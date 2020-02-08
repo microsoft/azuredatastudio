@@ -21,7 +21,7 @@ export class FileBrowserDialog {
 	}
 
 	/**
-	 * Opens a dialog to manage packages used by notebooks.
+	 * Opens a dialog to browse server files and folders.
 	 */
 	public showDialog(): void {
 		let fileBrowserTitle = '';

@@ -6,8 +6,8 @@
 import * as should from 'should';
 import 'mocha';
 import { createContext, ParentDialog } from './utils';
-import { LanguageEditDialog } from '../../../dialogs/externalLanguages/languageEditDialog';
-import { LanguageUpdateModel } from '../../../dialogs/externalLanguages/languageViewBase';
+import { LanguageEditDialog } from '../../../views/externalLanguages/languageEditDialog';
+import { LanguageUpdateModel } from '../../../views/externalLanguages/languageViewBase';
 
 describe('Edit External Languages Dialog', () => {
 	it('Should open dialog successfully ', async function (): Promise<void> {

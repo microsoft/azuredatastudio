@@ -6,7 +6,7 @@
 import * as should from 'should';
 import 'mocha';
 import { createContext } from './utils';
-import { LanguagesDialog } from '../../../dialogs/externalLanguages/languagesDialog';
+import { LanguagesDialog } from '../../../views/externalLanguages/languagesDialog';
 
 describe('External Languages Dialog', () => {
 	it('Should open dialog successfully ', async function (): Promise<void> {

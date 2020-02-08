@@ -6,8 +6,8 @@
 import * as should from 'should';
 import 'mocha';
 import { createContext, ParentDialog } from './utils';
-import { AddEditLanguageTab } from '../../../dialogs/externalLanguages/addEditLanguageTab';
-import { LanguageUpdateModel } from '../../../dialogs/externalLanguages/languageViewBase';
+import { AddEditLanguageTab } from '../../../views/externalLanguages/addEditLanguageTab';
+import { LanguageUpdateModel } from '../../../views/externalLanguages/languageViewBase';
 
 describe('Add Edit External Languages Tab', () => {
 	it('Should create AddEditLanguageTab for new language successfully ', async function (): Promise<void> {
@@ -19,7 +19,7 @@ describe('Add Edit External Languages Tab', () => {
 			newLang: true
 		};
 		let tab = new AddEditLanguageTab(testContext.apiWrapper.object, parent, languageUpdateModel);
-		should.notEqual(tab.languageView, undefined);
+		should.notEqual(tab.languageView, undefined, 'Failed to create language view for add');
 	});
 
 	it('Should create AddEditLanguageTab for edit successfully ', async function (): Promise<void> {
@@ -38,7 +38,7 @@ describe('Add Edit External Languages Tab', () => {
 			newLang: false
 		};
 		let tab = new AddEditLanguageTab(testContext.apiWrapper.object, parent, languageUpdateModel);
-		should.notEqual(tab.languageView, undefined);
+		should.notEqual(tab.languageView, undefined, 'Failed to create language view for edit');
 		should.equal(tab.saveButton, undefined);
 	});
 

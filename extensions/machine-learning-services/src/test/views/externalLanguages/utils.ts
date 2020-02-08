@@ -7,16 +7,16 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as TypeMoq from 'typemoq';
 import { ApiWrapper } from '../../../common/apiWrapper';
-import { LanguageViewBase } from '../../../dialogs/externalLanguages/languageViewBase';
+import { LanguageViewBase } from '../../../views/externalLanguages/languageViewBase';
 import * as mssql from '../../../../../mssql/src/mssql';
-import { LanguagesDialogModel } from '../../../dialogs/externalLanguages/languagesDialogModel';
+import { LanguageService } from '../../../externalLanguage/languageService';
 
 export interface TestContext {
 	apiWrapper: TypeMoq.IMock<ApiWrapper>;
 	view: azdata.ModelView;
 	languageExtensionService: mssql.ILanguageExtensionService;
 	onClick: vscode.EventEmitter<any>;
-	dialogModel: TypeMoq.IMock<LanguagesDialogModel>;
+	dialogModel: TypeMoq.IMock<LanguageService>;
 }
 
 export class ParentDialog extends LanguageViewBase {
@@ -231,6 +231,6 @@ export function createContext(): TestContext {
 		view: view,
 		languageExtensionService: languageExtensionService,
 		onClick: onClick,
-		dialogModel: TypeMoq.Mock.ofType(LanguagesDialogModel)
+		dialogModel: TypeMoq.Mock.ofType(LanguageService)
 	};
 }

@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as mssql from '../../../../mssql/src/mssql';
-import { ApiWrapper } from '../../common/apiWrapper';
+import * as mssql from '../../../mssql/src/mssql';
+import { ApiWrapper } from '../common/apiWrapper';
 
 /**
  * Manage package dialog model
  */
-export class LanguagesDialogModel {
+export class LanguageService {
 
 	public connection: azdata.connection.ConnectionProfile | undefined;
 	public connectionUrl: string = '';

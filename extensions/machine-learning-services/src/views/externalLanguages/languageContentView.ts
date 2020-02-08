@@ -137,13 +137,10 @@ export class LanguageContentView extends LanguageViewBase {
 	}
 
 	public async reset(): Promise<void> {
-		return new Promise(resolve => {
-			this._isLocalPath = true;
-			this._localPath.checked = this._isLocalPath;
-			this._serverPath.checked = !this._isLocalPath;
-			this.load();
-			resolve();
-		});
+		this._isLocalPath = true;
+		this._localPath.checked = this._isLocalPath;
+		this._serverPath.checked = !this._isLocalPath;
+		this.load();
 	}
 
 	public get updatedContent(): mssql.ExternalLanguageContent {

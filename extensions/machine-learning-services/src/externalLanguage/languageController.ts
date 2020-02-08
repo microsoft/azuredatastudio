@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as mssql from '../../../../mssql/src/mssql';
-import { ApiWrapper } from '../../common/apiWrapper';
-import { LanguagesDialogModel } from './languagesDialogModel';
-import { LanguagesDialog } from './languagesDialog';
-import { LanguageEditDialog } from './languageEditDialog';
-import { FileBrowserDialog } from './fileBrowserDialog';
-import { LanguageViewBase, LanguageUpdateModel } from './languageViewBase';
-import * as constants from '../../common/constants';
+import * as mssql from '../../../mssql/src/mssql';
+import { ApiWrapper } from '../common/apiWrapper';
+import { LanguageService } from './languageService';
+import { LanguagesDialog } from '../views/externalLanguages/languagesDialog';
+import { LanguageEditDialog } from '../views/externalLanguages/languageEditDialog';
+import { FileBrowserDialog } from '../views/externalLanguages/fileBrowserDialog';
+import { LanguageViewBase, LanguageUpdateModel } from '../views/externalLanguages/languageViewBase';
+import * as constants from '../common/constants';
 
 export class LanguageController {
 
@@ -20,7 +20,7 @@ export class LanguageController {
 	constructor(
 		private _apiWrapper: ApiWrapper,
 		private _root: string,
-		private _model: LanguagesDialogModel) {
+		private _service: LanguageService) {
 	}
 
 	/**
@@ -32,9 +32,9 @@ export class LanguageController {
 
 		// Load current connection
 		//
-		await this._model.load();
-		dialog.connection = this._model.connection;
-		dialog.connectionUrl = this._model.connectionUrl;
+		await this._service.load();
+		dialog.connection = this._service.connection;
+		dialog.connectionUrl = this._service.connectionUrl;
 
 		// Handle dialog events and connect to model
 		//
@@ -43,7 +43,7 @@ export class LanguageController {
 		});
 		dialog.onDelete(async deleteModel => {
 			try {
-				await this.executeAction(dialog, this.deleteLanguage, this._model, deleteModel);
+				await this.executeAction(dialog, this.deleteLanguage, this._service, deleteModel);
 				dialog.onUpdatedLanguage(deleteModel);
 			} catch (err) {
 				dialog.onActionFailed(err);
@@ -52,7 +52,7 @@ export class LanguageController {
 
 		dialog.onUpdate(async updateModel => {
 			try {
-				await this.executeAction(dialog, this.updateLanguage, this._model, updateModel);
+				await this.executeAction(dialog, this.updateLanguage, this._service, updateModel);
 				dialog.onUpdatedLanguage(updateModel);
 			} catch (err) {
 				dialog.onActionFailed(err);
@@ -61,7 +61,7 @@ export class LanguageController {
 
 		dialog.onList(async () => {
 			try {
-				let result = await this.listLanguages(this._model);
+				let result = await this.listLanguages(this._service);
 				dialog.onListLanguageLoaded(result);
 			} catch (err) {
 				dialog.onActionFailed(err);
@@ -76,13 +76,9 @@ export class LanguageController {
 	}
 
 	public async executeAction<T>(dialog: LanguageViewBase, func: (...args: any[]) => Promise<T>, ...args: any[]): Promise<T> {
-		try {
-			let result = await func(...args);
-			await dialog.reset();
-			return result;
-		} catch (error) {
-			throw error;
-		}
+		let result = await func(...args);
+		await dialog.reset();
+		return result;
 	}
 
 	public editLanguage(parent: LanguageViewBase, languageUpdateModel: LanguageUpdateModel): void {
@@ -123,22 +119,20 @@ export class LanguageController {
 		return result && result.length > 0 ? result[0].fsPath : '';
 	}
 
-	public async deleteLanguage(model: LanguagesDialogModel, deleteModel: LanguageUpdateModel): Promise<void> {
+	public async deleteLanguage(model: LanguageService, deleteModel: LanguageUpdateModel): Promise<void> {
 		await model.deleteLanguage(deleteModel.language.name);
 	}
 
-	public async listLanguages(model: LanguagesDialogModel): Promise<mssql.ExternalLanguage[]> {
+	public async listLanguages(model: LanguageService): Promise<mssql.ExternalLanguage[]> {
 		return await model.getLanguageList();
 	}
 
-	public async updateLanguage(model: LanguagesDialogModel, updateModel: LanguageUpdateModel): Promise<void> {
+	public async updateLanguage(model: LanguageService, updateModel: LanguageUpdateModel): Promise<void> {
 		if (!updateModel.language) {
 			return;
 		}
 		let contents: mssql.ExternalLanguageContent[] = [];
-		if (!updateModel.language.contents || updateModel.language.contents.length === 0) {
-			contents = [];
-		} else {
+		if (updateModel.language.contents && updateModel.language.contents.length >= 0) {
 			contents = updateModel.language.contents.filter(x => x.platform !== updateModel.content.platform);
 		}
 		contents.push(updateModel.content);

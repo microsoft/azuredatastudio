@@ -7,7 +7,7 @@ import * as should from 'should';
 import 'mocha';
 import * as TypeMoq from 'typemoq';
 import { createContext } from './utils';
-import { LanguageController } from '../../../dialogs/externalLanguages/languageController';
+import { LanguageController } from '../../../externalLanguage/languageController';
 import * as mssql from '../../../../../mssql/src/mssql';
 
 describe('External Languages Controller', () => {

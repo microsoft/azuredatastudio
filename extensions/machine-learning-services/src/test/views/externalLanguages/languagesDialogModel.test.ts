@@ -7,7 +7,7 @@ import * as should from 'should';
 import 'mocha';
 import { createContext } from './utils';
 import * as mssql from '../../../../../mssql/src/mssql';
-import { LanguagesDialogModel } from '../../../dialogs/externalLanguages/languagesDialogModel';
+import { LanguageService } from '../../../externalLanguage/languageService';
 
 describe('External Languages Dialog Model', () => {
 	it('Should list languages successfully ', async function (): Promise<void> {
@@ -21,7 +21,7 @@ describe('External Languages Dialog Model', () => {
 			}]
 		}];
 		testContext.languageExtensionService.listLanguages = () => {return Promise.resolve(languages);};
-		let model = new LanguagesDialogModel(testContext.apiWrapper.object, testContext.languageExtensionService);
+		let model = new LanguageService(testContext.apiWrapper.object, testContext.languageExtensionService);
 		await model.load();
 		let actual = await model.getLanguageList();
 		should.deepEqual(actual, languages);
@@ -38,7 +38,7 @@ describe('External Languages Dialog Model', () => {
 			}]
 		};
 
-		let model = new LanguagesDialogModel(testContext.apiWrapper.object, testContext.languageExtensionService);
+		let model = new LanguageService(testContext.apiWrapper.object, testContext.languageExtensionService);
 		await model.load();
 		await should(model.updateLanguage(language)).resolved();
 	});
@@ -54,7 +54,7 @@ describe('External Languages Dialog Model', () => {
 			}]
 		};
 
-		let model = new LanguagesDialogModel(testContext.apiWrapper.object, testContext.languageExtensionService);
+		let model = new LanguageService(testContext.apiWrapper.object, testContext.languageExtensionService);
 		await model.load();
 		await should(model.deleteLanguage(language.name)).resolved();
 	});
