@@ -42,7 +42,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 
 	public toObject(): IConnectionProfileGroup {
 		let subgroups = undefined;
-		if (this.children.length > 0) {
+		if (this.children && this.children.length > 0) {
 			subgroups = [];
 			this.children.forEach((group) => {
 				subgroups.push(group.toObject());
@@ -76,10 +76,8 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	}
 
 	public hasChildren(): boolean {
-		if (this.children.length > 0 || this.connections.length > 0) {
-			return true;
-		}
-		return false;
+		return ((this.children && this.children.length > 0)
+			|| (this.connections && this.connections.length > 0));
 	}
 
 	/**
@@ -91,25 +89,31 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 			return false;
 		} else {
 			let childrenAreValid: boolean = true;
-			this.children.forEach(element => {
-				let isChildValid = element.hasValidConnections;
-				if (!isChildValid) {
-					childrenAreValid = false;
-				}
-			});
+			if (this.children) {
+				this.children.forEach(element => {
+					let isChildValid = element.hasValidConnections;
+					if (!isChildValid) {
+						childrenAreValid = false;
+					}
+				});
+			}
 			return childrenAreValid;
 		}
 	}
 
 	public getChildren(): (ConnectionProfile | ConnectionProfileGroup)[] {
 		let allChildren: (ConnectionProfile | ConnectionProfileGroup)[] = [];
-		this.connections.forEach((conn) => {
-			allChildren.push(conn);
-		});
+		if (this.connections) {
+			this.connections.forEach((conn) => {
+				allChildren.push(conn);
+			});
+		}
 
-		this.children.forEach((group) => {
-			allChildren.push(group);
-		});
+		if (this.children) {
+			this.children.forEach((group) => {
+				allChildren.push(group);
+			});
+		}
 		return allChildren;
 	}
 
@@ -121,22 +125,25 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	}
 
 	public addConnections(connections: ConnectionProfile[]): void {
-		connections.forEach((conn) => {
-			this.connections = this.connections.filter((curConn) => { return curConn.id !== conn.id; });
-			conn.parent = this;
-			this._register(conn);
-			this.connections.push(conn);
-		});
-
+		if (connections) {
+			connections.forEach((conn) => {
+				this.connections = this.connections.filter((curConn) => { return curConn.id !== conn.id; });
+				conn.parent = this;
+				this._register(conn);
+				this.connections.push(conn);
+			});
+		}
 	}
 
 	public addGroups(groups: ConnectionProfileGroup[]): void {
-		groups.forEach((group) => {
-			this.children = this.children.filter((grp) => { return group.id !== grp.id; });
-			group.parent = this;
-			this._register(group);
-			this.children.push(group);
-		});
+		if (groups) {
+			groups.forEach((group) => {
+				this.children = this.children.filter((grp) => { return group.id !== grp.id; });
+				group.parent = this;
+				this._register(group);
+				this.children.push(group);
+			});
+		}
 	}
 
 	public getParent(): ConnectionProfileGroup | undefined {
