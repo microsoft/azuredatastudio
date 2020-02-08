@@ -75,11 +75,16 @@
     "vscode-nls": "^3.2.1"
   },
   "devDependencies": {
+    "@types/mocha": "^5.2.5",
     "@types/node": "^12.11.7",
+    "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.3",
-    "vscode": "^1.1.36"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.4"
+  },
+  "resolutions": {
+      "esprima": "^4.0.0"
   },
   "__metadata": {
     "id": "41",

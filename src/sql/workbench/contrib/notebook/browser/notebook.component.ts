@@ -8,7 +8,7 @@ import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, V
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
-import { INotificationService, INotification, Severity } from 'vs/platform/notification/common/notification';
+import { INotificationService, INotification } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -18,7 +18,6 @@ import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common
 import { IAction, Action, IActionViewItem } from 'vs/base/common/actions';
 import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import * as DOM from 'vs/base/browser/dom';
 
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
@@ -37,7 +36,6 @@ import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHos
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CellMagicMapper } from 'sql/workbench/contrib/notebook/browser/models/cellMagicMapper';
-import { VIEWLET_ID, IExtensionsViewPaneContainer } from 'vs/workbench/contrib/extensions/common/extensions';
 import { CellModel } from 'sql/workbench/contrib/notebook/browser/models/cell';
 import { FileOperationError, FileOperationResult } from 'vs/platform/files/common/files';
 import { isValidBasename } from 'vs/base/common/extpath';
@@ -101,7 +99,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IContextKeyService) private contextKeyService: IContextKeyService,
 		@Inject(IMenuService) private menuService: IMenuService,
 		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
-		@Inject(IViewletService) private viewletService: IViewletService,
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
@@ -183,8 +180,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		if (event) {
 			event.stopPropagation();
 		}
-		this.model.updateActiveCell(cell);
-		this.detectChanges();
+		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
+			this.model.updateActiveCell(cell);
+			this.detectChanges();
+		}
 	}
 
 	//Saves scrollTop value on scroll change
@@ -339,25 +338,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			let providers = notebookUtils.getProvidersForFileName(this._notebookParams.notebookUri.fsPath, this.notebookService);
 			let tsqlProvider = find(providers, provider => provider === SQL_NOTEBOOK_PROVIDER);
 			providerInfo.providerId = tsqlProvider ? SQL_NOTEBOOK_PROVIDER : providers[0];
-		}
-		if (DEFAULT_NOTEBOOK_PROVIDER === providerInfo.providerId) {
-			// If it's still the default, warn them they should install an extension
-			this.notificationService.prompt(Severity.Warning,
-				localize('noKernelInstalled', "Please install the SQL Server 2019 extension to run cells."),
-				[{
-					label: localize('installSql2019Extension', "Install Extension"),
-					run: () => this.openExtensionGallery()
-				}]);
-		}
-	}
-
-	private async openExtensionGallery(): Promise<void> {
-		try {
-			let viewlet = await this.viewletService.openViewlet(VIEWLET_ID, true);
-			(viewlet.getViewPaneContainer() as IExtensionsViewPaneContainer).search('sql-vnext');
-			viewlet.focus();
-		} catch (error) {
-			this.notificationService.error(error.message);
 		}
 	}
 

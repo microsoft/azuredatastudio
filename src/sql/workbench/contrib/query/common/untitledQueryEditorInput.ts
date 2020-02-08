@@ -6,12 +6,11 @@
 import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
 import { IEncodingSupport, EncodingMode } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
-import { IFileService } from 'vs/platform/files/common/files';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
 
@@ -29,10 +28,9 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		results: QueryResultsInput,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@IFileService fileService: IFileService
+		@IConfigurationService configurationService: IConfigurationService
 	) {
-		super(description, text, results, connectionManagementService, queryModelService, configurationService, fileService);
+		super(description, text, results, connectionManagementService, queryModelService, configurationService);
 	}
 
 	public resolve(): Promise<UntitledTextEditorModel & IResolvedTextEditorModel> {
@@ -45,10 +43,6 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 
 	public get hasAssociatedFilePath(): boolean {
 		return this.text.hasAssociatedFilePath;
-	}
-
-	public suggestFileName(): string {
-		return this.text.suggestFileName();
 	}
 
 	public setMode(mode: string): void {
@@ -74,13 +68,5 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 	isUntitled(): boolean {
 		// Subclasses need to explicitly opt-in to being untitled.
 		return true;
-	}
-
-	hasBackup(): boolean {
-		if (this.text) {
-			return this.text.hasBackup();
-		}
-
-		return false;
 	}
 }

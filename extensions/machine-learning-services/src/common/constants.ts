@@ -30,6 +30,8 @@ export const mlsDependenciesCommand = 'mls.command.dependencies';
 //
 export const mlsConfigKey = 'machineLearningServices';
 export const pythonPathConfigKey = 'pythonPath';
+export const pythonEnabledConfigKey = 'enablePython';
+export const rEnabledConfigKey = 'enableR';
 export const rPathConfigKey = 'rPath';
 
 // Localized texts
@@ -59,6 +61,7 @@ export const pythonConfigError = localize('mls.pythonConfigError', "Python execu
 export const rConfigError = localize('mls.rConfigError', "R executable is not configured");
 export const installingDependencies = localize('mls.installingDependencies', "Installing dependencies ...");
 export const resourceNotFoundError = localize('mls.resourceNotFound', "Could not find the specified resource");
+export const latestVersion = localize('mls.latestVersion', "Latest");
 export function httpGetRequestError(code: number, message: string): string {
 	return localize('mls.httpGetRequestError', "Package info request failed with error: {0} {1}",
 		code,

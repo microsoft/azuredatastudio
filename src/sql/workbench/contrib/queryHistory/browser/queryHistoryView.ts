@@ -18,9 +18,9 @@ import { QueryHistoryDataSource } from 'sql/workbench/contrib/queryHistory/brows
 import { QueryHistoryController } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryController';
 import { QueryHistoryActionProvider } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryActionProvider';
 import { IExpandableTree } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
-import { IQueryHistoryService } from 'sql/platform/queryHistory/common/queryHistoryService';
+import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
 import { QueryHistoryNode } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryNode';
-import { QueryHistoryInfo } from 'sql/platform/queryHistory/common/queryHistoryInfo';
+import { QueryHistoryInfo } from 'sql/workbench/services/queryHistory/common/queryHistoryInfo';
 import { IAction } from 'vs/base/common/actions';
 /**
  * QueryHistoryView implements the dynamic tree view for displaying Query History

@@ -38,7 +38,7 @@ export class PackageManager {
 		private _config: Config,
 		private _httpClient: HttpClient) {
 		this._sqlPythonPackagePackageManager = new SqlPythonPackageManageProvider(this._outputChannel, this._apiWrapper, this._queryRunner, this._processService, this._config, this._httpClient);
-		this._sqlRPackageManager = new SqlRPackageManageProvider(this._outputChannel, this._apiWrapper, this._queryRunner, this._processService, this._config);
+		this._sqlRPackageManager = new SqlRPackageManageProvider(this._outputChannel, this._apiWrapper, this._queryRunner, this._processService, this._config, this._httpClient);
 	}
 
 	/**
@@ -132,6 +132,9 @@ export class PackageManager {
 	}
 
 	private async installRequiredRPackages(startBackgroundOperation: azdata.BackgroundOperation): Promise<void> {
+		if (!this._config.rEnabled) {
+			return;
+		}
 		if (!this._rExecutable) {
 			throw new Error(constants.rConfigError);
 		}
@@ -143,6 +146,9 @@ export class PackageManager {
 	 * Installs required python packages
 	 */
 	private async installRequiredPythonPackages(): Promise<void> {
+		if (!this._config.pythonEnabled) {
+			return;
+		}
 		if (!this._pythonExecutable) {
 			throw new Error(constants.pythonConfigError);
 		}
@@ -205,7 +211,7 @@ export class PackageManager {
 			output = await this._processService.executeBufferedCommand(cmd, this._outputChannel);
 		} else if (model.repository) {
 			cmd = `"${this._rExecutable}" -e "install.packages('${model.name}', repos='${model.repository}')"`;
-			output = output + await this._processService.executeBufferedCommand(cmd, this._outputChannel);
+			output = await this._processService.executeBufferedCommand(cmd, this._outputChannel);
 		}
 		return output;
 	}

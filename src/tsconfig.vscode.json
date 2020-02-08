@@ -1,0 +1,35 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"noEmit": true,
+		"noImplicitAny": true,
+		"experimentalDecorators": true,
+		"noImplicitReturns": true,
+		"noUnusedLocals": true,
+		"noImplicitThis": true,
+		"alwaysStrict": true,
+		"strictBindCallApply": true,
+		"strictNullChecks": true,
+		"strictPropertyInitialization": true,
+		"forceConsistentCasingInFileNames": true,
+		"skipLibCheck": true
+	},
+	"include": [
+		"./typings",
+		"./vs/vscode.d.ts",
+		"./vs/vscode.proposed.d.ts",
+		"./vs/monaco.d.ts",
+		"./sql/azdata.d.ts",
+		"./sql/azdata.proposed.d.ts",
+		"./vs/base/**/*.ts",
+		// "./vs/code/**/*.ts",
+		"./vs/editor/**/*.ts",
+		"./vs/platform/**/*.ts",
+		"./sql/base/**/*.ts",
+		"./sql/editor/**/*.ts",
+		"./sql/platform/**/*.ts"
+	],
+	"exclude": [
+		"./vs/platform/workspaces/test/electron-main/workspacesMainService.test.ts"
+	]
+}

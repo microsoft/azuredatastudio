@@ -3,13 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SyncStatus, SyncSource, IUserDataSyncService } from 'vs/platform/userDataSync/common/userDataSync';
+import { SyncStatus, SyncSource, IUserDataSyncService, UserDataSyncError } from 'vs/platform/userDataSync/common/userDataSync';
 import { ISharedProcessService } from 'vs/platform/ipc/electron-browser/sharedProcessService';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IChannel } from 'vs/base/parts/ipc/common/ipc';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
-import { IExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export class UserDataSyncService extends Disposable implements IUserDataSyncService {
 
@@ -31,7 +31,16 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 		@ISharedProcessService sharedProcessService: ISharedProcessService
 	) {
 		super();
-		this.channel = sharedProcessService.getChannel('userDataSync');
+		const userDataSyncChannel = sharedProcessService.getChannel('userDataSync');
+		this.channel = {
+			call<T>(command: string, arg?: any, cancellationToken?: CancellationToken): Promise<T> {
+				return userDataSyncChannel.call(command, arg, cancellationToken)
+					.then(null, error => { throw UserDataSyncError.toUserDataSyncError(error); });
+			},
+			listen<T>(event: string, arg?: any): Event<T> {
+				return userDataSyncChannel.listen(event, arg);
+			}
+		};
 		this.channel.call<SyncStatus>('_getInitialStatus').then(status => {
 			this.updateStatus(status);
 			this._register(this.channel.listen<SyncStatus>('onDidChangeStatus')(status => this.updateStatus(status)));
@@ -46,8 +55,12 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 		return this.channel.call('push');
 	}
 
-	sync(_continue?: boolean): Promise<boolean> {
-		return this.channel.call('sync', [_continue]);
+	sync(): Promise<void> {
+		return this.channel.call('sync');
+	}
+
+	accept(source: SyncSource, content: string): Promise<void> {
+		return this.channel.call('accept', [source, content]);
 	}
 
 	reset(): Promise<void> {
@@ -58,8 +71,13 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 		return this.channel.call('resetLocal');
 	}
 
-	stop(): void {
-		this.channel.call('stop');
+	stop(): Promise<void> {
+		return this.channel.call('stop');
+	}
+
+	async restart(): Promise<void> {
+		const status = await this.channel.call<SyncStatus>('restart');
+		await this.updateStatus(status);
 	}
 
 	hasPreviouslySynced(): Promise<boolean> {
@@ -74,12 +92,12 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 		return this.channel.call('hasLocalData');
 	}
 
-	isFirstTimeSyncAndHasUserData(): Promise<boolean> {
-		return this.channel.call('isFirstTimeSyncAndHasUserData');
+	getRemoteContent(source: SyncSource, preview: boolean): Promise<string | null> {
+		return this.channel.call('getRemoteContent', [source, preview]);
 	}
 
-	removeExtension(identifier: IExtensionIdentifier): Promise<void> {
-		return this.channel.call('removeExtension', [identifier]);
+	isFirstTimeSyncAndHasUserData(): Promise<boolean> {
+		return this.channel.call('isFirstTimeSyncAndHasUserData');
 	}
 
 	private async updateStatus(status: SyncStatus): Promise<void> {

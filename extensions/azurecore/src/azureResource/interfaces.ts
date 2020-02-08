@@ -41,23 +41,6 @@ export interface IAzureResourceNodeWithProviderId {
 	resourceNode: azureResource.IAzureResourceNode;
 }
 
-export interface AzureSqlResource {
-	name: string;
-	loginName: string;
-}
-
-export interface IAzureResourceService<T extends AzureSqlResource> {
+export interface IAzureResourceService<T extends azureResource.AzureResource> {
 	getResources(subscription: azureResource.AzureResourceSubscription, credential: msRest.ServiceClientCredentials): Promise<T[]>;
-}
-
-
-export interface AzureResourceDatabase extends AzureSqlResource {
-	serverName: string;
-	serverFullName: string;
-}
-
-export interface AzureResourceDatabaseServer extends AzureSqlResource {
-	id?: string;
-	fullName: string;
-	defaultDatabaseName: string;
 }

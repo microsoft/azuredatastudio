@@ -68,6 +68,7 @@ export class RenderLineInput {
 	public readonly tabSize: number;
 	public readonly startVisibleColumn: number;
 	public readonly spaceWidth: number;
+	public readonly middotWidth: number;
 	public readonly stopRenderingLineAfter: number;
 	public readonly renderWhitespace: RenderWhitespace;
 	public readonly renderControlCharacters: boolean;
@@ -92,6 +93,7 @@ export class RenderLineInput {
 		tabSize: number,
 		startVisibleColumn: number,
 		spaceWidth: number,
+		middotWidth: number,
 		stopRenderingLineAfter: number,
 		renderWhitespace: 'none' | 'boundary' | 'selection' | 'all',
 		renderControlCharacters: boolean,
@@ -110,6 +112,7 @@ export class RenderLineInput {
 		this.tabSize = tabSize;
 		this.startVisibleColumn = startVisibleColumn;
 		this.spaceWidth = spaceWidth;
+		this.middotWidth = middotWidth;
 		this.stopRenderingLineAfter = stopRenderingLineAfter;
 		this.renderWhitespace = (
 			renderWhitespace === 'all'
@@ -380,6 +383,7 @@ class ResolvedRenderLineInput {
 		public readonly startVisibleColumn: number,
 		public readonly containsRTL: boolean,
 		public readonly spaceWidth: number,
+		public readonly middotWidth: number,
 		public readonly renderWhitespace: RenderWhitespace,
 		public readonly renderControlCharacters: boolean,
 	) {
@@ -439,6 +443,7 @@ function resolveRenderLineInput(input: RenderLineInput): ResolvedRenderLineInput
 		input.startVisibleColumn,
 		input.containsRTL,
 		input.spaceWidth,
+		input.middotWidth,
 		input.renderWhitespace,
 		input.renderControlCharacters
 	);
@@ -544,7 +549,7 @@ function splitLargeTokens(lineContent: string, tokens: LinePart[], onlyAtSpaces:
 }
 
 /**
- * Whitespace is rendered by "replacing" tokens with a special-purpose `vs-whitespace` type that is later recognized in the rendering phase.
+ * Whitespace is rendered by "replacing" tokens with a special-purpose `mtkw` type that is later recognized in the rendering phase.
  * Moreover, a token is created for every visual indent because on some fonts the glyphs used for rendering whitespace (&rarr; or &middot;) do not have the same width as &nbsp;.
  * The rendering phase will generate `style="width:..."` for these tokens.
  */
@@ -611,7 +616,7 @@ function _applyRenderWhitespace(lineContent: string, len: number, continuesWithW
 			// was in whitespace token
 			if (!isInWhitespace || (!useMonospaceOptimizations && tmpIndent >= tabSize)) {
 				// leaving whitespace token or entering a new indent
-				result[resultLen++] = new LinePart(charIndex, 'vs-whitespace');
+				result[resultLen++] = new LinePart(charIndex, 'mtkw');
 				tmpIndent = tmpIndent % tabSize;
 			}
 		} else {
@@ -656,7 +661,7 @@ function _applyRenderWhitespace(lineContent: string, len: number, continuesWithW
 		}
 	}
 
-	result[resultLen++] = new LinePart(len, generateWhitespace ? 'vs-whitespace' : tokenType);
+	result[resultLen++] = new LinePart(len, generateWhitespace ? 'mtkw' : tokenType);
 
 	return result;
 }
@@ -734,8 +739,12 @@ function _renderLine(input: ResolvedRenderLineInput, sb: IStringBuilder): Render
 	const startVisibleColumn = input.startVisibleColumn;
 	const containsRTL = input.containsRTL;
 	const spaceWidth = input.spaceWidth;
+	const middotWidth = input.middotWidth;
 	const renderWhitespace = input.renderWhitespace;
 	const renderControlCharacters = input.renderControlCharacters;
+
+	// use U+2E31 - WORD SEPARATOR MIDDLE DOT or U+00B7 - MIDDLE DOT
+	const spaceRenderWhitespaceCharacter = (middotWidth > spaceWidth ? 0x2E31 : 0xB7);
 
 	const characterMapping = new CharacterMapping(len + 1, parts.length);
 
@@ -754,11 +763,12 @@ function _renderLine(input: ResolvedRenderLineInput, sb: IStringBuilder): Render
 		const part = parts[partIndex];
 		const partEndIndex = part.endIndex;
 		const partType = part.type;
-		const partRendersWhitespace = (renderWhitespace !== RenderWhitespace.None && (partType.indexOf('vs-whitespace') >= 0));
+		const partRendersWhitespace = (renderWhitespace !== RenderWhitespace.None && (partType.indexOf('mtkw') >= 0));
+		const partRendersWhitespaceWithWidth = partRendersWhitespace && !fontIsMonospace && (partType === 'mtkw'/*only whitespace*/ || !containsForeignElements);
 		charOffsetInPart = 0;
 
 		sb.appendASCIIString('<span class="');
-		sb.appendASCIIString(partType);
+		sb.appendASCIIString(partRendersWhitespaceWithWidth ? 'mtkz' : partType);
 		sb.appendASCII(CharCode.DoubleQuote);
 
 		if (partRendersWhitespace) {
@@ -778,13 +788,10 @@ function _renderLine(input: ResolvedRenderLineInput, sb: IStringBuilder): Render
 				}
 			}
 
-			if (!fontIsMonospace) {
-				const partIsOnlyWhitespace = (partType === 'vs-whitespace');
-				if (partIsOnlyWhitespace || !containsForeignElements) {
-					sb.appendASCIIString(' style="display:inline-block;width:');
-					sb.appendASCIIString(String(spaceWidth * partContentCnt));
-					sb.appendASCIIString('px"');
-				}
+			if (partRendersWhitespaceWithWidth) {
+				sb.appendASCIIString(' style="width:');
+				sb.appendASCIIString(String(spaceWidth * partContentCnt));
+				sb.appendASCIIString('px"');
 			}
 			sb.appendASCII(CharCode.GreaterThan);
 
@@ -808,7 +815,7 @@ function _renderLine(input: ResolvedRenderLineInput, sb: IStringBuilder): Render
 				} else { // must be CharCode.Space
 					charWidth = 1;
 
-					sb.write1(0xB7); // &middot;
+					sb.write1(spaceRenderWhitespaceCharacter); // &middot; or word separator middle dot
 				}
 
 				charOffsetInPart += charWidth;

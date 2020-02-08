@@ -6,7 +6,7 @@
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
 import * as LocalizedConstants from 'sql/workbench/contrib/query/common/localizedConstants';
 import { SaveResultsRequestParams } from 'azdata';
-import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
+import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { ISaveRequest, SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
 
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';

@@ -8,13 +8,13 @@ import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import { AccountProviderStub, TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
 import { ExtHostAccountManagement } from 'sql/workbench/api/common/extHostAccountManagement';
-import { TestRPCProtocol } from 'vs/workbench/test/electron-browser/api/testRPCProtocol';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IRPCProtocol } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { MainThreadAccountManagement } from 'sql/workbench/api/browser/mainThreadAccountManagement';
 import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { TestRPCProtocol } from 'vs/workbench/test/browser/api/testRPCProtocol';
 
 const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');
 

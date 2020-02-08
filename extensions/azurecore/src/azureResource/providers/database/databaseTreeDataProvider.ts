@@ -12,22 +12,22 @@ import { azureResource } from '../../azure-resource';
 import { AzureResourceItemType } from '../../../azureResource/constants';
 import { ApiWrapper } from '../../../apiWrapper';
 import { generateGuid } from '../../utils';
-import { IAzureResourceService, AzureResourceDatabase } from '../../interfaces';
+import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 
-export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProviderBase<AzureResourceDatabase> {
+export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabase> {
 
 	private static readonly containerId = 'azure.resource.providers.database.treeDataProvider.databaseContainer';
 	private static readonly containerLabel = localize('azure.resource.providers.database.treeDataProvider.databaseContainerLabel', "SQL Databases");
 
 	public constructor(
-		databaseService: IAzureResourceService<AzureResourceDatabase>,
+		databaseService: IAzureResourceService<azureResource.AzureResourceDatabase>,
 		apiWrapper: ApiWrapper,
 		private _extensionContext: ExtensionContext
 	) {
 		super(databaseService, apiWrapper);
 	}
-	protected getTreeItemForResource(database: AzureResourceDatabase): TreeItem {
+	protected getTreeItemForResource(database: azureResource.AzureResourceDatabase): TreeItem {
 		return {
 			id: `databaseServer_${database.serverFullName}.database_${database.name}`,
 			label: `${database.name} (${database.serverName})`,
