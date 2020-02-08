@@ -315,10 +315,12 @@ export class CellModel implements ICellModel {
 				// for this property
 				return false;
 			}
+
 			let kernel = await this.getOrStartKernel(notificationService);
 			if (!kernel) {
 				return false;
 			}
+
 			// If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
 			// This matches the same behavior as JupyterLab
 			if (this.future && this.future.inProgress) {
@@ -330,6 +332,14 @@ export class CellModel implements ICellModel {
 				await kernel.interrupt();
 				this.sendNotification(notificationService, Severity.Info, localize('runCellCancelled', "Cell execution cancelled"));
 			} else {
+				// Executing a single cell will make the notebook trusted
+				if (!this._isTrusted) {
+					let executeCell = await this.notebookModel.promptForTrust();
+					if (!executeCell) {
+						return false;
+					}
+				}
+
 				// TODO update source based on editor component contents
 				if (kernel.requiresConnection && !this.notebookModel.context) {
 					let connected = await this.notebookModel.requestConnection();
