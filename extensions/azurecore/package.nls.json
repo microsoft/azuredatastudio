@@ -19,5 +19,5 @@
 	"config.enableUsGovCloudDescription": "Should US Government Azure cloud (Fairfax) integration be enabled",
 	"config.enableChinaCloudDescription": "Should Azure China integration be enabled",
 	"config.enableGermanyCloudDescription": "Should Azure Germany integration be enabled",
-	"config.enableDeviceCodeLogin": "Use device code login mechanism"
+	"config.enableDeviceCodeLogin": "Enable Azure Active Directory device code login mechanism"
 }
