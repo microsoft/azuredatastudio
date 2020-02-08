@@ -18,6 +18,8 @@ export const mlEnableMlsCommand = 'mls.command.enableMls';
 export const mlDisableMlsCommand = 'mls.command.disableMls';
 export const extensionOutputChannel = 'Machine Learning Services';
 export const notebookExtensionName = 'Microsoft.notebook';
+export const azureSubscriptionsCommand = 'azure.accounts.getSubscriptions';
+export const azureResourceGroupsCommand = 'azure.accounts.getResourceGroups';
 
 // Tasks, commands
 //

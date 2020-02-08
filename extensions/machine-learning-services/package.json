@@ -114,7 +114,10 @@
   "dependencies": {
     "request": "^2.88.0",
     "vscode-nls": "^4.0.0",
-    "vscode-languageclient": "^5.3.0-next.1"
+    "vscode-languageclient": "^5.3.0-next.1",
+    "@azure/arm-resourcegraph": "^2.0.0",
+    "@azure/arm-subscriptions": "1.0.0",
+    "@azure/arm-machinelearningservices" : "^3.0.0"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",

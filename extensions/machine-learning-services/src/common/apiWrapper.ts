@@ -85,4 +85,12 @@ export class ApiWrapper {
 	public openDialog(dialog: azdata.window.Dialog): void {
 		return azdata.window.openDialog(dialog);
 	}
+
+	public getAllAccounts(): Thenable<azdata.Account[]> {
+		return azdata.accounts.getAllAccounts();
+	}
+
+	public getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{ [key: string]: any }> {
+		return azdata.accounts.getSecurityToken(account, resource);
+	}
 }
