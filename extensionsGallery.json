@@ -2964,8 +2964,8 @@
 				},
 				{
 					"extensionId": "61",
-					"extensionName": "Visualization",
-					"displayName": "Visualization",
+					"extensionName": "schema-visualization",
+					"displayName": "Schema Visualization",
 					"shortDescription": "Visualization of databases",
 					"publisher": {
 						"displayName": "Jens Hunt",
@@ -2974,14 +2974,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.0",
+							"version": "0.2.0",
 							"lastUpdated": "2/2/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/R0tenur/visualization/releases/tag/v0.1.0"
+									"source": "https://github.com/R0tenur/visualization/releases/tag/v0.2.0"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2989,14 +2989,14 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://github.com/R0tenur/visualization/blob/master/README.md"														},
+									"source": "https://raw.githubusercontent.com/R0tenur/visualization/master/README.md"														},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://github.com/R0tenur/visualization/blob/master/package.json"
+									"source": "https://raw.githubusercontent.com/R0tenur/visualization/master/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://github.com/R0tenur/visualization/blob/master/LICENSE"
+									"source": "https://raw.githubusercontent.com/R0tenur/visualization/master/LICENSE"
 								}
 							],
 							"properties": [
