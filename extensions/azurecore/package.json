@@ -39,6 +39,11 @@
             "type": "boolean",
             "default": true,
             "description": "%config.enablePublicCloudDescription%"
+          },
+          "accounts.azure.enableDeviceCodeLogin": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.enableDeviceCodeLogin%"
           }
         }
       },
