@@ -5,7 +5,7 @@
 |----------------------------------------------------------------------------*/
 
 import { JSONObject, isPrimitive } from '../../../../services/notebook/common/jsonext';
-import { MimeModel } from './mimemodel';
+import { MimeModel } from '../../../../services/notebook/browser/outputs/mimemodel';
 import { nbformat } from '../../../../services/notebook/common/nbformat';
 import { nb } from 'azdata';
 

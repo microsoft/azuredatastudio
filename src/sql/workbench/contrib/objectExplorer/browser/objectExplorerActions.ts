@@ -7,7 +7,7 @@ import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 
 import * as azdata from 'azdata';
-import { TreeNode } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
+import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { TreeUpdateUtils } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/workbench/contrib/objectExplorer/browser/treeSelectionHandler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

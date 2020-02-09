@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ICellMagicMapper } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellMagicMapper } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ILanguageMagic } from 'sql/workbench/services/notebook/browser/notebookService';
 import { find } from 'vs/base/common/arrays';
 

@@ -12,7 +12,7 @@ import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ServerTreeActionProvider } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeActionProvider';
 import { ObjectExplorerActionsContext } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerActions';
-import { TreeNode } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
+import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 
 /**
  * Extends the tree controller to handle clicks on the tree elements

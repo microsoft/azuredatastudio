@@ -10,7 +10,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 
-import { TreeNode } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
+import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import * as errors from 'vs/base/common/errors';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Disposable } from 'vs/base/common/lifecycle';

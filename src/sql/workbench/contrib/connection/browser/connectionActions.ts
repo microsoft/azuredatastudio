@@ -12,8 +12,8 @@ import { INotificationService, INotificationActions } from 'vs/platform/notifica
 import Severity from 'vs/base/common/severity';
 import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
-import { EditDataInput } from 'sql/workbench/contrib/editData/browser/editDataInput';
+import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
+import { EditDataInput } from 'sql/workbench/common/editor/editData/editDataInput';
 import { DashboardInput } from 'sql/workbench/contrib/dashboard/browser/dashboardInput';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';

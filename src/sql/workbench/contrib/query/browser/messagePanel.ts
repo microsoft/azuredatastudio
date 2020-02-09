@@ -28,7 +28,7 @@ import { $, Dimension, createStyleSheet } from 'vs/base/browser/dom';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { resultsErrorColor } from 'sql/platform/theme/common/colors';
-import { MessagePanelState } from 'sql/workbench/contrib/query/common/messagePanelState';
+import { MessagePanelState } from 'sql/workbench/common/editor/query/messagePanelState';
 
 export interface IResultMessageIntern extends IQueryMessage {
 	id?: string;

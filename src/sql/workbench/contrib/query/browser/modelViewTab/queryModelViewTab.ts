@@ -9,7 +9,7 @@ import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
 import { QueryModelViewTabModule } from 'sql/workbench/contrib/query/browser/modelViewTab/queryModelViewTab.module';
-import { QueryModelViewState } from 'sql/workbench/contrib/query/common/modelViewTab/modelViewState';
+import { QueryModelViewState } from 'sql/workbench/common/editor/query/modelViewState';
 
 export class QueryModelViewTab implements IPanelTab {
 	public identifier = 'QueryModelViewTab_';

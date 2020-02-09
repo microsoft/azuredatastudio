@@ -49,7 +49,7 @@ export class ConnectionViewletPanel extends ViewPane {
 		this._addServerGroupAction = this.instantiationService.createInstance(AddServerGroupAction,
 			AddServerGroupAction.ID,
 			AddServerGroupAction.LABEL);
-		this._serverTreeView = this.objectExplorerService.getServerTreeView();
+		this._serverTreeView = <any>this.objectExplorerService.getServerTreeView() as ServerTreeView;
 		if (!this._serverTreeView) {
 			this._serverTreeView = this.instantiationService.createInstance(ServerTreeView);
 			this.objectExplorerService.registerServerTreeView(this._serverTreeView);

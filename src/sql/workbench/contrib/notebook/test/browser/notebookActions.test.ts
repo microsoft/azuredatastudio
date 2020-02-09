@@ -9,7 +9,7 @@ import * as assert from 'assert';
 import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, TrustedAction, RunAllCellsAction, NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
-import { ICellModel, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { ICommandService } from 'vs/platform/commands/common/commands';

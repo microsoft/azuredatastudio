@@ -13,7 +13,7 @@ import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { TreeSelectionHandler } from 'sql/workbench/contrib/objectExplorer/browser/treeSelectionHandler';
 import { ObjectExplorerActionsContext, getTreeNode } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerActions';
-import { TreeNode } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
+import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { TreeUpdateUtils } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

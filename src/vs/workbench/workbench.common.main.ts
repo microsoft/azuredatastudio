@@ -180,8 +180,8 @@ import { IAccountManagementService } from 'sql/platform/accounts/common/interfac
 import { AccountManagementService } from 'sql/workbench/services/accountManagement/browser/accountManagementService';
 import { IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ProfilerService } from 'sql/workbench/services/profiler/browser/profilerService';
-import { AccountPickerService } from 'sql/workbench/contrib/accounts/browser/accountPickerService';
-import { IAccountPickerService } from 'sql/workbench/contrib/accounts/browser/accountPicker';
+import { AccountPickerService } from 'sql/workbench/services/accountManagement/browser/accountPickerService';
+import { IAccountPickerService } from 'sql/workbench/services/accountManagement/browser/accountPicker';
 import { IDashboardViewService } from 'sql/platform/dashboard/browser/dashboardViewService';
 import { DashboardViewService } from 'sql/platform/dashboard/browser/dashboardViewServiceImpl';
 import { IModelViewService } from 'sql/platform/modelComponents/browser/modelViewService';

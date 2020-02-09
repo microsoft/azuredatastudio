@@ -483,6 +483,38 @@
 					"vs/workbench/contrib/files/common/editors/fileEditorInput", // this should be fine, it only accesses constants from contrib
                     "vscode-textmate"
                 ]
+            },
+            {
+                "target": "**/{vs,sql}/workbench/services/**/worker/**",
+                "restrictions": [
+                    "vs/nls",
+                    "**/{vs,sql}/base/**/common/**",
+                    "**/{vs,sql}/platform/**/common/**",
+                    "**/{vs,sql}/editor/common/**",
+                    "**/{vs,sql}/workbench/**/common/**",
+                    "**/{vs,sql}/workbench/**/worker/**",
+                    "**/{vs,sql}/workbench/services/**/common/**",
+                    "vscode"
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/workbench/services/**/browser/**",
+                "restrictions": [
+                    "vs/nls",
+					"vs/css!./**/*",
+					"azdata",
+					"vscode",
+                    "**/{vs,sql}/base/**/{common,browser,worker}/**",
+                    "**/{vs,sql}/platform/**/{common,browser}/**",
+                    "**/{vs,sql}/editor/{common,browser}/**",
+                    "**/{vs,sql}/workbench/workbench.web.api",
+                    "**/{vs,sql}/workbench/{common,browser}/**",
+                    "**/{vs,sql}/workbench/api/{common,browser}/**",
+                    "**/{vs,sql}/workbench/services/**/{common,browser}/**",
+                    "vscode-textmate",
+					"onigasm-umd",
+					"sanitize-html"
+                ]
             }
         ]
     },

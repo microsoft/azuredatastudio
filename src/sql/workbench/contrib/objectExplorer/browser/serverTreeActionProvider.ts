@@ -13,7 +13,7 @@ import {
 	DisconnectConnectionAction, AddServerAction,
 	DeleteConnectionAction, RefreshAction, EditServerGroupAction
 } from 'sql/workbench/contrib/objectExplorer/browser/connectionTreeAction';
-import { TreeNode } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
+import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';

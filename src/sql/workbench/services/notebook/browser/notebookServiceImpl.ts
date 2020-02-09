@@ -12,8 +12,8 @@ import {
 	INotebookService, INotebookManager, INotebookProvider,
 	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, OVERRIDE_EDITOR_THEMING_SETTING, INavigationProvider, ILanguageMagic
 } from 'sql/workbench/services/notebook/browser/notebookService';
-import { RenderMimeRegistry } from 'sql/workbench/contrib/notebook/browser/outputs/registry';
-import { standardRendererFactories } from 'sql/workbench/contrib/notebook/browser/outputs/factories';
+import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
+import { standardRendererFactories } from 'sql/workbench/services/notebook/browser/outputs/factories';
 import { Extensions, INotebookProviderRegistry, NotebookProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Memento } from 'vs/workbench/common/memento';
@@ -30,7 +30,7 @@ import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookE
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { registerNotebookThemes } from 'sql/workbench/contrib/notebook/browser/notebookStyles';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
-import { notebookConstants, ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { SqlNotebookProvider } from 'sql/workbench/services/notebook/browser/sql/sqlNotebookProvider';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
@@ -44,6 +44,7 @@ import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contr
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 
 export interface NotebookProviderProperties {
 	provider: string;

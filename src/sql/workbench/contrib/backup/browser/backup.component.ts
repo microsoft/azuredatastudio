@@ -33,6 +33,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { ITheme } from 'vs/platform/theme/common/themeService';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+import { fileFiltersSet } from 'sql/workbench/services/restore/common/constants';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -654,7 +655,7 @@ export class BackupComponent extends AngularDisposable {
 	private onAddClick(): void {
 		this.fileBrowserDialogService.showDialog(this._uri,
 			this.defaultNewBackupFolder,
-			BackupConstants.fileFiltersSet,
+			fileFiltersSet,
 			FileValidationConstants.backup,
 			false,
 			(filepath => this.handlePathAdded(filepath)));
