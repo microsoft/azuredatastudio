@@ -587,15 +587,21 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		return cellSrc.replace(/(?:__)|\[([\s\S]*?)\]\(.*?\)/gm, '$1');
 	}
 
-	// remove /n's to calculate the line number to locate the correct element
+	// clean up the source w.r.t rendered html elements to locate the correct element
 	cleanUpCellSource(cellValue: string | string[]): string | string[] {
 		let trimmedCellSrc: string[] = [];
-		const newline = new RegExp(/^([-=]+[\\r\\n]*)$/gm); // new RegExp(/^([\s-=]+[\\r\\n]*)$/gm);
+		// regex to get the elements that span multiple lines into one.
+		const newline = new RegExp(/^([-=]+[\\r\\n]*)$/gm);
+		// regex to clean up table seperators ex: |--|----:| since they aren't rendered as a seprate element
 		const tableSeperator = new RegExp(/^(([|]+[ :]*[-]+[ :]*[|]*)+[\\r\\n]*)$/gm);
+		// regex to match a table row | rowData | rowData |
 		const tableRows = new RegExp(/^\|(.+\|*)*/gm);
-		const listRegex = new RegExp(/^[*+-]+(.+[\r\n]*)/gm);// ^[*+-]+[\s]*.+
+		// regex for match list elements in markdown
+		const listRegex = new RegExp(/^[*+-]+(.+[\r\n]*)/gm);
+		// regex to match block-quotes that begin and end with >>>
 		const blockQuoutesRgx = new RegExp(/^\>(.*)/gm);
-		const headingsRegex = new RegExp(/(^\#+(.*))|(.*?\n+[-=]+)$/gm); //new RegExp(/^\#+(.*)/gm);
+		// regex to match all the headings
+		const headingsRegex = new RegExp(/(^\#+(.*))|(.*?\n+[-=]+)$/gm);
 		if (cellValue instanceof Array) {
 			let paragraphContent: string = '';
 			cellValue.forEach(content => {
@@ -606,6 +612,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 						trimmedCellSrc.push(this.cleanMarkdownLinks(paragraphContent));
 						paragraphContent = '';
 					}
+					// if the element is a list item or table row or block quote then check for multi-line instead of pushing them.
 					if (content.match(listRegex) || (content.match(tableRows) && !content.match(tableSeperator)) || content.match(blockQuoutesRgx)) {
 						paragraphContent = paragraphContent.concat(content);
 					} else if (content.match(headingsRegex)) {
