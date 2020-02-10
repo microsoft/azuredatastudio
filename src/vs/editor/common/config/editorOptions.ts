@@ -3634,7 +3634,7 @@ export const EditorOptions = {
 	)),
 	renderWhitespace: register(new EditorStringEnumOption(
 		EditorOption.renderWhitespace, 'renderWhitespace',
-		'none' as 'none' | 'boundary' | 'selection' | 'all',
+		'selection' as 'selection' | 'none' | 'boundary' | 'all',
 		['none', 'boundary', 'selection', 'all'] as const,
 		{
 			enumDescriptions: [
