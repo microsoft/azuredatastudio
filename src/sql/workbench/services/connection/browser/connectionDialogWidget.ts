@@ -15,10 +15,10 @@ import { TreeCreationUtils } from 'sql/workbench/contrib/objectExplorer/browser/
 import { TreeUpdateUtils, IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
-import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/workbench/contrib/connection/browser/recentConnectionTreeController';
-import { SavedConnectionTreeController } from 'sql/workbench/contrib/connection/browser/savedConnectionTreeController';
+import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/workbench/services/connection/browser/recentConnectionTreeController';
+import { SavedConnectionTreeController } from 'sql/workbench/services/connection/browser/savedConnectionTreeController';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { ClearRecentConnectionsAction } from 'sql/workbench/contrib/connection/browser/connectionActions';
+import { ClearRecentConnectionsAction } from 'sql/workbench/services/connection/browser/connectionActions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { Event, Emitter } from 'vs/base/common/event';
