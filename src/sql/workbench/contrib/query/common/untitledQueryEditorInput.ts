@@ -14,9 +14,7 @@ import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverServ
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
 
-type PublicPart<T> = { [K in keyof T]: T[K] };
-
-export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport, PublicPart<UntitledTextEditorInput> {
+export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport {
 
 	public static readonly ID = 'workbench.editorInput.untitledQueryInput';
 
