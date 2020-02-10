@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import { AzureActiveDirectoryService, onDidChangeSessions } from './AADHelper';
 
-export async function activate(context: vscode.ExtensionContext) {
+export async function activate(_: vscode.ExtensionContext) {
 
 	const loginService = new AzureActiveDirectoryService();
 
@@ -14,12 +14,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	vscode.authentication.registerAuthenticationProvider({
 		id: 'MSA',
-		displayName: 'Microsoft Account', // TODO localize
+		displayName: 'Microsoft',
 		onDidChangeSessions: onDidChangeSessions.event,
 		getSessions: () => Promise.resolve(loginService.sessions),
-		login: async () => {
+		login: async (scopes: string[]) => {
 			try {
-				await loginService.login();
+				await loginService.login(scopes.sort().join(' '));
 				return loginService.sessions[0]!;
 			} catch (e) {
 				vscode.window.showErrorMessage(`Logging in failed: ${e}`);
@@ -27,7 +27,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			}
 		},
 		logout: async (id: string) => {
-			return loginService.logout();
+			return loginService.logout(id);
 		}
 	});
 

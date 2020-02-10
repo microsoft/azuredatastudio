@@ -3,22 +3,30 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IUserDataSyncService, SyncStatus, ISynchroniser, IUserDataSyncStoreService, SyncSource, ISettingsSyncService, IUserDataSyncLogService, IUserDataAuthTokenService } from 'vs/platform/userDataSync/common/userDataSync';
+import { IUserDataSyncService, SyncStatus, IUserDataSyncStoreService, SyncSource, ISettingsSyncService, IUserDataSyncLogService, IUserDataAuthTokenService, IUserDataSynchroniser, UserDataSyncStoreError, UserDataSyncErrorCode } from 'vs/platform/userDataSync/common/userDataSync';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { SettingsSynchroniser } from 'vs/platform/userDataSync/common/settingsSync';
 import { Emitter, Event } from 'vs/base/common/event';
 import { ExtensionsSynchroniser } from 'vs/platform/userDataSync/common/extensionsSync';
-import { IExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
 import { KeybindingsSynchroniser } from 'vs/platform/userDataSync/common/keybindingsSync';
 import { GlobalStateSynchroniser } from 'vs/platform/userDataSync/common/globalStateSync';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
+import { localize } from 'vs/nls';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+
+type SyncConflictsClassification = {
+	source?: { classification: 'SystemMetaData', purpose: 'FeatureInsight', isMeasurement: true };
+};
+
+type SyncErrorClassification = {
+	source: { classification: 'SystemMetaData', purpose: 'FeatureInsight', isMeasurement: true };
+};
 
 export class UserDataSyncService extends Disposable implements IUserDataSyncService {
 
 	_serviceBrand: any;
 
-	private readonly synchronisers: ISynchroniser[];
+	private readonly synchronisers: IUserDataSynchroniser[];
 
 	private _status: SyncStatus = SyncStatus.Uninitialized;
 	get status(): SyncStatus { return this._status; }
@@ -40,6 +48,7 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 		@ISettingsSyncService private readonly settingsSynchroniser: ISettingsSyncService,
 		@IUserDataSyncLogService private readonly logService: IUserDataSyncLogService,
 		@IUserDataAuthTokenService private readonly userDataAuthTokenService: IUserDataAuthTokenService,
+		@ITelemetryService private readonly telemetryService: ITelemetryService,
 	) {
 		super();
 		this.keybindingsSynchroniser = this._register(this.instantiationService.createInstance(KeybindingsSynchroniser));
@@ -67,7 +76,7 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 			try {
 				await synchroniser.pull();
 			} catch (e) {
-				this.logService.error(`${this.getSyncSource(synchroniser)}: ${toErrorMessage(e)}`);
+				this.handleSyncError(e, synchroniser.source);
 			}
 		}
 	}
@@ -83,36 +92,62 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 			try {
 				await synchroniser.push();
 			} catch (e) {
-				this.logService.error(`${this.getSyncSource(synchroniser)}: ${toErrorMessage(e)}`);
+				this.handleSyncError(e, synchroniser.source);
 			}
 		}
 	}
 
-	async sync(_continue?: boolean): Promise<boolean> {
+	async sync(): Promise<void> {
 		if (!this.userDataSyncStoreService.userDataSyncStore) {
 			throw new Error('Not enabled');
 		}
 		if (!(await this.userDataAuthTokenService.getToken())) {
 			throw new Error('Not Authenticated. Please sign in to start sync.');
 		}
+		if (this.status === SyncStatus.HasConflicts) {
+			throw new Error(localize('resolve conflicts', "Please resolve conflicts before resuming sync."));
+		}
+		const startTime = new Date().getTime();
+		this.logService.trace('Started Syncing...');
 		for (const synchroniser of this.synchronisers) {
 			try {
-				if (!await synchroniser.sync(_continue)) {
-					return false;
+				await synchroniser.sync();
+				// do not continue if synchroniser has conflicts
+				if (synchroniser.status === SyncStatus.HasConflicts) {
+					break;
 				}
 			} catch (e) {
-				this.logService.error(`${this.getSyncSource(synchroniser)}: ${toErrorMessage(e)}`);
+				this.handleSyncError(e, synchroniser.source);
 			}
 		}
-		return true;
+		this.logService.trace(`Finished Syncing. Took ${new Date().getTime() - startTime}ms`);
 	}
 
-	stop(): void {
+	async accept(source: SyncSource, content: string): Promise<void> {
+		const synchroniser = this.getSynchroniser(source);
+		await synchroniser.accept(content);
+		if (synchroniser.status !== SyncStatus.HasConflicts) {
+			await this.sync();
+		}
+	}
+
+	async stop(): Promise<void> {
 		if (!this.userDataSyncStoreService.userDataSyncStore) {
 			throw new Error('Not enabled');
 		}
 		for (const synchroniser of this.synchronisers) {
-			synchroniser.stop();
+			await synchroniser.stop();
+		}
+	}
+
+	async restart(): Promise<void> {
+		const synchroniser = this.getSynchroniserInConflicts();
+		if (!synchroniser) {
+			throw new Error(localize('no synchroniser with conflicts', "No conflicts detected."));
+		}
+		await synchroniser.restart();
+		if (synchroniser.status !== SyncStatus.HasConflicts) {
+			await this.sync();
 		}
 	}
 
@@ -161,6 +196,15 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 		return false;
 	}
 
+	async getRemoteContent(source: SyncSource, preview: boolean): Promise<string | null> {
+		for (const synchroniser of this.synchronisers) {
+			if (synchroniser.source === source) {
+				return synchroniser.getRemoteContent(preview);
+			}
+		}
+		return null;
+	}
+
 	async isFirstTimeSyncAndHasUserData(): Promise<boolean> {
 		if (!this.userDataSyncStoreService.userDataSyncStore) {
 			throw new Error('Not enabled');
@@ -205,24 +249,28 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 			try {
 				await synchroniser.resetLocal();
 			} catch (e) {
-				this.logService.error(`${this.getSyncSource(synchroniser)}: ${toErrorMessage(e)}`);
+				this.logService.error(`${synchroniser.source}: ${toErrorMessage(e)}`);
+				this.logService.error(e);
 			}
 		}
 		this.logService.info('Completed resetting local cache');
 	}
 
-	removeExtension(identifier: IExtensionIdentifier): Promise<void> {
-		return this.extensionsSynchroniser.removeExtension(identifier);
-	}
-
 	private updateStatus(): void {
-		this._conflictsSource = this.computeConflictsSource();
-		this.setStatus(this.computeStatus());
-	}
-
-	private setStatus(status: SyncStatus): void {
+		const status = this.computeStatus();
 		if (this._status !== status) {
+			const oldStatus = this._status;
+			const oldConflictsSource = this._conflictsSource;
+			this._conflictsSource = this.computeConflictsSource();
 			this._status = status;
+			if (status === SyncStatus.HasConflicts) {
+				// Log to telemetry when there is a sync conflict
+				this.telemetryService.publicLog2<{ source: string }, SyncConflictsClassification>('sync/conflictsDetected', { source: this._conflictsSource! });
+			}
+			if (oldStatus === SyncStatus.HasConflicts && status === SyncStatus.Idle) {
+				// Log to telemetry when conflicts are resolved
+				this.telemetryService.publicLog2<{ source: string }, SyncConflictsClassification>('sync/conflictsResolved', { source: oldConflictsSource! });
+			}
 			this._onDidChangeStatus.fire(status);
 		}
 	}
@@ -240,22 +288,35 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 		return SyncStatus.Idle;
 	}
 
-	private computeConflictsSource(): SyncSource | null {
-		const synchroniser = this.synchronisers.filter(s => s.status === SyncStatus.HasConflicts)[0];
-		return synchroniser ? this.getSyncSource(synchroniser) : null;
+	private handleSyncError(e: Error, source: SyncSource): void {
+		if (e instanceof UserDataSyncStoreError) {
+			switch (e.code) {
+				case UserDataSyncErrorCode.TooLarge:
+					this.telemetryService.publicLog2<{ source: string }, SyncErrorClassification>('sync/errorTooLarge', { source });
+			}
+			throw e;
+		}
+		this.logService.error(e);
+		this.logService.error(`${source}: ${toErrorMessage(e)}`);
 	}
 
-	private getSyncSource(synchroniser: ISynchroniser): SyncSource {
-		if (synchroniser instanceof SettingsSynchroniser) {
-			return SyncSource.Settings;
+	private computeConflictsSource(): SyncSource | null {
+		const synchroniser = this.synchronisers.filter(s => s.status === SyncStatus.HasConflicts)[0];
+		return synchroniser ? synchroniser.source : null;
+	}
+
+	private getSynchroniserInConflicts(): IUserDataSynchroniser | null {
+		const synchroniser = this.synchronisers.filter(s => s.status === SyncStatus.HasConflicts)[0];
+		return synchroniser || null;
+	}
+
+	private getSynchroniser(source: SyncSource): IUserDataSynchroniser {
+		switch (source) {
+			case SyncSource.Settings: return this.settingsSynchroniser;
+			case SyncSource.Keybindings: return this.keybindingsSynchroniser;
+			case SyncSource.Extensions: return this.extensionsSynchroniser;
+			case SyncSource.GlobalState: return this.globalStateSynchroniser;
 		}
-		if (synchroniser instanceof KeybindingsSynchroniser) {
-			return SyncSource.Keybindings;
-		}
-		if (synchroniser instanceof ExtensionsSynchroniser) {
-			return SyncSource.Extensions;
-		}
-		return SyncSource.UIState;
 	}
 
 	private onDidChangeAuthTokenStatus(token: string | undefined): void {

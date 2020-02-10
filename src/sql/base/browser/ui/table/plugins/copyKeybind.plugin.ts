@@ -12,7 +12,7 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
  * Implements the various additional navigation  keybindings we want out of slickgrid
  */
 export class CopyKeybind<T> implements Slick.Plugin<T> {
-	private grid: Slick.Grid<T>;
+	private grid!: Slick.Grid<T>;
 	private handler = new Slick.EventHandler();
 
 	private _onCopy = new Emitter<Slick.Range[]>();

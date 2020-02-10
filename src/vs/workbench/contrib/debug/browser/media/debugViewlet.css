@@ -92,7 +92,6 @@
 	border-radius: 2px;
 	font-size: 0.9em;
 	padding: 0 3px;
-	margin-left: 0.8em;
 	line-height: 20px;
 }
 
@@ -173,7 +172,7 @@
 	display: none;
 }
 
-.debug-viewlet .debug-call-stack .monaco-list-row:hover .stack-frame.has-actions .file {
+.debug-viewlet .debug-call-stack .monaco-list-row:hover .stack-frame.has-actions .file .line-number {
 	display: none;
 }
 
@@ -245,6 +244,7 @@
 .debug-viewlet .debug-call-stack .stack-frame > .file > .file-name {
 	overflow: hidden;
 	text-overflow: ellipsis;
+	margin-right: 0.8em;
 }
 
 .vs-dark .debug-viewlet .debug-call-stack .monaco-list-row:not(.selected) .stack-frame > .file {

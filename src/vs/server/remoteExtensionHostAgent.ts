@@ -22,7 +22,9 @@ const serverOptions: OptionDescriptions<ServerParsedArgs> = {
 	'driver': { type: 'string' },
 
 	'fileWatcherPolling': { type: 'string' },
+
 	'enable-remote-auto-shutdown': { type: 'boolean' },
+	'remote-auto-shutdown-without-delay': { type: 'boolean' },
 
 	'disable-telemetry': OPTIONS['disable-telemetry'],
 
@@ -49,7 +51,9 @@ export interface ServerParsedArgs {
 	driver?: string;
 	'disable-telemetry'?: boolean;
 	fileWatcherPolling?: string;
+
 	'enable-remote-auto-shutdown'?: boolean;
+	'remote-auto-shutdown-without-delay'?: boolean;
 
 	'extensions-dir'?: string;
 	'install-extension'?: string[];

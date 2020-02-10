@@ -7,9 +7,9 @@ import { ChangeDetectorRef, ElementRef } from '@angular/core';
 import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { createIconCssClass, IUserFriendlyIcon } from 'sql/workbench/browser/modelComponents/iconUtils';
-import { IComponentDescriptor } from 'sql/workbench/browser/modelComponents/interfaces';
 import { removeCSSRulesContainingSelector } from 'vs/base/browser/dom';
 import { URI } from 'vs/base/common/uri';
+import { IComponentDescriptor } from 'sql/platform/dashboard/browser/interfaces';
 
 export class ItemDescriptor<T> {
 	constructor(public descriptor: IComponentDescriptor, public config: T) { }

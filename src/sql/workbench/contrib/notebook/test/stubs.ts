@@ -135,7 +135,7 @@ export class NotebookFindModelStub implements INotebookFindModel {
 	findPrevious(): Promise<NotebookRange> {
 		throw new Error('Method not implemented.');
 	}
-	find(exp: string, maxMatches?: number): Promise<NotebookRange> {
+	find(exp: string, matchCase?: boolean, wholeWord?: boolean, maxMatches?: number): Promise<NotebookRange> {
 		throw new Error('Method not implemented.');
 	}
 	clearFind(): void {

@@ -20,7 +20,6 @@ import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { Workspace } from 'vs/platform/workspace/common/workspace';
 import { URI } from 'vs/base/common/uri';
-import { checkProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
 
 function lookUp(tree: any, key: string) {
 	if (key) {
@@ -42,11 +41,11 @@ type ConfigurationInspect<T> = {
 	workspaceFolderValue?: T,
 
 	defaultLanguageValue?: T;
-	userLanguageValue?: T;
+	globalLanguageValue?: T;
 	workspaceLanguageValue?: T;
 	workspaceFolderLanguageValue?: T;
 
-	languages?: string[];
+	languageIds?: string[];
 };
 
 function isUri(thing: any): thing is vscode.Uri {
@@ -84,6 +83,9 @@ function scopeToOverrides(scope: vscode.ConfigurationScope | undefined | null): 
 	}
 	if (isWorkspaceFolder(scope)) {
 		return { resource: scope.uri };
+	}
+	if (scope === null) {
+		return { resource: null };
 	}
 	return undefined;
 }
@@ -154,9 +156,6 @@ export class ExtHostConfigProvider {
 
 	getConfiguration(section?: string, scope?: vscode.ConfigurationScope | null, extensionDescription?: IExtensionDescription): vscode.WorkspaceConfiguration {
 		const overrides = scopeToOverrides(scope) || {};
-		if (overrides.overrideIdentifier && extensionDescription) {
-			checkProposedApiEnabled(extensionDescription);
-		}
 		const config = this._toReadonlyValue(section
 			? lookUp(this._configuration.getValue(undefined, overrides, this._extHostWorkspace.workspace), section)
 			: this._configuration.getValue(undefined, overrides, this._extHostWorkspace.workspace));
@@ -257,17 +256,17 @@ export class ExtHostConfigProvider {
 					return {
 						key,
 
-						defaultValue: config.defaultValue,
-						globalValue: config.userValue,
-						workspaceValue: config.workspaceValue,
-						workspaceFolderValue: config.workspaceFolderValue,
+						defaultValue: config.default?.value,
+						globalValue: config.user?.value,
+						workspaceValue: config.workspace?.value,
+						workspaceFolderValue: config.workspaceFolder?.value,
 
 						defaultLanguageValue: config.default?.override,
-						userLanguageValue: config.user?.override,
+						globalLanguageValue: config.user?.override,
 						workspaceLanguageValue: config.workspace?.override,
 						workspaceFolderLanguageValue: config.workspaceFolder?.override,
 
-						languages: config.overrideIdentifiers
+						languageIds: config.overrideIdentifiers
 					};
 				}
 				return undefined;
@@ -301,7 +300,7 @@ export class ExtHostConfigProvider {
 		const scope = OVERRIDE_PROPERTY_PATTERN.test(key) ? ConfigurationScope.RESOURCE : this._configurationScopes.get(key);
 		const extensionIdText = extensionId ? `[${extensionId.value}] ` : '';
 		if (ConfigurationScope.RESOURCE === scope) {
-			if (overrides?.resource) {
+			if (typeof overrides?.resource === 'undefined') {
 				this._logService.warn(`${extensionIdText}Accessing a resource scoped configuration without providing a resource is not expected. To get the effective value for '${key}', provide the URI of a resource or 'null' for any resource.`);
 			}
 			return;

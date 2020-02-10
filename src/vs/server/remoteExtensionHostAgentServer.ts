@@ -54,7 +54,7 @@ import { IPCServer, ClientConnectionEvent, IMessagePassingProtocol, StaticRouter
 import { Emitter, Event } from 'vs/base/common/event';
 import { RemoteAgentEnvironmentChannel } from 'vs/server/remoteAgentEnvironmentImpl';
 import { RemoteAgentFileSystemChannel } from 'vs/server/remoteAgentFileSystemImpl';
-import { REMOTE_FILE_SYSTEM_CHANNEL_NAME } from 'vs/platform/remote/common/remoteAgentFileSystemChannel';
+import { REMOTE_FILE_SYSTEM_CHANNEL_NAME } from 'vs/workbench/services/remote/common/remoteAgentFileSystemChannel';
 import { RequestChannel } from 'vs/platform/request/common/requestIpc';
 import { ExtensionManagementChannel } from 'vs/platform/extensionManagement/common/extensionManagementIpc';
 import ErrorTelemetry from 'vs/platform/telemetry/node/errorTelemetry';
@@ -745,21 +745,29 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 			return;
 		}
 
-		this.shutdownTimer = setTimeout(() => {
-			this.shutdownTimer = undefined;
+		if (this._environmentService.args['remote-auto-shutdown-without-delay']) {
+			this._shutdown();
+		} else {
+			this.shutdownTimer = setTimeout(() => {
+				this.shutdownTimer = undefined;
 
-			const hasActiveExtHosts = !!Object.keys(this._extHostConnections).length;
-			if (hasActiveExtHosts) {
-				console.log('New EH opened, aborting shutdown');
-				this._logService.info('New EH opened, aborting shutdown');
-				return;
-			} else {
-				console.log('Last EH closed, shutting down');
-				this._logService.info('Last EH closed, shutting down');
-				this.dispose();
-				process.exit(0);
-			}
-		}, SHUTDOWN_TIMEOUT);
+				this._shutdown();
+			}, SHUTDOWN_TIMEOUT);
+		}
+	}
+
+	private _shutdown(): void {
+		const hasActiveExtHosts = !!Object.keys(this._extHostConnections).length;
+		if (hasActiveExtHosts) {
+			console.log('New EH opened, aborting shutdown');
+			this._logService.info('New EH opened, aborting shutdown');
+			return;
+		} else {
+			console.log('Last EH closed, shutting down');
+			this._logService.info('Last EH closed, shutting down');
+			this.dispose();
+			process.exit(0);
+		}
 	}
 
 	/**

@@ -95,7 +95,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			version: '1.3.0'
 		}, {
 			name: 'powershell-kernel',
-			version: '0.1.2'
+			version: '0.1.3'
 		}
 	];
 

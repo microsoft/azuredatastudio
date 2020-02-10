@@ -71,10 +71,10 @@ export function main(desc: ProductDescription, args: string[]): void {
 	}
 
 	// take the local options and remove the ones that don't apply
-	const options: OptionDescriptions<RemoteParsedArgs> = { ...OPTIONS, };
+	const options: OptionDescriptions<RemoteParsedArgs> = { ...OPTIONS };
 	const isSupported = cliCommand ? isSupportedForCmd : isSupportedForPipe;
 	for (const optionId in OPTIONS) {
-		const optId = <keyof typeof OPTIONS>optionId;
+		const optId = <keyof ParsedArgs>optionId;
 		if (!isSupported(optId)) {
 			delete options[optId];
 		}

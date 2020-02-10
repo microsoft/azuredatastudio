@@ -2,7 +2,7 @@
   "name": "cms",
   "displayName": "%cms.displayName%",
   "description": "%cms.description%",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
@@ -638,8 +638,11 @@
     "mocha-multi-reporters": "^1.1.7",
     "mocha": "^5.2.0",
     "should": "^13.2.1",
-    "vscode": "^1.1.26",
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.4",
     "typemoq": "^2.1.0"
+  },
+  "resolutions": {
+      "esprima": "^4.0.0"
   },
   "__metadata": {
     "id": "40",
