@@ -4,14 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as loc from '../../localizedConstants';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
-
-const localize = nls.loadMessageBundle();
 
 export class ImportConfigPage extends DacFxConfigPage {
 
@@ -28,7 +26,7 @@ export class ImportConfigPage extends DacFxConfigPage {
 	}
 
 	async start(): Promise<boolean> {
-		let databaseComponent = await this.createDatabaseTextBox(localize('dacfx.targetDatabaseAriaLabel', "Target Database"));
+		let databaseComponent = await this.createDatabaseTextBox(loc.targetDatabase);
 		let serverComponent = await this.createServerDropdown(true);
 		let fileBrowserComponent = await this.createFileBrowser();
 
@@ -63,7 +61,7 @@ export class ImportConfigPage extends DacFxConfigPage {
 					canSelectFolders: false,
 					canSelectMany: false,
 					defaultUri: vscode.Uri.file(this.getRootPath()),
-					openLabel: localize('dacFxImport.openFile', "Open"),
+					openLabel: loc.open,
 					filters: {
 						'bacpac Files': ['bacpac'],
 					}
@@ -89,7 +87,7 @@ export class ImportConfigPage extends DacFxConfigPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxImport.fileTextboxTitle', "File Location"),
+			title: loc.fileLocation,
 			actions: [this.fileButton]
 		};
 	}
