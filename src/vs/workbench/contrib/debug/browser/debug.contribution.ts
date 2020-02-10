@@ -70,7 +70,7 @@ class OpenDebugViewletAction extends ShowViewletAction {
 
 const viewContainer = Registry.as<IViewContainersRegistry>(ViewExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
-	name: nls.localize('runAndDebug', "Run and Debug"),
+	name: nls.localize('run', "Run"),
 	ctorDescriptor: new SyncDescriptor(DebugViewPaneContainer),
 	icon: 'codicon-debug-alt',
 	order: 13 // {{SQL CARBON EDIT}}
@@ -341,27 +341,23 @@ registerEditorContribution(BREAKPOINT_EDITOR_CONTRIBUTION_ID, BreakpointEditorCo
 
 // View menu
 
-// {{SQL CARBON EDIT}} - Disable unused menu item
-// MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
-// 	group: '3_views',
-// 	command: {
-// 		id: VIEWLET_ID,
-// 		title: nls.localize({ key: 'miViewDebug', comment: ['&& denotes a mnemonic'] }, "&&Debug")
-// 	},
-// 	order: 4
-// });
-// {{SQL CARBON EDIT}} - End
+/*MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
+	group: '3_views',
+	command: {
+		id: VIEWLET_ID,
+		title: nls.localize({ key: 'miViewRun', comment: ['&& denotes a mnemonic'] }, "&&Run")
+	},
+	order: 4
+});
 
-// {{SQL CARBON EDIT}} - Disable unused menu item
-// MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
-// 	group: '4_panels',
-// 	command: {
-// 		id: OpenDebugPanelAction.ID,
-// 		title: nls.localize({ key: 'miToggleDebugConsole', comment: ['&& denotes a mnemonic'] }, "De&&bug Console")
-// 	},
-// 	order: 2
-// });
-// {{SQL CARBON EDIT}} - End
+MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
+	group: '4_panels',
+	command: {
+		id: OpenDebugPanelAction.ID,
+		title: nls.localize({ key: 'miToggleDebugConsole', comment: ['&& denotes a mnemonic'] }, "De&&bug Console")
+	},
+	order: 2
+}); {{SQL CARBON EDIT}} - Disable unusued menus */
 
 // Debug menu
 
