@@ -6,7 +6,7 @@
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IEditorInput, EditorInput } from 'vs/workbench/common/editor';
 import { ServicesAccessor, IInstantiationService, BrandedService } from 'vs/platform/instantiation/common/instantiation';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { getCodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
