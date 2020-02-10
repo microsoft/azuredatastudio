@@ -332,14 +332,6 @@ export class CellModel implements ICellModel {
 				await kernel.interrupt();
 				this.sendNotification(notificationService, Severity.Info, localize('runCellCancelled', "Cell execution cancelled"));
 			} else {
-				// Executing a single cell will make the notebook trusted
-				if (!this._isTrusted) {
-					let executeCell = await this.notebookModel.promptForTrust();
-					if (!executeCell) {
-						return false;
-					}
-				}
-
 				// TODO update source based on editor component contents
 				if (kernel.requiresConnection && !this.notebookModel.context) {
 					let connected = await this.notebookModel.requestConnection();
@@ -349,6 +341,8 @@ export class CellModel implements ICellModel {
 				}
 				let content = this.source;
 				if ((Array.isArray(content) && content.length > 0) || (!Array.isArray(content) && content)) {
+					this.notebookModel.trustedMode = true;
+
 					// requestExecute expects a string for the code parameter
 					content = Array.isArray(content) ? content.join('') : content;
 					const future = kernel.requestExecute({

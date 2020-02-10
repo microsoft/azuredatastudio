@@ -242,32 +242,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		});
 	}
 
-	public async promptForTrust(): Promise<boolean> {
-		if (this.trustedMode) {
-			return true;
-		}
-
-		let promptPromise = new Promise<boolean>(resolve => {
-			this.notificationService.prompt(
-				Severity.Info,
-				localize('notebook.confirmTrust', "Running a code cell will make this a trusted notebook. Would you like to continue?"),
-				[{
-					label: localize('notebook.yes', "Yes"),
-					run: () => {
-						this.trustedMode = true;
-						resolve(true);
-					}
-				}, {
-					label: localize('notebook.no', "No"),
-					run: () => {
-						resolve(false);
-					}
-				}]);
-		});
-
-		return promptPromise;
-	}
-
 	/**
 	 * Indicates the server has finished loading. It may have failed to load in
 	 * which case the view will be in an error state.

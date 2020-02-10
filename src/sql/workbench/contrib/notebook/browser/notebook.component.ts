@@ -554,16 +554,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	public async runCell(cell: ICellModel): Promise<boolean> {
 		await this.modelReady;
-
-		if (!this._model.trustedMode) {
-			let executeCell = await this._model.promptForTrust();
-			if (!executeCell) {
-				return false;
-			}
-		}
-
 		let uriString = cell.cellUri.toString();
 		if (firstIndex(this._model.cells, c => c.cellUri.toString() === uriString) > -1) {
+			this.model.trustedMode = true;
 			this.selectCell(cell);
 			return cell.runCell(this.notificationService, this.connectionManagementService);
 		} else {
@@ -573,14 +566,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	public async runAllCells(startCell?: ICellModel, endCell?: ICellModel): Promise<boolean> {
 		await this.modelReady;
-
-		if (!this._model.trustedMode) {
-			let executeCell = await this._model.promptForTrust();
-			if (!executeCell) {
-				return false;
-			}
-		}
-
 		let codeCells = this._model.cells.filter(cell => cell.cellType === CellTypes.Code);
 		if (codeCells && codeCells.length) {
 			// For the run all cells scenario where neither startId not endId are provided, set defaults
@@ -592,6 +577,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			if (!isUndefinedOrNull(endCell)) {
 				endIndex = firstIndex(codeCells, c => c.id === endCell.id);
 			}
+
+			this.model.trustedMode = true;
 			for (let i = startIndex; i < endIndex; i++) {
 				let cellStatus = await this.runCell(codeCells[i]);
 				if (!cellStatus) {
