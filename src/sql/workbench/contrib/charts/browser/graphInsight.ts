@@ -163,8 +163,8 @@ export class Graph implements IInsight {
 			this.chartjs.config.type = this.options.type;
 			// we don't want to include lables for timeSeries
 			this.chartjs.data.labels = this.originalType === 'timeSeries' ? [] : labels;
-			this.chartjs.config.options = this.transformOptions(this.options);
-			this.chartjs.update(0);
+			this.chartjs.options = this.transformOptions(this.options);
+			this.chartjs.update({ duration: 0 });
 		} else {
 			this.chartjs = new chartjs.Chart(this.canvas.getContext('2d'), {
 				data: {
