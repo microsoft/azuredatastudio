@@ -26,7 +26,7 @@ suite('SQL ConnectionProfileGroup tests', () => {
 		group2Node = new ConnectionProfileGroup(Groups2, root, Groups2, undefined, undefined);
 		group11Node = new ConnectionProfileGroup(Groups11, root, Groups11, undefined, undefined);
 		emptyGroup = new ConnectionProfileGroup(ConnectionProfileGroup.RootGroupName, undefined, ConnectionProfileGroup.RootGroupName);
-		connectionProfile = new ConnectionProfile(new TestCapabilitiesService(), undefined);
+		connectionProfile = new ConnectionProfile(new TestCapabilitiesService(), undefined!);
 		root.addGroups([group1Node]);
 		group1Node.addGroups([group11Node]);
 		root.addGroups([group2Node]);
