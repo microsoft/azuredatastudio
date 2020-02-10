@@ -133,6 +133,7 @@ export class Application {
 			extraArgs,
 			remote: this.options.remote,
 			web: this.options.web,
+			browser: this.options.browser,
 			headless: this.options.headless
 		});
 

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ITestInstantiationService, workbenchInstantiationService as vsworkbenchInstantiationService } from 'vs/workbench/test/workbenchTestServices';
+import { ITestInstantiationService, workbenchInstantiationService as vsworkbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';

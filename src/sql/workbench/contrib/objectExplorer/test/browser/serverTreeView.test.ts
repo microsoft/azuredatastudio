@@ -8,7 +8,7 @@ import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/ser
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
+import { TestStorageService } from 'vs/workbench/test/browser/workbenchTestServices';
 
 import * as TypeMoq from 'typemoq';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
