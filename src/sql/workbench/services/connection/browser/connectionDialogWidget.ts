@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import 'vs/css!./media/connectionDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
@@ -11,7 +12,7 @@ import { Modal } from 'sql/workbench/browser/modal/modal';
 import { IConnectionManagementService, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { TreeCreationUtils } from 'sql/workbench/contrib/objectExplorer/browser/treeCreationUtils';
-import { TreeUpdateUtils, IExpandableTree } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
+import { TreeUpdateUtils, IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
 import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/workbench/contrib/connection/browser/recentConnectionTreeController';

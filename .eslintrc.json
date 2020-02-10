@@ -513,7 +513,9 @@
                     "**/{vs,sql}/workbench/services/**/{common,browser}/**",
                     "vscode-textmate",
 					"onigasm-umd",
-					"sanitize-html"
+					"sanitize-html",
+					"@angular/*",
+					"rxjs/**"
                 ]
             }
         ]

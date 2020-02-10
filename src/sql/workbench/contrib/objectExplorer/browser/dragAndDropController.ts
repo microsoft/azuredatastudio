@@ -8,7 +8,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ITree, IDragAndDrop, IDragOverReaction, DRAG_OVER_ACCEPT_BUBBLE_DOWN, DRAG_OVER_REJECT } from 'vs/base/parts/tree/browser/tree';
 import { DragMouseEvent } from 'vs/base/browser/mouseEvent';
-import { TreeUpdateUtils } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
+import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { IDragAndDropData } from 'vs/base/browser/dnd';
 

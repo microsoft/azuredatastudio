@@ -22,7 +22,7 @@ import * as ConnectionUtils from 'sql/platform/connection/common/utils';
 import { ActiveConnectionsFilterAction } from 'sql/workbench/contrib/objectExplorer/browser/connectionTreeAction';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TreeCreationUtils } from 'sql/workbench/contrib/objectExplorer/browser/treeCreationUtils';
-import { TreeUpdateUtils } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
+import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/workbench/contrib/objectExplorer/browser/treeSelectionHandler';
 import { IObjectExplorerService, IServerTreeView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';

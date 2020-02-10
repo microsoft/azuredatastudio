@@ -6,7 +6,7 @@
 import 'vs/css!./media/messagePanel';
 import { IMessagesActionContext, CopyMessagesAction, CopyAllMessagesAction } from './actions';
 import QueryRunner, { IQueryMessage } from 'sql/workbench/services/query/common/queryRunner';
-import { IExpandableTree } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
+import { IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 
 import { ISelectionData } from 'azdata';
 

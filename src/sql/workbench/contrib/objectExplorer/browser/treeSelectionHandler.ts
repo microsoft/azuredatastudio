@@ -10,7 +10,7 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 
 // import { IProgressRunner, IProgressService } from 'vs/platform/progress/common/progress';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
-import { TreeUpdateUtils } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
+import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 
 export class TreeSelectionHandler {
 	// progressRunner: IProgressRunner;

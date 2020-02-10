@@ -16,7 +16,6 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface IExpandableTree extends ITree {
-	// {{SQL CARBON EDIT }}	- add back deleted VS Code tree methods
 	/**
 	 * Returns a list of the currently expanded elements.
 	 */
@@ -38,7 +37,6 @@ export interface IExpandableTree extends ITree {
 	 * Returns the total height of the tree's content.
 	 */
 	getContentHeight(): number;
-	// {{SQL CARBON EDIT }} - end block
 }
 
 

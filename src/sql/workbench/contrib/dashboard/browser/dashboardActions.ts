@@ -15,7 +15,7 @@ import { TreeSelectionHandler } from 'sql/workbench/contrib/objectExplorer/brows
 import { ObjectExplorerActionsContext, getTreeNode } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerActions';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { TreeUpdateUtils } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
+import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IViewsService } from 'vs/workbench/common/views';

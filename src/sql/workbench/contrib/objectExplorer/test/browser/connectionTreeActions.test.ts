@@ -16,7 +16,7 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/testErrorMessageService';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
-import * as  LocalizedConstants from 'sql/workbench/contrib/connection/common/localizedConstants';
+import * as  LocalizedConstants from 'sql/workbench/services/connection/browser/localizedConstants';
 import { ObjectExplorerService, ObjectExplorerNodeEventArgs } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';

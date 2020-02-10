@@ -18,7 +18,7 @@ import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/ba
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
-import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
+import { IBackupUiService } from 'sql/workbench/contrib/backup/common/backupUiService';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
 
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';

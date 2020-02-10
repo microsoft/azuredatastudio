@@ -164,8 +164,8 @@ import { IJobManagementService } from 'sql/workbench/services/jobManagement/comm
 import { JobManagementService } from 'sql/workbench/services/jobManagement/common/jobManagementService';
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { BackupService } from 'sql/platform/backup/common/backupServiceImp';
-import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
-import { BackupUiService } from 'sql/workbench/services/backup/browser/backupUiService';
+import { IBackupUiService } from 'sql/workbench/contrib/backup/common/backupUiService';
+import { BackupUiService } from 'sql/workbench/contrib/backup/browser/backupUiService';
 import { IRestoreDialogController, IRestoreService } from 'sql/workbench/services/restore/common/restoreService';
 import { RestoreService, RestoreDialogController } from 'sql/workbench/services/restore/browser/restoreServiceImpl';
 import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/browser/newDashboardTabDialog';

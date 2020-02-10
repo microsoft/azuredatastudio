@@ -6,8 +6,8 @@
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 import { Emitter } from 'vs/base/common/event';
-import { AccountDialog } from 'sql/workbench/contrib/accounts/browser/accountDialog';
-import { AccountDialogController } from 'sql/workbench/contrib/accounts/browser/accountDialogController';
+import { AccountDialog } from 'sql/workbench/services/accountManagement/browser/accountDialog';
+import { AccountDialogController } from 'sql/workbench/services/accountManagement/browser/accountDialogController';
 import { AccountViewModel } from 'sql/platform/accounts/common/accountViewModel';
 import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
 import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/testErrorMessageService';

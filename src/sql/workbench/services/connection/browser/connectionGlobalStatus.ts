@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { ConnectionSummary } from 'azdata';
-import * as LocalizedConstants from 'sql/workbench/contrib/connection/common/localizedConstants';
+import * as LocalizedConstants from 'sql/workbench/services/connection/browser/localizedConstants';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
 // Status when making connections from the viewlet
