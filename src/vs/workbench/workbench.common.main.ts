@@ -264,6 +264,9 @@ import 'vs/workbench/contrib/search/browser/search.contribution';
 import 'vs/workbench/contrib/search/browser/searchView';
 import 'vs/workbench/contrib/search/browser/openAnythingHandler';
 
+// Search Editor
+import 'vs/workbench/contrib/searchEditor/browser/searchEditor.contribution';
+
 // SCM
 import 'vs/workbench/contrib/scm/browser/scm.contribution';
 import 'vs/workbench/contrib/scm/browser/scmViewlet';
@@ -296,9 +299,9 @@ import 'vs/workbench/contrib/extensions/browser/extensions.contribution';
 import 'vs/workbench/contrib/extensions/browser/extensionsQuickOpen';
 import 'vs/workbench/contrib/extensions/browser/extensionsViewlet';
 
-// Output Panel
+// Output View
 import 'vs/workbench/contrib/output/browser/output.contribution';
-import 'vs/workbench/contrib/output/browser/outputPanel';
+import 'vs/workbench/contrib/output/browser/outputView';
 
 // Terminal
 import 'vs/workbench/contrib/terminal/browser/terminal.contribution';
@@ -369,6 +372,9 @@ import 'vs/workbench/contrib/userDataSync/browser/userDataSync.contribution';
 
 // Code Actions
 import 'vs/workbench/contrib/codeActions/common/codeActions.contribution';
+
+// Timeline
+import 'vs/workbench/contrib/timeline/browser/timeline.contribution';
 
 //#endregion
 

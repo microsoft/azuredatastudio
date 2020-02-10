@@ -49,6 +49,7 @@ import { SaveReason } from 'vs/workbench/common/editor';
 import { ExtensionActivationReason } from 'vs/workbench/api/common/extHostExtensionActivator';
 import { TunnelDto } from 'vs/workbench/api/common/extHostTunnelService';
 import { TunnelOptions } from 'vs/platform/remote/common/tunnel';
+import { TimelineItem, TimelineProviderDescriptor, TimelineChangeEvent, TimelineItemWithSource } from 'vs/workbench/contrib/timeline/common/timeline';
 
 // {{SQL CARBON EDIT}}
 import { ITreeItem as sqlITreeItem } from 'sql/workbench/common/views';
@@ -714,7 +715,7 @@ export interface SCMGroupFeatures {
 export type SCMRawResource = [
 	number /*handle*/,
 	UriComponents /*resourceUri*/,
-	string[] /*icons: light, dark*/,
+	UriComponents[] /*icons: light, dark*/,
 	string /*tooltip*/,
 	boolean /*strike through*/,
 	boolean /*faded*/
@@ -799,6 +800,14 @@ export interface MainThreadTunnelServiceShape extends IDisposable {
 	$registerCandidateFinder(): Promise<void>;
 	$setTunnelProvider(): Promise<void>;
 	$setCandidateFilter(): Promise<void>;
+}
+
+export interface MainThreadTimelineShape extends IDisposable {
+	$registerTimelineProvider(provider: TimelineProviderDescriptor): void;
+	$unregisterTimelineProvider(source: string): void;
+	$emitTimelineChangeEvent(e: TimelineChangeEvent): void;
+
+	$getTimeline(uri: UriComponents, token: CancellationToken): Promise<TimelineItem[]>;
 }
 
 // -- extension host
@@ -914,8 +923,9 @@ export interface ExtHostLabelServiceShape {
 }
 
 export interface ExtHostAuthenticationShape {
-	$getSessions(id: string): Promise<ReadonlyArray<modes.Session>>;
-	$login(id: string, scopes: string[]): Promise<modes.Session>;
+	$getSessions(id: string): Promise<ReadonlyArray<modes.AuthenticationSession>>;
+	$getSessionAccessToken(id: string, sessionId: string): Promise<string>;
+	$login(id: string, scopes: string[]): Promise<modes.AuthenticationSession>;
 	$logout(id: string, sessionId: string): Promise<void>;
 }
 
@@ -1445,6 +1455,10 @@ export interface ExtHostTunnelServiceShape {
 	$onDidTunnelsChange(): Promise<void>;
 }
 
+export interface ExtHostTimelineShape {
+	$getTimeline(source: string, uri: UriComponents, token: CancellationToken): Promise<TimelineItemWithSource[]>;
+}
+
 // --- proxy identifiers
 
 export const MainContext = {
@@ -1488,7 +1502,8 @@ export const MainContext = {
 	MainThreadWindow: createMainId<MainThreadWindowShape>('MainThreadWindow'),
 	MainThreadLabelService: createMainId<MainThreadLabelServiceShape>('MainThreadLabelService'),
 	MainThreadTheming: createMainId<MainThreadThemingShape>('MainThreadTheming'),
-	MainThreadTunnelService: createMainId<MainThreadTunnelServiceShape>('MainThreadTunnelService')
+	MainThreadTunnelService: createMainId<MainThreadTunnelServiceShape>('MainThreadTunnelService'),
+	MainThreadTimeline: createMainId<MainThreadTimelineShape>('MainThreadTimeline')
 };
 
 export const ExtHostContext = {
@@ -1525,5 +1540,6 @@ export const ExtHostContext = {
 	ExtHostLabelService: createMainId<ExtHostLabelServiceShape>('ExtHostLabelService'),
 	ExtHostTheming: createMainId<ExtHostThemingShape>('ExtHostTheming'),
 	ExtHostTunnelService: createMainId<ExtHostTunnelServiceShape>('ExtHostTunnelService'),
-	ExtHostAuthentication: createMainId<ExtHostAuthenticationShape>('ExtHostAuthentication')
+	ExtHostAuthentication: createMainId<ExtHostAuthenticationShape>('ExtHostAuthentication'),
+	ExtHostTimeline: createMainId<ExtHostTimelineShape>('ExtHostTimeline')
 };

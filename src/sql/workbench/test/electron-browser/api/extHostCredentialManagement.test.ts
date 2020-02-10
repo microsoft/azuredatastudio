@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { TestRPCProtocol } from 'vs/workbench/test/electron-browser/api/testRPCProtocol';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { ExtHostCredentialManagement } from 'sql/workbench/api/common/extHostCredentialManagement';
 import { SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
@@ -14,6 +13,7 @@ import { ICredentialsService } from 'sql/platform/credentials/common/credentials
 import { Credential, CredentialProvider } from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TestCredentialsService, TestCredentialsProvider } from 'sql/platform/credentials/test/common/testCredentialsService';
+import { TestRPCProtocol } from 'vs/workbench/test/browser/api/testRPCProtocol';
 
 const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');
 
