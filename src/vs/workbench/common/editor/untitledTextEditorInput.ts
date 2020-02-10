@@ -4,9 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { URI } from 'vs/base/common/uri';
-import { createMemoizer } from 'vs/base/common/decorators';
-import { basenameOrAuthority, dirname } from 'vs/base/common/resources';
-import { IEncodingSupport, EncodingMode, Verbosity, IModeSupport, TextEditorInput } from 'vs/workbench/common/editor';
+import { IEncodingSupport, EncodingMode, Verbosity, IModeSupport, TextResourceEditorInput } from 'vs/workbench/common/editor';
 import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Emitter } from 'vs/base/common/event';
@@ -15,22 +13,22 @@ import { ILabelService } from 'vs/platform/label/common/label';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IFileService } from 'vs/platform/files/common/files';
+import { IFilesConfigurationService } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
 
 /**
  * An editor input to be used for untitled text buffers.
  */
-export class UntitledTextEditorInput extends TextEditorInput implements IEncodingSupport, IModeSupport {
+export class UntitledTextEditorInput extends TextResourceEditorInput implements IEncodingSupport, IModeSupport {
 
 	static readonly ID: string = 'workbench.editors.untitledEditorInput';
-
-	private static readonly MEMOIZER = createMemoizer();
 
 	private readonly _onDidModelChangeEncoding = this._register(new Emitter<void>());
 	readonly onDidModelChangeEncoding = this._onDidModelChangeEncoding.event;
 
-	private cachedModel: UntitledTextEditorModel | null = null;
+	private cachedModel: UntitledTextEditorModel | undefined = undefined;
 
-	private modelResolve: Promise<UntitledTextEditorModel & IResolvedTextEditorModel> | null = null;
+	private modelResolve: Promise<UntitledTextEditorModel & IResolvedTextEditorModel> | undefined = undefined;
 
 	private preferredMode: string | undefined;
 
@@ -42,21 +40,17 @@ export class UntitledTextEditorInput extends TextEditorInput implements IEncodin
 		private preferredEncoding: string | undefined,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@ITextFileService textFileService: ITextFileService,
-		@ILabelService private readonly labelService: ILabelService,
+		@ILabelService labelService: ILabelService,
 		@IEditorService editorService: IEditorService,
-		@IEditorGroupsService editorGroupService: IEditorGroupsService
+		@IEditorGroupsService editorGroupService: IEditorGroupsService,
+		@IFileService fileService: IFileService,
+		@IFilesConfigurationService filesConfigurationService: IFilesConfigurationService
 	) {
-		super(resource, editorService, editorGroupService, textFileService);
+		super(resource, editorService, editorGroupService, textFileService, labelService, fileService, filesConfigurationService);
 
 		if (preferredMode) {
 			this.setMode(preferredMode);
 		}
-
-		this.registerListeners();
-	}
-
-	private registerListeners(): void {
-		this._register(this.labelService.onDidChangeFormatters(() => UntitledTextEditorInput.MEMOIZER.clear()));
 	}
 
 	get hasAssociatedFilePath(): boolean {
@@ -72,76 +66,41 @@ export class UntitledTextEditorInput extends TextEditorInput implements IEncodin
 			return this.cachedModel.name;
 		}
 
-		return this.hasAssociatedFilePath ? basenameOrAuthority(this.resource) : this.resource.path;
-	}
-
-	@UntitledTextEditorInput.MEMOIZER
-	private get shortDescription(): string {
-		return this.labelService.getUriBasenameLabel(dirname(this.resource));
-	}
-
-	@UntitledTextEditorInput.MEMOIZER
-	private get mediumDescription(): string {
-		return this.labelService.getUriLabel(dirname(this.resource), { relative: true });
-	}
-
-	@UntitledTextEditorInput.MEMOIZER
-	private get longDescription(): string {
-		return this.labelService.getUriLabel(dirname(this.resource));
+		return super.getName();
 	}
 
 	getDescription(verbosity: Verbosity = Verbosity.MEDIUM): string | undefined {
+
+		// Without associated path: only use if name and description differ
 		if (!this.hasAssociatedFilePath) {
+			const descriptionCandidate = this.resource.path;
+			if (descriptionCandidate !== this.getName()) {
+				return descriptionCandidate;
+			}
+
 			return undefined;
 		}
 
-		switch (verbosity) {
-			case Verbosity.SHORT:
-				return this.shortDescription;
-			case Verbosity.LONG:
-				return this.longDescription;
-			case Verbosity.MEDIUM:
-			default:
-				return this.mediumDescription;
-		}
-	}
-
-	@UntitledTextEditorInput.MEMOIZER
-	private get shortTitle(): string {
-		return this.getName();
-	}
-
-	@UntitledTextEditorInput.MEMOIZER
-	private get mediumTitle(): string {
-		return this.labelService.getUriLabel(this.resource, { relative: true });
-	}
-
-	@UntitledTextEditorInput.MEMOIZER
-	private get longTitle(): string {
-		return this.labelService.getUriLabel(this.resource);
+		// With associated path: delegate to parent
+		return super.getDescription(verbosity);
 	}
 
 	getTitle(verbosity: Verbosity): string {
+
+		// Without associated path: check if name and description differ to decide
+		// if description should appear besides the name to distinguish better
 		if (!this.hasAssociatedFilePath) {
-			return this.getName();
+			const name = this.getName();
+			const description = this.getDescription();
+			if (description && description !== name) {
+				return `${name} • ${description}`;
+			}
+
+			return name;
 		}
 
-		switch (verbosity) {
-			case Verbosity.SHORT:
-				return this.shortTitle;
-			case Verbosity.MEDIUM:
-				return this.mediumTitle;
-			case Verbosity.LONG:
-				return this.longTitle;
-		}
-	}
-
-	isReadonly(): boolean {
-		return false;
-	}
-
-	isUntitled(): boolean {
-		return true;
+		// With associated path: delegate to parent
+		return super.getTitle(verbosity);
 	}
 
 	isDirty(): boolean {
@@ -255,8 +214,8 @@ export class UntitledTextEditorInput extends TextEditorInput implements IEncodin
 	}
 
 	dispose(): void {
-		this.cachedModel = null;
-		this.modelResolve = null;
+		this.cachedModel = undefined;
+		this.modelResolve = undefined;
 
 		super.dispose();
 	}
