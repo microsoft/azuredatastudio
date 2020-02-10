@@ -75,7 +75,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		this._isRenamed = val;
 	}
 
-	public get children(): ConnectionProfileGroup[] {
+	public get children(): ConnectionProfileGroup[] | undefined {
 		return this._childGroups;
 	}
 
@@ -83,7 +83,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		this._childGroups = children ?? [];
 	}
 
-	public get connections(): ConnectionProfile[] {
+	public get connections(): ConnectionProfile[] | undefined {
 		return this._childConnections;
 	}
 
