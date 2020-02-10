@@ -315,12 +315,10 @@ export class CellModel implements ICellModel {
 				// for this property
 				return false;
 			}
-
 			let kernel = await this.getOrStartKernel(notificationService);
 			if (!kernel) {
 				return false;
 			}
-
 			// If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
 			// This matches the same behavior as JupyterLab
 			if (this.future && this.future.inProgress) {
