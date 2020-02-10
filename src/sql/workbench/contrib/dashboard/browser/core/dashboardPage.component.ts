@@ -11,7 +11,7 @@ import { Component, Inject, forwardRef, ViewChild, ElementRef, ViewChildren, Que
 
 import { DashboardServiceInterface } from 'sql/workbench/contrib/dashboard/browser/services/dashboardServiceInterface.service';
 import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
-import { WidgetConfig, TabConfig, TabSettingConfig, DashboardToolbarItemConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
+import { WidgetConfig, TabConfig, TabSettingConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { IPropertiesConfig } from 'sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution';
 import { PanelComponent, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
 import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
@@ -80,10 +80,12 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 	private _editEnabled = new Emitter<boolean>();
 	public readonly editEnabled: Event<boolean> = this._editEnabled.event;
-	public showToolbar = false;
+	public showToolbar = true;
 	// tslint:disable:no-unused-variable
 	private readonly homeTabTitle: string = nls.localize('home', "Home");
 	private readonly databasesTabTitle: string = nls.localize('databases', "Databases");
+	private readonly objectsTabTitle: string = nls.localize('objects', "Objects");
+	private tabToolbarActions = new Map<string, WidgetConfig>();
 
 	// a set of config modifiers
 	private readonly _configModifiers: Array<(item: Array<WidgetConfig>, collection: IConfigModifierCollection, context: string) => Array<WidgetConfig>> = [
@@ -157,11 +159,17 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			};
 			this.createTabs(tempWidgets);
 		}
-		this.createToolbar(this.taskContainer.nativeElement);
+
+		this.showToolbar = true;
+		let homeToolbarConfig = this.dashboardService.getSettings<Array<WidgetConfig>>([this.context, 'widgets'].join('.'))[0].widget['tasks-widget'];
+		this.tabToolbarActions.set(this.homeTabTitle, homeToolbarConfig);
+		this.tabToolbarActions.set(this.databasesTabTitle, homeToolbarConfig);
+		this.tabToolbarActions.set(this.objectsTabTitle, homeToolbarConfig);
+		this.createToolbar(this.taskContainer.nativeElement, homeToolbarConfig, false);
 	}
 
-	protected createToolbar(parentElement: HTMLElement): void {
-		let toolbarTasks = this.dashboardService.getSettings<Array<WidgetConfig>>([this.context, 'widgets'].join('.'))[0].widget['tasks-widget'];
+	protected createToolbar(parentElement: HTMLElement, config: WidgetConfig, isExtension: boolean): void {
+		let toolbarTasks = config;
 		let tasks = TaskRegistry.getTasks();
 
 		if (types.isArray(toolbarTasks) && toolbarTasks.length > 0) {
@@ -203,14 +211,15 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			content.push({ action: a });
 		});
 
-		if (content.length > 0) {
-			content.push({ element: separator });
+		if (!isExtension) {
+			if (content.length > 0) {
+				content.push({ element: separator });
+			}
+
+			content.push(
+				{ action: this._refreshAction },
+				{ action: this._editAction });
 		}
-
-		content.push(
-			{ action: this._refreshAction },
-			{ action: this._editAction });
-
 		this.toolbar.setContent(content);
 	}
 
@@ -380,6 +389,13 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			this._gridModifiers.forEach(cb => {
 				configs = cb.apply(this, [configs]);
 			});
+
+			// remove tasks widget because it will be shown in the toolbar
+			const index = configs.findIndex(c => c.widget['tasks-widget']);
+			if (index !== -1) {
+				this.tabToolbarActions.set(value.title, configs[index].widget['tasks-widget']);
+				configs.splice(index);
+			}
 			if (key === WIDGETS_CONTAINER) {
 				return { id: value.id, title: value.title, container: { 'widgets-container': configs }, alwaysShow: value.alwaysShow };
 			}
@@ -448,11 +464,13 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	public handleTabChange(tab: TabComponent): void {
-		if (tab.title === this.homeTabTitle || tab.title === this.databasesTabTitle) {
+		if (this.tabToolbarActions.has(tab.title)) {
 			this.showToolbar = true;
-		} else {
+			this.createToolbar(this.taskContainer.nativeElement, this.tabToolbarActions.get(tab.title), this.isExtensionTab(tab.title));
+		} else { // hide toolbar
 			this.showToolbar = false;
 		}
+
 		this._cd.detectChanges();
 		const localtab = this._tabs.find(i => i.id === tab.identifier);
 		this._editEnabled.fire(localtab.editable);
@@ -463,5 +481,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		const index = firstIndex(this.tabs, i => i.id === tab.identifier);
 		this.tabs.splice(index, 1);
 		this.angularEventingService.sendAngularEvent(this.dashboardService.getUnderlyingUri(), AngularEventType.CLOSE_TAB, { id: tab.identifier });
+	}
+
+	private isExtensionTab(tabName: string): boolean {
+		return tabName !== this.homeTabTitle && tabName !== this.databasesTabTitle && tabName !== this.objectsTabTitle;
 	}
 }
