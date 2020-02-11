@@ -17,6 +17,9 @@ import { Emitter } from 'vs/base/common/event';
 import { InsightsDialogModel } from 'sql/workbench/services/insights/browser/insightsDialogModel';
 import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 
 const testData: string[][] = [
 	['1', '2', '3', '4'],
@@ -39,11 +42,13 @@ suite('Insights Dialog Controller Tests', () => {
 		instMoq.setup(x => x.createInstance(It.isValue(QueryRunner), It.isAny()))
 			.returns(() => runner);
 
+		let testinstantiationService = new TestInstantiationService();
+		testinstantiationService.stub(IStorageService, new TestStorageService());
 		let connMoq = Mock.ofType(ConnectionManagementService, MockBehavior.Strict,
 			undefined, // connection store
 			undefined, // connection status manager
 			undefined, // connection dialog service
-			undefined, // instantiation service
+			testinstantiationService, // instantiation service
 			undefined, // editor service
 			undefined, // telemetry service
 			undefined, // configuration service

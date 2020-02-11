@@ -13,6 +13,8 @@ import * as TypeMoq from 'typemoq';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { TestTree } from 'sql/workbench/contrib/objectExplorer/test/browser/treeMock';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 
 suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
@@ -23,11 +25,12 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
 	setup(() => {
 		let instantiationService = new TestInstantiationService();
+		instantiationService.stub(IStorageService, new TestStorageService());
 		let mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict,
 			undefined, //connection store
 			undefined, // connectionstatusmanager
 			undefined, // connectiondialog service
-			undefined, // instantiation service
+			instantiationService, // instantiation service
 			undefined, // editor service
 			undefined, // telemetryservice
 			undefined, // configuration service

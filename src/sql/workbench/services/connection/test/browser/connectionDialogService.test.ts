@@ -13,6 +13,9 @@ import * as TypeMoq from 'typemoq';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 
 suite('ConnectionDialogService tests', () => {
 
@@ -21,6 +24,8 @@ suite('ConnectionDialogService tests', () => {
 	let mockConnectionDialog: TypeMoq.Mock<ConnectionDialogWidget>;
 
 	setup(() => {
+		let testinstantiationService = new TestInstantiationService();
+		testinstantiationService.stub(IStorageService, new TestStorageService());
 		let errorMessageService = getMockErrorMessageService();
 		connectionDialogService = new ConnectionDialogService(undefined, undefined, errorMessageService.object,
 			undefined, undefined, undefined, new NullLogService());
@@ -28,7 +33,7 @@ suite('ConnectionDialogService tests', () => {
 			undefined, // connection store
 			undefined, // connection status manager
 			undefined, // connection dialog service
-			undefined, // instantiation service
+			testinstantiationService, // instantiation service
 			undefined, // editor service
 			undefined, // telemetry service
 			undefined, // configuration service

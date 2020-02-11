@@ -17,7 +17,7 @@ import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { TestFileService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestFileService, TestStorageService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
@@ -25,6 +25,8 @@ import { TestQueryModelService } from 'sql/workbench/services/query/test/common/
 import { Event } from 'vs/base/common/event';
 import { LabelService } from 'vs/workbench/services/label/common/labelService';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 suite('SQL QueryEditor Tests', () => {
 	let instantiationService: TypeMoq.Mock<InstantiationService>;
@@ -87,11 +89,13 @@ suite('SQL QueryEditor Tests', () => {
 		});
 
 		// Mock ConnectionManagementService
+		let testinstantiationService = new TestInstantiationService();
+		testinstantiationService.stub(IStorageService, new TestStorageService());
 		connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose,
 			undefined, // connection store
 			undefined, // connection status manager
 			undefined, // connection dialog service
-			undefined, // instantiation service
+			testinstantiationService, // instantiation service
 			undefined, // editor service
 			undefined, // telemetry service
 			undefined, // configuration service
