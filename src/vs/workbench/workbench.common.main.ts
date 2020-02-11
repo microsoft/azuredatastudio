@@ -154,7 +154,7 @@ import { IResourceProviderService } from 'sql/workbench/services/resourceProvide
 import { ResourceProviderService } from 'sql/workbench/services/resourceProvider/browser/resourceProviderService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { AdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
-import { OEShimService, IOEShimService } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerViewTreeShim';
+import { OEShimService, IOEShimService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim';
 import { IObjectExplorerService, ObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { AngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingServiceImpl';
@@ -393,7 +393,7 @@ import 'sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contributi
 
 // {{SQL CARBON EDIT}}
 //editor replacement
-import 'sql/workbench/common/editorReplacer.contribution';
+import 'sql/workbench/contrib/editorReplacement/common/editorReplacer.contribution';
 
 // tasks
 import 'sql/workbench/contrib/tasks/browser/tasks.contribution';
@@ -446,7 +446,7 @@ import 'sql/workbench/contrib/dashboard/browser/containers/dashboardModelViewCon
 import 'sql/workbench/contrib/dashboard/browser/core/dashboardTab.contribution';
 
 // Model-based Views
-import 'sql/workbench/browser/modelComponents/components.contribution';
+import 'sql/workbench/contrib/modelView/browser/components.contribution';
 import 'sql/workbench/browser/modelComponents/modelViewEditor.contribution';
 
 // notebooks

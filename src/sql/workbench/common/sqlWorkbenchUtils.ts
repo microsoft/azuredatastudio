@@ -4,11 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
-import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
-
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { URI } from 'vs/base/common/uri';
-import { IEditorInput } from 'vs/workbench/common/editor';
 
 /**
  * Gets the 'sql' configuration section for use in looking up settings. Note that configs under
@@ -22,16 +18,4 @@ export function getSqlConfigSection(workspaceConfigService: IConfigurationServic
 export function getSqlConfigValue<T>(workspaceConfigService: IConfigurationService, configName: string): T {
 	let config = workspaceConfigService.getValue(ConnectionConstants.sqlConfigSectionName);
 	return config[configName];
-}
-
-export function getEditorUri(input: IEditorInput): string {
-	let uri: URI;
-	if (input instanceof QueryEditorInput) {
-		uri = input.getResource();
-	}
-
-	if (uri) {
-		return uri.toString(true);
-	}
-	return undefined;
 }

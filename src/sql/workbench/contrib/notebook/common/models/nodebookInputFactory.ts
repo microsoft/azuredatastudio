@@ -11,7 +11,7 @@ import { FileNotebookInput } from 'sql/workbench/contrib/notebook/common/models/
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/common/models/untitledNotebookInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { ILanguageAssociation } from 'sql/workbench/common/languageAssociation';
+import { ILanguageAssociation } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 
 const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorInputExtensions.EditorInputFactories);

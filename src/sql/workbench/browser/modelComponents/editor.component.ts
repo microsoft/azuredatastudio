@@ -23,8 +23,7 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser/simpleProgressIndicator';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
-import { ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 
 @Component({
 	template: '',

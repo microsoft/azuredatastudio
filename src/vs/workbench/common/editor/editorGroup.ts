@@ -10,9 +10,7 @@ import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/co
 import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { coalesce } from 'vs/base/common/arrays';
-
-// {{SQL CARBON EDIT}}
-import { doHandleUpgrade } from 'sql/workbench/common/languageAssociation';
+import { doHandleUpgrade } from 'sql/workbench/services/languageAssociation/common/doHandleUpgrade';
 
 const EditorOpenPositioning = {
 	LEFT: 'left',

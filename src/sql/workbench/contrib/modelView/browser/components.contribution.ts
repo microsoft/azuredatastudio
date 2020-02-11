@@ -2,34 +2,35 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import DivContainer from './divContainer.component';
-import FlexContainer from './flexContainer.component';
-import FormContainer from './formContainer.component';
-import ToolbarContainer from './toolbarContainer.component';
-import GroupContainer from './groupContainer.component';
-import CardComponent from './card.component';
-import InputBoxComponent from './inputbox.component';
-import DropDownComponent from './dropdown.component';
-import DeclarativeTableComponent from './declarativeTable.component';
-import ListBoxComponent from './listbox.component';
-import ButtonComponent from './button.component';
-import CheckBoxComponent from './checkbox.component';
-import TreeComponent from './tree.component';
-import RadioButtonComponent from './radioButton.component';
-import WebViewComponent from './webview.component';
-import TableComponent from './table.component';
-import TextComponent from './text.component';
-import ImageComponent from './image.component';
-import LoadingComponent from './loadingComponent.component';
-import FileBrowserTreeComponent from './fileBrowserTree.component';
-import EditorComponent from './editor.component';
-import DiffEditorComponent from './diffeditor.component';
-import DomComponent from './dom.component';
+
+import DivContainer from 'sql/workbench/browser/modelComponents/divContainer.component';
+import FlexContainer from 'sql/workbench/browser/modelComponents/flexContainer.component';
+import FormContainer from 'sql/workbench/browser/modelComponents/formContainer.component';
+import ToolbarContainer from 'sql/workbench/browser/modelComponents/toolbarContainer.component';
+import GroupContainer from 'sql/workbench/browser/modelComponents/groupContainer.component';
+import CardComponent from 'sql/workbench/browser/modelComponents/card.component';
+import InputBoxComponent from 'sql/workbench/browser/modelComponents/inputbox.component';
+import DropDownComponent from 'sql/workbench/browser/modelComponents/dropdown.component';
+import DeclarativeTableComponent from 'sql/workbench/browser/modelComponents/declarativeTable.component';
+import ListBoxComponent from 'sql/workbench/browser/modelComponents/listbox.component';
+import ButtonComponent from 'sql/workbench/browser/modelComponents/button.component';
+import CheckBoxComponent from 'sql/workbench/browser/modelComponents/checkbox.component';
+import TreeComponent from 'sql/workbench/browser/modelComponents/tree.component';
+import RadioButtonComponent from 'sql/workbench/browser/modelComponents/radioButton.component';
+import WebViewComponent from 'sql/workbench/contrib/modelView/browser/webview.component';
+import TableComponent from 'sql/workbench/browser/modelComponents/table.component';
+import TextComponent from 'sql/workbench/browser/modelComponents/text.component';
+import ImageComponent from 'sql/workbench/browser/modelComponents/image.component';
+import LoadingComponent from 'sql/workbench/browser/modelComponents/loadingComponent.component';
+import FileBrowserTreeComponent from 'sql/workbench/browser/modelComponents/fileBrowserTree.component';
+import EditorComponent from 'sql/workbench/browser/modelComponents/editor.component';
+import DiffEditorComponent from 'sql/workbench/browser/modelComponents/diffeditor.component';
+import DomComponent from 'sql/workbench/browser/modelComponents/dom.component';
 import { registerComponentType } from 'sql/platform/dashboard/browser/modelComponentRegistry';
-import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 import HyperlinkComponent from 'sql/workbench/browser/modelComponents/hyperlink.component';
 import SplitViewContainer from 'sql/workbench/browser/modelComponents/splitviewContainer.component';
 import RadioCardGroup from 'sql/workbench/browser/modelComponents/radioCardGroup.component';
+import { ModelComponentTypes } from 'sql/platform/dashboard/browser/interfaces';
 
 export const DIV_CONTAINER = 'div-container';
 registerComponentType(DIV_CONTAINER, ModelComponentTypes.DivContainer, DivContainer);
@@ -109,4 +110,3 @@ registerComponentType(HYPERLINK_COMPONENT, ModelComponentTypes.Hyperlink, Hyperl
 
 export const RADIOCARDGROUP_COMPONENT = 'radiocardgroup-component';
 registerComponentType(RADIOCARDGROUP_COMPONENT, ModelComponentTypes.RadioCardGroup, RadioCardGroup);
-

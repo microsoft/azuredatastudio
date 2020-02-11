@@ -12,7 +12,7 @@ import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/unt
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { ILanguageAssociation } from 'sql/workbench/common/languageAssociation';
+import { ILanguageAssociation } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
