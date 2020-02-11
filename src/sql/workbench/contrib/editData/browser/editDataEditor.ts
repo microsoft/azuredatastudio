@@ -297,7 +297,7 @@ export class EditDataEditor extends BaseEditor {
 	}
 
 	/**
-	 * Checks if the current position of the sash doesn't violate the minimum editor size.
+	 * Checks if the current position of the sash doesn't cover the first row of the table.
 	 * If large enough, do layout. Else if too small, hide result editor to prevent crashing.
 	 */
 	private _positionCheck(position: number) {
