@@ -8,7 +8,7 @@
 	[actions]="panelActions">
 	<div #toolbar [style.display]="showToolbar ? 'block': 'none'" class="editor-toolbar">
 	</div>
-		<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize"
+	<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize"
 		[identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions" [type]="tab.type">
 		<ng-template>
 			<dashboard-home-container *ngIf="tab.id === 'homeTab'; else not_home" [properties]="propertiesWidget"

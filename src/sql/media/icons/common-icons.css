@@ -3,7 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+.vs .codicon.backup,
+.vs-dark .codicon.backup,
+.hc-black .codicon.backup {
+	background: url("backup.svg") no-repeat;
+}
 
+.vs .codicon.restore,
+.vs-dark .codicon.restore,
+.hc-black .codicon.restore {
+	background: url("restore.svg") no-repeat;
+}
 
 .vs .codicon.database {
 	background: url("database.svg") center center no-repeat;
@@ -154,6 +164,12 @@
 	background: url("status_warning.svg") center center no-repeat;
 }
 
+.vs .codicon.refresh,
+.vs-dark .codicon.refresh,
+.hc-black .codicon.refresh {
+	background: url("refresh.svg") no-repeat;
+}
+
 .hc-black .codicon.toggle-more,
 .vs-dark .codicon.toggle-more {
 	background: url('ellipsis-inverse.svg') center center no-repeat;
@@ -172,14 +188,16 @@
 	background: url('new.svg') center center no-repeat;
 }
 
-
-.hc-black .codicon.configure-dashboard,
-.vs-dark .codicon.configure-dashboard {
-	background: url('configdashboard_inverse.svg') center center no-repeat;
+.vs .codicon.new-query,
+.vs-dark .codicon.new-query,
+.hc-black .codicon.new-query {
+	background: url("newquery.svg") no-repeat;
 }
 
-.vs .codicon.configure-dashboard {
-	background: url('configdashboard.svg') center center no-repeat;
+.vs .codicon.configure-dashboard,
+.hc-black .codicon.configure-dashboard,
+.vs-dark .codicon.configure-dashboard {
+	background: url('configuredashboard.svg') no-repeat;
 }
 
 .hc-black .codicon.edit,
@@ -258,30 +276,6 @@
 .hc-black .codicon.edit,
 .vs-dark .codicon.edit {
 	background: url("edit.svg") no-repeat;
-}
-
-.vs .codicon.refresh,
-.vs-dark .codicon.refresh,
-.hc-black .codicon.refresh {
-	background: url("refresh.svg") no-repeat;
-}
-
-.vs .codicon.new-query,
-.vs-dark .codicon.new-query,
-.hc-black .codicon.new-query {
-	background: url("newquery.svg") no-repeat;
-}
-
-.vs .codicon.backup,
-.vs-dark .codicon.backup,
-.hc-black .codicon.backup {
-	background: url("backup.svg") no-repeat;
-}
-
-.vs .codicon.restore,
-.vs-dark .codicon.restore,
-.hc-black .codicon.restore {
-	background: url("restore.svg") no-repeat;
 }
 
 .small {

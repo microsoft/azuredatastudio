@@ -68,16 +68,11 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	protected toolbar: Taskbar;
 	public showToolbar: boolean;
 
-	// actions
-	protected _editAction: EditDashboardAction;
-	protected _refreshAction: RefreshWidgetAction;
-
 	private _editEnabled = new Emitter<boolean>();
 	public readonly editEnabled: Event<boolean> = this._editEnabled.event;
 	// tslint:disable:no-unused-variable
 	private readonly homeTabTitle: string = nls.localize('home', "Home");
-	private readonly databasesTabTitle: string = nls.localize('databases', "Databases");
-	private readonly objectsTabTitle: string = nls.localize('objects', "Objects");
+	private readonly homeTabId: string = 'homeTab';
 	private tabToolbarActions = new Map<string, ITaskbarContent[]>();
 	private tabToolbarActionsConfig = new Map<string, WidgetConfig>();
 
@@ -151,10 +146,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 		this.showToolbar = true;
 		const homeToolbarContent = this.getHomeToolbarContent();
-		this.tabToolbarActions.set(this.homeTabTitle, homeToolbarContent);
-		this.tabToolbarActions.set(this.databasesTabTitle, homeToolbarContent);
-		this.tabToolbarActions.set(this.objectsTabTitle, homeToolbarContent);
-		this.createToolbar(this.toolbarContainer.nativeElement, this.homeTabTitle);
+		this.tabToolbarActions.set(this.homeTabId, homeToolbarContent);
+		this.createToolbar(this.toolbarContainer.nativeElement, this.homeTabId);
 	}
 
 	private getHomeToolbarContent(): ITaskbarContent[] {
@@ -166,11 +159,15 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			content.push({ element: separator });
 		}
 
-		this._editAction = new EditDashboardAction(this.enableEdit, this);
-		this._refreshAction = new RefreshWidgetAction(this.refresh, this);
+		const editAction = new EditDashboardAction(this.enableEdit, this);
+		const refreshAction = new RefreshWidgetAction(this.refresh, this);
+		const configureDashboardCommand = MenuRegistry.getCommand('configureDashboard');
+		const configureDashboardAction = new ToolbarAction(configureDashboardCommand.id, configureDashboardCommand.title.toString(), TaskRegistry.getOrCreateTaskIconClassName(configureDashboardCommand), this.runAction, this, this.logService);
+
 		content.push(
-			{ action: this._refreshAction },
-			{ action: this._editAction });
+			{ action: refreshAction },
+			{ action: editAction },
+			{ action: configureDashboardAction });
 
 		return content;
 	}
@@ -323,7 +320,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 	private setAndRemoveHomeTab(allTabs: IDashboardTab[], homeWidgets: WidgetConfig[]): IDashboardTab[] {
 		const homeTabConfig: TabConfig = {
-			id: 'homeTab',
+			id: this.homeTabId,
 			provider: Constants.anyProviderName,
 			publisher: undefined,
 			title: this.homeTabTitle,
@@ -394,9 +391,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			// remove tasks widget because the tasks will be shown in the toolbar
 			const index = configs.findIndex(c => c.widget['tasks-widget']);
 			if (index !== -1) {
-				this.tabToolbarActionsConfig.set(value.title, configs[index].widget['tasks-widget']);
+				this.tabToolbarActionsConfig.set(value.id, configs[index].widget['tasks-widget']);
 				const content = this.getToolbarContent(configs[index].widget['tasks-widget']);
-				this.tabToolbarActions.set(value.title, content);
+				this.tabToolbarActions.set(value.id, content);
 				configs.splice(index);
 			}
 
@@ -464,9 +461,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	public handleTabChange(tab: TabComponent): void {
-		if (this.tabToolbarActions.has(tab.title)) {
+		if (this.tabToolbarActions.has(tab.identifier)) {
 			this.showToolbar = true;
-			this.createToolbar(this.toolbarContainer.nativeElement, tab.title);
+			this.createToolbar(this.toolbarContainer.nativeElement, tab.identifier);
 		} else { // hide toolbar
 			this.showToolbar = false;
 		}
