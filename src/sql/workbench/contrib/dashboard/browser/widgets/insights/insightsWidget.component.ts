@@ -12,7 +12,7 @@ import 'rxjs/add/observable/fromPromise';
 
 import { DashboardWidget, IDashboardWidget, WIDGET_CONFIG, WidgetConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
-import { ComponentHostDirective } from 'sql/workbench/contrib/dashboard/browser/core/componentHost.directive';
+import { ComponentHostDirective } from 'sql/base/browser/componentHost.directive';
 import { InsightAction, InsightActionContext } from 'sql/workbench/browser/actions';
 import { Extensions, IInsightRegistry, IInsightsConfig, IInsightsView, getWidgetAutoRefreshState } from 'sql/platform/dashboard/browser/insightRegistry';
 import { resolveQueryFilePath } from 'sql/workbench/services/insights/common/insightsUtils';

@@ -442,7 +442,7 @@ export class LoadedScriptsView extends ViewPane {
 		this.treeLabels = this.instantiationService.createInstance(ResourceLabels, { onDidChangeVisibility: this.onDidChangeBodyVisibility });
 		this._register(this.treeLabels);
 
-		this.tree = this.instantiationService.createInstance(WorkbenchCompressibleObjectTree,
+		this.tree = <WorkbenchCompressibleObjectTree<LoadedScriptsItem, FuzzyScore>>this.instantiationService.createInstance(WorkbenchCompressibleObjectTree,
 			'LoadedScriptsView',
 			this.treeContainer,
 			new LoadedScriptsDelegate(),
@@ -606,8 +606,8 @@ export class LoadedScriptsView extends ViewPane {
 	}
 
 	dispose(): void {
-		this.tree = dispose(this.tree);
-		this.treeLabels = dispose(this.treeLabels);
+		dispose(this.tree);
+		dispose(this.treeLabels);
 		super.dispose();
 	}
 }

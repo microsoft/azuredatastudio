@@ -25,21 +25,22 @@ import { activeContrastBorder, scrollbarSliderActiveBackground, scrollbarSliderB
 import { ICssStyleCollector, ITheme, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { PANEL_BACKGROUND } from 'vs/workbench/common/theme';
 import { TerminalWidgetManager } from 'vs/workbench/contrib/terminal/browser/terminalWidgetManager';
-import { IShellLaunchConfig, ITerminalDimensions, ITerminalProcessManager, KEYBINDING_CONTEXT_TERMINAL_TEXT_SELECTED, NEVER_MEASURE_RENDER_TIME_STORAGE_KEY, ProcessState, TERMINAL_PANEL_ID, IWindowsShellHelper, SHELL_PATH_INVALID_EXIT_CODE, SHELL_PATH_DIRECTORY_EXIT_CODE, SHELL_CWD_INVALID_EXIT_CODE, KEYBINDING_CONTEXT_TERMINAL_A11Y_TREE_FOCUS, INavigationMode, TitleEventSource, TERMINAL_COMMAND_ID, LEGACY_CONSOLE_MODE_EXIT_CODE } from 'vs/workbench/contrib/terminal/common/terminal';
+import { IShellLaunchConfig, ITerminalDimensions, ITerminalProcessManager, KEYBINDING_CONTEXT_TERMINAL_TEXT_SELECTED, NEVER_MEASURE_RENDER_TIME_STORAGE_KEY, ProcessState, TERMINAL_VIEW_ID, IWindowsShellHelper, SHELL_PATH_INVALID_EXIT_CODE, SHELL_PATH_DIRECTORY_EXIT_CODE, SHELL_CWD_INVALID_EXIT_CODE, KEYBINDING_CONTEXT_TERMINAL_A11Y_TREE_FOCUS, INavigationMode, TitleEventSource, TERMINAL_COMMAND_ID, LEGACY_CONSOLE_MODE_EXIT_CODE } from 'vs/workbench/contrib/terminal/common/terminal';
 import { ansiColorIdentifiers, TERMINAL_BACKGROUND_COLOR, TERMINAL_CURSOR_BACKGROUND_COLOR, TERMINAL_CURSOR_FOREGROUND_COLOR, TERMINAL_FOREGROUND_COLOR, TERMINAL_SELECTION_BACKGROUND_COLOR } from 'vs/workbench/contrib/terminal/common/terminalColorRegistry';
 import { TerminalConfigHelper } from 'vs/workbench/contrib/terminal/browser/terminalConfigHelper';
 import { TerminalLinkHandler } from 'vs/workbench/contrib/terminal/browser/terminalLinkHandler';
-import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { ITerminalInstanceService, ITerminalInstance, TerminalShellType } from 'vs/workbench/contrib/terminal/browser/terminal';
 import { TerminalProcessManager } from 'vs/workbench/contrib/terminal/browser/terminalProcessManager';
 import { Terminal as XTermTerminal, IBuffer, ITerminalAddon } from 'xterm';
 import { SearchAddon, ISearchOptions } from 'xterm-addon-search';
+import { Unicode11Addon } from 'xterm-addon-unicode11';
 import { CommandTrackerAddon } from 'vs/workbench/contrib/terminal/browser/addons/commandTrackerAddon';
 import { NavigationModeAddon } from 'vs/workbench/contrib/terminal/browser/addons/navigationModeAddon';
 import { XTermCore } from 'vs/workbench/contrib/terminal/browser/xterm-private';
 import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { IViewsService } from 'vs/workbench/common/views';
 
 // How long in milliseconds should an average frame take to render for a notification to appear
 // which suggests the fallback DOM-based renderer
@@ -148,7 +149,9 @@ export const DEFAULT_COMMANDS_TO_SKIP_SHELL: string[] = [
 	'workbench.action.openNextRecentlyUsedEditorInGroup',
 	'workbench.action.openPreviousRecentlyUsedEditorInGroup',
 	'workbench.action.quickOpenPreviousRecentlyUsedEditor',
+	'workbench.action.quickOpenLeastRecentlyUsedEditor',
 	'workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup',
+	'workbench.action.quickOpenLeastRecentlyUsedEditorInGroup',
 	'workbench.action.focusActiveEditorGroup',
 	'workbench.action.focusFirstEditorGroup',
 	'workbench.action.focusLastEditorGroup',
@@ -198,6 +201,7 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 	private _xterm: XTermTerminal | undefined;
 	private _xtermCore: XTermCore | undefined;
 	private _xtermSearch: SearchAddon | undefined;
+	private _xtermUnicode11: Unicode11Addon | undefined;
 	private _xtermElement: HTMLDivElement | undefined;
 	private _terminalHasTextContextKey: IContextKey<boolean>;
 	private _terminalA11yTreeFocusContextKey: IContextKey<boolean>;
@@ -278,7 +282,7 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 		@IContextKeyService private readonly _contextKeyService: IContextKeyService,
 		@IKeybindingService private readonly _keybindingService: IKeybindingService,
 		@INotificationService private readonly _notificationService: INotificationService,
-		@IPanelService private readonly _panelService: IPanelService,
+		@IViewsService private readonly _viewsService: IViewsService,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@IClipboardService private readonly _clipboardService: IClipboardService,
 		@IThemeService private readonly _themeService: IThemeService,
@@ -325,6 +329,9 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 				// this hack can be removed when https://github.com/xtermjs/xterm.js/issues/702 is
 				// supported.
 				this.setVisible(this._isVisible);
+			}
+			if (e.affectsConfiguration('terminal.integrated.unicodeVersion')) {
+				this._updateUnicodeVersion();
 			}
 			if (e.affectsConfiguration('editor.accessibilitySupport')) {
 				this.updateAccessibilitySupport();
@@ -482,6 +489,7 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 		});
 		this._xterm = xterm;
 		this._xtermCore = (xterm as any)._core as XTermCore;
+		this._updateUnicodeVersion();
 		this.updateAccessibilitySupport();
 		this._terminalInstanceService.getXtermSearchConstructor().then(Addon => {
 			this._xtermSearch = new Addon();
@@ -509,7 +517,7 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 				// Force line data to be sent when the cursor is moved, the main purpose for
 				// this is because ConPTY will often not do a line feed but instead move the
 				// cursor, in which case we still want to send the current line's data to tasks.
-				xterm.parser.addCsiHandler({ final: 'H' }, () => {
+				xterm.parser.registerCsiHandler({ final: 'H' }, () => {
 					this._onCursorMove();
 					return false;
 				});
@@ -793,9 +801,12 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 
 		dispose(this._windowsShellHelper);
 		this._windowsShellHelper = undefined;
-		this._linkHandler = dispose(this._linkHandler);
-		this._commandTrackerAddon = dispose(this._commandTrackerAddon);
-		this._widgetManager = dispose(this._widgetManager);
+		dispose(this._linkHandler);
+		this._linkHandler = undefined;
+		dispose(this._commandTrackerAddon);
+		this._commandTrackerAddon = undefined;
+		dispose(this._widgetManager);
+		this._widgetManager = undefined;
 
 		if (this._xterm && this._xterm.element) {
 			this._hadFocusOnExit = dom.hasClass(this._xterm.element, 'focus');
@@ -952,8 +963,7 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 	}
 
 	private _refreshSelectionContextKey() {
-		const activePanel = this._panelService.getActivePanel();
-		const isActive = !!activePanel && activePanel.getId() === TERMINAL_PANEL_ID;
+		const isActive = !!this._viewsService.getActiveViewWithId(TERMINAL_VIEW_ID);
 		this._terminalHasTextContextKey.set(isActive && this.hasSelection());
 	}
 
@@ -1237,6 +1247,18 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 		}
 	}
 
+	private async _updateUnicodeVersion(): Promise<void> {
+		if (!this._xterm) {
+			throw new Error('Cannot update unicode version before xterm has been initialized');
+		}
+		if (!this._xtermUnicode11 && this._configHelper.config.unicodeVersion === '11') {
+			const Addon = await this._terminalInstanceService.getXtermUnicode11Constructor();
+			this._xtermUnicode11 = new Addon();
+			this._xterm.loadAddon(this._xtermUnicode11);
+		}
+		this._xterm.unicode.activeVersion = this._configHelper.config.unicodeVersion;
+	}
+
 	public updateAccessibilitySupport(): void {
 		const isEnabled = this._accessibilityService.isScreenReaderOptimized();
 		if (isEnabled) {
@@ -1484,8 +1506,8 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const border = theme.getColor(activeContrastBorder);
 	if (border) {
 		collector.addRule(`
-			.hc-black .monaco-workbench .panel.integrated-terminal .xterm.focus::before,
-			.hc-black .monaco-workbench .panel.integrated-terminal .xterm:focus::before { border-color: ${border}; }`
+			.hc-black .monaco-workbench .pane-body.integrated-terminal .xterm.focus::before,
+			.hc-black .monaco-workbench .pane-body.integrated-terminal .xterm:focus::before { border-color: ${border}; }`
 		);
 	}
 
@@ -1493,20 +1515,20 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const scrollbarSliderBackgroundColor = theme.getColor(scrollbarSliderBackground);
 	if (scrollbarSliderBackgroundColor) {
 		collector.addRule(`
-			.monaco-workbench .panel.integrated-terminal .find-focused .xterm .xterm-viewport,
-			.monaco-workbench .panel.integrated-terminal .xterm.focus .xterm-viewport,
-			.monaco-workbench .panel.integrated-terminal .xterm:focus .xterm-viewport,
-			.monaco-workbench .panel.integrated-terminal .xterm:hover .xterm-viewport { background-color: ${scrollbarSliderBackgroundColor} !important; }`
+			.monaco-workbench .pane-body.integrated-terminal .find-focused .xterm .xterm-viewport,
+			.monaco-workbench .pane-body.integrated-terminal .xterm.focus .xterm-viewport,
+			.monaco-workbench .pane-body.integrated-terminal .xterm:focus .xterm-viewport,
+			.monaco-workbench .pane-body.integrated-terminal .xterm:hover .xterm-viewport { background-color: ${scrollbarSliderBackgroundColor} !important; }`
 		);
 	}
 
 	const scrollbarSliderHoverBackgroundColor = theme.getColor(scrollbarSliderHoverBackground);
 	if (scrollbarSliderHoverBackgroundColor) {
-		collector.addRule(`.monaco-workbench .panel.integrated-terminal .xterm .xterm-viewport::-webkit-scrollbar-thumb:hover { background-color: ${scrollbarSliderHoverBackgroundColor}; }`);
+		collector.addRule(`.monaco-workbench .pane-body.integrated-terminal .xterm .xterm-viewport::-webkit-scrollbar-thumb:hover { background-color: ${scrollbarSliderHoverBackgroundColor}; }`);
 	}
 
 	const scrollbarSliderActiveBackgroundColor = theme.getColor(scrollbarSliderActiveBackground);
 	if (scrollbarSliderActiveBackgroundColor) {
-		collector.addRule(`.monaco-workbench .panel.integrated-terminal .xterm .xterm-viewport::-webkit-scrollbar-thumb:active { background-color: ${scrollbarSliderActiveBackgroundColor}; }`);
+		collector.addRule(`.monaco-workbench .pane-body.integrated-terminal .xterm .xterm-viewport::-webkit-scrollbar-thumb:active { background-color: ${scrollbarSliderActiveBackgroundColor}; }`);
 	}
 });

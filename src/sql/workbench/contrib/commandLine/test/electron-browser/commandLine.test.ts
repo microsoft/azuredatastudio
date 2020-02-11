@@ -22,7 +22,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
-import { TestEditorService, TestDialogService } from 'vs/workbench/test/workbenchTestServices';
+import { TestEditorService, TestDialogService, TestFileService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
 import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
@@ -33,7 +33,7 @@ import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { LabelService } from 'vs/workbench/services/label/common/labelService';
 
 class TestParsedArgs implements ParsedArgs {
@@ -393,7 +393,7 @@ suite('commandLineService tests', () => {
 		querymodelService.setup(c => c.onRunQueryComplete).returns(() => Event.None);
 		const instantiationService = new TestInstantiationService();
 		let uri = URI.file(args._[0]);
-		const untitledEditorInput = new UntitledTextEditorInput(uri, false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined);
+		const untitledEditorInput = new UntitledTextEditorInput(uri, false, undefined, undefined, undefined, instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined, new TestFileService(), undefined);
 		const queryInput = new UntitledQueryEditorInput(undefined, untitledEditorInput, undefined, connectionManagementService.object, querymodelService.object, configurationService.object);
 		queryInput.state.connected = true;
 		const editorService: TypeMoq.Mock<IEditorService> = TypeMoq.Mock.ofType<IEditorService>(TestEditorService, TypeMoq.MockBehavior.Strict);

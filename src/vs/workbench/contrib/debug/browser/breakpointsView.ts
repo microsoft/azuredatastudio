@@ -34,6 +34,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { Gesture } from 'vs/base/browser/touch';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
+import { TextEditorSelectionRevealType } from 'vs/platform/editor/common/editor';
 
 const $ = dom.$;
 
@@ -80,7 +81,7 @@ export class BreakpointsView extends ViewPane {
 		dom.addClass(container, 'debug-breakpoints');
 		const delegate = new BreakpointsDelegate(this.debugService);
 
-		this.list = this.instantiationService.createInstance(WorkbenchList, 'Breakpoints', container, delegate, [
+		this.list = <WorkbenchList<IEnablement>>this.instantiationService.createInstance(WorkbenchList, 'Breakpoints', container, delegate, [
 			this.instantiationService.createInstance(BreakpointsRenderer),
 			new ExceptionBreakpointsRenderer(this.debugService),
 			this.instantiationService.createInstance(FunctionBreakpointsRenderer),
@@ -633,7 +634,7 @@ export function openBreakpointSource(breakpoint: IBreakpoint, sideBySide: boolea
 			preserveFocus,
 			selection,
 			revealIfOpened: true,
-			revealInCenterIfOutsideViewport: true,
+			selectionRevealType: TextEditorSelectionRevealType.CenterIfOutsideViewport,
 			pinned: !preserveFocus
 		}
 	}, sideBySide ? SIDE_GROUP : ACTIVE_GROUP);

@@ -14,13 +14,13 @@ import {
 	DeleteConnectionAction, RefreshAction, EditServerGroupAction
 } from 'sql/workbench/contrib/objectExplorer/browser/connectionTreeAction';
 import { TreeNode } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
-import { NodeType } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
+import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TreeUpdateUtils } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';
-import { ConnectionContextKey } from 'sql/workbench/contrib/connection/common/connectionContextKey';
+import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
 import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { ServerInfoContextKey } from 'sql/workbench/contrib/connection/common/serverInfoContextKey';

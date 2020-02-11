@@ -16,7 +16,7 @@ import { DashboardModule } from './dashboard.module';
 import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
 import { IDashboardComponentParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { DASHBOARD_SELECTOR } from 'sql/workbench/contrib/dashboard/browser/dashboard.component';
-import { ConnectionContextKey } from 'sql/workbench/contrib/connection/common/connectionContextKey';
+import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';

@@ -557,6 +557,10 @@ export class CodeEditorWidget extends Disposable implements editorBrowser.ICodeE
 		this._revealLine(lineNumber, VerticalRevealType.CenterIfOutsideViewport, scrollType);
 	}
 
+	public revealLineNearTop(lineNumber: number, scrollType: editorCommon.ScrollType = editorCommon.ScrollType.Smooth): void {
+		this._revealLine(lineNumber, VerticalRevealType.NearTop, scrollType);
+	}
+
 	private _revealLine(lineNumber: number, revealType: VerticalRevealType, scrollType: editorCommon.ScrollType): void {
 		if (typeof lineNumber !== 'number') {
 			throw new Error('Invalid arguments');
@@ -592,6 +596,15 @@ export class CodeEditorWidget extends Disposable implements editorBrowser.ICodeE
 		this._revealPosition(
 			position,
 			VerticalRevealType.CenterIfOutsideViewport,
+			true,
+			scrollType
+		);
+	}
+
+	public revealPositionNearTop(position: IPosition, scrollType: editorCommon.ScrollType = editorCommon.ScrollType.Smooth): void {
+		this._revealPosition(
+			position,
+			VerticalRevealType.NearTop,
 			true,
 			scrollType
 		);
@@ -685,6 +698,15 @@ export class CodeEditorWidget extends Disposable implements editorBrowser.ICodeE
 		);
 	}
 
+	public revealLinesNearTop(startLineNumber: number, endLineNumber: number, scrollType: editorCommon.ScrollType = editorCommon.ScrollType.Smooth): void {
+		this._revealLines(
+			startLineNumber,
+			endLineNumber,
+			VerticalRevealType.NearTop,
+			scrollType
+		);
+	}
+
 	private _revealLines(startLineNumber: number, endLineNumber: number, verticalType: VerticalRevealType, scrollType: editorCommon.ScrollType): void {
 		if (typeof startLineNumber !== 'number' || typeof endLineNumber !== 'number') {
 			throw new Error('Invalid arguments');
@@ -720,6 +742,15 @@ export class CodeEditorWidget extends Disposable implements editorBrowser.ICodeE
 		this._revealRange(
 			range,
 			VerticalRevealType.CenterIfOutsideViewport,
+			true,
+			scrollType
+		);
+	}
+
+	public revealRangeNearTop(range: IRange, scrollType: editorCommon.ScrollType = editorCommon.ScrollType.Smooth): void {
+		this._revealRange(
+			range,
+			VerticalRevealType.NearTop,
 			true,
 			scrollType
 		);
@@ -1613,6 +1644,7 @@ export class BooleanEventEmitter extends Disposable {
 class EditorContextKeysManager extends Disposable {
 
 	private readonly _editor: CodeEditorWidget;
+	private readonly _editorSimpleInput: IContextKey<boolean>;
 	private readonly _editorFocus: IContextKey<boolean>;
 	private readonly _textInputFocus: IContextKey<boolean>;
 	private readonly _editorTextFocus: IContextKey<boolean>;
@@ -1632,6 +1664,8 @@ class EditorContextKeysManager extends Disposable {
 		this._editor = editor;
 
 		contextKeyService.createKey('editorId', editor.getId());
+
+		this._editorSimpleInput = EditorContextKeys.editorSimpleInput.bindTo(contextKeyService);
 		this._editorFocus = EditorContextKeys.focus.bindTo(contextKeyService);
 		this._textInputFocus = EditorContextKeys.textInputFocus.bindTo(contextKeyService);
 		this._editorTextFocus = EditorContextKeys.editorTextFocus.bindTo(contextKeyService);
@@ -1655,6 +1689,8 @@ class EditorContextKeysManager extends Disposable {
 		this._updateFromSelection();
 		this._updateFromFocus();
 		this._updateFromModel();
+
+		this._editorSimpleInput.set(this._editor.isSimpleWidget);
 	}
 
 	private _updateFromConfig(): void {

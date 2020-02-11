@@ -72,6 +72,7 @@ import { ExtHostTheming } from 'vs/workbench/api/common/extHostTheming';
 import { IExtHostTunnelService } from 'vs/workbench/api/common/extHostTunnelService';
 import { IExtHostApiDeprecationService } from 'vs/workbench/api/common/extHostApiDeprecationService';
 import { ExtHostAuthentication } from 'vs/workbench/api/common/extHostAuthentication';
+import { ExtHostTimeline } from 'vs/workbench/api/common/extHostTimeline';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -133,6 +134,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostLabelService = rpcProtocol.set(ExtHostContext.ExtHostLabelService, new ExtHostLabelService(rpcProtocol));
 	const extHostTheming = rpcProtocol.set(ExtHostContext.ExtHostTheming, new ExtHostTheming(rpcProtocol));
 	const extHostAuthentication = rpcProtocol.set(ExtHostContext.ExtHostAuthentication, new ExtHostAuthentication(rpcProtocol));
+	const extHostTimeline = rpcProtocol.set(ExtHostContext.ExtHostTimeline, new ExtHostTimeline(rpcProtocol));
 
 	// Check that no named customers are missing
 	// {{SQL CARBON EDIT}} filter out the services we don't expose
@@ -189,11 +191,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			get providers() {
 				return extHostAuthentication.providers(extension);
 			},
-			get onDidRegisterAuthenticationProvider() {
-				return extHostAuthentication.onDidRegisterAuthenticationProvider;
-			},
-			get onDidUnregisterAuthenticationProvider() {
-				return extHostAuthentication.onDidUnregisterAuthenticationProvider;
+			get onDidChangeAuthenticationProviders(): Event<vscode.AuthenticationProvidersChangeEvent> {
+				return extHostAuthentication.onDidChangeAuthenticationProviders;
 			}
 		};
 
@@ -761,9 +760,19 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				checkProposedApiEnabled(extension);
 				return extHostTunnelService.getTunnels();
 			},
+			onDidChangeTunnels: (listener, thisArg?, disposables?) => {
+				checkProposedApiEnabled(extension);
+				return extHostTunnelService.onDidChangeTunnels(listener, thisArg, disposables);
+
+			},
 			onDidTunnelsChange: (listener, thisArg?, disposables?) => {
 				checkProposedApiEnabled(extension);
-				return extHostTunnelService.onDidTunnelsChange(listener, thisArg, disposables);
+				return extHostTunnelService.onDidChangeTunnels(listener, thisArg, disposables);
+
+			},
+			registerTimelineProvider: (scheme: string | string[], provider: vscode.TimelineProvider) => {
+				checkProposedApiEnabled(extension);
+				return extHostTimeline.registerTimelineProvider(scheme, provider, extension.identifier, extHostCommands.converter);
 			}
 		};
 
@@ -986,7 +995,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			Decoration: extHostTypes.Decoration,
 			WebviewContentState: extHostTypes.WebviewContentState,
 			UIKind: UIKind,
-			ColorThemeKind: extHostTypes.ColorThemeKind
+			ColorThemeKind: extHostTypes.ColorThemeKind,
+			TimelineItem: extHostTypes.TimelineItem
 		};
 	};
 }

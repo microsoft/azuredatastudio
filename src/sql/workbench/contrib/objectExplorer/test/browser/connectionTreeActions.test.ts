@@ -19,10 +19,10 @@ import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/ser
 import * as  LocalizedConstants from 'sql/workbench/contrib/connection/common/localizedConstants';
 import { ObjectExplorerService, ObjectExplorerNodeEventArgs } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeNode } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
-import { NodeType } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
+import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { ServerTreeDataSource } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeDataSource';
-import { Emitter } from 'vs/base/common/event';
+import { Emitter, Event } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerActions';
 import { IConnectionResult, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
@@ -31,7 +31,7 @@ import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/t
 import { UNSAVED_GROUP_ID, mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { $ } from 'vs/base/browser/dom';
 import { OEManageConnectionAction } from 'sql/workbench/contrib/dashboard/browser/dashboardActions';
-import { IViewsService, IView, ViewContainer, IViewDescriptorCollection } from 'vs/workbench/common/views';
+import { IViewsService, IView } from 'vs/workbench/common/views';
 import { ConsoleLogService } from 'vs/platform/log/common/log';
 
 suite('SQL Connection Tree Action tests', () => {
@@ -109,18 +109,22 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 
 		const viewsService = new class implements IViewsService {
-			getActiveViewWithId(id: string): IView {
+			getActiveViewWithId<T extends IView>(id: string): T | null {
 				throw new Error('Method not implemented.');
 			}
 			_serviceBrand: undefined;
-			openView(id: string, focus?: boolean): Promise<IView> {
-				return Promise.resolve({
+			openView<T extends IView>(id: string, focus?: boolean): Promise<T | null> {
+				return Promise.resolve(<T><any>{
 					id: '',
 					serversTree: undefined
 				});
 			}
-			getViewDescriptors(container: ViewContainer): IViewDescriptorCollection {
-				throw new Error('Method not implemented.');
+			onDidChangeViewVisibility: Event<{ id: string, visible: boolean }> = Event.None;
+			closeView(id: string): void {
+				return;
+			}
+			isViewVisible(id: string): boolean {
+				return true;
 			}
 		};
 
