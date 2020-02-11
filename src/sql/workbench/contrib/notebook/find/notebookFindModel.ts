@@ -594,9 +594,9 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		const newline = new RegExp(/^([-=]+[\\r\\n]*)$/gm);
 		// regex to clean up table seperators ex: |--|----:| since they aren't rendered as a seprate element
 		const tableSeperator = new RegExp(/^(([|]+[ :]*[-]+[ :]*[|]*)+[\\r\\n]*)$/gm);
-		// regex to match a table row | rowData | rowData |
+		// regex to match a table row -> | rowData | rowData |
 		const tableRows = new RegExp(/^\|(.+\|*)*/gm);
-		// regex for match list elements in markdown
+		// regex for match un-ordered list elements in markdown
 		const listRegex = new RegExp(/^[*+-]+(.+[\r\n]*)/gm);
 		// regex to match block-quotes that begin and end with >>>
 		const blockQuoutesRgx = new RegExp(/^\>(.*)/gm);
@@ -608,11 +608,13 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 				if (content !== '\n' && content !== '\r\n' && !content.match(tableSeperator) && !content.match(newline) && !content.match(listRegex) && !content.match(blockQuoutesRgx) && !content.match(tableRows) && !content.match(headingsRegex)) {
 					paragraphContent = paragraphContent.concat(content);
 				} else {
+					// if the source is not broken into multiple lines, add it
 					if (paragraphContent.length > 0 && !paragraphContent.match(newline)) {
 						trimmedCellSrc.push(this.cleanMarkdownLinks(paragraphContent));
 						paragraphContent = '';
 					}
-					// if the element is a list item or table row or block quote then check for multi-line instead of pushing them.
+					// if source is accross multiple lines:
+					// the element is a list item or table row or block quote then append them into one element.
 					if (content.match(listRegex) || (content.match(tableRows) && !content.match(tableSeperator)) || content.match(blockQuoutesRgx)) {
 						paragraphContent = paragraphContent.concat(content);
 					} else if (content.match(headingsRegex)) {

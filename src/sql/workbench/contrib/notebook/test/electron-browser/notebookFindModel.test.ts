@@ -274,6 +274,72 @@ suite('Notebook Find Model', function (): void {
 		assert.equal(notebookFindModel.findMatches.length, 0, 'Find failed to apply match whole word for //');
 	});
 
+	test('Should find in markdown that has a paragraph spanned accross multiple lines', async function (): Promise<void> {
+		let codeContent: nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Markdown,
+				source: ['TSG027 - Observe cluster deployment\n', '===================================\n', '\n', 'Description\n', '-----------\n', '\n',
+					'To troubleshoot SQL Server big data cluster create issues the following\n', 'commands are often useful for pinpointing underlying causes.\n', '\n', 'Steps\n', '-----\n', '\n', '### Parameters'
+				],
+				metadata: { language: 'python' },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'python',
+					language: 'python'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		await initNotebookModel(codeContent);
+		//initialize find
+		let notebookFindModel = new NotebookFindModel(model);
+
+		await notebookFindModel.find('cluster', true, false, max_find_count);
+		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed');
+
+		let expectedFindRange1 = new NotebookRange(model.cells[0], 1, 18, 1, 25);
+		assert.deepEqual(notebookFindModel.findMatches[0].range, expectedFindRange1, 'Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange1) + '\n ' + JSON.stringify(notebookFindModel.findMatches[0].range));
+		let expectedFindRange2 = new NotebookRange(model.cells[0], 3, 37, 3, 44);
+		assert.deepEqual(notebookFindModel.findMatches[1].range, expectedFindRange2, 'Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange2) + '\n ' + JSON.stringify(notebookFindModel.findMatches[1].range));
+
+	});
+
+	test('Should find in markdown that has list element spanned accross multiple lines', async function (): Promise<void> {
+		let codeContent: nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Markdown,
+				source: ['### Get the versions of `azdata`, the BDC and Kubernetes cluster\n', '\n', 'Often the first question asked is “what version are you using”. There\n', 'are versions of several things that are useful to know:\n', '\n',
+					'-   [SOP007 - Version information (azdata\n', ', bdc,    kubernetes)](../common/sop007-get-key-version-information.ipynb)\n', '\n'],
+				metadata: { language: 'python' },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'python',
+					language: 'python'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		await initNotebookModel(codeContent);
+		//initialize find
+		let notebookFindModel = new NotebookFindModel(model);
+
+		await notebookFindModel.find('bdc', false, false, max_find_count);
+		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed');
+
+		let expectedFindRange1 = new NotebookRange(model.cells[0], 1, 39, 1, 42);
+		assert.deepEqual(notebookFindModel.findMatches[0].range, expectedFindRange1, 'Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange1) + '\n ' + JSON.stringify(notebookFindModel.findMatches[0].range));
+		let expectedFindRange2 = new NotebookRange(model.cells[0], 3, 44, 3, 47);
+		assert.deepEqual(notebookFindModel.findMatches[1].range, expectedFindRange2, 'Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange2) + '\n ' + JSON.stringify(notebookFindModel.findMatches[1].range));
+
+	});
+
+
 
 	async function initNotebookModel(contents: nb.INotebookContents): Promise<void> {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
