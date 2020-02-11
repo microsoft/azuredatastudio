@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 //#region --- editor/workbench core
-require('sql/setup');
 
 import 'vs/editor/editor.all';
 
