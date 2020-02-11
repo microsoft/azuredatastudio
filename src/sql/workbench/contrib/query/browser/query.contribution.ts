@@ -25,7 +25,7 @@ import {
 } from 'sql/workbench/contrib/query/browser/keyboardQueryActions';
 import * as gridActions from 'sql/workbench/contrib/editData/common/gridActions';
 import * as gridCommands from 'sql/workbench/contrib/editData/browser/gridCommands';
-import * as Constants from 'sql/workbench/contrib/query/common/constants';
+import * as Constants from 'sql/platform/query/common/constants';
 import { localize } from 'vs/nls';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 
@@ -36,10 +36,10 @@ import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
 import { FileQueryEditorInputFactory, UntitledQueryEditorInputFactory, QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/common/queryInputFactory';
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
-import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
+import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/contrib/query/browser/queryActions';
 import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
-import { MssqlNodeContext } from 'sql/workbench/contrib/dataExplorer/browser/mssqlNodeContext';
+import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/mssqlNodeContext';
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTreeContext';

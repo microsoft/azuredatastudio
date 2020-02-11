@@ -8,7 +8,7 @@ import 'vs/css!./media/styles';
 
 import { Table } from 'sql/base/browser/ui/table/table';
 import { Subscription, Subject } from 'rxjs/Rx';
-import * as Constants from 'sql/workbench/contrib/query/common/constants';
+import * as Constants from 'sql/platform/query/common/constants';
 import * as LocalizedConstants from 'sql/workbench/contrib/query/common/localizedConstants';
 import { IGridInfo, IGridDataSet, SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
 import * as Utils from 'sql/platform/connection/common/utils';

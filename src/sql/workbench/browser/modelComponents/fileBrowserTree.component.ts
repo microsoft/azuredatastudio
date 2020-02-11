@@ -14,8 +14,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { FileBrowserViewModel } from 'sql/workbench/services/fileBrowser/common/fileBrowserViewModel';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { FileBrowserTreeView } from 'sql/workbench/services/fileBrowser/browser/fileBrowserTreeView';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
-import { ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 
 @Component({
 	selector: 'modelview-fileBrowserTree',

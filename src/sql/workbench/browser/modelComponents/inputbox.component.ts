@@ -23,8 +23,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
 import { assign } from 'vs/base/common/objects';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
-import { ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 
 @Component({
 	selector: 'modelview-inputBox',

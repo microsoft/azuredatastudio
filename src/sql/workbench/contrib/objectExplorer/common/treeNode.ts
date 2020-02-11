@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { NodeType, SqlThemeIcon } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
+import { NodeType, SqlThemeIcon } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import * as azdata from 'azdata';
 
 import * as UUID from 'vs/base/common/uuid';

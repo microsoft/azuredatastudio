@@ -8,7 +8,7 @@ import { IConnectionManagementService, IConnectionCompletionOptions, IConnection
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
-import { NodeType } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
+import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 
 import { TreeNode } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
 import * as errors from 'vs/base/common/errors';

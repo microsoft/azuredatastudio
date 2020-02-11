@@ -12,7 +12,7 @@ import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelI
 import * as outputProcessor from 'sql/workbench/contrib/notebook/browser/models/outputProcessor';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
-import { ComponentHostDirective } from 'sql/workbench/contrib/dashboard/browser/core/componentHost.directive';
+import { ComponentHostDirective } from 'sql/base/browser/componentHost.directive';
 import { Extensions, IMimeComponent, IMimeComponentRegistry } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRegistry';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
