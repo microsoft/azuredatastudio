@@ -34,7 +34,7 @@ type PermissionCheckboxesMapping = {
 export class ManageAccessDialog {
 
 	private hdfsModel: HdfsModel;
-	private viewInitialized: boolean = false;
+	private viewInitializedOrInProgress: boolean = false;
 	private modelInitialized: boolean = false;
 	private modelBuilder: azdata.ModelBuilder;
 	private rootContainer: azdata.FlexContainer;
@@ -92,7 +92,6 @@ export class ManageAccessDialog {
 				await modelView.initializeModel(this.rootLoadingComponent);
 				this.modelInitialized = true;
 				this.handlePermissionStatusUpdated(this.hdfsModel.permissionStatus);
-				this.addUserOrGroupInput.focus();
 			});
 			this.dialog.content = [tab];
 		}
@@ -102,6 +101,8 @@ export class ManageAccessDialog {
 	}
 
 	private initializeView(permissionStatus: PermissionStatus): void {
+		this.viewInitializedOrInProgress = true;
+
 		// We nest the content inside another container for the margins - getting them on the root container isn't supported
 		const contentContainer = this.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column', width: '100%', height: '100%' })
@@ -237,7 +238,6 @@ export class ManageAccessDialog {
 			.withLayout({ flexFlow: 'column' })
 			.component();
 		contentContainer.addItem(this.namedUsersAndGroupsPermissionsContainer, { flex: '1', CSSStyles: { 'overflow': 'scroll', 'min-height': '200px' } });
-		this.viewInitialized = true;
 	}
 
 	private handlePermissionStatusUpdated(permissionStatus: PermissionStatus): void {
@@ -246,7 +246,7 @@ export class ManageAccessDialog {
 		}
 
 		// If this is the first time go through and create the UI components now that we have a model to use
-		if (!this.viewInitialized) {
+		if (!this.viewInitializedOrInProgress) {
 			this.initializeView(permissionStatus);
 		}
 
@@ -324,6 +324,8 @@ export class ManageAccessDialog {
 		this.namedUsersAndGroupsPermissionsContainer.addItem(namedUsersAndGroupsTable);
 
 		this.rootLoadingComponent.loading = false;
+
+		this.addUserOrGroupInput.focus();
 	}
 
 	private createRadioButton(modelBuilder: azdata.ModelBuilder, label: string, name: string, aclEntryType: AclType): azdata.RadioButtonComponent {
