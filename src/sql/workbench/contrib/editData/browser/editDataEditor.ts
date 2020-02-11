@@ -301,7 +301,7 @@ export class EditDataEditor extends BaseEditor {
 	 * If large enough, do layout. Else if too small, hide result editor to prevent crashing.
 	 */
 	private _positionCheck(position: number) {
-		if (position < (2 / 3) * this._minEditorSize) {
+		if (position < 40) {
 			this.resultsEditorVisibility = false;
 		}
 		else {
