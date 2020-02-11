@@ -16,7 +16,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { localize } from 'vs/nls';
-import { NodeType } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
+import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { UserCancelledConnectionError } from 'sql/base/common/errors';
 import { assign } from 'vs/base/common/objects';
 

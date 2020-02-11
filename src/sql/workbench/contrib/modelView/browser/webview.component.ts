@@ -206,7 +206,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		options = reviveWebviewOptions(options);
 		return {
 			allowScripts: options.enableScripts,
-			localResourceRoots: options!.localResourceRoots || this.getDefaultLocalResourceRoots()
+			localResourceRoots: options.localResourceRoots || this.getDefaultLocalResourceRoots()
 		};
 	}
 

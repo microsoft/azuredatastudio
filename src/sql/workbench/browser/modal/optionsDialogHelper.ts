@@ -11,8 +11,8 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import * as types from 'vs/base/common/types';
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
-import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { startsWith } from 'vs/base/common/strings';
+import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 
 export interface IOptionElement {
 	optionWidget: any;
