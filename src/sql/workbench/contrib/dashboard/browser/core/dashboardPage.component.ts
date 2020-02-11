@@ -41,11 +41,9 @@ import { values } from 'vs/base/common/collections';
 import { RefreshWidgetAction, EditDashboardAction, ToolbarAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as DOM from 'vs/base/browser/dom';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { ServerInfo } from 'azdata';
 import { TaskRegistry } from 'sql/workbench/services/tasks/browser/tasksRegistry';
-import { MenuRegistry, ICommandAction } from 'vs/platform/actions/common/actions';
+import { MenuRegistry } from 'vs/platform/actions/common/actions';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 const homeTabGroupId = 'home';
@@ -74,15 +72,13 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	protected _editAction: EditDashboardAction;
 	protected _refreshAction: RefreshWidgetAction;
 
-	private _tasks: Array<ICommandAction> = [];
-
 	private _editEnabled = new Emitter<boolean>();
 	public readonly editEnabled: Event<boolean> = this._editEnabled.event;
 	// tslint:disable:no-unused-variable
 	private readonly homeTabTitle: string = nls.localize('home', "Home");
 	private readonly databasesTabTitle: string = nls.localize('databases', "Databases");
 	private readonly objectsTabTitle: string = nls.localize('objects', "Objects");
-	private tabToolbarActions = new Map<string, WidgetConfig>();
+	private tabToolbarActions = new Map<string, ITaskbarContent[]>();
 
 	// a set of config modifiers
 	private readonly _configModifiers: Array<(item: Array<WidgetConfig>, collection: IConfigModifierCollection, context: string) => Array<WidgetConfig>> = [
@@ -96,10 +92,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 	public get connectionManagementService(): SingleConnectionManagementService {
 		return this.dashboardService.connectionManagementService;
-	}
-
-	public get serverInfo(): ServerInfo {
-		return this.connectionManagementService.connectionInfo.serverInfo;
 	}
 
 	public get contextKeyService(): IContextKeyService {
@@ -121,7 +113,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		@Inject(IAngularEventingService) private angularEventingService: IAngularEventingService,
 		@Inject(IConfigurationService) private configurationService: IConfigurationService,
 		@Inject(ILogService) private logService: ILogService,
-		@Inject(IInstantiationService) protected _instantiationService: IInstantiationService,
 		@Inject(ICommandService) private commandService: ICommandService,
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService
 	) {
@@ -158,14 +149,40 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		}
 
 		this.showToolbar = true;
-		let homeToolbarConfig = this.dashboardService.getSettings<Array<WidgetConfig>>([this.context, 'widgets'].join('.'))[0].widget['tasks-widget'];
-		this.tabToolbarActions.set(this.homeTabTitle, homeToolbarConfig);
-		this.tabToolbarActions.set(this.databasesTabTitle, homeToolbarConfig);
-		this.tabToolbarActions.set(this.objectsTabTitle, homeToolbarConfig);
-		this.createToolbar(this.taskContainer.nativeElement, homeToolbarConfig, false);
+		const homeToolbarContent = this.getHomeToolbarContent();
+		this.tabToolbarActions.set(this.homeTabTitle, homeToolbarContent);
+		this.tabToolbarActions.set(this.databasesTabTitle, homeToolbarContent);
+		this.tabToolbarActions.set(this.objectsTabTitle, homeToolbarContent);
+		this.createToolbar(this.taskContainer.nativeElement, homeToolbarContent);
 	}
 
-	protected createToolbar(parentElement: HTMLElement, toolbarTasks: WidgetConfig, isExtension: boolean): void {
+	private getHomeToolbarContent(): ITaskbarContent[] {
+		const homeToolbarConfig = this.dashboardService.getSettings<Array<WidgetConfig>>([this.context, 'widgets'].join('.'))[0].widget['tasks-widget'];
+
+		let content = this.getToolbarContent(homeToolbarConfig);
+		if (content.length > 0) {
+			let separator: HTMLElement = Taskbar.createTaskbarSeparator();
+			content.push({ element: separator });
+		}
+
+		this._editAction = new EditDashboardAction(this.enableEdit, this);
+		this._refreshAction = new RefreshWidgetAction(this.refresh, this);
+		content.push(
+			{ action: this._refreshAction },
+			{ action: this._editAction });
+
+		return content;
+	}
+
+	private createToolbar(parentElement: HTMLElement, content: ITaskbarContent[]): void {
+		// clear out toolbar
+		DOM.clearNode(parentElement);
+		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
+		this.toolbar = this._register(new Taskbar(taskbarContainer));
+		this.toolbar.setContent(content);
+	}
+
+	private getToolbarContent(toolbarTasks: WidgetConfig): ITaskbarContent[] {
 		let tasks = TaskRegistry.getTasks();
 
 		if (types.isArray(toolbarTasks) && toolbarTasks.length > 0) {
@@ -183,39 +200,20 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			}).filter(i => !!i);
 		}
 
-		this._tasks = tasks.map(i => MenuRegistry.getCommand(i)).filter(v => !!v);
+		let _tasks = tasks.map(i => MenuRegistry.getCommand(i)).filter(v => !!v);
 
 		let toolbarActions = [];
-		this._tasks.forEach(a => {
+		_tasks.forEach(a => {
 			let iconClassName = TaskRegistry.getOrCreateTaskIconClassName(a);
-			toolbarActions.push(new ToolbarAction(a.id, a.title, iconClassName, this.runAction, this));
+			toolbarActions.push(new ToolbarAction(a.id, a.title.toString(), iconClassName, this.runAction, this));
 		});
 
-		// clear out toolbar
-		DOM.clearNode(parentElement);
-		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
-		this.toolbar = this._register(new Taskbar(taskbarContainer));
-
-		// Set the content in the order we desire
 		let content: ITaskbarContent[] = [];
 		toolbarActions.forEach(a => {
 			content.push({ action: a });
 		});
 
-		if (!isExtension) {
-			if (content.length > 0) {
-				let separator: HTMLElement = Taskbar.createTaskbarSeparator();
-				content.push({ element: separator });
-			}
-
-			this._editAction = new EditDashboardAction(this.enableEdit, this);
-			this._refreshAction = new RefreshWidgetAction(this.refresh, this);
-			content.push(
-				{ action: this._refreshAction },
-				{ action: this._editAction });
-		}
-
-		this.toolbar.setContent(content);
+		return content;
 	}
 
 	public runAction(id: string): Promise<void> {
@@ -388,7 +386,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			// remove tasks widget because the tasks will be shown in the toolbar
 			const index = configs.findIndex(c => c.widget['tasks-widget']);
 			if (index !== -1) {
-				this.tabToolbarActions.set(value.title, configs[index].widget['tasks-widget']);
+				const content = this.getToolbarContent(configs[index].widget['tasks-widget']);
+				this.tabToolbarActions.set(value.title, content);
 				configs.splice(index);
 			}
 
@@ -458,7 +457,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	public handleTabChange(tab: TabComponent): void {
 		if (this.tabToolbarActions.has(tab.title)) {
 			this.showToolbar = true;
-			this.createToolbar(this.taskContainer.nativeElement, this.tabToolbarActions.get(tab.title), this.isExtensionTab(tab.title));
+			this.createToolbar(this.taskContainer.nativeElement, this.tabToolbarActions.get(tab.title));
 		} else { // hide toolbar
 			this.showToolbar = false;
 		}
@@ -473,9 +472,5 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		const index = firstIndex(this.tabs, i => i.id === tab.identifier);
 		this.tabs.splice(index, 1);
 		this.angularEventingService.sendAngularEvent(this.dashboardService.getUnderlyingUri(), AngularEventType.CLOSE_TAB, { id: tab.identifier });
-	}
-
-	private isExtensionTab(tabName: string): boolean {
-		return tabName !== this.homeTabTitle && tabName !== this.databasesTabTitle && tabName !== this.objectsTabTitle;
 	}
 }

@@ -18,7 +18,6 @@ import * as nls from 'vs/nls';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
@@ -48,11 +47,10 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 		@Inject(IAngularEventingService) angularEventingService: IAngularEventingService,
 		@Inject(IConfigurationService) configurationService: IConfigurationService,
 		@Inject(ILogService) logService: ILogService,
-		@Inject(IInstantiationService) _instantiationService: IInstantiationService,
 		@Inject(ICommandService) commandService: ICommandService,
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService
 	) {
-		super(dashboardService, el, _cd, notificationService, angularEventingService, configurationService, logService, _instantiationService, commandService, contextKeyService);
+		super(dashboardService, el, _cd, notificationService, angularEventingService, configurationService, logService, commandService, contextKeyService);
 		this._register(dashboardService.onUpdatePage(() => {
 			this.refresh(true);
 			this._cd.detectChanges();

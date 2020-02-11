@@ -44,8 +44,8 @@ export interface TabConfig extends IDashboardTab {
 	actions?: Array<Action>;
 	iconClass?: string;
 	type?: TabType;
-
 }
+
 
 export type IUserFriendlyIcon = string | { light: string; dark: string; };
 

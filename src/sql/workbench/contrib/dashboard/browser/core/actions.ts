@@ -77,7 +77,7 @@ export class RefreshWidgetAction extends Action {
 export class ToolbarAction extends Action {
 	constructor(
 		id: string,
-		label,
+		label: string,
 		cssClass: string,
 		private runFn: (id: string) => void,
 		private context: any // this
