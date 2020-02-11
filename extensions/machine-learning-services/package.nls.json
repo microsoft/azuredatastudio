@@ -5,10 +5,13 @@
 	"title.configurations": "Configurations",
 	"title.endpoints": "Endpoints",
 	"mls.command.managePackages": "Manage Packages in SQL Server",
+	"mls.command.manageLanguages": "Manage External Languages",
 	"mls.command.odbcdriver": "Install ODBC Driver for SQL Server",
 	"mls.command.mlsdocs": "Machine Learning Services Documentation",
 	"mls.configuration.title": "Machine Learning Services configurations",
-	"mls.pythonPath.description": "Local path to a preexisting python installation used by Machine Learning Services.",
-	"mls.rPath.description": "Local path to a preexisting python installation used by Machine Learning Services.",
+	"mls.pythonPath.description": "Local path to a preexisting Python installation used by Machine Learning Services.",
+	"mls.enablePython.description": "Enable Python package management.",
+	"mls.enableR.description": "Enable R package management.",
+	"mls.rPath.description": "Local path to a preexisting R installation used by Machine Learning Services.",
 	"mls.command.dependencies": "Install Machine Learning Services Dependencies"
 }

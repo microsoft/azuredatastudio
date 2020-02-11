@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorInput, EditorModel, EncodingMode } from 'vs/workbench/common/editor';
+import { EditorInput, EditorModel, EncodingMode, IEditorInput } from 'vs/workbench/common/editor';
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { Event, Emitter } from 'vs/base/common/event';
 import { EditSessionReadyParams } from 'azdata';
 import { URI } from 'vs/base/common/uri';
@@ -14,7 +14,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import Severity from 'vs/base/common/severity';
 import { EditDataResultsInput } from 'sql/workbench/contrib/editData/browser/editDataResultsInput';
 import { IEditorViewState } from 'vs/editor/common/editorCommon';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 
 /**
  * Input for the EditDataEditor.
@@ -57,9 +57,14 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		this._refreshButtonEnabled = false;
 		this._useQueryFilter = false;
 
-		// re-emit sql editor events through this editor if it exists
+		// re-emit sql editor events through this editor if it exists.
+		// also set dirty status to false to prevent rerendering.
 		if (this._sql) {
-			this._register(this._sql.onDidChangeDirty(() => this._onDidChangeDirty.fire()));
+			this._register(this._sql.onDidChangeDirty(async () => {
+				const model = await this._sql.resolve();
+				model.setDirty(false);
+				this._onDidChangeDirty.fire();
+			}));
 		}
 
 		//TODO determine is this is a table or a view
@@ -107,7 +112,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	public get objectType(): string { return this._objectType; }
 	public showResultsEditor(): void { this._showResultsEditor.fire(undefined); }
 	public isDirty(): boolean { return false; }
-	public save(): Promise<boolean> { return Promise.resolve(false); }
+	public save(): Promise<IEditorInput | undefined> { return Promise.resolve(undefined); }
 	public getTypeId(): string { return EditDataInput.ID; }
 	public setBootstrappedTrue(): void { this._hasBootstrapped = true; }
 	public getResource(): URI { return this._uri; }
@@ -217,11 +222,9 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		return this._connectionManagementService.getTabColorForUri(this.uri);
 	}
 
-	public get onDidModelChangeContent(): Event<void> { return this._sql.onDidModelChangeContent; }
 	public get onDidModelChangeEncoding(): Event<void> { return this._sql.onDidModelChangeEncoding; }
 	public resolve(refresh?: boolean): Promise<EditorModel> { return this._sql.resolve(); }
 	public getEncoding(): string { return this._sql.getEncoding(); }
-	public suggestFileName(): string { return this._sql.suggestFileName(); }
 	public getName(): string { return this._sql.getName(); }
 	public get hasAssociatedFilePath(): boolean { return this._sql.hasAssociatedFilePath; }
 

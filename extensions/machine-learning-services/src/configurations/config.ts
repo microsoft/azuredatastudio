@@ -21,7 +21,6 @@ const defaultRExecutable = 'r';
 export class Config {
 
 	private _configValues: any;
-	private _mlsConfig: vscode.WorkspaceConfiguration | undefined;
 
 	constructor(private _root: string, private _apiWrapper: ApiWrapper) {
 	}
@@ -30,7 +29,7 @@ export class Config {
 	 * Loads the config values
 	 */
 	public async load(): Promise<void> {
-		const rawConfig = await fs.readFile(path.join(this._root, 'src', 'configurations', configFileName));
+		const rawConfig = await fs.readFile(path.join(this._root, configFileName));
 		this._configValues = JSON.parse(rawConfig.toString());
 	}
 
@@ -49,10 +48,31 @@ export class Config {
 	}
 
 	/**
+	 * Returns r packages repository
+	 */
+	public get rPackagesRepository(): string {
+		return this._configValues.rPackagesRepository;
+	}
+
+	/**
 	 * Returns python path from user settings
 	 */
 	public get pythonExecutable(): string {
 		return this.config.get(constants.pythonPathConfigKey) || defaultPythonExecutable;
+	}
+
+	/**
+	 * Returns true if python package management is enabled
+	 */
+	public get pythonEnabled(): boolean {
+		return this.config.get(constants.pythonEnabledConfigKey) || false;
+	}
+
+	/**
+	 * Returns true if r package management is enabled
+	 */
+	public get rEnabled(): boolean {
+		return this.config.get(constants.rEnabledConfigKey) || false;
 	}
 
 	/**
@@ -63,9 +83,6 @@ export class Config {
 	}
 
 	private get config(): vscode.WorkspaceConfiguration {
-		if (!this._mlsConfig) {
-			this._mlsConfig = this._apiWrapper.getConfiguration(constants.mlsConfigKey);
-		}
-		return this._mlsConfig;
+		return this._apiWrapper.getConfiguration(constants.mlsConfigKey);
 	}
 }

@@ -14,7 +14,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
-import { Task } from 'sql/platform/tasks/browser/tasksRegistry';
+import { Task } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 

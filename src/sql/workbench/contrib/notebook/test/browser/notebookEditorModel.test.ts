@@ -28,7 +28,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { TextFileEditorModelManager } from 'vs/workbench/services/textfile/common/textFileEditorModelManager';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { TestEnvironmentService, TestLifecycleService, TestStorageService, TestTextFileService, workbenchInstantiationService, TestTextResourcePropertiesService } from 'vs/workbench/test/workbenchTestServices';
+import { TestEnvironmentService, TestLifecycleService, TestStorageService, TestTextFileService, workbenchInstantiationService, TestTextResourcePropertiesService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { Range } from 'vs/editor/common/core/range';
 import { nb } from 'azdata';
 import { Emitter } from 'vs/base/common/event';
@@ -142,8 +142,8 @@ suite('Notebook Editor Model', function (): void {
 	});
 
 	teardown(() => {
-		if (accessor && accessor.textFileService && accessor.textFileService.models) {
-			(<TextFileEditorModelManager>accessor.textFileService.models).clear();
+		if (accessor && accessor.textFileService && accessor.textFileService.files) {
+			(<TextFileEditorModelManager>accessor.textFileService.files).clear();
 		}
 	});
 
@@ -870,7 +870,7 @@ suite('Notebook Editor Model', function (): void {
 
 	async function createTextEditorModel(self: Mocha.ITestCallbackContext): Promise<NotebookEditorModel> {
 		let textFileEditorModel = instantiationService.createInstance(TextFileEditorModel, toResource.call(self, defaultUri.toString()), 'utf8', undefined);
-		(<TextFileEditorModelManager>accessor.textFileService.models).add(textFileEditorModel.resource, textFileEditorModel);
+		(<TextFileEditorModelManager>accessor.textFileService.files).add(textFileEditorModel.resource, textFileEditorModel);
 		await textFileEditorModel.load();
 		return new NotebookEditorModel(defaultUri, textFileEditorModel, mockNotebookService.object, testResourcePropertiesService);
 	}

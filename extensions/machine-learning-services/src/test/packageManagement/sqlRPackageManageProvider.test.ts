@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as should from 'should';
 import 'mocha';
@@ -245,18 +243,28 @@ describe('SQL R Package Manager', () => {
 		should.deepEqual(actual, true);
 	});
 
+	it('canUseProvider Should return false if r is disabled in setting', async function (): Promise<void> {
+		let testContext = createContext();
+
+		let provider = createProvider(testContext);
+		testContext.config.setup(x => x.rEnabled).returns(() => false);
+		let actual = await provider.canUseProvider();
+
+		should.deepEqual(actual, false);
+	});
+
 	it('getPackageOverview Should return package info successfully', async function (): Promise<void> {
 		let testContext = createContext();
 		let packagePreview = {
 			'name': 'a-name',
-			'versions': ['1.1.2'],
+			'versions': ['Latest'],
 			'summary': ''
 		};
-		let allPackages = [{
-			'name': 'a-name',
-			'version': '1.1.2'
-		}];
-		testContext.queryRunner.setup(x => x.getRAvailablePackages(TypeMoq.It.isAny())).returns(() => Promise.resolve(allPackages));
+
+		testContext.httpClient.setup(x => x.fetch(TypeMoq.It.isAny())).returns(() => {
+			return Promise.resolve(``);
+		});
+
 		let provider = createProvider(testContext);
 		let actual = await provider.getPackageOverview('a-name');
 
@@ -303,11 +311,14 @@ describe('SQL R Package Manager', () => {
 
 	function createProvider(testContext: TestContext): SqlRPackageManageProvider {
 		testContext.config.setup(x => x.rExecutable).returns(() => 'r');
+		testContext.config.setup(x => x.rEnabled).returns(() => true);
+		testContext.config.setup(x => x.rPackagesRepository).returns(() => 'http://cran.r-project.org');
 		return new SqlRPackageManageProvider(
 			testContext.outputChannel,
 			testContext.apiWrapper.object,
 			testContext.queryRunner.object,
 			testContext.processService.object,
-			testContext.config.object);
+			testContext.config.object,
+			testContext.httpClient.object);
 	}
 });

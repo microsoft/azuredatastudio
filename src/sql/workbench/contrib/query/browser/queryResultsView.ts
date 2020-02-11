@@ -5,8 +5,8 @@
 
 import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import QueryRunner from 'sql/platform/query/common/queryRunner';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { MessagePanel } from 'sql/workbench/contrib/query/browser/messagePanel';
 import { GridPanel } from 'sql/workbench/contrib/query/browser/gridPanel';
 import { ChartTab } from 'sql/workbench/contrib/charts/browser/chartTab';
@@ -20,11 +20,11 @@ import * as nls from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
 import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Event } from 'vs/base/common/event';
 import { startsWith } from 'vs/base/common/strings';
 import { URI } from 'vs/base/common/uri';
+import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;

@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as TypeMoq from 'typemoq';
 import * as should from 'should';
 import * as vscode from 'vscode';

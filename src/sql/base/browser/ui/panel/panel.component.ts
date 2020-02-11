@@ -68,30 +68,29 @@ let idPool = 0;
 	`
 })
 export class PanelComponent extends Disposable {
-	@Input() public options: IPanelOptions;
-	@Input() public actions: Array<Action>;
-	@ContentChildren(TabComponent) private _tabs: QueryList<TabComponent>;
-	@ViewChild(ScrollableDirective) private scrollable: ScrollableDirective;
+	@Input() public options?: IPanelOptions;
+	@Input() public actions?: Array<Action>;
+	@ContentChildren(TabComponent) private readonly _tabs!: QueryList<TabComponent>;
+	@ViewChild(ScrollableDirective) private scrollable?: ScrollableDirective;
 
 	@Output() public onTabChange = new EventEmitter<TabComponent>();
 	@Output() public onTabClose = new EventEmitter<TabComponent>();
 
-	private _activeTab: TabComponent;
-	private _actionbar: ActionBar;
-	private _mru: TabComponent[];
+	private _activeTab?: TabComponent;
+	private _actionbar?: ActionBar;
+	private _mru: TabComponent[] = [];
 
 	protected AutoScrollbarVisibility = ScrollbarVisibility.Auto; // used by angular template
 	protected HiddenScrollbarVisibility = ScrollbarVisibility.Hidden; // used by angular template
 	protected NavigationBarLayout = NavigationBarLayout; // used by angular template
 
-	@ViewChild('panelActionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
+	@ViewChild('panelActionbar', { read: ElementRef }) private _actionbarRef!: ElementRef;
 	constructor(@Inject(forwardRef(() => NgZone)) private _zone: NgZone) {
 		super();
 	}
 
 	ngOnInit(): void {
 		this.options = mixin(this.options || {}, defaultOptions, false);
-		this._mru = [];
 	}
 
 	ngAfterContentInit(): void {
@@ -195,8 +194,8 @@ export class PanelComponent extends Disposable {
 	/**
 	 * Get the id of the active tab
 	 */
-	public get getActiveTab(): string {
-		return this._activeTab.identifier;
+	public get getActiveTab(): string | undefined {
+		return this._activeTab?.identifier;
 	}
 
 	/**
@@ -244,6 +243,6 @@ export class PanelComponent extends Disposable {
 	}
 
 	public layout() {
-		this._activeTab.layout();
+		this._activeTab?.layout();
 	}
 }
