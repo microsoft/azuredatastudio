@@ -63,6 +63,8 @@ export abstract class GridParentComponent extends Disposable {
 	private queryEditorVisible: IContextKey<boolean>;
 
 	// All datasets
+	//main dataset to work on.
+	protected dataSet: IGridDataSet;
 	// Place holder data sets to buffer between data sets and rendered data sets
 	protected placeHolderDataSets: IGridDataSet[] = [];
 	// Datasets currently being rendered on the DOM
@@ -502,10 +504,14 @@ export abstract class GridParentComponent extends Disposable {
 	resizeGrid(): void {
 		const self = this;
 		setTimeout(() => {
-			if (self.table) {
-				self.table.grid.onColumnsResized.notify();
-			}
+			setTimeout(() => self.onResize(), 100);
 		});
+	}
+
+	protected onResize() {
+		if (this.table) {
+			this.table.resizeCanvas();
+		}
 	}
 
 	/**

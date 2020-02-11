@@ -50,7 +50,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	// FIELDS
 	// All datasets
 	private gridDataProvider: AsyncDataProvider<any>;
-	private dataSet: IGridDataSet;
 	private oldDataRows: VirtualizedCollection<any>;
 	private firstRender = true;
 	private firstLoad = true;
@@ -427,9 +426,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 				if (self.dataSet) {
 					self.placeHolderDataSets[0].dataRows = self.dataSet.dataRows;
-					if (self.table) {
-						setTimeout(() => { self.table.grid.onColumnsResized.notify(); }, 100);
-					}
+					setTimeout(() => this.onResize(), 100);
 				}
 
 
@@ -811,6 +808,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				for (let i = 0; i < dataSet.columnDefinitions.length; i++) {
 					this.columnNameToIndex[this.dataSet.columnDefinitions[i].name] = i;
 				}
+				this.onResize();
 			}
 		}
 		else {
@@ -1000,9 +998,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	private setupEvents(): void {
-		this.table.grid.onScroll.subscribe((e, args) => {
-			this.onScroll(args);
-		});
 		this.table.grid.onCellChange.subscribe((e, args) => {
 			this.onCellEditEnd(args);
 		});
@@ -1035,7 +1030,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		// handleInitializeTable() will be called *after* the first time handleChanges() is called
 		// so, grid must be there already
 
-		if (this.dataSet.dataRows && this.dataSet.dataRows.getLength() > 0) {
+		if (this.placeHolderDataSets[0].dataRows && this.placeHolderDataSets[0].dataRows.getLength() > 0) {
 			this.table.grid.scrollRowToTop(0);
 		}
 
