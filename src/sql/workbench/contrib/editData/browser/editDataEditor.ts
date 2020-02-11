@@ -46,7 +46,7 @@ export class EditDataEditor extends BaseEditor {
 
 	// The minimum width/height of the editors hosted in the QueryEditor
 	private readonly _minEditorSize: number = 60;
-	// Minimum position for the bottom sash to ensure editor is at minimum height.
+	// Minimum position for the sash to ensure editor is at minimum height.
 	private readonly _minPositionSize: number = 40;
 
 	private _sash: IFlexibleSash;
