@@ -257,7 +257,7 @@ suite('SQL QueryEditor Tests', () => {
 
 	suite('Action Tests', () => {
 		let queryActionInstantiationService: TypeMoq.Mock<InstantiationService>;
-		let queryConnectionService: TypeMoq.Mock<ConnectionManagementService>;
+		let connectionManagementService: TypeMoq.Mock<ConnectionManagementService>;
 		let queryModelService: TypeMoq.Mock<TestQueryModelService>;
 		let queryInput: UntitledQueryEditorInput;
 		setup(() => {
@@ -274,10 +274,10 @@ suite('SQL QueryEditor Tests', () => {
 				undefined, // telemetry service
 				undefined, // configuration service
 				new TestCapabilitiesService());
-			queryConnectionService.callBase = true;
+			connectionManagementService.callBase = true;
 
-			queryConnectionService.setup(x => x.disconnectEditor(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
-			queryConnectionService.setup(x => x.ensureDefaultLanguageFlavor(TypeMoq.It.isAnyString())).returns(() => void 0);
+			connectionManagementService.setup(x => x.disconnectEditor(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
+			connectionManagementService.setup(x => x.ensureDefaultLanguageFlavor(TypeMoq.It.isAnyString())).returns(() => void 0);
 
 			// Mock InstantiationService to give us the actions
 			queryActionInstantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
@@ -295,7 +295,7 @@ suite('SQL QueryEditor Tests', () => {
 			queryActionInstantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 				.returns((definition, editor, action, selectBox) => {
 					if (definition.ID === 'listDatabaseQueryActionItem') {
-						let item = new ListDatabasesActionItem(editor, undefined, queryConnectionService.object, undefined, configurationService.object);
+						let item = new ListDatabasesActionItem(editor, undefined, connectionManagementService.object, undefined, configurationService.object);
 						return item;
 					}
 					// Default
@@ -318,7 +318,7 @@ suite('SQL QueryEditor Tests', () => {
 		});
 
 		test('Taskbar buttons are set correctly upon standard load', () => {
-			queryConnectionService.setup(x => x.isConnected(TypeMoq.It.isAny())).returns(() => false);
+			connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAny())).returns(() => false);
 			queryModelService.setup(x => x.isRunningQuery(TypeMoq.It.isAny())).returns(() => false);
 			// If I use the created QueryEditor with no changes since creation
 			// Buttons should be set as if disconnected
