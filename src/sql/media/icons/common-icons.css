@@ -200,13 +200,10 @@
 	background: url('configuredashboard.svg') no-repeat;
 }
 
+.vs .codicon.edit,
 .hc-black .codicon.edit,
 .vs-dark .codicon.edit {
-	background: url('edit_inverse.svg') center center no-repeat;
-}
-
-.vs .codicon.edit {
-	background: url('edit.svg') center center no-repeat;
+	background: url("edit.svg") no-repeat;
 }
 
 .hc-black .codicon.pin,
@@ -270,12 +267,6 @@
 .vs-dark .sql.codicon.stop,
 .hc-black .sql.codicon.stop {
 	background-image: url('stop_inverse.svg')
-}
-
-.vs .codicon.edit,
-.hc-black .codicon.edit,
-.vs-dark .codicon.edit {
-	background: url("edit.svg") no-repeat;
 }
 
 .small {
