@@ -155,8 +155,9 @@ suite('notebook model', function (): void {
 
 		// Then I expect to have 0 code cell as the contents
 		assert.equal(model.cells.length, 0);
-		// And Trust should be false by default
-		assert(!model.trustedMode);
+
+		// And Trust should be true by default if there are no cells
+		assert(model.trustedMode);
 	});
 
 	test('Should use trusted state set in model load', async function (): Promise<void> {

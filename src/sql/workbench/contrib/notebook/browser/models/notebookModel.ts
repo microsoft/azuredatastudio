@@ -308,6 +308,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					});
 				}
 			}
+
+			// Trust notebook by default if there are no code cells
+			if (this._cells.length === 0 || this._cells.every(cell => cell.cellType === CellTypes.Markdown)) {
+				this.trustedMode = true;
+			}
 		} catch (error) {
 			this._inErrorState = true;
 			throw error;
