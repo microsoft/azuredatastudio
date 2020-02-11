@@ -1040,7 +1040,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 
-
 	/*Formatter for Column*/
 	private getColumnFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
 		let valueToDisplay = '';
