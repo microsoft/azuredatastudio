@@ -73,4 +73,16 @@ export class ApiWrapper {
 	public getConfiguration(section?: string, resource?: vscode.Uri | null): vscode.WorkspaceConfiguration {
 		return vscode.workspace.getConfiguration(section, resource);
 	}
+
+	public createTab(title: string): azdata.window.DialogTab {
+		return azdata.window.createTab(title);
+	}
+
+	public createModelViewDialog(title: string, dialogName?: string, isWide?: boolean): azdata.window.Dialog {
+		return azdata.window.createModelViewDialog(title, dialogName, isWide);
+	}
+
+	public openDialog(dialog: azdata.window.Dialog): void {
+		return azdata.window.openDialog(dialog);
+	}
 }

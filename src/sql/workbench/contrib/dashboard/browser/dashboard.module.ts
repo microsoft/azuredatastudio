@@ -28,7 +28,7 @@ import { DashboardServiceInterface } from 'sql/workbench/contrib/dashboard/brows
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 
 /* Directives */
-import { ComponentHostDirective } from 'sql/workbench/contrib/dashboard/browser/core/componentHost.directive';
+import { ComponentHostDirective } from 'sql/base/browser/componentHost.directive';
 
 /* Base Components */
 import { DashboardComponent } from 'sql/workbench/contrib/dashboard/browser/dashboard.component';

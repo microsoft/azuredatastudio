@@ -7,9 +7,9 @@ import { EditorInput, EditorModel, IEditorInput } from 'vs/workbench/common/edit
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ILanguageAssociation } from 'sql/workbench/common/languageAssociation';
+import { ILanguageAssociation } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 
 export class QueryPlanConverter implements ILanguageAssociation {
 	static readonly languages = ['sqlplan'];

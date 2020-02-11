@@ -14,7 +14,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import Severity from 'vs/base/common/severity';
 import { EditDataResultsInput } from 'sql/workbench/contrib/editData/browser/editDataResultsInput';
 import { IEditorViewState } from 'vs/editor/common/editorCommon';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 
 /**
  * Input for the EditDataEditor.

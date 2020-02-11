@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.15.0",
-  "distro": "922d292f69c5d36ab6f0dbbd94a63c81219afaaf",
+  "distro": "cb2e6bf1c272453de1200ae404c3c561877a2a46",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -25,8 +25,8 @@
     "update-localization-extension": "node build/npm/update-localization-extension.js",
     "smoketest": "cd test/smoke && node test/index.js",
     "monaco-compile-check": "tsc -p src/tsconfig.monaco.json --noEmit",
-    "strict-vscode": "node node_modules/typescript/bin/tsc -p src/tsconfig.vscode.json",
-    "strict-vscode-watch": "node node_modules/typescript/bin/tsc -p src/tsconfig.vscode.json --watch",
+    "strict-vscode": "node --max_old_space_size=4095 node_modules/typescript/bin/tsc -p src/tsconfig.vscode.json",
+    "strict-vscode-watch": "node --max_old_space_size=4095 node_modules/typescript/bin/tsc -p src/tsconfig.vscode.json --watch",
     "strict-initialization-watch": "tsc --watch -p src/tsconfig.json --noEmit --strictPropertyInitialization",
     "valid-layers-check": "node build/lib/layersChecker.js",
     "strict-function-types-watch": "tsc --watch -p src/tsconfig.json --noEmit --strictFunctionTypes",
@@ -75,11 +75,11 @@
     "vscode-minimist": "^1.2.2",
     "vscode-nsfw": "1.2.8",
     "vscode-proxy-agent": "^0.5.2",
-    "vscode-ripgrep": "^1.5.7",
+    "vscode-ripgrep": "^1.5.8",
     "vscode-sqlite3": "4.0.9",
     "vscode-textmate": "4.4.0",
     "xterm": "4.4.0",
-    "xterm-addon-search": "0.4.0",
+    "xterm-addon-search": "0.5.0",
     "xterm-addon-unicode11": "0.1.1",
     "xterm-addon-web-links": "0.2.1",
     "xterm-addon-webgl": "0.5.0",

@@ -6,7 +6,7 @@
 import { DataService } from 'sql/workbench/contrib/grid/common/dataService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { ConnectionContextKey } from 'sql/workbench/contrib/connection/common/connectionContextKey';
+import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
 import { Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 

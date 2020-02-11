@@ -11,8 +11,7 @@ import {
 import * as azdata from 'azdata';
 
 import { TitledComponent } from 'sql/workbench/browser/modelComponents/titledComponent';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
-import { ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 
 @Component({
 	selector: 'modelview-hyperlink',
