@@ -340,6 +340,8 @@ export class CellModel implements ICellModel {
 				}
 				let content = this.source;
 				if ((Array.isArray(content) && content.length > 0) || (!Array.isArray(content) && content)) {
+					this.notebookModel.trustedMode = true;
+
 					// requestExecute expects a string for the code parameter
 					content = Array.isArray(content) ? content.join('') : content;
 					const future = kernel.requestExecute({

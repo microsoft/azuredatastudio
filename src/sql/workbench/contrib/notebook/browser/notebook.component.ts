@@ -21,8 +21,8 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import * as DOM from 'vs/base/browser/dom';
 
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-import { CellTypes, CellType } from 'sql/workbench/services/notebook/common/contracts';
-import { ICellModel, IModelFactory, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
+import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
@@ -309,7 +309,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}, this.profile, this.logService, this.notificationService, this.telemetryService);
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 		this._register(model.onError((errInfo: INotification) => this.handleModelError(errInfo)));
-		this._register(model.contentChanged((change) => this.handleContentChanged()));
+		this._register(model.contentChanged((change) => this.handleContentChanged(change)));
 		this._register(model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider)));
 		this._register(model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs)));
 		this._model = this._register(model);
@@ -360,7 +360,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.notificationService.notify(notification);
 	}
 
-	private handleContentChanged() {
+	private handleContentChanged(change: NotebookContentChange) {
+		if (change.changeType === NotebookChangeType.TrustChanged) {
+			this._trustedAction.trusted = this._model.trustedMode;
+		}
+
 		// Note: for now we just need to set dirty state and refresh the UI.
 		this.detectChanges();
 	}

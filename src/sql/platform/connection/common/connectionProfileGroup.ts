@@ -19,8 +19,8 @@ export interface IConnectionProfileGroup {
 
 export class ConnectionProfileGroup extends Disposable implements IConnectionProfileGroup {
 
-	public children: ConnectionProfileGroup[] = [];
-	public connections: ConnectionProfile[] = [];
+	private _childGroups: ConnectionProfileGroup[] = [];
+	private _childConnections: ConnectionProfile[] = [];
 	public parentId?: string;
 	private _isRenamed = false;
 	public constructor(
@@ -42,9 +42,9 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 
 	public toObject(): IConnectionProfileGroup {
 		let subgroups = undefined;
-		if (this.children.length > 0) {
+		if (this._childGroups.length > 0) {
 			subgroups = [];
-			this.children.forEach((group) => {
+			this._childGroups.forEach((group) => {
 				subgroups.push(group.toObject());
 			});
 		}
@@ -75,8 +75,24 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		this._isRenamed = val;
 	}
 
+	public get children(): ConnectionProfileGroup[] | undefined {
+		return this._childGroups;
+	}
+
+	public set children(children: ConnectionProfileGroup[] | undefined) {
+		this._childGroups = children ?? [];
+	}
+
+	public get connections(): ConnectionProfile[] | undefined {
+		return this._childConnections;
+	}
+
+	public set connections(connections: ConnectionProfile[] | undefined) {
+		this._childConnections = connections ?? [];
+	}
+
 	public hasChildren(): boolean {
-		if (this.children.length > 0 || this.connections.length > 0) {
+		if (this._childGroups.length > 0 || this._childConnections.length > 0) {
 			return true;
 		}
 		return false;
@@ -86,12 +102,12 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	 * Returns true if all connections in the tree have valid options using the correct capabilities
 	 */
 	public get hasValidConnections(): boolean {
-		let invalidConnections = find(this.connections, c => !c.isConnectionOptionsValid);
+		let invalidConnections = find(this._childConnections, c => !c.isConnectionOptionsValid);
 		if (invalidConnections !== undefined) {
 			return false;
 		} else {
 			let childrenAreValid: boolean = true;
-			this.children.forEach(element => {
+			this._childGroups.forEach(element => {
 				let isChildValid = element.hasValidConnections;
 				if (!isChildValid) {
 					childrenAreValid = false;
@@ -103,11 +119,11 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 
 	public getChildren(): (ConnectionProfile | ConnectionProfileGroup)[] {
 		let allChildren: (ConnectionProfile | ConnectionProfileGroup)[] = [];
-		this.connections.forEach((conn) => {
+		this._childConnections.forEach((conn) => {
 			allChildren.push(conn);
 		});
 
-		this.children.forEach((group) => {
+		this._childGroups.forEach((group) => {
 			allChildren.push(group);
 		});
 		return allChildren;
@@ -120,22 +136,22 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		return other.id === this.id;
 	}
 
-	public addConnections(connections: ConnectionProfile[]): void {
-		connections.forEach((conn) => {
-			this.connections = this.connections.filter((curConn) => { return curConn.id !== conn.id; });
+	public addConnections(connections: ConnectionProfile[] | undefined): void {
+		connections?.forEach((conn) => {
+			this._childConnections = this._childConnections.filter((curConn) => { return curConn.id !== conn.id; });
 			conn.parent = this;
 			this._register(conn);
-			this.connections.push(conn);
+			this._childConnections.push(conn);
 		});
 
 	}
 
-	public addGroups(groups: ConnectionProfileGroup[]): void {
-		groups.forEach((group) => {
-			this.children = this.children.filter((grp) => { return group.id !== grp.id; });
+	public addGroups(groups: ConnectionProfileGroup[] | undefined): void {
+		groups?.forEach((group) => {
+			this._childGroups = this._childGroups.filter((grp) => { return group.id !== grp.id; });
 			group.parent = this;
 			this._register(group);
-			this.children.push(group);
+			this._childGroups.push(group);
 		});
 	}
 

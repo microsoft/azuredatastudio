@@ -3,10 +3,10 @@
 | Distributed under the terms of the Modified BSD License.
 |----------------------------------------------------------------------------*/
 
+import { defaultSanitizer } from './sanitizer';
+import { ReadonlyJSONObject } from 'sql/workbench/services/notebook/common/jsonext';
 import { IRenderMime } from 'sql/workbench/services/notebook/browser/outputs/renderMimeInterfaces';
 import { MimeModel } from 'sql/workbench/services/notebook/browser/outputs/mimemodel';
-import { ReadonlyJSONObject } from 'sql/workbench/services/notebook/common/jsonext';
-import { defaultSanitizer } from 'sql/workbench/services/notebook/browser/outputs/sanitizer';
 
 /**
  * An object which manages mime renderer factories.
