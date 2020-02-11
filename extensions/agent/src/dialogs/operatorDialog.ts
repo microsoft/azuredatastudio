@@ -9,6 +9,117 @@ import * as nls from 'vscode-nls';
 import { AgentDialog } from './agentDialog';
 
 const localize = nls.loadMessageBundle();
+interface Updatable {
+	update(): void
+}
+
+class PagerDutyTimeBox implements Updatable {
+	private readonly workdayBeginInputBox: azdata.InputBoxComponent;
+	private readonly workdayEndInputBox: azdata.InputBoxComponent;
+	private _container: azdata.FormContainer[];
+
+	constructor(
+		private readonly view: azdata.ModelView,
+
+		private readonly beginLabel: string,
+		private readonly endLabel: string,
+
+		private readonly workDayBeginObserver: (newValue: string) => void,
+		private readonly workdayEndObserver: (newValue: string) => void
+	) {
+		this.workdayBeginInputBox = this.view.modelBuilder.inputBox()
+			.withProperties({
+				inputType: 'time',
+				placeHolder: '08:00:00',
+			}).component();
+		this.workdayBeginInputBox.enabled = false;
+
+		this.workdayEndInputBox = this.view.modelBuilder.inputBox()
+			.withProperties({
+				inputType: 'time',
+				placeHolder: '06:00:00'
+			}).component();
+		this.workdayEndInputBox.enabled = false;
+	}
+
+	public update(): void {
+		this.workDayBeginObserver(this.workdayBeginInputBox.value);
+		this.workdayEndObserver(this.workdayEndInputBox.value);
+	}
+
+	public createContainer() {
+		if (this._container) {
+			return this._container;
+		}
+		const beginContainer = this.view.modelBuilder.formContainer().withFormItems([
+			{
+				component: this.workdayBeginInputBox,
+				title: this.beginLabel,
+			}
+		]).component();
+
+		const endContainer = this.view.modelBuilder.formContainer().withFormItems([
+			{
+				component: this.workdayEndInputBox,
+				title: this.endLabel,
+			}
+		]).component();
+
+		this._container = [beginContainer, endContainer];
+		return this._container;
+	}
+
+	public enable() {
+		this.workdayBeginInputBox.enabled = true;
+		this.workdayEndInputBox.enabled = true;
+	}
+
+	public disable() {
+		this.workdayBeginInputBox.enabled = false;
+		this.workdayEndInputBox.enabled = false;
+	}
+}
+class PagerDutySchedule implements Updatable {
+	private readonly checkBox: azdata.CheckBoxComponent;
+
+	constructor(
+		checkboxLabel: string,
+		private readonly timebox: PagerDutyTimeBox,
+		private readonly view: azdata.ModelView,
+
+	) {
+		this.checkBox = this.view.modelBuilder.checkBox()
+			.withProperties({
+				label: checkboxLabel
+			}).component();
+
+		this.attachListeners();
+	}
+
+	public update(): void {
+		this.timebox.update();
+	}
+
+	private attachListeners() {
+		this.checkBox.onChanged(() => {
+			if (this.checkBox.checked) {
+				this.timebox.enable();
+			} else {
+				this.timebox.disable();
+			}
+		});
+
+	}
+
+	public createContainer(): azdata.FlexContainer {
+		return this.view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'row',
+			alignItems: 'baseline',
+			width: '100%'
+		}).withItems([this.checkBox, ...this.timebox.createContainer()])
+			.component();
+	}
+}
 
 export class OperatorDialog extends AgentDialog<OperatorData> {
 
@@ -23,6 +134,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 	private static readonly EnabledCheckboxLabel: string = localize('createOperator.Enabled', "Enabled");
 	private static readonly EmailNameTextLabel: string = localize('createOperator.EmailName', "E-mail Name");
 	private static readonly PagerEmailNameTextLabel: string = localize('createOperator.PagerEmailName', "Pager E-mail Name");
+
 	private static readonly PagerMondayCheckBoxLabel: string = localize('createOperator.PagerMondayCheckBox', "Monday");
 	private static readonly PagerTuesdayCheckBoxLabel: string = localize('createOperator.PagerTuesdayCheckBox', "Tuesday");
 	private static readonly PagerWednesdayCheckBoxLabel: string = localize('createOperator.PagerWednesdayCheckBox', "Wednesday");
@@ -30,6 +142,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 	private static readonly PagerFridayCheckBoxLabel: string = localize('createOperator.PagerFridayCheckBox', "Friday  ");
 	private static readonly PagerSaturdayCheckBoxLabel: string = localize('createOperator.PagerSaturdayCheckBox', "Saturday");
 	private static readonly PagerSundayCheckBoxLabel: string = localize('createOperator.PagerSundayCheckBox', "Sunday");
+
 	private static readonly WorkdayBeginLabel: string = localize('createOperator.workdayBegin', "Workday begin");
 	private static readonly WorkdayEndLabel: string = localize('createOperator.workdayEnd', "Workday end");
 	private static readonly PagerDutyScheduleLabel: string = localize('createOperator.PagerDutySchedule', "Pager on duty schedule");
@@ -53,19 +166,9 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 	private enabledCheckBox: azdata.CheckBoxComponent;
 	private emailNameTextBox: azdata.InputBoxComponent;
 	private pagerEmailNameTextBox: azdata.InputBoxComponent;
-	private pagerMondayCheckBox: azdata.CheckBoxComponent;
-	private pagerTuesdayCheckBox: azdata.CheckBoxComponent;
-	private pagerWednesdayCheckBox: azdata.CheckBoxComponent;
-	private pagerThursdayCheckBox: azdata.CheckBoxComponent;
-	private pagerFridayCheckBox: azdata.CheckBoxComponent;
-	private pagerSaturdayCheckBox: azdata.CheckBoxComponent;
-	private pagerSundayCheckBox: azdata.CheckBoxComponent;
-	private weekdayPagerStartTimeInput: azdata.InputBoxComponent;
-	private weekdayPagerEndTimeInput: azdata.InputBoxComponent;
-	private saturdayPagerStartTimeInput: azdata.InputBoxComponent;
-	private saturdayPagerEndTimeInput: azdata.InputBoxComponent;
-	private sundayPagerStartTimeInput: azdata.InputBoxComponent;
-	private sundayPagerEndTimeInput: azdata.InputBoxComponent;
+
+	private pagerDutySchedules: PagerDutySchedule[];
+
 
 	// Notification tab controls
 	private alertsTable: azdata.TableComponent;
@@ -91,6 +194,10 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 	}
 
 	private initializeGeneralTab() {
+		const nameOfDays = [OperatorDialog.PagerMondayCheckBoxLabel, OperatorDialog.PagerTuesdayCheckBoxLabel,
+		OperatorDialog.PagerWednesdayCheckBoxLabel, OperatorDialog.PagerThursdayCheckBoxLabel, OperatorDialog.PagerFridayCheckBoxLabel,
+		OperatorDialog.PagerSaturdayCheckBoxLabel, OperatorDialog.PagerSundayCheckBoxLabel];
+
 		this.generalTab.registerContent(async view => {
 
 			this.nameTextBox = view.modelBuilder.inputBox().withProperties({
@@ -116,222 +223,50 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 				}).component();
 			this.enabledCheckBox.checked = this.model.enabled;
 
-			this.pagerMondayCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
-					label: OperatorDialog.PagerMondayCheckBoxLabel
-				}).component();
+			const weekdayTime = new PagerDutyTimeBox(view, OperatorDialog.WorkdayBeginLabel, OperatorDialog.WorkdayEndLabel,
+				((value) => {
+					this.model.weekdayPagerStartTime = value;
+				}), ((value) => {
+					this.model.weekdayPagerEndTime = value;
+				})
+			);
 
-			this.pagerMondayCheckBox.onChanged(() => {
-				if (this.pagerMondayCheckBox.checked) {
-					this.weekdayPagerStartTimeInput.enabled = true;
-					this.weekdayPagerEndTimeInput.enabled = true;
+			const saturdayTime = new PagerDutyTimeBox(view, OperatorDialog.WorkdayBeginLabel, OperatorDialog.WorkdayEndLabel,
+				((value) => {
+					this.model.saturdayPagerStartTime = value;
+				}), ((value) => {
+					this.model.saturdayPagerEndTime = value;
+				})
+			);
+
+			const sundayTime = new PagerDutyTimeBox(view, OperatorDialog.WorkdayBeginLabel, OperatorDialog.WorkdayEndLabel,
+				((value) => {
+					this.model.sundayPagerStartTime = value;
+				}), ((value) => {
+					this.model.sundayPagerEndTime = value;
+				})
+			);
+
+			this.pagerDutySchedules = nameOfDays.map((day, index) => {
+				let timebox: PagerDutyTimeBox;
+				if (index < 5) {
+					timebox = weekdayTime;
+				} else if (index === 5) {
+					timebox = saturdayTime;
 				} else {
-					if (!this.pagerTuesdayCheckBox.checked && !this.pagerWednesdayCheckBox.checked &&
-						!this.pagerThursdayCheckBox.checked && !this.pagerFridayCheckBox.checked) {
-						this.weekdayPagerStartTimeInput.enabled = false;
-						this.weekdayPagerEndTimeInput.enabled = false;
-					}
+					timebox = sundayTime;
 				}
+
+				return new PagerDutySchedule(day, timebox, view);
 			});
 
-			this.pagerTuesdayCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
-					label: OperatorDialog.PagerTuesdayCheckBoxLabel
-				}).component();
-
-
-			this.pagerTuesdayCheckBox.onChanged(() => {
-				if (this.pagerTuesdayCheckBox.checked) {
-					this.weekdayPagerStartTimeInput.enabled = true;
-					this.weekdayPagerEndTimeInput.enabled = true;
-				} else {
-					if (!this.pagerMondayCheckBox.checked && !this.pagerWednesdayCheckBox.checked &&
-						!this.pagerThursdayCheckBox.checked && !this.pagerFridayCheckBox.checked) {
-						this.weekdayPagerStartTimeInput.enabled = false;
-						this.weekdayPagerEndTimeInput.enabled = false;
-					}
-				}
+			const pagerDutyScheduleComponents: azdata.FormComponent[] = this.pagerDutySchedules.map(c => {
+				return {
+					title: '',
+					component: c.createContainer()
+				};
 			});
 
-			this.pagerWednesdayCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
-					label: OperatorDialog.PagerWednesdayCheckBoxLabel
-				}).component();
-
-			this.pagerWednesdayCheckBox.onChanged(() => {
-				if (this.pagerWednesdayCheckBox.checked) {
-					this.weekdayPagerStartTimeInput.enabled = true;
-					this.weekdayPagerEndTimeInput.enabled = true;
-				} else {
-					if (!this.pagerMondayCheckBox.checked && !this.pagerTuesdayCheckBox.checked &&
-						!this.pagerThursdayCheckBox.checked && !this.pagerFridayCheckBox.checked) {
-						this.weekdayPagerStartTimeInput.enabled = false;
-						this.weekdayPagerEndTimeInput.enabled = false;
-					}
-				}
-			});
-
-			this.pagerThursdayCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
-					label: OperatorDialog.PagerThursdayCheckBoxLabel
-				}).component();
-
-			this.pagerThursdayCheckBox.onChanged(() => {
-				if (this.pagerThursdayCheckBox.checked) {
-					this.weekdayPagerStartTimeInput.enabled = true;
-					this.weekdayPagerEndTimeInput.enabled = true;
-				} else {
-					if (!this.pagerMondayCheckBox.checked && !this.pagerWednesdayCheckBox.checked &&
-						!this.pagerTuesdayCheckBox.checked && !this.pagerFridayCheckBox.checked) {
-						this.weekdayPagerStartTimeInput.enabled = false;
-						this.weekdayPagerEndTimeInput.enabled = false;
-					}
-				}
-			});
-
-			this.weekdayPagerStartTimeInput = view.modelBuilder.inputBox()
-				.withProperties({
-					inputType: 'time',
-					placeHolder: '08:00:00',
-				}).component();
-			this.weekdayPagerStartTimeInput.enabled = false;
-			let weekdayStartInputContainer = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: this.weekdayPagerStartTimeInput,
-					title: OperatorDialog.WorkdayBeginLabel
-				}]).component();
-
-			this.weekdayPagerEndTimeInput = view.modelBuilder.inputBox()
-				.withProperties({
-					inputType: 'time',
-					placeHolder: '06:00:00'
-				}).component();
-			this.weekdayPagerEndTimeInput.enabled = false;
-			let weekdayEndInputContainer = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: this.weekdayPagerEndTimeInput,
-					title: OperatorDialog.WorkdayEndLabel
-				}]).component();
-
-			this.pagerFridayCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
-					label: OperatorDialog.PagerFridayCheckBoxLabel,
-					width: 80
-				}).component();
-			this.pagerFridayCheckBox.onChanged(() => {
-				if (this.pagerFridayCheckBox.checked) {
-					this.weekdayPagerStartTimeInput.enabled = true;
-					this.weekdayPagerEndTimeInput.enabled = true;
-				} else {
-					if (!this.pagerMondayCheckBox.checked && !this.pagerWednesdayCheckBox.checked &&
-						!this.pagerThursdayCheckBox.checked && !this.pagerTuesdayCheckBox.checked) {
-						this.weekdayPagerStartTimeInput.enabled = false;
-						this.weekdayPagerEndTimeInput.enabled = false;
-					}
-				}
-			});
-
-			let pagerFridayCheckboxContainer = view.modelBuilder.flexContainer()
-				.withLayout({
-					flexFlow: 'row',
-					alignItems: 'baseline',
-					width: '100%'
-				}).withItems([this.pagerFridayCheckBox, weekdayStartInputContainer, weekdayEndInputContainer])
-				.component();
-
-			this.pagerSaturdayCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
-					label: OperatorDialog.PagerSaturdayCheckBoxLabel,
-					width: 80
-				}).component();
-
-			this.pagerSaturdayCheckBox.onChanged(() => {
-				if (this.pagerSaturdayCheckBox.checked) {
-					this.saturdayPagerStartTimeInput.enabled = true;
-					this.saturdayPagerEndTimeInput.enabled = true;
-				} else {
-					this.saturdayPagerStartTimeInput.enabled = false;
-					this.saturdayPagerEndTimeInput.enabled = false;
-				}
-			});
-
-			this.saturdayPagerStartTimeInput = view.modelBuilder.inputBox()
-				.withProperties({
-					inputType: 'time',
-					placeHolder: '08:00:00'
-				}).component();
-			this.saturdayPagerStartTimeInput.enabled = false;
-			let saturdayStartInputContainer = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: this.saturdayPagerStartTimeInput,
-					title: OperatorDialog.WorkdayBeginLabel
-				}]).component();
-
-			this.saturdayPagerEndTimeInput = view.modelBuilder.inputBox()
-				.withProperties({
-					inputType: 'time',
-					placeHolder: '06:00:00'
-				}).component();
-			this.saturdayPagerEndTimeInput.enabled = false;
-			let saturdayEndInputContainer = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: this.saturdayPagerEndTimeInput,
-					title: OperatorDialog.WorkdayEndLabel
-				}]).component();
-
-			let pagerSaturdayCheckboxContainer = view.modelBuilder.flexContainer()
-				.withLayout({
-					flexFlow: 'row',
-					alignItems: 'baseline'
-				}).withItems([this.pagerSaturdayCheckBox, saturdayStartInputContainer, saturdayEndInputContainer])
-				.component();
-
-			this.pagerSundayCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
-					label: OperatorDialog.PagerSundayCheckBoxLabel,
-					width: 80
-				}).component();
-
-			this.pagerSundayCheckBox.onChanged(() => {
-				if (this.pagerSundayCheckBox.checked) {
-					this.sundayPagerStartTimeInput.enabled = true;
-					this.sundayPagerEndTimeInput.enabled = true;
-				} else {
-					this.sundayPagerStartTimeInput.enabled = false;
-					this.sundayPagerEndTimeInput.enabled = false;
-				}
-			});
-
-			this.sundayPagerStartTimeInput = view.modelBuilder.inputBox()
-				.withProperties({
-					inputType: 'time',
-					placeHolder: '08:00:00'
-				}).component();
-			this.sundayPagerStartTimeInput.enabled = false;
-			let sundayStartInputContainer = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: this.sundayPagerStartTimeInput,
-					title: OperatorDialog.WorkdayBeginLabel
-				}]).component();
-
-			this.sundayPagerEndTimeInput = view.modelBuilder.inputBox()
-				.withProperties({
-					inputType: 'time',
-					placeHolder: '06:00:00'
-				}).component();
-			this.sundayPagerEndTimeInput.enabled = false;
-			let sundayEndInputContainer = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: this.sundayPagerEndTimeInput,
-					title: OperatorDialog.WorkdayEndLabel
-				}]).component();
-
-			let pagerSundayCheckboxContainer = view.modelBuilder.flexContainer()
-				.withLayout({
-					flexFlow: 'row',
-					alignItems: 'baseline'
-				}).withItems([this.pagerSundayCheckBox, sundayStartInputContainer, sundayEndInputContainer])
-				.component();
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -347,28 +282,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 					component: this.pagerEmailNameTextBox,
 					title: OperatorDialog.PagerEmailNameTextLabel
 				}, {
-					components: [{
-						component: this.pagerMondayCheckBox,
-						title: ''
-					}, {
-						component: this.pagerTuesdayCheckBox,
-						title: ''
-					}, {
-						component: this.pagerWednesdayCheckBox,
-						title: ''
-					}, {
-						component: this.pagerThursdayCheckBox,
-						title: ''
-					}, {
-						component: pagerFridayCheckboxContainer,
-						title: ''
-					}, {
-						component: pagerSaturdayCheckboxContainer,
-						title: ''
-					}, {
-						component: pagerSundayCheckboxContainer,
-						title: ''
-					}],
+					components: pagerDutyScheduleComponents,
 					title: OperatorDialog.PagerDutyScheduleLabel
 				}]).withLayout({ width: '100%' }).component();
 			await view.initializeModel(formModel);
@@ -411,11 +325,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 		this.model.enabled = this.enabledCheckBox.checked;
 		this.model.emailAddress = this.emailNameTextBox.value;
 		this.model.pagerAddress = this.pagerEmailNameTextBox.value;
-		this.model.weekdayPagerStartTime = this.weekdayPagerStartTimeInput.value;
-		this.model.weekdayPagerEndTime = this.weekdayPagerEndTimeInput.value;
-		this.model.saturdayPagerStartTime = this.saturdayPagerStartTimeInput.value;
-		this.model.saturdayPagerEndTime = this.saturdayPagerEndTimeInput.value;
-		this.model.sundayPagerStartTime = this.sundayPagerStartTimeInput.value;
-		this.model.sundayPagerEndTime = this.sundayPagerEndTimeInput.value;
+
+		this.pagerDutySchedules.forEach(c => c.update());
 	}
 }
