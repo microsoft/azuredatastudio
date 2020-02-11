@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 //#region --- editor/workbench core
-import 'sql/setup'; // {{SQL CARBON EDIT}}
+require('sql/setup');
 
 import 'vs/editor/editor.all';
 
