@@ -38,3 +38,10 @@ export type WorkspacesModelsResponse = ListWorkspaceModelsResult & {
 		parsedBody: ListWorkspaceModelsResult;
 	};
 };
+
+export interface RegisteredModel {
+	id: number,
+	name: string,
+	groupPath: string,
+	size: number
+}

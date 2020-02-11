@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { ApiWrapper } from '../../common/apiWrapper';
-import * as constants from '../../common/constants';
+import { ApiWrapper } from '../common/apiWrapper';
+import * as constants from '../common/constants';
 import { azureResource } from './azure-resource';
 import { AzureMachineLearningWorkspaces } from '@azure/arm-machinelearningservices';
 import { TokenCredentials } from '@azure/ms-rest-js';
@@ -13,7 +13,7 @@ import { WorkspaceModels } from './workspacesModels';
 import { AzureMachineLearningWorkspacesOptions, Workspace } from '@azure/arm-machinelearningservices/esm/models';
 
 
-export class AzureModelRegistry {
+export class AzureModelRegistryService {
 
 	/**
 	 *
@@ -25,23 +25,23 @@ export class AzureModelRegistry {
 		return await this._apiWrapper.getAllAccounts();
 	}
 
-	public async getSubscriptions(account: azdata.Account): Promise<azureResource.AzureResourceSubscription[] | undefined> {
+	public async getSubscriptions(account: azdata.Account | undefined): Promise<azureResource.AzureResourceSubscription[] | undefined> {
 		return await this._apiWrapper.executeCommand(constants.azureSubscriptionsCommand, account);
 	}
 
-	public async getWorkspaces(account: azdata.Account, subscription: azureResource.AzureResourceSubscription): Promise<Workspace[]> {
-		//const query = 'where type == 'microsoft.machinelearningservices/workspaces'';
-		//return await this._apiWrapper.executeCommand(constants.azureSqlResourcesCommand, account, subscription, query);
-		return await this.getResources(account, subscription);
+	public async getGroups(account: azdata.Account | undefined, subscription: azureResource.AzureResourceSubscription | undefined): Promise<azureResource.AzureResource[] | undefined> {
+		return await this._apiWrapper.executeCommand(constants.azureResourceGroupsCommand, account, subscription);
+	}
+
+	public async getWorkspaces(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroup: azureResource.AzureResource | undefined): Promise<Workspace[]> {
+		return await this.getResources(account, subscription, resourceGroup);
 	}
 
 	public async getModels(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroup: azureResource.AzureResource, workspace: Workspace): Promise<azureResource.AzureResource[] | undefined> {
-		//const query = `where type == 'microsoft.machinelearningservices/workspaces/myws1'`;
-		//return await this._apiWrapper.executeCommand(constants.azureSqlResourcesCommand, account, subscription, query);
 		return await this.getModelResources(account, subscription, resourceGroup, workspace);
 	}
 
-	private async getResources(account: azdata.Account, subscription: azureResource.AzureResourceSubscription): Promise<Workspace[]> {
+	private async getResources(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroup: azureResource.AzureResource | undefined): Promise<Workspace[]> {
 		let resources: Workspace[] = [];
 		//let models: AzureMachineLearningWorkspacesModels.MachineLearningComputeListByWorkspaceResponse;
 
@@ -51,7 +51,7 @@ export class AzureModelRegistry {
 				const token = tokens[tenant.id].token;
 				const tokenType = tokens[tenant.id].tokenType;
 				const client = new AzureMachineLearningWorkspaces(new TokenCredentials(token, tokenType), subscription.id);
-				let result = await client.workspaces.listBySubscription();
+				let result = resourceGroup ? await client.workspaces.listByResourceGroup(resourceGroup.name) : await client.workspaces.listBySubscription();
 				resources.push(...result);
 			}
 		} catch (error) {

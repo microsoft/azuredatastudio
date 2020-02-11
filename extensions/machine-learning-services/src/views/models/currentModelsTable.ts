@@ -1,0 +1,130 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import * as azdata from 'azdata';
+import * as constants from '../../common/constants';
+import { ModelViewBase } from './modelViewBase';
+import { ApiWrapper } from '../../common/apiWrapper';
+import { RegisteredModel } from '../../modelManagement/interfaces';
+
+export class CurrentModelsTable extends ModelViewBase {
+
+	private _table: azdata.DeclarativeTableComponent;
+
+	/**
+	 *
+	 */
+	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: ModelViewBase) {
+		super(apiWrapper, parent.root, parent);
+		this._table = _modelBuilder.declarativeTable()
+			.withProperties<azdata.DeclarativeTableProperties>(
+				{
+					columns: [
+						{ // Id
+							displayName: constants.modeIld,
+							ariaLabel: constants.modeIld,
+							valueType: azdata.DeclarativeDataType.string,
+							isReadOnly: true,
+							width: 100,
+							headerCssStyles: {
+								...constants.cssStyles.tableHeader
+							},
+							rowCssStyles: {
+								...constants.cssStyles.tableRow
+							},
+						},
+						{ // Name
+							displayName: constants.modelName,
+							ariaLabel: constants.modelName,
+							valueType: azdata.DeclarativeDataType.string,
+							isReadOnly: true,
+							width: 150,
+							headerCssStyles: {
+								...constants.cssStyles.tableHeader
+							},
+							rowCssStyles: {
+								...constants.cssStyles.tableRow
+							},
+						},
+						{ // Size
+							displayName: constants.modelSize,
+							ariaLabel: constants.modelSize,
+							valueType: azdata.DeclarativeDataType.string,
+							isReadOnly: true,
+							width: 150,
+							headerCssStyles: {
+								...constants.cssStyles.tableHeader
+							},
+							rowCssStyles: {
+								...constants.cssStyles.tableRow
+							},
+						},
+						{ // Action
+							displayName: '',
+							valueType: azdata.DeclarativeDataType.component,
+							isReadOnly: true,
+							width: 50,
+							headerCssStyles: {
+								...constants.cssStyles.tableHeader
+							},
+							rowCssStyles: {
+								...constants.cssStyles.tableRow
+							},
+						}
+					],
+					data: [],
+					ariaLabel: constants.mlsConfigTitle
+				})
+			.component();
+	}
+
+	public get table(): azdata.DeclarativeTableComponent {
+		return this._table;
+	}
+
+	public async loadData(): Promise<void> {
+		let models: RegisteredModel[] | undefined;
+
+		models = await this.listModels();
+		let tableData: any[][] = [];
+
+		if (models) {
+			tableData = tableData.concat(models.map(model => this.createTableRow(model)));
+		}
+
+		this._table.data = tableData;
+	}
+
+	private createTableRow(model: RegisteredModel): any[] {
+		if (this._modelBuilder) {
+			let editLanguageButton = this._modelBuilder.button().withProperties({
+				label: '',
+				title: constants.deleteTitle,
+				iconPath: {
+					dark: this.asAbsolutePath('images/dark/edit_inverse.svg'),
+					light: this.asAbsolutePath('images/light/edit.svg')
+				},
+				width: 15,
+				height: 15
+			}).component();
+			editLanguageButton.onDidClick(() => {
+				/*
+				this.onEditLanguage({
+					language: language,
+					content: content,
+					newLang: false
+				});
+				*/
+			});
+			return [model.id, model.name, model.size, editLanguageButton];
+		}
+
+		return [];
+	}
+
+	public async reset(): Promise<void> {
+		await this.loadData();
+	}
+}

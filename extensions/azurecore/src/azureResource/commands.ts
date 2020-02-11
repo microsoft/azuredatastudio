@@ -46,11 +46,15 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		const service = new AzureResourceGroupService();
 		const resourceGroups: azureResource.AzureResourceResourceGroup[] = [];
 		for (const tenant of account.properties.tenants) {
-			const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
-			const token = tokens[tenant.id].token;
-			const tokenType = tokens[tenant.id].tokenType;
+			try {
+				const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
+				const token = tokens[tenant.id].token;
+				const tokenType = tokens[tenant.id].tokenType;
 
-			resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType)));
+				resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType)));
+			} catch {
+
+			}
 		}
 		return resourceGroups;
 	});

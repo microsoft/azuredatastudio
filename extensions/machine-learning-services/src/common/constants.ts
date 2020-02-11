@@ -24,6 +24,7 @@ export const azureResourceGroupsCommand = 'azure.accounts.getResourceGroups';
 // Tasks, commands
 //
 export const mlManageLanguagesCommand = 'mls.command.manageLanguages';
+export const mlManageModelsCommand = 'mls.command.manageModels';
 export const mlManagePackagesCommand = 'mls.command.managePackages';
 export const mlOdbcDriverCommand = 'mls.command.odbcdriver';
 export const mlsDocumentsCommand = 'mls.command.mlsdocs';
@@ -35,6 +36,7 @@ export const mlsConfigKey = 'machineLearningServices';
 export const pythonPathConfigKey = 'pythonPath';
 export const pythonEnabledConfigKey = 'enablePython';
 export const rEnabledConfigKey = 'enableR';
+export const registeredModelsTableName = 'registeredModelsTableName';
 export const rPathConfigKey = 'rPath';
 
 // Localized texts
@@ -96,6 +98,11 @@ export const extLangParameters = localize('extLang.parameters', "Parameters");
 export const extLangSelectedPath = localize('extLang.selectedPath', "Selected Path");
 export const extLangInstallFailedError = localize('extLang.installFailedError', "Failed to install language");
 export const extLangUpdateFailedError = localize('extLang.updateFailedError', "Failed to update language");
+
+export const modeIld = localize('models.id', "Id");
+export const modelName = localize('models.name', "Name");
+export const modelSize = localize('models.size', "Size");
+
 
 // Links
 //

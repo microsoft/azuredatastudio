@@ -58,6 +58,10 @@
         "title": "%mls.command.managePackages%"
       },
       {
+        "command": "mls.command.manageModels",
+        "title": "%mls.command.manageModels%"
+      },
+      {
         "command": "mls.command.manageLanguages",
         "title": "%mls.command.manageLanguages%"
       },
@@ -102,7 +106,8 @@
                   "mls.command.managePackages",
                   "mls.command.manageLanguages",
                   "mls.command.odbcdriver",
-                  "mls.command.mlsdocs"
+                  "mls.command.mlsdocs",
+                  "mls.command.manageModels"
                 ]
               }
             }
