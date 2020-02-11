@@ -19,7 +19,6 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { BackupToolbarAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
@@ -39,7 +38,6 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 	};
 
 	protected readonly context = 'database';
-	protected _backupAction: BackupToolbarAction;
 
 	constructor(
 		@Inject(forwardRef(() => IBreadcrumbService)) private _breadcrumbService: IBreadcrumbService,

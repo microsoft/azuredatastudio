@@ -38,7 +38,7 @@ import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/commo
 import { ILogService } from 'vs/platform/log/common/log';
 import { firstIndex, find } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
-import { RefreshWidgetAction, EditDashboardAction, RestoreToolbarAction, ManageExtensionsToolbarAction, NewQueryAction, NewNotebookToolbarAction, ToolbarAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
+import { RefreshWidgetAction, EditDashboardAction, ToolbarAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -68,19 +68,16 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
 	@ViewChild('toolbar', { read: ElementRef }) private taskContainer: ElementRef;
 	protected toolbar: Taskbar;
+	public showToolbar = true;
 
 	// actions
 	protected _editAction: EditDashboardAction;
 	protected _refreshAction: RefreshWidgetAction;
-	protected _restoreAction: RestoreToolbarAction;
-	protected _manageExtensionsAction: ManageExtensionsToolbarAction;
-	protected _newQueryAction: NewQueryAction;
-	protected _newNotebookAction: NewNotebookToolbarAction;
+
 	private _tasks: Array<ICommandAction> = [];
 
 	private _editEnabled = new Emitter<boolean>();
 	public readonly editEnabled: Event<boolean> = this._editEnabled.event;
-	public showToolbar = true;
 	// tslint:disable:no-unused-variable
 	private readonly homeTabTitle: string = nls.localize('home', "Home");
 	private readonly databasesTabTitle: string = nls.localize('databases', "Databases");
@@ -168,8 +165,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this.createToolbar(this.taskContainer.nativeElement, homeToolbarConfig, false);
 	}
 
-	protected createToolbar(parentElement: HTMLElement, config: WidgetConfig, isExtension: boolean): void {
-		let toolbarTasks = config;
+	protected createToolbar(parentElement: HTMLElement, toolbarTasks: WidgetConfig, isExtension: boolean): void {
 		let tasks = TaskRegistry.getTasks();
 
 		if (types.isArray(toolbarTasks) && toolbarTasks.length > 0) {
@@ -187,12 +183,11 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			}).filter(i => !!i);
 		}
 
-
 		this._tasks = tasks.map(i => MenuRegistry.getCommand(i)).filter(v => !!v);
 
 		let toolbarActions = [];
 		this._tasks.forEach(a => {
-			let iconClassName = `${TaskRegistry.getOrCreateTaskIconClassName(a)} dashboard-toolbar-item`;
+			let iconClassName = TaskRegistry.getOrCreateTaskIconClassName(a);
 			toolbarActions.push(new ToolbarAction(a.id, a.title, iconClassName, this.runAction, this));
 		});
 
@@ -200,10 +195,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		DOM.clearNode(parentElement);
 		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
 		this.toolbar = this._register(new Taskbar(taskbarContainer));
-		this._editAction = new EditDashboardAction(this.enableEdit, this);
-		this._refreshAction = new RefreshWidgetAction(this.refresh, this);
-
-		let separator: HTMLElement = Taskbar.createTaskbarSeparator();
 
 		// Set the content in the order we desire
 		let content: ITaskbarContent[] = [];
@@ -213,13 +204,17 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 		if (!isExtension) {
 			if (content.length > 0) {
+				let separator: HTMLElement = Taskbar.createTaskbarSeparator();
 				content.push({ element: separator });
 			}
 
+			this._editAction = new EditDashboardAction(this.enableEdit, this);
+			this._refreshAction = new RefreshWidgetAction(this.refresh, this);
 			content.push(
 				{ action: this._refreshAction },
 				{ action: this._editAction });
 		}
+
 		this.toolbar.setContent(content);
 	}
 
@@ -390,12 +385,13 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				configs = cb.apply(this, [configs]);
 			});
 
-			// remove tasks widget because it will be shown in the toolbar
+			// remove tasks widget because the tasks will be shown in the toolbar
 			const index = configs.findIndex(c => c.widget['tasks-widget']);
 			if (index !== -1) {
 				this.tabToolbarActions.set(value.title, configs[index].widget['tasks-widget']);
 				configs.splice(index);
 			}
+
 			if (key === WIDGETS_CONTAINER) {
 				return { id: value.id, title: value.title, container: { 'widgets-container': configs }, alwaysShow: value.alwaysShow };
 			}
@@ -457,10 +453,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				tabContent.enableEdit();
 			});
 		}
-	}
-
-	public manageExtensions(): void {
-		// TODO: implement what to do here
 	}
 
 	public handleTabChange(tab: TabComponent): void {

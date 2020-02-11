@@ -47,16 +47,6 @@ export interface TabConfig extends IDashboardTab {
 
 }
 
-export interface DashboardToolbarItemConfig {
-	id?: string;
-	name?: string;
-	icon?: string;
-	context: string;
-	provider: string | Array<string>;
-	edition: number | Array<number>;
-	when?: string;
-}
-
 export type IUserFriendlyIcon = string | { light: string; dark: string; };
 
 export interface NavSectionConfig {

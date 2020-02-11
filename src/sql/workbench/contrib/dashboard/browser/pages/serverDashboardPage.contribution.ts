@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { generateDashboardTabSchema, generateDashboardWidgetSchema, generateDashboardToolbarItemSchema } from 'sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution';
+import { generateDashboardTabSchema, generateDashboardWidgetSchema } from 'sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 
@@ -110,16 +110,6 @@ export const serverDashboardTabsSchema: IJSONSchema = {
 	default: []
 };
 
-export const serverDashboardToolbarSchema: IJSONSchema = {
-	type: ['array'],
-	description: nls.localize('dashboardServerToolbar', "Customizes the server dashboard toolbar"),
-	items: generateDashboardToolbarItemSchema('server'),
-	default: [
-		{ name: 'restore', when: '!mssql:iscloud && mssql:engineedition != 11' }, 'newQuery', 'mssqlCluster.task.newNotebook'
-	]
-};
-
 export const SERVER_DASHBOARD_SETTING = 'dashboard.server.widgets';
 export const SERVER_DASHBOARD_PROPERTIES = 'dashboard.server.properties';
 export const SERVER_DASHBOARD_TABS = 'dashboard.server.tabs';
-export const SERVER_DASHBOARD_TOOLBAR = 'dashboard.server.toolbar';

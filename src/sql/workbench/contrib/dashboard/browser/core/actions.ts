@@ -19,7 +19,7 @@ export class EditDashboardAction extends Action {
 	private static readonly ID = 'editDashboard';
 	private static readonly EDITLABEL = nls.localize('editDashboard', "Edit");
 	private static readonly EXITLABEL = nls.localize('editDashboardExit', "Exit");
-	private static readonly CSSCLASS = 'edit';
+	private static readonly ICON = 'edit';
 
 	private _state = 0;
 
@@ -27,7 +27,7 @@ export class EditDashboardAction extends Action {
 		private editFn: () => void,
 		private context: any //this
 	) {
-		super(EditDashboardAction.ID, EditDashboardAction.EDITLABEL, EditDashboardAction.CSSCLASS);
+		super(EditDashboardAction.ID, EditDashboardAction.EDITLABEL, EditDashboardAction.ICON);
 	}
 
 	run(): Promise<boolean> {
@@ -55,13 +55,13 @@ export class RefreshWidgetAction extends Action {
 
 	private static readonly ID = 'refreshWidget';
 	private static readonly LABEL = nls.localize('refreshWidget', "Refresh");
-	private static readonly CSSCLASS = 'refresh dashboard-toolbar-item';
+	private static readonly ICON = 'refresh';
 
 	constructor(
 		private refreshFn: () => void,
 		private context: any // this
 	) {
-		super(RefreshWidgetAction.ID, RefreshWidgetAction.LABEL, RefreshWidgetAction.CSSCLASS);
+		super(RefreshWidgetAction.ID, RefreshWidgetAction.LABEL, RefreshWidgetAction.ICON);
 	}
 
 	run(): Promise<boolean> {
@@ -88,116 +88,6 @@ export class ToolbarAction extends Action {
 	run(): Promise<boolean> {
 		try {
 			this.runFn.apply(this.context, [this.id]);
-			return Promise.resolve(true);
-		} catch (e) {
-			return Promise.resolve(false);
-		}
-	}
-}
-
-export class RestoreToolbarAction extends Action {
-	private static readonly ID = 'restore';
-	private static readonly LABEL = nls.localize('restore', "Restore");
-	private static readonly CSSCLASS = 'restore-toolbar dashboard-toolbar-item';
-
-	constructor(
-		private restoreFn: () => void,
-		private context: any // this
-	) {
-		super(RestoreToolbarAction.ID, RestoreToolbarAction.LABEL, RestoreToolbarAction.CSSCLASS);
-	}
-
-	run(): Promise<boolean> {
-		try {
-			this.restoreFn.apply(this.context);
-			return Promise.resolve(true);
-		} catch (e) {
-			return Promise.resolve(false);
-		}
-	}
-}
-
-export class BackupToolbarAction extends Action {
-	private static readonly ID = 'backup';
-	private static readonly LABEL = nls.localize('backup', "Backup");
-	private static readonly CSSCLASS = 'backup-toolbar dashboard-toolbar-item';
-
-	constructor(
-		private backupFn: () => void,
-		private context: any // this
-	) {
-		super(BackupToolbarAction.ID, BackupToolbarAction.LABEL, BackupToolbarAction.CSSCLASS);
-	}
-
-	run(): Promise<boolean> {
-		try {
-			this.backupFn.apply(this.context);
-			return Promise.resolve(true);
-		} catch (e) {
-			return Promise.resolve(false);
-		}
-	}
-}
-
-export class ManageExtensionsToolbarAction extends Action {
-	private static readonly ID = 'manageExtensions';
-	private static readonly LABEL = nls.localize('manageExtensions', "Manage extensions");
-	private static readonly CSSCLASS = 'manage-extensions-toolbar dashboard-toolbar-item';
-
-	constructor(
-		private manageExtensionsFn: () => void,
-		private context: any // this
-	) {
-		super(ManageExtensionsToolbarAction.ID, ManageExtensionsToolbarAction.LABEL, ManageExtensionsToolbarAction.CSSCLASS);
-	}
-
-	run(): Promise<boolean> {
-		try {
-			this.manageExtensionsFn.apply(this.context);
-			return Promise.resolve(true);
-		} catch (e) {
-			return Promise.resolve(false);
-		}
-	}
-}
-
-export class NewQueryAction extends Action {
-	private static readonly ID = 'newQuery';
-	private static readonly LABEL = nls.localize('newQuery', "New Query");
-	private static readonly CSSCLASS = 'new-query-toolbar dashboard-toolbar-item';
-
-	constructor(
-		private newQueryFn: () => void,
-		private context: any // this
-	) {
-		super(NewQueryAction.ID, NewQueryAction.LABEL, NewQueryAction.CSSCLASS);
-	}
-
-	run(): Promise<boolean> {
-		try {
-			this.newQueryFn.apply(this.context);
-			return Promise.resolve(true);
-		} catch (e) {
-			return Promise.resolve(false);
-		}
-	}
-}
-
-export class NewNotebookToolbarAction extends Action {
-	public static readonly ID = 'notebook.command.new';
-	public static readonly LABEL = nls.localize('newNotebookAction', "New Notebook");
-	private static readonly CSSCLASS = 'new-notebook-toolbar dashboard-toolbar-item';
-
-	constructor(
-		private newNotebookFn: () => void,
-		private context: any // this
-	) {
-		super(NewNotebookToolbarAction.ID, NewNotebookToolbarAction.LABEL, NewNotebookToolbarAction.CSSCLASS);
-	}
-
-	async run(): Promise<boolean> {
-		try {
-			this.newNotebookFn.apply(this.context);
 			return Promise.resolve(true);
 		} catch (e) {
 			return Promise.resolve(false);

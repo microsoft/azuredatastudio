@@ -24,7 +24,7 @@ dashboard-page .dashboard-panel .tab-header .action-item .action-label.close {
 	padding: 5px;
 }
 
-dashboard-page .actions-container .action-item .dashboard-toolbar-item {
+dashboard-page .actions-container .action-item .action-label{
 	padding-left: 20px;
 	padding-right: 5px;
 	background-size: 16px;
@@ -32,4 +32,15 @@ dashboard-page .actions-container .action-item .dashboard-toolbar-item {
 
 dashboard-page .actions-container .taskbarSeparator {
 	height: 14px;
+}
+
+dashboard-page .editor-toolbar {
+	flex: 0 0 auto;
+	flex-flow: row;
+	width: 100%;
+	align-items: center;
+	border-bottom-color:rgb(234, 234, 234);
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	height:26px;
 }

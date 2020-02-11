@@ -5,7 +5,7 @@
 
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
-import { generateDashboardWidgetSchema, generateDashboardTabSchema, generateDashboardToolbarItemSchema } from './dashboardPageContribution';
+import { generateDashboardWidgetSchema, generateDashboardTabSchema } from './dashboardPageContribution';
 
 export const databaseDashboardPropertiesSchema: IJSONSchema = {
 	description: nls.localize('dashboardDatabaseProperties', "Enable or disable the properties widget"),
@@ -102,7 +102,7 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 					'mssqlCluster.task.newNotebook'
 				]
 			}
-		},
+		}
 	]
 };
 
@@ -114,19 +114,6 @@ export const databaseDashboardTabsSchema: IJSONSchema = {
 	]
 };
 
-export const databaseDashboardToolbarSchema: IJSONSchema = {
-	type: ['array'],
-	description: nls.localize('dashboardServerToolbar', "Customizes the server dashboard toolbar"),
-	items: generateDashboardToolbarItemSchema('database'),
-	default: [
-		{ name: 'backup', when: '!mssql:iscloud && mssql:engineedition != 11' },
-		{ name: 'restore', when: '!mssql:iscloud && mssql:engineedition != 11' },
-		'newQuery',
-		'mssqlCluster.task.newNotebook'
-	]
-};
-
 export const DATABASE_DASHBOARD_SETTING = 'dashboard.database.widgets';
 export const DATABASE_DASHBOARD_PROPERTIES = 'dashboard.database.properties';
 export const DATABASE_DASHBOARD_TABS = 'dashboard.database.tabs';
-export const DATABASE_DASHBOARD_TOOLBAR = 'dashboard.database.toolbar';
