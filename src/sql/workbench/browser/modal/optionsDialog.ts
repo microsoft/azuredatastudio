@@ -9,7 +9,6 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IModalOptions, Modal } from './modal';
 import * as OptionsDialogHelper from './optionsDialogHelper';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
-import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 
 import * as azdata from 'azdata';
@@ -36,6 +35,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { attachModalDialogStyler, attachPanelStyler } from 'sql/workbench/common/styler';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
+import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 
 export class CategoryView extends ViewPane {
 

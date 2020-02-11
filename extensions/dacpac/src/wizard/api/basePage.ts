@@ -4,10 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
+import * as loc from '../../localizedConstants';
 import { DacFxDataModel } from './models';
-
-const localize = nls.loadMessageBundle();
 
 export abstract class BasePage {
 
@@ -75,7 +73,7 @@ export abstract class BasePage {
 			let srv = c.options.server;
 
 			if (!usr) {
-				usr = localize('basePage.defaultUser', "default");
+				usr = loc.defaultText;
 			}
 
 			let finalName = `${srv} (${usr})`;

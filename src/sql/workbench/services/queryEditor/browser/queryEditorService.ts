@@ -140,7 +140,7 @@ export class QueryEditorService implements IQueryEditorService {
 		let counter = 1;
 		// Get document name and check if it exists
 		let filePath = prefixFileName(counter);
-		while (this._untitledEditorService.exists(URI.from({ scheme: Schemas.untitled, path: filePath }))) {
+		while (this._untitledEditorService.get(URI.from({ scheme: Schemas.untitled, path: filePath }))) {
 			counter++;
 			filePath = prefixFileName(counter);
 		}
