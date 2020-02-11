@@ -55,11 +55,11 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 
 	//#region --- revive functions
 
-	private static _reviveLocationDto(data: ILocationDto): modes.Location;
-	private static _reviveLocationDto(data: ILocationDto[]): modes.Location[];
-	private static _reviveLocationDto(data: ILocationDto | ILocationDto[]): modes.Location | modes.Location[] {
+	private static _reviveLocationDto(data?: ILocationDto): modes.Location;
+	private static _reviveLocationDto(data?: ILocationDto[]): modes.Location[];
+	private static _reviveLocationDto(data: ILocationDto | ILocationDto[] | undefined): modes.Location | modes.Location[] | undefined {
 		if (!data) {
-			return <modes.Location>data;
+			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 		} else if (Array.isArray(data)) {
 			data.forEach(l => MainThreadLanguageFeatures._reviveLocationDto(l));
 			return <modes.Location[]>data;
