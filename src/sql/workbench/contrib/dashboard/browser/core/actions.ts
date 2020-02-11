@@ -13,6 +13,7 @@ import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/
 import { IDashboardTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class EditDashboardAction extends Action {
 
@@ -80,7 +81,8 @@ export class ToolbarAction extends Action {
 		label: string,
 		cssClass: string,
 		private runFn: (id: string) => void,
-		private context: any // this
+		private context: any, // this
+		private logService: ILogService
 	) {
 		super(id, label, cssClass);
 	}
@@ -90,6 +92,7 @@ export class ToolbarAction extends Action {
 			this.runFn.apply(this.context, [this.id]);
 			return Promise.resolve(true);
 		} catch (e) {
+			this.logService.error(e);
 			return Promise.resolve(false);
 		}
 	}

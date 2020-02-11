@@ -64,9 +64,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 	@ViewChildren(TabChild) private _tabs: QueryList<DashboardTab>;
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
-	@ViewChild('toolbar', { read: ElementRef }) private taskContainer: ElementRef;
+	@ViewChild('toolbar', { read: ElementRef }) private toolbarContainer: ElementRef;
 	protected toolbar: Taskbar;
-	public showToolbar = true;
+	public showToolbar: boolean;
 
 	// actions
 	protected _editAction: EditDashboardAction;
@@ -79,6 +79,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	private readonly databasesTabTitle: string = nls.localize('databases', "Databases");
 	private readonly objectsTabTitle: string = nls.localize('objects', "Objects");
 	private tabToolbarActions = new Map<string, ITaskbarContent[]>();
+	private tabToolbarActionsConfig = new Map<string, WidgetConfig>();
 
 	// a set of config modifiers
 	private readonly _configModifiers: Array<(item: Array<WidgetConfig>, collection: IConfigModifierCollection, context: string) => Array<WidgetConfig>> = [
@@ -153,7 +154,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this.tabToolbarActions.set(this.homeTabTitle, homeToolbarContent);
 		this.tabToolbarActions.set(this.databasesTabTitle, homeToolbarContent);
 		this.tabToolbarActions.set(this.objectsTabTitle, homeToolbarContent);
-		this.createToolbar(this.taskContainer.nativeElement, homeToolbarContent);
+		this.createToolbar(this.toolbarContainer.nativeElement, this.homeTabTitle);
 	}
 
 	private getHomeToolbarContent(): ITaskbarContent[] {
@@ -174,11 +175,18 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		return content;
 	}
 
-	private createToolbar(parentElement: HTMLElement, content: ITaskbarContent[]): void {
+	private createToolbar(parentElement: HTMLElement, tabName: string): void {
 		// clear out toolbar
 		DOM.clearNode(parentElement);
 		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
 		this.toolbar = this._register(new Taskbar(taskbarContainer));
+
+		let content = this.tabToolbarActions.get(tabName);
+		// get toolbar content if it wasn't loaded previously
+		if (content.length === 0) {
+			content = this.getToolbarContent(this.tabToolbarActionsConfig.get(tabName));
+		}
+
 		this.toolbar.setContent(content);
 	}
 
@@ -205,7 +213,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		let toolbarActions = [];
 		_tasks.forEach(a => {
 			let iconClassName = TaskRegistry.getOrCreateTaskIconClassName(a);
-			toolbarActions.push(new ToolbarAction(a.id, a.title.toString(), iconClassName, this.runAction, this));
+			toolbarActions.push(new ToolbarAction(a.id, a.title.toString(), iconClassName, this.runAction, this, this.logService));
 		});
 
 		let content: ITaskbarContent[] = [];
@@ -216,7 +224,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		return content;
 	}
 
-	public runAction(id: string): Promise<void> {
+	private runAction(id: string): Promise<void> {
 		return this.commandService.executeCommand(id, this.connectionManagementService.connectionInfo.connectionProfile);
 	}
 
@@ -386,6 +394,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			// remove tasks widget because the tasks will be shown in the toolbar
 			const index = configs.findIndex(c => c.widget['tasks-widget']);
 			if (index !== -1) {
+				this.tabToolbarActionsConfig.set(value.title, configs[index].widget['tasks-widget']);
 				const content = this.getToolbarContent(configs[index].widget['tasks-widget']);
 				this.tabToolbarActions.set(value.title, content);
 				configs.splice(index);
@@ -457,7 +466,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	public handleTabChange(tab: TabComponent): void {
 		if (this.tabToolbarActions.has(tab.title)) {
 			this.showToolbar = true;
-			this.createToolbar(this.taskContainer.nativeElement, this.tabToolbarActions.get(tab.title));
+			this.createToolbar(this.toolbarContainer.nativeElement, tab.title);
 		} else { // hide toolbar
 			this.showToolbar = false;
 		}
