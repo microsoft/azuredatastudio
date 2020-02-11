@@ -44,9 +44,9 @@ steps:
 - script: |
     ./scripts/test.sh --tfs "Unit Tests"
   displayName: Run Unit Tests (Electron)
-- script: |
-    yarn test-browser --browser chromium --browser webkit
-  displayName: Run Unit Tests (Browser)
+# - script: | {{SQL CARBON EDIT}} disable for now @TODO @anthonydresser
+#     yarn test-browser --browser chromium --browser webkit
+#   displayName: Run Unit Tests (Browser)
 # - script: | {{SQL CARBON EDIT}} remove step
 #     ./scripts/test-integration.sh --tfs "Integration Tests"
 #   displayName: Run Integration Tests (Electron)
