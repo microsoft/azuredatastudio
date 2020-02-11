@@ -182,8 +182,8 @@
         }
       },
       {
-        "command": "notebook.command.openExternalBook",
-        "title": "%title.openExternalJupyterBook%",
+        "command": "notebook.command.createBook",
+        "title": "%title.createJupyterBook%",
         "category": "%books-preview-category%",
         "icon": {
           "dark": "resources/dark/open_notebook_inverse.svg",
@@ -337,7 +337,7 @@
           "group": "navigation"
         },
         {
-          "command": "notebook.command.openExternalBook",
+          "command": "notebook.command.createBook",
           "when": "view == bookTreeView"
         }
       ],

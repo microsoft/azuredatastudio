@@ -35,5 +35,5 @@
 	"title.UnsavedBooks": "Unsaved Books",
 	"title.PreviewLocalizedBook": "Get localized SQL Server 2019 guide",
 	"title.openJupyterBook": "Open Jupyter Book",
-	"title.openExternalJupyterBook": "Open External Book"
+	"title.createJupyterBook": "Create Book"
 }

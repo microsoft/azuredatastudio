@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as os from 'os';
 import * as nls from 'vscode-nls';
+import * as path from 'path';
 
 import { JupyterController } from './jupyter/jupyterController';
 import { AppContext } from './common/appContext';
@@ -37,7 +38,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.searchBook', () => bookTreeViewProvider.searchJupyterBooks()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.searchUntitledBook', () => untitledBookTreeViewProvider.searchJupyterBooks()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openBook', () => bookTreeViewProvider.openNewBook()));
-
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.createBook', () => untitledBookTreeViewProvider.openNotebook(path.posix.join(extensionContext.extensionPath, 'resources', 'notebooks', 'JupyterBooksCreate.ipynb'), true)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', (context?: azdata.ConnectedContext) => {
 		let connectionProfile: azdata.IConnectionProfile = undefined;
 		if (context && context.connectionProfile) {

@@ -108,9 +108,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async openNotebook(resource: string): Promise<void> {
+	async openNotebook(resource: string, openAsUntitled?: boolean): Promise<void> {
 		try {
-			if (this._openAsUntitled) {
+			if (this._openAsUntitled || openAsUntitled) {
 				this.openNotebookAsUntitled(resource);
 			}
 			else {
