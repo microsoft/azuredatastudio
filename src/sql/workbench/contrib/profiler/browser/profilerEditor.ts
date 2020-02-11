@@ -162,7 +162,7 @@ export class ProfilerEditor extends BaseEditor {
 		@IProfilerService private _profilerService: IProfilerService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IEditorService editorService: IEditorService,
+		@IEditorService private readonly editorService: IEditorService,
 		@IStorageService storageService: IStorageService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
@@ -433,7 +433,7 @@ export class ProfilerEditor extends BaseEditor {
 		editorContainer.className = 'profiler-editor';
 		this._editor.create(editorContainer);
 		this._editor.setVisible(true);
-		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, URI.from({ scheme: Schemas.untitled }), false, 'sql', '', '');
+		this._editorInput = this.editorService.createInput({ forceUntitled: true, mode: 'sql', resource: URI.from({ scheme: Schemas.untitled }) }) as UntitledTextEditorInput;
 		this._editor.setInput(this._editorInput, undefined);
 		this._editorInput.resolve().then(model => this._editorModel = model.textEditorModel);
 		return editorContainer;

@@ -38,6 +38,7 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
+import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -478,7 +479,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			await untitledModel.load();
 			input.untitledEditorModel = untitledModel;
 			if (options.initialDirtyState === false) {
-				input.untitledEditorModel.setDirty(false);
+				(input.untitledEditorModel as UntitledTextEditorModel).setDirty(false);
 			}
 		}
 		let editor = await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
