@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { EditorInput } from 'vs/workbench/common/editor';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { Extensions as ILanguageAssociationExtensions, ILanguageAssociationRegistry } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 
 const languageRegistry = Registry.as<ILanguageAssociationRegistry>(ILanguageAssociationExtensions.LanguageAssociations);
 
