@@ -10,9 +10,9 @@ import { ConnectionType, IConnectableInput, IConnectionResult, INewConnectionPar
 import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/testErrorMessageService';
 
 import * as TypeMoq from 'typemoq';
-import { TestStorageService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { NullLogService } from 'vs/platform/log/common/log';
+import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 
 suite('ConnectionDialogService tests', () => {
 
@@ -24,7 +24,15 @@ suite('ConnectionDialogService tests', () => {
 		let errorMessageService = getMockErrorMessageService();
 		connectionDialogService = new ConnectionDialogService(undefined, undefined, errorMessageService.object,
 			undefined, undefined, undefined, new NullLogService());
-		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict, {}, {}, new TestStorageService());
+		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict,
+			undefined, // connection store
+			undefined, // connection status manager
+			undefined, // connection dialog service
+			undefined, // instantiation service
+			undefined, // editor service
+			undefined, // telemetry service
+			undefined, // configuration service
+			new TestCapabilitiesService());
 		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;
 		mockConnectionDialog = TypeMoq.Mock.ofType(ConnectionDialogWidget, TypeMoq.MockBehavior.Strict,
 			undefined,

@@ -8,7 +8,6 @@ import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/ser
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { TestStorageService } from 'vs/workbench/test/browser/workbenchTestServices';
 
 import * as TypeMoq from 'typemoq';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
@@ -24,7 +23,16 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
 	setup(() => {
 		let instantiationService = new TestInstantiationService();
-		let mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict, {}, {}, new TestStorageService());
+		let mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict,
+			undefined, //connection store
+			undefined, // connectionstatusmanager
+			undefined, // connectiondialog service
+			undefined, // instantiation service
+			undefined, // editor service
+			undefined, // telemetryservice
+			undefined, // configuration service
+			new TestCapabilitiesService(), // capabilities service
+		);
 		mockConnectionManagementService.setup(x => x.getConnectionGroups()).returns(x => []);
 		mockConnectionManagementService.setup(x => x.hasRegisteredServers()).returns(() => true);
 		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, undefined, undefined, undefined, capabilitiesService);

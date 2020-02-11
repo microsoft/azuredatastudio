@@ -13,10 +13,10 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import * as azdata from 'azdata';
 import { equal } from 'assert';
 import { Mock, MockBehavior, It } from 'typemoq';
-import { TestStorageService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { Emitter } from 'vs/base/common/event';
 import { InsightsDialogModel } from 'sql/workbench/services/insights/browser/insightsDialogModel';
 import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
+import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 
 const testData: string[][] = [
 	['1', '2', '3', '4'],
@@ -39,7 +39,15 @@ suite('Insights Dialog Controller Tests', () => {
 		instMoq.setup(x => x.createInstance(It.isValue(QueryRunner), It.isAny()))
 			.returns(() => runner);
 
-		let connMoq = Mock.ofType(ConnectionManagementService, MockBehavior.Strict, {}, {}, new TestStorageService());
+		let connMoq = Mock.ofType(ConnectionManagementService, MockBehavior.Strict,
+			undefined, // connection store
+			undefined, // connection status manager
+			undefined, // connection dialog service
+			undefined, // instantiation service
+			undefined, // editor service
+			undefined, // telemetry service
+			undefined, // configuration service
+			new TestCapabilitiesService());
 		connMoq.setup(x => x.connect(It.isAny(), It.isAny()))
 			.returns(() => Promise.resolve(undefined));
 

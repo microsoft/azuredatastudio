@@ -6,7 +6,6 @@
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { IEditorDescriptor } from 'vs/workbench/browser/editor';
 import { URI } from 'vs/base/common/uri';
-import { Memento } from 'vs/workbench/common/memento';
 
 import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
 import { INewConnectionParams, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
@@ -18,20 +17,20 @@ import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { TestStorageService, TestFileService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestFileService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
 import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
 import { Event } from 'vs/base/common/event';
 import { LabelService } from 'vs/workbench/services/label/common/labelService';
+import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 
 suite('SQL QueryEditor Tests', () => {
 	let instantiationService: TypeMoq.Mock<InstantiationService>;
 	let editorDescriptorService: TypeMoq.Mock<EditorDescriptorService>;
 	let connectionManagementService: TypeMoq.Mock<ConnectionManagementService>;
 	let configurationService: TypeMoq.Mock<TestConfigurationService>;
-	let memento: TypeMoq.Mock<Memento>;
 
 	let mockEditor: any;
 
@@ -88,9 +87,15 @@ suite('SQL QueryEditor Tests', () => {
 		});
 
 		// Mock ConnectionManagementService
-		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
-		memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
-		connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
+		connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose,
+			undefined, // connection store
+			undefined, // connection status manager
+			undefined, // connection dialog service
+			undefined, // instantiation service
+			undefined, // editor service
+			undefined, // telemetry service
+			undefined, // configuration service
+			new TestCapabilitiesService());
 		connectionManagementService.callBase = true;
 		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAny())).returns(() => false);
 		connectionManagementService.setup(x => x.disconnectEditor(TypeMoq.It.isAny())).returns(() => void 0);
@@ -254,9 +259,15 @@ suite('SQL QueryEditor Tests', () => {
 		setup(() => {
 
 			// Mock ConnectionManagementService but don't set connected state
-			memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
-			memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
-			queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
+			connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose,
+				undefined, // connection store
+				undefined, // connection status manager
+				undefined, // connection dialog service
+				undefined, // instantiation service
+				undefined, // editor service
+				undefined, // telemetry service
+				undefined, // configuration service
+				new TestCapabilitiesService());
 			queryConnectionService.callBase = true;
 
 			queryConnectionService.setup(x => x.disconnectEditor(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
