@@ -263,11 +263,13 @@ suite('SQL QueryEditor Tests', () => {
 		setup(() => {
 
 			// Mock ConnectionManagementService but don't set connected state
+			let testinstantiationService = new TestInstantiationService();
+			testinstantiationService.stub(IStorageService, new TestStorageService());
 			connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose,
 				undefined, // connection store
 				undefined, // connection status manager
 				undefined, // connection dialog service
-				undefined, // instantiation service
+				testinstantiationService, // instantiation service
 				undefined, // editor service
 				undefined, // telemetry service
 				undefined, // configuration service
