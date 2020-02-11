@@ -284,10 +284,12 @@ export abstract class NotebookInput extends EditorInput {
 	}
 
 	save(groupId: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+		this._model.getNotebookModel().trustedMode = true;
 		return this.textInput.save(groupId, options);
 	}
 
 	saveAs(group: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+		this._model.getNotebookModel().trustedMode = true;
 		return this.textInput.saveAs(group, options);
 	}
 
