@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 
 import * as nbExtensionApis from '../typings/notebookServices';
+import * as mssql from '../../../mssql';
 import { PackageManager } from '../packageManagement/packageManager';
 import * as constants from '../common/constants';
 import { ApiWrapper } from '../common/apiWrapper';
@@ -15,6 +16,8 @@ import { Config } from '../configurations/config';
 import { ServerConfigWidget } from '../widgets/serverConfigWidgets';
 import { ServerConfigManager } from '../serverConfig/serverConfigManager';
 import { HttpClient } from '../common/httpClient';
+import { LanguageController } from '../externalLanguage/languageController';
+import { LanguageService } from '../externalLanguage/languageService';
 
 /**
  * The main controller class that initializes the extension
@@ -65,6 +68,18 @@ export default class MainController implements vscode.Disposable {
 		}
 	}
 
+	/**
+	 * Returns an instance of Server Installation from notebook extension
+	 */
+	private async getLanguageExtensionService(): Promise<mssql.ILanguageExtensionService> {
+		let mssqlExtension = this._apiWrapper.getExtension(mssql.extension.name)?.exports as mssql.IExtension;
+		if (mssqlExtension) {
+			return (mssqlExtension.languageExtension);
+		} else {
+			throw new Error(constants.mssqlExtensionNotLoaded);
+		}
+	}
+
 	private async initialize(): Promise<void> {
 
 		this._outputChannel.show(true);
@@ -78,11 +93,22 @@ export default class MainController implements vscode.Disposable {
 		this._apiWrapper.registerCommand(constants.mlManagePackagesCommand, (async () => {
 			await packageManager.managePackages();
 		}));
+
+		let mssqlService = await this.getLanguageExtensionService();
+		let languagesModel = new LanguageService(this._apiWrapper, mssqlService);
+		let languageController = new LanguageController(this._apiWrapper, this._rootPath, languagesModel);
+
+		this._apiWrapper.registerCommand(constants.mlManageLanguagesCommand, (async () => {
+			await languageController.manageLanguages();
+		}));
 		this._apiWrapper.registerCommand(constants.mlsDependenciesCommand, (async () => {
 			await packageManager.installDependencies();
 		}));
 		this._apiWrapper.registerTaskHandler(constants.mlManagePackagesCommand, async () => {
 			await packageManager.managePackages();
+		});
+		this._apiWrapper.registerTaskHandler(constants.mlManageLanguagesCommand, async () => {
+			await languageController.manageLanguages();
 		});
 		this._apiWrapper.registerTaskHandler(constants.mlOdbcDriverCommand, async () => {
 			await this.serverConfigManager.openOdbcDriverDocuments();
@@ -125,7 +151,6 @@ export default class MainController implements vscode.Disposable {
 		}
 		return this._httpClient;
 	}
-
 
 	/**
 	 * Config instance
