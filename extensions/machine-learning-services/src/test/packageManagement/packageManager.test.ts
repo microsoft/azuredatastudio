@@ -192,6 +192,8 @@ describe('Package Manager', () => {
 		testContext.httpClient.setup(x => x.download(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		testContext.config.setup(x => x.pythonExecutable).returns(() => 'python');
 		testContext.config.setup(x => x.rExecutable).returns(() => 'r');
+		testContext.config.setup(x => x.rEnabled).returns(() => true);
+		testContext.config.setup(x => x.pythonEnabled).returns(() => true);
 		let packageManager = new PackageManager(
 			testContext.outputChannel,
 			'',
