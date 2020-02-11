@@ -46,6 +46,8 @@ export class EditDataEditor extends BaseEditor {
 
 	// The minimum width/height of the editors hosted in the QueryEditor
 	private readonly _minEditorSize: number = 60;
+	// Minimum position for the bottom sash to ensure editor is at minimum height.
+	private readonly _minPositionSize: number = 40;
 
 	private _sash: IFlexibleSash;
 	private _dimension: DOM.Dimension;
@@ -301,7 +303,7 @@ export class EditDataEditor extends BaseEditor {
 	 * If large enough, do layout. Else if too small, hide result editor to prevent crashing.
 	 */
 	private _positionCheck(position: number) {
-		if (position < 40) {
+		if (position < this._minPositionSize) {
 			this.resultsEditorVisibility = false;
 		}
 		else {
