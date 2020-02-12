@@ -49,8 +49,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private readonly scopes: string[];
 	private readonly clientId: string;
 
-	constructor(private metadata: AzureAccountProviderMetadata,
-		_tokenCache: TokenCache,
+	constructor(private readonly metadata: AzureAccountProviderMetadata,
+		private readonly _tokenCache: TokenCache,
 		_context: vscode.ExtensionContext) {
 		this.loginEndpointUrl = this.metadata.settings.host;
 		this.commonTenant = 'common';
