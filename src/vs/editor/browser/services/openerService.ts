@@ -11,7 +11,7 @@ import { Schemas } from 'vs/base/common/network';
 import { normalizePath } from 'vs/base/common/resources';
 import { URI } from 'vs/base/common/uri';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
-import { ICommandService } from 'vs/platform/commands/common/commands'; // {{ SQL CARBON EDIT }} chlafreniere Remove CommandsRegistry.getCommand()
+import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { IOpener, IOpenerService, IValidator, IExternalUriResolver, OpenOptions, ResolveExternalUriOptions, IResolvedExternalUri, IExternalOpener, matchesScheme } from 'vs/platform/opener/common/opener';
 import { EditorOpenContext } from 'vs/platform/editor/common/editor';
 
@@ -28,13 +28,9 @@ class CommandOpener implements IOpener {
 		if (typeof target === 'string') {
 			target = URI.parse(target);
 		}
-		// {{ SQL CARBON EDIT }} chlafreniere Remove CommandsRegistry.getCommand() check here
-		// This does not take into account onCommand extension activation events, and _commandService.executeCommand()
-		// checks for those events in addition to checking the CommandsRegistry
-
-		// if (!CommandsRegistry.getCommand(target.path)) {
-		// 	throw new Error(`command '${target.path}' NOT known`);
-		// }
+		if (!CommandsRegistry.getCommand(target.path)) {
+			throw new Error(`command '${target.path}' NOT known`);
+		}
 		// execute as command
 		let args: any = [];
 		try {
