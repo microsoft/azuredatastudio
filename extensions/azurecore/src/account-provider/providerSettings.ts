@@ -22,7 +22,7 @@ const publicAzureSettings: ProviderSettings = {
 				endpoint: 'https://graph.windows.net'
 			},
 			armResource: {
-				id: 'https://management.core.windows.net/',
+				id: 'https://management.azure.com/',
 				endpoint: 'https://management.azure.com'
 			},
 			sqlResource: {
@@ -33,7 +33,7 @@ const publicAzureSettings: ProviderSettings = {
 				id: 'https://ossrdbms-aad.database.windows.net',
 				endpoint: 'https://ossrdbms-aad.database.windows.net'
 			},
-			redirectUri: 'http://localhost/redirect'
+			redirectUri: 'https://vscode-redirect.azurewebsites.net/'
 		}
 	}
 };
