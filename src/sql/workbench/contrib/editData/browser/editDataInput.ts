@@ -224,7 +224,6 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		return this._connectionManagementService.getTabColorForUri(this.uri);
 	}
 
-	public get onDidModelChangeEncoding(): Event<void> { return this._sql.onDidModelChangeEncoding; }
 	public resolve(refresh?: boolean): Promise<IUntitledTextEditorModel & IResolvedTextEditorModel> { return this._sql.resolve(); }
 	public getEncoding(): string { return this._sql.getEncoding(); }
 	public getName(): string { return this._sql.getName(); }
