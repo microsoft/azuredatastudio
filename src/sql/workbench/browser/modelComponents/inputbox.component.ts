@@ -11,7 +11,6 @@ import {
 import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 
@@ -24,6 +23,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
 import { assign } from 'vs/base/common/objects';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 
 @Component({
 	selector: 'modelview-inputBox',
@@ -158,12 +158,16 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public validate(): Thenable<boolean> {
 		return super.validate().then(valid => {
+			const otherErrorMsg = valid || this.inputElement.value === '' ? undefined : this.validationErrorMessage;
 			valid = valid && this.inputElement.validate();
 
 			// set aria label based on validity of input
 			if (valid) {
 				this.inputElement.setAriaLabel(this.ariaLabel);
 			} else {
+				if (otherErrorMsg) {
+					this.inputElement.showMessage({ type: MessageType.ERROR, content: otherErrorMsg }, true);
+				}
 				if (this.ariaLabel) {
 					this.inputElement.setAriaLabel(nls.localize('period', "{0}. {1}", this.ariaLabel, this.inputElement.inputElement.validationMessage));
 				} else {
@@ -328,5 +332,13 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public focus(): void {
 		this.inputElement.focus();
+	}
+
+	public get validationErrorMessage(): string {
+		return this.getPropertyOrDefault<azdata.InputBoxProperties, string>((props) => props.validationErrorMessage, '');
+	}
+
+	public set validationErrorMessage(newValue: string) {
+		this.setPropertyFromUI<azdata.InputBoxProperties, string>((props, value) => props.validationErrorMessage = value, newValue);
 	}
 }

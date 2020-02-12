@@ -114,13 +114,15 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 
 // Menu
 (function registerMenu(): void {
-	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, { // {{SQL CARBON EDIT}} - Add install VSIX menu item
-		group: '5.1_installExtension',
-		command: {
-			id: InstallVSIXAction.ID,
-			title: nls.localize({ key: 'miinstallVsix', comment: ['&& denotes a mnemonic'] }, "Install Extension from VSIX Package")
-		}
-	});
+	if (InstallVSIXAction.AVAILABLE) {
+		MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, { // {{SQL CARBON EDIT}} - Add install VSIX menu item
+			group: '5.1_installExtension',
+			command: {
+				id: InstallVSIXAction.ID,
+				title: nls.localize({ key: 'miinstallVsix', comment: ['&& denotes a mnemonic'] }, "Install Extension from VSIX Package")
+			}
+		});
+	}
 
 	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 		group: '6_close',
@@ -212,23 +214,6 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 		'title': nls.localize('windowConfigurationTitle', "Window"),
 		'type': 'object',
 		'properties': {
-			'window.openFilesInNewWindow': {
-				'type': 'string',
-				'enum': ['on', 'off', 'default'],
-				'enumDescriptions': [
-					nls.localize('window.openFilesInNewWindow.on', "Files will open in a new window."),
-					nls.localize('window.openFilesInNewWindow.off', "Files will open in the window with the files' folder open or the last active window."),
-					isMacintosh ?
-						nls.localize('window.openFilesInNewWindow.defaultMac', "Files will open in the window with the files' folder open or the last active window unless opened via the Dock or from Finder.") :
-						nls.localize('window.openFilesInNewWindow.default', "Files will open in a new window unless picked from within the application (e.g. via the File menu).")
-				],
-				'default': 'off',
-				'scope': ConfigurationScope.APPLICATION,
-				'markdownDescription':
-					isMacintosh ?
-						nls.localize('openFilesInNewWindowMac', "Controls whether files should open in a new window. \nNote that there can still be cases where this setting is ignored (e.g. when using the `--new-window` or `--reuse-window` command line option).") :
-						nls.localize('openFilesInNewWindow', "Controls whether files should open in a new window.\nNote that there can still be cases where this setting is ignored (e.g. when using the `--new-window` or `--reuse-window` command line option).")
-			},
 			'window.openWithoutArgumentsInNewWindow': {
 				'type': 'string',
 				'enum': ['on', 'off'],

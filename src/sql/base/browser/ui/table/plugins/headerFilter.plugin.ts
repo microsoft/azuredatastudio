@@ -19,16 +19,16 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	public onFilterApplied = new Slick.Event();
 	public onCommand = new Slick.Event();
 
-	private grid: Slick.Grid<T>;
+	private grid!: Slick.Grid<T>;
 	private handler = new Slick.EventHandler();
 
 	private $menu?: JQuery<HTMLElement>;
-	private okButton: Button;
-	private clearButton: Button;
-	private cancelButton: Button;
-	private workingFilters: Array<string>;
-	private columnDef: IExtendedColumn<T>;
-	private buttonStyles: IButtonStyles;
+	private okButton?: Button;
+	private clearButton?: Button;
+	private cancelButton?: Button;
+	private workingFilters!: Array<string>;
+	private columnDef!: IExtendedColumn<T>;
+	private buttonStyles?: IButtonStyles;
 
 	private disposableStore = new DisposableStore();
 
@@ -286,7 +286,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 			if ($checkbox.prop('checked') && index < 0) {
 				workingFilters.push(filterItems[value]);
-				const nextRow = filterItems[(parseInt(<string><any>value) + 1).toString()]; // for some reason parseInt is defined as only supporting strings even though it works fine for numbers
+				const nextRow = filterItems[Number((parseInt(<string><any>value) + 1).toString())]; // for some reason parseInt is defined as only supporting strings even though it works fine for numbers
 				if (nextRow && nextRow.indexOf('Error:') >= 0) {
 					workingFilters.push(nextRow);
 				}

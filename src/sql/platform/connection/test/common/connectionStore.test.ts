@@ -8,10 +8,9 @@ import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { IConnectionProfile, ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { TestCredentialsService } from 'sql/platform/credentials/test/common/testCredentialsService';
-import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { deepClone, deepFreeze, assign } from 'vs/base/common/objects';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
@@ -31,12 +30,12 @@ suite('ConnectionStore', () => {
 		savePassword: true,
 		groupId: '',
 		groupFullName: '',
-		getOptionsKey: undefined,
+		getOptionsKey: undefined!,
 		matches: () => false,
 		providerName: mssqlProviderName,
 		options: {},
 		saveProfile: true,
-		id: undefined
+		id: undefined!
 	});
 	let capabilitiesService: TestCapabilitiesService;
 	let maxRecent = 5;
@@ -51,11 +50,11 @@ suite('ConnectionStore', () => {
 		let connectionProvider: azdata.ConnectionOption[] = [
 			{
 				name: 'connectionName',
-				displayName: undefined,
-				description: undefined,
-				groupName: undefined,
-				categoryValues: undefined,
-				defaultValue: undefined,
+				displayName: undefined!,
+				description: undefined!,
+				groupName: undefined!,
+				categoryValues: undefined!,
+				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: ConnectionOptionSpecialType.connectionName,
@@ -63,11 +62,11 @@ suite('ConnectionStore', () => {
 			},
 			{
 				name: 'serverName',
-				displayName: undefined,
-				description: undefined,
-				groupName: undefined,
-				categoryValues: undefined,
-				defaultValue: undefined,
+				displayName: undefined!,
+				description: undefined!,
+				groupName: undefined!,
+				categoryValues: undefined!,
+				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: ConnectionOptionSpecialType.serverName,
@@ -75,11 +74,11 @@ suite('ConnectionStore', () => {
 			},
 			{
 				name: 'databaseName',
-				displayName: undefined,
-				description: undefined,
-				groupName: undefined,
-				categoryValues: undefined,
-				defaultValue: undefined,
+				displayName: undefined!,
+				description: undefined!,
+				groupName: undefined!,
+				categoryValues: undefined!,
+				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: ConnectionOptionSpecialType.databaseName,
@@ -87,11 +86,11 @@ suite('ConnectionStore', () => {
 			},
 			{
 				name: 'userName',
-				displayName: undefined,
-				description: undefined,
-				groupName: undefined,
-				categoryValues: undefined,
-				defaultValue: undefined,
+				displayName: undefined!,
+				description: undefined!,
+				groupName: undefined!,
+				categoryValues: undefined!,
+				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: ConnectionOptionSpecialType.userName,
@@ -99,11 +98,11 @@ suite('ConnectionStore', () => {
 			},
 			{
 				name: 'authenticationType',
-				displayName: undefined,
-				description: undefined,
-				groupName: undefined,
-				categoryValues: undefined,
-				defaultValue: undefined,
+				displayName: undefined!,
+				description: undefined!,
+				groupName: undefined!,
+				categoryValues: undefined!,
+				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: ConnectionOptionSpecialType.authType,
@@ -111,11 +110,11 @@ suite('ConnectionStore', () => {
 			},
 			{
 				name: 'password',
-				displayName: undefined,
-				description: undefined,
-				groupName: undefined,
-				categoryValues: undefined,
-				defaultValue: undefined,
+				displayName: undefined!,
+				description: undefined!,
+				groupName: undefined!,
+				categoryValues: undefined!,
+				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: ConnectionOptionSpecialType.password,
@@ -232,8 +231,8 @@ suite('ConnectionStore', () => {
 		let current = connectionStore.getRecentlyUsedConnections();
 		// Then verify that since its password based we save the password
 		assert.equal(credentialsService.credentials.size, 1);
-		assert.strictEqual(recentCredential.password, defaultNamedProfile.password);
-		assert.ok(recentCredential.credentialId.indexOf('Profile') > -1, 'Expect credential to be marked as an Profile cred');
+		assert.strictEqual(recentCredential!.password, defaultNamedProfile.password);
+		assert.ok(recentCredential!.credentialId.indexOf('Profile') > -1, 'Expect credential to be marked as an Profile cred');
 		assert.ok(!current[0].password);
 		// When add integrated auth connection
 		const integratedCredConnectionProfile = new ConnectionProfile(capabilitiesService, integratedCred);
@@ -376,11 +375,11 @@ suite('ConnectionStore', () => {
 			credentialsService, capabilitiesService);
 
 		// If I look up the parent group using its ID, then I get back the correct group
-		let actualGroup = connectionStore.getGroupFromId(parentGroupId);
+		let actualGroup = connectionStore.getGroupFromId(parentGroupId)!;
 		assert.equal(actualGroup.id, parentGroupId, 'Did not get the parent group when looking it up with its ID');
 
 		// If I look up the child group using its ID, then I get back the correct group
-		actualGroup = connectionStore.getGroupFromId(childGroupId);
+		actualGroup = connectionStore.getGroupFromId(childGroupId)!;
 		assert.equal(actualGroup.id, childGroupId, 'Did not get the child group when looking it up with its ID');
 	});
 

@@ -15,9 +15,8 @@ import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewl
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IAddedViewDescriptorRef } from 'vs/workbench/browser/parts/views/views';
 import { ConnectionViewletPanel } from 'sql/workbench/contrib/dataExplorer/browser/connectionViewletPanel';
-import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry, IViewContainersRegistry, ViewContainerLocation } from 'vs/workbench/common/views';
+import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry, IViewContainersRegistry, ViewContainerLocation, IViewDescriptorService } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -27,6 +26,7 @@ import { ShowViewletAction, Viewlet } from 'vs/workbench/browser/viewlet';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { ViewPaneContainer, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 
 export const VIEWLET_ID = 'workbench.view.connections';
 
@@ -62,7 +62,7 @@ export class DataExplorerViewletViewsContribution implements IWorkbenchContribut
 		return {
 			id: ConnectionViewletPanel.ID,
 			name: localize('dataExplorer.servers', "Servers"),
-			ctorDescriptor: { ctor: ConnectionViewletPanel },
+			ctorDescriptor: new SyncDescriptor(ConnectionViewletPanel),
 			weight: 100,
 			canToggleVisibility: true,
 			order: 0
@@ -102,9 +102,10 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 		@IExtensionService extensionService: IExtensionService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IMenuService private menuService: IMenuService,
-		@IContextKeyService private contextKeyService: IContextKeyService
+		@IContextKeyService private contextKeyService: IContextKeyService,
+		@IViewDescriptorService viewDescriptorService: IViewDescriptorService
 	) {
-		super(VIEWLET_ID, `${VIEWLET_ID}.state`, { mergeViewWithContainerWhenSingleView: true }, instantiationService, configurationService, layoutService, contextMenuService, telemetryService, extensionService, themeService, storageService, contextService);
+		super(VIEWLET_ID, `${VIEWLET_ID}.state`, { mergeViewWithContainerWhenSingleView: true }, instantiationService, configurationService, layoutService, contextMenuService, telemetryService, extensionService, themeService, storageService, contextService, viewDescriptorService);
 	}
 
 	create(parent: HTMLElement): void {
@@ -144,11 +145,6 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 		return actions;
 	}
 
-	protected onDidAddViews(added: IAddedViewDescriptorRef[]): ViewPane[] {
-		const addedViews = super.onDidAddViews(added);
-		return addedViews;
-	}
-
 	protected createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
 		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewPane;
 		this._register(viewletPanel);
@@ -159,6 +155,6 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
 	name: localize('dataexplorer.name', "Connections"),
-	ctorDescriptor: { ctor: DataExplorerViewPaneContainer },
+	ctorDescriptor: new SyncDescriptor(DataExplorerViewPaneContainer),
 	icon: 'dataExplorer'
 }, ViewContainerLocation.Sidebar);

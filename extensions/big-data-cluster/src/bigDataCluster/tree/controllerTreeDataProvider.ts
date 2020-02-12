@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import * as nls from 'vscode-nls';
 import { TreeNode } from './treeNode';
 import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
 import { AddControllerNode } from './addControllerNode';
@@ -12,6 +13,8 @@ import { ControllerRootNode, ControllerNode } from './controllerTreeNode';
 import { showErrorMessage } from '../utils';
 import { LoadingControllerNode } from './loadingControllerNode';
 import { AuthType } from '../constants';
+
+const localize = nls.loadMessageBundle();
 
 const CredentialNamespace = 'clusterControllerCredentials';
 
@@ -29,9 +32,11 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 	public readonly onDidChangeTreeData: vscode.Event<TreeNode> = this._onDidChangeTreeData.event;
 	private root: ControllerRootNode;
 	private credentialProvider: azdata.CredentialProvider;
+	private initialized: boolean = false;
 
 	constructor(private memento: vscode.Memento) {
 		this.root = new ControllerRootNode(this);
+		this.root.addChild(new LoadingControllerNode());
 	}
 
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
@@ -39,12 +44,11 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 			return element.getChildren();
 		}
 
-		if (this.root.hasChildren) {
-			return this.root.getChildren();
+		if (!this.initialized) {
+			this.loadSavedControllers().catch(err => { vscode.window.showErrorMessage(localize('bdc.controllerTreeDataProvider.error', "Unexpected error loading saved controllers: {0}", err)); });
 		}
 
-		await this.loadSavedControllers();
-		return [new LoadingControllerNode()];
+		return this.root.getChildren();
 	}
 
 	public getTreeItem(element: TreeNode): vscode.TreeItem | Thenable<vscode.TreeItem> {
@@ -84,12 +88,11 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 	}
 
 	private removeNonControllerNodes(): void {
-		this.removePlaceholderNodes();
-		this.removeDefectiveControllerNodes();
+		this.removePlaceholderNodes(this.root.children);
+		this.removeDefectiveControllerNodes(this.root.children);
 	}
 
-	private removePlaceholderNodes(): void {
-		let nodes = this.root.children;
+	private removePlaceholderNodes(nodes: TreeNode[]): void {
 		if (nodes.length > 0) {
 			for (let i = 0; i < nodes.length; ++i) {
 				if (nodes[i] instanceof AddControllerNode ||
@@ -101,8 +104,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		}
 	}
 
-	private removeDefectiveControllerNodes(): void {
-		let nodes = this.root.children;
+	private removeDefectiveControllerNodes(nodes: TreeNode[]): void {
 		if (nodes.length > 0) {
 			for (let i = 0; i < nodes.length; ++i) {
 				if (nodes[i] instanceof ControllerNode) {
@@ -116,31 +118,42 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 	}
 
 	private async loadSavedControllers(): Promise<void> {
-		this.root.clearChildren();
-		let controllers: IControllerInfoSlim[] = this.memento.get('controllers');
-		if (controllers) {
-			for (const c of controllers) {
-				let password = undefined;
-				if (c.rememberPassword) {
-					password = await this.getPassword(c.url, c.username);
+		// Optimistically set to true so we don't double-load the tree
+		this.initialized = true;
+		try {
+			let controllers: IControllerInfoSlim[] = this.memento.get('controllers');
+			let treeNodes: TreeNode[] = [];
+			if (controllers) {
+				for (const c of controllers) {
+					let password = undefined;
+					if (c.rememberPassword) {
+						password = await this.getPassword(c.url, c.username);
+					}
+					if (!c.auth) {
+						// Added before we had added authentication
+						c.auth = 'basic';
+					}
+					treeNodes.push(new ControllerNode(
+						c.url, c.auth, c.username, password, c.rememberPassword,
+						undefined, this.root, this, undefined
+					));
 				}
-				if (!c.auth) {
-					// Added before we had added authentication
-					c.auth = 'basic';
-				}
-				this.root.addChild(new ControllerNode(
-					c.url, c.auth, c.username, password, c.rememberPassword,
-					undefined, this.root, this, undefined
-				));
+				this.removeDefectiveControllerNodes(treeNodes);
 			}
-			this.removeDefectiveControllerNodes();
+
+			this.root.clearChildren();
+			if (treeNodes.length === 0) {
+				this.root.addChild(new AddControllerNode());
+			} else {
+				treeNodes.forEach(node => this.root.addChild(node));
+			}
+			this.notifyNodeChanged();
+		} catch (err) {
+			// Reset so we can try again if the tree refreshes
+			this.initialized = false;
+			throw err;
 		}
 
-		if (!this.root.hasChildren) {
-			this.root.addChild(new AddControllerNode());
-		}
-
-		this.notifyNodeChanged();
 	}
 
 	public async saveControllers(): Promise<void> {

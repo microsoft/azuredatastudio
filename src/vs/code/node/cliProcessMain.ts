@@ -292,7 +292,7 @@ export class Main {
 	}
 }
 
-const eventPrefix = product.quality !== 'stable' ? 'adsworkbench' : 'monacoworkbench'; // {{SQL CARBON EDIT}}
+const eventPrefix = 'adsworkbench'; // {{SQL CARBON EDIT}}
 
 export async function main(argv: ParsedArgs): Promise<void> {
 	const services = new ServiceCollection();
@@ -331,7 +331,7 @@ export async function main(argv: ParsedArgs): Promise<void> {
 		const envService = accessor.get(IEnvironmentService);
 		const stateService = accessor.get(IStateService);
 
-		const { appRoot, extensionsPath, extensionDevelopmentLocationURI: extensionDevelopmentLocationURI, isBuilt, installSourcePath } = envService;
+		const { appRoot, extensionsPath, extensionDevelopmentLocationURI, isBuilt, installSourcePath } = envService;
 
 		const services = new ServiceCollection();
 

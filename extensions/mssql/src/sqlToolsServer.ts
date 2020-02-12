@@ -21,6 +21,7 @@ import { CmsService } from './cms/cmsService';
 import { CompletionExtensionParams, CompletionExtLoadRequest } from './contracts';
 import { promises as fs } from 'fs';
 import * as nls from 'vscode-nls';
+import { LanguageExtensionService } from './languageExtension/languageExtensionService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -152,6 +153,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 			AgentServicesFeature,
 			SerializationFeature,
 			SchemaCompareService.asFeature(context),
+			LanguageExtensionService.asFeature(context),
 			DacFxService.asFeature(context),
 			CmsService.asFeature(context)
 		],

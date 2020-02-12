@@ -485,12 +485,7 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 
 		// Panel to restore
 		if (!this.state.panel.hidden) {
-			const panelRegistry = Registry.as<PanelRegistry>(PanelExtensions.Panels);
-
-			let panelToRestore = this.storageService.get(PanelPart.activePanelSettingsKey, StorageScope.WORKSPACE, panelRegistry.getDefaultPanelId());
-			if (!panelRegistry.hasPanel(panelToRestore)) {
-				panelToRestore = panelRegistry.getDefaultPanelId(); // fallback to default if panel is unknown
-			}
+			let panelToRestore = this.storageService.get(PanelPart.activePanelSettingsKey, StorageScope.WORKSPACE, Registry.as<PanelRegistry>(PanelExtensions.Panels).getDefaultPanelId());
 
 			if (panelToRestore) {
 				this.state.panel.panelToRestore = panelToRestore;
@@ -1236,7 +1231,7 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 			// Otherwise, save the height of the panel
 			if (position === Position.BOTTOM) {
 				this.state.panel.lastNonMaximizedWidth = size.width;
-			} else {
+			} else if (positionFromString(oldPositionValue) === Position.BOTTOM) {
 				this.state.panel.lastNonMaximizedHeight = size.height;
 			}
 		}
@@ -1269,6 +1264,35 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 		this.updateWindowBorder();
 		this._onMaximizeChange.fire(maximized);
 	}
+
+	getVisibleNeighborPart(part: Parts, direction: Direction): Parts | undefined {
+		if (!this.workbenchGrid) {
+			return undefined;
+		}
+
+		if (!this.isVisible(part)) {
+			return undefined;
+		}
+
+		const neighborViews = this.workbenchGrid.getNeighborViews(this.getPart(part), direction, false);
+
+		if (!neighborViews) {
+			return undefined;
+		}
+
+		for (const neighborView of neighborViews) {
+			const neighborPart =
+				[Parts.ACTIVITYBAR_PART, Parts.EDITOR_PART, Parts.PANEL_PART, Parts.SIDEBAR_PART, Parts.STATUSBAR_PART, Parts.TITLEBAR_PART]
+					.find(partId => this.getPart(partId) === neighborView && this.isVisible(partId));
+
+			if (neighborPart !== undefined) {
+				return neighborPart;
+			}
+		}
+
+		return undefined;
+	}
+
 
 	private arrangeEditorNodes(editorNode: ISerializedNode, panelNode: ISerializedNode, editorSectionWidth: number): ISerializedNode[] {
 		switch (this.state.panel.position) {

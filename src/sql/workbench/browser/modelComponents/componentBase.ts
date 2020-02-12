@@ -10,7 +10,6 @@ import {
 
 import * as types from 'vs/base/common/types';
 
-import { IComponent, IComponentDescriptor, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import * as azdata from 'azdata';
 import { Emitter } from 'vs/base/common/event';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
@@ -21,7 +20,7 @@ import { EventType, addDisposableListener } from 'vs/base/browser/dom';
 import { IKeyboardEvent, StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { endsWith } from 'vs/base/common/strings';
 import { firstIndex } from 'vs/base/common/arrays';
-
+import { IComponentDescriptor, IComponent, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 
 export type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
 

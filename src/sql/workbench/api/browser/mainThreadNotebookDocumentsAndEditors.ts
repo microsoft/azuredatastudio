@@ -35,7 +35,7 @@ import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/common/mod
 import { FileNotebookInput } from 'sql/workbench/contrib/notebook/common/models/fileNotebookInput';
 import { find } from 'vs/base/common/arrays';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 
@@ -95,7 +95,7 @@ class MainThreadNotebookEditor extends Disposable {
 	}
 
 	public save(): Thenable<boolean> {
-		return this.textFileService.save(this.uri);
+		return this.textFileService.save(this.uri).then(uri => !!uri);
 	}
 
 	public matches(input: NotebookInput): boolean {
@@ -351,7 +351,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let uriString = URI.revive(uri).toString();
 		let editor = this._notebookEditors.get(uriString);
 		if (editor) {
-			return editor.save();
+			return editor.save().then(uri => !!uri);
 		} else {
 			return Promise.resolve(false);
 		}
@@ -458,8 +458,13 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		};
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
-		const fileInput = isUntitled ? this._untitledEditorService.createOrGet(uri, 'notebook', options.initialContent) :
-			this._editorService.createInput({ resource: uri, mode: 'notebook' });
+		let fileInput;
+		if (isUntitled && path.isAbsolute(uri.fsPath)) {
+			fileInput = this._untitledEditorService.create({ associatedResource: uri, mode: 'notebook', initialValue: options.initialContent });
+		} else {
+			fileInput = isUntitled ? this._untitledEditorService.create({ untitledResource: uri, mode: 'notebook', initialValue: options.initialContent }) :
+				this._editorService.createInput({ resource: uri, mode: 'notebook' });
+		}
 		let input: NotebookInput;
 		if (isUntitled) {
 			input = this._instantiationService.createInstance(UntitledNotebookInput, path.basename(uri.fsPath), uri, fileInput as UntitledTextEditorInput);
@@ -720,7 +725,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
 					if (result.next.scheme === Schemas.untitled) {
-						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.next.path)}`);
+						let untitledNbName: URI = URI.parse(`untitled:${result.next.path}`);
 						let content = await this._fileService.readFile(URI.file(result.next.path));
 						await this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
 					}
@@ -733,7 +738,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
 					if (result.previous.scheme === Schemas.untitled) {
-						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.previous.path)}`);
+						let untitledNbName: URI = URI.parse(`untitled:${result.previous.path}`);
 						let content = await this._fileService.readFile(URI.file(result.previous.path));
 						await this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
 					}

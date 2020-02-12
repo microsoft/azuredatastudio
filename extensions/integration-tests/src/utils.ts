@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { TestServerProfile, TestConnectionInfo } from './testConfig';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined, promisify } from 'util';
 
 // default server connection timeout
 export const DefaultConnectTimeoutInMs: number = 10000;
@@ -217,13 +217,13 @@ export async function assertFileGenerationResult(filepath: string, retryCount: n
 	let exists = false;
 	while (retryCount > 0 && !exists) {
 		--retryCount;
-		exists = fs.existsSync(filepath);
+		exists = await promisify(fs.exists)(filepath);
 		await sleep(5000);
 	}
 
 	assert(exists, `File ${filepath} is expected to be present`);
-	assert(fs.readFileSync(filepath).byteLength > 0, 'File ${filepath} should not be empty');
-	fs.unlinkSync(filepath);
+	assert((await fs.promises.readFile(filepath)).byteLength > 0, 'File ${filepath} should not be empty');
+	await fs.promises.unlink(filepath);
 }
 
 /**

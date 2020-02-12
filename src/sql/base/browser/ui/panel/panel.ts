@@ -69,7 +69,7 @@ export class TabbedPanel extends Disposable {
 	private body: HTMLElement;
 	private parent: HTMLElement;
 	private _actionbar: ActionBar;
-	private _currentDimensions: DOM.Dimension;
+	private _currentDimensions?: DOM.Dimension;
 	private _collapsed = false;
 	private _headerVisible: boolean;
 	private _styleElement: HTMLStyleElement;
@@ -130,7 +130,9 @@ export class TabbedPanel extends Disposable {
 		if (this._tabMap.size > 1 && !this._headerVisible) {
 			this.parent.insertBefore(this.header, this.parent.firstChild);
 			this._headerVisible = true;
-			this.layout(this._currentDimensions);
+			if (this._currentDimensions) {
+				this.layout(this._currentDimensions);
+			}
 		}
 		return tab.identifier as PanelTabIdentifier;
 	}
@@ -287,7 +289,9 @@ export class TabbedPanel extends Disposable {
 		if (!this.options.showHeaderWhenSingleView && this._tabMap.size === 1 && this._headerVisible) {
 			this.header.remove();
 			this._headerVisible = false;
-			this.layout(this._currentDimensions);
+			if (this._currentDimensions) {
+				this.layout(this._currentDimensions);
+			}
 		}
 	}
 

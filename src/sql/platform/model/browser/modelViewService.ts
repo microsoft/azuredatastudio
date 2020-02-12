@@ -4,14 +4,26 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { IItemConfig, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IComponentEventArgs } from 'sql/workbench/browser/modelComponents/interfaces';
 import { Event } from 'vs/base/common/event';
+import { IComponentEventArgs, ModelComponentTypes } from 'sql/platform/dashboard/browser/interfaces';
 
 export interface IView {
 	readonly id: string;
 	readonly connection: azdata.connection.Connection;
 	readonly serverInfo: azdata.ServerInfo;
+}
+
+export interface IComponentShape {
+	type: ModelComponentTypes;
+	id: string;
+	properties?: { [key: string]: any };
+	layout?: any;
+	itemConfigs?: IItemConfig[];
+}
+
+export interface IItemConfig {
+	componentShape: IComponentShape;
+	config: any;
 }
 
 export interface IModelViewEventArgs extends IComponentEventArgs {
