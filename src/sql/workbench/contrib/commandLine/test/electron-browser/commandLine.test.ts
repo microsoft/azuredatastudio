@@ -24,7 +24,6 @@ import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { TestEditorService, TestDialogService, workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
-import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
 import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
 import { Event } from 'vs/base/common/event';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
@@ -32,8 +31,8 @@ import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
 
 class TestParsedArgs implements ParsedArgs {
 	[arg: string]: any;
@@ -392,10 +391,8 @@ suite('commandLineService tests', () => {
 		querymodelService.setup(c => c.onRunQueryComplete).returns(() => Event.None);
 		let uri = URI.file(args._[0]);
 		const workbenchinstantiationService = workbenchInstantiationService();
-		const accessor = workbenchinstantiationService.createInstance(ServiceAccessor);
-		const service = accessor.untitledTextEditorService;
-		const untitledEditorInput = workbenchinstantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: uri }));
-		const queryInput = new UntitledQueryEditorInput(undefined, untitledEditorInput, undefined, connectionManagementService.object, querymodelService.object, configurationService.object);
+		const editorInput = workbenchinstantiationService.createInstance(FileEditorInput, uri, undefined, undefined);
+		const queryInput = new FileQueryEditorInput(undefined, editorInput, undefined, connectionManagementService.object, querymodelService.object, configurationService.object);
 		queryInput.state.connected = true;
 		const editorService: TypeMoq.Mock<IEditorService> = TypeMoq.Mock.ofType<IEditorService>(TestEditorService, TypeMoq.MockBehavior.Strict);
 		editorService.setup(e => e.editors).returns(() => [queryInput]);
@@ -568,9 +565,3 @@ suite('commandLineService tests', () => {
 
 	});
 });
-
-class ServiceAccessor {
-	constructor(
-		@IUntitledTextEditorService public readonly untitledTextEditorService: IUntitledTextEditorService
-	) { }
-}
