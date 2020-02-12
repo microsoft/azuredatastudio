@@ -90,6 +90,11 @@ export class AddNewPackageTab {
 			await view.initializeModel(formModel);
 
 			await this.resetPageFields();
+
+			// Search package by name when pressing enter
+			this.newPackagesSearchBar.onEnterKeyPressed(async () => {
+				await this.loadNewPackageInfo();
+			});
 		});
 	}
 
