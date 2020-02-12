@@ -30,8 +30,9 @@ import { IHighlight } from 'vs/base/browser/ui/highlightedlabel/highlightedLabel
 import { variableSetEmitter, VariablesRenderer } from 'vs/workbench/contrib/debug/browser/variablesView';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { dispose } from 'vs/base/common/lifecycle';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 const MAX_VALUE_RENDER_LENGTH_IN_VIEWLET = 1024;
 let ignoreVariableSetEmitter = false;
@@ -52,8 +53,10 @@ export class WatchExpressionsView extends ViewPane {
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IContextKeyService contextKeyService: IContextKeyService,
+		@IOpenerService openerService: IOpenerService,
+		@IThemeService themeService: IThemeService,
 	) {
-		super({ ...(options as IViewPaneOptions), ariaHeaderLabel: nls.localize('watchExpressionsSection', "Watch Expressions Section") }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService);
+		super({ ...(options as IViewPaneOptions), ariaHeaderLabel: nls.localize('watchExpressionsSection', "Watch Expressions Section") }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService);
 
 		this.onWatchExpressionsUpdatedScheduler = new RunOnceScheduler(() => {
 			this.needsRefresh = false;
@@ -62,6 +65,8 @@ export class WatchExpressionsView extends ViewPane {
 	}
 
 	renderBody(container: HTMLElement): void {
+		super.renderBody(container);
+
 		dom.addClass(container, 'debug-watch');
 		const treeContainer = renderViewTree(container);
 
@@ -83,7 +88,7 @@ export class WatchExpressionsView extends ViewPane {
 			},
 			dnd: new WatchExpressionsDragAndDrop(this.debugService),
 			overrideStyles: {
-				listBackground: SIDE_BAR_BACKGROUND
+				listBackground: this.getBackgroundColor()
 			}
 		});
 
@@ -138,6 +143,11 @@ export class WatchExpressionsView extends ViewPane {
 		this._register(this.debugService.getViewModel().onDidSelectExpression(e => {
 			if (e instanceof Expression && e.name) {
 				this.tree.rerender(e);
+			}
+		}));
+		this._register(this.viewDescriptorService.onDidChangeLocation(({ views, from, to }) => {
+			if (views.some(v => v.id === this.id)) {
+				this.tree.updateOptions({ overrideStyles: { listBackground: this.getBackgroundColor() } });
 			}
 		}));
 	}

@@ -35,6 +35,7 @@ import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/u
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser/simpleProgressIndicator';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -108,7 +109,8 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		@Inject(IModeService) private _modeService: IModeService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
-		@Inject(ILogService) private readonly logService: ILogService
+		@Inject(ILogService) private readonly logService: ILogService,
+		@Inject(IEditorService) private readonly editorService: IEditorService
 	) {
 		super();
 		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
@@ -210,11 +212,11 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		let uri = this.cellModel.cellUri;
 		let cellModelSource: string;
 		cellModelSource = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
-		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, uri, false, this.cellModel.language, cellModelSource, '');
+		this._editorInput = this.editorService.createInput({ forceUntitled: true, resource: uri, mode: this.cellModel.language, contents: cellModelSource }) as UntitledTextEditorInput;
 		await this._editor.setInput(this._editorInput, undefined);
 		this.setFocusAndScroll();
 
-		let untitledEditorModel: UntitledTextEditorModel = await this._editorInput.resolve();
+		let untitledEditorModel = await this._editorInput.resolve() as UntitledTextEditorModel;
 		this._editorModel = untitledEditorModel.textEditorModel;
 
 		let isActive = this.cellModel.id === this._activeCellId;
