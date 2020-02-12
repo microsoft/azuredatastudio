@@ -12,13 +12,7 @@
     "*"
   ],
   "main": "./out/main",
-  "extensionDependencies": [
-    "Microsoft.agent",
-    "Microsoft.import",
-    "Microsoft.profiler",
-    "Microsoft.mssql",
-    "Microsoft.notebook"
-  ],
+  "extensionDependencies": [],
   "contributes": {
     "configuration": {
       "type": "object",
