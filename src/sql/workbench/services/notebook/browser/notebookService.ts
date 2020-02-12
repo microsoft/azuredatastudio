@@ -101,8 +101,8 @@ export interface INotebookService {
 	 * sent to listeners that can act on the point-in-time notebook state
 	 * @param notebookUri The URI identifying a notebook.
 	 * @param changeType The type of notebook state change to serialize.
-	 * @param cell The notebook cell associated with the state change.
-	 * @param isTrusted A manual override for the notebook's trusted state.
+	 * @param cell (Optional) The notebook cell associated with the state change.
+	 * @param isTrusted (Optional) A manual override for the notebook's trusted state.
 	 */
 	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel, isTrusted?: boolean): Promise<void>;
 
