@@ -36,6 +36,8 @@ import { INotebookEditor, INotebookManager } from 'sql/workbench/services/notebo
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { startsWith } from 'vs/base/common/strings';
 import { assign } from 'vs/base/common/objects';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 
 class ServiceAccessor {
@@ -68,7 +70,17 @@ suite('Notebook Editor Model', function (): void {
 	const notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
 	let memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
 	memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
-	const queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
+	let testinstantiationService = new TestInstantiationService();
+	testinstantiationService.stub(IStorageService, new TestStorageService());
+	const queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose,
+		undefined, // connection store
+		undefined, // connection status manager
+		undefined, // connection dialog service
+		testinstantiationService, // instantiation service
+		undefined, // editor service
+		undefined, // telemetry service
+		undefined, // configuration service
+		new TestCapabilitiesService());
 	queryConnectionService.callBase = true;
 	const capabilitiesService = TypeMoq.Mock.ofType(TestCapabilitiesService);
 	const configurationService = new TestConfigurationService();

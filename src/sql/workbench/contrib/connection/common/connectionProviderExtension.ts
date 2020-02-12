@@ -133,7 +133,7 @@ const ConnectionProviderContrib: IJSONSchema = {
 
 const connectionProviderExtPoint = ExtensionsRegistry.registerExtensionPoint<ConnectionProviderProperties | ConnectionProviderProperties[]>({ extensionPoint: 'connectionProvider', jsonSchema: ConnectionProviderContrib });
 
-class ResourceLabelFormattersHandler implements IWorkbenchContribution {
+class ConnectionProviderHandler implements IWorkbenchContribution {
 	private disposables = new Map<ConnectionProviderProperties, IDisposable>();
 
 	constructor(@ICapabilitiesService capabilitiesService: ICapabilitiesService) {
@@ -166,7 +166,7 @@ class ResourceLabelFormattersHandler implements IWorkbenchContribution {
 	}
 }
 
-Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(ResourceLabelFormattersHandler, LifecyclePhase.Restored);
+Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(ConnectionProviderHandler, LifecyclePhase.Restored);
 
 function resolveIconPath(extension: IExtensionPointUser<any>): void {
 	if (!extension || !extension.value) { return undefined; }
