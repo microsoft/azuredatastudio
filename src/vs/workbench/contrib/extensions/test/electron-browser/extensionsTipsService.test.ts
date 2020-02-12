@@ -496,7 +496,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		});
 	});
 
-	test.only('test global extensions are modified and recommendation change event is fired when an extension is ignored', async () => {
+	test('test global extensions are modified and recommendation change event is fired when an extension is ignored', async () => {
 		const storageSetterTarget = sinon.spy();
 		const changeHandlerTarget = sinon.spy();
 		const ignoredExtensionId = 'Some.Extension';
