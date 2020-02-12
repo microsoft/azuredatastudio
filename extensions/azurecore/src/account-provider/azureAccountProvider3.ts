@@ -14,7 +14,9 @@ const atob = require('atob');
 import * as url from 'url';
 
 import {
-	AzureAccountProviderMetadata, Tenant,
+	AzureAccountProviderMetadata,
+	Tenant,
+	AzureAccount
 } from './interfaces';
 
 import TokenCache from './tokenCache';
@@ -32,9 +34,15 @@ interface Token {
 	accountName: string;
 	scope: string;
 	sessionId: string; // The account id + the scope
+
+	displayName: string
+	iss: string
 }
 
 export class AzureAccountProvider implements azdata.AccountProvider {
+	private static WorkSchoolAccountType: string = 'work_school';
+	private static MicrosoftAccountType: string = 'microsoft';
+
 	private readonly loginEndpointUrl: string;
 	private readonly commonTenant: string;
 	private readonly redirectUri: string;
@@ -99,10 +107,40 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			throw Error('something');
 		}
 
-		const tenants = this.getTenants(token);
-		console.log(token);
-		console.log(tenants);
-		return undefined;
+		const tenants = await this.getTenants(token);
+
+		// Determine if this is a microsoft account
+		let msa = token.iss === 'https://sts.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/';
+
+		let contextualDisplayName = msa
+			? localize('microsoftAccountDisplayName', "Microsoft Account")
+			: token.displayName;
+
+		let accountType = msa
+			? AzureAccountProvider.MicrosoftAccountType
+			: AzureAccountProvider.WorkSchoolAccountType;
+
+		const account = {
+			key: {
+				providerId: this.metadata.id,
+				accountId: token.accountName
+			},
+			name: token.accountName,
+			displayInfo: {
+				accountType: accountType,
+				userId: token.accountName,
+				contextualDisplayName: contextualDisplayName,
+				displayName: token.displayName
+			},
+			properties: {
+				providerSettings: this.metadata,
+				isMsAccount: msa,
+				tenants,
+			},
+			isStale: false
+		} as AzureAccount;
+
+		return account;
 	}
 
 	private async makeWebRequest(token: Token, uri: string): Promise<any> {
@@ -118,17 +156,37 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	private async getTenants(token: Token): Promise<Tenant[]> {
-		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
-
-		console.log(tenantUri);
-		try {
-			const x = await this.makeWebRequest(token, tenantUri);
-			console.log(x);
-		} catch (ex) {
-			console.log(ex);
+		interface TenantResponse { // https://docs.microsoft.com/en-us/rest/api/resources/tenants/list
+			id: string
+			tenantId: string
+			displayName?: string
+			tenantCategory?: string
 		}
 
-		return undefined;
+		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
+		try {
+			const tenantResponse = await this.makeWebRequest(token, tenantUri);
+			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
+				return {
+					id: tenantInfo.tenantId,
+					displayName: tenantInfo.displayName ? tenantInfo.displayName : localize('azureWorkAccountDisplayName', "Work or school account"),
+					userId: token.accountName,
+					tenantCategory: tenantInfo.tenantCategory
+				} as Tenant;
+			});
+
+			const homeTenantIndex = tenants.findIndex(tenant => tenant.tenantCategory === 'Home');
+			if (homeTenantIndex >= 0) {
+				const homeTenant = tenants.splice(homeTenantIndex, 1);
+				tenants.unshift(homeTenant[0]);
+			}
+
+			return tenants;
+		} catch (ex) {
+			//TODO cleaner errors
+			console.log(ex);
+			throw new Error('Error retreiving tenant information');
+		}
 	}
 
 	private async getTokenWithAuthCode(authCode: string, codeVerifier: string, scope: string, redirectUri: string): Promise<Token | undefined> {
@@ -160,7 +218,9 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 				refreshToken: tokenResponse.data.refresh_token,
 				scope: tokenResponse.data.scope,
 				sessionId: `${tokenClaims.tid}/${(tokenClaims.oid || (tokenClaims.altsecid || '' + tokenClaims.ipd || ''))}/${scope}`,
-				accountName: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name
+				accountName: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name,
+				displayName: tokenClaims.name,
+				iss: tokenClaims.iss
 			};
 
 			return tokenResult;
