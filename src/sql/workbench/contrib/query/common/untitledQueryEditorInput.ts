@@ -11,12 +11,10 @@ import { IQueryModelService } from 'sql/workbench/services/query/common/queryMod
 import { IEncodingSupport, EncodingMode } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
-import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 
-type PublicPart<T> = { [K in keyof T]: T[K] };
-
-export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport, PublicPart<UntitledTextEditorInput> {
+export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport {
 
 	public static readonly ID = 'workbench.editorInput.untitledQueryInput';
 

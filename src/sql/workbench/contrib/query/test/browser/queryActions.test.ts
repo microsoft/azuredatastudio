@@ -32,7 +32,7 @@ import { URI } from 'vs/base/common/uri';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { LabelService } from 'vs/workbench/services/label/common/labelService';
 
 suite('SQL QueryAction Tests', () => {
