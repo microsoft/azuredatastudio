@@ -155,13 +155,14 @@ export class GlobalNewUntitledFileAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IEditorService private readonly editorService: IEditorService
+		@ICommandService private readonly commandService: ICommandService // {{ SQL CARBON EDIT }} - commandService to open newQuery
 	) {
 		super(id, label);
 	}
 
 	run(): Promise<any> {
-		return this.editorService.openEditor({ options: { pinned: true } }); // untitled are always pinned
+		// {{ SQL CARBON EDIT }} - open newQuery
+		return this.commandService.executeCommand('objectExplorer.newQuery');
 	}
 }
 
