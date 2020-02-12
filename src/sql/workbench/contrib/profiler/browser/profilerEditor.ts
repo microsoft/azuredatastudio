@@ -53,6 +53,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { find } from 'vs/base/common/arrays';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
+import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {
@@ -162,7 +163,7 @@ export class ProfilerEditor extends BaseEditor {
 		@IProfilerService private _profilerService: IProfilerService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IEditorService private readonly editorService: IEditorService,
+		@IEditorService editorService: IEditorService,
 		@IStorageService storageService: IStorageService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
@@ -433,7 +434,8 @@ export class ProfilerEditor extends BaseEditor {
 		editorContainer.className = 'profiler-editor';
 		this._editor.create(editorContainer);
 		this._editor.setVisible(true);
-		this._editorInput = this.editorService.createInput({ forceUntitled: true, mode: 'sql', resource: URI.from({ scheme: Schemas.untitled }) }) as UntitledTextEditorInput;
+		const model = this._instantiationService.createInstance(UntitledTextEditorModel, URI.from({ scheme: Schemas.untitled }), false, undefined, 'sql', undefined);
+		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 		this._editor.setInput(this._editorInput, undefined);
 		this._editorInput.resolve().then(model => this._editorModel = model.textEditorModel);
 		return editorContainer;
