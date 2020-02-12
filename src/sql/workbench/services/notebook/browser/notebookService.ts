@@ -101,7 +101,7 @@ export interface INotebookService {
 	 * sent to listeners that can act on the point-in-time notebook state
 	 * @param notebookUri the URI identifying a notebook
 	 */
-	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel): void;
+	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel, isTrusted?: boolean): Promise<void>;
 
 	/**
 	 *

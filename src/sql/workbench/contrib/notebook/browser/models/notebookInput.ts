@@ -160,7 +160,8 @@ export class NotebookEditorModel extends EditorModel {
 	private sendNotebookSerializationStateChange(): void {
 		let notebookModel = this.getNotebookModel();
 		if (notebookModel) {
-			this.notebookService.serializeNotebookStateChange(this.notebookUri, NotebookChangeType.Saved);
+			this.notebookService.serializeNotebookStateChange(this.notebookUri, NotebookChangeType.Saved)
+				.catch(() => { });
 		}
 	}
 
@@ -283,14 +284,23 @@ export abstract class NotebookInput extends EditorInput {
 		return this._standardKernels;
 	}
 
-	save(groupId: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
-		this._model.getNotebookModel().trustedMode = true;
-		return this.textInput.save(groupId, options);
+	async save(groupId: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+		let input = await this.textInput.save(groupId, options);
+		await this.setTrustForNewEditor(input);
+		return input;
 	}
 
-	saveAs(group: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
-		this._model.getNotebookModel().trustedMode = true;
-		return this.textInput.saveAs(group, options);
+	async saveAs(group: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+		let input = await this.textInput.saveAs(group, options);
+		await this.setTrustForNewEditor(input);
+		return input;
+	}
+
+	private async setTrustForNewEditor(newInput: IEditorInput | undefined): Promise<void> {
+		let isTrusted = this._model.getNotebookModel().trustedMode;
+		if (isTrusted && newInput && newInput.getResource() !== this.getResource()) {
+			await this.notebookService.serializeNotebookStateChange(newInput.getResource(), NotebookChangeType.Saved, undefined, true);
+		}
 	}
 
 	public set standardKernels(value: IStandardKernelWithProvider[]) {
