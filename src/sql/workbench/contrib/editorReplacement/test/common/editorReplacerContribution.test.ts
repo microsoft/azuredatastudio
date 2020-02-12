@@ -158,7 +158,7 @@ suite('Editor Replacer Contribution', () => {
 		const contrib = instantiationService.createInstance(EditorReplacementContribution);
 		const accessor = instantiationService.createInstance(ServiceAccessor);
 		const service = accessor.untitledTextEditorService;
-		const input = instantiationService.createInstance(UntitledTextEditorInput, service.create());
+		const input = instantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: URI.file('/test/file.unknown') }));
 		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
 		assert(response === undefined);
 
