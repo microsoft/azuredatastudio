@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as crypto from 'crypto';
