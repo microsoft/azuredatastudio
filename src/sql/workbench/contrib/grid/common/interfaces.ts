@@ -15,23 +15,10 @@ export interface IGridDataSet {
 	minHeight: number | string;
 }
 
-export enum SaveFormat {
-	CSV = 'csv',
-	JSON = 'json',
-	EXCEL = 'excel',
-	XML = 'xml'
-}
-
 export interface IGridInfo {
 	batchIndex: number;
 	resultSetNumber: number;
 	selection: Slick.Range[];
 	gridIndex: number;
 	rowIndex?: number;
-}
-export interface ISaveRequest {
-	format: SaveFormat;
-	batchIndex: number;
-	resultSetNumber: number;
-	selection: Slick.Range[];
 }

@@ -10,8 +10,8 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/contrib/notebook/common/models/contracts';
-import { nbversion } from 'sql/workbench/contrib/notebook/common/models/notebookConstants';
+import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import * as notebookUtils from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';

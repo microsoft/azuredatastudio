@@ -17,7 +17,7 @@ import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColu
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { escape } from 'sql/base/common/strings';
-import { DataService } from 'sql/workbench/contrib/grid/common/dataService';
+import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -115,7 +115,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		// Add the subscription to the list of things to be disposed on destroy, or else on a new component init
 		// may get the "destroyed" object still getting called back.
-		this.subscribeWithDispose(this.dataService.queryEventObserver, (event) => {
+		this.toDispose.add(this.dataService.queryEvents(event => {
 			switch (event.type) {
 				case 'start':
 					self.handleStart(self, event);
@@ -136,7 +136,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					this.logService.error('Unexpected query event type "' + event.type + '" sent');
 					break;
 			}
-		});
+		}));
 		this.dataService.onLoaded();
 	}
 

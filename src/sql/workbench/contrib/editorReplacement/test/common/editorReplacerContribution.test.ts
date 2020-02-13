@@ -28,6 +28,7 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 
 const languageAssociations = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -122,7 +123,10 @@ suite('Editor Replacer Contribution', () => {
 		const instantiationService = workbenchInstantiationService();
 		instantiationService.stub(IEditorService, editorService);
 		const contrib = instantiationService.createInstance(EditorReplacementContribution);
-		const input = instantiationService.createInstance(UntitledTextEditorInput, URI.file('/test/file'), false, undefined, undefined, undefined);
+		const accessor = instantiationService.createInstance(ServiceAccessor);
+		const service = accessor.untitledTextEditorService;
+
+		const input = instantiationService.createInstance(UntitledTextEditorInput, service.create());
 		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
 		assert(response?.override);
 		const newinput = <any>(await response.override) as EditorInput; // our test service returns this so we are fine to cast this
@@ -137,7 +141,9 @@ suite('Editor Replacer Contribution', () => {
 		const instantiationService = workbenchInstantiationService();
 		instantiationService.stub(IEditorService, editorService);
 		const contrib = instantiationService.createInstance(EditorReplacementContribution);
-		const untitled = instantiationService.createInstance(UntitledTextEditorInput, URI.file('/test/file'), false, undefined, undefined, undefined);
+		const accessor = instantiationService.createInstance(ServiceAccessor);
+		const service = accessor.untitledTextEditorService;
+		const untitled = instantiationService.createInstance(UntitledTextEditorInput, service.create());
 		const input = instantiationService.createInstance(UntitledQueryEditorInput, '', untitled, undefined);
 		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
 		assert(response === undefined);
@@ -150,7 +156,9 @@ suite('Editor Replacer Contribution', () => {
 		const instantiationService = workbenchInstantiationService();
 		instantiationService.stub(IEditorService, editorService);
 		const contrib = instantiationService.createInstance(EditorReplacementContribution);
-		const input = instantiationService.createInstance(UntitledTextEditorInput, URI.file('/test/file.unknown'), false, undefined, undefined, undefined);
+		const accessor = instantiationService.createInstance(ServiceAccessor);
+		const service = accessor.untitledTextEditorService;
+		const input = instantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: URI.file('/test/file.unknown') }));
 		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
 		assert(response === undefined);
 
@@ -253,4 +261,10 @@ class TestModeService implements IModeService {
 	triggerMode(commaSeparatedMimetypesOrCommaSeparatedIds: string): void {
 		throw new Error('Method not implemented.');
 	}
+}
+
+class ServiceAccessor {
+	constructor(
+		@IUntitledTextEditorService public readonly untitledTextEditorService: IUntitledTextEditorService
+	) { }
 }

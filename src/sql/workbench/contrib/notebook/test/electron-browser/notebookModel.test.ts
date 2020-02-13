@@ -16,7 +16,7 @@ import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/not
 import { ModelFactory } from 'sql/workbench/contrib/notebook/browser/models/modelFactory';
 import { IClientSession, INotebookModelOptions, NotebookContentChange, IClientSessionOptions } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { ClientSession } from 'sql/workbench/contrib/notebook/browser/models/clientSession';
-import { CellTypes, NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { Deferred } from 'sql/base/common/promise';
 import { Memento } from 'vs/workbench/common/memento';
 import { Emitter } from 'vs/base/common/event';

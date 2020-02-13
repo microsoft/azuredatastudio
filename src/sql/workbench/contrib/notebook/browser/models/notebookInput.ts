@@ -16,17 +16,17 @@ import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { Schemas } from 'vs/base/common/network';
-import { ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
+import { ITextFileSaveOptions, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { Deferred } from 'sql/base/common/promise';
 import { NotebookTextFileModel } from 'sql/workbench/contrib/notebook/browser/models/notebookTextFileModel';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
-import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
+import { UntitledTextEditorModel, IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
@@ -42,7 +42,7 @@ export class NotebookEditorModel extends EditorModel {
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
 	private _lastEditFullReplacement: boolean;
 	constructor(public readonly notebookUri: URI,
-		private textEditorModel: TextFileEditorModel | UntitledTextEditorModel | ResourceEditorModel,
+		private textEditorModel: ITextFileEditorModel | IUntitledTextEditorModel | ResourceEditorModel,
 		@INotebookService private notebookService: INotebookService,
 		@ITextResourcePropertiesService private textResourcePropertiesService: ITextResourcePropertiesService
 	) {
@@ -198,7 +198,7 @@ export abstract class NotebookInput extends EditorInput {
 	private _parentContainer: HTMLElement;
 	private readonly _layoutChanged: Emitter<void> = this._register(new Emitter<void>());
 	private _model: NotebookEditorModel;
-	private _untitledEditorModel: UntitledTextEditorModel;
+	private _untitledEditorModel: IUntitledTextEditorModel;
 	private _contentManager: IContentManager;
 	private _providersLoaded: Promise<void>;
 	private _dirtyListener: IDisposable;
@@ -328,11 +328,11 @@ export abstract class NotebookInput extends EditorInput {
 		return this.resource;
 	}
 
-	public get untitledEditorModel(): UntitledTextEditorModel {
+	public get untitledEditorModel(): IUntitledTextEditorModel {
 		return this._untitledEditorModel;
 	}
 
-	public set untitledEditorModel(value: UntitledTextEditorModel) {
+	public set untitledEditorModel(value: IUntitledTextEditorModel) {
 		this._untitledEditorModel = value;
 	}
 
@@ -346,7 +346,7 @@ export abstract class NotebookInput extends EditorInput {
 		if (this._model) {
 			return Promise.resolve(this._model);
 		} else {
-			let textOrUntitledEditorModel: TextFileEditorModel | UntitledTextEditorModel | ResourceEditorModel;
+			let textOrUntitledEditorModel: ITextFileEditorModel | IUntitledTextEditorModel | ResourceEditorModel;
 			if (this.resource.scheme === Schemas.untitled) {
 				if (this._untitledEditorModel) {
 					this._untitledEditorModel.textEditorModel.onBeforeAttached();
