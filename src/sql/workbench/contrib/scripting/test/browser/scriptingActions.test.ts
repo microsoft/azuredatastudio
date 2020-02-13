@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import { handleOeRefreshCommand } from 'sql/workbench/contrib/scripting/browser/scriptingActions';
-import { ObjectExplorerActionsContext } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerActions';
+import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';

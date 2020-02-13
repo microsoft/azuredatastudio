@@ -10,8 +10,8 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ServerTreeActionProvider } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeActionProvider';
-import { ObjectExplorerActionsContext } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerActions';
+import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/browser/serverTreeActionProvider';
+import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 
 /**

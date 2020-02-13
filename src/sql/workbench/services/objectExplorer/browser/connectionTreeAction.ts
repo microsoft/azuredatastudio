@@ -7,18 +7,22 @@ import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import Severity from 'vs/base/common/severity';
-import { ObjectExplorerActionsContext } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerActions';
+import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ILogService } from 'vs/platform/log/common/log';
+
+export interface IServerView {
+	showFilteredTree(filter: string): void;
+	refreshTree(): void;
+}
 
 export class RefreshAction extends Action {
 
@@ -219,7 +223,7 @@ export class ActiveConnectionsFilterAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private view: ServerTreeView
+		private view: IServerView
 	) {
 		super(id, label);
 		this.class = ActiveConnectionsFilterAction.enabledClass;
@@ -265,7 +269,7 @@ export class RecentConnectionsFilterAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private view: ServerTreeView
+		private view: IServerView
 	) {
 		super(id, label);
 		this.class = RecentConnectionsFilterAction.enabledClass;

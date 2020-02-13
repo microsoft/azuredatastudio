@@ -12,7 +12,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import {
 	DisconnectConnectionAction, AddServerAction,
 	DeleteConnectionAction, RefreshAction, EditServerGroupAction
-} from 'sql/workbench/contrib/objectExplorer/browser/connectionTreeAction';
+} from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
@@ -21,9 +21,9 @@ import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/t
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';
 import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
-import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
+import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
-import { ServerInfoContextKey } from 'sql/workbench/contrib/connection/common/serverInfoContextKey';
+import { ServerInfoContextKey } from 'sql/workbench/services/connection/common/serverInfoContextKey';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
 import { firstIndex, find } from 'vs/base/common/arrays';

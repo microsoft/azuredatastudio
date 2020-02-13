@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!sql/media/objectTypes/objecttypes';
-import 'vs/css!sql/media/icons/common-icons';
+import 'vs/css!./media/objectTypes/objecttypes';
 
 import * as dom from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
@@ -14,7 +13,7 @@ import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
-import { badgeRenderer, iconRenderer } from 'sql/workbench/contrib/objectExplorer/browser/iconRenderer';
+import { badgeRenderer, iconRenderer } from 'sql/workbench/services/objectExplorer/browser/iconRenderer';
 import { URI } from 'vs/base/common/uri';
 
 export interface IConnectionTemplateData {
