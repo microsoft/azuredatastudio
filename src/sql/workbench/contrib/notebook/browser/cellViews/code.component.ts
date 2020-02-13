@@ -22,7 +22,7 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';
-import { CellTypes } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/browser/notebookService';
 import * as notebookUtils from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';

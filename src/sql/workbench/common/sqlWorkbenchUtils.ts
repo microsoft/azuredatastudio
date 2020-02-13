@@ -11,11 +11,11 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
  * 'mssql' or other sections are not available from this.
  */
 export function getSqlConfigSection(workspaceConfigService: IConfigurationService, sectionName: string): any {
-	let config = workspaceConfigService.getValue(ConnectionConstants.sqlConfigSectionName);
+	let config = workspaceConfigService.getValue<{ [key: string]: any }>(ConnectionConstants.sqlConfigSectionName);
 	return config ? config[sectionName] : {};
 }
 
 export function getSqlConfigValue<T>(workspaceConfigService: IConfigurationService, configName: string): T {
-	let config = workspaceConfigService.getValue(ConnectionConstants.sqlConfigSectionName);
+	let config = workspaceConfigService.getValue<{ [key: string]: any }>(ConnectionConstants.sqlConfigSectionName);
 	return config[configName];
 }

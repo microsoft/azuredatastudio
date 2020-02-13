@@ -10,7 +10,7 @@ import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 
 import * as notebookUtils from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
-import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
 import { ICellModel, notebookConstants, IOutputChangedEvent, FutureInternal, CellExecutionState, ICellModelOptions } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';

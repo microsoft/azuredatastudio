@@ -21,7 +21,7 @@ import { LocalContentManager } from 'sql/workbench/services/notebook/common/loca
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { Deferred } from 'sql/base/common/promise';
 import { NotebookTextFileModel } from 'sql/workbench/contrib/notebook/browser/models/notebookTextFileModel';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';

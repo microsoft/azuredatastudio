@@ -40,7 +40,7 @@ import { RunOnceScheduler } from 'vs/base/common/async';
 import { Schemas } from 'vs/base/common/network';
 import { ILogService } from 'vs/platform/log/common/log';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
-import { NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { onUnexpectedError } from 'vs/base/common/errors';

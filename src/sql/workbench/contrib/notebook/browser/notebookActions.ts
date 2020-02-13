@@ -18,7 +18,7 @@ import { noKernel } from 'sql/workbench/services/notebook/browser/sessionManager
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IFindNotebookController } from 'sql/workbench/contrib/notebook/find/notebookFindWidget';

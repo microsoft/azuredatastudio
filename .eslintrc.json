@@ -477,6 +477,22 @@
                     "**/{vs,sql}/workbench/test/**",
                     "!path" // node modules (except path where we have our own impl)
                 ]
+            },
+            {
+                "target": "**/{vs,sql}/workbench/services/**/common/**",
+                "restrictions": [
+                    "vs/nls",
+                    "azdata",
+                    "**/{vs,sql}/base/**/common/**",
+                    "**/{vs,sql}/platform/**/common/**",
+                    "**/{vs,sql}/editor/common/**",
+                    "**/{vs,sql}/workbench/workbench.web.api",
+                    "**/{vs,sql}/workbench/common/**",
+                    "**/{vs,sql}/workbench/services/**/common/**",
+                    "**/{vs,sql}/workbench/api/**/common/**",
+                    "vs/workbench/contrib/files/common/editors/fileEditorInput", // this should be fine, it only accesses constants from contrib
+                    "vscode-textmate"
+                ]
             }
         ]
     },
