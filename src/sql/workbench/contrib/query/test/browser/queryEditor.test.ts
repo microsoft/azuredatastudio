@@ -6,7 +6,6 @@
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { IEditorDescriptor } from 'vs/workbench/browser/editor';
 import { URI } from 'vs/base/common/uri';
-import { Memento } from 'vs/workbench/common/memento';
 
 import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
 import { INewConnectionParams, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
@@ -25,13 +24,15 @@ import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/unt
 import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
 import { Event } from 'vs/base/common/event';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 suite('SQL QueryEditor Tests', () => {
 	let instantiationService: TypeMoq.Mock<InstantiationService>;
 	let editorDescriptorService: TypeMoq.Mock<EditorDescriptorService>;
 	let connectionManagementService: TypeMoq.Mock<ConnectionManagementService>;
 	let configurationService: TypeMoq.Mock<TestConfigurationService>;
-	let memento: TypeMoq.Mock<Memento>;
 
 	let mockEditor: any;
 
@@ -88,9 +89,17 @@ suite('SQL QueryEditor Tests', () => {
 		});
 
 		// Mock ConnectionManagementService
-		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
-		memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
-		connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
+		let testinstantiationService = new TestInstantiationService();
+		testinstantiationService.stub(IStorageService, new TestStorageService());
+		connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose,
+			undefined, // connection store
+			undefined, // connection status manager
+			undefined, // connection dialog service
+			testinstantiationService, // instantiation service
+			undefined, // editor service
+			undefined, // telemetry service
+			undefined, // configuration service
+			new TestCapabilitiesService());
 		connectionManagementService.callBase = true;
 		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAny())).returns(() => false);
 		connectionManagementService.setup(x => x.disconnectEditor(TypeMoq.It.isAny())).returns(() => void 0);
@@ -248,19 +257,27 @@ suite('SQL QueryEditor Tests', () => {
 
 	suite('Action Tests', () => {
 		let queryActionInstantiationService: TypeMoq.Mock<InstantiationService>;
-		let queryConnectionService: TypeMoq.Mock<ConnectionManagementService>;
+		let connectionManagementService: TypeMoq.Mock<ConnectionManagementService>;
 		let queryModelService: TypeMoq.Mock<TestQueryModelService>;
 		let queryInput: UntitledQueryEditorInput;
 		setup(() => {
 
 			// Mock ConnectionManagementService but don't set connected state
-			memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
-			memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
-			queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
-			queryConnectionService.callBase = true;
+			let testinstantiationService = new TestInstantiationService();
+			testinstantiationService.stub(IStorageService, new TestStorageService());
+			connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose,
+				undefined, // connection store
+				undefined, // connection status manager
+				undefined, // connection dialog service
+				testinstantiationService, // instantiation service
+				undefined, // editor service
+				undefined, // telemetry service
+				undefined, // configuration service
+				new TestCapabilitiesService());
+			connectionManagementService.callBase = true;
 
-			queryConnectionService.setup(x => x.disconnectEditor(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
-			queryConnectionService.setup(x => x.ensureDefaultLanguageFlavor(TypeMoq.It.isAnyString())).returns(() => void 0);
+			connectionManagementService.setup(x => x.disconnectEditor(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
+			connectionManagementService.setup(x => x.ensureDefaultLanguageFlavor(TypeMoq.It.isAnyString())).returns(() => void 0);
 
 			// Mock InstantiationService to give us the actions
 			queryActionInstantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
@@ -278,7 +295,7 @@ suite('SQL QueryEditor Tests', () => {
 			queryActionInstantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 				.returns((definition, editor, action, selectBox) => {
 					if (definition.ID === 'listDatabaseQueryActionItem') {
-						let item = new ListDatabasesActionItem(editor, undefined, queryConnectionService.object, undefined, configurationService.object);
+						let item = new ListDatabasesActionItem(editor, undefined, connectionManagementService.object, undefined, configurationService.object);
 						return item;
 					}
 					// Default
@@ -304,7 +321,7 @@ suite('SQL QueryEditor Tests', () => {
 		});
 
 		test('Taskbar buttons are set correctly upon standard load', () => {
-			queryConnectionService.setup(x => x.isConnected(TypeMoq.It.isAny())).returns(() => false);
+			connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAny())).returns(() => false);
 			queryModelService.setup(x => x.isRunningQuery(TypeMoq.It.isAny())).returns(() => false);
 			// If I use the created QueryEditor with no changes since creation
 			// Buttons should be set as if disconnected

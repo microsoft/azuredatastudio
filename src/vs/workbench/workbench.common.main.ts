@@ -143,7 +143,7 @@ import { ErrorMessageService } from 'sql/workbench/services/errorMessage/browser
 import { ServerGroupController } from 'sql/workbench/services/serverGroup/browser/serverGroupController';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { CapabilitiesService } from 'sql/workbench/services/capabilities/common/capabilitiesServiceImpl';
+import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesServiceImpl';
 import { ICredentialsService as sqlICredentialsService, CredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { QueryModelService } from 'sql/workbench/services/query/common/queryModelService';
@@ -391,7 +391,6 @@ import 'sql/workbench/contrib/query/common/resultsGrid.contribution';
 import 'sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution';
 import 'sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contribution';
 
-// {{SQL CARBON EDIT}}
 //editor replacement
 import 'sql/workbench/contrib/editorReplacement/common/editorReplacer.contribution';
 
@@ -404,6 +403,7 @@ import 'sql/workbench/contrib/telemetry/common/telemetry.contribution';
 
 // connection
 import 'sql/workbench/contrib/connection/browser/connection.contribution';
+import 'sql/workbench/contrib/connection/common/connectionProviderExtension';
 import 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
 
 // edit data editor
