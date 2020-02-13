@@ -35,6 +35,15 @@ class SymVerProxyTest extends SemVerProxy {
 
 const testDefinitions: TestDefinition[] = [
 	{
+		testName: 'SemVerProxyTest: canonical 3 part version - Pre-existing common SymVers work as before', inputVersion: '1.2.3', expected: {
+			major: 1,
+			minor: 2,
+			patch: 3,
+			raw: '1.2.3',
+			version: '1.2.3'
+		}
+	},
+	{
 		testName: 'SemVerProxyTest: canonical 4 part version', inputVersion: '1.2.3.4', expected: {
 			major: 1,
 			minor: 2,
@@ -71,7 +80,7 @@ function validate(test: TestDefinition, semVerProxy: SymVerProxyTest) {
 	for (const key in test.expected) {
 		const expected = test.expected[key];
 		if (expected) {
-			assert(expected.toString() === semVerProxy[key].toString(), `validation for property ${key} failed. Expected Value:${expected}, Actual Value:${semVerProxy[key]}`);
+			assert.equal(semVerProxy[key].toString(), expected.toString(), `validation for property ${key} failed.`);
 		}
 	}
 }
