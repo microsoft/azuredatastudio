@@ -110,7 +110,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			};
 			const installedPathColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolDiscoveredPathColumnHeader', "Discovered Path or Additional Information"),
-				width: 570
+				width: 580
 			};
 			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 				data: [],

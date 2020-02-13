@@ -37,16 +37,23 @@ function fourPart2SemVer(version: string): string {
 export class SemVerProxy extends SemVer {
 	private _version: string;
 
-	constructor(version: string | SemVer, loose?: boolean) {
+	constructor(version: string | SemVerProxy, loose?: boolean) {
 		let ver: string;
-		if ((version as SemVer).version) {
-			ver = (version as SemVer).version;
+
+		if (version instanceof SemVer) {
+			ver = version.version;
+			if (!ver) {
+				throw new Error('Invalid version');
+			}
 		} else {
-			ver = version as string;
-			ver = fourPart2SemVer(ver);
+			ver = fourPart2SemVer(version);
 		}
 		super(ver, loose);
-		this._version = ver.replace('+', '.'); // change back any '+' character used to delimit the build portion of the version with a '.'
+		if (ver.includes('-')) {
+			this._version = ver;
+		} else {
+			this._version = ver.replace('+', '.'); // change back any '+' character used to delimit the build portion of the version with a '.'
+		}
 	}
 
 	get version(): string {
