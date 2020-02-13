@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { DashboardEditor } from 'sql/workbench/contrib/dashboard/browser/dashboardEditor';
-import { DashboardInput } from 'sql/workbench/common/editor/dashboardInput';
+import { DashboardInput } from 'sql/workbench/browser/editor/profiler/dashboardInput';
 
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';

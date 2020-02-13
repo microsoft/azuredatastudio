@@ -17,7 +17,7 @@ import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService, ConnectionProviderProperties, ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as ConnectionContracts from 'sql/workbench/services/connection/browser/connection';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
-import { DashboardInput } from 'sql/workbench/common/editor/dashboardInput';
+import { DashboardInput } from 'sql/workbench/browser/editor/profiler/dashboardInput';
 import { ConnectionGlobalStatus } from 'sql/workbench/services/connection/browser/connectionGlobalStatus';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
