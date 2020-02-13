@@ -83,10 +83,24 @@ export class Config {
 	}
 
 	/**
- * Returns registered models table name
- */
+	 * Returns registered models table name
+	 */
 	public get registeredModelDatabaseName(): string {
 		return this._configValues.registeredModelsDatabaseName;
+	}
+
+	/**
+	 * Returns Azure ML API
+	 */
+	public get amlApiUrl(): string {
+		return this._configValues.amlApiUrl;
+	}
+
+	/**
+	 * Returns Azure ML API Version
+	 */
+	public get amlApiVersion(): string {
+		return this._configValues.amlApiVersion;
 	}
 
 	/**

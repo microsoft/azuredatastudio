@@ -9,16 +9,27 @@ import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { RegisteredModel } from '../../modelManagement/interfaces';
 
+/**
+ * View to render registered models table
+ */
 export class CurrentModelsTable extends ModelViewBase {
 
 	private _table: azdata.DeclarativeTableComponent;
 
 	/**
-	 *
+	 * Creates new view
 	 */
 	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: ModelViewBase) {
 		super(apiWrapper, parent.root, parent);
-		this._table = _modelBuilder.declarativeTable()
+		this._table = this.registerComponent(this._modelBuilder);
+	}
+
+	/**
+	 *
+	 * @param modelBuilder register the components
+	 */
+	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.DeclarativeTableComponent {
+		this._table = modelBuilder.declarativeTable()
 			.withProperties<azdata.DeclarativeTableProperties>(
 				{
 					columns: [
@@ -78,12 +89,19 @@ export class CurrentModelsTable extends ModelViewBase {
 					ariaLabel: constants.mlsConfigTitle
 				})
 			.component();
-	}
-
-	public get table(): azdata.DeclarativeTableComponent {
 		return this._table;
 	}
 
+	/**
+	 * Returns the component
+	 */
+	public get component(): azdata.DeclarativeTableComponent {
+		return this._table;
+	}
+
+	/**
+	 * Loads the data in the component
+	 */
 	public async loadData(): Promise<void> {
 		let models: RegisteredModel[] | undefined;
 
@@ -110,13 +128,6 @@ export class CurrentModelsTable extends ModelViewBase {
 				height: 15
 			}).component();
 			editLanguageButton.onDidClick(() => {
-				/*
-				this.onEditLanguage({
-					language: language,
-					content: content,
-					newLang: false
-				});
-				*/
 			});
 			return [model.id, model.name, model.size, editLanguageButton];
 		}
@@ -124,7 +135,10 @@ export class CurrentModelsTable extends ModelViewBase {
 		return [];
 	}
 
-	public async reset(): Promise<void> {
+	/**
+	 * Refreshes the view
+	 */
+	public async refresh(): Promise<void> {
 		await this.loadData();
 	}
 }

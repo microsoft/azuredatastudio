@@ -82,6 +82,14 @@ export class ApiWrapper {
 		return azdata.window.createModelViewDialog(title, dialogName, isWide);
 	}
 
+	public createWizard(title: string): azdata.window.Wizard {
+		return azdata.window.createWizard(title);
+	}
+
+	public createWizardPage(title: string): azdata.window.WizardPage {
+		return azdata.window.createWizardPage(title);
+	}
+
 	public openDialog(dialog: azdata.window.Dialog): void {
 		return azdata.window.openDialog(dialog);
 	}

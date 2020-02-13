@@ -8,19 +8,31 @@ import * as constants from '../../common/constants';
 import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { WorkspaceModel } from '../../modelManagement/interfaces';
-import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
-import { azureResource } from '../../modelManagement/azure-resource';
+import { IDataComponent, AzureWorkspaceResource } from '../interfaces';
 
-export class AzureModelsTable extends ModelViewBase {
+/**
+ * View to render azure models in a table
+ */
+export class AzureModelsTable extends ModelViewBase implements IDataComponent<WorkspaceModel> {
 
 	private _table: azdata.DeclarativeTableComponent;
+	private _selectedModelId: any;
+	private _models: WorkspaceModel[] | undefined;
 
 	/**
-	 *
+	 * Creates a view to render azure models in a table
 	 */
 	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: ModelViewBase) {
 		super(apiWrapper, parent.root, parent);
-		this._table = _modelBuilder.declarativeTable()
+		this._table = this.registerComponent(this._modelBuilder);
+	}
+
+	/**
+	 * Register components
+	 * @param modelBuilder model builder
+	 */
+	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.DeclarativeTableComponent {
+		this._table = modelBuilder.declarativeTable()
 			.withProperties<azdata.DeclarativeTableProperties>(
 				{
 					columns: [
@@ -67,57 +79,66 @@ export class AzureModelsTable extends ModelViewBase {
 					ariaLabel: constants.mlsConfigTitle
 				})
 			.component();
+		return this._table;
 	}
 
 	public get component(): azdata.DeclarativeTableComponent {
 		return this._table;
 	}
 
-	public async loadData(
-		account?: azdata.Account | undefined,
-		subscription?: azureResource.AzureResourceSubscription | undefined,
-		group?: azureResource.AzureResource | undefined,
-		workspace?: Workspace | undefined): Promise<void> {
-		let models: WorkspaceModel[] | undefined;
+	/**
+	 * Load data in the component
+	 * @param account Azure account
+	 * @param subscription azure subscription
+	 * @param group azure resource group
+	 * @param workspace azure workspace
+	 */
+	public async loadData(workspaceResource?: AzureWorkspaceResource | undefined): Promise<void> {
 
-		models = await this.listAzureModels(account, subscription, group, workspace);
-		let tableData: any[][] = [];
+		if (this._table && workspaceResource) {
+			this._models = await this.listAzureModels(workspaceResource);
+			let tableData: any[][] = [];
 
-		if (models) {
-			tableData = tableData.concat(models.map(model => this.createTableRow(model)));
+			if (this._models) {
+				tableData = tableData.concat(this._models.map(model => this.createTableRow(model)));
+			}
+
+			this._table.data = tableData;
 		}
-
-		this._table.data = tableData;
 	}
 
 	private createTableRow(model: WorkspaceModel): any[] {
 		if (this._modelBuilder) {
-			let editLanguageButton = this._modelBuilder.button().withProperties({
-				label: '',
-				title: constants.deleteTitle,
-				iconPath: {
-					dark: this.asAbsolutePath('images/dark/edit_inverse.svg'),
-					light: this.asAbsolutePath('images/light/edit.svg')
-				},
+			let selectModelButton = this._modelBuilder.radioButton().withProperties({
+				name: 'amlModel',
+				value: model.id,
 				width: 15,
-				height: 15
+				height: 15,
+				checked: false
 			}).component();
-			editLanguageButton.onDidClick(() => {
-				/*
-				this.onEditLanguage({
-					language: language,
-					content: content,
-					newLang: false
-				});
-				*/
+			selectModelButton.onDidClick(() => {
+				this._selectedModelId = model.id;
 			});
-			return [model.id, model.name, editLanguageButton];
+			return [model.id, model.name, selectModelButton];
 		}
 
 		return [];
 	}
 
-	public async reset(): Promise<void> {
+	/**
+	 * Returns selected data
+	 */
+	public get data(): WorkspaceModel | undefined {
+		if (this._models && this._selectedModelId) {
+			return this._models.find(x => x.id === this._selectedModelId);
+		}
+		return undefined;
+	}
+
+	/**
+	 * Refreshes the view
+	 */
+	public async refresh(): Promise<void> {
 		await this.loadData();
 	}
 }

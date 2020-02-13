@@ -6,44 +6,104 @@
 import * as azdata from 'azdata';
 import { ApiWrapper } from '../common/apiWrapper';
 import * as constants from '../common/constants';
-import { azureResource } from './azure-resource';
+import { azureResource } from '../typings/azure-resource';
 import { AzureMachineLearningWorkspaces } from '@azure/arm-machinelearningservices';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import { WorkspaceModels } from './workspacesModels';
 import { AzureMachineLearningWorkspacesOptions, Workspace } from '@azure/arm-machinelearningservices/esm/models';
+import { WorkspaceModel } from './interfaces';
+import { Config } from '../configurations/config';
 
-
+/**
+ * Azure Model Service
+ */
 export class AzureModelRegistryService {
 
 	/**
 	 *
 	 */
-	constructor(private _apiWrapper: ApiWrapper) {
+	constructor(private _apiWrapper: ApiWrapper, private _config: Config) {
 	}
 
+	/**
+	 * Returns list of azure accounts
+	 */
 	public async getAccounts(): Promise<azdata.Account[]> {
 		return await this._apiWrapper.getAllAccounts();
 	}
 
+	/**
+	 * Returns list of azure subscriptions
+	 * @param account azure account
+	 */
 	public async getSubscriptions(account: azdata.Account | undefined): Promise<azureResource.AzureResourceSubscription[] | undefined> {
 		return await this._apiWrapper.executeCommand(constants.azureSubscriptionsCommand, account);
 	}
 
-	public async getGroups(account: azdata.Account | undefined, subscription: azureResource.AzureResourceSubscription | undefined): Promise<azureResource.AzureResource[] | undefined> {
+	/**
+	 * Returns list of azure groups
+	 * @param account azure account
+	 * @param subscription azure subscription
+	 */
+	public async getGroups(
+		account: azdata.Account | undefined,
+		subscription: azureResource.AzureResourceSubscription | undefined): Promise<azureResource.AzureResource[] | undefined> {
 		return await this._apiWrapper.executeCommand(constants.azureResourceGroupsCommand, account, subscription);
 	}
 
-	public async getWorkspaces(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroup: azureResource.AzureResource | undefined): Promise<Workspace[]> {
-		return await this.getResources(account, subscription, resourceGroup);
+	/**
+	 * Returns list of workspaces
+	 * @param account azure account
+	 * @param subscription azure subscription
+	 * @param resourceGroup azure resource group
+	 */
+	public async getWorkspaces(
+		account: azdata.Account,
+		subscription: azureResource.AzureResourceSubscription,
+		resourceGroup: azureResource.AzureResource | undefined): Promise<Workspace[]> {
+		return await this.fetchWorkspaces(account, subscription, resourceGroup);
 	}
 
-	public async getModels(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroup: azureResource.AzureResource, workspace: Workspace): Promise<azureResource.AzureResource[] | undefined> {
-		return await this.getModelResources(account, subscription, resourceGroup, workspace);
+	/**
+	 * Returns list of models
+	 * @param account azure account
+	 * @param subscription azure subscription
+	 * @param resourceGroup azure resource group
+	 * @param workspace azure workspace
+	 */
+	public async getModels(
+		account: azdata.Account,
+		subscription: azureResource.AzureResourceSubscription,
+		resourceGroup: azureResource.AzureResource,
+		workspace: Workspace): Promise<azureResource.AzureResource[] | undefined> {
+		return await this.fetchModels(account, subscription, resourceGroup, workspace);
 	}
 
-	private async getResources(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroup: azureResource.AzureResource | undefined): Promise<Workspace[]> {
+	/**
+	 * Download an azure model to a temporary location
+	 * @param account azure account
+	 * @param subscription azure subscription
+	 * @param resourceGroup azure resource group
+	 * @param workspace azure workspace
+	 * @param model azure model
+	 */
+	public async downloadModel(
+		account: azdata.Account,
+		subscription: azureResource.AzureResourceSubscription,
+		resourceGroup: azureResource.AzureResource,
+		workspace: Workspace,
+		model: WorkspaceModel): Promise<string> {
+		console.log(account);
+		console.log(subscription);
+		console.log(resourceGroup);
+		console.log(workspace);
+		console.log(model);
+		// TODO: not implemented
+		return '';
+	}
+
+	private async fetchWorkspaces(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroup: azureResource.AzureResource | undefined): Promise<Workspace[]> {
 		let resources: Workspace[] = [];
-		//let models: AzureMachineLearningWorkspacesModels.MachineLearningComputeListByWorkspaceResponse;
 
 		try {
 			for (const tenant of account.properties.tenants) {
@@ -60,35 +120,37 @@ export class AzureModelRegistryService {
 		return resources;
 	}
 
-
-	private async getModelResources(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroup: azureResource.AzureResource, workspace: Workspace): Promise<azureResource.AzureResource[]> {
+	private async fetchModels(
+		account: azdata.Account,
+		subscription: azureResource.AzureResourceSubscription,
+		resourceGroup: azureResource.AzureResource,
+		workspace: Workspace): Promise<azureResource.AzureResource[]> {
 		let resources: azureResource.AzureResource[] = [];
 
-		try {
-			for (const tenant of account.properties.tenants) {
+		for (const tenant of account.properties.tenants) {
+			try {
 				const tokens = await this._apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
 				const token = tokens[tenant.id].token;
 				const tokenType = tokens[tenant.id].tokenType;
-				let baseUri = `https://${workspace.location}.modelmanagement.azureml.net/modelmanagement/v1.0`;
+				let baseUri = `https://${workspace.location}.${this._config.amlApiUrl}`;
 				if (workspace.location === 'chinaeast2') {
-					baseUri = `https://chinaeast2.modelmanagement.azureml.cn/modelmanagement/v1.0`;
+					baseUri = `https://${workspace.location}.${this._config.amlApiUrl}`;
 				}
 				const options: AzureMachineLearningWorkspacesOptions = {
 					baseUri: baseUri
 
 				};
 				const client = new AzureMachineLearningWorkspaces(new TokenCredentials(token, tokenType), subscription.id, options);
-				client.apiVersion = '2018-11-19';
+				client.apiVersion = this._config.amlApiVersion;
 
-				//let result = await client.workspaces.get(resourceGroup.name, workspace.name);
 				let modelsClient = new WorkspaceModels(client);
-				let result = await modelsClient.listKeys(resourceGroup.name, workspace.name || '');
+				let result = await modelsClient.listModels(resourceGroup.name, workspace.name || '');
 				resources.push(...result.map(r => { return { id: r.id || '', name: r.name || '' }; }));
+			} catch (error) {
+				console.log(error);
 			}
-		} catch (error) {
-			console.log(error);
 		}
+
 		return resources;
 	}
-
 }

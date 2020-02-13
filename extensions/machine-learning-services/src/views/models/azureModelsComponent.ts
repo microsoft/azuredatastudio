@@ -8,22 +8,32 @@ import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { AzureResourceFilterComponent } from './azureResourceFilterComponent';
 import { AzureModelsTable } from './azureModelsTable';
+import * as constants from '../../common/constants';
+import { IPageView, IDataComponent, AzureModelResource } from '../interfaces';
 
-export class AzureModelsComponent extends ModelViewBase {
+export class AzureModelsComponent extends ModelViewBase implements IPageView, IDataComponent<AzureModelResource> {
 
-	private _form: azdata.FormContainer;
 	public azureModelsTable: AzureModelsTable | undefined;
 	public azureFilterComponent: AzureResourceFilterComponent | undefined;
+
 	private _loader: azdata.LoadingComponent | undefined;
+	private _form: azdata.FormContainer | undefined;
 
 	/**
-	 *
+	 * Component to render a view to pick an azure model
 	 */
-	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: ModelViewBase) {
+	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase) {
 		super(apiWrapper, parent.root, parent);
-		this.azureFilterComponent = new AzureResourceFilterComponent(this._apiWrapper, this._modelBuilder, this);
-		this.azureModelsTable = new AzureModelsTable(this._apiWrapper, this._modelBuilder, this);
-		this._loader = this._modelBuilder.loadingComponent()
+	}
+
+	/**
+	 * Register components
+	 * @param modelBuilder model builder
+	 */
+	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
+		this.azureFilterComponent = new AzureResourceFilterComponent(this._apiWrapper, modelBuilder, this);
+		this.azureModelsTable = new AzureModelsTable(this._apiWrapper, modelBuilder, this);
+		this._loader = modelBuilder.loadingComponent()
 			.withItem(this.azureModelsTable.component)
 			.withProperties({
 				loading: true
@@ -31,22 +41,18 @@ export class AzureModelsComponent extends ModelViewBase {
 
 		this.azureFilterComponent.onWorkspacesSelected(async () => {
 			await this.onLoading();
-			await this.azureModelsTable?.loadData(
-				this.azureFilterComponent?.account,
-				this.azureFilterComponent?.subscription,
-				this.azureFilterComponent?.group,
-				this.azureFilterComponent?.workspace);
+			await this.azureModelsTable?.loadData(this.azureFilterComponent?.data);
 			await this.onLoaded();
 		});
 
-		this._form = this._modelBuilder.formContainer().withFormItems([{
-			title: '',
+		this._form = modelBuilder.formContainer().withFormItems([{
+			title: constants.azureModelFilter,
 			component: this.azureFilterComponent.component
 		}, {
-			title: '',
+			title: constants.azureModels,
 			component: this._loader
 		}]).component();
-
+		return this._form;
 	}
 
 	private async onLoading(): Promise<void> {
@@ -61,15 +67,37 @@ export class AzureModelsComponent extends ModelViewBase {
 		}
 	}
 
-	public get component(): azdata.Component {
+	public get component(): azdata.Component | undefined {
 		return this._form;
 	}
 
+	/**
+	 * Loads the data in the components
+	 */
 	public async loadData() {
 		await this.azureFilterComponent?.loadData();
 	}
 
-	public async reset(): Promise<void> {
+	/**
+	 * Returns selected data
+	 */
+	public get data(): AzureModelResource | undefined {
+		return Object.assign({}, this.azureFilterComponent?.data, {
+			model: this.azureModelsTable?.data
+		});
+	}
+
+	/**
+	 * Refreshes the view
+	 */
+	public async refresh(): Promise<void> {
 		await this.loadData();
+	}
+
+	/**
+	 * Returns the title of the page
+	 */
+	public get title(): string {
+		return constants.azureModelsTitle;
 	}
 }

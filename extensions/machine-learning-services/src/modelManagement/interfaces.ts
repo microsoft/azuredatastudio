@@ -7,11 +7,14 @@ import * as msRest from '@azure/ms-rest-js';
 import { Resource } from '@azure/arm-machinelearningservices/esm/models';
 
 /**
- * An interface representing ListWorkspaceKeysResult.
+ * An interface representing ListWorkspaceModelResult.
  */
 export interface ListWorkspaceModelsResult extends Array<WorkspaceModel> {
 }
 
+/**
+ * An interface representing Workspace model
+ */
 export interface WorkspaceModel extends Resource {
 	framework?: string;
 	frameworkVersion?: string;
@@ -19,9 +22,11 @@ export interface WorkspaceModel extends Resource {
 	createdTime?: string;
 	experimentName?: string;
 	outputsSchema?: Array<string>;
-
 }
 
+/**
+ * An interface representing Workspace model list response
+ */
 export type WorkspacesModelsResponse = ListWorkspaceModelsResult & {
 	/**
 	 * The underlying HTTP response.
@@ -39,6 +44,9 @@ export type WorkspacesModelsResponse = ListWorkspaceModelsResult & {
 	};
 };
 
+/**
+ * An interface representing registered model
+ */
 export interface RegisteredModel {
 	id: number,
 	name: string,

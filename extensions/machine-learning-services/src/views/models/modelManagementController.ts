@@ -5,72 +5,124 @@
 
 import * as azdata from 'azdata';
 
-import { azureResource } from '../../modelManagement/azure-resource';
+import { azureResource } from '../../typings/azure-resource';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { AzureModelRegistryService } from '../../modelManagement/azureModelRegistryService';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
-import { RegisteredModel } from '../../modelManagement/interfaces';
+import { RegisteredModel, WorkspaceModel } from '../../modelManagement/interfaces';
 import { RegisteredModelService } from '../../modelManagement/registeredModelService';
 import { RegisteredModelsDialog } from './registeredModelsDialog';
-import { AzureResourceEventArgs, ListAzureModelsEventName, ListSubscriptionsEventName, ListModelsEventName, ListWorkspacesEventName, ListGroupsEventName, ListAccountsEventName } from './modelViewBase';
-import { ViewBase } from '../viewBase';
+import { AzureResourceEventArgs, ListAzureModelsEventName, ListSubscriptionsEventName, ListModelsEventName, ListWorkspacesEventName, ListGroupsEventName, ListAccountsEventName, RegisterLocalModelEventName, RegisterLocalModelEventArgs, RegisterAzureModelEventName, RegisterAzureModelEventArgs, ModelViewBase, SourceModelSelectedEventName, RegisterModelEventName } from './modelViewBase';
+import { ControllerBase } from '../controllerBase';
+import { RegisterModelWizard } from './registerModelWizard';
+import * as constants from '../../common/constants';
 
-export class ModelManagementController {
+/**
+ * Model management UI controller
+ */
+export class ModelManagementController extends ControllerBase {
 
 	/**
-	 *
+	 * Creates new instance
 	 */
 	constructor(
-		private _apiWrapper: ApiWrapper,
+		apiWrapper: ApiWrapper,
 		private _root: string,
 		private _amlService: AzureModelRegistryService,
 		private _registeredModelService: RegisteredModelService) {
+		super(apiWrapper);
 	}
 
-	public async manageRegisteredModels(): Promise<RegisteredModelsDialog> {
-		let dialog = new RegisteredModelsDialog(this._apiWrapper, this._root);
+	/**
+	 * Opens the dialog for model registration
+	 * @param controller controller
+	 * @param apiWrapper apiWrapper
+	 * @param root root folder path
+	 */
+	public async registerModel(controller?: ModelManagementController, apiWrapper?: ApiWrapper, root?: string): Promise<ModelViewBase> {
+		controller = controller || this;
+		apiWrapper = apiWrapper || this._apiWrapper;
+		root = root || this._root;
+		let view = new RegisterModelWizard(apiWrapper, root);
 
 		// Register events
 		//
-		dialog.on(ListAccountsEventName, async () => {
-			await this.executeAction(dialog, ListAccountsEventName, this.getAzureAccounts, this._amlService);
-		});
-		dialog.on(ListSubscriptionsEventName, async (arg) => {
-			let azureArgs = <AzureResourceEventArgs>arg;
-			await this.executeAction(dialog, ListSubscriptionsEventName, this.getAzureSubscriptions, this._amlService, azureArgs.account);
-		});
-		dialog.on(ListWorkspacesEventName, async (arg) => {
-			let azureArgs = <AzureResourceEventArgs>arg;
-			await this.executeAction(dialog, ListWorkspacesEventName, this.getWorkspaces, this._amlService, azureArgs.account, azureArgs.subscription, azureArgs.group);
-		});
-		dialog.on(ListGroupsEventName, async (arg) => {
-			let azureArgs = <AzureResourceEventArgs>arg;
-			await this.executeAction(dialog, ListGroupsEventName, this.getAzureGroups, this._amlService, azureArgs.account, azureArgs.subscription);
-		});
-		dialog.on(ListAzureModelsEventName, async (arg) => {
-			let azureArgs = <AzureResourceEventArgs>arg;
-			await this.executeAction(dialog, ListAzureModelsEventName, this.getAzureModels, this._amlService, azureArgs.account, azureArgs.subscription, azureArgs.group, azureArgs.workspace);
-		});
+		controller.registerEvents(view);
 
-		dialog.on(ListModelsEventName, async () => {
-			await this.executeAction(dialog, ListModelsEventName, this.getRegisteredModels, this._registeredModelService);
-		});
-
-		// Open dialog
+		// Open view
 		//
-		dialog.showDialog();
-		return dialog;
+		await view.open();
+		return view;
 	}
 
-	public async executeAction<T extends ViewBase>(dialog: T, eventName: string, func: (...args: any[]) => Promise<any>, ...args: any[]): Promise<void> {
-		const callbackEvent = ViewBase.getCallbackEventName(eventName);
-		try {
-			let result = await func(...args);
-			dialog.sendCallbackRequest(callbackEvent, { data: result });
+	/**
+	 * Register events in the main view
+	 * @param view main view
+	 */
+	public registerEvents(view: ModelViewBase): void {
 
-		} catch (error) {
-			dialog.sendCallbackRequest(callbackEvent, { error: error });
-		}
+		// Register events
+		//
+		super.registerEvents(view);
+		view.on(ListAccountsEventName, async () => {
+			await this.executeAction(view, ListAccountsEventName, this.getAzureAccounts, this._amlService);
+		});
+		view.on(ListSubscriptionsEventName, async (arg) => {
+			let azureArgs = <AzureResourceEventArgs>arg;
+			await this.executeAction(view, ListSubscriptionsEventName, this.getAzureSubscriptions, this._amlService, azureArgs.account);
+		});
+		view.on(ListWorkspacesEventName, async (arg) => {
+			let azureArgs = <AzureResourceEventArgs>arg;
+			await this.executeAction(view, ListWorkspacesEventName, this.getWorkspaces, this._amlService, azureArgs.account, azureArgs.subscription, azureArgs.group);
+		});
+		view.on(ListGroupsEventName, async (arg) => {
+			let azureArgs = <AzureResourceEventArgs>arg;
+			await this.executeAction(view, ListGroupsEventName, this.getAzureGroups, this._amlService, azureArgs.account, azureArgs.subscription);
+		});
+		view.on(ListAzureModelsEventName, async (arg) => {
+			let azureArgs = <AzureResourceEventArgs>arg;
+			await this.executeAction(view, ListAzureModelsEventName, this.getAzureModels, this._amlService
+				, azureArgs.account, azureArgs.subscription, azureArgs.group, azureArgs.workspace);
+		});
+
+		view.on(ListModelsEventName, async () => {
+			await this.executeAction(view, ListModelsEventName, this.getRegisteredModels, this._registeredModelService);
+		});
+		view.on(RegisterLocalModelEventName, async (arg) => {
+			let registerArgs = <RegisterLocalModelEventArgs>arg;
+			await this.executeAction(view, RegisterLocalModelEventName, this.registerLocalModel, this._registeredModelService, registerArgs.filePath);
+			view.refresh();
+		});
+		view.on(RegisterModelEventName, async () => {
+			await this.executeAction(view, RegisterModelEventName, this.registerModel, this, this._apiWrapper, this._root);
+			await view.refresh();
+		});
+		view.on(RegisterAzureModelEventName, async (arg) => {
+			let registerArgs = <RegisterAzureModelEventArgs>arg;
+			await this.executeAction(view, RegisterAzureModelEventName, this.registerAzureModel, this._amlService, this._registeredModelService,
+				registerArgs.account, registerArgs.subscription, registerArgs.group, registerArgs.workspace, registerArgs.model);
+			this._apiWrapper.showInfoMessage(constants.modelRegisteredSuccessfully);
+			view.refresh();
+		});
+		view.on(SourceModelSelectedEventName, () => {
+			view.refresh();
+		});
+	}
+
+	/**
+	 * Opens the dialog for model management
+	 */
+	public async manageRegisteredModels(): Promise<ModelViewBase> {
+		let view = new RegisteredModelsDialog(this._apiWrapper, this._root);
+
+		// Register events
+		//
+		this.registerEvents(view);
+
+		// Open view
+		//
+		await view.open();
+		return view;
 	}
 
 	private async getAzureAccounts(service: AzureModelRegistryService): Promise<azdata.Account[]> {
@@ -96,7 +148,7 @@ export class ModelManagementController {
 		return registeredModelService.getRegisteredModels();
 	}
 
-	public async getAzureModels(
+	private async getAzureModels(
 		service: AzureModelRegistryService,
 		account: azdata.Account | undefined,
 		subscription: azureResource.AzureResourceSubscription | undefined,
@@ -106,5 +158,26 @@ export class ModelManagementController {
 			return [];
 		}
 		return await service.getModels(account, subscription, resourceGroup, workspace) || [];
+	}
+
+	private async registerLocalModel(service: RegisteredModelService, filePath?: string): Promise<void> {
+		if (filePath) {
+			await service.registerLocalModel(filePath);
+		}
+	}
+
+	private async registerAzureModel(
+		azureService: AzureModelRegistryService,
+		service: RegisteredModelService,
+		account: azdata.Account | undefined,
+		subscription: azureResource.AzureResourceSubscription | undefined,
+		resourceGroup: azureResource.AzureResource | undefined,
+		workspace: Workspace | undefined,
+		model: WorkspaceModel | undefined): Promise<void> {
+		if (!account || !subscription || !resourceGroup || !workspace || !model) {
+			return;
+		}
+		const filePath = await azureService.downloadModel(account, subscription, resourceGroup, workspace, model);
+		await service.registerLocalModel(filePath);
 	}
 }

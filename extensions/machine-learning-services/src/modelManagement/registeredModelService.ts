@@ -9,7 +9,11 @@ import { ApiWrapper } from '../common/apiWrapper';
 import { Config } from '../configurations/config';
 import { QueryRunner } from '../common/queryRunner';
 import { RegisteredModel } from './interfaces';
+import { ModelImporter } from './modelImporter';
 
+/**
+ * Service to registered models
+ */
 export class RegisteredModelService {
 
 	/**
@@ -18,7 +22,8 @@ export class RegisteredModelService {
 	constructor(
 		private _apiWrapper: ApiWrapper,
 		private _config: Config,
-		private _queryRunner: QueryRunner) {
+		private _queryRunner: QueryRunner,
+		private _modelImporter: ModelImporter) {
 	}
 
 	public async getRegisteredModels(): Promise<RegisteredModel[]> {
@@ -40,6 +45,13 @@ export class RegisteredModelService {
 		return list;
 	}
 
+	public async registerLocalModel(filePath: string) {
+		let connection = await this.getCurrentConnection();
+		if (connection) {
+			await this._modelImporter.registerModel(connection, filePath);
+		}
+	}
+
 	private async getCurrentConnection(): Promise<azdata.connection.ConnectionProfile> {
 		return await this._apiWrapper.getCurrentConnection();
 	}
@@ -59,7 +71,8 @@ export class RegisteredModelService {
 			WHERE ('[' + name + ']' = '${databaseName}'
 			OR name = '${databaseName}')))
 		BEGIN
-			SELECT artifact_id,artifact_name,group_path,artifact_initial_size from ${databaseName}.${tableName}
+			SELECT artifact_id, artifact_name, group_path, artifact_initial_size from ${databaseName}.${tableName}
+			WHERE artifact_name like '%.onnx'
 		END
 		`;
 	}

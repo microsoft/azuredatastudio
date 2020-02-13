@@ -3,16 +3,52 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export class ModelImporter {
-	/*
-	private importScript = `
-	from mlflow.tracking.client import MlflowClient
-	client = MlflowClient()
-	exp_name = "artifact_test_experiment_112"
-	db_uri_artifact = "mssql+pyodbc://user:pww@host,port/MlFlowDB?driver=ODBC+Driver+17+for+SQL+Server"
+import { ProcessService } from '../common/processService';
+import { Config } from '../configurations/config';
+import { ApiWrapper } from '../common/apiWrapper';
+import * as vscode from 'vscode';
+import * as azdata from 'azdata';
+import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 
-	client.create_experiment(exp_name, artifact_location=db_uri_artifact)
-	mlflow.onnx.log_model(onx, "pipeline_vectorize")
-	`;
-	*/
+/**
+ * Service to import model to database
+ */
+export class ModelImporter {
+
+	/**
+	 *
+	 */
+	constructor(private _outputChannel: vscode.OutputChannel, private _apiWrapper: ApiWrapper, private _processService: ProcessService, private _config: Config) {
+	}
+
+	public async registerModel(connection: azdata.connection.ConnectionProfile, modelFolderPath: string): Promise<void> {
+		await this.executeScripts(connection, modelFolderPath);
+	}
+
+	protected async executeScripts(connection: azdata.connection.ConnectionProfile, modelFolderPath: string): Promise<void> {
+
+		modelFolderPath = modelFolderPath.replace('\\', '/');
+		modelFolderPath = `file:///${modelFolderPath}`;
+		let credentials = await this._apiWrapper.getCredentials(connection.connectionId);
+
+		if (connection) {
+			let server = connection.serverName;
+
+			const experimentId = `ads_ml_experiment_${UUID.generateUuid()}`;
+			const credential = connection.userName ? `${connection.userName}:${credentials[azdata.ConnectionOptionSpecialType.password]}` : '';
+			let scripts: string[] = [
+				'import mlflow.onnx',
+				'from mlflow.tracking.client import MlflowClient',
+				`onx = mlflow.onnx.load_model("${modelFolderPath}")`,
+				'client = MlflowClient()',
+				`exp_name = "${experimentId}"`,
+				`db_uri_artifact = "mssql+pyodbc://${credential}@${server}/MlFlowDB?driver=ODBC+Driver+17+for+SQL+Server"`,
+				'client.create_experiment(exp_name, artifact_location=db_uri_artifact)',
+				'mlflow.set_experiment(exp_name)',
+				'mlflow.onnx.log_model(onx, "pipeline_vectorize")'
+			];
+			let pythonExecutable = this._config.pythonExecutable;
+			await this._processService.execScripts(pythonExecutable, scripts, [], this._outputChannel);
+		}
+	}
 }

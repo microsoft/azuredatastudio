@@ -7,13 +7,18 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
-import { azureResource } from '../../modelManagement/azure-resource';
+import { azureResource } from '../../typings/azure-resource';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
+import * as constants from '../../common/constants';
+import { AzureWorkspaceResource, IDataComponent } from '../interfaces';
 
+/**
+ * View to render filters to pick an azure resource
+ */
 const componentWidth = 200;
-export class AzureResourceFilterComponent extends ModelViewBase {
+export class AzureResourceFilterComponent extends ModelViewBase implements IDataComponent<AzureWorkspaceResource> {
 
-	private _flex: azdata.FlexContainer;
+	private _form: azdata.FormContainer;
 	private _accounts: azdata.DropDownComponent;
 	private _subscriptions: azdata.DropDownComponent;
 	private _groups: azdata.DropDownComponent;
@@ -26,7 +31,7 @@ export class AzureResourceFilterComponent extends ModelViewBase {
 	public readonly onWorkspacesSelected: vscode.Event<void> = this._onWorkspacesSelected.event;
 
 	/**
-	 *
+	 * Creates a new view
 	 */
 	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: ModelViewBase) {
 		super(apiWrapper, parent.root, parent);
@@ -57,22 +62,56 @@ export class AzureResourceFilterComponent extends ModelViewBase {
 			await this.onWorkspaceSelected();
 		});
 
-		this._flex = this._modelBuilder.flexContainer()
-			.withLayout({
-				flexFlow: 'column',
-				justifyContent: 'space-between'
-				//width: parent.componentMaxLength
-			})
-			.withItems([
-				this._accounts,
-				this._subscriptions,
-				this._groups,
-				this._workspaces
-			]).component();
+		this._form = this._modelBuilder.formContainer().withFormItems([{
+			title: constants.azureAccount,
+			component: this._accounts
+		}, {
+			title: constants.azureSubscription,
+			component: this._subscriptions
+		}, {
+			title: constants.azureGroup,
+			component: this._groups
+		}, {
+			title: constants.azureModelWorkspace,
+			component: this._workspaces
+		}]).component();
 	}
 
+	/**
+	 * Returns the created component
+	 */
 	public get component(): azdata.Component {
-		return this._flex;
+		return this._form;
+	}
+
+	/**
+	 * Returns selected data
+	 */
+	public get data(): AzureWorkspaceResource | undefined {
+		return {
+			account: this.account,
+			subscription: this.subscription,
+			group: this.group,
+			workspace: this.workspace
+		};
+	}
+
+	/**
+	 * loads data in the components
+	 */
+	public async loadData(): Promise<void> {
+		this._azureAccounts = await this.listAzureAccounts();
+		let values = this._azureAccounts.map(a => { return { displayName: a.displayInfo.displayName, name: a.key.accountId }; });
+		this._accounts.values = values;
+		this._accounts.value = values[0];
+		this.onAccountSelected();
+	}
+
+	/**
+	 * refreshes the view
+	 */
+	public async refresh(): Promise<void> {
+		await this.loadData();
 	}
 
 	private async onAccountSelected(): Promise<void> {
@@ -103,31 +142,19 @@ export class AzureResourceFilterComponent extends ModelViewBase {
 		this._onWorkspacesSelected.fire();
 	}
 
-	public get workspace(): Workspace | undefined {
+	private get workspace(): Workspace | undefined {
 		return this._azureWorkspaces.find(a => a.id === (<azdata.CategoryValue>this._workspaces.value).name);
 	}
 
-	public get account(): azdata.Account | undefined {
+	private get account(): azdata.Account | undefined {
 		return this._azureAccounts.find(a => a.key.accountId === (<azdata.CategoryValue>this._accounts.value).name);
 	}
 
-	public get group(): azureResource.AzureResource | undefined {
+	private get group(): azureResource.AzureResource | undefined {
 		return this._azureGroups.find(a => a.id === (<azdata.CategoryValue>this._groups.value).name);
 	}
 
-	public get subscription(): azureResource.AzureResourceSubscription | undefined {
+	private get subscription(): azureResource.AzureResourceSubscription | undefined {
 		return this._azureSubscriptions.find(a => a.id === (<azdata.CategoryValue>this._subscriptions.value).name);
-	}
-
-	public async loadData(): Promise<void> {
-		this._azureAccounts = await this.listAzureAccounts();
-		let values = this._azureAccounts.map(a => { return { displayName: a.displayInfo.displayName, name: a.key.accountId }; });
-		this._accounts.values = values;
-		this._accounts.value = values[0];
-		this.onAccountSelected();
-	}
-
-	public async reset(): Promise<void> {
-		await this.loadData();
 	}
 }

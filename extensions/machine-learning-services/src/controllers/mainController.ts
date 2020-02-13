@@ -21,6 +21,7 @@ import { LanguageService } from '../externalLanguage/languageService';
 import { ModelManagementController } from '../views/models/modelManagementController';
 import { RegisteredModelService } from '../modelManagement/registeredModelService';
 import { AzureModelRegistryService } from '../modelManagement/azureModelRegistryService';
+import { ModelImporter } from '../modelManagement/modelImporter';
 
 /**
  * The main controller class that initializes the extension
@@ -102,11 +103,12 @@ export default class MainController implements vscode.Disposable {
 		let mssqlService = await this.getLanguageExtensionService();
 		let languagesModel = new LanguageService(this._apiWrapper, mssqlService);
 		let languageController = new LanguageController(this._apiWrapper, this._rootPath, languagesModel);
+		let modelImporter = new ModelImporter(this._outputChannel, this._apiWrapper, this._processService, this._config);
 
 		// Model Management
 		//
-		let registeredModelService = new RegisteredModelService(this._apiWrapper, this._config, this._queryRunner);
-		let azureModelsService = new AzureModelRegistryService(this._apiWrapper);
+		let registeredModelService = new RegisteredModelService(this._apiWrapper, this._config, this._queryRunner, modelImporter);
+		let azureModelsService = new AzureModelRegistryService(this._apiWrapper, this._config);
 		let modelManagementController = new ModelManagementController(this._apiWrapper, this._rootPath, azureModelsService, registeredModelService);
 
 		this._apiWrapper.registerCommand(constants.mlManageLanguagesCommand, (async () => {
@@ -114,6 +116,9 @@ export default class MainController implements vscode.Disposable {
 		}));
 		this._apiWrapper.registerCommand(constants.mlManageModelsCommand, (async () => {
 			await modelManagementController.manageRegisteredModels();
+		}));
+		this._apiWrapper.registerCommand(constants.mlRegisterModelCommand, (async () => {
+			await modelManagementController.registerModel();
 		}));
 		this._apiWrapper.registerCommand(constants.mlsDependenciesCommand, (async () => {
 			await packageManager.installDependencies();
@@ -126,6 +131,9 @@ export default class MainController implements vscode.Disposable {
 		});
 		this._apiWrapper.registerTaskHandler(constants.mlManageModelsCommand, async () => {
 			await modelManagementController.manageRegisteredModels();
+		});
+		this._apiWrapper.registerTaskHandler(constants.mlRegisterModelCommand, async () => {
+			await modelManagementController.registerModel();
 		});
 		this._apiWrapper.registerTaskHandler(constants.mlOdbcDriverCommand, async () => {
 			await this.serverConfigManager.openOdbcDriverDocuments();

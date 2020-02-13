@@ -9,7 +9,9 @@ import * as Models from './interfaces';
 import * as Mappers from './mappers';
 import * as Parameters from './parameters';
 
-
+/**
+ * Workspace models client
+ */
 export class WorkspaceModels {
 	private readonly client: AzureMachineLearningWorkspacesContext;
 
@@ -17,25 +19,23 @@ export class WorkspaceModels {
 		this.client = client;
 	}
 
-
-	listKeys(resourceGroupName: string, workspaceName: string, options?: msRest.RequestOptionsBase): Promise<Models.ListWorkspaceModelsResult>;
-	listKeys(resourceGroupName: string, workspaceName: string, callback: msRest.ServiceCallback<Models.ListWorkspaceModelsResult>): void;
-	listKeys(resourceGroupName: string, workspaceName: string, options: msRest.RequestOptionsBase, callback: msRest.ServiceCallback<Models.ListWorkspaceModelsResult>): void;
-	listKeys(resourceGroupName: string, workspaceName: string, options?: msRest.RequestOptionsBase | msRest.ServiceCallback<Models.ListWorkspaceModelsResult>, callback?: msRest.ServiceCallback<Models.ListWorkspaceModelsResult>): Promise<Models.WorkspacesModelsResponse> {
+	listModels(resourceGroupName: string, workspaceName: string, options?: msRest.RequestOptionsBase): Promise<Models.ListWorkspaceModelsResult>;
+	listModels(resourceGroupName: string, workspaceName: string, callback: msRest.ServiceCallback<Models.ListWorkspaceModelsResult>): void;
+	listModels(resourceGroupName: string, workspaceName: string, options: msRest.RequestOptionsBase, callback: msRest.ServiceCallback<Models.ListWorkspaceModelsResult>): void;
+	listModels(resourceGroupName: string, workspaceName: string, options?: msRest.RequestOptionsBase | msRest.ServiceCallback<Models.ListWorkspaceModelsResult>, callback?: msRest.ServiceCallback<Models.ListWorkspaceModelsResult>): Promise<Models.WorkspacesModelsResponse> {
 		return this.client.sendOperationRequest(
 			{
 				resourceGroupName,
 				workspaceName,
 				options
 			},
-			listKeysOperationSpec,
+			listModelsOperationSpec,
 			callback) as Promise<Models.WorkspacesModelsResponse>;
 	}
-
 }
 
 const serializer = new msRest.Serializer(Mappers);
-const listKeysOperationSpec: msRest.OperationSpec = {
+const listModelsOperationSpec: msRest.OperationSpec = {
 	httpMethod: 'GET',
 	path: 'subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/models',
 	urlParameters: [

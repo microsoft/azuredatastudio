@@ -14,15 +14,27 @@ export interface CallbackEventArgs {
 	error?: (reason?: any) => void;
 }
 
+
+export interface CallbackEventArgs {
+	data?: any;
+	error?: (reason?: any) => void;
+}
+
 export const CallEventNamePostfix = 'Callback';
+export const LocalFileEventName = 'localFile';
+export const LocalFolderEventName = 'localFolder';
 
-
+/**
+ * Base class for views
+ */
 export abstract class ViewBase extends EventEmitterCollection {
-	protected _dialog: azdata.window.Dialog | undefined;
+	protected _mainViewPanel: azdata.window.Dialog | azdata.window.Wizard | undefined;
+	public viewPanel: azdata.window.ModelViewPanel | undefined;
 	public connection: azdata.connection.ConnectionProfile | undefined;
 	public connectionUrl: string = '';
 
 	public componentMaxLength = 350;
+	public buttonMaxLength = 150;
 	public browseButtonMaxLength = 20;
 	public spaceBetweenComponentsLength = 10;
 
@@ -54,7 +66,7 @@ export abstract class ViewBase extends EventEmitterCollection {
 
 	protected registerEvents() {
 		if (this._parent) {
-			this._dialog = this._parent.dialog;
+			this._mainViewPanel = this._parent.mainViewPanel;
 			const events = this.getEventNames();
 			if (events) {
 				events.forEach(eventName => {
@@ -75,7 +87,7 @@ export abstract class ViewBase extends EventEmitterCollection {
 		}
 	}
 
-	public sendRequest(requestType: string, arg: any) {
+	public sendRequest(requestType: string, arg?: any) {
 		this.fire(requestType, arg);
 	}
 
@@ -105,6 +117,14 @@ export abstract class ViewBase extends EventEmitterCollection {
 				}
 			});
 		});
+	}
+
+	public async getLocalFilePath(): Promise<string> {
+		return await this.sendDataRequest(LocalFileEventName);
+	}
+
+	public async getLocalFolderPath(): Promise<string> {
+		return await this.sendDataRequest(LocalFolderEventName);
 	}
 
 	public async getLocationTitle(): Promise<string> {
@@ -142,12 +162,12 @@ export abstract class ViewBase extends EventEmitterCollection {
 	/**
 	 * Dialog model instance
 	 */
-	public get dialog(): azdata.window.Dialog | undefined {
-		return this._dialog;
+	public get mainViewPanel(): azdata.window.Dialog | azdata.window.Wizard | undefined {
+		return this._mainViewPanel;
 	}
 
-	public set dialog(value: azdata.window.Dialog | undefined) {
-		this._dialog = value;
+	public set mainViewPanel(value: azdata.window.Dialog | azdata.window.Wizard | undefined) {
+		this._mainViewPanel = value;
 	}
 
 	public showInfoMessage(message: string): void {
@@ -159,8 +179,8 @@ export abstract class ViewBase extends EventEmitterCollection {
 	}
 
 	private showMessage(message: string, level: azdata.window.MessageLevel): void {
-		if (this._dialog) {
-			this._dialog.message = {
+		if (this._mainViewPanel) {
+			this._mainViewPanel.message = {
 				text: message,
 				level: level
 			};
@@ -175,5 +195,5 @@ export abstract class ViewBase extends EventEmitterCollection {
 		return path.join(this._root || '', filePath);
 	}
 
-	public abstract reset(): Promise<void>;
+	public abstract refresh(): Promise<void>;
 }

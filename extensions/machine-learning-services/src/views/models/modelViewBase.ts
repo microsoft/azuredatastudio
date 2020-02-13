@@ -5,66 +5,93 @@
 
 import * as azdata from 'azdata';
 
-import { azureResource } from '../../modelManagement/azure-resource';
+import { azureResource } from '../../typings/azure-resource';
 import { ApiWrapper } from '../../common/apiWrapper';
-import { ViewBase } from '../viewBase';
+import { ViewBase, LocalFolderEventName } from '../viewBase';
 import { RegisteredModel, WorkspaceModel } from '../../modelManagement/interfaces';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
+import { AzureWorkspaceResource, AzureModelResource } from '../interfaces';
 
-export interface AzureResourceEventArgs {
-	account?: azdata.Account,
-	subscription?: azureResource.AzureResourceSubscription,
-	group?: azureResource.AzureResource,
-	workspace?: Workspace
+export interface AzureResourceEventArgs extends AzureWorkspaceResource {
 }
 
+export interface RegisterAzureModelEventArgs extends AzureModelResource {
+	model?: WorkspaceModel;
+}
+
+export interface RegisterLocalModelEventArgs extends AzureResourceEventArgs {
+	filePath?: string;
+}
+
+// Event names
+//
 export const ListModelsEventName = 'listModels';
 export const ListAzureModelsEventName = 'listAzureModels';
 export const ListAccountsEventName = 'listAccounts';
 export const ListSubscriptionsEventName = 'listSubscriptions';
 export const ListGroupsEventName = 'listGroups';
 export const ListWorkspacesEventName = 'listWorkspaces';
+export const RegisterLocalModelEventName = 'registerLocalModel';
+export const RegisterAzureModelEventName = 'registerAzureLocalModel';
+export const RegisterModelEventName = 'registerModel';
+export const SourceModelSelectedEventName = 'sourceModelSelected';
 
+/**
+ * Base class for all model management views
+ */
 export abstract class ModelViewBase extends ViewBase {
 
 	constructor(apiWrapper: ApiWrapper, root?: string, parent?: ModelViewBase) {
 		super(apiWrapper, root, parent);
 	}
 
-	protected registerEvents() {
-		super.registerEvents();
-	}
-
 	protected getEventNames(): string[] {
-		return [ListModelsEventName, ListAzureModelsEventName, ListAccountsEventName, ListSubscriptionsEventName, ListGroupsEventName, ListWorkspacesEventName];
+		return [ListModelsEventName,
+			ListAzureModelsEventName,
+			ListAccountsEventName,
+			ListSubscriptionsEventName,
+			ListGroupsEventName,
+			ListWorkspacesEventName,
+			LocalFolderEventName,
+			RegisterLocalModelEventName,
+			RegisterAzureModelEventName,
+			RegisterModelEventName,
+			SourceModelSelectedEventName];
 	}
 
+	/**
+	 * Parent view
+	 */
 	public get parent(): ModelViewBase | undefined {
 		return this._parent ? <ModelViewBase>this._parent : undefined;
 	}
 
-	public async listAzureModels(
-		account: azdata.Account | undefined,
-		subscription: azureResource.AzureResourceSubscription | undefined,
-		group: azureResource.AzureResource | undefined,
-		workspace: Workspace | undefined): Promise<WorkspaceModel[]> {
-		const args: AzureResourceEventArgs = {
-			account: account,
-			subscription: subscription,
-			group: group,
-			workspace: workspace
-		};
+	/**
+	 * list azure models
+	 */
+	public async listAzureModels(workspaceResource: AzureWorkspaceResource): Promise<WorkspaceModel[]> {
+		const args: AzureResourceEventArgs = workspaceResource;
 		return await this.sendDataRequest(ListAzureModelsEventName, args);
 	}
 
+	/**
+	 * list registered models
+	 */
 	public async listModels(): Promise<RegisteredModel[]> {
 		return await this.sendDataRequest(ListModelsEventName);
 	}
 
+	/**
+	 * lists azure accounts
+	 */
 	public async listAzureAccounts(): Promise<azdata.Account[]> {
 		return await this.sendDataRequest(ListAccountsEventName);
 	}
 
+	/**
+	 * lists azure subscriptions
+	 * @param account azure account
+	 */
 	public async listAzureSubscriptions(account: azdata.Account | undefined): Promise<azureResource.AzureResourceSubscription[]> {
 		const args: AzureResourceEventArgs = {
 			account: account
@@ -72,6 +99,30 @@ export abstract class ModelViewBase extends ViewBase {
 		return await this.sendDataRequest(ListSubscriptionsEventName, args);
 	}
 
+	/**
+	 * registers local model
+	 * @param localFilePath local file path
+	 */
+	public async registerLocalModel(localFilePath: string | undefined): Promise<void> {
+		const args: RegisterLocalModelEventArgs = {
+			filePath: localFilePath
+		};
+		return await this.sendDataRequest(RegisterLocalModelEventName, args);
+	}
+
+	/**
+	 * registers azure model
+	 * @param args azure resource
+	 */
+	public async registerAzureModel(args: RegisterAzureModelEventArgs | undefined): Promise<void> {
+		return await this.sendDataRequest(RegisterAzureModelEventName, args);
+	}
+
+	/**
+	 * list resource groups
+	 * @param account azure account
+	 * @param subscription azure subscription
+	 */
 	public async listAzureGroups(account: azdata.Account | undefined, subscription: azureResource.AzureResourceSubscription | undefined): Promise<azureResource.AzureResource[]> {
 		const args: AzureResourceEventArgs = {
 			account: account,
@@ -80,6 +131,12 @@ export abstract class ModelViewBase extends ViewBase {
 		return await this.sendDataRequest(ListGroupsEventName, args);
 	}
 
+	/**
+	 * lists azure workspaces
+	 * @param account azure account
+	 * @param subscription azure subscription
+	 * @param group azure resource group
+	 */
 	public async listWorkspaces(account: azdata.Account | undefined, subscription: azureResource.AzureResourceSubscription | undefined, group: azureResource.AzureResource | undefined): Promise<Workspace[]> {
 		const args: AzureResourceEventArgs = {
 			account: account,
