@@ -11,6 +11,14 @@
 .list-row.account-picker-list .label {
 	flex: 1 1 auto;
 	margin-left: 15px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	min-width: 0;
+}
+
+.list-row.account-picker-list .monaco-action-bar {
+	overflow: unset;
 }
 
 .list-row.account-picker-list .label .contextual-display-name {

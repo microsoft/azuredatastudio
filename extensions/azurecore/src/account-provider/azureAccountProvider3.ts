@@ -29,10 +29,7 @@ interface Token {
 
 	expiresIn: string; // How long access token is valid, in seconds
 	refreshToken: string;
-
 	accountName: string;
-	scope: string;
-	sessionId: string; // The account id + the scope
 
 	displayName: string
 	iss: string
@@ -54,8 +51,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		this.loginEndpointUrl = this.metadata.settings.host;
 		this.commonTenant = 'common';
 		this.redirectUri = this.metadata.settings.redirectUri;
-		this.scopes = ['openid', 'email', 'profile', 'offline_access', 'https://management.azure.com/user_impersonation'];
 		this.clientId = this.metadata.settings.clientId;
+		this.scopes = this.metadata.settings.scopes;
 	}
 
 
@@ -66,14 +63,39 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private async _initialize(storedAccounts: azdata.Account[]): Promise<azdata.Account[]> {
 
 		for (let account of storedAccounts) {
-			await this.refresh(account);
+			await this._refreshToken(account);
 		}
 
 		return storedAccounts;
 	}
 
+	private async _refreshToken(account: azdata.Account): Promise<azdata.Account | azdata.PromptFailedResult> {
+		const token = JSON.parse(await this.getSecurityToken(account, undefined) as string) as Token;
+		if (!token) {
+			account.isStale = true;
+			return account;
+		}
+
+		const result = await this.refreshAccessToken(account, token);
+
+		if (result) {
+			await this._tokenCache.addAccount(account.key.accountId, JSON.stringify(result));
+		} else {
+			account.isStale = true;
+		}
+
+		return account;
+	}
+
 	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}> {
-		return this._tokenCache.getCredential(account.key.accountId);
+		return this._getSecurityToken(account, resource);
+	}
+
+	private async _getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<{}> {
+		const x = await this._tokenCache.getCredential(account.key.accountId);
+		console.log(x);
+
+		return x;
 	}
 
 	prompt(): Thenable<azdata.Account | azdata.PromptFailedResult> {
@@ -147,8 +169,11 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			},
 			isStale: false
 		} as AzureAccount;
-
-		this._tokenCache.addAccount(account.key.accountId, JSON.stringify(token));
+		try {
+			await this._tokenCache.addAccount(account.key.accountId, JSON.stringify(token));
+		} catch (ex) {
+			console.log(ex);
+		}
 		return account;
 	}
 
@@ -216,8 +241,6 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 				accessToken: tokenResponse.data.access_token,
 				expiresIn: tokenResponse.data.expires_in,
 				refreshToken: tokenResponse.data.refresh_token,
-				scope: tokenResponse.data.scope,
-				sessionId: `${tokenClaims.tid}/${(tokenClaims.oid || (tokenClaims.altsecid || '' + tokenClaims.ipd || ''))}/${scope}`,
 				accountName: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name,
 				displayName: tokenClaims.name,
 				iss: tokenClaims.iss
@@ -313,21 +336,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	refresh(account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> {
-		return this._refresh(account);
-	}
-
-	private async _refresh(account: azdata.Account): Promise<azdata.Account | azdata.PromptFailedResult> {
-		const token = JSON.parse(await this.getSecurityToken(account, undefined) as string) as Token;
-
-		const result = await this.refreshAccessToken(account, token);
-
-		if (result) {
-			this._tokenCache.addAccount(account.key.accountId, JSON.stringify(result));
-		} else {
-			account.isStale = true;
-		}
-
-		return account;
+		return this.prompt();
 	}
 
 	clear(accountKey: azdata.AccountKey): Thenable<void> {

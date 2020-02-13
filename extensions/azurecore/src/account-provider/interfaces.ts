@@ -101,6 +101,11 @@ interface Settings {
 	 * Redirect URI that is used to signify the end of the interactive aspect of sign it
 	 */
 	redirectUri?: string;
+
+	/**
+	 * List of authentication scopes
+	 */
+	scopes?: string[]
 }
 
 /**

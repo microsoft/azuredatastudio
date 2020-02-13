@@ -33,7 +33,11 @@ const publicAzureSettings: ProviderSettings = {
 				id: 'https://ossrdbms-aad.database.windows.net',
 				endpoint: 'https://ossrdbms-aad.database.windows.net'
 			},
-			redirectUri: 'https://vscode-redirect.azurewebsites.net/'
+			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
+			scopes: [
+				'openid', 'email', 'profile', 'offline_access',
+				'https://management.azure.com/user_impersonation'
+			]
 		}
 	}
 };
@@ -45,18 +49,30 @@ const usGovAzureSettings: ProviderSettings = {
 		displayName: localize('usGovCloudDisplayName', "Azure (US Government)"),
 		id: 'usGovAzureCloud',
 		settings: {
-			host: 'https://login.microsoftonline.us',
-			clientId: 'TBD',
+			host: 'https://login.microsoftonline.us/',
+			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
 			signInResourceId: 'https://management.core.usgovcloudapi.net/',
 			graphResource: {
-				id: 'https://graph.usgovcloudapi.net/',
-				endpoint: 'https://graph.usgovcloudapi.net'
+				id: 'https://graph.windows.net/',
+				endpoint: 'https://graph.windows.net'
 			},
 			armResource: {
 				id: 'https://management.core.usgovcloudapi.net/',
 				endpoint: 'https://management.usgovcloudapi.net'
 			},
-			redirectUri: 'http://localhost/redirect'
+			sqlResource: {
+				id: 'https://database.usgovcloudapi.net/',
+				endpoint: 'https://database.usgovcloudapi.net'
+			},
+			ossRdbmsResource: {
+				id: 'https://ossrdbms-aad.database.usgovcloudapi.net',
+				endpoint: 'https://ossrdbms-aad.database.usgovcloudapi.net'
+			},
+			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
+			scopes: [
+				'openid', 'email', 'profile', 'offline_access',
+				'https://management.usgovcloudapi.net/user_impersonation'
+			]
 		}
 	}
 };
@@ -69,7 +85,7 @@ const germanyAzureSettings: ProviderSettings = {
 		id: 'germanyAzureCloud',
 		settings: {
 			host: 'https://login.microsoftazure.de/',
-			clientId: 'TBD',
+			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
 			signInResourceId: 'https://management.core.cloudapi.de/',
 			graphResource: {
 				id: 'https://graph.cloudapi.de/',
@@ -79,7 +95,7 @@ const germanyAzureSettings: ProviderSettings = {
 				id: 'https://management.core.cloudapi.de/',
 				endpoint: 'https://management.microsoftazure.de'
 			},
-			redirectUri: 'http://localhost/redirect'
+			redirectUri: 'https://vscode-redirect.azurewebsites.net/'
 		}
 	}
 };
@@ -91,7 +107,7 @@ const chinaAzureSettings: ProviderSettings = {
 		id: 'chinaAzureCloud',
 		settings: {
 			host: 'https://login.chinacloudapi.cn/',
-			clientId: 'TBD',
+			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
 			signInResourceId: 'https://management.core.chinacloudapi.cn/',
 			graphResource: {
 				id: 'https://graph.chinacloudapi.cn/',
@@ -101,7 +117,7 @@ const chinaAzureSettings: ProviderSettings = {
 				id: 'https://management.core.chinacloudapi.cn/',
 				endpoint: 'https://managemement.chinacloudapi.net'
 			},
-			redirectUri: 'http://localhost/redirect'
+			redirectUri: 'https://vscode-redirect.azurewebsites.net/'
 		}
 	}
 };
