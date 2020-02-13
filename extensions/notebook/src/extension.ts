@@ -17,8 +17,11 @@ import { CellType } from './contracts/content';
 import { getErrorMessage, isEditorTitleFree } from './common/utils';
 import { NotebookUriHandler } from './protocol/notebookUriHandler';
 import { BookTreeViewProvider } from './book/bookTreeView';
+import * as fileServices from 'fs';
 
 const localize = nls.loadMessageBundle();
+
+const fsPromises = fileServices.promises;
 
 const JUPYTER_NOTEBOOK_PROVIDER = 'jupyter';
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample code loads the file into a data frame and shows the first 10 results.");
@@ -38,7 +41,8 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.searchBook', () => bookTreeViewProvider.searchJupyterBooks()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.searchUntitledBook', () => untitledBookTreeViewProvider.searchJupyterBooks()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openBook', () => bookTreeViewProvider.openNewBook()));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.createBook', () => {
+
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.createBook', async () => {
 		const createBookPath: string = path.posix.join(extensionContext.extensionPath, 'resources', 'notebooks', 'JupyterBooksCreate.ipynb');
 		let untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${createBookPath}`);
 		vscode.workspace.openTextDocument(createBookPath).then((document) => {
@@ -123,6 +127,11 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 
 	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(BOOKS_VIEWID, bookTreeViewProvider));
 	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(READONLY_BOOKS_VIEWID, untitledBookTreeViewProvider));
+
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openCreatedBook', (bookPath: string) => {
+		updateBookMetadata(bookPath);
+		bookTreeViewProvider.openBook(bookPath, undefined);
+	}));
 
 	return {
 		getJupyterController() {
@@ -239,6 +248,38 @@ async function addCell(cellType: azdata.nb.CellType): Promise<void> {
 		}
 	} catch (err) {
 		vscode.window.showErrorMessage(getErrorMessage(err));
+	}
+}
+
+async function updateBookMetadata(bookPath: string): Promise<void> {
+	try {
+		// get the toc file and update the contents
+		let tocFilePath: string = path.join(bookPath, '_data', 'toc.yml');
+		let result: string;
+		fsPromises.readFile(tocFilePath).then(data => {
+			result = data.toString();
+			let urls = result.match(/- url: [a-zA-Z0-9\\.\s-]+$/gm);
+			let firstUrl: string = urls.shift();
+			let title: string = firstUrl.substring(firstUrl.lastIndexOf(path.sep) + 1);
+			let replacedString: string = `- title: ${title}\n  url: /${title}\n  not_numbered: true\n  expand_sections: true\n  sections:\n`;
+			result = result.replace(firstUrl, replacedString);
+			urls.map(url => {
+				title = url.substring(url.lastIndexOf(path.sep) + 1);
+				replacedString = `  - title: ${title}\n    url: /${title}\n`;
+				result = result.replace(url, replacedString);
+			});
+			fsPromises.writeFile(tocFilePath, result);
+		});
+		// update the book title
+		let configFilePath: string = path.join(bookPath, '_config.yml');
+		fsPromises.readFile(configFilePath).then(data => {
+			let titleLine = data.toString().match(/title: [a-zA-Z0-9\\.\s-]+$/gm);
+			let title: string = `title: ${path.basename(bookPath)}`;
+			result = data.toString().replace(titleLine[0], title);
+			fsPromises.writeFile(configFilePath, result);
+		});
+	} catch (error) {
+		new ApiWrapper().showErrorMessage(error);
 	}
 }
 
