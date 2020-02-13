@@ -5,7 +5,7 @@
 import { Type } from '@angular/core';
 
 import * as platform from 'vs/platform/registry/common/platform';
-import { ReadonlyJSONObject } from 'sql/workbench/contrib/notebook/common/models/jsonext';
+import { ReadonlyJSONObject } from 'sql/workbench/services/notebook/common/jsonext';
 import { MimeModel } from 'sql/workbench/contrib/notebook/browser/models/mimemodel';
 import * as types from 'vs/base/common/types';
 import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';

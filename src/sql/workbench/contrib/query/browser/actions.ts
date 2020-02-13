@@ -9,7 +9,6 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IExtensionTipsService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
-import { SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { QueryEditor } from './queryEditor';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
@@ -23,6 +22,7 @@ import * as Constants from 'sql/workbench/contrib/extensions/common/constants';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { getErrorMessage } from 'vs/base/common/errors';
+import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;

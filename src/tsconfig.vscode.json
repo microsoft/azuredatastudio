@@ -25,8 +25,12 @@
 		// "./vs/code/**/*.ts",
 		"./vs/editor/**/*.ts",
 		"./vs/platform/**/*.ts",
+		// "./vs/workbench/api/common/**/*.ts",
+		// "./vs/workbench/api/worker/**/*.ts",
+		// "./vs/workbench/browser/**/*.ts",
 		// "./vs/workbench/common/**/*.ts",
 		// "./vs/workbench/contrib/debug/common/debugProtocol.d.ts",
+		// "./vs/workbench/electron-browser/**/*.ts",
 		// "./vs/workbench/services/activity/**/*.ts",
 		// "./vs/workbench/services/activityBar/**/*.ts",
 		// "./vs/workbench/services/authentication/**/*.ts",
@@ -53,12 +57,19 @@
 		// "./vs/workbench/services/title/**/*.ts",
 		// "./vs/workbench/services/untitled/**/*.ts",
 		// "./vs/workbench/services/userDataSync/**/*.ts",
+		// "./vs/workbench/services/**/test/**/*.ts",
 		"./sql/base/**/*.ts",
 		"./sql/editor/**/*.ts",
-		"./sql/platform/**/*.ts"
+		"./sql/platform/**/*.ts",
+		// "./sql/workbench/api/common/**/*.ts",
+		// "./sql/workbench/api/worker/**/*.ts",
+		// "./sql/workbench/browser/**/*.ts",
+		"./sql/workbench/common/**/*.ts",
+		// "./sql/workbench/electron-browser/**/*.ts",
+		// "./sql/workbench/services/**/test/**/*.ts"
 	],
 	"exclude": [
 		"./vs/platform/workspaces/test/electron-main/workspacesMainService.test.ts",
-		"./vs/workbench/common/editor/**/*.ts",
+		"./vs/workbench/common/editor/editorGroup.ts"
 	]
 }

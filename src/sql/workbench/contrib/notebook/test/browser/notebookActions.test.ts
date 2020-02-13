@@ -7,7 +7,7 @@ import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 
 import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, TrustedAction, RunAllCellsAction, NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
-import { CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ICellModel, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { INotificationService } from 'vs/platform/notification/common/notification';

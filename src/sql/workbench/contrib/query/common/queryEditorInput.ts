@@ -234,17 +234,17 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	// State update funtions
 	public runQuery(selection?: ISelectionData, executePlanOptions?: ExecutionPlanOptions): void {
-		this.queryModelService.runQuery(this.uri, selection, this, executePlanOptions);
+		this.queryModelService.runQuery(this.uri, selection, executePlanOptions);
 		this.state.executing = true;
 	}
 
 	public runQueryStatement(selection?: ISelectionData): void {
-		this.queryModelService.runQueryStatement(this.uri, selection, this);
+		this.queryModelService.runQueryStatement(this.uri, selection);
 		this.state.executing = true;
 	}
 
 	public runQueryString(text: string): void {
-		this.queryModelService.runQueryString(this.uri, text, this);
+		this.queryModelService.runQueryString(this.uri, text);
 		this.state.executing = true;
 	}
 

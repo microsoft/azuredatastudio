@@ -25,7 +25,7 @@ import { INotebookService, INotebookEditor } from 'sql/workbench/services/notebo
 import { ISingleNotebookEditOperation, NotebookChangeKind } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
 import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { NotebookChangeType, CellTypes } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { NotebookChangeType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
@@ -38,6 +38,7 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
+import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -458,12 +459,17 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		};
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
-		let fileInput;
+		let fileInput: UntitledTextEditorInput | FileEditorInput;
 		if (isUntitled && path.isAbsolute(uri.fsPath)) {
-			fileInput = this._untitledEditorService.create({ associatedResource: uri, mode: 'notebook', initialValue: options.initialContent });
+			const model = this._untitledEditorService.create({ associatedResource: uri, mode: 'notebook', initialValue: options.initialContent });
+			fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 		} else {
-			fileInput = isUntitled ? this._untitledEditorService.create({ untitledResource: uri, mode: 'notebook', initialValue: options.initialContent }) :
-				this._editorService.createInput({ resource: uri, mode: 'notebook' });
+			if (isUntitled) {
+				const model = this._untitledEditorService.create({ untitledResource: uri, mode: 'notebook', initialValue: options.initialContent });
+				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
+			} else {
+				fileInput = this._editorService.createInput({ forceFile: true, resource: uri, mode: 'notebook' }) as FileEditorInput;
+			}
 		}
 		let input: NotebookInput;
 		if (isUntitled) {
@@ -478,7 +484,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			await untitledModel.load();
 			input.untitledEditorModel = untitledModel;
 			if (options.initialDirtyState === false) {
-				input.untitledEditorModel.setDirty(false);
+				(input.untitledEditorModel as UntitledTextEditorModel).setDirty(false);
 			}
 		}
 		let editor = await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));

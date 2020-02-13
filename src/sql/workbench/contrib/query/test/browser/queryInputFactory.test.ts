@@ -20,6 +20,7 @@ import { IConnectionManagementService, IConnectionCompletionOptions, IConnection
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 
 suite('Query Input Factory', () => {
 
@@ -63,13 +64,22 @@ suite('Query Input Factory', () => {
 
 });
 
+class ServiceAccessor {
+	constructor(
+		@IUntitledTextEditorService public readonly untitledTextEditorService: IUntitledTextEditorService
+	) { }
+}
+
 class MockEditorService extends TestEditorService {
 	public readonly activeEditor: IEditorInput | undefined = undefined;
 
 	constructor(instantiationService?: IInstantiationService) {
 		super();
 		if (instantiationService) {
-			const untitledInput = instantiationService.createInstance(UntitledTextEditorInput, URI.file('/test/file'), false, undefined, undefined, undefined);
+			const workbenchinstantiationService = workbenchInstantiationService();
+			const accessor = workbenchinstantiationService.createInstance(ServiceAccessor);
+			const service = accessor.untitledTextEditorService;
+			const untitledInput = instantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: URI.file('/test/file') }));
 			this.activeEditor = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, undefined);
 		}
 	}

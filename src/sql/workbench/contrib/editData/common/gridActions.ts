@@ -3,11 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IGridInfo, SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
-import { DataService } from 'sql/workbench/contrib/grid/common/dataService';
+import { IGridInfo } from 'sql/workbench/contrib/grid/common/interfaces';
+import { DataService } from 'sql/workbench/services/query/common/dataService';
 
 import { localize } from 'vs/nls';
 import { IAction, Action } from 'vs/base/common/actions';
+import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 
 export const GRID_SAVECSV_ID = 'grid.saveAsCsv';
 export const GRID_SAVEJSON_ID = 'grid.saveAsJson';

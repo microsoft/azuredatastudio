@@ -3,14 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Subject } from 'rxjs/Subject';
-
 import { EditUpdateCellResult, EditSubsetResult, EditCreateRowResult } from 'azdata';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
-import { ResultSerializer } from 'sql/workbench/contrib/query/common/resultSerializer';
-import { ISaveRequest } from 'sql/workbench/contrib/grid/common/interfaces';
+import { ResultSerializer, ISaveRequest } from 'sql/workbench/services/query/common/resultSerializer';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { Emitter } from 'vs/base/common/event';
 
 /**
  * DataService handles the interactions between QueryModel and app.component. Thus, it handles
@@ -18,8 +16,18 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
  */
 export class DataService {
 
-	public queryEventObserver: Subject<any>;
-	public gridContentObserver: Subject<any>;
+	public fireQueryEvent(event: any) {
+		this._queryEvents.fire(event);
+	}
+	private readonly _queryEvents = new Emitter<any>();
+	public readonly queryEvents = this._queryEvents.event;
+
+	public fireGridContent(event: any) {
+		this._gridContent.fire(event);
+	}
+	private readonly _gridContent = new Emitter<any>();
+	public readonly gridContent = this._gridContent.event;
+
 	private editQueue: Promise<any>;
 
 	constructor(
@@ -27,8 +35,6 @@ export class DataService {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IQueryModelService private _queryModel: IQueryModelService
 	) {
-		this.queryEventObserver = new Subject();
-		this.gridContentObserver = new Subject();
 		this.editQueue = Promise.resolve();
 	}
 

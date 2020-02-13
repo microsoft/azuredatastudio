@@ -233,7 +233,7 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		services.set(IFileService, fileService);
 		fileService.registerProvider(Schemas.file, this._register(new DiskFileSystemProvider(this._logService)));
 
-		services.set(IConfigurationService, new SyncDescriptor(ConfigurationService, [this._environmentService.machineSettingsResource]));
+		services.set(IConfigurationService, new SyncDescriptor(ConfigurationService, [this._environmentService.machineSettingsResource, fileService]));
 		services.set(IRequestService, new SyncDescriptor(RequestService));
 
 		let appInsightsAppender: ITelemetryAppender | null = NullAppender;
