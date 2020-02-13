@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.15.0",
-  "distro": "9e40c9a0b20474b196d66867733a96749911bca3",
+  "distro": "1b4d90a67886b41cddaae7bd5a43559a7da39543",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -78,7 +78,7 @@
     "vscode-ripgrep": "^1.5.8",
     "vscode-sqlite3": "4.0.9",
     "vscode-textmate": "4.4.0",
-    "xterm": "4.4.0",
+    "xterm": "4.5.0-beta.4",
     "xterm-addon-search": "0.5.0",
     "xterm-addon-unicode11": "0.1.1",
     "xterm-addon-web-links": "0.2.1",

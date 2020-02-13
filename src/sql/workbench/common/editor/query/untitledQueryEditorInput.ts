@@ -12,13 +12,11 @@ import { IEncodingSupport, EncodingMode } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
+import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 
 export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport {
 
 	public static readonly ID = 'workbench.editorInput.untitledQueryInput';
-
-	public readonly onDidModelChangeEncoding = this.text.onDidModelChangeEncoding;
 
 	constructor(
 		description: string,
@@ -31,7 +29,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		super(description, text, results, connectionManagementService, queryModelService, configurationService);
 	}
 
-	public resolve(): Promise<UntitledTextEditorModel & IResolvedTextEditorModel> {
+	public resolve(): Promise<IUntitledTextEditorModel & IResolvedTextEditorModel> {
 		return this.text.resolve();
 	}
 
@@ -40,7 +38,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 	}
 
 	public get hasAssociatedFilePath(): boolean {
-		return this.text.hasAssociatedFilePath;
+		return this.text.model.hasAssociatedFilePath;
 	}
 
 	public setMode(mode: string): void {

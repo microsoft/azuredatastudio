@@ -17,15 +17,15 @@ import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { TestFileService, TestStorageService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestStorageService, workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
 import { Event } from 'vs/base/common/event';
-import { LabelService } from 'vs/workbench/services/label/common/labelService';
-import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 
 suite('SQL QueryEditor Tests', () => {
@@ -302,7 +302,10 @@ suite('SQL QueryEditor Tests', () => {
 					return new RunQueryAction(undefined, undefined, undefined);
 				});
 
-			let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, undefined, undefined, undefined, instantiationService.object, undefined, new LabelService(undefined, undefined), undefined, undefined, new TestFileService(), undefined);
+			const workbenchinstantiationService = workbenchInstantiationService();
+			const accessor = workbenchinstantiationService.createInstance(ServiceAccessor);
+			const service = accessor.untitledTextEditorService;
+			let fileInput = workbenchinstantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: URI.parse('file://testUri') }));
 			queryModelService = TypeMoq.Mock.ofType(TestQueryModelService, TypeMoq.MockBehavior.Strict);
 			queryModelService.setup(x => x.disposeQuery(TypeMoq.It.isAny()));
 			queryModelService.setup(x => x.onRunQueryComplete).returns(() => Event.None);
@@ -343,3 +346,9 @@ suite('SQL QueryEditor Tests', () => {
 		});
 	});
 });
+
+class ServiceAccessor {
+	constructor(
+		@IUntitledTextEditorService public readonly untitledTextEditorService: IUntitledTextEditorService
+	) { }
+}

@@ -53,6 +53,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { find } from 'vs/base/common/arrays';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
+import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {
@@ -433,7 +434,8 @@ export class ProfilerEditor extends BaseEditor {
 		editorContainer.className = 'profiler-editor';
 		this._editor.create(editorContainer);
 		this._editor.setVisible(true);
-		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, URI.from({ scheme: Schemas.untitled }), false, 'sql', '', '');
+		const model = this._instantiationService.createInstance(UntitledTextEditorModel, URI.from({ scheme: Schemas.untitled }), false, undefined, 'sql', undefined);
+		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 		this._editor.setInput(this._editorInput, undefined);
 		this._editorInput.resolve().then(model => this._editorModel = model.textEditorModel);
 		return editorContainer;
