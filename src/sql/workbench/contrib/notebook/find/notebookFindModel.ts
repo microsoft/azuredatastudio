@@ -8,7 +8,7 @@ import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/brow
 import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as types from 'vs/base/common/types';
-import { NotebookRange, NotebookFindMatch, NotebookFindDecorations } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
+import { NotebookFindMatch, NotebookFindDecorations } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 import * as model from 'vs/editor/common/model';
 import { ModelDecorationOptions, DidChangeDecorationsEmitter, createTextBuffer } from 'vs/editor/common/model/textModel';
 import { IModelDecorationsChangedEvent } from 'vs/editor/common/model/textModelEvents';
@@ -24,6 +24,7 @@ import { NOTEBOOK_COMMAND_SEARCH } from 'sql/workbench/services/notebook/common/
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ActiveEditorContext } from 'vs/workbench/common/editor';
+import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 
 function _normalizeOptions(options: model.IModelDecorationOptions): ModelDecorationOptions {
 	if (options instanceof ModelDecorationOptions) {

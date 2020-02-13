@@ -24,9 +24,9 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/services/notebook/browser/outputs/sanitizer';
 import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions';
-import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
+import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';

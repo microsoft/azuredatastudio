@@ -26,8 +26,8 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ClientSession } from 'sql/workbench/services/notebook/browser/models/clientSession';
 import { TestStorageService } from 'vs/workbench/test/browser/workbenchTestServices';
-import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
