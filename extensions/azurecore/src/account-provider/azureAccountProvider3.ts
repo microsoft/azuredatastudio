@@ -18,8 +18,8 @@ import {
 	AzureAccount
 } from './interfaces';
 
-import TokenCache from './tokenCache';
 import { SimpleWebServer } from './simpleWebServer';
+import { SimpleTokenCache } from './simpleTokenCache';
 
 const localize = nls.loadMessageBundle();
 // const notInitalizedMessage = localize('accountProviderNotInitialized', "Account provider not initialized, cannot perform action");
@@ -49,7 +49,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private readonly clientId: string;
 
 	constructor(private readonly metadata: AzureAccountProviderMetadata,
-		private readonly _tokenCache: TokenCache,
+		private readonly _tokenCache: SimpleTokenCache,
 		_context: vscode.ExtensionContext) {
 		this.loginEndpointUrl = this.metadata.settings.host;
 		this.commonTenant = 'common';
@@ -60,11 +60,20 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 
 	initialize(storedAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
-		throw new Error('Method not implemented.');
+		return this._initialize(storedAccounts);
+	}
+
+	private async _initialize(storedAccounts: azdata.Account[]): Promise<azdata.Account[]> {
+
+		for (let account of storedAccounts) {
+			await this.refresh(account);
+		}
+
+		return storedAccounts;
 	}
 
 	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}> {
-		throw new Error('Method not implemented.');
+		return this._tokenCache.getCredential(account.key.accountId);
 	}
 
 	prompt(): Thenable<azdata.Account | azdata.PromptFailedResult> {
@@ -139,6 +148,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			isStale: false
 		} as AzureAccount;
 
+		this._tokenCache.addAccount(account.key.accountId, JSON.stringify(token));
 		return account;
 	}
 
@@ -188,16 +198,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		}
 	}
 
-	private async getTokenWithAuthCode(authCode: string, codeVerifier: string, scope: string, redirectUri: string): Promise<Token | undefined> {
-		const postData = {
-			grant_type: 'authorization_code',
-			code: authCode,
-			client_id: this.clientId,
-			scope,
-			code_verifier: codeVerifier,
-			redirect_uri: redirectUri
-		};
-
+	private async getToken(postData: { [key: string]: string }, scope: string): Promise<Token | undefined> {
 		const tokenUrl = `${this.loginEndpointUrl}${this.commonTenant}/oauth2/v2.0/token`;
 		try {
 			const config = {
@@ -230,6 +231,31 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		}
 
 		return undefined;
+	}
+
+	private async refreshAccessToken(account: azdata.Account, token: Token): Promise<Token | undefined> {
+		const postData = {
+			grant_type: 'refresh_token',
+			refresh_token: token.refreshToken,
+			client_id: this.clientId,
+			tenant: this.commonTenant,
+			scope: this.scopes.join(' ')
+		};
+
+		return this.getToken(postData, postData.scope);
+	}
+
+	private async getTokenWithAuthCode(authCode: string, codeVerifier: string, scope: string, redirectUri: string): Promise<Token | undefined> {
+		const postData = {
+			grant_type: 'authorization_code',
+			code: authCode,
+			client_id: this.clientId,
+			scope,
+			code_verifier: codeVerifier,
+			redirect_uri: redirectUri
+		};
+
+		return this.getToken(postData, postData.scope);
 	}
 
 	private getTokenClaims(accessToken: string) {
@@ -287,11 +313,29 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	refresh(account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> {
-		throw new Error('Method not implemented.');
+		return this._refresh(account);
+	}
+
+	private async _refresh(account: azdata.Account): Promise<azdata.Account | azdata.PromptFailedResult> {
+		const token = JSON.parse(await this.getSecurityToken(account, undefined) as string) as Token;
+
+		const result = await this.refreshAccessToken(account, token);
+
+		if (result) {
+			this._tokenCache.addAccount(account.key.accountId, JSON.stringify(result));
+		} else {
+			account.isStale = true;
+		}
+
+		return account;
 	}
 
 	clear(accountKey: azdata.AccountKey): Thenable<void> {
-		throw new Error('Method not implemented.');
+		return this._clear(accountKey);
+	}
+
+	private async _clear(accountKey: azdata.AccountKey): Promise<void> {
+		await this._tokenCache.clearCredential(accountKey.accountId);
 	}
 
 	autoOAuthCancelled(): Thenable<void> {

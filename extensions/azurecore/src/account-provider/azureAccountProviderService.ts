@@ -7,9 +7,8 @@ import * as constants from '../constants';
 import * as azdata from 'azdata';
 import * as events from 'events';
 import * as nls from 'vscode-nls';
-import * as path from 'path';
 import * as vscode from 'vscode';
-import CredentialServiceTokenCache from './tokenCache';
+import { SimpleTokenCache } from './simpleTokenCache';
 import providerSettings from './providerSettings';
 import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider3';
 import { AzureAccountProviderMetadata, ProviderSettings } from './interfaces';
@@ -25,12 +24,12 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////////
 	private _accountDisposals: { [accountProviderId: string]: vscode.Disposable };
 	private _accountProviders: { [accountProviderId: string]: azdata.AccountProvider };
-	private _credentialProvider: azdata.CredentialProvider;
+	// private _credentialProvider: azdata.CredentialProvider;
 	private _configChangePromiseChain: Thenable<void>;
 	private _currentConfig: vscode.WorkspaceConfiguration;
 	private _event: events.EventEmitter;
 
-	constructor(private _context: vscode.ExtensionContext, private _userStoragePath: string) {
+	constructor(private _context: vscode.ExtensionContext, _userStoragePath: string) {
 		this._accountDisposals = {};
 		this._accountProviders = {};
 		this._configChangePromiseChain = Promise.resolve();
@@ -55,7 +54,6 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		// 2c) Perform an initial config change handling
 		return azdata.credentials.getProvider(AzureAccountProviderService.CredentialNamespace)
 			.then(credProvider => {
-				self._credentialProvider = credProvider;
 
 				self._context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(self.onDidChangeConfiguration, self));
 				self.onDidChangeConfiguration();
@@ -136,9 +134,10 @@ export class AzureAccountProviderService implements vscode.Disposable {
 				//let config = vscode.workspace.getConfiguration(AzureAccountProviderService.ConfigurationSection);
 
 				let tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
-				let tokenCachePath = path.join(this._userStoragePath, tokenCacheKey);
-				let tokenCache = new CredentialServiceTokenCache(self._credentialProvider, tokenCacheKey, tokenCachePath);
-				let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, tokenCache, this._context);
+				// let tokenCachePath = path.join(this._userStoragePath, tokenCacheKey);
+				// let tokenCache = new CredentialServiceTokenCache(self._credentialProvider, tokenCacheKey, tokenCachePath);
+				let simpleTokenCache = new SimpleTokenCache(tokenCacheKey);
+				let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, simpleTokenCache, this._context);
 				self._accountProviders[provider.metadata.id] = accountProvider;
 				self._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
 				resolve();
