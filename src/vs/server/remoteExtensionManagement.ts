@@ -175,7 +175,7 @@ export async function run(argv: ParsedArgs, environmentService: ServerEnvironmen
 	disposables.add(diskFileSystemProvider);
 	fileService.registerProvider(Schemas.file, diskFileSystemProvider);
 
-	const configurationService = new ConfigurationService(environmentService.settingsResource);
+	const configurationService = new ConfigurationService(environmentService.settingsResource, fileService);
 	disposables.add(configurationService);
 	await configurationService.initialize();
 	services.set(IConfigurationService, configurationService);
