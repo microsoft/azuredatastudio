@@ -75,7 +75,8 @@ export function httpGetRequestError(code: number, message: string): string {
 		code,
 		message);
 }
-export function getErrorMessage(error: Error): string { return localize('azure.resource.error', "Error: {0}", error?.message); }
+export function getErrorMessage(error: Error): string { return localize('azure.resource.error', "Error: {0}", error?.message || error?.toString()); }
+export const notSupportedEventArg = localize('notSupportedEventArg', "Not supported event args");
 export const extLangInstallTabTitle = localize('extLang.installTabTitle', "Installed");
 export const extLangLanguageCreatedDate = localize('extLang.languageCreatedDate', "Installed");
 export const extLangLanguagePlatform = localize('extLang.languagePlatform', "Platform");
@@ -118,6 +119,7 @@ export const azureRegisterModel = localize('models.azureRegisterModel', "Registe
 export const registerModelWizardTitle = localize('models.RegisterWizard', "Register");
 export const registerModelButton = localize('models.RegisterModelButton', "Register model");
 export const modelRegisteredSuccessfully = localize('models.modelRegisteredSuccessfully', "Model registered successfully");
+export const modelFailedToRegister = localize('models.modelFailedToRegistered', "Model failed to register");
 
 
 // Links

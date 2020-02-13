@@ -15,7 +15,6 @@ import { RegisteredModelsDialog } from './registeredModelsDialog';
 import { AzureResourceEventArgs, ListAzureModelsEventName, ListSubscriptionsEventName, ListModelsEventName, ListWorkspacesEventName, ListGroupsEventName, ListAccountsEventName, RegisterLocalModelEventName, RegisterLocalModelEventArgs, RegisterAzureModelEventName, RegisterAzureModelEventArgs, ModelViewBase, SourceModelSelectedEventName, RegisterModelEventName } from './modelViewBase';
 import { ControllerBase } from '../controllerBase';
 import { RegisterModelWizard } from './registerModelWizard';
-import * as constants from '../../common/constants';
 
 /**
  * Model management UI controller
@@ -39,19 +38,21 @@ export class ModelManagementController extends ControllerBase {
 	 * @param apiWrapper apiWrapper
 	 * @param root root folder path
 	 */
-	public async registerModel(controller?: ModelManagementController, apiWrapper?: ApiWrapper, root?: string): Promise<ModelViewBase> {
+	public async registerModel(parent?: ModelViewBase, controller?: ModelManagementController, apiWrapper?: ApiWrapper, root?: string): Promise<ModelViewBase> {
 		controller = controller || this;
 		apiWrapper = apiWrapper || this._apiWrapper;
 		root = root || this._root;
-		let view = new RegisterModelWizard(apiWrapper, root);
+		let view = new RegisterModelWizard(apiWrapper, root, parent);
 
-		// Register events
-		//
-		controller.registerEvents(view);
+		if (!parent) {
+			// Register events
+			//
+			controller.registerEvents(view);
+		}
 
 		// Open view
 		//
-		await view.open();
+		view.open();
 		return view;
 	}
 
@@ -94,15 +95,12 @@ export class ModelManagementController extends ControllerBase {
 			view.refresh();
 		});
 		view.on(RegisterModelEventName, async () => {
-			await this.executeAction(view, RegisterModelEventName, this.registerModel, this, this._apiWrapper, this._root);
-			await view.refresh();
+			await this.executeAction(view, RegisterModelEventName, this.registerModel, view, this, this._apiWrapper, this._root);
 		});
 		view.on(RegisterAzureModelEventName, async (arg) => {
 			let registerArgs = <RegisterAzureModelEventArgs>arg;
 			await this.executeAction(view, RegisterAzureModelEventName, this.registerAzureModel, this._amlService, this._registeredModelService,
 				registerArgs.account, registerArgs.subscription, registerArgs.group, registerArgs.workspace, registerArgs.model);
-			this._apiWrapper.showInfoMessage(constants.modelRegisteredSuccessfully);
-			view.refresh();
 		});
 		view.on(SourceModelSelectedEventName, () => {
 			view.refresh();
@@ -121,7 +119,7 @@ export class ModelManagementController extends ControllerBase {
 
 		// Open view
 		//
-		await view.open();
+		view.open();
 		return view;
 	}
 

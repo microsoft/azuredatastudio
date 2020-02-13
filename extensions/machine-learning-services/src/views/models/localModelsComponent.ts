@@ -42,7 +42,7 @@ export class LocalModelsComponent extends ModelViewBase implements IPageView, ID
 			}
 		}).component();
 		this._localBrowse.onDidClick(async () => {
-			const filePath = await this.getLocalFolderPath();
+			const filePath = await this.getLocalFilePath();
 			if (this._localPath) {
 				this._localPath.value = filePath;
 			}

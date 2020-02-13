@@ -5,8 +5,7 @@
 		{ "name": "mlflow", "version": ""},
 		{ "name": "pyodbc", "version": ""},
 		{ "name": "mlflow[sqlserver]", "version": ""},
-		{ "name": "onnxruntime", "version": ""},
-		{ "name": "skl2onnx", "version": ""}
+		{ "name": "onnx", "version": ""}
 	],
 
 	"requiredRPackages": [

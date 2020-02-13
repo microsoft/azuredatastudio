@@ -29,15 +29,17 @@ export class MainViewBase {
 		});
 	}
 
-	protected addPage(page: IPageView, index: number): void {
-		this._pages[index] = page;
+	protected addPage(page: IPageView, index?: number): void {
+		if (index) {
+			this._pages[index] = page;
+		} else {
+			this._pages.push(page);
+		}
 	}
 
 	public async refresh(): Promise<void> {
 		if (this._pages) {
-			await Promise.all(this._pages.map(p => {
-				return p.refresh();
-			}));
+			await Promise.all(this._pages.map(p => p.refresh()));
 		}
 	}
 }

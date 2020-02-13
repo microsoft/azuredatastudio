@@ -23,39 +23,48 @@ export class RegisterModelWizard extends ModelViewBase {
 
 	constructor(
 		apiWrapper: ApiWrapper,
-		root: string) {
-		super(apiWrapper, root);
+		root: string,
+		parent?: ModelViewBase) {
+		super(apiWrapper, root, parent);
 	}
 
 	/**
 	 * Opens a dialog to manage packages used by notebooks.
 	 */
-	public open(): Promise<void> {
-		return new Promise<void>(resolve => {
-			this.modelResources = new ModelSourcesComponent(this._apiWrapper, this);
-			this.localModelsComponent = new LocalModelsComponent(this._apiWrapper, this);
-			this.azureModelsComponent = new AzureModelsComponent(this._apiWrapper, this);
+	public open(): void {
 
-			this.wizardView = new WizardView(this._apiWrapper);
+		this.modelResources = new ModelSourcesComponent(this._apiWrapper, this);
+		this.localModelsComponent = new LocalModelsComponent(this._apiWrapper, this);
+		this.azureModelsComponent = new AzureModelsComponent(this._apiWrapper, this);
 
-			let wizard = this.wizardView.createWizard('', [this.modelResources, this.localModelsComponent]);
-			wizard.doneButton.label = constants.azureRegisterModel;
-			wizard.generateScriptButton.hidden = true;
-			wizard.doneButton.onClick(async () => {
+		this.wizardView = new WizardView(this._apiWrapper);
+
+		let wizard = this.wizardView.createWizard('', [this.modelResources, this.localModelsComponent]);
+		this.mainViewPanel = this.parent?.mainViewPanel || wizard;
+		wizard.doneButton.label = constants.azureRegisterModel;
+		wizard.generateScriptButton.hidden = true;
+		wizard.doneButton.onClick(async () => {
+			try {
 				if (this.modelResources && this.localModelsComponent && this.modelResources.data) {
 					await this.registerLocalModel(this.localModelsComponent.data);
 				} else {
 					await this.registerAzureModel(this.azureModelsComponent?.data);
 				}
-				resolve();
-			});
+				this.showInfoMessage(constants.modelRegisteredSuccessfully);
+			} catch (error) {
+				this.showErrorMessage(`${constants.modelFailedToRegister} ${constants.getErrorMessage(error)}`);
+			}
+			if (this.parent) {
+				this.parent.refresh();
+			}
 
-			wizard.registerNavigationValidator(() => {
-				return true;
-			});
-
-			wizard.open();
 		});
+
+		wizard.registerNavigationValidator(() => {
+			return true;
+		});
+
+		wizard.open();
 	}
 
 	private loadPages(): void {

@@ -28,7 +28,7 @@ export class ModelImporter {
 	protected async executeScripts(connection: azdata.connection.ConnectionProfile, modelFolderPath: string): Promise<void> {
 
 		modelFolderPath = modelFolderPath.replace('\\', '/');
-		modelFolderPath = `file:///${modelFolderPath}`;
+
 		let credentials = await this._apiWrapper.getCredentials(connection.connectionId);
 
 		if (connection) {
@@ -38,8 +38,9 @@ export class ModelImporter {
 			const credential = connection.userName ? `${connection.userName}:${credentials[azdata.ConnectionOptionSpecialType.password]}` : '';
 			let scripts: string[] = [
 				'import mlflow.onnx',
+				'import onnx',
 				'from mlflow.tracking.client import MlflowClient',
-				`onx = mlflow.onnx.load_model("${modelFolderPath}")`,
+				`onx = onnx.load("${modelFolderPath}")`,
 				'client = MlflowClient()',
 				`exp_name = "${experimentId}"`,
 				`db_uri_artifact = "mssql+pyodbc://${credential}@${server}/MlFlowDB?driver=ODBC+Driver+17+for+SQL+Server"`,

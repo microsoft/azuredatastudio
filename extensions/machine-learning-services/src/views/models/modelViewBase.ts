@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 
 import { azureResource } from '../../typings/azure-resource';
 import { ApiWrapper } from '../../common/apiWrapper';
-import { ViewBase, LocalFolderEventName } from '../viewBase';
+import { ViewBase } from '../viewBase';
 import { RegisteredModel, WorkspaceModel } from '../../modelManagement/interfaces';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { AzureWorkspaceResource, AzureModelResource } from '../interfaces';
@@ -46,17 +46,16 @@ export abstract class ModelViewBase extends ViewBase {
 	}
 
 	protected getEventNames(): string[] {
-		return [ListModelsEventName,
+		return super.getEventNames().concat([ListModelsEventName,
 			ListAzureModelsEventName,
 			ListAccountsEventName,
 			ListSubscriptionsEventName,
 			ListGroupsEventName,
 			ListWorkspacesEventName,
-			LocalFolderEventName,
 			RegisterLocalModelEventName,
 			RegisterAzureModelEventName,
 			RegisterModelEventName,
-			SourceModelSelectedEventName];
+			SourceModelSelectedEventName]);
 	}
 
 	/**

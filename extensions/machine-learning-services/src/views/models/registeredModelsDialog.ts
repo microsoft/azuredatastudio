@@ -26,22 +26,20 @@ export class RegisteredModelsDialog extends ModelViewBase {
 	/**
 	 * Opens a dialog to manage packages used by notebooks.
 	 */
-	public open(): Promise<void> {
-		return new Promise<void>(resolve => {
-			let currentLanguagesTab = new CurrentModelsPage(this._apiWrapper, this);
+	public open(): void {
 
-			let dialog = this.dialogView.createDialog('', [currentLanguagesTab]);
+		let currentLanguagesTab = new CurrentModelsPage(this._apiWrapper, this);
 
-			dialog.okButton.hidden = true;
-			dialog.cancelButton.label = constants.extLangDoneButtonText;
+		let dialog = this.dialogView.createDialog('', [currentLanguagesTab]);
+		this.mainViewPanel = dialog;
+		dialog.okButton.hidden = true;
+		dialog.cancelButton.label = constants.extLangDoneButtonText;
 
-			dialog.registerCloseValidator(() => {
-				return false; // Blocks Enter key from closing dialog.
-			});
-
-			this._apiWrapper.openDialog(dialog);
-			resolve();
+		dialog.registerCloseValidator(() => {
+			return false; // Blocks Enter key from closing dialog.
 		});
+
+		this._apiWrapper.openDialog(dialog);
 	}
 
 	/**

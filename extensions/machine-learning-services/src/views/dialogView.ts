@@ -11,8 +11,7 @@ import { IPageView } from './interfaces';
  * Dialog view to create and manage a dialog
  */
 export class DialogView extends MainViewBase {
-	public viewPanel: azdata.window.ModelViewPanel | undefined;
-	protected _pages: IPageView[] = [];
+
 	private _dialog: azdata.window.Dialog | undefined;
 
 	/**
@@ -24,6 +23,7 @@ export class DialogView extends MainViewBase {
 
 	private createDialogPage(title: string, componentView: IPageView): azdata.window.DialogTab {
 		let viewPanel = this._apiWrapper.createTab(title);
+		this.addPage(componentView);
 		this.registerContent(viewPanel, componentView);
 		return viewPanel;
 	}

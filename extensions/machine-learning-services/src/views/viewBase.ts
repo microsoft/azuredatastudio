@@ -51,7 +51,7 @@ export abstract class ViewBase extends EventEmitterCollection {
 	}
 
 	protected getEventNames(): string[] {
-		return [];
+		return [LocalFolderEventName, LocalFileEventName];
 	}
 
 	protected getCallbackEventNames(): string[] {
@@ -66,7 +66,6 @@ export abstract class ViewBase extends EventEmitterCollection {
 
 	protected registerEvents() {
 		if (this._parent) {
-			this._mainViewPanel = this._parent.mainViewPanel;
 			const events = this.getEventNames();
 			if (events) {
 				events.forEach(eventName => {
@@ -113,7 +112,7 @@ export abstract class ViewBase extends EventEmitterCollection {
 						resolve(<T>callbackArgs.data);
 					}
 				} else {
-					reject('Not supported event args');
+					reject(constants.notSupportedEventArg);
 				}
 			});
 		});
@@ -163,7 +162,7 @@ export abstract class ViewBase extends EventEmitterCollection {
 	 * Dialog model instance
 	 */
 	public get mainViewPanel(): azdata.window.Dialog | azdata.window.Wizard | undefined {
-		return this._mainViewPanel;
+		return this._mainViewPanel || this._parent?.mainViewPanel;
 	}
 
 	public set mainViewPanel(value: azdata.window.Dialog | azdata.window.Wizard | undefined) {
