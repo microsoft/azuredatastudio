@@ -14,7 +14,7 @@ import { DATABASE_DASHBOARD_TABS } from 'sql/workbench/contrib/dashboard/browser
 import { SERVER_DASHBOARD_TABS } from 'sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution';
 import { DASHBOARD_CONFIG_ID, DASHBOARD_TABS_KEY_PROPERTY } from 'sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution';
 import { find } from 'vs/base/common/arrays';
-import { IDashboardTab } from '../../../services/dashboard/browser/common/interfaces';
+import { IDashboardTab } from 'sql/workbench/services/dashboard/browser/common/interfaces';
 
 export const Extensions = {
 	DashboardContributions: 'dashboard.contributions'

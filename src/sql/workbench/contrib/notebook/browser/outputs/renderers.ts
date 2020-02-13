@@ -4,7 +4,7 @@
 |----------------------------------------------------------------------------*/
 
 import { default as AnsiUp } from 'ansi_up';
-import { IRenderMime } from '../../../../services/notebook/browser/outputs/renderMimeInterfaces';
+import { IRenderMime } from 'sql/workbench/services/notebook/browser/outputs/renderMimeInterfaces';
 import { URLExt } from '../../common/models/url';
 import { URI } from 'vs/base/common/uri';
 

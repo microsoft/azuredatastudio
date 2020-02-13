@@ -511,9 +511,9 @@
                 "target": "**/{vs,sql}/workbench/services/**/browser/**",
                 "restrictions": [
                     "vs/nls",
-					"vs/css!./**/*",
-					"azdata",
-					"vscode",
+                    "vs/css!./**/*",
+                    "azdata",
+                    "vscode",
                     "**/{vs,sql}/base/**/{common,browser,worker}/**",
                     "**/{vs,sql}/platform/**/{common,browser}/**",
                     "**/{vs,sql}/editor/{common,browser}/**",
@@ -522,10 +522,10 @@
                     "**/{vs,sql}/workbench/api/{common,browser}/**",
                     "**/{vs,sql}/workbench/services/**/{common,browser}/**",
                     "vscode-textmate",
-					"onigasm-umd",
-					"sanitize-html",
-					"@angular/*",
-					"rxjs/**"
+                    "onigasm-umd",
+                    "sanitize-html",
+                    "@angular/*",
+                    "rxjs/**"
                 ]
             }
         ]
