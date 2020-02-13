@@ -13,7 +13,7 @@ import Severity from 'vs/base/common/severity';
 import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
-import { EditDataInput } from 'sql/workbench/common/editor/editData/editDataInput';
+import { EditDataInput } from 'sql/workbench/browser/editData/editDataInput';
 import { DashboardInput } from 'sql/workbench/browser/editor/profiler/dashboardInput';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';

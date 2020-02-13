@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
-import { EditDataInput } from 'sql/workbench/common/editor/editData/editDataInput';
+import { EditDataInput } from 'sql/workbench/browser/editData/editDataInput';
 import { IConnectableInput } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
@@ -14,7 +14,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { EditDataResultsInput } from 'sql/workbench/common/editor/editData/editDataResultsInput';
+import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataResultsInput';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';

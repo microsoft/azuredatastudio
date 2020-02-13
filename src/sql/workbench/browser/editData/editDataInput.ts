@@ -12,7 +12,7 @@ import { URI } from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
-import { EditDataResultsInput } from 'sql/workbench/common/editor/editData/editDataResultsInput';
+import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataResultsInput';
 import { IEditorViewState } from 'vs/editor/common/editorCommon';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
