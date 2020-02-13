@@ -9,14 +9,15 @@ import { IAzureResourceService } from '../../interfaces';
 import { serversQuery, DbServerGraphData } from '../databaseServer/databaseServerService';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { queryGraphResources, GraphData } from '../resourceTreeDataProviderBase';
+import { Account } from 'azdata';
 
 interface DatabaseGraphData extends GraphData {
 	kind: string;
 }
 export class AzureResourceDatabaseService implements IAzureResourceService<azureResource.AzureResourceDatabase> {
-	public async getResources(subscription: azureResource.AzureResourceSubscription, credential: ServiceClientCredentials): Promise<azureResource.AzureResourceDatabase[]> {
+	public async getResources(subscription: azureResource.AzureResourceSubscription, credential: ServiceClientCredentials, account: Account): Promise<azureResource.AzureResourceDatabase[]> {
 		const databases: azureResource.AzureResourceDatabase[] = [];
-		const resourceClient = new ResourceGraphClient(credential);
+		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 
 		// Query servers and databases in parallel (start both promises before waiting on the 1st)
 		let serverQueryPromise = queryGraphResources<GraphData>(resourceClient, subscription.id, serversQuery);

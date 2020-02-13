@@ -3,6 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as keytarType from 'keytar';
+import * as vscode from 'vscode';
+import * as nls from 'vscode-nls';
+
+
+const localize = nls.loadMessageBundle();
 
 function getKeytar(): Keytar | undefined {
 	try {
@@ -27,6 +32,8 @@ export class SimpleTokenCache {
 	) {
 		const keytar = getKeytar();
 		if (!keytar) {
+			const message = localize('azure.noSystemKeychain', "System keychain is unavailable.");
+			vscode.window.showErrorMessage(message);
 			throw new Error('System keychain unavailable');
 		}
 
@@ -37,11 +44,10 @@ export class SimpleTokenCache {
 
 	async addAccount(id: string, key: string): Promise<void> {
 		try {
-			console.log(key.length);
-			const y = await this.keytar.setPassword(this.serviceName, id, key);
-			const x = await this.keytar.findCredentials(this.serviceName);
-			console.log(x);
-			return y;
+			if (key.length > 2500) { // Windows limitation
+				throw new Error('Key length is longer than 2500 chars');
+			}
+			return await this.keytar.setPassword(this.serviceName, id, key);
 		} catch (ex) {
 			console.log(`Adding key failed: ${ex}`);
 		}
@@ -49,9 +55,7 @@ export class SimpleTokenCache {
 
 	async getCredential(id: string): Promise<string> {
 		try {
-			const x = await this.keytar.findCredentials(this.serviceName);
-			console.log(x);
-			return this.keytar.getPassword(this.serviceName, id);
+			return await this.keytar.getPassword(this.serviceName, id);
 		} catch (ex) {
 			console.log(`Getting key failed: ${ex}`);
 			return undefined;
@@ -60,7 +64,7 @@ export class SimpleTokenCache {
 
 	async clearCredential(id: string): Promise<boolean> {
 		try {
-			return this.keytar.deletePassword(this.serviceName, id);
+			return await this.keytar.deletePassword(this.serviceName, id);
 		} catch (ex) {
 			console.log(`Clearing key failed: ${ex}`);
 			return false;

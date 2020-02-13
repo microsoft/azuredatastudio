@@ -14,7 +14,7 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 	public async getSubscriptions(account: Account, credential: ServiceClientCredentials): Promise<azureResource.AzureResourceSubscription[]> {
 		const subscriptions: azureResource.AzureResourceSubscription[] = [];
 
-		const subClient = new SubscriptionClient(credential);
+		const subClient = new SubscriptionClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 		const subs = await subClient.subscriptions.list();
 		subs.forEach((sub) => subscriptions.push({
 			id: sub.subscriptionId,

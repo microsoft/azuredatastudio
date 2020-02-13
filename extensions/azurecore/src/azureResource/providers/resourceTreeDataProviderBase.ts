@@ -45,10 +45,10 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 	}
 
 	private async getResources(element: azureResource.IAzureResourceNode): Promise<T[]> {
-		const tokens = await this._apiWrapper.getSecurityToken(element.account, azdata.AzureResource.ResourceManagement);
-		const credential = new msRest.TokenCredentials(tokens[element.tenantId].token, tokens[element.tenantId].tokenType);
+		const token = await this._apiWrapper.getSecurityToken(element.account, azdata.AzureResource.ResourceManagement);
+		const credential = new msRest.TokenCredentials(token.at);
 
-		const resources: T[] = await this._resourceService.getResources(element.subscription, credential) || <T[]>[];
+		const resources: T[] = await this._resourceService.getResources(element.subscription, credential, element.account) || <T[]>[];
 		return resources;
 	}
 
@@ -99,9 +99,9 @@ export abstract class ResourceServiceBase<T extends GraphData, U extends azureRe
 	 */
 	protected abstract get query(): string;
 
-	public async getResources(subscription: azureResource.AzureResourceSubscription, credential: msRest.ServiceClientCredentials): Promise<U[]> {
+	public async getResources(subscription: azureResource.AzureResourceSubscription, credential: msRest.ServiceClientCredentials, account: azdata.Account): Promise<U[]> {
 		const convertedResources: U[] = [];
-		const resourceClient = new ResourceGraphClient(credential);
+		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 		let graphResources = await queryGraphResources<T>(resourceClient, subscription.id, this.query);
 		let ids = new Set<string>();
 		graphResources.forEach((res) => {

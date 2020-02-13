@@ -24,16 +24,56 @@ import { SimpleTokenCache } from './simpleTokenCache';
 const localize = nls.loadMessageBundle();
 // const notInitalizedMessage = localize('accountProviderNotInitialized', "Account provider not initialized, cannot perform action");
 
-interface Token {
-	accessToken: string; // When unable to refresh due to network problems, the access token becomes undefined
-
-	expiresIn: string; // How long access token is valid, in seconds
-	refreshToken: string;
-	accountName: string;
-
-	displayName: string
-	iss: string
+interface AccountKey {
+	/**
+	 * Account Key
+	 */
+	key: string
 }
+interface AccessToken extends AccountKey {
+	/**
+	 * Access Token
+	 */
+	at: string;
+
+}
+
+interface RefreshToken extends AccountKey {
+	/**
+	 * Refresh Token
+	 */
+	rt: string;
+}
+
+interface Token extends AccessToken, RefreshToken {
+
+}
+
+interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens
+	aud: string;
+	iss: string;
+	iat: number;
+	idp: string,
+	nbf: number;
+	exp: number;
+	c_hash: string;
+	at_hash: string;
+	aio: string;
+	preferred_username: string;
+	email: string;
+	name: string;
+	nonce: string;
+	oid: string;
+	roles: string[];
+	rh: string;
+	sub: string;
+	tid: string;
+	unique_name: string;
+	uti: string;
+	ver: string;
+}
+
+type TokenRefreshResponse = { accessToken: AccessToken, refreshToken: RefreshToken, tokenClaims: TokenClaims };
 
 export class AzureAccountProvider implements azdata.AccountProvider {
 	private static WorkSchoolAccountType: string = 'work_school';
@@ -70,16 +110,17 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	private async _refreshToken(account: azdata.Account): Promise<azdata.Account | azdata.PromptFailedResult> {
-		const token = JSON.parse(await this.getSecurityToken(account, undefined) as string) as Token;
-		if (!token) {
+		const token = await this.getSecurityToken(account, undefined) as Token;
+		if (!token || !token.at || !token.rt) {
 			account.isStale = true;
 			return account;
 		}
 
 		const result = await this.refreshAccessToken(account, token);
 
-		if (result) {
-			await this._tokenCache.addAccount(account.key.accountId, JSON.stringify(result));
+		if (result && result.accessToken && result.refreshToken) {
+			await this._tokenCache.addAccount(`${account.key.accountId}_access`, JSON.stringify(result.accessToken));
+			await this._tokenCache.addAccount(`${account.key.accountId}_refresh`, JSON.stringify(result.refreshToken));
 		} else {
 			account.isStale = true;
 		}
@@ -91,11 +132,15 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		return this._getSecurityToken(account, resource);
 	}
 
-	private async _getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<{}> {
-		const x = await this._tokenCache.getCredential(account.key.accountId);
-		console.log(x);
+	private async _getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<Token> {
+		const accessToken: AccessToken = JSON.parse(await this._tokenCache.getCredential(`${account.key.accountId}_access`));
+		const refreshToken: RefreshToken = JSON.parse(await this._tokenCache.getCredential(`${account.key.accountId}_refresh`));
 
-		return x;
+		return {
+			at: accessToken.at,
+			rt: refreshToken.rt,
+			key: accessToken.key
+		};
 	}
 
 	prompt(): Thenable<azdata.Account | azdata.PromptFailedResult> {
@@ -131,20 +176,20 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		const authenticatedCode = await this.addServerListeners(server, nonce, loginUrl);
 		console.log(authenticatedCode);
 
-		const token = await this.getTokenWithAuthCode(authenticatedCode, codeVerifier, scopes, this.redirectUri);
-		if (!token) {
+		const { accessToken, refreshToken, tokenClaims } = await this.getTokenWithAuthCode(authenticatedCode, codeVerifier, scopes, this.redirectUri);
+		if (!accessToken) {
 			//TODO errors
 			throw Error('something');
 		}
 
-		const tenants = await this.getTenants(token);
+		const tenants = await this.getTenants(accessToken);
 
 		// Determine if this is a microsoft account
-		let msa = token.iss === 'https://sts.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/';
+		let msa = tokenClaims.iss === 'https://sts.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/';
 
 		let contextualDisplayName = msa
 			? localize('microsoftAccountDisplayName', "Microsoft Account")
-			: token.displayName;
+			: tokenClaims.name;
 
 		let accountType = msa
 			? AzureAccountProvider.MicrosoftAccountType
@@ -153,14 +198,14 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		const account = {
 			key: {
 				providerId: this.metadata.id,
-				accountId: token.accountName
+				accountId: accessToken.key
 			},
-			name: token.accountName,
+			name: accessToken.key,
 			displayInfo: {
 				accountType: accountType,
-				userId: token.accountName,
+				userId: accessToken.key,
 				contextualDisplayName: contextualDisplayName,
-				displayName: token.displayName
+				displayName: tokenClaims.name
 			},
 			properties: {
 				providerSettings: this.metadata,
@@ -170,17 +215,19 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			isStale: false
 		} as AzureAccount;
 		try {
-			await this._tokenCache.addAccount(account.key.accountId, JSON.stringify(token));
+			console.log(accessToken, refreshToken, tokenClaims);
+			await this._tokenCache.addAccount(`${account.key.accountId}_access`, JSON.stringify(accessToken));
+			await this._tokenCache.addAccount(`${account.key.accountId}_refresh`, JSON.stringify(refreshToken));
 		} catch (ex) {
 			console.log(ex);
 		}
 		return account;
 	}
 
-	private async makeWebRequest(token: Token, uri: string): Promise<any> {
+	private async makeWebRequest(token: AccessToken, uri: string): Promise<any> {
 		const config = {
 			headers: {
-				Authorization: `Bearer ${token.accessToken}`,
+				Authorization: `Bearer ${token.at}`,
 				'Content-Type': 'application/json',
 			},
 		};
@@ -189,7 +236,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		return x;
 	}
 
-	private async getTenants(token: Token): Promise<Tenant[]> {
+	private async getTenants(token: AccessToken): Promise<Tenant[]> {
 		interface TenantResponse { // https://docs.microsoft.com/en-us/rest/api/resources/tenants/list
 			id: string
 			tenantId: string
@@ -204,7 +251,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 				return {
 					id: tenantInfo.tenantId,
 					displayName: tenantInfo.displayName ? tenantInfo.displayName : localize('azureWorkAccountDisplayName', "Work or school account"),
-					userId: token.accountName,
+					userId: token.key,
 					tenantCategory: tenantInfo.tenantCategory
 				} as Tenant;
 			});
@@ -223,7 +270,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		}
 	}
 
-	private async getToken(postData: { [key: string]: string }, scope: string): Promise<Token | undefined> {
+	private async getToken(postData: { [key: string]: string }, scope: string): Promise<TokenRefreshResponse | undefined> {
 		const tokenUrl = `${this.loginEndpointUrl}${this.commonTenant}/oauth2/v2.0/token`;
 		try {
 			const config = {
@@ -237,16 +284,17 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 			console.log(tokenResponse);
 			console.log(tokenClaims);
-			const tokenResult: Token = {
-				accessToken: tokenResponse.data.access_token,
-				expiresIn: tokenResponse.data.expires_in,
-				refreshToken: tokenResponse.data.refresh_token,
-				accountName: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name,
-				displayName: tokenClaims.name,
-				iss: tokenClaims.iss
+			const accessToken: AccessToken = {
+				at: tokenResponse.data.access_token,
+				key: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name,
 			};
 
-			return tokenResult;
+			const refreshToken: RefreshToken = {
+				rt: tokenResponse.data.refresh_token,
+				key: accessToken.key,
+			};
+
+			return { accessToken, refreshToken, tokenClaims };
 
 		} catch (err) {
 			//TODO handle errors
@@ -256,10 +304,10 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		return undefined;
 	}
 
-	private async refreshAccessToken(account: azdata.Account, token: Token): Promise<Token | undefined> {
+	private async refreshAccessToken(account: azdata.Account, token: RefreshToken): Promise<TokenRefreshResponse | undefined> {
 		const postData = {
 			grant_type: 'refresh_token',
-			refresh_token: token.refreshToken,
+			refresh_token: token.rt,
 			client_id: this.clientId,
 			tenant: this.commonTenant,
 			scope: this.scopes.join(' ')
@@ -268,7 +316,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		return this.getToken(postData, postData.scope);
 	}
 
-	private async getTokenWithAuthCode(authCode: string, codeVerifier: string, scope: string, redirectUri: string): Promise<Token | undefined> {
+	private async getTokenWithAuthCode(authCode: string, codeVerifier: string, scope: string, redirectUri: string): Promise<TokenRefreshResponse | undefined> {
 		const postData = {
 			grant_type: 'authorization_code',
 			code: authCode,
@@ -281,7 +329,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		return this.getToken(postData, postData.scope);
 	}
 
-	private getTokenClaims(accessToken: string) {
+	private getTokenClaims(accessToken: string): TokenClaims | undefined {
 		try {
 			const split = accessToken.split('.');
 			return JSON.parse(atob(split[1]));
@@ -344,7 +392,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	private async _clear(accountKey: azdata.AccountKey): Promise<void> {
-		await this._tokenCache.clearCredential(accountKey.accountId);
+		await this._tokenCache.clearCredential(`${accountKey.accountId}_access`);
+		await this._tokenCache.clearCredential(`${accountKey.accountId}_refresh`);
 	}
 
 	autoOAuthCancelled(): Thenable<void> {

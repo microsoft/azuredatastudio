@@ -42,21 +42,15 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 	public async getChildren(): Promise<TreeNode[]> {
 		try {
 			let subscriptions: azureResource.AzureResourceSubscription[] = [];
-
+			let credentials: TokenCredentials;
 			if (this._isClearingCache) {
 				try {
-					const tokens = await this.appContext.apiWrapper.getSecurityToken(this.account, AzureResource.ResourceManagement);
-
-					for (const tenant of this.account.properties.tenants) {
-						const token = tokens[tenant.id].token;
-						const tokenType = tokens[tenant.id].tokenType;
-
-						subscriptions.push(...(await this._subscriptionService.getSubscriptions(this.account, new TokenCredentials(token, tokenType)) || <azureResource.AzureResourceSubscription[]>[]));
-					}
+					const token = await this.appContext.apiWrapper.getSecurityToken(this.account, AzureResource.ResourceManagement);
+					credentials = new TokenCredentials(token.at);
+					subscriptions.push(...(await this._subscriptionService.getSubscriptions(this.account, credentials) || <azureResource.AzureResourceSubscription[]>[]));
 				} catch (error) {
 					throw new AzureResourceCredentialError(localize('azure.resource.tree.accountTreeNode.credentialError', "Failed to get credential for account {0}. Please refresh the account.", this.account.key.accountId), error);
 				}
-
 				this.updateCache<azureResource.AzureResourceSubscription[]>(subscriptions);
 
 				this._isClearingCache = false;
@@ -82,7 +76,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 				return [AzureResourceMessageTreeNode.create(AzureResourceAccountTreeNode.noSubscriptionsLabel, this)];
 			} else {
 				let subTreeNodes = await Promise.all(subscriptions.map(async (subscription) => {
-					const tenantId = await this._tenantService.getTenantId(subscription);
+					const tenantId = await this._tenantService.getTenantId(subscription, this.account, credentials);
 
 					return new AzureResourceSubscriptionTreeNode(this.account, subscription, tenantId, this.appContext, this.treeChangeHandler, this);
 				}));

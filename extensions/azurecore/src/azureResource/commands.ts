@@ -50,7 +50,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			const token = tokens[tenant.id].token;
 			const tokenType = tokens[tenant.id].tokenType;
 
-			resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType)));
+			resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType), account));
 		}
 		return resourceGroups;
 	});
