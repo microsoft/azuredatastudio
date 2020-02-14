@@ -28,7 +28,9 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { startsWith } from 'vs/base/common/strings';
-
+import { IWorkspaceContextService, Workspace } from 'vs/platform/workspace/common/workspace';
+import { WorkspaceService } from 'vs/workbench/services/configuration/browser/configurationService';
+import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
 * warning, or informational message. Default is error.
@@ -86,7 +88,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		public connectionProfile: IConnectionProfile | undefined,
 		@ILogService private readonly logService: ILogService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@ITelemetryService private readonly telemetryService: ITelemetryService
+		@ITelemetryService private readonly telemetryService: ITelemetryService,
+		@IWorkspaceContextService private readonly workspaceContextService: WorkspaceService
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
@@ -232,6 +235,29 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public set trustedMode(isTrusted: boolean) {
 		this._trustedMode = isTrusted;
+		let whitelistedFolders: string[] = this.workspaceContextService.getValue('notebook.trustedNotebooks');
+		let workspace: Workspace = this.workspaceContextService.getWorkspace();
+		let workspacePaths: string[] = workspace!.folders!.map(uri => uri.uri.fsPath);
+		let modifiedWhitelistedFolder: boolean = false;
+		workspacePaths.forEach(wsPath => {
+			// tslint:disable-next-line: triple-equals
+			let wsIndex = whitelistedFolders.findIndex(trustedFolder => trustedFolder === wsPath);
+
+			if (isTrusted && wsIndex === -1) {
+				whitelistedFolders.push(wsPath);
+				modifiedWhitelistedFolder = true;
+			}
+			else if (!isTrusted && wsIndex !== -1) {
+				whitelistedFolders.splice(wsIndex, 1);
+				modifiedWhitelistedFolder = true;
+			}
+		});
+
+		if (modifiedWhitelistedFolder) {
+			this.workspaceContextService.updateValue('notebook.trustedNotebooks', whitelistedFolders, ConfigurationTarget.USER_LOCAL);
+		}
+
+
 		if (this._cells) {
 			this._cells.forEach(c => {
 				c.trustedMode = this._trustedMode;
@@ -289,6 +315,19 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public async loadContents(isTrusted: boolean = false): Promise<void> {
 		try {
 			this._trustedMode = isTrusted;
+
+			if (!isTrusted) {
+				let whitelistedFolders: string[] = this.workspaceContextService.getValue('notebook.trustedNotebooks');
+				let matchingWhitelistedFolder: string = whitelistedFolders.find(folder => {
+					return this._notebookOptions.notebookUri.fsPath.startsWith(folder);
+				});
+
+				// If a matching folder has been located, then trusted automatically
+				let newTrustedState = !!matchingWhitelistedFolder;
+
+				this.trustedMode = newTrustedState;
+			}
+
 			let contents = null;
 
 			if (this._notebookOptions && this._notebookOptions.contentManager) {
@@ -302,7 +341,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => {
-						let cellModel = factory.createCell(c, { notebook: this, isTrusted: isTrusted });
+						let cellModel = factory.createCell(c, { notebook: this, isTrusted: this.trustedMode });
 						this.trackMarkdownTelemetry(<nb.ICellContents>c, cellModel);
 						return cellModel;
 					});

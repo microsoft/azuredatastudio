@@ -20,7 +20,7 @@ import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookE
 import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { KeyMod } from 'vs/editor/common/standalone/standaloneBase';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
+import { IConfigurationRegistry, ConfigurationScope, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { GridOutputComponent } from 'sql/workbench/contrib/notebook/browser/outputs/gridOutput.component';
 import { PlotlyOutputComponent } from 'sql/workbench/contrib/notebook/browser/outputs/plotlyOutput.component';
 import { registerComponentType } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRegistry';
@@ -163,6 +163,15 @@ configurationRegistry.registerConfiguration({
 			'type': 'boolean',
 			'default': true,
 			'description': localize('notebook.sqlStopOnError', "SQL kernel: stop Notebook execution when error occurs in a cell.")
+		},
+		'notebook.trustedNotebooks': {
+			'type': 'array',
+			'items': {
+				'type': 'string',
+			},
+			'scope': ConfigurationScope.MACHINE,
+			'default': true,
+			'description': localize('notebook.trustedNotebooks', "Trusted directories for notebooks.")
 		}
 	}
 });

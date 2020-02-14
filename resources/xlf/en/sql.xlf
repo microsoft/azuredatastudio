@@ -483,6 +483,9 @@
     <trans-unit id="notebook.sqlStopOnError">
       <source xml:lang="en">SQL kernel: stop Notebook execution when error occurs in a cell.</source>
     </trans-unit>
+		<trans-unit id="notebook.trustedNotebooks">
+        <source xml:lang="en">Trusted directories for notebooks.</source>
+    </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/scripting/browser/scripting.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="scriptAsCreate">

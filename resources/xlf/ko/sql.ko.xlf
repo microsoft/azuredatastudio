@@ -693,6 +693,10 @@
         <source xml:lang="en">SQL kernel: stop Notebook execution when error occurs in a cell.</source>
         <target state="translated">SQL 커널: 셀에서 오류가 발생하면 Notebook 실행을 중지합니다.</target>
       </trans-unit>
+			<trans-unit id="notebook.trustedNotebooks">
+        <source xml:lang="en">Trusted directories for notebooks.</source>
+        <target state="translated">노트북의 신뢰할 수있는 디렉토리.</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/scripting/browser/scripting.contribution" source-language="en" target-language="ko" datatype="plaintext">

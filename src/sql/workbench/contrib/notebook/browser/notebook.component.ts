@@ -56,6 +56,8 @@ import { find, firstIndex } from 'vs/base/common/arrays';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { WorkspaceService } from 'vs/workbench/services/configuration/browser/configurationService';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -105,7 +107,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
-		@Inject(ITelemetryService) private telemetryService: ITelemetryService
+		@Inject(ITelemetryService) private telemetryService: ITelemetryService,
+		@Inject(IWorkspaceContextService) private workspaceContextService: WorkspaceService,
 	) {
 		super();
 		this.updateProfile();
@@ -307,7 +310,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService,
 			editorLoadedTimestamp: this._notebookParams.input.editorOpenedTimestamp
-		}, this.profile, this.logService, this.notificationService, this.telemetryService);
+		}, this.profile, this.logService, this.notificationService, this.telemetryService, this.workspaceContextService);
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 		this._register(model.onError((errInfo: INotification) => this.handleModelError(errInfo)));
 		this._register(model.contentChanged((change) => this.handleContentChanged()));
