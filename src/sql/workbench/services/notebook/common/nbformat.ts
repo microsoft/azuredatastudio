@@ -6,7 +6,7 @@
 // https://github.com/jupyter/nbformat/blob/master/nbformat/v4/nbformat.v4.schema.json
 
 
-import { JSONObject } from './jsonext';
+import { JSONObject } from 'sql/workbench/services/notebook/common/jsonext';
 import { nb } from 'azdata';
 
 /**

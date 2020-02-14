@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorInput, EditorModel, EncodingMode, IEditorInput } from 'vs/workbench/common/editor';
+import { EditorInput, EncodingMode, IEditorInput } from 'vs/workbench/common/editor';
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -14,7 +14,9 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import Severity from 'vs/base/common/severity';
 import { EditDataResultsInput } from 'sql/workbench/contrib/editData/browser/editDataResultsInput';
 import { IEditorViewState } from 'vs/editor/common/editorCommon';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
+import { IUntitledTextEditorModel, UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 
 /**
  * Input for the EditDataEditor.
@@ -61,7 +63,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		// also set dirty status to false to prevent rerendering.
 		if (this._sql) {
 			this._register(this._sql.onDidChangeDirty(async () => {
-				const model = await this._sql.resolve();
+				const model = await this._sql.resolve() as UntitledTextEditorModel;
 				model.setDirty(false);
 				this._onDidChangeDirty.fire();
 			}));
@@ -222,11 +224,10 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		return this._connectionManagementService.getTabColorForUri(this.uri);
 	}
 
-	public get onDidModelChangeEncoding(): Event<void> { return this._sql.onDidModelChangeEncoding; }
-	public resolve(refresh?: boolean): Promise<EditorModel> { return this._sql.resolve(); }
+	public resolve(refresh?: boolean): Promise<IUntitledTextEditorModel & IResolvedTextEditorModel> { return this._sql.resolve(); }
 	public getEncoding(): string { return this._sql.getEncoding(); }
 	public getName(): string { return this._sql.getName(); }
-	public get hasAssociatedFilePath(): boolean { return this._sql.hasAssociatedFilePath; }
+	public get hasAssociatedFilePath(): boolean { return this._sql.model.hasAssociatedFilePath; }
 
 	public setEncoding(encoding: string, mode: EncodingMode /* ignored, we only have Encode */): void {
 		this._sql.setEncoding(encoding, mode);

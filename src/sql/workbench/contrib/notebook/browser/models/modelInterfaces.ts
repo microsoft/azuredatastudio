@@ -11,7 +11,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
-import { CellType, NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { INotebookManager, ILanguageMagic } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';

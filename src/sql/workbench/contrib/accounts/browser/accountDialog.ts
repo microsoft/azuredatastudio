@@ -40,6 +40,7 @@ import { attachModalDialogStyler, attachPanelStyler } from 'sql/workbench/common
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
 
 class AccountPanel extends ViewPane {
 	public index: number;
@@ -50,12 +51,13 @@ class AccountPanel extends ViewPane {
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IThemeService private themeService: IThemeService,
+		@IThemeService themeService: IThemeService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IViewDescriptorService viewDescriptorService: IViewDescriptorService
+		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
+		@IOpenerService openerService: IOpenerService,
 	) {
-		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService);
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -134,7 +136,8 @@ export class AccountDialog extends Modal {
 		@IViewDescriptorService private viewDescriptorService: IViewDescriptorService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 		@IQuickInputService private _quickInputService: IQuickInputService,
-		@INotificationService private _notificationService: INotificationService
+		@INotificationService private _notificationService: INotificationService,
+		@IOpenerService protected readonly openerService: IOpenerService
 	) {
 		super(
 			localize('linkedAccounts', "Linked accounts"),
@@ -331,7 +334,8 @@ export class AccountDialog extends Modal {
 			this._themeService,
 			this.contextKeyService,
 			this._instantiationService,
-			this.viewDescriptorService
+			this.viewDescriptorService,
+			this.openerService
 		);
 
 		attachPanelStyler(providerView, this._themeService);

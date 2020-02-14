@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
-  "version": "1.15.0",
-  "distro": "cb2e6bf1c272453de1200ae404c3c561877a2a46",
+  "version": "1.16.0",
+  "distro": "1b4d90a67886b41cddaae7bd5a43559a7da39543",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -75,11 +75,11 @@
     "vscode-minimist": "^1.2.2",
     "vscode-nsfw": "1.2.8",
     "vscode-proxy-agent": "^0.5.2",
-    "vscode-ripgrep": "^1.5.7",
+    "vscode-ripgrep": "^1.5.8",
     "vscode-sqlite3": "4.0.9",
     "vscode-textmate": "4.4.0",
-    "xterm": "4.4.0",
-    "xterm-addon-search": "0.4.0",
+    "xterm": "4.5.0-beta.4",
+    "xterm-addon-search": "0.5.0",
     "xterm-addon-unicode11": "0.1.1",
     "xterm-addon-web-links": "0.2.1",
     "xterm-addon-webgl": "0.5.0",

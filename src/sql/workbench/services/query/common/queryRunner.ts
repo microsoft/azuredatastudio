@@ -7,10 +7,9 @@ import * as azdata from 'azdata';
 
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import * as Utils from 'sql/platform/connection/common/utils';
-import { SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { IQueryPlanInfo } from 'sql/workbench/services/query/common/queryModel';
-import { ResultSerializer } from 'sql/workbench/contrib/query/common/resultSerializer';
+import { ResultSerializer, SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 
 import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';

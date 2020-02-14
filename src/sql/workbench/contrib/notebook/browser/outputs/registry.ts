@@ -3,10 +3,11 @@
 | Copyright (c) Jupyter Development Team.
 | Distributed under the terms of the Modified BSD License.
 |----------------------------------------------------------------------------*/
-import { IRenderMime } from '../models/renderMimeInterfaces';
-import { MimeModel } from '../models/mimemodel';
-import { ReadonlyJSONObject } from '../../common/models/jsonext';
+
 import { defaultSanitizer } from './sanitizer';
+import type { IRenderMime } from 'sql/workbench/contrib/notebook/browser/models/renderMimeInterfaces';
+import type { ReadonlyJSONObject } from 'sql/workbench/services/notebook/common/jsonext';
+import { MimeModel } from 'sql/workbench/contrib/notebook/browser/models/mimemodel';
 
 /**
  * An object which manages mime renderer factories.

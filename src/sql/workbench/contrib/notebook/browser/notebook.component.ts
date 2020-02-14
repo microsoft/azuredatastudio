@@ -21,7 +21,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import * as DOM from 'vs/base/browser/dom';
 
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';

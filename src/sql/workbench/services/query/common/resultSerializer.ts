@@ -3,14 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as ConnectionConstants from 'sql/platform/connection/common/constants';
-import * as LocalizedConstants from 'sql/workbench/contrib/query/common/localizedConstants';
 import { SaveResultsRequestParams } from 'azdata';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
-import { ISaveRequest, SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
 
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { Registry } from 'vs/platform/registry/common/platform';
 import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
 import * as nls from 'vs/nls';
@@ -21,14 +17,18 @@ import { getBaseLabel } from 'vs/base/common/labels';
 import { ShowFileInFolderAction, OpenFileInFolderAction } from 'sql/workbench/common/workspaceActions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { getRootPath, resolveCurrentDirectory, resolveFilePath } from 'sql/platform/common/pathUtilities';
-import { IOutputService, IOutputChannel } from 'vs/workbench/contrib/output/common/output';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IFileDialogService, FileFilter } from 'vs/platform/dialogs/common/dialogs';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IOutputChannelRegistry, Extensions as OutputExtensions } from 'vs/workbench/services/output/common/output';
 
 let prevSavePath: string;
 
+export interface ISaveRequest {
+	format: SaveFormat;
+	batchIndex: number;
+	resultSetNumber: number;
+	selection: Slick.Range[];
+}
 
 export interface SaveResultsResponse {
 	succeeded: boolean;
@@ -48,6 +48,16 @@ interface IXmlConfig {
 	encoding: string;
 }
 
+export enum SaveFormat {
+	CSV = 'csv',
+	JSON = 'json',
+	EXCEL = 'excel',
+	XML = 'xml'
+}
+
+const msgSaveFailed = nls.localize('msgSaveFailed', "Failed to save results. ");
+const msgSaveSucceeded = nls.localize('msgSaveSucceeded', "Successfully saved results to ");
+
 /**
  *  Handles save results request from the context menu of slickGrid
  */
@@ -55,7 +65,6 @@ export class ResultSerializer {
 	public static tempFileCount: number = 1;
 
 	constructor(
-		@IOutputService private _outputService: IOutputService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@IEditorService private _editorService: IEditorService,
@@ -107,28 +116,9 @@ export class ResultSerializer {
 		});
 	}
 
-	private ensureOutputChannelExists(): void {
-		Registry.as<IOutputChannelRegistry>(OutputExtensions.OutputChannels)
-			.registerChannel({
-				id: ConnectionConstants.outputChannelName,
-				label: ConnectionConstants.outputChannelName,
-				log: true
-			});
-	}
-
-	private get outputChannel(): IOutputChannel {
-		this.ensureOutputChannelExists();
-		return this._outputService.getChannel(ConnectionConstants.outputChannelName)!;
-	}
-
 	private get rootPath(): string | undefined {
 		return getRootPath(this._contextService);
 	}
-
-	private logToOutputChannel(message: string): void {
-		this.outputChannel.append(message);
-	}
-
 
 	private promptForFilepath(format: SaveFormat, resourceUri: string): Promise<string | undefined> {
 		let filepathPlaceHolder = prevSavePath ? path.dirname(prevSavePath) : resolveCurrentDirectory(resourceUri, this.rootPath);
@@ -309,7 +299,7 @@ export class ResultSerializer {
 
 		this._notificationService.prompt(
 			Severity.Info,
-			LocalizedConstants.msgSaveSucceeded + savedFilePath,
+			msgSaveSucceeded + savedFilePath,
 			[{
 				label: nls.localize('openLocation', "Open file location"),
 				run: () => {
@@ -333,20 +323,16 @@ export class ResultSerializer {
 	 */
 	private async doSave(filePath: string, format: string, sendRequest: () => Promise<SaveResultsResponse | undefined>): Promise<void> {
 
-		this.logToOutputChannel(LocalizedConstants.msgSaveStarted + filePath);
-
 		// send message to the sqlserverclient for converting results to the requested format and saving to filepath
 		try {
 			let result = await sendRequest();
 			if (!result || result.messages) {
 				this._notificationService.notify({
 					severity: Severity.Error,
-					message: LocalizedConstants.msgSaveFailed + (result ? result.messages : '')
+					message: msgSaveFailed + (result ? result.messages : '')
 				});
-				this.logToOutputChannel(LocalizedConstants.msgSaveFailed + (result ? result.messages : ''));
 			} else {
 				this.promptFileSavedNotification(filePath);
-				this.logToOutputChannel(LocalizedConstants.msgSaveSucceeded + filePath);
 				this.openSavedFile(filePath, format);
 			}
 			// TODO telemetry for save results
@@ -355,9 +341,8 @@ export class ResultSerializer {
 		} catch (error) {
 			this._notificationService.notify({
 				severity: Severity.Error,
-				message: LocalizedConstants.msgSaveFailed + error
+				message: msgSaveFailed + error
 			});
-			this.logToOutputChannel(LocalizedConstants.msgSaveFailed + error);
 		}
 	}
 
