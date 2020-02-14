@@ -91,7 +91,7 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 			let profile: IConnectionProfile = MainThreadQueryEditor.connectionProfileToIConnectionProfile(connection);
 			let connectionResult = await this._connectionManagementService.connect(profile, fileUri, options);
 			if (connectionResult && connectionResult.connected) {
-				console.log(`editor ${fileUri} connected`);
+				this._logService.info(`editor ${fileUri} connected`);
 			}
 		});
 	}

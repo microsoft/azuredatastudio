@@ -40,7 +40,6 @@ import { Schemas } from 'vs/base/common/network';
 import { ILogService } from 'vs/platform/log/common/log';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { onUnexpectedError } from 'vs/base/common/errors';
 
@@ -129,7 +128,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IFileService private readonly _fileService: IFileService,
 		@ILogService private readonly _logService: ILogService,
 		@IQueryManagementService private readonly _queryManagementService: IQueryManagementService,
-		@IEnvironmentService environmentService: IEnvironmentService
+		@ILogService private readonly logService: ILogService
 	) {
 		super();
 		this._providersMemento = new Memento('notebookProviders', this._storageService);
@@ -455,7 +454,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				try {
 					await this._extensionService.whenInstalledExtensionsRegistered();
 				} catch (error) {
-					console.error(error);
+					this.logService.error(error);
 				}
 				instance = await this.waitOnProviderAvailability(providerDescriptor);
 			} else {

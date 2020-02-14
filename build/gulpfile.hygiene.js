@@ -202,13 +202,6 @@ const tsHygieneFilter = [
 	'!src/vs/workbench/contrib/extensions/browser/extensionTipsService.ts' // {{SQL CARBON EDIT}} skip this because known issue
 ];
 
-const sqlHygieneFilter = [ // for rules we want to only apply to our code
-	'src/sql/**/*.ts',
-	'!**/node_modules/**',
-	'extensions/**/*.ts',
-	'!extensions/{git,search-result,vscode-test-resolver,extension-editing,json-language-features,vscode-colorize-tests}/**/*.ts',
-];
-
 const copyrightHeaderLines = [
 	'/*---------------------------------------------------------------------------------------------',
 	' *  Copyright (c) Microsoft Corporation. All rights reserved.',
@@ -376,20 +369,8 @@ function hygiene(some) {
 			errorCount += results.errorCount;
 		}));
 
-	const sqlJavascript = result
-		.pipe(filter(sqlHygieneFilter))
-		.pipe(gulpeslint({
-			configFile: '.eslintrc.sql.json',
-			rulePaths: ['./build/lib/eslint']
-		}))
-		.pipe(gulpeslint.formatEach('compact'))
-		.pipe(gulpeslint.results(results => {
-			errorCount += results.warningCount;
-			errorCount += results.errorCount;
-		}));
-
 	let count = 0;
-	return es.merge(typescript, javascript, sqlJavascript)
+	return es.merge(typescript, javascript)
 		.pipe(es.through(function (data) {
 			count++;
 			if (process.env['TRAVIS'] && count % 10 === 0) {
