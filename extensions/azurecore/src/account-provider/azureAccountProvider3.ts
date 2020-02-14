@@ -16,8 +16,15 @@ import { AzureAuth, Token } from './auths/azureAuth';
 import { AzureAuthCodeGrant } from './auths/azureAuthCodeGrant';
 import { AzureDeviceCode } from './auths/azureDeviceCode';
 
+interface Deferred<T> {
+	resolve: (result: T | Promise<T>) => void;
+	reject: (reason: any) => void;
+}
+
 export class AzureAccountProvider implements azdata.AccountProvider {
 	private readonly authMappings = new Map<AzureAuthType, AzureAuth>();
+	private initComplete: Deferred<void>;
+	private initCompletePromise: Promise<void> = new Promise<void>((resolve, reject) => this.initComplete = { resolve, reject });
 
 	constructor(
 		metadata: AzureAccountProviderMetadata,
@@ -26,9 +33,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	) {
 		this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, tokenCache, context));
 		this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, tokenCache, context));
-
 	}
-
 
 	private getAuthMethod(account?: azdata.Account): AzureAuth {
 		const authType: AzureAuthType = account?.properties?.azureAuthType;
@@ -49,6 +54,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			const azureAuth = this.getAuthMethod(account);
 			accounts.push(await azureAuth.refreshAccess(account));
 		}
+		this.initComplete.resolve();
 		return accounts;
 	}
 
@@ -58,6 +64,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	private async _getSecurityToken(account: azdata.AccountKey, resource: azdata.AzureResource): Promise<Token> {
+		await this.initCompletePromise;
 		const azureAuth = this.getAuthMethod(undefined);
 		return azureAuth.getSecurityToken(account, resource);
 	}
@@ -68,6 +75,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 
 	private async _prompt(): Promise<azdata.Account | azdata.PromptFailedResult> {
+		await this.initCompletePromise;
 		class Option implements vscode.QuickPickItem {
 			public readonly label: string;
 			constructor(public readonly azureAuth: AzureAuth) {
@@ -94,6 +102,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	private async _clear(accountKey: azdata.AccountKey): Promise<void> {
+		await this.initCompletePromise;
 		this.getAuthMethod(undefined).clearCredentials(accountKey);
 	}
 

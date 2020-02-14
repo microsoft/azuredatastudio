@@ -79,8 +79,6 @@ export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-
 
 export type TokenRefreshResponse = { accessToken: AccessToken, refreshToken: RefreshToken, tokenClaims: TokenClaims };
 
-
-
 export abstract class AzureAuth {
 
 	protected readonly WorkSchoolAccountType: string = 'work_school';
