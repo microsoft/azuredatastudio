@@ -4,16 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
+import * as loc from '../../localizedConstants';
 import { DataTierApplicationWizard, Operation } from '../dataTierApplicationWizard';
 import { DacFxDataModel } from './models';
 import { BasePage } from './basePage';
 import { sanitizeStringForFilename, isValidBasename, isValidBasenameErrorMessage } from './utils';
-
-const localize = nls.loadMessageBundle();
 
 export abstract class DacFxConfigPage extends BasePage {
 
@@ -44,7 +42,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected async createServerDropdown(isTargetServer: boolean): Promise<azdata.FormComponent> {
-		const serverDropDownTitle = isTargetServer ? localize('dacFx.targetServerDropdownTitle', "Target Server") : localize('dacFx.sourceServerDropdownTitle', "Source Server");
+		const serverDropDownTitle = isTargetServer ? loc.targetServer : loc.sourceServer;
 		this.serverDropdown = this.view.modelBuilder.dropDown().withProperties({
 			required: true,
 			ariaLabel: serverDropDownTitle
@@ -87,7 +85,7 @@ export abstract class DacFxConfigPage extends BasePage {
 			.withValidation(component => !this.databaseNameExists(component.value))
 			.withProperties({
 				required: true,
-				validationErrorMessage: localize('dacfx.databaseNameExistsErrorMessage', "A database with the same name already exists on the instance of SQL Server")
+				validationErrorMessage: loc.databaseNameExistsErrorMessage
 			}).component();
 
 		this.databaseTextBox.ariaLabel = title;
@@ -102,7 +100,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected async createDatabaseDropdown(): Promise<azdata.FormComponent> {
-		const databaseDropdownTitle = localize('dacFx.sourceDatabaseDropdownTitle', "Source Database");
+		const databaseDropdownTitle = loc.sourceDatabase;
 		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
 			ariaLabel: databaseDropdownTitle
 		}).component();
@@ -174,11 +172,11 @@ export abstract class DacFxConfigPage extends BasePage {
 			}
 		});
 
-		this.fileTextBox.ariaLabel = localize('dacfx.fileLocationAriaLabel', "File Location");
+		this.fileTextBox.ariaLabel = loc.fileLocation;
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: '•••',
-			title: localize('dacfx.selectFile', "Select file"),
-			ariaLabel: localize('dacfx.selectFile', "Select file")
+			title: loc.selectFile,
+			ariaLabel: loc.selectFile
 		}).component();
 	}
 

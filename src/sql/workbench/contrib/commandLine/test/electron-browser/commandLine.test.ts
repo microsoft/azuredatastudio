@@ -22,19 +22,17 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
-import { TestEditorService, TestDialogService } from 'vs/workbench/test/workbenchTestServices';
+import { TestEditorService, TestDialogService, workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
-import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
 import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
 import { Event } from 'vs/base/common/event';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
-import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
-import { LabelService } from 'vs/workbench/services/label/common/labelService';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
 
 class TestParsedArgs implements ParsedArgs {
 	[arg: string]: any;
@@ -391,10 +389,10 @@ suite('commandLineService tests', () => {
 		const querymodelService = TypeMoq.Mock.ofType<IQueryModelService>(TestQueryModelService, TypeMoq.MockBehavior.Strict);
 		querymodelService.setup(c => c.onRunQueryStart).returns(() => Event.None);
 		querymodelService.setup(c => c.onRunQueryComplete).returns(() => Event.None);
-		const instantiationService = new TestInstantiationService();
 		let uri = URI.file(args._[0]);
-		const untitledEditorInput = new UntitledTextEditorInput(uri, false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined);
-		const queryInput = new UntitledQueryEditorInput(undefined, untitledEditorInput, undefined, connectionManagementService.object, querymodelService.object, configurationService.object);
+		const workbenchinstantiationService = workbenchInstantiationService();
+		const editorInput = workbenchinstantiationService.createInstance(FileEditorInput, uri, undefined, undefined);
+		const queryInput = new FileQueryEditorInput(undefined, editorInput, undefined, connectionManagementService.object, querymodelService.object, configurationService.object);
 		queryInput.state.connected = true;
 		const editorService: TypeMoq.Mock<IEditorService> = TypeMoq.Mock.ofType<IEditorService>(TestEditorService, TypeMoq.MockBehavior.Strict);
 		editorService.setup(e => e.editors).returns(() => [queryInput]);

@@ -13,7 +13,7 @@ import { AccountAdditionResult, AccountProviderAddedEventParams, UpdateAccountLi
 import { IAccountStore } from 'sql/platform/accounts/common/interfaces';
 import { AccountProviderStub } from 'sql/platform/accounts/test/common/testAccountManagementService';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
-import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
+import { TestStorageService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { EventVerifierSingle } from 'sql/base/test/common/event';
 
 // SUITE CONSTANTS /////////////////////////////////////////////////////////

@@ -61,7 +61,7 @@ export abstract class MenubarControl extends Disposable {
 		// 'Selection': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
 		'View': IMenu;
 		// 'Go': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
-		// 'Debug': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
+		// 'Run': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
 		// 'Terminal': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
 		'Window'?: IMenu;
 		'Help': IMenu;
@@ -73,9 +73,9 @@ export abstract class MenubarControl extends Disposable {
 		'Edit': nls.localize({ key: 'mEdit', comment: ['&& denotes a mnemonic'] }, "&&Edit"),
 		// 'Selection': nls.localize({ key: 'mSelection', comment: ['&& denotes a mnemonic'] }, "&&Selection"), {{SQL CARBON EDIT}} - Disable unused menus
 		'View': nls.localize({ key: 'mView', comment: ['&& denotes a mnemonic'] }, "&&View"),
-		// 'Go': nls.localize({ key: 'mGoto', comment: ['&& denotes a mnemonic'] }, "&&Go"), {{SQL CARBON EDIT}} - Disable unused menus
-		// 'Debug': nls.localize({ key: 'mDebug', comment: ['&& denotes a mnemonic'] }, "&&Debug"), {{SQL CARBON EDIT}} - Disable unused menus
-		// 'Terminal': nls.localize({ key: 'mTerminal', comment: ['&& denotes a mnemonic'] }, "&&Terminal"), {{SQL CARBON EDIT}} - Disable unused menus
+		// 'Go': nls.localize({ key: 'mGoto', comment: ['&& denotes a mnemonic'] }, "&&Go"), {{SQL CARBON EDIT}} - Disable unusued menus
+		// 'Run': nls.localize({ key: 'mRun', comment: ['&& denotes a mnemonic'] }, "&&Run"), {{SQL CARBON EDIT}} - Disable unusued menus
+		// 'Terminal': nls.localize({ key: 'mTerminal', comment: ['&& denotes a mnemonic'] }, "&&Terminal"), {{SQL CARBON EDIT}} - Disable unusued menus
 		'Help': nls.localize({ key: 'mHelp', comment: ['&& denotes a mnemonic'] }, "&&Help")
 	};
 
@@ -110,7 +110,7 @@ export abstract class MenubarControl extends Disposable {
 			// 'Selection': this._register(this.menuService.createMenu(MenuId.MenubarSelectionMenu, this.contextKeyService)),
 			'View': this._register(this.menuService.createMenu(MenuId.MenubarViewMenu, this.contextKeyService)),
 			// 'Go': this._register(this.menuService.createMenu(MenuId.MenubarGoMenu, this.contextKeyService)),
-			// 'Debug': this._register(this.menuService.createMenu(MenuId.MenubarDebugMenu, this.contextKeyService)),
+			// 'Run': this._register(this.menuService.createMenu(MenuId.MenubarDebugMenu, this.contextKeyService)),
 			// 'Terminal': this._register(this.menuService.createMenu(MenuId.MenubarTerminalMenu, this.contextKeyService)),
 			'Help': this._register(this.menuService.createMenu(MenuId.MenubarHelpMenu, this.contextKeyService))
 		};
@@ -156,14 +156,14 @@ export abstract class MenubarControl extends Disposable {
 		return label;
 	}
 
-	protected getOpenRecentActions(): IAction[] {
+	protected getOpenRecentActions(): (Separator | IAction & { uri: URI })[] {
 		if (!this.recentlyOpened) {
 			return [];
 		}
 
 		const { workspaces, files } = this.recentlyOpened;
 
-		const result: IAction[] = [];
+		const result = [];
 
 		if (workspaces.length > 0) {
 			for (let i = 0; i < MenubarControl.MAX_MENU_RECENT_ENTRIES && i < workspaces.length; i++) {
@@ -574,9 +574,9 @@ export class CustomMenubarControl extends MenubarControl {
 				for (let action of actions) {
 					this.insertActionsBefore(action, target);
 					if (action instanceof SubmenuItemAction) {
-						let submenu = this.menus[action.item.submenu];
+						let submenu = this.menus[action.item.submenu.id];
 						if (!submenu) {
-							submenu = this.menus[action.item.submenu] = this.menuService.createMenu(action.item.submenu, this.contextKeyService);
+							submenu = this.menus[action.item.submenu.id] = this.menuService.createMenu(action.item.submenu, this.contextKeyService);
 							this._register(submenu.onDidChange(() => {
 								if (!this.focusInsideMenubar) {
 									const actions: IAction[] = [];

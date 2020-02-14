@@ -12,7 +12,6 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { ScrollableSplitView, IView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
-import { SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
 import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, RestoreTableAction, ChartDataAction, VisualizerDataAction } from 'sql/workbench/contrib/query/browser/actions';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
@@ -47,6 +46,7 @@ import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/co
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { GridPanelState, GridTableState } from 'sql/workbench/contrib/query/common/gridPanelState';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -580,8 +580,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				let content = value.displayValue;
 
 				const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
-				const model = await input.resolve();
-				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, model.textEditorModel, FormattingMode.Explicit, CancellationToken.None);
+				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, CancellationToken.None);
 				return this.editorService.openEditor(input);
 			});
 		}

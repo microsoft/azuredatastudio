@@ -33,6 +33,7 @@ const all = [
 	'scripts/**/*',
 	'src/**/*',
 	'test/**/*',
+	'!test/**/out/**',
 	'!**/node_modules/**'
 ];
 
@@ -53,8 +54,7 @@ const indentationFilter = [
 	'!src/vs/base/common/marked/marked.js',
 	'!src/vs/base/node/terminateProcess.sh',
 	'!src/vs/base/node/cpuUsage.sh',
-	'!test/assert.js',
-	'!build/testSetup.js',
+	'!test/unit/assert.js',
 
 	// except specific folders
 	'!test/automation/out/**',
@@ -84,7 +84,7 @@ const indentationFilter = [
 	'!src/vs/*/**/*.d.ts',
 	'!src/typings/**/*.d.ts',
 	'!extensions/**/*.d.ts',
-	'!**/*.{svg,exe,png,bmp,scpt,bat,cmd,cur,ttf,woff,eot,md,ps1,template,yaml,yml,d.ts.recipe,ico,icns}',
+	'!**/*.{svg,exe,png,bmp,scpt,bat,cmd,cur,ttf,woff,eot,md,ps1,template,yaml,yml,d.ts.recipe,ico,icns,plist}',
 	'!build/{lib,download}/**/*.js',
 	'!build/**/*.sh',
 	'!build/azure-pipelines/**/*.js',
@@ -155,7 +155,7 @@ const copyrightFilter = [
 	'!src/sql/workbench/contrib/notebook/browser/outputs/renderers.ts',
 	'!src/sql/workbench/contrib/notebook/browser/outputs/registry.ts',
 	'!src/sql/workbench/contrib/notebook/browser/outputs/factories.ts',
-	'!src/sql/workbench/contrib/notebook/common/models/nbformat.ts',
+	'!src/sql/workbench/services/notebook/common/nbformat.ts',
 	'!extensions/markdown-language-features/media/tomorrow.css',
 	'!src/sql/workbench/browser/modelComponents/media/highlight.css',
 	'!src/sql/workbench/contrib/notebook/electron-browser/cellViews/media/highlight.css',

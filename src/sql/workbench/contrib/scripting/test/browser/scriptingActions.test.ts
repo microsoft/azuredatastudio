@@ -16,7 +16,7 @@ import { TreeNode } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
 import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
-import { NodeType } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
+import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
 import { createObjectExplorerServiceMock } from 'sql/workbench/services/objectExplorer/test/browser/testObjectExplorerService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

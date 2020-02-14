@@ -8,7 +8,7 @@ import * as assert from 'assert';
 
 import { URI } from 'vs/base/common/uri';
 import { NotebookManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
-import { CellTypes } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { IClientSession, INotebookModelOptions } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
 import { NullLogService } from 'vs/platform/log/common/log';
@@ -25,7 +25,7 @@ import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/t
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ClientSession } from 'sql/workbench/contrib/notebook/browser/models/clientSession';
-import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
+import { TestStorageService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 

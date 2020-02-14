@@ -23,17 +23,16 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { TestStorageService, TestFileService } from 'vs/workbench/test/workbenchTestServices';
+import { TestStorageService, TestFileService, workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
 import { URI } from 'vs/base/common/uri';
-import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
-import { LabelService } from 'vs/workbench/services/label/common/labelService';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 
 suite('SQL QueryAction Tests', () => {
 
@@ -69,8 +68,10 @@ suite('SQL QueryAction Tests', () => {
 		queryModelService.setup(q => q.onRunQueryComplete).returns(() => Event.None);
 		connectionManagementService = TypeMoq.Mock.ofType<TestConnectionManagementService>(TestConnectionManagementService);
 		connectionManagementService.setup(q => q.onDisconnect).returns(() => Event.None);
-		const instantiationService = new TestInstantiationService();
-		let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined);
+		const workbenchinstantiationService = workbenchInstantiationService();
+		const accessor = workbenchinstantiationService.createInstance(ServiceAccessor);
+		const service = accessor.untitledTextEditorService;
+		let fileInput = workbenchinstantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: URI.parse('file://testUri') }));
 		// Setup a reusable mock QueryInput
 		testQueryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		testQueryInput.setup(x => x.uri).returns(() => testUri);
@@ -133,7 +134,7 @@ suite('SQL QueryAction Tests', () => {
 
 		// ... Mock QueryModelService
 		let queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose);
-		queryModelService.setup(x => x.runQuery(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny()));
+		queryModelService.setup(x => x.runQuery(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny()));
 
 		// If I call run on RunQueryAction when I am not connected
 		let queryAction: RunQueryAction = new RunQueryAction(editor.object, queryModelService.object, connectionManagementService.object);
@@ -174,8 +175,10 @@ suite('SQL QueryAction Tests', () => {
 		let queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose);
 		queryModelService.setup(x => x.onRunQueryStart).returns(() => Event.None);
 		queryModelService.setup(x => x.onRunQueryComplete).returns(() => Event.None);
-		const instantiationService = new TestInstantiationService();
-		let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined);
+		const workbenchinstantiationService = workbenchInstantiationService();
+		const accessor = workbenchinstantiationService.createInstance(ServiceAccessor);
+		const service = accessor.untitledTextEditorService;
+		let fileInput = workbenchinstantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: URI.parse('file://testUri') }));
 
 		// ... Mock "isSelectionEmpty" in QueryEditor
 		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
@@ -223,8 +226,10 @@ suite('SQL QueryAction Tests', () => {
 		let predefinedSelection: ISelectionData = { startLine: 1, startColumn: 2, endLine: 3, endColumn: 4 };
 
 		// ... Mock "getSelection" in QueryEditor
-		const instantiationService = new TestInstantiationService();
-		let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined);
+		const workbenchinstantiationService = workbenchInstantiationService();
+		const accessor = workbenchinstantiationService.createInstance(ServiceAccessor);
+		const service = accessor.untitledTextEditorService;
+		let fileInput = workbenchinstantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: URI.parse('file://testUri') }));
 
 		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Loose, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		queryInput.setup(x => x.uri).returns(() => testUri);
@@ -556,3 +561,9 @@ suite('SQL QueryAction Tests', () => {
 		assert.equal(listItem.currentDatabaseName, eventParams.connectionProfile.databaseName);
 	});
 });
+
+class ServiceAccessor {
+	constructor(
+		@IUntitledTextEditorService public readonly untitledTextEditorService: IUntitledTextEditorService
+	) { }
+}

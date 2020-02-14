@@ -11,16 +11,12 @@ import { IQueryModelService } from 'sql/workbench/services/query/common/queryMod
 import { IEncodingSupport, EncodingMode } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
-import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 
-type PublicPart<T> = { [K in keyof T]: T[K] };
-
-export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport, PublicPart<UntitledTextEditorInput> {
+export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport {
 
 	public static readonly ID = 'workbench.editorInput.untitledQueryInput';
-
-	public readonly onDidModelChangeEncoding = this.text.onDidModelChangeEncoding;
 
 	constructor(
 		description: string,
@@ -33,7 +29,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		super(description, text, results, connectionManagementService, queryModelService, configurationService);
 	}
 
-	public resolve(): Promise<UntitledTextEditorModel & IResolvedTextEditorModel> {
+	public resolve(): Promise<IUntitledTextEditorModel & IResolvedTextEditorModel> {
 		return this.text.resolve();
 	}
 
@@ -42,7 +38,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 	}
 
 	public get hasAssociatedFilePath(): boolean {
-		return this.text.hasAssociatedFilePath;
+		return this.text.model.hasAssociatedFilePath;
 	}
 
 	public setMode(mode: string): void {

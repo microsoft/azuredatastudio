@@ -16,6 +16,7 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { isNative } from 'vs/base/common/platform';
 import { IWorkingCopy } from 'vs/workbench/services/workingCopy/common/workingCopyService';
 import { IUntitledTextEditorModelManager } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export const ITextFileService = createDecorator<ITextFileService>('textFileService');
 
@@ -51,6 +52,17 @@ export interface ITextFileService extends IDisposable {
 	readonly encoding: IResourceEncodings;
 
 	/**
+	 * The handler that should be called when saving fails. Can be overridden
+	 * to handle save errors in a custom way.
+	 */
+	saveErrorHandler: ISaveErrorHandler;
+
+	/**
+	 * The save participant if any. By default, no save participant is registered.
+	 */
+	saveParticipant: ISaveParticipant | undefined;
+
+	/**
 	 * A resource is dirty if it has unsaved changes or is an untitled file not yet saved.
 	 *
 	 * @param resource the resource to check for being dirty
@@ -64,7 +76,7 @@ export interface ITextFileService extends IDisposable {
 	 * @param options optional save options
 	 * @return Path of the saved resource or undefined if canceled.
 	 */
-	save(resource: URI, options?: ISaveOptions): Promise<URI | undefined>;
+	save(resource: URI, options?: ITextFileSaveOptions): Promise<URI | undefined>;
 
 	/**
 	 * Saves the provided resource asking the user for a file name or using the provided one.
@@ -74,7 +86,7 @@ export interface ITextFileService extends IDisposable {
 	 * @param options optional save options
 	 * @return Path of the saved resource or undefined if canceled.
 	 */
-	saveAs(resource: URI, targetResource?: URI, options?: ISaveOptions): Promise<URI | undefined>;
+	saveAs(resource: URI, targetResource?: URI, options?: ITextFileSaveOptions): Promise<URI | undefined>;
 
 	/**
 	 * Reverts the provided resource.
@@ -174,7 +186,7 @@ export interface IWriteTextFileOptions extends IWriteFileOptions {
 	overwriteReadonly?: boolean;
 
 	/**
-	 * Wether to write to the file as elevated (admin) user. When setting this option a prompt will
+	 * Whether to write to the file as elevated (admin) user. When setting this option a prompt will
 	 * ask the user to authenticate as super user.
 	 */
 	writeElevated?: boolean;
@@ -219,7 +231,7 @@ export interface ISaveParticipant {
 	/**
 	 * Participate in a save of a model. Allows to change the model before it is being saved to disk.
 	 */
-	participate(model: IResolvedTextFileEditorModel, env: { reason: SaveReason }): Promise<void>;
+	participate(model: IResolvedTextFileEditorModel, context: { reason: SaveReason }, token: CancellationToken): Promise<void>;
 }
 
 /**
@@ -255,7 +267,7 @@ export const enum ModelState {
 
 	/**
 	 * Any error that happens during a save that is not causing the CONFLICT state.
-	 * Models in error mode are always diry.
+	 * Models in error mode are always dirty.
 	 */
 	ERROR
 }
@@ -368,6 +380,7 @@ export interface ITextFileSaveOptions extends ISaveOptions {
 	overwriteEncoding?: boolean;
 	writeElevated?: boolean;
 	ignoreModifiedSince?: boolean;
+	ignoreErrorHandler?: boolean;
 }
 
 export interface ILoadOptions {
@@ -410,7 +423,7 @@ export interface ITextFileEditorModel extends ITextEditorModel, IEncodingSupport
 
 	isDirty(): boolean; // {{SQL CARBON EDIT}} strict-null-check
 
-	makeDirty(): void;
+	setDirty(dirty: boolean): void;
 
 	getMode(): string | undefined;
 

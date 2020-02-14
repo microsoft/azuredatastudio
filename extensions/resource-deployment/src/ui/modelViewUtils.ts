@@ -10,6 +10,7 @@ import { DialogInfoBase, FieldType, FieldInfo, SectionInfo, LabelPosition, FontW
 import { Model } from './model';
 import { getDateTimeString } from '../utils';
 import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
+import * as azurecore from '../../../azurecore/src/azurecore';
 import * as loc from '../localizedConstants';
 
 const localize = nls.loadMessageBundle();
@@ -510,8 +511,8 @@ function handleSelectedAccountChanged(
 	} else {
 		locationDropdown.values = [];
 	}
-	vscode.commands.executeCommand('azure.accounts.getSubscriptions', selectedAccount).then(subscriptions => {
-		subscriptionDropdown.values = (<azureResource.AzureResourceSubscription[]>subscriptions).map(subscription => {
+	vscode.commands.executeCommand('azure.accounts.getSubscriptions', selectedAccount, true /*ignoreErrors*/).then(response => {
+		subscriptionDropdown.values = (<azurecore.GetSubscriptionsResult>response).subscriptions.map(subscription => {
 			const displayName = `${subscription.name} (${subscription.id})`;
 			subscriptionValueToSubscriptionMap.set(displayName, subscription);
 			return displayName;
@@ -551,8 +552,8 @@ function createAzureResourceGroupsDropdown(
 
 function handleSelectedSubscriptionChanged(selectedAccount: azdata.Account | undefined, selectedSubscription: azureResource.AzureResourceSubscription | undefined, resourceGroupDropdown: azdata.DropDownComponent): void {
 	resourceGroupDropdown.values = [];
-	vscode.commands.executeCommand('azure.accounts.getResourceGroups', selectedAccount, selectedSubscription).then(resourceGroups => {
-		resourceGroupDropdown.values = (<azureResource.AzureResourceSubscription[]>resourceGroups).map(resourceGroup => resourceGroup.name).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()));
+	vscode.commands.executeCommand('azure.accounts.getResourceGroups', selectedAccount, selectedSubscription, true /*ignoreErrors*/).then(response => {
+		resourceGroupDropdown.values = (<azurecore.GetResourceGroupsResult>response).resourceGroups.map(resourceGroup => resourceGroup.name).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()));
 	}, err => { vscode.window.showErrorMessage(localize('azure.accounts.unexpectedResourceGroupsError', "Unexpected error fetching resource groups for subscription {0} ({1}): {2}", selectedSubscription?.name, selectedSubscription?.id, err.message)); });
 }
 

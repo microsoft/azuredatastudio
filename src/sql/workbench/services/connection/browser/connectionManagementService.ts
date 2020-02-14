@@ -14,7 +14,7 @@ import { ConnectionStore } from 'sql/platform/connection/common/connectionStore'
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import * as Utils from 'sql/platform/connection/common/utils';
 import * as Constants from 'sql/platform/connection/common/constants';
-import { ICapabilitiesService, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ICapabilitiesService, ConnectionProviderProperties, ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as ConnectionContracts from 'sql/workbench/contrib/connection/common/connection';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
 import { DashboardInput } from 'sql/workbench/contrib/dashboard/browser/dashboardInput';
@@ -22,10 +22,9 @@ import { ConnectionGlobalStatus } from 'sql/workbench/contrib/connection/common/
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/browser/angularEventingService';
-import * as QueryConstants from 'sql/workbench/contrib/query/common/constants';
+import * as QueryConstants from 'sql/platform/query/common/constants';
 import { Deferred } from 'sql/base/common/promise';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/contrib/connection/common/connectionProviderExtension';
 import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
 
 import * as azdata from 'azdata';
@@ -35,7 +34,6 @@ import * as errors from 'vs/base/common/errors';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
-import * as platform from 'vs/platform/registry/common/platform';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
@@ -110,19 +108,17 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		this.initializeConnectionProvidersMap();
 
-		const registry = platform.Registry.as<IConnectionProviderRegistry>(ConnectionProviderExtensions.ConnectionProviderContributions);
-
-		let providerRegistration = (p: { id: string, properties: ConnectionProviderProperties }) => {
+		let providerRegistration = (p: { id: string, features: ProviderFeatures }) => {
 			let provider = {
 				onReady: new Deferred<azdata.ConnectionProvider>(),
-				properties: p.properties
+				properties: p.features.connection
 			};
 			this._providers.set(p.id, provider);
 		};
 
-		registry.onNewProvider(providerRegistration, this);
-		entries(registry.providers).map(v => {
-			providerRegistration({ id: v[0], properties: v[1] });
+		this._capabilitiesService.onCapabilitiesRegistered(providerRegistration, this);
+		entries(this._capabilitiesService.providers).map(v => {
+			providerRegistration({ id: v[0], features: v[1] });
 		});
 
 		this._register(this._onAddConnectionProfile);

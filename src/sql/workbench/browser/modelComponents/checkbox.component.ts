@@ -14,8 +14,7 @@ import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBa
 import { Checkbox, ICheckboxOptions } from 'sql/base/browser/ui/checkbox/checkbox';
 import { attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
-import { ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 
 @Component({
 	selector: 'modelview-checkbox',

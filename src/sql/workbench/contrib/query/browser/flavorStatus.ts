@@ -12,7 +12,6 @@ import { getCodeEditor } from 'vs/editor/browser/editorBrowser';
 import * as nls from 'vs/nls';
 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { DidChangeLanguageFlavorParams } from 'azdata';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -97,12 +96,12 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 	}
 
 	private _onEditorClosed(event: IEditorCloseEvent): void {
-		let uri = WorkbenchUtils.getEditorUri(event.editor);
+		let uri = event.editor.getResource().toString();
 		if (uri && uri in this._sqlStatusEditors) {
 			// If active editor is being closed, hide the query status.
 			let activeEditor = this.editorService.activeControl;
 			if (activeEditor) {
-				let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
+				let currentUri = activeEditor.input.getResource().toString();
 				if (uri === currentUri) {
 					this.hide();
 				}
@@ -115,7 +114,7 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 	private _onEditorsChanged(): void {
 		let activeEditor = this.editorService.activeControl;
 		if (activeEditor) {
-			let uri = WorkbenchUtils.getEditorUri(activeEditor.input);
+			let uri = activeEditor.input.getResource().toString();
 
 			// Show active editor's language flavor	status
 			if (uri) {
@@ -146,7 +145,7 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 	private _showStatus(uri: string): void {
 		let activeEditor = this.editorService.activeControl;
 		if (activeEditor) {
-			let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
+			let currentUri = activeEditor.input.getResource().toString();
 			if (uri === currentUri) {
 				let flavor: SqlProviderEntry = this._sqlStatusEditors[uri];
 				if (flavor) {
@@ -187,7 +186,7 @@ export class ChangeFlavorAction extends Action {
 
 	public run(): Promise<any> {
 		let activeEditor = this._editorService.activeControl;
-		let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
+		let currentUri = activeEditor?.input.getResource().toString();
 		if (this._connectionManagementService.isConnected(currentUri)) {
 			let currentProvider = this._connectionManagementService.getProviderIdFromUri(currentUri);
 			return this._showMessage(Severity.Info, nls.localize('alreadyConnected',

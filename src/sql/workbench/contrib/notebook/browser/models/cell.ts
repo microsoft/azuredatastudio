@@ -10,7 +10,7 @@ import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 
 import * as notebookUtils from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
-import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
 import { ICellModel, notebookConstants, IOutputChangedEvent, FutureInternal, CellExecutionState, ICellModelOptions } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -19,13 +19,13 @@ import { INotificationService, Severity } from 'vs/platform/notification/common/
 import { Schemas } from 'vs/base/common/network';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { optional } from 'vs/platform/instantiation/common/instantiation';
-import { getErrorMessage } from 'vs/base/common/errors';
+import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import { firstIndex, find } from 'vs/base/common/arrays';
-let modelId = 0;
+import { HideInputTag } from 'sql/platform/notebooks/common/outputRegistry';
 
-export const HideInputTag = 'hide_input';
+let modelId = 0;
 
 export class CellModel implements ICellModel {
 	public id: string;
@@ -285,7 +285,8 @@ export class CellModel implements ICellModel {
 
 	private notifyExecutionComplete(): void {
 		if (this._notebookService) {
-			this._notebookService.serializeNotebookStateChange(this.notebookModel.notebookUri, NotebookChangeType.CellExecuted, this);
+			this._notebookService.serializeNotebookStateChange(this.notebookModel.notebookUri, NotebookChangeType.CellExecuted, this)
+				.catch(e => onUnexpectedError(e));
 		}
 	}
 
@@ -339,6 +340,8 @@ export class CellModel implements ICellModel {
 				}
 				let content = this.source;
 				if ((Array.isArray(content) && content.length > 0) || (!Array.isArray(content) && content)) {
+					this.notebookModel.trustedMode = true;
+
 					// requestExecute expects a string for the code parameter
 					content = Array.isArray(content) ? content.join('') : content;
 					const future = kernel.requestExecute({

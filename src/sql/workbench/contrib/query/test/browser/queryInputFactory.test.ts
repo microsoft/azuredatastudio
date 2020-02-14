@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { TestEditorService } from 'vs/workbench/test/workbenchTestServices';
+import { TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorInput } from 'vs/workbench/common/editor';
@@ -19,7 +19,8 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService, IConnectionCompletionOptions, IConnectionCallbacks, IConnectionResult } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 
 suite('Query Input Factory', () => {
 
@@ -63,13 +64,22 @@ suite('Query Input Factory', () => {
 
 });
 
+class ServiceAccessor {
+	constructor(
+		@IUntitledTextEditorService public readonly untitledTextEditorService: IUntitledTextEditorService
+	) { }
+}
+
 class MockEditorService extends TestEditorService {
 	public readonly activeEditor: IEditorInput | undefined = undefined;
 
 	constructor(instantiationService?: IInstantiationService) {
 		super();
 		if (instantiationService) {
-			const untitledInput = instantiationService.createInstance(UntitledTextEditorInput, URI.file('/test/file'), false, undefined, undefined, undefined);
+			const workbenchinstantiationService = workbenchInstantiationService();
+			const accessor = workbenchinstantiationService.createInstance(ServiceAccessor);
+			const service = accessor.untitledTextEditorService;
+			const untitledInput = instantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: URI.file('/test/file') }));
 			this.activeEditor = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, undefined);
 		}
 	}

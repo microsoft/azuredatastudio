@@ -9,7 +9,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 
 export class UntitledNotebookInput extends NotebookInput {
 	public static ID: string = 'workbench.editorinputs.untitledNotebookInput';

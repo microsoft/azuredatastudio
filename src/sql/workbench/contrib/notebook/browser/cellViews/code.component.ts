@@ -22,7 +22,7 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';
-import { CellTypes } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/browser/notebookService';
 import * as notebookUtils from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -30,8 +30,8 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { CollapseComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/collapse.component';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
-import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser/simpleProgressIndicator';
@@ -210,11 +210,12 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		let uri = this.cellModel.cellUri;
 		let cellModelSource: string;
 		cellModelSource = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
-		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, uri, false, this.cellModel.language, cellModelSource, '');
+		const model = this._instantiationService.createInstance(UntitledTextEditorModel, uri, false, cellModelSource, this.cellModel.language, undefined);
+		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 		await this._editor.setInput(this._editorInput, undefined);
 		this.setFocusAndScroll();
 
-		let untitledEditorModel: UntitledTextEditorModel = await this._editorInput.resolve();
+		let untitledEditorModel = await this._editorInput.resolve() as UntitledTextEditorModel;
 		this._editorModel = untitledEditorModel.textEditorModel;
 
 		let isActive = this.cellModel.id === this._activeCellId;

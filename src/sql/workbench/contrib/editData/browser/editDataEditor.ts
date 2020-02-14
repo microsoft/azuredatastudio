@@ -29,7 +29,7 @@ import {
 import { TextResourceEditor } from 'vs/workbench/browser/parts/editor/textResourceEditor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IFlexibleSash, HorizontalFlexibleSash } from 'sql/workbench/contrib/query/browser/flexibleSash';
 import { EditDataResultsEditor } from 'sql/workbench/contrib/editData/browser/editDataResultsEditor';
 import { EditDataResultsInput } from 'sql/workbench/contrib/editData/browser/editDataResultsInput';
