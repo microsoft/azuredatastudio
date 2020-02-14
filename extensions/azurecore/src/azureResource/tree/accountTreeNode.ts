@@ -42,11 +42,11 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 	public async getChildren(): Promise<TreeNode[]> {
 		try {
 			let subscriptions: azureResource.AzureResourceSubscription[] = [];
-			let credentials: TokenCredentials;
+			const token = await this.appContext.apiWrapper.getSecurityToken(this.account, AzureResource.ResourceManagement);
+
+			let credentials = new TokenCredentials(token.at);
 			if (this._isClearingCache) {
 				try {
-					const token = await this.appContext.apiWrapper.getSecurityToken(this.account, AzureResource.ResourceManagement);
-					credentials = new TokenCredentials(token.at);
 					subscriptions.push(...(await this._subscriptionService.getSubscriptions(this.account, credentials) || <azureResource.AzureResourceSubscription[]>[]));
 				} catch (error) {
 					throw new AzureResourceCredentialError(localize('azure.resource.tree.accountTreeNode.credentialError', "Failed to get credential for account {0}. Please refresh the account.", this.account.key.accountId), error);
