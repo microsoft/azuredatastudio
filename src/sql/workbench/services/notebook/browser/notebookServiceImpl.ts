@@ -29,7 +29,6 @@ import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { SqlNotebookProvider } from 'sql/workbench/services/notebook/browser/sql/sqlNotebookProvider';
 import { keys } from 'vs/base/common/map';
 import { IFileService, IFileStatWithMetadata } from 'vs/platform/files/common/files';
-import { RunOnceScheduler } from 'vs/base/common/async';
 import { Schemas } from 'vs/base/common/network';
 import { ILogService } from 'vs/platform/log/common/log';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
@@ -107,7 +106,6 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _themeParticipant: IDisposable;
 	private _trustedCacheQueue: URI[] = [];
 	private _unTrustedCacheQueue: URI[] = [];
-	private _updateTrustCacheScheduler: RunOnceScheduler;
 
 	constructor(
 		@ILifecycleService lifecycleService: ILifecycleService,
@@ -123,7 +121,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		this._providersMemento = new Memento('notebookProviders', this._storageService);
 		this._trustedNotebooksMemento = new Memento('notebooks.trusted', this._storageService);
 
-		this._updateTrustCacheScheduler = new RunOnceScheduler(() => this.updateTrustedCache(), 250);
 		this._register(notebookRegistry.onNewRegistration(this.updateRegisteredProviders, this));
 		this.registerBuiltInProvider();
 		// If a provider has been already registered, the onNewRegistration event will not have a listener attached yet
@@ -521,7 +518,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 	}
 
-	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel): void {
+	async serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel, isTrusted?: boolean): Promise<void> {
 		if (notebookUri.scheme !== Schemas.untitled) {
 			// Conditions for saving:
 			// 1. Not untitled. They're always trusted as we open them
@@ -530,15 +527,23 @@ export class NotebookService extends Disposable implements INotebookService {
 			// 4. Notebook is trusted. Don't need to save state of untrusted notebooks
 			let notebookUriString = notebookUri.toString();
 			if (changeType === NotebookChangeType.Saved && firstIndex(this._trustedCacheQueue, uri => uri.toString() === notebookUriString) < 0) {
-				// Only save if it's trusted
-				let notebook = find(this.listNotebookEditors(), n => n.id === notebookUriString);
-				if (notebook && notebook.model) {
-					if (notebook.model.trustedMode) {
-						this._trustedCacheQueue.push(notebookUri);
-					} else {
-						this._unTrustedCacheQueue.push(notebookUri);
+				if (isTrusted) {
+					this._trustedCacheQueue.push(notebookUri);
+					await this.updateTrustedCache();
+				} else if (isTrusted === false) {
+					this._unTrustedCacheQueue.push(notebookUri);
+					await this.updateTrustedCache();
+				} else {
+					// Only save as trusted if the associated notebook model is trusted
+					let notebook = find(this.listNotebookEditors(), n => n.id === notebookUriString);
+					if (notebook && notebook.model) {
+						if (notebook.model.trustedMode) {
+							this._trustedCacheQueue.push(notebookUri);
+						} else {
+							this._unTrustedCacheQueue.push(notebookUri);
+						}
+						await this.updateTrustedCache();
 					}
-					this._updateTrustCacheScheduler.schedule();
 				}
 			}
 		}
