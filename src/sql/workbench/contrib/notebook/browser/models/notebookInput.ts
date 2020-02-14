@@ -32,6 +32,7 @@ import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorIn
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
 import { NotebookFindModel } from 'sql/workbench/contrib/notebook/find/notebookFindModel';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -161,7 +162,7 @@ export class NotebookEditorModel extends EditorModel {
 		let notebookModel = this.getNotebookModel();
 		if (notebookModel) {
 			this.notebookService.serializeNotebookStateChange(this.notebookUri, NotebookChangeType.Saved)
-				.catch(() => { });
+				.catch(e => onUnexpectedError(e));
 		}
 	}
 
