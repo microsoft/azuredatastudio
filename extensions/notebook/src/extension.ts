@@ -258,16 +258,55 @@ async function updateBookMetadata(bookPath: string): Promise<void> {
 		let result: string;
 		fsPromises.readFile(tocFilePath).then(data => {
 			result = data.toString();
+			let contentFolders: string[] = [];
+			let headers = result.match(/- header: [a-zA-Z0-9\\.\s-]+$/gm);
 			let urls = result.match(/- url: [a-zA-Z0-9\\.\s-]+$/gm);
-			let firstUrl: string = urls.shift();
-			let title: string = firstUrl.substring(firstUrl.lastIndexOf(path.sep) + 1);
-			let replacedString: string = `- title: ${title}\n  url: /${title}\n  not_numbered: true\n  expand_sections: true\n  sections:\n`;
-			result = result.replace(firstUrl, replacedString);
-			urls.map(url => {
-				title = url.substring(url.lastIndexOf(path.sep) + 1);
-				replacedString = `  - title: ${title}\n    url: /${title}\n`;
-				result = result.replace(url, replacedString);
-			});
+			let firstLevelUrls = result.match(/^(?:\s+$[\r\n]+)+(- url: [a-zA-Z0-9\\.\s-]+$[\r\n]+)/gm);
+			let title: string;
+			let replacedString: string;
+			if (firstLevelUrls) {
+				firstLevelUrls.map(url => {
+					title = url.substring(url.lastIndexOf(path.sep) + 1).replace(/(\r\n|\n|\r)/gm, '');
+					// if there are sub folders inside content, just add this without sections
+					if (!headers) {
+						replacedString = `\n- title: ${title}\n  url: /${title}\n  not_numbered: true\n  expand_sections: true\n  sections:\n`;
+					} else {
+						replacedString = `\n- title: ${title}\n  url: /${title}\n  not_numbered: true\n`;
+					}
+					result = result.replace(url, replacedString);
+				});
+			}
+			if (headers) {
+				headers.map(header => {
+					title = header.substring(10).replace(/(\r\n|\n|\r)/gm, '');
+					// for the url you need to have home page on clicking on the header section
+					// check urls that are inside this folder and pick the first one as home
+					contentFolders.push(title.toLocaleLowerCase());
+					let index: number = urls.findIndex(x => x.indexOf(`${path.sep}${title.toLocaleLowerCase()}${path.sep}`) > -1);
+					let urlValue: string = urls[index].substring(urls[index].lastIndexOf(path.sep) + 1).replace(/(\r\n|\n|\r)/gm, '');
+					replacedString = `- title: ${title}\n  url: /${title}/${urlValue}\n  not_numbered: true\n  expand_sections: true\n  sections:\n`;
+					result = result.replace(header, replacedString);
+					result = result.replace(urls[index], '');
+					urls.splice(index, 1);
+				});
+			}
+			if (urls) {
+				urls.map(url => {
+					title = url.substring(url.lastIndexOf(path.sep) + 1).replace(/(\r\n|\n|\r)/gm, '');
+					let urlValue: string = title;
+					// if there are folders inside content, the url will be that foldrname/filename
+					if (contentFolders.length > -1) {
+						// get each folder from the path bread crumb and check if the last folder is inside content
+						let folders: string[] = url.substring(8).split(path.sep);
+						let parentFolder: number = contentFolders.findIndex(x => x === folders[folders.length - 2]);
+						if (parentFolder > -1) {
+							urlValue = `${contentFolders[parentFolder]}/${title}`;
+						}
+					}
+					replacedString = `  - title: ${title}\n    url: /${urlValue}\n`;
+					result = result.replace(url, replacedString);
+				});
+			}
 			fsPromises.writeFile(tocFilePath, result);
 		});
 		// update the book title
