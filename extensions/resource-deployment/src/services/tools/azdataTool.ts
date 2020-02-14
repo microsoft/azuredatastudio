@@ -11,6 +11,7 @@ import { AzdataInstallLocationKey, DeploymentConfigurationKey } from '../../cons
 import { Command, OsDistribution, ToolType } from '../../interfaces';
 import { IPlatformService } from '../platformService';
 import { dependencyType, ToolBase } from './toolBase';
+import { SemVerProxy } from './SemVerProxy';
 
 const localize = nls.loadMessageBundle();
 export const AzdataToolName = 'azdata';
@@ -58,7 +59,7 @@ export class AzdataTool extends ToolBase {
 	protected getVersionFromOutput(output: string): SemVer | undefined {
 		let version: SemVer | undefined = undefined;
 		if (output && output.split(EOL).length > 0) {
-			version = new SemVer(output.split(EOL)[0].replace(/ /g, ''));
+			version = new SemVerProxy(output.split(EOL)[0].replace(/ /g, ''));
 		}
 		return version;
 	}
