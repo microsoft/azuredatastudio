@@ -88,6 +88,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private readonly scopes: string[];
 	private readonly clientId: string;
 
+	private server: SimpleWebServer;
+
 	constructor(private readonly metadata: AzureAccountProviderMetadata,
 		private readonly _tokenCache: SimpleTokenCache,
 		private readonly _context: vscode.ExtensionContext) {
@@ -151,16 +153,19 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	private async _prompt(): Promise<azdata.Account | azdata.PromptFailedResult> {
-		const server = new SimpleWebServer();
+		this.server = new SimpleWebServer();
 		const nonce = crypto.randomBytes(16).toString('base64');
 		let serverPort: string;
 
 		try {
-			serverPort = await server.startup();
+			serverPort = await this.server.startup();
 		} catch (err) {
-			//TODO: formatted errors;
-			console.log(err);
+			const msg = localize('azure.serverCouldNotStart', 'Server could not start. This could be a permissions error or an incompatibility on your system.');
+			vscode.window.showErrorMessage(msg);
+			console.dir(err);
+			return { canceled: false } as azdata.PromptFailedResult;
 		}
+
 		vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(nonce)}`));
 
 		// The login code to use
@@ -176,13 +181,12 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		}
 
 		console.log(loginUrl);
-		const authenticatedCode = await this.addServerListeners(server, nonce, loginUrl);
+		const authenticatedCode = await this.addServerListeners(this.server, nonce, loginUrl);
 		console.log(authenticatedCode);
 
 		const { accessToken, refreshToken, tokenClaims } = await this.getTokenWithAuthCode(authenticatedCode, codeVerifier, scopes, this.redirectUri);
 		if (!accessToken) {
-			//TODO errors
-			throw Error('something');
+			throw Error('Failure when retreiving tokens');
 		}
 
 		const tenants = await this.getTenants(accessToken);
@@ -218,12 +222,15 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			isStale: false
 		} as AzureAccount;
 		try {
-			console.log(accessToken, refreshToken, tokenClaims);
 			await this._tokenCache.addAccount(`${account.key.accountId}_access`, JSON.stringify(accessToken));
 			await this._tokenCache.addAccount(`${account.key.accountId}_refresh`, JSON.stringify(refreshToken));
 		} catch (ex) {
-			console.log(ex);
+			console.dir(ex);
+			vscode.window.showErrorMessage(localize('azure.keytarIssue', "There was an issue with your local security module. If you're using Linux, you may need libsecret for this to work."));
+			return { canceled: false } as azdata.PromptFailedResult;
 		}
+
+		await this.server.shutdown();
 		return account;
 	}
 
@@ -267,7 +274,6 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 			return tenants;
 		} catch (ex) {
-			//TODO cleaner errors
 			console.log(ex);
 			throw new Error('Error retreiving tenant information');
 		}
@@ -285,8 +291,6 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			const tokenResponse = await axios.post(tokenUrl, qs.stringify(postData), config);
 			const tokenClaims = this.getTokenClaims(tokenResponse.data.access_token);
 
-			console.log(tokenResponse);
-			console.log(tokenClaims);
 			const accessToken: AccessToken = {
 				at: tokenResponse.data.access_token,
 				key: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name,
@@ -300,8 +304,10 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			return { accessToken, refreshToken, tokenClaims };
 
 		} catch (err) {
-			//TODO handle errors
-			console.log(err);
+			const msg = localize('azure.noToken', "Retrieving the token failed.");
+			vscode.window.showErrorMessage(msg);
+			console.dir(err);
+			throw err;
 		}
 
 		return undefined;
@@ -389,7 +395,6 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 		return new Promise<string>((resolve, reject) => {
 			server.on('/callback', (req, reqUrl, res) => {
-				//TODO handle rejects
 				const state = reqUrl.query.state as string ?? '';
 				const code = reqUrl.query.code as string ?? '';
 
@@ -398,6 +403,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 					res.writeHead(400, { 'content-type': 'text/html' });
 					res.write(localize('azureAuth.stateError', "Authentication failed due to a state mismatch, please close ADS and try again."));
 					res.end();
+					reject(new Error('State mismatch'));
 					return;
 				}
 
@@ -405,6 +411,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 					res.writeHead(400, { 'content-type': 'text/html' });
 					res.write(localize('azureAuth.nonceError', "Authentication failed due to a nonce mismatch, please close ADS and try again."));
 					res.end();
+					reject(new Error('Nonce mismatch'));
 					return;
 				}
 
@@ -428,6 +435,11 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	autoOAuthCancelled(): Thenable<void> {
-		throw new Error('Method not implemented.');
+		return this._authOAuthCancelled();
+	}
+
+	private async _authOAuthCancelled(): Promise<void> {
+		await this.server?.shutdown();
+		this.server = undefined;
 	}
 }
