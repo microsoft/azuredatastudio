@@ -55,7 +55,7 @@
         "code-layering": [
             "warn",
             {
-                "common": [], // {{SQL CARBON EDIT}} @anthonydresser not ideal, but for our purposes its fine for now,
+                "common": [],
                 "node": [
                     "common"
                 ],
@@ -109,7 +109,7 @@
                 "target": "**/{vs,sql}/base/node/**",
                 "restrictions": [
                     "vs/nls",
-                    "**/{vs,sql}/base/{common,browser,node}/**",
+                    "**/{vs,sql}/base/{common,node}/**",
                     "!path" // node modules (except path where we have our own impl)
                 ]
             },
@@ -118,6 +118,7 @@
                 "target": "**/{vs,sql}/base/test/browser/**",
                 "restrictions": [
                     "assert",
+                    "sinon",
                     "vs/nls",
                     "**/{vs,sql}/base/{common,browser}/**",
                     "**/{vs,sql}/base/test/{common,browser}/**",
@@ -148,8 +149,8 @@
                 "target": "**/{vs,sql}/base/parts/*/node/**",
                 "restrictions": [
                     "vs/nls",
-                    "**/{vs,sql}/base/{common,browser,node}/**",
-                    "**/{vs,sql}/base/parts/*/{common,browser,node}/**",
+                    "**/{vs,sql}/base/{common,node}/**",
+                    "**/{vs,sql}/base/parts/*/{common,node}/**",
                     "!path" // node modules (except path where we have our own impl)
                 ]
             },
@@ -169,8 +170,8 @@
                 "target": "**/{vs,sql}/base/parts/*/electron-main/**",
                 "restrictions": [
                     "vs/nls",
-                    "**/{vs,sql}/base/{common,browser,node,electron-main}/**",
-                    "**/{vs,sql}/base/parts/*/{common,browser,node,electron-main}/**",
+                    "**/{vs,sql}/base/{common,node,electron-main}/**",
+                    "**/{vs,sql}/base/parts/*/{common,node,electron-main}/**",
                     "!path", // node modules (except path where we have our own impl)
                     "@angular/*",
                     "rxjs/*"
@@ -543,6 +544,19 @@
                 ]
             },
             {
+                "target": "**/{vs,sql}/workbench/services/**/electron-browser/**",
+                "restrictions": [
+                    "vs/nls",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/**/{common,browser,worker,node,electron-browser}/**",
+                    "**/{vs,sql}/platform/**/{common,browser,node,electron-browser}/**",
+                    "**/{vs,sql}/editor/**",
+                    "**/{vs,sql}/workbench/{common,browser,node,electron-browser,api}/**",
+                    "**/{vs,sql}/workbench/services/**/{common,browser,node,electron-browser}/**",
+                    "!path" // node modules (except path where we have our own impl)
+                ]
+            },
+            {
                 "target": "**/{vs,sql}/workbench/contrib/terminal/browser/**",
                 "restrictions": [
                     // xterm and its addons are strictly browser-only components
@@ -666,11 +680,7 @@
             },
             {
                 "target": "**/{common,browser,workbench}/**",
-                "restrictions": [
-					"**/{vs,sql}/**",
-					"azdata",
-					"vscode"
-				]
+                "restrictions": ["**/{vs,sql}/**","azdata","vscode"]
             }
         ]
     },
