@@ -398,6 +398,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.refreshDatasets();
 		}
 		self.refreshGrid();
+
 		// Setup the state of the selected cell
 		this.resetCurrentCell();
 		this.removingNewRow = false;
