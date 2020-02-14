@@ -138,7 +138,8 @@ function configureCommandlineSwitchesSync(cliArgs) {
 		'disable-hardware-acceleration',
 
 		// provided by Electron
-		'disable-color-correct-rendering'
+		'disable-color-correct-rendering',
+		'force-renderer-accessibility'
 	];
 
 	// Read argv config
