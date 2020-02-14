@@ -11,9 +11,14 @@ export type WebHandler = (req: http.IncomingMessage, reqUrl: url.UrlWithParsedQu
 export class SimpleWebServer {
 	private readonly pathMappings = new Map<string, WebHandler>();
 	private readonly server: http.Server;
+	private lastUsed: number;
+	private shutoffInterval: NodeJS.Timer;
 
 	constructor() {
+		this.bumpLastUsed();
+		this.autoShutoff();
 		this.server = http.createServer((req, res) => {
+			this.bumpLastUsed();
 			const reqUrl = url.parse(req.url!, /* parseQueryString */ true);
 
 			const handler = this.pathMappings.get(reqUrl.pathname);
@@ -25,7 +30,12 @@ export class SimpleWebServer {
 		});
 	}
 
+	private bumpLastUsed(): void {
+		this.lastUsed = new Date().getTime();
+	}
+
 	public async shutdown(): Promise<void> {
+		clearInterval(this.shutoffInterval);
 		return new Promise<void>((resolve, reject) => {
 			this.server.close((error) => {
 				if (error) {
@@ -75,5 +85,16 @@ export class SimpleWebServer {
 
 	public on(pathMapping: string, handler: WebHandler) {
 		this.pathMappings.set(pathMapping, handler);
+	}
+
+	private autoShutoff(): void {
+		this.shutoffInterval = setInterval(() => {
+			const time = new Date().getTime();
+
+			if (time - this.lastUsed > 5 * 60 * 1000) {
+				console.log('Shutting off webserver...');
+				this.shutdown();
+			}
+		}, 1000);
 	}
 }

@@ -33,7 +33,7 @@ export interface Tenant {
 /**
  * Represents a resource exposed by an Azure Active Directory
  */
-interface Resource {
+export interface Resource {
 	/**
 	 * Identifier of the resource
 	 */
@@ -43,6 +43,16 @@ interface Resource {
 	 * Endpoint url used to access the resource
 	 */
 	endpoint: string;
+
+	/**
+	 * List of scopes for resource
+	 */
+	scopes?: string[];
+
+	/**
+	 * Resource ID for azdata
+	 */
+	azureResourceId?: azdata.AzureResource
 }
 
 /**

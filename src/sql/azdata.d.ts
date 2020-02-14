@@ -2209,7 +2209,9 @@ declare module 'azdata' {
 
 	export enum AzureResource {
 		ResourceManagement = 0,
-		Sql = 1
+		Sql = 1,
+		OssRdbms = 2,
+		Graph = 3
 	}
 
 	export interface DidChangeAccountsParams {

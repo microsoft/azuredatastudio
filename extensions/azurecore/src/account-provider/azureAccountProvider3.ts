@@ -18,7 +18,8 @@ import * as http from 'http';
 import {
 	AzureAccountProviderMetadata,
 	Tenant,
-	AzureAccount
+	AzureAccount,
+	Resource
 } from './interfaces';
 
 import { SimpleWebServer } from './simpleWebServer';
@@ -27,11 +28,21 @@ import { SimpleTokenCache } from './simpleTokenCache';
 const localize = nls.loadMessageBundle();
 // const notInitalizedMessage = localize('accountProviderNotInitialized', "Account provider not initialized, cannot perform action");
 
+interface Deferred<T> {
+	resolve: (result: T | Promise<T>) => void;
+	reject: (reason: any) => void;
+}
+
 interface AccountKey {
 	/**
 	 * Account Key
 	 */
 	key: string
+
+	/**
+	 * Resource ID
+	 */
+	resource: string
 }
 interface AccessToken extends AccountKey {
 	/**
@@ -88,6 +99,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private readonly scopes: string[];
 	private readonly clientId: string;
 
+	private readonly resources: Resource[];
+
 	private server: SimpleWebServer;
 
 	constructor(private readonly metadata: AzureAccountProviderMetadata,
@@ -98,6 +111,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		this.redirectUri = this.metadata.settings.redirectUri;
 		this.clientId = this.metadata.settings.clientId;
 		this.scopes = this.metadata.settings.scopes;
+
+		this.resources = [this.metadata.settings.armResource];
 	}
 
 
@@ -108,250 +123,65 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private async _initialize(storedAccounts: azdata.Account[]): Promise<azdata.Account[]> {
 
 		for (let account of storedAccounts) {
-			await this._refreshToken(account);
+			await this.refreshToken(account);
 		}
 
 		return storedAccounts;
 	}
 
-	private async _refreshToken(account: azdata.Account): Promise<azdata.Account | azdata.PromptFailedResult> {
-		const token = await this.getSecurityToken(account, undefined) as Token;
-		if (!token || !token.at || !token.rt) {
+	private async refreshToken(account: azdata.Account): Promise<azdata.Account | azdata.PromptFailedResult> {
+		const tokens = await this.getSecurityTokens(account.key);
+		if (tokens.length !== this.resources.length) {
 			account.isStale = true;
 			return account;
 		}
-
-		const result = await this.refreshAccessToken(account, token);
-
-		if (result && result.accessToken && result.refreshToken) {
-			await this._tokenCache.addAccount(`${account.key.accountId}_access`, JSON.stringify(result.accessToken));
-			await this._tokenCache.addAccount(`${account.key.accountId}_refresh`, JSON.stringify(result.refreshToken));
-		} else {
-			account.isStale = true;
-		}
+		await this.refreshAccessTokens(account, tokens);
 
 		return account;
 	}
 
 	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}> {
-		return this._getSecurityToken(account, resource);
+		return this._getSecurityToken(account.key, resource);
 	}
 
-	private async _getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<Token> {
-		const accessToken: AccessToken = JSON.parse(await this._tokenCache.getCredential(`${account.key.accountId}_access`));
-		const refreshToken: RefreshToken = JSON.parse(await this._tokenCache.getCredential(`${account.key.accountId}_refresh`));
+	private async _getSecurityToken(account: azdata.AccountKey, azureResource: azdata.AzureResource): Promise<Token> {
+		const resource: Resource = this.resources.find(r => r.azureResourceId === azureResource);
+		if (!resource) {
+			return undefined;
+		}
 
-		return {
+		const accessToken: AccessToken = JSON.parse(await this._tokenCache.getCredential(`${account.accountId}_${resource.id}_access`));
+		const refreshToken: RefreshToken = JSON.parse(await this._tokenCache.getCredential(`${account.accountId}_${resource.id}_refresh`));
+		if (!accessToken || !refreshToken) {
+			return undefined;
+		}
+
+		const token: Token = {
 			at: accessToken.at,
 			rt: refreshToken.rt,
-			key: accessToken.key
+			key: accessToken.key,
+			resource: resource.id
 		};
+
+		return token;
+	}
+
+	private async getSecurityTokens(account: azdata.AccountKey): Promise<Token[]> {
+		const tokens: Token[] = [];
+		for (let resource of this.resources) {
+			const token = await this._getSecurityToken(account, resource.azureResourceId);
+			if (token) {
+				tokens.push(token);
+			}
+		}
+		return tokens;
 	}
 
 	prompt(): Thenable<azdata.Account | azdata.PromptFailedResult> {
 		return this._prompt();
 	}
 
-	private async _prompt(): Promise<azdata.Account | azdata.PromptFailedResult> {
-		this.server = new SimpleWebServer();
-		const nonce = crypto.randomBytes(16).toString('base64');
-		let serverPort: string;
-
-		try {
-			serverPort = await this.server.startup();
-		} catch (err) {
-			const msg = localize('azure.serverCouldNotStart', 'Server could not start. This could be a permissions error or an incompatibility on your system.');
-			vscode.window.showErrorMessage(msg);
-			console.dir(err);
-			return { canceled: false } as azdata.PromptFailedResult;
-		}
-
-		vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(nonce)}`));
-
-		// The login code to use
-		let loginUrl: string;
-		let codeVerifier: string;
-		let scopes: string;
-		{
-			scopes = this.scopes.join(' ');
-			codeVerifier = this.toBase64UrlEncoding(crypto.randomBytes(32).toString('base64'));
-			const state = `${serverPort},${encodeURIComponent(nonce)}`;
-			const codeChallenge = this.toBase64UrlEncoding(crypto.createHash('sha256').update(codeVerifier).digest('base64'));
-			loginUrl = `${this.loginEndpointUrl}${this.commonTenant}/oauth2/v2.0/authorize?response_type=code&response_mode=query&client_id=${encodeURIComponent(this.clientId)}&redirect_uri=${encodeURIComponent(this.redirectUri)}&state=${state}&scope=${encodeURIComponent(scopes)}&prompt=select_account&code_challenge_method=S256&code_challenge=${codeChallenge}`;
-		}
-
-		console.log(loginUrl);
-		const authenticatedCode = await this.addServerListeners(this.server, nonce, loginUrl);
-		console.log(authenticatedCode);
-
-		const { accessToken, refreshToken, tokenClaims } = await this.getTokenWithAuthCode(authenticatedCode, codeVerifier, scopes, this.redirectUri);
-		if (!accessToken) {
-			throw Error('Failure when retreiving tokens');
-		}
-
-		const tenants = await this.getTenants(accessToken);
-
-		// Determine if this is a microsoft account
-		let msa = tokenClaims.iss === 'https://sts.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/';
-
-		let contextualDisplayName = msa
-			? localize('microsoftAccountDisplayName', "Microsoft Account")
-			: tokenClaims.name;
-
-		let accountType = msa
-			? AzureAccountProvider.MicrosoftAccountType
-			: AzureAccountProvider.WorkSchoolAccountType;
-
-		const account = {
-			key: {
-				providerId: this.metadata.id,
-				accountId: accessToken.key
-			},
-			name: accessToken.key,
-			displayInfo: {
-				accountType: accountType,
-				userId: accessToken.key,
-				contextualDisplayName: contextualDisplayName,
-				displayName: tokenClaims.name
-			},
-			properties: {
-				providerSettings: this.metadata,
-				isMsAccount: msa,
-				tenants,
-			},
-			isStale: false
-		} as AzureAccount;
-		try {
-			await this._tokenCache.addAccount(`${account.key.accountId}_access`, JSON.stringify(accessToken));
-			await this._tokenCache.addAccount(`${account.key.accountId}_refresh`, JSON.stringify(refreshToken));
-		} catch (ex) {
-			console.dir(ex);
-			vscode.window.showErrorMessage(localize('azure.keytarIssue', "There was an issue with your local security module. If you're using Linux, you may need libsecret for this to work."));
-			return { canceled: false } as azdata.PromptFailedResult;
-		}
-
-		await this.server.shutdown();
-		return account;
-	}
-
-	private async makeWebRequest(token: AccessToken, uri: string): Promise<any> {
-		const config = {
-			headers: {
-				Authorization: `Bearer ${token.at}`,
-				'Content-Type': 'application/json',
-			},
-		};
-
-		const x = axios.get(uri, config);
-		return x;
-	}
-
-	private async getTenants(token: AccessToken): Promise<Tenant[]> {
-		interface TenantResponse { // https://docs.microsoft.com/en-us/rest/api/resources/tenants/list
-			id: string
-			tenantId: string
-			displayName?: string
-			tenantCategory?: string
-		}
-
-		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
-		try {
-			const tenantResponse = await this.makeWebRequest(token, tenantUri);
-			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
-				return {
-					id: tenantInfo.tenantId,
-					displayName: tenantInfo.displayName ? tenantInfo.displayName : localize('azureWorkAccountDisplayName', "Work or school account"),
-					userId: token.key,
-					tenantCategory: tenantInfo.tenantCategory
-				} as Tenant;
-			});
-
-			const homeTenantIndex = tenants.findIndex(tenant => tenant.tenantCategory === 'Home');
-			if (homeTenantIndex >= 0) {
-				const homeTenant = tenants.splice(homeTenantIndex, 1);
-				tenants.unshift(homeTenant[0]);
-			}
-
-			return tenants;
-		} catch (ex) {
-			console.log(ex);
-			throw new Error('Error retreiving tenant information');
-		}
-	}
-
-	private async getToken(postData: { [key: string]: string }, scope: string): Promise<TokenRefreshResponse | undefined> {
-		const tokenUrl = `${this.loginEndpointUrl}${this.commonTenant}/oauth2/v2.0/token`;
-		try {
-			const config = {
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded'
-				}
-			};
-
-			const tokenResponse = await axios.post(tokenUrl, qs.stringify(postData), config);
-			const tokenClaims = this.getTokenClaims(tokenResponse.data.access_token);
-
-			const accessToken: AccessToken = {
-				at: tokenResponse.data.access_token,
-				key: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name,
-			};
-
-			const refreshToken: RefreshToken = {
-				rt: tokenResponse.data.refresh_token,
-				key: accessToken.key,
-			};
-
-			return { accessToken, refreshToken, tokenClaims };
-
-		} catch (err) {
-			const msg = localize('azure.noToken', "Retrieving the token failed.");
-			vscode.window.showErrorMessage(msg);
-			console.dir(err);
-			throw err;
-		}
-
-		return undefined;
-	}
-
-	private async refreshAccessToken(account: azdata.Account, token: RefreshToken): Promise<TokenRefreshResponse | undefined> {
-		const postData = {
-			grant_type: 'refresh_token',
-			refresh_token: token.rt,
-			client_id: this.clientId,
-			tenant: this.commonTenant,
-			scope: this.scopes.join(' ')
-		};
-
-		return this.getToken(postData, postData.scope);
-	}
-
-	private async getTokenWithAuthCode(authCode: string, codeVerifier: string, scope: string, redirectUri: string): Promise<TokenRefreshResponse | undefined> {
-		const postData = {
-			grant_type: 'authorization_code',
-			code: authCode,
-			client_id: this.clientId,
-			scope,
-			code_verifier: codeVerifier,
-			redirect_uri: redirectUri
-		};
-
-		return this.getToken(postData, postData.scope);
-	}
-
-	private getTokenClaims(accessToken: string): TokenClaims | undefined {
-		try {
-			const split = accessToken.split('.');
-			return JSON.parse(atob(split[1]));
-		} catch (ex) {
-			throw new Error('Unable to read token claims');
-		}
-	}
-
-	private toBase64UrlEncoding(base64string: string) {
-		return base64string.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_'); // Need to use base64url encoding
-	}
-
-	private async addServerListeners(server: SimpleWebServer, nonce: string, loginUrl: string): Promise<string> {
+	private async addServerListeners(server: SimpleWebServer, nonce: string, loginUrl: string, authComplete: Promise<void>): Promise<string> {
 		const mediaPath = path.join(this._context.extensionPath, 'media');
 
 		// Utility function
@@ -415,11 +245,286 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 					return;
 				}
 
-				sendFile(res, path.join(mediaPath, 'landing.html'), 'text/html; charset=utf-8').catch(console.error);
 				resolve(code);
+
+				authComplete.then(() => {
+					sendFile(res, path.join(mediaPath, 'landing.html'), 'text/html; charset=utf-8').catch(console.error);
+				}, (msg) => {
+					res.writeHead(400, { 'content-type': 'text/html' });
+					res.write(msg);
+					res.end();
+				});
 			});
 		});
 	}
+
+	private async _prompt(): Promise<azdata.Account | azdata.PromptFailedResult> {
+		let authCompleteDeferred: Deferred<void>;
+		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
+
+		this.server = new SimpleWebServer();
+		const nonce = crypto.randomBytes(16).toString('base64');
+		let serverPort: string;
+
+		try {
+			serverPort = await this.server.startup();
+		} catch (err) {
+			const msg = localize('azure.serverCouldNotStart', 'Server could not start. This could be a permissions error or an incompatibility on your system.');
+			vscode.window.showErrorMessage(msg);
+			console.dir(err);
+			return { canceled: false } as azdata.PromptFailedResult;
+		}
+
+		vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(nonce)}`));
+
+		// The login code to use
+		let loginUrl: string;
+		let codeVerifier: string;
+		let scopes: string;
+		{
+			scopes = this.scopes.join(' ');
+			codeVerifier = this.toBase64UrlEncoding(crypto.randomBytes(32).toString('base64'));
+			const state = `${serverPort},${encodeURIComponent(nonce)}`;
+			const codeChallenge = this.toBase64UrlEncoding(crypto.createHash('sha256').update(codeVerifier).digest('base64'));
+			loginUrl = `${this.loginEndpointUrl}${this.commonTenant}/oauth2/v2.0/authorize?response_type=code&response_mode=query&client_id=${encodeURIComponent(this.clientId)}&redirect_uri=${encodeURIComponent(this.redirectUri)}&state=${state}&scope=${encodeURIComponent(scopes)}&prompt=select_account&code_challenge_method=S256&code_challenge=${codeChallenge}`;
+		}
+
+		const authenticatedCode = await this.addServerListeners(this.server, nonce, loginUrl, authCompletePromise);
+
+		let tenants: Tenant[];
+		let tokenClaims: TokenClaims;
+		let accessToken: AccessToken;
+		for (let resource of this.resources) {
+			const { accessToken: at, refreshToken: rt, tokenClaims: tc } = await this.getTokenWithAuthCode(authenticatedCode, codeVerifier, this.redirectUri, resource);
+			if (!at) {
+				const msg = localize('azure.tokenFail', "Failure when retreiving tokens.");
+				authCompleteDeferred.reject(msg);
+				throw Error('Failure when retreiving tokens');
+			}
+
+			switch (resource.id) {
+				case this.metadata.settings.armResource.id: {
+					tenants = await this.getTenants(at);
+					break;
+				}
+				case this.metadata.settings.graphResource.id: {
+					await this.getUserPhoto(at);
+					break;
+				}
+			}
+
+			try {
+				await this._tokenCache.addAccount(`${at.key}_${resource.id}_access`, JSON.stringify(at));
+				await this._tokenCache.addAccount(`${at.key}_${resource.id}_refresh`, JSON.stringify(rt));
+			} catch (ex) {
+				console.dir(ex);
+				const msg = localize('azure.keytarIssue', "There was an issue with your local security module. If you're using Linux, you may need libsecret for this to work.");
+				vscode.window.showErrorMessage(msg);
+				authCompleteDeferred.reject(msg);
+				return { canceled: false } as azdata.PromptFailedResult;
+			}
+
+			tokenClaims = tc;
+			accessToken = at;
+		}
+
+		// Determine if this is a microsoft account
+		let msa = tokenClaims.iss === 'https://sts.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/';
+
+		let contextualDisplayName = msa
+			? localize('microsoftAccountDisplayName', "Microsoft Account")
+			: tokenClaims.name;
+
+		let accountType = msa
+			? AzureAccountProvider.MicrosoftAccountType
+			: AzureAccountProvider.WorkSchoolAccountType;
+
+		const account = {
+			key: {
+				providerId: this.metadata.id,
+				accountId: accessToken.key
+			},
+			name: accessToken.key,
+			displayInfo: {
+				accountType: accountType,
+				userId: accessToken.key,
+				contextualDisplayName: contextualDisplayName,
+				displayName: tokenClaims.name
+			},
+			properties: {
+				providerSettings: this.metadata,
+				isMsAccount: msa,
+				tenants,
+			},
+			isStale: false
+		} as AzureAccount;
+
+		authCompleteDeferred.resolve();
+		return account;
+	}
+
+	private async getUserPhoto(token: AccessToken): Promise<{}> {
+		try {
+			const config = {
+				headers: {
+					Authorization: `Bearer ${token.at}`,
+					'Content-Type': 'application/json',
+				},
+			};
+
+			const url = `${this.metadata.settings.graphResource.endpoint}/v1.0/me/photo/$value?size=48x48`;
+
+			const x = await axios.get(url, config);
+
+			console.log(x);
+		} catch (ex) {
+			console.dir(ex);
+		}
+		return undefined;
+	}
+
+	private async makeWebRequest(token: AccessToken, uri: string): Promise<any> {
+		const config = {
+			headers: {
+				Authorization: `Bearer ${token.at}`,
+				'Content-Type': 'application/json',
+			},
+		};
+
+		const x = axios.get(uri, config);
+		return x;
+	}
+
+	private async getTenants(token: AccessToken): Promise<Tenant[]> {
+		interface TenantResponse { // https://docs.microsoft.com/en-us/rest/api/resources/tenants/list
+			id: string
+			tenantId: string
+			displayName?: string
+			tenantCategory?: string
+		}
+
+		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
+		try {
+			const tenantResponse = await this.makeWebRequest(token, tenantUri);
+			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
+				return {
+					id: tenantInfo.tenantId,
+					displayName: tenantInfo.displayName ? tenantInfo.displayName : localize('azureWorkAccountDisplayName', "Work or school account"),
+					userId: token.key,
+					tenantCategory: tenantInfo.tenantCategory
+				} as Tenant;
+			});
+
+			const homeTenantIndex = tenants.findIndex(tenant => tenant.tenantCategory === 'Home');
+			if (homeTenantIndex >= 0) {
+				const homeTenant = tenants.splice(homeTenantIndex, 1);
+				tenants.unshift(homeTenant[0]);
+			}
+
+			return tenants;
+		} catch (ex) {
+			console.log(ex);
+			throw new Error('Error retreiving tenant information');
+		}
+	}
+
+	private async getToken(postData: { [key: string]: string }, scope: string, resource: Resource): Promise<TokenRefreshResponse | undefined> {
+		const tokenUrl = `${this.loginEndpointUrl}${this.commonTenant}/oauth2/v2.0/token`;
+		try {
+			const config = {
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				}
+			};
+
+			const tokenResponse = await axios.post(tokenUrl, qs.stringify(postData), config);
+			const tokenClaims = this.getTokenClaims(tokenResponse.data.access_token);
+
+			const accessToken: AccessToken = {
+				at: tokenResponse.data.access_token,
+				key: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name,
+				resource: resource.id,
+			};
+
+			const refreshToken: RefreshToken = {
+				rt: tokenResponse.data.refresh_token,
+				key: accessToken.key,
+				resource: resource.id
+			};
+
+			return { accessToken, refreshToken, tokenClaims };
+
+		} catch (err) {
+			const msg = localize('azure.noToken', "Retrieving the token failed.");
+			vscode.window.showErrorMessage(msg);
+			console.dir(err);
+			throw err;
+		}
+
+		return undefined;
+	}
+
+	private async refreshAccessTokens(account: azdata.Account, tokens: RefreshToken[]): Promise<void> {
+		for (let resource of this.resources) {
+			const properToken = tokens.find(t => t.resource === resource.id);
+			if (!properToken) {
+				account.isStale = true;
+				return;
+			}
+
+			this.refreshAccessToken(account.key, properToken, resource);
+		}
+	}
+
+	private async refreshAccessToken(account: azdata.AccountKey, token: RefreshToken, resource: Resource): Promise<void> {
+		const scopes = [...this.metadata.settings.scopes, resource.scopes];
+		const postData = {
+			grant_type: 'refresh_token',
+			refresh_token: token.rt,
+			client_id: this.clientId,
+			tenant: this.commonTenant,
+			scope: scopes.join(' ')
+		};
+
+		const { accessToken, refreshToken } = await this.getToken(postData, postData.scope, resource);
+
+		if (!accessToken || !refreshToken) {
+			console.log(`This shouldn't have happened`);
+			return;
+		}
+
+		await this._tokenCache.addAccount(`${account.accountId}_${resource.id}_access`, JSON.stringify(accessToken));
+		await this._tokenCache.addAccount(`${account.accountId}_${resource.id}_refresh`, JSON.stringify(refreshToken));
+	}
+
+	private async getTokenWithAuthCode(authCode: string, codeVerifier: string, redirectUri: string, resource: Resource): Promise<TokenRefreshResponse | undefined> {
+		const scopes = [...this.metadata.settings.scopes, resource.scopes];
+		const postData = {
+			grant_type: 'authorization_code',
+			code: authCode,
+			client_id: this.clientId,
+			scope: scopes.join(' '),
+			code_verifier: codeVerifier,
+			redirect_uri: redirectUri
+		};
+
+		return this.getToken(postData, postData.scope, resource);
+	}
+
+	private getTokenClaims(accessToken: string): TokenClaims | undefined {
+		try {
+			const split = accessToken.split('.');
+			return JSON.parse(atob(split[1]));
+		} catch (ex) {
+			throw new Error('Unable to read token claims');
+		}
+	}
+
+	private toBase64UrlEncoding(base64string: string) {
+		return base64string.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_'); // Need to use base64url encoding
+	}
+
+
 
 	refresh(account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> {
 		return this.prompt();

@@ -5,6 +5,7 @@
 
 import * as nls from 'vscode-nls';
 import { ProviderSettings } from './interfaces';
+import { AzureResource } from 'azdata';
 
 const localize = nls.loadMessageBundle();
 
@@ -18,25 +19,32 @@ const publicAzureSettings: ProviderSettings = {
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
 			signInResourceId: 'https://management.core.windows.net/',
 			graphResource: {
-				id: 'https://graph.windows.net/',
-				endpoint: 'https://graph.windows.net'
+				id: 'graph',
+				endpoint: 'https://graph.microsoft.com',
+				scopes: [
+					'User.Read'
+				],
+				azureResourceId: AzureResource.Graph
 			},
 			armResource: {
-				id: 'https://management.azure.com/',
-				endpoint: 'https://management.azure.com'
+				id: 'arm',
+				endpoint: 'https://management.azure.com',
+				scopes: [
+					'https://management.azure.com/user_impersonation'
+				],
+				azureResourceId: AzureResource.ResourceManagement
 			},
 			sqlResource: {
-				id: 'https://database.windows.net/',
+				id: 'sql',
 				endpoint: 'https://database.windows.net'
 			},
 			ossRdbmsResource: {
-				id: 'https://ossrdbms-aad.database.windows.net',
+				id: 'ossrdbms',
 				endpoint: 'https://ossrdbms-aad.database.windows.net'
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
-				'https://management.azure.com/user_impersonation'
 			]
 		}
 	}
@@ -53,25 +61,32 @@ const usGovAzureSettings: ProviderSettings = {
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
 			signInResourceId: 'https://management.core.usgovcloudapi.net/',
 			graphResource: {
-				id: 'https://graph.windows.net/',
-				endpoint: 'https://graph.windows.net'
+				id: 'graph',
+				endpoint: 'https://graph.windows.net',
+				scopes: [
+					'User.Read'
+				],
+				azureResourceId: AzureResource.Graph
 			},
 			armResource: {
-				id: 'https://management.core.usgovcloudapi.net/',
-				endpoint: 'https://management.usgovcloudapi.net'
+				id: 'arm',
+				endpoint: 'https://management.usgovcloudapi.net',
+				scopes: [
+					'https://management.usgovcloudapi.net/user_impersonation'
+				],
+				azureResourceId: AzureResource.ResourceManagement
 			},
 			sqlResource: {
-				id: 'https://database.usgovcloudapi.net/',
+				id: 'sql',
 				endpoint: 'https://database.usgovcloudapi.net'
 			},
 			ossRdbmsResource: {
-				id: 'https://ossrdbms-aad.database.usgovcloudapi.net',
+				id: 'ossrdbms',
 				endpoint: 'https://ossrdbms-aad.database.usgovcloudapi.net'
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
-				'https://management.usgovcloudapi.net/user_impersonation'
 			]
 		}
 	}
