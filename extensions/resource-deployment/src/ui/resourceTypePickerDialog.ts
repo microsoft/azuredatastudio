@@ -102,7 +102,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			};
 			const versionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolVersionColumnHeader', "Version"),
-				width: 60
+				width: 75
 			};
 			const minVersionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolMinimumVersionColumnHeader', "Required Version"),
@@ -110,7 +110,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			};
 			const installedPathColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolDiscoveredPathColumnHeader', "Discovered Path or Additional Information"),
-				width: 570
+				width: 580
 			};
 			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 				data: [],
