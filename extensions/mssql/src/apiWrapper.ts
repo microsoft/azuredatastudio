@@ -98,7 +98,7 @@ export class ApiWrapper {
 		return vscode.window.showTextDocument(document, options);
 	}
 
-	public get workspaceFolders(): vscode.WorkspaceFolder[] {
+	public get workspaceFolders(): readonly vscode.WorkspaceFolder[] {
 		return vscode.workspace.workspaceFolders;
 	}
 

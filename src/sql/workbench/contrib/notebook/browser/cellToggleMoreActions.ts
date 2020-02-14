@@ -14,7 +14,7 @@ import * as DOM from 'vs/base/browser/dom';
 
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CellActionBase, CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
-import { CellTypes, CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { CellTypes, CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
 import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { ToggleMoreWidgetAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';

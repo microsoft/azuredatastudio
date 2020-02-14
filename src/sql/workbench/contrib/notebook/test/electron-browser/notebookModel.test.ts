@@ -16,13 +16,13 @@ import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/not
 import { ModelFactory } from 'sql/workbench/contrib/notebook/browser/models/modelFactory';
 import { IClientSession, INotebookModelOptions, NotebookContentChange, IClientSessionOptions } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { ClientSession } from 'sql/workbench/contrib/notebook/browser/models/clientSession';
-import { CellTypes, NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { Deferred } from 'sql/base/common/promise';
 import { Memento } from 'vs/workbench/common/memento';
 import { Emitter } from 'vs/base/common/event';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
+import { TestStorageService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
@@ -155,8 +155,9 @@ suite('notebook model', function (): void {
 
 		// Then I expect to have 0 code cell as the contents
 		assert.equal(model.cells.length, 0);
-		// And Trust should be false by default
-		assert(!model.trustedMode);
+
+		// And Trust should be true by default if there are no cells
+		assert(model.trustedMode);
 	});
 
 	test('Should use trusted state set in model load', async function (): Promise<void> {

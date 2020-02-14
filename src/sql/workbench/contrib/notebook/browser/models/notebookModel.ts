@@ -10,8 +10,8 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/contrib/notebook/common/models/contracts';
-import { nbversion } from 'sql/workbench/contrib/notebook/common/models/notebookConstants';
+import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import * as notebookUtils from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
@@ -307,6 +307,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						return cellModel;
 					});
 				}
+			}
+
+			// Trust notebook by default if there are no code cells
+			if (this._cells.length === 0 || this._cells.every(cell => cell.cellType === CellTypes.Markdown)) {
+				this.trustedMode = true;
 			}
 		} catch (error) {
 			this._inErrorState = true;

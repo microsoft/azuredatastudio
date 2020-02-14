@@ -7,12 +7,12 @@ import * as nls from 'vs/nls';
 import * as dom from 'vs/base/browser/dom';
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { normalize, isAbsolute, posix } from 'vs/base/common/path';
-import { IViewPaneOptions, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { renderViewTree } from 'vs/workbench/contrib/debug/browser/baseDebugView';
+import { renderViewTree, BaseDebugViewPane } from 'vs/workbench/contrib/debug/browser/baseDebugView';
 import { IDebugSession, IDebugService, CONTEXT_LOADED_SCRIPTS_ITEM_TYPE } from 'vs/workbench/contrib/debug/common/debug';
 import { Source } from 'vs/workbench/contrib/debug/common/debugSource';
 import { IWorkspaceContextService, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
@@ -34,10 +34,11 @@ import { dispose } from 'vs/base/common/lifecycle';
 import { createMatches, FuzzyScore } from 'vs/base/common/filters';
 import { DebugContentProvider } from 'vs/workbench/contrib/debug/common/debugContentProvider';
 import { ILabelService } from 'vs/platform/label/common/label';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import type { ICompressedTreeNode } from 'vs/base/browser/ui/tree/compressedObjectTreeModel';
 import type { ICompressibleTreeRenderer } from 'vs/base/browser/ui/tree/objectTree';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 const NEW_STYLE_COMPRESS = true;
 
@@ -401,7 +402,7 @@ function asTreeElement(item: BaseTreeItem, viewState?: IViewState): ITreeElement
 	};
 }
 
-export class LoadedScriptsView extends ViewPane {
+export class LoadedScriptsView extends BaseDebugViewPane {
 
 	private treeContainer!: HTMLElement;
 	private loadedScriptsItemType: IContextKey<string>;
@@ -423,13 +424,17 @@ export class LoadedScriptsView extends ViewPane {
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
 		@IEnvironmentService private readonly environmentService: IEnvironmentService,
 		@IDebugService private readonly debugService: IDebugService,
-		@ILabelService private readonly labelService: ILabelService
+		@ILabelService private readonly labelService: ILabelService,
+		@IOpenerService openerService: IOpenerService,
+		@IThemeService themeService: IThemeService,
 	) {
-		super({ ...(options as IViewPaneOptions), ariaHeaderLabel: nls.localize('loadedScriptsSection', "Loaded Scripts Section") }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService);
+		super({ ...(options as IViewPaneOptions), ariaHeaderLabel: nls.localize('loadedScriptsSection', "Loaded Scripts Section") }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService);
 		this.loadedScriptsItemType = CONTEXT_LOADED_SCRIPTS_ITEM_TYPE.bindTo(contextKeyService);
 	}
 
 	renderBody(container: HTMLElement): void {
+		super.renderBody(container);
+
 		dom.addClass(container, 'debug-loaded-scripts');
 		dom.addClass(container, 'show-file-icons');
 
@@ -442,7 +447,7 @@ export class LoadedScriptsView extends ViewPane {
 		this.treeLabels = this.instantiationService.createInstance(ResourceLabels, { onDidChangeVisibility: this.onDidChangeBodyVisibility });
 		this._register(this.treeLabels);
 
-		this.tree = this.instantiationService.createInstance(WorkbenchCompressibleObjectTree,
+		this.tree = <WorkbenchCompressibleObjectTree<LoadedScriptsItem, FuzzyScore>>this.instantiationService.createInstance(WorkbenchCompressibleObjectTree,
 			'LoadedScriptsView',
 			this.treeContainer,
 			new LoadedScriptsDelegate(),
@@ -466,7 +471,7 @@ export class LoadedScriptsView extends ViewPane {
 				accessibilityProvider: new LoadedSciptsAccessibilityProvider(),
 				ariaLabel: nls.localize({ comment: ['Debug is a noun in this context, not a verb.'], key: 'loadedScriptsAriaLabel' }, "Debug Loaded Scripts"),
 				overrideStyles: {
-					listBackground: SIDE_BAR_BACKGROUND
+					listBackground: this.getBackgroundColor()
 				}
 			}
 		);
@@ -606,8 +611,8 @@ export class LoadedScriptsView extends ViewPane {
 	}
 
 	dispose(): void {
-		this.tree = dispose(this.tree);
-		this.treeLabels = dispose(this.treeLabels);
+		dispose(this.tree);
+		dispose(this.treeLabels);
 		super.dispose();
 	}
 }

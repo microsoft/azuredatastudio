@@ -11,7 +11,6 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
 import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
@@ -30,7 +29,7 @@ import { GridTableBase } from 'sql/workbench/contrib/query/browser/gridPanel';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { ISerializationService, SerializeDataParams } from 'sql/platform/serialization/common/serializationService';
 import { SaveResultAction } from 'sql/workbench/contrib/query/browser/actions';
-import { ResultSerializer, SaveResultsResponse } from 'sql/workbench/contrib/query/common/resultSerializer';
+import { ResultSerializer, SaveResultsResponse, SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { values } from 'vs/base/common/collections';
 import { assign } from 'vs/base/common/objects';

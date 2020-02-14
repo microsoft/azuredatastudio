@@ -127,6 +127,7 @@ export class TextEditElement implements ICheckable {
 
 	constructor(
 		readonly parent: FileElement,
+		readonly idx: number,
 		readonly edit: BulkTextEdit,
 		readonly prefix: string, readonly selecting: string, readonly inserting: string, readonly suffix: string
 	) { }
@@ -144,7 +145,18 @@ export class TextEditElement implements ICheckable {
 		if (model instanceof CategoryElement) {
 			model = model.parent;
 		}
-		return model.checked.updateChecked(this.edit.textEdit, value);
+
+		// check/uncheck this element
+		model.checked.updateChecked(this.edit.textEdit, value);
+
+		// make sure parent is checked when this element is checked...
+		if (value) {
+			this.parent.edit.originalEdits.forEach(edit => {
+				if (WorkspaceFileEdit.is(edit)) {
+					(<BulkFileOperations>model).checked.updateChecked(edit, value);
+				}
+			});
+		}
 	}
 
 	isDisabled(): boolean {
@@ -200,7 +212,7 @@ export class BulkEditDataSource implements IAsyncDataSource<BulkFileOperations, 
 				textModelDisposable = textModel;
 			}
 
-			const result = element.edit.textEdits.map(edit => {
+			const result = element.edit.textEdits.map((edit, idx) => {
 				const range = Range.lift(edit.textEdit.edit.range);
 
 				//prefix-math
@@ -219,6 +231,7 @@ export class BulkEditDataSource implements IAsyncDataSource<BulkFileOperations, 
 
 				return new TextEditElement(
 					element,
+					idx,
 					edit,
 					textModel.getValueInRange(new Range(range.startLineNumber, range.startColumn - prefixLen, range.startLineNumber, range.startColumn)),
 					textModel.getValueInRange(range),
@@ -315,7 +328,7 @@ export class BulkEditIdentityProvider implements IIdentityProvider<BulkEditEleme
 		if (element instanceof FileElement) {
 			return element.edit.uri + (element.parent instanceof CategoryElement ? JSON.stringify(element.parent.category.metadata) : '');
 		} else if (element instanceof TextEditElement) {
-			return element.parent.edit.uri.toString() + JSON.stringify(element.edit.textEdit);
+			return element.parent.edit.uri.toString() + element.idx;
 		} else {
 			return JSON.stringify(element.category.metadata);
 		}
@@ -434,33 +447,33 @@ class FileElementTemplate {
 		}));
 
 		if (element.edit.type & BulkFileOperationType.Rename && element.edit.newUri) {
-			// rename: NEW NAME (old name)
-			this._label.setFile(element.edit.newUri, {
-				matches: createMatches(score),
-				fileKind: FileKind.FILE,
-				fileDecorations: { colors: true, badges: false },
+			// rename: oldName → newName
+			this._label.setResource({
+				resource: element.edit.uri,
+				name: localize('rename.label', "{0} → {1}", this._labelService.getUriLabel(element.edit.uri, { relative: true }), this._labelService.getUriLabel(element.edit.newUri, { relative: true })),
+			}, {
+				fileDecorations: { colors: true, badges: false }
 			});
 
-			this._details.innerText = localize(
-				'detail.rename', "(renaming from {0})",
-				this._labelService.getUriLabel(element.edit.uri, { relative: true })
-			);
+			this._details.innerText = localize('detail.rename', "(renaming)");
 
 		} else {
 			// create, delete, edit: NAME
-			this._label.setFile(element.edit.uri, {
+			const options = {
 				matches: createMatches(score),
 				fileKind: FileKind.FILE,
 				fileDecorations: { colors: true, badges: false },
-			});
-
+				extraClasses: <string[]>[]
+			};
 			if (element.edit.type & BulkFileOperationType.Create) {
 				this._details.innerText = localize('detail.create', "(creating)");
 			} else if (element.edit.type & BulkFileOperationType.Delete) {
 				this._details.innerText = localize('detail.del', "(deleting)");
+				options.extraClasses.push('delete');
 			} else {
 				this._details.innerText = '';
 			}
+			this._label.setFile(element.edit.uri, options);
 		}
 	}
 }
@@ -516,13 +529,13 @@ class TextEditElementTemplate {
 	set(element: TextEditElement) {
 		this._localDisposables.clear();
 
+		this._localDisposables.add(dom.addDisposableListener(this._checkbox, 'change', e => {
+			element.setChecked(this._checkbox.checked);
+			e.preventDefault();
+		}));
 		if (element.parent.isChecked()) {
 			this._checkbox.checked = element.isChecked();
 			this._checkbox.disabled = element.isDisabled();
-			this._localDisposables.add(dom.addDisposableListener(this._checkbox, 'change', e => {
-				element.setChecked(this._checkbox.checked);
-				e.preventDefault();
-			}));
 		} else {
 			this._checkbox.checked = element.isChecked();
 			this._checkbox.disabled = element.isDisabled();

@@ -125,7 +125,15 @@ export const enum MetadataConsts {
 	FOREGROUND_MASK = 0b00000000011111111100000000000000,
 	BACKGROUND_MASK = 0b11111111100000000000000000000000,
 
-	LANG_TTYPE_CMPL = 0b11111111111111111111100000000000,
+	ITALIC_MASK = 0b00000000000000000000100000000000,
+	BOLD_MASK = 0b00000000000000000001000000000000,
+	UNDERLINE_MASK = 0b00000000000000000010000000000000,
+
+	SEMANTIC_USE_ITALIC = 0b00000000000000000000000000000001,
+	SEMANTIC_USE_BOLD = 0b00000000000000000000000000000010,
+	SEMANTIC_USE_UNDERLINE = 0b00000000000000000000000000000100,
+	SEMANTIC_USE_FOREGROUND = 0b00000000000000000000000000001000,
+	SEMANTIC_USE_BACKGROUND = 0b00000000000000000000000000010000,
 
 	LANGUAGEID_OFFSET = 0,
 	TOKEN_TYPE_OFFSET = 8,
@@ -607,7 +615,9 @@ export interface CodeActionProvider {
 	/**
 	 * Optional list of CodeActionKinds that this provider returns.
 	 */
-	providedCodeActionKinds?: ReadonlyArray<string>;
+	readonly providedCodeActionKinds?: ReadonlyArray<string>;
+
+	readonly documentation?: ReadonlyArray<{ readonly kind: string, readonly command: Command }>;
 
 	/**
 	 * @internal
@@ -1330,10 +1340,10 @@ export interface RenameProvider {
 /**
  * @internal
  */
-export interface Session {
+export interface AuthenticationSession {
 	id: string;
-	accessToken: string;
-	displayName: string;
+	accessToken(): Promise<string>;
+	accountName: string;
 }
 
 export interface Command {

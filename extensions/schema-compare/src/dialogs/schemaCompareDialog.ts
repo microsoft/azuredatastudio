@@ -3,33 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as loc from '../localizedConstants';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { promises as fs } from 'fs';
 import { TelemetryReporter, TelemetryViews } from '../telemetry';
 import { getEndpointName, getRootPath } from '../utils';
 import * as mssql from '../../../mssql';
 
-const localize = nls.loadMessageBundle();
-const OkButtonText: string = localize('schemaCompareDialog.ok', "OK");
-const CancelButtonText: string = localize('schemaCompareDialog.cancel', "Cancel");
-const SourceTitle: string = localize('schemaCompareDialog.SourceTitle', "Source");
-const TargetTitle: string = localize('schemaCompareDialog.TargetTitle', "Target");
-const FileTextBoxLabel: string = localize('schemaCompareDialog.fileTextBoxLabel', "File");
-const DacpacRadioButtonLabel: string = localize('schemaCompare.dacpacRadioButtonLabel', "Data-tier Application File (.dacpac)");
-const DatabaseRadioButtonLabel: string = localize('schemaCompare.databaseButtonLabel', "Database");
-const RadioButtonsLabel: string = localize('schemaCompare.radioButtonsLabel', "Type");
-const ServerDropdownLabel: string = localize('schemaCompareDialog.serverDropdownTitle', "Server");
-const DatabaseDropdownLabel: string = localize('schemaCompareDialog.databaseDropdownTitle', "Database");
-const NoActiveConnectionsLabel: string = localize('schemaCompare.noActiveConnectionsText', "No active connections");
-const SchemaCompareLabel: string = localize('schemaCompare.dialogTitle', "Schema Compare");
-const differentSourceMessage: string = localize('schemaCompareDialog.differentSourceMessage', "A different source schema has been selected. Compare to see the comparison?");
-const differentTargetMessage: string = localize('schemaCompareDialog.differentTargetMessage', "A different target schema has been selected. Compare to see the comparison?");
-const differentSourceTargetMessage: string = localize('schemaCompareDialog.differentSourceTargetMessage', "Different source and target schemas have been selected. Compare to see the comparison?");
-const YesButtonText: string = localize('schemaCompareDialog.Yes', "Yes");
-const NoButtonText: string = localize('schemaCompareDialog.No', "No");
 const titleFontSize: number = 13;
 
 async function exists(path: string): Promise<boolean> {
@@ -78,7 +60,7 @@ export class SchemaCompareDialog {
 	}
 
 	protected initializeDialog(): void {
-		this.schemaCompareTab = azdata.window.createTab(SchemaCompareLabel);
+		this.schemaCompareTab = azdata.window.createTab(loc.SchemaCompareLabel);
 		this.initializeSchemaCompareTab();
 		this.dialog.content = [this.schemaCompareTab];
 	}
@@ -90,14 +72,14 @@ export class SchemaCompareDialog {
 			this.connectionId = connection.connectionId;
 		}
 
-		this.dialog = azdata.window.createModelViewDialog(SchemaCompareLabel);
+		this.dialog = azdata.window.createModelViewDialog(loc.SchemaCompareLabel);
 		this.initializeDialog();
 
-		this.dialog.okButton.label = OkButtonText;
+		this.dialog.okButton.label = loc.OkButtonText;
 		this.dialog.okButton.enabled = false;
 		this.dialog.okButton.onClick(async () => await this.execute());
 
-		this.dialog.cancelButton.label = CancelButtonText;
+		this.dialog.cancelButton.label = loc.CancelButtonText;
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
 
 		azdata.window.openDialog(this.dialog);
@@ -169,15 +151,15 @@ export class SchemaCompareDialog {
 			&& (sourceEndpointChanged || targetEndpointChanged)) {
 			this.schemaCompareResult.setButtonsForRecompare();
 
-			let message = differentSourceMessage;
+			let message = loc.differentSourceMessage;
 			if (sourceEndpointChanged && targetEndpointChanged) {
-				message = differentSourceTargetMessage;
+				message = loc.differentSourceTargetMessage;
 			} else if (targetEndpointChanged) {
-				message = differentTargetMessage;
+				message = loc.differentTargetMessage;
 			}
 
-			vscode.window.showWarningMessage(message, YesButtonText, NoButtonText).then((result) => {
-				if (result === YesButtonText) {
+			vscode.window.showWarningMessage(message, loc.YesButtonText, loc.NoButtonText).then((result) => {
+				if (result === loc.YesButtonText) {
 					this.schemaCompareResult.startCompare();
 				}
 			});
@@ -200,7 +182,7 @@ export class SchemaCompareDialog {
 			this.sourceTextBox = view.modelBuilder.inputBox().withProperties({
 				value: this.schemaCompareResult.sourceEndpointInfo ? this.schemaCompareResult.sourceEndpointInfo.packageFilePath : '',
 				width: 275,
-				ariaLabel: localize('schemaCompareDialog.sourceTextBox', "Source file")
+				ariaLabel: loc.sourceFile
 			}).component();
 
 			this.sourceTextBox.onTextChanged(async (e) => {
@@ -210,7 +192,7 @@ export class SchemaCompareDialog {
 			this.targetTextBox = view.modelBuilder.inputBox().withProperties({
 				value: this.schemaCompareResult.targetEndpointInfo ? this.schemaCompareResult.targetEndpointInfo.packageFilePath : '',
 				width: 275,
-				ariaLabel: localize('schemaCompareDialog.targetTextBox', "Target file")
+				ariaLabel: loc.targetFile
 			}).component();
 
 			this.targetTextBox.onTextChanged(async () => {
@@ -275,10 +257,10 @@ export class SchemaCompareDialog {
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
 					{
-						title: SourceTitle,
+						title: loc.SourceTitle,
 						components: sourceComponents
 					}, {
-						title: TargetTitle,
+						title: loc.TargetTitle,
 						components: targetComponents
 					}
 				], {
@@ -305,14 +287,14 @@ export class SchemaCompareDialog {
 		if (isTarget) {
 			this.targetFileButton = view.modelBuilder.button().withProperties({
 				label: '•••',
-				title: localize('schemaCompare.selectTargetFile', "Select target file"),
-				ariaLabel: localize('schemaCompare.selectTargetFile', "Select target file")
+				title: loc.selectTargetFile,
+				ariaLabel: loc.selectTargetFile
 			}).component();
 		} else {
 			this.sourceFileButton = view.modelBuilder.button().withProperties({
 				label: '•••',
-				title: localize('schemaCompare.selectSourceFile', "Select source file"),
-				ariaLabel: localize('schemaCompare.selectSourceFile', "Select source file")
+				title: loc.selectSourceFile,
+				ariaLabel: loc.selectSourceFile
 			}).component();
 		}
 
@@ -329,7 +311,7 @@ export class SchemaCompareDialog {
 					canSelectFolders: false,
 					canSelectMany: false,
 					defaultUri: vscode.Uri.file(defaultUri),
-					openLabel: localize('schemaCompare.openFile', "Open"),
+					openLabel: loc.open,
 					filters: {
 						'dacpac Files': ['dacpac'],
 					}
@@ -346,7 +328,7 @@ export class SchemaCompareDialog {
 
 		return {
 			component: currentTextbox,
-			title: FileTextBoxLabel,
+			title: loc.FileTextBoxLabel,
 			actions: [currentButton]
 		};
 	}
@@ -355,13 +337,13 @@ export class SchemaCompareDialog {
 		this.sourceDacpacRadioButton = view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'source',
-				label: DacpacRadioButtonLabel
+				label: loc.DacpacRadioButtonLabel
 			}).component();
 
 		this.sourceDatabaseRadioButton = view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'source',
-				label: DatabaseRadioButtonLabel
+				label: loc.DatabaseRadioButtonLabel
 			}).component();
 
 		// show dacpac file browser
@@ -402,7 +384,7 @@ export class SchemaCompareDialog {
 
 		return {
 			component: flexRadioButtonsModel,
-			title: RadioButtonsLabel
+			title: loc.RadioButtonsLabel
 		};
 	}
 
@@ -410,13 +392,13 @@ export class SchemaCompareDialog {
 		let dacpacRadioButton = view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'target',
-				label: DacpacRadioButtonLabel
+				label: loc.DacpacRadioButtonLabel
 			}).component();
 
 		let databaseRadioButton = view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'target',
-				label: DatabaseRadioButtonLabel
+				label: loc.DatabaseRadioButtonLabel
 			}).component();
 
 		// show dacpac file browser
@@ -458,7 +440,7 @@ export class SchemaCompareDialog {
 
 		return {
 			component: flexRadioButtonsModel,
-			title: RadioButtonsLabel
+			title: loc.RadioButtonsLabel
 		};
 	}
 
@@ -481,7 +463,7 @@ export class SchemaCompareDialog {
 			{
 				editable: true,
 				fireOnTextChange: true,
-				ariaLabel: localize('schemaCompareDialog.sourceServerDropdown', "Source Server")
+				ariaLabel: loc.sourceServer
 			}
 		).component();
 		this.sourceServerDropdown.onValueChanged(async (value) => {
@@ -498,7 +480,7 @@ export class SchemaCompareDialog {
 
 		return {
 			component: this.sourceServerDropdown,
-			title: ServerDropdownLabel
+			title: loc.ServerDropdownLabel
 		};
 	}
 
@@ -507,7 +489,7 @@ export class SchemaCompareDialog {
 			{
 				editable: true,
 				fireOnTextChange: true,
-				ariaLabel: localize('schemaCompareDialog.targetServerDropdown', "Target Server")
+				ariaLabel: loc.targetServer
 			}
 		).component();
 		this.targetServerDropdown.onValueChanged(async (value) => {
@@ -524,7 +506,7 @@ export class SchemaCompareDialog {
 
 		return {
 			component: this.targetServerDropdown,
-			title: ServerDropdownLabel
+			title: loc.ServerDropdownLabel
 		};
 	}
 
@@ -560,7 +542,7 @@ export class SchemaCompareDialog {
 			let srv = c.options.server;
 
 			if (!usr) {
-				usr = localize('schemaCompareDialog.defaultUser', "default");
+				usr = loc.defaultText;
 			}
 
 			let finalName = `${srv} (${usr})`;
@@ -605,7 +587,7 @@ export class SchemaCompareDialog {
 			{
 				editable: true,
 				fireOnTextChange: true,
-				ariaLabel: localize('schemaCompareDialog.sourceDatabaseDropdown', "Source Database")
+				ariaLabel: loc.sourceDatabase
 			}
 		).component();
 		this.sourceDatabaseDropdown.onValueChanged(async (value) => {
@@ -615,7 +597,7 @@ export class SchemaCompareDialog {
 
 		return {
 			component: this.sourceDatabaseDropdown,
-			title: DatabaseDropdownLabel
+			title: loc.DatabaseDropdownLabel
 		};
 	}
 
@@ -624,7 +606,7 @@ export class SchemaCompareDialog {
 			{
 				editable: true,
 				fireOnTextChange: true,
-				ariaLabel: localize('schemaCompareDialog.targetDatabaseDropdown', "Target Database")
+				ariaLabel: loc.targetDatabase
 			}
 		).component();
 		this.targetDatabaseDropdown.onValueChanged(async (value) => {
@@ -634,7 +616,7 @@ export class SchemaCompareDialog {
 
 		return {
 			component: this.targetDatabaseDropdown,
-			title: DatabaseDropdownLabel
+			title: loc.DatabaseDropdownLabel
 		};
 	}
 
@@ -684,7 +666,7 @@ export class SchemaCompareDialog {
 	}
 
 	protected async createNoActiveConnectionsText(view: azdata.ModelView): Promise<azdata.FormComponent> {
-		let noActiveConnectionsText = view.modelBuilder.text().withProperties({ value: NoActiveConnectionsLabel }).component();
+		let noActiveConnectionsText = view.modelBuilder.text().withProperties({ value: loc.NoActiveConnectionsLabel }).component();
 
 		return {
 			component: noActiveConnectionsText,

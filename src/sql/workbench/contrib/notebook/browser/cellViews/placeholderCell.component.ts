@@ -9,7 +9,7 @@ import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/inter
 import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
 import { localize } from 'vs/nls';
-import { CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { CellType } from 'sql/workbench/services/notebook/common/contracts';
 
 
 export const PLACEHOLDER_SELECTOR: string = 'placeholder-cell-component';

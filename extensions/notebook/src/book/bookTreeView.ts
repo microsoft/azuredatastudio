@@ -24,8 +24,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private prompter: IPrompter;
 	private _initializeDeferred: Deferred<void> = new Deferred<void>();
 
-	// For testing
-	private _errorMessage: string;
 	private _openAsUntitled: boolean;
 	public viewId: string;
 	public books: BookModel[];
@@ -290,10 +288,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		} else {
 			return undefined;
 		}
-	}
-
-	public get errorMessage() {
-		return this._errorMessage;
 	}
 
 	getUntitledNotebookUri(resource: string): vscode.Uri {

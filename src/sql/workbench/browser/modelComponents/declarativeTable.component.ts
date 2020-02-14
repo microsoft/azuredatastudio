@@ -15,8 +15,7 @@ import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBa
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { find } from 'vs/base/common/arrays';
 import { localize } from 'vs/nls';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
-import { ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 
 export enum DeclarativeDataType {
 	string = 'string',

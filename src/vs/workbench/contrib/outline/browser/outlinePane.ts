@@ -27,7 +27,7 @@ import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IResourceInput } from 'vs/platform/editor/common/editor';
+import { IResourceInput, TextEditorSelectionRevealType } from 'vs/platform/editor/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { WorkbenchDataTree } from 'vs/platform/list/browser/listService';
@@ -47,8 +47,8 @@ import { basename } from 'vs/base/common/resources';
 import { IDataSource } from 'vs/base/browser/ui/tree/tree';
 import { IMarkerDecorationsService } from 'vs/editor/common/services/markersDecorationService';
 import { MarkerSeverity } from 'vs/platform/markers/common/markers';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
 
 class RequestState {
 
@@ -267,8 +267,10 @@ export class OutlinePane extends ViewPane {
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextMenuService contextMenuService: IContextMenuService,
+		@IOpenerService openerService: IOpenerService,
+		@IThemeService themeService: IThemeService,
 	) {
-		super(options, keybindingService, contextMenuService, _configurationService, contextKeyService, viewDescriptorService, _instantiationService);
+		super(options, keybindingService, contextMenuService, _configurationService, contextKeyService, viewDescriptorService, _instantiationService, openerService, themeService);
 		this._outlineViewState.restore(this._storageService);
 		this._contextKeyFocused = OutlineViewFocused.bindTo(contextKeyService);
 		this._contextKeyFiltered = OutlineViewFiltered.bindTo(contextKeyService);
@@ -296,6 +298,8 @@ export class OutlinePane extends ViewPane {
 	}
 
 	protected renderBody(container: HTMLElement): void {
+		super.renderBody(container);
+
 		this._domNode = container;
 		this._domNode.tabIndex = 0;
 		dom.addClass(container, 'outline-pane');
@@ -317,7 +321,7 @@ export class OutlinePane extends ViewPane {
 		this._treeDataSource = new OutlineDataSource();
 		this._treeComparator = new OutlineItemComparator(this._outlineViewState.sortBy);
 		this._treeFilter = this._instantiationService.createInstance(OutlineFilter, 'outline');
-		this._tree = this._instantiationService.createInstance(
+		this._tree = <WorkbenchDataTree<OutlineModel, OutlineItem, FuzzyScore>>this._instantiationService.createInstance(
 			WorkbenchDataTree,
 			'OutlinePane',
 			treeContainer,
@@ -335,13 +339,19 @@ export class OutlinePane extends ViewPane {
 				keyboardNavigationLabelProvider: new OutlineNavigationLabelProvider(),
 				hideTwistiesOfChildlessElements: true,
 				overrideStyles: {
-					listBackground: SIDE_BAR_BACKGROUND
+					listBackground: this.getBackgroundColor()
 				}
 			}
 		);
 
+
 		this._disposables.push(this._tree);
 		this._disposables.push(this._outlineViewState.onDidChange(this._onDidChangeUserState, this));
+		this._disposables.push(this.viewDescriptorService.onDidChangeLocation(({ views, from, to }) => {
+			if (views.some(v => v.id === this.id)) {
+				this._tree.updateOptions({ overrideStyles: { listBackground: this.getBackgroundColor() } });
+			}
+		}));
 
 		// override the globally defined behaviour
 		this._tree.updateOptions({
@@ -625,7 +635,7 @@ export class OutlinePane extends ViewPane {
 			options: {
 				preserveFocus: !focus,
 				selection: Range.collapseToStart(element.symbol.selectionRange),
-				revealInCenterIfOutsideViewport: true
+				selectionRevealType: TextEditorSelectionRevealType.NearTop,
 			}
 		} as IResourceInput, aside ? SIDE_GROUP : ACTIVE_GROUP);
 	}

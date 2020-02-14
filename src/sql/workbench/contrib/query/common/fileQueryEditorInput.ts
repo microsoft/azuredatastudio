@@ -11,8 +11,8 @@ import { IQueryModelService } from 'sql/workbench/services/query/common/queryMod
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { EncodingMode } from 'vs/workbench/common/editor';
-import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
+import { ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
 
 type PublicPart<T> = { [K in keyof T]: T[K] };
 
@@ -31,7 +31,7 @@ export class FileQueryEditorInput extends QueryEditorInput implements PublicPart
 		super(description, text, results, connectionManagementService, queryModelService, configurationService);
 	}
 
-	public resolve(): Promise<TextFileEditorModel | BinaryEditorModel> {
+	public resolve(): Promise<ITextFileEditorModel | BinaryEditorModel> {
 		return this.text.resolve();
 	}
 

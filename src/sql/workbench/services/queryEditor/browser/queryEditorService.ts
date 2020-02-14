@@ -21,6 +21,8 @@ import { replaceConnection } from 'sql/workbench/browser/taskUtilities';
 import { EditDataResultsInput } from 'sql/workbench/contrib/editData/browser/editDataResultsInput';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 
 /**
  * Service wrapper for opening and creating SQL documents as sql editor inputs
@@ -52,8 +54,8 @@ export class QueryEditorService implements IQueryEditorService {
 				let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 				// Create a sql document pane with accoutrements
-				const fileInput = this._untitledEditorService.create({ associatedResource: docUri, mode: 'sql' });
-				let untitledEditorModel = await fileInput.resolve();
+				const fileInput = this._editorService.createInput({ forceUntitled: true, resource: docUri, mode: 'sql' }) as UntitledTextEditorInput;
+				let untitledEditorModel = await fileInput.resolve() as UntitledTextEditorModel;
 				if (sqlContent) {
 					untitledEditorModel.textEditorModel.setValue(sqlContent);
 					if (isDirty === false || (isDirty === undefined && !this._configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles'))) {
@@ -87,8 +89,8 @@ export class QueryEditorService implements IQueryEditorService {
 		let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 		// Create a sql document pane with accoutrements
-		const fileInput = this._untitledEditorService.create({ associatedResource: docUri, mode: 'sql' });
-		const m = await fileInput.resolve();
+		const fileInput = this._editorService.createInput({ forceUntitled: true, resource: docUri, mode: 'sql' }) as UntitledTextEditorInput;
+		const m = await fileInput.resolve() as UntitledTextEditorModel;
 		//when associatedResource editor is created it is dirty, this must be set to false to be able to detect changes to the editor.
 		m.setDirty(false);
 		// Create an EditDataInput for editing
@@ -140,7 +142,7 @@ export class QueryEditorService implements IQueryEditorService {
 		let counter = 1;
 		// Get document name and check if it exists
 		let filePath = prefixFileName(counter);
-		while (this._untitledEditorService.exists(URI.from({ scheme: Schemas.untitled, path: filePath }))) {
+		while (this._untitledEditorService.get(URI.from({ scheme: Schemas.untitled, path: filePath }))) {
 			counter++;
 			filePath = prefixFileName(counter);
 		}

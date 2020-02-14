@@ -14,7 +14,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ICellModel, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { NotebookChangeType, CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { NotebookChangeType, CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
@@ -99,9 +99,12 @@ export interface INotebookService {
 	 * Serializes an impactful Notebook state change. This will result
 	 * in trusted state being serialized if needed, and notifications being
 	 * sent to listeners that can act on the point-in-time notebook state
-	 * @param notebookUri the URI identifying a notebook
+	 * @param notebookUri The URI identifying a notebook.
+	 * @param changeType The type of notebook state change to serialize.
+	 * @param cell (Optional) The notebook cell associated with the state change.
+	 * @param isTrusted (Optional) A manual override for the notebook's trusted state.
 	 */
-	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel): void;
+	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel, isTrusted?: boolean): Promise<void>;
 
 	/**
 	 *

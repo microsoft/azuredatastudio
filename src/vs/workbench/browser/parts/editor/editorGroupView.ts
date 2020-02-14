@@ -31,8 +31,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { RunOnceWorker } from 'vs/base/common/async';
 import { EventType as TouchEventType, GestureEvent } from 'vs/base/browser/touch';
 import { TitleControl } from 'vs/workbench/browser/parts/editor/titleControl';
-import { IEditorGroupsAccessor, IEditorGroupView, getActiveTextEditorOptions, IEditorOpeningEvent } from 'vs/workbench/browser/parts/editor/editor';
-import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
+import { IEditorGroupsAccessor, IEditorGroupView, getActiveTextEditorOptions, IEditorOpeningEvent, EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ActionRunner, IAction, Action } from 'vs/base/common/actions';
@@ -43,7 +42,7 @@ import { StandardMouseEvent } from 'vs/base/browser/mouseEvent';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { isErrorWithActions, IErrorWithActions } from 'vs/base/common/errorsWithActions';
-import { IVisibleEditor } from 'vs/workbench/services/editor/common/editorService';
+import { IVisibleEditor, IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { withNullAsUndefined, withUndefinedAsNull } from 'vs/base/common/types';
 import { hash } from 'vs/base/common/hash';
 import { guessMimeTypes } from 'vs/base/common/mime';
@@ -129,12 +128,12 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		@INotificationService private readonly notificationService: INotificationService,
 		@IDialogService private readonly dialogService: IDialogService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
-		@ITextFileService private readonly textFileService: ITextFileService,
 		@IKeybindingService private readonly keybindingService: IKeybindingService,
 		@IMenuService private readonly menuService: IMenuService,
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IFileDialogService private readonly fileDialogService: IFileDialogService,
-		@ILogService private readonly logService: ILogService
+		@ILogService private readonly logService: ILogService,
+		@IEditorService private readonly editorService: EditorServiceImpl
 	) {
 		super(themeService);
 
@@ -256,7 +255,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 			if (this.isEmpty) {
 				EventHelper.stop(e);
 
-				this.openEditor(this.textFileService.untitled.create(), EditorOptions.create({ pinned: true }));
+				this.openEditor(this.editorService.createInput({ forceUntitled: true }), EditorOptions.create({ pinned: true }));
 			}
 		}));
 
@@ -464,11 +463,11 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 	private registerListeners(): void {
 
 		// Model Events
-		this._register(this._group.onDidEditorPin(editor => this.onDidEditorPin(editor)));
-		this._register(this._group.onDidEditorOpen(editor => this.onDidEditorOpen(editor)));
-		this._register(this._group.onDidEditorClose(editor => this.onDidEditorClose(editor)));
-		this._register(this._group.onDidEditorDispose(editor => this.onDidEditorDispose(editor)));
-		this._register(this._group.onDidEditorBecomeDirty(editor => this.onDidEditorBecomeDirty(editor)));
+		this._register(this._group.onDidChangeEditorPinned(editor => this.onDidChangeEditorPinned(editor)));
+		this._register(this._group.onDidOpenEditor(editor => this.onDidOpenEditor(editor)));
+		this._register(this._group.onDidCloseEditor(editor => this.handleOnDidCloseEditor(editor)));
+		this._register(this._group.onDidDisposeEditor(editor => this.onDidDisposeEditor(editor)));
+		this._register(this._group.onDidChangeEditorDirty(editor => this.onDidChangeEditorDirty(editor)));
 		this._register(this._group.onDidEditorLabelChange(editor => this.onDidEditorLabelChange(editor)));
 
 		// Option Changes
@@ -478,13 +477,13 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		this._register(this.accessor.onDidVisibilityChange(e => this.onDidVisibilityChange(e)));
 	}
 
-	private onDidEditorPin(editor: EditorInput): void {
+	private onDidChangeEditorPinned(editor: EditorInput): void {
 
 		// Event
 		this._onDidGroupChange.fire({ kind: GroupChangeKind.EDITOR_PIN, editor });
 	}
 
-	private onDidEditorOpen(editor: EditorInput): void {
+	private onDidOpenEditor(editor: EditorInput): void {
 
 		/* __GDPR__
 			"editorOpened" : {
@@ -502,7 +501,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		this._onDidGroupChange.fire({ kind: GroupChangeKind.EDITOR_OPEN, editor });
 	}
 
-	private onDidEditorClose(event: EditorCloseEvent): void {
+	private handleOnDidCloseEditor(event: EditorCloseEvent): void {
 
 		// Before close
 		this._onWillCloseEditor.fire(event);
@@ -559,7 +558,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		return descriptor;
 	}
 
-	private onDidEditorDispose(editor: EditorInput): void {
+	private onDidDisposeEditor(editor: EditorInput): void {
 
 		// To prevent race conditions, we handle disposed editors in our worker with a timeout
 		// because it can happen that an input is being disposed with the intent to replace
@@ -625,7 +624,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		}
 	}
 
-	private onDidEditorBecomeDirty(editor: EditorInput): void {
+	private onDidChangeEditorDirty(editor: EditorInput): void {
 
 		// Always show dirty editors pinned
 		this.pinEditor(editor);

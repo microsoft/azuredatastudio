@@ -10,7 +10,7 @@ import * as assert from 'assert';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { CellModel } from 'sql/workbench/contrib/notebook/browser/models/cell';
-import { CellTypes, NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { ModelFactory } from 'sql/workbench/contrib/notebook/browser/models/modelFactory';
 import { INotebookModelOptions, NotebookContentChange, ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { NotebookEditorModel } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
@@ -28,7 +28,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { TextFileEditorModelManager } from 'vs/workbench/services/textfile/common/textFileEditorModelManager';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { TestEnvironmentService, TestLifecycleService, TestStorageService, TestTextFileService, workbenchInstantiationService, TestTextResourcePropertiesService } from 'vs/workbench/test/workbenchTestServices';
+import { TestEnvironmentService, TestLifecycleService, TestStorageService, TestTextFileService, workbenchInstantiationService, TestTextResourcePropertiesService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { Range } from 'vs/editor/common/core/range';
 import { nb } from 'azdata';
 import { Emitter } from 'vs/base/common/event';
@@ -36,6 +36,8 @@ import { INotebookEditor, INotebookManager } from 'sql/workbench/services/notebo
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { startsWith } from 'vs/base/common/strings';
 import { assign } from 'vs/base/common/objects';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 
 class ServiceAccessor {
@@ -68,7 +70,17 @@ suite('Notebook Editor Model', function (): void {
 	const notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
 	let memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
 	memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
-	const queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
+	let testinstantiationService = new TestInstantiationService();
+	testinstantiationService.stub(IStorageService, new TestStorageService());
+	const queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose,
+		undefined, // connection store
+		undefined, // connection status manager
+		undefined, // connection dialog service
+		testinstantiationService, // instantiation service
+		undefined, // editor service
+		undefined, // telemetry service
+		undefined, // configuration service
+		new TestCapabilitiesService());
 	queryConnectionService.callBase = true;
 	const capabilitiesService = TypeMoq.Mock.ofType(TestCapabilitiesService);
 	const configurationService = new TestConfigurationService();
