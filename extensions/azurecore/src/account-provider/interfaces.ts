@@ -143,10 +143,20 @@ export interface AzureAccountProviderMetadata extends azdata.AccountProviderMeta
 	settings: Settings;
 }
 
+export enum AzureAuthType {
+	AuthCodeGrant = 0,
+	DeviceCode = 1
+}
+
 /**
  * Properties specific to an Azure account
  */
 interface AzureAccountProperties {
+	/**
+	 * Auth type of azure used to authenticate this account.
+	 */
+	azureAuthType?: AzureAuthType
+
 	providerSettings: AzureAccountProviderMetadata;
 	/**
 	 * Whether or not the account is a Microsoft account
