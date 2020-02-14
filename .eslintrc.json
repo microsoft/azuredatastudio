@@ -55,7 +55,7 @@
         "code-layering": [
             "warn",
             {
-                "common": ["browser"], // {{SQL CARBON EDIT}} @anthonydresser not ideal, but for our purposes its fine for now,
+                "common": [], // {{SQL CARBON EDIT}} @anthonydresser not ideal, but for our purposes its fine for now,
                 "node": [
                     "common"
                 ],

@@ -20,9 +20,9 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileE
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
-import { QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/common/queryInputFactory';
+import { QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/browser/queryInputFactory';
 import { workbenchInstantiationService } from 'sql/workbench/test/workbenchTestServices';
-import { NotebookEditorInputAssociation } from 'sql/workbench/contrib/notebook/common/models/nodebookInputFactory';
+import { NotebookEditorInputAssociation } from 'sql/workbench/contrib/notebook/browser/models/nodebookInputFactory';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';

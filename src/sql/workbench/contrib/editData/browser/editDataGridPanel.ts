@@ -8,7 +8,7 @@ import 'vs/css!./media/editData';
 import { VirtualizedCollection, AsyncDataProvider, ISlickColumn } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 
-import { IGridDataSet } from 'sql/workbench/contrib/grid/common/interfaces';
+import { IGridDataSet } from 'sql/workbench/contrib/grid/browser/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
 import { GridParentComponent } from 'sql/workbench/contrib/editData/browser/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/workbench/contrib/editData/browser/editDataGridActions';
