@@ -11,6 +11,9 @@ import axios from 'axios';
 import * as qs from 'qs';
 const atob = require('atob');
 import * as url from 'url';
+import { promises as fs } from 'fs';
+import * as path from 'path';
+import * as http from 'http';
 
 import {
 	AzureAccountProviderMetadata,
@@ -87,7 +90,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 	constructor(private readonly metadata: AzureAccountProviderMetadata,
 		private readonly _tokenCache: SimpleTokenCache,
-		_context: vscode.ExtensionContext) {
+		private readonly _context: vscode.ExtensionContext) {
 		this.loginEndpointUrl = this.metadata.settings.host;
 		this.commonTenant = 'common';
 		this.redirectUri = this.metadata.settings.redirectUri;
@@ -343,14 +346,41 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	private async addServerListeners(server: SimpleWebServer, nonce: string, loginUrl: string): Promise<string> {
+		const mediaPath = path.join(this._context.extensionPath, 'media');
+
+		// Utility function
+		const sendFile = async (res: http.ServerResponse, filePath: string, contentType: string): Promise<void> => {
+			let fileContents;
+			try {
+				fileContents = await fs.readFile(filePath);
+			} catch (ex) {
+				console.error(ex);
+				res.writeHead(200);
+				res.end();
+				return;
+			}
+
+			res.writeHead(200, {
+				'Content-Length': fileContents.length,
+				'Content-Type': contentType
+			});
+
+			res.end(fileContents);
+		};
+
+		server.on('/landing.css', (req, reqUrl, res) => {
+			sendFile(res, path.join(mediaPath, 'landing.css'), 'text/css; charset=utf-8').catch(console.error);
+		});
 
 		server.on('/signin', (req, reqUrl, res) => {
 			let receivedNonce: string = reqUrl.query.nonce as string;
 			receivedNonce = receivedNonce.replace(/ /g, '+');
 
 			if (receivedNonce !== nonce) {
-				//TODO: Formatted errors;
-				console.log('nonce no match');
+				res.writeHead(400, { 'content-type': 'text/html' });
+				res.write(localize('azureAuth.nonceError', "Authentication failed due to a nonce mismatch, please close ADS and try again."));
+				res.end();
+				console.error('nonce no match');
 				return;
 			}
 			res.writeHead(302, { Location: loginUrl });
@@ -378,6 +408,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 					return;
 				}
 
+				sendFile(res, path.join(mediaPath, 'landing.html'), 'text/html; charset=utf-8').catch(console.error);
 				resolve(code);
 			});
 		});

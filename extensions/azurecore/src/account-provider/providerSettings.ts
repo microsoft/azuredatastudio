@@ -12,7 +12,7 @@ const publicAzureSettings: ProviderSettings = {
 	configKey: 'enablePublicCloud',
 	metadata: {
 		displayName: localize('publicCloudDisplayName', "Azure"),
-		id: 'azurePublicCloud',
+		id: 'azure_publicCloud',
 		settings: {
 			host: 'https://login.microsoftonline.com/',
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
@@ -47,7 +47,7 @@ const usGovAzureSettings: ProviderSettings = {
 	configKey: 'enableUsGovCloud',
 	metadata: {
 		displayName: localize('usGovCloudDisplayName', "Azure (US Government)"),
-		id: 'usGovAzureCloud',
+		id: 'azure_usGovtCloud',
 		settings: {
 			host: 'https://login.microsoftonline.us/',
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
@@ -82,7 +82,7 @@ const germanyAzureSettings: ProviderSettings = {
 	configKey: 'enableGermanyCloud',
 	metadata: {
 		displayName: localize('germanyCloud', "Azure (Germany)"),
-		id: 'germanyAzureCloud',
+		id: 'azure_germanyCloud',
 		settings: {
 			host: 'https://login.microsoftazure.de/',
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
@@ -104,7 +104,7 @@ const chinaAzureSettings: ProviderSettings = {
 	configKey: 'enableChinaCloud',
 	metadata: {
 		displayName: localize('chinaCloudDisplayName', "Azure (China)"),
-		id: 'chinaAzureCloud',
+		id: 'azure_chinaCloud',
 		settings: {
 			host: 'https://login.chinacloudapi.cn/',
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
