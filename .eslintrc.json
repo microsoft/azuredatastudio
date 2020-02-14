@@ -660,7 +660,8 @@
 					"chart.js",
 					"ng2-charts",
 					"angular2-grid",
-					"html-query-plan"
+					"html-query-plan",
+					"plotly.js-dist"
 				]
             },
             {
