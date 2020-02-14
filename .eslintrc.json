@@ -505,17 +505,17 @@
             "rules": {
                 "jsdoc/no-types": "off"
             }
-		},
-		{
-			"files": [
-				"**/sql/**"
-			],
-			"rules": {
-				"no-sync": "warn",
-				"strict": ["warn", "never"],
-				"no-console": "warn"
-			}
-		},
+        },
+        {
+            "files": [
+                "**/sql/**"
+            ],
+            "rules": {
+                "no-sync": "warn",
+                "strict": ["warn", "never"],
+                "no-console": "warn"
+            }
+        },
         {
             "files": [
                 "**/vscode.d.ts",
