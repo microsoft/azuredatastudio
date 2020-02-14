@@ -125,7 +125,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		} else {
 			let tempWidgets = this.dashboardService.getSettings<Array<WidgetConfig>>([this.context, 'widgets'].join('.'));
 			// remove tasks widget because those will be shown in the toolbar
-			tempWidgets.shift();
+			const index = tempWidgets.findIndex(c => c.widget['tasks-widget']);
+			tempWidgets.splice(index, 1);
+
 			this._originalConfig = objects.deepClone(tempWidgets);
 			let properties = this.getProperties();
 			this._configModifiers.forEach((cb) => {
@@ -394,7 +396,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				this.tabToolbarActionsConfig.set(value.id, configs[index].widget['tasks-widget']);
 				const content = this.getToolbarContent(configs[index].widget['tasks-widget']);
 				this.tabToolbarActions.set(value.id, content);
-				configs.splice(index);
+				configs.splice(index, 1);
 			}
 
 			if (key === WIDGETS_CONTAINER) {
