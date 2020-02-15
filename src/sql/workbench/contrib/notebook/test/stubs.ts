@@ -250,7 +250,7 @@ export class NotebookServiceStub implements INotebookService {
 	isNotebookTrustCached(notebookUri: URI, isDirty: boolean): Promise<boolean> {
 		throw new Error('Method not implemented.');
 	}
-	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel): void {
+	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel, isTrusted?: boolean): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
 	navigateTo(notebookUri: URI, sectionId: string): void {

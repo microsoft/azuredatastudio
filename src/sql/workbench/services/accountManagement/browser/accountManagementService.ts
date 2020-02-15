@@ -23,6 +23,7 @@ import { URI } from 'vs/base/common/uri';
 import { firstIndex } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -52,7 +53,8 @@ export class AccountManagementService implements IAccountManagementService {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IStorageService private _storageService: IStorageService,
 		@IClipboardService private _clipboardService: IClipboardService,
-		@IOpenerService private _openerService: IOpenerService
+		@IOpenerService private _openerService: IOpenerService,
+		@ILogService private readonly logService: ILogService
 	) {
 		// Create the account store
 		if (!this._mementoObj) {
@@ -301,7 +303,7 @@ export class AccountManagementService implements IAccountManagementService {
 		this.doWithProvider(providerId, provider => provider.provider.autoOAuthCancelled())
 			.then(	// Swallow errors
 				null,
-				err => { console.warn(`Error when cancelling auto OAuth: ${err}`); }
+				err => { this.logService.warn(`Error when cancelling auto OAuth: ${err}`); }
 			)
 			.then(() => this.autoOAuthDialogController.closeAutoOAuthDialog());
 	}

@@ -228,7 +228,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 			providerInfo: input.getProviderInfo(),
 			profile: input.connectionProfile
 		};
-		bootstrapAngular(this._instantiationService,
+		this._instantiationService.invokeFunction(bootstrapAngular,
 			NotebookModule,
 			this._notebookContainer,
 			NOTEBOOK_SELECTOR,
