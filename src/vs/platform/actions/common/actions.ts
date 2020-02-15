@@ -119,7 +119,9 @@ export class MenuId {
 	static readonly DataExplorerContext = new MenuId('DataExplorerContext'); // {{SQL CARBON EDIT}}
 	static readonly DataExplorerAction = new MenuId('DataExplorerAction'); // {{SQL CARBON EDIT}}
 	static readonly ExplorerWidgetContext = new MenuId('ExplorerWidgetContext'); // {{SQL CARBON EDIT}}
-
+	static readonly TimelineItemContext = new MenuId('TimelineItemContext');
+	static readonly TimelineTitle = new MenuId('TimelineTitle');
+	static readonly TimelineTitleContext = new MenuId('TimelineTitleContext');
 
 	readonly id: number;
 	readonly _debugName: string;

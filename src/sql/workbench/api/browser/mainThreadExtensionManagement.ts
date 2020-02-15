@@ -12,6 +12,7 @@ import { URI } from 'vs/base/common/uri';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadExtensionManagement)
 export class MainThreadExtensionManagement extends Disposable implements MainThreadExtensionManagementShape {
@@ -22,7 +23,8 @@ export class MainThreadExtensionManagement extends Disposable implements MainThr
 		extHostContext: IExtHostContext,
 		@IExtensionManagementService private _extensionService: IExtensionManagementService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@INotificationService private _notificationService: INotificationService
+		@INotificationService private _notificationService: INotificationService,
+		@ILogService private readonly logService: ILogService
 	) {
 		super();
 	}
@@ -32,7 +34,7 @@ export class MainThreadExtensionManagement extends Disposable implements MainThr
 	}
 
 	public $showObsoleteExtensionApiUsageNotification(message: string): void {
-		console.warn(message);
+		this.logService.warn(message);
 
 		if (this._obsoleteExtensionApiUsageNotificationShown) {
 			return;

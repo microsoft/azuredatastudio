@@ -542,6 +542,16 @@
         },
         {
             "files": [
+                "**/sql/**"
+            ],
+            "rules": {
+                "no-sync": "warn",
+                "strict": ["warn", "never"],
+                "no-console": "warn"
+            }
+        },
+        {
+            "files": [
                 "**/vscode.d.ts",
                 "**/vscode.proposed.d.ts"
             ],

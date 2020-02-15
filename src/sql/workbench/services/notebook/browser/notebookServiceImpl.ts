@@ -115,7 +115,8 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IFileService private readonly _fileService: IFileService,
 		@ILogService private readonly _logService: ILogService,
-		@IQueryManagementService private readonly _queryManagementService: IQueryManagementService
+		@IQueryManagementService private readonly _queryManagementService: IQueryManagementService,
+		@ILogService private readonly logService: ILogService
 	) {
 		super();
 		this._providersMemento = new Memento('notebookProviders', this._storageService);
@@ -397,7 +398,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				try {
 					await this._extensionService.whenInstalledExtensionsRegistered();
 				} catch (error) {
-					console.error(error);
+					this.logService.error(error);
 				}
 				instance = await this.waitOnProviderAvailability(providerDescriptor);
 			} else {

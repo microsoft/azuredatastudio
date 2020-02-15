@@ -445,7 +445,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					() => this.nextPage(), this.navigationResult.next ? true : false);
 				this.detectChanges();
 			}, err => {
-				console.log(err);
+				this.logService.info(err);
 			});
 		}
 	}
