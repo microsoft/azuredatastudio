@@ -9,13 +9,13 @@ import * as assert from 'assert';
 import { URI } from 'vs/base/common/uri';
 import { NotebookManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
-import { IClientSession, INotebookModelOptions } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
+import { IClientSession, INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { NotebookFindModel } from 'sql/workbench/contrib/notebook/find/notebookFindModel';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { Deferred } from 'sql/base/common/promise';
-import { ModelFactory } from 'sql/workbench/contrib/notebook/browser/models/modelFactory';
+import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -24,10 +24,10 @@ import { Memento } from 'vs/workbench/common/memento';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
-import { ClientSession } from 'sql/workbench/contrib/notebook/browser/models/clientSession';
+import { ClientSession } from 'sql/workbench/services/notebook/browser/models/clientSession';
 import { TestStorageService } from 'vs/workbench/test/browser/workbenchTestServices';
-import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
