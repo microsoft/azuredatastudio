@@ -31,7 +31,7 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileE
 import { URI } from 'vs/base/common/uri';
 import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
 
-import { QueryEditorInput, IQueryEditorStateChange } from 'sql/workbench/contrib/query/common/queryEditorInput';
+import { QueryEditorInput, IQueryEditorStateChange } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';

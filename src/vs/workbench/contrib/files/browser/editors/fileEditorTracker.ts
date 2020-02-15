@@ -28,7 +28,7 @@ import { isEqualOrParent, joinPath } from 'vs/base/common/resources';
 import { Schemas } from 'vs/base/common/network';
 
 // {{SQL CARBON EDIT}}
-import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
+import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 
 export class FileEditorTracker extends Disposable implements IWorkbenchContribution {
 

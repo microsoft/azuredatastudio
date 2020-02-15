@@ -64,7 +64,7 @@
 		// "./sql/workbench/api/common/**/*.ts",
 		// "./sql/workbench/api/worker/**/*.ts",
 		// "./sql/workbench/browser/**/*.ts",
-		"./sql/workbench/common/**/*.ts",
+		// "./sql/workbench/common/**/*.ts",
 		// "./sql/workbench/electron-browser/**/*.ts",
 		// "./sql/workbench/services/**/test/**/*.ts"
 	],

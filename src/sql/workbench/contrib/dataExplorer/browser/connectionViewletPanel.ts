@@ -15,7 +15,7 @@ import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/ser
 import {
 	ActiveConnectionsFilterAction,
 	AddServerAction, AddServerGroupAction
-} from 'sql/workbench/contrib/objectExplorer/browser/connectionTreeAction';
+} from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
@@ -55,7 +55,7 @@ export class ConnectionViewletPanel extends ViewPane {
 		this._addServerGroupAction = this.instantiationService.createInstance(AddServerGroupAction,
 			AddServerGroupAction.ID,
 			AddServerGroupAction.LABEL);
-		this._serverTreeView = this.objectExplorerService.getServerTreeView();
+		this._serverTreeView = <any>this.objectExplorerService.getServerTreeView() as ServerTreeView;
 		if (!this._serverTreeView) {
 			this._serverTreeView = this.instantiationService.createInstance(ServerTreeView);
 			this.objectExplorerService.registerServerTreeView(this._serverTreeView);

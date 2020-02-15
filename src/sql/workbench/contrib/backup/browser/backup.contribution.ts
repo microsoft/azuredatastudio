@@ -14,10 +14,10 @@ import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { localize } from 'vs/nls';
-import { OEAction } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerActions';
-import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
+import { OEAction } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
+import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
 import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
-import { ServerInfoContextKey } from 'sql/workbench/contrib/connection/common/serverInfoContextKey';
+import { ServerInfoContextKey } from 'sql/workbench/services/connection/common/serverInfoContextKey';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
