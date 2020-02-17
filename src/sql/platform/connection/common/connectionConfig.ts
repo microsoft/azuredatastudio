@@ -5,7 +5,7 @@
 
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfileGroup, IConnectionProfileGroup, IConnectionProfileGroupShape } from 'sql/platform/connection/common/connectionProfileGroup';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { IConnectionProfile, IConnectionProfileStore } from 'sql/platform/connection/common/interfaces';
 import * as Utils from 'sql/platform/connection/common/utils';
@@ -19,7 +19,7 @@ const CONNECTIONS_CONFIG_KEY = 'datasource.connections';
 
 export interface ISaveGroupResult {
 	groups: IConnectionProfileGroup[];
-	newGroupId?: string;
+	newGroup?: IConnectionProfileGroup;
 }
 
 /**
@@ -62,13 +62,13 @@ export class ConnectionConfig {
 	 */
 	public addConnection(profile: IConnectionProfile): Promise<IConnectionProfile> {
 		if (profile.saveProfile) {
-			return this.addGroupFromProfile(profile).then(groupId => {
+			return this.addGroupFromProfile(profile).then(group => {
 				let profiles = this.configurationService.inspect<IConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).userValue;
 				if (!profiles) {
 					profiles = [];
 				}
 
-				let connectionProfile = this.getConnectionProfileInstance(profile, groupId);
+				let connectionProfile = this.getConnectionProfileInstance(profile, group.id);
 				let newProfile = ConnectionProfile.convertToProfileStore(this._capabilitiesService, connectionProfile);
 
 				// Remove the profile if already set
@@ -104,36 +104,34 @@ export class ConnectionConfig {
 	/**
 	 *Returns group id
 	 */
-	public addGroupFromProfile(profile: IConnectionProfile): Promise<string> {
+	public addGroupFromProfile(profile: IConnectionProfile): Promise<IConnectionProfileGroup> {
 		if (profile.groupId && profile.groupId !== Utils.defaultGroupId) {
-			return Promise.resolve(profile.groupId);
-		} else {
+			return Promise.resolve(this.getAllGroups().find(g => g.id === profile.groupId)!);
+		} else if (profile.groupFullName) {
 			let groups = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).userValue;
-			let result = this.saveGroup(groups!, profile.groupFullName, undefined, undefined);
+			let result = this.saveGroup(groups!, { name: profile.groupFullName, color: undefined, description: undefined });
 			groups = result.groups;
 
-			return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER).then(() => result.newGroupId!);
+			return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER).then(() => result.newGroup!);
+		} else {
+			throw new Error('Insufficient information to add group.');
 		}
 	}
 
 	/**
 	 *Returns group id
 	 */
-	public addGroup(profileGroup: IConnectionProfileGroup): Promise<string> {
-		if (profileGroup.id) {
-			return Promise.resolve(profileGroup.id);
+	public addGroup(profileGroup: IConnectionProfileGroupShape): Promise<IConnectionProfileGroup> {
+		let groups = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).userValue;
+		let sameNameGroup = groups ? find(groups, group => group.name === profileGroup.name) : undefined;
+		if (sameNameGroup) {
+			let errMessage: string = nls.localize('invalidServerName', "A server group with the same name already exists.");
+			return Promise.reject(errMessage);
 		} else {
-			let groups = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).userValue;
-			let sameNameGroup = groups ? find(groups, group => group.name === profileGroup.name) : undefined;
-			if (sameNameGroup) {
-				let errMessage: string = nls.localize('invalidServerName', "A server group with the same name already exists.");
-				return Promise.reject(errMessage);
-			} else {
-				let result = this.saveGroup(groups!, profileGroup.name, profileGroup.color, profileGroup.description);
-				groups = result.groups;
+			let result = this.saveGroup(groups!, profileGroup);
+			groups = result.groups;
 
-				return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER).then(() => result.newGroupId!);
-			}
+			return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER).then(() => result.newGroup!);
 		}
 	}
 
@@ -322,9 +320,9 @@ export class ConnectionConfig {
 		}
 	}
 
-	public saveGroup(groups: IConnectionProfileGroup[], groupFullName?: string, color?: string, description?: string): ISaveGroupResult {
-		let groupNames = ConnectionProfileGroup.getGroupFullNameParts(groupFullName);
-		return this.saveGroupInTree(groups, undefined, groupNames, color, description, 0);
+	public saveGroup(groups: IConnectionProfileGroup[], shape: IConnectionProfileGroupShape): ISaveGroupResult {
+		let groupNames = ConnectionProfileGroup.getGroupFullNameParts(shape.name);
+		return this.saveGroupInTree(groups, undefined, groupNames, shape.color, shape.description, 0);
 	}
 
 	public editGroup(source: ConnectionProfileGroup): Promise<void> {
@@ -346,7 +344,7 @@ export class ConnectionConfig {
 		return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER);
 	}
 
-	private isSameGroupName(group1: IConnectionProfileGroup, group2: IConnectionProfileGroup): boolean {
+	private isSameGroupName(group1: IConnectionProfileGroupShape, group2: IConnectionProfileGroupShape): boolean {
 		let sameGroupName: boolean = false;
 		if (group1 && group2) {
 			sameGroupName = ((!group1.name && !group2.name) || group1.name.toUpperCase() === group2.name.toUpperCase()) &&
@@ -359,46 +357,43 @@ export class ConnectionConfig {
 		if (!groupTree) {
 			groupTree = [];
 		}
-		let newGroupId: string | undefined;
+		let newGroup: IConnectionProfileGroup | undefined;
 
 		if (index < groupNames.length) {
 			let groupName: string = groupNames[index];
-			let newGroup = <unknown>{ // workaround to make this work properly
+			let newGroupShape: IConnectionProfileGroupShape = {
 				name: groupName,
-				id: undefined,
 				parentId: parentId,
 				color: color,
 				description: description
-			} as IConnectionProfileGroup;
-			let found = find(groupTree, group => this.isSameGroupName(group, newGroup));
+			};
+			let found = find(groupTree, group => this.isSameGroupName(group, newGroupShape));
 			if (found) {
 				if (index === groupNames.length - 1) {
-					newGroupId = found.id;
+					newGroup = found;
 					//Found the group full name
 				} else {
 					let result = this.saveGroupInTree(groupTree, found.id, groupNames, color, description, index + 1);
 					groupTree = result.groups;
-					newGroupId = result.newGroupId;
+					newGroup = result.newGroup;
 				}
 
 			} else {
-				if (ConnectionProfileGroup.isRoot(newGroup.name)) {
-					newGroup.id = Utils.defaultGroupId;
+				let newId: string;
+				if (ConnectionProfileGroup.isRoot(newGroupShape.name)) {
+					newId = Utils.defaultGroupId;
 				} else {
-					newGroup.id = generateUuid();
+					newId = generateUuid();
 				}
+				newGroup = { ...newGroupShape, id: newId };
 				let result = this.saveGroupInTree(groupTree, newGroup.id, groupNames, color, description, index + 1);
-				newGroupId = result.newGroupId;
 				groupTree = result.groups;
 				groupTree.push(newGroup);
-				if (index === groupNames.length - 1) {
-					newGroupId = newGroup.id;
-				}
 			}
 		}
 		let groupResult: ISaveGroupResult = {
 			groups: groupTree,
-			newGroupId: newGroupId
+			newGroup
 		};
 		return groupResult;
 	}

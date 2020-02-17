@@ -391,11 +391,11 @@ suite('ConnectionConfig', () => {
 		let newGroups: string = 'ROOT/g1/g1-1/new-group/new-group2';
 		let color: string = 'red';
 
-		let result: ISaveGroupResult = config.saveGroup(groups, newGroups, color, newGroups);
+		let result: ISaveGroupResult = config.saveGroup(groups, { name: newGroups, color, description: newGroups });
 		assert.ok(!!result);
 		assert.equal(result.groups.length, testGroups.length + 2, 'The result groups length is invalid');
 		let newGroup = find(result.groups, g => g.name === 'new-group2');
-		assert.equal(result.newGroupId, newGroup!.id, 'The groups id is invalid');
+		assert.deepEqual(result.newGroup, newGroup, 'The groups id is invalid');
 	});
 
 	test('saveGroup should only add the groups that are not in the tree', () => {
@@ -404,11 +404,11 @@ suite('ConnectionConfig', () => {
 		let newGroups: string = 'ROOT/g2/g2-5';
 		let color: string = 'red';
 
-		let result: ISaveGroupResult = config.saveGroup(groups, newGroups, color, newGroups);
+		let result: ISaveGroupResult = config.saveGroup(groups, { name: newGroups, color, description: newGroups });
 		assert.ok(!!result);
 		assert.equal(result.groups.length, testGroups.length + 1, 'The result groups length is invalid');
 		let newGroup = find(result.groups, g => g.name === 'g2-5');
-		assert.equal(result.newGroupId, newGroup!.id, 'The groups id is invalid');
+		assert.deepEqual(result.newGroup, newGroup, 'The groups id is invalid');
 	});
 
 	test('saveGroup should not add any new group if tree already has all the groups in the full path', () => {
@@ -417,11 +417,11 @@ suite('ConnectionConfig', () => {
 		let newGroups: string = 'ROOT/g2/g2-1';
 		let color: string = 'red';
 
-		let result: ISaveGroupResult = config.saveGroup(groups, newGroups, color, newGroups);
+		let result: ISaveGroupResult = config.saveGroup(groups, { name: newGroups, color, description: newGroups });
 		assert.ok(!!result);
 		assert.equal(result.groups.length, testGroups.length, 'The result groups length is invalid');
 		let newGroup = find(result.groups, g => g.name === 'g2-1');
-		assert.equal(result.newGroupId, newGroup!.id, 'The groups id is invalid');
+		assert.deepEqual(result.newGroup, newGroup, 'The groups id is invalid');
 	});
 
 	test('deleteConnection should remove the connection from config', async () => {
