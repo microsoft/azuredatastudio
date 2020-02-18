@@ -17,7 +17,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
-import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
+import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
@@ -35,10 +35,10 @@ import { SqlFlavorStatusbarItem, ChangeFlavorAction } from 'sql/workbench/contri
 import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions } from 'vs/workbench/common/editor';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
 import { FileQueryEditorInputFactory, UntitledQueryEditorInputFactory, QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/common/queryInputFactory';
-import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
+import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/contrib/query/browser/queryActions';
-import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
+import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
 import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/mssqlNodeContext';
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { ManageActionContext } from 'sql/workbench/browser/actions';

@@ -12,12 +12,12 @@ import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { RestoreAction } from 'sql/workbench/contrib/restore/browser/restoreActions';
-import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
-import { ObjectExplorerActionsContext } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerActions';
+import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
+import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
 import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTreeContext';
-import { ServerInfoContextKey } from 'sql/workbench/contrib/connection/common/serverInfoContextKey';
+import { ServerInfoContextKey } from 'sql/workbench/services/connection/common/serverInfoContextKey';
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 new RestoreAction().registerTask();

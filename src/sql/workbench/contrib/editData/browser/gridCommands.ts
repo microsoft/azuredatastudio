@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as GridContentEvents from 'sql/workbench/contrib/grid/common/gridContentEvents';
+import * as GridContentEvents from 'sql/workbench/services/query/common/gridContentEvents';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { EditDataEditor } from 'sql/workbench/contrib/editData/browser/editDataEditor';

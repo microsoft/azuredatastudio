@@ -19,28 +19,29 @@ import { append, $, hide, show } from 'vs/base/browser/dom';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as ConnectionUtils from 'sql/platform/connection/common/utils';
-import { ActiveConnectionsFilterAction } from 'sql/workbench/contrib/objectExplorer/browser/connectionTreeAction';
+import { ActiveConnectionsFilterAction } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { TreeCreationUtils } from 'sql/workbench/contrib/objectExplorer/browser/treeCreationUtils';
-import { TreeUpdateUtils } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
-import { TreeSelectionHandler } from 'sql/workbench/contrib/objectExplorer/browser/treeSelectionHandler';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { TreeCreationUtils } from 'sql/workbench/services/objectExplorer/browser/treeCreationUtils';
+import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
+import { TreeSelectionHandler } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
+import { IObjectExplorerService, IServerTreeView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
-import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
-import { SERVER_GROUP_CONFIG, SERVER_GROUP_AUTOEXPAND_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
+import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/services/objectExplorer/common/treeNode';
+import { SERVER_GROUP_AUTOEXPAND_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-import { ServerTreeActionProvider } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeActionProvider';
+import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/browser/serverTreeActionProvider';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isHidden } from 'sql/base/browser/dom';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { startsWith } from 'vs/base/common/strings';
+import { SERVER_GROUP_CONFIG } from 'sql/workbench/services/serverGroup/common/interfaces';
 
 /**
  * ServerTreeview implements the dynamic tree view.
  */
-export class ServerTreeView extends Disposable {
+export class ServerTreeView extends Disposable implements IServerTreeView {
 
 	public messages: HTMLElement;
 	private _buttonSection: HTMLElement;
@@ -121,7 +122,7 @@ export class ServerTreeView extends Disposable {
 	/**
 	 * Render the view body
 	 */
-	public renderBody(container: HTMLElement): Thenable<void> {
+	public renderBody(container: HTMLElement): Promise<void> {
 		// Add div to display no connections found message and hide it by default
 		this.messages = append(container, $('.title'));
 		const messageText = append(this.messages, $('span'));
@@ -267,7 +268,7 @@ export class ServerTreeView extends Disposable {
 		}
 	}
 
-	public deleteObjectExplorerNodeAndRefreshTree(connection: IConnectionProfile): Thenable<void> {
+	public deleteObjectExplorerNodeAndRefreshTree(connection: IConnectionProfile): Promise<void> {
 		if (connection) {
 			const conn = this.getConnectionInTreeInput(connection.id);
 			if (conn) {
@@ -286,7 +287,7 @@ export class ServerTreeView extends Disposable {
 		return TreeUpdateUtils.registeredServerUpdate(this._tree, this._connectionManagementService);
 	}
 
-	public refreshElement(element: any): Thenable<void> {
+	public refreshElement(element: any): Promise<void> {
 		return this._tree.refresh(element);
 	}
 
@@ -474,7 +475,7 @@ export class ServerTreeView extends Disposable {
 	/**
 	 * Set whether the given element is expanded or collapsed
 	 */
-	public setExpandedState(element: TreeNode | ConnectionProfile, expandedState: TreeItemCollapsibleState): Thenable<void> {
+	public setExpandedState(element: TreeNode | ConnectionProfile, expandedState: TreeItemCollapsibleState): Promise<void> {
 		if (expandedState === TreeItemCollapsibleState.Collapsed) {
 			return this._tree.collapse(element);
 		} else if (expandedState === TreeItemCollapsibleState.Expanded) {
@@ -486,14 +487,14 @@ export class ServerTreeView extends Disposable {
 	/**
 	 * Reveal the given element in the tree
 	 */
-	public reveal(element: TreeNode | ConnectionProfile): Thenable<void> {
+	public reveal(element: TreeNode | ConnectionProfile): Promise<void> {
 		return this._tree.reveal(element);
 	}
 
 	/**
 	 * Select the given element in the tree and clear any other selections
 	 */
-	public setSelected(element: TreeNode | ConnectionProfile, selected: boolean, clearOtherSelections: boolean): Thenable<void> {
+	public setSelected(element: TreeNode | ConnectionProfile, selected: boolean, clearOtherSelections: boolean): Promise<void> {
 		if (clearOtherSelections || (selected && clearOtherSelections !== false)) {
 			this._tree.clearSelection();
 		}
