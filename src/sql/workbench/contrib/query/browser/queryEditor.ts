@@ -105,7 +105,7 @@ export class QueryEditor extends BaseEditor {
 		this.queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
 
 		// Clear view state for deleted files
-		this._register(fileService.onFileChanges(e => this.onFilesChanged(e)));
+		this._register(fileService.onDidFilesChange(e => this.onFilesChanged(e)));
 	}
 
 	private onFilesChanged(e: FileChangesEvent): void {
