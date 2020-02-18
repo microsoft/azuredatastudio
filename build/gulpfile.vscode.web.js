@@ -54,7 +54,7 @@ const vscodeWebResourceIncludes = [
 
 	// Extension Worker
 	'out-build/vs/workbench/services/extensions/worker/extensionHostWorkerMain.js',
-	'out-build/sql/{base,platform,workbench}/**/*.{svg,png}', // {{SQL CARBON EDIT}}
+	'out-build/sql/{base,platform,workbench}/**/*.{svg,png,html}', // {{SQL CARBON EDIT}}
 ];
 exports.vscodeWebResourceIncludes = vscodeWebResourceIncludes;
 
