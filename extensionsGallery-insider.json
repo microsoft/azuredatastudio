@@ -246,8 +246,8 @@
 					},
 					"versions": [
 						{
-							"version": "0.3.6",
-							"lastUpdated": "11/20/2019",
+							"version": "0.4.0",
+							"lastUpdated": "02/18/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -706,14 +706,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.12.0",
-							"lastUpdated": "11/4/2019",
+							"version": "0.13.1",
+							"lastUpdated": "2/5/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-0.12.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-0.13.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1272,14 +1272,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.1.0",
-							"lastUpdated": "12/16/2019",
+							"version": "1.2.0",
+							"lastUpdated": "2/5/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/dacpac/dacpac-1.1.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/dacpac/dacpac-1.2.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1504,14 +1504,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.1.0",
-							"lastUpdated": "12/16/2019",
+							"version": "1.2.0",
+							"lastUpdated": "2/5/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/schema-compare/schema-compare-1.1.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/schema-compare/schema-compare-1.2.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1679,14 +1679,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.6.0",
-							"lastUpdated": "12/16/2019",
+							"version": "0.7.0",
+							"lastUpdated": "2/5/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/cms/cms-0.6.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/cms/cms-0.7.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2804,14 +2804,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.2.0",
-							"lastUpdated": "12/16/2019",
+							"version": "1.3.0",
+							"lastUpdated": "2/5/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/datavirtualization-1.2.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/datavirtualization-1.3.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2819,15 +2819,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.1.0/README.md"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.3.0/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.1.0/package.json"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.3.0/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.1.0/LICENSE.txt"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.3.0/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -2965,6 +2965,63 @@
 				},
 				{
 					"extensionId": "61",
+					"extensionName": "tsqlchecker",
+					"displayName": "TSQL Checker",
+					"shortDescription": "Adds checks for bad practice to the TSQL query window.",
+					"publisher": {
+						"displayName": "Daniel Janik",
+						"publisherId": "DanielJanik",
+						"publisherName": "DanielJanik"
+					},
+					"versions": [
+						{
+							"version": "0.0.1",
+							"lastUpdated": "02/06/2020",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/DanielJanik/tsqlchecker_adsextension/releases/tag/0.0.1"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/danieljanik/tsqlchecker_adsextension/master/tsqlhelp.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/danieljanik/tsqlchecker_adsextension/master/README.md"														},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/danieljanik/tsqlchecker_adsextension/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/danieljanik/tsqlchecker_adsextension/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/DanielJanik/tsqlchecker_adsextension"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								}
+							]
+						},
+
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
+					"extensionId": "62",
 					"extensionName": "schema-visualization",
 					"displayName": "Schema Visualization",
 					"shortDescription": "Visualization of databases",
@@ -3027,7 +3084,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 51
+							"count": 52
 						}
 					]
 				}
