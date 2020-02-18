@@ -8,14 +8,14 @@ import 'mocha';
 
 import { SimpleTokenCache } from '../../account-provider/simpleTokenCache';
 
-describe('AccountProvider.TokenCache', function (): void {
+describe('AccountProvider.SimpleTokenCache', function (): void {
 	it('Can save and load credentials', async function (): Promise<void> {
 		const tokenCacheKey = 'azureTokenCache-testkey';
 		const tokenCachePassword = 'azureTokenCache-testpassword';
 		const tokenCache = new SimpleTokenCache('testTokenService');
 
 		const result = await tokenCache.saveCredential(tokenCacheKey, tokenCachePassword);
-		should(result).true('TokenResponse not added correctly');
+		should(result).not.be.true('TokenResponse not added correctly');
 
 		const results = await tokenCache.getCredential(tokenCacheKey);
 		should(results).equal(tokenCachePassword);
@@ -26,12 +26,12 @@ describe('AccountProvider.TokenCache', function (): void {
 		const tokenCache = new SimpleTokenCache('testTokenService');
 
 		const addResult = await tokenCache.saveCredential(tokenCacheKey, tokenCachePassword);
-		should(addResult).true('TokenResponse not added correctly');
+		should(addResult).not.be.false('TokenResponse not added correctly');
 
 		const clearResult = await tokenCache.clearCredential(tokenCacheKey);
-		should(clearResult).true('TokenResponse not cleared correctly');
+		should(clearResult).not.be.false('TokenResponse not cleared correctly');
 
 		const results = await tokenCache.getCredential(tokenCacheKey);
-		should(results).equal(undefined);
+		should(results).equal(null);
 	});
 });

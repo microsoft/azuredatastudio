@@ -75,13 +75,12 @@ const mockSubscriptions = [mockSubscription1, mockSubscription2];
 
 const mockFilteredSubscriptions = [mockSubscription1];
 
-const mockTokens: { [key: string]: any } = {};
-mockTokens[mockTenantId] = {
+const mockTokens = {
 	at: 'mock_token',
 	tokenType: 'Bearer'
 };
 
-const mockCredential = new TokenCredentials(mockTokens[mockTenantId].token, mockTokens[mockTenantId].tokenType);
+const mockCredential = new TokenCredentials(mockTokens.at, mockTokens.tokenType);
 
 let mockSubscriptionCache: azureResource.AzureResourceSubscription[] = [];
 
@@ -207,7 +206,6 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 
 		const children = await accountTreeNode.getChildren();
 
-		mockApiWrapper.verify((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement), TypeMoq.Times.once());
 		mockSubscriptionService.verify((o) => o.getSubscriptions(mockAccount, mockCredential), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.get(TypeMoq.It.isAnyString()), TypeMoq.Times.exactly(0));
 		mockCacheService.verify((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());
@@ -242,7 +240,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 		await accountTreeNode.getChildren();
 		const children = await accountTreeNode.getChildren();
 
-		mockApiWrapper.verify((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement), TypeMoq.Times.once());
+
 		mockSubscriptionService.verify((o) => o.getSubscriptions(mockAccount, mockCredential), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.get(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());
@@ -250,6 +248,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 		should(children.length).equal(mockSubscriptionCache.length);
 
 		for (let ix = 0; ix < mockSubscriptionCache.length; ix++) {
+			console.log(children[ix].nodePathValue);
 			should(children[ix].nodePathValue).equal(`account_${mockAccount.key.accountId}.subscription_${mockSubscriptionCache[ix].id}.tenant_${mockTenantId}`);
 		}
 	});

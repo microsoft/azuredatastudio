@@ -36,13 +36,10 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			return result;
 		}
 		const subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
-		const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
+		const token = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
 		await Promise.all(account.properties.tenants.map(async (tenant: { id: string | number; }) => {
 			try {
-				const token = tokens[tenant.id].token;
-				const tokenType = tokens[tenant.id].tokenType;
-
-				result.subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType)));
+				result.subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token.at)));
 			} catch (err) {
 				console.warn(`Error fetching subscriptions for account ${account.displayInfo.displayName} tenant ${tenant.id} : ${err}`);
 				if (!ignoreErrors) {
@@ -68,11 +65,8 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		const service = new AzureResourceGroupService();
 		await Promise.all(account.properties.tenants.map(async (tenant: { id: string | number; }) => {
 			try {
-				const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
-				const token = tokens[tenant.id].token;
-				const tokenType = tokens[tenant.id].tokenType;
-
-				result.resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType), account));
+				const token = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
+				result.resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token.at), account));
 			} catch (err) {
 				console.warn(`Error fetching resource groups for account ${account.displayInfo.displayName} (${account.displayInfo.userId}) subscription ${subscription.id} (${subscription.name}) tenant ${tenant.id} : ${err}`);
 				if (!ignoreErrors) {
@@ -100,14 +94,8 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		const subscriptions = (await accountNode.getCachedSubscriptions()) || <azureResource.AzureResourceSubscription[]>[];
 		if (subscriptions.length === 0) {
 			try {
-				const tokens = await this.servicePool.apiWrapper.getSecurityToken(this.account, azdata.AzureResource.ResourceManagement);
-
-				for (const tenant of this.account.properties.tenants) {
-					const token = tokens[tenant.id].token;
-					const tokenType = tokens[tenant.id].tokenType;
-
-					subscriptions.push(...await subscriptionService.getSubscriptions(accountNode.account, new TokenCredentials(token, tokenType)));
-				}
+				const token = await this.servicePool.apiWrapper.getSecurityToken(this.account, azdata.AzureResource.ResourceManagement);
+				subscriptions.push(...await subscriptionService.getSubscriptions(accountNode.account, new TokenCredentials(token.at)));
 			} catch (error) {
 				throw new AzureResourceCredentialError(localize('azure.resource.selectsubscriptions.credentialError', "Failed to get credential for account {0}. Please refresh the account.", this.account.key.accountId), error);
 			}

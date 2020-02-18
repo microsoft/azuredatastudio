@@ -53,7 +53,7 @@ export class SimpleTokenCache {
 		}
 	}
 
-	async getCredential(id: string): Promise<string> {
+	async getCredential(id: string): Promise<string | null> {
 		try {
 			return await this.keytar.getPassword(this.serviceName, id);
 		} catch (ex) {
