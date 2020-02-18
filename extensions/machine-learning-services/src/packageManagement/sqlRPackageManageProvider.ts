@@ -92,6 +92,9 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 	 * Returns true if the provider can be used
 	 */
 	async canUseProvider(): Promise<boolean> {
+		if (!this._config.rEnabled) {
+			return false;
+		}
 		let connection = await this.getCurrentConnection();
 		if (connection && await this._queryRunner.isRInstalled(connection)) {
 			return true;

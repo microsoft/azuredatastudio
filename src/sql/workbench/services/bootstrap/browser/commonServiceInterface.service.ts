@@ -6,6 +6,7 @@
 /* Node Modules */
 import { Injectable, Inject } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/fromPromise';
 
 /* SQL imports */
 import { IDefaultComponentParams, IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
@@ -16,7 +17,7 @@ import { IAdminService } from 'sql/workbench/services/admin/common/adminService'
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-import { ConnectionContextKey } from 'sql/workbench/contrib/connection/common/connectionContextKey';
+import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
 
 import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'azdata';
 

@@ -5,7 +5,7 @@
 
 import { Action } from 'vs/base/common/actions';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
-// eslint-disable-next-line code-layering
+// eslint-disable-next-line code-layering,code-import-patterns
 import { IElectronService } from 'vs/platform/electron/node/electron';
 import { URI } from 'vs/base/common/uri';
 
@@ -23,7 +23,7 @@ export class ShowFileInFolderAction extends Action {
 export class OpenFileInFolderAction extends Action {
 
 	constructor(private path: string, label: string, @IOpenerService private openerService: IOpenerService) {
-		super('showItemInFolder.action.id', label);
+		super('openItemInFolder.action.id', label);
 	}
 
 	run() {

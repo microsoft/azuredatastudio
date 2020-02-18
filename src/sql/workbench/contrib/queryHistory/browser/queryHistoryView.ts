@@ -17,7 +17,7 @@ import { QueryHistoryRenderer } from 'sql/workbench/contrib/queryHistory/browser
 import { QueryHistoryDataSource } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryDataSource';
 import { QueryHistoryController } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryController';
 import { QueryHistoryActionProvider } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryActionProvider';
-import { IExpandableTree } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
+import { IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
 import { QueryHistoryNode } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryNode';
 import { QueryHistoryInfo } from 'sql/workbench/services/queryHistory/common/queryHistoryInfo';

@@ -80,8 +80,8 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 				dispose(this._onCapabilitiesRegisteredDisposable);
 			}
 			this._onCapabilitiesRegisteredDisposable = this.capabilitiesService.onCapabilitiesRegistered(e => {
-				if (e.connection.providerId === this.providerName) {
-					this._serverCapabilities = e.connection;
+				if (e.id === this.providerName) {
+					this._serverCapabilities = e.features.connection;
 				}
 			});
 		}

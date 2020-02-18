@@ -17,7 +17,7 @@ import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColu
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { escape } from 'sql/base/common/strings';
-import { DataService } from 'sql/workbench/contrib/grid/common/dataService';
+import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -33,6 +33,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { deepClone, assign } from 'vs/base/common/objects';
 import { Emitter, Event } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
+import * as DOM from 'vs/base/browser/dom';
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -110,10 +111,11 @@ export class EditDataGridPanel extends GridParentComponent {
 	onInit(): void {
 		const self = this;
 		this.baseInit();
+		this._register(DOM.addDisposableListener(this.nativeElement, DOM.EventType.KEY_DOWN, e => this.tryHandleKeyEvent(new StandardKeyboardEvent(e))));
 
 		// Add the subscription to the list of things to be disposed on destroy, or else on a new component init
 		// may get the "destroyed" object still getting called back.
-		this.subscribeWithDispose(this.dataService.queryEventObserver, (event) => {
+		this.toDispose.add(this.dataService.queryEvents(event => {
 			switch (event.type) {
 				case 'start':
 					self.handleStart(self, event);
@@ -134,7 +136,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					this.logService.error('Unexpected query event type "' + event.type + '" sent');
 					break;
 			}
-		});
+		}));
 		this.dataService.onLoaded();
 	}
 
@@ -392,11 +394,13 @@ export class EditDataGridPanel extends GridParentComponent {
 		undefinedDataSet.dataRows = undefined;
 		undefinedDataSet.resized = new Emitter();
 		self.placeHolderDataSets.push(undefinedDataSet);
+		if (self.placeHolderDataSets[0]) {
+			this.refreshDatasets();
+		}
 		self.refreshGrid();
 
 		// Setup the state of the selected cell
 		this.resetCurrentCell();
-		this.currentEditCellValue = undefined;
 		this.removingNewRow = false;
 		this.newRowVisible = false;
 		this.dirtyCells = [];
@@ -522,7 +526,6 @@ export class EditDataGridPanel extends GridParentComponent {
 				// so clear any existing client-side edit and refresh on-screen data
 				// do not refresh the whole dataset as it will move the focus away to the first row.
 				//
-				this.currentEditCellValue = undefined;
 				this.dirtyCells = [];
 				let row = this.currentCell.row;
 				this.resetCurrentCell();
@@ -761,6 +764,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			isEditable: false,
 			isDirty: false
 		};
+		this.currentEditCellValue = undefined;
 	}
 
 	private setCurrentCell(row: number, column: number) {
@@ -1066,7 +1070,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			cellClasses += ' missing-value';
 		}
 		else if (Services.DBCellValue.isDBCellValue(value)) {
-			valueToDisplay = (value.displayValue + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			valueToDisplay = (value.displayValue + '');
 			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
 		}
 		else if (typeof value === 'string' || (value && value.text)) {

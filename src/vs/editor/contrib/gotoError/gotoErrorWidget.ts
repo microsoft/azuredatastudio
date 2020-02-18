@@ -134,10 +134,10 @@ class MessageWidget {
 					detailsElement.appendChild(codeElement);
 				} else {
 					this._codeLink = dom.$('a.code-link');
-					this._codeLink.setAttribute('href', `${code.link.toString()}`);
+					this._codeLink.setAttribute('href', `${code.target.toString()}`);
 
 					this._codeLink.onclick = (e) => {
-						this._openerService.open(code.link);
+						this._openerService.open(code.target);
 						e.preventDefault();
 						e.stopPropagation();
 					};
@@ -317,6 +317,7 @@ export class MarkerNavigationWidget extends PeekViewWidget {
 		this._icon.className = `codicon ${SeverityIcon.className(MarkerSeverity.toSeverity(this._severity))}`;
 
 		this.editor.revealPositionInCenter(position, ScrollType.Smooth);
+		this.editor.focus();
 	}
 
 	updateMarker(marker: IMarker): void {

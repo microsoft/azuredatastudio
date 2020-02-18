@@ -14,7 +14,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/contrib/jobManagement/browser/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import { JobCacheObject } from 'sql/workbench/services/jobManagement/common/jobManagementService';
-import { EditJobAction, DeleteJobAction, NewJobAction, RunJobAction } from 'sql/workbench/services/jobManagement/browser/jobActions';
+import { EditJobAction, DeleteJobAction, NewJobAction, RunJobAction } from 'sql/workbench/contrib/jobManagement/browser/jobActions';
 import { JobManagementUtilities } from 'sql/workbench/services/jobManagement/browser/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/workbench/services/jobManagement/common/interfaces';

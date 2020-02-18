@@ -10,7 +10,9 @@ import { DialogInfoBase, FieldType, FieldInfo, SectionInfo, LabelPosition, FontW
 import { Model } from './model';
 import { getDateTimeString } from '../utils';
 import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
+import * as azurecore from '../../../azurecore/src/azurecore';
 import * as loc from '../localizedConstants';
+import { EOL } from 'os';
 
 const localize = nls.loadMessageBundle();
 
@@ -66,14 +68,15 @@ interface CreateContext {
 	onNewInputComponentCreated: (name: string, component: azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent, inputValueTransformer?: InputValueTransformer) => void;
 }
 
-export function createTextInput(view: azdata.ModelView, inputInfo: { defaultValue?: string, ariaLabel: string, required?: boolean, placeHolder?: string, width?: string }): azdata.InputBoxComponent {
+export function createTextInput(view: azdata.ModelView, inputInfo: { defaultValue?: string, ariaLabel: string, required?: boolean, placeHolder?: string, width?: string, enabled?: boolean }): azdata.InputBoxComponent {
 	return view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		value: inputInfo.defaultValue,
 		ariaLabel: inputInfo.ariaLabel,
 		inputType: 'text',
 		required: inputInfo.required,
 		placeHolder: inputInfo.placeHolder,
-		width: inputInfo.width
+		width: inputInfo.width,
+		enabled: inputInfo.enabled
 	}).component();
 }
 
@@ -326,7 +329,8 @@ function processTextField(context: FieldContext): void {
 		ariaLabel: context.fieldInfo.label,
 		required: context.fieldInfo.required,
 		placeHolder: context.fieldInfo.placeHolder,
-		width: context.fieldInfo.inputWidth
+		width: context.fieldInfo.inputWidth,
+		enabled: context.fieldInfo.enabled
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelPosition);
@@ -421,32 +425,31 @@ function processCheckboxField(context: FieldContext): void {
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, checkbox);
 }
 
-// Values used for the Azure Account field inputs
-let selectedAccount: azdata.Account | undefined;
-let subscriptionDropdown: azdata.DropDownComponent;
-let resourceGroupDropdown: azdata.DropDownComponent;
-const accountValueToAccountMap = new Map<string, azdata.Account>();
-const subscriptionValueToSubscriptionMap = new Map<string, azureResource.AzureResourceSubscription>();
-
 /**
  * An Azure Account field consists of 3 separate dropdown fields - Account, Subscription and Resource Group
  * @param context The context to use to create the field
  */
 function processAzureAccountField(context: AzureAccountFieldContext): void {
-	if (subscriptionDropdown) {
-		throw new Error(localize('onlyOneAzureAccountField', "Only one Azure Account field is supported at this time"));
-	}
+	const accountValueToAccountMap = new Map<string, azdata.Account>();
+	const subscriptionValueToSubscriptionMap = new Map<string, azureResource.AzureResourceSubscription>();
 	const accountDropdown = createAzureAccountDropdown(context);
-	createAzureSubscriptionDropdown(context, accountDropdown);
-	createAzureResourceGroupsDropdown(context, subscriptionDropdown);
+	const subscriptionDropdown = createAzureSubscriptionDropdown(context, subscriptionValueToSubscriptionMap);
+	const resourceGroupDropdown = createAzureResourceGroupsDropdown(context, accountDropdown, accountValueToAccountMap, subscriptionDropdown, subscriptionValueToSubscriptionMap);
+	const locationDropdown = createAzureLocationDropdown(context);
+	accountDropdown.onValueChanged(selectedItem => {
+		const selectedAccount = accountValueToAccountMap.get(selectedItem.selected)!;
+		handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
+	});
 	azdata.accounts.getAllAccounts().then((accounts: azdata.Account[]) => {
-		accountDropdown.values = accounts.map(account => {
+		// Append a blank value for the "default" option if the field isn't required, this will clear all the dropdowns when selected
+		const dropdownValues = context.fieldInfo.required ? [] : [''];
+		accountDropdown.values = dropdownValues.concat(accounts.map(account => {
 			const displayName = `${account.displayInfo.displayName} (${account.displayInfo.userId})`;
 			accountValueToAccountMap.set(displayName, account);
 			return displayName;
-		});
-		selectedAccount = accounts.length > 0 ? accounts[0] : undefined;
-		handleSelectedAccountChanged();
+		}));
+		const selectedAccount = accountDropdown.value ? accountValueToAccountMap.get(accountDropdown.value.toString()) : undefined;
+		handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
 	}, (err: any) => console.log(`Unexpected error fetching accounts: ${err}`));
 }
 
@@ -464,19 +467,21 @@ function createAzureAccountDropdown(context: AzureAccountFieldContext): azdata.D
 		required: context.fieldInfo.required,
 		label: loc.account
 	});
-	context.onNewInputComponentCreated('', accountDropdown);
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, accountDropdown);
 	addLabelInputPairToContainer(context.view, context.components, label, accountDropdown, context.fieldInfo.labelPosition);
 	return accountDropdown;
 }
 
-function createAzureSubscriptionDropdown(context: AzureAccountFieldContext, accountDropdown: azdata.DropDownComponent): void {
+function createAzureSubscriptionDropdown(
+	context: AzureAccountFieldContext,
+	subscriptionValueToSubscriptionMap: Map<string, azureResource.AzureResourceSubscription>): azdata.DropDownComponent {
 	const label = createLabel(context.view, {
 		text: loc.subscription,
 		required: context.fieldInfo.required,
 		width: context.fieldInfo.labelWidth,
 		fontWeight: context.fieldInfo.labelFontWeight
 	});
-	subscriptionDropdown = createDropdown(context.view, {
+	const subscriptionDropdown = createDropdown(context.view, {
 		width: context.fieldInfo.inputWidth,
 		editable: false,
 		required: context.fieldInfo.required,
@@ -486,34 +491,62 @@ function createAzureSubscriptionDropdown(context: AzureAccountFieldContext, acco
 		return subscriptionValueToSubscriptionMap.get(inputValue)?.id || inputValue;
 	});
 	addLabelInputPairToContainer(context.view, context.components, label, subscriptionDropdown, context.fieldInfo.labelPosition);
-	accountDropdown.onValueChanged(selectedItem => {
-		selectedAccount = accountValueToAccountMap.get(selectedItem.selected);
-		handleSelectedAccountChanged();
-	});
+	return subscriptionDropdown;
 }
 
-function handleSelectedAccountChanged(): void {
+function handleSelectedAccountChanged(
+	context: AzureAccountFieldContext,
+	selectedAccount: azdata.Account | undefined,
+	subscriptionDropdown: azdata.DropDownComponent,
+	subscriptionValueToSubscriptionMap: Map<string, azureResource.AzureResourceSubscription>,
+	resourceGroupDropdown: azdata.DropDownComponent,
+	locationDropdown: azdata.DropDownComponent
+): void {
 	subscriptionValueToSubscriptionMap.clear();
 	subscriptionDropdown.values = [];
-	vscode.commands.executeCommand('azure.accounts.getSubscriptions', selectedAccount).then(subscriptions => {
-		subscriptionDropdown.values = (<azureResource.AzureResourceSubscription[]>subscriptions).map(subscription => {
+	handleSelectedSubscriptionChanged(context, selectedAccount, undefined, resourceGroupDropdown);
+	if (selectedAccount) {
+		if (locationDropdown.values && locationDropdown.values.length === 0) {
+			locationDropdown.values = context.fieldInfo.locations;
+		}
+	} else {
+		locationDropdown.values = [];
+		return;
+	}
+	vscode.commands.executeCommand<azurecore.GetSubscriptionsResult>('azure.accounts.getSubscriptions', selectedAccount, true /*ignoreErrors*/).then(response => {
+		if (!response) {
+			return;
+		}
+		if (response.errors.length > 0) {
+			context.container.message = {
+				text: response.errors.join(EOL) || '',
+				description: '',
+				level: azdata.window.MessageLevel.Warning
+			};
+		}
+		subscriptionDropdown.values = response.subscriptions.map(subscription => {
 			const displayName = `${subscription.name} (${subscription.id})`;
 			subscriptionValueToSubscriptionMap.set(displayName, subscription);
 			return displayName;
 		}).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()));
 		const selectedSubscription = subscriptionDropdown.values.length > 0 ? subscriptionValueToSubscriptionMap.get(subscriptionDropdown.values[0]) : undefined;
-		handleSelectedSubscriptionChanged(selectedSubscription);
-	}, err => { console.log(`Unexpected error fetching subscriptions for account ${selectedAccount?.displayInfo.displayName} (${selectedAccount?.key.accountId}): ${err}`); });
+		handleSelectedSubscriptionChanged(context, selectedAccount, selectedSubscription, resourceGroupDropdown);
+	}, err => { vscode.window.showErrorMessage(localize('azure.accounts.unexpectedSubscriptionsError', "Unexpected error fetching subscriptions for account {0} ({1}): {2}", selectedAccount?.displayInfo.displayName, selectedAccount?.key.accountId, err.message)); });
 }
 
-function createAzureResourceGroupsDropdown(context: AzureAccountFieldContext, subscriptionDropdown: azdata.DropDownComponent): void {
+function createAzureResourceGroupsDropdown(
+	context: AzureAccountFieldContext,
+	accountDropdown: azdata.DropDownComponent,
+	accountValueToAccountMap: Map<string, azdata.Account>,
+	subscriptionDropdown: azdata.DropDownComponent,
+	subscriptionValueToSubscriptionMap: Map<string, azureResource.AzureResourceSubscription>): azdata.DropDownComponent {
 	const label = createLabel(context.view, {
 		text: loc.resourceGroup,
 		required: context.fieldInfo.required,
 		width: context.fieldInfo.labelWidth,
 		fontWeight: context.fieldInfo.labelFontWeight
 	});
-	resourceGroupDropdown = createDropdown(context.view, {
+	const resourceGroupDropdown = createDropdown(context.view, {
 		width: context.fieldInfo.inputWidth,
 		editable: false,
 		required: context.fieldInfo.required,
@@ -522,16 +555,62 @@ function createAzureResourceGroupsDropdown(context: AzureAccountFieldContext, su
 	context.onNewInputComponentCreated(context.fieldInfo.resourceGroupVariableName!, resourceGroupDropdown);
 	addLabelInputPairToContainer(context.view, context.components, label, resourceGroupDropdown, context.fieldInfo.labelPosition);
 	subscriptionDropdown.onValueChanged(selectedItem => {
+		const selectedAccount = !accountDropdown || !accountDropdown.value ? undefined : accountValueToAccountMap.get(accountDropdown.value.toString());
 		const selectedSubscription = subscriptionValueToSubscriptionMap.get(selectedItem.selected);
-		handleSelectedSubscriptionChanged(selectedSubscription);
+		handleSelectedSubscriptionChanged(context, selectedAccount, selectedSubscription, resourceGroupDropdown);
 	});
+	return resourceGroupDropdown;
 }
 
-function handleSelectedSubscriptionChanged(selectedSubscription: azureResource.AzureResourceSubscription | undefined): void {
+function handleSelectedSubscriptionChanged(context: AzureAccountFieldContext, selectedAccount: azdata.Account | undefined, selectedSubscription: azureResource.AzureResourceSubscription | undefined, resourceGroupDropdown: azdata.DropDownComponent): void {
 	resourceGroupDropdown.values = [];
-	vscode.commands.executeCommand('azure.accounts.getResourceGroups', selectedAccount, selectedSubscription).then(resourceGroups => {
-		resourceGroupDropdown.values = (<azureResource.AzureResourceSubscription[]>resourceGroups).map(resourceGroup => resourceGroup.name).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()));
-	}, err => { console.log(`Unexpected error fetching resource groups for subscription ${selectedSubscription?.name} (${selectedSubscription?.id}): ${err}`); });
+	if (!selectedAccount || !selectedSubscription) {
+		// Don't need to execute command if we don't have both an account and subscription selected
+		return;
+	}
+	vscode.commands.executeCommand<azurecore.GetResourceGroupsResult>('azure.accounts.getResourceGroups', selectedAccount, selectedSubscription, true /*ignoreErrors*/).then(response => {
+		if (!response) {
+			return;
+		}
+		if (response.errors.length > 0) {
+			context.container.message = {
+				text: response.errors.join(EOL) || '',
+				description: '',
+				level: azdata.window.MessageLevel.Warning
+			};
+		}
+		resourceGroupDropdown.values = response.resourceGroups.map(resourceGroup => resourceGroup.name).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()));
+	}, err => { vscode.window.showErrorMessage(localize('azure.accounts.unexpectedResourceGroupsError', "Unexpected error fetching resource groups for subscription {0} ({1}): {2}", selectedSubscription?.name, selectedSubscription?.id, err.message)); });
+}
+
+/**
+ * Map of known Azure location friendly names to their internal names
+ */
+const knownAzureLocationNameMappings = new Map<string, string>([
+	['East US', 'eastus'],
+	['East US 2', 'eastus2'],
+	['Central US', 'centralus']
+]);
+
+function createAzureLocationDropdown(context: AzureAccountFieldContext): azdata.DropDownComponent {
+	const label = createLabel(context.view, {
+		text: loc.location,
+		required: context.fieldInfo.required,
+		width: context.fieldInfo.labelWidth,
+		fontWeight: context.fieldInfo.labelFontWeight
+	});
+	const locationDropdown = createDropdown(context.view, {
+		width: context.fieldInfo.inputWidth,
+		editable: false,
+		required: context.fieldInfo.required,
+		label: loc.location,
+		values: context.fieldInfo.locations
+	});
+	context.onNewInputComponentCreated(context.fieldInfo.locationVariableName!, locationDropdown, (inputValue: string) => {
+		return knownAzureLocationNameMappings.get(inputValue) || inputValue;
+	});
+	addLabelInputPairToContainer(context.view, context.components, label, locationDropdown, context.fieldInfo.labelPosition);
+	return locationDropdown;
 }
 
 export function isValidSQLPassword(password: string, userName: string = 'sa'): boolean {

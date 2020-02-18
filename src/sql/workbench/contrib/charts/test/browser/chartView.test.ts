@@ -6,7 +6,7 @@
 import * as assert from 'assert';
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
-import { TestLayoutService } from 'vs/workbench/test/workbenchTestServices';
+import { TestLayoutService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
