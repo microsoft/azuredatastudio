@@ -207,7 +207,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	// Compares database name with existing databases on the server
-	protected databaseNameExists(n: string): boolean {
+	public databaseNameExists(n: string): boolean {
 		for (let i = 0; i < this.databaseValues.length; ++i) {
 			if (this.databaseValues[i].toLowerCase() === n.toLowerCase()) {
 				// database name exists
