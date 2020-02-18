@@ -348,8 +348,7 @@ class WelcomePage extends Disposable {
 				}
 			}
 		}));
-		// {{SQL CARBON EDIT}} - Add onWelcomePageOpen event
-		this.extensionService.activateByEvent('onWelcomePageOpen');
+		this.extensionService.activateByEvent('onWelcomePageOpen'); // {{SQL CARBON EDIT}} - Add onWelcomePageOpen event
 	}
 
 	private createListEntries(recents: (IRecentWorkspace | IRecentFolder)[]) {
