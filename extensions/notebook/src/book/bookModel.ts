@@ -150,8 +150,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 							}
 						}
 						else {
-							if (!this._allNotebooks.get(pathToNotebook.toLocaleLowerCase())) {
-								this._allNotebooks.set(pathToNotebook.toLocaleLowerCase(), notebook);
+							if (!this._allNotebooks.get(pathToNotebook)) {
+								this._allNotebooks.set(pathToNotebook, notebook);
 								notebooks.push(notebook);
 							}
 						}
@@ -206,7 +206,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	}
 
 	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {
-		let notebook = !this.openAsUntitled ? this._allNotebooks.get(uri.fsPath.toLocaleLowerCase()) : this._allNotebooks.get(path.basename(uri.fsPath));
+		let notebook = !this.openAsUntitled ? this._allNotebooks.get(uri.fsPath) : this._allNotebooks.get(path.basename(uri.fsPath));
 		let result: azdata.nb.NavigationResult;
 		if (notebook) {
 			result = {
