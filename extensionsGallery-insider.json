@@ -2933,7 +2933,8 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/ecirpnaes/DbSnapshotCreator/master/README.md"														},
+									"source": "https://raw.githubusercontent.com/ecirpnaes/DbSnapshotCreator/master/README.md"
+								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
 									"source": "https://raw.githubusercontent.com/ecirpnaes/DbSnapshotCreator/master/package.json"
@@ -3013,10 +3014,68 @@
 									"value": "*"
 								}
 							]
-						}
+						},
+
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "62",
+					"extensionName": "schema-visualization",
+					"displayName": "Schema Visualization",
+					"shortDescription": "Visualization of databases",
+					"publisher": {
+						"displayName": "Jens Hunt",
+						"publisherId": "R0tenur",
+						"publisherName": "R0tenur"
+					},
+					"versions": [
+						{
+							"version": "0.2.0",
+							"lastUpdated": "2/2/2020",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/R0tenur/visualization/releases/tag/v0.2.0"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/R0tenur/visualization/master/images/logo.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/R0tenur/visualization/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/R0tenur/visualization/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/R0tenur/visualization/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/R0tenur/visualization"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
@@ -3025,7 +3084,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 51
+							"count": 52
 						}
 					]
 				}
