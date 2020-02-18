@@ -300,8 +300,8 @@ export abstract class AzureAuth {
 		};
 
 		try {
-			await this._tokenCache.addAccount(`${account.accountId}_${resource.id}_access`, JSON.stringify(accessToken));
-			await this._tokenCache.addAccount(`${account.accountId}_${resource.id}_refresh`, JSON.stringify(refreshToken));
+			await this._tokenCache.saveCredential(`${account.accountId}_${resource.id}_access`, JSON.stringify(accessToken));
+			await this._tokenCache.saveCredential(`${account.accountId}_${resource.id}_refresh`, JSON.stringify(refreshToken));
 		} catch (ex) {
 			console.error('Error when storing tokens.', ex);
 			throw new Error(msg);

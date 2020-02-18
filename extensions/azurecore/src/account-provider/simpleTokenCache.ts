@@ -42,7 +42,7 @@ export class SimpleTokenCache {
 		this.keytar = keytar;
 	}
 
-	async addAccount(id: string, key: string): Promise<void> {
+	async saveCredential(id: string, key: string): Promise<void> {
 		try {
 			if (key.length > 2500) { // Windows limitation
 				throw new Error('Key length is longer than 2500 chars');
