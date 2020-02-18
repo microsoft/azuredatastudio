@@ -701,6 +701,43 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "name": "attestationProtocol",
+          "displayName": "%mssql.connectionOptions.enclaveAttestationProtocol.displayName%",
+          "description": "%mssql.connectionOptions.enclaveAttestationProtocol.description%",
+          "groupName": "Security",
+          "valueType": "category",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": [
+            {
+              "displayName": "%mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS%",
+              "name": "HGS"
+            },
+            {
+              "displayName": "%mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS%",
+              "name": "AAS"
+            }
+          ],
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
+          "name": "enclaveAttestationUrl",
+          "displayName": "%mssql.connectionOptions.enclaveAttestationUrl.displayName%",
+          "description": "%mssql.connectionOptions.enclaveAttestationUrl.description%",
+          "groupName": "Security",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
           "name": "encrypt",
           "displayName": "%mssql.connectionOptions.encrypt.displayName%",
           "description": "%mssql.connectionOptions.encrypt.description%",
