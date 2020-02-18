@@ -806,79 +806,99 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 		// namespace: debug
 		const debug: typeof vscode.debug = {
 			get activeDebugSession() {
-				throw new Error('Debug api is not allowed in Azure Data Studio');
-				return undefined;
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			get activeDebugConsole() {
-				throw new Error('Debug api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return undefined!;
 			},
 			get breakpoints() {
-				throw new Error('Debug api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return [];
 			},
 			onDidStartDebugSession(listener, thisArg?, disposables?) {
-				throw new Error('Debug api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			onDidTerminateDebugSession(listener, thisArg?, disposables?) {
-				throw new Error('Debug api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			onDidChangeActiveDebugSession(listener, thisArg?, disposables?) {
-				throw new Error('Debug api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			onDidReceiveDebugSessionCustomEvent(listener, thisArg?, disposables?) {
-				throw new Error('Debug api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			onDidChangeBreakpoints(listener, thisArgs?, disposables?) {
-				throw new Error('Debug api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			registerDebugConfigurationProvider(debugType: string, provider: vscode.DebugConfigurationProvider) {
-				throw new Error('Debug api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			registerDebugAdapterDescriptorFactory(debugType: string, factory: vscode.DebugAdapterDescriptorFactory) {
-				throw new Error('Debug api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			registerDebugAdapterTrackerFactory(debugType: string, factory: vscode.DebugAdapterTrackerFactory) {
-				throw new Error('Debug api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			startDebugging(folder: vscode.WorkspaceFolder | undefined, nameOrConfig: string | vscode.DebugConfiguration, parentSessionOrOptions?: vscode.DebugSession | vscode.DebugSessionOptions) {
-				throw new Error('Debug api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			addBreakpoints(breakpoints: vscode.Breakpoint[]) {
-				throw new Error('Debug api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			removeBreakpoints(breakpoints: vscode.Breakpoint[]) {
-				throw new Error('Debug api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			asDebugSourceUri(source: vscode.DebugProtocolSource, session?: vscode.DebugSession): vscode.Uri {
-				throw new Error('Debug api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			}
 		};
 
 		const tasks: typeof vscode.tasks = { // {{SQL CARBON EDIT}} disable tasks api
 			registerTaskProvider: (type: string, provider: vscode.TaskProvider) => {
-				throw new Error('Tasks api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Tasks API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			fetchTasks: (filter?: vscode.TaskFilter): Thenable<vscode.Task[]> => {
-				throw new Error('Tasks api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Tasks API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			executeTask: (task: vscode.Task): Thenable<vscode.TaskExecution> => {
-				throw new Error('Tasks api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Tasks API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			get taskExecutions(): vscode.TaskExecution[] {
-				throw new Error('Tasks api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Tasks API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			onDidStartTask: (listeners, thisArgs?, disposables?) => {
-				throw new Error('Tasks api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Tasks API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			onDidEndTask: (listeners, thisArgs?, disposables?) => {
-				throw new Error('Tasks api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Tasks API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			onDidStartTaskProcess: (listeners, thisArgs?, disposables?) => {
-				throw new Error('Tasks api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Tasks API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			onDidEndTaskProcess: (listeners, thisArgs?, disposables?) => {
-				throw new Error('Tasks api is not allowed in Azure Data Studio');
+				extHostLogService.warn('Tasks API is disabled in Azure Data Studio');
+				return undefined!;
 			}
 		};
 
