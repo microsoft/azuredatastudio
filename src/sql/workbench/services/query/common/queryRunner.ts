@@ -44,8 +44,8 @@ export interface IQueryMessage extends azdata.IResultMessage {
 */
 export default class QueryRunner extends Disposable {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
-	private _resultLineOffset: number;
-	private _resultColumnOffset: number;
+	private _resultLineOffset?: number;
+	private _resultColumnOffset?: number;
 	private _totalElapsedMilliseconds: number = 0;
 	private _isExecuting: boolean = false;
 	private _hasCompleted: boolean = false;
@@ -249,10 +249,10 @@ export default class QueryRunner extends Disposable {
 
 		this._batchSets.map(batch => {
 			if (batch.selection) {
-				batch.selection.startLine += this._resultLineOffset;
-				batch.selection.startColumn += this._resultColumnOffset;
-				batch.selection.endLine += this._resultLineOffset;
-				batch.selection.endColumn += this._resultColumnOffset;
+				batch.selection.startLine += this._resultLineOffset!;
+				batch.selection.startColumn += this._resultColumnOffset!;
+				batch.selection.endLine += this._resultLineOffset!;
+				batch.selection.endColumn += this._resultColumnOffset!;
 			}
 		});
 
@@ -278,10 +278,10 @@ export default class QueryRunner extends Disposable {
 
 		// Recalculate the start and end lines, relative to the result line offset
 		if (batch.selection) {
-			batch.selection.startLine += this._resultLineOffset;
-			batch.selection.startColumn += this._resultColumnOffset;
-			batch.selection.endLine += this._resultLineOffset;
-			batch.selection.endColumn += this._resultColumnOffset;
+			batch.selection.startLine += this._resultLineOffset!;
+			batch.selection.startColumn += this._resultColumnOffset!;
+			batch.selection.endLine += this._resultLineOffset!;
+			batch.selection.endColumn += this._resultColumnOffset!;
 		}
 
 		// Set the result sets as an empty array so that as result sets complete we can add to the list

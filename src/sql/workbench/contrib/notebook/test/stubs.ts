@@ -5,15 +5,16 @@
 
 import { nb, IConnectionProfile } from 'azdata';
 import * as vsEvent from 'vs/base/common/event';
-import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, IKernelPreference, INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, IKernelPreference } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
 import { NotebookChangeType, CellType } from 'sql/workbench/services/notebook/common/contracts';
-import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, INotebookProvider, INavigationProvider, INotebookParams, INotebookSection, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, INotebookProvider, INavigationProvider, INotebookParams, INotebookSection, ICellEditorProvider, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IStandardKernelWithProvider } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
+import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
-import { NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
+import { NotebookFindMatch } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 import { URI } from 'vs/workbench/workbench.web.api';
-import { RenderMimeRegistry } from 'sql/workbench/contrib/notebook/browser/outputs/registry';
+import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export class NotebookModelStub implements INotebookModel {

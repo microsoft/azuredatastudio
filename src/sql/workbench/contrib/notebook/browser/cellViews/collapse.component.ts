@@ -6,7 +6,7 @@ import 'vs/css!./code';
 
 import { OnInit, Component, Input, ElementRef, ViewChild, SimpleChange, OnChanges } from '@angular/core';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
-import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { localize } from 'vs/nls';
 
 export const COLLAPSE_SELECTOR: string = 'collapse-component';

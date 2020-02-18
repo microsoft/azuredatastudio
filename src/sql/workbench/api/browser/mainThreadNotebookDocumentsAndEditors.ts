@@ -24,7 +24,7 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 import { INotebookService, INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ISingleNotebookEditOperation, NotebookChangeKind } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
-import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
