@@ -45,6 +45,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}}
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions'; // {{SQL CARBON EDIT}}
 
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
@@ -267,6 +268,7 @@ class WelcomePage extends Disposable {
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IHostService private readonly hostService: IHostService,
 		@IProductService private readonly productService: IProductService,
+		@IExtensionService private readonly extensionService: IExtensionService // {{SQL CARBON EDIT}}
 
 	) {
 		super();
@@ -346,6 +348,8 @@ class WelcomePage extends Disposable {
 				}
 			}
 		}));
+		// {{SQL CARBON EDIT}} - Add onWelcomePageOpen event
+		this.extensionService.activateByEvent('onWelcomePageOpen');
 	}
 
 	private createListEntries(recents: (IRecentWorkspace | IRecentFolder)[]) {

@@ -14,7 +14,8 @@
   },
   "activationEvents": [
     "onCommand:azdata.resource.deploy",
-    "onCommand:azdata.openNotebookInputDialog"
+    "onCommand:azdata.openNotebookInputDialog",
+    "onWelcomePageOpen"
   ],
   "main": "./out/main",
   "repository": {
