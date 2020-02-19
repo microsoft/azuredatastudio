@@ -136,6 +136,8 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 				this._selectBox.disable();
 			}
 		}
+
+		this._selectBox.selectElem.required = this.required;
 	}
 
 	private getValues(): string[] {
@@ -215,6 +217,14 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	private setValuesProperties(properties: azdata.DropDownProperties, values: string[] | azdata.CategoryValue[]): void {
 		properties.values = values;
+	}
+
+	public get required(): boolean {
+		return this.getPropertyOrDefault<azdata.DropDownProperties, boolean>((props) => props.required, false);
+	}
+
+	public set required(newValue: boolean) {
+		this.setPropertyFromUI<azdata.DropDownProperties, boolean>((props, value) => props.required = value, newValue);
 	}
 
 	public focus(): void {
