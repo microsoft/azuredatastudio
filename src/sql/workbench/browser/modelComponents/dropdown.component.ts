@@ -138,6 +138,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 		}
 
 		this._selectBox.selectElem.required = this.required;
+		this._editableDropdown.inputElement.required = this.required;
 	}
 
 	private getValues(): string[] {
