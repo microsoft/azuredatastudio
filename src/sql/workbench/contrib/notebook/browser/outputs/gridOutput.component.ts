@@ -37,6 +37,7 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -138,7 +139,7 @@ class DataResourceTable extends GridTableBase<any> {
 	private _chartContainer: HTMLElement;
 
 	constructor(source: IDataResource,
-		documentUri: string,
+		public readonly documentUri: string,
 		state: GridTableState,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IInstantiationService protected instantiationService: IInstantiationService,
@@ -148,7 +149,7 @@ class DataResourceTable extends GridTableBase<any> {
 		@ISerializationService private _serializationService: ISerializationService
 	) {
 		super(state, createResultSet(source), contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
-		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, documentUri);
+		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.documentUri);
 	}
 
 	get gridDataProvider(): IGridDataProvider {
@@ -421,7 +422,8 @@ export class NotebookChartAction extends ToggleableAction {
 	public static SHOWTABLE_LABEL = localize('notebook.showTable', "Show table");
 	public static ICON = 'viewChart';
 
-	constructor(private resourceTable: DataResourceTable) {
+	constructor(private resourceTable: DataResourceTable,
+		@IQueryModelService private queryModelService: IQueryModelService) {
 		super(NotebookChartAction.ID, {
 			toggleOnLabel: NotebookChartAction.SHOWTABLE_LABEL,
 			toggleOnClass: NotebookChartAction.ICON,
@@ -435,6 +437,8 @@ export class NotebookChartAction extends ToggleableAction {
 		this.resourceTable.toggleChartVisibility();
 		this.toggle(!this.state.isOn);
 		if (this.state.isOn) {
+			let queryRunner = this.queryModelService.getQueryRunner(this.resourceTable.documentUri);
+			this.resourceTable.queryRunner = queryRunner;
 			this.resourceTable.chart({ batchId: context.batchId, resultId: context.resultId });
 		}
 		return Promise.resolve(true);
