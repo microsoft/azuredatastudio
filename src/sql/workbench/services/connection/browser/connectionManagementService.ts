@@ -34,7 +34,7 @@ import * as errors from 'vs/base/common/errors';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
-import { ConnectionProfileGroup, IConnectionProfileGroup, IConnectionProfileGroupShape } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
@@ -638,11 +638,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	public saveProfileGroup(profile: IConnectionProfileGroupShape): Promise<IConnectionProfileGroup> {
+	public saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
 		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.AddServerGroup);
-		return this._connectionStore.saveProfileGroup(profile).then(group => {
+		return this._connectionStore.saveProfileGroup(profile).then(groupId => {
 			this._onAddConnectionProfile.fire(undefined);
-			return group;
+			return groupId;
 		});
 	}
 

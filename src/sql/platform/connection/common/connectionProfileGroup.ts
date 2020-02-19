@@ -9,11 +9,8 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { assign } from 'vs/base/common/objects';
 import { find } from 'vs/base/common/arrays';
 
-export interface IConnectionProfileGroup extends IConnectionProfileGroupShape {
+export interface IConnectionProfileGroup {
 	id: string;
-}
-
-export interface IConnectionProfileGroupShape {
 	parentId?: string;
 	name: string;
 	color?: string;

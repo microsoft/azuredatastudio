@@ -8,7 +8,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ConnectionConfig } from 'sql/platform/connection/common/connectionConfig';
 import { fixupConnectionCredentials } from 'sql/platform/connection/common/connectionInfo';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ConnectionProfileGroup, IConnectionProfileGroup, IConnectionProfileGroupShape } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -130,7 +130,7 @@ export class ConnectionStore {
 	 * @param profile the profile group to save
 	 * @returns a Promise that returns the id of connection group
 	 */
-	public saveProfileGroup(profile: IConnectionProfileGroupShape): Promise<IConnectionProfileGroup> {
+	public saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
 		return this.connectionConfig.addGroup(profile);
 	}
 

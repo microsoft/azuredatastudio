@@ -6,7 +6,7 @@
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
 import * as azdata from 'azdata';
-import { IConnectionProfileGroup, ConnectionProfileGroup, IConnectionProfileGroupShape } from 'sql/platform/connection/common/connectionProfileGroup';
+import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
@@ -124,7 +124,7 @@ export interface IConnectionManagementService {
 
 	getActiveConnections(providers?: string[]): ConnectionProfile[];
 
-	saveProfileGroup(profile: IConnectionProfileGroupShape): Promise<IConnectionProfileGroup>;
+	saveProfileGroup(profile: IConnectionProfileGroup): Promise<string>;
 
 	changeGroupIdForConnectionGroup(source: IConnectionProfileGroup, target: IConnectionProfileGroup): Promise<void>;
 

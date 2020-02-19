@@ -5,7 +5,7 @@
 
 import { IConnectionManagementService, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks, IConnectionResult, INewConnectionParams }
 	from 'sql/platform/connection/common/connectionManagement';
-import { IConnectionProfileGroup, ConnectionProfileGroup, IConnectionProfileGroupShape } from 'sql/platform/connection/common/connectionProfileGroup';
+import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
@@ -83,7 +83,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return [];
 	}
 
-	saveProfileGroup(profile: IConnectionProfileGroupShape): Promise<IConnectionProfileGroup> {
+	saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
 		return undefined!;
 	}
 
