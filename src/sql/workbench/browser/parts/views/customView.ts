@@ -717,7 +717,7 @@ class TreeDataSource implements IAsyncDataSource<ITreeItem, ITreeItem> {
 			}
 		}
 		if (this.treeView.dataProvider) {
-			return this.withProgress(this.treeView.dataProvider.getChildren(node));
+			return await this.withProgress(this.treeView.dataProvider.getChildren(node));
 		}
 		return [];
 	}
