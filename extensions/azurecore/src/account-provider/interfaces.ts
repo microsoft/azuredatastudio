@@ -220,3 +220,8 @@ export interface AzureAccountSecurityToken {
  * an access token. The list of tenants correspond to the tenants in the account properties.
  */
 export type AzureAccountSecurityTokenCollection = { [tenantId: string]: AzureAccountSecurityToken };
+
+export interface Deferred<T> {
+	resolve: (result: T | Promise<T>) => void;
+	reject: (reason: any) => void;
+}

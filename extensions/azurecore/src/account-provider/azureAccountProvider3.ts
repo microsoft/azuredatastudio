@@ -8,7 +8,8 @@ import * as vscode from 'vscode';
 
 import {
 	AzureAccountProviderMetadata,
-	AzureAuthType
+	AzureAuthType,
+	Deferred
 } from './interfaces';
 
 import { SimpleTokenCache } from './simpleTokenCache';
@@ -16,10 +17,6 @@ import { AzureAuth, TokenResponse } from './auths/azureAuth';
 import { AzureAuthCodeGrant } from './auths/azureAuthCodeGrant';
 import { AzureDeviceCode } from './auths/azureDeviceCode';
 
-interface Deferred<T> {
-	resolve: (result: T | Promise<T>) => void;
-	reject: (reason: any) => void;
-}
 
 export class AzureAccountProvider implements azdata.AccountProvider {
 	private readonly authMappings = new Map<AzureAuthType, AzureAuth>();

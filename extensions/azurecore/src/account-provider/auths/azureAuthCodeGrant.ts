@@ -24,17 +24,14 @@ import {
 	Tenant,
 	Resource,
 	AzureAuthType,
-	Subscription
+	Subscription,
+	Deferred
 } from '../interfaces';
 
 import { SimpleWebServer } from './simpleWebServer';
 import { SimpleTokenCache } from '../simpleTokenCache';
 const localize = nls.loadMessageBundle();
 
-interface Deferred<T> {
-	resolve: (result: T | Promise<T>) => void;
-	reject: (reason: any) => void;
-}
 export class AzureAuthCodeGrant extends AzureAuth {
 	private static readonly USER_FRIENDLY_NAME: string = localize('azure.azureAuthCodeGrantName', 'Azure Auth Code Grant');
 	private server: SimpleWebServer;
