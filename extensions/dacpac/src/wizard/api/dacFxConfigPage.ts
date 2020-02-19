@@ -44,6 +44,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	protected async createServerDropdown(isTargetServer: boolean): Promise<azdata.FormComponent> {
 		const serverDropDownTitle = isTargetServer ? loc.targetServer : loc.sourceServer;
 		this.serverDropdown = this.view.modelBuilder.dropDown().withProperties({
+			required: true,
 			ariaLabel: serverDropDownTitle
 		}).component();
 
@@ -101,6 +102,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	protected async createDatabaseDropdown(): Promise<azdata.FormComponent> {
 		const databaseDropdownTitle = loc.sourceDatabase;
 		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+			required: true,
 			ariaLabel: databaseDropdownTitle
 		}).component();
 
