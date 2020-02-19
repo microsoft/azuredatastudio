@@ -37,9 +37,9 @@ export class AzureAuthCodeGrant extends AzureAuth {
 	private server: SimpleWebServer;
 
 	constructor(metadata: AzureAccountProviderMetadata,
-		_tokenCache: SimpleTokenCache,
-		_context: vscode.ExtensionContext) {
-		super(metadata, _tokenCache, _context, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME);
+		tokenCache: SimpleTokenCache,
+		context: vscode.ExtensionContext) {
+		super(metadata, tokenCache, context, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME);
 	}
 
 	public async autoOAuthCancelled(): Promise<void> {
@@ -133,7 +133,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 	}
 
 	private async addServerListeners(server: SimpleWebServer, nonce: string, loginUrl: string, authComplete: Promise<void>): Promise<string> {
-		const mediaPath = path.join(this._context.extensionPath, 'media');
+		const mediaPath = path.join(this.context.extensionPath, 'media');
 
 		// Utility function
 		const sendFile = async (res: http.ServerResponse, filePath: string, contentType: string): Promise<void> => {

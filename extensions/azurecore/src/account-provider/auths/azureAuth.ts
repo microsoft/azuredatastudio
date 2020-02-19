@@ -111,8 +111,8 @@ export abstract class AzureAuth {
 
 	constructor(
 		protected readonly metadata: AzureAccountProviderMetadata,
-		protected readonly _tokenCache: SimpleTokenCache,
-		protected readonly _context: vscode.ExtensionContext,
+		protected readonly tokenCache: SimpleTokenCache,
+		protected readonly context: vscode.ExtensionContext,
 		protected readonly authType: AzureAuthType,
 		public readonly userFriendlyName: string
 	) {
@@ -359,8 +359,8 @@ export abstract class AzureAuth {
 		}
 
 		try {
-			await this._tokenCache.saveCredential(`${account.accountId}_${resource.id}_access`, JSON.stringify(accessToken));
-			await this._tokenCache.saveCredential(`${account.accountId}_${resource.id}_refresh`, JSON.stringify(refreshToken));
+			await this.tokenCache.saveCredential(`${account.accountId}_${resource.id}_access`, JSON.stringify(accessToken));
+			await this.tokenCache.saveCredential(`${account.accountId}_${resource.id}_refresh`, JSON.stringify(refreshToken));
 		} catch (ex) {
 			console.error('Error when storing tokens.', ex);
 			throw new Error(msg);
@@ -368,8 +368,8 @@ export abstract class AzureAuth {
 	}
 
 	protected async getCachedToken(account: azdata.AccountKey, resource: Resource): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken }> {
-		const accessToken: AccessToken = JSON.parse(await this._tokenCache.getCredential(`${account.accountId}_${resource.id}_access`));
-		const refreshToken: RefreshToken = JSON.parse(await this._tokenCache.getCredential(`${account.accountId}_${resource.id}_refresh`));
+		const accessToken: AccessToken = JSON.parse(await this.tokenCache.getCredential(`${account.accountId}_${resource.id}_access`));
+		const refreshToken: RefreshToken = JSON.parse(await this.tokenCache.getCredential(`${account.accountId}_${resource.id}_refresh`));
 		if (!accessToken || !refreshToken) {
 			return undefined;
 		}
@@ -391,8 +391,8 @@ export abstract class AzureAuth {
 
 	protected async deleteCachedToken(account: azdata.AccountKey, resource: Resource): Promise<void> {
 		try {
-			await this._tokenCache.clearCredential(`${account.accountId}_${resource.id}_access`);
-			await this._tokenCache.clearCredential(`${account.accountId}_${resource.id}_refresh`);
+			await this.tokenCache.clearCredential(`${account.accountId}_${resource.id}_access`);
+			await this.tokenCache.clearCredential(`${account.accountId}_${resource.id}_refresh`);
 		} catch (ex) {
 			const msg = localize('azure.cacheErrrorRemove', "Error when removing your account from the cache.");
 			console.error('Error when removing tokens.', ex);
