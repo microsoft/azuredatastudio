@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Application } from '../../../../automation';
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -13,7 +13,7 @@ export function setup() {
 
 		it('Can open and edit existing file', async function () {
 			const testFilePath = path.join(os.tmpdir(), 'QueryEditorSmokeTest.sql');
-			fs.writeFileSync(testFilePath, '');
+			await fs.writeFile(testFilePath, '');
 			try {
 				const app = this.app as Application;
 				await app.workbench.queryEditors.openFile(testFilePath);
@@ -21,7 +21,7 @@ export function setup() {
 				await app.workbench.editor.waitForTypeInEditor(fileBaseName, 'SELECT * FROM sys.tables');
 			}
 			finally {
-				fs.unlinkSync(testFilePath);
+				await fs.unlink(testFilePath);
 			}
 		});
 	});

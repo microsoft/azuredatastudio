@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/agent/out/dialogs/scheduleDialog" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/agent/out/dialogs/scheduleDialog" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="scheduleDialog.newSchedule">
         <source xml:lang="en">New Schedule</source>
@@ -24,7 +24,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/proxyDialog" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/agent/out/dialogs/proxyDialog" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="createProxy.createProxy">
         <source xml:lang="en">Create Proxy</source>
@@ -96,11 +96,11 @@
       </trans-unit>
       <trans-unit id="createProxy.subSystemHeading">
         <source xml:lang="en">Active to the following subsytems</source>
-        <target state="translated">Activar en los subsistemas siguientes</target>
+        <target state="translated">Activo en los subsistemas siguientes</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/pickScheduleDialog" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/agent/out/dialogs/pickScheduleDialog" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="pickSchedule.jobSchedules">
         <source xml:lang="en">Job Schedules</source>
@@ -124,7 +124,7 @@
       </trans-unit>
       <trans-unit id="pickSchedule.scheduleID">
         <source xml:lang="en">ID</source>
-        <target state="translated">ID.</target>
+        <target state="translated">Id.</target>
       </trans-unit>
       <trans-unit id="pickSchedule.description">
         <source xml:lang="en">Description</source>
@@ -132,7 +132,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/operatorDialog" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/agent/out/dialogs/operatorDialog" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="createOperator.createOperator">
         <source xml:lang="en">Create Operator</source>
@@ -140,7 +140,7 @@
       </trans-unit>
       <trans-unit id="createOperator.editOperator">
         <source xml:lang="en">Edit Operator</source>
-        <target state="translated">Operador de edición</target>
+        <target state="translated">Editar operador</target>
       </trans-unit>
       <trans-unit id="createOperator.General">
         <source xml:lang="en">General</source>
@@ -196,7 +196,7 @@
       </trans-unit>
       <trans-unit id="createOperator.workdayBegin">
         <source xml:lang="en">Workday begin</source>
-        <target state="translated">Día laborable de inicio</target>
+        <target state="translated">Inicio del día laborable</target>
       </trans-unit>
       <trans-unit id="createOperator.workdayEnd">
         <source xml:lang="en">Workday end</source>
@@ -220,15 +220,15 @@
       </trans-unit>
       <trans-unit id="createOperator.AlertPagerColumnLabel">
         <source xml:lang="en">Pager</source>
-        <target state="translated">Pager</target>
+        <target state="translated">Buscapersonas</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/jobStepDialog" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/agent/out/dialogs/jobStepDialog" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="jobStepDialog.fileBrowserTitle">
         <source xml:lang="en">Locate Database Files - </source>
-        <target state="translated">Ubicar archivos de base de datos -</target>
+        <target state="translated">Ubicar archivos de base de datos - </target>
       </trans-unit>
       <trans-unit id="jobStepDialog.ok">
         <source xml:lang="en">OK</source>
@@ -296,7 +296,7 @@
       </trans-unit>
       <trans-unit id="jobStepDialog.failureAction">
         <source xml:lang="en">On failure action</source>
-        <target state="translated">En caso de falla</target>
+        <target state="translated">En caso de error</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.runAsUser">
         <source xml:lang="en">Run as user</source>
@@ -304,7 +304,7 @@
       </trans-unit>
       <trans-unit id="jobStepDialog.retryAttempts">
         <source xml:lang="en">Retry Attempts</source>
-        <target state="translated">Intentos de reintento</target>
+        <target state="translated">Número de reintentos</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.retryInterval">
         <source xml:lang="en">Retry Interval (minutes)</source>
@@ -416,7 +416,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/jobDialog" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/agent/out/dialogs/jobDialog" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="jobDialog.general">
         <source xml:lang="en">General</source>
@@ -440,7 +440,7 @@
       </trans-unit>
       <trans-unit id="jobDialog.blankJobNameError">
         <source xml:lang="en">The name of the job cannot be blank.</source>
-        <target state="translated">El nombre del trabajo no puede estar en vacío.</target>
+        <target state="translated">El nombre del trabajo no puede estar en blanco.</target>
       </trans-unit>
       <trans-unit id="jobDialog.name">
         <source xml:lang="en">Name</source>
@@ -568,7 +568,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/alertDialog" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/agent/out/dialogs/alertDialog" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="alertDialog.createAlert">
         <source xml:lang="en">Create Alert</source>
@@ -632,7 +632,7 @@
       </trans-unit>
       <trans-unit id="alertDialog.Severity002">
         <source xml:lang="en">002 - Reserved</source>
-        <target state="translated">002: Reservado</target>
+        <target state="translated">002 - Reservado</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity003">
         <source xml:lang="en">003 - Reserved</source>
@@ -652,11 +652,11 @@
       </trans-unit>
       <trans-unit id="alertDialog.Severity007">
         <source xml:lang="en">007 - Notification: Status Information</source>
-        <target state="translated">007 - notificación: Información del estado</target>
+        <target state="translated">007 - Notificación: Información del estado</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity008">
         <source xml:lang="en">008 - Notification: User Intervention Required</source>
-        <target state="translated">008: Notificación: Intervención del usuario requerida</target>
+        <target state="translated">008 - Notificación: Intervención del usuario requerida</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity009">
         <source xml:lang="en">009 - User Defined</source>
@@ -664,7 +664,7 @@
       </trans-unit>
       <trans-unit id="alertDialog.Severity010">
         <source xml:lang="en">010 - Information</source>
-        <target state="translated">010 - información</target>
+        <target state="translated">010 - Información</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity011">
         <source xml:lang="en">011 - Specified Database Object Not Found</source>
@@ -684,7 +684,7 @@
       </trans-unit>
       <trans-unit id="alertDialog.Severity015">
         <source xml:lang="en">015 - Syntax Error in SQL Statements</source>
-        <target state="translated">015 - Error de sintaxis en las sentencias SQL</target>
+        <target state="translated">015 - Error de sintaxis en las instrucciones SQL</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity016">
         <source xml:lang="en">016 - Miscellaneous User Error</source>
@@ -696,35 +696,35 @@
       </trans-unit>
       <trans-unit id="alertDialog.Severity018">
         <source xml:lang="en">018 - Nonfatal Internal Error</source>
-        <target state="translated">018: Error interno no crítico</target>
+        <target state="translated">018 - Error interno no crítico</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity019">
         <source xml:lang="en">019 - Fatal Error in Resource</source>
-        <target state="translated">019 - error fatal en el recurso</target>
+        <target state="translated">019 - Error grave en el recurso</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity020">
         <source xml:lang="en">020 - Fatal Error in Current Process</source>
-        <target state="translated">020-error fatal en el proceso actual</target>
+        <target state="translated">020 - Error grave en el proceso actual</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity021">
         <source xml:lang="en">021 - Fatal Error in Database Processes</source>
-        <target state="translated">021 - Error fatal en procesos de base de datos</target>
+        <target state="translated">021 - Error grave en procesos de base de datos</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity022">
         <source xml:lang="en">022 - Fatal Error: Table Integrity Suspect</source>
-        <target state="translated">022: Error fatal. Integridad de la tabla sospechosa</target>
+        <target state="translated">022: Error grave: Integridad de la tabla sospechosa</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity023">
         <source xml:lang="en">023 - Fatal Error: Database Integrity Suspect</source>
-        <target state="translated">023 - Error fatal: Es posible que se presente un problema de integridad de base de datos</target>
+        <target state="translated">023 - Error grave: Es posible que se presente un problema de integridad de base de datos</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity024">
         <source xml:lang="en">024 - Fatal Error: Hardware Error</source>
-        <target state="translated">024 - Error fatal: Error de Hardware</target>
+        <target state="translated">024 - Error grave: Error de Hardware</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity025">
         <source xml:lang="en">025 - Fatal Error</source>
-        <target state="translated">025: Error fatal</target>
+        <target state="translated">025 - Error grave</target>
       </trans-unit>
       <trans-unit id="alertDialog.AllDatabases">
         <source xml:lang="en">&lt;all databases&gt;</source>
@@ -760,7 +760,7 @@
       </trans-unit>
       <trans-unit id="alertDialog.OperatorPager">
         <source xml:lang="en">Pager</source>
-        <target state="translated">Pager</target>
+        <target state="translated">Buscapersonas</target>
       </trans-unit>
       <trans-unit id="alertDialog.NewOperator">
         <source xml:lang="en">New Operator</source>
@@ -792,7 +792,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/agentDialog" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/agent/out/dialogs/agentDialog" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="agentDialog.OK">
         <source xml:lang="en">OK</source>
@@ -804,7 +804,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/data/proxyData" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/agent/out/data/proxyData" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="proxyData.saveErrorMessage">
         <source xml:lang="en">Proxy update failed '{0}'</source>
@@ -820,7 +820,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/data/jobStepData" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/agent/out/data/jobStepData" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="jobStepData.saveErrorMessage">
         <source xml:lang="en">Step update failed '{0}'</source>
@@ -828,31 +828,31 @@
       </trans-unit>
       <trans-unit id="stepData.jobNameRequired">
         <source xml:lang="en">Job name must be provided</source>
-        <target state="translated">El nombre del trabajo debe ser proporcionado</target>
+        <target state="translated">Debe proporcionarse el nombre del trabajo</target>
       </trans-unit>
       <trans-unit id="stepData.stepNameRequired">
         <source xml:lang="en">Step name must be provided</source>
-        <target state="translated">Debe proporcionarse el nombre de paso</target>
+        <target state="translated">Debe proporcionarse el nombre del paso</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/data/jobData" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/agent/out/data/jobData" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="jobData.whenJobCompletes">
         <source xml:lang="en">When the job completes</source>
-        <target state="translated">Cuando termina el trabajo</target>
+        <target state="translated">Cuando el trabajo termina</target>
       </trans-unit>
       <trans-unit id="jobData.whenJobFails">
         <source xml:lang="en">When the job fails</source>
-        <target state="translated">Cuando el trabajo falla</target>
+        <target state="translated">Cuando el trabajo genera error</target>
       </trans-unit>
       <trans-unit id="jobData.whenJobSucceeds">
         <source xml:lang="en">When the job succeeds</source>
-        <target state="translated">Cuando el trabajo tiene éxito</target>
+        <target state="translated">Cuando el trabajo se completa correctamente</target>
       </trans-unit>
       <trans-unit id="jobData.jobNameRequired">
         <source xml:lang="en">Job name must be provided</source>
-        <target state="translated">El nombre del trabajo debe ser proporcionado</target>
+        <target state="translated">Debe proporcionarse el nombre del trabajo</target>
       </trans-unit>
       <trans-unit id="jobData.saveErrorMessage">
         <source xml:lang="en">Job update failed '{0}'</source>
@@ -868,11 +868,11 @@
       </trans-unit>
       <trans-unit id="jobData.newJobSuccessMessage">
         <source xml:lang="en">Job '{0}' created successfully</source>
-        <target state="translated">Trabajo "{0}" creado correctamente</target>
+        <target state="translated">El trabajo "{0}" se creó correctamente</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/data/alertData" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/agent/out/data/alertData" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="alertData.saveErrorMessage">
         <source xml:lang="en">Alert update failed '{0}'</source>
@@ -892,7 +892,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/mainController" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/agent/out/mainController" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="mainController.notImplemented">
         <source xml:lang="en">This feature is under development.  Check-out the latest insiders build if you'd like to try out the most recent changes!</source>

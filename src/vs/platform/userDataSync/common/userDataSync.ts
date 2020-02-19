@@ -18,15 +18,23 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IStringDictionary } from 'vs/base/common/collections';
 import { FormattingOptions } from 'vs/base/common/jsonFormatter';
 import { URI } from 'vs/base/common/uri';
+import { isEqual } from 'vs/base/common/resources';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
-const CONFIGURATION_SYNC_STORE_KEY = 'configurationSync.store';
+export const CONFIGURATION_SYNC_STORE_KEY = 'configurationSync.store';
 
-export const DEFAULT_IGNORED_SETTINGS = [
-	CONFIGURATION_SYNC_STORE_KEY,
-	'sync.enable',
-	'sync.enableSettings',
-	'sync.enableExtensions',
-];
+export interface ISyncConfiguration {
+	sync: {
+		enable: boolean,
+		enableSettings: boolean,
+		enableKeybindings: boolean,
+		enableUIState: boolean,
+		enableExtensions: boolean,
+		keybindingsPerPlatform: boolean,
+		ignoredExtensions: string[],
+		ignoredSettings: string[]
+	}
+}
 
 export function registerConfiguration(): IDisposable {
 	const ignoredSettingsSchemaId = 'vscode://schemas/ignoredSettings';
@@ -39,27 +47,33 @@ export function registerConfiguration(): IDisposable {
 		properties: {
 			'sync.enable': {
 				type: 'boolean',
-				description: localize('sync.enable', "Enable synchronization."),
 				default: false,
-				scope: ConfigurationScope.APPLICATION
+				scope: ConfigurationScope.APPLICATION,
+				deprecationMessage: 'deprecated'
 			},
 			'sync.enableSettings': {
 				type: 'boolean',
-				description: localize('sync.enableSettings', "Enable synchronizing settings."),
 				default: true,
 				scope: ConfigurationScope.APPLICATION,
-			},
-			'sync.enableExtensions': {
-				type: 'boolean',
-				description: localize('sync.enableExtensions', "Enable synchronizing extensions."),
-				default: true,
-				scope: ConfigurationScope.APPLICATION,
+				deprecationMessage: 'deprecated'
 			},
 			'sync.enableKeybindings': {
 				type: 'boolean',
-				description: localize('sync.enableKeybindings', "Enable synchronizing keybindings."),
 				default: true,
 				scope: ConfigurationScope.APPLICATION,
+				deprecationMessage: 'Deprecated'
+			},
+			'sync.enableUIState': {
+				type: 'boolean',
+				default: true,
+				scope: ConfigurationScope.APPLICATION,
+				deprecationMessage: 'deprecated'
+			},
+			'sync.enableExtensions': {
+				type: 'boolean',
+				default: true,
+				scope: ConfigurationScope.APPLICATION,
+				deprecationMessage: 'deprecated'
 			},
 			'sync.keybindingsPerPlatform': {
 				type: 'boolean',
@@ -76,7 +90,7 @@ export function registerConfiguration(): IDisposable {
 			},
 			'sync.ignoredSettings': {
 				'type': 'array',
-				description: localize('sync.ignoredSettings', "Configure settings to be ignored while synchronizing. \nDefault Ignored Settings:\n\n{0}", DEFAULT_IGNORED_SETTINGS.sort().map(setting => `- ${setting}`).join('\n')),
+				description: localize('sync.ignoredSettings', "Configure settings to be ignored while synchronizing."),
 				'default': [],
 				'scope': ConfigurationScope.APPLICATION,
 				$ref: ignoredSettingsSchemaId,
@@ -90,7 +104,7 @@ export function registerConfiguration(): IDisposable {
 		const ignoredSettingsSchema: IJSONSchema = {
 			items: {
 				type: 'string',
-				enum: [...Object.keys(allSettings.properties).filter(setting => DEFAULT_IGNORED_SETTINGS.indexOf(setting) === -1), ...DEFAULT_IGNORED_SETTINGS.map(setting => `-${setting}`)]
+				enum: Object.keys(allSettings.properties)
 			}
 		};
 		jsonRegistry.registerSchema(ignoredSettingsSchemaId, ignoredSettingsSchema);
@@ -98,46 +112,89 @@ export function registerConfiguration(): IDisposable {
 	return configurationRegistry.onDidUpdateConfiguration(() => registerIgnoredSettingsSchema());
 }
 
+// #region User Data Sync Store
+
 export interface IUserData {
 	ref: string;
 	content: string | null;
 }
 
-export enum UserDataSyncStoreErrorCode {
-	Unauthroized = 'Unauthroized',
-	Rejected = 'Rejected',
-	Unknown = 'Unknown'
-}
-
-export class UserDataSyncStoreError extends Error {
-
-	constructor(message: string, public readonly code: UserDataSyncStoreErrorCode) {
-		super(message);
-	}
-
-}
-
 export interface IUserDataSyncStore {
 	url: string;
-	name: string;
-	account: string;
+	authenticationProviderId: string;
 }
 
 export function getUserDataSyncStore(configurationService: IConfigurationService): IUserDataSyncStore | undefined {
 	const value = configurationService.getValue<IUserDataSyncStore>(CONFIGURATION_SYNC_STORE_KEY);
-	return value && value.url && value.name && value.account ? value : undefined;
+	return value && value.url && value.authenticationProviderId ? value : undefined;
+}
+
+export const ALL_RESOURCE_KEYS: ResourceKey[] = ['settings', 'keybindings', 'extensions', 'globalState'];
+export type ResourceKey = 'settings' | 'keybindings' | 'extensions' | 'globalState';
+
+export interface IUserDataManifest {
+	settings: string;
+	keybindings: string;
+	extensions: string;
+	globalState: string;
 }
 
 export const IUserDataSyncStoreService = createDecorator<IUserDataSyncStoreService>('IUserDataSyncStoreService');
-
 export interface IUserDataSyncStoreService {
 	_serviceBrand: undefined;
-
 	readonly userDataSyncStore: IUserDataSyncStore | undefined;
-
-	read(key: string, oldValue: IUserData | null): Promise<IUserData>;
-	write(key: string, content: string, ref: string | null): Promise<string>;
+	read(key: ResourceKey, oldValue: IUserData | null, source?: SyncSource): Promise<IUserData>;
+	write(key: ResourceKey, content: string, ref: string | null, source?: SyncSource): Promise<string>;
+	manifest(): Promise<IUserDataManifest | null>;
+	clear(): Promise<void>;
 }
+
+//#endregion
+
+// #region User Data Sync Error
+
+export enum UserDataSyncErrorCode {
+	// Server Errors
+	Unauthorized = 'Unauthorized',
+	Forbidden = 'Forbidden',
+	ConnectionRefused = 'ConnectionRefused',
+	RemotePreconditionFailed = 'RemotePreconditionFailed',
+	TooLarge = 'TooLarge',
+	NoRef = 'NoRef',
+	TurnedOff = 'TurnedOff',
+
+	// Local Errors
+	LocalPreconditionFailed = 'LocalPreconditionFailed',
+	LocalInvalidContent = 'LocalInvalidContent',
+
+	Unknown = 'Unknown',
+}
+
+export class UserDataSyncError extends Error {
+
+	constructor(message: string, public readonly code: UserDataSyncErrorCode, public readonly source?: SyncSource) {
+		super(message);
+		this.name = `${this.code} (UserDataSyncError) ${this.source}`;
+	}
+
+	static toUserDataSyncError(error: Error): UserDataSyncError {
+		if (error instanceof UserDataSyncStoreError) {
+			return error;
+		}
+		const match = /^(.+) \(UserDataSyncError\) (.+)?$/.exec(error.name);
+		if (match && match[1]) {
+			return new UserDataSyncError(error.message, <UserDataSyncErrorCode>match[1], <SyncSource>match[2]);
+		}
+		return new UserDataSyncError(error.message, UserDataSyncErrorCode.Unknown);
+	}
+
+}
+
+export class UserDataSyncStoreError extends UserDataSyncError { }
+
+//#endregion
+
+// #region User Data Synchroniser
 
 export interface ISyncExtension {
 	identifier: IExtensionIdentifier;
@@ -145,10 +202,16 @@ export interface ISyncExtension {
 	enabled: boolean;
 }
 
+export interface IGlobalState {
+	argv: IStringDictionary<any>;
+	storage: IStringDictionary<any>;
+}
+
 export const enum SyncSource {
-	Settings = 1,
-	Keybindings,
-	Extensions
+	Settings = 'Settings',
+	Keybindings = 'Keybindings',
+	Extensions = 'Extensions',
+	GlobalState = 'GlobalState'
 }
 
 export const enum SyncStatus {
@@ -158,41 +221,127 @@ export const enum SyncStatus {
 	HasConflicts = 'hasConflicts',
 }
 
-export interface ISynchroniser {
+export interface IUserDataSynchroniser {
 
+	readonly resourceKey: ResourceKey;
+	readonly source: SyncSource;
 	readonly status: SyncStatus;
 	readonly onDidChangeStatus: Event<SyncStatus>;
 	readonly onDidChangeLocal: Event<void>;
 
-	sync(_continue?: boolean): Promise<boolean>;
-	stop(): void;
+	pull(): Promise<void>;
+	push(): Promise<void>;
+	sync(ref?: string): Promise<void>;
+	stop(): Promise<void>;
+
+	hasPreviouslySynced(): Promise<boolean>
+	hasLocalData(): Promise<boolean>;
+	resetLocal(): Promise<void>;
+
+	getRemoteContent(preivew?: boolean): Promise<string | null>;
+	accept(content: string): Promise<void>;
+}
+
+//#endregion
+
+// #region User Data Sync Services
+
+export const IUserDataSyncEnablementService = createDecorator<IUserDataSyncEnablementService>('IUserDataSyncEnablementService');
+export interface IUserDataSyncEnablementService {
+	_serviceBrand: any;
+
+	readonly onDidChangeEnablement: Event<boolean>;
+	readonly onDidChangeResourceEnablement: Event<[ResourceKey, boolean]>;
+
+	isEnabled(): boolean;
+	setEnablement(enabled: boolean): void;
+
+	isResourceEnabled(key: ResourceKey): boolean;
+	setResourceEnablement(key: ResourceKey, enabled: boolean): void;
 }
 
 export const IUserDataSyncService = createDecorator<IUserDataSyncService>('IUserDataSyncService');
-
-export interface IUserDataSyncService extends ISynchroniser {
+export interface IUserDataSyncService {
 	_serviceBrand: any;
-	readonly conflictsSource: SyncSource | null;
 
-	removeExtension(identifier: IExtensionIdentifier): Promise<void>;
+	readonly status: SyncStatus;
+	readonly onDidChangeStatus: Event<SyncStatus>;
+
+	readonly conflictsSources: SyncSource[];
+	readonly onDidChangeConflicts: Event<SyncSource[]>;
+
+	readonly onDidChangeLocal: Event<void>;
+
+	pull(): Promise<void>;
+	sync(): Promise<void>;
+	stop(): Promise<void>;
+	reset(): Promise<void>;
+	resetLocal(): Promise<void>;
+
+	isFirstTimeSyncWithMerge(): Promise<boolean>;
+	getRemoteContent(source: SyncSource, preview: boolean): Promise<string | null>;
+	accept(source: SyncSource, content: string): Promise<void>;
+}
+
+export const IUserDataAutoSyncService = createDecorator<IUserDataAutoSyncService>('IUserDataAutoSyncService');
+export interface IUserDataAutoSyncService {
+	_serviceBrand: any;
+	readonly onError: Event<{ code: UserDataSyncErrorCode, source?: SyncSource }>;
+	triggerAutoSync(): Promise<void>;
 }
 
 export const IUserDataSyncUtilService = createDecorator<IUserDataSyncUtilService>('IUserDataSyncUtilService');
-
 export interface IUserDataSyncUtilService {
+	_serviceBrand: undefined;
+	resolveUserBindings(userbindings: string[]): Promise<IStringDictionary<string>>;
+	resolveFormattingOptions(resource: URI): Promise<FormattingOptions>;
+}
 
+export const IUserDataAuthTokenService = createDecorator<IUserDataAuthTokenService>('IUserDataAuthTokenService');
+
+export interface IUserDataAuthTokenService {
 	_serviceBrand: undefined;
 
-	resolveUserBindings(userbindings: string[]): Promise<IStringDictionary<string>>;
+	readonly onDidChangeToken: Event<string | undefined>;
 
-	resolveFormattingOptions(resource: URI): Promise<FormattingOptions>;
-
+	getToken(): Promise<string | undefined>;
+	setToken(accessToken: string | undefined): Promise<void>;
 }
 
 export const IUserDataSyncLogService = createDecorator<IUserDataSyncLogService>('IUserDataSyncLogService');
+export interface IUserDataSyncLogService extends ILogService { }
 
-export interface IUserDataSyncLogService extends ILogService {
-
+export interface IConflictSetting {
+	key: string;
+	localValue: any | undefined;
+	remoteValue: any | undefined;
 }
 
+export const ISettingsSyncService = createDecorator<ISettingsSyncService>('ISettingsSyncService');
+export interface ISettingsSyncService extends IUserDataSynchroniser {
+	_serviceBrand: any;
+	readonly onDidChangeConflicts: Event<IConflictSetting[]>;
+	readonly conflicts: IConflictSetting[];
+	resolveSettingsConflicts(resolvedConflicts: { key: string, value: any | undefined }[]): Promise<void>;
+}
+
+//#endregion
+
 export const CONTEXT_SYNC_STATE = new RawContextKey<string>('syncStatus', SyncStatus.Uninitialized);
+
+export const USER_DATA_SYNC_SCHEME = 'vscode-userdata-sync';
+export function toRemoteContentResource(source: SyncSource): URI {
+	return URI.from({ scheme: USER_DATA_SYNC_SCHEME, path: `${source}/remoteContent` });
+}
+export function getSyncSourceFromRemoteContentResource(uri: URI): SyncSource | undefined {
+	return [SyncSource.Settings, SyncSource.Keybindings, SyncSource.Extensions, SyncSource.GlobalState].filter(source => isEqual(uri, toRemoteContentResource(source)))[0];
+}
+export function getSyncSourceFromPreviewResource(uri: URI, environmentService: IEnvironmentService): SyncSource | undefined {
+	if (isEqual(uri, environmentService.settingsSyncPreviewResource)) {
+		return SyncSource.Settings;
+	}
+	if (isEqual(uri, environmentService.keybindingsSyncPreviewResource)) {
+		return SyncSource.Keybindings;
+	}
+	return undefined;
+}

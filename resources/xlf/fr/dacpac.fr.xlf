@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/dacpac/out/wizard/pages/selectOperationpage" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/selectOperationpage" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="dacFx.deployRadioButtonLabel">
         <source xml:lang="en">Deploy a data-tier application .dacpac file to an instance of SQL Server [Deploy Dacpac]</source>
@@ -20,19 +20,19 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/importConfigPage" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/importConfigPage" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="dacFxImport.openFile">
         <source xml:lang="en">Open</source>
-        <target state="translated">Ouvrir </target>
+        <target state="translated">Ouvrir</target>
       </trans-unit>
       <trans-unit id="dacFxImport.fileTextboxTitle">
         <source xml:lang="en">File Location</source>
-        <target state="translated">Emplacement du fichier</target>
+        <target state="translated">Emplacement de fichier</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/extractConfigPage" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/extractConfigPage" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="dacfxExtract.saveFile">
         <source xml:lang="en">Save</source>
@@ -40,7 +40,7 @@
       </trans-unit>
       <trans-unit id="dacFxExtract.fileTextboxTitle">
         <source xml:lang="en">File Location</source>
-        <target state="translated">Emplacement du fichier</target>
+        <target state="translated">Emplacement de fichier</target>
       </trans-unit>
       <trans-unit id="dacFxExtract.versionTextboxTitle">
         <source xml:lang="en">Version (use x.x.x.x where x is a number)</source>
@@ -48,7 +48,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/exportConfigPage" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/exportConfigPage" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="dacfxExport.saveFile">
         <source xml:lang="en">Save</source>
@@ -56,11 +56,11 @@
       </trans-unit>
       <trans-unit id="dacFxExport.fileTextboxTitle">
         <source xml:lang="en">File Location</source>
-        <target state="translated">Emplacement du fichier</target>
+        <target state="translated">Emplacement de fichier</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/deployPlanPage" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/deployPlanPage" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="dacfx.dataLossTextWithCount">
         <source xml:lang="en">{0} of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.</source>
@@ -92,7 +92,7 @@
       </trans-unit>
       <trans-unit id="dacfx.typeTooltip">
         <source xml:lang="en">Type of object that will be affected by deployment</source>
-        <target state="translated">Type d'objet affecté par le déploiement</target>
+        <target state="translated">Type de l'objet affecté par le déploiement</target>
       </trans-unit>
       <trans-unit id="dacfx.objectColumn">
         <source xml:lang="en">Object</source>
@@ -100,7 +100,7 @@
       </trans-unit>
       <trans-unit id="dacfx.objecTooltip">
         <source xml:lang="en">Name of object that will be affected by deployment</source>
-        <target state="translated">Nom d'objet affecté par le déploiement</target>
+        <target state="translated">Nom de l'objet affecté par le déploiement</target>
       </trans-unit>
       <trans-unit id="dacfx.dataLossColumn">
         <source xml:lang="en">Data Loss</source>
@@ -108,11 +108,11 @@
       </trans-unit>
       <trans-unit id="dacfx.dataLossTooltip">
         <source xml:lang="en">Operations that may result in data loss are marked with a warning sign</source>
-        <target state="translated">Les opérations pouvant entraîner une perte des données sont marquées avec un signe d'avertissement</target>
+        <target state="translated">Les opérations pouvant entraîner une perte des données sont marquées d'un signe d'avertissement</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/deployConfigPage" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/deployConfigPage" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="dacFx.databaseNameTextBox">
         <source xml:lang="en">Database Name</source>
@@ -124,11 +124,11 @@
       </trans-unit>
       <trans-unit id="dacFxDeploy.openFile">
         <source xml:lang="en">Open</source>
-        <target state="translated">Ouvrir </target>
+        <target state="translated">Ouvrir</target>
       </trans-unit>
       <trans-unit id="dacFxDeploy.fileTextboxTitle">
         <source xml:lang="en">File Location</source>
-        <target state="translated">Emplacement du fichier</target>
+        <target state="translated">Emplacement de fichier</target>
       </trans-unit>
       <trans-unit id="dacFx.upgradeRadioButtonLabel">
         <source xml:lang="en">Upgrade Existing Database</source>
@@ -148,7 +148,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/dacFxSummaryPage" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/dacFxSummaryPage" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="dacfx.targetServerName">
         <source xml:lang="en">Target Server</source>
@@ -164,11 +164,11 @@
       </trans-unit>
       <trans-unit id="dacfx.sourceDatabaseName">
         <source xml:lang="en">Source Database</source>
-        <target state="translated">Base de données source </target>
+        <target state="translated">Base de données source</target>
       </trans-unit>
       <trans-unit id="dacfx.fileLocation">
         <source xml:lang="en">File Location</source>
-        <target state="translated">Emplacement du fichier</target>
+        <target state="translated">Emplacement de fichier</target>
       </trans-unit>
       <trans-unit id="dacfxExtract.version">
         <source xml:lang="en">Version</source>
@@ -184,7 +184,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/api/dacFxConfigPage" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/api/dacFxConfigPage" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="dacFx.targetServerDropdownTitle">
         <source xml:lang="en">Target Server</source>
@@ -200,19 +200,19 @@
       </trans-unit>
       <trans-unit id="dacFx.sourceDatabaseDropdownTitle">
         <source xml:lang="en">Source Database</source>
-        <target state="translated">Base de données source </target>
+        <target state="translated">Base de données source</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/api/basePage" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/api/basePage" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="basePage.defaultUser">
         <source xml:lang="en">default</source>
-        <target state="translated">Par défaut</target>
+        <target state="translated">par défaut</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/dataTierApplicationWizard" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/dataTierApplicationWizard" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="dacFx.selectOperationPageName">
         <source xml:lang="en">Select an Operation</source>

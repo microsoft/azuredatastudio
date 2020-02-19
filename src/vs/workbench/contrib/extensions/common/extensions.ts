@@ -13,8 +13,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IExtensionManifest, ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { URI } from 'vs/base/common/uri';
-import { IViewPaneContainer } from 'vs/workbench/common/viewPaneContainer';
-import { IAction } from 'vs/base/common/actions';
+import { IViewPaneContainer } from 'vs/workbench/common/views';
 
 export const VIEWLET_ID = 'workbench.view.extensions';
 
@@ -129,7 +128,7 @@ export class ExtensionContainers extends Disposable {
 		this.containers.forEach(c => c.extension = extension);
 	}
 
-	private update(extension: IExtension): void {
+	private update(extension: IExtension | undefined): void {
 		for (const container of this.containers) {
 			if (extension && container.extension) {
 				if (areSameExtensions(container.extension.identifier, extension.identifier)) {
@@ -144,13 +143,4 @@ export class ExtensionContainers extends Disposable {
 			}
 		}
 	}
-}
-
-export interface IExtensionMenuAction extends IAction {
-	run(context: IExtensionMenuActionContext): Promise<void>;
-}
-
-export interface IExtensionMenuActionContext {
-	id: string;
-	packageJSON: IExtensionManifest;
 }

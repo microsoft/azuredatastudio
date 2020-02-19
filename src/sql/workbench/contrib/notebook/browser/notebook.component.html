@@ -21,7 +21,12 @@
 			</button>
 		</div>
 		<div *ngFor="let cell of cells">
-			<div class="notebook-cell" (click)="selectCell(cell, $event)" [class.active]="cell.active">
+			<div class="notebook-cell"
+			(click)="selectCell(cell, $event)"
+			(focus)="selectCell(cell, $event)"
+			[class.active]="cell.active"
+			[attr.aria-label]="cell.ariaLabel"
+			tabindex="0">
 				<code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
 				</code-cell-component>
 				<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">

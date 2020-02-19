@@ -9,11 +9,17 @@ import {
 	ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
-import { Orientation, ToolbarLayout } from 'sql/workbench/api/common/sqlExtHostTypes';
-
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
-
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
+import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+
+export enum Orientation {
+	Horizontal = 'horizontal',
+	Vertical = 'vertial'
+}
+
+export interface ToolbarLayout {
+	orientation: Orientation;
+}
 
 export interface ToolbarItemConfig {
 	title?: string;

@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import { ProcessService } from '../../common/processService';
 import * as utils from '../../common/utils';
@@ -29,11 +27,11 @@ function createContext(): TestContext {
 	};
 }
 
-function execFolderListCommand(context: TestContext, service : ProcessService): Promise<void> {
+function execFolderListCommand(context: TestContext, service : ProcessService): Promise<string> {
 	if (utils.isWindows()) {
-		return service.execScripts('cmd', ['dir', '.'], context.outputChannel);
+		return service.execScripts('cmd', ['dir', '.'], [], context.outputChannel);
 	} else {
-		return service.execScripts('/bin/sh', ['-c', 'ls'], context.outputChannel);
+		return service.execScripts('/bin/sh', ['-c', 'ls'], [], context.outputChannel);
 	}
 }
 

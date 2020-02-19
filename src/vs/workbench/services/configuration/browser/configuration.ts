@@ -9,8 +9,8 @@ import { Event, Emitter } from 'vs/base/common/event';
 import * as errors from 'vs/base/common/errors';
 import { Disposable, IDisposable, dispose, toDisposable, MutableDisposable } from 'vs/base/common/lifecycle';
 import { RunOnceScheduler, runWhenIdle } from 'vs/base/common/async';
-import { FileChangeType, FileChangesEvent, IFileService, whenProviderRegistered } from 'vs/platform/files/common/files';
-import { ConfigurationModel, ConfigurationModelParser } from 'vs/platform/configuration/common/configurationModels';
+import { FileChangeType, FileChangesEvent, IFileService, whenProviderRegistered, FileOperationError, FileOperationResult } from 'vs/platform/files/common/files';
+import { ConfigurationModel, ConfigurationModelParser, UserSettings } from 'vs/platform/configuration/common/configurationModels';
 import { WorkspaceConfigurationModelParser, StandaloneConfigurationModelParser } from 'vs/workbench/services/configuration/common/configurationModels';
 import { TASKS_CONFIGURATION_KEY, FOLDER_SETTINGS_NAME, LAUNCH_CONFIGURATION_KEY, IConfigurationCache, ConfigurationKey, REMOTE_MACHINE_SCOPES, FOLDER_SCOPES, WORKSPACE_SCOPES } from 'vs/workbench/services/configuration/common/configuration';
 import { IStoredWorkspaceFolder, IWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
@@ -64,38 +64,6 @@ export class UserConfiguration extends Disposable {
 	}
 }
 
-class UserSettings extends Disposable {
-
-	private readonly parser: ConfigurationModelParser;
-	protected readonly _onDidChange: Emitter<void> = this._register(new Emitter<void>());
-	readonly onDidChange: Event<void> = this._onDidChange.event;
-
-	constructor(
-		private readonly userSettingsResource: URI,
-		private readonly scopes: ConfigurationScope[] | undefined,
-		private readonly fileService: IFileService
-	) {
-		super();
-		this.parser = new ConfigurationModelParser(this.userSettingsResource.toString(), this.scopes);
-		this._register(Event.filter(this.fileService.onFileChanges, e => e.contains(this.userSettingsResource))(() => this._onDidChange.fire()));
-	}
-
-	async loadConfiguration(): Promise<ConfigurationModel> {
-		try {
-			const content = await this.fileService.readFile(this.userSettingsResource);
-			this.parser.parseContent(content.value.toString() || '{}');
-			return this.parser.configurationModel;
-		} catch (e) {
-			return new ConfigurationModel();
-		}
-	}
-
-	reprocess(): ConfigurationModel {
-		this.parser.parse();
-		return this.parser.configurationModel;
-	}
-}
-
 class FileServiceBasedConfigurationWithNames extends Disposable {
 
 	private _folderSettingsModelParser: ConfigurationModelParser;
@@ -127,8 +95,7 @@ class FileServiceBasedConfigurationWithNames extends Disposable {
 				const content = await this.fileService.readFile(resource);
 				return content.value.toString();
 			} catch (error) {
-				const exists = await this.fileService.exists(resource);
-				if (exists) {
+				if ((<FileOperationError>error).fileOperationResult !== FileOperationResult.FILE_NOT_FOUND) {
 					errors.onUnexpectedError(error);
 				}
 			}

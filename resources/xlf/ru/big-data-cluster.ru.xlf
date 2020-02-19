@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/big-data-cluster/package" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/big-data-cluster/package" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="description">
         <source xml:lang="en">Support for managing SQL Server Big Data Clusters</source>
@@ -44,15 +44,15 @@
       </trans-unit>
       <trans-unit id="bdc.ignoreSslVerification.desc">
         <source xml:lang="en">Ignore SSL verification errors against SQL Server Big Data Cluster endpoints such as HDFS, Spark, and Controller if true</source>
-        <target state="translated">Если этот параметр имеет значение true, игнорировать ошибки проверки SSL в отношении конечных точек кластера больших данных SQL Server, таких как HDFS, Spark и Controller</target>
+        <target state="translated">Если этот параметр имеет значение TRUE, игнорировать ошибки проверки SSL в отношении конечных точек кластера больших данных SQL Server, таких как HDFS, Spark и Controller</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/utils" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/utils" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="state.creating">
         <source xml:lang="en">Creating</source>
-        <target state="translated">Идет создание</target>
+        <target state="translated">Создание</target>
       </trans-unit>
       <trans-unit id="state.waiting">
         <source xml:lang="en">Waiting</source>
@@ -88,7 +88,7 @@
       </trans-unit>
       <trans-unit id="state.rollback">
         <source xml:lang="en">Rollback</source>
-        <target state="translated">откат</target>
+        <target state="translated">Откат</target>
       </trans-unit>
       <trans-unit id="state.rollbackInProgress">
         <source xml:lang="en">Rollback In Progress</source>
@@ -196,7 +196,7 @@
       </trans-unit>
       <trans-unit id="endpoint.livy">
         <source xml:lang="en">Proxy for running Spark statements, jobs, applications</source>
-        <target state="translated">Прокси-сервер для выполнения инструкций, заданий, приложений Spark</target>
+        <target state="translated">Прокси-сервер для выполнения инструкций, заданий и приложений Spark</target>
       </trans-unit>
       <trans-unit id="service.sql">
         <source xml:lang="en">SQL Server</source>
@@ -204,7 +204,7 @@
       </trans-unit>
       <trans-unit id="service.hdfs">
         <source xml:lang="en">HDFS</source>
-        <target state="translated">Hdfs</target>
+        <target state="translated">HDFS</target>
       </trans-unit>
       <trans-unit id="service.spark">
         <source xml:lang="en">Spark</source>
@@ -212,7 +212,7 @@
       </trans-unit>
       <trans-unit id="service.control">
         <source xml:lang="en">Control</source>
-        <target state="translated">CTRL</target>
+        <target state="translated">Управление</target>
       </trans-unit>
       <trans-unit id="service.gateway">
         <source xml:lang="en">Gateway</source>
@@ -232,11 +232,11 @@
       </trans-unit>
       <trans-unit id="endpointsError">
         <source xml:lang="en">Unexpected error retrieving BDC Endpoints: {0}</source>
-        <target state="translated">При получении конечных точек BDC возникла неожиданная ошибка: {0}</target>
+        <target state="translated">При получении конечных точек модели подключения к бизнес-данным возникла неожиданная ошибка: {0}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="basicAuthName">
         <source xml:lang="en">Basic</source>
@@ -292,7 +292,7 @@
       </trans-unit>
       <trans-unit id="hdsf.dialog.connection.section">
         <source xml:lang="en">Cluster Connection</source>
-        <target state="translated">Подключение кластера</target>
+        <target state="translated">Подключение к кластеру</target>
       </trans-unit>
       <trans-unit id="hdfs.dialog.ok">
         <source xml:lang="en">OK</source>
@@ -304,7 +304,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="error.no.activedirectory">
         <source xml:lang="en">This cluster does not support Windows authentication</source>
@@ -324,7 +324,7 @@
       </trans-unit>
       <trans-unit id="bdc.error.getBdcStatus">
         <source xml:lang="en">Error retrieving BDC status from {0}</source>
-        <target state="translated">Ошибка при получении состояния BDC из {0}</target>
+        <target state="translated">Ошибка при получении состояния модели подключения к бизнес-данным из {0}</target>
       </trans-unit>
       <trans-unit id="bdc.error.mountHdfs">
         <source xml:lang="en">Error creating mount</source>
@@ -340,7 +340,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/connectControllerDialog" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/connectControllerDialog" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="connectController.dialog.title">
         <source xml:lang="en">Connect to Controller (preview)</source>
@@ -348,7 +348,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/commonControls" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/commonControls" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="bdc.dashboard.viewDetails">
         <source xml:lang="en">View Details</source>
@@ -356,7 +356,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/extension" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/extension" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="mount.error.endpointNotFound">
         <source xml:lang="en">Controller endpoint information was not found</source>
@@ -380,11 +380,11 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/addControllerNode" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/addControllerNode" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="textBigDataClusterControllerWithDots">
         <source xml:lang="en">Add SQL Server Big Data Cluster controller...</source>
-        <target state="translated">Добавить контроллер кластера больших данных SQL Server...</target>
+        <target state="translated">Добавить контроллер кластера больших данных SQL Server…</target>
       </trans-unit>
       <trans-unit id="textConnectToController">
         <source xml:lang="en">Connect to Controller</source>
@@ -392,15 +392,15 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/loadingControllerNode" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/loadingControllerNode" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="textLoadingWithDots">
         <source xml:lang="en">Loading...</source>
-        <target state="translated">Загрузка...</target>
+        <target state="translated">Загрузка…</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="basicAuthName">
         <source xml:lang="en">Basic</source>
@@ -420,7 +420,7 @@
       </trans-unit>
       <trans-unit id="textAddNewController">
         <source xml:lang="en">Add New Controller (preview)</source>
-        <target state="translated">Добавление нового контроллера (предварительная версия)</target>
+        <target state="translated">Добавление контроллера (предварительная версия)</target>
       </trans-unit>
       <trans-unit id="textUrlLower">
         <source xml:lang="en">url</source>
@@ -456,7 +456,7 @@
       </trans-unit>
       <trans-unit id="textAdd">
         <source xml:lang="en">Add</source>
-        <target state="translated">добавить</target>
+        <target state="translated">Добавить</target>
       </trans-unit>
       <trans-unit id="textCancel">
         <source xml:lang="en">Cancel</source>
@@ -464,7 +464,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboard" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboard" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="bdc.dashboard.refreshButton">
         <source xml:lang="en">Refresh</source>
@@ -484,7 +484,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="bdc.dashboard.viewHyperlink">
         <source xml:lang="en">View</source>
@@ -508,7 +508,7 @@
       </trans-unit>
       <trans-unit id="bdc.dashboard.stateHeader">
         <source xml:lang="en">State</source>
-        <target state="translated">State</target>
+        <target state="translated">Состояние</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.healthStatusHeader">
         <source xml:lang="en">Health Status</source>
@@ -532,7 +532,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="bdc.dashboard.propertiesHeader">
         <source xml:lang="en">Cluster Properties</source>
@@ -560,7 +560,7 @@
       </trans-unit>
       <trans-unit id="bdc.dashboard.stateHeader">
         <source xml:lang="en">State</source>
-        <target state="translated">State</target>
+        <target state="translated">Состояние</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.healthStatusHeader">
         <source xml:lang="en">Health Status</source>
@@ -580,11 +580,11 @@
       </trans-unit>
       <trans-unit id="endpointsError">
         <source xml:lang="en">Unexpected error retrieving BDC Endpoints: {0}</source>
-        <target state="translated">При получении конечных точек BDC произошла неожиданная ошибка: {0}</target>
+        <target state="translated">При получении конечных точек модели подключения к бизнес-данным возникла неожиданная ошибка: {0}</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.noConnection">
         <source xml:lang="en">The dashboard requires a connection. Please click retry to enter your credentials.</source>
-        <target state="translated">Необходимо указать параметры соединения для панели мониторинга. Нажмите "Повторить", чтобы ввести свои учетные данные.</target>
+        <target state="translated">Необходимо указать параметры подключения для панели мониторинга. Нажмите "Повторить", чтобы ввести свои учетные данные.</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.unexpectedError">
         <source xml:lang="en">Unexpected error occurred: {0}</source>
@@ -592,7 +592,7 @@
       </trans-unit>
       <trans-unit id="bdc.dashboard.copyTitle">
         <source xml:lang="en">Copy</source>
-        <target state="translated">Копирование</target>
+        <target state="translated">Копировать</target>
       </trans-unit>
       <trans-unit id="copiedEndpoint">
         <source xml:lang="en">Endpoint '{0}' copied to clipboard</source>
@@ -600,7 +600,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="mount.main.section">
         <source xml:lang="en">Mount Configuration</source>

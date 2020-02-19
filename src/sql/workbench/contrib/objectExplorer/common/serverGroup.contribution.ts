@@ -7,11 +7,10 @@ import { IConfigurationRegistry, Extensions, IConfigurationNode } from 'vs/platf
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
+import { SERVER_GROUP_CONFIG, SERVER_GROUP_COLORS_CONFIG } from 'sql/workbench/services/serverGroup/common/interfaces';
 
 const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
 
-export const SERVER_GROUP_CONFIG = 'serverGroup';
-export const SERVER_GROUP_COLORS_CONFIG = 'colors';
 export const SERVER_GROUP_AUTOEXPAND_CONFIG = 'autoExpand';
 
 const serverGroupConfig: IConfigurationNode = {

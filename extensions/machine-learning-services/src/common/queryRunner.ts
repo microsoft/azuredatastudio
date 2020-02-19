@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as nbExtensionApis from '../typings/notebookServices';
 import { ApiWrapper } from './apiWrapper';
 import * as constants from '../common/constants';
+
+const maxNumberOfRetries = 3;
 
 const listPythonPackagesQuery = `
 EXEC sp_execute_external_script
@@ -16,6 +16,13 @@ EXEC sp_execute_external_script
 @script=N'import pkg_resources
 import pandas
 OutputDataSet = pandas.DataFrame([(d.project_name, d.version) for d in pkg_resources.working_set])'
+`;
+
+const listRPackagesQuery = `
+EXEC sp_execute_external_script
+@language=N'R',
+@script=N'
+OutputDataSet <- as.data.frame(installed.packages()[,c(1,3)])'
 `;
 
 const checkMlInstalledQuery = `
@@ -57,8 +64,28 @@ export class QueryRunner {
 	 * @param connection SQL Connection
 	 */
 	public async getPythonPackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
+		return this.getPackages(connection, listPythonPackagesQuery);
+	}
+
+	/**
+	 * Returns python packages installed in SQL server instance
+	 * @param connection SQL Connection
+	 */
+	public async getRPackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
+		return this.getPackages(connection, listRPackagesQuery);
+	}
+
+	private async getPackages(connection: azdata.connection.ConnectionProfile, script: string): Promise<nbExtensionApis.IPackageDetails[]> {
 		let packages: nbExtensionApis.IPackageDetails[] = [];
-		let result = await this.runQuery(connection, listPythonPackagesQuery);
+		let result: azdata.SimpleExecuteResult | undefined = undefined;
+
+		for (let index = 0; index < maxNumberOfRetries; index++) {
+			result = await this.runQuery(connection, script);
+			if (result && result.rowCount > 0) {
+				break;
+			}
+		}
+
 		if (result && result.rows.length > 0) {
 			packages = result.rows.map(row => {
 				return {

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/dacpac/out/wizard/pages/selectOperationpage" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/selectOperationpage" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="dacFx.deployRadioButtonLabel">
         <source xml:lang="en">Deploy a data-tier application .dacpac file to an instance of SQL Server [Deploy Dacpac]</source>
@@ -20,11 +20,11 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/importConfigPage" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/importConfigPage" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="dacFxImport.openFile">
         <source xml:lang="en">Open</source>
-        <target state="translated">Открыто</target>
+        <target state="translated">Открыть</target>
       </trans-unit>
       <trans-unit id="dacFxImport.fileTextboxTitle">
         <source xml:lang="en">File Location</source>
@@ -32,7 +32,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/extractConfigPage" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/extractConfigPage" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="dacfxExtract.saveFile">
         <source xml:lang="en">Save</source>
@@ -44,11 +44,11 @@
       </trans-unit>
       <trans-unit id="dacFxExtract.versionTextboxTitle">
         <source xml:lang="en">Version (use x.x.x.x where x is a number)</source>
-        <target state="translated">Версия (используйте формат x.x.x.x, где x — это число)</target>
+        <target state="translated">Версия (используйте формат x.x.x.x, где x — это число)</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/exportConfigPage" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/exportConfigPage" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="dacfxExport.saveFile">
         <source xml:lang="en">Save</source>
@@ -60,7 +60,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/deployPlanPage" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/deployPlanPage" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="dacfx.dataLossTextWithCount">
         <source xml:lang="en">{0} of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.</source>
@@ -112,7 +112,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/deployConfigPage" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/deployConfigPage" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="dacFx.databaseNameTextBox">
         <source xml:lang="en">Database Name</source>
@@ -124,7 +124,7 @@
       </trans-unit>
       <trans-unit id="dacFxDeploy.openFile">
         <source xml:lang="en">Open</source>
-        <target state="translated">Открыто</target>
+        <target state="translated">Открыть</target>
       </trans-unit>
       <trans-unit id="dacFxDeploy.fileTextboxTitle">
         <source xml:lang="en">File Location</source>
@@ -148,7 +148,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/dacFxSummaryPage" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/dacFxSummaryPage" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="dacfx.targetServerName">
         <source xml:lang="en">Target Server</source>
@@ -184,7 +184,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/api/dacFxConfigPage" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/api/dacFxConfigPage" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="dacFx.targetServerDropdownTitle">
         <source xml:lang="en">Target Server</source>
@@ -204,7 +204,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/api/basePage" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/api/basePage" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="basePage.defaultUser">
         <source xml:lang="en">default</source>
@@ -212,7 +212,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/dataTierApplicationWizard" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/dataTierApplicationWizard" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="dacFx.selectOperationPageName">
         <source xml:lang="en">Select an Operation</source>
@@ -240,11 +240,11 @@
       </trans-unit>
       <trans-unit id="dacFx.exportConfigPageName">
         <source xml:lang="en">Select Export Bacpac Settings</source>
-        <target state="translated">Выберите параметры экспорта Bacpac</target>
+        <target state="translated">Выберите параметры экспорта BACPAC</target>
       </trans-unit>
       <trans-unit id="dacFx.deployButton">
         <source xml:lang="en">Deploy</source>
-        <target state="translated">Развертывание.</target>
+        <target state="translated">Развертывание</target>
       </trans-unit>
       <trans-unit id="dacFx.extractButton">
         <source xml:lang="en">Extract</source>
@@ -276,7 +276,7 @@
       </trans-unit>
       <trans-unit id="alertData.importErrorMessage">
         <source xml:lang="en">Import failed '{0}'</source>
-        <target state="translated">Сбой импорта "{0}"</target>
+        <target state="translated">Ошибка импорта "{0}"</target>
       </trans-unit>
       <trans-unit id="dacfx.scriptGeneratingMessage">
         <source xml:lang="en">You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.</source>

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IGridInfo } from 'sql/workbench/contrib/grid/common/interfaces';
-import { DataService } from 'sql/workbench/contrib/grid/common/dataService';
+import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { GridActionProvider } from 'sql/workbench/contrib/editData/common/gridActions';
 import { localize } from 'vs/nls';
 import { IAction, Action } from 'vs/base/common/actions';

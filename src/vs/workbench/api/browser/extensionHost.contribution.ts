@@ -59,6 +59,8 @@ import './mainThreadComments';
 // import './mainThreadTask'; {{SQL CARBON EDIT}} @anthonydresser comment out task
 import './mainThreadLabelService';
 import './mainThreadTunnelService';
+import './mainThreadAuthentication';
+import './mainThreadTimeline';
 import 'vs/workbench/api/common/apiCommands';
 
 export class ExtensionPoints implements IWorkbenchContribution {

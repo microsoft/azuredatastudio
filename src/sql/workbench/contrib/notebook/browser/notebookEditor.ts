@@ -14,7 +14,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { NotebookModule } from 'sql/workbench/contrib/notebook/browser/notebook.module';
 import { NOTEBOOK_SELECTOR } from 'sql/workbench/contrib/notebook/browser/notebook.component';
-import { INotebookParams, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookParams, INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ACTION_IDS, NOTEBOOK_MAX_MATCHES, IFindNotebookController, FindWidget, IConfigurationChangedEvent } from 'sql/workbench/contrib/notebook/find/notebookFindWidget';
 import { IOverlayWidget } from 'vs/editor/browser/editorBrowser';
@@ -26,10 +26,11 @@ import { NotebookFindNextAction, NotebookFindPreviousAction } from 'sql/workbenc
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { INotebookModel, INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
 import { IDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import { IModelDecorationsChangeAccessor, IModelDeltaDecoration } from 'vs/editor/common/model';
-import { NotebookFindDecorations, NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
+import { NotebookFindDecorations } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 import { TimeoutTimer } from 'vs/base/common/async';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { onUnexpectedError } from 'vs/base/common/errors';
@@ -227,7 +228,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 			providerInfo: input.getProviderInfo(),
 			profile: input.connectionProfile
 		};
-		bootstrapAngular(this._instantiationService,
+		this._instantiationService.invokeFunction(bootstrapAngular,
 			NotebookModule,
 			this._notebookContainer,
 			NOTEBOOK_SELECTOR,
@@ -282,12 +283,12 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 			}
 		}
 
-		if (e.searchString) {
+		if (e.searchString || e.matchCase || e.wholeWord) {
 			this._findDecorations.clearDecorations();
 			if (this._notebookModel) {
 				if (this._findState.searchString) {
 					let findScope = this._findDecorations.getFindScope();
-					if (this._findState.searchString === this.notebookFindModel.findExpression && findScope !== null) {
+					if (this._findState.searchString === this.notebookFindModel.findExpression && findScope !== null && !e.matchCase && !e.wholeWord) {
 						if (findScope) {
 							this._updateFinderMatchState();
 							this._findState.changeMatchInfo(
@@ -300,7 +301,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 					} else {
 						this.notebookInput.notebookFindModel.clearDecorations();
 						this.notebookFindModel.findExpression = this._findState.searchString;
-						this.notebookInput.notebookFindModel.find(this._findState.searchString, NOTEBOOK_MAX_MATCHES).then(findRange => {
+						this.notebookInput.notebookFindModel.find(this._findState.searchString, this._findState.matchCase, this._findState.wholeWord, NOTEBOOK_MAX_MATCHES).then(findRange => {
 							if (findRange) {
 								this.updatePosition(findRange);
 							} else if (this.notebookFindModel.findMatches.length > 0) {

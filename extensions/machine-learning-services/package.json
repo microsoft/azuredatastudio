@@ -26,10 +26,40 @@
     "Microsoft.notebook"
   ],
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "%mls.configuration.title%",
+      "properties": {
+        "machineLearningServices.enablePython": {
+          "type": "boolean",
+          "default": "true",
+          "description": "%mls.enablePython.description%"
+        },
+        "machineLearningServices.enableR": {
+          "type": "boolean",
+          "default": "true",
+          "description": "%mls.enableR.description%"
+        },
+        "machineLearningServices.pythonPath": {
+          "type": "string",
+          "default": "python",
+          "description": "%mls.pythonPath.description%"
+        },
+        "machineLearningServices.rPath": {
+          "type": "string",
+          "default": "r",
+          "description": "%mls.rPath.description%"
+        }
+      }
+    },
     "commands": [
       {
         "command": "mls.command.managePackages",
         "title": "%mls.command.managePackages%"
+      },
+      {
+        "command": "mls.command.manageLanguages",
+        "title": "%mls.command.manageLanguages%"
       },
       {
         "command": "mls.command.odbcdriver",
@@ -38,6 +68,10 @@
       {
         "command": "mls.command.mlsdocs",
         "title": "%mls.command.mlsdocs%"
+      },
+      {
+        "command": "mls.command.dependencies",
+        "title": "%mls.command.dependencies%"
       }
     ],
     "dashboard.tabs": [
@@ -66,6 +100,7 @@
               "widget": {
                 "tasks-widget": [
                   "mls.command.managePackages",
+                  "mls.command.manageLanguages",
                   "mls.command.odbcdriver",
                   "mls.command.mlsdocs"
                 ]
@@ -77,17 +112,22 @@
     ]
   },
   "dependencies": {
+    "request": "^2.88.0",
     "vscode-nls": "^4.0.0",
     "vscode-languageclient": "^5.3.0-next.1"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.14.8",
+    "@types/request": "^2.48.1",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscode": "1.1.26"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.4"
+  },
+  "resolutions": {
+      "esprima": "^4.0.0"
   }
 }

@@ -8,10 +8,8 @@
 const gulp = require('gulp');
 const filter = require('gulp-filter');
 const es = require('event-stream');
-const gulptslint = require('gulp-tslint');
 const gulpeslint = require('gulp-eslint');
 const tsfmt = require('typescript-formatter');
-const tslint = require('tslint');
 const VinylFile = require('vinyl');
 const vfs = require('vinyl-fs');
 const path = require('path');
@@ -35,6 +33,7 @@ const all = [
 	'scripts/**/*',
 	'src/**/*',
 	'test/**/*',
+	'!test/**/out/**',
 	'!**/node_modules/**'
 ];
 
@@ -55,8 +54,7 @@ const indentationFilter = [
 	'!src/vs/base/common/marked/marked.js',
 	'!src/vs/base/node/terminateProcess.sh',
 	'!src/vs/base/node/cpuUsage.sh',
-	'!test/assert.js',
-	'!build/testSetup.js',
+	'!test/unit/assert.js',
 
 	// except specific folders
 	'!test/automation/out/**',
@@ -86,8 +84,8 @@ const indentationFilter = [
 	'!src/vs/*/**/*.d.ts',
 	'!src/typings/**/*.d.ts',
 	'!extensions/**/*.d.ts',
-	'!**/*.{svg,exe,png,bmp,scpt,bat,cmd,cur,ttf,woff,eot,md,ps1,template,yaml,yml,d.ts.recipe,ico,icns}',
-	'!build/{lib,tslintRules,download}/**/*.js',
+	'!**/*.{svg,exe,png,bmp,scpt,bat,cmd,cur,ttf,woff,eot,md,ps1,template,yaml,yml,d.ts.recipe,ico,icns,plist}',
+	'!build/{lib,download}/**/*.js',
 	'!build/**/*.sh',
 	'!build/azure-pipelines/**/*.js',
 	'!build/azure-pipelines/**/*.config',
@@ -143,9 +141,9 @@ const copyrightFilter = [
 	'!extensions/mssql/src/hdfs/webhdfs.ts',
 	'!src/sql/workbench/contrib/notebook/browser/outputs/tableRenderers.ts',
 	'!src/sql/workbench/contrib/notebook/common/models/url.ts',
-	'!src/sql/workbench/contrib/notebook/browser/models/renderMimeInterfaces.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/renderMimeInterfaces.ts',
 	'!src/sql/workbench/contrib/notebook/browser/models/outputProcessor.ts',
-	'!src/sql/workbench/contrib/notebook/browser/models/mimemodel.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/mimemodel.ts',
 	'!src/sql/workbench/contrib/notebook/browser/cellViews/media/*.css',
 	'!src/sql/base/browser/ui/table/plugins/rowSelectionModel.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/rowDetailView.ts',
@@ -153,11 +151,11 @@ const copyrightFilter = [
 	'!src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/cellSelectionModel.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/autoSizeColumns.plugin.ts',
-	'!src/sql/workbench/contrib/notebook/browser/outputs/sanitizer.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/sanitizer.ts',
 	'!src/sql/workbench/contrib/notebook/browser/outputs/renderers.ts',
-	'!src/sql/workbench/contrib/notebook/browser/outputs/registry.ts',
-	'!src/sql/workbench/contrib/notebook/browser/outputs/factories.ts',
-	'!src/sql/workbench/contrib/notebook/common/models/nbformat.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/registry.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/factories.ts',
+	'!src/sql/workbench/services/notebook/common/nbformat.ts',
 	'!extensions/markdown-language-features/media/tomorrow.css',
 	'!src/sql/workbench/browser/modelComponents/media/highlight.css',
 	'!src/sql/workbench/contrib/notebook/electron-browser/cellViews/media/highlight.css',
@@ -173,7 +171,7 @@ const copyrightFilter = [
 	'!**/*.bacpac'
 ];
 
-const eslintFilter = [
+const jsHygieneFilter = [
 	'src/**/*.js',
 	'build/gulpfile.*.js',
 	'!src/vs/loader.js',
@@ -186,7 +184,10 @@ const eslintFilter = [
 	'!**/test/**'
 ];
 
-const tslintBaseFilter = [
+const tsHygieneFilter = [
+	'src/**/*.ts',
+	'test/**/*.ts',
+	'extensions/**/*.ts',
 	'!**/fixtures/**',
 	'!**/typings/**',
 	'!**/node_modules/**',
@@ -197,67 +198,9 @@ const tslintBaseFilter = [
 	'!extensions/html-language-features/server/lib/jquery.d.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts', // {{SQL CARBON EDIT}},
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts', // {{SQL CARBON EDIT}},
-	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts' // {{SQL CARBON EDIT}} skip this because we have no plans on touching this and its not ours
+	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts', // {{SQL CARBON EDIT}} skip this because we have no plans on touching this and its not ours
+	'!src/vs/workbench/contrib/extensions/browser/extensionTipsService.ts' // {{SQL CARBON EDIT}} skip this because known issue
 ];
-
-// {{SQL CARBON EDIT}}
-const sqlFilter = [
-	'src/sql/**',
-	'extensions/**',
-	// Ignore VS Code extensions
-	'!extensions/bat/**',
-	'!extensions/configuration-editing/**',
-	'!extensions/docker/**',
-	'!extensions/extension-editing/**',
-	'!extensions/git/**',
-	'!extensions/git-ui/**',
-	'!extensions/image-preview/**',
-	'!extensions/insights-default/**',
-	'!extensions/json/**',
-	'!extensions/json-language-features/**',
-	'!extensions/markdown-basics/**',
-	'!extensions/markdown-language-features/**',
-	'!extensions/merge-conflict/**',
-	'!extensions/powershell/**',
-	'!extensions/python/**',
-	'!extensions/r/**',
-	'!extensions/theme-*/**',
-	'!extensions/vscode-*/**',
-	'!extensions/xml/**',
-	'!extensions/xml-language-features/**',
-	'!extensions/yarml/**',
-];
-
-const tslintCoreFilter = [
-	'src/**/*.ts',
-	'test/**/*.ts',
-	'!extensions/**/*.ts',
-	'!test/automation/**',
-	'!test/smoke/**',
-	...tslintBaseFilter
-];
-
-const tslintExtensionsFilter = [
-	'extensions/**/*.ts',
-	'!src/**/*.ts',
-	'!test/**/*.ts',
-	'test/automation/**/*.ts',
-	...tslintBaseFilter
-];
-
-const tslintHygieneFilter = [
-	'src/**/*.ts',
-	'test/**/*.ts',
-	'extensions/**/*.ts',
-	'!src/vs/workbench/contrib/extensions/browser/extensionTipsService.ts', // {{SQL CARBON EDIT}} known formatting issue do to commenting out code
-	...tslintBaseFilter
-];
-
-const fileLengthFilter = filter([
-	'**',
-	'!extensions/import/*.docx',
-	'!extensions/admin-tool-ext-win/license/**'
-], {restore: true});
 
 const copyrightHeaderLines = [
 	'/*---------------------------------------------------------------------------------------------',
@@ -268,27 +211,17 @@ const copyrightHeaderLines = [
 
 gulp.task('eslint', () => {
 	return vfs.src(all, { base: '.', follow: true, allowEmpty: true })
-		.pipe(filter(eslintFilter))
-		.pipe(gulpeslint('src/.eslintrc'))
+		.pipe(filter(jsHygieneFilter.concat(tsHygieneFilter)))
+		.pipe(gulpeslint({
+			configFile: '.eslintrc.json',
+			rulePaths: ['./build/lib/eslint']
+		}))
 		.pipe(gulpeslint.formatEach('compact'))
-		.pipe(gulpeslint.failAfterError());
-});
-
-gulp.task('tslint', () => {
-	return es.merge([
-
-		// Core: include type information (required by certain rules like no-nodejs-globals)
-		vfs.src(all, { base: '.', follow: true, allowEmpty: true })
-			.pipe(filter(tslintCoreFilter))
-			.pipe(gulptslint.default({ rulesDirectory: 'build/lib/tslint', program: tslint.Linter.createProgram('src/tsconfig.json') }))
-			.pipe(gulptslint.default.report({ emitError: true })),
-
-		// Exenstions: do not include type information
-		vfs.src(all, { base: '.', follow: true, allowEmpty: true })
-			.pipe(filter(tslintExtensionsFilter))
-			.pipe(gulptslint.default({ rulesDirectory: 'build/lib/tslint' }))
-			.pipe(gulptslint.default.report({ emitError: true }))
-	]).pipe(es.through());
+		.pipe(gulpeslint.results(results => {
+			if (results.warningCount > 0 || results.errorCount > 0) {
+				throw new Error('eslint failed with warnings and/or errors');
+			}
+		}));
 });
 
 function checkPackageJSON(actualPath) {
@@ -310,7 +243,7 @@ function checkPackageJSON(actualPath) {
 
 const checkPackageJSONTask = task.define('check-package-json', () => {
 	return gulp.src('package.json')
-		.pipe(es.through(function() {
+		.pipe(es.through(function () {
 			checkPackageJSON.call(this, 'remote/package.json');
 			checkPackageJSON.call(this, 'remote/web/package.json');
 		}));
@@ -377,8 +310,6 @@ function hygiene(some) {
 			replace: undefined,
 			tsconfig: undefined,
 			tsconfigFile: undefined,
-			tslint: undefined,
-			tslintFile: undefined,
 			tsfmtFile: undefined,
 			vscode: undefined,
 			vscodeFile: undefined
@@ -387,7 +318,7 @@ function hygiene(some) {
 			let formatted = result.dest.replace(/\r\n/gm, '\n');
 
 			if (original !== formatted) {
-				console.error("File not formatted. Run the 'Format Document' command to fix it:", file.relative);
+				console.error('File not formatted. Run the \'Format Document\' command to fix it:', file.relative);
 				errorCount++;
 			}
 			cb(null, file);
@@ -395,33 +326,6 @@ function hygiene(some) {
 		}, err => {
 			cb(err);
 		});
-	});
-
-	const filelength = es.through(function (file) {
-
-		const fileName = path.basename(file.relative);
-		const fileDir = path.dirname(file.relative);
-		//check the filename is < 50 characters (basename gets the filename with extension).
-		if (fileName.length > 50) {
-			console.error(`File name '${fileName}' under ${fileDir} is too long. Rename file to have less than 50 characters.`);
-			errorCount++;
-		}
-		if (file.relative.length > 150) {
-			console.error(`File path ${file.relative} exceeds acceptable file-length. Rename the path to have less than 150 characters.`);
-			errorCount++;
-		}
-
-		this.emit('data', file);
-	});
-
-	const tslintConfiguration = tslint.Configuration.findConfiguration('tslint.json', '.');
-	const tslintOptions = { fix: false, formatter: 'json' };
-	const tsLinter = new tslint.Linter(tslintOptions);
-
-	const tsl = es.through(function (file) {
-		const contents = file.contents.toString('utf8');
-		tsLinter.lint(file.relative, contents, tslintConfiguration.results);
-		this.emit('data', file);
 	});
 
 	let input;
@@ -437,22 +341,9 @@ function hygiene(some) {
 		input = some;
 	}
 
-	// {{SQL CARBON EDIT}} Linting for SQL
-	const tslintSqlConfiguration = tslint.Configuration.findConfiguration('tslint-sql.json', '.');
-	const tslintSqlOptions = { fix: false, formatter: 'json' };
-	const sqlTsLinter = new tslint.Linter(tslintSqlOptions);
-
-	const sqlTsl = es.through(function (file) { //TODO restore
-		const contents = file.contents.toString('utf8');
-		sqlTsLinter.lint(file.relative, contents, tslintSqlConfiguration.results);
-	});
-
 	const productJsonFilter = filter('product.json', { restore: true });
 
 	const result = input
-		.pipe(fileLengthFilter)
-		.pipe(filelength)
-		.pipe(fileLengthFilter.restore)
 		.pipe(filter(f => !f.stat.isDirectory()))
 		.pipe(productJsonFilter)
 		.pipe(process.env['BUILD_SOURCEVERSION'] ? es.through() : productJson)
@@ -462,22 +353,21 @@ function hygiene(some) {
 		.pipe(filter(copyrightFilter))
 		.pipe(copyrights);
 
-	let typescript = result
-		.pipe(filter(tslintHygieneFilter))
+	const typescript = result
+		.pipe(filter(tsHygieneFilter))
 		.pipe(formatting);
 
-	if (!process.argv.some(arg => arg === '--skip-tslint')) {
-		typescript = typescript.pipe(tsl);
-		typescript = typescript
-			.pipe(filter(sqlFilter)) // {{SQL CARBON EDIT}}
-			.pipe(sqlTsl);
-	}
-
 	const javascript = result
-		.pipe(filter(eslintFilter))
-		.pipe(gulpeslint('src/.eslintrc'))
+		.pipe(filter(jsHygieneFilter.concat(tsHygieneFilter)))
+		.pipe(gulpeslint({
+			configFile: '.eslintrc.json',
+			rulePaths: ['./build/lib/eslint']
+		}))
 		.pipe(gulpeslint.formatEach('compact'))
-		.pipe(gulpeslint.failAfterError());
+		.pipe(gulpeslint.results(results => {
+			errorCount += results.warningCount;
+			errorCount += results.errorCount;
+		}));
 
 	let count = 0;
 	return es.merge(typescript, javascript)
@@ -489,33 +379,6 @@ function hygiene(some) {
 			this.emit('data', data);
 		}, function () {
 			process.stdout.write('\n');
-
-			const tslintResult = tsLinter.getResult();
-			if (tslintResult.failures.length > 0) {
-				for (const failure of tslintResult.failures) {
-					const name = failure.getFileName();
-					const position = failure.getStartPosition();
-					const line = position.getLineAndCharacter().line;
-					const character = position.getLineAndCharacter().character;
-
-					console.error(`${name}:${line + 1}:${character + 1}:${failure.getFailure()}`);
-				}
-				errorCount += tslintResult.failures.length;
-			}
-
-			const sqlTslintResult = sqlTsLinter.getResult();
-			if (sqlTslintResult.failures.length > 0) {
-				for (const failure of sqlTslintResult.failures) {
-					const name = failure.getFileName();
-					const position = failure.getStartPosition();
-					const line = position.getLineAndCharacter().line;
-					const character = position.getLineAndCharacter().character;
-
-					console.error(`${name}:${line + 1}:${character + 1}:${failure.getFailure()}`);
-				}
-				errorCount += sqlTslintResult.failures.length;
-			}
-
 			if (errorCount > 0) {
 				this.emit('error', 'Hygiene failed with ' + errorCount + ' errors. Check \'build/gulpfile.hygiene.js\'.');
 			} else {

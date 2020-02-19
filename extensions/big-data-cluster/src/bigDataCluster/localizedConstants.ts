@@ -76,6 +76,8 @@ export const credentials = localize('mount.credentials.title', "Credentials");
 export const credentialsInfo = localize('mount.credentials.info', "Mount credentials for authentication to remote data source for reads");
 export const refreshMount = localize('refreshmount.dialog.title', "Refresh Mount");
 export const deleteMount = localize('deleteMount.dialog.title', "Delete Mount");
+export const loadingClusterStateCompleted = localize('bdc.dashboard.loadingClusterStateCompleted', "Loading cluster state completed");
+export const loadingHealthStatusCompleted = localize('bdc.dashboard.loadingHealthStatusCompleted', "Loading health status completed");
 
 // Errors
 export const usernameRequired = localize('err.controller.username.required', "Username is required");

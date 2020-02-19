@@ -72,7 +72,7 @@ import 'vs/workbench/services/history/browser/history';
 import 'vs/workbench/services/activity/browser/activityService';
 import 'vs/workbench/services/keybinding/browser/keybindingService';
 import 'vs/workbench/services/untitled/common/untitledTextEditorService';
-import 'vs/workbench/services/textfile/common/textResourcePropertiesService';
+import 'vs/workbench/services/textresourceProperties/common/textResourcePropertiesService';
 import 'vs/workbench/services/mode/common/workbenchModeService';
 import 'vs/workbench/services/commands/common/commandService';
 import 'vs/workbench/services/themes/browser/workbenchThemeService';
@@ -85,10 +85,12 @@ import 'vs/workbench/services/path/common/remotePathService';
 import 'vs/workbench/services/remote/common/remoteExplorerService';
 import 'vs/workbench/services/workingCopy/common/workingCopyService';
 import 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
+import 'vs/workbench/services/views/browser/viewDescriptorService';
 
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
-import { IExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { GlobalExtensionEnablementService } from 'vs/platform/extensionManagement/common/extensionEnablementService';
+import { IExtensionGalleryService, IGlobalExtensionEnablementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IListService, ListService } from 'vs/platform/list/browser/listService';
@@ -110,7 +112,11 @@ import { IDownloadService } from 'vs/platform/download/common/download';
 import { DownloadService } from 'vs/platform/download/common/downloadService';
 import { OpenerService } from 'vs/editor/browser/services/openerService';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { IUserDataSyncEnablementService } from 'vs/platform/userDataSync/common/userDataSync';
+import { UserDataSyncEnablementService } from 'vs/platform/userDataSync/common/userDataSyncEnablementService';
 
+registerSingleton(IUserDataSyncEnablementService, UserDataSyncEnablementService);
+registerSingleton(IGlobalExtensionEnablementService, GlobalExtensionEnablementService);
 registerSingleton(IExtensionGalleryService, ExtensionGalleryService, true);
 registerSingleton(IContextViewService, ContextViewService, true);
 registerSingleton(IListService, ListService, true);
@@ -137,38 +143,38 @@ import { ErrorMessageService } from 'sql/workbench/services/errorMessage/browser
 import { ServerGroupController } from 'sql/workbench/services/serverGroup/browser/serverGroupController';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { CapabilitiesService } from 'sql/workbench/services/capabilities/common/capabilitiesServiceImpl';
+import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesServiceImpl';
 import { ICredentialsService as sqlICredentialsService, CredentialsService } from 'sql/platform/credentials/common/credentialsService';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import { QueryModelService } from 'sql/platform/query/common/queryModelService';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
+import { QueryModelService } from 'sql/workbench/services/query/common/queryModelService';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryEditorService } from 'sql/workbench/services/queryEditor/browser/queryEditorService';
-import { IQueryManagementService, QueryManagementService } from 'sql/platform/query/common/queryManagement';
+import { IQueryManagementService, QueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { ResourceProviderService } from 'sql/workbench/services/resourceProvider/browser/resourceProviderService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { AdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
-import { OEShimService, IOEShimService } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerViewTreeShim';
+import { OEShimService, IOEShimService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim';
 import { IObjectExplorerService, ObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { AngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingServiceImpl';
 import { ISerializationService, SerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IMetadataService, MetadataService } from 'sql/platform/metadata/common/metadataService';
-import { ITaskService, TaskService } from 'sql/platform/tasks/common/tasksService';
+import { ITaskService, TaskService } from 'sql/workbench/services/tasks/common/tasksService';
 import { IEditorDescriptorService, EditorDescriptorService } from 'sql/workbench/services/queryEditor/browser/editorDescriptorService';
 import { IAdminService, AdminService } from 'sql/workbench/services/admin/common/adminService';
-import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
-import { JobManagementService } from 'sql/platform/jobManagement/common/jobManagementService';
+import { IJobManagementService } from 'sql/workbench/services/jobManagement/common/interfaces';
+import { JobManagementService } from 'sql/workbench/services/jobManagement/common/jobManagementService';
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { BackupService } from 'sql/platform/backup/common/backupServiceImp';
-import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
-import { BackupUiService } from 'sql/workbench/services/backup/browser/backupUiService';
-import { IRestoreDialogController, IRestoreService } from 'sql/platform/restore/common/restoreService';
-import { RestoreService, RestoreDialogController } from 'sql/platform/restore/browser/restoreServiceImpl';
+import { IBackupUiService } from 'sql/workbench/contrib/backup/common/backupUiService';
+import { BackupUiService } from 'sql/workbench/contrib/backup/browser/backupUiService';
+import { IRestoreDialogController, IRestoreService } from 'sql/workbench/services/restore/common/restoreService';
+import { RestoreService, RestoreDialogController } from 'sql/workbench/services/restore/browser/restoreServiceImpl';
 import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/browser/newDashboardTabDialog';
 import { NewDashboardTabDialogService } from 'sql/workbench/services/dashboard/browser/newDashboardTabDialogService';
-import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
-import { FileBrowserService } from 'sql/platform/fileBrowser/common/fileBrowserService';
+import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/interfaces';
+import { FileBrowserService } from 'sql/workbench/services/fileBrowser/common/fileBrowserService';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { FileBrowserDialogController } from 'sql/workbench/services/fileBrowser/browser/fileBrowserDialogController';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
@@ -177,8 +183,8 @@ import { IAccountManagementService } from 'sql/platform/accounts/common/interfac
 import { AccountManagementService } from 'sql/workbench/services/accountManagement/browser/accountManagementService';
 import { IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ProfilerService } from 'sql/workbench/services/profiler/browser/profilerService';
-import { AccountPickerService } from 'sql/workbench/contrib/accounts/browser/accountPickerService';
-import { IAccountPickerService } from 'sql/workbench/contrib/accounts/browser/accountPicker';
+import { AccountPickerService } from 'sql/workbench/services/accountManagement/browser/accountPickerService';
+import { IAccountPickerService } from 'sql/workbench/services/accountManagement/browser/accountPicker';
 import { IDashboardViewService } from 'sql/platform/dashboard/browser/dashboardViewService';
 import { DashboardViewService } from 'sql/platform/dashboard/browser/dashboardViewServiceImpl';
 import { IModelViewService } from 'sql/platform/modelComponents/browser/modelViewService';
@@ -253,10 +259,16 @@ import 'vs/workbench/contrib/files/browser/files.contribution';
 // Backup
 import 'vs/workbench/contrib/backup/common/backup.contribution';
 
+// bulkEdit
+import 'vs/workbench/contrib/bulkEdit/browser/bulkEdit.contribution';
+
 // Search
 import 'vs/workbench/contrib/search/browser/search.contribution';
 import 'vs/workbench/contrib/search/browser/searchView';
 import 'vs/workbench/contrib/search/browser/openAnythingHandler';
+
+// Search Editor
+import 'vs/workbench/contrib/searchEditor/browser/searchEditor.contribution';
 
 // SCM
 import 'vs/workbench/contrib/scm/browser/scm.contribution';
@@ -290,14 +302,14 @@ import 'vs/workbench/contrib/extensions/browser/extensions.contribution';
 import 'vs/workbench/contrib/extensions/browser/extensionsQuickOpen';
 import 'vs/workbench/contrib/extensions/browser/extensionsViewlet';
 
-// Output Panel
+// Output View
 import 'vs/workbench/contrib/output/browser/output.contribution';
-import 'vs/workbench/contrib/output/browser/outputPanel';
+import 'vs/workbench/contrib/output/browser/outputView';
 
 // Terminal
 import 'vs/workbench/contrib/terminal/browser/terminal.contribution';
 import 'vs/workbench/contrib/terminal/browser/terminalQuickOpen';
-import 'vs/workbench/contrib/terminal/browser/terminalPanel';
+import 'vs/workbench/contrib/terminal/browser/terminalView';
 
 // Relauncher
 import 'vs/workbench/contrib/relauncher/browser/relauncher.contribution';
@@ -364,6 +376,9 @@ import 'vs/workbench/contrib/userDataSync/browser/userDataSync.contribution';
 // Code Actions
 import 'vs/workbench/contrib/codeActions/common/codeActions.contribution';
 
+// Timeline
+import 'vs/workbench/contrib/timeline/browser/timeline.contribution';
+
 //#endregion
 
 //#region -- contributions
@@ -376,9 +391,8 @@ import 'sql/workbench/contrib/query/common/resultsGrid.contribution';
 import 'sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution';
 import 'sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contribution';
 
-// {{SQL CARBON EDIT}}
 //editor replacement
-import 'sql/workbench/common/editorReplacer.contribution';
+import 'sql/workbench/contrib/editorReplacement/common/editorReplacer.contribution';
 
 // tasks
 import 'sql/workbench/contrib/tasks/browser/tasks.contribution';
@@ -389,6 +403,7 @@ import 'sql/workbench/contrib/telemetry/common/telemetry.contribution';
 
 // connection
 import 'sql/workbench/contrib/connection/browser/connection.contribution';
+import 'sql/workbench/contrib/connection/common/connectionProviderExtension';
 import 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
 
 // edit data editor
@@ -431,7 +446,7 @@ import 'sql/workbench/contrib/dashboard/browser/containers/dashboardModelViewCon
 import 'sql/workbench/contrib/dashboard/browser/core/dashboardTab.contribution';
 
 // Model-based Views
-import 'sql/workbench/browser/modelComponents/components.contribution';
+import 'sql/workbench/contrib/modelView/browser/components.contribution';
 import 'sql/workbench/browser/modelComponents/modelViewEditor.contribution';
 
 // notebooks

@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vs/base/common/lifecycle';
-import { INotebookFindModel, ICellModel, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as types from 'vs/base/common/types';
-import { NotebookRange, NotebookFindMatch, NotebookFindDecorations } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
+import { NotebookFindMatch, NotebookFindDecorations } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 import * as model from 'vs/editor/common/model';
 import { ModelDecorationOptions, DidChangeDecorationsEmitter, createTextBuffer } from 'vs/editor/common/model/textModel';
 import { IModelDecorationsChangedEvent } from 'vs/editor/common/model/textModelEvents';
@@ -19,10 +20,11 @@ import { singleLetterHash, isHighSurrogate } from 'vs/base/common/strings';
 import { Command, ServicesAccessor } from 'vs/editor/browser/editorExtensions';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { NOTEBOOK_COMMAND_SEARCH, NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
-import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { NOTEBOOK_COMMAND_SEARCH } from 'sql/workbench/services/notebook/common/notebookContext';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { ActiveEditorContext } from 'vs/workbench/common/editor';
+import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 
 function _normalizeOptions(options: model.IModelDecorationOptions): ModelDecorationOptions {
 	if (options instanceof ModelDecorationOptions) {
@@ -490,13 +492,13 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		}
 	}
 
-	find(exp: string, maxMatches?: number): Promise<NotebookRange> {
+	find(exp: string, matchCase?: boolean, wholeWord?: boolean, maxMatches?: number): Promise<NotebookRange> {
 		this._findArray = new Array<NotebookRange>();
 		this._onFindCountChange.fire(this._findArray.length);
 		if (exp) {
 			for (let i = 0; i < this.notebookModel.cells.length; i++) {
 				const item = this.notebookModel.cells[i];
-				const result = this.searchFn(item, exp, maxMatches);
+				const result = this.searchFn(item, exp, matchCase, wholeWord, maxMatches);
 				if (result) {
 					this._findArray.push(...result);
 					this._onFindCountChange.fire(this._findArray.length);
@@ -523,39 +525,61 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		return this.findArray;
 	}
 
-	private searchFn(cell: ICellModel, exp: string, maxMatches?: number): NotebookRange[] {
+	private searchFn(cell: ICellModel, exp: string, matchCase: boolean = false, wholeWord: boolean = false, maxMatches?: number): NotebookRange[] {
 		let findResults: NotebookRange[] = [];
 		let cellVal = cell.cellType === 'markdown' ? this.cleanUpCellSource(cell.source) : cell.source;
-		let index: number;
-		let start: number;
-		let end: number;
 		if (cellVal) {
+
 			if (typeof cellVal === 'string') {
-				index = 0;
-				while (cellVal.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) > -1) {
-					start = cellVal.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index;
-					end = start + exp.length;
-					let range = new NotebookRange(cell, 0, start, 0, end);
-					findResults = findResults.concat(range);
-					index = end;
-				}
+				let findStartResults = this.search(cellVal, exp, matchCase, wholeWord, maxMatches);
+				findStartResults.forEach(start => {
+					let range = new NotebookRange(cell, 0, start, 0, start + exp.length);
+					findResults.push(range);
+				});
+
 			} else {
 				for (let j = 0; j < cellVal.length; j++) {
-					index = 0;
 					let cellValFormatted = cell.cellType === 'markdown' ? this.cleanMarkdownLinks(cellVal[j]) : cellVal[j];
-					while (cellValFormatted.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) > -1) {
-						start = cellValFormatted.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index + 1;
-						end = start + exp.length;
+					let findStartResults = this.search(cellValFormatted, exp, matchCase, wholeWord, maxMatches - findResults.length);
+					findStartResults.forEach(start => {
 						// lineNumber: j+1 since notebook editors aren't zero indexed.
-						let range = new NotebookRange(cell, j + 1, start, j + 1, end);
-						findResults = findResults.concat(range);
-						index = end;
-					}
-					if (findResults.length >= maxMatches) {
-						break;
-					}
+						let range = new NotebookRange(cell, j + 1, start, j + 1, start + exp.length);
+						findResults.push(range);
+					});
 				}
 			}
+		}
+		return findResults;
+	}
+
+	// escape the special characters in a regex string
+	escapeRegExp(text: string): string {
+		return text.replace(/[-[\]{}()*+!<=:?.\/\\^$|#\s,]/g, '\\$&');
+	}
+
+	search(input: string, exp: string, matchCase: boolean = false, wholeWord: boolean = false, maxMatches?: number): number[] {
+		let index: number = 0;
+		let start: number;
+		let findResults: number[] = [];
+		if (!matchCase) {
+			input = input.toLocaleLowerCase();
+			exp = exp.toLocaleLowerCase();
+		}
+		let searchText: string = input.substr(index);
+		while (findResults.length < maxMatches && searchText.indexOf(exp) > -1) {
+			if (wholeWord) {
+				// word with no special characters around \\bword\\b, word that begins or ends with special character \\sword\\s
+				let wholeWordRegex = new RegExp(`(?:\\b|\\s)${this.escapeRegExp(exp)}(?:\\b|\\s)`);
+				start = searchText.search(wholeWordRegex) + 1;
+				if (start < 1) {
+					break;
+				}
+			} else {
+				start = searchText.indexOf(exp) + index + 1;
+			}
+			findResults.push(start);
+			index = start + exp.length;
+			searchText = input.substr(index - 1);
 		}
 		return findResults;
 	}
@@ -656,7 +680,7 @@ class SearchNotebookCommand extends SettingsCommand {
 
 export const findCommand = new SearchNotebookCommand({
 	id: NOTEBOOK_COMMAND_SEARCH,
-	precondition: ContextKeyExpr.and(NotebookEditorVisibleContext),
+	precondition: ActiveEditorContext.isEqualTo(NotebookEditor.ID),
 	kbOpts: {
 		primary: KeyMod.CtrlCmd | KeyCode.KEY_F,
 		weight: KeybindingWeight.EditorContrib

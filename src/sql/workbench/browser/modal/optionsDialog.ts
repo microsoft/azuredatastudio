@@ -8,8 +8,7 @@ import * as DialogHelper from './dialogHelper';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IModalOptions, Modal } from './modal';
 import * as OptionsDialogHelper from './optionsDialogHelper';
-import { attachButtonStyler, attachModalDialogStyler, attachPanelStyler } from 'sql/platform/theme/common/styler';
-import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 
 import * as azdata from 'azdata';
@@ -34,6 +33,10 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { attachModalDialogStyler, attachPanelStyler } from 'sql/workbench/common/styler';
+import { IViewDescriptorService } from 'vs/workbench/common/views';
+import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
 
 export class CategoryView extends ViewPane {
 
@@ -44,9 +47,13 @@ export class CategoryView extends ViewPane {
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
+		@IOpenerService protected openerService: IOpenerService,
+		@IThemeService protected themeService: IThemeService
 	) {
-		super(options, keybindingService, contextMenuService, configurationService, contextKeyService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, opener, themeService);
 	}
 
 	// we want a fixed size, so when we render to will measure our content and set that to be our

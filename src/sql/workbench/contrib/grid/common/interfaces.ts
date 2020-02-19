@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ISlickColumn, VirtualizedCollection } from 'angular2-slickgrid';
-
+import { VirtualizedCollection, ISlickColumn } from 'sql/base/browser/ui/table/asyncDataView';
 export interface IGridDataSet {
 	dataRows: VirtualizedCollection<{}>;
 	columnDefinitions: ISlickColumn<any>[];
@@ -16,23 +15,10 @@ export interface IGridDataSet {
 	minHeight: number | string;
 }
 
-export enum SaveFormat {
-	CSV = 'csv',
-	JSON = 'json',
-	EXCEL = 'excel',
-	XML = 'xml'
-}
-
 export interface IGridInfo {
 	batchIndex: number;
 	resultSetNumber: number;
 	selection: Slick.Range[];
 	gridIndex: number;
 	rowIndex?: number;
-}
-export interface ISaveRequest {
-	format: SaveFormat;
-	batchIndex: number;
-	resultSetNumber: number;
-	selection: Slick.Range[];
 }

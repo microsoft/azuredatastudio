@@ -12,7 +12,7 @@ import * as path from 'vs/base/common/path';
 
 import { Workspace, toWorkspaceFolder, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { ConfigurationResolverService } from 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
-import { TestContextService, TestFileService } from 'vs/workbench/test/workbenchTestServices';
+import { TestContextService, TestFileService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IExtensionHostDebugParams, IDebugParams, ParsedArgs } from 'vs/platform/environment/common/environment';
 import { URI } from 'vs/base/common/uri';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
@@ -25,6 +25,7 @@ import { getRandomTestPath } from 'vs/base/test/node/testUtils';
 import { IWorkbenchConstructionOptions } from 'vs/workbench/workbench.web.api';
 
 class TestEnvironmentService implements IWorkbenchEnvironmentService {
+	userDataSyncHome: URI;
 	keybindingsSyncPreviewResource: URI;
 	argvResource: URI;
 	userDataSyncLogResource: URI;

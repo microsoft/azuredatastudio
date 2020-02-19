@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as childProcess from 'child_process';
 
@@ -13,12 +11,12 @@ export class ProcessService {
 
 	public timeout = ExecScriptsTimeoutInSeconds;
 
-	public async execScripts(exeFilePath: string, scripts: string[], outputChannel?: vscode.OutputChannel): Promise<void> {
-		return new Promise<void>((resolve, reject) => {
+	public async execScripts(exeFilePath: string, scripts: string[], args?: string[], outputChannel?: vscode.OutputChannel): Promise<string> {
+		return new Promise<string>((resolve, reject) => {
 
-			const scriptExecution = childProcess.spawn(exeFilePath);
+			const scriptExecution = childProcess.spawn(exeFilePath, args);
 			let timer: NodeJS.Timeout;
-			let output: string;
+			let output: string = '';
 			scripts.forEach(script => {
 				scriptExecution.stdin.write(`${script}\n`);
 			});
@@ -41,7 +39,7 @@ export class ProcessService {
 					clearTimeout(timer);
 				}
 				if (code === 0) {
-					resolve();
+					resolve(output);
 				} else {
 					reject(`Process exited with code: ${code}. output: ${output}`);
 				}

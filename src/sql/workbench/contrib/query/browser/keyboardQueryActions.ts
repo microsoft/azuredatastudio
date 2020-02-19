@@ -10,17 +10,17 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 
 import * as azdata from 'azdata';
 
-import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
+import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
-import * as Constants from 'sql/workbench/contrib/query/common/constants';
+import * as Constants from 'sql/platform/query/common/constants';
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
 import { EditDataEditor } from 'sql/workbench/contrib/editData/browser/editDataEditor';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
+import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { firstIndex } from 'vs/base/common/arrays';
 
 const singleQuote = '\'';

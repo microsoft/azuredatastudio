@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 
 import { IEditorModel } from 'vs/platform/editor/common/editor';
-import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
+import { EditorInput, EditorModel, IEditorInput } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
@@ -139,8 +139,8 @@ export class ModelViewInput extends EditorInput {
 	/**
 	 * Saves the editor if it is dirty. Subclasses return a promise with a boolean indicating the success of the operation.
 	 */
-	save(): Promise<boolean> {
-		return this._model.save();
+	save(): Promise<IEditorInput | undefined> {
+		return this._model.save().then(saved => saved ? this : undefined);
 	}
 
 	public dispose(): void {

@@ -10,9 +10,9 @@ import {
 	DISCONNECT_COMMAND_ID, REFRESH_COMMAND_ID
 } from './nodeCommands.common';
 import { ContextKeyExpr, ContextKeyNotEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
-import { NodeContextKey } from 'sql/workbench/contrib/dataExplorer/browser/nodeContext';
-import { MssqlNodeContext } from 'sql/workbench/contrib/dataExplorer/browser/mssqlNodeContext';
-import { NodeType } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
+import { NodeContextKey } from 'sql/workbench/browser/parts/views/nodeContext';
+import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/mssqlNodeContext';
+import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 
 
 // Disconnect

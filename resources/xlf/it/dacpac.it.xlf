@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/dacpac/out/wizard/pages/selectOperationpage" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/selectOperationpage" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="dacFx.deployRadioButtonLabel">
         <source xml:lang="en">Deploy a data-tier application .dacpac file to an instance of SQL Server [Deploy Dacpac]</source>
@@ -20,7 +20,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/importConfigPage" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/importConfigPage" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="dacFxImport.openFile">
         <source xml:lang="en">Open</source>
@@ -32,7 +32,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/extractConfigPage" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/extractConfigPage" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="dacfxExtract.saveFile">
         <source xml:lang="en">Save</source>
@@ -48,7 +48,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/exportConfigPage" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/exportConfigPage" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="dacfxExport.saveFile">
         <source xml:lang="en">Save</source>
@@ -60,7 +60,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/deployPlanPage" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/deployPlanPage" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="dacfx.dataLossTextWithCount">
         <source xml:lang="en">{0} of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.</source>
@@ -112,7 +112,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/deployConfigPage" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/deployConfigPage" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="dacFx.databaseNameTextBox">
         <source xml:lang="en">Database Name</source>
@@ -136,7 +136,7 @@
       </trans-unit>
       <trans-unit id="dacFx.newRadioButtonLabel">
         <source xml:lang="en">New Database</source>
-        <target state="translated">Nuovo Database</target>
+        <target state="translated">Nuovo database</target>
       </trans-unit>
       <trans-unit id="dacFx.targetDatabaseRadioButtonsTitle">
         <source xml:lang="en">Target Database</source>
@@ -148,7 +148,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/dacFxSummaryPage" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/dacFxSummaryPage" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="dacfx.targetServerName">
         <source xml:lang="en">Target Server</source>
@@ -184,7 +184,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/api/dacFxConfigPage" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/api/dacFxConfigPage" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="dacFx.targetServerDropdownTitle">
         <source xml:lang="en">Target Server</source>
@@ -204,15 +204,15 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/api/basePage" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/api/basePage" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="basePage.defaultUser">
         <source xml:lang="en">default</source>
-        <target state="translated">Predefinito</target>
+        <target state="translated">predefinito</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/dataTierApplicationWizard" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/dataTierApplicationWizard" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="dacFx.selectOperationPageName">
         <source xml:lang="en">Select an Operation</source>
@@ -244,7 +244,7 @@
       </trans-unit>
       <trans-unit id="dacFx.deployButton">
         <source xml:lang="en">Deploy</source>
-        <target state="translated">Distribuzione</target>
+        <target state="translated">Distribuisci</target>
       </trans-unit>
       <trans-unit id="dacFx.extractButton">
         <source xml:lang="en">Extract</source>
@@ -260,11 +260,11 @@
       </trans-unit>
       <trans-unit id="dacFx.generateScriptButton">
         <source xml:lang="en">Generate Script</source>
-        <target state="translated">Genera lo script</target>
+        <target state="translated">Genera script</target>
       </trans-unit>
       <trans-unit id="alertData.deployErrorMessage">
         <source xml:lang="en">Deploy failed '{0}'</source>
-        <target state="translated">La distribuzione non è riuscita: '{0}'</target>
+        <target state="translated">Distribuzione non riuscita: '{0}'</target>
       </trans-unit>
       <trans-unit id="alertData.extractErrorMessage">
         <source xml:lang="en">Extract failed '{0}'</source>
