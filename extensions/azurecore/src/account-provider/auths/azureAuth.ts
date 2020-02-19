@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import axios, { AxiosResponse } from 'axios';
 import * as qs from 'qs';
-const atob = require('atob');
 import * as url from 'url';
 
 import {
@@ -312,7 +311,7 @@ export abstract class AzureAuth {
 	protected getTokenClaims(accessToken: string): TokenClaims | undefined {
 		try {
 			const split = accessToken.split('.');
-			return JSON.parse(atob(split[1]));
+			return JSON.parse(Buffer.from(split[1], 'base64').toString('binary'));
 		} catch (ex) {
 			throw new Error('Unable to read token claims');
 		}

@@ -224,7 +224,6 @@
     "@azure/arm-resourcegraph": "^2.0.0",
     "@azure/arm-subscriptions": "^2.0.0",
     "adal-node": "^0.2.1",
-    "atob": "^2.1.2",
     "axios": "^0.19.2",
     "keytar": "^5.2.0",
     "qs": "^6.9.1",
@@ -232,7 +231,6 @@
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
-    "@types/atob": "^2.1.2",
     "@types/keytar": "^4.4.2",
     "@types/mocha": "^5.2.5",
     "@types/node": "^12.11.7",
