@@ -32,6 +32,7 @@ let controller: JupyterController;
 type ChooseCellType = { label: string, id: CellType };
 
 export async function activate(extensionContext: vscode.ExtensionContext): Promise<IExtensionApi> {
+	const createBookPath: string = path.posix.join(extensionContext.extensionPath, 'resources', 'notebooks', 'JupyterBooksCreate.ipynb');
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openBook', (bookPath: string, openAsUntitled: boolean, urlToOpen?: string) => openAsUntitled ? untitledBookTreeViewProvider.openBook(bookPath, urlToOpen) : bookTreeViewProvider.openBook(bookPath, urlToOpen)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openNotebook', (resource) => bookTreeViewProvider.openNotebook(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openUntitledNotebook', (resource) => untitledBookTreeViewProvider.openNotebookAsUntitled(resource)));
@@ -43,7 +44,6 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openBook', () => bookTreeViewProvider.openNewBook()));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.createBook', async () => {
-		const createBookPath: string = path.posix.join(extensionContext.extensionPath, 'resources', 'notebooks', 'JupyterBooksCreate.ipynb');
 		let untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${createBookPath}`);
 		vscode.workspace.openTextDocument(createBookPath).then((document) => {
 			azdata.nb.showNotebookDocument(untitledFileName, {
@@ -128,8 +128,8 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(BOOKS_VIEWID, bookTreeViewProvider));
 	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(READONLY_BOOKS_VIEWID, untitledBookTreeViewProvider));
 
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openCreatedBook', (bookPath: string) => {
-		updateBookMetadata(bookPath);
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openCreatedBook', async (bookPath: string) => {
+		await updateBookMetadata(bookPath);
 		bookTreeViewProvider.openBook(bookPath, undefined);
 	}));
 
