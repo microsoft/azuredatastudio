@@ -170,7 +170,7 @@ configurationRegistry.registerConfiguration({
 				'type': 'string',
 			},
 			'scope': ConfigurationScope.MACHINE,
-			'default': true,
+			'default': [],
 			'description': localize('notebook.trustedNotebooks', "Trusted directories for notebooks.")
 		}
 	}
