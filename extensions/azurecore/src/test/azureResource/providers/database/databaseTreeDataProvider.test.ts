@@ -56,7 +56,8 @@ const mockResourceRootNode: azureResource.IAzureResourceNode = {
 	}
 };
 
-const mockTokens = {
+const mockTokens: { [key: string]: any } = {};
+mockTokens[mockTenantId] = {
 	token: 'mock_token',
 	tokenType: 'Bearer'
 };
