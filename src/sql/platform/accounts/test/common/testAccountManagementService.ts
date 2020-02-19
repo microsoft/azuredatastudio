@@ -59,6 +59,10 @@ export class TestAccountManagementService implements IAccountManagementService {
 		throw new Error('Method not implemented');
 	}
 
+	removeAccounts(): Thenable<boolean> {
+		throw new Error('Method not implemented');
+	}
+
 	refreshAccount(account: azdata.Account): Thenable<azdata.Account> {
 		throw new Error('Method not implemented');
 	}

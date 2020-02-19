@@ -23,6 +23,7 @@ export interface IAccountManagementService {
 	getAccounts(): Thenable<azdata.Account[]>;
 	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{ [key: string]: { token: string } }>;
 	removeAccount(accountKey: azdata.AccountKey): Thenable<boolean>;
+	removeAccounts(): Thenable<boolean>;
 	refreshAccount(account: azdata.Account): Thenable<azdata.Account>;
 
 	// UI METHODS //////////////////////////////////////////////////////////

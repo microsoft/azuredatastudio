@@ -258,6 +258,21 @@ export class AccountManagementService implements IAccountManagementService {
 		});
 	}
 
+	public removeAccounts(): Thenable<boolean> {
+		const self = this;
+		return this.getAccounts().then((accounts) => {
+			return self._accountStore.removeAllAccounts().then((removeAllResult) => {
+				if (removeAllResult === true) {
+					for (const account of accounts) {
+						self.removeAccount(account.key);
+					}
+					return true;
+				}
+				return false;
+			});
+		});
+	}
+
 	// UI METHODS //////////////////////////////////////////////////////////
 	/**
 	 * Opens the account list dialog
