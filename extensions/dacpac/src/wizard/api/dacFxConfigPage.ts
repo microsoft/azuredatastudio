@@ -44,7 +44,6 @@ export abstract class DacFxConfigPage extends BasePage {
 	protected async createServerDropdown(isTargetServer: boolean): Promise<azdata.FormComponent> {
 		const serverDropDownTitle = isTargetServer ? loc.targetServer : loc.sourceServer;
 		this.serverDropdown = this.view.modelBuilder.dropDown().withProperties({
-			required: true,
 			ariaLabel: serverDropDownTitle
 		}).component();
 
@@ -112,9 +111,7 @@ export abstract class DacFxConfigPage extends BasePage {
 			this.model.filePath = this.fileTextBox.value;
 		});
 
-		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).withProperties({
-			required: true
-		}).component();
+		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).component();
 
 
 		return {
