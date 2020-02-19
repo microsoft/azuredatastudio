@@ -13,13 +13,13 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
-import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
+import QueryRunner, { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { localize } from 'vs/nls';
-import { IAction, Action } from 'vs/base/common/actions';
+import { IAction } from 'vs/base/common/actions';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IMimeComponent } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRegistry';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -36,6 +36,7 @@ import { assign } from 'vs/base/common/objects';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
+import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -199,6 +200,14 @@ class DataResourceTable extends GridTableBase<any> {
 			this.tableContainer.style.display = 'inline-block';
 			this._chartContainer.style.display = 'none';
 		}
+	}
+
+	public set queryRunner(runner: QueryRunner) {
+		this._chart.queryRunner = runner;
+	}
+
+	public chart(dataId: { batchId: number, resultId: number }): void {
+		this._chart.chart(dataId);
 	}
 }
 
@@ -406,17 +415,28 @@ class SimpleDbColumn implements azdata.IDbColumn {
 	dataTypeName: string;
 }
 
-export class NotebookChartAction extends Action {
+export class NotebookChartAction extends ToggleableAction {
 	public static ID = 'notebook.showChart';
-	public static LABEL = localize('notebook.showChart', "Show chart");
+	public static SHOWCHART_LABEL = localize('notebook.showChart', "Show chart");
+	public static SHOWTABLE_LABEL = localize('notebook.showTable', "Show table");
 	public static ICON = 'viewChart';
 
 	constructor(private resourceTable: DataResourceTable) {
-		super(NotebookChartAction.ID, NotebookChartAction.LABEL, NotebookChartAction.ICON);
+		super(NotebookChartAction.ID, {
+			toggleOnLabel: NotebookChartAction.SHOWTABLE_LABEL,
+			toggleOnClass: NotebookChartAction.ICON,
+			toggleOffLabel: NotebookChartAction.SHOWCHART_LABEL,
+			toggleOffClass: NotebookChartAction.ICON,
+			isOn: false
+		});
 	}
 
 	public async run(context: IGridActionContext): Promise<boolean> {
 		this.resourceTable.toggleChartVisibility();
-		return true;
+		this.toggle(!this.state.isOn);
+		if (this.state.isOn) {
+			this.resourceTable.chart({ batchId: context.batchId, resultId: context.resultId });
+		}
+		return Promise.resolve(true);
 	}
 }
