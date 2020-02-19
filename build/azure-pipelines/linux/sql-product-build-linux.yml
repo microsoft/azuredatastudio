@@ -108,8 +108,8 @@ steps:
 
   - script: |
       set -e
-      apt update
-      apt install libsecret-1-dev gnome-keyring python-gnomekeyring
+      sudo apt update
+      sudo apt install libsecret-1-dev gnome-keyring python-gnomekeyring
       NO_AT_BRIDGE=1;
       eval $(dbus-launch --sh-syntax);
       eval $(echo -n "" | /usr/bin/gnome-keyring-daemon --login);
