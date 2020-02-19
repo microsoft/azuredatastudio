@@ -23,9 +23,9 @@ export class NotebookEditorInputAssociation implements ILanguageAssociation {
 
 	convertInput(activeEditor: IEditorInput): NotebookInput {
 		if (activeEditor instanceof FileEditorInput) {
-			return this.instantiationService.createInstance(FileNotebookInput, activeEditor.getName(), activeEditor.getResource(), activeEditor);
+			return this.instantiationService.createInstance(FileNotebookInput, activeEditor.getName(), activeEditor.resource, activeEditor);
 		} else if (activeEditor instanceof UntitledTextEditorInput) {
-			return this.instantiationService.createInstance(UntitledNotebookInput, activeEditor.getName(), activeEditor.getResource(), activeEditor);
+			return this.instantiationService.createInstance(UntitledNotebookInput, activeEditor.getName(), activeEditor.resource, activeEditor);
 		} else {
 			return undefined;
 		}
@@ -48,7 +48,7 @@ export class FileNoteBookEditorInputFactory implements IEditorInputFactory {
 	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): FileNotebookInput | undefined {
 		const factory = editorInputFactoryRegistry.getEditorInputFactory(FILE_EDITOR_INPUT_ID);
 		const fileEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as FileEditorInput;
-		return instantiationService.createInstance(FileNotebookInput, fileEditorInput.getName(), fileEditorInput.getResource(), fileEditorInput);
+		return instantiationService.createInstance(FileNotebookInput, fileEditorInput.getName(), fileEditorInput.resource, fileEditorInput);
 	}
 
 	canSerialize(): boolean { // we can always serialize notebooks
@@ -68,7 +68,7 @@ export class UntitledNoteBookEditorInputFactory implements IEditorInputFactory {
 	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): UntitledNotebookInput | undefined {
 		const factory = editorInputFactoryRegistry.getEditorInputFactory(UntitledTextEditorInput.ID);
 		const untitledEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as UntitledTextEditorInput;
-		return instantiationService.createInstance(UntitledNotebookInput, untitledEditorInput.getName(), untitledEditorInput.getResource(), untitledEditorInput);
+		return instantiationService.createInstance(UntitledNotebookInput, untitledEditorInput.getName(), untitledEditorInput.resource, untitledEditorInput);
 	}
 
 	canSerialize(): boolean { // we can always serialize notebooks
