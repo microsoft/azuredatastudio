@@ -45,8 +45,8 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 	}
 
 	private async getResources(element: azureResource.IAzureResourceNode): Promise<T[]> {
-		const token = await this._apiWrapper.getSecurityToken(element.account, azdata.AzureResource.ResourceManagement);
-		const credential = new msRest.TokenCredentials(token.at);
+		const tokens = await this._apiWrapper.getSecurityToken(element.account, azdata.AzureResource.ResourceManagement);
+		const credential = new msRest.TokenCredentials(tokens[element.tenantId].token, tokens[element.tenantId].tokenType);
 
 		const resources: T[] = await this._resourceService.getResources(element.subscription, credential, element.account) || <T[]>[];
 		return resources;

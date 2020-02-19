@@ -206,6 +206,10 @@ export class AccountManagementService implements IAccountManagementService {
 		});
 	}
 
+	public getAccounts(): Thenable<azdata.Account[]> {
+		return this._accountStore.getAllAccounts();
+	}
+
 	/**
 	 * Generates a security token by asking the account's provider
 	 * @param account Account to generate security token for

@@ -43,6 +43,10 @@ export class TestAccountManagementService implements IAccountManagementService {
 		return Promise.resolve([]);
 	}
 
+	getAccounts(): Thenable<azdata.Account[]> {
+		return Promise.resolve([]);
+	}
+
 	getAccountsForProvider(providerId: string): Thenable<azdata.Account[]> {
 		return Promise.resolve([]);
 	}

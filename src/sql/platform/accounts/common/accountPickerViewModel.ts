@@ -20,7 +20,7 @@ export class AccountPickerViewModel {
 	public selectedAccount: azdata.Account | undefined;
 
 	constructor(
-		private _providerId: string,
+		_providerId: string,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
 		// Create our event emitters
@@ -37,7 +37,7 @@ export class AccountPickerViewModel {
 	 */
 	public initialize(): Thenable<azdata.Account[]> {
 		// Load a baseline of the accounts for the provider
-		return this._accountManagementService.getAccountsForProvider(this._providerId)
+		return this._accountManagementService.getAccounts()
 			.then(undefined, () => {
 				// In the event we failed to lookup accounts for the provider, just send
 				// back an empty collection

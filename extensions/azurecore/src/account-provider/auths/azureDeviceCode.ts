@@ -18,7 +18,8 @@ import {
 	AzureAccountProviderMetadata,
 	AzureAccount,
 	AzureAuthType,
-	Tenant
+	Tenant,
+	Subscription
 } from '../interfaces';
 
 import { SimpleTokenCache } from '../simpleTokenCache';
@@ -74,33 +75,35 @@ export class AzureDeviceCode extends AzureAuth {
 			let accessToken: AccessToken;
 			let refreshToken: RefreshToken;
 			let tenants: Tenant[];
+			let subscriptions: Subscription[];
 
 			for (const resource of this.resources) {
 				tokenClaims = this.getTokenClaims(finalDeviceLogin.access_token);
 
 				accessToken = {
-					at: finalDeviceLogin.access_token,
+					token: finalDeviceLogin.access_token,
 					key: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name,
 					resource: resource.id
 				};
 				refreshToken = {
-					rt: finalDeviceLogin.refresh_token,
+					token: finalDeviceLogin.refresh_token,
 					key: accessToken.key,
 					resource: resource.id
 				};
 
-				this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, resource, { at: accessToken.at, key: accessToken.key, rt: refreshToken.rt, resource: accessToken.resource });
+				this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, resource, accessToken, refreshToken);
 
 
 				switch (resource.id) {
 					case this.metadata.settings.armResource.id: {
 						tenants = await this.getTenants(accessToken);
+						subscriptions = await this.getSubscriptions(accessToken);
 						break;
 					}
 				}
 			}
 
-			const account = await this.createAccount(tokenClaims, accessToken.key, tenants);
+			const account = await this.createAccount(tokenClaims, accessToken.key, tenants, subscriptions);
 			return account;
 		} catch (ex) {
 			console.log(ex);

@@ -56,7 +56,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private _azureTenantDropdown: SelectBox;
 	private _refreshCredentialsLink: HTMLLinkElement;
 	private _addAzureAccountMessage: string = localize('connectionWidget.AddAzureAccount', "Add an account...");
-	private readonly _azureProviderId = 'azurePublicCloud';
+	private readonly _azureProviderId = 'azure_publicCloud';
 	private _azureTenantId: string;
 	private _azureAccountList: azdata.Account[];
 	private _callbacks: IConnectionComponentCallbacks;

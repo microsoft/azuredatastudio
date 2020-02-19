@@ -75,12 +75,13 @@ const mockSubscriptions = [mockSubscription1, mockSubscription2];
 
 const mockFilteredSubscriptions = [mockSubscription1];
 
-const mockTokens = {
-	at: 'mock_token',
+const mockTokens: { [key: string]: any } = {};
+mockTokens[mockTenantId] = {
+	token: 'mock_token',
 	tokenType: 'Bearer'
 };
 
-const mockCredential = new TokenCredentials(mockTokens.at, mockTokens.tokenType);
+const mockCredential = new TokenCredentials(mockTokens[mockTenantId].token, mockTokens[mockTenantId].tokenType);
 
 let mockSubscriptionCache: azureResource.AzureResourceSubscription[] = [];
 

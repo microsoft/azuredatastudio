@@ -167,6 +167,17 @@ interface AzureAccountProperties {
 	 * A list of tenants (aka directories) that the account belongs to
 	 */
 	tenants: Tenant[];
+
+	/**
+	 * A list of subscriptions the user belongs to
+	 */
+	subscriptions?: Subscription[];
+}
+
+export interface Subscription {
+	id: string,
+	tenantId: string,
+	displayName: string
 }
 
 /**

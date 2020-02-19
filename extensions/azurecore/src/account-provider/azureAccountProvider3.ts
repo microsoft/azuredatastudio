@@ -12,7 +12,7 @@ import {
 } from './interfaces';
 
 import { SimpleTokenCache } from './simpleTokenCache';
-import { AzureAuth, Token } from './auths/azureAuth';
+import { AzureAuth, TokenResponse } from './auths/azureAuth';
 import { AzureAuthCodeGrant } from './auths/azureAuthCodeGrant';
 import { AzureDeviceCode } from './auths/azureDeviceCode';
 
@@ -60,10 +60,10 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 
 	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}> {
-		return this._getSecurityToken(account.key, resource);
+		return this._getSecurityToken(account, resource);
 	}
 
-	private async _getSecurityToken(account: azdata.AccountKey, resource: azdata.AzureResource): Promise<Token> {
+	private async _getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<TokenResponse> {
 		await this.initCompletePromise;
 		const azureAuth = this.getAuthMethod(undefined);
 		return azureAuth.getSecurityToken(account, resource);

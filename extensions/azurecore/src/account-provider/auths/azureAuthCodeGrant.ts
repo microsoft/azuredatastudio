@@ -23,7 +23,8 @@ import {
 	AzureAccountProviderMetadata,
 	Tenant,
 	Resource,
-	AzureAuthType
+	AzureAuthType,
+	Subscription
 } from '../interfaces';
 
 import { SimpleWebServer } from './simpleWebServer';
@@ -82,6 +83,8 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		const authenticatedCode = await this.addServerListeners(this.server, nonce, loginUrl, authCompletePromise);
 
 		let tenants: Tenant[];
+		let subscriptions: Subscription[];
+
 		let tokenClaims: TokenClaims;
 		let accessToken: AccessToken;
 		let refreshToken: RefreshToken;
@@ -108,12 +111,13 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			switch (resource.id) {
 				case this.metadata.settings.armResource.id: {
 					tenants = await this.getTenants(accessToken);
+					subscriptions = await this.getSubscriptions(accessToken);
 					break;
 				}
 			}
 
 			try {
-				this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, resource, { at: accessToken.at, rt: refreshToken.rt, resource: resource.id, key: accessToken.key });
+				this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, resource, accessToken, refreshToken);
 			} catch (ex) {
 				console.log(ex);
 				if (ex.msg) {
@@ -126,7 +130,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 				return { canceled: false } as azdata.PromptFailedResult;
 			}
 		}
-		const account = this.createAccount(tokenClaims, accessToken.key, tenants);
+		const account = this.createAccount(tokenClaims, accessToken.key, tenants, subscriptions);
 		authCompleteDeferred.resolve();
 		return account;
 	}
