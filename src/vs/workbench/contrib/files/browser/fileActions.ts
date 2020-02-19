@@ -204,7 +204,6 @@ async function deleteFiles(workingCopyService: IWorkingCopyService, workingCopyF
 			confirmed = false;
 		} else {
 			skipConfirm = true;
-			await Promise.all(dirtyWorkingCopies.map(dirty => dirty.revert()));
 		}
 	}
 
