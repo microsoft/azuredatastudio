@@ -206,6 +206,10 @@ export class AccountManagementService implements IAccountManagementService {
 		});
 	}
 
+	public getAccounts(): Thenable<azdata.Account[]> {
+		return this._accountStore.getAllAccounts();
+	}
+
 	/**
 	 * Generates a security token by asking the account's provider
 	 * @param account Account to generate security token for
@@ -251,6 +255,21 @@ export class AccountManagementService implements IAccountManagementService {
 					}
 					return result;
 				});
+		});
+	}
+
+	public removeAccounts(): Thenable<boolean> {
+		const self = this;
+		return this.getAccounts().then((accounts) => {
+			return self._accountStore.removeAllAccounts().then((removeAllResult) => {
+				if (removeAllResult === true) {
+					for (const account of accounts) {
+						self.removeAccount(account.key);
+					}
+					return true;
+				}
+				return false;
+			});
 		});
 	}
 

@@ -17,6 +17,7 @@ import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation
 import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
 export interface BaseActionContext {
 	object?: ObjectMetadata;
@@ -86,5 +87,22 @@ export class ConfigureDashboardAction extends Task {
 
 	async runTask(accessor: ServicesAccessor): Promise<void> {
 		accessor.get(IOpenerService).open(URI.parse(ConfigureDashboardAction.configHelpUri));
+	}
+}
+
+export class ClearSavedAccountsAction extends Task {
+	public static readonly ID = 'clearSavedAccounts';
+	public static readonly LABEL = nls.localize('clearSavedAccounts', "Clear all saved accounts");
+
+	constructor() {
+		super({
+			id: ClearSavedAccountsAction.ID,
+			title: ClearSavedAccountsAction.LABEL,
+			iconPath: undefined
+		});
+	}
+
+	async runTask(accessor: ServicesAccessor): Promise<void> {
+		accessor.get(IAccountManagementService).removeAccounts();
 	}
 }

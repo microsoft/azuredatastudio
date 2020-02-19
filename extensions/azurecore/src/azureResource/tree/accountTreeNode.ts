@@ -42,12 +42,16 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 	public async getChildren(): Promise<TreeNode[]> {
 		try {
 			let subscriptions: azureResource.AzureResourceSubscription[] = [];
-			const token = await this.appContext.apiWrapper.getSecurityToken(this.account, AzureResource.ResourceManagement);
+			const tokens = await this.appContext.apiWrapper.getSecurityToken(this.account, AzureResource.ResourceManagement);
 
-			let credentials = new TokenCredentials(token.at);
 			if (this._isClearingCache) {
 				try {
-					subscriptions.push(...(await this._subscriptionService.getSubscriptions(this.account, credentials) || <azureResource.AzureResourceSubscription[]>[]));
+					for (const tenant of this.account.properties.tenants) {
+						const token = tokens[tenant.id].token;
+						const tokenType = tokens[tenant.id].tokenType;
+
+						subscriptions.push(...(await this._subscriptionService.getSubscriptions(this.account, new TokenCredentials(token, tokenType)) || <azureResource.AzureResourceSubscription[]>[]));
+					}
 				} catch (error) {
 					throw new AzureResourceCredentialError(localize('azure.resource.tree.accountTreeNode.credentialError', "Failed to get credential for account {0}. Please refresh the account.", this.account.key.accountId), error);
 				}
@@ -76,7 +80,8 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 				return [AzureResourceMessageTreeNode.create(AzureResourceAccountTreeNode.noSubscriptionsLabel, this)];
 			} else {
 				let subTreeNodes = await Promise.all(subscriptions.map(async (subscription) => {
-					const tenantId = await this._tenantService.getTenantId(subscription, this.account, credentials);
+					const token = tokens[Object.keys(tokens)[0]];
+					const tenantId = await this._tenantService.getTenantId(subscription, this.account, new TokenCredentials(token.token, token.tokenType));
 
 					return new AzureResourceSubscriptionTreeNode(this.account, subscription, tenantId, this.appContext, this.treeChangeHandler, this);
 				}));
