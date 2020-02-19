@@ -39,32 +39,12 @@ class FireWallFeature extends SqlOpsFeature<any> {
 		const client = this._client;
 
 		let createFirewallRule = (account: azdata.Account, firewallruleInfo: azdata.FirewallRuleInfo): Thenable<azdata.CreateFirewallRuleResponse> => {
-			return _createFirewallRule(account, firewallruleInfo);
-		};
-
-		let _createFirewallRule = async (account: azdata.Account, firewallruleInfo: azdata.FirewallRuleInfo): Promise<azdata.CreateFirewallRuleResponse> => {
-			try {
-				const x = await client.sendRequest(CreateFirewallRuleRequest.type, asCreateFirewallRuleParams(account, firewallruleInfo));
-				return x;
-			} catch (ex) {
-				console.log(ex);
-				throw ex;
-			}
+			return client.sendRequest(CreateFirewallRuleRequest.type, asCreateFirewallRuleParams(account, firewallruleInfo));
 		};
 
 		let handleFirewallRule = (errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.HandleFirewallRuleResponse> => {
-			return _handleFirewallRule(errorCode, errorMessage, connectionTypeId);
-		};
-
-		let _handleFirewallRule = async (errorCode: number, errorMessage: string, connectionTypeId: string): Promise<azdata.HandleFirewallRuleResponse> => {
-			try {
-				let params: HandleFirewallRuleParams = { errorCode: errorCode, errorMessage: errorMessage, connectionTypeId: connectionTypeId };
-				const x = await client.sendRequest(HandleFirewallRuleRequest.type, params);
-				return x;
-			} catch (ex) {
-				console.log(ex);
-				throw ex;
-			}
+			let params: HandleFirewallRuleParams = { errorCode: errorCode, errorMessage: errorMessage, connectionTypeId: connectionTypeId };
+			return client.sendRequest(HandleFirewallRuleRequest.type, params);
 		};
 
 		return azdata.resources.registerResourceProvider({
