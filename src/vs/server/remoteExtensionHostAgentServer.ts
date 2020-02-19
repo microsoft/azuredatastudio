@@ -27,7 +27,7 @@ import product from 'vs/platform/product/common/product';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { ConfigurationService } from 'vs/platform/configuration/node/configurationService';
+import { ConfigurationService } from 'vs/platform/configuration/common/configurationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IRequestService } from 'vs/platform/request/common/request';
 import { RequestService } from 'vs/platform/request/node/requestService';
