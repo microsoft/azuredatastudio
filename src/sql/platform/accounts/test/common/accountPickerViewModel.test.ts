@@ -85,7 +85,7 @@ suite('Account picker view model tests', () => {
 				evUpdateAccounts.assertNotFired();
 
 				// ... The account management service should have been called
-				mockAccountManagementService.verify(x => x.getAccountsForProvider(TypeMoq.It.isAny()), TypeMoq.Times.once());
+				mockAccountManagementService.verify(x => x.getAccounts(), TypeMoq.Times.once());
 
 				// ... The results that were returned should be an array of account
 				assert.ok(Array.isArray(results));
@@ -108,7 +108,7 @@ suite('Account picker view model tests', () => {
 				evUpdateAccounts.assertNotFired();
 
 				// ... The account management service should have been called
-				mockAccountManagementService.verify(x => x.getAccountsForProvider(TypeMoq.It.isAny()), TypeMoq.Times.once());
+				mockAccountManagementService.verify(x => x.getAccounts(), TypeMoq.Times.once());
 
 				// ... The results should be an empty array
 				assert.ok(Array.isArray(result));
@@ -123,6 +123,8 @@ function getMockAccountManagementService(resolveProviders: boolean, resolveAccou
 	mockAccountManagementService.setup(x => x.getAccountProviderMetadata())
 		.returns(() => resolveProviders ? Promise.resolve(providers) : Promise.reject(null).then());
 	mockAccountManagementService.setup(x => x.getAccountsForProvider(TypeMoq.It.isAny()))
+		.returns(() => resolveAccounts ? Promise.resolve(accounts) : Promise.reject(null).then());
+	mockAccountManagementService.setup(x => x.getAccounts())
 		.returns(() => resolveAccounts ? Promise.resolve(accounts) : Promise.reject(null).then());
 
 	mockAccountManagementService.setup(x => x.updateAccountListEvent)
