@@ -9,11 +9,11 @@ import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
 import * as azdata from 'azdata';
 
-import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernelsForProvider } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
+import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernelsForProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER, IProviderInfo } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
-import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { Schemas } from 'vs/base/common/network';
 import { ITextFileSaveOptions, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
@@ -32,6 +32,7 @@ import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorIn
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
 import { NotebookFindModel } from 'sql/workbench/contrib/notebook/find/notebookFindModel';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -160,7 +161,8 @@ export class NotebookEditorModel extends EditorModel {
 	private sendNotebookSerializationStateChange(): void {
 		let notebookModel = this.getNotebookModel();
 		if (notebookModel) {
-			this.notebookService.serializeNotebookStateChange(this.notebookUri, NotebookChangeType.Saved);
+			this.notebookService.serializeNotebookStateChange(this.notebookUri, NotebookChangeType.Saved)
+				.catch(e => onUnexpectedError(e));
 		}
 	}
 
@@ -209,7 +211,7 @@ export abstract class NotebookInput extends EditorInput {
 	private _notebookFindModel: NotebookFindModel;
 
 	constructor(private _title: string,
-		private resource: URI,
+		private _resource: URI,
 		private _textInput: TextInput,
 		@ITextModelService private textModelService: ITextModelService,
 		@IInstantiationService private instantiationService: IInstantiationService,
@@ -217,7 +219,6 @@ export abstract class NotebookInput extends EditorInput {
 		@IExtensionService private extensionService: IExtensionService
 	) {
 		super();
-		this.resource = resource;
 		this._standardKernels = [];
 		this._providersLoaded = this.assignProviders();
 		this._notebookEditorOpenedTimestamp = Date.now();
@@ -283,12 +284,23 @@ export abstract class NotebookInput extends EditorInput {
 		return this._standardKernels;
 	}
 
-	save(groupId: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
-		return this.textInput.save(groupId, options);
+	async save(groupId: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+		let input = await this.textInput.save(groupId, options);
+		await this.setTrustForNewEditor(input);
+		return input;
 	}
 
-	saveAs(group: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
-		return this.textInput.saveAs(group, options);
+	async saveAs(group: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+		let input = await this.textInput.saveAs(group, options);
+		await this.setTrustForNewEditor(input);
+		return input;
+	}
+
+	private async setTrustForNewEditor(newInput: IEditorInput | undefined): Promise<void> {
+		let isTrusted = this._model.getNotebookModel().trustedMode;
+		if (isTrusted && newInput && newInput.resource !== this.resource) {
+			await this.notebookService.serializeNotebookStateChange(newInput.resource, NotebookChangeType.Saved, undefined, true);
+		}
 	}
 
 	public set standardKernels(value: IStandardKernelWithProvider[]) {
@@ -324,8 +336,8 @@ export abstract class NotebookInput extends EditorInput {
 
 	public abstract getTypeId(): string;
 
-	getResource(): URI {
-		return this.resource;
+	get resource(): URI {
+		return this._resource;
 	}
 
 	public get untitledEditorModel(): IUntitledTextEditorModel {

@@ -14,7 +14,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-import { EditDataInput } from 'sql/workbench/contrib/editData/browser/editDataInput';
+import { EditDataInput } from 'sql/workbench/browser/editData/editDataInput';
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
@@ -32,7 +32,7 @@ import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/c
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IFlexibleSash, HorizontalFlexibleSash } from 'sql/workbench/contrib/query/browser/flexibleSash';
 import { EditDataResultsEditor } from 'sql/workbench/contrib/editData/browser/editDataResultsEditor';
-import { EditDataResultsInput } from 'sql/workbench/contrib/editData/browser/editDataResultsInput';
+import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
@@ -274,7 +274,7 @@ export class EditDataEditor extends BaseEditor {
 		if (!input.results.container) {
 			this._resultsEditorContainer = DOM.append(parentElement, DOM.$('.editDataContainer-horizontal'));
 
-			input.results.container = this._resultsEditorContainer;
+			input.results.setContainer(this._resultsEditorContainer);
 		} else {
 			this._resultsEditorContainer = DOM.append(parentElement, input.results.container);
 		}

@@ -12,7 +12,7 @@ import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetecto
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AgentViewComponent } from 'sql/workbench/contrib/jobManagement/browser/agentView.component';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
-import { RunJobAction, StopJobAction, JobsRefreshAction, EditNotebookJobAction, OpenMaterializedNotebookAction, OpenTemplateNotebookAction, RenameNotebookMaterializedAction, PinNotebookMaterializedAction, UnpinNotebookMaterializedAction, DeleteMaterializedNotebookAction } from 'sql/workbench/services/jobManagement/browser/jobActions';
+import { RunJobAction, StopJobAction, JobsRefreshAction, EditNotebookJobAction, OpenMaterializedNotebookAction, OpenTemplateNotebookAction, RenameNotebookMaterializedAction, PinNotebookMaterializedAction, UnpinNotebookMaterializedAction, DeleteMaterializedNotebookAction } from 'sql/workbench/contrib/jobManagement/browser/jobActions';
 import { NotebookCacheObject } from 'sql/workbench/services/jobManagement/common/jobManagementService';
 import { IJobManagementService } from 'sql/workbench/services/jobManagement/common/interfaces';
 import { JobStepsViewRow } from 'sql/workbench/contrib/jobManagement/browser/jobStepsViewTree';

@@ -15,7 +15,7 @@ import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/ser
 import {
 	ActiveConnectionsFilterAction,
 	AddServerAction, AddServerGroupAction
-} from 'sql/workbench/contrib/objectExplorer/browser/connectionTreeAction';
+} from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
@@ -23,6 +23,7 @@ import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/vie
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class ConnectionViewletPanel extends ViewPane {
 
@@ -44,7 +45,8 @@ export class ConnectionViewletPanel extends ViewPane {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IOpenerService protected openerService: IOpenerService,
-		@IThemeService protected themeService: IThemeService
+		@IThemeService protected themeService: IThemeService,
+		@ILogService private readonly logService: ILogService
 	) {
 		super({ ...(options as IViewPaneOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, opener, themeService);
 		this._addServerAction = this.instantiationService.createInstance(AddServerAction,
@@ -53,7 +55,7 @@ export class ConnectionViewletPanel extends ViewPane {
 		this._addServerGroupAction = this.instantiationService.createInstance(AddServerGroupAction,
 			AddServerGroupAction.ID,
 			AddServerGroupAction.LABEL);
-		this._serverTreeView = this.objectExplorerService.getServerTreeView();
+		this._serverTreeView = <any>this.objectExplorerService.getServerTreeView() as ServerTreeView;
 		if (!this._serverTreeView) {
 			this._serverTreeView = this.instantiationService.createInstance(ServerTreeView);
 			this.objectExplorerService.registerServerTreeView(this._serverTreeView);
@@ -73,7 +75,7 @@ export class ConnectionViewletPanel extends ViewPane {
 		const viewletContainer = DOM.append(container, DOM.$('div.server-explorer-viewlet'));
 		const viewContainer = DOM.append(viewletContainer, DOM.$('div.object-explorer-view'));
 		this._serverTreeView.renderBody(viewContainer).then(undefined, error => {
-			console.warn('render registered servers: ' + error);
+			this.logService.warn('render registered servers: ' + error);
 		});
 		this._root = container;
 	}

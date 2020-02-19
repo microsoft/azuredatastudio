@@ -76,7 +76,7 @@ export function getCurrentGlobalConnection(objectExplorerService: IObjectExplore
 
 	let activeInput = workbenchEditorService.activeEditor;
 	if (activeInput) {
-		connection = connectionManagementService.getConnectionProfile(activeInput.getResource().toString());
+		connection = connectionManagementService.getConnectionProfile(activeInput.resource.toString());
 	}
 
 	return connection;

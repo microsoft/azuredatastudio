@@ -73,7 +73,7 @@ export interface IQueryModelService {
 	onQueryEvent: Event<IQueryEvent>;
 
 	// Edit Data Functions
-	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): void;
+	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit?: number, queryString?: string): void;
 	disposeEdit(ownerUri: string): Promise<void>;
 	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Promise<EditUpdateCellResult | undefined>;
 	commitEdit(ownerUri: string): Promise<void>;

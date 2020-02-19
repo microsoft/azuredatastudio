@@ -12,10 +12,10 @@ import { TestNotificationService } from 'vs/platform/notification/test/common/te
 import { URI } from 'vs/base/common/uri';
 
 import { NotebookManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
-import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
-import { ModelFactory } from 'sql/workbench/contrib/notebook/browser/models/modelFactory';
-import { IClientSession, INotebookModelOptions, NotebookContentChange, IClientSessionOptions } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { ClientSession } from 'sql/workbench/contrib/notebook/browser/models/clientSession';
+import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
+import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
+import { IClientSession, INotebookModelOptions, NotebookContentChange, IClientSessionOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ClientSession } from 'sql/workbench/services/notebook/browser/models/clientSession';
 import { CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { Deferred } from 'sql/base/common/promise';
 import { Memento } from 'vs/workbench/common/memento';
