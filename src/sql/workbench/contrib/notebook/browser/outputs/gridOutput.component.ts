@@ -19,7 +19,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { localize } from 'vs/nls';
-import { IAction } from 'vs/base/common/actions';
+import { IAction, Action } from 'vs/base/common/actions';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IMimeComponent } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRegistry';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -28,12 +28,14 @@ import { GridTableState } from 'sql/workbench/common/editor/query/gridPanelState
 import { GridTableBase } from 'sql/workbench/contrib/query/browser/gridPanel';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { ISerializationService, SerializeDataParams } from 'sql/platform/serialization/common/serializationService';
-import { SaveResultAction } from 'sql/workbench/contrib/query/browser/actions';
+import { SaveResultAction, IGridActionContext } from 'sql/workbench/contrib/query/browser/actions';
 import { ResultSerializer, SaveResultsResponse, SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { values } from 'vs/base/common/collections';
 import { assign } from 'vs/base/common/objects';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
+import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -49,6 +51,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	private _bundleOptions: MimeModel.IOptions;
 	private _table: DataResourceTable;
 	private _hover: boolean;
+
 	constructor(
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IThemeService) private readonly themeService: IThemeService
@@ -130,12 +133,14 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 class DataResourceTable extends GridTableBase<any> {
 
 	private _gridDataProvider: IGridDataProvider;
+	private _chart: ChartView;
+	private _chartContainer: HTMLElement;
 
 	constructor(source: IDataResource,
 		documentUri: string,
 		state: GridTableState,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IInstantiationService instantiationService: IInstantiationService,
+		@IInstantiationService protected instantiationService: IInstantiationService,
 		@IEditorService editorService: IEditorService,
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
@@ -162,6 +167,7 @@ class DataResourceTable extends GridTableBase<any> {
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
+			this.instantiationService.createInstance(NotebookChartAction, this)
 		];
 	}
 
@@ -169,6 +175,30 @@ class DataResourceTable extends GridTableBase<any> {
 		// Overriding action bar size calculation for now.
 		// When we add this back in, we should update this calculation
 		return Math.max(this.maxSize, /* ACTIONBAR_HEIGHT + BOTTOM_PADDING */ 0);
+	}
+
+	public layout(size?: number, orientation?: Orientation, actionsOrientation?: ActionsOrientation): void {
+		super.layout(size, orientation, actionsOrientation);
+
+		if (!this._chartContainer) {
+			this._chartContainer = document.createElement('div');
+			this._chartContainer.style.display = 'none';
+
+			this._chart = this.instantiationService.createInstance(ChartView);
+			this._chart.render(this._chartContainer);
+
+			this.element.appendChild(this._chartContainer);
+		}
+	}
+
+	public toggleChartVisibility(): void {
+		if (this.tableContainer.style.display !== 'none') {
+			this.tableContainer.style.display = 'none';
+			this._chartContainer.style.display = 'inline-block';
+		} else {
+			this.tableContainer.style.display = 'inline-block';
+			this._chartContainer.style.display = 'none';
+		}
 	}
 }
 
@@ -374,4 +404,19 @@ class SimpleDbColumn implements azdata.IDbColumn {
 	numericScale?: number;
 	udtAssemblyQualifiedName: string;
 	dataTypeName: string;
+}
+
+export class NotebookChartAction extends Action {
+	public static ID = 'notebook.showChart';
+	public static LABEL = localize('notebook.showChart', "Show chart");
+	public static ICON = 'viewChart';
+
+	constructor(private resourceTable: DataResourceTable) {
+		super(NotebookChartAction.ID, NotebookChartAction.LABEL, NotebookChartAction.ICON);
+	}
+
+	public async run(context: IGridActionContext): Promise<boolean> {
+		this.resourceTable.toggleChartVisibility();
+		return true;
+	}
 }
