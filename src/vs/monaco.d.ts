@@ -6048,7 +6048,7 @@ declare namespace monaco.languages {
 		description?: string;
 		iconPath?: {
 			id: string;
-		} | {
+		} | Uri | {
 			light: Uri;
 			dark: Uri;
 		};
