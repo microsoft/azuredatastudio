@@ -256,12 +256,12 @@ async function updateBookMetadata(bookPath: string): Promise<void> {
 		// get the toc file and update the contents
 		let tocFilePath: string = path.join(bookPath, '_data', 'toc.yml');
 		let result: string;
-		fsPromises.readFile(tocFilePath).then(data => {
+		await fsPromises.readFile(tocFilePath).then(data => {
 			result = data.toString();
 			let contentFolders: string[] = [];
 			let headers = result.match(/- header: [a-zA-Z0-9\\.\s-]+$/gm);
-			let urls = result.match(/- url: [a-zA-Z0-9\\.\s-]+$/gm);
-			let firstLevelUrls = result.match(/^(?:\s+$[\r\n]+)+(- url: [a-zA-Z0-9\\.\s-]+$[\r\n]+)/gm);
+			let urls = result.match(/- url: [a-zA-Z0-9\\.\s-\/]+$/gm);
+			let firstLevelUrls = result.match(/^(?:\s+$[\r\n]+)+(- url: [a-zA-Z0-9\\.\s-\/]+$[\r\n]+)/gm);
 			let title: string;
 			let replacedString: string;
 			if (firstLevelUrls || headers || urls) {
@@ -321,8 +321,8 @@ async function updateBookMetadata(bookPath: string): Promise<void> {
 		});
 		// update the book title
 		let configFilePath: string = path.join(bookPath, '_config.yml');
-		fsPromises.readFile(configFilePath).then(data => {
-			let titleLine = data.toString().match(/title: [a-zA-Z0-9\\.\s-]+$/gm);
+		await fsPromises.readFile(configFilePath).then(data => {
+			let titleLine = data.toString().match(/title: [a-zA-Z0-9\\.\s-\/]+$/gm);
 			let title: string = `title: ${path.basename(bookPath)}`;
 			result = data.toString().replace(titleLine[0], title);
 			fsPromises.writeFile(configFilePath, result);
