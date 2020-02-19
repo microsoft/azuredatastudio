@@ -108,6 +108,17 @@ steps:
 
   - script: |
       set -e
+      apt update
+      apt install libsecret-1-dev gnome-keyring python-gnomekeyring
+      NO_AT_BRIDGE=1;
+      eval $(dbus-launch --sh-syntax);
+      eval $(echo -n "" | /usr/bin/gnome-keyring-daemon --login);
+      eval $(/usr/bin/gnome-keyring-daemon --components=secrets --start);
+      /usr/bin/python -c "import gnomekeyring;gnomekeyring.create_sync('login', '');";
+    displayName: Setup Key Ring
+
+  - script: |
+      set -e
       yarn gulp package-rebuild-extensions
       yarn gulp compile-extensions
       yarn gulp package-external-extensions
