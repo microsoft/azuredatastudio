@@ -149,6 +149,7 @@ class DataResourceTable extends GridTableBase<any> {
 	) {
 		super(state, createResultSet(source), contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.documentUri);
+		this._chart = this.instantiationService.createInstance(ChartView);
 	}
 
 	get gridDataProvider(): IGridDataProvider {
@@ -185,7 +186,6 @@ class DataResourceTable extends GridTableBase<any> {
 			this._chartContainer = document.createElement('div');
 			this._chartContainer.style.display = 'none';
 
-			this._chart = this.instantiationService.createInstance(ChartView);
 			this._chart.render(this._chartContainer);
 
 			this.element.appendChild(this._chartContainer);
@@ -433,12 +433,11 @@ export class NotebookChartAction extends ToggleableAction {
 		if (this.state.isOn) {
 			let rowCount = context.table.getData().getLength();
 			let range = new Slick.Range(0, 0, rowCount - 1, context.table.columns.length - 1);
-
 			let columns = context.gridDataProvider.getColumnHeaders(range);
-			let result = await context.gridDataProvider.getRowData(0, rowCount);
 
-			this.resourceTable.chart.setData(result.resultSubset.rows, columns);
-			this.resourceTable.chart.chart({ batchId: context.batchId, resultId: context.resultId });
+			context.gridDataProvider.getRowData(0, rowCount).then(result => {
+				this.resourceTable.chart.setData(result.resultSubset.rows, columns);
+			});
 		}
 		return true;
 	}
