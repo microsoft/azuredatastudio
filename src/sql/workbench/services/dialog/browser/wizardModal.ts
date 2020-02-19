@@ -232,7 +232,7 @@ export class WizardModal extends Modal {
 	 * Bootstrap angular for the wizard's left nav bar
 	 */
 	private initializeNavigation(bodyContainer: HTMLElement) {
-		bootstrapAngular(this._instantiationService,
+		this._instantiationService.invokeFunction(bootstrapAngular,
 			DialogModule,
 			bodyContainer,
 			'wizard-navigation',

@@ -394,6 +394,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		undefinedDataSet.dataRows = undefined;
 		undefinedDataSet.resized = new Emitter();
 		self.placeHolderDataSets.push(undefinedDataSet);
+		if (self.placeHolderDataSets[0]) {
+			this.refreshDatasets();
+		}
 		self.refreshGrid();
 
 		// Setup the state of the selected cell

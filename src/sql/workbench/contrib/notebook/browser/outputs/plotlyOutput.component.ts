@@ -9,8 +9,8 @@ import { localize } from 'vs/nls';
 import * as types from 'vs/base/common/types';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IMimeComponent } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRegistry';
-import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { MimeModel } from 'sql/workbench/contrib/notebook/browser/models/mimemodel';
+import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { MimeModel } from 'sql/workbench/services/notebook/browser/outputs/mimemodel';
 import { getErrorMessage } from 'vs/base/common/errors';
 
 type ObjectType = object;

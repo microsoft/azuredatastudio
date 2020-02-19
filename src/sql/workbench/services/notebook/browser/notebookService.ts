@@ -5,19 +5,19 @@
 
 import * as azdata from 'azdata';
 
-import * as vsEvent from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { URI } from 'vs/base/common/uri';
-import { RenderMimeRegistry } from 'sql/workbench/contrib/notebook/browser/outputs/registry';
-import { ModelFactory } from 'sql/workbench/contrib/notebook/browser/models/modelFactory';
+import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
+import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ICellModel, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel, INotebookModel, IContentManager } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
-import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
+import { Range } from 'vs/editor/common/core/range';
+import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -37,9 +37,9 @@ export interface ILanguageMagic {
 export interface INotebookService {
 	_serviceBrand: undefined;
 
-	readonly onNotebookEditorAdd: vsEvent.Event<INotebookEditor>;
-	readonly onNotebookEditorRemove: vsEvent.Event<INotebookEditor>;
-	onNotebookEditorRename: vsEvent.Event<INotebookEditor>;
+	readonly onNotebookEditorAdd: Event<INotebookEditor>;
+	readonly onNotebookEditorRemove: Event<INotebookEditor>;
+	onNotebookEditorRename: Event<INotebookEditor>;
 
 	readonly isRegistrationComplete: boolean;
 	readonly registrationComplete: Promise<void>;
@@ -99,9 +99,12 @@ export interface INotebookService {
 	 * Serializes an impactful Notebook state change. This will result
 	 * in trusted state being serialized if needed, and notifications being
 	 * sent to listeners that can act on the point-in-time notebook state
-	 * @param notebookUri the URI identifying a notebook
+	 * @param notebookUri The URI identifying a notebook.
+	 * @param changeType The type of notebook state change to serialize.
+	 * @param cell (Optional) The notebook cell associated with the state change.
+	 * @param isTrusted (Optional) A manual override for the notebook's trusted state.
 	 */
-	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel): void;
+	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel, isTrusted?: boolean): Promise<void>;
 
 	/**
 	 *
@@ -128,9 +131,21 @@ export interface IProviderInfo {
 	providerId: string;
 	providers: string[];
 }
+
+export interface INotebookInput {
+	readonly notebookUri: URI;
+	updateModel(): void;
+	isDirty(): boolean;
+	readonly defaultKernel: azdata.nb.IKernelSpec;
+	readonly editorOpenedTimestamp: number;
+	readonly contentManager: IContentManager;
+	readonly standardKernels: IStandardKernelWithProvider[];
+	readonly layoutChanged: Event<void>;
+}
+
 export interface INotebookParams extends IBootstrapParams {
 	notebookUri: URI;
-	input: NotebookInput;
+	input: INotebookInput;
 	providerInfo: Promise<IProviderInfo>;
 	profile?: IConnectionProfile;
 	modelFactory?: ModelFactory;
@@ -152,6 +167,18 @@ export interface ICellEditorProvider {
 	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void;
 }
 
+export class NotebookRange extends Range {
+	updateActiveCell(cell: ICellModel) {
+		this.cell = cell;
+	}
+	cell: ICellModel;
+
+	constructor(cell: ICellModel, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number) {
+		super(startLineNumber, startColumn, endLineNumber, endColumn);
+		this.updateActiveCell(cell);
+	}
+}
+
 export interface INotebookEditor {
 	readonly notebookParams: INotebookParams;
 	readonly id: string;
@@ -170,7 +197,7 @@ export interface INotebookEditor {
 	getSections(): INotebookSection[];
 	navigateToSection(sectionId: string): void;
 	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void;
-	addCell(cellType: CellType, index?: number, event?: Event);
+	addCell(cellType: CellType, index?: number, event?: UIEvent);
 }
 
 export interface INavigationProvider {

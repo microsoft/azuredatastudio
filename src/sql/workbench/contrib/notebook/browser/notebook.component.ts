@@ -22,12 +22,12 @@ import * as DOM from 'vs/base/browser/dom';
 
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
-import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
-import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
-import { ModelFactory } from 'sql/workbench/contrib/notebook/browser/models/modelFactory';
-import * as notebookUtils from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
+import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider, ICellEditorProvider, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
+import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
+import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { Deferred } from 'sql/base/common/promise';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
@@ -36,7 +36,7 @@ import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHos
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CellMagicMapper } from 'sql/workbench/contrib/notebook/browser/models/cellMagicMapper';
-import { CellModel } from 'sql/workbench/contrib/notebook/browser/models/cell';
+import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { FileOperationError, FileOperationResult } from 'vs/platform/files/common/files';
 import { isValidBasename } from 'vs/base/common/extpath';
 import { basename } from 'vs/base/common/resources';
@@ -53,7 +53,7 @@ import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
-import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
+import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -260,8 +260,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 					let editors = this.editorService.visibleControls;
 					for (let editor of editors) {
-						if (editor && editor.input.getResource() === this._notebookParams.input.notebookUri) {
-							await editor.group.closeEditor(this._notebookParams.input, { preserveFocus: true });
+						if (editor && editor.input.resource === this._notebookParams.input.notebookUri) {
+							await editor.group.closeEditor(this._notebookParams.input as NotebookInput, { preserveFocus: true }); // sketchy
 							break;
 						}
 					}
@@ -445,7 +445,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					() => this.nextPage(), this.navigationResult.next ? true : false);
 				this.detectChanges();
 			}, err => {
-				console.log(err);
+				this.logService.info(err);
 			});
 		}
 	}
@@ -532,12 +532,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	isActive(): boolean {
-		return this.editorService.activeEditor === this.notebookParams.input;
+		return this.editorService.activeEditor.matches(this.notebookParams.input);
 	}
 
 	isVisible(): boolean {
 		let notebookEditor = this.notebookParams.input;
-		return this.editorService.visibleEditors.some(e => e === notebookEditor);
+		return this.editorService.visibleEditors.some(e => e.matches(notebookEditor));
 	}
 
 	isDirty(): boolean {

@@ -3,12 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TreeNode } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
+import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Event } from 'vs/base/common/event';
-import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
-import { ObjectExplorerNodeEventArgs, IObjectExplorerService, NodeExpandInfoWithProviderId } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { ObjectExplorerNodeEventArgs, IObjectExplorerService, NodeExpandInfoWithProviderId, IServerTreeView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 
@@ -16,7 +15,7 @@ export type ObjectExplorerServiceMockOptions = {
 	/**
 	 * Return value for getServerTreeView
 	 */
-	serverTreeView?: ServerTreeView;
+	serverTreeView?: IServerTreeView;
 	/**
 	 * Return value for getTreeNode
 	 */
@@ -60,7 +59,7 @@ export class TestObjectExplorerService implements IObjectExplorerService {
 
 	public updateObjectExplorerNodes(connection: IConnectionProfile): Promise<void> { return Promise.resolve(); }
 
-	public deleteObjectExplorerNode(connection: IConnectionProfile): Thenable<void> { return Promise.resolve(); }
+	public deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void> { return Promise.resolve(); }
 
 	public onNodeExpanded(expandResponse: NodeExpandInfoWithProviderId) { }
 
@@ -86,13 +85,13 @@ export class TestObjectExplorerService implements IObjectExplorerService {
 
 	public refreshTreeNode(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> { return Promise.resolve(undefined); }
 
-	public registerServerTreeView(view: ServerTreeView): void { }
+	public registerServerTreeView(view: IServerTreeView): void { }
 
 	public getSelectedProfileAndDatabase(): { profile: ConnectionProfile, databaseName: string } { return undefined; }
 
 	public isFocused(): boolean { return true; }
 
-	public getServerTreeView(): ServerTreeView { return undefined; }
+	public getServerTreeView(): IServerTreeView { return undefined; }
 
 	public findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames?: string[]): Thenable<azdata.NodeInfo[]> { return Promise.resolve(undefined); }
 

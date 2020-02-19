@@ -9,7 +9,7 @@ import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
 import { QueryModelViewTabModule } from 'sql/workbench/contrib/query/browser/modelViewTab/queryModelViewTab.module';
-import { QueryModelViewState } from 'sql/workbench/contrib/query/common/modelViewTab/modelViewState';
+import { QueryModelViewState } from 'sql/workbench/common/editor/query/modelViewState';
 
 export class QueryModelViewTab implements IPanelTab {
 	public identifier = 'QueryModelViewTab_';
@@ -78,7 +78,7 @@ export class QueryModelViewTabView implements IPanelView {
 	 * Load the angular components and record for this input that we have done so
 	 */
 	private bootstrapAngular(container: HTMLElement): string {
-		let uniqueSelector = bootstrapAngular(this._instantiationService,
+		let uniqueSelector = this._instantiationService.invokeFunction(bootstrapAngular,
 			QueryModelViewTabModule,
 			container,
 			'querytab-modelview-container',
