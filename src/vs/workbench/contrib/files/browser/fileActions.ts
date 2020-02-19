@@ -494,7 +494,7 @@ export class GlobalCompareResourcesAction extends Action {
 
 	async run(): Promise<any> {
 		const activeInput = this.editorService.activeEditor;
-		const activeResource = activeInput ? activeInput.getResource() : undefined;
+		const activeResource = activeInput ? activeInput.resource : undefined;
 		if (activeResource) {
 
 			// Compare with next editor that opens
@@ -504,7 +504,7 @@ export class GlobalCompareResourcesAction extends Action {
 				toDispose.dispose();
 
 				// Open editor as diff
-				const resource = editor.getResource();
+				const resource = editor.resource;
 				if (resource) {
 					return {
 						override: this.editorService.openEditor({
