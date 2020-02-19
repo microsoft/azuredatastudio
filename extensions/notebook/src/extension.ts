@@ -17,11 +17,9 @@ import { CellType } from './contracts/content';
 import { getErrorMessage, isEditorTitleFree } from './common/utils';
 import { NotebookUriHandler } from './protocol/notebookUriHandler';
 import { BookTreeViewProvider } from './book/bookTreeView';
-import * as fileServices from 'fs';
+import { promises as fs } from 'fs';
 
 const localize = nls.loadMessageBundle();
-
-const fsPromises = fileServices.promises;
 
 const JUPYTER_NOTEBOOK_PROVIDER = 'jupyter';
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample code loads the file into a data frame and shows the first 10 results.");
@@ -256,11 +254,14 @@ async function updateBookMetadata(bookPath: string): Promise<void> {
 		// get the toc file and update the contents
 		let tocFilePath: string = path.join(bookPath, '_data', 'toc.yml');
 		let result: string;
-		await fsPromises.readFile(tocFilePath).then(data => {
+		await fs.readFile(tocFilePath).then(data => {
 			result = data.toString();
 			let contentFolders: string[] = [];
+			// check if there any lines matching: - header: <headerValue>
 			let headers = result.match(/- header: [a-zA-Z0-9\\.\s-]+$/gm);
+			// check if there any lines matching: - url: <path to the ipynb or md file>
 			let urls = result.match(/- url: [a-zA-Z0-9\\.\s-\/]+$/gm);
+			// check the first url in the toc file that comes after all the comments.
 			let firstLevelUrls = result.match(/^(?:\s+$[\r\n]+)+(- url: [a-zA-Z0-9\\.\s-\/]+$[\r\n]+)/gm);
 			let title: string;
 			let replacedString: string;
@@ -314,18 +315,18 @@ async function updateBookMetadata(bookPath: string): Promise<void> {
 						result = result.replace(url, replacedString);
 					});
 				}
-				fsPromises.writeFile(tocFilePath, result);
+				fs.writeFile(tocFilePath, result);
 			} else {
 				new ApiWrapper().showErrorMessage('File Name contains unsupported-characters (ex: underscores or spaces) by Jupyter Book');
 			}
 		});
 		// update the book title
 		let configFilePath: string = path.join(bookPath, '_config.yml');
-		await fsPromises.readFile(configFilePath).then(data => {
+		await fs.readFile(configFilePath).then(data => {
 			let titleLine = data.toString().match(/title: [a-zA-Z0-9\\.\s-\/]+$/gm);
 			let title: string = `title: ${path.basename(bookPath)}`;
 			result = data.toString().replace(titleLine[0], title);
-			fsPromises.writeFile(configFilePath, result);
+			fs.writeFile(configFilePath, result);
 		});
 	} catch (error) {
 		new ApiWrapper().showErrorMessage(error);

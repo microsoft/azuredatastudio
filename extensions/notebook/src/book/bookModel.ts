@@ -148,10 +148,11 @@ export class BookModel implements azdata.nb.NavigationProvider {
 								this._allNotebooks.set(path.basename(pathToNotebook), notebook);
 								notebooks.push(notebook);
 							}
-						}
-						else {
-							if (!this._allNotebooks.get(pathToNotebook)) {
-								this._allNotebooks.set(pathToNotebook, notebook);
+						} else {
+							// vconvert to URI to avoid casing issue with drive letters when getting navigation links
+							let uriToNotebook: vscode.Uri = vscode.Uri.file(pathToNotebook);
+							if (!this._allNotebooks.get(uriToNotebook.fsPath)) {
+								this._allNotebooks.set(uriToNotebook.fsPath, notebook);
 								notebooks.push(notebook);
 							}
 						}
