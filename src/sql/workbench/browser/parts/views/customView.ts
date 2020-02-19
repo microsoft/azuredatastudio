@@ -700,7 +700,7 @@ class TreeDataSource implements IAsyncDataSource<ITreeItem, ITreeItem> {
 
 	getChildren(node: ITreeItem): Promise<any[]> {
 		if (node.childProvider) {
-			return this.withProgress(this.objectExplorerService.getChildren(node, this.id)).catch(e => {
+			return this.withProgress(this.objectExplorerService.refreshNode(node, this.id)).catch(e => {
 				// if some error is caused we assume something tangently happened
 				// i.e the user could retry if they wanted.
 				// So in order to enable this we need to tell the tree to refresh this node so it will ask us for the data again

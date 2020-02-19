@@ -26,6 +26,7 @@ export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
 export interface IOEShimService {
 	_serviceBrand: undefined;
 	getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]>;
+	refreshNode(node: ITreeItem, viewId: string): Promise<ITreeItem[]>;
 	disconnectNode(viewId: string, node: ITreeItem): Promise<boolean>;
 	providerExists(providerId: string): boolean;
 	isNodeConnected(viewId: string, node: ITreeItem): boolean;
@@ -135,6 +136,28 @@ export class OEShimService extends Disposable implements IOEShimService {
 			let treeNode = new TreeNode(undefined, undefined, undefined, requestHandle, undefined, undefined, undefined, undefined, undefined, undefined);
 			treeNode.connection = new ConnectionProfile(this.capabilities, node.payload);
 			return this.oe.resolveTreeNodeChildren({
+				success: undefined,
+				sessionId,
+				rootNode: undefined,
+				errorMessage: undefined
+			}, treeNode).then(e => e.map(n => this.treeNodeToITreeItem(viewId, n, node)));
+		} else {
+			return Promise.resolve([]);
+		}
+	}
+
+	/**
+	 * Refreshes a node - returning the refreshed set of children for that node.
+	 * @param node The node to refresh
+	 * @param viewId The ID of the view requesting the refresh
+	 */
+	public async refreshNode(node: ITreeItem, viewId: string): Promise<ITreeItem[]> {
+		if (node.payload) {
+			let sessionId = await this.getOrCreateSession(viewId, node);
+			let requestHandle = this.nodeHandleMap.get(generateNodeMapKey(viewId, node)) || node.handle;
+			let treeNode = new TreeNode(undefined, undefined, undefined, requestHandle, undefined, undefined, undefined, undefined, undefined, undefined);
+			treeNode.connection = new ConnectionProfile(this.capabilities, node.payload);
+			return this.oe.refreshTreeNode({
 				success: undefined,
 				sessionId,
 				rootNode: undefined,
