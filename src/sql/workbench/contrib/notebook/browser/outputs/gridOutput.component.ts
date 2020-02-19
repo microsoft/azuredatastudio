@@ -13,7 +13,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
-import QueryRunner, { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
+import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
@@ -37,7 +37,6 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
-import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -203,12 +202,8 @@ class DataResourceTable extends GridTableBase<any> {
 		}
 	}
 
-	public set queryRunner(runner: QueryRunner) {
-		this._chart.queryRunner = runner;
-	}
-
-	public chart(dataId: { batchId: number, resultId: number }): void {
-		this._chart.chart(dataId);
+	public get chart(): ChartView {
+		return this._chart;
 	}
 }
 
@@ -422,8 +417,7 @@ export class NotebookChartAction extends ToggleableAction {
 	public static SHOWTABLE_LABEL = localize('notebook.showTable', "Show table");
 	public static ICON = 'viewChart';
 
-	constructor(private resourceTable: DataResourceTable,
-		@IQueryModelService private queryModelService: IQueryModelService) {
+	constructor(private resourceTable: DataResourceTable) {
 		super(NotebookChartAction.ID, {
 			toggleOnLabel: NotebookChartAction.SHOWTABLE_LABEL,
 			toggleOnClass: NotebookChartAction.ICON,
@@ -437,10 +431,15 @@ export class NotebookChartAction extends ToggleableAction {
 		this.resourceTable.toggleChartVisibility();
 		this.toggle(!this.state.isOn);
 		if (this.state.isOn) {
-			let queryRunner = this.queryModelService.getQueryRunner(this.resourceTable.documentUri);
-			this.resourceTable.queryRunner = queryRunner;
-			this.resourceTable.chart({ batchId: context.batchId, resultId: context.resultId });
+			let rowCount = context.table.getData().getLength();
+			let range = new Slick.Range(0, 0, rowCount - 1, context.table.columns.length - 1);
+
+			let columns = context.gridDataProvider.getColumnHeaders(range);
+			let result = await context.gridDataProvider.getRowData(0, rowCount);
+
+			this.resourceTable.chart.setData(result.resultSubset.rows, columns);
+			this.resourceTable.chart.chart({ batchId: context.batchId, resultId: context.resultId });
 		}
-		return Promise.resolve(true);
+		return true;
 	}
 }

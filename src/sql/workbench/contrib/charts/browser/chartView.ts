@@ -28,6 +28,7 @@ import { ChartState } from 'sql/workbench/common/editor/query/chartState';
 import * as nls from 'vs/nls';
 import { find } from 'vs/base/common/arrays';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { DbCellValue } from 'azdata';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -196,6 +197,17 @@ export class ChartView extends Disposable implements IPanelView {
 	public set queryRunner(runner: QueryRunner) {
 		this._queryRunner = runner;
 		this.shouldGraph();
+	}
+
+	public setData(rows: DbCellValue[][], columns: string[]): void {
+		this._data = {
+			columns: columns,
+			rows: rows.map(r => r.map(c => c.displayValue))
+		};
+
+		if (this.insight) {
+			this.insight.data = this._data;
+		}
 	}
 
 	private shouldGraph() {
