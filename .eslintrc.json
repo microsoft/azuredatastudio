@@ -666,17 +666,17 @@
             {
                 "target": "**/browser/**",
                 "restrictions": [
-					"**/{vs,sql}/**",
-					"azdata",
-					"vscode",
-					"@angular/*",
-					"rxjs/**",
-					"chart.js",
-					"ng2-charts",
-					"angular2-grid",
-					"html-query-plan",
-					"plotly.js-dist"
-				]
+                    "**/{vs,sql}/**",
+                    "azdata",
+                    "vscode",
+                    "@angular/*",
+                    "rxjs/**",
+                    "chart.js",
+                    "ng2-charts",
+                    "angular2-grid",
+                    "html-query-plan",
+                    "plotly.js-dist"
+                ]
             },
             {
                 "target": "**/{common,browser,workbench}/**",
