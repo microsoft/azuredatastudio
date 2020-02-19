@@ -1202,6 +1202,12 @@ export interface IOutgoingCallDto {
 	to: ICallHierarchyItemDto;
 }
 
+export interface ILanguageWordDefinitionDto {
+	languageId: string;
+	regexSource: string;
+	regexFlags: string
+}
+
 export interface ExtHostLanguageFeaturesShape {
 	$provideDocumentSymbols(handle: number, resource: UriComponents, token: CancellationToken): Promise<modes.DocumentSymbol[] | undefined>;
 	$provideCodeLenses(handle: number, resource: UriComponents, token: CancellationToken): Promise<ICodeLensListDto | undefined>;
@@ -1244,6 +1250,7 @@ export interface ExtHostLanguageFeaturesShape {
 	$provideCallHierarchyIncomingCalls(handle: number, sessionId: string, itemId: string, token: CancellationToken): Promise<IIncomingCallDto[] | undefined>;
 	$provideCallHierarchyOutgoingCalls(handle: number, sessionId: string, itemId: string, token: CancellationToken): Promise<IOutgoingCallDto[] | undefined>;
 	$releaseCallHierarchy(handle: number, sessionId: string): void;
+	$setWordDefinitions(wordDefinitions: ILanguageWordDefinitionDto[]): void;
 }
 
 export interface ExtHostQuickOpenShape {

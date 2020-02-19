@@ -166,7 +166,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	// Getters for private properties
-	public get uri(): string { return this.getResource()!.toString(true); }
+	public get uri(): string { return this.resource!.toString(true); }
 	public get text(): EditorInput { return this._text; }
 	public get results(): QueryResultsInput { return this._results; }
 	// Description is shown beside the tab name in the combobox of open editors
@@ -191,7 +191,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	// Forwarding resource functions to the inline sql file editor
 	public isDirty(): boolean { return this._text.isDirty(); }
-	public getResource(): URI | undefined { return this._text.getResource(); }
+	public get resource(): URI | undefined { return this._text.resource; }
 
 	public matchInputInstanceType(inputType: any): boolean {
 		return (this._text instanceof inputType);

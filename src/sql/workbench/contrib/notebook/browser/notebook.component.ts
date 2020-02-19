@@ -260,7 +260,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 					let editors = this.editorService.visibleControls;
 					for (let editor of editors) {
-						if (editor && editor.input.getResource() === this._notebookParams.input.notebookUri) {
+						if (editor && editor.input.resource === this._notebookParams.input.notebookUri) {
 							await editor.group.closeEditor(this._notebookParams.input as NotebookInput, { preserveFocus: true }); // sketchy
 							break;
 						}

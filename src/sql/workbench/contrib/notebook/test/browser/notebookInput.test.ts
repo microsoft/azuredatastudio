@@ -115,7 +115,7 @@ suite('Notebook Input', function (): void {
 		assert.strictEqual(untitledNotebookInput.untitledEditorModel, testModel);
 
 		// getResource
-		assert.strictEqual(untitledNotebookInput.getResource(), untitledUri);
+		assert.strictEqual(untitledNotebookInput.resource, untitledUri);
 
 		// Standard kernels
 		let testKernels = [{

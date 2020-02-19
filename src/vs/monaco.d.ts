@@ -1108,6 +1108,13 @@ declare namespace monaco.editor {
 		 * Defaults to 20000.
 		 */
 		maxTokenizationLineLength?: number;
+		/**
+		 * Theme to be used for rendering.
+		 * The current out-of-the-box available themes are: 'vs' (default), 'vs-dark', 'hc-black'.
+		 * You can create custom themes via `monaco.editor.defineTheme`.
+		 * To switch a theme, use `monaco.editor.setTheme`
+		 */
+		theme?: string;
 	}
 
 	/**
@@ -2390,6 +2397,8 @@ declare namespace monaco.editor {
 	 * An event describing that model decorations have changed.
 	 */
 	export interface IModelDecorationsChangedEvent {
+		readonly affectsMinimap: boolean;
+		readonly affectsOverviewRuler: boolean;
 	}
 
 	export interface IModelOptionsChangedEvent {
@@ -3334,6 +3343,14 @@ declare namespace monaco.editor {
 		 * The width of the minimap
 		 */
 		readonly minimapWidth: number;
+		readonly minimapHeightIsEditorHeight: boolean;
+		readonly minimapIsSampling: boolean;
+		readonly minimapScale: number;
+		readonly minimapLineHeight: number;
+		readonly minimapCanvasInnerWidth: number;
+		readonly minimapCanvasInnerHeight: number;
+		readonly minimapCanvasOuterWidth: number;
+		readonly minimapCanvasOuterHeight: number;
 		/**
 		 * Minimap render type
 		 */
@@ -3383,6 +3400,11 @@ declare namespace monaco.editor {
 		 * Defaults to 'right'.
 		 */
 		side?: 'right' | 'left';
+		/**
+		 * Control the minimap rendering mode.
+		 * Defaults to 'actual'.
+		 */
+		mode?: 'actual' | 'cover' | 'contain';
 		/**
 		 * Control the rendering of the minimap slider.
 		 * Defaults to 'mouseover'.
