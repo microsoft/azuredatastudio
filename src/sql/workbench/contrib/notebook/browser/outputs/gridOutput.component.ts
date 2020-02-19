@@ -414,15 +414,17 @@ class SimpleDbColumn implements azdata.IDbColumn {
 export class NotebookChartAction extends ToggleableAction {
 	public static ID = 'notebook.showChart';
 	public static SHOWCHART_LABEL = localize('notebook.showChart', "Show chart");
-	public static SHOWTABLE_LABEL = localize('notebook.showTable', "Show table");
-	public static ICON = 'viewChart';
+	public static SHOWCHART_ICON = 'viewChart';
+
+	public static HIDECHART_LABEL = localize('notebook.hideChart', "Hide chart");
+	public static HIDECHART_ICON = 'close';
 
 	constructor(private resourceTable: DataResourceTable) {
 		super(NotebookChartAction.ID, {
-			toggleOnLabel: NotebookChartAction.SHOWTABLE_LABEL,
-			toggleOnClass: NotebookChartAction.ICON,
+			toggleOnLabel: NotebookChartAction.HIDECHART_LABEL,
+			toggleOnClass: NotebookChartAction.HIDECHART_ICON,
 			toggleOffLabel: NotebookChartAction.SHOWCHART_LABEL,
-			toggleOffClass: NotebookChartAction.ICON,
+			toggleOffClass: NotebookChartAction.SHOWCHART_ICON,
 			isOn: false
 		});
 	}
