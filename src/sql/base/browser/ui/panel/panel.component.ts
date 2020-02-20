@@ -52,8 +52,8 @@ let idPool = 0;
 			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title">
 				<div class="tabContainer">
 					<div *ngIf="options.layout === NavigationBarLayout.vertical" class="action-container">
-						<span [title]="toggleTabLabelButtonLabel">
-							<div role="button" [attr.aria-expanded]="toggleTabLabelButtonExpanded" [attr.aria-label]="toggleTabLabelButtonLabel" [ngClass]="toggleTabLabelButtonClass" tabindex="0" (click)="updateToggleState()" (keyup)="onKey($event)"></div>
+						<span [title]="toggleTabPanelButtonAriaLabel">
+							<div role="button" [attr.aria-expanded]="_tabExpanded" [attr.aria-label]="toggleTabPanelButtonAriaLabel" [ngClass]="toggleTabPanelButtonCssClass" tabindex="0" (click)="toggleTabPanel()" (keyup)="onKey($event)"></div>
 						</span>
 					</div>
 					<div #tabList class="tabList" role="tablist" scrollable [horizontalScroll]="AutoScrollbarVisibility" [verticalScroll]="HiddenScrollbarVisibility" [scrollYToX]="true">
@@ -62,7 +62,7 @@ let idPool = 0;
 								<tab-header role="presentation" [active]="_activeTab === tab" [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
 							</ng-container>
 							<ng-container *ngIf="tab.type==='group-header' && options.layout === NavigationBarLayout.vertical">
-								<div class="tab-group-header" *ngIf="_showTabText">
+								<div class="tab-group-header" *ngIf="_tabExpanded">
 									<span>{{tab.title}}</span>
 								</div>
 							</ng-container >
@@ -95,7 +95,7 @@ export class PanelComponent extends Disposable {
 	private _activeTab?: TabComponent;
 	private _actionbar?: ActionBar;
 	private _mru: TabComponent[] = [];
-	private _showTabText: boolean = true;
+	private _tabExpanded: boolean = true;
 
 	protected AutoScrollbarVisibility = ScrollbarVisibility.Auto; // used by angular template
 	protected HiddenScrollbarVisibility = ScrollbarVisibility.Hidden; // used by angular template
@@ -108,23 +108,19 @@ export class PanelComponent extends Disposable {
 		super();
 	}
 
-	public get toggleTabLabelButtonClass(): string {
-		return this._showTabText ? 'tab-action collapse' : 'tab-action expand';
+	public get toggleTabPanelButtonCssClass(): string {
+		return this._tabExpanded ? 'tab-action collapse' : 'tab-action expand';
 	}
 
-	public get toggleTabLabelButtonLabel(): string {
-		return this._showTabText ? nls.localize('hideTextLabel', "Hide text labels") : nls.localize('showTextLabel', "Show text labels");
+	public get toggleTabPanelButtonAriaLabel(): string {
+		return this._tabExpanded ? nls.localize('hideTextLabel', "Hide text labels") : nls.localize('showTextLabel', "Show text labels");
 	}
 
-	public get toggleTabLabelButtonExpanded(): boolean {
-		return this._showTabText;
-	}
-
-	updateToggleState(): void {
-		this._showTabText = !this._showTabText;
+	toggleTabPanel(): void {
+		this._tabExpanded = !this._tabExpanded;
 		const tabListControl = this._tabList.nativeElement as HTMLElement;
 		const tabLabelHiddenClassName = 'tabLabelHidden';
-		if (this._showTabText && tabListControl.classList.contains(tabLabelHiddenClassName)) {
+		if (this._tabExpanded && tabListControl.classList.contains(tabLabelHiddenClassName)) {
 			tabListControl.classList.remove(tabLabelHiddenClassName);
 		} else {
 			tabListControl.classList.add(tabLabelHiddenClassName);
@@ -135,7 +131,7 @@ export class PanelComponent extends Disposable {
 	onKey(e: KeyboardEvent) {
 		let event = new StandardKeyboardEvent(e);
 		if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
-			this.updateToggleState();
+			this.toggleTabPanel();
 			e.stopPropagation();
 		}
 	}

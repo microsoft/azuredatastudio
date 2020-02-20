@@ -153,10 +153,6 @@ panel {
 	border-color: rgb(214, 214, 214);
 }
 
-.tabbedPanel .tab-group-heade {
-	display: block;
-}
-
 .tabbedPanel .tabLabelHidden .tab-group-header {
 	display: none;
 }
