@@ -163,11 +163,11 @@ class DataResourceTable extends GridTableBase<any> {
 		if (!this._chartContainer) {
 			this._chartContainer = document.createElement('div');
 			this._chartContainer.style.display = 'none';
-
-			this._chart.render(this._chartContainer);
-
 			this.element.appendChild(this._chartContainer);
+			this._chart.render(this._chartContainer);
 		}
+
+		this._chartContainer.style.width = this.tableContainer.style.width;
 	}
 
 	public toggleChartVisibility(): void {
