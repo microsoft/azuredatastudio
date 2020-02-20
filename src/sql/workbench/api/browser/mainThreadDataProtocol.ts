@@ -26,7 +26,7 @@ import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/i
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { assign } from 'vs/base/common/objects';
-import { IConnectionService } from 'sql/platform/connection/common/connectionService';
+import { IConnectionService, IConnectionCompleteEvent, IConnectionChangedEvent } from 'sql/platform/connection/common/connectionService';
 import { Emitter } from 'vs/base/common/event';
 
 /**
@@ -38,7 +38,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	private _proxy: ExtHostDataProtocolShape;
 
 	private _capabilitiesRegistrations: { [handle: number]: IDisposable; } = Object.create(null); // should we be registering these?
-	private _connectionEvents = new Map<string, { onDidConnectionComplete: Emitter<any>; onDidConnectionChange: Emitter<any> }>();
+	private _connectionEvents = new Map<string, { onDidConnectionComplete: Emitter<IConnectionCompleteEvent>; onDidConnectionChange: Emitter<IConnectionChangedEvent> }>();
 
 	constructor(
 		extHostContext: IExtHostContext,
@@ -469,7 +469,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 
 	// Connection Management handlers
 	public $onConnectionComplete(providerId: string, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
-		this._connectionEvents.get(providerId)?.onDidConnectionComplete.fire(connectionInfoSummary);
+		this._connectionEvents.get(providerId)?.onDidConnectionComplete.fire({ connectionUri: connectionInfoSummary.ownerUri, errorMessage: connectionInfoSummary.errorMessage || connectionInfoSummary.messages });
 	}
 
 	public $onIntelliSenseCacheComplete(handle: number, connectionUri: string): void {

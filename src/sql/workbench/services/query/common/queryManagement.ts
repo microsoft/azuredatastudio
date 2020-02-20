@@ -180,7 +180,7 @@ export class QueryManagementService implements IQueryManagementService {
 	}
 
 	private _runAction<T>(uri: string, action: (handler: IQueryRequestHandler) => Promise<T>, fallBackToDefaultProvider: boolean = false): Promise<T> {
-		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
+		let providerId = 'MSSQL';//: string = this._connectionService.getProviderIdFromUri(uri);
 
 		if (!providerId && fallBackToDefaultProvider) {
 			providerId = this._connectionService.getDefaultProviderId();
@@ -203,6 +203,7 @@ export class QueryManagementService implements IQueryManagementService {
 			return runner.cancelQuery(ownerUri);
 		});
 	}
+
 	public runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void> {
 		this.addTelemetry(TelemetryKeys.RunQuery, ownerUri, runOptions);
 		return this._runAction(ownerUri, (runner) => {

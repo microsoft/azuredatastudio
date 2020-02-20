@@ -6,7 +6,7 @@
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { ICapabilitiesService, ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
-import { Disposable, IDisposable, combinedDisposable, toDisposable, dispose } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable, combinedDisposable, dispose } from 'vs/base/common/lifecycle';
 import { entries } from 'sql/base/common/collections';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Deferred } from 'sql/base/common/promise';
@@ -83,8 +83,8 @@ class ConnectionService extends Disposable implements IConnectionService {
 			this.connectionProviders.set(provider.id, { provider: new Deferred<IConnectionProvider>() });
 		}
 		const disposable = combinedDisposable(
-			toDisposable(() => provider.onDidConnectionChanged(e => this.onConnectionChanged(e))),
-			toDisposable(() => provider.onDidConnectionComplete(e => this.onConnectionComplete(e)))
+			provider.onDidConnectionChanged(e => this.onConnectionChanged(e)),
+			provider.onDidConnectionComplete(e => this.onConnectionComplete(e))
 		);
 		const providerStub = this.connectionProviders.get(provider.id);
 		providerStub.disposable = disposable;
