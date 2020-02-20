@@ -19,6 +19,8 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 export class ServerDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
@@ -46,9 +48,11 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 		@Inject(INotificationService) notificationService: INotificationService,
 		@Inject(IAngularEventingService) angularEventingService: IAngularEventingService,
 		@Inject(IConfigurationService) configurationService: IConfigurationService,
-		@Inject(ILogService) logService: ILogService
+		@Inject(ILogService) logService: ILogService,
+		@Inject(ICommandService) commandService: ICommandService,
+		@Inject(IContextKeyService) contextKeyService: IContextKeyService
 	) {
-		super(dashboardService, el, _cd, notificationService, angularEventingService, configurationService, logService);
+		super(dashboardService, el, _cd, notificationService, angularEventingService, configurationService, logService, commandService, contextKeyService);
 
 		// special-case handling for MSSQL data provider
 		const connInfo = this.dashboardService.connectionManagementService.connectionInfo;
