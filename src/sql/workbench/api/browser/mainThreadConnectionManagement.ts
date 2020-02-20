@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SqlExtHostContext, SqlMainContext, ExtHostConnectionManagementShape, MainThreadConnectionManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { SqlMainContext, MainThreadConnectionManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import * as azdata from 'azdata';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { IConnectionManagementService, ConnectionType, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
@@ -23,7 +23,7 @@ import { deepClone } from 'vs/base/common/objects';
 @extHostNamedCustomer(SqlMainContext.MainThreadConnectionManagement)
 export class MainThreadConnectionManagement extends Disposable implements MainThreadConnectionManagementShape {
 
-	private _proxy: ExtHostConnectionManagementShape;
+	// private _proxy: ExtHostConnectionManagementShape;
 
 	constructor(
 		extHostContext: IExtHostContext,
@@ -35,48 +35,48 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	) {
 		super();
 		if (extHostContext) {
-			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostConnectionManagement);
+			// this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostConnectionManagement);
 		}
 	}
 
 	public $registerConnectionEventListener(handle: number, providerId: string): void {
 
-		let stripProfile = (inputProfile: azdata.IConnectionProfile) => {
-			if (!inputProfile) {
-				return inputProfile;
-			}
+		// let stripProfile = (inputProfile: azdata.IConnectionProfile) => {
+		// 	if (!inputProfile) {
+		// 		return inputProfile;
+		// 	}
 
-			let outputProfile: azdata.IConnectionProfile = {
-				connectionName: inputProfile.connectionName,
-				serverName: inputProfile.serverName,
-				databaseName: inputProfile.databaseName,
-				userName: inputProfile.userName,
-				password: inputProfile.password,
-				authenticationType: inputProfile.authenticationType,
-				savePassword: inputProfile.savePassword,
-				groupFullName: inputProfile.groupFullName,
-				groupId: inputProfile.groupId,
-				providerName: inputProfile.providerName,
-				saveProfile: inputProfile.saveProfile,
-				id: inputProfile.id,
-				azureTenantId: inputProfile.azureTenantId,
-				azureAccount: inputProfile.azureAccount,
-				options: inputProfile.options
-			};
-			return outputProfile;
-		};
+		// 	let outputProfile: azdata.IConnectionProfile = {
+		// 		connectionName: inputProfile.connectionName,
+		// 		serverName: inputProfile.serverName,
+		// 		databaseName: inputProfile.databaseName,
+		// 		userName: inputProfile.userName,
+		// 		password: inputProfile.password,
+		// 		authenticationType: inputProfile.authenticationType,
+		// 		savePassword: inputProfile.savePassword,
+		// 		groupFullName: inputProfile.groupFullName,
+		// 		groupId: inputProfile.groupId,
+		// 		providerName: inputProfile.providerName,
+		// 		saveProfile: inputProfile.saveProfile,
+		// 		id: inputProfile.id,
+		// 		azureTenantId: inputProfile.azureTenantId,
+		// 		azureAccount: inputProfile.azureAccount,
+		// 		options: inputProfile.options
+		// 	};
+		// 	return outputProfile;
+		// };
 
-		this._connectionManagementService.onConnect((params: IConnectionParams) => {
-			this._proxy.$onConnectionEvent(handle, 'onConnect', params.connectionUri, stripProfile(params.connectionProfile));
-		});
+		// this._connectionManagementService.onConnect((params: IConnectionParams) => {
+		// 	this._proxy.$onConnectionEvent(handle, 'onConnect', params.connectionUri, stripProfile(params.connectionProfile));
+		// });
 
-		this._connectionManagementService.onConnectionChanged((params: IConnectionParams) => {
-			this._proxy.$onConnectionEvent(handle, 'onConnectionChanged', params.connectionUri, stripProfile(params.connectionProfile));
-		});
+		// this._connectionManagementService.onConnectionChanged((params: IConnectionParams) => {
+		// 	this._proxy.$onConnectionEvent(handle, 'onConnectionChanged', params.connectionUri, stripProfile(params.connectionProfile));
+		// });
 
-		this._connectionManagementService.onDisconnect((params: IConnectionParams) => {
-			this._proxy.$onConnectionEvent(handle, 'onDisconnect', params.connectionUri, stripProfile(params.connectionProfile));
-		});
+		// this._connectionManagementService.onDisconnect((params: IConnectionParams) => {
+		// 	this._proxy.$onConnectionEvent(handle, 'onDisconnect', params.connectionUri, stripProfile(params.connectionProfile));
+		// });
 	}
 
 	public $getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {

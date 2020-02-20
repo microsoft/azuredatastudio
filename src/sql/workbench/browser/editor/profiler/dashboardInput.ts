@@ -54,11 +54,11 @@ export class DashboardInput extends EditorInput {
 				this._uri = u;
 				const info = this._connectionService.getConnectionInfo(u);
 				if (info) {
-					this._onConnectionChanged = this._connectionService.onConnectionChanged(e => {
-						if (e.connectionUri === u) {
-							this._onDidChangeLabel.fire();
-						}
-					});
+					// this._onConnectionChanged = this._connectionService.onConnectionChanged(e => {
+					// 	if (e.connectionUri === u) {
+					// 		this._onDidChangeLabel.fire();
+					// 	}
+					// });
 				}
 			}
 		);

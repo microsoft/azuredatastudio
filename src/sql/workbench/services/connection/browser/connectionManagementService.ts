@@ -14,7 +14,7 @@ import { ConnectionStore } from 'sql/platform/connection/common/connectionStore'
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import * as Utils from 'sql/platform/connection/common/utils';
 import * as Constants from 'sql/platform/connection/common/constants';
-import { ICapabilitiesService, ConnectionProviderProperties, ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ICapabilitiesService, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as ConnectionContracts from 'sql/workbench/services/connection/browser/connection';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
 import { DashboardInput } from 'sql/workbench/browser/editor/profiler/dashboardInput';
@@ -23,7 +23,6 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/browser/angularEventingService';
 import * as QueryConstants from 'sql/platform/query/common/constants';
-import { Deferred } from 'sql/base/common/promise';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
 
@@ -64,7 +63,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _onConnect = new Emitter<IConnectionParams>();
 	private _onDisconnect = new Emitter<IConnectionParams>();
 	private _onConnectRequestSent = new Emitter<void>();
-	private _onConnectionChanged = new Emitter<IConnectionParams>();
 	private _onLanguageFlavorChanged = new Emitter<azdata.DidChangeLanguageFlavorParams>();
 	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._notificationService);
 
@@ -107,19 +105,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 
 		this.initializeConnectionProvidersMap();
-
-		let providerRegistration = (p: { id: string, features: ProviderFeatures }) => {
-			let provider = {
-				onReady: new Deferred<azdata.ConnectionProvider>(),
-				properties: p.features.connection
-			};
-			this._providers.set(p.id, provider);
-		};
-
-		this._capabilitiesService.onCapabilitiesRegistered(providerRegistration, this);
-		entries(this._capabilitiesService.providers).map(v => {
-			providerRegistration({ id: v[0], features: v[1] });
-		});
 
 		this._register(this._onAddConnectionProfile);
 		this._register(this._onDeleteConnectionProfile);
@@ -170,10 +155,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._onDisconnect.event;
 	}
 
-	public get onConnectionChanged(): Event<IConnectionParams> {
-		return this._onConnectionChanged.event;
-	}
-
 	public get onConnectionRequestSent(): Event<void> {
 		return this._onConnectRequestSent.event;
 	}
@@ -184,21 +165,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	public get providerNameToDisplayNameMap(): { readonly [providerDisplayName: string]: string } {
 		return this._providerNameToDisplayNameMap;
-	}
-
-	// Connection Provider Registration
-	public registerProvider(providerId: string, provider: azdata.ConnectionProvider): void {
-		if (!this._providers.has(providerId)) {
-			this._logService.warn('Provider', providerId, 'attempted to register but has no metadata');
-			let providerType = {
-				onReady: new Deferred<azdata.ConnectionProvider>(),
-				properties: undefined
-			};
-			this._providers.set(providerId, providerType);
-		}
-
-		// we know this is a deferred promise because we made it
-		(this._providers.get(providerId).onReady as Deferred<azdata.ConnectionProvider>).resolve(provider);
 	}
 
 	public registerIconProvider(providerId: string, iconProvider: azdata.IconProvider): void {
@@ -892,19 +858,19 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	private addTelemetryForConnection(connection: ConnectionManagementInfo): void {
-		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DatabaseConnected)
-			.withAdditionalProperties({
-				connectionType: connection.serverInfo ? (connection.serverInfo.isCloud ? 'Azure' : 'Standalone') : '',
-				provider: connection.connectionProfile.providerName,
-				serverVersion: connection.serverInfo ? connection.serverInfo.serverVersion : '',
-				serverEdition: connection.serverInfo ? connection.serverInfo.serverEdition : '',
-				serverEngineEdition: connection.serverInfo ? connection.serverInfo.engineEditionId : '',
-				extensionConnectionTime: connection.extensionTimer.elapsed() - connection.serviceTimer.elapsed(),
-				serviceConnectionTime: connection.serviceTimer.elapsed()
-			})
-			.send();
-	}
+	// private addTelemetryForConnection(connection: ConnectionManagementInfo): void {
+	// 	this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DatabaseConnected)
+	// 		.withAdditionalProperties({
+	// 			connectionType: connection.serverInfo ? (connection.serverInfo.isCloud ? 'Azure' : 'Standalone') : '',
+	// 			provider: connection.connectionProfile.providerName,
+	// 			serverVersion: connection.serverInfo ? connection.serverInfo.serverVersion : '',
+	// 			serverEdition: connection.serverInfo ? connection.serverInfo.serverEdition : '',
+	// 			serverEngineEdition: connection.serverInfo ? connection.serverInfo.engineEditionId : '',
+	// 			extensionConnectionTime: connection.extensionTimer.elapsed() - connection.serviceTimer.elapsed(),
+	// 			serviceConnectionTime: connection.serviceTimer.elapsed()
+	// 		})
+	// 		.send();
+	// }
 
 	private addTelemetryForConnectionDisconnected(connection: interfaces.IConnectionProfile): void {
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DatabaseDisconnected)
@@ -912,41 +878,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				provider: connection.providerName
 			})
 			.send();
-	}
-
-	public onConnectionComplete(handle: number, info: azdata.ConnectionInfoSummary): void {
-		let connection = this._connectionStatusManager.onConnectionComplete(info);
-
-		if (info.connectionId) {
-			if (info.connectionSummary && info.connectionSummary.databaseName) {
-				this._connectionStatusManager.updateDatabaseName(info);
-			}
-			connection.serverInfo = info.serverInfo;
-			connection.extensionTimer.stop();
-
-			connection.connectHandler(true);
-			this.addTelemetryForConnection(connection);
-
-			if (this._connectionStatusManager.isDefaultTypeUri(info.ownerUri)) {
-				this._connectionGlobalStatus.setStatusToConnected(info.connectionSummary);
-			}
-		} else {
-			connection.connectHandler(false, info.errorMessage, info.errorNumber, info.messages);
-		}
-	}
-
-	public onConnectionChangedNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void {
-		let profile: interfaces.IConnectionProfile = this._connectionStatusManager.onConnectionChanged(changedConnInfo);
-		this._notifyConnectionChanged(profile, changedConnInfo.connectionUri);
-	}
-
-	private _notifyConnectionChanged(profile: interfaces.IConnectionProfile, connectionUri: string): void {
-		if (profile) {
-			this._onConnectionChanged.fire(<IConnectionParams>{
-				connectionProfile: profile,
-				connectionUri: connectionUri
-			});
-		}
 	}
 
 	public onIntelliSenseCacheComplete(handle: number, connectionUri: string): void {

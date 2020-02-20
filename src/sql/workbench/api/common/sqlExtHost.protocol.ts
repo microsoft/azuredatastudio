@@ -95,7 +95,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Callback when a connection request has completed
 	 */
-	$onConnectComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void { throw ni(); }
+	$onConnectComplete(providerId: string, connectionInfoSummary: azdata.ConnectionInfoSummary): void { throw ni(); }
 
 	/**
 	 * Callback when a IntelliSense cache has been built
@@ -551,9 +551,9 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerAgentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerSerializationProvider(providerId: string, handle: number): Promise<any>;
 	$unregisterProvider(handle: number): Promise<any>;
-	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
+	$onConnectionComplete(providerId: string, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
-	$onConnectionChangeNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void;
+	$onConnectionChangeNotification(providerId: string, changedConnInfo: azdata.ChangedConnectionInfo): void;
 	$onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void;
 	$onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void;
 	$onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void;

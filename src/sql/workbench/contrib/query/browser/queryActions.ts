@@ -17,7 +17,6 @@ import { append, $ } from 'vs/base/browser/dom';
 import { ISelectionData, QueryExecutionOptions } from 'azdata';
 import {
 	IConnectionManagementService,
-	IConnectionParams,
 	INewConnectionParams,
 	ConnectionType,
 	RunQueryOnConnectionMode,
@@ -43,6 +42,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IConnectionService } from 'sql/platform/connection/common/connectionService';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -407,10 +407,13 @@ export class ConnectDatabaseAction extends QueryTaskbarAction {
 	public static EnabledChangeClass = 'changeConnection';
 	public static ID = 'connectDatabaseAction';
 
+	private readonly connectionService: IConnectionService;
+
 	constructor(
 		editor: QueryEditor,
 		isChangeConnectionAction: boolean,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IConnectionService connectionService: IConnectionService
 	) {
 		let label: string;
 		let enabledClass: string;
@@ -426,11 +429,21 @@ export class ConnectDatabaseAction extends QueryTaskbarAction {
 		super(connectionManagementService, editor, ConnectDatabaseAction.ID, enabledClass);
 
 		this.label = label;
+		this.connectionService = connectionService;
 	}
 
 	public async run(): Promise<void> {
-		this.connectEditor(this.editor);
-		return;
+		const response = this.connectionService.connect(this.editor.input.resource.toString(), {
+			provider: 'MSSQL',
+			options: {
+				serverName: 'addresser-test-server.database.windows.net',
+				databaseName: 'addresser-test-db',
+				authType: 'SqlLogin',
+				userName: 'addresser',
+				password: 'password'
+			}
+		});
+		console.log(response);
 	}
 }
 
@@ -614,7 +627,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		}
 
 		// Register event handlers
-		this._register(this.connectionManagementService.onConnectionChanged(params => this.onConnectionChanged(params)));
+		// this._register(this.connectionManagementService.onConnectionChanged(params => this.onConnectionChanged(params)));
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -742,23 +755,23 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		}
 	}
 
-	private onConnectionChanged(connParams: IConnectionParams): void {
-		if (!connParams) {
-			return;
-		}
+	// private onConnectionChanged(connParams: IConnectionParams): void {
+	// 	if (!connParams) {
+	// 		return;
+	// 	}
 
-		if (!this._editor.input) {
-			this.logService.error('editor input was null');
-			return;
-		}
+	// 	if (!this._editor.input) {
+	// 		this.logService.error('editor input was null');
+	// 		return;
+	// 	}
 
-		let uri = this._editor.input.uri;
-		if (uri !== connParams.connectionUri) {
-			return;
-		}
+	// 	let uri = this._editor.input.uri;
+	// 	if (uri !== connParams.connectionUri) {
+	// 		return;
+	// 	}
 
-		this.updateConnection(connParams.connectionProfile.databaseName);
-	}
+	// 	this.updateConnection(connParams.connectionProfile.databaseName);
+	// }
 
 	private onDropdownFocus(): void {
 		if (!this._editor.input) {

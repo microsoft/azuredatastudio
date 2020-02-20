@@ -143,7 +143,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		connectionManagementService = createConnectionManagementService();
 
-		connectionManagementService.registerProvider('MSSQL', mssqlConnectionProvider.object);
+		// connectionManagementService.registerProvider('MSSQL', mssqlConnectionProvider.object);
 	});
 
 	function createConnectionManagementService(): ConnectionManagementService {
@@ -216,23 +216,23 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	async function connect(uri: string, options?: IConnectionCompletionOptions, fromDialog?: boolean, connection?: IConnectionProfile, error?: string, errorCode?: number, errorCallStack?: string): Promise<IConnectionResult> {
 		let connectionToUse = connection ? connection : connectionProfile;
-		let id = connectionToUse.getOptionsKey();
-		let defaultUri = 'connection:' + (id ? id : connectionToUse.serverName + ':' + connectionToUse.databaseName);
+		// let id = connectionToUse.getOptionsKey();
+		// let defaultUri = 'connection:' + (id ? id : connectionToUse.serverName + ':' + connectionToUse.databaseName);
 		connectionManagementService.onConnectionRequestSent(() => {
-			let info: azdata.ConnectionInfoSummary = {
-				connectionId: error ? undefined : 'id',
-				connectionSummary: {
-					databaseName: connectionToUse.databaseName,
-					serverName: connectionToUse.serverName,
-					userName: connectionToUse.userName
-				},
-				errorMessage: error,
-				errorNumber: errorCode,
-				messages: errorCallStack,
-				ownerUri: uri ? uri : defaultUri,
-				serverInfo: undefined
-			};
-			connectionManagementService.onConnectionComplete(0, info);
+			// let info: azdata.ConnectionInfoSummary = {
+			// 	connectionId: error ? undefined : 'id',
+			// 	connectionSummary: {
+			// 		databaseName: connectionToUse.databaseName,
+			// 		serverName: connectionToUse.serverName,
+			// 		userName: connectionToUse.userName
+			// 	},
+			// 	errorMessage: error,
+			// 	errorNumber: errorCode,
+			// 	messages: errorCallStack,
+			// 	ownerUri: uri ? uri : defaultUri,
+			// 	serverInfo: undefined
+			// };
+			// connectionManagementService.onConnectionComplete(0, info);
 		});
 		await connectionManagementService.cancelConnectionForUri(uri);
 		if (fromDialog) {

@@ -59,6 +59,11 @@ export interface ICapabilitiesService {
 	readonly onCapabilitiesRegistered: Event<{ id: string; features: ProviderFeatures }>;
 
 	/**
+	 * When a capabilities is unregistered, i.e an extension is uninstalled that had previously registered capabiltiies
+	 */
+	readonly onCapabilitiesUnregistered: Event<string>;
+
+	/**
 	 * Get an array of all known providers
 	 */
 	readonly providers: { [id: string]: ProviderFeatures };

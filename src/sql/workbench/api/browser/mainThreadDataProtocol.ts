@@ -26,6 +26,8 @@ import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/i
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { assign } from 'vs/base/common/objects';
+import { IConnectionService } from 'sql/platform/connection/common/connectionService';
+import { Emitter } from 'vs/base/common/event';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -36,10 +38,12 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	private _proxy: ExtHostDataProtocolShape;
 
 	private _capabilitiesRegistrations: { [handle: number]: IDisposable; } = Object.create(null); // should we be registering these?
+	private _connectionEvents = new Map<string, { onDidConnectionComplete: Emitter<any>; onDidConnectionChange: Emitter<any> }>();
 
 	constructor(
 		extHostContext: IExtHostContext,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IConnectionService private readonly connectionService: IConnectionService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@IMetadataService private _metadataService: IMetadataService,
@@ -63,36 +67,28 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		}
 	}
 
-	public $registerConnectionProvider(providerId: string, handle: number): Promise<any> {
-		const self = this;
-		this._connectionManagementService.registerProvider(providerId, <azdata.ConnectionProvider>{
-			connect(connectionUri: string, connectionInfo: azdata.ConnectionInfo): Thenable<boolean> {
-				return self._proxy.$connect(handle, connectionUri, connectionInfo);
+	public $registerConnectionProvider(providerId: string, handle: number): Promise<void> {
+		const emitters = {
+			onDidConnectionChange: new Emitter<any>(),
+			onDidConnectionComplete: new Emitter<any>()
+		};
+		this._connectionEvents.set(providerId, emitters);
+		this.connectionService.registerProvider({
+			id: providerId,
+			connect: (connectionUri: string, options: { [name: string]: any }): Promise<boolean> => {
+				return Promise.resolve(this._proxy.$connect(handle, connectionUri, { options }));
 			},
-			disconnect(connectionUri: string): Thenable<boolean> {
-				return self._proxy.$disconnect(handle, connectionUri);
+			disconnect: (connectionUri: string): Promise<boolean> => {
+				return Promise.resolve(this._proxy.$disconnect(handle, connectionUri));
 			},
-			changeDatabase(connectionUri: string, newDatabase: string): Thenable<boolean> {
-				return self._proxy.$changeDatabase(handle, connectionUri, newDatabase);
+			cancelConnect: (connectionUri: string): Promise<boolean> => {
+				return Promise.resolve(this._proxy.$cancelConnect(handle, connectionUri));
 			},
-			cancelConnect(connectionUri: string): Thenable<boolean> {
-				return self._proxy.$cancelConnect(handle, connectionUri);
-			},
-			listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult> {
-				return self._proxy.$listDatabases(handle, connectionUri);
-			},
-			getConnectionString(connectionUri: string, includePassword: boolean): Thenable<string> {
-				return self._proxy.$getConnectionString(handle, connectionUri, includePassword);
-			},
-			buildConnectionInfo(connectionString: string): Thenable<azdata.ConnectionInfo> {
-				return self._proxy.$buildConnectionInfo(handle, connectionString);
-			},
-			rebuildIntelliSenseCache(connectionUri: string): Thenable<void> {
-				return self._proxy.$rebuildIntelliSenseCache(handle, connectionUri);
-			}
+			onDidConnectionChanged: emitters.onDidConnectionChange.event,
+			onDidConnectionComplete: emitters.onDidConnectionComplete.event
 		});
 
-		return undefined;
+		return Promise.resolve();
 	}
 
 	public $registerQueryProvider(providerId: string, handle: number): Promise<any> {
@@ -472,16 +468,16 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	}
 
 	// Connection Management handlers
-	public $onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
-		this._connectionManagementService.onConnectionComplete(handle, connectionInfoSummary);
+	public $onConnectionComplete(providerId: string, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
+		this._connectionEvents.get(providerId)?.onDidConnectionComplete.fire(connectionInfoSummary);
 	}
 
 	public $onIntelliSenseCacheComplete(handle: number, connectionUri: string): void {
 		this._connectionManagementService.onIntelliSenseCacheComplete(handle, connectionUri);
 	}
 
-	public $onConnectionChangeNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void {
-		this._connectionManagementService.onConnectionChangedNotification(handle, changedConnInfo);
+	public $onConnectionChangeNotification(providerId: string, changedConnInfo: azdata.ChangedConnectionInfo): void {
+		this._connectionEvents.get(providerId)?.onDidConnectionChange.fire(changedConnInfo);
 	}
 
 	// Query Management handlers

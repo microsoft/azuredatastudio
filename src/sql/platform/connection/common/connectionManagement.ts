@@ -71,7 +71,6 @@ export interface IConnectionManagementService {
 	onDeleteConnectionProfile: Event<void>;
 	onConnect: Event<IConnectionParams>;
 	onDisconnect: Event<IConnectionParams>;
-	onConnectionChanged: Event<IConnectionParams>;
 	onLanguageFlavorChanged: Event<azdata.DidChangeLanguageFlavorParams>;
 
 	// Properties
@@ -105,14 +104,7 @@ export interface IConnectionManagementService {
 	 */
 	connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection', saveConnection?: boolean): Promise<string>;
 
-	/**
-	 * Adds the successful connection to MRU and send the connection error back to the connection handler for failed connections
-	 */
-	onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
-
 	onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
-
-	onConnectionChangedNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void;
 
 	getConnectionGroups(providers?: string[]): ConnectionProfileGroup[];
 
@@ -167,11 +159,6 @@ export interface IConnectionManagementService {
 	addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile>;
 
 	listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult>;
-
-	/**
-	 * Register a connection provider
-	 */
-	registerProvider(providerId: string, provider: azdata.ConnectionProvider): void;
 
 	registerIconProvider(providerId: string, provider: azdata.IconProvider): void;
 

@@ -109,6 +109,7 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 		this.capabilities[mssqlProviderName] = { connection: msSQLCapabilities };
 		this.capabilities[this.pgsqlProviderName] = { connection: pgSQLCapabilities };
 	}
+	onCapabilitiesUnregistered: Event<string> = Event.None;
 
 	registerConnectionProvider(id: string, properties: ConnectionProviderProperties): IDisposable {
 		throw new Error('Method not implemented.');

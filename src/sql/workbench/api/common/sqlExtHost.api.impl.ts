@@ -204,7 +204,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			let registerConnectionProvider = (provider: azdata.ConnectionProvider): vscode.Disposable => {
 				// Connection callbacks
 				provider.registerOnConnectionComplete((connSummary: azdata.ConnectionInfoSummary) => {
-					extHostDataProvider.$onConnectComplete(provider.handle, connSummary);
+					extHostDataProvider.$onConnectComplete(provider.providerId, connSummary);
 				});
 
 				provider.registerOnIntelliSenseCacheComplete((connectionUri: string) => {
@@ -212,7 +212,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				});
 
 				provider.registerOnConnectionChanged((changedConnInfo: azdata.ChangedConnectionInfo) => {
-					extHostDataProvider.$onConnectionChanged(provider.handle, changedConnInfo);
+					extHostDataProvider.$onConnectionChanged(provider.providerId, changedConnInfo);
 				});
 
 				return extHostDataProvider.$registerConnectionProvider(provider);
