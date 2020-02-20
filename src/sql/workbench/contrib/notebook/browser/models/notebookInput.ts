@@ -285,12 +285,14 @@ export abstract class NotebookInput extends EditorInput {
 	}
 
 	async save(groupId: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+		this.updateModel();
 		let input = await this.textInput.save(groupId, options);
 		await this.setTrustForNewEditor(input);
 		return input;
 	}
 
 	async saveAs(group: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+		this.updateModel();
 		let input = await this.textInput.saveAs(group, options);
 		await this.setTrustForNewEditor(input);
 		return input;
