@@ -41,7 +41,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 	private diffNavigator: DiffNavigator | undefined;
 	private readonly diffNavigatorDisposables = this._register(new DisposableStore());
 
-	private reverseColor: boolean; // {{SQL CARBON EDIT}} add property
+	private reverseColor?: boolean; // {{SQL CARBON EDIT}} add property
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
