@@ -8,7 +8,8 @@ import 'mocha';
 
 import { SimpleTokenCache } from '../../account-provider/simpleTokenCache';
 
-describe('AccountProvider.SimpleTokenCache', function (): void {
+// These tests don't work on Linux systems because gnome-keyring doesn't like running on headless machines.
+describe('AccountProvider.SimpleTokenCache @UNSTABLE@ @REL@', function (): void {
 	it('Can save and load credentials', async function (): Promise<void> {
 		const tokenCacheKey = 'azureTokenCache-testkey';
 		const tokenCachePassword = 'azureTokenCache-testpassword';
