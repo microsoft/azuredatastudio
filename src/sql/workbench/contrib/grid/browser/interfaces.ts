@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { VirtualizedCollection, ISlickColumn } from 'sql/base/browser/ui/table/asyncDataView';
+
 export interface IGridDataSet {
 	dataRows: VirtualizedCollection<{}>;
 	columnDefinitions: ISlickColumn<any>[];
