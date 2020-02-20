@@ -18,7 +18,7 @@ let localize = nls.loadMessageBundle();
 export class AzureAccountProviderService implements vscode.Disposable {
 	// CONSTANTS ///////////////////////////////////////////////////////////////
 	private static CommandClearTokenCache = 'accounts.clearTokenCache';
-	private static ConfigurationSection = 'accounts.azure';
+	private static ConfigurationSection = 'accounts.azure.cloud';
 	private static CredentialNamespace = 'azureAccountProviderCredentials';
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////////
@@ -131,11 +131,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 		return new Promise((resolve, reject) => {
 			try {
-				//let config = vscode.workspace.getConfiguration(AzureAccountProviderService.ConfigurationSection);
-
 				let tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
-				// let tokenCachePath = path.join(this._userStoragePath, tokenCacheKey);
-				// let tokenCache = new CredentialServiceTokenCache(self._credentialProvider, tokenCacheKey, tokenCachePath);
 				let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath);
 				let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, simpleTokenCache, this._context);
 				self._accountProviders[provider.metadata.id] = accountProvider;

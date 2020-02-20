@@ -33,31 +33,24 @@
       },
       {
         "type": "object",
-        "title": "Azure Account Configuration",
+        "title": "%config.azureAccountConfigurationSection%",
         "properties": {
-          "accounts.azure.enablePublicCloud": {
+          "accounts.azure.cloud.enablePublicCloud": {
             "type": "boolean",
             "default": true,
             "description": "%config.enablePublicCloudDescription%"
-          }
-        }
-      },
-      {
-        "type": "object",
-        "title": "Azure Account Configuration",
-        "properties": {
-          "accounts.azure.enableUsGovCloud": {
+          },
+          "accounts.azure.cloud.enableUsGovCloud": {
             "type": "boolean",
             "default": false,
             "description": "%config.enableUsGovCloudDescription%"
-          }
-        }
-      },
-      {
-        "type": "object",
-        "title": "Azure Account Configuration",
-        "properties": {
-          "accounts.azure.enableChinaCloud": {
+          },
+          "accounts.azure.cloud.enableGermanyCloud": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.enableGermanyCloudDescription%"
+          },
+          "accounts.azure.cloud.enableChinaCloud": {
             "type": "boolean",
             "default": false,
             "description": "%config.enableChinaCloudDescription%"
@@ -66,12 +59,17 @@
       },
       {
         "type": "object",
-        "title": "Azure Account Configuration",
+        "title": "%config.azureAuthMethodConfigurationSection%",
         "properties": {
-          "accounts.azure.enableGermanyCloud": {
+          "accounts.azure.auth.codeGrant": {
+            "type": "boolean",
+            "default": true,
+            "description": "%config.azureCodeGrantMethod%"
+          },
+          "accounts.azure.auth.deviceCode": {
             "type": "boolean",
             "default": false,
-            "description": "%config.enableGermanyCloudDescription%"
+            "description": "%config.azureDeviceCodeMethod%"
           }
         }
       }
