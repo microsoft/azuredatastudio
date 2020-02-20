@@ -8,13 +8,13 @@ import { localize } from 'vs/nls';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 import { Table } from 'sql/base/browser/ui/table/table';
-import { PlanXmlParser } from 'sql/workbench/contrib/queryPlan/common/planXmlParser';
+import { PlanXmlParser } from 'sql/workbench/contrib/queryPlan/browser/planXmlParser';
 import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { TopOperationsState } from 'sql/workbench/contrib/queryPlan/common/topOperationsState';
+import { TopOperationsState } from 'sql/workbench/common/editor/query/topOperationsState';
 
 const topOperationColumns: Array<Slick.Column<any>> = [
 	{ name: localize('topOperations.operation', "Operation"), field: 'operation', sortable: true },
@@ -66,6 +66,7 @@ export class TopOperationsView extends Disposable implements IPanelView {
 		});
 		this._register(this.table);
 		this._register(attachTableStyler(this.table, this.themeService));
+		this._register(this.dataView.onRowCountChange(() => this.table.updateRowCount()));
 	}
 
 	public render(container: HTMLElement): void {

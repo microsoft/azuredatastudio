@@ -158,7 +158,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 		const resourceIdMap = new Map<azdata.AzureResource, string>([
 			[azdata.AzureResource.ResourceManagement, self._metadata.settings.armResource.id],
-			[azdata.AzureResource.Sql, self._metadata.settings.sqlResource.id]
+			[azdata.AzureResource.Sql, self._metadata.settings.sqlResource.id],
+			[azdata.AzureResource.OssRdbms, self._metadata.settings.ossRdbmsResource.id]
 		]);
 
 		let accessTokenPromises: Thenable<void>[] = [];
@@ -431,6 +432,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 				displayName: displayName
 			},
 			properties: {
+				providerSettings: this._metadata,
 				isMsAccount: msa,
 				tenants: tenants
 			},

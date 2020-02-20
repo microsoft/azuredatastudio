@@ -115,7 +115,8 @@ const tasks = compilations.map(function (tsconfigFile) {
 
 	const compileTask = task.define(`compile-extension:${name}`, task.series(cleanTask, () => {
 		const pipeline = createPipeline(sqlLocalizedExtensions.includes(name), true); // {{SQL CARBON EDIT}}
-		const input = pipeline.tsProjectSrc();
+		const nonts = gulp.src(src, srcOpts).pipe(filter(['**', '!**/*.ts']));
+		const input = es.merge(nonts, pipeline.tsProjectSrc());
 
 		return input
 			.pipe(pipeline())
@@ -124,7 +125,8 @@ const tasks = compilations.map(function (tsconfigFile) {
 
 	const watchTask = task.define(`watch-extension:${name}`, task.series(cleanTask, () => {
 		const pipeline = createPipeline(false);
-		const input = pipeline.tsProjectSrc();
+		const nonts = gulp.src(src, srcOpts).pipe(filter(['**', '!**/*.ts']));
+		const input = es.merge(nonts, pipeline.tsProjectSrc());
 		const watchInput = watcher(src, { ...srcOpts, ...{ readDelay: 200 } });
 
 		return watchInput
@@ -134,7 +136,8 @@ const tasks = compilations.map(function (tsconfigFile) {
 
 	const compileBuildTask = task.define(`compile-build-extension-${name}`, task.series(cleanTask, () => {
 		const pipeline = createPipeline(true, true);
-		const input = pipeline.tsProjectSrc();
+		const nonts = gulp.src(src, srcOpts).pipe(filter(['**', '!**/*.ts']));
+		const input = es.merge(nonts, pipeline.tsProjectSrc());
 
 		return input
 			.pipe(pipeline())

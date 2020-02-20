@@ -24,7 +24,7 @@ import { Schemas } from 'vs/base/common/network';
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
 import { getInstalledExtensions, IExtensionStatus, onExtensionChanged, isKeymapExtension } from 'vs/workbench/contrib/extensions/common/extensionsUtils';
 import { IExtensionManagementService, IExtensionGalleryService, ILocalExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { IExtensionEnablementService, EnablementState, IExtensionTipsService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
+import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionTipsService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lifecycle';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
@@ -44,6 +44,7 @@ import { IRecentlyOpened, isRecentWorkspace, IRecentWorkspace, IRecentFolder, is
 import { CancellationToken } from 'vs/base/common/cancellation';
 import 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}}
 import { IHostService } from 'vs/workbench/services/host/browser/host';
+import { IProductService } from 'vs/platform/product/common/productService';
 
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
@@ -108,7 +109,7 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 
 function isWelcomePageEnabled(configurationService: IConfigurationService, contextService: IWorkspaceContextService) {
 	const startupEditor = configurationService.inspect(configurationKey);
-	if (!startupEditor.user && !startupEditor.workspace) {
+	if (!startupEditor.userValue && !startupEditor.workspaceValue) {
 		const welcomeEnabled = configurationService.inspect(oldConfigurationKey);
 		if (welcomeEnabled.value !== undefined && welcomeEnabled.value !== null) {
 			return welcomeEnabled.value;
@@ -257,14 +258,16 @@ class WelcomePage extends Disposable {
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@ILabelService private readonly labelService: ILabelService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@IExtensionEnablementService private readonly extensionEnablementService: IExtensionEnablementService,
+		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService,
 		@IExtensionGalleryService private readonly extensionGalleryService: IExtensionGalleryService,
 		@IExtensionManagementService private readonly extensionManagementService: IExtensionManagementService,
 		@IExtensionTipsService private readonly tipsService: IExtensionTipsService,
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
-		@IHostService private readonly hostService: IHostService
+		@IHostService private readonly hostService: IHostService,
+		@IProductService private readonly productService: IProductService,
+
 	) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
@@ -299,6 +302,11 @@ class WelcomePage extends Disposable {
 		showOnStartup.addEventListener('click', e => {
 			this.configurationService.updateValue(configurationKey, showOnStartup.checked ? 'welcomePage' : 'newUntitledFile', ConfigurationTarget.USER);
 		});
+
+		const prodName = container.querySelector('.welcomePage .title .caption') as HTMLElement;
+		if (prodName) {
+			prodName.innerHTML = this.productService.nameLong;
+		}
 
 		recentlyOpened.then(({ workspaces }) => {
 			// Filter out the current workspace
@@ -517,15 +525,13 @@ class WelcomePage extends Disposable {
 									"WelcomePageInstalled-4" : {
 										"from" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 										"extensionId": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-										"outcome": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-										"error": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" }
+										"outcome": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 									}
 								*/
 								this.telemetryService.publicLog(strings.installedEvent, {
 									from: telemetryFrom,
 									extensionId: extensionSuggestion.id,
 									outcome: isPromiseCanceledError(err) ? 'canceled' : 'error',
-									error: String(err),
 								});
 								this.notificationService.error(err);
 							});
@@ -554,15 +560,13 @@ class WelcomePage extends Disposable {
 				"WelcomePageInstalled-6" : {
 					"from" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 					"extensionId": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-					"outcome": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-					"error": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" }
+					"outcome": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 				}
 			*/
 			this.telemetryService.publicLog(strings.installedEvent, {
 				from: telemetryFrom,
 				extensionId: extensionSuggestion.id,
 				outcome: isPromiseCanceledError(err) ? 'canceled' : 'error',
-				error: String(err),
 			});
 			this.notificationService.error(err);
 		});
@@ -593,6 +597,10 @@ class WelcomePage extends Disposable {
 export class WelcomeInputFactory implements IEditorInputFactory {
 
 	static readonly ID = welcomeInputTypeId;
+
+	public canSerialize(editorInput: EditorInput): boolean {
+		return true;
+	}
 
 	public serialize(editorInput: EditorInput): string {
 		return '{}';

@@ -6,19 +6,22 @@
 import { assign } from 'vs/base/common/objects';
 import { memoize } from 'vs/base/common/decorators';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { BrowserWindow, ipcMain } from 'electron';
+import { BrowserWindow, ipcMain, WebContents, Event as ElectronEvent } from 'electron';
 import { ISharedProcess } from 'vs/platform/ipc/electron-main/sharedProcessMainService';
 import { Barrier } from 'vs/base/common/async';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ILifecycleMainService } from 'vs/platform/lifecycle/electron-main/lifecycleMainService';
 import { IThemeMainService } from 'vs/platform/theme/electron-main/themeMainService';
 import { toDisposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { Event } from 'vs/base/common/event';
 
 export class SharedProcess implements ISharedProcess {
 
 	private barrier = new Barrier();
 
 	private window: BrowserWindow | null = null;
+
+	private readonly _whenReady: Promise<void>;
 
 	constructor(
 		private readonly machineId: string,
@@ -27,10 +30,13 @@ export class SharedProcess implements ISharedProcess {
 		@ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService,
 		@ILogService private readonly logService: ILogService,
 		@IThemeMainService private readonly themeMainService: IThemeMainService
-	) { }
+	) {
+		// overall ready promise when shared process signals initialization is done
+		this._whenReady = new Promise<void>(c => ipcMain.once('shared-process->electron-main: init-done', () => c(undefined)));
+	}
 
 	@memoize
-	private get _whenReady(): Promise<void> {
+	private get _whenIpcReady(): Promise<void> {
 		this.window = new BrowserWindow({
 			show: false,
 			backgroundColor: this.themeMainService.getBackgroundColor(),
@@ -53,7 +59,7 @@ export class SharedProcess implements ISharedProcess {
 		this.window.loadURL(url);
 
 		// Prevent the window from dying
-		const onClose = (e: Event) => {
+		const onClose = (e: ElectronEvent) => {
 			this.logService.trace('SharedProcess#close prevented');
 
 			// We never allow to close the shared process unless we get explicitly disposed()
@@ -97,16 +103,20 @@ export class SharedProcess implements ISharedProcess {
 		});
 
 		return new Promise<void>(c => {
-			ipcMain.once('handshake:hello', ({ sender }: { sender: any }) => {
-				sender.send('handshake:hey there', {
+			// send payload once shared process is ready to receive it
+			disposables.add(Event.once(Event.fromNodeEventEmitter(ipcMain, 'shared-process->electron-main: ready-for-payload', ({ sender }: { sender: WebContents }) => sender))(sender => {
+				sender.send('electron-main->shared-process: payload', {
 					sharedIPCHandle: this.environmentService.sharedIPCHandle,
 					args: this.environmentService.args,
 					logLevel: this.logService.getLevel()
 				});
 
-				disposables.add(toDisposable(() => sender.send('handshake:goodbye')));
-				ipcMain.once('handshake:im ready', () => c(undefined));
-			});
+				// signal exit to shared process when we get disposed
+				disposables.add(toDisposable(() => sender.send('electron-main->shared-process: exit')));
+
+				// complete IPC-ready promise when shared process signals this to us
+				ipcMain.once('shared-process->electron-main: ipc-ready', () => c(undefined));
+			}));
 		});
 	}
 
@@ -118,6 +128,11 @@ export class SharedProcess implements ISharedProcess {
 	async whenReady(): Promise<void> {
 		await this.barrier.wait();
 		await this._whenReady;
+	}
+
+	async whenIpcReady(): Promise<void> {
+		await this.barrier.wait();
+		await this._whenIpcReady;
 	}
 
 	toggle(): void {

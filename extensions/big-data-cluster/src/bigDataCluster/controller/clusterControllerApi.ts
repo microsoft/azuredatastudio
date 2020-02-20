@@ -275,9 +275,9 @@ export class ClusterController {
 			mountPath);
 	}
 
-	private async deleteMountImpl(mountPath: string): Promise<MountResponse> {
-		let auth = await this._authPromise;
-		const api = new DefaultApiWrapper(this._username, this._password, this._url, auth);
+	private async deleteMountImpl(self: ClusterController, mountPath: string): Promise<MountResponse> {
+		let auth = await self._authPromise;
+		const api = new DefaultApiWrapper(self._username, self._password, self._url, auth);
 
 		const mountStatus = await api.deleteMount('', '', mountPath);
 		return {

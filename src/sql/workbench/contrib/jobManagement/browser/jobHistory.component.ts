@@ -12,10 +12,10 @@ import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetecto
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AgentViewComponent } from 'sql/workbench/contrib/jobManagement/browser/agentView.component';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
-import { RunJobAction, StopJobAction, EditJobAction, JobsRefreshAction } from 'sql/platform/jobManagement/browser/jobActions';
-import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { JobManagementUtilities } from 'sql/platform/jobManagement/browser/jobManagementUtilities';
-import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
+import { RunJobAction, StopJobAction, EditJobAction, JobsRefreshAction } from 'sql/workbench/contrib/jobManagement/browser/jobActions';
+import { JobCacheObject } from 'sql/workbench/services/jobManagement/common/jobManagementService';
+import { JobManagementUtilities } from 'sql/workbench/services/jobManagement/browser/jobManagementUtilities';
+import { IJobManagementService } from 'sql/workbench/services/jobManagement/common/interfaces';
 import {
 	JobHistoryController, JobHistoryDataSource,
 	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow
@@ -243,7 +243,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		return false;
 	}
 
-	private buildHistoryTree(self: any, jobHistories: azdata.AgentJobHistoryInfo[]) {
+	private buildHistoryTree(self: JobHistoryComponent, jobHistories: azdata.AgentJobHistoryInfo[]) {
 		self._treeController.jobHistories = jobHistories;
 		let jobHistoryRows: JobHistoryRow[] = this._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
 		let sortedRows = jobHistoryRows.sort((row1, row2) => {
@@ -278,6 +278,14 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 
 	public goToJobs(): void {
 		this._agentViewComponent.showHistory = false;
+	}
+
+	private convertToJobHistoryRow(historyInfo: azdata.AgentJobHistoryInfo): JobHistoryRow {
+		let jobHistoryRow = new JobHistoryRow();
+		jobHistoryRow.runDate = this.formatTime(historyInfo.runDate);
+		jobHistoryRow.runStatus = JobManagementUtilities.convertToStatusString(historyInfo.runStatus);
+		jobHistoryRow.instanceID = historyInfo.instanceId;
+		return jobHistoryRow;
 	}
 
 	private formatTime(time: string): string {

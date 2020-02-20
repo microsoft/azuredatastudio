@@ -15,11 +15,11 @@ import * as DOM from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
+import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { QueryResultsView } from 'sql/workbench/contrib/query/browser/queryResultsView';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/contrib/query/common/resultsGridContribution';
+import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/contrib/query/common/resultsGrid.contribution';
 
 export const TextCompareEditorVisible = new RawContextKey<boolean>('textCompareEditorVisible', false);
 

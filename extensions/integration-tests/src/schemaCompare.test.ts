@@ -11,21 +11,24 @@ import * as mssql from '../../mssql';
 import * as os from 'os';
 import * as fs from 'fs';
 const path = require('path');
-import { context } from './testContext';
+import { isTestSetupCompleted } from './testContext';
 import * as assert from 'assert';
 import { getStandaloneServer } from './testConfig';
 import { stressify } from 'adstest';
+import { promisify } from 'util';
 
 let schemaCompareService: mssql.ISchemaCompareService;
 let dacfxService: mssql.IDacFxService;
 let schemaCompareTester: SchemaCompareTester;
-const dacpac1: string = path.join(__dirname, '../testData/Database1.dacpac');
-const dacpac2: string = path.join(__dirname, '../testData/Database2.dacpac');
+const dacpac1: string = path.join(__dirname, '..','testData', 'Database1.dacpac');
+const dacpac2: string = path.join(__dirname, '..', 'testData', 'Database2.dacpac');
+const includeExcludeSourceDacpac: string = path.join(__dirname, '..', 'testData', 'SchemaCompareIncludeExcludeSource.dacpac');
+const includeExcludeTargetDacpac: string = path.join(__dirname, '..', 'testData', 'SchemaCompareIncludeExcludeTarget.dacpac');
 const SERVER_CONNECTION_TIMEOUT: number = 3000;
 const retryCount = 24; // 2 minutes
 const folderPath = path.join(os.tmpdir(), 'SchemaCompareTest');
 
-if (context.RunTest) {
+if (isTestSetupCompleted()) {
 	suite('Schema compare integration test suite', () => {
 		suiteSetup(async function () {
 			let attempts: number = 20;
@@ -44,13 +47,15 @@ if (context.RunTest) {
 		test('Schema compare dacpac to dacpac comparison and scmp', async function () {
 			await schemaCompareTester.SchemaCompareDacpacToDacpac();
 		});
-		test('Schema compare database to database comparison, script generation, and scmp @UNSTABLE@', async function () {
+		test('Schema compare database to database comparison, script generation, and scmp', async function () {
 			await schemaCompareTester.SchemaCompareDatabaseToDatabase();
 		});
-		// TODO: figure out why this is failing with Error: This editor is not connected to a database Parameter name: OwnerUri
-		// test('Schema compare dacpac to database comparison, script generation, and scmp', async function () {
-		// 	await schemaCompareTester.SchemaCompareDacpacToDatabase();
-		// });
+		test('Schema compare dacpac to database comparison, script generation, and scmp', async function () {
+			await schemaCompareTester.SchemaCompareDacpacToDatabase();
+		});
+		test('Schema compare dacpac to dacpac comparison with include exclude', async function () {
+			await schemaCompareTester.SchemaCompareIncludeExcludeDacpacToDacpac();
+		});
 	});
 }
 
@@ -83,16 +88,16 @@ class SchemaCompareTester {
 		};
 
 		let schemaCompareResult = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, null);
-		this.assertSchemaCompareResult(schemaCompareResult, operationId);
+		this.assertSchemaCompareResult(schemaCompareResult, operationId, 4);
 
 		// save to scmp
 		const filepath = path.join(folderPath, `ads_schemaCompare_${now.getTime().toString()}.scmp`);
-		if (!fs.existsSync(folderPath)) {
-			fs.mkdirSync(folderPath);
+		if (!(await promisify(fs.exists)(folderPath))) {
+			await fs.promises.mkdir(folderPath);
 		}
 		const saveScmpResult = await schemaCompareService.schemaCompareSaveScmp(source, target, azdata.TaskExecutionMode.execute, null, filepath, [], []);
 		assert(saveScmpResult.success && !saveScmpResult.errorMessage, `Save scmp should succeed. Expected: there should be no error. Actual Error message: "${saveScmpResult.errorMessage}`);
-		assert(fs.existsSync(filepath), `File ${filepath} is expected to be present`);
+		assert(await promisify(fs.exists)(filepath), `File ${filepath} is expected to be present`);
 
 		// open scmp
 		const openScmpResult = await schemaCompareService.schemaCompareOpenScmp(filepath);
@@ -126,8 +131,8 @@ class SchemaCompareTester {
 
 			assert(result1.success === true, 'Deploy source database should succeed');
 			assert(result2.success === true, 'Deploy target database should succeed');
-			utils.assertDatabaseCreationResult(sourceDB, ownerUri, retryCount);
-			utils.assertDatabaseCreationResult(targetDB, ownerUri, retryCount);
+			await utils.assertDatabaseCreationResult(sourceDB, ownerUri, retryCount);
+			await utils.assertDatabaseCreationResult(targetDB, ownerUri, retryCount);
 
 			assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 
@@ -151,7 +156,7 @@ class SchemaCompareTester {
 			};
 
 			let schemaCompareResult = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, null);
-			this.assertSchemaCompareResult(schemaCompareResult, operationId);
+			this.assertSchemaCompareResult(schemaCompareResult, operationId, 4);
 
 			let status = await schemaCompareService.schemaCompareGenerateScript(schemaCompareResult.operationId, server.serverName, targetDB, azdata.TaskExecutionMode.script);
 
@@ -160,13 +165,13 @@ class SchemaCompareTester {
 			await this.assertScriptGenerationResult(status, target.serverName, target.databaseName);
 
 			// save to scmp
-			const filepath = path.join(folderPath,`ads_schemaCompare_${now.getTime().toString()}.scmp`);
-			if (!fs.existsSync(folderPath)) {
-				fs.mkdirSync(folderPath);
+			const filepath = path.join(folderPath, `ads_schemaCompare_${now.getTime().toString()}.scmp`);
+			if (!(await promisify(fs.exists)(folderPath))) {
+				await fs.promises.mkdir(folderPath);
 			}
 			const saveScmpResult = await schemaCompareService.schemaCompareSaveScmp(source, target, azdata.TaskExecutionMode.execute, null, filepath, [], []);
 			assert(saveScmpResult.success && !saveScmpResult.errorMessage, `Save scmp should succeed. Expected: there should be no error. Actual Error message: "${saveScmpResult.errorMessage}`);
-			assert(fs.existsSync(filepath), `File ${filepath} is expected to be present`);
+			assert(promisify(fs.exists)(filepath), `File ${filepath} is expected to be present`);
 
 			// open scmp
 			const openScmpResult = await schemaCompareService.schemaCompareOpenScmp(filepath);
@@ -174,7 +179,7 @@ class SchemaCompareTester {
 			assert(openScmpResult.sourceEndpointInfo.databaseName === source.databaseName, `Expected: source database to be ${source.databaseName}, Actual: ${openScmpResult.sourceEndpointInfo.databaseName}`);
 			assert(openScmpResult.targetEndpointInfo.databaseName === target.databaseName, `Expected: target database to be ${target.databaseName}, Actual: ${openScmpResult.targetEndpointInfo.databaseName}`);
 
-			fs.unlinkSync(filepath);
+			await fs.promises.unlink(filepath);
 		}
 		finally {
 			await utils.deleteDB(server, sourceDB, ownerUri);
@@ -226,19 +231,19 @@ class SchemaCompareTester {
 			assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 
 			let schemaCompareResult = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, null);
-			this.assertSchemaCompareResult(schemaCompareResult, operationId);
+			this.assertSchemaCompareResult(schemaCompareResult, operationId, 4);
 
 			let status = await schemaCompareService.schemaCompareGenerateScript(schemaCompareResult.operationId, server.serverName, targetDB, azdata.TaskExecutionMode.script);
 			await this.assertScriptGenerationResult(status, target.serverName, target.databaseName);
 
 			// save to scmp
 			const filepath = path.join(folderPath, `ads_schemaCompare_${now.getTime().toString()}.scmp`);
-			if (!fs.existsSync(folderPath)) {
-				fs.mkdirSync(folderPath);
+			if (!(await promisify(fs.exists)(folderPath))) {
+				await fs.promises.mkdir(folderPath);
 			}
 			const saveScmpResult = await schemaCompareService.schemaCompareSaveScmp(source, target, azdata.TaskExecutionMode.execute, null, filepath, [], []);
 			assert(saveScmpResult.success && !saveScmpResult.errorMessage, `Save scmp should succeed. Expected: there should be no error. Actual Error message: "${saveScmpResult.errorMessage}`);
-			assert(fs.existsSync(filepath), `File ${filepath} is expected to be present`);
+			assert(await promisify(fs.exists)(filepath), `File ${filepath} is expected to be present`);
 
 			// open scmp
 			const openScmpResult = await schemaCompareService.schemaCompareOpenScmp(filepath);
@@ -251,18 +256,89 @@ class SchemaCompareTester {
 		}
 	}
 
-	private assertSchemaCompareResult(schemaCompareResult: mssql.SchemaCompareResult, operationId: string): void {
+	@stressify({ dop: SchemaCompareTester.ParallelCount })
+	async SchemaCompareIncludeExcludeDacpacToDacpac(): Promise<void> {
+		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
+		const operationId = 'testOperationId_' + new Date().getTime().toString();
+
+		let source: mssql.SchemaCompareEndpointInfo = {
+			endpointType: mssql.SchemaCompareEndpointType.Dacpac,
+			packageFilePath: includeExcludeSourceDacpac,
+			serverDisplayName: '',
+			serverName: '',
+			databaseName: '',
+			ownerUri: '',
+			connectionDetails: undefined
+		};
+		let target: mssql.SchemaCompareEndpointInfo = {
+			endpointType: mssql.SchemaCompareEndpointType.Dacpac,
+			packageFilePath: includeExcludeTargetDacpac,
+			serverDisplayName: '',
+			serverName: '',
+			databaseName: '',
+			ownerUri: '',
+			connectionDetails: undefined
+		};
+
+		const deploymentOptionsResult = await schemaCompareService.schemaCompareGetDefaultOptions();
+		let deploymentOptions = deploymentOptionsResult.defaultDeploymentOptions;
+		const schemaCompareResult = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, deploymentOptions);
+		this.assertSchemaCompareResult(schemaCompareResult, operationId, 5);
+
+		// try to exclude table t2 and it should fail because a dependency is still included
+		const t2Difference = schemaCompareResult.differences.find(e => e.sourceValue && e.sourceValue[1] === 't2' && e.name === 'SqlTable');
+		assert(t2Difference !== undefined, 'The difference Table t2 should be found. Should not be undefined');
+		const excludeResult = await schemaCompareService.schemaCompareIncludeExcludeNode(operationId, t2Difference, false, azdata.TaskExecutionMode.execute);
+		this.assertIncludeExcludeResult(excludeResult, false, 1, 0);
+		assert(excludeResult.blockingDependencies[0].sourceValue[1] === 'v1', `Blocking dependency should be view v1. Actual: ${excludeResult.blockingDependencies[0].sourceValue[1]}`);
+
+		// Exclude the view v1 that t2 was a dependency for and it should succeed and t2 should also be excluded
+		const v1Difference = schemaCompareResult.differences.find(e => e.sourceValue && e.sourceValue[1] === 'v1' && e.name === 'SqlView');
+		assert(v1Difference !== undefined, 'The difference View v1 should be found. Should not be undefined');
+		const excludeResult2 = await schemaCompareService.schemaCompareIncludeExcludeNode(operationId, v1Difference, false, azdata.TaskExecutionMode.execute);
+		this.assertIncludeExcludeResult(excludeResult2, true, 0, 1);
+		assert(excludeResult2.affectedDependencies[0].sourceValue[1] === 't2', `Table t2 should be the affected dependency. Actual: ${excludeResult2.affectedDependencies[0].sourceValue[1]}`);
+		assert(excludeResult2.affectedDependencies[0].included === false, 'Table t2 should be excluded as a result of excluding v1. Actual: true');
+
+		// including the view v1 should also include the table t2
+		const includeResult = await schemaCompareService.schemaCompareIncludeExcludeNode(operationId, v1Difference, true, azdata.TaskExecutionMode.execute);
+		this.assertIncludeExcludeResult(includeResult, true, 0, 1);
+		assert(includeResult.affectedDependencies[0].sourceValue[1] === 't2', `Table t2 should be the affected dependency. Actual: ${includeResult.affectedDependencies[0].sourceValue[1]}`);
+		assert(includeResult.affectedDependencies[0].included === true, 'Table t2 should be included as a result of including v1. Actual: false');
+
+		// excluding views from the comparison should make it so t2 can be excluded
+		deploymentOptions.excludeObjectTypes.push(mssql.SchemaObjectType.Views);
+		await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, deploymentOptions);
+		const excludeResult3 = await schemaCompareService.schemaCompareIncludeExcludeNode(operationId, t2Difference, false, azdata.TaskExecutionMode.execute);
+		this.assertIncludeExcludeResult(excludeResult3, true, 0, 0);
+	}
+
+	private assertIncludeExcludeResult(result: mssql.SchemaCompareIncludeExcludeResult, expectedSuccess: boolean, expectedBlockingDependenciesLength: number, expectedAffectedDependenciesLength: number): void {
+		assert(result.success === expectedSuccess, `Operation success should have been ${expectedSuccess}. Actual: ${result.success}`);
+		if (result.blockingDependencies) {
+			assert(result.blockingDependencies.length === expectedBlockingDependenciesLength, `Expected ${expectedBlockingDependenciesLength} blocking dependencies. Actual: ${result.blockingDependencies}`);
+		} else if (expectedBlockingDependenciesLength !== 0) {
+			throw new Error(`ExpectedBlockingDependencies length was ${expectedBlockingDependenciesLength} but blockingDependencies was undefined`);
+		}
+		if (result.affectedDependencies) {
+			assert(result.affectedDependencies.length === expectedAffectedDependenciesLength, `Expected ${expectedAffectedDependenciesLength} affected dependencies. Actual: ${result.affectedDependencies}`);
+		} else if (expectedAffectedDependenciesLength !== 0) {
+			throw new Error(`ExpectedAffectedDependencies length was ${expectedAffectedDependenciesLength} but affectedDependencies was undefined`);
+		}
+	}
+
+	private assertSchemaCompareResult(schemaCompareResult: mssql.SchemaCompareResult, operationId: string, expectedDifferenceCount: number): void {
 		assert(schemaCompareResult.areEqual === false, `Expected: the schemas are not to be equal Actual: Equal`);
 		assert(schemaCompareResult.errorMessage === null, `Expected: there should be no error. Actual Error message: "${schemaCompareResult.errorMessage}"`);
 		assert(schemaCompareResult.success === true, `Expected: success in schema compare, Actual: Failure`);
-		assert(schemaCompareResult.differences.length === 4, `Expected: 4 differences. Actual differences: "${schemaCompareResult.differences.length}"`);
+		assert(schemaCompareResult.differences.length === expectedDifferenceCount, `Expected: ${expectedDifferenceCount} differences. Actual differences: "${schemaCompareResult.differences.length}"`);
 		assert(schemaCompareResult.operationId === operationId, `Operation Id Expected to be same as passed. Expected : ${operationId}, Actual ${schemaCompareResult.operationId}`);
 	}
 
 	private async assertScriptGenerationResult(resultstatus: azdata.ResultStatus, server: string, database: string): Promise<void> {
 		// TODO add more validation
 		assert(resultstatus.success === true, `Expected: success true Actual: "${resultstatus.success}" Error Message: "${resultstatus.errorMessage}`);
-		const taskService = await azdata.dataprotocol.getProvider<azdata.TaskServicesProvider>('MSSQL', azdata.DataProviderType.TaskServicesProvider);
+		const taskService = azdata.dataprotocol.getProvider<azdata.TaskServicesProvider>('MSSQL', azdata.DataProviderType.TaskServicesProvider);
 		const tasks = await taskService.getAllTasks({ listActiveTasksOnly: true });
 		let foundTask: azdata.TaskInfo;
 		tasks.tasks.forEach(t => {

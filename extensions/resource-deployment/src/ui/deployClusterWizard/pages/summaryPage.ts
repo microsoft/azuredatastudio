@@ -321,7 +321,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 
 	private createStorageSection(): azdata.GroupContainer {
 		const serviceNameColumn: azdata.TableColumn = {
-			value: ' ',
+			value: localize('deployCluster.ServiceName', "Service"),
 			width: 150
 		};
 		const dataStorageClassColumn: azdata.TableColumn = {

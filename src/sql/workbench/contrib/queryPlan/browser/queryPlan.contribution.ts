@@ -3,11 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { QueryPlanInput } from 'sql/workbench/contrib/queryPlan/common/queryPlanInput';
+import { QueryPlanInput, QueryPlanConverter } from 'sql/workbench/contrib/queryPlan/common/queryPlanInput';
 import { EditorDescriptor, IEditorRegistry, Extensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { QueryPlanEditor } from 'sql/workbench/contrib/queryPlan/browser/queryPlanEditor';
+import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 
 // Query Plan editor registration
 
@@ -19,3 +20,6 @@ const queryPlanEditorDescriptor = new EditorDescriptor(
 
 Registry.as<IEditorRegistry>(Extensions.Editors)
 	.registerEditor(queryPlanEditorDescriptor, [new SyncDescriptor(QueryPlanInput)]);
+
+Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations)
+	.registerLanguageAssociation(QueryPlanConverter.languages, QueryPlanConverter);

@@ -10,7 +10,7 @@ import { INativeOpenWindowOptions } from 'vs/platform/windows/node/window';
 import { ILifecycleMainService } from 'vs/platform/lifecycle/electron-main/lifecycleMainService';
 import { IOpenedWindow, OpenContext, IWindowOpenable, IOpenEmptyWindowOptions } from 'vs/platform/windows/common/windows';
 import { INativeOpenDialogOptions } from 'vs/platform/dialogs/node/dialogs';
-import { isMacintosh, IProcessEnvironment } from 'vs/base/common/platform';
+import { isMacintosh } from 'vs/base/common/platform';
 import { IElectronService } from 'vs/platform/electron/node/electron';
 import { ISerializableCommandAction } from 'vs/platform/actions/common/actions';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
@@ -18,7 +18,6 @@ import { AddFirstParameterToFunctions } from 'vs/base/common/types';
 import { IDialogMainService } from 'vs/platform/dialogs/electron-main/dialogs';
 import { dirExists } from 'vs/base/node/pfs';
 import { URI } from 'vs/base/common/uri';
-import { parseArgs, OPTIONS } from 'vs/platform/environment/node/argv';
 import { ITelemetryData, ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
@@ -100,6 +99,7 @@ export class ElectronMainService implements IElectronMainService {
 				cli: this.environmentService.args,
 				forceNewWindow: options.forceNewWindow,
 				forceReuseWindow: options.forceReuseWindow,
+				preferNewWindow: options.preferNewWindow,
 				diffMode: options.diffMode,
 				addMode: options.addMode,
 				gotoLineMode: options.gotoLineMode,
@@ -155,15 +155,6 @@ export class ElectronMainService implements IElectronMainService {
 		if (window) {
 			window.win.minimize();
 		}
-	}
-
-	async isWindowFocused(windowId: number | undefined): Promise<boolean> {
-		const window = this.windowById(windowId);
-		if (window) {
-			return window.win.isFocused();
-		}
-
-		return false;
 	}
 
 	async focusWindow(windowId: number | undefined, options?: { windowId?: number; }): Promise<void> {
@@ -367,15 +358,13 @@ export class ElectronMainService implements IElectronMainService {
 	//#region Connectivity
 
 	async resolveProxy(windowId: number | undefined, url: string): Promise<string | undefined> {
-		return new Promise(resolve => {
-			const window = this.windowById(windowId);
-			const session = window?.win?.webContents?.session;
-			if (session) {
-				session.resolveProxy(url, proxy => resolve(proxy));
-			} else {
-				resolve();
-			}
-		});
+		const window = this.windowById(windowId);
+		const session = window?.win?.webContents?.session;
+		if (session) {
+			return session.resolveProxy(url);
+		} else {
+			return undefined;
+		}
 	}
 
 	//#endregion
@@ -403,24 +392,6 @@ export class ElectronMainService implements IElectronMainService {
 
 	async startCrashReporter(windowId: number | undefined, options: CrashReporterStartOptions): Promise<void> {
 		crashReporter.start(options);
-	}
-
-	//#endregion
-
-	//#region Debug
-
-	// TODO@Isidor move into debug IPC channel (https://github.com/microsoft/vscode/issues/81060)
-
-	async openExtensionDevelopmentHostWindow(windowId: number, args: string[], env: IProcessEnvironment): Promise<void> {
-		const pargs = parseArgs(args, OPTIONS);
-		const extDevPaths = pargs.extensionDevelopmentPath;
-		if (extDevPaths) {
-			this.windowsMainService.openExtensionDevelopmentHostWindow(extDevPaths, {
-				context: OpenContext.API,
-				cli: pargs,
-				userEnv: Object.keys(env).length > 0 ? env : undefined
-			});
-		}
 	}
 
 	//#endregion

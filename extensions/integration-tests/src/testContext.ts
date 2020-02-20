@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export let context = {
-	RunTest: true
-};
+import * as vscode from 'vscode';
+
+export function isTestSetupCompleted(): boolean {
+	return vscode.workspace.getConfiguration('test')['testSetupCompleted'];
+}

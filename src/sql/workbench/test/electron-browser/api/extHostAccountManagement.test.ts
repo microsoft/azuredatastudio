@@ -8,13 +8,13 @@ import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import { AccountProviderStub, TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
 import { ExtHostAccountManagement } from 'sql/workbench/api/common/extHostAccountManagement';
-import { TestRPCProtocol } from 'vs/workbench/test/electron-browser/api/testRPCProtocol';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IRPCProtocol } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { MainThreadAccountManagement } from 'sql/workbench/api/browser/mainThreadAccountManagement';
 import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { TestRPCProtocol } from 'vs/workbench/test/browser/api/testRPCProtocol';
 
 const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');
 
@@ -101,25 +101,24 @@ suite('ExtHostAccountManagement', () => {
 	// TODO: Test for unregistering a provider
 
 	// CLEAR TESTS /////////////////////////////////////////////////////////
-	test('Clear - Success', (done) => {
+	test('Clear - Success', () => {
 		// Setup: Create ext host account management with registered account provider
 		let extHost = new ExtHostAccountManagement(threadService);
 		let mockProvider = getMockAccountProvider();
 		extHost.$registerAccountProvider(mockAccountMetadata, mockProvider.object);
 
 		// If: I clear an account
-		extHost.$clear(0, mockAccount.key)
+		return extHost.$clear(0, mockAccount.key)
 			.then(() => {
 				// Then: The call should have been passed to the provider
 				mockProvider.verify(
 					(obj) => obj.clear(TypeMoq.It.isValue(mockAccount.key)),
 					TypeMoq.Times.once()
 				);
-			})
-			.then(() => done(), (err) => done(err));
+			});
 	});
 
-	test('Clear - Handle does not exist', (done) => {
+	test('Clear - Handle does not exist', async () => {
 		// Setup: Create ext host account management with registered account provider
 		let extHost = new ExtHostAccountManagement(threadService);
 		let mockProvider = getMockAccountProvider();
@@ -127,38 +126,37 @@ suite('ExtHostAccountManagement', () => {
 
 		// If: I clear an account for a handle that doesn't exist
 		// Then: It should fail
-		extHost.$clear(1, mockAccount.key)
-			.then(() => done('Clear succeeded when it should have failed'))
-			.then(null, () => {
-				// The provider's clear should not have been called
-				mockProvider.verify(
-					(obj) => obj.clear(TypeMoq.It.isAny()),
-					TypeMoq.Times.never()
-				);
-			})
-			.then(() => done(), (err) => done(err));
+		try {
+			await extHost.$clear(1, mockAccount.key);
+			assert.fail('Clear succeeded when it should have failed');
+		} catch (e) {
+			// The provider's clear should not have been called
+			mockProvider.verify(
+				(obj) => obj.clear(TypeMoq.It.isAny()),
+				TypeMoq.Times.never()
+			);
+		}
 	});
 
 	// INITIALIZE TESTS ////////////////////////////////////////////////////
-	test('Initialize - Success', (done) => {
+	test('Initialize - Success', () => {
 		// Setup: Create ext host account management with registered account provider
 		let extHost = new ExtHostAccountManagement(threadService);
 		let mockProvider = getMockAccountProvider();
 		extHost.$registerAccountProvider(mockAccountMetadata, mockProvider.object);
 
 		// If: I initialize the provider
-		extHost.$initialize(0, [mockAccount])
+		return extHost.$initialize(0, [mockAccount])
 			.then(() => {
 				// Then: The call should have been passed to the provider
 				mockProvider.verify(
 					(obj) => obj.initialize(TypeMoq.It.isValue([mockAccount])),
 					TypeMoq.Times.once()
 				);
-			})
-			.then(() => done(), (err) => done(err));
+			});
 	});
 
-	test('Initialize - Handle does not exist', (done) => {
+	test('Initialize - Handle does not exist', async () => {
 		// Setup: Create ext host account management with registered account provider
 		let extHost = new ExtHostAccountManagement(threadService);
 		let mockProvider = getMockAccountProvider();
@@ -166,38 +164,37 @@ suite('ExtHostAccountManagement', () => {
 
 		// If: I initialize for a handle that doesn't exist
 		// Then: It should fail
-		extHost.$initialize(1, [mockAccount])
-			.then(() => done('Initialize succeeded when it should have failed'))
-			.then(null, () => {
-				// The provider's clear should not have been called
-				mockProvider.verify(
-					(obj) => obj.initialize(TypeMoq.It.isAny()),
-					TypeMoq.Times.never()
-				);
-			})
-			.then(() => done(), (err) => done(err));
+		try {
+			await extHost.$initialize(1, [mockAccount]);
+			assert.fail('Initialize succeeded when it should have failed');
+		} catch (e) {
+			// The provider's clear should not have been called
+			mockProvider.verify(
+				(obj) => obj.initialize(TypeMoq.It.isAny()),
+				TypeMoq.Times.never()
+			);
+		}
 	});
 
 	// PROMPT TESTS ////////////////////////////////////////////////////////
-	test('Prompt - Success', (done) => {
+	test('Prompt - Success', () => {
 		// Setup: Create ext host account management with registered account provider
 		let extHost = new ExtHostAccountManagement(threadService);
 		let mockProvider = getMockAccountProvider();
 		extHost.$registerAccountProvider(mockAccountMetadata, mockProvider.object);
 
 		// If: I prompt for an account
-		extHost.$prompt(0)
+		return extHost.$prompt(0)
 			.then(() => {
 				// Then: The call should have been passed to the provider
 				mockProvider.verify(
 					(obj) => obj.prompt(),
 					TypeMoq.Times.once()
 				);
-			})
-			.then(() => done(), (err) => done(err));
+			});
 	});
 
-	test('Prompt - Handle does not exist', (done) => {
+	test('Prompt - Handle does not exist', async () => {
 		// Setup: Create ext host account management with registered account provider
 		let extHost = new ExtHostAccountManagement(threadService);
 		let mockProvider = getMockAccountProvider();
@@ -205,38 +202,37 @@ suite('ExtHostAccountManagement', () => {
 
 		// If: I prompt with a handle that doesn't exist
 		// Then: It should fail
-		extHost.$prompt(1)
-			.then(() => done('Prompt succeeded when it should have failed'))
-			.then(null, () => {
-				// The provider's clear should not have been called
-				mockProvider.verify(
-					(obj) => obj.prompt(),
-					TypeMoq.Times.never()
-				);
-			})
-			.then(() => done(), (err) => done(err));
+		try {
+			await extHost.$prompt(1);
+			assert.fail('Prompt succeeded when it should have failed');
+		} catch (e) {
+			// The provider's clear should not have been called
+			mockProvider.verify(
+				(obj) => obj.prompt(),
+				TypeMoq.Times.never()
+			);
+		}
 	});
 
 	// REFRESH TESTS ///////////////////////////////////////////////////////
-	test('Refresh - Success', (done) => {
+	test('Refresh - Success', () => {
 		// Setup: Create ext host account management with registered account provider
 		let extHost = new ExtHostAccountManagement(threadService);
 		let mockProvider = getMockAccountProvider();
 		extHost.$registerAccountProvider(mockAccountMetadata, mockProvider.object);
 
 		// If: I refresh an account
-		extHost.$refresh(0, mockAccount)
+		return extHost.$refresh(0, mockAccount)
 			.then(() => {
 				// Then: The call should have been passed to the provider
 				mockProvider.verify(
 					(obj) => obj.refresh(TypeMoq.It.isValue(mockAccount)),
 					TypeMoq.Times.once()
 				);
-			})
-			.then(() => done(), (err) => done(err));
+			});
 	});
 
-	test('Refresh - Handle does not exist', (done) => {
+	test('Refresh - Handle does not exist', async () => {
 		// Setup: Create ext host account management with registered account provider
 		let extHost = new ExtHostAccountManagement(threadService);
 		let mockProvider = getMockAccountProvider();
@@ -244,20 +240,20 @@ suite('ExtHostAccountManagement', () => {
 
 		// If: I refresh an account for a handle that doesn't exist
 		// Then: It should fail
-		extHost.$refresh(1, mockAccount)
-			.then(() => done('Refresh succeeded when it should have failed'))
-			.then(null, () => {
-				// The provider's clear should not have been called
-				mockProvider.verify(
-					(obj) => obj.refresh(TypeMoq.It.isAny()),
-					TypeMoq.Times.never()
-				);
-			})
-			.then(() => done(), (err) => done(err));
+		try {
+			await extHost.$refresh(1, mockAccount);
+			assert.fail('Refresh succeeded when it should have failed');
+		} catch (e) {
+			// The provider's clear should not have been called
+			mockProvider.verify(
+				(obj) => obj.refresh(TypeMoq.It.isAny()),
+				TypeMoq.Times.never()
+			);
+		}
 	});
 
 	// GETALLACCOUNTS TESTS ///////////////////////////////////////////////////////
-	test('GetAllAccounts - Success', (done) => {
+	test('GetAllAccounts - Success', () => {
 		let mockAccountProviderMetadata = {
 			id: 'azure',
 			displayName: 'Azure'
@@ -305,7 +301,7 @@ suite('ExtHostAccountManagement', () => {
 		extHost.$registerAccountProvider(mockAccountProviderMetadata, new AccountProviderStub());
 
 		// If: I get all accounts
-		extHost.$getAllAccounts()
+		return extHost.$getAllAccounts()
 			.then((accounts) => {
 				// Then: The call should have been passed to the account management service
 				mockAccountManagementService.verify(
@@ -316,25 +312,24 @@ suite('ExtHostAccountManagement', () => {
 				assert.ok(Array.isArray(accounts));
 				assert.equal(accounts.length, expectedAccounts.length);
 				assert.deepStrictEqual(accounts, expectedAccounts);
-			})
-			.then(() => done(), (err) => done(err));
+			});
 	});
 
-	test('GetAllAccounts - No account providers', (done) => {
+	test('GetAllAccounts - No account providers', async () => {
 		// Setup: Create ext host account management with no registered account providers
 		let extHost = new ExtHostAccountManagement(threadService);
 
 		// If: I get all accounts
 		// Then: It should throw
-		assert.throws(
-			() => extHost.$getAllAccounts(),
-			(error) => {
-				return error.message === 'No account providers registered.';
-			});
-		done();
+		try {
+			await extHost.$getAllAccounts();
+			assert.fail('Succedded when should have failed');
+		} catch (e) {
+			assert(e.message === 'No account providers registered.');
+		}
 	});
 
-	test('GetSecurityToken - Success', (done) => {
+	test('GetSecurityToken - Success', () => {
 		let mockAccountProviderMetadata = {
 			id: 'azure',
 			displayName: 'Azure'
@@ -365,15 +360,14 @@ suite('ExtHostAccountManagement', () => {
 		let extHost = new ExtHostAccountManagement(threadService);
 		extHost.$registerAccountProvider(mockAccountProviderMetadata, new AccountProviderStub());
 
-		extHost.$getAllAccounts()
+		return extHost.$getAllAccounts()
 			.then((accounts) => {
 				// If: I get security token it will not throw
 				return extHost.$getSecurityToken(mockAccount1, AzureResource.ResourceManagement);
-			}
-			).then(() => done(), (err) => done(new Error(err)));
+			});
 	});
 
-	test('GetSecurityToken - Account not found', (done) => {
+	test('GetSecurityToken - Account not found', async () => {
 		let mockAccountProviderMetadata = {
 			id: 'azure',
 			displayName: 'Azure'
@@ -419,16 +413,11 @@ suite('ExtHostAccountManagement', () => {
 			isStale: false
 		};
 
-		extHost.$getAllAccounts()
-			.then(accounts => {
-				return extHost.$getSecurityToken(mockAccount2, AzureResource.ResourceManagement);
-			})
-			.then((noError) => {
-				done(new Error('Expected getSecurityToken to throw'));
-			}, (err) => {
-				// Expected error caught
-				done();
-			});
+		await extHost.$getAllAccounts();
+		try {
+			await extHost.$getSecurityToken(mockAccount2, AzureResource.ResourceManagement);
+			assert.fail('Expected getSecurityToken to throw');
+		} catch (e) { }
 	});
 });
 

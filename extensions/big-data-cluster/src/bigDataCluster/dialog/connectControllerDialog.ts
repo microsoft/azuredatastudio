@@ -4,15 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
 import { HdfsDialogBase, HdfsDialogModelBase, HdfsDialogProperties } from './hdfsDialogBase';
 import { ClusterController } from '../controller/clusterControllerApi';
+import * as loc from '../localizedConstants';
 
-const localize = nls.loadMessageBundle();
 
 export class ConnectControllerDialog extends HdfsDialogBase<HdfsDialogProperties, ClusterController> {
 	constructor(model: ConnectControllerModel) {
-		super(localize('connectController.dialog.title', "Connect to Controller (preview)"), model);
+		super(loc.connectToController, model);
 	}
 
 	protected getMainSectionComponents(): (azdata.FormComponentGroup | azdata.FormComponent)[] {

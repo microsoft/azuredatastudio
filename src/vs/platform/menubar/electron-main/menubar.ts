@@ -284,14 +284,12 @@ export class Menubar {
 		this.setMenuById(editMenu, 'Edit');
 		menubar.append(editMenuItem);
 
-		// {{SQL CARBON EDIT}} - Disable unused menus
-		// // Selection
-		// const selectionMenu = new Menu();
-		// const selectionMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mSelection', comment: ['&& denotes a mnemonic'] }, "&&Selection")), submenu: selectionMenu });
+		// Selection
+		/*const selectionMenu = new Menu();
+		const selectionMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mSelection', comment: ['&& denotes a mnemonic'] }, "&&Selection")), submenu: selectionMenu });
 
-		// this.setMenuById(selectionMenu, 'Selection');
-		// menubar.append(selectionMenuItem);
-		// {{SQL CARBON EDIT}} - End
+		this.setMenuById(selectionMenu, 'Selection');
+		menubar.append(selectionMenuItem);  {{SQL CARBON EDIT}} - Disable unused menus */
 
 		// View
 		const viewMenu = new Menu();
@@ -300,32 +298,26 @@ export class Menubar {
 		this.setMenuById(viewMenu, 'View');
 		menubar.append(viewMenuItem);
 
-		// {{SQL CARBON EDIT}} - Disable unused menus
-		// // Go
-		// const gotoMenu = new Menu();
-		// const gotoMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mGoto', comment: ['&& denotes a mnemonic'] }, "&&Go")), submenu: gotoMenu });
+		// Go
+		/* const gotoMenu = new Menu();
+		const gotoMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mGoto', comment: ['&& denotes a mnemonic'] }, "&&Go")), submenu: gotoMenu });
 
-		// this.setMenuById(gotoMenu, 'Go');
-		// menubar.append(gotoMenuItem);
-		// {{SQL CARBON EDIT}} - End
+		this.setMenuById(gotoMenu, 'Go');
+		menubar.append(gotoMenuItem);  {{SQL CARBON EDIT}} - Disable unused menus */
 
-		// {{SQL CARBON EDIT}} - Disable unused menus
-		// // Debug
-		// const debugMenu = new Menu();
-		// const debugMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mDebug', comment: ['&& denotes a mnemonic'] }, "&&Debug")), submenu: debugMenu });
+		// Debug
+		/*const debugMenu = new Menu();
+		const debugMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mRun', comment: ['&& denotes a mnemonic'] }, "&&Run")), submenu: debugMenu });
 
-		// this.setMenuById(debugMenu, 'Debug');
-		// menubar.append(debugMenuItem);
-		// {{SQL CARBON EDIT}} - End
+		this.setMenuById(debugMenu, 'Run');
+		menubar.append(debugMenuItem); {{SQL CARBON EDIT}} - Disable unused menus */
 
-		// {{SQL CARBON EDIT}} - Disable unused menus
-		// // Terminal
-		// const terminalMenu = new Menu();
-		// const terminalMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mTerminal', comment: ['&& denotes a mnemonic'] }, "&&Terminal")), submenu: terminalMenu });
+		// Terminal
+		/*const terminalMenu = new Menu();
+		const terminalMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mTerminal', comment: ['&& denotes a mnemonic'] }, "&&Terminal")), submenu: terminalMenu });
 
-		// this.setMenuById(terminalMenu, 'Terminal');
-		// menubar.append(terminalMenuItem);
-		// {{SQL CARBON EDIT}} - End
+		this.setMenuById(terminalMenu, 'Terminal');
+		menubar.append(terminalMenuItem);  {{SQL CARBON EDIT}} - Disable unused menus */
 
 		// Mac: Window
 		let macWindowMenuItem: MenuItem | undefined;
@@ -500,7 +492,7 @@ export class Menubar {
 				}).length > 0;
 
 				if (!success) {
-					this.workspacesHistoryMainService.removeFromRecentlyOpened([revivedUri]);
+					this.workspacesHistoryMainService.removeRecentlyOpened([revivedUri]);
 				}
 			}
 		}, false));
@@ -560,8 +552,8 @@ export class Menubar {
 					label: this.mnemonicLabel(nls.localize('miCheckForUpdates', "Check for &&Updates...")), click: () => setTimeout(() => {
 						this.reportMenuActionTelemetry('CheckForUpdate');
 
-						const focusedWindow = BrowserWindow.getFocusedWindow();
-						const context = focusedWindow ? { windowId: focusedWindow.id } : null;
+						const window = this.windowsMainService.getLastActiveWindow();
+						const context = window && `window:${window.id}`; // sessionId
 						this.updateService.checkForUpdates(context);
 					}, 0)
 				})];

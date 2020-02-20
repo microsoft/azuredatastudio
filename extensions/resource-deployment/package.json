@@ -13,7 +13,8 @@
     "azdata": ">=1.6.0"
   },
   "activationEvents": [
-    "*"
+    "onCommand:azdata.resource.deploy",
+    "onCommand:azdata.openNotebookInputDialog"
   ],
   "main": "./out/main",
   "repository": {
@@ -29,15 +30,9 @@
       {
         "title": "%deployment.configuration.title%",
         "properties": {
-          "deployment.azdataPipInstallUri": {
+          "deployment.azdataInstallLocation": {
             "type": "string",
-            "default": "https://aka.ms/azdata",
-            "description": "%azdata-pip-install-uri-description%"
-          },
-          "deployment.azdataPipInstallArgs": {
-            "type": "string",
-            "default": "",
-            "description": "%azdata-pip-install-args-description%"
+            "description": "%azdata-install-location-description%"
           }
         }
       }
@@ -248,7 +243,8 @@
             },
             "requiredTools": [
               {
-                "name": "kubectl"
+                "name": "kubectl",
+                "version": "1.13.0"
               },
               {
                 "name": "azure-cli"
@@ -304,7 +300,7 @@
             },
             {
               "text": "%bdc-agreement-azdata-eula%",
-              "url": "https://aka.ms/azdata-eula"
+              "url": "https://aka.ms/eula-azdata-en"
             }
           ]
         }
@@ -344,7 +340,7 @@
             "when": "version=sql2017"
           },
           {
-            "webPageUrl": "https://www.microsoft.com/evalcenter/evaluate-sql-server-2019-rc",
+            "downloadUrl": "https://go.microsoft.com/fwlink/?linkid=866662",
             "requiredTools": [],
             "when": "version=sql2019"
           }
@@ -353,16 +349,22 @@
     ]
   },
   "dependencies": {
+    "linux-release-info": "^2.0.0",
     "promisify-child-process": "^3.1.1",
-    "sudo-prompt": "^9.0.0",
+    "sudo-prompt": "9.1.1",
     "vscode-nls": "^4.0.0",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
+    "@types/mocha": "^5.2.5",
     "@types/yamljs": "0.2.30",
+    "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "typemoq": "^2.1.0",
-    "vscode": "^1.1.26"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.4"
+  },
+  "resolutions": {
+      "esprima": "^4.0.0"
   }
 }

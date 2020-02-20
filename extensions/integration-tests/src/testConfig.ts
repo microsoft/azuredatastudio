@@ -63,8 +63,19 @@ export const EnvironmentVariable_AZURE_SERVER: string = 'AZURE_SQL';
 export const EnvironmentVariable_AZURE_USERNAME: string = 'AZURE_SQL_USERNAME';
 export const EnvironmentVariable_AZURE_PASSWORD: string = 'AZURE_SQL_PWD';
 export const EnvironmentVariable_PYTHON_PATH: string = 'PYTHON_TEST_PATH';
+export const EnvironmentVariable_STANDALONE_SERVER_2019: string = 'STANDALONE_SQL_2019';
+export const EnvironmentVariable_STANDALONE_USERNAME_2019: string = 'STANDALONE_SQL_USERNAME_2019';
+export const EnvironmentVariable_STANDALONE_PASSWORD_2019: string = 'STANDALONE_SQL_PWD_2019';
 
-export class TestServerProfile {
+export interface TestConnectionInfo {
+	readonly serverName: string;
+	readonly database: string;
+	readonly userName: string;
+	readonly password: string;
+	readonly providerName: string;
+	readonly authenticationTypeName: string;
+}
+export class TestServerProfile implements TestConnectionInfo {
 	constructor(private _profile: ITestServerProfile) { }
 	public get serverName(): string { return this._profile.serverName; }
 	public get userName(): string { return this._profile.userName; }
@@ -113,6 +124,17 @@ let TestingServers: TestServerProfile[] = [
 			provider: ConnectionProvider.SQLServer,
 			version: '2019',
 			engineType: EngineType.BigDataCluster
+		}),
+	new TestServerProfile(
+		{
+			serverName: getConfigValue(EnvironmentVariable_STANDALONE_SERVER_2019),
+			userName: getConfigValue(EnvironmentVariable_STANDALONE_USERNAME_2019),
+			password: getConfigValue(EnvironmentVariable_STANDALONE_PASSWORD_2019),
+			authenticationType: AuthenticationType.SqlLogin,
+			database: 'master',
+			provider: ConnectionProvider.SQLServer,
+			version: '2019',
+			engineType: EngineType.Standalone
 		})
 ];
 
@@ -130,9 +152,9 @@ export async function getAzureServer(): Promise<TestServerProfile> {
 	return servers.filter(s => s.engineType === EngineType.Azure)[0];
 }
 
-export async function getStandaloneServer(): Promise<TestServerProfile> {
+export async function getStandaloneServer(version: '2017' | '2019' = '2017'): Promise<TestServerProfile> {
 	let servers = await getTestingServers();
-	return servers.filter(s => s.version === '2017' && s.engineType === EngineType.Standalone)[0];
+	return servers.filter(s => s.version === version && s.engineType === EngineType.Standalone)[0];
 }
 
 export async function getBdcServer(): Promise<TestServerProfile> {

@@ -5,9 +5,9 @@
 
 import * as assert from 'assert';
 import { ComponentBase, ContainerBase, ItemDescriptor } from 'sql/workbench/browser/modelComponents/componentBase';
-import { IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { ModelStore } from 'sql/workbench/browser/modelComponents/modelStore';
 import { ChangeDetectorRef } from '@angular/core';
+import { IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 
 
 class TestComponent extends ComponentBase {
@@ -64,7 +64,7 @@ suite('ComponentBase Tests', () => {
 		testContainer = new TestContainer(modelStore, 'testContainer');
 	});
 
-	test('Component validation runs external validations stored in the model store', done => {
+	test('Component validation runs external validations stored in the model store', () => {
 		assert.equal(testComponent.valid, true, 'Test component validity did not default to true');
 		let validationCalls = 0;
 		modelStore.registerValidationCallback(componentId => {
@@ -72,19 +72,14 @@ suite('ComponentBase Tests', () => {
 			return Promise.resolve(false);
 		});
 
-		testComponent.validate().then(valid => {
-			try {
-				assert.equal(validationCalls, 1, 'External validation was not called once');
-				assert.equal(valid, false, 'Validate call did not return correct value from the external validation');
-				assert.equal(testComponent.valid, false, 'Validate call did not update the component valid property');
-				done();
-			} catch (err) {
-				done(err);
-			}
-		}, err => done(err));
+		return testComponent.validate().then(valid => {
+			assert.equal(validationCalls, 1, 'External validation was not called once');
+			assert.equal(valid, false, 'Validate call did not return correct value from the external validation');
+			assert.equal(testComponent.valid, false, 'Validate call did not update the component valid property');
+		});
 	});
 
-	test('Component validation runs default component validations', done => {
+	test('Component validation runs default component validations', () => {
 		assert.equal(testComponent.valid, true, 'Test component validity did not default to true');
 		let validationCalls = 0;
 		testComponent.addValidation(() => {
@@ -92,29 +87,23 @@ suite('ComponentBase Tests', () => {
 			return false;
 		});
 
-		testComponent.validate().then(valid => {
-			try {
-				assert.equal(validationCalls, 1, 'Default validation was not called once');
-				assert.equal(valid, false, 'Validate call did not return correct value from the default validation');
-				assert.equal(testComponent.valid, false, 'Validate call did not update the component valid property');
-				done();
-			} catch (err) {
-				done(err);
-			}
-		}, err => done(err));
+		return testComponent.validate().then(valid => {
+			assert.equal(validationCalls, 1, 'Default validation was not called once');
+			assert.equal(valid, false, 'Validate call did not return correct value from the default validation');
+			assert.equal(testComponent.valid, false, 'Validate call did not update the component valid property');
+		});
 	});
 
-	test('Container validation reflects child component validity', done => {
+	test('Container validation reflects child component validity', () => {
 		assert.equal(testContainer.valid, true, 'Test container validity did not default to true');
 		testContainer.addToContainer(testComponent.descriptor, undefined);
 		testComponent.addValidation(() => false);
-		testComponent.validate().then(() => {
-			testContainer.validate().then(valid => {
+		return testComponent.validate().then(() => {
+			return testContainer.validate().then(valid => {
 				assert.equal(valid, false, 'Validate call did not return correct value for container child validation');
 				assert.equal(testContainer.valid, false, 'Validate call did not update the container valid property');
-				done();
-			}, err => done(err));
-		}, err => done(err));
+			});
+		});
 	});
 
 	test('Container child validity changes cause the parent container validity to change', done => {

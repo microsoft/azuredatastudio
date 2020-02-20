@@ -316,6 +316,7 @@ const identifier: IJSONSchema = {
 
 const runOptions: IJSONSchema = {
 	type: 'object',
+	additionalProperties: false,
 	properties: {
 		reevaluateOnRerun: {
 			type: 'boolean',
@@ -327,6 +328,11 @@ const runOptions: IJSONSchema = {
 			enum: ['default', 'folderOpen'],
 			description: nls.localize('JsonSchema.tasks.runOn', 'Configures when the task should be run. If set to folderOpen, then the task will be run automatically when the folder is opened.'),
 			default: 'default'
+		},
+		instanceLimit: {
+			type: 'number',
+			description: nls.localize('JsonSchema.tasks.instanceLimit', 'The number of instances of the task that are allowed to run simultaneously.'),
+			default: 1
 		},
 	},
 	description: nls.localize('JsonSchema.tasks.runOptions', 'The task\'s run related options')
@@ -569,7 +575,7 @@ export function updateProblemMatchers() {
 	try {
 		let matcherIds = ProblemMatcherRegistry.keys().map(key => '$' + key);
 		definitions.problemMatcherType2.oneOf![0].enum = matcherIds;
-		(definitions.problemMatcherType2.oneOf![2].items as IJSONSchema).anyOf![1].enum = matcherIds;
+		(definitions.problemMatcherType2.oneOf![2].items as IJSONSchema).anyOf![0].enum = matcherIds;
 	} catch (err) {
 		console.log('Installing problem matcher ids failed');
 	}

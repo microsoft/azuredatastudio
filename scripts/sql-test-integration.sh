@@ -10,6 +10,7 @@ else
 	ROOT=$(dirname $(dirname $(readlink -f $0)))
 	VSCODEUSERDATADIR=`mktemp -d 2>/dev/null`
 	VSCODEEXTDIR=`mktemp -d 2>/dev/null`
+	LINUX_NO_SANDBOX="--no-sandbox" # Electron 6 introduces a chrome-sandbox that requires root to run. This can fail. Disable sandbox via --no-sandbox.
 fi
 
 # Default to only running stable tests if test grep isn't set
@@ -42,10 +43,10 @@ else
 	export PYTHON_TEST_PATH=$VSCODEUSERDATADIR/TestPythonInstallation
 	echo $PYTHON_TEST_PATH
 
-	$INTEGRATION_TEST_ELECTRON_PATH --nogpu --extensionDevelopmentPath=$ROOT/extensions/notebook --extensionTestsPath=$ROOT/extensions/notebook/out/integrationTest --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --skip-getting-started --disable-inspect
+	"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX --nogpu --extensionDevelopmentPath=$ROOT/extensions/notebook --extensionTestsPath=$ROOT/extensions/notebook/out/integrationTest --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --skip-getting-started --disable-inspect
 fi
 
-$INTEGRATION_TEST_ELECTRON_PATH --nogpu --extensionDevelopmentPath=$ROOT/extensions/admin-pack \
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX --nogpu --extensionDevelopmentPath=$ROOT/extensions/admin-pack \
 --extensionDevelopmentPath=$ROOT/extensions/admin-tool-ext-win \
 --extensionDevelopmentPath=$ROOT/extensions/agent \
 --extensionDevelopmentPath=$ROOT/extensions/azurecore \

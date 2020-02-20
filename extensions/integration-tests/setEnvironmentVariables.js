@@ -96,6 +96,9 @@ const SECRET_BDC_SERVER_PASSWORD = 'ads-integration-test-bdc-server-password';
 const SECRET_STANDALONE_SERVER = 'ads-integration-test-standalone-server';
 const SECRET_STANDALONE_SERVER_USERNAME = 'ads-integration-test-standalone-server-username';
 const SECRET_STANDALONE_SERVER_PASSWORD = 'ads-integration-test-standalone-server-password';
+const SECRET_STANDALONE_SERVER_2019 = 'ads-integration-test-standalone-server-2019';
+const SECRET_STANDALONE_SERVER_USERNAME_2019 = 'ads-integration-test-standalone-server-username-2019';
+const SECRET_STANDALONE_SERVER_PASSWORD_2019 = 'ads-integration-test-standalone-server-password-2019';
 
 // Environment variable names
 const ENVAR_AZURE_SERVER = 'AZURE_SQL';
@@ -107,6 +110,9 @@ const ENVAR_BDC_SERVER_PASSWORD = 'BDC_BACKEND_PWD';
 const ENVAR_STANDALONE_SERVER = 'STANDALONE_SQL';
 const ENVAR_STANDALONE_SERVER_USERNAME = 'STANDALONE_SQL_USERNAME';
 const ENVAR_STANDALONE_SERVER_PASSWORD = 'STANDALONE_SQL_PWD';
+const ENVAR_STANDALONE_SERVER_2019 = 'STANDALONE_SQL_2019';
+const ENVAR_STANDALONE_SERVER_USERNAME_2019 = 'STANDALONE_SQL_USERNAME_2019';
+const ENVAR_STANDALONE_SERVER_PASSWORD_2019 = 'STANDALONE_SQL_PWD_2019';
 const ENVAR_PYTHON_INSTALL_PATH = 'PYTHON_TEST_PATH';
 const ENVAR_RUN_PYTHON3_TEST = 'RUN_PYTHON3_TEST';
 const ENVAR_RUN_PYSPARK_TEST = 'RUN_PYSPARK_TEST';
@@ -122,6 +128,9 @@ SecretEnVarMapping.push([SECRET_BDC_SERVER_USERNAME, ENVAR_BDC_SERVER_USERNAME])
 SecretEnVarMapping.push([SECRET_STANDALONE_SERVER, ENVAR_STANDALONE_SERVER]);
 SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_PASSWORD, ENVAR_STANDALONE_SERVER_PASSWORD]);
 SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_USERNAME, ENVAR_STANDALONE_SERVER_USERNAME]);
+SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_2019, ENVAR_STANDALONE_SERVER_2019]);
+SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_USERNAME_2019, ENVAR_STANDALONE_SERVER_USERNAME_2019]);
+SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_PASSWORD_2019, ENVAR_STANDALONE_SERVER_PASSWORD_2019]);
 
 // Set the values that are not stored in AKV here
 process.env[ENVAR_PYTHON_INSTALL_PATH] = NOTEBOOK_PYTHON_INSTALL_PATH;
@@ -131,7 +140,7 @@ process.env[ENVAR_RUN_PYSPARK_TEST] = '0';
 const promises = [];
 
 // Open up a web browser to the login page so the user doesn't have to copy the URL manually
-const start = (process.platform == 'darwin'? 'open': process.platform == 'win32'? 'start': 'xdg-open');
+const start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
 child_process.exec(`${start} https://microsoft.com/devicelogin`);
 
 // Fetch the values from AKV

@@ -1,18 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/big-data-cluster/package" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/big-data-cluster/package" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="description">
         <source xml:lang="en">Support for managing SQL Server Big Data Clusters</source>
-        <target state="translated">Suporte para gerenciar clusters de Big data do SQL Server</target>
+        <target state="translated">Suporte para gerenciar clusters de Big Data do SQL Server</target>
       </trans-unit>
       <trans-unit id="text.sqlServerBigDataClusters">
         <source xml:lang="en">SQL Server Big Data Clusters</source>
-        <target state="translated">Clusters de Big data do SQL Server</target>
+        <target state="translated">Clusters de Big Data do SQL Server</target>
       </trans-unit>
       <trans-unit id="command.addController.title">
         <source xml:lang="en">Connect to Controller</source>
-        <target state="translated">Conectar ao controlador</target>
+        <target state="translated">Conectar ao Controlador</target>
       </trans-unit>
       <trans-unit id="command.deleteController.title">
         <source xml:lang="en">Delete</source>
@@ -32,15 +32,23 @@
       </trans-unit>
       <trans-unit id="command.refreshmount.title">
         <source xml:lang="en">Refresh Mount</source>
-        <target state="translated">Atualizar a Montagem</target>
+        <target state="translated">Atualizar Montagem</target>
       </trans-unit>
       <trans-unit id="command.deletemount.title">
         <source xml:lang="en">Delete Mount</source>
-        <target state="translated">Excluir a Montagem</target>
+        <target state="translated">Excluir Montagem</target>
+      </trans-unit>
+      <trans-unit id="bdc.configuration.title">
+        <source xml:lang="en">Big Data Cluster</source>
+        <target state="translated">Cluster de Big Data</target>
+      </trans-unit>
+      <trans-unit id="bdc.ignoreSslVerification.desc">
+        <source xml:lang="en">Ignore SSL verification errors against SQL Server Big Data Cluster endpoints such as HDFS, Spark, and Controller if true</source>
+        <target state="translated">Ignorar os erros de verificação do SSL em relação aos pontos de extremidade do Cluster de Big Data do SQL Server, como o HDFS, o Spark e o Controlador, se for true</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/utils" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/utils" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="state.creating">
         <source xml:lang="en">Creating</source>
@@ -58,37 +66,97 @@
         <source xml:lang="en">Deleting</source>
         <target state="translated">Excluindo</target>
       </trans-unit>
-      <trans-unit id="state.waitingForDeletion">
-        <source xml:lang="en">Waiting For Deletion</source>
-        <target state="translated">Aguardando a Exclusão</target>
-      </trans-unit>
       <trans-unit id="state.deleted">
         <source xml:lang="en">Deleted</source>
         <target state="translated">Excluído</target>
+      </trans-unit>
+      <trans-unit id="state.applyingUpgrade">
+        <source xml:lang="en">Applying Upgrade</source>
+        <target state="translated">Aplicando Atualização</target>
       </trans-unit>
       <trans-unit id="state.upgrading">
         <source xml:lang="en">Upgrading</source>
         <target state="translated">Atualizando</target>
       </trans-unit>
-      <trans-unit id="state.waitingForUpgrade">
-        <source xml:lang="en">Waiting For Upgrade</source>
-        <target state="translated">Aguardando o Upgrade</target>
+      <trans-unit id="state.applyingmanagedupgrade">
+        <source xml:lang="en">Applying Managed Upgrade</source>
+        <target state="translated">Aplicando Atualização Gerenciada</target>
+      </trans-unit>
+      <trans-unit id="state.managedUpgrading">
+        <source xml:lang="en">Managed Upgrading</source>
+        <target state="translated">Atualização Gerenciada</target>
+      </trans-unit>
+      <trans-unit id="state.rollback">
+        <source xml:lang="en">Rollback</source>
+        <target state="translated">Reverter</target>
+      </trans-unit>
+      <trans-unit id="state.rollbackInProgress">
+        <source xml:lang="en">Rollback In Progress</source>
+        <target state="translated">Reversão Em Andamento</target>
+      </trans-unit>
+      <trans-unit id="state.rollbackComplete">
+        <source xml:lang="en">Rollback Complete</source>
+        <target state="translated">Reversão Concluída</target>
       </trans-unit>
       <trans-unit id="state.error">
         <source xml:lang="en">Error</source>
         <target state="translated">Erro</target>
       </trans-unit>
+      <trans-unit id="state.creatingSecrets">
+        <source xml:lang="en">Creating Secrets</source>
+        <target state="translated">Criando Segredos</target>
+      </trans-unit>
+      <trans-unit id="state.waitingForSecrets">
+        <source xml:lang="en">Waiting For Secrets</source>
+        <target state="translated">Esperando Os Segredos</target>
+      </trans-unit>
+      <trans-unit id="state.creatingGroups">
+        <source xml:lang="en">Creating Groups</source>
+        <target state="translated">Criando Grupos</target>
+      </trans-unit>
+      <trans-unit id="state.waitingForGroups">
+        <source xml:lang="en">Waiting For Groups</source>
+        <target state="translated">Aguardando Grupos</target>
+      </trans-unit>
+      <trans-unit id="state.creatingResources">
+        <source xml:lang="en">Creating Resources</source>
+        <target state="translated">Criando Recursos</target>
+      </trans-unit>
+      <trans-unit id="state.waitingForResources">
+        <source xml:lang="en">Waiting For Resources</source>
+        <target state="translated">Esperando Recursos</target>
+      </trans-unit>
+      <trans-unit id="state.creatingKerberosDelegationSetup">
+        <source xml:lang="en">Creating Kerberos Delegation Setup</source>
+        <target state="translated">Criando Configuração de Delegação do Kerberos</target>
+      </trans-unit>
+      <trans-unit id="state.waitingForKerberosDelegationSetup">
+        <source xml:lang="en">Waiting For Kerberos Delegation Setup</source>
+        <target state="translated">Aguardando Configuração de Delegação do Kerberos</target>
+      </trans-unit>
+      <trans-unit id="state.waitingForDeletion">
+        <source xml:lang="en">Waiting For Deletion</source>
+        <target state="translated">Aguardando Exclusão</target>
+      </trans-unit>
+      <trans-unit id="state.waitingForUpgrade">
+        <source xml:lang="en">Waiting For Upgrade</source>
+        <target state="translated">Aguardando Upgrade</target>
+      </trans-unit>
+      <trans-unit id="state.upgradePaused">
+        <source xml:lang="en">Upgrade Paused</source>
+        <target state="translated">Atualização em Pausa</target>
+      </trans-unit>
       <trans-unit id="state.running">
         <source xml:lang="en">Running</source>
-        <target state="translated">Em execução</target>
+        <target state="translated">Executando</target>
       </trans-unit>
       <trans-unit id="endpoint.appproxy">
         <source xml:lang="en">Application Proxy</source>
-        <target state="translated">Proxy de aplicativo</target>
+        <target state="translated">Proxy de Aplicativo</target>
       </trans-unit>
       <trans-unit id="endpoint.controller">
         <source xml:lang="en">Cluster Management Service</source>
-        <target state="translated">Serviço de gerenciamento de cluster</target>
+        <target state="translated">Serviço de Gerenciamento de Cluster</target>
       </trans-unit>
       <trans-unit id="endpoint.gateway">
         <source xml:lang="en">Gateway to access HDFS files, Spark</source>
@@ -96,19 +164,19 @@
       </trans-unit>
       <trans-unit id="endpoint.managementproxy">
         <source xml:lang="en">Management Proxy</source>
-        <target state="translated">Proxy de gerenciamento</target>
+        <target state="translated">Proxy de Gerenciamento</target>
       </trans-unit>
       <trans-unit id="endpoint.mgmtproxy">
         <source xml:lang="en">Management Proxy</source>
-        <target state="translated">Proxy de gerenciamento</target>
+        <target state="translated">Proxy de Gerenciamento</target>
       </trans-unit>
       <trans-unit id="endpoint.sqlServerEndpoint">
         <source xml:lang="en">SQL Server Master Instance Front-End</source>
-        <target state="translated">Front-end da instância mestra do SQL Server</target>
+        <target state="translated">Front-end da Instância Mestra do SQL Server</target>
       </trans-unit>
       <trans-unit id="endpoint.grafana">
         <source xml:lang="en">Metrics Dashboard</source>
-        <target state="translated">Painel de métricas</target>
+        <target state="translated">Painel de Métricas</target>
       </trans-unit>
       <trans-unit id="endpoint.kibana">
         <source xml:lang="en">Log Search Dashboard</source>
@@ -120,11 +188,11 @@
       </trans-unit>
       <trans-unit id="endpoint.sparkHistory">
         <source xml:lang="en">Spark Jobs Management and Monitoring Dashboard</source>
-        <target state="translated">Painel de gerenciamento e monitoramento de trabalhos do Spark</target>
+        <target state="translated">Painel de Gerenciamento e Monitoramento de Trabalhos do Spark</target>
       </trans-unit>
       <trans-unit id="endpoint.webhdfs">
         <source xml:lang="en">HDFS File System Proxy</source>
-        <target state="translated">Proxy do sistema de arquivos HDFS</target>
+        <target state="translated">Proxy do Sistema de Arquivos HDFS</target>
       </trans-unit>
       <trans-unit id="endpoint.livy">
         <source xml:lang="en">Proxy for running Spark statements, jobs, applications</source>
@@ -144,7 +212,7 @@
       </trans-unit>
       <trans-unit id="service.control">
         <source xml:lang="en">Control</source>
-        <target state="translated">Control</target>
+        <target state="translated">Controle</target>
       </trans-unit>
       <trans-unit id="service.gateway">
         <source xml:lang="en">Gateway</source>
@@ -162,9 +230,81 @@
         <source xml:lang="en">Unhealthy</source>
         <target state="translated">Não íntegro</target>
       </trans-unit>
+      <trans-unit id="endpointsError">
+        <source xml:lang="en">Unexpected error retrieving BDC Endpoints: {0}</source>
+        <target state="translated">Erro inesperado ao recuperar os pontos de Extremidade do BDC: {0}</target>
+      </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="basicAuthName">
+        <source xml:lang="en">Basic</source>
+        <target state="translated">Básico</target>
+      </trans-unit>
+      <trans-unit id="integratedAuthName">
+        <source xml:lang="en">Windows Authentication</source>
+        <target state="translated">Autenticação do Windows</target>
+      </trans-unit>
+      <trans-unit id="mount.hdfs.loginerror1">
+        <source xml:lang="en">Login to controller failed</source>
+        <target state="translated">Falha ao entrar no controlador</target>
+      </trans-unit>
+      <trans-unit id="mount.hdfs.loginerror2">
+        <source xml:lang="en">Login to controller failed: {0}</source>
+        <target state="translated">Falha ao entrar no controlador: {0}</target>
+      </trans-unit>
+      <trans-unit id="err.controller.username.required">
+        <source xml:lang="en">Username is required</source>
+        <target state="translated">O nome de usuário é obrigatório</target>
+      </trans-unit>
+      <trans-unit id="err.controller.password.required">
+        <source xml:lang="en">Password is required</source>
+        <target state="translated">A senha é obrigatória</target>
+      </trans-unit>
+      <trans-unit id="textUrlLower">
+        <source xml:lang="en">url</source>
+        <target state="translated">URL</target>
+      </trans-unit>
+      <trans-unit id="textUsernameLower">
+        <source xml:lang="en">username</source>
+        <target state="translated">nome de usuário</target>
+      </trans-unit>
+      <trans-unit id="textPasswordLower">
+        <source xml:lang="en">password</source>
+        <target state="translated">senha</target>
+      </trans-unit>
+      <trans-unit id="textUrlCapital">
+        <source xml:lang="en">Cluster Management URL</source>
+        <target state="translated">URL de Gerenciamento de Cluster</target>
+      </trans-unit>
+      <trans-unit id="textAuthCapital">
+        <source xml:lang="en">Authentication type</source>
+        <target state="translated">Tipo de autenticação</target>
+      </trans-unit>
+      <trans-unit id="textUsernameCapital">
+        <source xml:lang="en">Username</source>
+        <target state="translated">Nome de usuário</target>
+      </trans-unit>
+      <trans-unit id="textPasswordCapital">
+        <source xml:lang="en">Password</source>
+        <target state="translated">Senha</target>
+      </trans-unit>
+      <trans-unit id="hdsf.dialog.connection.section">
+        <source xml:lang="en">Cluster Connection</source>
+        <target state="translated">Conexão de Cluster</target>
+      </trans-unit>
+      <trans-unit id="hdfs.dialog.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">OK</target>
+      </trans-unit>
+      <trans-unit id="hdfs.dialog.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Cancelar</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="error.no.activedirectory">
         <source xml:lang="en">This cluster does not support Windows authentication</source>
@@ -196,19 +336,35 @@
       </trans-unit>
       <trans-unit id="bdc.error.deleteHdfs">
         <source xml:lang="en">Error deleting mount</source>
-        <target state="translated">Erro ao excluir montagem</target>
+        <target state="translated">Erro ao excluir a montagem</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/extension" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/connectControllerDialog" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="connectController.dialog.title">
+        <source xml:lang="en">Connect to Controller (preview)</source>
+        <target state="translated">Conectar ao Controlador (versão prévia)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/commonControls" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="bdc.dashboard.viewDetails">
+        <source xml:lang="en">View Details</source>
+        <target state="translated">Exibir Detalhes</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/dist/extension" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="mount.error.endpointNotFound">
         <source xml:lang="en">Controller endpoint information was not found</source>
         <target state="translated">As informações do ponto de extremidade do controlador não foram encontradas</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.title">
-        <source xml:lang="en">Big Data Cluster Dashboard -</source>
-        <target state="translated">Painel do Cluster de Big Sata –</target>
+        <source xml:lang="en">Big Data Cluster Dashboard (preview) -</source>
+        <target state="translated">Painel de Cluster de Big Data (versão prévia) –</target>
       </trans-unit>
       <trans-unit id="textYes">
         <source xml:lang="en">Yes</source>
@@ -224,7 +380,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/addControllerNode" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/addControllerNode" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="textBigDataClusterControllerWithDots">
         <source xml:lang="en">Add SQL Server Big Data Cluster controller...</source>
@@ -232,11 +388,11 @@
       </trans-unit>
       <trans-unit id="textConnectToController">
         <source xml:lang="en">Connect to Controller</source>
-        <target state="translated">Conectar ao controlador</target>
+        <target state="translated">Conectar ao Controlador</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/loadingControllerNode" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/loadingControllerNode" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="textLoadingWithDots">
         <source xml:lang="en">Loading...</source>
@@ -244,7 +400,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="basicAuthName">
         <source xml:lang="en">Basic</source>
@@ -256,15 +412,15 @@
       </trans-unit>
       <trans-unit id="err.controller.username.required">
         <source xml:lang="en">Username is required</source>
-        <target state="translated">O nome de usuário é necessário</target>
+        <target state="translated">O nome de usuário é obrigatório</target>
       </trans-unit>
       <trans-unit id="err.controller.password.required">
         <source xml:lang="en">Password is required</source>
-        <target state="translated">A senha é necessária</target>
+        <target state="translated">A senha é obrigatória</target>
       </trans-unit>
       <trans-unit id="textAddNewController">
-        <source xml:lang="en">Add New Controller</source>
-        <target state="translated">Adicionar novo controlador</target>
+        <source xml:lang="en">Add New Controller (preview)</source>
+        <target state="translated">Adicionar Novo Controlador (versão prévia)</target>
       </trans-unit>
       <trans-unit id="textUrlLower">
         <source xml:lang="en">url</source>
@@ -272,19 +428,19 @@
       </trans-unit>
       <trans-unit id="textUsernameLower">
         <source xml:lang="en">username</source>
-        <target state="translated">Nome do Usuário</target>
+        <target state="translated">nome de usuário</target>
       </trans-unit>
       <trans-unit id="textPasswordLower">
         <source xml:lang="en">password</source>
-        <target state="translated">Senha</target>
+        <target state="translated">senha</target>
       </trans-unit>
       <trans-unit id="textRememberPassword">
         <source xml:lang="en">Remember Password</source>
-        <target state="translated">Lembrar senha</target>
+        <target state="translated">Lembrar Senha</target>
       </trans-unit>
       <trans-unit id="textUrlCapital">
-        <source xml:lang="en">URL</source>
-        <target state="translated">URL</target>
+        <source xml:lang="en">Cluster Management URL</source>
+        <target state="translated">URL de Gerenciamento de Cluster</target>
       </trans-unit>
       <trans-unit id="textAuthCapital">
         <source xml:lang="en">Authentication type</source>
@@ -292,7 +448,7 @@
       </trans-unit>
       <trans-unit id="textUsernameCapital">
         <source xml:lang="en">Username</source>
-        <target state="translated">Nome do Usuário</target>
+        <target state="translated">Nome de usuário</target>
       </trans-unit>
       <trans-unit id="textPasswordCapital">
         <source xml:lang="en">Password</source>
@@ -308,7 +464,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboard" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboard" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="bdc.dashboard.refreshButton">
         <source xml:lang="en">Refresh</source>
@@ -319,32 +475,32 @@
         <target state="translated">Solucionar problemas</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.overviewNavTitle">
-        <source xml:lang="en">Big data cluster overview</source>
-        <target state="translated">Visão geral do cluster de Big data</target>
+        <source xml:lang="en">Big Data Cluster overview</source>
+        <target state="translated">Visão geral do cluster de Big Data</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.clusterDetails">
         <source xml:lang="en">Cluster Details</source>
-        <target state="translated">Detalhes do cluster</target>
+        <target state="translated">Detalhes do Cluster</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="bdc.dashboard.viewHyperlink">
         <source xml:lang="en">View</source>
-        <target state="translated">Visão</target>
+        <target state="translated">Exibir</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.notAvailable">
         <source xml:lang="en">N/A</source>
-        <target state="translated">N/A</target>
+        <target state="translated">N/D</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.healthStatusDetailsHeader">
         <source xml:lang="en">Health Status Details</source>
-        <target state="translated">Detalhes do Estado de Integridade</target>
+        <target state="translated">Detalhes do Status de Integridade</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.lastUpdated">
         <source xml:lang="en">Last Updated : {0}</source>
-        <target state="translated">Última atualização: {0}</target>
+        <target state="translated">Última Atualização: {0}</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.instanceHeader">
         <source xml:lang="en">Instance</source>
@@ -356,35 +512,35 @@
       </trans-unit>
       <trans-unit id="bdc.dashboard.healthStatusHeader">
         <source xml:lang="en">Health Status</source>
-        <target state="translated">Estado de Integridade</target>
+        <target state="translated">Status de Integridade</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.metricsAndLogsLabel">
         <source xml:lang="en">Metrics and Logs</source>
-        <target state="translated">Métricas e logs</target>
+        <target state="translated">Métricas e Logs</target>
       </trans-unit>
-      <trans-unit id="bdc.dashboard.metricsHeader">
-        <source xml:lang="en">Metrics</source>
-        <target state="translated">Métricas</target>
+      <trans-unit id="bdc.dashboard.nodeMetricsHeader">
+        <source xml:lang="en">Node Metrics</source>
+        <target state="translated">Métricas do Node</target>
+      </trans-unit>
+      <trans-unit id="bdc.dashboard.sqlMetricsHeader">
+        <source xml:lang="en">SQL Metrics</source>
+        <target state="translated">Métricas do SQL</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.logsHeader">
         <source xml:lang="en">Logs</source>
         <target state="translated">Logs</target>
       </trans-unit>
-      <trans-unit id="bdc.dashboard.viewDetails">
-        <source xml:lang="en">View Details</source>
-        <target state="translated">Ver detalhes</target>
-      </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="bdc.dashboard.propertiesHeader">
         <source xml:lang="en">Cluster Properties</source>
-        <target state="translated">Propriedades do cluster</target>
+        <target state="translated">Propriedades do Cluster</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.clusterState">
         <source xml:lang="en">Cluster State :</source>
-        <target state="translated">Estado do cluster:</target>
+        <target state="translated">Estado do Cluster:</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.healthStatus">
         <source xml:lang="en">Health Status :</source>
@@ -392,15 +548,15 @@
       </trans-unit>
       <trans-unit id="bdc.dashboard.overviewHeader">
         <source xml:lang="en">Cluster Overview</source>
-        <target state="translated">Visão geral do cluster</target>
+        <target state="translated">Visão geral do Cluster</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.lastUpdated">
         <source xml:lang="en">Last Updated : {0}</source>
-        <target state="translated">Última atualização: {0}</target>
+        <target state="translated">Última Atualização: {0}</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.serviceNameHeader">
         <source xml:lang="en">Service Name</source>
-        <target state="translated">Nome do serviço</target>
+        <target state="translated">Nome do Serviço</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.stateHeader">
         <source xml:lang="en">State</source>
@@ -408,11 +564,11 @@
       </trans-unit>
       <trans-unit id="bdc.dashboard.healthStatusHeader">
         <source xml:lang="en">Health Status</source>
-        <target state="translated">Estado de Integridade</target>
+        <target state="translated">Status de Integridade</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.endpointsLabel">
         <source xml:lang="en">Service Endpoints</source>
-        <target state="translated">Pontos de extremidade de serviço</target>
+        <target state="translated">Pontos de Extremidade de Serviço</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.serviceHeader">
         <source xml:lang="en">Service</source>
@@ -422,53 +578,41 @@
         <source xml:lang="en">Endpoint</source>
         <target state="translated">Ponto de Extremidade</target>
       </trans-unit>
-      <trans-unit id="bdc.dashboard.viewDetails">
-        <source xml:lang="en">View Details</source>
-        <target state="translated">Ver os Detalhes</target>
+      <trans-unit id="endpointsError">
+        <source xml:lang="en">Unexpected error retrieving BDC Endpoints: {0}</source>
+        <target state="translated">Erro inesperado ao recuperar os pontos de Extremidade do BDC: {0}</target>
+      </trans-unit>
+      <trans-unit id="bdc.dashboard.noConnection">
+        <source xml:lang="en">The dashboard requires a connection. Please click retry to enter your credentials.</source>
+        <target state="translated">O painel requer uma conexão. Clique em tentar novamente para inserir suas credenciais.</target>
+      </trans-unit>
+      <trans-unit id="bdc.dashboard.unexpectedError">
+        <source xml:lang="en">Unexpected error occurred: {0}</source>
+        <target state="translated">Erro inesperado: {0}</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.copyTitle">
         <source xml:lang="en">Copy</source>
         <target state="translated">Copiar</target>
       </trans-unit>
+      <trans-unit id="copiedEndpoint">
+        <source xml:lang="en">Endpoint '{0}' copied to clipboard</source>
+        <target state="translated">Ponto de extremidade '{0}' copiado para a área de transferência</target>
+      </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
-      <trans-unit id="basicAuthName">
-        <source xml:lang="en">Basic</source>
-        <target state="translated">Básico</target>
-      </trans-unit>
-      <trans-unit id="integratedAuthName">
-        <source xml:lang="en">Windows Authentication</source>
-        <target state="translated">Autenticação do Windows</target>
-      </trans-unit>
       <trans-unit id="mount.main.section">
         <source xml:lang="en">Mount Configuration</source>
-        <target state="translated">Configuração da montagem</target>
+        <target state="translated">Configuração da Montagem</target>
       </trans-unit>
-      <trans-unit id="mount.hdfsPath">
+      <trans-unit id="mount.hdfsPath.title">
         <source xml:lang="en">HDFS Path</source>
         <target state="translated">Caminho do HDFS</target>
       </trans-unit>
       <trans-unit id="mount.err.formatting">
         <source xml:lang="en">Bad formatting of credentials at {0}</source>
         <target state="translated">Formatação incorreta de credenciais em {0}</target>
-      </trans-unit>
-      <trans-unit id="mount.hdfs.loginerror1">
-        <source xml:lang="en">Login to controller failed</source>
-        <target state="translated">Falha ao entrar no controlador</target>
-      </trans-unit>
-      <trans-unit id="mount.hdfs.loginerror2">
-        <source xml:lang="en">Login to controller failed: {0}</source>
-        <target state="translated">Falha ao entrar no controlador: {0}</target>
-      </trans-unit>
-      <trans-unit id="err.controller.username.required">
-        <source xml:lang="en">Username is required</source>
-        <target state="translated">O nome de usuário é necessário</target>
-      </trans-unit>
-      <trans-unit id="err.controller.password.required">
-        <source xml:lang="en">Password is required</source>
-        <target state="translated">A senha é necessária</target>
       </trans-unit>
       <trans-unit id="mount.task.name">
         <source xml:lang="en">Mounting HDFS folder on path {0}</source>
@@ -480,7 +624,7 @@
       </trans-unit>
       <trans-unit id="mount.task.complete">
         <source xml:lang="en">Mounting HDFS folder is complete</source>
-        <target state="translated">A montagem da pasta HDFS está concluída</target>
+        <target state="translated">A montagem da pasta do HDFS está concluída</target>
       </trans-unit>
       <trans-unit id="mount.task.inprogress">
         <source xml:lang="en">Mounting is likely to complete, check back later to verify</source>
@@ -494,61 +638,33 @@
         <source xml:lang="en">Unknown error occurred during the mount process</source>
         <target state="translated">Erro desconhecido durante o processo de montagem</target>
       </trans-unit>
-      <trans-unit id="textUrlLower">
-        <source xml:lang="en">url</source>
-        <target state="translated">URL</target>
-      </trans-unit>
-      <trans-unit id="textUsernameLower">
-        <source xml:lang="en">username</source>
-        <target state="translated">Nome do Usuário</target>
-      </trans-unit>
-      <trans-unit id="textPasswordLower">
-        <source xml:lang="en">password</source>
-        <target state="translated">Senha</target>
-      </trans-unit>
-      <trans-unit id="textUrlCapital">
-        <source xml:lang="en">URL</source>
-        <target state="translated">URL</target>
-      </trans-unit>
-      <trans-unit id="textAuthCapital">
-        <source xml:lang="en">Authentication type</source>
-        <target state="translated">Tipo de autenticação</target>
-      </trans-unit>
-      <trans-unit id="textUsernameCapital">
-        <source xml:lang="en">Username</source>
-        <target state="translated">Nome do Usuário</target>
-      </trans-unit>
-      <trans-unit id="textPasswordCapital">
-        <source xml:lang="en">Password</source>
-        <target state="translated">Senha</target>
-      </trans-unit>
-      <trans-unit id="hdsf.dialog.connection.section">
-        <source xml:lang="en">Cluster Connection</source>
-        <target state="translated">Conexão de cluster</target>
-      </trans-unit>
-      <trans-unit id="hdfs.dialog.ok">
-        <source xml:lang="en">OK</source>
-        <target state="translated">OK</target>
-      </trans-unit>
-      <trans-unit id="hdfs.dialog.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">Cancelar</target>
-      </trans-unit>
       <trans-unit id="mount.dialog.title">
-        <source xml:lang="en">Mount HDFS Folder</source>
-        <target state="translated">Montar a Pasta do HDFS</target>
+        <source xml:lang="en">Mount HDFS Folder (preview)</source>
+        <target state="translated">Montar a Pasta do HDFS (versão prévia)</target>
       </trans-unit>
-      <trans-unit id="mount.remoteUri">
+      <trans-unit id="mount.hdfsPath.info">
+        <source xml:lang="en">Path to a new (non-existing) directory which you want to associate with the mount</source>
+        <target state="translated">Caminho para um novo diretório (não existente) que você deseja associar com a montagem</target>
+      </trans-unit>
+      <trans-unit id="mount.remoteUri.title">
         <source xml:lang="en">Remote URI</source>
         <target state="translated">URI remoto</target>
       </trans-unit>
-      <trans-unit id="mount.credentials">
+      <trans-unit id="mount.remoteUri.info">
+        <source xml:lang="en">The URI to the remote data source. Example for ADLS: abfs://fs@saccount.dfs.core.windows.net/</source>
+        <target state="translated">O URI da fonte de dados remota. Exemplo para o ADLS: abfs://fs@saccount.dfs.core.windows.net/</target>
+      </trans-unit>
+      <trans-unit id="mount.credentials.title">
         <source xml:lang="en">Credentials</source>
         <target state="translated">Credenciais</target>
       </trans-unit>
+      <trans-unit id="mount.credentials.info">
+        <source xml:lang="en">Mount credentials for authentication to remote data source for reads</source>
+        <target state="translated">Montar as credenciais para autenticação na fonte de dados remota para leituras</target>
+      </trans-unit>
       <trans-unit id="refreshmount.dialog.title">
         <source xml:lang="en">Refresh Mount</source>
-        <target state="translated">Atualizar a Montagem</target>
+        <target state="translated">Atualizar Montagem</target>
       </trans-unit>
       <trans-unit id="refreshmount.task.name">
         <source xml:lang="en">Refreshing HDFS Mount on path {0}</source>
@@ -560,7 +676,7 @@
       </trans-unit>
       <trans-unit id="deleteMount.dialog.title">
         <source xml:lang="en">Delete Mount</source>
-        <target state="translated">Excluir a Montagem</target>
+        <target state="translated">Excluir Montagem</target>
       </trans-unit>
       <trans-unit id="deletemount.task.name">
         <source xml:lang="en">Deleting HDFS Mount on path {0}</source>
@@ -568,7 +684,7 @@
       </trans-unit>
       <trans-unit id="deletemount.task.submitted">
         <source xml:lang="en">Delete mount request submitted</source>
-        <target state="translated">Excluir a solicitação de montagem enviada</target>
+        <target state="translated">Solicitação de exclusão de montagem enviada</target>
       </trans-unit>
     </body>
   </file>

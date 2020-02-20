@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { TestRPCProtocol } from 'vs/workbench/test/electron-browser/api/testRPCProtocol';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { ExtHostCredentialManagement } from 'sql/workbench/api/common/extHostCredentialManagement';
 import { SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
@@ -14,6 +13,7 @@ import { ICredentialsService } from 'sql/platform/credentials/common/credentials
 import { Credential, CredentialProvider } from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TestCredentialsService, TestCredentialsProvider } from 'sql/platform/credentials/test/common/testCredentialsService';
+import { TestRPCProtocol } from 'vs/workbench/test/browser/api/testRPCProtocol';
 
 const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');
 
@@ -56,7 +56,7 @@ suite('ExtHostCredentialManagement', () => {
 		assert.equal(extHost.getProviderCount(), 1);
 	});
 
-	test('Get Credential Provider - Success', (done) => {
+	test('Get Credential Provider - Success', () => {
 		// Setup: Register a mock credential provider
 		let extHost = new ExtHostCredentialManagement(threadService);
 		let mockCredentialProvider = new TestCredentialsProvider();
@@ -68,7 +68,7 @@ suite('ExtHostCredentialManagement', () => {
 		let credential = 'test_credential';
 		let expectedCredentialId = `${namespaceId}|${credentialId}`;
 		let credProvider: CredentialProvider;
-		extHost.$getCredentialProvider(namespaceId)
+		return extHost.$getCredentialProvider(namespaceId)
 			.then((provider) => {
 				// Then: There should still only be one provider registered
 				assert.equal(extHost.getProviderCount(), 1);
@@ -100,11 +100,10 @@ suite('ExtHostCredentialManagement', () => {
 			.then(() => {
 				// Then: The credential with its namespace should no longer exist
 				assert.strictEqual(mockCredentialProvider.storedCredentials[expectedCredentialId], undefined);
-			})
-			.then(() => done(), (err) => done(err));
+			});
 	});
 
-	test('Get Credential Provider - No Namespace', (done) => {
+	test('Get Credential Provider - No Namespace', async () => {
 		// Setup: Register a mock credential provider
 		let extHost = new ExtHostCredentialManagement(threadService);
 		let mockCredentialProvider = new TestCredentialsProvider();
@@ -112,20 +111,19 @@ suite('ExtHostCredentialManagement', () => {
 
 		// If: I get a credential provider with an invalid namespace ID
 		// Then: I should get an error
-		extHost.$getCredentialProvider(undefined)
-			.then(
-				() => { done('Provider was returned from undefined'); },
-				() => { /* Swallow error, this is success path */ }
-			)
-			.then(() => { return extHost.$getCredentialProvider(null); })
-			.then(
-				() => { done('Provider was returned from null'); },
-				() => { /* Swallow error, this is success path */ }
-			)
-			.then(() => { return extHost.$getCredentialProvider(''); })
-			.then(
-				() => { done('Provider was returned from \'\''); },
-				() => { done(); }
-			);
+		try {
+			await extHost.$getCredentialProvider(undefined);
+			assert.fail('Provider was returned from undefined');
+		} catch (e) { }
+
+		try {
+			await extHost.$getCredentialProvider(null);
+			assert.fail('Provider was returned from null');
+		} catch (e) { }
+
+		try {
+			await extHost.$getCredentialProvider('');
+			assert.fail('Provider was returned from \'\'');
+		} catch (e) { }
 	});
 });

@@ -16,6 +16,7 @@ import * as strings from 'vs/base/common/strings';
 import { ITextAreaWrapper, ITypeData, TextAreaState } from 'vs/editor/browser/controller/textAreaState';
 import { Position } from 'vs/editor/common/core/position';
 import { Selection } from 'vs/editor/common/core/selection';
+import { BrowserFeatures } from 'vs/base/browser/canIUse';
 
 export interface ICompositionData {
 	data: string;
@@ -40,31 +41,20 @@ export interface ClipboardDataToCopy {
 	multicursorText: string[] | null | undefined;
 	text: string;
 	html: string | null | undefined;
+	mode: string | null;
 }
 
 export interface ClipboardStoredMetadata {
 	version: 1;
 	isFromEmptySelection: boolean | undefined;
 	multicursorText: string[] | null | undefined;
+	mode: string | null;
 }
 
 export interface ITextAreaInputHost {
 	getDataToCopy(html: boolean): ClipboardDataToCopy;
 	getScreenReaderContent(currentState: TextAreaState): TextAreaState;
 	deduceModelPosition(viewAnchorPosition: Position, deltaOffset: number, lineFeedCnt: number): Position;
-}
-
-const enum TextAreaInputEventType {
-	none,
-	compositionstart,
-	compositionupdate,
-	compositionend,
-	input,
-	cut,
-	copy,
-	paste,
-	focus,
-	blur
 }
 
 interface CompositionEvent extends UIEvent {
@@ -152,7 +142,6 @@ export class TextAreaInput extends Disposable {
 
 	private readonly _host: ITextAreaInputHost;
 	private readonly _textArea: TextAreaWrapper;
-	private _lastTextAreaEvent: TextAreaInputEventType;
 	private readonly _asyncTriggerCut: RunOnceScheduler;
 
 	private _textAreaState: TextAreaState;
@@ -162,11 +151,10 @@ export class TextAreaInput extends Disposable {
 	private _isDoingComposition: boolean;
 	private _nextCommand: ReadFromTextArea;
 
-	constructor(host: ITextAreaInputHost, textArea: FastDomNode<HTMLTextAreaElement>) {
+	constructor(host: ITextAreaInputHost, private textArea: FastDomNode<HTMLTextAreaElement>) {
 		super();
 		this._host = host;
 		this._textArea = this._register(new TextAreaWrapper(textArea));
-		this._lastTextAreaEvent = TextAreaInputEventType.none;
 		this._asyncTriggerCut = this._register(new RunOnceScheduler(() => this._onCut.fire(), 0));
 
 		this._textAreaState = TextAreaState.EMPTY;
@@ -197,8 +185,6 @@ export class TextAreaInput extends Disposable {
 		}));
 
 		this._register(dom.addDisposableListener(textArea.domNode, 'compositionstart', (e: CompositionEvent) => {
-			this._lastTextAreaEvent = TextAreaInputEventType.compositionstart;
-
 			if (this._isDoingComposition) {
 				return;
 			}
@@ -215,10 +201,10 @@ export class TextAreaInput extends Disposable {
 		/**
 		 * Deduce the typed input from a text area's value and the last observed state.
 		 */
-		const deduceInputFromTextAreaValue = (couldBeEmojiInput: boolean, couldBeTypingAtOffset0: boolean): [TextAreaState, ITypeData] => {
+		const deduceInputFromTextAreaValue = (couldBeEmojiInput: boolean): [TextAreaState, ITypeData] => {
 			const oldState = this._textAreaState;
 			const newState = TextAreaState.readFromTextArea(this._textArea);
-			return [newState, TextAreaState.deduceInput(oldState, newState, couldBeEmojiInput, couldBeTypingAtOffset0)];
+			return [newState, TextAreaState.deduceInput(oldState, newState, couldBeEmojiInput)];
 		};
 
 		/**
@@ -255,10 +241,8 @@ export class TextAreaInput extends Disposable {
 		};
 
 		this._register(dom.addDisposableListener(textArea.domNode, 'compositionupdate', (e: CompositionEvent) => {
-			this._lastTextAreaEvent = TextAreaInputEventType.compositionupdate;
-
 			if (compositionDataInValid(e.locale)) {
-				const [newState, typeInput] = deduceInputFromTextAreaValue(/*couldBeEmojiInput*/false, /*couldBeTypingAtOffset0*/false);
+				const [newState, typeInput] = deduceInputFromTextAreaValue(/*couldBeEmojiInput*/false);
 				this._textAreaState = newState;
 				this._onType.fire(typeInput);
 				this._onCompositionUpdate.fire(e);
@@ -272,11 +256,14 @@ export class TextAreaInput extends Disposable {
 		}));
 
 		this._register(dom.addDisposableListener(textArea.domNode, 'compositionend', (e: CompositionEvent) => {
-			this._lastTextAreaEvent = TextAreaInputEventType.compositionend;
-
+			// https://github.com/microsoft/monaco-editor/issues/1663
+			// On iOS 13.2, Chinese system IME randomly trigger an additional compositionend event with empty data
+			if (!this._isDoingComposition) {
+				return;
+			}
 			if (compositionDataInValid(e.locale)) {
 				// https://github.com/Microsoft/monaco-editor/issues/339
-				const [newState, typeInput] = deduceInputFromTextAreaValue(/*couldBeEmojiInput*/false, /*couldBeTypingAtOffset0*/false);
+				const [newState, typeInput] = deduceInputFromTextAreaValue(/*couldBeEmojiInput*/false);
 				this._textAreaState = newState;
 				this._onType.fire(typeInput);
 			} else {
@@ -300,10 +287,6 @@ export class TextAreaInput extends Disposable {
 		}));
 
 		this._register(dom.addDisposableListener(textArea.domNode, 'input', () => {
-			// We want to find out if this is the first `input` after a `focus`.
-			const previousEventWasFocus = (this._lastTextAreaEvent === TextAreaInputEventType.focus);
-			this._lastTextAreaEvent = TextAreaInputEventType.input;
-
 			// Pretend here we touched the text area, as the `input` event will most likely
 			// result in a `selectionchange` event which we want to ignore
 			this._textArea.setIgnoreSelectionChangeTime('received input event');
@@ -312,7 +295,7 @@ export class TextAreaInput extends Disposable {
 				return;
 			}
 
-			const [newState, typeInput] = deduceInputFromTextAreaValue(/*couldBeEmojiInput*/platform.isMacintosh, /*couldBeTypingAtOffset0*/previousEventWasFocus && platform.isMacintosh);
+			const [newState, typeInput] = deduceInputFromTextAreaValue(/*couldBeEmojiInput*/platform.isMacintosh);
 			if (typeInput.replaceCharCnt === 0 && typeInput.text.length === 1 && strings.isHighSurrogate(typeInput.text.charCodeAt(0))) {
 				// Ignore invalid input but keep it around for next time
 				return;
@@ -324,7 +307,7 @@ export class TextAreaInput extends Disposable {
 					this._onType.fire(typeInput);
 				}
 			} else {
-				if (typeInput.text !== '') {
+				if (typeInput.text !== '' || typeInput.replaceCharCnt !== 0) {
 					this._firePaste(typeInput.text, null);
 				}
 				this._nextCommand = ReadFromTextArea.Type;
@@ -334,8 +317,6 @@ export class TextAreaInput extends Disposable {
 		// --- Clipboard operations
 
 		this._register(dom.addDisposableListener(textArea.domNode, 'cut', (e: ClipboardEvent) => {
-			this._lastTextAreaEvent = TextAreaInputEventType.cut;
-
 			// Pretend here we touched the text area, as the `cut` event will most likely
 			// result in a `selectionchange` event which we want to ignore
 			this._textArea.setIgnoreSelectionChangeTime('received cut event');
@@ -345,14 +326,10 @@ export class TextAreaInput extends Disposable {
 		}));
 
 		this._register(dom.addDisposableListener(textArea.domNode, 'copy', (e: ClipboardEvent) => {
-			this._lastTextAreaEvent = TextAreaInputEventType.copy;
-
 			this._ensureClipboardGetsEditorSelection(e);
 		}));
 
 		this._register(dom.addDisposableListener(textArea.domNode, 'paste', (e: ClipboardEvent) => {
-			this._lastTextAreaEvent = TextAreaInputEventType.paste;
-
 			// Pretend here we touched the text area, as the `paste` event will most likely
 			// result in a `selectionchange` event which we want to ignore
 			this._textArea.setIgnoreSelectionChangeTime('received paste event');
@@ -372,11 +349,9 @@ export class TextAreaInput extends Disposable {
 		}));
 
 		this._register(dom.addDisposableListener(textArea.domNode, 'focus', () => {
-			this._lastTextAreaEvent = TextAreaInputEventType.focus;
 			this._setHasFocus(true);
 		}));
 		this._register(dom.addDisposableListener(textArea.domNode, 'blur', () => {
-			this._lastTextAreaEvent = TextAreaInputEventType.blur;
 			this._setHasFocus(false);
 		}));
 	}
@@ -476,10 +451,24 @@ export class TextAreaInput extends Disposable {
 		// Setting this._hasFocus and writing the screen reader content
 		// will result in a focus() and setSelectionRange() in the textarea
 		this._setHasFocus(true);
+
+		// If the editor is off DOM, focus cannot be really set, so let's double check that we have managed to set the focus
+		this.refreshFocusState();
 	}
 
 	public isFocused(): boolean {
 		return this._hasFocus;
+	}
+
+	public refreshFocusState(): void {
+		const shadowRoot = dom.getShadowRoot(this.textArea.domNode);
+		if (shadowRoot) {
+			this._setHasFocus(shadowRoot.activeElement === this.textArea.domNode);
+		} else if (dom.isInDOM(this.textArea.domNode)) {
+			this._setHasFocus(document.activeElement === this.textArea.domNode);
+		} else {
+			this._setHasFocus(false);
+		}
 	}
 
 	private _setHasFocus(newHasFocus: boolean): void {
@@ -533,11 +522,12 @@ export class TextAreaInput extends Disposable {
 	}
 
 	private _ensureClipboardGetsEditorSelection(e: ClipboardEvent): void {
-		const dataToCopy = this._host.getDataToCopy(ClipboardEventUtils.canUseTextData(e) && browser.hasClipboardSupport());
+		const dataToCopy = this._host.getDataToCopy(ClipboardEventUtils.canUseTextData(e) && BrowserFeatures.clipboard.richText);
 		const storedMetadata: ClipboardStoredMetadata = {
 			version: 1,
 			isFromEmptySelection: dataToCopy.isFromEmptySelection,
-			multicursorText: dataToCopy.multicursorText
+			multicursorText: dataToCopy.multicursorText,
+			mode: dataToCopy.mode
 		};
 		InMemoryClipboardMetadataManager.INSTANCE.set(
 			// When writing "LINE\r\n" to the clipboard and then pasting,
@@ -603,7 +593,8 @@ class ClipboardEventUtils {
 
 		if ((<any>window).clipboardData) {
 			e.preventDefault();
-			return (<any>window).clipboardData.getData('Text');
+			const text: string = (<any>window).clipboardData.getData('Text');
+			return [text, null];
 		}
 
 		throw new Error('ClipboardEventUtils.getTextData: Cannot use text data!');
@@ -680,7 +671,15 @@ class TextAreaWrapper extends Disposable implements ITextAreaWrapper {
 	public setSelectionRange(reason: string, selectionStart: number, selectionEnd: number): void {
 		const textArea = this._actual.domNode;
 
-		const currentIsFocused = (document.activeElement === textArea);
+		let activeElement: Element | null = null;
+		const shadowRoot = dom.getShadowRoot(textArea);
+		if (shadowRoot) {
+			activeElement = shadowRoot.activeElement;
+		} else {
+			activeElement = document.activeElement;
+		}
+
+		const currentIsFocused = (activeElement === textArea);
 		const currentSelectionStart = textArea.selectionStart;
 		const currentSelectionEnd = textArea.selectionEnd;
 

@@ -9,11 +9,11 @@ import { ApiWrapper } from '../../../apiWrapper';
 
 import { azureResource } from '../../azure-resource';
 import { AzureResourceDatabaseTreeDataProvider } from './databaseTreeDataProvider';
-import { IAzureResourceService, AzureResourceDatabase } from '../../interfaces';
+import { IAzureResourceService } from '../../interfaces';
 
 export class AzureResourceDatabaseProvider implements azureResource.IAzureResourceProvider {
 	public constructor(
-		private _databaseService: IAzureResourceService<AzureResourceDatabase>,
+		private _databaseService: IAzureResourceService<azureResource.AzureResourceDatabase>,
 		private _apiWrapper: ApiWrapper,
 		private _extensionContext: ExtensionContext
 	) {

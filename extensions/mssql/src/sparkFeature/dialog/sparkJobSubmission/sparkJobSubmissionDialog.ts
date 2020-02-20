@@ -39,7 +39,7 @@ export class SparkJobSubmissionDialog {
 	}
 
 	public async openDialog(path?: string): Promise<void> {
-		this._dialog = this.apiWrapper.createDialog(localize('sparkJobSubmission.DialogTitleNewJob', "New Job (preview)"));
+		this._dialog = this.apiWrapper.createDialog(localize('sparkJobSubmission.DialogTitleNewJob', "New Job"));
 
 		this._dataModel = new SparkJobSubmissionModel(this.sqlClusterConnection, this._dialog, this.appContext);
 

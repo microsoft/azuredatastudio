@@ -9,7 +9,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { EditorAction, ServicesAccessor, registerEditorAction, registerEditorContribution } from 'vs/editor/browser/editorExtensions';
 import { Selection } from 'vs/editor/common/core/selection';
-import { IEditorContribution, ScrollType } from 'vs/editor/common/editorCommon';
+import { IEditorContribution } from 'vs/editor/common/editorCommon';
 import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 
@@ -35,6 +35,14 @@ class CursorState {
 	}
 }
 
+class StackElement {
+	constructor(
+		public readonly cursorState: CursorState,
+		public readonly scrollTop: number,
+		public readonly scrollLeft: number
+	) { }
+}
+
 export class CursorUndoRedoController extends Disposable implements IEditorContribution {
 
 	public static readonly ID = 'editor.contrib.cursorUndoRedoController';
@@ -46,9 +54,8 @@ export class CursorUndoRedoController extends Disposable implements IEditorContr
 	private readonly _editor: ICodeEditor;
 	private _isCursorUndoRedo: boolean;
 
-	private _undoStack: CursorState[];
-	private _redoStack: CursorState[];
-	private _prevState: CursorState | null;
+	private _undoStack: StackElement[];
+	private _redoStack: StackElement[];
 
 	constructor(editor: ICodeEditor) {
 		super();
@@ -57,38 +64,36 @@ export class CursorUndoRedoController extends Disposable implements IEditorContr
 
 		this._undoStack = [];
 		this._redoStack = [];
-		this._prevState = null;
 
 		this._register(editor.onDidChangeModel((e) => {
 			this._undoStack = [];
 			this._redoStack = [];
-			this._prevState = null;
 		}));
 		this._register(editor.onDidChangeModelContent((e) => {
 			this._undoStack = [];
 			this._redoStack = [];
-			this._prevState = null;
-			this._pushStateIfNecessary();
 		}));
-		this._register(editor.onDidChangeCursorSelection(() => this._pushStateIfNecessary()));
-	}
-
-	private _pushStateIfNecessary(): void {
-		const newState = new CursorState(this._editor.getSelections()!);
-
-		if (!this._isCursorUndoRedo && this._prevState) {
-			const isEqualToLastUndoStack = (this._undoStack.length > 0 && this._undoStack[this._undoStack.length - 1].equals(this._prevState));
+		this._register(editor.onDidChangeCursorSelection((e) => {
+			if (this._isCursorUndoRedo) {
+				return;
+			}
+			if (!e.oldSelections) {
+				return;
+			}
+			if (e.oldModelVersionId !== e.modelVersionId) {
+				return;
+			}
+			const prevState = new CursorState(e.oldSelections);
+			const isEqualToLastUndoStack = (this._undoStack.length > 0 && this._undoStack[this._undoStack.length - 1].cursorState.equals(prevState));
 			if (!isEqualToLastUndoStack) {
-				this._undoStack.push(this._prevState);
+				this._undoStack.push(new StackElement(prevState, editor.getScrollTop(), editor.getScrollLeft()));
 				this._redoStack = [];
 				if (this._undoStack.length > 50) {
 					// keep the cursor undo stack bounded
 					this._undoStack.shift();
 				}
 			}
-		}
-
-		this._prevState = newState;
+		}));
 	}
 
 	public cursorUndo(): void {
@@ -96,7 +101,7 @@ export class CursorUndoRedoController extends Disposable implements IEditorContr
 			return;
 		}
 
-		this._redoStack.push(new CursorState(this._editor.getSelections()));
+		this._redoStack.push(new StackElement(new CursorState(this._editor.getSelections()), this._editor.getScrollTop(), this._editor.getScrollLeft()));
 		this._applyState(this._undoStack.pop()!);
 	}
 
@@ -105,14 +110,17 @@ export class CursorUndoRedoController extends Disposable implements IEditorContr
 			return;
 		}
 
-		this._undoStack.push(new CursorState(this._editor.getSelections()));
+		this._undoStack.push(new StackElement(new CursorState(this._editor.getSelections()), this._editor.getScrollTop(), this._editor.getScrollLeft()));
 		this._applyState(this._redoStack.pop()!);
 	}
 
-	private _applyState(state: CursorState): void {
+	private _applyState(stackElement: StackElement): void {
 		this._isCursorUndoRedo = true;
-		this._editor.setSelections(state.selections);
-		this._editor.revealRangeInCenterIfOutsideViewport(state.selections[0], ScrollType.Smooth);
+		this._editor.setSelections(stackElement.cursorState.selections);
+		this._editor.setScrollPosition({
+			scrollTop: stackElement.scrollTop,
+			scrollLeft: stackElement.scrollLeft
+		});
 		this._isCursorUndoRedo = false;
 	}
 }

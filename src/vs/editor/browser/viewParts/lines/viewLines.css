@@ -17,12 +17,9 @@
 .monaco-editor.no-user-select .lines-content,
 .monaco-editor.no-user-select .view-line,
 .monaco-editor.no-user-select .view-lines {
+	user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-o-user-select: none;
-	user-select: none;
 }
 
 .monaco-editor .view-lines {
@@ -38,6 +35,10 @@
 .monaco-editor .view-line {
 	position: absolute;
 	width: 100%;
+}
+
+.monaco-editor .mtkz {
+	display: inline-block;
 }
 
 /* TODO@tokenization bootstrap fix */

@@ -9,21 +9,21 @@ import * as azdata from 'azdata';
 import * as mssql from '../../mssql';
 import * as utils from './utils';
 import * as uuid from './uuid';
-import { context } from './testContext';
+import { isTestSetupCompleted } from './testContext';
 import assert = require('assert');
-import { getStandaloneServer, TestServerProfile, getBdcServer } from './testConfig';
+import { getStandaloneServer, TestServerProfile } from './testConfig';
 
 let cmsService: mssql.ICmsService;
 let server: TestServerProfile;
 let connectionId: string;
 let ownerUri: string;
 const SERVER_CONNECTION_TIMEOUT: number = 3000;
-const TEST_CMS_NAME = `adsTestCms_${uuid.v4()}`;
-const TEST_CMS_GROUP = `adsTestCmsGroup_${uuid.v4()}`;
-const TEST_CMS_SERVER = `adsTestCmsServer_${uuid.v4()}`;
-const TEST_CMS_REG_SERVER = `adsTestCmsRegisteredServer_${uuid.v4()}`;
+const TEST_CMS_NAME = `adsTestCms_${uuid.v4().asHex()}`;
+const TEST_CMS_GROUP = `adsTestCmsGroup_${uuid.v4().asHex()}`;
+const TEST_CMS_SERVER = `adsTestCmsServer_${uuid.v4().asHex()}`;
+const TEST_CMS_REG_SERVER = `adsTestCmsRegisteredServer_${uuid.v4().asHex()}`;
 
-if (context.RunTest) {
+if (isTestSetupCompleted()) {
 	suite('CMS integration test suite', () => {
 
 		setup(async function () {
@@ -45,7 +45,7 @@ if (context.RunTest) {
 			}
 		});
 
-		test('Create CMS Server @UNSTABLE@ @REL@', async function () {
+		test('Create CMS Server', async function () {
 			// Should fail
 			await utils.assertThrowsAsync(
 				async () => await cmsService.createCmsServer(undefined, 'test_description', undefined, ownerUri),
@@ -66,7 +66,7 @@ if (context.RunTest) {
 			await cmsService.createCmsServer(TEST_CMS_NAME, 'test_description', connection, ownerUri);
 		});
 
-		test('Add and delete registered group to/from CMS server @UNSTABLE@ @REL@', async function () {
+		test('Add and delete registered group to/from CMS server', async function () {
 			await utils.assertThrowsAsync(
 				async () => await cmsService.addServerGroup(ownerUri, '', undefined, 'test_description'),
 				'Cannot add a server group without a name');
@@ -95,32 +95,32 @@ if (context.RunTest) {
 				`The server group ${TEST_CMS_GROUP} was not removed successfully. Groups : [${cmsResources.registeredServerGroups.map(g => g.name).join(', ')}]`);
 		});
 
-		test('Add and delete registered server to/from CMS server @UNSTABLE@ @REL@', async function () {
+		test('Add and delete registered server to/from CMS server', async function () {
 
 			await utils.assertThrowsAsync(
 				async () => cmsService.addRegisteredServer(ownerUri, '', undefined, 'test_description', undefined),
 				'Cannot add a registered without a name or connection');
 
-			let bdcServer = await getBdcServer();
-			let bdcConnection = {
-				serverName: bdcServer.serverName,
-				userName: bdcServer.userName,
-				password: bdcServer.password,
-				authenticationType: bdcServer.authenticationTypeName,
-				database: bdcServer.database,
-				provider: bdcServer.provider,
-				version: bdcServer.version,
-				engineType: bdcServer.engineType,
+			let server = await getStandaloneServer('2019');
+			let connection = {
+				serverName: server.serverName,
+				userName: server.userName,
+				password: server.password,
+				authenticationType: server.authenticationTypeName,
+				database: server.database,
+				provider: server.provider,
+				version: server.version,
+				engineType: server.engineType,
 				options: {}
 			};
 
 			// Should create a registered server
-			let result = await cmsService.addRegisteredServer(ownerUri, '', TEST_CMS_SERVER, 'test_description', bdcConnection);
+			let result = await cmsService.addRegisteredServer(ownerUri, '', TEST_CMS_SERVER, 'test_description', connection);
 			assert(result === true, `Registered server ${TEST_CMS_SERVER} was not added to CMS server successfully`);
 
 			// Shouldn't be able to create a new registered server with same name
 			await utils.assertThrowsAsync(
-				async () => await cmsService.addRegisteredServer(ownerUri, '', TEST_CMS_SERVER, 'test_description', bdcConnection),
+				async () => await cmsService.addRegisteredServer(ownerUri, '', TEST_CMS_SERVER, 'test_description', connection),
 				'Cannot add a registered server with existing name');
 
 			// Should remove the registered server we added above
@@ -128,7 +128,7 @@ if (context.RunTest) {
 			assert(deleteResult === true, `Registered server ${TEST_CMS_SERVER} was not removed correctly`);
 		});
 
-		test('Add and delete registered server to/from server group @UNSTABLE@ @REL@', async function () {
+		test('Add and delete registered server to/from server group', async function () {
 
 			// Should create a server group
 			let result = await cmsService.addServerGroup(ownerUri, '', TEST_CMS_GROUP, 'test_description');
@@ -140,21 +140,21 @@ if (context.RunTest) {
 				`Registered Server Group ${TEST_CMS_GROUP} was not found after being added. Groups : [${cmsResources.registeredServerGroups.map(g => g.name).join(', ')}]`);
 
 			// Should create a registered server under the group
-			let bdcServer = await getBdcServer();
-			let bdcConnection = {
-				serverName: bdcServer.serverName,
-				userName: bdcServer.userName,
-				password: bdcServer.password,
-				authenticationType: bdcServer.authenticationTypeName,
-				database: bdcServer.database,
-				provider: bdcServer.provider,
-				version: bdcServer.version,
-				engineType: bdcServer.engineType,
+			let server = await getStandaloneServer('2019');
+			let connection = {
+				serverName: server.serverName,
+				userName: server.userName,
+				password: server.password,
+				authenticationType: server.authenticationTypeName,
+				database: server.database,
+				provider: server.provider,
+				version: server.version,
+				engineType: server.engineType,
 				options: {}
 			};
 			let relativePath = cmsResources.registeredServerGroups[0].relativePath;
 
-			result = await cmsService.addRegisteredServer(ownerUri, relativePath, TEST_CMS_REG_SERVER, 'test_description', bdcConnection);
+			result = await cmsService.addRegisteredServer(ownerUri, relativePath, TEST_CMS_REG_SERVER, 'test_description', connection);
 			assert(result === true, `Registered server ${TEST_CMS_REG_SERVER} was not added to server group successfully`);
 
 			// Should remove the server group we added above

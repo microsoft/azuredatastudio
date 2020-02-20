@@ -11,16 +11,16 @@ const localize = nls.loadMessageBundle();
 import { AzureResourceItemType } from '../../constants';
 import { ApiWrapper } from '../../../apiWrapper';
 import { generateGuid } from '../../utils';
-import { IAzureResourceService, AzureResourceDatabaseServer } from '../../interfaces';
+import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 import { azureResource } from '../../azure-resource';
 
-export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<AzureResourceDatabaseServer> {
+export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly containerId = 'azure.resource.providers.sqlInstanceContainer';
 	private static readonly containerLabel = localize('azure.resource.providers.sqlInstanceContainerLabel', "SQL Managed Instances");
 
 	public constructor(
-		databaseServerService: IAzureResourceService<AzureResourceDatabaseServer>,
+		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
 		apiWrapper: ApiWrapper,
 		private _extensionContext: ExtensionContext
 	) {
@@ -28,7 +28,7 @@ export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<Az
 	}
 
 
-	protected getTreeItemForResource(databaseServer: AzureResourceDatabaseServer): TreeItem {
+	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer): TreeItem {
 		return {
 			id: `sqlInstance_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: databaseServer.name,

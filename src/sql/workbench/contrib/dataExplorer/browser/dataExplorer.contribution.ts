@@ -18,7 +18,7 @@ import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { DataExplorerContainerExtensionHandler } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerExtensionPoint';
 
 // Data Explorer Viewlet
-const viewletDescriptor = new ViewletDescriptor(
+const viewletDescriptor = ViewletDescriptor.create(
 	DataExplorerViewlet,
 	VIEWLET_ID,
 	localize('workbench.dataExplorer', "Connections"),
@@ -32,7 +32,7 @@ const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(Workbench
 workbenchRegistry.registerWorkbenchContribution(DataExplorerViewletViewsContribution, LifecyclePhase.Starting);
 const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
 registry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		OpenDataExplorerViewletAction,
 		OpenDataExplorerViewletAction.ID,
 		OpenDataExplorerViewletAction.LABEL,

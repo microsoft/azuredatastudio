@@ -6,16 +6,14 @@
 import { OnInit, Component, Input, Inject, ViewChild, ElementRef } from '@angular/core';
 import * as azdata from 'azdata';
 
-import { IGridDataProvider, getResultsString } from 'sql/platform/query/common/gridDataProvider';
+import { IGridDataProvider, getResultsString } from 'sql/workbench/services/query/common/gridDataProvider';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
 import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
-import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/platform/query/common/queryRunner';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
@@ -24,17 +22,18 @@ import { localize } from 'vs/nls';
 import { IAction } from 'vs/base/common/actions';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IMimeComponent } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRegistry';
-import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { MimeModel } from 'sql/workbench/contrib/notebook/browser/models/mimemodel';
-import { GridTableState } from 'sql/workbench/contrib/query/common/gridPanelState';
+import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { MimeModel } from 'sql/workbench/services/notebook/browser/outputs/mimemodel';
+import { GridTableState } from 'sql/workbench/common/editor/query/gridPanelState';
 import { GridTableBase } from 'sql/workbench/contrib/query/browser/gridPanel';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { ISerializationService, SerializeDataParams } from 'sql/platform/serialization/common/serializationService';
 import { SaveResultAction } from 'sql/workbench/contrib/query/browser/actions';
-import { ResultSerializer, SaveResultsResponse } from 'sql/workbench/contrib/query/common/resultSerializer';
+import { ResultSerializer, SaveResultsResponse, SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { values } from 'vs/base/common/collections';
 import { assign } from 'vs/base/common/objects';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -138,7 +137,7 @@ class DataResourceTable extends GridTableBase<any> {
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IEditorService editorService: IEditorService,
-		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
+		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@ISerializationService private _serializationService: ISerializationService
 	) {

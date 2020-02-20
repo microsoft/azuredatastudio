@@ -10,7 +10,6 @@ import {
 
 import * as types from 'vs/base/common/types';
 
-import { IComponent, IComponentDescriptor, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import * as azdata from 'azdata';
 import { Emitter } from 'vs/base/common/event';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
@@ -21,7 +20,7 @@ import { EventType, addDisposableListener } from 'vs/base/browser/dom';
 import { IKeyboardEvent, StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { endsWith } from 'vs/base/common/strings';
 import { firstIndex } from 'vs/base/common/arrays';
-
+import { IComponentDescriptor, IComponent, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 
 export type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
 
@@ -182,6 +181,30 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 
 	public set ariaLabel(newValue: string) {
 		this.setPropertyFromUI<azdata.ComponentProperties, string>((props, value) => props.ariaLabel = value, newValue);
+	}
+
+	public get ariaRole(): string {
+		return this.getPropertyOrDefault<azdata.ComponentProperties, string>((props) => props.ariaRole, '');
+	}
+
+	public set ariaRole(newValue: string) {
+		this.setPropertyFromUI<azdata.ComponentProperties, string>((props, value) => props.ariaRole = value, newValue);
+	}
+
+	public get ariaSelected(): boolean {
+		return this.getPropertyOrDefault<azdata.ComponentProperties, boolean>((props) => props.ariaSelected, false);
+	}
+
+	public set ariaSelected(newValue: boolean) {
+		this.setPropertyFromUI<azdata.ComponentProperties, boolean>((props, value) => props.ariaSelected = value, newValue);
+	}
+
+	public get ariaHidden(): boolean {
+		return this.getPropertyOrDefault<azdata.ComponentProperties, boolean>((props) => props.ariaHidden, false);
+	}
+
+	public set ariaHidden(newValue: boolean) {
+		this.setPropertyFromUI<azdata.ComponentProperties, boolean>((props, value) => props.ariaHidden = value, newValue);
 	}
 
 	public get CSSStyles(): { [key: string]: string } {

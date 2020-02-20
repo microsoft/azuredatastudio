@@ -7,11 +7,11 @@ import { Disposable, dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { isString } from 'vs/base/common/types';
 
 import * as azdata from 'azdata';
-import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { assign } from 'vs/base/common/objects';
 import { find } from 'vs/base/common/arrays';
+import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 
 type SettableProperty = 'serverName' | 'authenticationType' | 'databaseName' | 'password' | 'connectionName' | 'userName';
 
@@ -19,9 +19,9 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 	options: { [name: string]: any } = {};
 
-	private _providerName: string;
-	private _onCapabilitiesRegisteredDisposable: IDisposable;
-	protected _serverCapabilities: ConnectionProviderProperties;
+	private _providerName?: string;
+	private _onCapabilitiesRegisteredDisposable?: IDisposable;
+	protected _serverCapabilities?: ConnectionProviderProperties;
 	private static readonly SqlAuthentication = 'SqlLogin';
 	public static readonly ProviderPropertyName = 'providerName';
 
@@ -66,7 +66,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public get providerName(): string {
-		return this._providerName;
+		return this._providerName!; // this needs to be rewritten at some point
 	}
 
 	public set providerName(name: string) {
@@ -80,8 +80,8 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 				dispose(this._onCapabilitiesRegisteredDisposable);
 			}
 			this._onCapabilitiesRegisteredDisposable = this.capabilitiesService.onCapabilitiesRegistered(e => {
-				if (e.connection.providerId === this.providerName) {
-					this._serverCapabilities = e.connection;
+				if (e.id === this.providerName) {
+					this._serverCapabilities = e.features.connection;
 				}
 			});
 		}
@@ -100,7 +100,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		return instance;
 	}
 
-	public get serverCapabilities(): ConnectionProviderProperties {
+	public get serverCapabilities(): ConnectionProviderProperties | undefined {
 		return this._serverCapabilities;
 	}
 
@@ -189,7 +189,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	 * Returns true if the capabilities and options are loaded correctly
 	 */
 	public get isConnectionOptionsValid(): boolean {
-		return this.serverCapabilities && this.title.indexOf('undefined') < 0;
+		return !!this.serverCapabilities && this.title.indexOf('undefined') < 0;
 	}
 
 	public isPasswordRequired(): boolean {
@@ -284,7 +284,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public get authenticationTypeDisplayName(): string {
-		let optionMetadata = find(this._serverCapabilities.connectionOptions, o => o.specialValueType === ConnectionOptionSpecialType.authType);
+		let optionMetadata = this._serverCapabilities ? find(this._serverCapabilities.connectionOptions, o => o.specialValueType === ConnectionOptionSpecialType.authType) : undefined;
 		let authType = this.authenticationType;
 		let displayName: string = authType;
 
@@ -298,8 +298,8 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		return displayName;
 	}
 
-	public getProviderOptions(): azdata.ConnectionOption[] {
-		return this._serverCapabilities.connectionOptions;
+	public getProviderOptions(): azdata.ConnectionOption[] | undefined {
+		return this._serverCapabilities?.connectionOptions;
 	}
 
 	public static get idSeparator(): string {
@@ -317,19 +317,21 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		parts.push(this.databaseName);
 		parts.push(this.authenticationTypeDisplayName);
 
-		this._serverCapabilities.connectionOptions.forEach(element => {
-			if (element.specialValueType !== ConnectionOptionSpecialType.serverName &&
-				element.specialValueType !== ConnectionOptionSpecialType.databaseName &&
-				element.specialValueType !== ConnectionOptionSpecialType.authType &&
-				element.specialValueType !== ConnectionOptionSpecialType.password &&
-				element.specialValueType !== ConnectionOptionSpecialType.connectionName &&
-				element.isIdentity && element.valueType === ServiceOptionType.string) {
-				let value = this.getOptionValue(element.name);
-				if (value) {
-					parts.push(value);
+		if (this._serverCapabilities) {
+			this._serverCapabilities.connectionOptions.forEach(element => {
+				if (element.specialValueType !== ConnectionOptionSpecialType.serverName &&
+					element.specialValueType !== ConnectionOptionSpecialType.databaseName &&
+					element.specialValueType !== ConnectionOptionSpecialType.authType &&
+					element.specialValueType !== ConnectionOptionSpecialType.password &&
+					element.specialValueType !== ConnectionOptionSpecialType.connectionName &&
+					element.isIdentity && element.valueType === ServiceOptionType.string) {
+					let value = this.getOptionValue(element.name);
+					if (value) {
+						parts.push(value);
+					}
 				}
-			}
-		});
+			});
+		}
 
 		return parts;
 	}

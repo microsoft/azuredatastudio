@@ -340,12 +340,16 @@ function patches(originals: typeof http | typeof https, resolveProxy: ReturnType
 			options = options || {};
 
 			if (options.socketPath) {
-				return original.apply(null, arguments as unknown as any[]);
+				return original.apply(null, arguments as any);
 			}
 
-			const optionsPatched = options.agent instanceof ProxyAgent;
+			const originalAgent = options.agent;
+			if (originalAgent === true) {
+				throw new Error('Unexpected agent option: true');
+			}
+			const optionsPatched = originalAgent instanceof ProxyAgent;
 			const config = onRequest && ((<any>options)._vscodeProxySupport || /* LS */ (<any>options)._vscodeSystemProxy) || proxySetting.config;
-			const useProxySettings = !optionsPatched && (config === 'override' || config === 'on' && !options.agent);
+			const useProxySettings = !optionsPatched && (config === 'override' || config === 'on' && originalAgent === undefined);
 			const useSystemCertificates = !optionsPatched && certSetting.config && originals === https && !(options as https.RequestOptions).ca;
 
 			if (useProxySettings || useSystemCertificates) {
@@ -367,12 +371,12 @@ function patches(originals: typeof http | typeof https, resolveProxy: ReturnType
 				options.agent = new ProxyAgent({
 					resolveProxy: resolveProxy.bind(undefined, { useProxySettings, useSystemCertificates }),
 					defaultPort: originals === https ? 443 : 80,
-					originalAgent: options.agent
+					originalAgent
 				});
 				return original(options, callback);
 			}
 
-			return original.apply(null, arguments as unknown as any[]);
+			return original.apply(null, arguments as any);
 		}
 		return patched;
 	}
@@ -385,7 +389,7 @@ function tlsPatches(originals: typeof tls) {
 
 	function patch(original: typeof tls.createSecureContext): typeof tls.createSecureContext {
 		return function (details: tls.SecureContextOptions): ReturnType<typeof tls.createSecureContext> {
-			const context = original.apply(null, arguments as unknown as any[]);
+			const context = original.apply(null, arguments as any);
 			const certs = (details as any)._vscodeAdditionalCaCerts;
 			if (certs) {
 				for (const cert of certs) {
@@ -469,7 +473,9 @@ async function readCaCertificates() {
 }
 
 async function readWindowsCaCertificates() {
-	const winCA = await import('vscode-windows-ca-certs');
+	const winCA = await new Promise<any>((resolve, reject) => {
+		require(['vscode-windows-ca-certs'], resolve, reject);
+	});
 
 	let ders: any[] = [];
 	const store = winCA();

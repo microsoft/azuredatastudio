@@ -10,18 +10,22 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IAction } from 'vs/base/common/actions';
 import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
 import {
 	ActiveConnectionsFilterAction,
 	AddServerAction, AddServerGroupAction
-} from 'sql/workbench/contrib/objectExplorer/browser/connectionTreeAction';
+} from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { IViewDescriptorService } from 'vs/workbench/common/views';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { ILogService } from 'vs/platform/log/common/log';
 
-export class ConnectionViewletPanel extends ViewletPanel {
+export class ConnectionViewletPanel extends ViewPane {
 
 	public static readonly ID = 'dataExplorer.servers';
 
@@ -35,19 +39,23 @@ export class ConnectionViewletPanel extends ViewletPanel {
 		private options: IViewletViewOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@IInstantiationService instantiationService: IInstantiationService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
+		@IOpenerService protected openerService: IOpenerService,
+		@IThemeService protected themeService: IThemeService,
+		@ILogService private readonly logService: ILogService
 	) {
-		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService, contextKeyService);
+		super({ ...(options as IViewPaneOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, opener, themeService);
 		this._addServerAction = this.instantiationService.createInstance(AddServerAction,
 			AddServerAction.ID,
 			AddServerAction.LABEL);
 		this._addServerGroupAction = this.instantiationService.createInstance(AddServerGroupAction,
 			AddServerGroupAction.ID,
 			AddServerGroupAction.LABEL);
-		this._serverTreeView = this.objectExplorerService.getServerTreeView();
+		this._serverTreeView = <any>this.objectExplorerService.getServerTreeView() as ServerTreeView;
 		if (!this._serverTreeView) {
 			this._serverTreeView = this.instantiationService.createInstance(ServerTreeView);
 			this.objectExplorerService.registerServerTreeView(this._serverTreeView);
@@ -67,7 +75,7 @@ export class ConnectionViewletPanel extends ViewletPanel {
 		const viewletContainer = DOM.append(container, DOM.$('div.server-explorer-viewlet'));
 		const viewContainer = DOM.append(viewletContainer, DOM.$('div.object-explorer-view'));
 		this._serverTreeView.renderBody(viewContainer).then(undefined, error => {
-			console.warn('render registered servers: ' + error);
+			this.logService.warn('render registered servers: ' + error);
 		});
 		this._root = container;
 	}

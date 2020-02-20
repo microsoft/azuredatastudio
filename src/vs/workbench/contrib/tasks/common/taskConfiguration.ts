@@ -133,6 +133,7 @@ export interface PresentationOptionsConfig {
 export interface RunOptionsConfig {
 	reevaluateOnRerun?: boolean;
 	runOn?: string;
+	instanceLimit?: number;
 }
 
 export interface TaskIdentifier {
@@ -552,7 +553,7 @@ interface MetaData<T, U> {
 }
 
 
-function _isEmpty<T>(this: void, value: T | undefined, properties: MetaData<T, any>[] | undefined): boolean {
+function _isEmpty<T>(this: void, value: T | undefined, properties: MetaData<T, any>[] | undefined, allowEmptyArray: boolean = false): boolean {
 	if (value === undefined || value === null || properties === undefined) {
 		return true;
 	}
@@ -561,7 +562,7 @@ function _isEmpty<T>(this: void, value: T | undefined, properties: MetaData<T, a
 		if (property !== undefined && property !== null) {
 			if (meta.type !== undefined && !meta.type.isEmpty(property)) {
 				return false;
-			} else if (!Array.isArray(property) || property.length > 0) {
+			} else if (!Array.isArray(property) || (property.length > 0) || allowEmptyArray) {
 				return false;
 			}
 		}
@@ -591,11 +592,11 @@ function _assignProperties<T>(this: void, target: T | undefined, source: T | und
 	return target;
 }
 
-function _fillProperties<T>(this: void, target: T | undefined, source: T | undefined, properties: MetaData<T, any>[] | undefined): T | undefined {
+function _fillProperties<T>(this: void, target: T | undefined, source: T | undefined, properties: MetaData<T, any>[] | undefined, allowEmptyArray: boolean = false): T | undefined {
 	if (!source || _isEmpty(source, properties)) {
 		return target;
 	}
-	if (!target || _isEmpty(target, properties)) {
+	if (!target || _isEmpty(target, properties, allowEmptyArray)) {
 		return source;
 	}
 	for (let meta of properties!) {
@@ -681,7 +682,8 @@ export namespace RunOptions {
 	export function fromConfiguration(value: RunOptionsConfig | undefined): Tasks.RunOptions {
 		return {
 			reevaluateOnRerun: value ? value.reevaluateOnRerun : true,
-			runOn: value ? RunOnOptions.fromString(value.runOn) : Tasks.RunOnOptions.default
+			runOn: value ? RunOnOptions.fromString(value.runOn) : Tasks.RunOnOptions.default,
+			instanceLimit: value ? value.instanceLimit : 1
 		};
 	}
 }
@@ -727,7 +729,7 @@ namespace ShellConfiguration {
 	}
 
 	export function isEmpty(this: void, value: Tasks.ShellConfiguration): boolean {
-		return _isEmpty(value, properties);
+		return _isEmpty(value, properties, true);
 	}
 
 	export function assignProperties(this: void, target: Tasks.ShellConfiguration | undefined, source: Tasks.ShellConfiguration | undefined): Tasks.ShellConfiguration | undefined {
@@ -735,7 +737,7 @@ namespace ShellConfiguration {
 	}
 
 	export function fillProperties(this: void, target: Tasks.ShellConfiguration, source: Tasks.ShellConfiguration): Tasks.ShellConfiguration | undefined {
-		return _fillProperties(target, source, properties);
+		return _fillProperties(target, source, properties, true);
 	}
 
 	export function fillDefaults(this: void, value: Tasks.ShellConfiguration, context: ParseContext): Tasks.ShellConfiguration {

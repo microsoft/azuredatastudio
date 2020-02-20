@@ -3,27 +3,28 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
+import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import QueryRunner from 'sql/platform/query/common/queryRunner';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { MessagePanel } from 'sql/workbench/contrib/query/browser/messagePanel';
 import { GridPanel } from 'sql/workbench/contrib/query/browser/gridPanel';
 import { ChartTab } from 'sql/workbench/contrib/charts/browser/chartTab';
 import { QueryPlanTab } from 'sql/workbench/contrib/queryPlan/browser/queryPlan';
 import { TopOperationsTab } from 'sql/workbench/contrib/queryPlan/browser/topOperations';
 import { QueryModelViewTab } from 'sql/workbench/contrib/query/browser/modelViewTab/queryModelViewTab';
-import { MessagePanelState } from 'sql/workbench/contrib/query/common/messagePanelState';
-import { GridPanelState } from 'sql/workbench/contrib/query/common/gridPanelState';
+import { MessagePanelState } from 'sql/workbench/common/editor/query/messagePanelState';
+import { GridPanelState } from 'sql/workbench/common/editor/query/gridPanelState';
 
 import * as nls from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
 import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Event } from 'vs/base/common/event';
 import { startsWith } from 'vs/base/common/strings';
+import { URI } from 'vs/base/common/uri';
+import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
@@ -312,13 +313,13 @@ export class QueryResultsView extends Disposable {
 			dynamicTab.captureState(this.input.state.dynamicModelViewTabsState);
 		});
 
-		let info = this.queryModelService._getQueryInfo(input.uri);
+		let info = this.queryModelService._getQueryInfo(input.uri) || this.queryModelService._getQueryInfo(URI.parse(input.uri).toString(true));
 		if (info) {
 			this.setQueryRunner(info.queryRunner);
 		} else {
 			let disposable = this.queryModelService.onRunQueryStart(c => {
-				if (c === input.uri) {
-					let info = this.queryModelService._getQueryInfo(input.uri);
+				if (URI.parse(c).toString() === URI.parse(input.uri).toString()) {
+					let info = this.queryModelService._getQueryInfo(c);
 					this.setQueryRunner(info.queryRunner);
 					disposable.dispose();
 				}

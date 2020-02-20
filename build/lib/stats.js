@@ -116,7 +116,7 @@ function submitAllStats(productJson, commit) {
                 }
             */
             appInsights.defaultClient.trackEvent({
-                name: 'monacoworkbench/packagemetrics',
+                name: 'adsworkbench/packagemetrics',
                 properties: { commit, size: JSON.stringify(sizes), count: JSON.stringify(counts) }
             });
             appInsights.defaultClient.flush({

@@ -265,7 +265,7 @@ export class ViewItem implements IViewItem {
 			}
 
 			if (this.context.horizontalScrolling) {
-				this.element.style.width = 'fit-content';
+				this.element.style.width = Browser.isFirefox ? '-moz-fit-content' : 'fit-content';
 			}
 
 			try {
@@ -289,7 +289,7 @@ export class ViewItem implements IViewItem {
 
 		const style = window.getComputedStyle(this.element);
 		const paddingLeft = parseFloat(style.paddingLeft!);
-		this.element.style.width = 'fit-content';
+		this.element.style.width = Browser.isFirefox ? '-moz-fit-content' : 'fit-content';
 		this.width = DOM.getContentWidth(this.element) + paddingLeft;
 		this.element.style.width = '';
 	}
@@ -557,7 +557,7 @@ export class TreeView extends HeightMap {
 			this.viewListeners.push(DOM.addDisposableListener(this.wrapper, 'MSGestureTap', (e) => this.onMsGestureTap(e)));
 
 			// these events come too fast, we throttle them
-			this.viewListeners.push(DOM.addDisposableThrottledListener<IThrottledGestureEvent>(this.wrapper, 'MSGestureChange', (e) => this.onThrottledMsGestureChange(e), (lastEvent: IThrottledGestureEvent, event: MSGestureEvent): IThrottledGestureEvent => {
+			this.viewListeners.push(DOM.addDisposableThrottledListener<IThrottledGestureEvent, MSGestureEvent>(this.wrapper, 'MSGestureChange', e => this.onThrottledMsGestureChange(e), (lastEvent, event) => {
 				event.stopPropagation();
 				event.preventDefault();
 

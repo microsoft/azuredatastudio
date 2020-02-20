@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { nb } from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
@@ -168,4 +166,3 @@ export class ServerInstanceFactory {
 		return new PerFolderServerInstance(options);
 	}
 }
-

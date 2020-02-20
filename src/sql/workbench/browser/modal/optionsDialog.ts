@@ -8,8 +8,7 @@ import * as DialogHelper from './dialogHelper';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IModalOptions, Modal } from './modal';
 import * as OptionsDialogHelper from './optionsDialogHelper';
-import { attachButtonStyler, attachModalDialogStyler, attachPanelStyler } from 'sql/platform/theme/common/styler';
-import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 
 import * as azdata from 'azdata';
@@ -24,7 +23,6 @@ import * as styler from 'vs/platform/theme/common/styler';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { IViewletPanelOptions, ViewletPanel } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -32,21 +30,30 @@ import { append, $ } from 'vs/base/browser/dom';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { attachModalDialogStyler, attachPanelStyler } from 'sql/workbench/common/styler';
+import { IViewDescriptorService } from 'vs/workbench/common/views';
+import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
 
-export class CategoryView extends ViewletPanel {
+export class CategoryView extends ViewPane {
 
 	constructor(
 		private contentElement: HTMLElement,
 		private size: number,
-		options: IViewletPanelOptions,
+		options: IViewPaneOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
+		@IOpenerService protected openerService: IOpenerService,
+		@IThemeService protected themeService: IThemeService
 	) {
-		super(options, keybindingService, contextMenuService, configurationService, contextKeyService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, opener, themeService);
 	}
 
 	// we want a fixed size, so when we render to will measure our content and set that to be our
@@ -123,7 +130,7 @@ export class OptionsDialog extends Modal {
 
 		this._dividerBuilder = append(this._body, $('div'));
 
-		this._optionGroups = append(this._body, $('div.optionsDialog-options-groups.monaco-panel-view'));
+		this._optionGroups = append(this._body, $('div.optionsDialog-options-groups.monaco-pane-view'));
 		this.splitview = new ScrollableSplitView(this._optionGroups, { enableResizing: false, scrollDebounce: 0 });
 
 		const descriptionContainer = append(this._body, $('div.optionsDialog-description'));

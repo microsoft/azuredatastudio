@@ -7,7 +7,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
-import { Task } from 'sql/platform/tasks/browser/tasksRegistry';
+import { Task } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 
 import { ObjectMetadata } from 'azdata';
 
@@ -64,9 +64,8 @@ export class InsightAction extends Action {
 		super(id, label);
 	}
 
-	run(actionContext: InsightActionContext): Promise<boolean> {
-		this._insightsDialogService.show(actionContext.insight, actionContext.profile);
-		return Promise.resolve(true);
+	async run(actionContext: InsightActionContext): Promise<void> {
+		await this._insightsDialogService.show(actionContext.insight, actionContext.profile);
 	}
 }
 
@@ -85,7 +84,7 @@ export class ConfigureDashboardAction extends Task {
 		});
 	}
 
-	runTask(accessor: ServicesAccessor): Promise<void> {
-		return accessor.get(IOpenerService).open(URI.parse(ConfigureDashboardAction.configHelpUri)).then();
+	async runTask(accessor: ServicesAccessor): Promise<void> {
+		accessor.get(IOpenerService).open(URI.parse(ConfigureDashboardAction.configHelpUri));
 	}
 }

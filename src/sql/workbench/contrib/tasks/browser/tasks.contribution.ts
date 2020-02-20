@@ -11,7 +11,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { TasksPanel } from 'sql/workbench/contrib/tasks/browser/tasksPanel';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import * as ext from 'vs/workbench/common/contributions';
-import { ITaskService } from 'sql/platform/tasks/common/tasksService';
+import { ITaskService } from 'sql/workbench/services/tasks/common/tasksService';
 import { IActivityService, NumberBadge } from 'vs/workbench/services/activity/common/activity';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { PanelRegistry, Extensions as PanelExtensions, PanelDescriptor } from 'vs/workbench/browser/panel';
@@ -61,7 +61,7 @@ export class StatusUpdater extends lifecycle.Disposable implements ext.IWorkbenc
 
 const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
 registry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		ToggleTasksAction,
 		ToggleTasksAction.ID,
 		ToggleTasksAction.LABEL,
@@ -71,7 +71,7 @@ registry.registerWorkbenchAction(
 );
 
 // Register Output Panel
-Registry.as<PanelRegistry>(PanelExtensions.Panels).registerPanel(new PanelDescriptor(
+Registry.as<PanelRegistry>(PanelExtensions.Panels).registerPanel(PanelDescriptor.create(
 	TasksPanel,
 	TASKS_PANEL_ID,
 	localize('tasks', "Tasks"),

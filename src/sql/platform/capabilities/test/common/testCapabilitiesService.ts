@@ -5,15 +5,17 @@
 
 import * as azdata from 'azdata';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import { ICapabilitiesService, ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ICapabilitiesService, ProviderFeatures, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { Action } from 'vs/base/common/actions';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
 export class TestCapabilitiesService implements ICapabilitiesService {
 
+	private pgsqlProviderName = 'PGSQL';
 	public _serviceBrand: undefined;
 
 	public capabilities: { [id: string]: ProviderFeatures } = {};
@@ -99,7 +101,17 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 			displayName: 'MSSQL',
 			connectionOptions: connectionProvider,
 		};
+		let pgSQLCapabilities = {
+			providerId: this.pgsqlProviderName,
+			displayName: this.pgsqlProviderName,
+			connectionOptions: connectionProvider,
+		};
 		this.capabilities[mssqlProviderName] = { connection: msSQLCapabilities };
+		this.capabilities[this.pgsqlProviderName] = { connection: pgSQLCapabilities };
+	}
+
+	registerConnectionProvider(id: string, properties: ConnectionProviderProperties): IDisposable {
+		throw new Error('Method not implemented.');
 	}
 
 	/**
@@ -136,10 +148,10 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 		return Promise.resolve();
 	}
 
-	public fireCapabilitiesRegistered(providerFeatures: ProviderFeatures): void {
-		this._onCapabilitiesRegistered.fire(providerFeatures);
+	public fireCapabilitiesRegistered(id: string, features: ProviderFeatures): void {
+		this._onCapabilitiesRegistered.fire({ id, features });
 	}
 
-	private _onCapabilitiesRegistered = new Emitter<ProviderFeatures>();
+	private _onCapabilitiesRegistered = new Emitter<{ id: string; features: ProviderFeatures }>();
 	public readonly onCapabilitiesRegistered = this._onCapabilitiesRegistered.event;
 }

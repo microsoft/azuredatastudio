@@ -25,6 +25,11 @@ import { JupyterNotebookProvider } from './jupyterNotebookProvider';
 import { ConfigurePythonDialog } from '../dialog/configurePythonDialog';
 import CodeAdapter from '../prompts/adapter';
 import { ManagePackagesDialog } from '../dialog/managePackages/managePackagesDialog';
+import { IPackageManageProvider } from '../types';
+import { LocalPipPackageManageProvider } from './localPipPackageManageProvider';
+import { LocalCondaPackageManageProvider } from './localCondaPackageManageProvider';
+import { ManagePackagesDialogModel, ManagePackageDialogOptions } from '../dialog/managePackages/managePackagesDialogModel';
+import { PiPyClient } from './pipyClient';
 
 let untitledCounter = 0;
 
@@ -32,6 +37,7 @@ export class JupyterController implements vscode.Disposable {
 	private _jupyterInstallation: JupyterServerInstallation;
 	private _notebookInstances: IServerInstance[] = [];
 	private _serverInstanceFactory: ServerInstanceFactory = new ServerInstanceFactory();
+	private _packageManageProviders = new Map<string, IPackageManageProvider>();
 
 	private outputChannel: vscode.OutputChannel;
 	private prompter: IPrompter;
@@ -76,7 +82,7 @@ export class JupyterController implements vscode.Disposable {
 		});
 
 		this.apiWrapper.registerCommand(constants.jupyterReinstallDependenciesCommand, () => { return this.handleDependenciesReinstallation(); });
-		this.apiWrapper.registerCommand(constants.jupyterManagePackages, () => { return this.doManagePackages(); });
+		this.apiWrapper.registerCommand(constants.jupyterManagePackages, async (args) => { return this.doManagePackages(args); });
 		this.apiWrapper.registerCommand(constants.jupyterConfigurePython, () => { return this.doConfigurePython(this._jupyterInstallation); });
 
 		let supportedFileFilter: vscode.DocumentFilter[] = [
@@ -85,6 +91,7 @@ export class JupyterController implements vscode.Disposable {
 		let notebookProvider = this.registerNotebookProvider();
 		this.extensionContext.subscriptions.push(this.apiWrapper.registerCompletionItemProvider(supportedFileFilter, new NotebookCompletionItemProvider(notebookProvider)));
 
+		this.registerDefaultPackageManageProviders();
 		return true;
 	}
 
@@ -110,7 +117,7 @@ export class JupyterController implements vscode.Disposable {
 
 	public deactivate(): void {
 		// Shutdown any open notebooks
-		this._notebookInstances.forEach(instance => { instance.stop(); });
+		this._notebookInstances.forEach(async (instance) => { await instance.stop(); });
 	}
 
 	// EVENT HANDLERS //////////////////////////////////////////////////////
@@ -196,14 +203,51 @@ export class JupyterController implements vscode.Disposable {
 		});
 	}
 
-	public doManagePackages(): void {
+	public async doManagePackages(options?: ManagePackageDialogOptions): Promise<void> {
 		try {
-			let packagesDialog = new ManagePackagesDialog(this._jupyterInstallation);
+			if (!options) {
+				options = {
+					multiLocations: false,
+					defaultLocation: constants.localhostName,
+					defaultProviderId: LocalPipPackageManageProvider.ProviderId
+				};
+			}
+			let model = new ManagePackagesDialogModel(this._jupyterInstallation, this._packageManageProviders, options);
+
+			await model.init();
+			let packagesDialog = new ManagePackagesDialog(model);
 			packagesDialog.showDialog();
 		} catch (error) {
 			let message = utils.getErrorMessage(error);
 			this.apiWrapper.showErrorMessage(message);
 		}
+	}
+
+	/**
+	 * Register a package provider
+	 * @param providerId Provider Id
+	 * @param packageManageProvider Provider instance
+	 */
+	public registerPackageManager(providerId: string, packageManageProvider: IPackageManageProvider): void {
+		if (packageManageProvider) {
+			if (!this._packageManageProviders.has(providerId)) {
+				this._packageManageProviders.set(providerId, packageManageProvider);
+			} else {
+				throw Error(`Package manager provider is already registered. provider id: ${providerId}`);
+			}
+		}
+	}
+
+	/**
+	 * Returns the list of registered providers
+	 */
+	public get packageManageProviders(): Map<string, IPackageManageProvider> {
+		return this._packageManageProviders;
+	}
+
+	private registerDefaultPackageManageProviders(): void {
+		this.registerPackageManager(LocalPipPackageManageProvider.ProviderId, new LocalPipPackageManageProvider(this._jupyterInstallation, new PiPyClient()));
+		this.registerPackageManager(LocalCondaPackageManageProvider.ProviderId, new LocalCondaPackageManageProvider(this._jupyterInstallation));
 	}
 
 	public doConfigurePython(jupyterInstaller: JupyterServerInstallation): void {

@@ -6,9 +6,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as nls from 'vscode-nls';
 import { IJupyterBookSection, IJupyterBookToc } from '../contracts/content';
-const localize = nls.loadMessageBundle();
+import * as loc from '../common/localizedConstants';
 
 export enum BookTreeItemType {
 	Book = 'Book',
@@ -68,13 +67,14 @@ export class BookTreeItem extends vscode.TreeItem {
 
 	private setCommand() {
 		if (this.book.type === BookTreeItemType.Notebook) {
-			let pathToNotebook = path.join(this.book.root, 'content', this._uri.concat('.ipynb'));
-			this.command = { command: this.book.isUntitled ? 'bookTreeView.openUntitledNotebook' : 'bookTreeView.openNotebook', title: localize('openNotebookCommand', "Open Notebook"), arguments: [pathToNotebook], };
+			// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
+			const pathToNotebook = path.posix.join(this.book.root, 'content', this._uri.concat('.ipynb'));
+			this.command = { command: this.book.isUntitled ? 'bookTreeView.openUntitledNotebook' : 'bookTreeView.openNotebook', title: loc.openNotebookCommand, arguments: [pathToNotebook], };
 		} else if (this.book.type === BookTreeItemType.Markdown) {
 			let pathToMarkdown = path.join(this.book.root, 'content', this._uri.concat('.md'));
-			this.command = { command: 'bookTreeView.openMarkdown', title: localize('openMarkdownCommand', "Open Markdown"), arguments: [pathToMarkdown], };
+			this.command = { command: 'bookTreeView.openMarkdown', title: loc.openMarkdownCommand, arguments: [pathToMarkdown], };
 		} else if (this.book.type === BookTreeItemType.ExternalLink) {
-			this.command = { command: 'bookTreeView.openExternalLink', title: localize('openExternalLinkCommand', "Open External Link"), arguments: [this._uri], };
+			this.command = { command: 'bookTreeView.openExternalLink', title: loc.openExternalLinkCommand, arguments: [this._uri], };
 		}
 	}
 
@@ -82,9 +82,9 @@ export class BookTreeItem extends vscode.TreeItem {
 		let i = --index;
 		while (i > -1) {
 			if (this.book.tableOfContents.sections[i].url) {
-				// TODO: Currently only navigating to notebooks. Need to add logic for markdown.
-				let pathToNotebook = path.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
-				// tslint:disable-next-line:no-sync
+				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
+				let pathToNotebook = path.posix.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
+				// eslint-disable-next-line no-sync
 				if (fs.existsSync(pathToNotebook)) {
 					this._previousUri = pathToNotebook;
 					return;
@@ -98,9 +98,9 @@ export class BookTreeItem extends vscode.TreeItem {
 		let i = ++index;
 		while (i < this.book.tableOfContents.sections.length) {
 			if (this.book.tableOfContents.sections[i].url) {
-				// TODO: Currently only navigating to notebooks. Need to add logic for markdown.
-				let pathToNotebook = path.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
-				// tslint:disable-next-line:no-sync
+				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
+				let pathToNotebook = path.posix.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
+				// eslint-disable-next-line no-sync
 				if (fs.existsSync(pathToNotebook)) {
 					this._nextUri = pathToNotebook;
 					return;

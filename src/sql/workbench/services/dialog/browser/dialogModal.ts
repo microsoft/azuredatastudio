@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/dialogModal';
 import { Modal, IModalOptions } from 'sql/workbench/browser/modal/modal';
-import { attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 import { Dialog, DialogButton } from 'sql/workbench/services/dialog/common/dialogTypes';
 import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
 
@@ -22,8 +21,10 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { append, $ } from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
@@ -156,15 +157,15 @@ export class DialogModal extends Modal {
 	/**
 	 * Overridable to change behavior of escape key
 	 */
-	protected onClose(e: StandardKeyboardEvent) {
+	protected onClose(e: StandardKeyboardEvent): void {
 		this.cancel();
 	}
 
 	/**
 	 * Overridable to change behavior of enter key
 	 */
-	protected onAccept(e: StandardKeyboardEvent) {
-		this.done();
+	protected onAccept(e: StandardKeyboardEvent): void {
+		this.done().catch(err => onUnexpectedError(err));
 	}
 
 	public dispose(): void {

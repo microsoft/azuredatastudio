@@ -4,8 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Terminal as XTermTerminal } from 'xterm';
-import { WebLinksAddon as XTermWebLinksAddon } from 'xterm-addon-web-links';
 import { SearchAddon as XTermSearchAddon } from 'xterm-addon-search';
+import { Unicode11Addon as XTermUnicode11Addon } from 'xterm-addon-unicode11';
+import { WebLinksAddon as XTermWebLinksAddon } from 'xterm-addon-web-links';
+import { WebglAddon as XTermWebglAddon } from 'xterm-addon-webgl';
 import { IWindowsShellHelper, ITerminalConfigHelper, ITerminalChildProcess, IShellLaunchConfig, IDefaultShellAndArgsRequest, ISpawnExtHostProcessRequest, IStartExtensionTerminalRequest, IAvailableShellsRequest, ITerminalProcessExtHostProxy, ICommandTracker, INavigationMode, TitleEventSource, ITerminalDimensions } from 'vs/workbench/contrib/terminal/common/terminal';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IProcessEnvironment, Platform } from 'vs/base/common/platform';
@@ -29,8 +31,10 @@ export interface ITerminalInstanceService {
 	onRequestDefaultShellAndArgs?: Event<IDefaultShellAndArgsRequest>;
 
 	getXtermConstructor(): Promise<typeof XTermTerminal>;
-	getXtermWebLinksConstructor(): Promise<typeof XTermWebLinksAddon>;
 	getXtermSearchConstructor(): Promise<typeof XTermSearchAddon>;
+	getXtermUnicode11Constructor(): Promise<typeof XTermUnicode11Addon>;
+	getXtermWebLinksConstructor(): Promise<typeof XTermWebLinksAddon>;
+	getXtermWebglConstructor(): Promise<typeof XTermWebglAddon>;
 	createWindowsShellHelper(shellProcessId: number, instance: ITerminalInstance, xterm: XTermTerminal): IWindowsShellHelper;
 	createTerminalProcess(shellLaunchConfig: IShellLaunchConfig, cwd: string, cols: number, rows: number, env: IProcessEnvironment, windowsEnableConpty: boolean): ITerminalChildProcess;
 
@@ -141,7 +145,7 @@ export interface ITerminalService {
 	 * @param path The path to be escaped and formatted.
 	 * @returns An escaped version of the path to be execuded in the terminal.
 	 */
-	preparePathForTerminalAsync(path: string, executable: string | undefined, title: string): Promise<string>;
+	preparePathForTerminalAsync(path: string, executable: string | undefined, title: string, shellType: TerminalShellType): Promise<string>;
 
 	extHostReady(remoteAuthority: string): void;
 	requestSpawnExtHostProcess(proxy: ITerminalProcessExtHostProxy, shellLaunchConfig: IShellLaunchConfig, activeWorkspaceRootUri: URI | undefined, cols: number, rows: number, isWorkspaceShellAllowed: boolean): void;
@@ -166,6 +170,14 @@ export interface ISearchOptions {
 	 */
 	incremental?: boolean;
 }
+
+export enum WindowsShellType {
+	CommandPrompt,
+	PowerShell,
+	Wsl,
+	GitBash
+}
+export type TerminalShellType = WindowsShellType | undefined;
 
 export interface ITerminalInstance {
 	/**
@@ -228,6 +240,8 @@ export interface ITerminalInstance {
 	 */
 	onExit: Event<number | undefined>;
 
+	readonly exitCode: number | undefined;
+
 	processReady: Promise<void>;
 
 	/**
@@ -235,6 +249,11 @@ export interface ITerminalInstance {
 	 * explicit name given to the terminal instance through the extension API.
 	 */
 	readonly title: string;
+
+	/**
+	 * The shell type of the terminal.
+	 */
+	readonly shellType: TerminalShellType;
 
 	/**
 	 * The focus state of the terminal before exiting.
@@ -373,12 +392,6 @@ export interface ITerminalInstance {
 	 */
 	sendText(text: string, addNewLine: boolean): void;
 
-	/**
-	 * Write text directly to the terminal, skipping the process if it exists.
-	 * @param text The text to write.
-	 */
-	write(text: string): void;
-
 	/** Scroll the terminal buffer down 1 line. */
 	scrollDownLine(): void;
 	/** Scroll the terminal buffer down 1 page. */
@@ -430,6 +443,11 @@ export interface ITerminalInstance {
 	 * Sets the title of the terminal instance.
 	 */
 	setTitle(title: string, eventSource: TitleEventSource): void;
+
+	/**
+	 * Sets the shell type of the terminal instance.
+	 */
+	setShellType(shellType: TerminalShellType): void;
 
 	waitForTitle(): Promise<string>;
 

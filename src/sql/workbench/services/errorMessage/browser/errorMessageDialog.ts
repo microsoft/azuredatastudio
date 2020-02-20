@@ -3,12 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/errorMessageDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { attachButtonStyler, attachModalDialogStyler } from 'sql/platform/theme/common/styler';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -21,8 +20,10 @@ import { IAction } from 'vs/base/common/actions';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 
 const maxActions = 1;
 
@@ -66,7 +67,7 @@ export class ErrorMessageDialog extends Modal {
 		this.createCopyButton();
 		this._actionButtons = [];
 		for (let i = 0; i < maxActions; i++) {
-			this._actionButtons.unshift(this.createStandardButton('Action', () => this.onActionSelected(i)));
+			this._actionButtons.unshift(this.createStandardButton(localize('errorMessageDialog.action', "Action"), () => this.onActionSelected(i)));
 		}
 		this._okButton = this.addFooterButton(this._okLabel, () => this.ok());
 		this._register(attachButtonStyler(this._okButton, this._themeService));
@@ -74,7 +75,7 @@ export class ErrorMessageDialog extends Modal {
 
 	private createCopyButton() {
 		let copyButtonLabel = localize('copyDetails', "Copy details");
-		this._copyButton = this.addFooterButton(copyButtonLabel, () => this._clipboardService.writeText(this._messageDetails), 'left');
+		this._copyButton = this.addFooterButton(copyButtonLabel, () => this._clipboardService.writeText(this._messageDetails).catch(err => onUnexpectedError(err)), 'left');
 		this._copyButton.icon = 'codicon scriptToClipboard';
 		this._copyButton.element.title = copyButtonLabel;
 		this._register(attachButtonStyler(this._copyButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_FOREGROUND }));
@@ -91,7 +92,7 @@ export class ErrorMessageDialog extends Modal {
 		this.ok();
 		// Run the action if possible
 		if (this._actions && index < this._actions.length) {
-			this._actions[index].run();
+			this._actions[index].run().catch(err => onUnexpectedError(err));
 		}
 	}
 

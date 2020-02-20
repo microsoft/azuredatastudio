@@ -10,9 +10,9 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 import { IAngularEventingService, AngularEventType, IAngularEvent } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/browser/newDashboardTabDialog';
-import { IDashboardTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
-import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
+import { IDashboardTab } from 'sql/workbench/services/dashboard/browser/common/interfaces';
 import { find, firstIndex } from 'vs/base/common/arrays';
+import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 
 export class EditDashboardAction extends Action {
 
@@ -81,9 +81,9 @@ export class ToggleMoreWidgetAction extends Action {
 	private static readonly ICON = 'toggle-more';
 
 	constructor(
-		private _actions: Array<IAction>,
-		private _context: any,
-		@IContextMenuService private _contextMenuService: IContextMenuService
+		private readonly _actions: Array<IAction>,
+		private readonly _context: CellContext,
+		@IContextMenuService private readonly _contextMenuService: IContextMenuService
 	) {
 		super(ToggleMoreWidgetAction.ID, ToggleMoreWidgetAction.LABEL, ToggleMoreWidgetAction.ICON);
 	}
@@ -104,9 +104,9 @@ export class DeleteWidgetAction extends Action {
 	private static readonly ICON = 'close';
 
 	constructor(
-		private _widgetId,
-		private _uri,
-		@IAngularEventingService private angularEventService: IAngularEventingService
+		private _widgetId: string,
+		private _uri: string,
+		@IAngularEventingService private readonly angularEventService: IAngularEventingService
 	) {
 		super(DeleteWidgetAction.ID, DeleteWidgetAction.LABEL, DeleteWidgetAction.ICON);
 	}
@@ -165,7 +165,7 @@ export class AddFeatureTabAction extends Action {
 		@IAngularEventingService private _angularEventService: IAngularEventingService
 	) {
 		super(AddFeatureTabAction.ID, AddFeatureTabAction.LABEL, AddFeatureTabAction.ICON);
-		this._register(subscriptionToDisposable(this._angularEventService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
+		this._register(this._angularEventService.onAngularEvent(this._uri)(event => this.handleDashboardEvent(event)));
 	}
 
 	run(): Promise<boolean> {

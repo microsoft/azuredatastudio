@@ -11,7 +11,7 @@ import * as nls from 'vscode-nls';
 import { JupyterController } from './jupyter/jupyterController';
 import { AppContext } from './common/appContext';
 import { ApiWrapper } from './common/apiWrapper';
-import { IExtensionApi } from './types';
+import { IExtensionApi, IPackageManageProvider } from './types';
 import { CellType } from './contracts/content';
 import { getErrorMessage, isEditorTitleFree } from './common/utils';
 import { NotebookUriHandler } from './protocol/notebookUriHandler';
@@ -36,6 +36,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.saveBook', () => untitledBookTreeViewProvider.saveJupyterBooks()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.searchBook', () => bookTreeViewProvider.searchJupyterBooks()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.searchUntitledBook', () => untitledBookTreeViewProvider.searchJupyterBooks()));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openBook', () => bookTreeViewProvider.openNewBook()));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', (context?: azdata.ConnectedContext) => {
 		let connectionProfile: azdata.IConnectionProfile = undefined;
@@ -103,7 +104,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		return undefined;
 	}
 
-	let workspaceFolders = vscode.workspace.workspaceFolders || [];
+	let workspaceFolders = vscode.workspace.workspaceFolders?.slice() ?? [];
 	const bookTreeViewProvider = new BookTreeViewProvider(workspaceFolders, extensionContext, false, BOOKS_VIEWID);
 	await bookTreeViewProvider.initialized;
 	const untitledBookTreeViewProvider = new BookTreeViewProvider([], extensionContext, true, READONLY_BOOKS_VIEWID);
@@ -115,6 +116,12 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	return {
 		getJupyterController() {
 			return controller;
+		},
+		registerPackageManager(providerId: string, packageManagerProvider: IPackageManageProvider): void {
+			controller.registerPackageManager(providerId, packageManagerProvider);
+		},
+		getPackageManagers() {
+			return controller.packageManageProviders;
 		}
 	};
 }

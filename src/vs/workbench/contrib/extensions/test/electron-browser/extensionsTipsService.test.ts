@@ -14,7 +14,7 @@ import {
 	IExtensionGalleryService, IGalleryExtensionAssets, IGalleryExtension, IExtensionManagementService,
 	DidInstallExtensionEvent, DidUninstallExtensionEvent, InstallExtensionEvent, IExtensionIdentifier
 } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { IExtensionEnablementService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
+import { IWorkbenchExtensionEnablementService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { ExtensionTipsService } from 'vs/workbench/contrib/extensions/browser/extensionTipsService';
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
@@ -22,7 +22,8 @@ import { Emitter } from 'vs/base/common/event';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtils';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { TestContextService, TestLifecycleService, TestSharedProcessService, productService } from 'vs/workbench/test/workbenchTestServices';
+import { TestContextService, TestLifecycleService, productService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestSharedProcessService } from 'vs/workbench/test/electron-browser/workbenchTestServices';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { URI } from 'vs/base/common/uri';
@@ -34,7 +35,7 @@ import { getGalleryExtensionId } from 'vs/platform/extensionManagement/common/ex
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { ConfigurationKey } from 'vs/workbench/contrib/extensions/common/extensions';
 import { ExtensionManagementService } from 'vs/platform/extensionManagement/node/extensionManagementService';
-import { TestExtensionEnablementService } from 'vs/workbench/services/extensionManagement/test/electron-browser/extensionEnablementService.test';
+import { TestExtensionEnablementService } from 'vs/workbench/services/extensionManagement/test/browser/extensionEnablementService.test';
 import { IURLService } from 'vs/platform/url/common/url';
 import { ITextModel } from 'vs/editor/common/model';
 import { IModelService } from 'vs/editor/common/services/modelService';
@@ -198,7 +199,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		instantiationService.stub(IExtensionManagementService, 'onDidInstallExtension', didInstallEvent.event);
 		instantiationService.stub(IExtensionManagementService, 'onUninstallExtension', uninstallEvent.event);
 		instantiationService.stub(IExtensionManagementService, 'onDidUninstallExtension', didUninstallEvent.event);
-		instantiationService.stub(IExtensionEnablementService, new TestExtensionEnablementService(instantiationService));
+		instantiationService.stub(IWorkbenchExtensionEnablementService, new TestExtensionEnablementService(instantiationService));
 		instantiationService.stub(ITelemetryService, NullTelemetryService);
 		instantiationService.stub(IURLService, URLService);
 		instantiationService.set(IProductService, {
@@ -206,7 +207,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 			...{
 				extensionTips: {
 					'ms-vscode.csharp': '{**/*.cs,**/project.json,**/global.json,**/*.csproj,**/*.sln,**/appsettings.json}',
-					'msjsdiag.debugger-for-chrome': '{**/*.ts,**/*.tsx**/*.js,**/*.jsx,**/*.es6,**/.babelrc}',
+					'msjsdiag.debugger-for-chrome': '{**/*.ts,**/*.tsx,**/*.js,**/*.jsx,**/*.es6,**/*.mjs,**/*.cjs,**/.babelrc}',
 					'lukehoban.Go': '**/*.go'
 				},
 				extensionImportantTips: {
@@ -495,31 +496,32 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		});
 	});
 
-	test('test global extensions are modified and recommendation change event is fired when an extension is ignored', () => {
+	test('test global extensions are modified and recommendation change event is fired when an extension is ignored', async () => {
 		const storageSetterTarget = sinon.spy();
 		const changeHandlerTarget = sinon.spy();
 		const ignoredExtensionId = 'Some.Extension';
 		instantiationService.stub(IStorageService, <any>{ // {{SQL CARBON EDIT}} strict-null-checks?
 			get: (a: string, b: StorageScope, c?: boolean) => a === 'extensionsAssistant/ignored_recommendations' ? '["ms-vscode.vscode"]' : c,
+			getBoolean: (a: string, b: StorageScope, c: boolean) => c,
 			store: (...args: any[]) => {
 				storageSetterTarget(...args);
 			}
 		});
 
-		return setUpFolderWorkspace('myFolder', []).then(() => {
-			testObject = instantiationService.createInstance(ExtensionTipsService);
-			testObject.onRecommendationChange(changeHandlerTarget);
-			testObject.toggleIgnoredRecommendation(ignoredExtensionId, true);
+		await setUpFolderWorkspace('myFolder', []);
+		testObject = instantiationService.createInstance(ExtensionTipsService);
+		testObject.onRecommendationChange(changeHandlerTarget);
+		testObject.toggleIgnoredRecommendation(ignoredExtensionId, true);
+		await testObject.loadWorkspaceConfigPromise;
 
-			assert.ok(changeHandlerTarget.calledOnce);
-			assert.ok(changeHandlerTarget.getCall(0).calledWithMatch({ extensionId: 'Some.Extension', isRecommended: false }));
-			assert.ok(storageSetterTarget.calledWithExactly('extensionsAssistant/ignored_recommendations', `["ms-vscode.vscode","${ignoredExtensionId.toLowerCase()}"]`, StorageScope.GLOBAL));
-		});
+		assert.ok(changeHandlerTarget.calledOnce);
+		assert.ok(changeHandlerTarget.getCall(0).calledWithMatch({ extensionId: 'Some.Extension', isRecommended: false }));
+		assert.ok(storageSetterTarget.calledWithExactly('extensionsAssistant/ignored_recommendations', `["ms-vscode.vscode","${ignoredExtensionId.toLowerCase()}"]`, StorageScope.GLOBAL));
 	});
 
 	test('ExtensionTipsService: Get file based recommendations from storage (old format)', () => {
 		const storedRecommendations = '["ms-vscode.csharp", "ms-python.python", "ms-vscode.vscode-typescript-tslint-plugin"]';
-		instantiationService.stub(IStorageService, <Partial<IStorageService>>{ get: (a: string, b: StorageScope, c?: string) => a === 'extensionsAssistant/recommendations' ? storedRecommendations : c });
+		instantiationService.stub(IStorageService, <Partial<IStorageService>>{ get: (a: string, b: StorageScope, c?: string) => a === 'extensionsAssistant/recommendations' ? storedRecommendations : c, getBoolean: (a: string, b: StorageScope, c: boolean) => c });
 
 		return setUpFolderWorkspace('myFolder', []).then(() => {
 			testObject = instantiationService.createInstance(ExtensionTipsService);
@@ -538,7 +540,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		const now = Date.now();
 		const tenDaysOld = 10 * milliSecondsInADay;
 		const storedRecommendations = `{"ms-vscode.csharp": ${now}, "ms-python.python": ${now}, "ms-vscode.vscode-typescript-tslint-plugin": ${now}, "lukehoban.Go": ${tenDaysOld}}`;
-		instantiationService.stub(IStorageService, <Partial<IStorageService>>{ get: (a: string, b: StorageScope, c?: string) => a === 'extensionsAssistant/recommendations' ? storedRecommendations : c });
+		instantiationService.stub(IStorageService, <Partial<IStorageService>>{ get: (a: string, b: StorageScope, c?: string) => a === 'extensionsAssistant/recommendations' ? storedRecommendations : c, getBoolean: (a: string, b: StorageScope, c: boolean) => c });
 
 		return setUpFolderWorkspace('myFolder', []).then(() => {
 			testObject = instantiationService.createInstance(ExtensionTipsService);

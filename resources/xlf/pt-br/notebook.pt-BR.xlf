@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/notebook/package" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/notebook/package" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="displayName">
         <source xml:lang="en">Notebook Core Extensions</source>
@@ -16,11 +16,11 @@
       </trans-unit>
       <trans-unit id="notebook.pythonPath.description">
         <source xml:lang="en">Local path to python installation used by Notebooks.</source>
-        <target state="translated">Caminho local para a instalação do Python usada por notebooks.</target>
+        <target state="translated">Caminho local para a instalação do Python usada por Notebooks.</target>
       </trans-unit>
       <trans-unit id="notebook.useExistingPython.description">
         <source xml:lang="en">Local path to a preexisting python installation used by Notebooks.</source>
-        <target state="translated">Caminho local para uma instalação do Python preexistente usada por notebooks.</target>
+        <target state="translated">Caminho local para uma instalação do Python preexistente usada por Notebooks.</target>
       </trans-unit>
       <trans-unit id="notebook.overrideEditorTheming.description">
         <source xml:lang="en">Override editor default settings in the Notebook editor. Settings include background color, current line color and border</source>
@@ -48,7 +48,7 @@
       </trans-unit>
       <trans-unit id="notebook.command.runactivecell">
         <source xml:lang="en">Run Cell</source>
-        <target state="translated">Executar célula</target>
+        <target state="translated">Executar Célula</target>
       </trans-unit>
       <trans-unit id="notebook.command.clearactivecellresult">
         <source xml:lang="en">Clear Cell Result</source>
@@ -56,19 +56,19 @@
       </trans-unit>
       <trans-unit id="notebook.command.runallcells">
         <source xml:lang="en">Run Cells</source>
-        <target state="translated">Executar células</target>
+        <target state="translated">Executar Células</target>
       </trans-unit>
       <trans-unit id="notebook.command.addcode">
         <source xml:lang="en">Add Code Cell</source>
-        <target state="translated">Adicionar célula de código</target>
+        <target state="translated">Adicionar Célula de Código</target>
       </trans-unit>
       <trans-unit id="notebook.command.addtext">
         <source xml:lang="en">Add Text Cell</source>
-        <target state="translated">Adicionar célula de texto</target>
+        <target state="translated">Adicionar Célula de Texto</target>
       </trans-unit>
       <trans-unit id="notebook.command.addcell">
         <source xml:lang="en">Add Cell</source>
-        <target state="translated">Adicionar célula</target>
+        <target state="translated">Adicionar Célula</target>
       </trans-unit>
       <trans-unit id="title.analyzeJupyterNotebook">
         <source xml:lang="en">Analyze in Notebook</source>
@@ -112,7 +112,7 @@
       </trans-unit>
       <trans-unit id="title.managePackages">
         <source xml:lang="en">Manage Packages</source>
-        <target state="translated">Gerenciar pacotes</target>
+        <target state="translated">Gerenciar Pacotes</target>
       </trans-unit>
       <trans-unit id="title.SQL19PreviewBook">
         <source xml:lang="en">SQL Server 2019 Guide</source>
@@ -124,7 +124,7 @@
       </trans-unit>
       <trans-unit id="title.saveJupyterBook">
         <source xml:lang="en">Save Book</source>
-        <target state="translated">Salvar o Book</target>
+        <target state="translated">Salvar Book</target>
       </trans-unit>
       <trans-unit id="title.searchJupyterBook">
         <source xml:lang="en">Search Book</source>
@@ -140,7 +140,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/common/utils" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/notebook/dist/common/utils" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="mkdirOutputMsg">
         <source xml:lang="en">... Creating {0}</source>
@@ -152,7 +152,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/common/localizedConstants" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/notebook/dist/common/localizedConstants" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="msgYes">
         <source xml:lang="en">Yes</source>
@@ -168,7 +168,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterServerInstallation" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/notebook/dist/jupyter/jupyterServerInstallation" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="msgInstallPkgProgress">
         <source xml:lang="en">Notebook dependencies installation is in progress</source>
@@ -236,7 +236,7 @@
       </trans-unit>
       <trans-unit id="upgradePackages.pipInstall">
         <source xml:lang="en">Installing {0}</source>
-        <target state="translated">Instalando o {0}</target>
+        <target state="translated">Instalando {0}</target>
       </trans-unit>
       <trans-unit id="msgInstallStart">
         <source xml:lang="en">Installing required packages to run Notebooks...</source>
@@ -248,7 +248,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/dialog/configurePythonDialog" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/notebook/dist/dialog/configurePythonDialog" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="configurePython.dialogName">
         <source xml:lang="en">Configure Python for Notebooks</source>
@@ -272,7 +272,7 @@
       </trans-unit>
       <trans-unit id="configurePython.selectFileLabel">
         <source xml:lang="en">Select</source>
-        <target state="translated">Selecione</target>
+        <target state="translated">Selecionar</target>
       </trans-unit>
       <trans-unit id="configurePython.installNote">
         <source xml:lang="en">This installation will take some time. It is recommended to not close the application until the installation is complete.</source>
@@ -292,7 +292,7 @@
       </trans-unit>
       <trans-unit id="configurePython.installationType">
         <source xml:lang="en">Installation Type</source>
-        <target state="translated">Tipo de instalação</target>
+        <target state="translated">Tipo de Instalação</target>
       </trans-unit>
       <trans-unit id="configurePython.newInstall">
         <source xml:lang="en">New Python installation</source>
@@ -304,7 +304,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/extension" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/notebook/dist/extension" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="msgSampleCodeDataFrame">
         <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
@@ -332,7 +332,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterController" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/notebook/dist/jupyter/jupyterController" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="notebookFileType">
         <source xml:lang="en">Notebooks</source>
@@ -340,7 +340,7 @@
       </trans-unit>
       <trans-unit id="unsupportedFileType">
         <source xml:lang="en">Only .ipynb Notebooks are supported</source>
-        <target state="translated">Somente há suporte para os Notebooks .ipynb</target>
+        <target state="translated">Somente os Notebooks .ipynb são compatíveis</target>
       </trans-unit>
       <trans-unit id="confirmReinstall">
         <source xml:lang="en">Are you sure you want to reinstall?</source>
@@ -348,7 +348,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterServerManager" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/notebook/dist/jupyter/jupyterServerManager" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="shutdownError">
         <source xml:lang="en">Shutdown of Notebook server failed: {0}</source>
@@ -356,15 +356,15 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/serverInstance" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/notebook/dist/jupyter/serverInstance" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="serverStopError">
         <source xml:lang="en">Error stopping Notebook Server: {0}</source>
-        <target state="translated">Erro ao parar o servidor do notebook: {0}</target>
+        <target state="translated">Erro ao parar o Servidor do Notebook: {0}</target>
       </trans-unit>
       <trans-unit id="notebookStartProcessExitPremature">
         <source xml:lang="en">Notebook process exited prematurely with error: {0}, StdErr Output: {1}</source>
-        <target state="translated">O processo do Notebook foi encerrado prematuramente com erro: {0}, Saída de StdErr: {1}</target>
+        <target state="translated">O processo do Notebook foi encerrado prematuramente com o erro: {0}, Saída de StdErr: {1}</target>
       </trans-unit>
       <trans-unit id="jupyterError">
         <source xml:lang="en">Error sent from Jupyter: {0}</source>
@@ -376,11 +376,11 @@
       </trans-unit>
       <trans-unit id="jupyterOutputMsgStart">
         <source xml:lang="en">... Starting Notebook server</source>
-        <target state="translated">...Iniciando o servidor do Notebook</target>
+        <target state="translated">... Iniciando o servidor do Notebook</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterNotebookProvider" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/notebook/dist/jupyter/jupyterNotebookProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="errNotebookUriMissing">
         <source xml:lang="en">A notebook path is required</source>
@@ -388,7 +388,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterSessionManager" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/notebook/dist/jupyter/jupyterSessionManager" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="errorStartBeforeReady">
         <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
@@ -396,15 +396,15 @@
       </trans-unit>
       <trans-unit id="connectionNotValid">
         <source xml:lang="en">Spark kernels require a connection to a SQL Server Big Data Cluster master instance.</source>
-        <target state="translated">Os kernels do Spark exigem uma conexão com uma instância mestra do cluster de Big data do SQL Server.</target>
+        <target state="translated">Os kernels do Spark exigem uma conexão com uma instância mestra do cluster de Big Data do SQL Server.</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/dialog/managePackages/managePackagesDialog" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/notebook/dist/dialog/managePackages/managePackagesDialog" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="managePackages.dialogName">
         <source xml:lang="en">Manage Packages</source>
-        <target state="translated">Gerenciar pacotes</target>
+        <target state="translated">Gerenciar Pacotes</target>
       </trans-unit>
       <trans-unit id="managePackages.cancelButtonText">
         <source xml:lang="en">Close</source>
@@ -412,11 +412,11 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/dialog/managePackages/installedPackagesTab" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/notebook/dist/dialog/managePackages/installedPackagesTab" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="managePackages.installedTabTitle">
         <source xml:lang="en">Installed</source>
-        <target state="translated">INSTALADO</target>
+        <target state="translated">Instalado</target>
       </trans-unit>
       <trans-unit id="managePackages.pkgNameColumn">
         <source xml:lang="en">Name</source>
@@ -432,7 +432,7 @@
       </trans-unit>
       <trans-unit id="managePackages.packageType">
         <source xml:lang="en">Package Type</source>
-        <target state="translated">Tipo de pacote</target>
+        <target state="translated">Tipo de Pacote</target>
       </trans-unit>
       <trans-unit id="managePackages.packageCount">
         <source xml:lang="en">{0} {1} packages found</source>
@@ -456,11 +456,11 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/dialog/managePackages/addNewPackageTab" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/notebook/dist/dialog/managePackages/addNewPackageTab" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="managePackages.invalidTextPlaceholder">
         <source xml:lang="en">N/A</source>
-        <target state="translated">N/A</target>
+        <target state="translated">N/D</target>
       </trans-unit>
       <trans-unit id="managePackages.packageNotFound">
         <source xml:lang="en">Could not find the specified package</source>
@@ -484,7 +484,7 @@
       </trans-unit>
       <trans-unit id="managePackages.packageNameTitle">
         <source xml:lang="en">Package Name</source>
-        <target state="translated">Nome do pacote</target>
+        <target state="translated">Nome do Pacote</target>
       </trans-unit>
       <trans-unit id="managePackages.packageVersionTitle">
         <source xml:lang="en">Package Version</source>
@@ -492,7 +492,7 @@
       </trans-unit>
       <trans-unit id="managePackages.packageSummaryTitle">
         <source xml:lang="en">Package Summary</source>
-        <target state="translated">Resumo do pacote</target>
+        <target state="translated">Resumo do Pacote</target>
       </trans-unit>
       <trans-unit id="managePackages.noVersionsFound">
         <source xml:lang="en">Could not find any valid versions for the specified package</source>
@@ -500,7 +500,7 @@
       </trans-unit>
       <trans-unit id="managePackages.packageRequestError">
         <source xml:lang="en">Package info request failed with error: {0} {1}</source>
-        <target state="translated">Falha na solicitação de informações do pacote com erro: {0} {1}</target>
+        <target state="translated">Falha na solicitação de informações do pacote com o erro: {0} {1}</target>
       </trans-unit>
       <trans-unit id="managePackages.backgroundInstallStarted">
         <source xml:lang="en">Installing {0} {1}</source>
@@ -516,7 +516,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/protocol/notebookUriHandler" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/notebook/dist/protocol/notebookUriHandler" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="notebook.unsupportedAction">
         <source xml:lang="en">Action {0} is not supported for this handler</source>
@@ -524,7 +524,7 @@
       </trans-unit>
       <trans-unit id="unsupportedScheme">
         <source xml:lang="en">Cannot open link {0} as only HTTP and HTTPS links are supported</source>
-        <target state="translated">Não é possível abrir o link {0} porque somente há suporte para os links HTTP e HTTPS</target>
+        <target state="translated">Não é possível abrir o link {0} porque somente os links HTTP e HTTPS são compatíveis</target>
       </trans-unit>
       <trans-unit id="notebook.confirmOpen">
         <source xml:lang="en">Download and open '{0}'?</source>
@@ -540,7 +540,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/book/bookTreeView" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/notebook/dist/book/bookTreeView" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="openBookError">
         <source xml:lang="en">Open book {0} failed: {1}</source>
@@ -556,7 +556,7 @@
       </trans-unit>
       <trans-unit id="openUntitledNotebookError">
         <source xml:lang="en">Open untitled notebook {0} as untitled failed: {1}</source>
-        <target state="translated">Abrir o notebook sem título {0} pois o sem título falhou: {1}</target>
+        <target state="translated">Abrir o notebook sem título {0} porque o sem título falhou: {1}</target>
       </trans-unit>
       <trans-unit id="allFiles">
         <source xml:lang="en">All Files</source>
@@ -572,11 +572,11 @@
       </trans-unit>
       <trans-unit id="confirmReplace">
         <source xml:lang="en">Folder already exists. Are you sure you want to delete and replace this folder?</source>
-        <target state="translated">A pasta já existe. Tem certeza de que pretende eliminar e substituir essa pasta?</target>
+        <target state="translated">A pasta já existe. Tem certeza de que deseja excluir e substituir essa pasta?</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/book/bookModel" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/notebook/dist/book/bookModel" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="missingFileError">
         <source xml:lang="en">Missing file : {0}</source>
@@ -592,7 +592,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/book/bookTreeItem" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/notebook/dist/book/bookTreeItem" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="openNotebookCommand">
         <source xml:lang="en">Open Notebook</source>
@@ -604,7 +604,7 @@
       </trans-unit>
       <trans-unit id="openExternalLinkCommand">
         <source xml:lang="en">Open External Link</source>
-        <target state="translated">Abrir link externo</target>
+        <target state="translated">Abrir Link Externo</target>
       </trans-unit>
     </body>
   </file>

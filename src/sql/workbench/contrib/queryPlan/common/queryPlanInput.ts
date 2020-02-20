@@ -3,12 +3,27 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
+import { EditorInput, EditorModel, IEditorInput } from 'vs/workbench/common/editor';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ILanguageAssociation } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
+
+export class QueryPlanConverter implements ILanguageAssociation {
+	static readonly languages = ['sqlplan'];
+
+	constructor(@IInstantiationService private instantiationService: IInstantiationService) { }
+
+	convertInput(activeEditor: IEditorInput): QueryPlanInput {
+		return this.instantiationService.createInstance(QueryPlanInput, activeEditor.resource);
+	}
+
+	createBase(activeEditor: QueryPlanInput): IEditorInput {
+		return undefined;
+	}
+}
 
 export class QueryPlanInput extends EditorInput {
 
@@ -19,7 +34,7 @@ export class QueryPlanInput extends EditorInput {
 	private _xml: string;
 
 	constructor(
-		private _uri: URI, private _connection: ConnectionManagementInfo,
+		private _uri: URI,
 		@IFileService private readonly fileService: IFileService
 	) {
 		super();
@@ -30,7 +45,7 @@ export class QueryPlanInput extends EditorInput {
 	}
 
 	public getTypeId(): string {
-		return UntitledEditorInput.ID;
+		return UntitledTextEditorInput.ID;
 	}
 
 	public getName(): string {
@@ -69,7 +84,7 @@ export class QueryPlanInput extends EditorInput {
 		return this._uniqueSelector;
 	}
 
-	public getConnectionInfo(): ConnectionManagementInfo {
-		return this._connection;
+	get resource(): URI | undefined {
+		return undefined;
 	}
 }

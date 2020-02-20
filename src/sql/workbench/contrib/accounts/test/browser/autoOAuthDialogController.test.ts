@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as TypeMoq from 'typemoq';
+import * as assert from 'assert';
 import { Emitter } from 'vs/base/common/event';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 
-import { AutoOAuthDialog } from 'sql/workbench/contrib/accounts/browser/autoOAuthDialog';
-import { AutoOAuthDialogController } from 'sql/workbench/contrib/accounts/browser/autoOAuthDialogController';
+import { AutoOAuthDialog } from 'sql/workbench/services/accountManagement/browser/autoOAuthDialog';
+import { AutoOAuthDialogController } from 'sql/workbench/services/accountManagement/browser/autoOAuthDialogController';
 import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
 import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/testErrorMessageService';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
@@ -70,7 +71,7 @@ suite('auto OAuth dialog controller tests', () => {
 
 	});
 
-	test('Open auto OAuth when the flyout is already open, return an error', (done) => {
+	test('Open auto OAuth when the flyout is already open, return an error', async () => {
 
 		// If: Open auto OAuth dialog first time
 		autoOAuthDialogController.openAutoOAuthDialog(providerId, title, message, userCode, uri);
@@ -80,8 +81,8 @@ suite('auto OAuth dialog controller tests', () => {
 		mockErrorMessageService.verify(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.never());
 
 		// If: a oauth flyout is already open
-		autoOAuthDialogController.openAutoOAuthDialog(providerId, title, message, userCode, uri)
-			.then(success => done('Failure: Expected error on 2nd dialog open'), error => done());
+		await autoOAuthDialogController.openAutoOAuthDialog(providerId, title, message, userCode, uri)
+			.then(success => assert.fail('Failure: Expected error on 2nd dialog open'), error => Promise.resolve());
 
 		// Then: An error dialog should have been opened
 		mockErrorMessageService.verify(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());

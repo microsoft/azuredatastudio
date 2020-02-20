@@ -25,19 +25,17 @@ export function setEnvironmentVariablesForInstallPaths(tools: ITool[]): void {
 	// Use Set class to make sure the collection only contains unique values.
 	let installationPaths: Set<string> = new Set<string>();
 	tools.forEach(t => {
-		if (t.installationPath) {
+		if (t.installationPathOrAdditionalInformation) {
 
 			// construct an env variable name with NoteBookEnvironmentVariablePrefix prefix
 			// and tool.name as suffix, making sure of using all uppercase characters and only _ as separator
 			const envVarName = getRuntimeBinaryPathEnvironmentVariableName(t.name);
-			process.env[envVarName] = t.installationPath;
-			installationPaths.add(path.dirname(t.installationPath));
-			console.log(`setting env var:'${envVarName}' to: '${t.installationPath}'`);
+			process.env[envVarName] = t.installationPathOrAdditionalInformation;
+			installationPaths.add(path.dirname(t.installationPathOrAdditionalInformation));
 		}
 	});
 	if (installationPaths.size > 0) {
 		const envVarToolsInstallationPath: string = [...installationPaths.values()].join(path.delimiter);
 		process.env[ToolsInstallPath] = envVarToolsInstallationPath;
-		console.log(`setting env var:'${ToolsInstallPath}' to: '${envVarToolsInstallationPath}'`);
 	}
 }

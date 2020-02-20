@@ -5,7 +5,7 @@
 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionComponentCallbacks, IConnectionComponentController, IConnectionValidateResult } from 'sql/workbench/services/connection/browser/connectionDialogService';
-import { AdvancedPropertiesController } from 'sql/workbench/contrib/connection/browser/advancedPropertiesController';
+import { AdvancedPropertiesController } from 'sql/workbench/services/connection/browser/advancedPropertiesController';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as Constants from 'sql/platform/connection/common/constants';
@@ -51,7 +51,8 @@ export class ConnectionController implements IConnectionComponentController {
 			onFetchDatabases: (serverName: string, authenticationType: string, userName?: string, password?: string) => this.onFetchDatabases(
 				serverName, authenticationType, userName, password).then(result => {
 					return result;
-				})
+				}),
+			onAzureTenantSelection: (azureTenantId?: string) => this.onAzureTenantSelection(azureTenantId),
 		}, providerName);
 		this._providerName = providerName;
 	}
@@ -101,6 +102,20 @@ export class ConnectionController implements IConnectionComponentController {
 		let timeoutOption = this._model.options[timeoutPropertyName];
 		if (timeoutOption === undefined || timeoutOption === null) {
 			this._model.options[timeoutPropertyName] = 30;
+		}
+	}
+
+	protected onAzureTenantSelection(azureTenantId?: string): void {
+		if (this._model.options.azureAccountToken !== undefined) {
+			this._model.options.azureAccountToken = undefined;
+		}
+
+		if (this._model.azureTenantId !== azureTenantId) {
+			this._model.azureTenantId = azureTenantId;
+		}
+
+		if (this._model.options.azureTenantId !== azureTenantId) {
+			this._model.azureTenantId = azureTenantId;
 		}
 	}
 

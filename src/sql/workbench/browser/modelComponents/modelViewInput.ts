@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 
 import { IEditorModel } from 'vs/platform/editor/common/editor';
-import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
+import { EditorInput, EditorModel, IEditorInput } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
@@ -89,11 +89,11 @@ export class ModelViewInput extends EditorInput {
 		return this._title;
 	}
 
-	public getResource(): URI {
+	public get resource(): URI | undefined {
 		if (this._options.resourceName) {
 			return URI.from({ scheme: ModelViewInput.Scheme, path: this._options.resourceName });
 		}
-		return super.getResource();
+		return undefined;
 	}
 
 	public get container(): HTMLElement {
@@ -137,21 +137,10 @@ export class ModelViewInput extends EditorInput {
 	}
 
 	/**
-	 * Subclasses should bring up a proper dialog for the user if the editor is dirty and return the result.
-	 */
-	confirmSave(): Promise<ConfirmResult> {
-		// TODO #2530 support save on close / confirm save. This is significantly more work
-		// as we need to either integrate with textFileService (seems like this isn't viable)
-		// or register our own complimentary service that handles the lifecycle operations such
-		// as close all, auto save etc.
-		return Promise.resolve(ConfirmResult.DONT_SAVE);
-	}
-
-	/**
 	 * Saves the editor if it is dirty. Subclasses return a promise with a boolean indicating the success of the operation.
 	 */
-	save(): Promise<boolean> {
-		return this._model.save();
+	save(): Promise<IEditorInput | undefined> {
+		return this._model.save().then(saved => saved ? this : undefined);
 	}
 
 	public dispose(): void {

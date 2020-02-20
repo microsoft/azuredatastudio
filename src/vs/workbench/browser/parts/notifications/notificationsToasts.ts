@@ -11,7 +11,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { NotificationsList } from 'vs/workbench/browser/parts/notifications/notificationsList';
 import { Event } from 'vs/base/common/event';
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
-import { Themable, NOTIFICATIONS_TOAST_BORDER } from 'vs/workbench/common/theme';
+import { Themable, NOTIFICATIONS_TOAST_BORDER, NOTIFICATIONS_BACKGROUND } from 'vs/workbench/common/theme';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { widgetShadow } from 'vs/platform/theme/common/colorRegistry';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
@@ -90,11 +90,11 @@ export class NotificationsToasts extends Themable {
 			this.model.notifications.forEach(notification => this.addToast(notification));
 
 			// Update toasts on notification changes
-			this._register(this.model.onDidNotificationChange(e => this.onDidNotificationChange(e)));
+			this._register(this.model.onDidChangeNotification(e => this.onDidChangeNotification(e)));
 		});
 
 		// Filter
-		this._register(this.model.onDidFilterChange(filter => {
+		this._register(this.model.onDidChangeFilter(filter => {
 			if (filter === NotificationsFilter.SILENT || filter === NotificationsFilter.ERROR) {
 				this.hide();
 			}
@@ -114,7 +114,7 @@ export class NotificationsToasts extends Themable {
 		]);
 	}
 
-	private onDidNotificationChange(e: INotificationChangeEvent): void {
+	private onDidChangeNotification(e: INotificationChangeEvent): void {
 		switch (e.kind) {
 			case NotificationChangeType.ADD:
 				return this.addToast(e.item);
@@ -194,12 +194,12 @@ export class NotificationsToasts extends Themable {
 		this.layoutContainer(maxDimensions.height);
 
 		// Update when item height changes due to expansion
-		itemDisposables.add(item.onDidExpansionChange(() => {
+		itemDisposables.add(item.onDidChangeExpansion(() => {
 			notificationList.updateNotificationsList(0, 1, [item]);
 		}));
 
 		// Update when item height potentially changes due to label changes
-		itemDisposables.add(item.onDidLabelChange(e => {
+		itemDisposables.add(item.onDidChangeLabel(e => {
 			if (!item.expanded) {
 				return; // dynamic height only applies to expanded notifications
 			}
@@ -421,6 +421,9 @@ export class NotificationsToasts extends Themable {
 
 	protected updateStyles(): void {
 		this.mapNotificationToToast.forEach(t => {
+			const backgroundColor = this.getColor(NOTIFICATIONS_BACKGROUND);
+			t.toast.style.background = backgroundColor ? backgroundColor : '';
+
 			const widgetShadowColor = this.getColor(widgetShadow);
 			t.toast.style.boxShadow = widgetShadowColor ? `0 0px 8px ${widgetShadowColor}` : '';
 
@@ -522,7 +525,7 @@ export class NotificationsToasts extends Themable {
 
 			// Hide or show toast based on context
 			this.setVisibility(toast, makeVisible);
-			toast.container.style.opacity = null;
+			toast.container.style.opacity = '';
 
 			if (makeVisible) {
 				visibleToasts++;

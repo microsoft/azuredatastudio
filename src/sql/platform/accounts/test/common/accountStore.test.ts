@@ -9,13 +9,13 @@ import AccountStore from 'sql/platform/accounts/common/accountStore';
 import { EventVerifierSingle } from 'sql/base/test/common/event';
 
 suite('Account Store Tests', () => {
-	test('AddOrUpdate - Uninitialized memento', done => {
+	test('AddOrUpdate - Uninitialized memento', () => {
 		// Setup: Create account store w/o initialized memento
-		let memento = {};
+		let memento: { [key: string]: azdata.Account[] } = {};
 		let as = new AccountStore(memento);
 
 		// If: I add an account to the store
-		as.addOrUpdate(account1)
+		return as.addOrUpdate(account1)
 			.then(result => {
 				// Then:
 				// ... I should have gotten back a result indicating the account was added
@@ -27,21 +27,17 @@ suite('Account Store Tests', () => {
 				assert.ok(Array.isArray(memento[AccountStore.MEMENTO_KEY]));
 				assert.equal(memento[AccountStore.MEMENTO_KEY].length, 1);
 				assertAccountEqual(memento[AccountStore.MEMENTO_KEY][0], account1);
-			})
-			.then(
-				() => done(),
-				e => done(e)
-			);
+			});
 	});
 
-	test('AddOrUpdate - Adds to accounts', done => {
+	test('AddOrUpdate - Adds to accounts', () => {
 		// Setup: Create account store with initialized memento with accounts
-		let memento = {};
+		let memento: { [key: string]: azdata.Account[] } = {};
 		memento[AccountStore.MEMENTO_KEY] = [];
 		let as = new AccountStore(memento);
 
 		// If: I add an account to the store
-		as.addOrUpdate(account1)
+		return as.addOrUpdate(account1)
 			.then(result => {
 				// Then:
 				// ... I should have gotten back a result indicating the account was added
@@ -53,14 +49,10 @@ suite('Account Store Tests', () => {
 				assert.ok(Array.isArray(memento[AccountStore.MEMENTO_KEY]));
 				assert.equal(memento[AccountStore.MEMENTO_KEY].length, 1);
 				assertAccountEqual(memento[AccountStore.MEMENTO_KEY][0], account1);
-			})
-			.then(
-				() => done(),
-				e => done(e)
-			);
+			});
 	});
 
-	test('AddOrUpdate - Updates account', done => {
+	test('AddOrUpdate - Updates account', () => {
 		// Setup: Create account store with initialized memento with accounts
 		let memento = getTestMemento();
 		let as = new AccountStore(memento);
@@ -71,7 +63,7 @@ suite('Account Store Tests', () => {
 			displayInfo: account1.displayInfo,
 			isStale: account1.isStale
 		};
-		as.addOrUpdate(param)
+		return as.addOrUpdate(param)
 			.then(result => {
 				// Then:
 				// ... I should have gotten back a result indicating the account was updated
@@ -84,20 +76,16 @@ suite('Account Store Tests', () => {
 				assert.equal(memento[AccountStore.MEMENTO_KEY].length, 2);
 				assertAccountEqual(memento[AccountStore.MEMENTO_KEY][0], account1);
 				assertAccountEqual(memento[AccountStore.MEMENTO_KEY][1], param);
-			})
-			.then(
-				() => done(),
-				e => done(e)
-			);
+			});
 	});
 
-	test('GetAccountsByProvider - Uninitialized memento', done => {
+	test('GetAccountsByProvider - Uninitialized memento', () => {
 		// Setup: Create account store w/o initialized memento
 		let memento = {};
 		let as = new AccountStore(memento);
 
 		// If: I get accounts by provider
-		as.getAccountsByProvider('azure')
+		return as.getAccountsByProvider('azure')
 			.then(result => {
 				// Then:
 				// ... I should get back an empty array
@@ -106,77 +94,61 @@ suite('Account Store Tests', () => {
 
 				// ... Memento should not have been written
 				assert.equal(Object.keys(memento).length, 0);
-			})
-			.then(
-				() => done(),
-				e => done(e)
-			);
+			});
 	});
 
-	test('GetAccountsByProvider - No accounts', done => {
+	test('GetAccountsByProvider - No accounts', () => {
 		// Setup: Create account store with initialized memento with accounts
-		let memento = {};
+		let memento: { [key: string]: azdata.Account[] } = {};
 		memento[AccountStore.MEMENTO_KEY] = [];
 		let as = new AccountStore(memento);
 
 		// If: I get accounts when there aren't any accounts
-		as.getAccountsByProvider('azure')
+		return as.getAccountsByProvider('azure')
 			.then(result => {
 				// Then: I should get back an empty array
 				assert.ok(Array.isArray(result));
 				assert.equal(result.length, 0);
-			})
-			.then(
-				() => done(),
-				e => done(e)
-			);
+			});
 	});
 
-	test('GetAccountsByProvider - Accounts, but no accounts for provider', done => {
+	test('GetAccountsByProvider - Accounts, but no accounts for provider', () => {
 		// Setup: Create account store with initialized memento with accounts
 		let memento = getTestMemento();
 		let as = new AccountStore(memento);
 
 		// If: I get accounts by provider that doesn't have accounts
-		as.getAccountsByProvider('cloudycloud')
+		return as.getAccountsByProvider('cloudycloud')
 			.then(result => {
 				// Then: I should get back an empty array
 				assert.ok(Array.isArray(result));
 				assert.equal(result.length, 0);
-			})
-			.then(
-				() => done(),
-				e => done(e)
-			);
+			});
 	});
 
-	test('GetAccountsByProvider - Accounts for provider', done => {
+	test('GetAccountsByProvider - Accounts for provider', () => {
 		// Setup: Create account store with initialized memento with accounts
 		let memento = getTestMemento();
 		let as = new AccountStore(memento);
 
 		// If: I get accounts by provider that has accounts
-		as.getAccountsByProvider('azure')
+		return as.getAccountsByProvider('azure')
 			.then(result => {
 				// Then: I should get the accounts
 				assert.ok(Array.isArray(result));
 				assert.equal(result.length, 2);
 				assertAccountEqual(result[0], memento[AccountStore.MEMENTO_KEY][0]);
 				assertAccountEqual(result[1], memento[AccountStore.MEMENTO_KEY][1]);
-			})
-			.then(
-				() => done(),
-				e => done(e)
-			);
+			});
 	});
 
-	test('GetAllAccounts - Uninitialized memento', done => {
+	test('GetAllAccounts - Uninitialized memento', () => {
 		// Setup: Create account store w/o initialized memento
 		let memento = {};
 		let as = new AccountStore(memento);
 
 		// If: I get accounts
-		as.getAllAccounts()
+		return as.getAllAccounts()
 			.then(result => {
 				// Then:
 				// ... I should get back an empty array
@@ -185,59 +157,47 @@ suite('Account Store Tests', () => {
 
 				// ... Memento should not have been written
 				assert.equal(Object.keys(memento).length, 0);
-			})
-			.then(
-				() => done(),
-				e => done(e)
-			);
+			});
 	});
 
-	test('GetAllAccounts - No accounts', done => {
+	test('GetAllAccounts - No accounts', () => {
 		// Setup: Create account store with initialized memento with accounts
-		let memento = {};
+		let memento: { [key: string]: azdata.Account[] } = {};
 		memento[AccountStore.MEMENTO_KEY] = [];
 		let as = new AccountStore(memento);
 
 		// If: I get accounts when there aren't any accounts
-		as.getAllAccounts()
+		return as.getAllAccounts()
 			.then(result => {
 				// Then: I should get back an empty array
 				assert.ok(Array.isArray(result));
 				assert.equal(result.length, 0);
-			})
-			.then(
-				() => done(),
-				e => done(e)
-			);
+			});
 	});
 
-	test('GetAllAccounts - Accounts', done => {
+	test('GetAllAccounts - Accounts', () => {
 		// Setup: Create account store with initialized memento with accounts
 		let memento = getTestMemento();
 		let as = new AccountStore(memento);
 
 		// If: I get accounts
-		as.getAllAccounts()
+		return as.getAllAccounts()
 			.then(result => {
 				// Then: I should get the accounts
 				assert.ok(Array.isArray(result));
 				assert.equal(result.length, 2);
 				assertAccountEqual(result[0], memento[AccountStore.MEMENTO_KEY][0]);
 				assertAccountEqual(result[1], memento[AccountStore.MEMENTO_KEY][1]);
-			})
-			.then(
-				() => done(),
-				e => done(e)
-			);
+			});
 	});
 
-	test('Remove - Uninitialized menento', done => {
+	test('Remove - Uninitialized menento', () => {
 		// Setup: Create account store w/o initialized memento
-		let memento = {};
+		let memento: { [key: string]: azdata.Account[] } = {};
 		let as = new AccountStore(memento);
 
 		// If: I remove an account when there's an uninitialized memento
-		as.remove(account1.key)
+		return as.remove(account1.key)
 			.then(result => {
 				// Then:
 				// ... I should get back false (no account removed)
@@ -246,21 +206,17 @@ suite('Account Store Tests', () => {
 				// ... The memento should have been initialized
 				assert.ok(Array.isArray(memento[AccountStore.MEMENTO_KEY]));
 				assert.equal(memento[AccountStore.MEMENTO_KEY].length, 0);
-			})
-			.then(
-				() => done(),
-				e => done(e)
-			);
+			});
 	});
 
-	test('Remove - Account does not exist', done => {
+	test('Remove - Account does not exist', () => {
 		// Setup: Create account store with initialized memento with accounts
-		let memento = {};
+		let memento: { [key: string]: azdata.Account[] } = {};
 		memento[AccountStore.MEMENTO_KEY] = [];
 		let as = new AccountStore(memento);
 
 		// If: I remove an account that doesn't exist
-		as.remove({ providerId: 'cloudyCloud', accountId: 'testyTest' })
+		return as.remove({ providerId: 'cloudyCloud', accountId: 'testyTest' })
 			.then(result => {
 				// Then:
 				// ... I should get back false (no account removed)
@@ -269,20 +225,16 @@ suite('Account Store Tests', () => {
 				// ... The memento should still be empty
 				assert.ok(Array.isArray(memento[AccountStore.MEMENTO_KEY]));
 				assert.equal(memento[AccountStore.MEMENTO_KEY].length, 0);
-			})
-			.then(
-				() => done(),
-				e => done(e)
-			);
+			});
 	});
 
-	test('Remove - Account exists', done => {
+	test('Remove - Account exists', () => {
 		// Setup: Create account store with initialized memento with accounts
 		let memento = getTestMemento();
 		let as = new AccountStore(memento);
 
 		// If: I remove an account that does exist
-		as.remove(account1.key)
+		return as.remove(account1.key)
 			.then(result => {
 				// Then:
 				// ... I should get back true (account removed)
@@ -292,24 +244,20 @@ suite('Account Store Tests', () => {
 				assert.ok(Array.isArray(memento[AccountStore.MEMENTO_KEY]));
 				assert.equal(memento[AccountStore.MEMENTO_KEY].length, 1);
 				assertAccountEqual(memento[AccountStore.MEMENTO_KEY][0], account2);
-			})
-			.then(
-				() => done(),
-				e => done(e)
-			);
+			});
 	});
 
-	test('Update - Uninitialized menento', done => {
+	test('Update - Uninitialized menento', () => {
 		// Setup:
 		// ... Create account store w/o initialized memento
-		let memento = {};
+		let memento: { [key: string]: azdata.Account[] } = {};
 		let as = new AccountStore(memento);
 
 		// ... Create a callback that we can verify was called
 		let updateCallback = new EventVerifierSingle<azdata.Account>();
 
 		// If: I update an account
-		as.update(account1.key, updateCallback.eventHandler)
+		return as.update(account1.key, updateCallback.eventHandler)
 			.then(result => {
 				// Then:
 				// ... I should get back false (account did not change)
@@ -321,16 +269,12 @@ suite('Account Store Tests', () => {
 
 				// ... The callback shouldn't have been called
 				updateCallback.assertNotFired();
-			})
-			.then(
-				() => done(),
-				e => done(e)
-			);
+			});
 	});
 
-	test('Update - Account does not exist', done => {
+	test('Update - Account does not exist', () => {
 		// Setup: Create account store with initialized memento with accounts
-		let memento = {};
+		let memento: { [key: string]: azdata.Account[] } = {};
 		memento[AccountStore.MEMENTO_KEY] = [];
 		let as = new AccountStore(memento);
 
@@ -338,7 +282,7 @@ suite('Account Store Tests', () => {
 		let updateCallback = new EventVerifierSingle<azdata.Account>();
 
 		// If: I update an account that doesn't exist
-		as.update({ accountId: 'testyTest', providerId: 'cloudyCloud' }, updateCallback.eventHandler)
+		return as.update({ accountId: 'testyTest', providerId: 'cloudyCloud' }, updateCallback.eventHandler)
 			.then(result => {
 				// Then:
 				// ... I should get back false (account did not change)
@@ -350,14 +294,10 @@ suite('Account Store Tests', () => {
 
 				// ... The callback shouldn't have been called
 				updateCallback.assertNotFired();
-			})
-			.then(
-				() => done(),
-				e => done(e)
-			);
+			});
 	});
 
-	test('Update - Account exists', done => {
+	test('Update - Account exists', () => {
 		// Setup: Create account store with initialized memento with accounts
 		let memento = getTestMemento();
 		let as = new AccountStore(memento);
@@ -369,7 +309,7 @@ suite('Account Store Tests', () => {
 		};
 
 		// If: I update an account that exists
-		as.update(account1.key, updateCallback)
+		return as.update(account1.key, updateCallback)
 			.then(result => {
 				// Then:
 				// ... I should get back true (account did change)
@@ -384,11 +324,7 @@ suite('Account Store Tests', () => {
 
 				// ... Account 2 should have stayed the same
 				assertAccountEqual(memento[AccountStore.MEMENTO_KEY][1], account2);
-			})
-			.then(
-				() => done(),
-				e => done(e)
-			);
+			});
 	});
 
 	// TODO: Test to make sure operations occur sequentially
@@ -422,7 +358,7 @@ const account2 = <azdata.Account>{
 };
 
 function getTestMemento() {
-	let memento = {};
+	let memento: { [key: string]: azdata.Account[] } = {};
 	memento[AccountStore.MEMENTO_KEY] = [account1, account2];
 
 	return memento;

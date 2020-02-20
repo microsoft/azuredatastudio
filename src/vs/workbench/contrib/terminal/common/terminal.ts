@@ -12,7 +12,7 @@ import { URI } from 'vs/base/common/uri';
 import { OperatingSystem } from 'vs/base/common/platform';
 import { IOpenFileRequest } from 'vs/platform/windows/common/windows';
 
-export const TERMINAL_PANEL_ID = 'workbench.panel.terminal';
+export const TERMINAL_VIEW_ID = 'workbench.panel.terminal';
 
 /** A context key that is set when there is at least one opened integrated terminal. */
 export const KEYBINDING_CONTEXT_TERMINAL_IS_OPEN = new RawContextKey<boolean>('terminalIsOpen', false);
@@ -87,14 +87,18 @@ export interface ITerminalConfiguration {
 	};
 	macOptionIsMeta: boolean;
 	macOptionClickForcesSelection: boolean;
-	rendererType: 'auto' | 'canvas' | 'dom';
+	rendererType: 'auto' | 'canvas' | 'dom' | 'experimentalWebgl';
 	rightClickBehavior: 'default' | 'copyPaste' | 'paste' | 'selectWord';
 	cursorBlinking: boolean;
 	cursorStyle: string;
+	cursorWidth: number;
 	drawBoldTextInBrightColors: boolean;
+	fastScrollSensitivity: number;
 	fontFamily: string;
 	fontWeight: FontWeight;
 	fontWeightBold: FontWeight;
+	minimumContrastRatio: number;
+	mouseWheelScrollSensitivity: number;
 	// fontLigatures: boolean;
 	fontSize: number;
 	letterSpacing: number;
@@ -113,12 +117,11 @@ export interface ITerminalConfiguration {
 		windows: { [key: string]: string };
 	};
 	showExitAlert: boolean;
-	experimentalBufferImpl: 'JsArray' | 'TypedArray';
 	splitCwd: 'workspaceRoot' | 'initial' | 'inherited';
 	windowsEnableConpty: boolean;
-	experimentalRefreshOnResume: boolean;
 	experimentalUseTitleEvent: boolean;
 	enableFileLinks: boolean;
+	unicodeVersion: '6' | '11';
 }
 
 export interface ITerminalConfigHelper {
@@ -286,7 +289,7 @@ export interface ITerminalProcessManager extends IDisposable {
 	readonly onBeforeProcessData: Event<IBeforeProcessDataEvent>;
 	readonly onProcessData: Event<string>;
 	readonly onProcessTitle: Event<string>;
-	readonly onProcessExit: Event<number>;
+	readonly onProcessExit: Event<number | undefined>;
 	readonly onProcessOverrideDimensions: Event<ITerminalDimensions | undefined>;
 	readonly onProcessResolvedShellLaunchConfig: Event<IShellLaunchConfig>;
 
@@ -325,7 +328,7 @@ export interface ITerminalProcessExtHostProxy extends IDisposable {
 	emitData(data: string): void;
 	emitTitle(title: string): void;
 	emitReady(pid: number, cwd: string): void;
-	emitExit(exitCode: number): void;
+	emitExit(exitCode: number | undefined): void;
 	emitOverrideDimensions(dimensions: ITerminalDimensions | undefined): void;
 	emitResolvedShellLaunchConfig(shellLaunchConfig: IShellLaunchConfig): void;
 	emitInitialCwd(initialCwd: string): void;
@@ -356,7 +359,7 @@ export interface IStartExtensionTerminalRequest {
 }
 
 export interface IAvailableShellsRequest {
-	(shells: IShellDefinition[]): void;
+	callback: (shells: IShellDefinition[]) => void;
 }
 
 export interface IDefaultShellAndArgsRequest {
@@ -389,7 +392,7 @@ export interface IWindowsShellHelper extends IDisposable {
  */
 export interface ITerminalChildProcess {
 	onProcessData: Event<string>;
-	onProcessExit: Event<number>;
+	onProcessExit: Event<number | undefined>;
 	onProcessReady: Event<{ pid: number, cwd: string }>;
 	onProcessTitleChanged: Event<string>;
 	onProcessOverrideDimensions?: Event<ITerminalDimensions | undefined>;
@@ -412,9 +415,7 @@ export interface ITerminalChildProcess {
 
 export const enum TERMINAL_COMMAND_ID {
 	FIND_NEXT = 'workbench.action.terminal.findNext',
-	FIND_NEXT_TERMINAL_FOCUS = 'workbench.action.terminal.findNextTerminalFocus',
 	FIND_PREVIOUS = 'workbench.action.terminal.findPrevious',
-	FIND_PREVIOUS_TERMINAL_FOCUS = 'workbench.action.terminal.findPreviousTerminalFocus',
 	TOGGLE = 'workbench.action.terminal.toggleTerminal',
 	KILL = 'workbench.action.terminal.kill',
 	QUICK_KILL = 'workbench.action.terminal.quickKill',
@@ -455,6 +456,7 @@ export const enum TERMINAL_COMMAND_ID {
 	CLEAR_SELECTION = 'workbench.action.terminal.clearSelection',
 	MANAGE_WORKSPACE_SHELL_PERMISSIONS = 'workbench.action.terminal.manageWorkspaceShellPermissions',
 	RENAME = 'workbench.action.terminal.rename',
+	RENAME_WITH_ARG = 'workbench.action.terminal.renameWithArg',
 	FIND_WIDGET_FOCUS = 'workbench.action.terminal.focusFindWidget',
 	FIND_WIDGET_HIDE = 'workbench.action.terminal.hideFindWidget',
 	QUICK_OPEN_TERM = 'workbench.action.quickOpenTerm',
@@ -469,9 +471,6 @@ export const enum TERMINAL_COMMAND_ID {
 	TOGGLE_FIND_REGEX = 'workbench.action.terminal.toggleFindRegex',
 	TOGGLE_FIND_WHOLE_WORD = 'workbench.action.terminal.toggleFindWholeWord',
 	TOGGLE_FIND_CASE_SENSITIVE = 'workbench.action.terminal.toggleFindCaseSensitive',
-	TOGGLE_FIND_REGEX_TERMINAL_FOCUS = 'workbench.action.terminal.toggleFindRegexTerminalFocus',
-	TOGGLE_FIND_WHOLE_WORD_TERMINAL_FOCUS = 'workbench.action.terminal.toggleFindWholeWordTerminalFocus',
-	TOGGLE_FIND_CASE_SENSITIVE_TERMINAL_FOCUS = 'workbench.action.terminal.toggleFindCaseSensitiveTerminalFocus',
 	NAVIGATION_MODE_EXIT = 'workbench.action.terminal.navigationModeExit',
 	NAVIGATION_MODE_FOCUS_NEXT = 'workbench.action.terminal.navigationModeFocusNext',
 	NAVIGATION_MODE_FOCUS_PREVIOUS = 'workbench.action.terminal.navigationModeFocusPrevious'

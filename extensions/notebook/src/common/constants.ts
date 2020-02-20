@@ -3,7 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
+import * as nls from 'vscode-nls';
+
+const localize = nls.loadMessageBundle();
 
 // CONFIG VALUES ///////////////////////////////////////////////////////////
 export const extensionOutputChannel = 'Notebooks';
@@ -27,6 +29,9 @@ export const jupyterReinstallDependenciesCommand = 'jupyter.reinstallDependencie
 export const jupyterAnalyzeCommand = 'jupyter.cmd.analyzeNotebook';
 export const jupyterManagePackages = 'jupyter.cmd.managePackages';
 export const jupyterConfigurePython = 'jupyter.cmd.configurePython';
+export const localhostName = 'localhost';
+export const localhostTitle = localize('managePackages.localhost', "localhost");
+export const PackageNotFoundError = localize('managePackages.packageNotFound', "Could not find the specified package");
 
 export enum BuiltInCommands {
 	SetContext = 'setContext'

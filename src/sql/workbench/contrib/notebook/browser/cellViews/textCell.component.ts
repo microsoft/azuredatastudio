@@ -6,27 +6,27 @@ import 'vs/css!./textCell';
 import 'vs/css!./media/markdown';
 import 'vs/css!./media/highlight';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener, ViewChildren, QueryList } from '@angular/core';
 
 import { localize } from 'vs/nls';
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
-import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as DOM from 'vs/base/browser/dom';
 
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
-import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
-import { ISanitizer, defaultSanitizer } from 'sql/workbench/contrib/notebook/browser/outputs/sanitizer';
+import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
+import { ISanitizer, defaultSanitizer } from 'sql/workbench/services/notebook/browser/outputs/sanitizer';
 import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions';
-import { useInProcMarkdown, convertVscodeResourceToFileInSubDirectories } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
+import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
+import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
+import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -39,6 +39,8 @@ const USER_SELECT_CLASS = 'actionselect';
 export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('preview', { read: ElementRef }) private output: ElementRef;
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
+	@ViewChildren(CodeComponent) private markdowncodeCell: QueryList<CodeComponent>;
+
 	@Input() cellModel: ICellModel;
 
 	@Input() set model(value: NotebookModel) {
@@ -66,6 +68,14 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._model.updateActiveCell(undefined);
 	}
 
+	@HostListener('document:keydown.meta.a', ['$event'])
+	onkeydown(e) {
+		// use preventDefault() to avoid invoking the editor's select all
+		// select the active .
+		e.preventDefault();
+		document.execCommand('selectAll');
+	}
+
 	private _content: string | string[];
 	private _lastTrustedMode: boolean;
 	private isEditMode: boolean;
@@ -83,9 +93,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(ICommandService) private _commandService: ICommandService,
-		@Inject(IConfigurationService) private configurationService: IConfigurationService,
-
 	) {
 		super();
 		this.isEditMode = true;
@@ -112,6 +119,15 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	get activeCellId(): string {
 		return this._activeCellId;
+	}
+	/**
+	 * Returns the code editor of makrdown cell in edit mode.
+	 */
+	getEditor(): BaseTextEditor | undefined {
+		if (this.markdowncodeCell.length > 0) {
+			return this.markdowncodeCell.first.getEditor();
+		}
+		return undefined;
 	}
 
 	private setLoading(isLoading: boolean): void {
@@ -145,6 +161,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 	}
 
+	public cellGuid(): string {
+		return this.cellModel.cellGuid;
+	}
+
 	public get isTrusted(): boolean {
 		return this.model.trustedMode;
 	}
@@ -171,25 +191,15 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this._content = this.cellModel.source;
 			}
 
-			if (useInProcMarkdown(this.configurationService)) {
-				this.markdownRenderer.setNotebookURI(this.cellModel.notebookModel.notebookUri);
-				this.markdownResult = this.markdownRenderer.render({
-					isTrusted: true,
-					value: Array.isArray(this._content) ? this._content.join('') : this._content
-				});
-				this.markdownResult.element.innerHTML = this.sanitizeContent(this.markdownResult.element.innerHTML);
-				this.setLoading(false);
-				let outputElement = <HTMLElement>this.output.nativeElement;
-				outputElement.innerHTML = this.markdownResult.element.innerHTML;
-			} else {
-				this._commandService.executeCommand<string>('notebook.showPreview', this.cellModel.notebookModel.notebookUri, this._content).then((htmlcontent) => {
-					htmlcontent = convertVscodeResourceToFileInSubDirectories(htmlcontent, this.cellModel);
-					htmlcontent = this.sanitizeContent(htmlcontent);
-					let outputElement = <HTMLElement>this.output.nativeElement;
-					outputElement.innerHTML = htmlcontent;
-					this.setLoading(false);
-				});
-			}
+			this.markdownRenderer.setNotebookURI(this.cellModel.notebookModel.notebookUri);
+			this.markdownResult = this.markdownRenderer.render({
+				isTrusted: true,
+				value: Array.isArray(this._content) ? this._content.join('') : this._content
+			});
+			this.markdownResult.element.innerHTML = this.sanitizeContent(this.markdownResult.element.innerHTML);
+			this.setLoading(false);
+			let outputElement = <HTMLElement>this.output.nativeElement;
+			outputElement.innerHTML = this.markdownResult.element.innerHTML;
 		}
 	}
 
@@ -258,5 +268,67 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	protected toggleMoreActionsButton(isActiveOrHovered: boolean) {
 		this._cellToggleMoreActions.toggleVisible(!isActiveOrHovered);
+	}
+
+	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
+		if (oldDecorationRange) {
+			this.removeDecoration(oldDecorationRange);
+		}
+
+		if (newDecorationRange) {
+			this.addDecoration(newDecorationRange);
+		}
+	}
+
+	private addDecoration(range: NotebookRange): void {
+		if (range && this.output && this.output.nativeElement) {
+			let children = this.getHtmlElements();
+			let ele = children[range.startLineNumber - 1];
+			if (ele) {
+				DOM.addClass(ele, 'rangeHighlight');
+				ele.scrollIntoView({ behavior: 'smooth' });
+			}
+		}
+	}
+
+	private removeDecoration(range: NotebookRange): void {
+		if (range && this.output && this.output.nativeElement) {
+			let children = this.getHtmlElements();
+			let ele = children[range.startLineNumber - 1];
+			if (ele) {
+				DOM.removeClass(ele, 'rangeHighlight');
+			}
+		}
+	}
+
+	private getHtmlElements(): any[] {
+		let hostElem = this.output.nativeElement;
+		let children = [];
+		for (let element of hostElem.children) {
+			if (element.nodeName.toLowerCase() === 'table') {
+				// add table header and table rows.
+				children.push(element.children[0]);
+				for (let trow of element.children[1].children) {
+					children.push(trow);
+				}
+			} else if (element.children.length > 1) {
+				children = children.concat(this.getChildren(element));
+			} else {
+				children.push(element);
+			}
+		}
+		return children;
+	}
+
+	private getChildren(parent: any): any[] {
+		let children: any = [];
+		if (parent.children.length > 1 && parent.nodeName.toLowerCase() !== 'li' && parent.nodeName.toLowerCase() !== 'p') {
+			for (let child of parent.children) {
+				children = children.concat(this.getChildren(child));
+			}
+		} else {
+			return parent;
+		}
+		return children;
 	}
 }

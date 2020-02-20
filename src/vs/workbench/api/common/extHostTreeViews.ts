@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-import * as vscode from 'vscode';
+import type * as vscode from 'vscode';
 import { basename } from 'vs/base/common/resources';
 import { URI } from 'vs/base/common/uri';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -95,12 +95,10 @@ export class ExtHostTreeViews implements ExtHostTreeViewsShape {
 			get onDidChangeVisibility() { return treeView.onDidChangeVisibility; },
 			get message() { return treeView.message; },
 			set message(message: string) {
-				checkProposedApiEnabled(extension);
 				treeView.message = message;
 			},
 			get title() { return treeView.title; },
 			set title(title: string) {
-				checkProposedApiEnabled(extension);
 				treeView.title = title;
 			},
 			reveal: (element: T, options?: IRevealOptions): Promise<void> => {
@@ -202,7 +200,13 @@ export class ExtHostTreeView<T> extends Disposable {
 	private refreshPromise: Promise<void> = Promise.resolve();
 	private refreshQueue: Promise<void> = Promise.resolve();
 
-	constructor(private viewId: string, options: vscode.TreeViewOptions<T>, private proxy: MainThreadTreeViewsShape, private commands: CommandsConverter, private logService: ILogService, private extension: IExtensionDescription) {
+	constructor(
+		private viewId: string, options: vscode.TreeViewOptions<T>,
+		private proxy: MainThreadTreeViewsShape,
+		private commands: CommandsConverter,
+		private logService: ILogService,
+		private extension: IExtensionDescription
+	) {
 		super();
 		if (extension.contributes && extension.contributes.views) {
 			for (const location in extension.contributes.views) {
@@ -240,7 +244,7 @@ export class ExtHostTreeView<T> extends Disposable {
 				result.message = true;
 			}
 			return result;
-		}, 200)(({ message, elements }) => {
+		}, 200, true)(({ message, elements }) => {
 			if (elements.length) {
 				this.refreshQueue = this.refreshQueue.then(() => {
 					const _promiseCallback = promiseCallback;
@@ -257,7 +261,7 @@ export class ExtHostTreeView<T> extends Disposable {
 	getChildren(parentHandle: TreeItemHandle | Root): Promise<ITreeItem[]> {
 		const parentElement = parentHandle ? this.getExtensionElement(parentHandle) : undefined;
 		if (parentHandle && !parentElement) {
-			console.error(`No tree item with id \'${parentHandle}\' found.`);
+			this.logService.error(`No tree item with id \'${parentHandle}\' found.`);
 			return Promise.resolve([]);
 		}
 
@@ -425,7 +429,7 @@ export class ExtHostTreeView<T> extends Disposable {
 				// check if an ancestor of extElement is already in the elements to update list
 				let currentNode: TreeNode | undefined = elementNode;
 				while (currentNode && currentNode.parent && !elementsToUpdate.has(currentNode.parent.item.handle)) {
-					const parentElement = this.elements.get(currentNode.parent.item.handle);
+					const parentElement: T | undefined = this.elements.get(currentNode.parent.item.handle);
 					currentNode = parentElement ? this.nodes.get(parentElement) : undefined;
 				}
 				if (currentNode && !currentNode.parent) {

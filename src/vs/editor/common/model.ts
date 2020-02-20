@@ -14,7 +14,7 @@ import { IModelContentChange, IModelContentChangedEvent, IModelDecorationsChange
 import { SearchData } from 'vs/editor/common/model/textModelSearch';
 import { LanguageId, LanguageIdentifier, FormattingOptions } from 'vs/editor/common/modes';
 import { ThemeColor } from 'vs/platform/theme/common/themeService';
-import { MultilineTokens } from 'vs/editor/common/model/tokensStore';
+import { MultilineTokens, MultilineTokens2 } from 'vs/editor/common/model/tokensStore';
 
 /**
  * Vertical Lane in the overview ruler of the editor.
@@ -30,7 +30,8 @@ export enum OverviewRulerLane {
  * Position in the minimap to render the decoration.
  */
 export enum MinimapPosition {
-	Inline = 1
+	Inline = 1,
+	Gutter = 2
 }
 
 export interface IDecorationOptions {
@@ -289,6 +290,7 @@ export const enum EndOfLineSequence {
 
 /**
  * An identifier for a single edit operation.
+ * @internal
  */
 export interface ISingleEditOperationIdentifier {
 	/**
@@ -333,7 +335,7 @@ export interface IIdentifiedSingleEditOperation {
 	/**
 	 * The range to replace. This can be empty to emulate a simple insert.
 	 */
-	range: Range;
+	range: IRange;
 	/**
 	 * The text to replace with. This can be null to emulate a simple delete.
 	 */
@@ -356,6 +358,27 @@ export interface IIdentifiedSingleEditOperation {
 	_isTracked?: boolean;
 }
 
+export interface IValidEditOperation {
+	/**
+	 * An identifier associated with this single edit operation.
+	 * @internal
+	 */
+	identifier: ISingleEditOperationIdentifier | null;
+	/**
+	 * The range to replace. This can be empty to emulate a simple insert.
+	 */
+	range: Range;
+	/**
+	 * The text to replace with. This can be null to emulate a simple delete.
+	 */
+	text: string | null;
+	/**
+	 * This indicates that this operation has "insert" semantics.
+	 * i.e. forceMoveMarkers = true => if `range` is collapsed, all markers at the position will be moved.
+	 */
+	forceMoveMarkers: boolean;
+}
+
 /**
  * A callback that can compute the cursor state after applying a series of edit operations.
  */
@@ -363,7 +386,7 @@ export interface ICursorStateComputer {
 	/**
 	 * A callback that can compute the resulting cursors state after some edit operations have been executed.
 	 */
-	(inverseEditOperations: IIdentifiedSingleEditOperation[]): Selection[] | null;
+	(inverseEditOperations: IValidEditOperation[]): Selection[] | null;
 }
 
 export class TextModelResolvedOptions {
@@ -385,7 +408,7 @@ export class TextModelResolvedOptions {
 		defaultEOL: DefaultEndOfLine;
 		trimAutoWhitespace: boolean;
 	}) {
-		this.tabSize = src.tabSize | 0;
+		this.tabSize = Math.max(1, src.tabSize | 0);
 		this.indentSize = src.tabSize | 0;
 		this.insertSpaces = Boolean(src.insertSpaces);
 		this.defaultEOL = src.defaultEOL | 0;
@@ -792,6 +815,11 @@ export interface ITextModel {
 	setTokens(tokens: MultilineTokens[]): void;
 
 	/**
+	 * @internal
+	 */
+	setSemanticTokens(tokens: MultilineTokens2[] | null): void;
+
+	/**
 	 * Flush all tokenization state.
 	 * @internal
 	 */
@@ -892,7 +920,7 @@ export interface ITextModel {
 	 * @param position The position at which to start the search.
 	 * @internal
 	 */
-	findEnclosingBrackets(position: IPosition): [Range, Range] | null;
+	findEnclosingBrackets(position: IPosition, maxDuration?: number): [Range, Range] | null;
 
 	/**
 	 * Given a `position`, if the position is on top or near a bracket,
@@ -1056,7 +1084,7 @@ export interface ITextModel {
 	 * @param operations The edit operations.
 	 * @return The inverse edit operations, that, when applied, will bring the model back to the previous state.
 	 */
-	applyEdits(operations: IIdentifiedSingleEditOperation[]): IIdentifiedSingleEditOperation[];
+	applyEdits(operations: IIdentifiedSingleEditOperation[]): IValidEditOperation[];
 
 	/**
 	 * Change the end of line sequence without recording in the undo stack.
@@ -1195,6 +1223,27 @@ export interface ITextBufferFactory {
 /**
  * @internal
  */
+export const enum ModelConstants {
+	FIRST_LINE_DETECTION_LENGTH_LIMIT = 1000
+}
+
+/**
+ * @internal
+ */
+export class ValidAnnotatedEditOperation implements IIdentifiedSingleEditOperation {
+	constructor(
+		public readonly identifier: ISingleEditOperationIdentifier | null,
+		public readonly range: Range,
+		public readonly text: string | null,
+		public readonly forceMoveMarkers: boolean,
+		public readonly isAutoWhitespaceEdit: boolean,
+		public readonly _isTracked: boolean,
+	) { }
+}
+
+/**
+ * @internal
+ */
 export interface ITextBuffer {
 	equals(other: ITextBuffer): boolean;
 	mightContainRTL(): boolean;
@@ -1220,7 +1269,7 @@ export interface ITextBuffer {
 	getLineLastNonWhitespaceColumn(lineNumber: number): number;
 
 	setEOL(newEOL: '\r\n' | '\n'): void;
-	applyEdits(rawOperations: IIdentifiedSingleEditOperation[], recordTrimAutoWhitespace: boolean): ApplyEditsResult;
+	applyEdits(rawOperations: ValidAnnotatedEditOperation[], recordTrimAutoWhitespace: boolean): ApplyEditsResult;
 	findMatchesLineByLine(searchRange: Range, searchData: SearchData, captureMatches: boolean, limitResultCount: number): FindMatch[];
 }
 
@@ -1230,7 +1279,7 @@ export interface ITextBuffer {
 export class ApplyEditsResult {
 
 	constructor(
-		public readonly reverseEdits: IIdentifiedSingleEditOperation[],
+		public readonly reverseEdits: IValidEditOperation[],
 		public readonly changes: IInternalModelContentChange[],
 		public readonly trimAutoWhitespaceLineNumbers: number[] | null
 	) { }

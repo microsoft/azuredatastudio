@@ -5,8 +5,8 @@
 
 import 'vs/css!./media/messagePanel';
 import { IMessagesActionContext, CopyMessagesAction, CopyAllMessagesAction } from './actions';
-import QueryRunner, { IQueryMessage } from 'sql/platform/query/common/queryRunner';
-import { IExpandableTree } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
+import QueryRunner, { IQueryMessage } from 'sql/workbench/services/query/common/queryRunner';
+import { IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 
 import { ISelectionData } from 'azdata';
 
@@ -24,12 +24,11 @@ import { isArray } from 'vs/base/common/types';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { $, Dimension, createStyleSheet } from 'vs/base/browser/dom';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { resultsErrorColor } from 'sql/platform/theme/common/colors';
-import { MessagePanelState } from 'sql/workbench/contrib/query/common/messagePanelState';
+import { MessagePanelState } from 'sql/workbench/common/editor/query/messagePanelState';
 
 export interface IResultMessageIntern extends IQueryMessage {
 	id?: string;
@@ -76,7 +75,6 @@ export class MessagePanel extends Disposable {
 	constructor(
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IThemeService private readonly themeService: IThemeService,
-		@IClipboardService private readonly clipboardService: IClipboardService,
 		@IContextMenuService private readonly contextMenuService: IContextMenuService
 	) {
 		super();
@@ -107,7 +105,7 @@ export class MessagePanel extends Disposable {
 					selection: document.getSelection(),
 					tree: this.tree,
 				};
-				let copyMessageAction = instantiationService.createInstance(CopyMessagesAction, this.clipboardService);
+				let copyMessageAction = instantiationService.createInstance(CopyMessagesAction);
 				copyMessageAction.run(context);
 				event.preventDefault();
 				event.stopPropagation();
@@ -134,8 +132,8 @@ export class MessagePanel extends Disposable {
 				},
 				getActions: () => {
 					return [
-						instantiationService.createInstance(CopyMessagesAction, this.clipboardService),
-						instantiationService.createInstance(CopyAllMessagesAction, this.tree, this.clipboardService)
+						instantiationService.createInstance(CopyMessagesAction),
+						instantiationService.createInstance(CopyAllMessagesAction, this.tree)
 					];
 				},
 				getActionsContext: () => {

@@ -11,27 +11,27 @@ import {
 	RefreshAction, AddServerAction, DeleteConnectionAction, DisconnectConnectionAction,
 	ActiveConnectionsFilterAction, RecentConnectionsFilterAction
 }
-	from 'sql/workbench/contrib/objectExplorer/browser/connectionTreeAction';
+	from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/testErrorMessageService';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
-import * as  LocalizedConstants from 'sql/workbench/contrib/connection/common/localizedConstants';
+import * as  LocalizedConstants from 'sql/workbench/services/connection/browser/localizedConstants';
 import { ObjectExplorerService, ObjectExplorerNodeEventArgs } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
-import { TreeNode } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
-import { NodeType } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
+import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
+import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import { ServerTreeDataSource } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeDataSource';
-import { Emitter } from 'vs/base/common/event';
+import { ServerTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/serverTreeDataSource';
+import { Emitter, Event } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
-import { ObjectExplorerActionsContext } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerActions';
+import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 import { IConnectionResult, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
-import { TreeSelectionHandler } from 'sql/workbench/contrib/objectExplorer/browser/treeSelectionHandler';
+import { TreeSelectionHandler } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { UNSAVED_GROUP_ID, mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { $ } from 'vs/base/browser/dom';
 import { OEManageConnectionAction } from 'sql/workbench/contrib/dashboard/browser/dashboardActions';
-import { IViewsService, IView, ViewContainer, IViewDescriptorCollection } from 'vs/workbench/common/views';
+import { IViewsService, IView } from 'vs/workbench/common/views';
 import { ConsoleLogService } from 'vs/platform/log/common/log';
 
 suite('SQL Connection Tree Action tests', () => {
@@ -56,7 +56,7 @@ suite('SQL Connection Tree Action tests', () => {
 		connectionManagementService.callBase = true;
 		connectionManagementService.setup(x => x.isConnected(undefined, TypeMoq.It.isAny())).returns(() => isConnectedReturnValue);
 		connectionManagementService.setup(x => x.connect(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny(), undefined)).returns(() => Promise.resolve(connectionResult));
-		connectionManagementService.setup(x => x.disconnect(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
+		connectionManagementService.setup(x => x.disconnect(TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		connectionManagementService.setup(x => x.findExistingConnection(TypeMoq.It.isAny())).returns(() => undefined);
 		connectionManagementService.setup(x => x.showDashboard(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 		connectionManagementService.setup(x => x.isProfileConnected(TypeMoq.It.isAny())).returns(() => isConnectedReturnValue);
@@ -83,7 +83,7 @@ suite('SQL Connection Tree Action tests', () => {
 		return objectExplorerService;
 	}
 
-	test('ManageConnectionAction - test if connect is called for manage action if not already connected', (done) => {
+	test('ManageConnectionAction - test if connect is called for manage action if not already connected', () => {
 		let isConnectedReturnValue: boolean = false;
 		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
 			connectionName: 'Test',
@@ -109,15 +109,22 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 
 		const viewsService = new class implements IViewsService {
+			getActiveViewWithId<T extends IView>(id: string): T | null {
+				throw new Error('Method not implemented.');
+			}
 			_serviceBrand: undefined;
-			openView(id: string, focus?: boolean): Promise<IView> {
-				return Promise.resolve({
+			openView<T extends IView>(id: string, focus?: boolean): Promise<T | null> {
+				return Promise.resolve(<T><any>{
 					id: '',
 					serversTree: undefined
 				});
 			}
-			getViewDescriptors(container: ViewContainer): IViewDescriptorCollection {
-				throw new Error('Method not implemented.');
+			onDidChangeViewVisibility: Event<{ id: string, visible: boolean }> = Event.None;
+			closeView(id: string): void {
+				return;
+			}
+			isViewVisible(id: string): boolean {
+				return true;
 			}
 		};
 
@@ -127,12 +134,12 @@ suite('SQL Connection Tree Action tests', () => {
 		let actionContext = new ObjectExplorerActionsContext();
 		actionContext.connectionProfile = connection.toIConnectionProfile();
 		actionContext.isConnectionNode = true;
-		manageConnectionAction.run(actionContext).then((value) => {
+		return manageConnectionAction.run(actionContext).then(() => {
 			connectionManagementService.verify(x => x.connect(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny(), undefined), TypeMoq.Times.once());
-		}).then(() => done(), (err) => done(err));
+		});
 	});
 
-	test('ManageConnectionAction - test if connect is called for manage action on database node if not already connected', (done) => {
+	test('ManageConnectionAction - test if connect is called for manage action on database node if not already connected', () => {
 		let isConnectedReturnValue: boolean = false;
 		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
 			connectionName: 'Test',
@@ -165,13 +172,13 @@ suite('SQL Connection Tree Action tests', () => {
 		let actionContext = new ObjectExplorerActionsContext();
 		actionContext.connectionProfile = connection.toIConnectionProfile();
 		actionContext.nodeInfo = treeNode.toNodeInfo();
-		manageConnectionAction.run(actionContext).then((value) => {
+		return manageConnectionAction.run(actionContext).then((value) => {
 			connectionManagementService.verify(x => x.showDashboard(TypeMoq.It.isAny()), TypeMoq.Times.once());
-		}).then(() => done(), (err) => done(err));
+		});
 	});
 
 
-	test('DisconnectConnectionAction - test if disconnect is called when profile is connected', (done) => {
+	test('DisconnectConnectionAction - test if disconnect is called when profile is connected', () => {
 		let isConnectedReturnValue: boolean = true;
 		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
 			connectionName: 'Test',
@@ -194,23 +201,23 @@ suite('SQL Connection Tree Action tests', () => {
 
 		let actionContext = new ObjectExplorerActionsContext();
 		actionContext.connectionProfile = connection.toIConnectionProfile();
-		changeConnectionAction.run(actionContext).then((value) => {
+		return changeConnectionAction.run(actionContext).then((value) => {
 			connectionManagementService.verify(x => x.isProfileConnected(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 			connectionManagementService.verify(x => x.disconnect(TypeMoq.It.isAny()), TypeMoq.Times.once());
-		}).then(() => done(), (err) => done(err));
+		});
 	});
 
-	test('AddServerAction - test if show connection dialog is called', (done) => {
+	test('AddServerAction - test if show connection dialog is called', () => {
 		let connectionManagementService = createConnectionManagementService(true, undefined);
 
 		let connectionTreeAction: AddServerAction = new AddServerAction(AddServerAction.ID, AddServerAction.LABEL, connectionManagementService.object);
 		let conProfGroup = new ConnectionProfileGroup('testGroup', undefined, 'testGroup', undefined, undefined);
-		connectionTreeAction.run(conProfGroup).then((value) => {
+		return connectionTreeAction.run(conProfGroup).then((value) => {
 			connectionManagementService.verify(x => x.showConnectionDialog(undefined, undefined, TypeMoq.It.isAny()), TypeMoq.Times.once());
-		}).then(() => done(), (err) => done(err));
+		});
 	});
 
-	test('ActiveConnectionsFilterAction - test if view is called to display filtered results', (done) => {
+	test('ActiveConnectionsFilterAction - test if view is called to display filtered results', () => {
 		let instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny())).returns((input) => {
 			return new Promise((resolve) => resolve({}));
@@ -220,12 +227,12 @@ suite('SQL Connection Tree Action tests', () => {
 		serverTreeView.setup(x => x.showFilteredTree(TypeMoq.It.isAnyString()));
 		serverTreeView.setup(x => x.refreshTree());
 		let connectionTreeAction: ActiveConnectionsFilterAction = new ActiveConnectionsFilterAction(ActiveConnectionsFilterAction.ID, ActiveConnectionsFilterAction.LABEL, serverTreeView.object);
-		connectionTreeAction.run().then((value) => {
+		return connectionTreeAction.run().then((value) => {
 			serverTreeView.verify(x => x.showFilteredTree('active'), TypeMoq.Times.once());
-		}).then(() => done(), (err) => done(err));
+		});
 	});
 
-	test('ActiveConnectionsFilterAction - test if view is called refresh results if action is toggled', (done) => {
+	test('ActiveConnectionsFilterAction - test if view is called refresh results if action is toggled', () => {
 		let instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny())).returns((input) => {
 			return new Promise((resolve) => resolve({}));
@@ -236,12 +243,12 @@ suite('SQL Connection Tree Action tests', () => {
 		serverTreeView.setup(x => x.refreshTree());
 		let connectionTreeAction: ActiveConnectionsFilterAction = new ActiveConnectionsFilterAction(ActiveConnectionsFilterAction.ID, ActiveConnectionsFilterAction.LABEL, serverTreeView.object);
 		connectionTreeAction.isSet = true;
-		connectionTreeAction.run().then((value) => {
+		return connectionTreeAction.run().then((value) => {
 			serverTreeView.verify(x => x.refreshTree(), TypeMoq.Times.once());
-		}).then(() => done(), (err) => done(err));
+		});
 	});
 
-	test('RecentConnectionsFilterAction - test if view is called to display filtered results', (done) => {
+	test('RecentConnectionsFilterAction - test if view is called to display filtered results', () => {
 		let instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny())).returns((input) => {
 			return new Promise((resolve) => resolve({}));
@@ -251,12 +258,12 @@ suite('SQL Connection Tree Action tests', () => {
 		serverTreeView.setup(x => x.showFilteredTree(TypeMoq.It.isAnyString()));
 		serverTreeView.setup(x => x.refreshTree());
 		let connectionTreeAction: RecentConnectionsFilterAction = new RecentConnectionsFilterAction(RecentConnectionsFilterAction.ID, RecentConnectionsFilterAction.LABEL, serverTreeView.object);
-		connectionTreeAction.run().then((value) => {
+		return connectionTreeAction.run().then((value) => {
 			serverTreeView.verify(x => x.showFilteredTree('recent'), TypeMoq.Times.once());
-		}).then(() => done(), (err) => done(err));
+		});
 	});
 
-	test('RecentConnectionsFilterAction - test if view is called refresh results if action is toggled', (done) => {
+	test('RecentConnectionsFilterAction - test if view is called refresh results if action is toggled', () => {
 		let instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny())).returns((input) => {
 			return new Promise((resolve) => resolve({}));
@@ -267,12 +274,12 @@ suite('SQL Connection Tree Action tests', () => {
 		serverTreeView.setup(x => x.refreshTree());
 		let connectionTreeAction: RecentConnectionsFilterAction = new RecentConnectionsFilterAction(RecentConnectionsFilterAction.ID, RecentConnectionsFilterAction.LABEL, serverTreeView.object);
 		connectionTreeAction.isSet = true;
-		connectionTreeAction.run().then((value) => {
+		return connectionTreeAction.run().then((value) => {
 			serverTreeView.verify(x => x.refreshTree(), TypeMoq.Times.once());
-		}).then(() => done(), (err) => done(err));
+		});
 	});
 
-	test('DeleteConnectionAction - test delete connection', (done) => {
+	test('DeleteConnectionAction - test delete connection', () => {
 		let connectionManagementService = createConnectionManagementService(true, undefined);
 
 		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
@@ -295,13 +302,13 @@ suite('SQL Connection Tree Action tests', () => {
 			connection,
 			connectionManagementService.object);
 
-		connectionAction.run().then((value) => {
+		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.deleteConnection(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
-		}).then(() => done(), (err) => done(err));
+		});
 
 	});
 
-	test('DeleteConnectionAction - test delete connection group', (done) => {
+	test('DeleteConnectionAction - test delete connection group', () => {
 		let isConnectedReturnValue: boolean = false;
 		let connectionManagementService = createConnectionManagementService(isConnectedReturnValue, undefined);
 		let conProfGroup = new ConnectionProfileGroup('testGroup', undefined, 'testGroup', undefined, undefined);
@@ -310,13 +317,13 @@ suite('SQL Connection Tree Action tests', () => {
 			conProfGroup,
 			connectionManagementService.object);
 
-		connectionAction.run().then((value) => {
+		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.deleteConnectionGroup(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
-		}).then(() => done(), (err) => done(err));
+		});
 
 	});
 
-	test('DeleteConnectionAction - delete should not be called if connect is an unsaved connection', (done) => {
+	test('DeleteConnectionAction - delete should not be called if connect is an unsaved connection', () => {
 		let isConnectedReturnValue: boolean = false;
 		let connectionManagementService = createConnectionManagementService(isConnectedReturnValue, undefined);
 
@@ -342,10 +349,9 @@ suite('SQL Connection Tree Action tests', () => {
 			connectionManagementService.object);
 
 		assert.equal(connectionAction.enabled, false, 'delete action should be disabled.');
-		done();
 	});
 
-	test('RefreshConnectionAction - refresh should be called if connection status is connect', (done) => {
+	test('RefreshConnectionAction - refresh should be called if connection status is connect', () => {
 		let isConnectedReturnValue: boolean = true;
 		let sqlProvider = {
 			providerId: mssqlProviderName,
@@ -423,18 +429,15 @@ suite('SQL Connection Tree Action tests', () => {
 			undefined,
 			logService);
 
-		connectionAction.run().then((value) => {
+		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.isConnected(undefined, TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 			objectExplorerService.verify(x => x.getObjectExplorerNode(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 			objectExplorerService.verify(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 			tree.verify(x => x.refresh(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
-			tree.verify(x => x.expand(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
-		}).then(() => done(), (err) => {
-			done(err);
 		});
 	});
 
-	test('RefreshConnectionAction - refresh should not be called if connection status is not connect', (done) => {
+	test('RefreshConnectionAction - refresh should not be called if connection status is not connect', () => {
 		let isConnectedReturnValue: boolean = false;
 		let sqlProvider = {
 			providerId: mssqlProviderName,
@@ -511,13 +514,13 @@ suite('SQL Connection Tree Action tests', () => {
 			undefined,
 			logService);
 
-		connectionAction.run().then((value) => {
+		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.isConnected(undefined, TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 			objectExplorerService.verify(x => x.getObjectExplorerNode(TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
 			objectExplorerService.verify(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
 			tree.verify(x => x.refresh(TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
 			tree.verify(x => x.expand(TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
-		}).then(() => done(), (err) => done(err));
+		});
 	});
 
 });

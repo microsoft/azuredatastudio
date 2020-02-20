@@ -21,7 +21,7 @@ import {
 	INSTALL_ERROR_MALICIOUS,
 	INSTALL_ERROR_INCOMPATIBLE
 } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { areSameExtensions, getGalleryExtensionId, groupByExtension, getMaliciousExtensionsSet, getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, ExtensionIdentifierWithVersion } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
+import { areSameExtensions, getGalleryExtensionId, groupByExtension, getMaliciousExtensionsSet, getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, ExtensionIdentifierWithVersion, parseBuiltInExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { localizeManifest } from '../common/extensionNls';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { Limiter, createCancelablePromise, CancelablePromise, Queue } from 'vs/base/common/async';
@@ -45,6 +45,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { getPathFromAmdModule } from 'vs/base/common/amd';
 import { getManifest } from 'vs/platform/extensionManagement/node/extensionManagementUtil';
 import { IExtensionManifest, ExtensionType } from 'vs/platform/extensions/common/extensions';
+import { IProductService } from 'vs/platform/product/common/productService';
 
 const ERROR_SCANNING_SYS_EXTENSIONS = 'scanningSystem';
 const ERROR_SCANNING_USER_EXTENSIONS = 'scanningUser';
@@ -132,6 +133,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 		@ILogService private readonly logService: ILogService,
 		@optional(IDownloadService) private downloadService: IDownloadService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
+		@IProductService private readonly productService: IProductService,
 	) {
 		super();
 		this.systemExtensionsPath = environmentService.builtinExtensionsPath;
@@ -153,7 +155,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 		this.logService.trace('ExtensionManagementService#zip', extension.identifier.id);
 		return this.collectFiles(extension)
 			.then(files => zip(path.join(tmpdir(), generateUuid()), files))
-			.then(path => URI.file(path));
+			.then<URI>(path => URI.file(path));
 	}
 
 	unzip(zipLocation: URI, type: ExtensionType): Promise<IExtensionIdentifier> {
@@ -222,6 +224,16 @@ export class ExtensionManagementService extends Disposable implements IExtension
 									} else if (semver.gt(existing.manifest.version, manifest.version)) {
 										return this.uninstall(existing, true);
 									}
+								} else {
+									// Remove the extension with same version if it is already uninstalled.
+									// Installing a VSIX extension shall replace the existing extension always.
+									return this.unsetUninstalledAndGetLocal(identifierWithVersion)
+										.then(existing => {
+											if (existing) {
+												return this.removeExtension(existing, 'existing').then(null, e => Promise.reject(new Error(nls.localize('restartCode', "Please restart Azure Data Studio before reinstalling {0}.", manifest.displayName || manifest.name))));
+											}
+											return undefined;
+										});
 								}
 								return undefined;
 							})
@@ -390,7 +402,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 					return this.setUninstalled(extension)
 						.then(() => this.removeUninstalledExtension(extension)
 							.then(
-								() => this.installFromGallery(galleryExtension),
+								() => this.installFromGallery(galleryExtension).then(),
 								e => Promise.reject(new Error(nls.localize('removeError', "Error while removing the extension: {0}. Please Quit and Start VS Code before trying again.", toErrorMessage(e))))));
 				}
 				return Promise.reject(new Error(nls.localize('Not a Marketplace extension', "Only Marketplace Extensions can be reinstalled")));
@@ -541,10 +553,10 @@ export class ExtensionManagementService extends Disposable implements IExtension
 								.then(galleryResult => {
 									const extensionsToInstall = galleryResult.firstPage;
 									return Promise.all(extensionsToInstall.map(e => this.installFromGallery(e)))
-										.then(() => null, errors => this.rollback(extensionsToInstall).then(() => Promise.reject(errors), () => Promise.reject(errors)));
+										.then(undefined, errors => this.rollback(extensionsToInstall).then(() => Promise.reject(errors), () => Promise.reject(errors)));
 								});
 						}
-						return null;
+						return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 					});
 			}
 		}
@@ -565,7 +577,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			.then(installed => {
 				const extensionToUninstall = installed.filter(e => areSameExtensions(e.identifier, extension.identifier))[0];
 				if (extensionToUninstall) {
-					return this.checkForDependenciesAndUninstall(extensionToUninstall, installed).then(() => null, error => Promise.reject(this.joinErrors(error)));
+					return this.checkForDependenciesAndUninstall(extensionToUninstall, installed).then(undefined, error => Promise.reject(this.joinErrors(error)));
 				} else {
 					return Promise.reject(new Error(nls.localize('notInstalled', "Extension '{0}' is not installed.", extension.manifest.displayName || extension.manifest.name)));
 				}
@@ -954,19 +966,14 @@ export class ExtensionManagementService extends Disposable implements IExtension
 	private _devSystemExtensionsFilePath: string | null = null;
 	private get devSystemExtensionsFilePath(): string {
 		if (!this._devSystemExtensionsFilePath) {
-			// {{SQL CARBON EDIT}
-			let builtInPath = product.quality === 'stable' ? 'builtInExtensions' : 'builtInExtensions-insiders';
-			this._devSystemExtensionsFilePath = path.normalize(path.join(getPathFromAmdModule(require, ''), '..', 'build', `${builtInPath}.json`));
+			this._devSystemExtensionsFilePath = path.normalize(path.join(getPathFromAmdModule(require, ''), '..', 'build', 'builtInExtensions.json'));
 		}
 		return this._devSystemExtensionsFilePath;
 	}
 
 	private getDevSystemExtensionsList(): Promise<string[]> {
 		return pfs.readFile(this.devSystemExtensionsFilePath, 'utf8')
-			.then<string[]>(raw => {
-				const parsed: { name: string }[] = JSON.parse(raw);
-				return parsed.map(({ name }) => name);
-			});
+			.then(data => parseBuiltInExtensions(data, this.productService.quality).map(ext => ext.name));
 	}
 
 	private toNonCancellablePromise<T>(promise: Promise<T>): Promise<T> {

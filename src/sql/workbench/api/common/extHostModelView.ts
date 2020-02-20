@@ -16,6 +16,7 @@ import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape, ExtHos
 import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, ColumnSizingMode } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { firstIndex } from 'vs/base/common/arrays';
+import { ILogService } from 'vs/platform/log/common/log';
 
 class ModelBuilderImpl implements azdata.ModelBuilder {
 	private nextComponentId: number;
@@ -25,7 +26,8 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		private readonly _proxy: MainThreadModelViewShape,
 		private readonly _handle: number,
 		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
-		private readonly _extension: IExtensionDescription
+		private readonly _extension: IExtensionDescription,
+		private readonly logService: ILogService
 	) {
 		this.nextComponentId = 0;
 	}
@@ -79,7 +81,12 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return container;
 	}
 
+	private cardDeprecationMessagePrinted = false;
 	card(): azdata.ComponentBuilder<azdata.CardComponent> {
+		if (!this.cardDeprecationMessagePrinted) {
+			this.logService.warn(`Extension '${this._extension.identifier.value}' is using card component which has been replaced by radioCardGroup. the card component will be removed in a future release.`);
+			this.cardDeprecationMessagePrinted = true;
+		}
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.CardComponent> = this.getComponentBuilder(new CardWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
@@ -222,6 +229,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 	hyperlink(): azdata.ComponentBuilder<azdata.HyperlinkComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.HyperlinkComponent> = this.getComponentBuilder(new HyperlinkComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	radioCardGroup(): azdata.ComponentBuilder<azdata.RadioCardGroupComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.RadioCardGroupComponent> = this.getComponentBuilder(new RadioCardGroupComponentWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -566,6 +580,30 @@ class ComponentWrapper implements azdata.Component {
 		this.setProperty('ariaLabel', v);
 	}
 
+	public get ariaRole(): string {
+		return this.properties['ariaRole'];
+	}
+
+	public set ariaRole(v: string) {
+		this.setProperty('ariaRole', v);
+	}
+
+	public get ariaSelected(): boolean {
+		return this.properties['ariaSelected'];
+	}
+
+	public set ariaSelected(v: boolean) {
+		this.setProperty('ariaSelected', v);
+	}
+
+	public get ariaHidden(): boolean {
+		return this.properties['ariaHidden'];
+	}
+
+	public set ariaHidden(v: boolean) {
+		this.setProperty('ariaHidden', v);
+	}
+
 	public get CSSStyles(): { [key: string]: string } {
 		return this.properties['CSSStyles'];
 	}
@@ -742,6 +780,13 @@ class ComponentWithIconWrapper extends ComponentWrapper {
 	}
 	public set iconWidth(v: string | number) {
 		this.setProperty('iconWidth', v);
+	}
+
+	public get title(): string {
+		return this.properties['title'];
+	}
+	public set title(v: string) {
+		this.setProperty('title', v);
 	}
 }
 
@@ -1160,7 +1205,6 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Text, id);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
 	}
 
 	public get value(): string {
@@ -1175,11 +1219,6 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	}
 	public set title(title: string) {
 		this.setProperty('title', title);
-	}
-
-	public get onDidClick(): vscode.Event<any> {
-		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
-		return emitter && emitter.event;
 	}
 }
 
@@ -1358,6 +1397,46 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
+
+	protected notifyPropertyChanged(): Thenable<void> {
+		return this._proxy.$setProperties(this._handle, this._id, this.getPropertiesForMainThread());
+	}
+
+	public toComponentShape(): IComponentShape {
+		// Overridden to ensure we send the correct properties mapping.
+		return <IComponentShape>{
+			id: this.id,
+			type: this.type,
+			layout: this.layout,
+			properties: this.getPropertiesForMainThread(),
+			itemConfigs: this.itemConfigs ? this.itemConfigs.map<IItemConfig>(item => item.toIItemConfig()) : undefined
+		};
+	}
+
+	/**
+	 * Gets the properties map to send to the main thread.
+	 */
+	private getPropertiesForMainThread(): { [key: string]: string } {
+		// This is necessary because we can't send the actual ComponentWrapper objects
+		// and so map them into their IDs instead. We don't want to update the actual
+		// data property though since the caller would still expect that to contain
+		// the Component objects they created
+		const properties = assign({}, this.properties);
+		if (properties.data) {
+			properties.data = properties.data.map((row: any[]) => row.map(cell => {
+				if (cell instanceof ComponentWrapper) {
+					// First ensure that we register the component using addItem
+					// such that it gets added to the ModelStore. We don't want to
+					// make the table component an actual container since that exposes
+					// a lot of functionality we don't need.
+					this.addItem(cell);
+					return cell.id;
+				}
+				return cell;
+			}));
+		}
+		return properties;
+	}
 }
 
 class ListBoxWrapper extends ComponentWrapper implements azdata.ListBoxComponent {
@@ -1401,13 +1480,6 @@ class ButtonWrapper extends ComponentWithIconWrapper implements azdata.ButtonCom
 	}
 	public set label(v: string) {
 		this.setProperty('label', v);
-	}
-
-	public get title(): string {
-		return this.properties['title'];
-	}
-	public set title(v: string) {
-		this.setProperty('title', v);
 	}
 
 	public get onDidClick(): vscode.Event<any> {
@@ -1518,6 +1590,7 @@ class HyperlinkComponentWrapper extends ComponentWrapper implements azdata.Hyper
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Hyperlink, id);
 		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
 	}
 
 	public get label(): string {
@@ -1532,6 +1605,71 @@ class HyperlinkComponentWrapper extends ComponentWrapper implements azdata.Hyper
 	}
 	public set url(v: string) {
 		this.setProperty('url', v);
+	}
+
+	public get onDidClick(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
+	}
+}
+
+class RadioCardGroupComponentWrapper extends ComponentWrapper implements azdata.RadioCardGroupComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.RadioCardGroup, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+	}
+
+	public get iconWidth(): string | undefined {
+		return this.properties['iconWidth'];
+	}
+
+	public set iconWidth(v: string | undefined) {
+		this.setProperty('iconWidth', v);
+	}
+
+	public get iconHeight(): string | undefined {
+		return this.properties['iconHeight'];
+	}
+
+	public set iconHeight(v: string | undefined) {
+		this.setProperty('iconHeight', v);
+	}
+
+	public get cardWidth(): string | undefined {
+		return this.properties['cardWidth'];
+	}
+
+	public set cardWidth(v: string | undefined) {
+		this.setProperty('cardWidth', v);
+	}
+
+	public get cardHeight(): string | undefined {
+		return this.properties['cardHeight'];
+	}
+
+	public set cardHeight(v: string | undefined) {
+		this.setProperty('cardHeight', v);
+	}
+
+	public get cards(): azdata.RadioCard[] {
+		return this.properties['cards'];
+	}
+	public set cards(v: azdata.RadioCard[]) {
+		this.setProperty('cards', v);
+	}
+
+	public get selectedCardId(): string | undefined {
+		return this.properties['selectedCardId'];
+	}
+
+	public set selectedCardId(v: string | undefined) {
+		this.setProperty('selectedCardId', v);
+	}
+
+	public get onSelectionChanged(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
 	}
 }
 
@@ -1563,9 +1701,10 @@ class ModelViewImpl implements azdata.ModelView {
 		private readonly _connection: azdata.connection.Connection,
 		private readonly _serverInfo: azdata.ServerInfo,
 		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
-		_extension: IExtensionDescription
+		_extension: IExtensionDescription,
+		logService: ILogService
 	) {
-		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle, this._extHostModelViewTree, _extension);
+		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle, this._extHostModelViewTree, _extension, logService);
 	}
 
 	public get onClosed(): vscode.Event<any> {
@@ -1619,7 +1758,8 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 	private readonly _handlerToExtension = new Map<string, IExtensionDescription>();
 	constructor(
 		_mainContext: IMainContext,
-		private _extHostModelViewTree: ExtHostModelViewTreeViewsShape
+		private _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
+		private readonly logService: ILogService
 	) {
 		this._proxy = _mainContext.getProxy(SqlMainContext.MainThreadModelView);
 	}
@@ -1638,7 +1778,7 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 
 	$registerWidget(handle: number, id: string, connection: azdata.connection.Connection, serverInfo: azdata.ServerInfo): void {
 		let extension = this._handlerToExtension.get(id);
-		let view = new ModelViewImpl(this._proxy, handle, connection, serverInfo, this._extHostModelViewTree, extension);
+		let view = new ModelViewImpl(this._proxy, handle, connection, serverInfo, this._extHostModelViewTree, extension, this.logService);
 		this._modelViews.set(handle, view);
 		this._handlers.get(id)(view);
 	}

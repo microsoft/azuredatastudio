@@ -746,7 +746,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		if (extension.assets.manifest) {
 			return this.getAsset(extension.assets.manifest, {}, token)
 				.then(asText)
-				.then(JSON.parse);
+				.then(text => text ? JSON.parse(text) : null);
 		}
 		return Promise.resolve(null);
 	}
@@ -756,7 +756,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		if (asset) {
 			return this.getAsset(asset[1])
 				.then(asText)
-				.then(JSON.parse);
+				.then(text => text ? JSON.parse(text) : null);
 		}
 		return Promise.resolve(null);
 	}
@@ -823,17 +823,6 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					}
 
 					const message = getErrorMessage(err);
-					type GalleryServiceRequestErrorClassification = {
-						url: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-						cdn: { classification: 'SystemMetaData', purpose: 'FeatureInsight', isMeasurement: true };
-						message: { classification: 'CallstackOrException', purpose: 'FeatureInsight' };
-					};
-					type GalleryServiceRequestErrorEvent = {
-						url: string;
-						cdn: boolean;
-						message: string;
-					};
-					this.telemetryService.publicLog2<GalleryServiceRequestErrorEvent, GalleryServiceRequestErrorClassification>('galleryService:requestError', { url, cdn: true, message });
 					type GalleryServiceCDNFallbackClassification = {
 						url: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
 						message: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
@@ -845,15 +834,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					this.telemetryService.publicLog2<GalleryServiceCDNFallbackEvent, GalleryServiceCDNFallbackClassification>('galleryService:cdnFallback', { url, message });
 
 					const fallbackOptions = assign({}, options, { url: fallbackUrl });
-					return this.requestService.request(fallbackOptions, token).then(undefined, err => {
-						if (isPromiseCanceledError(err)) {
-							return Promise.reject(err);
-						}
-
-						const message = getErrorMessage(err);
-						this.telemetryService.publicLog2<GalleryServiceRequestErrorEvent, GalleryServiceRequestErrorClassification>('galleryService:requestError', { url: fallbackUrl, cdn: false, message });
-						return Promise.reject(err);
-					});
+					return this.requestService.request(fallbackOptions, token);
 				});
 		});
 	}

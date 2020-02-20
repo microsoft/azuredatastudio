@@ -8,9 +8,8 @@ import {
 	ElementRef, OnInit, ChangeDetectorRef, ReflectiveInjector, Injector, ComponentRef
 } from '@angular/core';
 
-import { ComponentHostDirective } from 'sql/workbench/contrib/dashboard/browser/core/componentHost.directive';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-import { IComponent, IComponentConfig, IComponentDescriptor, IModelStore, COMPONENT_CONFIG } from './interfaces';
+import { IComponentConfig, COMPONENT_CONFIG } from './interfaces';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/browser/modelComponentRegistry';
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
@@ -23,6 +22,8 @@ import { LayoutRequestParams } from 'sql/workbench/services/dialog/browser/dialo
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
+import { IComponentDescriptor, IModelStore, IComponent } from 'sql/platform/dashboard/browser/interfaces';
+import { ComponentHostDirective } from 'sql/base/browser/componentHost.directive';
 
 const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentContribution);
 

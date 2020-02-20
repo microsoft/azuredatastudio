@@ -12,11 +12,9 @@ import {
 import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { TreeComponentRenderer } from 'sql/workbench/browser/modelComponents/treeComponentRenderer';
 import { TreeComponentDataSource } from 'sql/workbench/browser/modelComponents/treeDataSource';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { DefaultFilter, DefaultAccessibilityProvider, DefaultController } from 'vs/base/parts/tree/browser/treeDefaults';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -26,6 +24,8 @@ import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { values } from 'vs/base/common/collections';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 
 class Root implements ITreeComponentItem {
 	label = {
@@ -54,7 +54,7 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(IThemeService) private themeService: IThemeService,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {
@@ -96,7 +96,7 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 	private createTreeControl(): void {
 		if (!this._tree && this._dataProvider) {
 			const dataSource = this._instantiationService.createInstance(TreeComponentDataSource, this._dataProvider);
-			const renderer = this._instantiationService.createInstance(TreeComponentRenderer, this._dataProvider, this.themeService, { withCheckbox: this.withCheckbox });
+			const renderer = new TreeComponentRenderer(this._dataProvider, this.themeService, { withCheckbox: this.withCheckbox });
 			this._treeRenderer = renderer;
 			const controller = new DefaultController();
 			const filter = new DefaultFilter();

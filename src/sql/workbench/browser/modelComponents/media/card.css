@@ -13,16 +13,7 @@
 	border-style: solid;
 	text-align: left;
 	vertical-align: top;
-}
-
-.model-card-list-item.selected, .model-card.selected {
-	border-color: rgb(0, 120, 215);
-	box-shadow: rgba(0, 120, 215, 0.75) 0px 0px 6px;
-}
-
-.model-card-list-item.unselected, .model-card.unselected {
 	border-color: rgb(214, 214, 214);
-	box-shadow: none;
 }
 
 .model-card .card-content {
@@ -122,7 +113,7 @@
 	border-radius: 50%;
 	background-color: white;
 	border-width: 1px;
-	border-color: rgb(0, 120, 215);
+	border-color: rgb(214, 214, 214);
 	border-style: solid;
 }
 
@@ -206,4 +197,23 @@
 
 .model-card-list-item-description-value {
 	float: right;
+}
+
+.card-group {
+	display: flex;
+	flex-flow: row;
+}
+
+.model-card-description-table {
+	margin-bottom: 10px;
+}
+
+.model-card-description-label-column {
+	text-align: left;
+	width: 100%;
+}
+
+.model-card-description-value-column {
+	text-align: right;
+	white-space: nowrap;
 }

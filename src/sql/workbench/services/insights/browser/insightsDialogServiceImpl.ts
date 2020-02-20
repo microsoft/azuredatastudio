@@ -20,7 +20,7 @@ export class InsightsDialogService implements IInsightsDialogService {
 	constructor(@IInstantiationService private _instantiationService: IInstantiationService) { }
 
 	// query string
-	public show(input: IInsightsConfig, connectionProfile: IConnectionProfile): void {
+	public async show(input: IInsightsConfig, connectionProfile: IConnectionProfile): Promise<void> {
 		if (!this._insightsDialogView) {
 			this._insightsDialogModel = new InsightsDialogModel();
 			this._insightsDialogController = this._instantiationService.createInstance(InsightsDialogController, this._insightsDialogModel);
@@ -32,7 +32,7 @@ export class InsightsDialogService implements IInsightsDialogService {
 		}
 
 		this._insightsDialogModel.insight = input.details;
-		this._insightsDialogController.update(input.details, connectionProfile);
+		await this._insightsDialogController.update(input.details, connectionProfile);
 		this._insightsDialogView.open(input.details, connectionProfile);
 	}
 

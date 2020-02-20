@@ -2,10 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
+import { generateDashboardTabSchema, generateDashboardWidgetSchema } from 'sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
-import { generateDashboardWidgetSchema, generateDashboardTabSchema } from 'sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution';
 
 export interface IPropertiesConfig {
 	edition: number | Array<number>;
@@ -78,7 +77,7 @@ const defaultVal = [
 	{
 		name: 'Tasks',
 		widget: {
-			'tasks-widget': [{ name: 'restore', when: '!mssql:iscloud && mssql:engineedition != 11' }, 'configureDashboard', 'newQuery', 'mssqlCluster.task.newNotebook']
+			'tasks-widget': ['newQuery', 'mssqlCluster.task.newNotebook', { name: 'restore', when: '!mssql:iscloud && mssql:engineedition != 11' }, 'configureDashboard']
 		},
 		gridItemConfig: {
 			sizex: 1,

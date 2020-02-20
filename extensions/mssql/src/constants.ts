@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 export const serviceName = 'SQL Tools Service';
 export const providerId = 'MSSQL';
@@ -37,6 +36,7 @@ export const ObjectExplorerService = 'objectexplorer';
 export const CmsService = 'cmsService';
 export const DacFxService = 'dacfxService';
 export const SchemaCompareService = 'schemaCompareService';
+export const LanguageExtensionService = 'languageExtensionService';
 export const objectExplorerPrefix: string = 'objectexplorer://';
 export const ViewType = 'view';
 

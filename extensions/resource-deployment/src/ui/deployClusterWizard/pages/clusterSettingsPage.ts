@@ -16,6 +16,8 @@ import { AuthenticationMode } from '../deployClusterWizardModel';
 const localize = nls.loadMessageBundle();
 
 const ConfirmPasswordName = 'ConfirmPassword';
+const clusterNameFieldDescription = localize('deployCluster.ClusterNameDescription', "The cluster name must consist only of alphanumeric lowercase characters or '-' and must start and end with an alphanumeric character.");
+
 export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 	private inputComponents: InputComponents = {};
 	private activeDirectorySection!: azdata.FormComponent;
@@ -37,7 +39,11 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					label: localize('deployCluster.ClusterName', "Cluster name"),
 					required: true,
 					variableName: VariableNames.ClusterName_VariableName,
-					defaultValue: 'mssql-cluster'
+					defaultValue: 'mssql-cluster',
+					textValidationRequired: true,
+					textValidationRegex: '^[a-z0-9]$|^[a-z0-9][a-z0-9-]*[a-z0-9]$',
+					textValidationDescription: clusterNameFieldDescription,
+					description: clusterNameFieldDescription
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.AdminUsername', "Admin username"),
@@ -192,7 +198,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					self.wizard.registerDisposable(disposable);
 				},
 				onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent): void => {
-					self.inputComponents[name] = component;
+					self.inputComponents[name] = { component: component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
@@ -206,7 +212,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					self.wizard.registerDisposable(disposable);
 				},
 				onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent): void => {
-					self.inputComponents[name] = component;
+					self.inputComponents[name] = { component: component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
@@ -220,7 +226,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					self.wizard.registerDisposable(disposable);
 				},
 				onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent): void => {
-					self.inputComponents[name] = component;
+					self.inputComponents[name] = { component: component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
@@ -229,7 +235,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			const basicSettingsFormItem = { title: '', component: basicSettingsGroup };
 			const dockerSettingsFormItem = { title: '', component: dockerSettingsGroup };
 			this.activeDirectorySection = { title: '', component: activeDirectorySettingsGroup };
-			const authModeDropdown = <azdata.DropDownComponent>this.inputComponents[VariableNames.AuthenticationMode_VariableName];
+			const authModeDropdown = <azdata.DropDownComponent>this.inputComponents[VariableNames.AuthenticationMode_VariableName].component;
 			this.formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[basicSettingsFormItem, dockerSettingsFormItem],
 				{
@@ -284,7 +290,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		getInputBoxComponent(VariableNames.DockerRegistry_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(VariableNames.DockerRegistry_VariableName);
 		getInputBoxComponent(VariableNames.DockerRepository_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(VariableNames.DockerRepository_VariableName);
 		getInputBoxComponent(VariableNames.DockerImageTag_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(VariableNames.DockerImageTag_VariableName);
-		const authModeDropdown = <azdata.DropDownComponent>this.inputComponents[VariableNames.AuthenticationMode_VariableName];
+		const authModeDropdown = <azdata.DropDownComponent>this.inputComponents[VariableNames.AuthenticationMode_VariableName].component;
 		if (authModeDropdown) {
 			authModeDropdown.enabled = this.wizard.model.adAuthSupported;
 			const adAuthSelected = (<azdata.CategoryValue>authModeDropdown.value).name === 'ad';
@@ -308,6 +314,13 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					if (!isValidSQLPassword(password, getInputBoxComponent(VariableNames.AdminUserName_VariableName, this.inputComponents).value!)) {
 						messages.push(getInvalidSQLPasswordMessage(localize('deployCluster.AdminPasswordField', "Password")));
 					}
+
+					this.validators.forEach(validator => {
+						const result = validator();
+						if (!result.valid) {
+							messages.push(result.message);
+						}
+					});
 
 					if (messages.length > 0) {
 						this.wizard.wizardObject.message = {

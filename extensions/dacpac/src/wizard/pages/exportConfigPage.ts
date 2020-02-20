@@ -3,15 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
+import * as loc from '../../localizedConstants';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
-
-const localize = nls.loadMessageBundle();
 
 export class ExportConfigPage extends DacFxConfigPage {
 
@@ -78,7 +75,7 @@ export class ExportConfigPage extends DacFxConfigPage {
 			let fileUri = await vscode.window.showSaveDialog(
 				{
 					defaultUri: vscode.Uri.file(this.fileTextBox.value),
-					saveLabel: localize('dacfxExport.saveFile', "Save"),
+					saveLabel: loc.save,
 					filters: {
 						'bacpac Files': ['bacpac'],
 					}
@@ -99,7 +96,7 @@ export class ExportConfigPage extends DacFxConfigPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxExport.fileTextboxTitle', "File Location"),
+			title: loc.fileLocation,
 			actions: [this.fileButton]
 		};
 	}

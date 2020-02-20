@@ -16,16 +16,16 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
-import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { SimpleEditorProgressService } from 'vs/editor/standalone/browser/simpleServices';
-import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { TextDiffEditor } from 'vs/workbench/browser/parts/editor/textDiffEditor';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { TextDiffEditorModel } from 'vs/workbench/common/editor/textDiffEditorModel';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { ITextModel } from 'vs/editor/common/model';
+import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
+import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser/simpleProgressIndicator';
+import { IEditorProgressService } from 'vs/platform/progress/common/progress';
+import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 
 @Component({
 	template: `
@@ -69,8 +69,8 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 	}
 
 	private _createEditor(): void {
-		this._instantiationService = this._instantiationService.createChild(new ServiceCollection([IEditorProgressService, new SimpleEditorProgressService()]));
-		this._editor = this._instantiationService.createInstance(TextDiffEditor);
+		const customInstan = this._instantiationService.createChild(new ServiceCollection([IEditorProgressService, new SimpleProgressIndicator()]));
+		this._editor = customInstan.createInstance(TextDiffEditor);
 		this._editor.reverseColoring();
 		this._editor.create(this._el.nativeElement);
 		this._editor.setVisible(true);
@@ -90,7 +90,7 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 
 		let editorinput1 = this._instantiationService.createInstance(ResourceEditorInput, 'source', undefined, uri1, undefined);
 		let editorinput2 = this._instantiationService.createInstance(ResourceEditorInput, 'target', undefined, uri2, undefined);
-		this._editorInput = this._instantiationService.createInstance(DiffEditorInput, 'DiffEditor', undefined, editorinput1, editorinput2, true);
+		this._editorInput = new DiffEditorInput('DiffEditor', undefined, editorinput1, editorinput2, true);
 		this._editor.setInput(this._editorInput, undefined, cancellationTokenSource.token);
 
 

@@ -7,19 +7,19 @@ import 'mocha';
 import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { context } from './testContext';
+import { isTestSetupCompleted } from './testContext';
 import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySparkKernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent, notebookContentForCellLanguageTest, sqlKernelSpec, pythonKernelSpec, pySparkKernelSpec, CellTypes } from './notebook.util';
-import { getBdcServer, getConfigValue, EnvironmentVariable_PYTHON_PATH } from './testConfig';
-import { connectToServer, sleep } from './utils';
+import { getConfigValue, EnvironmentVariable_PYTHON_PATH, TestServerProfile, getStandaloneServer } from './testConfig';
+import { connectToServer, sleep, testServerProfileToIConnectionProfile } from './utils';
 import * as fs from 'fs';
 import { stressify } from 'adstest';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined, promisify } from 'util';
 
-if (context.RunTest) {
+if (isTestSetupCompleted()) {
 	suite('Notebook integration test suite', function () {
 		setup(async function () {
 			console.log(`Start "${this.currentTest.title}"`);
-			let server = await getBdcServer();
+			let server = await getStandaloneServer();
 			assert(server && server.serverName, 'No server could be found');
 			await connectToServer(server, 6000);
 		});
@@ -375,8 +375,8 @@ class NotebookTester {
 	async cleanup(testName: string): Promise<void> {
 		try {
 			let fileName = getFileName(testName + this.invocationCount++);
-			if (fs.existsSync(fileName)) {
-				fs.unlinkSync(fileName);
+			if (await promisify(fs.exists)(fileName)) {
+				await fs.promises.unlink(fileName);
 				console.log(`"${fileName}" is deleted.`);
 			}
 			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
@@ -392,15 +392,20 @@ class NotebookTester {
 	async openNotebook(content: azdata.nb.INotebookContents, kernelMetadata: any, testName: string, connectToDifferentServer?: boolean): Promise<azdata.nb.NotebookEditor> {
 		let notebookConfig = vscode.workspace.getConfiguration('notebook');
 		notebookConfig.update('pythonPath', getConfigValue(EnvironmentVariable_PYTHON_PATH), 1);
+		let server: TestServerProfile;
 		if (!connectToDifferentServer) {
-			let server = await getBdcServer();
+			server = await getStandaloneServer();
 			assert(server && server.serverName, 'No server could be found in openNotebook');
 			await connectToServer(server, 6000);
 		}
 		let notebookJson = Object.assign({}, content, { metadata: kernelMetadata });
 		let uri = writeNotebookToFile(notebookJson, testName);
 		console.log('Notebook uri ' + uri);
-		let notebook = await azdata.nb.showNotebookDocument(uri);
+		let nbShowOptions: azdata.nb.NotebookShowOptions;
+		if (server) {
+			nbShowOptions = { connectionProfile: testServerProfileToIConnectionProfile(server) };
+		}
+		let notebook = await azdata.nb.showNotebookDocument(uri, nbShowOptions);
 		return notebook;
 	}
 

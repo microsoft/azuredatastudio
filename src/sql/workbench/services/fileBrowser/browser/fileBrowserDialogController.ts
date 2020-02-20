@@ -26,7 +26,7 @@ export class FileBrowserDialogController implements IFileBrowserDialogController
 		fileValidationServiceType: string,
 		isWide: boolean,
 		handleOnOk: (path: string) => void
-	) {
+	): void {
 		if (!this._fileBrowserDialog) {
 			this._fileBrowserDialog = this._instantiationService.createInstance(FileBrowserDialog, localize('filebrowser.selectFile', "Select a file"));
 			this._fileBrowserDialog.render();

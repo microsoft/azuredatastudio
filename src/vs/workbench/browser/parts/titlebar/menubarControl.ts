@@ -12,7 +12,7 @@ import { IAction, Action } from 'vs/base/common/actions';
 import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
 import * as DOM from 'vs/base/browser/dom';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { isMacintosh, isWeb } from 'vs/base/common/platform';
+import { isMacintosh, isWeb, isIOS } from 'vs/base/common/platform';
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -31,17 +31,19 @@ import { SubmenuAction, Direction } from 'vs/base/browser/ui/menu/menu';
 import { attachMenuStyler } from 'vs/platform/theme/common/styler';
 import { assign } from 'vs/base/common/objects';
 import { mnemonicMenuLabel, unmnemonicLabel } from 'vs/base/common/labels';
-import { IAccessibilityService, AccessibilitySupport } from 'vs/platform/accessibility/common/accessibility';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { isFullscreen } from 'vs/base/browser/browser';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 
 // TODO@sbatten https://github.com/microsoft/vscode/issues/81360
-// tslint:disable-next-line: import-patterns layering TODO@sbatten
+// eslint-disable-next-line code-layering, code-import-patterns
 import { IElectronService } from 'vs/platform/electron/node/electron';
 import { optional } from 'vs/platform/instantiation/common/instantiation';
-// tslint:disable-next-line: import-patterns layering TODO@sbatten
+// TODO@sbatten
+// eslint-disable-next-line code-layering, code-import-patterns
 import { IElectronEnvironmentService } from 'vs/workbench/services/electron/electron-browser/electronEnvironmentService';
+import { BrowserFeatures } from 'vs/base/browser/canIUse';
 
 export abstract class MenubarControl extends Disposable {
 
@@ -59,11 +61,11 @@ export abstract class MenubarControl extends Disposable {
 		// 'Selection': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
 		'View': IMenu;
 		// 'Go': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
-		// 'Debug': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
+		// 'Run': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
 		// 'Terminal': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
 		'Window'?: IMenu;
 		'Help': IMenu;
-		// [index: string]: IMenu | undefined; {{SQL CARBON EDIT}} - Disable unusued menus
+		[index: string]: IMenu | undefined;
 	};
 
 	protected topLevelTitles: { [menu: string]: string } = {
@@ -71,9 +73,9 @@ export abstract class MenubarControl extends Disposable {
 		'Edit': nls.localize({ key: 'mEdit', comment: ['&& denotes a mnemonic'] }, "&&Edit"),
 		// 'Selection': nls.localize({ key: 'mSelection', comment: ['&& denotes a mnemonic'] }, "&&Selection"), {{SQL CARBON EDIT}} - Disable unused menus
 		'View': nls.localize({ key: 'mView', comment: ['&& denotes a mnemonic'] }, "&&View"),
-		// 'Go': nls.localize({ key: 'mGoto', comment: ['&& denotes a mnemonic'] }, "&&Go"), {{SQL CARBON EDIT}} - Disable unused menus
-		// 'Debug': nls.localize({ key: 'mDebug', comment: ['&& denotes a mnemonic'] }, "&&Debug"), {{SQL CARBON EDIT}} - Disable unused menus
-		// 'Terminal': nls.localize({ key: 'mTerminal', comment: ['&& denotes a mnemonic'] }, "&&Terminal"), {{SQL CARBON EDIT}} - Disable unused menus
+		// 'Go': nls.localize({ key: 'mGoto', comment: ['&& denotes a mnemonic'] }, "&&Go"), {{SQL CARBON EDIT}} - Disable unusued menus
+		// 'Run': nls.localize({ key: 'mRun', comment: ['&& denotes a mnemonic'] }, "&&Run"), {{SQL CARBON EDIT}} - Disable unusued menus
+		// 'Terminal': nls.localize({ key: 'mTerminal', comment: ['&& denotes a mnemonic'] }, "&&Terminal"), {{SQL CARBON EDIT}} - Disable unusued menus
 		'Help': nls.localize({ key: 'mHelp', comment: ['&& denotes a mnemonic'] }, "&&Help")
 	};
 
@@ -108,7 +110,7 @@ export abstract class MenubarControl extends Disposable {
 			// 'Selection': this._register(this.menuService.createMenu(MenuId.MenubarSelectionMenu, this.contextKeyService)),
 			'View': this._register(this.menuService.createMenu(MenuId.MenubarViewMenu, this.contextKeyService)),
 			// 'Go': this._register(this.menuService.createMenu(MenuId.MenubarGoMenu, this.contextKeyService)),
-			// 'Debug': this._register(this.menuService.createMenu(MenuId.MenubarDebugMenu, this.contextKeyService)),
+			// 'Run': this._register(this.menuService.createMenu(MenuId.MenubarDebugMenu, this.contextKeyService)),
 			// 'Terminal': this._register(this.menuService.createMenu(MenuId.MenubarTerminalMenu, this.contextKeyService)),
 			'Help': this._register(this.menuService.createMenu(MenuId.MenubarHelpMenu, this.contextKeyService))
 		};
@@ -154,14 +156,14 @@ export abstract class MenubarControl extends Disposable {
 		return label;
 	}
 
-	protected getOpenRecentActions(): IAction[] {
+	protected getOpenRecentActions(): (Separator | IAction & { uri: URI })[] {
 		if (!this.recentlyOpened) {
 			return [];
 		}
 
 		const { workspaces, files } = this.recentlyOpened;
 
-		const result: IAction[] = [];
+		const result = [];
 
 		if (workspaces.length > 0) {
 			for (let i = 0; i < MenubarControl.MAX_MENU_RECENT_ENTRIES && i < workspaces.length; i++) {
@@ -248,10 +250,8 @@ export abstract class MenubarControl extends Disposable {
 
 		const hasBeenNotified = this.storageService.getBoolean('menubar/accessibleMenubarNotified', StorageScope.GLOBAL, false);
 		const usingCustomMenubar = getTitleBarStyle(this.configurationService, this.environmentService) === 'custom';
-		const detected = this.accessibilityService.getAccessibilitySupport() === AccessibilitySupport.Enabled;
-		const config = this.configurationService.getValue('editor.accessibilitySupport');
 
-		if (hasBeenNotified || usingCustomMenubar || !(config === 'on' || (config === 'auto' && detected))) {
+		if (hasBeenNotified || usingCustomMenubar || !this.accessibilityService.isScreenReaderOptimized()) {
 			return;
 		}
 
@@ -294,6 +294,7 @@ export class CustomMenubarControl extends MenubarControl {
 		@IThemeService private readonly themeService: IThemeService,
 		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService,
 		@IHostService protected readonly hostService: IHostService,
+		@IWorkbenchEnvironmentService private readonly workbenchEnvironmentService: IWorkbenchEnvironmentService,
 		@optional(IElectronService) private readonly electronService: IElectronService,
 		@optional(IElectronEnvironmentService) private readonly electronEnvironmentService: IElectronEnvironmentService
 	) {
@@ -327,12 +328,9 @@ export class CustomMenubarControl extends MenubarControl {
 			const menubarActiveWindowFgColor = theme.getColor(TITLE_BAR_ACTIVE_FOREGROUND);
 			if (menubarActiveWindowFgColor) {
 				collector.addRule(`
-				.monaco-workbench .menubar > .menubar-menu-button {
-					color: ${menubarActiveWindowFgColor};
-				}
-
+				.monaco-workbench .menubar > .menubar-menu-button,
 				.monaco-workbench .menubar .toolbar-toggle-more {
-					background-color: ${menubarActiveWindowFgColor}
+					color: ${menubarActiveWindowFgColor};
 				}
 				`);
 			}
@@ -340,12 +338,9 @@ export class CustomMenubarControl extends MenubarControl {
 			const activityBarInactiveFgColor = theme.getColor(ACTIVITY_BAR_INACTIVE_FOREGROUND);
 			if (activityBarInactiveFgColor) {
 				collector.addRule(`
-				.monaco-workbench .menubar.compact > .menubar-menu-button {
-					color: ${activityBarInactiveFgColor};
-				}
-
+				.monaco-workbench .menubar.compact > .menubar-menu-button,
 				.monaco-workbench .menubar.compact .toolbar-toggle-more {
-					background-color: ${activityBarInactiveFgColor}
+					color: ${activityBarInactiveFgColor};
 				}
 				`);
 
@@ -356,14 +351,11 @@ export class CustomMenubarControl extends MenubarControl {
 				collector.addRule(`
 				.monaco-workbench .menubar.compact > .menubar-menu-button.open,
 				.monaco-workbench .menubar.compact > .menubar-menu-button:focus,
-				.monaco-workbench .menubar.compact:not(:focus-within) > .menubar-menu-button:hover {
-					color: ${activityBarFgColor};
-				}
-
+				.monaco-workbench .menubar.compact:not(:focus-within) > .menubar-menu-button:hover,
 				.monaco-workbench .menubar.compact  > .menubar-menu-button.open .toolbar-toggle-more,
 				.monaco-workbench .menubar.compact > .menubar-menu-button:focus .toolbar-toggle-more,
 				.monaco-workbench .menubar.compact:not(:focus-within) > .menubar-menu-button:hover .toolbar-toggle-more {
-					background-color: ${activityBarFgColor}
+					color: ${activityBarFgColor};
 				}
 			`);
 			}
@@ -371,12 +363,9 @@ export class CustomMenubarControl extends MenubarControl {
 			const menubarInactiveWindowFgColor = theme.getColor(TITLE_BAR_INACTIVE_FOREGROUND);
 			if (menubarInactiveWindowFgColor) {
 				collector.addRule(`
-					.monaco-workbench .menubar.inactive:not(.compact) > .menubar-menu-button {
+					.monaco-workbench .menubar.inactive:not(.compact) > .menubar-menu-button,
+					.monaco-workbench .menubar.inactive:not(.compact) > .menubar-menu-button .toolbar-toggle-more  {
 						color: ${menubarInactiveWindowFgColor};
-					}
-
-					.monaco-workbench .menubar.inactive:not(.compact) > .menubar-menu-button .toolbar-toggle-more {
-						background-color: ${menubarInactiveWindowFgColor}
 					}
 				`);
 			}
@@ -387,14 +376,11 @@ export class CustomMenubarControl extends MenubarControl {
 				collector.addRule(`
 					.monaco-workbench .menubar:not(.compact) > .menubar-menu-button.open,
 					.monaco-workbench .menubar:not(.compact) > .menubar-menu-button:focus,
-					.monaco-workbench .menubar:not(:focus-within):not(.compact) > .menubar-menu-button:hover {
-						color: ${menubarSelectedFgColor};
-					}
-
+					.monaco-workbench .menubar:not(:focus-within):not(.compact) > .menubar-menu-button:hover,
 					.monaco-workbench .menubar:not(.compact) > .menubar-menu-button.open .toolbar-toggle-more,
 					.monaco-workbench .menubar:not(.compact) > .menubar-menu-button:focus .toolbar-toggle-more,
 					.monaco-workbench .menubar:not(:focus-within):not(.compact) > .menubar-menu-button:hover .toolbar-toggle-more {
-						background-color: ${menubarSelectedFgColor}
+						color: ${menubarSelectedFgColor};
 					}
 				`);
 			}
@@ -445,9 +431,8 @@ export class CustomMenubarControl extends MenubarControl {
 				return null;
 
 			case StateType.Idle:
-				const context = `window:${this.electronEnvironmentService ? this.electronEnvironmentService.windowId : 'any'}`;
 				return new Action('update.check', nls.localize({ key: 'checkForUpdates', comment: ['&& denotes a mnemonic'] }, "Check for &&Updates..."), undefined, true, () =>
-					this.updateService.checkForUpdates(context));
+					this.updateService.checkForUpdates(this.workbenchEnvironmentService.configuration.sessionId));
 
 			case StateType.CheckingForUpdates:
 				return new Action('update.checking', nls.localize('checkingForUpdates', "Checking for Updates..."), undefined, false);
@@ -589,9 +574,9 @@ export class CustomMenubarControl extends MenubarControl {
 				for (let action of actions) {
 					this.insertActionsBefore(action, target);
 					if (action instanceof SubmenuItemAction) {
-						let submenu = this.menus[action.item.submenu];
+						let submenu = this.menus[action.item.submenu.id];
 						if (!submenu) {
-							submenu = this.menus[action.item.submenu] = this.menuService.createMenu(action.item.submenu, this.contextKeyService);
+							submenu = this.menus[action.item.submenu.id] = this.menuService.createMenu(action.item.submenu, this.contextKeyService);
 							this._register(submenu.onDidChange(() => {
 								if (!this.focusInsideMenubar) {
 									const actions: IAction[] = [];
@@ -674,7 +659,7 @@ export class CustomMenubarControl extends MenubarControl {
 		}
 
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, () => {
-			if (this.menubar) {
+			if (this.menubar && !(isIOS && BrowserFeatures.pointerEvents)) {
 				this.menubar.blur();
 			}
 		}));

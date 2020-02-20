@@ -10,10 +10,8 @@ import {
 } from '@angular/core';
 
 import * as azdata from 'azdata';
-import { ColumnSizingMode } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
@@ -27,6 +25,13 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+
+export enum ColumnSizingMode {
+	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
+	AutoFit = 1,	// columns will be ForceFit up to a certain number; currently 3.  At 4 or more the behavior will switch to NO force fit
+	DataFit = 2		// columns use sizing based on cell data, horiz scroll bar present if more cells than visible in view area
+}
 
 @Component({
 	selector: 'modelview-table',
@@ -252,6 +257,10 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.ariaRole = this.ariaRole;
 		}
 
+		if (this.ariaLabel) {
+			this._table.ariaLabel = this.ariaLabel;
+		}
+
 		if (this.updateCells !== undefined) {
 			this.updateTableCells(this.updateCells);
 		}
@@ -350,10 +359,6 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public get ariaColumnCount(): number {
 		return this.getPropertyOrDefault<azdata.TableComponentProperties, number>((props) => props.ariaColumnCount, -1);
-	}
-
-	public get ariaRole(): string {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, string>((props) => props.ariaRole, undefined);
 	}
 
 	public set moveFocusOutWithTab(newValue: boolean) {

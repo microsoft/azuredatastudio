@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/azurecore/package" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/azurecore/package" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="azure.displayName">
         <source xml:lang="en">Azure (Core)</source>
@@ -8,7 +8,7 @@
       </trans-unit>
       <trans-unit id="azure.description">
         <source xml:lang="en">Browse and work with Azure resources</source>
-        <target state="translated">参照して Azure リソースで作業します</target>
+        <target state="translated">Azure リソースを参照して作業します</target>
       </trans-unit>
       <trans-unit id="azure.title">
         <source xml:lang="en">Azure</source>
@@ -40,7 +40,7 @@
       </trans-unit>
       <trans-unit id="azure.resource.selectsubscriptions.title">
         <source xml:lang="en">Select Subscriptions</source>
-        <target state="translated">サブスクリプションを選択します</target>
+        <target state="translated">サブスクリプションの選択</target>
       </trans-unit>
       <trans-unit id="azure.resource.connectsqlserver.title">
         <source xml:lang="en">Connect</source>
@@ -48,7 +48,7 @@
       </trans-unit>
       <trans-unit id="azure.resource.connectsqldb.title">
         <source xml:lang="en">Add to Servers</source>
-        <target state="translated">サーバーへの追加</target>
+        <target state="translated">サーバーに追加</target>
       </trans-unit>
       <trans-unit id="accounts.clearTokenCache">
         <source xml:lang="en">Clear Azure Account Token Cache</source>
@@ -56,23 +56,23 @@
       </trans-unit>
       <trans-unit id="config.enablePublicCloudDescription">
         <source xml:lang="en">Should Azure public cloud integration be enabled</source>
-        <target state="translated">Azure パブリック クラウド統合を有効にする必要があります</target>
+        <target state="translated">Azure パブリック クラウド統合を有効にするかどうか</target>
       </trans-unit>
       <trans-unit id="config.enableUsGovCloudDescription">
         <source xml:lang="en">Should US Government Azure cloud (Fairfax) integration be enabled</source>
-        <target state="translated">米国政府向け Azure Cloud (Fairfax) 統合を有効にする必要があります</target>
+        <target state="translated">米国政府向け Azure クラウド (Fairfax) 統合を有効にするかどうか</target>
       </trans-unit>
       <trans-unit id="config.enableChinaCloudDescription">
         <source xml:lang="en">Should Azure China integration be enabled</source>
-        <target state="translated">Azure China 統合を有効にする必要があります</target>
+        <target state="translated">Azure 中国の統合を有効にするかどうか</target>
       </trans-unit>
       <trans-unit id="config.enableGermanyCloudDescription">
         <source xml:lang="en">Should Azure Germany integration be enabled</source>
-        <target state="translated">Azure Germany 統合を有効にする必要があります</target>
+        <target state="translated">Azure ドイツの統合を有効にするかどうか</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/azureResource/utils" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/azurecore/dist/azureResource/utils" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="azure.resource.error">
         <source xml:lang="en">Error: {0}</source>
@@ -80,7 +80,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/constants" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/azurecore/dist/constants" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="extensionName">
         <source xml:lang="en">Azure Accounts</source>
@@ -88,7 +88,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/azureResource/tree/accountTreeNode" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/azurecore/dist/azureResource/tree/accountTreeNode" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="azure.resource.tree.accountTreeNode.credentialError">
         <source xml:lang="en">Failed to get credential for account {0}. Please refresh the account.</source>
@@ -100,7 +100,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/account-provider/azureAccountProviderService" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/azurecore/dist/account-provider/azureAccountProviderService" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="clearTokenCacheSuccess">
         <source xml:lang="en">Token cache successfully cleared</source>
@@ -112,7 +112,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/account-provider/providerSettings" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/azurecore/dist/account-provider/providerSettings" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="publicCloudDisplayName">
         <source xml:lang="en">Azure</source>
@@ -120,7 +120,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/account-provider/azureAccountProvider" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/azurecore/dist/account-provider/azureAccountProvider" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="accountProviderNotInitialized">
         <source xml:lang="en">Account provider not initialized, cannot perform action</source>
@@ -144,7 +144,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/azurecore/dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel">
         <source xml:lang="en">SQL Servers</source>
@@ -152,15 +152,15 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/azureResource/providers/database/databaseTreeDataProvider" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/azurecore/dist/azureResource/providers/database/databaseTreeDataProvider" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
         <source xml:lang="en">SQL Databases</source>
-        <target state="translated">SQL データベース</target>
+        <target state="translated">SQL Database</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/azureResource/commands" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/azurecore/dist/azureResource/commands" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="azure.resource.selectsubscriptions.credentialError">
         <source xml:lang="en">Failed to get credential for account {0}. Please refresh the account.</source>
@@ -168,7 +168,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/azureResource/tree/subscriptionTreeNode" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/azurecore/dist/azureResource/tree/subscriptionTreeNode" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="azure.resource.tree.subscriptionTreeNode.noResourcesLabel">
         <source xml:lang="en">No Resources found.</source>
@@ -176,27 +176,43 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/azureResource/resourceTreeNode" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/azurecore/dist/azureResource/resourceTreeNode" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="azure.resource.resourceTreeNode.noResourcesLabel">
         <source xml:lang="en">No Resources found</source>
-        <target state="translated">リソースが見つかりません</target>
+        <target state="translated">リソースは見つかりませんでした</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/azureResource/tree/treeProvider" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/azurecore/dist/azureResource/tree/treeProvider" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="azure.resource.tree.treeProvider.loadingLabel">
         <source xml:lang="en">Loading ...</source>
-        <target state="translated">読み込んでいます...</target>
+        <target state="translated">読み込み中...</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/azureResource/tree/accountNotSignedInTreeNode" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/azurecore/dist/azureResource/tree/accountNotSignedInTreeNode" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="azure.resource.tree.accountNotSignedInTreeNode.signInLabel">
         <source xml:lang="en">Sign in to Azure...</source>
         <target state="translated">Azure にサインイン...</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="azure.resource.providers.sqlInstanceContainerLabel">
+        <source xml:lang="en">SQL Managed Instances</source>
+        <target state="translated">SQL マネージド インスタンス</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel">
+        <source xml:lang="en">Azure Database for PostgreSQL Servers</source>
+        <target state="translated">Azure Database for PostgreSQL サーバー</target>
       </trans-unit>
     </body>
   </file>

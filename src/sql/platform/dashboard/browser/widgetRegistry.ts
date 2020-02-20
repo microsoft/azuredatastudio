@@ -55,14 +55,14 @@ class DashboardWidgetRegistry implements IDashboardWidgetRegistry {
 			this._allSchema.extensionProperties[id] = schema;
 		} else {
 			if (context === undefined || context === 'database') {
-				this._dashboardWidgetSchema.properties[id] = schema;
+				this._dashboardWidgetSchema.properties![id] = schema;
 			}
 
 			if (context === undefined || context === 'server') {
-				this._serverWidgetSchema.properties[id] = schema;
+				this._serverWidgetSchema.properties![id] = schema;
 			}
 
-			this._allSchema.properties[id] = schema;
+			this._allSchema.properties![id] = schema;
 		}
 
 		return id;
@@ -77,11 +77,11 @@ class DashboardWidgetRegistry implements IDashboardWidgetRegistry {
 	 */
 	public registerNonCustomDashboardWidget(id: string, description: string, val: IInsightsConfig, context?: 'database' | 'server'): WidgetIdentifier {
 		if (context === undefined || context === 'database') {
-			this._dashboardWidgetSchema.properties[id] = { type: 'null', default: null };
+			this._dashboardWidgetSchema.properties![id] = { type: 'null', default: null };
 		}
 
 		if (context === undefined || context === 'server') {
-			this._serverWidgetSchema.properties[id] = { type: 'null', default: null };
+			this._serverWidgetSchema.properties![id] = { type: 'null', default: null };
 		}
 
 		return id;

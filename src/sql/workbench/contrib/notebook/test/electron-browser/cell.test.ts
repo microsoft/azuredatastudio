@@ -9,17 +9,22 @@ import * as assert from 'assert';
 
 import * as objects from 'vs/base/common/objects';
 
-import { CellTypes } from 'sql/workbench/contrib/notebook/common/models/contracts';
-import { ModelFactory } from 'sql/workbench/contrib/notebook/browser/models/modelFactory';
-import { NotebookModelStub } from './common';
+import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
+import { NotebookModelStub, ClientSessionStub, KernelStub, FutureStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { EmptyFuture } from 'sql/workbench/services/notebook/browser/sessionManager';
-import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel, ICellModelOptions, IClientSession, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { startsWith } from 'vs/base/common/strings';
+import { Schemas } from 'vs/base/common/network';
+import { URI } from 'vs/base/common/uri';
+import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 
 let instantiationService: IInstantiationService;
 
@@ -585,9 +590,247 @@ suite('Cell Model', function (): void {
 			assert(startsWith(contentSplit[4].trim(), '"azdata_cell_guid": "'));
 			assert(startsWith(contentSplit[5].trim(), '}'));
 			assert(startsWith(contentSplit[6].trim(), '"outputs": []'));
-			assert(startsWith(contentSplit[7].trim(), '"execution_count": 0'));
+			assert(startsWith(contentSplit[7].trim(), '"execution_count": null'));
 			assert(startsWith(contentSplit[8].trim(), '}'));
 		});
 	});
 
+	test('Getters and setters test', async function (): Promise<void> {
+		// Code Cell
+		let cellData: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: '1+1',
+			outputs: [],
+			metadata: { language: 'python' },
+			execution_count: 1
+		};
+		let cell = factory.createCell(cellData, undefined);
+
+		assert.strictEqual(cell.trustedMode, false, 'Cell should not be trusted by default');
+		cell.trustedMode = true;
+		assert.strictEqual(cell.trustedMode, true, 'Cell should be trusted after manually setting trustedMode');
+
+		assert.strictEqual(cell.isEditMode, true, 'Code cells should be editable by default');
+		cell.isEditMode = false;
+		assert.strictEqual(cell.isEditMode, false, 'Cell should not be editable after manually setting isEditMode');
+
+		cell.hover = true;
+		assert.strictEqual(cell.hover, true, 'Cell should be hovered after manually setting hover=true');
+		cell.hover = false;
+		assert.strictEqual(cell.hover, false, 'Cell should be hovered after manually setting hover=false');
+
+		let cellUri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${cell.id}` });
+		assert.deepStrictEqual(cell.cellUri, cellUri);
+		cellUri = URI.from({ scheme: Schemas.untitled, path: `test-uri-12345` });
+		cell.cellUri = cellUri;
+		assert.deepStrictEqual(cell.cellUri, cellUri);
+
+		assert.strictEqual(cell.language, 'python');
+
+		assert.strictEqual(cell.notebookModel, undefined);
+
+		assert.strictEqual(cell.modelContentChangedEvent, undefined);
+		let contentChangedEvent = <IModelContentChangedEvent>{};
+		cell.modelContentChangedEvent = contentChangedEvent;
+		assert.strictEqual(cell.modelContentChangedEvent, contentChangedEvent);
+
+		assert.strictEqual(cell.stdInVisible, false, 'Cell stdin should not be visible by default');
+		cell.stdInVisible = true;
+		assert.strictEqual(cell.stdInVisible, true, 'Cell stdin should not be visible by default');
+
+		cell.loaded = true;
+		assert.strictEqual(cell.loaded, true, 'Cell should be loaded after manually setting loaded=true');
+		cell.loaded = false;
+		assert.strictEqual(cell.loaded, false, 'Cell should be loaded after manually setting loaded=false');
+
+		assert.ok(cell.onExecutionStateChange !== undefined, 'onExecutionStateChange event should not be undefined');
+
+		assert.ok(cell.onLoaded !== undefined, 'onLoaded event should not be undefined');
+
+		// Markdown cell
+		cellData = {
+			cell_type: CellTypes.Markdown,
+			source: 'some *markdown*',
+			outputs: [],
+			metadata: { language: 'python' }
+		};
+		let notebookModel = new NotebookModelStub({
+			name: 'python',
+			version: '',
+			mimetype: ''
+		});
+
+		let cellOptions: ICellModelOptions = { notebook: notebookModel, isTrusted: true };
+		cell = factory.createCell(cellData, cellOptions);
+
+		assert.strictEqual(cell.isEditMode, false, 'Markdown cells should not be editable by default');
+		assert.strictEqual(cell.trustedMode, true, 'Cell should be trusted when providing isTrusted=true in the cell options');
+		assert.strictEqual(cell.language, 'markdown');
+		assert.strictEqual(cell.notebookModel, notebookModel);
+	});
+
+	test('Equals test', async function (): Promise<void> {
+		let cell = factory.createCell(undefined, undefined);
+
+		let result = cell.equals(undefined);
+		assert.strictEqual(result, false, 'Cell should not be equal to undefined');
+
+		result = cell.equals(cell);
+		assert.strictEqual(result, true, 'Cell should be equal to itself');
+
+		let otherCell = factory.createCell(undefined, undefined);
+		result = cell.equals(otherCell);
+		assert.strictEqual(result, false, 'Cell should not be equal to a different cell');
+	});
+
+	suite('Run Cell tests', function (): void {
+		let cellOptions: ICellModelOptions;
+		let mockClientSession: TypeMoq.Mock<IClientSession>;
+		let mockNotebookModel: TypeMoq.Mock<INotebookModel>;
+		let mockKernel: TypeMoq.Mock<nb.IKernel>;
+
+		const codeCellContents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: '1+1',
+			outputs: [],
+			metadata: { language: 'python' },
+			execution_count: 1
+		};
+		const markdownCellContents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: 'some *markdown*',
+			outputs: [],
+			metadata: { language: 'python' }
+		};
+
+		setup(() => {
+			mockKernel = TypeMoq.Mock.ofType<nb.IKernel>(KernelStub);
+
+			mockClientSession = TypeMoq.Mock.ofType<IClientSession>(ClientSessionStub);
+			mockClientSession.setup(s => s.kernel).returns(() => mockKernel.object);
+			mockClientSession.setup(s => s.isReady).returns(() => true);
+
+			mockNotebookModel = TypeMoq.Mock.ofType<INotebookModel>(NotebookModelStub);
+			mockNotebookModel.setup(m => m.clientSession).returns(() => mockClientSession.object);
+			mockNotebookModel.setup(m => m.updateActiveCell(TypeMoq.It.isAny()));
+
+			cellOptions = { notebook: mockNotebookModel.object, isTrusted: true };
+		});
+
+		test('Run markdown cell', async function (): Promise<void> {
+			let cell = factory.createCell(markdownCellContents, cellOptions);
+			let result = await cell.runCell();
+			assert.strictEqual(result, false, 'Markdown cells should not be runnable');
+		});
+
+		test('No client session provided', async function (): Promise<void> {
+			mockNotebookModel.reset();
+			mockNotebookModel.setup(m => m.clientSession).returns(() => undefined);
+			mockNotebookModel.setup(m => m.updateActiveCell(TypeMoq.It.isAny()));
+			cellOptions.notebook = mockNotebookModel.object;
+
+			let cell = factory.createCell(codeCellContents, cellOptions);
+			let result = await cell.runCell();
+			assert.strictEqual(result, false, 'Running code cell without a client session should fail');
+		});
+
+		test('No Kernel provided', async function (): Promise<void> {
+			mockClientSession.reset();
+			mockClientSession.setup(s => s.kernel).returns(() => null);
+			mockClientSession.setup(s => s.isReady).returns(() => true);
+			mockNotebookModel.reset();
+			mockNotebookModel.setup(m => m.defaultKernel).returns(() => null);
+			mockNotebookModel.setup(m => m.clientSession).returns(() => mockClientSession.object);
+			mockNotebookModel.setup(m => m.updateActiveCell(TypeMoq.It.isAny()));
+			cellOptions.notebook = mockNotebookModel.object;
+
+			let cell = factory.createCell(codeCellContents, cellOptions);
+			let result = await cell.runCell();
+			assert.strictEqual(result, false, 'Running code cell without a kernel should fail');
+		});
+
+		test('Kernel fails to connect', async function (): Promise<void> {
+			mockKernel.setup(k => k.requiresConnection).returns(() => true);
+			mockNotebookModel.setup(m => m.requestConnection()).returns(() => Promise.resolve(false));
+
+			let cell = factory.createCell(codeCellContents, cellOptions);
+			let result = await cell.runCell();
+			assert.strictEqual(result, false, 'Running code cell should fail after connection fails');
+		});
+
+		test('Normal execute', async function (): Promise<void> {
+			mockKernel.setup(k => k.requiresConnection).returns(() => false);
+			mockKernel.setup(k => k.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+				let replyMsg: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg>{
+					content: <nb.IExecuteReply>{
+						execution_count: 1,
+						status: 'ok'
+					}
+				};
+
+				return new FutureStub(undefined, Promise.resolve(replyMsg));
+			});
+
+			let cell = factory.createCell(codeCellContents, cellOptions);
+			let result = await cell.runCell();
+			assert.strictEqual(result, true, 'Running normal code cell should succeed');
+		});
+
+		test('Execute returns error status', async function (): Promise<void> {
+			mockKernel.setup(k => k.requiresConnection).returns(() => false);
+			mockKernel.setup(k => k.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+				let replyMsg: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg>{
+					content: <nb.IExecuteReply>{
+						execution_count: 1,
+						status: 'error'
+					}
+				};
+
+				return new FutureStub(undefined, Promise.resolve(replyMsg));
+			});
+
+			let cell = factory.createCell(codeCellContents, cellOptions);
+			let result = await cell.runCell();
+			assert.strictEqual(result, false, 'Run cell should fail if execute returns error status');
+		});
+
+		test('Execute returns abort status', async function (): Promise<void> {
+			mockKernel.setup(k => k.requiresConnection).returns(() => false);
+			mockKernel.setup(k => k.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+				let replyMsg: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg>{
+					content: <nb.IExecuteReply>{
+						execution_count: 1,
+						status: 'abort'
+					}
+				};
+
+				return new FutureStub(undefined, Promise.resolve(replyMsg));
+			});
+
+			let cell = factory.createCell(codeCellContents, cellOptions);
+			let result = await cell.runCell();
+			assert.strictEqual(result, false, 'Run cell should fail if execute returns abort status');
+		});
+
+		test('Execute throws exception', async function (): Promise<void> {
+			let testMsg = 'Test message';
+			mockKernel.setup(k => k.requiresConnection).returns(() => false);
+			mockKernel.setup(k => k.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+				throw new Error(testMsg);
+			});
+
+			let actualMsg: string;
+			let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
+			mockNotification.setup(n => n.notify(TypeMoq.It.isAny())).returns(notification => {
+				actualMsg = notification.message;
+				return undefined;
+			});
+
+			let cell = factory.createCell(codeCellContents, cellOptions);
+			let result = await cell.runCell(mockNotification.object);
+			assert.strictEqual(result, true, 'Run cell should report errors via notification service');
+			assert.ok(actualMsg !== undefined, 'Should have received an error notification');
+			assert.strictEqual(actualMsg, testMsg);
+		});
+	});
 });

@@ -11,7 +11,7 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { TogglePanelAction } from 'vs/workbench/browser/panel';
 import { localize } from 'vs/nls';
-import { IQueryHistoryService } from 'sql/platform/queryHistory/common/queryHistoryService';
+import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
 import { QueryHistoryNode } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryNode';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
@@ -75,14 +75,14 @@ export class OpenQueryAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IInstantiationService private _instantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(id, label);
 	}
 
 	public async run(element: QueryHistoryNode): Promise<void> {
 		if (element instanceof QueryHistoryNode && element.info) {
-			return this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText, RunQueryOnConnectionMode.none).then(() => true, () => false);
+			return this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText, RunQueryOnConnectionMode.none).then();
 		}
 	}
 }
@@ -94,14 +94,14 @@ export class RunQueryAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IInstantiationService private _instantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(id, label);
 	}
 
 	public async run(element: QueryHistoryNode): Promise<void> {
 		if (element instanceof QueryHistoryNode && element.info) {
-			return this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText, RunQueryOnConnectionMode.executeQuery).catch(() => true, () => false);
+			return this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText, RunQueryOnConnectionMode.executeQuery).then();
 		}
 	}
 }

@@ -12,9 +12,9 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { Range } from 'vs/editor/common/core/range';
-import * as editorCommon from 'vs/editor/common/editorCommon';
+import { IEditorContribution } from 'vs/editor/common/editorCommon';
 import { registerEditorContribution, ServicesAccessor, registerEditorCommand, EditorCommand } from 'vs/editor/browser/editorExtensions';
-import { ICodeEditor, IActiveCodeEditor } from 'vs/editor/browser/editorBrowser';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { SnippetController2 } from 'vs/editor/contrib/snippet/snippetController2';
 import { SmartSnippetInserter } from 'vs/workbench/contrib/preferences/common/smartSnippetInserter';
 import { DefineKeybindingOverlayWidget } from 'vs/workbench/contrib/preferences/browser/keybindingWidgets';
@@ -30,13 +30,14 @@ import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegis
 import { KeybindingParser } from 'vs/base/common/keybindingParser';
 import { EditorOption } from 'vs/editor/common/config/editorOptions';
 import { equals } from 'vs/base/common/arrays';
+import { assertIsDefined } from 'vs/base/common/types';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { isEqual } from 'vs/base/common/resources';
 
 const NLS_LAUNCH_MESSAGE = nls.localize('defineKeybinding.start', "Define Keybinding");
 const NLS_KB_LAYOUT_ERROR_MESSAGE = nls.localize('defineKeybinding.kbLayoutErrorMessage', "You won't be able to produce this key combination under your current keyboard layout.");
 
-const INTERESTING_FILE = /keybindings\.json$/;
-
-export class DefineKeybindingController extends Disposable implements editorCommon.IEditorContribution {
+export class DefineKeybindingController extends Disposable implements IEditorContribution {
 
 	public static readonly ID = 'editor.contrib.defineKeybinding';
 
@@ -49,7 +50,8 @@ export class DefineKeybindingController extends Disposable implements editorComm
 
 	constructor(
 		private _editor: ICodeEditor,
-		@IInstantiationService private readonly _instantiationService: IInstantiationService
+		@IInstantiationService private readonly _instantiationService: IInstantiationService,
+		@IEnvironmentService private readonly _environmentService: IEnvironmentService
 	) {
 		super();
 
@@ -68,7 +70,7 @@ export class DefineKeybindingController extends Disposable implements editorComm
 	}
 
 	private _update(): void {
-		if (!isInterestingEditorModel(this._editor)) {
+		if (!isInterestingEditorModel(this._editor, this._environmentService)) {
 			this._disposeKeybindingWidgetRenderer();
 			this._disposeKeybindingDecorationRenderer();
 			return;
@@ -164,14 +166,14 @@ export class KeybindingEditorDecorationsRenderer extends Disposable {
 	private _dec: string[] = [];
 
 	constructor(
-		private _editor: IActiveCodeEditor,
+		private _editor: ICodeEditor,
 		@IKeybindingService private readonly _keybindingService: IKeybindingService,
 	) {
 		super();
 
 		this._updateDecorations = this._register(new RunOnceScheduler(() => this._updateDecorationsNow(), 500));
 
-		const model = this._editor.getModel();
+		const model = assertIsDefined(this._editor.getModel());
 		this._register(model.onDidChangeContent(() => this._updateDecorations.schedule()));
 		this._register(this._keybindingService.onDidUpdateKeybindings((e) => this._updateDecorations.schedule()));
 		this._register({
@@ -184,7 +186,7 @@ export class KeybindingEditorDecorationsRenderer extends Disposable {
 	}
 
 	private _updateDecorationsNow(): void {
-		const model = this._editor.getModel();
+		const model = assertIsDefined(this._editor.getModel());
 
 		const newDecorations: IModelDeltaDecoration[] = [];
 
@@ -362,7 +364,7 @@ class DefineKeybindingCommand extends EditorCommand {
 	}
 
 	runEditorCommand(accessor: ServicesAccessor, editor: ICodeEditor): void {
-		if (!isInterestingEditorModel(editor) || editor.getOption(EditorOption.readOnly)) {
+		if (!isInterestingEditorModel(editor, accessor.get(IEnvironmentService)) || editor.getOption(EditorOption.readOnly)) {
 			return;
 		}
 		const controller = DefineKeybindingController.get(editor);
@@ -372,13 +374,12 @@ class DefineKeybindingCommand extends EditorCommand {
 	}
 }
 
-function isInterestingEditorModel(editor: ICodeEditor): boolean {
+function isInterestingEditorModel(editor: ICodeEditor, environmentService: IEnvironmentService): boolean {
 	const model = editor.getModel();
 	if (!model) {
 		return false;
 	}
-	const url = model.uri.toString();
-	return INTERESTING_FILE.test(url);
+	return isEqual(model.uri, environmentService.keybindingsResource);
 }
 
 registerEditorContribution(DefineKeybindingController.ID, DefineKeybindingController);

@@ -5,13 +5,10 @@
 
 .optionsDialog-label {
 	width: 120px;
-	padding-bottom: 5px;
 }
 
 .optionsDialog-input {
 	width: 200px;
-	padding-bottom: 5px;
-	padding-right: 7px;
 }
 
 .options-dialog .select-box {
@@ -96,9 +93,6 @@
 
 .optionsDialog-table{
 	width:100%;
-	padding: 10px;
-}
-
-td.optionsDialog-input.select-container {
-	padding-right: 9px;
+	padding: 10px 19px 10px 10px;
+	border-spacing: 5px;
 }

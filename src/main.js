@@ -89,7 +89,7 @@ app.once('ready', function () {
 			traceOptions: args['trace-options'] || 'record-until-full,enable-sampling'
 		};
 
-		contentTracing.startRecording(traceOptions, () => onReady());
+		contentTracing.startRecording(traceOptions).finally(() => onReady());
 	} else {
 		onReady();
 	}
@@ -140,6 +140,9 @@ function configureCommandlineSwitchesSync(cliArgs) {
 		// provided by Electron
 		'disable-color-correct-rendering'
 	];
+	if (process.platform === 'linux') {
+		SUPPORTED_ELECTRON_SWITCHES.push('force-renderer-accessibility');
+	}
 
 	// Read argv config
 	const argvConfig = readArgvConfigSync();
@@ -155,10 +158,8 @@ function configureCommandlineSwitchesSync(cliArgs) {
 			if (argvKey === 'disable-hardware-acceleration') {
 				app.disableHardwareAcceleration(); // needs to be called explicitly
 			} else {
-				app.commandLine.appendArgument(argvKey);
+				app.commandLine.appendSwitch(argvKey);
 			}
-		} else {
-			app.commandLine.appendSwitch(argvKey, argvValue);
 		}
 	});
 
@@ -167,6 +168,9 @@ function configureCommandlineSwitchesSync(cliArgs) {
 	if (jsFlags) {
 		app.commandLine.appendSwitch('js-flags', jsFlags);
 	}
+
+	// TODO@Ben TODO@Deepak Electron 7 workaround for https://github.com/microsoft/vscode/issues/88873
+	app.commandLine.appendSwitch('disable-features', 'LayoutNG');
 
 	return argvConfig;
 }
@@ -221,24 +225,19 @@ function createDefaultArgvConfigSync(argvConfigPath) {
 
 		// Default argv content
 		const defaultArgvConfigContent = [
-			'// This configuration file allows to pass permanent command line arguments to VSCode.',
+			'// This configuration file allows you to pass permanent command line arguments to VS Code.',
 			'// Only a subset of arguments is currently supported to reduce the likelyhood of breaking',
 			'// the installation.',
 			'//',
 			'// PLEASE DO NOT CHANGE WITHOUT UNDERSTANDING THE IMPACT',
 			'//',
-			'// If the command line argument does not have any values, simply assign',
-			'// it in the JSON below with a value of \'true\'. Otherwise, put the value',
-			'// directly.',
-			'//',
-			'// If you see rendering issues in VSCode and have a better experience',
-			'// with software rendering, you can configure this by adding:',
-			'//',
-			'// \'disable-hardware-acceleration\': true',
-			'//',
-			'// NOTE: Changing this file requires a restart of VSCode.',
+			'// NOTE: Changing this file requires a restart of VS Code.',
 			'{',
-			'	// Enabled by default by VSCode to resolve color issues in the renderer',
+			'	// Use software rendering instead of hardware accelerated rendering.',
+			'	// This can help in cases where you see rendering issues in VS Code.',
+			'	// "disable-hardware-acceleration": true,',
+			'',
+			'	// Enabled by default by VS Code to resolve color issues in the renderer',
 			'	// See https://github.com/Microsoft/vscode/issues/51791 for details',
 			'	"disable-color-correct-rendering": true'
 		];
@@ -247,7 +246,7 @@ function createDefaultArgvConfigSync(argvConfigPath) {
 			defaultArgvConfigContent[defaultArgvConfigContent.length - 1] = `${defaultArgvConfigContent[defaultArgvConfigContent.length - 1]},`; // append trailing ","
 
 			defaultArgvConfigContent.push('');
-			defaultArgvConfigContent.push('	// Display language of VSCode');
+			defaultArgvConfigContent.push('	// Display language of VS Code');
 			defaultArgvConfigContent.push(`	"locale": "${legacyLocale}"`);
 		}
 

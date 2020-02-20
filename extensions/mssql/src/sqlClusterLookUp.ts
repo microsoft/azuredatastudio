@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as constants from './constants';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
@@ -138,6 +136,7 @@ class ConnectionParam implements azdata.connection.Connection, azdata.IConnectio
 	public saveProfile: boolean;
 	public id: string;
 	public azureTenantId?: string;
+	public azureAccount?: string;
 
 	public providerName: string;
 	public connectionId: string;

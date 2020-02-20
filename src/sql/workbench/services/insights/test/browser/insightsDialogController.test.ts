@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { InsightsDialogController } from 'sql/workbench/services/insights/browser/insightsDialogController';
-import QueryRunner from 'sql/platform/query/common/queryRunner';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
@@ -13,10 +13,13 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import * as azdata from 'azdata';
 import { equal } from 'assert';
 import { Mock, MockBehavior, It } from 'typemoq';
-import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 import { Emitter } from 'vs/base/common/event';
 import { InsightsDialogModel } from 'sql/workbench/services/insights/browser/insightsDialogModel';
 import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
+import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 
 const testData: string[][] = [
 	['1', '2', '3', '4'],
@@ -29,7 +32,7 @@ const testColumns: string[] = [
 ];
 
 suite('Insights Dialog Controller Tests', () => {
-	test('updates correctly with good input', done => {
+	test('updates correctly with good input', async (done) => {
 
 		let model = new InsightsDialogModel();
 
@@ -39,7 +42,17 @@ suite('Insights Dialog Controller Tests', () => {
 		instMoq.setup(x => x.createInstance(It.isValue(QueryRunner), It.isAny()))
 			.returns(() => runner);
 
-		let connMoq = Mock.ofType(ConnectionManagementService, MockBehavior.Strict, {}, {}, new TestStorageService());
+		let testinstantiationService = new TestInstantiationService();
+		testinstantiationService.stub(IStorageService, new TestStorageService());
+		let connMoq = Mock.ofType(ConnectionManagementService, MockBehavior.Strict,
+			undefined, // connection store
+			undefined, // connection status manager
+			undefined, // connection dialog service
+			testinstantiationService, // instantiation service
+			undefined, // editor service
+			undefined, // telemetry service
+			undefined, // configuration service
+			new TestCapabilitiesService());
 		connMoq.setup(x => x.connect(It.isAny(), It.isAny()))
 			.returns(() => Promise.resolve(undefined));
 
@@ -71,20 +84,19 @@ suite('Insights Dialog Controller Tests', () => {
 			options: {}
 		};
 
-		controller.update(<IInsightsConfigDetails>{ query: 'query' }, profile).then(() => {
-			// Once we update the controller, listen on when it changes the model and verify the data it
-			// puts in is correct
-			model.onDataChange(() => {
-				for (let i = 0; i < testData.length; i++) {
-					for (let j = 0; j < testData[i].length; j++) {
-						equal(testData[i][j], model.rows[i][j]);
-					}
+		await controller.update(<IInsightsConfigDetails>{ query: 'query' }, profile);
+		// Once we update the controller, listen on when it changes the model and verify the data it
+		// puts in is correct
+		model.onDataChange(() => {
+			for (let i = 0; i < testData.length; i++) {
+				for (let j = 0; j < testData[i].length; j++) {
+					equal(testData[i][j], model.rows[i][j]);
 				}
-				done();
-			});
-			// Fake the query Runner telling the controller the query is complete
-			complete();
+			}
+			done();
 		});
+		// Fake the query Runner telling the controller the query is complete
+		complete();
 	});
 });
 

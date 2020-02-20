@@ -3,32 +3,36 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IEditorModel } from 'vs/platform/editor/common/editor';
-import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
+import { EditorInput, EditorModel, IRevertOptions, GroupIdentifier, IEditorInput } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
 import * as azdata from 'azdata';
 
-import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernelsForProvider } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
+import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernelsForProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER, IProviderInfo } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
-import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
-import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { Schemas } from 'vs/base/common/network';
-import { ITextFileService, ISaveOptions, StateChange } from 'vs/workbench/services/textfile/common/textfiles';
+import { ITextFileSaveOptions, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { Deferred } from 'sql/base/common/promise';
 import { NotebookTextFileModel } from 'sql/workbench/contrib/notebook/browser/models/notebookTextFileModel';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
+import { UntitledTextEditorModel, IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
+import { NotebookFindModel } from 'sql/workbench/contrib/notebook/find/notebookFindModel';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -39,9 +43,8 @@ export class NotebookEditorModel extends EditorModel {
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
 	private _lastEditFullReplacement: boolean;
 	constructor(public readonly notebookUri: URI,
-		private textEditorModel: TextFileEditorModel | UntitledEditorModel | ResourceEditorModel,
+		private textEditorModel: ITextFileEditorModel | IUntitledTextEditorModel | ResourceEditorModel,
 		@INotebookService private notebookService: INotebookService,
-		@ITextFileService private textFileService: ITextFileService,
 		@ITextResourcePropertiesService private textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super();
@@ -64,19 +67,21 @@ export class NotebookEditorModel extends EditorModel {
 				}, err => undefined);
 			}
 		}));
-		if (this.textEditorModel instanceof UntitledEditorModel) {
+		if (this.textEditorModel instanceof UntitledTextEditorModel) {
 			this._register(this.textEditorModel.onDidChangeDirty(e => {
 				let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
 				this.setDirty(dirty);
 			}));
 		} else {
 			if (this.textEditorModel instanceof TextFileEditorModel) {
-				this._register(this.textEditorModel.onDidStateChange(change => {
+				this._register(this.textEditorModel.onDidSave(() => {
 					let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
 					this.setDirty(dirty);
-					if (change === StateChange.SAVED) {
-						this.sendNotebookSerializationStateChange();
-					}
+					this.sendNotebookSerializationStateChange();
+				}));
+				this._register(this.textEditorModel.onDidChangeDirty(() => {
+					let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
+					this.setDirty(dirty);
 				}));
 			}
 		}
@@ -102,20 +107,6 @@ export class NotebookEditorModel extends EditorModel {
 		}
 		this._dirty = dirty;
 		this._onDidChangeDirty.fire();
-	}
-
-	/**
-	 * UntitledEditor uses TextFileService to save data from UntitledEditorInput
-	 * Titled editor uses TextFileEditorModel to save existing notebook
-	*/
-	save(options: ISaveOptions): Promise<boolean> {
-		if (this.textEditorModel instanceof TextFileEditorModel) {
-			this.textEditorModel.save(options);
-			return Promise.resolve(true);
-		}
-		else {
-			return this.textFileService.save(this.notebookUri, options);
-		}
 	}
 
 	public updateModel(contentChange?: NotebookContentChange, type?: NotebookChangeType): void {
@@ -170,7 +161,8 @@ export class NotebookEditorModel extends EditorModel {
 	private sendNotebookSerializationStateChange(): void {
 		let notebookModel = this.getNotebookModel();
 		if (notebookModel) {
-			this.notebookService.serializeNotebookStateChange(this.notebookUri, NotebookChangeType.Saved);
+			this.notebookService.serializeNotebookStateChange(this.notebookUri, NotebookChangeType.Saved)
+				.catch(e => onUnexpectedError(e));
 		}
 	}
 
@@ -178,7 +170,7 @@ export class NotebookEditorModel extends EditorModel {
 		return this.getNotebookModel() !== undefined;
 	}
 
-	private getNotebookModel(): INotebookModel {
+	public getNotebookModel(): INotebookModel {
 		let editor = this.notebookService.findNotebookEditor(this.notebookUri);
 		if (editor) {
 			return editor.model;
@@ -195,8 +187,9 @@ export class NotebookEditorModel extends EditorModel {
 	}
 }
 
-export class NotebookInput extends EditorInput {
-	public static ID: string = 'workbench.editorinputs.notebookInput';
+type TextInput = ResourceEditorInput | UntitledTextEditorInput | FileEditorInput;
+
+export abstract class NotebookInput extends EditorInput {
 	private _providerId: string;
 	private _providers: string[];
 	private _standardKernels: IStandardKernelWithProvider[];
@@ -207,7 +200,7 @@ export class NotebookInput extends EditorInput {
 	private _parentContainer: HTMLElement;
 	private readonly _layoutChanged: Emitter<void> = this._register(new Emitter<void>());
 	private _model: NotebookEditorModel;
-	private _untitledEditorModel: UntitledEditorModel;
+	private _untitledEditorModel: IUntitledTextEditorModel;
 	private _contentManager: IContentManager;
 	private _providersLoaded: Promise<void>;
 	private _dirtyListener: IDisposable;
@@ -215,16 +208,17 @@ export class NotebookInput extends EditorInput {
 	private _modelResolveInProgress: boolean = false;
 	private _modelResolved: Deferred<void> = new Deferred<void>();
 
+	private _notebookFindModel: NotebookFindModel;
+
 	constructor(private _title: string,
-		private resource: URI,
-		private _textInput: UntitledEditorInput,
+		private _resource: URI,
+		private _textInput: TextInput,
 		@ITextModelService private textModelService: ITextModelService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@INotebookService private notebookService: INotebookService,
 		@IExtensionService private extensionService: IExtensionService
 	) {
 		super();
-		this.resource = resource;
 		this._standardKernels = [];
 		this._providersLoaded = this.assignProviders();
 		this._notebookEditorOpenedTimestamp = Date.now();
@@ -233,20 +227,23 @@ export class NotebookInput extends EditorInput {
 		}
 	}
 
-	public get textInput(): UntitledEditorInput {
+	public get textInput(): TextInput {
 		return this._textInput;
 	}
 
-	public confirmSave(): Promise<ConfirmResult> {
-		return this._textInput.confirmSave();
-	}
-
-	public revert(): Promise<boolean> {
-		return this._textInput.revert();
+	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<boolean> {
+		return this._textInput.revert(group, options);
 	}
 
 	public get notebookUri(): URI {
 		return this.resource;
+	}
+
+	public get notebookFindModel(): NotebookFindModel {
+		if (!this._notebookFindModel) {
+			this._notebookFindModel = new NotebookFindModel(this._model.getNotebookModel());
+		}
+		return this._notebookFindModel;
 	}
 
 	public get contentManager(): IContentManager {
@@ -261,6 +258,10 @@ export class NotebookInput extends EditorInput {
 			this._title = resources.basenameOrAuthority(this.resource);
 		}
 		return this._title;
+	}
+
+	public isReadonly(): boolean {
+		return false;
 	}
 
 	public async getProviderInfo(): Promise<IProviderInfo> {
@@ -283,9 +284,25 @@ export class NotebookInput extends EditorInput {
 		return this._standardKernels;
 	}
 
-	public save(): Promise<boolean> {
-		let options: ISaveOptions = { force: false };
-		return this._model.save(options);
+	async save(groupId: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+		this.updateModel();
+		let input = await this.textInput.save(groupId, options);
+		await this.setTrustForNewEditor(input);
+		return input;
+	}
+
+	async saveAs(group: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+		this.updateModel();
+		let input = await this.textInput.saveAs(group, options);
+		await this.setTrustForNewEditor(input);
+		return input;
+	}
+
+	private async setTrustForNewEditor(newInput: IEditorInput | undefined): Promise<void> {
+		let isTrusted = this._model.getNotebookModel().trustedMode;
+		if (isTrusted && newInput && newInput.resource !== this.resource) {
+			await this.notebookService.serializeNotebookStateChange(newInput.resource, NotebookChangeType.Saved, undefined, true);
+		}
 	}
 
 	public set standardKernels(value: IStandardKernelWithProvider[]) {
@@ -319,19 +336,17 @@ export class NotebookInput extends EditorInput {
 		this._layoutChanged.fire();
 	}
 
-	public getTypeId(): string {
-		return NotebookInput.ID;
+	public abstract getTypeId(): string;
+
+	get resource(): URI {
+		return this._resource;
 	}
 
-	getResource(): URI {
-		return this.resource;
-	}
-
-	public get untitledEditorModel(): UntitledEditorModel {
+	public get untitledEditorModel(): IUntitledTextEditorModel {
 		return this._untitledEditorModel;
 	}
 
-	public set untitledEditorModel(value: UntitledEditorModel) {
+	public set untitledEditorModel(value: IUntitledTextEditorModel) {
 		this._untitledEditorModel = value;
 	}
 
@@ -345,20 +360,22 @@ export class NotebookInput extends EditorInput {
 		if (this._model) {
 			return Promise.resolve(this._model);
 		} else {
-			let textOrUntitledEditorModel: UntitledEditorModel | IEditorModel;
+			let textOrUntitledEditorModel: ITextFileEditorModel | IUntitledTextEditorModel | ResourceEditorModel;
 			if (this.resource.scheme === Schemas.untitled) {
 				if (this._untitledEditorModel) {
 					this._untitledEditorModel.textEditorModel.onBeforeAttached();
 					textOrUntitledEditorModel = this._untitledEditorModel;
 				} else {
 					let resolvedInput = await this._textInput.resolve();
-					resolvedInput.textEditorModel.onBeforeAttached();
-					textOrUntitledEditorModel = resolvedInput;
+					if (!(resolvedInput instanceof BinaryEditorModel)) {
+						resolvedInput.textEditorModel.onBeforeAttached();
+					}
+					textOrUntitledEditorModel = resolvedInput as TextFileEditorModel | UntitledTextEditorModel | ResourceEditorModel;
 				}
 			} else {
 				const textEditorModelReference = await this.textModelService.createModelReference(this.resource);
 				textEditorModelReference.object.textEditorModel.onBeforeAttached();
-				textOrUntitledEditorModel = await textEditorModelReference.object.load();
+				textOrUntitledEditorModel = await textEditorModelReference.object.load() as TextFileEditorModel | ResourceEditorModel;
 			}
 			this._model = this._register(this.instantiationService.createInstance(NotebookEditorModel, this.resource, textOrUntitledEditorModel));
 			this.hookDirtyListener(this._model.onDidChangeDirty, () => this._onDidChangeDirty.fire());
@@ -453,21 +470,15 @@ export class NotebookInput extends EditorInput {
 	}
 
 	public matches(otherInput: any): boolean {
-		if (super.matches(otherInput) === true) {
-			return true;
-		}
-
 		if (otherInput instanceof NotebookInput) {
-			const otherNotebookEditorInput = <NotebookInput>otherInput;
-
-			// Compare by resource
-			return otherNotebookEditorInput.notebookUri.toString() === this.notebookUri.toString();
+			return this.textInput.matches(otherInput.textInput);
+		} else {
+			return this.textInput.matches(otherInput);
 		}
-		return false;
 	}
 }
 
-class NotebookEditorContentManager implements IContentManager {
+export class NotebookEditorContentManager implements IContentManager {
 	constructor(
 		private notebookInput: NotebookInput,
 		@IInstantiationService private readonly instantiationService: IInstantiationService) {

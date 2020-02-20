@@ -1,5 +1,37 @@
 # Change Log
 
+## Version 1.15.1
+* Release date: February 19, 2020
+* Release status: General Availability
+* Resolved [#9145 Edit Data render the result grid incorrectly when using custom query](https://github.com/microsoft/azuredatastudio/issues/9145).
+* Resolved [#9149 Show Active Connections](https://github.com/microsoft/azuredatastudio/issues/9149).
+
+## Version 1.15.0
+* Release date: February 13, 2020
+* Release status: General Availability
+* New Azure Sign-in improvement - Added improved Azure Sign-in experience, including removal of copy/paste of device code to make a more seamless connected experience.
+* Find in Notebook support - Users can now use Ctrl+F inside of a notebook. Find in Notebook support searches line by line through both code and text cells.
+* VS Code merge from 1.38 to 1.42 - This release includes updates to VS Code from the 3 previous VS Code releases. Read their [release notes](https://code.visualstudio.com/updates/v1_42) to learn more.
+* Fix for the ["white/blank screen"](https://github.com/microsoft/azuredatastudio/issues/8775) issue reported by many users.
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/issues?q=is%3Aissue+label%3ABug+milestone%3A%22February+2020%22+is%3Aclosed).
+
+## Version 1.14.1
+* Release date: December 26, 2019
+* Release status: General Availability
+* Hotfix for bug https://github.com/microsoft/azuredatastudio/issues/8768
+
+## Version 1.14.0
+* Release date: December 19, 2019
+* Release status: General Availability
+* Added bigdatacluster.ignoreSslVerification setting to allow ignoring SSL verification errors when connecting to a BDC [#8129](https://github.com/microsoft/azuredatastudio/issues/8129)
+* Changed attach to connection dropdown in Notebooks to only list the currently active connection [#8582](https://github.com/microsoft/azuredatastudio/pull/8582)
+* Allow changing default language flavor for offline query editors [#8419](https://github.com/microsoft/azuredatastudio/pull/8419)
+* GA status for Big Data Cluster/SQL 2019 features [#8269](https://github.com/microsoft/azuredatastudio/issues/8269)
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/44?closed=1).
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+
 ## Version 1.13.1
 * Release date: November 15, 2019
 * Release status: General Availability
@@ -10,6 +42,10 @@
 * Release status: General Availability
 * General Availability release for Schema Compare and DACPAC extensions
 * Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/43?closed=1).
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+* aspnerd for `Use selected DB for import wizard schema list` [#7878](https://github.com/microsoft/azuredatastudio/pull/7878)
 
 ## Version 1.12.2
 * Release date: October 11, 2019

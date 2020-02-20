@@ -549,20 +549,20 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 			this.emailCheckBox = view.modelBuilder.checkBox().withProperties({
 				label: this.EmailCheckBoxString,
-				width: 80
+				width: '20%'
 			}).component();
 
 			this.pagerCheckBox = view.modelBuilder.checkBox().withProperties({
 				label: this.PagerCheckBoxString,
-				width: 80
+				width: '20%'
 			}).component();
 			this.eventLogCheckBox = view.modelBuilder.checkBox().withProperties({
 				label: this.EventLogCheckBoxString,
-				width: 250
+				width: '5%'
 			}).component();
 			this.deleteJobCheckBox = view.modelBuilder.checkBox().withProperties({
 				label: this.DeleteJobCheckBoxString,
-				width: 250
+				width: '7%'
 			}).component();
 
 			this.emailCheckBox.onChanged(() => {
@@ -582,12 +582,12 @@ export class JobDialog extends AgentDialog<JobData>  {
 				this.deleteJobConditionDropdown.enabled = this.deleteJobCheckBox.checked;
 			});
 
-			this.emailOperatorDropdown = view.modelBuilder.dropDown().withProperties({ width: 150 }).component();
-			this.pagerOperatorDropdown = view.modelBuilder.dropDown().withProperties({ width: 150 }).component();
-			this.emailConditionDropdown = view.modelBuilder.dropDown().withProperties({ width: 150 }).component();
-			this.pagerConditionDropdown = view.modelBuilder.dropDown().withProperties({ width: 150 }).component();
-			this.eventLogConditionDropdown = view.modelBuilder.dropDown().withProperties({ width: 150 }).component();
-			this.deleteJobConditionDropdown = view.modelBuilder.dropDown().withProperties({ width: 150 }).component();
+			this.emailOperatorDropdown = view.modelBuilder.dropDown().withProperties({ width: '90%' }).component();
+			this.pagerOperatorDropdown = view.modelBuilder.dropDown().withProperties({ width: '90%' }).component();
+			this.emailConditionDropdown = view.modelBuilder.dropDown().withProperties({ width: '80%' }).component();
+			this.pagerConditionDropdown = view.modelBuilder.dropDown().withProperties({ width: '80%' }).component();
+			this.eventLogConditionDropdown = view.modelBuilder.dropDown().withProperties({ width: '80%' }).component();
+			this.deleteJobConditionDropdown = view.modelBuilder.dropDown().withProperties({ width: '85%' }).component();
 
 			let emailContainer = this.createRowContainer(view).withItems([this.emailCheckBox, this.emailOperatorDropdown, this.emailConditionDropdown]).component();
 

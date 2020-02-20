@@ -12,8 +12,6 @@ import { getCodeEditor } from 'vs/editor/browser/editorBrowser';
 import * as nls from 'vs/nls';
 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
-
 import { DidChangeLanguageFlavorParams } from 'azdata';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -21,7 +19,7 @@ import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { IStatusbarService, StatusbarAlignment, IStatusbarEntryAccessor } from 'vs/workbench/services/statusbar/common/statusbar';
+import { IStatusbarService, StatusbarAlignment, IStatusbarEntryAccessor, IStatusbarEntry } from 'vs/workbench/services/statusbar/common/statusbar';
 
 export interface ISqlProviderEntry extends IQuickPickItem {
 	providerId: string;
@@ -76,6 +74,7 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 		this.statusItem = this._register(
 			this.statusbarService.addEntry({
 				text: nls.localize('changeProvider', "Change SQL language provider"),
+				command: 'sql.action.editor.changeProvider'
 
 			},
 				SqlFlavorStatusbarItem.ID,
@@ -97,12 +96,12 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 	}
 
 	private _onEditorClosed(event: IEditorCloseEvent): void {
-		let uri = WorkbenchUtils.getEditorUri(event.editor);
+		let uri = event.editor.resource.toString();
 		if (uri && uri in this._sqlStatusEditors) {
 			// If active editor is being closed, hide the query status.
 			let activeEditor = this.editorService.activeControl;
 			if (activeEditor) {
-				let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
+				let currentUri = activeEditor.input.resource.toString();
 				if (uri === currentUri) {
 					this.hide();
 				}
@@ -115,7 +114,7 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 	private _onEditorsChanged(): void {
 		let activeEditor = this.editorService.activeControl;
 		if (activeEditor) {
-			let uri = WorkbenchUtils.getEditorUri(activeEditor.input);
+			let uri = activeEditor.input.resource.toString();
 
 			// Show active editor's language flavor	status
 			if (uri) {
@@ -146,17 +145,26 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 	private _showStatus(uri: string): void {
 		let activeEditor = this.editorService.activeControl;
 		if (activeEditor) {
-			let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
+			let currentUri = activeEditor.input.resource.toString();
 			if (uri === currentUri) {
 				let flavor: SqlProviderEntry = this._sqlStatusEditors[uri];
 				if (flavor) {
-					this.statusItem.update({ text: flavor.label });
+					this.updateFlavorElement(flavor.label);
 				} else {
-					this.statusItem.update({ text: SqlProviderEntry.getDefaultLabel() });
+					this.updateFlavorElement(SqlProviderEntry.getDefaultLabel());
 				}
 				this.show();
 			}
 		}
+	}
+
+	private updateFlavorElement(text: string): void {
+		const props: IStatusbarEntry = {
+			text,
+			command: 'sql.action.editor.changeProvider'
+		};
+
+		this.statusItem.update(props);
 	}
 }
 
@@ -178,27 +186,27 @@ export class ChangeFlavorAction extends Action {
 
 	public run(): Promise<any> {
 		let activeEditor = this._editorService.activeControl;
-		let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
+		let currentUri = activeEditor?.input.resource.toString();
 		if (this._connectionManagementService.isConnected(currentUri)) {
 			let currentProvider = this._connectionManagementService.getProviderIdFromUri(currentUri);
 			return this._showMessage(Severity.Info, nls.localize('alreadyConnected',
 				"A connection using engine {0} exists. To change please disconnect or change connection", currentProvider));
 		}
-		const editorWidget = getCodeEditor(activeEditor);
+
+		const editorWidget = getCodeEditor(activeEditor.getControl());
 		if (!editorWidget) {
 			return this._showMessage(Severity.Info, nls.localize('noEditor', "No text editor active at this time"));
 		}
 
 		// TODO #1334 use connectionManagementService.GetProviderNames here. The challenge is that the credentials provider is returned
 		// so we need a way to filter this using a capabilities check, with isn't yet implemented
-		const ProviderOptions: ISqlProviderEntry[] = [
-			new SqlProviderEntry(mssqlProviderName)
-		];
 
-		// TODO: select the current language flavor
-		return this._quickInputService.pick(ProviderOptions, { placeHolder: nls.localize('pickSqlProvider', "Select SQL Language Provider") }).then(provider => {
+		let providerNameToDisplayNameMap = this._connectionManagementService.providerNameToDisplayNameMap;
+		let providerOptions = Object.keys(this._connectionManagementService.getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap)).map(p => new SqlProviderEntry(p));
+
+		return this._quickInputService.pick(providerOptions, { placeHolder: nls.localize('pickSqlProvider', "Select SQL Language Provider") }).then(provider => {
 			if (provider) {
-				activeEditor = this._editorService.activeControl;
+				let activeEditor = this._editorService.activeControl.getControl();
 				const editorWidget = getCodeEditor(activeEditor);
 				if (editorWidget) {
 					if (currentUri) {

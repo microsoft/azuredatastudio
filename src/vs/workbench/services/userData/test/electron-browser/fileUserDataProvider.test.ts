@@ -23,6 +23,15 @@ import { BrowserWorkbenchEnvironmentService } from 'vs/workbench/services/enviro
 import { Emitter, Event } from 'vs/base/common/event';
 import { timeout } from 'vs/base/common/async';
 
+class TestBrowserWorkbenchEnvironmentService extends BrowserWorkbenchEnvironmentService {
+
+	testUserRoamingDataHome!: URI;
+
+	get userRoamingDataHome(): URI {
+		return this.testUserRoamingDataHome;
+	}
+}
+
 suite('FileUserDataProvider', () => {
 
 	let testObject: IFileService;
@@ -47,8 +56,8 @@ suite('FileUserDataProvider', () => {
 		userDataResource = URI.file(userDataPath).with({ scheme: Schemas.userData });
 		await Promise.all([pfs.mkdirp(userDataPath), pfs.mkdirp(backupsPath)]);
 
-		const environmentService = new BrowserWorkbenchEnvironmentService({ remoteAuthority: 'remote', workspaceId: 'workspaceId', logsPath: URI.file('logFile') });
-		environmentService.userRoamingDataHome = userDataResource;
+		const environmentService = new TestBrowserWorkbenchEnvironmentService({ remoteAuthority: 'remote', workspaceId: 'workspaceId', logsPath: URI.file('logFile') });
+		environmentService.testUserRoamingDataHome = userDataResource;
 
 		const userDataFileSystemProvider = new FileUserDataProvider(URI.file(userDataPath), URI.file(backupsPath), diskFileSystemProvider, environmentService);
 		disposables.add(userDataFileSystemProvider);
@@ -321,8 +330,8 @@ suite('FileUserDataProvider - Watching', () => {
 		localUserDataResource = URI.file(userDataPath);
 		userDataResource = localUserDataResource.with({ scheme: Schemas.userData });
 
-		const environmentService = new BrowserWorkbenchEnvironmentService({ remoteAuthority: 'remote', workspaceId: 'workspaceId', logsPath: URI.file('logFile') });
-		environmentService.userRoamingDataHome = userDataResource;
+		const environmentService = new TestBrowserWorkbenchEnvironmentService({ remoteAuthority: 'remote', workspaceId: 'workspaceId', logsPath: URI.file('logFile') });
+		environmentService.testUserRoamingDataHome = userDataResource;
 
 		const userDataFileSystemProvider = new FileUserDataProvider(localUserDataResource, localBackupsResource, new TestFileSystemProvider(fileEventEmitter.event), environmentService);
 		disposables.add(userDataFileSystemProvider);
@@ -339,7 +348,7 @@ suite('FileUserDataProvider - Watching', () => {
 	test('file added change event', done => {
 		const expected = joinPath(userDataResource, 'settings.json');
 		const target = joinPath(localUserDataResource, 'settings.json');
-		testObject.onFileChanges(e => {
+		testObject.onDidFilesChange(e => {
 			if (e.contains(expected, FileChangeType.ADDED)) {
 				done();
 			}
@@ -353,7 +362,7 @@ suite('FileUserDataProvider - Watching', () => {
 	test('file updated change event', done => {
 		const expected = joinPath(userDataResource, 'settings.json');
 		const target = joinPath(localUserDataResource, 'settings.json');
-		testObject.onFileChanges(e => {
+		testObject.onDidFilesChange(e => {
 			if (e.contains(expected, FileChangeType.UPDATED)) {
 				done();
 			}
@@ -367,7 +376,7 @@ suite('FileUserDataProvider - Watching', () => {
 	test('file deleted change event', done => {
 		const expected = joinPath(userDataResource, 'settings.json');
 		const target = joinPath(localUserDataResource, 'settings.json');
-		testObject.onFileChanges(e => {
+		testObject.onDidFilesChange(e => {
 			if (e.contains(expected, FileChangeType.DELETED)) {
 				done();
 			}
@@ -381,7 +390,7 @@ suite('FileUserDataProvider - Watching', () => {
 	test('file under folder created change event', done => {
 		const expected = joinPath(userDataResource, 'snippets', 'settings.json');
 		const target = joinPath(localUserDataResource, 'snippets', 'settings.json');
-		testObject.onFileChanges(e => {
+		testObject.onDidFilesChange(e => {
 			if (e.contains(expected, FileChangeType.ADDED)) {
 				done();
 			}
@@ -395,7 +404,7 @@ suite('FileUserDataProvider - Watching', () => {
 	test('file under folder updated change event', done => {
 		const expected = joinPath(userDataResource, 'snippets', 'settings.json');
 		const target = joinPath(localUserDataResource, 'snippets', 'settings.json');
-		testObject.onFileChanges(e => {
+		testObject.onDidFilesChange(e => {
 			if (e.contains(expected, FileChangeType.UPDATED)) {
 				done();
 			}
@@ -409,7 +418,7 @@ suite('FileUserDataProvider - Watching', () => {
 	test('file under folder deleted change event', done => {
 		const expected = joinPath(userDataResource, 'snippets', 'settings.json');
 		const target = joinPath(localUserDataResource, 'snippets', 'settings.json');
-		testObject.onFileChanges(e => {
+		testObject.onDidFilesChange(e => {
 			if (e.contains(expected, FileChangeType.DELETED)) {
 				done();
 			}
@@ -423,7 +432,7 @@ suite('FileUserDataProvider - Watching', () => {
 	test('event is not triggered if file is not under user data', async () => {
 		const target = joinPath(dirname(localUserDataResource), 'settings.json');
 		let triggered = false;
-		testObject.onFileChanges(() => triggered = true);
+		testObject.onDidFilesChange(() => triggered = true);
 		fileEventEmitter.fire([{
 			resource: target,
 			type: FileChangeType.DELETED
@@ -437,7 +446,7 @@ suite('FileUserDataProvider - Watching', () => {
 	test('backup file created change event', done => {
 		const expected = joinPath(userDataResource, BACKUPS, 'settings.json');
 		const target = joinPath(localBackupsResource, 'settings.json');
-		testObject.onFileChanges(e => {
+		testObject.onDidFilesChange(e => {
 			if (e.contains(expected, FileChangeType.ADDED)) {
 				done();
 			}
@@ -451,7 +460,7 @@ suite('FileUserDataProvider - Watching', () => {
 	test('backup file update change event', done => {
 		const expected = joinPath(userDataResource, BACKUPS, 'settings.json');
 		const target = joinPath(localBackupsResource, 'settings.json');
-		testObject.onFileChanges(e => {
+		testObject.onDidFilesChange(e => {
 			if (e.contains(expected, FileChangeType.UPDATED)) {
 				done();
 			}
@@ -465,7 +474,7 @@ suite('FileUserDataProvider - Watching', () => {
 	test('backup file delete change event', done => {
 		const expected = joinPath(userDataResource, BACKUPS, 'settings.json');
 		const target = joinPath(localBackupsResource, 'settings.json');
-		testObject.onFileChanges(e => {
+		testObject.onDidFilesChange(e => {
 			if (e.contains(expected, FileChangeType.DELETED)) {
 				done();
 			}

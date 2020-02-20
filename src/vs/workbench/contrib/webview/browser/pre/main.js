@@ -91,6 +91,24 @@
 		border-color: var(--vscode-textBlockQuote-border);
 	}
 
+	kbd {
+		color: var(--vscode-editor-foreground);
+		border-radius: 3px;
+		vertical-align: middle;
+		padding: 1px 3px;
+
+		background-color: hsla(0,0%,50%,.17);
+		border: 1px solid rgba(71,71,71,.4);
+		border-bottom-color: rgba(88,88,88,.4);
+		box-shadow: inset 0 -1px 0 rgba(88,88,88,.4);
+	}
+	.vscode-light kbd {
+		background-color: hsla(0,0%,87%,.5);
+		border: 1px solid hsla(0,0%,80%,.7);
+		border-bottom-color: hsla(0,0%,73%,.7);
+		box-shadow: inset 0 -1px 0 hsla(0,0%,73%,.7);
+	}
+
 	::-webkit-scrollbar {
 		width: 10px;
 		height: 10px;
@@ -213,23 +231,24 @@
 		/**
 		 * @param {MouseEvent} event
 		 */
-		const handleAuxClick = (event) => {
-			// Prevent middle clicks opening a broken link in the browser
-			if (!event.view || !event.view.document) {
-				return;
-			}
-
-			if (event.button === 1) {
-				let node = /** @type {any} */ (event.target);
-				while (node) {
-					if (node.tagName && node.tagName.toLowerCase() === 'a' && node.href) {
-						event.preventDefault();
-						break;
-					}
-					node = node.parentNode;
+		const handleAuxClick =
+			(event) => {
+				// Prevent middle clicks opening a broken link in the browser
+				if (!event.view || !event.view.document) {
+					return;
 				}
-			}
-		};
+
+				if (event.button === 1) {
+					let node = /** @type {any} */ (event.target);
+					while (node) {
+						if (node.tagName && node.tagName.toLowerCase() === 'a' && node.href) {
+							event.preventDefault();
+							break;
+						}
+						node = node.parentNode;
+					}
+				}
+			};
 
 		/**
 		 * @param {KeyboardEvent} e
@@ -308,7 +327,12 @@
 			} else {
 				// Rewrite vscode-resource in csp
 				if (data.endpoint) {
-					csp.setAttribute('content', csp.getAttribute('content').replace(/vscode-resource:/g, data.endpoint));
+					try {
+						const endpointUrl = new URL(data.endpoint);
+						csp.setAttribute('content', csp.getAttribute('content').replace(/vscode-resource:(?=(\s|;|$))/g, endpointUrl.origin));
+					} catch (e) {
+						console.error('Could not rewrite csp');
+					}
 				}
 			}
 
@@ -425,10 +449,14 @@
 					}, 0);
 				});
 
+				/**
+				 * @param {Document} contentDocument
+				 * @param {Window} contentWindow
+				 */
 				const onLoad = (contentDocument, contentWindow) => {
 					if (contentDocument && contentDocument.body) {
 						// Workaround for https://github.com/Microsoft/vscode/issues/12865
-						// check new scrollY and reset if neccessary
+						// check new scrollY and reset if necessary
 						setInitialScrollPosition(contentDocument.body, contentWindow);
 					}
 
@@ -468,10 +496,12 @@
 					}, 200);
 
 					newFrame.contentWindow.addEventListener('load', function (e) {
+						const contentDocument = /** @type {Document} */ (e.target);
+
 						if (loadTimeout) {
 							clearTimeout(loadTimeout);
 							loadTimeout = undefined;
-							onLoad(e.target, this);
+							onLoad(contentDocument, this);
 						}
 					});
 
@@ -515,6 +545,13 @@
 				initData.initialScrollProgress = progress;
 			});
 
+			host.onMessage('execCommand', (_event, data) => {
+				const target = getActiveFrame();
+				if (!target) {
+					return;
+				}
+				target.contentDocument.execCommand(data);
+			});
 
 			trackFocus({
 				onFocus: () => host.postMessage('did-focus'),

@@ -11,20 +11,21 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as mssql from '../../mssql';
 import * as vscode from 'vscode';
-import { context } from './testContext';
+import { isTestSetupCompleted } from './testContext';
 import { getStandaloneServer } from './testConfig';
 import * as assert from 'assert';
+import { promisify } from 'util';
 
 const retryCount = 24; // 2 minutes
 const dacpac1: string = path.join(__dirname, '../testData/Database1.dacpac');
-if (context.RunTest) {
+if (isTestSetupCompleted()) {
 	suite('Dacpac integration test suite', () => {
 		suiteSetup(async function () {
 			await utils.sleep(5000); // To ensure the providers are registered.
 			console.log(`Start dacpac tests`);
 		});
 
-		test('Deploy and extract dacpac @UNSTABLE@ @REL@', async function () {
+		test('Deploy and extract dacpac', async function () {
 			const server = await getStandaloneServer();
 			await utils.connectToServer(server);
 
@@ -41,14 +42,23 @@ if (context.RunTest) {
 				// Deploy dacpac
 				const deployResult = await dacfxService.deployDacpac(dacpac1, databaseName, false, ownerUri, azdata.TaskExecutionMode.execute);
 				await utils.assertDatabaseCreationResult(databaseName, ownerUri, retryCount);
-				await utils.assertTableCreationResult(databaseName, 'dbo', 'Table1', ownerUri, retryCount);
-				await utils.assertTableCreationResult(databaseName, 'dbo', 'Table2', ownerUri, retryCount);
+				const dbConnectionId = await utils.connectToServer({
+					serverName: server.serverName,
+					database: databaseName,
+					userName: server.userName,
+					password: server.password,
+					authenticationTypeName: server.authenticationTypeName,
+					providerName: server.providerName
+				});
+				const dbConnectionOwnerUri = await azdata.connection.getUriForConnection(dbConnectionId);
+				await utils.assertTableCreationResult('dbo', 'Table1', dbConnectionOwnerUri, retryCount);
+				await utils.assertTableCreationResult('dbo', 'Table2', dbConnectionOwnerUri, retryCount);
 				assert(deployResult.success === true && deployResult.errorMessage === '', `Deploy dacpac should succeed Expected: there should be no error. Actual Error message: "${deployResult.errorMessage}"`);
 
 				// Extract dacpac
 				const folderPath = path.join(os.tmpdir(), 'DacFxTest');
-				if (!fs.existsSync(folderPath)) {
-					fs.mkdirSync(folderPath);
+				if (!(await promisify(fs.exists)(folderPath))) {
+					await fs.promises.mkdir(folderPath);
 				}
 				const packageFilePath = path.join(folderPath, `${databaseName}.dacpac`);
 				const extractResult = await dacfxService.extractDacpac(databaseName, packageFilePath, databaseName, '1.0.0.0', ownerUri, azdata.TaskExecutionMode.execute);
@@ -60,11 +70,8 @@ if (context.RunTest) {
 			}
 		});
 
-		// Disabling due to intermittent failure with error Editor is not connected
-		// Tracking bug https://github.com/microsoft/azuredatastudio/issues/7323
-
 		const bacpac1: string = path.join(__dirname, '..', 'testData', 'Database1.bacpac');
-		test('Import and export bacpac @UNSTABLE@', async function () {
+		test('Import and export bacpac', async function () {
 			const server = await getStandaloneServer();
 			await utils.connectToServer(server);
 
@@ -81,14 +88,23 @@ if (context.RunTest) {
 				// Import bacpac
 				const importResult = await dacfxService.importBacpac(bacpac1, databaseName, ownerUri, azdata.TaskExecutionMode.execute);
 				await utils.assertDatabaseCreationResult(databaseName, ownerUri, retryCount);
-				await utils.assertTableCreationResult(databaseName, 'dbo', 'Table1', ownerUri, retryCount, true);
-				await utils.assertTableCreationResult(databaseName, 'dbo', 'Table2', ownerUri, retryCount, true);
+				const dbConnectionId = await utils.connectToServer({
+					serverName: server.serverName,
+					database: databaseName,
+					userName: server.userName,
+					password: server.password,
+					authenticationTypeName: server.authenticationTypeName,
+					providerName: server.providerName
+				});
+				const dbConnectionOwnerUri = await azdata.connection.getUriForConnection(dbConnectionId);
+				await utils.assertTableCreationResult('dbo', 'Table1', dbConnectionOwnerUri, retryCount, true);
+				await utils.assertTableCreationResult('dbo', 'Table2', dbConnectionOwnerUri, retryCount, true);
 				assert(importResult.success === true && importResult.errorMessage === '', `Expected: Import bacpac should succeed and there should be no error. Actual Error message: "${importResult.errorMessage}"`);
 
 				// Export bacpac
 				const folderPath = path.join(os.tmpdir(), 'DacFxTest');
-				if (!fs.existsSync(folderPath)) {
-					fs.mkdirSync(folderPath);
+				if (!(await promisify(fs.exists)(folderPath))) {
+					await fs.promises.mkdir(folderPath);
 				}
 				const packageFilePath = path.join(folderPath, `${databaseName}.bacpac`);
 				const exportResult = await dacfxService.exportBacpac(databaseName, packageFilePath, ownerUri, azdata.TaskExecutionMode.execute);

@@ -11,7 +11,9 @@ import { ExtHostDocumentsShape, IMainContext, MainContext, MainThreadDocumentsSh
 import { ExtHostDocumentData, setWordDefinitionFor } from 'vs/workbench/api/common/extHostDocumentData';
 import { ExtHostDocumentsAndEditors } from 'vs/workbench/api/common/extHostDocumentsAndEditors';
 import * as TypeConverters from 'vs/workbench/api/common/extHostTypeConverters';
-import * as vscode from 'vscode';
+import type * as vscode from 'vscode';
+import { assertIsDefined } from 'vs/base/common/types';
+import { deepFreeze } from 'vs/base/common/objects';
 
 export class ExtHostDocuments implements ExtHostDocumentsShape {
 
@@ -84,7 +86,7 @@ export class ExtHostDocuments implements ExtHostDocumentsShape {
 		if (!promise) {
 			promise = this._proxy.$tryOpenDocument(uri).then(() => {
 				this._documentLoader.delete(uri.toString());
-				return this._documentsAndEditors.getDocument(uri);
+				return assertIsDefined(this._documentsAndEditors.getDocument(uri));
 			}, err => {
 				this._documentLoader.delete(uri.toString());
 				return Promise.reject(err);
@@ -143,7 +145,7 @@ export class ExtHostDocuments implements ExtHostDocumentsShape {
 		}
 		data._acceptIsDirty(isDirty);
 		data.onEvents(events);
-		this._onDidChangeDocument.fire({
+		this._onDidChangeDocument.fire(deepFreeze({
 			document: data.document,
 			contentChanges: events.changes.map((change) => {
 				return {
@@ -153,7 +155,7 @@ export class ExtHostDocuments implements ExtHostDocumentsShape {
 					text: change.text
 				};
 			})
-		});
+		}));
 	}
 
 	public setWordDefinitionFor(modeId: string, wordDefinition: RegExp | undefined): void {

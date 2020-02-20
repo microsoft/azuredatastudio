@@ -336,6 +336,9 @@
     <trans-unit id="cms.errors.sameCmsServerName">
       <source xml:lang="en">Central Management Server Group already has a Registered Server with the name {0}</source>
     </trans-unit>
+    <trans-unit id="cms.errors.azureNotAllowed">
+      <source xml:lang="en">Azure SQL Database Servers cannot be used as Central Management Servers</source>
+    </trans-unit>
     <trans-unit id="cms.confirmDeleteServer">
       <source xml:lang="en">Are you sure you want to delete</source>
     </trans-unit>

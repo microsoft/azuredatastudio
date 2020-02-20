@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as cp from 'child_process';
 import { createWriteStream, promises as fs } from 'fs';
 import * as https from 'https';
 import * as os from 'os';
@@ -246,10 +245,10 @@ export class ResourceTypeService implements IResourceTypeService {
 				isCancelable: false,
 				operation: op => {
 					op.updateStatus(azdata.TaskStatus.InProgress, localize('resourceDeployment.DownloadingText', "Downloading from: {0}", provider.downloadUrl));
-					self.download(provider.downloadUrl).then((downloadedFile) => {
+					self.download(provider.downloadUrl).then(async (downloadedFile) => {
 						op.updateStatus(azdata.TaskStatus.InProgress, localize('resourceDeployment.DownloadCompleteText', "Successfully downloaded: {0}", downloadedFile));
 						op.updateStatus(azdata.TaskStatus.InProgress, localize('resourceDeployment.LaunchingProgramText', "Launching: {0}", downloadedFile));
-						cp.exec(downloadedFile);
+						await this.platformService.runCommand(downloadedFile, { sudo: true });
 						op.updateStatus(azdata.TaskStatus.Succeeded, localize('resourceDeployment.ProgramLaunchedText', "Successfully launched: {0}", downloadedFile));
 					}, (error) => {
 						op.updateStatus(azdata.TaskStatus.Failed, error);
@@ -285,7 +284,12 @@ export class ResourceTypeService implements IResourceTypeService {
 				const extension = path.extname(url);
 				const originalFileName = path.basename(url, extension);
 				let fileName = originalFileName;
-				const downloadFolder = os.homedir();
+				// Download it to the user's downloads folder
+				// and fall back to the user's homedir if it does not exist.
+				let downloadFolder = path.join(os.homedir(), 'Downloads');
+				if (!await exists(downloadFolder)) {
+					downloadFolder = os.homedir();
+				}
 				let cnt = 1;
 				while (await exists(path.join(downloadFolder, fileName + extension))) {
 					fileName = `${originalFileName}-${cnt}`;

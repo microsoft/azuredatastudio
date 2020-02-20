@@ -44,17 +44,16 @@ export class TerminalNativeService implements ITerminalNativeService {
 		// Complete when wait marker file is deleted
 		return new Promise<void>(resolve => {
 			let running = false;
-			const interval = setInterval(() => {
+			const interval = setInterval(async () => {
 				if (!running) {
 					running = true;
-					this._fileService.exists(path).then(exists => {
-						running = false;
+					const exists = await this._fileService.exists(path);
+					running = false;
 
-						if (!exists) {
-							clearInterval(interval);
-							resolve(undefined);
-						}
-					});
+					if (!exists) {
+						clearInterval(interval);
+						resolve(undefined);
+					}
 				}
 			}, 1000);
 		});
@@ -69,9 +68,10 @@ export class TerminalNativeService implements ITerminalNativeService {
 			throw new Error('wslpath does not exist on Windows build < 17063');
 		}
 		return new Promise<string>(c => {
-			execFile('bash.exe', ['-c', 'echo $(wslpath ' + escapeNonWindowsPath(path) + ')'], {}, (error, stdout, stderr) => {
+			const proc = execFile('bash.exe', ['-c', `wslpath ${escapeNonWindowsPath(path)}`], {}, (error, stdout, stderr) => {
 				c(escapeNonWindowsPath(stdout.trim()));
 			});
+			proc.stdin!.end();
 		});
 	}
 

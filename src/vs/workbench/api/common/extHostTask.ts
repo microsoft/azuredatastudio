@@ -12,7 +12,7 @@ import { MainContext, MainThreadTaskShape, ExtHostTaskShape } from 'vs/workbench
 
 import * as types from 'vs/workbench/api/common/extHostTypes';
 import { IExtHostWorkspaceProvider, IExtHostWorkspace } from 'vs/workbench/api/common/extHostWorkspace';
-import * as vscode from 'vscode';
+import type * as vscode from 'vscode';
 import * as tasks from '../common/shared/tasks';
 import { IExtHostDocumentsAndEditors } from 'vs/workbench/api/common/extHostDocumentsAndEditors';
 import { IExtHostConfiguration } from 'vs/workbench/api/common/extHostConfiguration';
@@ -24,6 +24,8 @@ import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitData
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Schemas } from 'vs/base/common/network';
 import * as Platform from 'vs/base/common/platform';
+import { ILogService } from 'vs/platform/log/common/log';
+import { IExtHostApiDeprecationService } from 'vs/workbench/api/common/extHostApiDeprecationService';
 
 export interface IExtHostTask extends ExtHostTaskShape {
 
@@ -374,6 +376,8 @@ export abstract class ExtHostTaskBase implements ExtHostTaskShape {
 	protected readonly _editorService: IExtHostDocumentsAndEditors;
 	protected readonly _configurationService: IExtHostConfiguration;
 	protected readonly _terminalService: IExtHostTerminalService;
+	protected readonly _logService: ILogService;
+	protected readonly _deprecationService: IExtHostApiDeprecationService;
 	protected _handleCounter: number;
 	protected _handlers: Map<number, HandlerData>;
 	protected _taskExecutions: Map<string, TaskExecutionImpl>;
@@ -393,7 +397,9 @@ export abstract class ExtHostTaskBase implements ExtHostTaskShape {
 		@IExtHostWorkspace workspaceService: IExtHostWorkspace,
 		@IExtHostDocumentsAndEditors editorService: IExtHostDocumentsAndEditors,
 		@IExtHostConfiguration configurationService: IExtHostConfiguration,
-		@IExtHostTerminalService extHostTerminalService: IExtHostTerminalService
+		@IExtHostTerminalService extHostTerminalService: IExtHostTerminalService,
+		@ILogService logService: ILogService,
+		@IExtHostApiDeprecationService deprecationService: IExtHostApiDeprecationService
 	) {
 		this._proxy = extHostRpc.getProxy(MainContext.MainThreadTask);
 		this._workspaceProvider = workspaceService;
@@ -406,6 +412,8 @@ export abstract class ExtHostTaskBase implements ExtHostTaskShape {
 		this._providedCustomExecutions2 = new Map<string, types.CustomExecution>();
 		this._notProvidedCustomExecutions = new Set<string>();
 		this._activeCustomExecutions2 = new Map<string, types.CustomExecution>();
+		this._logService = logService;
+		this._deprecationService = deprecationService;
 	}
 
 	public registerTaskProvider(extension: IExtensionDescription, type: string, provider: vscode.TaskProvider): vscode.Disposable {
@@ -457,6 +465,10 @@ export abstract class ExtHostTaskBase implements ExtHostTaskShape {
 		return this._onDidExecuteTask.event;
 	}
 
+	protected async resolveDefinition(uri: number | UriComponents | undefined, definition: vscode.TaskDefinition | undefined): Promise<vscode.TaskDefinition | undefined> {
+		return definition;
+	}
+
 	public async $onDidStartTask(execution: tasks.TaskExecutionDTO, terminalId: number): Promise<void> {
 		const customExecution: types.CustomExecution | undefined = this._providedCustomExecutions2.get(execution.id);
 		if (customExecution) {
@@ -466,7 +478,7 @@ export abstract class ExtHostTaskBase implements ExtHostTaskShape {
 
 			// Clone the custom execution to keep the original untouched. This is important for multiple runs of the same task.
 			this._activeCustomExecutions2.set(execution.id, customExecution);
-			this._terminalService.attachPtyToTerminal(terminalId, await customExecution.callback());
+			this._terminalService.attachPtyToTerminal(terminalId, await customExecution.callback(await this.resolveDefinition(execution.task?.source.scope, execution.task?.definition)));
 		}
 		this._lastStartedTask = execution.id;
 
@@ -568,6 +580,8 @@ export abstract class ExtHostTaskBase implements ExtHostTaskShape {
 			return undefined; // {{SQL CARBON EDIT}} strict-null-check
 		}
 
+		this.checkDeprecation(resolvedTask, handler);
+
 		const resolvedTaskDTO: tasks.TaskDTO | undefined = TaskDTO.from(resolvedTask, handler.extension);
 		if (!resolvedTaskDTO) {
 			throw new Error('Unexpected: Task cannot be resolved.');
@@ -622,6 +636,13 @@ export abstract class ExtHostTaskBase implements ExtHostTaskShape {
 		return createdResult;
 	}
 
+	protected checkDeprecation(task: vscode.Task, handler: HandlerData) {
+		const tTask = (task as types.Task);
+		if (tTask._deprecated) {
+			this._deprecationService.report('Task.constructor', handler.extension, 'Use the Task constructor that takes a `scope` instead.');
+		}
+	}
+
 	private customExecutionComplete(execution: tasks.TaskExecutionDTO): void {
 		const extensionCallback2: vscode.CustomExecution | undefined = this._activeCustomExecutions2.get(execution.id);
 		if (extensionCallback2) {
@@ -657,9 +678,11 @@ export class WorkerExtHostTask extends ExtHostTaskBase {
 		@IExtHostWorkspace workspaceService: IExtHostWorkspace,
 		@IExtHostDocumentsAndEditors editorService: IExtHostDocumentsAndEditors,
 		@IExtHostConfiguration configurationService: IExtHostConfiguration,
-		@IExtHostTerminalService extHostTerminalService: IExtHostTerminalService
+		@IExtHostTerminalService extHostTerminalService: IExtHostTerminalService,
+		@ILogService logService: ILogService,
+		@IExtHostApiDeprecationService deprecationService: IExtHostApiDeprecationService
 	) {
-		super(extHostRpc, initData, workspaceService, editorService, configurationService, extHostTerminalService);
+		super(extHostRpc, initData, workspaceService, editorService, configurationService, extHostTerminalService, logService, deprecationService);
 		if (initData.remote.isRemote && initData.remote.authority) {
 			this.registerTaskSystem(Schemas.vscodeRemote, {
 				scheme: Schemas.vscodeRemote,
@@ -691,8 +714,9 @@ export class WorkerExtHostTask extends ExtHostTaskBase {
 		const taskDTOs: tasks.TaskDTO[] = [];
 		if (value) {
 			for (let task of value) {
+				this.checkDeprecation(task, handler);
 				if (!task.definition || !validTypes[task.definition.type]) {
-					console.warn(`The task [${task.source}, ${task.name}] uses an undefined task type. The task will be ignored in the future.`);
+					this._logService.warn(`The task [${task.source}, ${task.name}] uses an undefined task type. The task will be ignored in the future.`);
 				}
 
 				const taskDTO: tasks.TaskDTO | undefined = TaskDTO.from(task, handler.extension);
@@ -703,7 +727,7 @@ export class WorkerExtHostTask extends ExtHostTaskBase {
 					// is invoked, we have to be able to map it back to our data.
 					taskIdPromises.push(this.addCustomExecution(taskDTO, task, true));
 				} else {
-					console.warn('Only custom execution tasks supported.');
+					this._logService.warn('Only custom execution tasks supported.');
 				}
 			}
 		}
@@ -717,7 +741,7 @@ export class WorkerExtHostTask extends ExtHostTaskBase {
 		if (CustomExecutionDTO.is(resolvedTaskDTO.execution)) {
 			return resolvedTaskDTO;
 		} else {
-			console.warn('Only custom execution tasks supported.');
+			this._logService.warn('Only custom execution tasks supported.');
 		}
 		return undefined;
 	}

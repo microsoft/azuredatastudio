@@ -330,7 +330,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 		}
 
 		if (e.equals(KeyMod.Shift | KeyCode.Enter)) {
-			this._tableController.getAction(ACTION_IDS.FIND_NEXT).run().then(null, onUnexpectedError);
+			this._tableController.getAction(ACTION_IDS.FIND_PREVIOUS).run().then(null, onUnexpectedError);
 			e.preventDefault();
 			return;
 		}

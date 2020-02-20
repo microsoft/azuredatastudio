@@ -1,0 +1,4 @@
+*.vsix
+python/**
+r_packages/**
+*.zip

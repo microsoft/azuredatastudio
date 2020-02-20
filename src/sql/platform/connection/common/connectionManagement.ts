@@ -74,6 +74,9 @@ export interface IConnectionManagementService {
 	onConnectionChanged: Event<IConnectionParams>;
 	onLanguageFlavorChanged: Event<azdata.DidChangeLanguageFlavorParams>;
 
+	// Properties
+	providerNameToDisplayNameMap: { [providerDisplayName: string]: string };
+
 	/**
 	 * Opens the connection dialog to create new connection
 	 */
@@ -179,6 +182,8 @@ export interface IConnectionManagementService {
 	getConnectionInfo(fileUri: string): ConnectionManagementInfo;
 
 	getDefaultProviderId(): string;
+
+	getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string };
 
 	/**
 	 * Cancels the connection

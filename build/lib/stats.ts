@@ -126,7 +126,7 @@ export function submitAllStats(productJson: any, commit: string): Promise<boolea
 				}
 			*/
 			appInsights.defaultClient.trackEvent({
-				name: 'monacoworkbench/packagemetrics',
+				name: 'adsworkbench/packagemetrics', // {{SQL CARBON EDIT}}
 				properties: { commit, size: JSON.stringify(sizes), count: JSON.stringify(counts) }
 			});
 

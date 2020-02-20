@@ -66,6 +66,14 @@ code-component .monaco-editor .decorationsOverviewRuler {
 	visibility: hidden;
 }
 
+.vs code-component .monaco-editor .rangeHighlight {
+	background-color: rgba(255, 255, 0, 0.2)
+}
+
+.vs-dark code-component .monaco-editor .rangeHighlight {
+	background-color: rgba(255, 255, 0, 0.2)
+}
+
 code-component .carbon-taskbar .codicon {
 	background-size: 20px;
 	width: 40px;

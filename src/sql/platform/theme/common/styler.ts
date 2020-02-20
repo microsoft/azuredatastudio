@@ -7,23 +7,9 @@ import * as sqlcolors from './colors';
 
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
-import { IThemable, attachStyler } from 'vs/platform/theme/common/styler';
+import { attachStyler } from 'vs/platform/theme/common/styler';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_FOREGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, SIDE_BAR_DRAG_AND_DROP_BACKGROUND, PANEL_INACTIVE_TITLE_FOREGROUND, PANEL_ACTIVE_TITLE_BORDER, PANEL_ACTIVE_TITLE_FOREGROUND } from 'vs/workbench/common/theme';
-
-export function attachModalDialogStyler(widget: IThemable, themeService: IThemeService, style?:
-	{
-		dialogForeground?: cr.ColorIdentifier,
-		dialogHeaderAndFooterBackground?: cr.ColorIdentifier,
-		dialogBodyBackground?: cr.ColorIdentifier,
-	}): IDisposable {
-	return attachStyler(themeService, {
-		dialogForeground: (style && style.dialogForeground) || cr.foreground,
-		dialogBorder: cr.contrastBorder,
-		dialogHeaderAndFooterBackground: (style && style.dialogHeaderAndFooterBackground) || SIDE_BAR_BACKGROUND,
-		dialogBodyBackground: (style && style.dialogBodyBackground) || cr.editorBackground
-	}, widget);
-}
+import { IThemable } from 'vs/base/common/styler';
 
 export function attachDropdownStyler(widget: IThemable, themeService: IThemeService, style?:
 	{
@@ -267,24 +253,5 @@ export function attachCheckboxStyler(widget: IThemable, themeService: IThemeServ
 	: IDisposable {
 	return attachStyler(themeService, {
 		disabledCheckboxForeground: (style && style.disabledCheckboxForeground) || sqlcolors.disabledCheckboxForeground
-	}, widget);
-}
-
-export function attachPanelStyler(widget: IThemable, themeService: IThemeService) {
-	return attachStyler(themeService, {
-		headerForeground: SIDE_BAR_SECTION_HEADER_FOREGROUND,
-		headerBackground: SIDE_BAR_SECTION_HEADER_BACKGROUND,
-		// headerHighContrastBorder: index === 0 ? null : contrastBorder,
-		dropBackground: SIDE_BAR_DRAG_AND_DROP_BACKGROUND
-	}, widget);
-}
-
-export function attachTabbedPanelStyler(widget: IThemable, themeService: IThemeService) {
-	return attachStyler(themeService, {
-		titleActiveForeground: PANEL_ACTIVE_TITLE_FOREGROUND,
-		titleActiveBorder: PANEL_ACTIVE_TITLE_BORDER,
-		titleInactiveForeground: PANEL_INACTIVE_TITLE_FOREGROUND,
-		focusBorder: cr.focusBorder,
-		outline: cr.activeContrastBorder
 	}, widget);
 }

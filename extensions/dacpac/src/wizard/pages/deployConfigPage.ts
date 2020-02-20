@@ -4,14 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as loc from '../../localizedConstants';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard, DeployOperationPath, Operation, DeployNewOperationPath, PageName } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
-
-const localize = nls.loadMessageBundle();
 
 export class DeployConfigPage extends DacFxConfigPage {
 
@@ -32,9 +30,9 @@ export class DeployConfigPage extends DacFxConfigPage {
 	async start(): Promise<boolean> {
 		let serverComponent = await this.createServerDropdown(true);
 		let fileBrowserComponent = await this.createFileBrowser();
-		this.databaseComponent = await this.createDatabaseTextBox(localize('dacFx.databaseNameTextBox', "Database Name"));
+		this.databaseComponent = await this.createDatabaseTextBox(loc.databaseName);
 		this.databaseDropdownComponent = await this.createDeployDatabaseDropdown();
-		this.databaseDropdownComponent.title = localize('dacFx.databaseNameDropdown', "Database Name");
+		this.databaseDropdownComponent.title = loc.databaseName;
 		let radioButtons = await this.createRadiobuttons();
 
 		this.formBuilder = this.view.modelBuilder.formContainer()
@@ -57,6 +55,8 @@ export class DeployConfigPage extends DacFxConfigPage {
 	async onPageEnter(): Promise<boolean> {
 		let r1 = await this.populateServerDropdown();
 		let r2 = await this.populateDeployDatabaseDropdown();
+		// get existing database values to verify if new database name is valid
+		await this.getDatabaseValues();
 		return r1 && r2;
 	}
 
@@ -70,7 +70,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 					canSelectFolders: false,
 					canSelectMany: false,
 					defaultUri: vscode.Uri.file(this.getRootPath()),
-					openLabel: localize('dacFxDeploy.openFile', "Open"),
+					openLabel: loc.open,
 					filters: {
 						'dacpac Files': ['dacpac'],
 					}
@@ -96,7 +96,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxDeploy.fileTextboxTitle', "File Location"),
+			title: loc.fileLocation,
 			actions: [this.fileButton]
 		};
 	}
@@ -105,13 +105,13 @@ export class DeployConfigPage extends DacFxConfigPage {
 		let upgradeRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'updateExisting',
-				label: localize('dacFx.upgradeRadioButtonLabel', "Upgrade Existing Database"),
+				label: loc.upgradeExistingDatabase,
 			}).component();
 
 		let newRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'updateExisting',
-				label: localize('dacFx.newRadioButtonLabel', "New Database"),
+				label: loc.newDatabase,
 			}).component();
 
 		upgradeRadioButton.onDidClick(() => {
@@ -155,12 +155,12 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		return {
 			component: flexRadioButtonsModel,
-			title: localize('dacFx.targetDatabaseRadioButtonsTitle', "Target Database")
+			title: loc.targetDatabase
 		};
 	}
 
 	protected async createDeployDatabaseDropdown(): Promise<azdata.FormComponent> {
-		const targetDatabaseTitle = localize('dacFx.targetDatabaseDropdownTitle', "Database Name");
+		const targetDatabaseTitle = loc.databaseName;
 		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
 			ariaLabel: targetDatabaseTitle
 		}).component();
@@ -191,7 +191,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		//set the database to the first dropdown value if upgrading, otherwise it should get set to the textbox value
 		if (this.model.upgradeExisting) {
-			this.model.database = values[0].name;
+			this.model.database = values[0];
 		}
 
 		this.databaseDropdown.updateProperties({

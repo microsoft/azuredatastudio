@@ -12,8 +12,7 @@ import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/
 import { ILogService } from 'vs/platform/log/common/log';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { getWorkspaceIdentifier } from 'vs/workbench/services/workspaces/browser/workspaces';
-import { IHostService } from 'vs/workbench/services/host/browser/host';
-import { IFileService } from 'vs/platform/files/common/files';
+import { IFileService, FileOperationError, FileOperationResult } from 'vs/platform/files/common/files';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { joinPath } from 'vs/base/common/resources';
 import { VSBuffer } from 'vs/base/common/buffer';
@@ -31,12 +30,13 @@ export class BrowserWorkspacesService extends Disposable implements IWorkspacesS
 		@IStorageService private readonly storageService: IStorageService,
 		@IWorkspaceContextService private readonly workspaceService: IWorkspaceContextService,
 		@ILogService private readonly logService: ILogService,
-		@IHostService private readonly hostService: IHostService,
 		@IFileService private readonly fileService: IFileService,
 		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService
 	) {
 		super();
 
+		// Opening a workspace should push it as most
+		// recently used to the workspaces history
 		this.addWorkspaceToRecentlyOpened();
 
 		this.registerListeners();
@@ -78,13 +78,13 @@ export class BrowserWorkspacesService extends Disposable implements IWorkspacesS
 
 		recents.forEach(recent => {
 			if (isRecentFile(recent)) {
-				this.doRemoveFromRecentlyOpened(recentlyOpened, [recent.fileUri]);
+				this.doRemoveRecentlyOpened(recentlyOpened, [recent.fileUri]);
 				recentlyOpened.files.unshift(recent);
 			} else if (isRecentFolder(recent)) {
-				this.doRemoveFromRecentlyOpened(recentlyOpened, [recent.folderUri]);
+				this.doRemoveRecentlyOpened(recentlyOpened, [recent.folderUri]);
 				recentlyOpened.workspaces.unshift(recent);
 			} else {
-				this.doRemoveFromRecentlyOpened(recentlyOpened, [recent.workspace.configPath]);
+				this.doRemoveRecentlyOpened(recentlyOpened, [recent.workspace.configPath]);
 				recentlyOpened.workspaces.unshift(recent);
 			}
 		});
@@ -92,15 +92,15 @@ export class BrowserWorkspacesService extends Disposable implements IWorkspacesS
 		return this.saveRecentlyOpened(recentlyOpened);
 	}
 
-	async removeFromRecentlyOpened(paths: URI[]): Promise<void> {
+	async removeRecentlyOpened(paths: URI[]): Promise<void> {
 		const recentlyOpened = await this.getRecentlyOpened();
 
-		this.doRemoveFromRecentlyOpened(recentlyOpened, paths);
+		this.doRemoveRecentlyOpened(recentlyOpened, paths);
 
 		return this.saveRecentlyOpened(recentlyOpened);
 	}
 
-	private doRemoveFromRecentlyOpened(recentlyOpened: IRecentlyOpened, paths: URI[]): void {
+	private doRemoveRecentlyOpened(recentlyOpened: IRecentlyOpened, paths: URI[]): void {
 		recentlyOpened.files = recentlyOpened.files.filter(file => {
 			return !paths.some(path => path.toString() === file.fileUri.toString());
 		});
@@ -123,18 +123,12 @@ export class BrowserWorkspacesService extends Disposable implements IWorkspacesS
 	//#region Workspace Management
 
 	async enterWorkspace(path: URI): Promise<IEnterWorkspaceResult | null> {
-
-		// Open workspace in same window
-		await this.hostService.openWindow([{ workspaceUri: path }], { forceReuseWindow: true });
-
-		return {
-			workspace: await this.getWorkspaceIdentifier(path)
-		};
+		return { workspace: await this.getWorkspaceIdentifier(path) };
 	}
 
 	async createUntitledWorkspace(folders?: IWorkspaceFolderCreationData[], remoteAuthority?: string): Promise<IWorkspaceIdentifier> {
 		const randomId = (Date.now() + Math.round(Math.random() * 1000)).toString();
-		const newUntitledWorkspacePath = joinPath(this.environmentService.untitledWorkspacesHome, `${randomId}.${WORKSPACE_EXTENSION}`);
+		const newUntitledWorkspacePath = joinPath(this.environmentService.untitledWorkspacesHome, `Untitled-${randomId}.${WORKSPACE_EXTENSION}`);
 
 		// Build array of workspace folders to store
 		const storedWorkspaceFolder: IStoredWorkspaceFolder[] = [];
@@ -151,8 +145,14 @@ export class BrowserWorkspacesService extends Disposable implements IWorkspacesS
 		return this.getWorkspaceIdentifier(newUntitledWorkspacePath);
 	}
 
-	deleteUntitledWorkspace(workspace: IWorkspaceIdentifier): Promise<void> {
-		return this.fileService.del(workspace.configPath);
+	async deleteUntitledWorkspace(workspace: IWorkspaceIdentifier): Promise<void> {
+		try {
+			await this.fileService.del(workspace.configPath);
+		} catch (error) {
+			if ((<FileOperationError>error).fileOperationResult !== FileOperationResult.FILE_NOT_FOUND) {
+				throw error; // re-throw any other error than file not found which is OK
+			}
+		}
 	}
 
 	async getWorkspaceIdentifier(workspacePath: URI): Promise<IWorkspaceIdentifier> {

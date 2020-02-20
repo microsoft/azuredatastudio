@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { getConfigurationKeys, IConfigurationOverrides, IConfigurationService, getConfigurationValue, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
+import { getConfigurationKeys, IConfigurationOverrides, IConfigurationService, getConfigurationValue, ConfigurationTarget, IConfigurationValue } from 'vs/platform/configuration/common/configuration';
 
 export class TestConfigurationService implements IConfigurationService {
 	public _serviceBrand: undefined;
 
-	private configuration = {
+	private configuration: { user: { [key: string]: any }; workspace: { [key: string]: any } } = {
 		user: {},
 		workspace: {}
 	};
@@ -22,7 +22,7 @@ export class TestConfigurationService implements IConfigurationService {
 	}
 
 	public updateValue(key: string, value: any, target?: any): Promise<void> {
-		let _target = (target as ConfigurationTarget) === ConfigurationTarget.USER ? 'user' : 'workspace';
+		let _target: 'user' | 'workspace' = (target as ConfigurationTarget) === ConfigurationTarget.USER ? 'user' : 'workspace';
 		let keyArray = key.split('.');
 		let targetObject = this.configuration[_target];
 		for (let i = 0; i < keyArray.length; i++) {
@@ -42,19 +42,13 @@ export class TestConfigurationService implements IConfigurationService {
 		return { dispose() { } };
 	}
 
-	public inspect<T>(key: string, overrides?: IConfigurationOverrides): {
-		default: T,
-		user: T,
-		workspace?: T,
-		workspaceFolder?: T
-		value: T,
-	} {
+	public inspect<T>(key: string, overrides?: IConfigurationOverrides): IConfigurationValue<T> {
 
 		return {
 			value: getConfigurationValue<T>(this.configuration.user, key),
 			default: undefined,
-			user: getConfigurationValue<T>(this.configuration.user, key),
-			workspace: getConfigurationValue<T>(this.configuration.workspace, key),
+			userValue: getConfigurationValue<T>(this.configuration.user, key),
+			workspaceValue: getConfigurationValue<T>(this.configuration.workspace, key),
 			workspaceFolder: undefined
 		};
 	}

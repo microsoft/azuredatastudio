@@ -10,13 +10,14 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileE
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IEditorRegistry, EditorDescriptor, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { NativeTextFileEditor } from 'vs/workbench/contrib/files/electron-browser/textFileEditor';
-import { NativeDirtyFilesTracker } from 'vs/workbench/contrib/files/electron-browser/dirtyFilesTracker';
-import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
-import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import * as os from 'os';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Register file editor
 Registry.as<IEditorRegistry>(EditorExtensions.Editors).registerEditor(
-	new EditorDescriptor(
+	EditorDescriptor.create(
 		NativeTextFileEditor,
 		NativeTextFileEditor.ID,
 		nls.localize('textFileEditor', "Text File Editor")
@@ -26,5 +27,7 @@ Registry.as<IEditorRegistry>(EditorExtensions.Editors).registerEditor(
 	]
 );
 
-// Register Dirty Files Tracker
-Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(NativeDirtyFilesTracker, LifecyclePhase.Starting);
+// Register mkdtemp command
+CommandsRegistry.registerCommand('mkdtemp', function () {
+	return fs.promises.mkdtemp(path.join(os.tmpdir(), 'vscodetmp-'));
+});

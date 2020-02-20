@@ -10,26 +10,33 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import * as azdata from 'azdata';
-import { Event, Emitter } from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 
 // Test stubs for commonly used objects
 
 export class TestConnectionManagementService implements IConnectionManagementService {
+	disconnect(connection: IConnectionProfile): Promise<void>;
+	disconnect(ownerUri: string): Promise<void>;
+	disconnect(ownerUri: any) {
+		return Promise.resolve();
+	}
 	_serviceBrand: undefined;
-	onAddConnectionProfile = undefined;
-	onDeleteConnectionProfile = undefined;
-	onConnectionChanged = undefined;
-	onLanguageFlavorChanged = undefined;
+	onAddConnectionProfile = undefined!;
+	onDeleteConnectionProfile = undefined!;
+	onConnectionChanged = undefined!;
+	onLanguageFlavorChanged = undefined!;
 
 	public get onConnect(): Event<any> {
-		let conEvent = new Emitter<any>();
-		return conEvent.event;
+		return Event.None;
 	}
 
 	public get onDisconnect(): Event<any> {
-		let conEvent = new Emitter<any>();
-		return conEvent.event;
+		return Event.None;
+	}
+
+	public get providerNameToDisplayNameMap(): { [providerDisplayName: string]: string } {
+		return {};
 	}
 
 	registerProvider(providerId: string, provider: azdata.ConnectionProvider): void {
@@ -41,15 +48,15 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void> {
-		return undefined;
+		return undefined!;
 	}
 
 	showCreateServerGroupDialog(): Promise<void> {
-		return undefined;
+		return undefined!;
 	}
 
 	showEditServerGroupDialog(group: ConnectionProfileGroup): Promise<void> {
-		return undefined;
+		return undefined!;
 	}
 
 	onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
@@ -65,7 +72,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	getCurrentConnectionSummary(): azdata.ConnectionSummary {
-		return undefined;
+		return undefined!;
 	}
 
 	getConnectionGroups(providers?: string[]): ConnectionProfileGroup[] {
@@ -77,7 +84,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
-		return undefined;
+		return undefined!;
 	}
 
 	getRecentConnections(providers?: string[]): ConnectionProfile[] {
@@ -121,15 +128,15 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	getConnectionUri(connectionProfile: ConnectionProfile): string {
-		return undefined;
+		return undefined!;
 	}
 
 	getFormattedUri(uri: string, connectionProfile: ConnectionProfile): string {
-		return undefined;
+		return undefined!;
 	}
 
 	getConnectionUriFromId(connectionId: string): string {
-		return undefined;
+		return undefined!;
 	}
 
 	isConnected(fileUri: string, connectionProfile?: ConnectionProfile): boolean {
@@ -149,12 +156,12 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	findExistingConnection(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection'): ConnectionProfile {
-		return undefined;
+		return undefined!;
 	}
 
 	connect(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		return new Promise<IConnectionResult>((resolve, reject) => {
-			resolve({ connected: true, errorMessage: undefined, errorCode: undefined, callStack: undefined });
+			resolve({ connected: true, errorMessage: undefined!, errorCode: undefined!, callStack: undefined! });
 		});
 	}
 
@@ -166,20 +173,12 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return new Promise<boolean>(() => true);
 	}
 
-	disconnect(connection: IConnectionProfile);
-	disconnect(uri: string);
-	disconnect(input: any): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			resolve(true);
-		});
-	}
-
 	getConnectionProfile(fileUri: string): IConnectionProfile {
-		return undefined;
+		return undefined!;
 	}
 
 	getConnectionInfo(fileUri: string): ConnectionManagementInfo {
-		return undefined;
+		return undefined!;
 	}
 
 	addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile> {
@@ -187,15 +186,15 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	public listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult> {
-		return Promise.resolve(undefined);
+		return Promise.resolve(undefined!);
 	}
 
 	cancelConnection(connection: IConnectionProfile): Thenable<boolean> {
-		return undefined;
+		return undefined!;
 	}
 
 	cancelEditorConnection(owner: IConnectableInput): Thenable<boolean> {
-		return undefined;
+		return undefined!;
 	}
 
 	showDashboard(connection: ConnectionProfile): Promise<boolean> {
@@ -213,15 +212,20 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return Promise.resolve();
 	}
 
-	getProviderIdFromUri(ownerUri: string): string {
-		return undefined;
+	getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string } {
+		return {};
 	}
+
+	getProviderIdFromUri(ownerUri: string): string {
+		return undefined!;
+	}
+
 	hasRegisteredServers(): boolean {
 		return true;
 	}
 
 	getCapabilities(providerName: string): azdata.DataProtocolServerCapabilities {
-		return undefined;
+		return undefined!;
 	}
 
 	canChangeConnectionConfig(profile: ConnectionProfile, newGroupID: string): boolean {
@@ -235,60 +239,56 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	}
 
-	public getProviderNames(): string[] {
-		return [];
-	}
-
 	connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection', saveConnection: boolean = false): Promise<string> {
-		return undefined;
+		return undefined!;
 	}
 
 	rebuildIntelliSenseCache(uri: string): Thenable<void> {
-		return undefined;
+		return undefined!;
 	}
 
 	getTabColorForUri(uri: string): string {
-		return undefined;
+		return undefined!;
 	}
 
 	removeConnectionProfileCredentials(profile: IConnectionProfile): IConnectionProfile {
-		return undefined;
+		return undefined!;
 	}
 
 	getActiveConnectionCredentials(profileId: string): { [name: string]: string } {
-		return undefined;
+		return undefined!;
 	}
 
 	getServerInfo(profileId: string): azdata.ServerInfo {
-		return undefined;
+		return undefined!;
 	}
 
 	getConnectionString(connectionId: string): Thenable<string> {
-		return undefined;
+		return undefined!;
 	}
 
 	buildConnectionInfo(connectionString: string, provider?: string): Thenable<azdata.ConnectionInfo> {
-		return undefined;
+		return undefined!;
 	}
 
 	providerRegistered(providerId: string): boolean {
-		return undefined;
+		return undefined!;
 	}
 
 	getConnectionProfileById(profileId: string): IConnectionProfile {
-		return undefined;
+		return undefined!;
 	}
 
 	getProviderProperties(providerName: string): ConnectionProviderProperties {
-		return undefined;
+		return undefined!;
 	}
 
 	getConnectionIconId(connectionId: string): string {
-		return undefined;
+		return undefined!;
 	}
 
 	getDefaultProviderId(): string {
-		return undefined;
+		return undefined!;
 	}
 
 	getConnections(activeConnectionsOnly?: boolean): ConnectionProfile[] {
@@ -296,6 +296,6 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	getConnection(uri: string): ConnectionProfile {
-		return undefined;
+		return undefined!;
 	}
 }

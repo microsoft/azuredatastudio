@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IProfilerController } from 'sql/workbench/contrib/profiler/common/interfaces';
-import { ProfilerInput } from 'sql/workbench/contrib/profiler/browser/profilerInput';
+import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
-import { IProfilerStateChangedEvent } from 'sql/workbench/contrib/profiler/common/profilerState';
+import { IProfilerStateChangedEvent } from 'sql/workbench/common/editor/profiler/profilerState';
 import { FindWidget, ITableController, IConfigurationChangedEvent, ACTION_IDS, PROFILER_MAX_MATCHES } from 'sql/workbench/contrib/profiler/browser/profilerFindWidget';
 import { ProfilerFindNext, ProfilerFindPrevious } from 'sql/workbench/contrib/profiler/browser/profilerActions';
 
@@ -32,7 +32,7 @@ import { localize } from 'vs/nls';
 import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { handleCopyRequest } from 'sql/workbench/contrib/profiler/browser/profilerCopyHandler';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 
 export interface ProfilerTableViewState {
 	scrollTop: number;

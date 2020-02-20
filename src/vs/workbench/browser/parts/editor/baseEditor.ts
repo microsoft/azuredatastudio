@@ -39,7 +39,7 @@ export abstract class BaseEditor extends Panel implements IEditor {
 	readonly minimumHeight = DEFAULT_EDITOR_MIN_DIMENSIONS.height;
 	readonly maximumHeight = DEFAULT_EDITOR_MAX_DIMENSIONS.height;
 
-	readonly onDidSizeConstraintsChange: Event<{ width: number; height: number; } | undefined> = Event.None;
+	readonly onDidSizeConstraintsChange = Event.None;
 
 	protected _input: EditorInput | undefined;
 	protected _options: EditorOptions | undefined;
@@ -78,11 +78,9 @@ export abstract class BaseEditor extends Panel implements IEditor {
 	 * The provided cancellation token should be used to test if the operation
 	 * was cancelled.
 	 */
-	setInput(input: EditorInput, options: EditorOptions | undefined, token: CancellationToken): Promise<void> {
+	async setInput(input: EditorInput, options: EditorOptions | undefined, token: CancellationToken): Promise<void> {
 		this._input = input;
 		this._options = options;
-
-		return Promise.resolve();
 	}
 
 	/**
@@ -111,6 +109,8 @@ export abstract class BaseEditor extends Panel implements IEditor {
 		// Create Editor
 		this.createEditor(parent);
 	}
+
+	onHide() { }
 
 	/**
 	 * Called to create the editor in the parent HTMLElement.
@@ -251,7 +251,7 @@ export class EditorMemento<T> implements IEditorMemento<T> {
 
 	private doGetResource(resourceOrEditor: URI | EditorInput): URI | undefined {
 		if (resourceOrEditor instanceof EditorInput) {
-			return resourceOrEditor.getResource();
+			return resourceOrEditor.resource;
 		}
 
 		return resourceOrEditor;

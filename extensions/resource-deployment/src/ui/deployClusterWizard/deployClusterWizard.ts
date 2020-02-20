@@ -161,11 +161,11 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 	static getTitle(type: BdcDeploymentType): string {
 		switch (type) {
 			case BdcDeploymentType.NewAKS:
-				return localize('deployCluster.NewAKSWizardTitle', "Deploy SQL Server 2019 Big Data Cluster on a new AKS cluster (preview)");
+				return localize('deployCluster.NewAKSWizardTitle', "Deploy SQL Server 2019 Big Data Cluster on a new AKS cluster");
 			case BdcDeploymentType.ExistingAKS:
-				return localize('deployCluster.ExistingAKSWizardTitle', "Deploy SQL Server 2019 Big Data Cluster on an existing AKS cluster (preview)");
+				return localize('deployCluster.ExistingAKSWizardTitle', "Deploy SQL Server 2019 Big Data Cluster on an existing AKS cluster");
 			case BdcDeploymentType.ExistingKubeAdm:
-				return localize('deployCluster.ExistingKubeAdm', "Deploy SQL Server 2019 Big Data Cluster on an existing kubeadm cluster (preview)");
+				return localize('deployCluster.ExistingKubeAdm', "Deploy SQL Server 2019 Big Data Cluster on an existing kubeadm cluster");
 			default:
 				throw new Error(`Unknown deployment type: ${type}`);
 		}

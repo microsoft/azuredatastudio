@@ -9,7 +9,6 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { IWindowOpenable, IOpenEmptyWindowOptions, IOpenedWindow } from 'vs/platform/windows/common/windows';
 import { INativeOpenDialogOptions } from 'vs/platform/dialogs/node/dialogs';
 import { ISerializableCommandAction } from 'vs/platform/actions/common/actions';
-import { IProcessEnvironment } from 'vs/base/common/platform';
 import { INativeOpenWindowOptions } from 'vs/platform/windows/node/window';
 
 export const IElectronService = createDecorator<IElectronService>('electronService');
@@ -44,7 +43,6 @@ export interface IElectronService {
 	unmaximizeWindow(): Promise<void>;
 	minimizeWindow(): Promise<void>;
 
-	isWindowFocused(): Promise<boolean>;
 	focusWindow(options?: { windowId?: number }): Promise<void>;
 
 	// Dialogs
@@ -85,7 +83,4 @@ export interface IElectronService {
 
 	// Connectivity
 	resolveProxy(url: string): Promise<string | undefined>;
-
-	// Debug (TODO@Isidor move into debug IPC channel (https://github.com/microsoft/vscode/issues/81060)
-	openExtensionDevelopmentHostWindow(args: string[], env: IProcessEnvironment): Promise<void>;
 }

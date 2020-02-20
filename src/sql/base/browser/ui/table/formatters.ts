@@ -6,11 +6,13 @@
 import { escape } from 'sql/base/common/strings';
 import { localize } from 'vs/nls';
 
-export class DBCellValue {
+export interface DBCellValue {
 	displayValue: string;
 	isNull: boolean;
+}
 
-	public static isDBCellValue(object: any): boolean {
+export namespace DBCellValue {
+	export function isDBCellValue(object: any): boolean {
 		return (object !== undefined && object.displayValue !== undefined && object.isNull !== undefined);
 	}
 }
@@ -85,6 +87,9 @@ export function slickGridDataItemColumnValueExtractor(value: any, columnDef: any
  */
 export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: any): { text: string; ariaLabel: string; } {
 	let displayValue = value[columnDef.field];
+	if (typeof displayValue === 'number') {
+		displayValue = displayValue.toString();
+	}
 	return {
 		text: displayValue,
 		ariaLabel: displayValue ? escape(displayValue) : ((displayValue !== undefined) ? localize("tableCell.NoDataAvailable", "no data available") : displayValue)

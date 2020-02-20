@@ -44,7 +44,8 @@ export interface IAccountManagementService {
 // Enum matching the AzureResource enum from azdata.d.ts
 export enum AzureResource {
 	ResourceManagement = 0,
-	Sql = 1
+	Sql = 1,
+	OssRdbms = 2
 }
 
 export interface IAccountStore {

@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
+import * as loc from '../localizedConstants';
 import { SelectOperationPage } from './pages/selectOperationpage';
 import { DeployConfigPage } from './pages/deployConfigPage';
 import { DeployPlanPage } from './pages/deployPlanPage';
@@ -17,7 +17,6 @@ import { DacFxDataModel } from './api/models';
 import { BasePage } from './api/basePage';
 import * as mssql from '../../../mssql';
 
-const localize = nls.loadMessageBundle();
 const msSqlProvider = 'MSSQL';
 class Page {
 	wizardPage: azdata.window.WizardPage;
@@ -109,14 +108,14 @@ export class DataTierApplicationWizard {
 
 		this.model.serverId = this.connection.connectionId;
 
-		this.wizard = azdata.window.createWizard('Data-tier Application Wizard');
-		let selectOperationWizardPage = azdata.window.createWizardPage(localize('dacFx.selectOperationPageName', "Select an Operation"));
-		let deployConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.deployConfigPageName', "Select Deploy Dacpac Settings"));
-		let deployPlanWizardPage = azdata.window.createWizardPage(localize('dacFx.deployPlanPage', "Review the deploy plan"));
-		let summaryWizardPage = azdata.window.createWizardPage(localize('dacFx.summaryPageName', "Summary"));
-		let extractConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.extractConfigPageName', "Select Extract Dacpac Settings"));
-		let importConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.importConfigPageName', "Select Import Bacpac Settings"));
-		let exportConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.exportConfigPageName', "Select Export Bacpac Settings"));
+		this.wizard = azdata.window.createWizard(loc.wizardTitle);
+		let selectOperationWizardPage = azdata.window.createWizardPage(loc.selectOperationPageName);
+		let deployConfigWizardPage = azdata.window.createWizardPage(loc.deployConfigPageName);
+		let deployPlanWizardPage = azdata.window.createWizardPage(loc.deployPlanPageName);
+		let summaryWizardPage = azdata.window.createWizardPage(loc.summaryPageName);
+		let extractConfigWizardPage = azdata.window.createWizardPage(loc.extractConfigPageName);
+		let importConfigWizardPage = azdata.window.createWizardPage(loc.importConfigPageName);
+		let exportConfigWizardPage = azdata.window.createWizardPage(loc.exportConfigPageName);
 
 		this.pages.set(PageName.selectOperation, new Page(selectOperationWizardPage));
 		this.pages.set(PageName.deployConfig, new Page(deployConfigWizardPage));
@@ -201,27 +200,27 @@ export class DataTierApplicationWizard {
 	public setDoneButton(operation: Operation): void {
 		switch (operation) {
 			case Operation.deploy: {
-				this.wizard.doneButton.label = localize('dacFx.deployButton', "Deploy");
+				this.wizard.doneButton.label = loc.deploy;
 				this.selectedOperation = Operation.deploy;
 				break;
 			}
 			case Operation.extract: {
-				this.wizard.doneButton.label = localize('dacFx.extractButton', "Extract");
+				this.wizard.doneButton.label = loc.extract;
 				this.selectedOperation = Operation.extract;
 				break;
 			}
 			case Operation.import: {
-				this.wizard.doneButton.label = localize('dacFx.importButton', "Import");
+				this.wizard.doneButton.label = loc.importText;
 				this.selectedOperation = Operation.import;
 				break;
 			}
 			case Operation.export: {
-				this.wizard.doneButton.label = localize('dacFx.exportButton', "Export");
+				this.wizard.doneButton.label = loc.exportText;
 				this.selectedOperation = Operation.export;
 				break;
 			}
 			case Operation.generateDeployScript: {
-				this.wizard.doneButton.label = localize('dacFx.generateScriptButton', "Generate Script");
+				this.wizard.doneButton.label = loc.generateScript;
 				this.selectedOperation = Operation.generateDeployScript;
 				break;
 			}
@@ -257,64 +256,44 @@ export class DataTierApplicationWizard {
 		}
 	}
 
-	private async deploy() {
+	private async deploy(): Promise<void> {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		const result = await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('alertData.deployErrorMessage', "Deploy failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-		}
+		await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
-	private async extract() {
+	private async extract(): Promise<void> {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		const result = await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('alertData.extractErrorMessage', "Extract failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-		}
+		await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
-	private async export() {
+	private async export(): Promise<void> {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		const result = await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('alertData.exportErrorMessage', "Export failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-		}
+		await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
-	private async import() {
+	private async import(): Promise<void> {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		const result = await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('alertData.importErrorMessage', "Import failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-		}
+		await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
-	private async generateDeployScript() {
+	private async generateDeployScript(): Promise<void> {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 		this.wizard.message = {
-			text: localize('dacfx.scriptGeneratingMessage', "You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete."),
+			text: loc.generatingScriptMessage,
 			level: azdata.window.MessageLevel.Information,
 			description: ''
 		};
 
-		const result = await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('alertData.deployErrorMessage', "Deploy failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-		}
+		await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
 	}
 
 	private getPage(idx: number): Page {
@@ -363,8 +342,7 @@ export class DataTierApplicationWizard {
 		const result = await service.generateDeployPlan(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
 
 		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('alertData.deployPlanErrorMessage', "Generating deploy plan failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+			vscode.window.showErrorMessage(loc.deployPlanErrorMessage(result.errorMessage));
 		}
 
 		return result.report;
