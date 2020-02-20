@@ -499,6 +499,10 @@
         "title": "%databases-tab-title%",
         "when": "dashboardContext == 'server'",
         "group": "contents",
+        "icon": {
+					"light": "./resources/light/database.svg",
+					"dark": "./resources/dark/database_inverse.svg"
+				},
         "container": {
           "widgets-container": [
             {

@@ -23,3 +23,21 @@ dashboard-page .dashboard-panel .tab-header .action-item .action-label.pin {
 dashboard-page .dashboard-panel .tab-header .action-item .action-label.close {
 	padding: 5px;
 }
+
+.home-tab-icon {
+	background-image: url("media/home.svg");
+}
+
+.vs-dark .home-tab-icon,
+.hc-black .home-tab-icon {
+	background-image: url("media/home_inverse.svg");
+}
+
+.default-tab-icon {
+	background-image: url("media/default.svg");
+}
+
+.vs-dark .default-tab-icon,
+.hc-black .default-tab-icon {
+	background-image: url("media/default_inverse.svg");
+}

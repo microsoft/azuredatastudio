@@ -21,8 +21,11 @@ import { CloseTabAction } from 'sql/base/browser/ui/panel/tabActions';
 	template: `
 		<div #actionHeader role="presentation" class="tab-header" style="flex: 0 0; flex-direction: row; height: 100%" [class.active]="tab.active" tabindex="0" (click)="selectTab(tab)" (keyup)="onKey($event)">
 			<span class="tab" role="tab" [attr.aria-selected]="tab.active" [attr.aria-controls]="tab.title">
-				<a class="tabLabel" [class.active]="tab.active" #tabLabel>
-				</a>
+				<div role="presentation">
+					<a #tabIcon></a>
+					<a class="tabLabel" [class.active]="tab.active" #tabLabel>
+					</a>
+				</div>
 			</span>
 			<span #actionbar style="flex: 0 0 auto; align-self: end; margin-top: auto; margin-bottom: auto;" ></span>
 		</div>
@@ -40,6 +43,8 @@ export class TabHeaderComponent extends Disposable implements AfterContentInit, 
 	@ViewChild('actionHeader', { read: ElementRef }) private _actionHeaderRef!: ElementRef;
 	@ViewChild('actionbar', { read: ElementRef }) private _actionbarRef!: ElementRef;
 	@ViewChild('tabLabel', { read: ElementRef }) private _tabLabelRef!: ElementRef;
+	@ViewChild('tabIcon', { read: ElementRef }) private _tabIconRef!: ElementRef;
+
 	constructor() {
 		super();
 	}
@@ -56,15 +61,16 @@ export class TabHeaderComponent extends Disposable implements AfterContentInit, 
 			}
 		}
 
-		let tabLabelcontainer = this._tabLabelRef.nativeElement as HTMLElement;
+		const tabLabelContainer = this._tabLabelRef.nativeElement as HTMLElement;
 		if (this.showIcon && this.tab.iconClass) {
-			tabLabelcontainer.className = 'tabLabel codicon';
-			tabLabelcontainer.classList.add(this.tab.iconClass);
-		} else {
-			tabLabelcontainer.className = 'tabLabel';
-			tabLabelcontainer.textContent = this.tab.title;
+			const tabIconContainer = this._tabIconRef.nativeElement as HTMLElement;
+			tabIconContainer.className = 'tabIcon codicon';
+			tabIconContainer.classList.add(this.tab.iconClass);
+			tabIconContainer.title = this.tab.title;
 		}
-		tabLabelcontainer.title = this.tab.title;
+
+		tabLabelContainer.textContent = this.tab.title;
+		tabLabelContainer.title = this.tab.title;
 	}
 
 	ngOnDestroy() {

@@ -30,6 +30,7 @@ export interface IDashboardTab {
 	alwaysShow?: boolean;
 	isHomeTab?: boolean;
 	group?: string;
+	iconClass?: string;
 }
 
 export interface IDashboardTabGroup {

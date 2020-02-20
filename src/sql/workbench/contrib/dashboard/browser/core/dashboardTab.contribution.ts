@@ -15,6 +15,8 @@ import { NAV_SECTION, validateNavSectionContributionAndRegisterIcon } from 'sql/
 import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardGridContainer.contribution';
 import { values } from 'vs/base/common/collections';
+import { IUserFriendlyIcon } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
+import { isValidIcon, createCSSRuleForIcon } from 'sql/workbench/contrib/dashboard/browser/dashboardIconUtil';
 
 export interface IDashboardTabContrib {
 	id: string;
@@ -26,6 +28,7 @@ export interface IDashboardTabContrib {
 	alwaysShow?: boolean;
 	isHomeTab?: boolean;
 	group?: string;
+	icon?: IUserFriendlyIcon;
 }
 
 export interface IDashboardTabGroupContrib {
@@ -73,6 +76,25 @@ const tabSchema: IJSONSchema = {
 		group: {
 			description: localize('azdata.extension.contributes.dashboard.tab.group', "The unique identifier of the group this tab belongs to, value for home group: home."),
 			type: 'string'
+		},
+		icon: {
+			description: localize('dazdata.extension.contributes.dashboard.tab.icon', "(Optional) Icon which is used to represent this tab in the UI. Either a file path or a themeable configuration"),
+			anyOf: [{
+				type: 'string'
+			},
+			{
+				type: 'object',
+				properties: {
+					light: {
+						description: localize('azdata.extension.contributes.dashboard.tab.icon.light', "Icon path when a light theme is used"),
+						type: 'string'
+					},
+					dark: {
+						description: localize('azdata.extension.contributes.dashboard.tab.icon.dark', "Icon path when a dark theme is used"),
+						type: 'string'
+					}
+				}
+			}]
 		}
 	}
 };
@@ -91,7 +113,7 @@ const tabContributionSchema: IJSONSchema = {
 ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabContrib[]>({ extensionPoint: 'dashboard.tabs', jsonSchema: tabContributionSchema }).setHandler(extensions => {
 
 	function handleTab(tab: IDashboardTabContrib, extension: IExtensionPointUser<any>) {
-		let { description, container, provider, title, when, id, alwaysShow, isHomeTab, group } = tab;
+		let { description, container, provider, title, when, id, alwaysShow, isHomeTab, group, icon } = tab;
 
 		// If always show is not specified, set it to true by default.
 		if (!types.isBoolean(alwaysShow)) {
@@ -140,8 +162,13 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 				break;
 		}
 
+		let iconClass = undefined;
+		if (isValidIcon(icon, extension)) {
+			iconClass = createCSSRuleForIcon(icon, extension);
+		}
+
 		if (result) {
-			registerTab({ description, title, container, provider, when, id, alwaysShow, publisher, isHomeTab, group });
+			registerTab({ description, title, container, provider, when, id, alwaysShow, publisher, isHomeTab, group, iconClass });
 		}
 	}
 

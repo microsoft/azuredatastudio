@@ -5,7 +5,7 @@
 
 import {
 	Component, ContentChildren, QueryList, Inject, forwardRef, NgZone,
-	Input, EventEmitter, Output, ViewChild, ElementRef
+	Input, EventEmitter, Output, ViewChild, ElementRef, ChangeDetectorRef
 } from '@angular/core';
 
 import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
@@ -19,6 +19,9 @@ import { mixin } from 'vs/base/common/objects';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { firstIndex } from 'vs/base/common/arrays';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import * as nls from 'vs/nls';
 
 export interface IPanelOptions {
 	/**
@@ -48,13 +51,18 @@ let idPool = 0;
 		<div class="tabbedPanel fullsize" [ngClass]="options.layout === NavigationBarLayout.vertical ? 'vertical' : 'horizontal'">
 			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title">
 				<div class="tabContainer">
-					<div class="tabList" role="tablist" scrollable [horizontalScroll]="AutoScrollbarVisibility" [verticalScroll]="HiddenScrollbarVisibility" [scrollYToX]="true">
+					<div *ngIf="options.layout === NavigationBarLayout.vertical" class="action-container">
+						<span [title]="toggleTabLabelButtonLabel">
+							<div role="button" [attr.aria-expanded]="toggleTabLabelButtonExpanded" [attr.aria-label]="toggleTabLabelButtonLabel" [ngClass]="toggleTabLabelButtonClass" tabindex="0" (click)="updateToggleState()" (keyup)="onKey($event)"></div>
+						</span>
+					</div>
+					<div #tabList class="tabList" role="tablist" scrollable [horizontalScroll]="AutoScrollbarVisibility" [verticalScroll]="HiddenScrollbarVisibility" [scrollYToX]="true">
 						<div role="presentation" *ngFor="let tab of _tabs">
 							<ng-container *ngIf="tab.type!=='group-header'">
 								<tab-header role="presentation" [active]="_activeTab === tab" [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
 							</ng-container>
 							<ng-container *ngIf="tab.type==='group-header' && options.layout === NavigationBarLayout.vertical">
-								<div class="tab-group-header">
+								<div class="tab-group-header" *ngIf="_showTabText">
 									<span>{{tab.title}}</span>
 								</div>
 							</ng-container >
@@ -79,6 +87,7 @@ export class PanelComponent extends Disposable {
 	@Input() public actions?: Array<Action>;
 	@ContentChildren(TabComponent) private readonly _tabs!: QueryList<TabComponent>;
 	@ViewChild(ScrollableDirective) private scrollable?: ScrollableDirective;
+	@ViewChild('tabList', { read: ElementRef }) private _tabList!: ElementRef;
 
 	@Output() public onTabChange = new EventEmitter<TabComponent>();
 	@Output() public onTabClose = new EventEmitter<TabComponent>();
@@ -86,14 +95,49 @@ export class PanelComponent extends Disposable {
 	private _activeTab?: TabComponent;
 	private _actionbar?: ActionBar;
 	private _mru: TabComponent[] = [];
+	private _showTabText: boolean = true;
 
 	protected AutoScrollbarVisibility = ScrollbarVisibility.Auto; // used by angular template
 	protected HiddenScrollbarVisibility = ScrollbarVisibility.Hidden; // used by angular template
 	protected NavigationBarLayout = NavigationBarLayout; // used by angular template
 
 	@ViewChild('panelActionbar', { read: ElementRef }) private _actionbarRef!: ElementRef;
-	constructor(@Inject(forwardRef(() => NgZone)) private _zone: NgZone) {
+	constructor(
+		@Inject(forwardRef(() => NgZone)) private _zone: NgZone,
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef) {
 		super();
+	}
+
+	public get toggleTabLabelButtonClass(): string {
+		return this._showTabText ? 'tab-action collapse' : 'tab-action expand';
+	}
+
+	public get toggleTabLabelButtonLabel(): string {
+		return this._showTabText ? nls.localize('hideTextLabel', "Hide text labels") : nls.localize('showTextLabel', "Show text labels");
+	}
+
+	public get toggleTabLabelButtonExpanded(): boolean {
+		return this._showTabText;
+	}
+
+	updateToggleState(): void {
+		this._showTabText = !this._showTabText;
+		const tabListControl = this._tabList.nativeElement as HTMLElement;
+		const tabLabelHiddenClassName = 'tabLabelHidden';
+		if (this._showTabText && tabListControl.classList.contains(tabLabelHiddenClassName)) {
+			tabListControl.classList.remove(tabLabelHiddenClassName);
+		} else {
+			tabListControl.classList.add(tabLabelHiddenClassName);
+		}
+		this._cd.detectChanges();
+	}
+
+	onKey(e: KeyboardEvent) {
+		let event = new StandardKeyboardEvent(e);
+		if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
+			this.updateToggleState();
+			e.stopPropagation();
+		}
 	}
 
 	ngOnInit(): void {
