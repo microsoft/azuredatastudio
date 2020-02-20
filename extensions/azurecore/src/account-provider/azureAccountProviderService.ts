@@ -29,7 +29,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private _currentConfig: vscode.WorkspaceConfiguration;
 	private _event: events.EventEmitter;
 
-	constructor(private _context: vscode.ExtensionContext, _userStoragePath: string) {
+	constructor(private _context: vscode.ExtensionContext, private _userStoragePath: string) {
 		this._accountDisposals = {};
 		this._accountProviders = {};
 		this._configChangePromiseChain = Promise.resolve();
@@ -136,7 +136,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 				let tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
 				// let tokenCachePath = path.join(this._userStoragePath, tokenCacheKey);
 				// let tokenCache = new CredentialServiceTokenCache(self._credentialProvider, tokenCacheKey, tokenCachePath);
-				let simpleTokenCache = new SimpleTokenCache(tokenCacheKey);
+				let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath);
 				let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, simpleTokenCache, this._context);
 				self._accountProviders[provider.metadata.id] = accountProvider;
 				self._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);

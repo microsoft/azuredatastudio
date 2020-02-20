@@ -368,8 +368,15 @@ export abstract class AzureAuth {
 	}
 
 	protected async getCachedToken(account: azdata.AccountKey, resource: Resource): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken }> {
-		const accessToken: AccessToken = JSON.parse(await this.tokenCache.getCredential(`${account.accountId}_${resource.id}_access`));
-		const refreshToken: RefreshToken = JSON.parse(await this.tokenCache.getCredential(`${account.accountId}_${resource.id}_refresh`));
+		let accessToken: AccessToken;
+		let refreshToken: RefreshToken;
+		try {
+			accessToken = JSON.parse(await this.tokenCache.getCredential(`${account.accountId}_${resource.id}_access`));
+			refreshToken = JSON.parse(await this.tokenCache.getCredential(`${account.accountId}_${resource.id}_refresh`));
+		} catch (ex) {
+			return undefined;
+		}
+
 		if (!accessToken || !refreshToken) {
 			return undefined;
 		}
