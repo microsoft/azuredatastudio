@@ -4,16 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
+import * as loc from '../../localizedConstants';
 import { DacFxDataModel } from './models';
-
-const localize = nls.loadMessageBundle();
 
 export abstract class BasePage {
 
 	protected readonly wizardPage: azdata.window.WizardPage;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: azdata.ModelView;
+	protected databaseValues: string[];
 
 	/**
 	 * This method constructs all the elements of the page.
@@ -74,7 +73,7 @@ export abstract class BasePage {
 			let srv = c.options.server;
 
 			if (!usr) {
-				usr = localize('basePage.defaultUser', "default");
+				usr = loc.defaultText;
 			}
 
 			let finalName = `${srv} (${usr})`;
@@ -105,30 +104,27 @@ export abstract class BasePage {
 		return values;
 	}
 
-	protected async getDatabaseValues(): Promise<{ displayName: string, name: string }[]> {
+	protected async getDatabaseValues(): Promise<string[]> {
 		let idx = -1;
 		let count = -1;
-		let values = (await azdata.connection.listDatabases(this.model.server.connectionId)).map(db => {
+		this.databaseValues = (await azdata.connection.listDatabases(this.model.server.connectionId)).map(db => {
 			count++;
 			if (this.model.database && db === this.model.database) {
 				idx = count;
 			}
 
-			return {
-				displayName: db,
-				name: db
-			};
+			return db;
 		});
 
 		if (idx >= 0) {
-			let tmp = values[0];
-			values[0] = values[idx];
-			values[idx] = tmp;
+			let tmp = this.databaseValues[0];
+			this.databaseValues[0] = this.databaseValues[idx];
+			this.databaseValues[idx] = tmp;
 		} else {
 			this.deleteDatabaseValues();
 		}
 
-		return values;
+		return this.databaseValues;
 	}
 
 	protected deleteServerValues() {

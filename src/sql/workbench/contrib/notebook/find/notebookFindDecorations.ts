@@ -9,9 +9,9 @@ import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
 import { overviewRulerFindMatchForeground, minimapFindMatch } from 'vs/platform/theme/common/colorRegistry';
 import { themeColorFromId } from 'vs/platform/theme/common/themeService';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
-import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { Range } from 'vs/editor/common/core/range';
 import { ScrollType } from 'vs/editor/common/editorCommon';
+import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 
 export class NotebookFindDecorations implements IDisposable {
 
@@ -295,18 +295,6 @@ export class NotebookFindDecorations implements IDisposable {
 		className: 'findScope',
 		isWholeLine: true
 	});
-}
-
-export class NotebookRange extends Range {
-	updateActiveCell(cell: ICellModel) {
-		this.cell = cell;
-	}
-	cell: ICellModel;
-
-	constructor(cell: ICellModel, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number) {
-		super(startLineNumber, startColumn, endLineNumber, endColumn);
-		this.updateActiveCell(cell);
-	}
 }
 
 export class NotebookFindMatch extends FindMatch {

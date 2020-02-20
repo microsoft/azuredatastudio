@@ -33,6 +33,7 @@ const all = [
 	'scripts/**/*',
 	'src/**/*',
 	'test/**/*',
+	'!test/**/out/**',
 	'!**/node_modules/**'
 ];
 
@@ -53,8 +54,7 @@ const indentationFilter = [
 	'!src/vs/base/common/marked/marked.js',
 	'!src/vs/base/node/terminateProcess.sh',
 	'!src/vs/base/node/cpuUsage.sh',
-	'!test/assert.js',
-	'!build/testSetup.js',
+	'!test/unit/assert.js',
 
 	// except specific folders
 	'!test/automation/out/**',
@@ -84,7 +84,7 @@ const indentationFilter = [
 	'!src/vs/*/**/*.d.ts',
 	'!src/typings/**/*.d.ts',
 	'!extensions/**/*.d.ts',
-	'!**/*.{svg,exe,png,bmp,scpt,bat,cmd,cur,ttf,woff,eot,md,ps1,template,yaml,yml,d.ts.recipe,ico,icns}',
+	'!**/*.{svg,exe,png,bmp,scpt,bat,cmd,cur,ttf,woff,eot,md,ps1,template,yaml,yml,d.ts.recipe,ico,icns,plist}',
 	'!build/{lib,download}/**/*.js',
 	'!build/**/*.sh',
 	'!build/azure-pipelines/**/*.js',
@@ -141,9 +141,9 @@ const copyrightFilter = [
 	'!extensions/mssql/src/hdfs/webhdfs.ts',
 	'!src/sql/workbench/contrib/notebook/browser/outputs/tableRenderers.ts',
 	'!src/sql/workbench/contrib/notebook/common/models/url.ts',
-	'!src/sql/workbench/contrib/notebook/browser/models/renderMimeInterfaces.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/renderMimeInterfaces.ts',
 	'!src/sql/workbench/contrib/notebook/browser/models/outputProcessor.ts',
-	'!src/sql/workbench/contrib/notebook/browser/models/mimemodel.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/mimemodel.ts',
 	'!src/sql/workbench/contrib/notebook/browser/cellViews/media/*.css',
 	'!src/sql/base/browser/ui/table/plugins/rowSelectionModel.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/rowDetailView.ts',
@@ -151,11 +151,11 @@ const copyrightFilter = [
 	'!src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/cellSelectionModel.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/autoSizeColumns.plugin.ts',
-	'!src/sql/workbench/contrib/notebook/browser/outputs/sanitizer.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/sanitizer.ts',
 	'!src/sql/workbench/contrib/notebook/browser/outputs/renderers.ts',
-	'!src/sql/workbench/contrib/notebook/browser/outputs/registry.ts',
-	'!src/sql/workbench/contrib/notebook/browser/outputs/factories.ts',
-	'!src/sql/workbench/contrib/notebook/common/models/nbformat.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/registry.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/factories.ts',
+	'!src/sql/workbench/services/notebook/common/nbformat.ts',
 	'!extensions/markdown-language-features/media/tomorrow.css',
 	'!src/sql/workbench/browser/modelComponents/media/highlight.css',
 	'!src/sql/workbench/contrib/notebook/electron-browser/cellViews/media/highlight.css',
@@ -200,13 +200,6 @@ const tsHygieneFilter = [
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts', // {{SQL CARBON EDIT}},
 	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts', // {{SQL CARBON EDIT}} skip this because we have no plans on touching this and its not ours
 	'!src/vs/workbench/contrib/extensions/browser/extensionTipsService.ts' // {{SQL CARBON EDIT}} skip this because known issue
-];
-
-const sqlHygieneFilter = [ // for rules we want to only apply to our code
-	'src/sql/**/*.ts',
-	'!**/node_modules/**',
-	'extensions/**/*.ts',
-	'!extensions/{git,search-result,vscode-test-resolver,extension-editing,json-language-features,vscode-colorize-tests}/**/*.ts',
 ];
 
 const copyrightHeaderLines = [
@@ -376,20 +369,8 @@ function hygiene(some) {
 			errorCount += results.errorCount;
 		}));
 
-	const sqlJavascript = result
-		.pipe(filter(sqlHygieneFilter))
-		.pipe(gulpeslint({
-			configFile: '.eslintrc.sql.json',
-			rulePaths: ['./build/lib/eslint']
-		}))
-		.pipe(gulpeslint.formatEach('compact'))
-		.pipe(gulpeslint.results(results => {
-			errorCount += results.warningCount;
-			errorCount += results.errorCount;
-		}));
-
 	let count = 0;
-	return es.merge(typescript, javascript, sqlJavascript)
+	return es.merge(typescript, javascript)
 		.pipe(es.through(function (data) {
 			count++;
 			if (process.env['TRAVIS'] && count % 10 === 0) {

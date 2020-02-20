@@ -14,46 +14,43 @@ import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IEditorModel, ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ILabelService } from 'vs/platform/label/common/label';
-import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
-import { GroupIdentifier, IEditorInput, IRevertOptions, ISaveOptions, Verbosity, SaveContext } from 'vs/workbench/common/editor';
+import { GroupIdentifier, IEditorInput, IRevertOptions, ISaveOptions, Verbosity } from 'vs/workbench/common/editor';
 import { ICustomEditorModel, ICustomEditorService } from 'vs/workbench/contrib/customEditor/common/customEditor';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { WebviewEditorOverlay } from 'vs/workbench/contrib/webview/browser/webview';
+import { WebviewEditorOverlay, IWebviewService } from 'vs/workbench/contrib/webview/browser/webview';
 import { IWebviewWorkbenchService, LazilyResolvedWebviewEditorInput } from 'vs/workbench/contrib/webview/browser/webviewWorkbenchService';
+import { AutoSaveMode, IFilesConfigurationService } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IFilesConfigurationService, AutoSaveMode } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
 
 export class CustomFileEditorInput extends LazilyResolvedWebviewEditorInput {
 
 	public static typeId = 'workbench.editors.webviewEditor';
 
 	private readonly _editorResource: URI;
+	get resource() { return this._editorResource; }
+
 	private _model?: ICustomEditorModel;
+
 
 	constructor(
 		resource: URI,
 		viewType: string,
 		id: string,
 		webview: Lazy<WebviewEditorOverlay>,
-		@ILifecycleService lifecycleService: ILifecycleService,
+		@IWebviewService webviewService: IWebviewService,
 		@IWebviewWorkbenchService webviewWorkbenchService: IWebviewWorkbenchService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@ILabelService private readonly labelService: ILabelService,
 		@ICustomEditorService private readonly customEditorService: ICustomEditorService,
-		@IEditorService private readonly editorService: IEditorService,
 		@IFileDialogService private readonly fileDialogService: IFileDialogService,
-		@IFilesConfigurationService private readonly filesConfigurationService: IFilesConfigurationService
+		@IFilesConfigurationService private readonly filesConfigurationService: IFilesConfigurationService,
+		@IEditorService private readonly editorService: IEditorService
 	) {
-		super(id, viewType, '', webview, webviewWorkbenchService, lifecycleService);
+		super(id, viewType, '', webview, webviewService, webviewWorkbenchService);
 		this._editorResource = resource;
 	}
 
 	public getTypeId(): string {
 		return CustomFileEditorInput.typeId;
-	}
-
-	public getResource(): URI {
-		return this._editorResource;
 	}
 
 	public supportsSplitEditor() {
@@ -62,7 +59,7 @@ export class CustomFileEditorInput extends LazilyResolvedWebviewEditorInput {
 
 	@memoize
 	getName(): string {
-		return basename(this.labelService.getUriLabel(this.getResource()));
+		return basename(this.labelService.getUriLabel(this.resource));
 	}
 
 	@memoize
@@ -73,7 +70,7 @@ export class CustomFileEditorInput extends LazilyResolvedWebviewEditorInput {
 	matches(other: IEditorInput): boolean {
 		return this === other || (other instanceof CustomFileEditorInput
 			&& this.viewType === other.viewType
-			&& isEqual(this.getResource(), other.getResource()));
+			&& isEqual(this.resource, other.resource));
 	}
 
 	@memoize
@@ -83,12 +80,12 @@ export class CustomFileEditorInput extends LazilyResolvedWebviewEditorInput {
 
 	@memoize
 	private get mediumTitle(): string {
-		return this.labelService.getUriLabel(this.getResource(), { relative: true });
+		return this.labelService.getUriLabel(this.resource, { relative: true });
 	}
 
 	@memoize
 	private get longTitle(): string {
-		return this.labelService.getUriLabel(this.getResource());
+		return this.labelService.getUriLabel(this.resource);
 	}
 
 	public getTitle(verbosity?: Verbosity): string {
@@ -123,52 +120,48 @@ export class CustomFileEditorInput extends LazilyResolvedWebviewEditorInput {
 		return false;
 	}
 
-	public save(groupId: GroupIdentifier, options?: ISaveOptions): Promise<boolean> {
-		return this._model ? this._model.save(options) : Promise.resolve(false);
+	public async save(groupId: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
+		if (!this._model) {
+			return undefined;
+		}
+
+		const result = await this._model.save(options);
+		if (!result) {
+			return undefined;
+		}
+
+		return this;
 	}
 
-	public async saveAs(groupId: GroupIdentifier, options?: ISaveOptions): Promise<boolean> {
+	public async saveAs(groupId: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
 		if (!this._model) {
-			return false;
+			return undefined;
 		}
 
 		let dialogPath = this._editorResource;
-		const target = await this.promptForPath(this._editorResource, dialogPath, options?.availableFileSystems);
+		const target = await this.fileDialogService.pickFileToSave(dialogPath, options?.availableFileSystems);
 		if (!target) {
-			return false; // save cancelled
+			return undefined; // save cancelled
 		}
 
 		if (!await this._model.saveAs(this._editorResource, target, options)) {
-			return false;
+			return undefined;
 		}
 
-		if (options?.context !== SaveContext.EDITOR_CLOSE) {
-			const replacement = this.handleMove(groupId, target) || this.instantiationService.createInstance(FileEditorInput, target, undefined, undefined);
-			await this.editorService.replaceEditors([{ editor: this, replacement, options: { pinned: true } }], groupId);
-		}
-
-		return true;
+		return this.handleMove(groupId, target) || this.editorService.createInput({ resource: target, forceFile: true });
 	}
 
-	public revert(options?: IRevertOptions): Promise<boolean> {
+	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<boolean> {
 		return this._model ? this._model.revert(options) : Promise.resolve(false);
 	}
 
 	public async resolve(): Promise<IEditorModel> {
-		this._model = await this.customEditorService.models.resolve(this.getResource(), this.viewType);
+		this._model = await this.customEditorService.models.resolve(this.resource, this.viewType);
 		this._register(this._model.onDidChangeDirty(() => this._onDidChangeDirty.fire()));
 		if (this.isDirty()) {
 			this._onDidChangeDirty.fire();
 		}
 		return await super.resolve();
-	}
-
-	private async promptForPath(resource: URI, defaultUri: URI, availableFileSystems?: string[]): Promise<URI | undefined> {
-
-		// Help user to find a name for the file by opening it first
-		await this.editorService.openEditor({ resource, options: { revealIfOpened: true, preserveFocus: true } });
-
-		return this.fileDialogService.pickFileToSave(defaultUri, availableFileSystems);
 	}
 
 	public handleMove(groupId: GroupIdentifier, uri: URI, options?: ITextEditorOptions): IEditorInput | undefined {

@@ -31,6 +31,7 @@ import { Parts, IWorkbenchLayoutService } from 'vs/workbench/services/layout/bro
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { MementoObject } from 'vs/workbench/common/memento';
 import { assertIsDefined } from 'vs/base/common/types';
+import { IBoundarySashes } from 'vs/base/browser/ui/grid/gridview';
 
 interface IEditorPartUIState {
 	serializedGrid: ISerializedGrid;
@@ -48,7 +49,7 @@ class GridWidgetView<T extends IView> implements IView {
 	get maximumHeight(): number { return this.gridWidget ? this.gridWidget.maximumHeight : Number.POSITIVE_INFINITY; }
 
 	private _onDidChange = new Relay<{ width: number; height: number; } | undefined>();
-	readonly onDidChange: Event<{ width: number; height: number; } | undefined> = this._onDidChange.event;
+	readonly onDidChange = this._onDidChange.event;
 
 	private _gridWidget: Grid<T> | undefined;
 
@@ -111,6 +112,7 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 	readonly onDidMoveGroup = this._onDidMoveGroup.event;
 
 	private readonly onDidSetGridWidget = this._register(new Emitter<{ width: number; height: number; } | undefined>());
+
 	private readonly _onDidSizeConstraintsChange = this._register(new Relay<{ width: number; height: number; } | undefined>());
 	readonly onDidSizeConstraintsChange = Event.any(this.onDidSetGridWidget.event, this._onDidSizeConstraintsChange.event);
 
@@ -946,11 +948,15 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 	}
 
 	private doSetGridWidget(gridWidget: SerializableGrid<IEditorGroupView>): void {
+		let boundarySashes: IBoundarySashes = {};
+
 		if (this.gridWidget) {
+			boundarySashes = this.gridWidget.boundarySashes;
 			this.gridWidget.dispose();
 		}
 
 		this.gridWidget = gridWidget;
+		this.gridWidget.boundarySashes = boundarySashes;
 		this.gridWidgetView.gridWidget = gridWidget;
 
 		this._onDidSizeConstraintsChange.input = gridWidget.onDidChange;
@@ -969,6 +975,11 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 
 	private get isEmpty(): boolean {
 		return this.groupViews.size === 1 && this._activeGroup.isEmpty;
+	}
+
+	setBoundarySashes(sashes: IBoundarySashes): void {
+		this.gridWidget.boundarySashes = sashes;
+		this.centeredLayoutWidget.boundarySashes = sashes;
 	}
 
 	layout(width: number, height: number): void {

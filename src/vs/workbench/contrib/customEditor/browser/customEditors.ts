@@ -4,9 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { coalesce } from 'vs/base/common/arrays';
+import { Emitter } from 'vs/base/common/event';
 import { Lazy } from 'vs/base/common/lazy';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { basename, isEqual } from 'vs/base/common/resources';
+import { basename, isEqual, extname } from 'vs/base/common/resources';
 import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as nls from 'vs/nls';
@@ -15,22 +16,23 @@ import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/c
 import { IEditorOptions, ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { FileOperation, IFileService } from 'vs/platform/files/common/files';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ILabelService } from 'vs/platform/label/common/label';
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 import * as colorRegistry from 'vs/platform/theme/common/colorRegistry';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { EditorInput, EditorOptions, IEditor, IEditorInput } from 'vs/workbench/common/editor';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { webviewEditorsExtensionPoint } from 'vs/workbench/contrib/customEditor/browser/extensionPoint';
 import { CONTEXT_FOCUSED_CUSTOM_EDITOR_IS_EDITABLE, CONTEXT_HAS_CUSTOM_EDITORS, CustomEditorInfo, CustomEditorInfoCollection, CustomEditorPriority, CustomEditorSelector, ICustomEditor, ICustomEditorService } from 'vs/workbench/contrib/customEditor/common/customEditor';
 import { CustomEditorModelManager } from 'vs/workbench/contrib/customEditor/common/customEditorModelManager';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { IWebviewService, webviewHasOwnEditFunctionsContext } from 'vs/workbench/contrib/webview/browser/webview';
 import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IEditorService, IOpenEditorOverride } from 'vs/workbench/services/editor/common/editorService';
 import { IWorkingCopyService } from 'vs/workbench/services/workingCopy/common/workingCopyService';
 import { CustomFileEditorInput } from './customEditorInput';
-import { Emitter } from 'vs/base/common/event';
+
 export const defaultEditorId = 'default';
 
 const defaultEditorInfo = new CustomEditorInfo({
@@ -110,10 +112,11 @@ export class CustomEditorService extends Disposable implements ICustomEditorServ
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
 		@IWebviewService private readonly webviewService: IWebviewService,
+		@ILabelService labelService: ILabelService
 	) {
 		super();
 
-		this._models = new CustomEditorModelManager(workingCopyService);
+		this._models = new CustomEditorModelManager(workingCopyService, labelService);
 
 		this._hasCustomEditor = CONTEXT_HAS_CUSTOM_EDITORS.bindTo(contextKeyService);
 		this._focusedCustomEditorIsEditable = CONTEXT_FOCUSED_CUSTOM_EDITOR_IS_EDITABLE.bindTo(contextKeyService);
@@ -122,7 +125,7 @@ export class CustomEditorService extends Disposable implements ICustomEditorServ
 		this._register(this._editorInfoStore.onChange(() => this.updateContexts()));
 		this._register(this.editorService.onDidActiveEditorChange(() => this.updateContexts()));
 
-		this._register(fileService.onAfterOperation(e => {
+		this._register(fileService.onDidRunOperation(e => {
 			if (e.isOperation(FileOperation.MOVE)) {
 				this.handleMovedFileInOpenedFileEditors(e.resource, e.target.resource);
 			}
@@ -138,7 +141,7 @@ export class CustomEditorService extends Disposable implements ICustomEditorServ
 		if (!(activeInput instanceof CustomFileEditorInput)) {
 			return undefined;
 		}
-		const resource = activeInput.getResource();
+		const resource = activeInput.resource;
 		return { resource, viewType: activeInput.viewType };
 	}
 
@@ -171,27 +174,68 @@ export class CustomEditorService extends Disposable implements ICustomEditorServ
 
 		let currentlyOpenedEditorType: undefined | string;
 		for (const editor of group ? group.editors : []) {
-			if (editor.getResource() && isEqual(editor.getResource(), resource)) {
+			if (editor.resource && isEqual(editor.resource, resource)) {
 				currentlyOpenedEditorType = editor instanceof CustomFileEditorInput ? editor.viewType : defaultEditorId;
 				break;
 			}
 		}
+
+		const resourceExt = extname(resource);
 
 		const items = customEditors.allEditors.map((editorDescriptor): IQuickPickItem => ({
 			label: editorDescriptor.displayName,
 			id: editorDescriptor.id,
 			description: editorDescriptor.id === currentlyOpenedEditorType
 				? nls.localize('openWithCurrentlyActive', "Currently Active")
-				: undefined
+				: undefined,
+			buttons: resourceExt ? [{
+				iconClass: 'codicon-settings-gear',
+				tooltip: nls.localize('promptOpenWith.setDefaultTooltip', "Set as default editor for '{0}' files", resourceExt)
+			}] : undefined
 		}));
-		const pick = await this.quickInputService.pick(items, {
-			placeHolder: nls.localize('promptOpenWith.placeHolder', "Select editor to use for '{0}'...", basename(resource)),
+
+		const picker = this.quickInputService.createQuickPick();
+		picker.items = items;
+		picker.placeholder = nls.localize('promptOpenWith.placeHolder', "Select editor to use for '{0}'...", basename(resource));
+
+		const pick = await new Promise<string | undefined>(resolve => {
+			picker.onDidAccept(() => {
+				resolve(picker.selectedItems.length === 1 ? picker.selectedItems[0].id : undefined);
+				picker.dispose();
+			});
+			picker.onDidTriggerItemButton(e => {
+				const pick = e.item.id;
+				resolve(pick); // open the view
+				picker.dispose();
+
+				// And persist the setting
+				if (pick) {
+					const newAssociation: CustomEditorAssociation = { viewType: pick, filenamePattern: '*' + resourceExt };
+					const currentAssociations = [...this.configurationService.getValue<CustomEditorsAssociations>(customEditorsAssociationsKey)] || [];
+
+					// First try updating existing association
+					for (let i = 0; i < currentAssociations.length; ++i) {
+						const existing = currentAssociations[i];
+						if (existing.filenamePattern === newAssociation.filenamePattern) {
+							currentAssociations.splice(i, 1, newAssociation);
+							this.configurationService.updateValue(customEditorsAssociationsKey, currentAssociations);
+							return;
+						}
+					}
+
+					// Otherwise, create a new one
+					currentAssociations.unshift(newAssociation);
+					this.configurationService.updateValue(customEditorsAssociationsKey, currentAssociations);
+				}
+			});
+			picker.show();
 		});
 
-		if (!pick || !pick.id) {
+		if (!pick) {
 			return undefined; // {{SQL CARBON EDIT}} strict-null-check
 		}
-		return this.openWith(resource, pick.id, options, group);
+
+		return this.openWith(resource, pick, options, group);
 	}
 
 	public openWith(
@@ -201,7 +245,7 @@ export class CustomEditorService extends Disposable implements ICustomEditorServ
 		group?: IEditorGroup,
 	): Promise<IEditor | undefined> {
 		if (viewType === defaultEditorId) {
-			const fileInput = this.instantiationService.createInstance(FileEditorInput, resource, undefined, undefined);
+			const fileInput = this.editorService.createInput({ resource, forceFile: true });
 			return this.openEditorForResource(resource, fileInput, { ...options, ignoreOverrides: true }, group);
 		}
 
@@ -218,9 +262,9 @@ export class CustomEditorService extends Disposable implements ICustomEditorServ
 		viewType: string,
 		group: IEditorGroup | undefined,
 		options?: { readonly customClasses: string; },
-	): EditorInput {
+	): IEditorInput {
 		if (viewType === defaultEditorId) {
-			return this.instantiationService.createInstance(FileEditorInput, resource, undefined, undefined);
+			return this.editorService.createInput({ resource, forceFile: true });
 		}
 
 		const id = generateUuid();
@@ -243,7 +287,7 @@ export class CustomEditorService extends Disposable implements ICustomEditorServ
 		const targetGroup = group || this.editorGroupService.activeGroup;
 
 		// Try to replace existing editors for resource
-		const existingEditors = targetGroup.editors.filter(editor => editor.getResource() && isEqual(editor.getResource(), resource));
+		const existingEditors = targetGroup.editors.filter(editor => editor.resource && isEqual(editor.resource, resource));
 		if (existingEditors.length) {
 			const existing = existingEditors[0];
 			if (!input.matches(existing)) {
@@ -264,7 +308,7 @@ export class CustomEditorService extends Disposable implements ICustomEditorServ
 
 	private updateContexts() {
 		const activeControl = this.editorService.activeControl;
-		const resource = activeControl?.input.getResource();
+		const resource = activeControl?.input.resource;
 		if (!resource) {
 			this._hasCustomEditor.reset();
 			this._focusedCustomEditorIsEditable.reset();
@@ -278,7 +322,7 @@ export class CustomEditorService extends Disposable implements ICustomEditorServ
 		];
 		this._hasCustomEditor.set(possibleEditors.length > 0);
 		this._focusedCustomEditorIsEditable.set(activeControl?.input instanceof CustomFileEditorInput);
-		this._webviewHasOwnEditFunctions.set(true);
+		this._webviewHasOwnEditFunctions.set(possibleEditors.length > 0);
 	}
 
 	private handleMovedFileInOpenedFileEditors(oldResource: URI, newResource: URI): void {
@@ -309,14 +353,32 @@ export class CustomEditorService extends Disposable implements ICustomEditorServ
 
 export const customEditorsAssociationsKey = 'workbench.experimental.editorAssociations';
 
-export type CustomEditorsAssociations = readonly (CustomEditorSelector & { readonly viewType: string; })[];
+export type CustomEditorAssociation = CustomEditorSelector & {
+	readonly viewType: string;
+};
 
-export class CustomEditorContribution implements IWorkbenchContribution {
+export type CustomEditorsAssociations = readonly CustomEditorAssociation[];
+
+export class CustomEditorContribution extends Disposable implements IWorkbenchContribution {
 	constructor(
-		@IEditorService private readonly editorService: IEditorService,
+		@IEditorService private readonly editorService: EditorServiceImpl,
 		@ICustomEditorService private readonly customEditorService: ICustomEditorService,
 	) {
-		this.editorService.overrideOpenEditor((editor, options, group) => this.onEditorOpening(editor, options, group));
+		super();
+
+		this._register(this.editorService.overrideOpenEditor((editor, options, group) => {
+			return this.onEditorOpening(editor, options, group);
+		}));
+
+		this._register(this.editorService.onDidCloseEditor(({ editor }) => {
+			if (!(editor instanceof CustomFileEditorInput)) {
+				return;
+			}
+
+			if (!this.editorService.editors.some(other => other === editor)) {
+				editor.dispose();
+			}
+		}));
 	}
 
 	private onEditorOpening(
@@ -326,7 +388,15 @@ export class CustomEditorContribution implements IWorkbenchContribution {
 	): IOpenEditorOverride | undefined {
 		if (editor instanceof CustomFileEditorInput) {
 			if (editor.group === group.id) {
+				// No need to do anything
 				return undefined;
+			} else {
+				// Create a copy of the input.
+				// Unlike normal editor inputs, we do not want to share custom editor inputs
+				// between multiple editors / groups.
+				return {
+					override: this.customEditorService.openWith(editor.resource, editor.viewType, options, group)
+				};
 			}
 		}
 
@@ -334,7 +404,7 @@ export class CustomEditorContribution implements IWorkbenchContribution {
 			return this.onDiffEditorOpening(editor, options, group);
 		}
 
-		const resource = editor.getResource();
+		const resource = editor.resource;
 		if (resource) {
 			return this.onResourceEditorOpening(resource, editor, options, group);
 		}
@@ -357,7 +427,7 @@ export class CustomEditorContribution implements IWorkbenchContribution {
 		// If there is, we want to open that instead of creating a new editor.
 		// This ensures that we preserve whatever type of editor was previously being used
 		// when the user switches back to it.
-		const existingEditorForResource = group.editors.find(editor => isEqual(resource, editor.getResource()));
+		const existingEditorForResource = group.editors.find(editor => isEqual(resource, editor.resource));
 		if (existingEditorForResource) {
 			return {
 				override: this.editorService.openEditor(existingEditorForResource, { ...options, ignoreOverrides: true }, group)
@@ -416,7 +486,7 @@ export class CustomEditorContribution implements IWorkbenchContribution {
 			if (subInput instanceof CustomFileEditorInput) {
 				return undefined;
 			}
-			const resource = subInput.getResource();
+			const resource = subInput.resource;
 			if (!resource) {
 				return undefined;
 			}
@@ -432,7 +502,12 @@ export class CustomEditorContribution implements IWorkbenchContribution {
 				return undefined;
 			}
 
-			return this.customEditorService.createInput(resource, bestAvailableEditor.id, group, { customClasses });
+			const input = this.customEditorService.createInput(resource, bestAvailableEditor.id, group, { customClasses });
+			if (input instanceof EditorInput) {
+				return input;
+			}
+
+			return undefined;
 		};
 
 		const modifiedOverride = getCustomEditorOverrideForSubInput(editor.modifiedInput, 'modified');
@@ -441,7 +516,7 @@ export class CustomEditorContribution implements IWorkbenchContribution {
 		if (modifiedOverride || originalOverride) {
 			return {
 				override: (async () => {
-					const input = new DiffEditorInput(editor.getName(), editor.getDescription(), originalOverride || editor.originalInput, modifiedOverride || editor.modifiedInput);
+					const input = new DiffEditorInput(editor.getName(), editor.getDescription(), originalOverride || editor.originalInput, modifiedOverride || editor.modifiedInput, true);
 					return this.editorService.openEditor(input, { ...options, ignoreOverrides: true }, group);
 				})(),
 			};

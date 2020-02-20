@@ -5,6 +5,7 @@
 
 import * as dom from 'vs/base/browser/dom';
 import * as platform from 'vs/base/common/platform';
+import * as browser from 'vs/base/browser/browser';
 import { IframeUtils } from 'vs/base/browser/iframe';
 import { StandardMouseEvent } from 'vs/base/browser/mouseEvent';
 import { IDisposable, DisposableStore } from 'vs/base/common/lifecycle';
@@ -75,6 +76,7 @@ export class GlobalMouseMoveMonitor<R extends { buttons: number; }> implements I
 	}
 
 	public startMonitoring(
+		initialElement: HTMLElement,
 		initialButtons: number,
 		mouseMoveEventMerger: IEventMerger<R>,
 		mouseMoveCallback: IMouseMoveCallback<R>,
@@ -88,13 +90,20 @@ export class GlobalMouseMoveMonitor<R extends { buttons: number; }> implements I
 		this._mouseMoveCallback = mouseMoveCallback;
 		this._onStopCallback = onStopCallback;
 
-		let windowChain = IframeUtils.getSameOriginWindowChain();
+		const windowChain = IframeUtils.getSameOriginWindowChain();
 		const mouseMove = platform.isIOS && BrowserFeatures.pointerEvents ? 'pointermove' : 'mousemove';
 		const mouseUp = platform.isIOS && BrowserFeatures.pointerEvents ? 'pointerup' : 'mouseup';
-		for (const element of windowChain) {
-			this._hooks.add(dom.addDisposableThrottledListener(element.window.document, mouseMove,
+
+		const listenTo: (Document | ShadowRoot)[] = windowChain.map(element => element.window.document);
+		const shadowRoot = dom.getShadowRoot(initialElement);
+		if (shadowRoot) {
+			listenTo.unshift(shadowRoot);
+		}
+
+		for (const element of listenTo) {
+			this._hooks.add(dom.addDisposableThrottledListener(element, mouseMove,
 				(data: R) => {
-					if (data.buttons !== initialButtons) {
+					if (!browser.isIE && data.buttons !== initialButtons) {
 						// Buttons state has changed in the meantime
 						this.stopMonitoring(true);
 						return;
@@ -103,7 +112,7 @@ export class GlobalMouseMoveMonitor<R extends { buttons: number; }> implements I
 				},
 				(lastEvent: R | null, currentEvent) => this._mouseMoveEventMerger!(lastEvent, currentEvent as MouseEvent)
 			));
-			this._hooks.add(dom.addDisposableListener(element.window.document, mouseUp, (e: MouseEvent) => this.stopMonitoring(true)));
+			this._hooks.add(dom.addDisposableListener(element, mouseUp, (e: MouseEvent) => this.stopMonitoring(true)));
 		}
 
 		if (IframeUtils.hasDifferentOriginAncestor()) {

@@ -4,16 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
+import * as loc from '../../localizedConstants';
 import { DataTierApplicationWizard, Operation } from '../dataTierApplicationWizard';
 import { DacFxDataModel } from './models';
 import { BasePage } from './basePage';
-import { sanitizeStringForFilename, isValidBasename } from './utils';
-
-const localize = nls.loadMessageBundle();
+import { sanitizeStringForFilename, isValidBasename, isValidBasenameErrorMessage } from './utils';
 
 export abstract class DacFxConfigPage extends BasePage {
 
@@ -44,7 +42,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected async createServerDropdown(isTargetServer: boolean): Promise<azdata.FormComponent> {
-		const serverDropDownTitle = isTargetServer ? localize('dacFx.targetServerDropdownTitle', "Target Server") : localize('dacFx.sourceServerDropdownTitle', "Source Server");
+		const serverDropDownTitle = isTargetServer ? loc.targetServer : loc.sourceServer;
 		this.serverDropdown = this.view.modelBuilder.dropDown().withProperties({
 			required: true,
 			ariaLabel: serverDropDownTitle
@@ -54,7 +52,11 @@ export abstract class DacFxConfigPage extends BasePage {
 		this.serverDropdown.onValueChanged(async () => {
 			this.model.server = (this.serverDropdown.value as ConnectionDropdownValue).connection;
 			this.model.serverName = (this.serverDropdown.value as ConnectionDropdownValue).displayName;
-			await this.populateDatabaseDropdown();
+			if (this.databaseDropdown) {
+				await this.populateDatabaseDropdown();
+			} else {
+				await this.getDatabaseValues();
+			}
 		});
 
 		return {
@@ -79,9 +81,12 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected async createDatabaseTextBox(title: string): Promise<azdata.FormComponent> {
-		this.databaseTextBox = this.view.modelBuilder.inputBox().withProperties({
-			required: true
-		}).component();
+		this.databaseTextBox = this.view.modelBuilder.inputBox()
+			.withValidation(component => !this.databaseNameExists(component.value))
+			.withProperties({
+				required: true,
+				validationErrorMessage: loc.databaseNameExistsErrorMessage
+			}).component();
 
 		this.databaseTextBox.ariaLabel = title;
 		this.databaseTextBox.onTextChanged(async () => {
@@ -95,8 +100,9 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected async createDatabaseDropdown(): Promise<azdata.FormComponent> {
-		const databaseDropdownTitle = localize('dacFx.sourceDatabaseDropdownTitle', "Source Database");
+		const databaseDropdownTitle = loc.sourceDatabase;
 		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+			required: true,
 			ariaLabel: databaseDropdownTitle
 		}).component();
 
@@ -110,7 +116,6 @@ export abstract class DacFxConfigPage extends BasePage {
 		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).withProperties({
 			required: true
 		}).component();
-
 
 		return {
 			component: this.databaseLoader,
@@ -130,10 +135,10 @@ export abstract class DacFxConfigPage extends BasePage {
 		let values = await this.getDatabaseValues();
 
 		// only update values and regenerate filepath if this is the first time and database isn't set yet
-		if (this.model.database !== values[0].name) {
+		if (this.model.database !== values[0]) {
 			// db should only get set to the dropdown value if it isn't deploy with create database
 			if (!(this.instance.selectedOperation === Operation.deploy && !this.model.upgradeExisting)) {
-				this.model.database = values[0].name;
+				this.model.database = values[0];
 			}
 			// filename shouldn't change for deploy because the file exists and isn't being generated as for extract and export
 			if (this.instance.selectedOperation !== Operation.deploy) {
@@ -159,11 +164,19 @@ export abstract class DacFxConfigPage extends BasePage {
 				ariaLive: 'polite'
 			}).component();
 
-		this.fileTextBox.ariaLabel = localize('dacfx.fileLocationAriaLabel', "File Location");
+		// Set validation error message if file name is invalid
+		this.fileTextBox.onTextChanged(text => {
+			const errorMessage = isValidBasenameErrorMessage(text);
+			if (errorMessage) {
+				this.fileTextBox.updateProperty('validationErrorMessage', errorMessage);
+			}
+		});
+
+		this.fileTextBox.ariaLabel = loc.fileLocation;
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: '•••',
-			title: localize('dacfx.selectFile', "Select file"),
-			ariaLabel: localize('dacfx.selectFile', "Select file")
+			title: loc.selectFile,
+			ariaLabel: loc.selectFile
 		}).component();
 	}
 
@@ -191,6 +204,18 @@ export abstract class DacFxConfigPage extends BasePage {
 			this.model.filePath += this.fileExtension;
 			this.fileTextBox.value = this.model.filePath;
 		}
+	}
+
+	// Compares database name with existing databases on the server
+	protected databaseNameExists(n: string): boolean {
+		for (let i = 0; i < this.databaseValues.length; ++i) {
+			if (this.databaseValues[i].toLowerCase() === n.toLowerCase()) {
+				// database name exists
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
 

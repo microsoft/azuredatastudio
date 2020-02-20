@@ -10,6 +10,7 @@ import { ConfigurationChangedEvent, EditorOption } from 'vs/editor/common/config
 import { Range } from 'vs/editor/common/core/range';
 import { Selection } from 'vs/editor/common/core/selection';
 import { ScrollType, IContentSizeChangedEvent } from 'vs/editor/common/editorCommon';
+import { IModelDecorationsChangedEvent } from 'vs/editor/common/model/textModelEvents';
 
 export const enum ViewEventType {
 	ViewConfigurationChanged = 1,
@@ -69,13 +70,12 @@ export class ViewCursorStateChangedEvent {
 
 	public readonly type = ViewEventType.ViewCursorStateChanged;
 
-	/**
-	 * The primary selection is always at index 0.
-	 */
 	public readonly selections: Selection[];
+	public readonly modelSelections: Selection[];
 
-	constructor(selections: Selection[]) {
+	constructor(selections: Selection[], modelSelections: Selection[]) {
 		this.selections = selections;
+		this.modelSelections = modelSelections;
 	}
 }
 
@@ -83,8 +83,17 @@ export class ViewDecorationsChangedEvent {
 
 	public readonly type = ViewEventType.ViewDecorationsChanged;
 
-	constructor() {
-		// Nothing to do
+	readonly affectsMinimap: boolean;
+	readonly affectsOverviewRuler: boolean;
+
+	constructor(source: IModelDecorationsChangedEvent | null) {
+		if (source) {
+			this.affectsMinimap = source.affectsMinimap;
+			this.affectsOverviewRuler = source.affectsOverviewRuler;
+		} else {
+			this.affectsMinimap = true;
+			this.affectsOverviewRuler = true;
+		}
 	}
 }
 
@@ -184,7 +193,8 @@ export const enum VerticalRevealType {
 	Center = 1,
 	CenterIfOutsideViewport = 2,
 	Top = 3,
-	Bottom = 4
+	Bottom = 4,
+	NearTop = 5,
 }
 
 export class ViewRevealRangeRequestEvent {

@@ -125,7 +125,15 @@ export const enum MetadataConsts {
 	FOREGROUND_MASK = 0b00000000011111111100000000000000,
 	BACKGROUND_MASK = 0b11111111100000000000000000000000,
 
-	LANG_TTYPE_CMPL = 0b11111111111111111111100000000000,
+	ITALIC_MASK = 0b00000000000000000000100000000000,
+	BOLD_MASK = 0b00000000000000000001000000000000,
+	UNDERLINE_MASK = 0b00000000000000000010000000000000,
+
+	SEMANTIC_USE_ITALIC = 0b00000000000000000000000000000001,
+	SEMANTIC_USE_BOLD = 0b00000000000000000000000000000010,
+	SEMANTIC_USE_UNDERLINE = 0b00000000000000000000000000000100,
+	SEMANTIC_USE_FOREGROUND = 0b00000000000000000000000000001000,
+	SEMANTIC_USE_BACKGROUND = 0b00000000000000000000000000010000,
 
 	LANGUAGEID_OFFSET = 0,
 	TOKEN_TYPE_OFFSET = 8,
@@ -257,6 +265,34 @@ export interface HoverProvider {
 	provideHover(model: model.ITextModel, position: Position, token: CancellationToken): ProviderResult<Hover>;
 }
 
+/**
+ * An evaluatable expression represents additional information for an expression in a document. Evaluatable expression are
+ * evaluated by a debugger or runtime and their result is rendered in a tooltip-like widget.
+ */
+export interface EvaluatableExpression {
+	/**
+	 * The range to which this expression applies.
+	 */
+	range: IRange;
+	/*
+	 * This expression overrides the expression extracted from the range.
+	 */
+	expression?: string;
+}
+
+/**
+ * The hover provider interface defines the contract between extensions and
+ * the [hover](https://code.visualstudio.com/docs/editor/intellisense)-feature.
+ */
+export interface EvaluatableExpressionProvider {
+	/**
+	 * Provide a hover for the given position and document. Multiple hovers at the same
+	 * position will be merged by the editor. A hover can have a range which defaults
+	 * to the word range at the position when omitted.
+	 */
+	provideEvaluatableExpression(model: model.ITextModel, position: Position, token: CancellationToken): ProviderResult<EvaluatableExpression>;
+}
+
 export const enum CompletionItemKind {
 	Method,
 	Function,
@@ -369,6 +405,28 @@ export let completionKindFromString: {
 	};
 })();
 
+export interface CompletionItemLabel {
+	/**
+	 * The function or variable. Rendered leftmost.
+	 */
+	name: string;
+
+	/**
+	 * The signature without the return type. Render after `name`.
+	 */
+	signature?: string;
+
+	/**
+	 * The fully qualified name, like package name or file path. Rendered after `signature`.
+	 */
+	qualifier?: string;
+
+	/**
+	 * The return-type of a function or type of a property/variable. Rendered rightmost.
+	 */
+	type?: string;
+}
+
 export const enum CompletionItemTag {
 	Deprecated = 1
 }
@@ -396,7 +454,7 @@ export interface CompletionItem {
 	 * this is also the text that is inserted when selecting
 	 * this completion.
 	 */
-	label: string;
+	label: string | CompletionItemLabel;
 	/**
 	 * The kind of this completion item. Based on the kind
 	 * an icon is chosen by the editor.
@@ -481,7 +539,6 @@ export interface CompletionItem {
 export interface CompletionList {
 	suggestions: CompletionItem[];
 	incomplete?: boolean;
-	isDetailsResolved?: boolean;
 	dispose?(): void;
 }
 
@@ -586,7 +643,9 @@ export interface CodeActionProvider {
 	/**
 	 * Optional list of CodeActionKinds that this provider returns.
 	 */
-	providedCodeActionKinds?: ReadonlyArray<string>;
+	readonly providedCodeActionKinds?: ReadonlyArray<string>;
+
+	readonly documentation?: ReadonlyArray<{ readonly kind: string, readonly command: Command }>;
 
 	/**
 	 * @internal
@@ -1257,20 +1316,36 @@ export namespace WorkspaceTextEdit {
 	 * @internal
 	 */
 	export function is(thing: any): thing is WorkspaceTextEdit {
-		return isObject(thing) && (<WorkspaceTextEdit>thing).resource && Array.isArray((<WorkspaceTextEdit>thing).edits);
+		return isObject(thing) && URI.isUri((<WorkspaceTextEdit>thing).resource) && isObject((<WorkspaceTextEdit>thing).edit);
 	}
+}
+
+export interface WorkspaceEditMetadata {
+	needsConfirmation: boolean;
+	label: string;
+	description?: string;
+	iconPath?: { id: string } | URI | { light: URI, dark: URI };
+}
+
+export interface WorkspaceFileEditOptions {
+	overwrite?: boolean;
+	ignoreIfNotExists?: boolean;
+	ignoreIfExists?: boolean;
+	recursive?: boolean;
 }
 
 export interface WorkspaceFileEdit {
 	oldUri?: URI;
 	newUri?: URI;
-	options?: { overwrite?: boolean, ignoreIfNotExists?: boolean, ignoreIfExists?: boolean, recursive?: boolean };
+	options?: WorkspaceFileEditOptions;
+	metadata?: WorkspaceEditMetadata;
 }
 
 export interface WorkspaceTextEdit {
 	resource: URI;
+	edit: TextEdit;
 	modelVersionId?: number;
-	edits: TextEdit[];
+	metadata?: WorkspaceEditMetadata;
 }
 
 export interface WorkspaceEdit {
@@ -1293,10 +1368,10 @@ export interface RenameProvider {
 /**
  * @internal
  */
-export interface Session {
+export interface AuthenticationSession {
 	id: string;
-	accessToken: string;
-	displayName: string;
+	accessToken(): Promise<string>;
+	accountName: string;
 }
 
 export interface Command {
@@ -1547,6 +1622,11 @@ export const SignatureHelpProviderRegistry = new LanguageFeatureRegistry<Signatu
  * @internal
  */
 export const HoverProviderRegistry = new LanguageFeatureRegistry<HoverProvider>();
+
+/**
+ * @internal
+ */
+export const EvaluatableExpressionProviderRegistry = new LanguageFeatureRegistry<EvaluatableExpressionProvider>();
 
 /**
  * @internal

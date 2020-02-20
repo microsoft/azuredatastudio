@@ -104,14 +104,7 @@ export class ReplaceService implements IReplaceService {
 		const edits: WorkspaceTextEdit[] = this.createEdits(arg, resource);
 		await this.bulkEditorService.apply({ edits }, { progress });
 
-		return Promise.all(edits.map(e => {
-			const model = this.textFileService.files.get(e.resource);
-			if (model) {
-				return model.save();
-			}
-
-			return Promise.resolve(undefined);
-		}));
+		return Promise.all(edits.map(e => this.textFileService.files.get(e.resource)?.save()));
 	}
 
 	async openReplacePreview(element: FileMatchOrMatch, preserveFocus?: boolean, sideBySide?: boolean, pinned?: boolean): Promise<any> {
@@ -165,10 +158,10 @@ export class ReplaceService implements IReplaceService {
 		const resourceEdits = this.createEdits(fileMatch, replaceModel.uri);
 		const modelEdits: IIdentifiedSingleEditOperation[] = [];
 		for (const resourceEdit of resourceEdits) {
-			for (const edit of resourceEdit.edits) {
-				const range = Range.lift(edit.range);
-				modelEdits.push(EditOperation.replaceMove(range, edit.text));
-			}
+			modelEdits.push(EditOperation.replaceMove(
+				Range.lift(resourceEdit.edit.range),
+				resourceEdit.edit.text)
+			);
 		}
 		replaceModel.pushEditOperations([], mergeSort(modelEdits, (a, b) => Range.compareRangesUsingStarts(a.range, b.range)), () => []);
 	}
@@ -201,10 +194,10 @@ export class ReplaceService implements IReplaceService {
 		const fileMatch: FileMatch = match.parent();
 		const resourceEdit: WorkspaceTextEdit = {
 			resource: resource !== null ? resource : fileMatch.resource,
-			edits: [{
+			edit: {
 				range: match.range(),
 				text: text
-			}]
+			}
 		};
 		return resourceEdit;
 	}

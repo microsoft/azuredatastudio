@@ -30,7 +30,6 @@ import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/commo
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { EditorMemento } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { EditorActivation, IEditorOptions } from 'vs/platform/editor/common/editor';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 /**
  * The text editor that leverages the diff text editor for the editing experience.
@@ -42,7 +41,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 	private diffNavigator: DiffNavigator | undefined;
 	private readonly diffNavigatorDisposables = this._register(new DisposableStore());
 
-	private reverseColor: boolean; // {{SQL CARBON EDIT}} add property
+	private reverseColor?: boolean; // {{SQL CARBON EDIT}} add property
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -51,8 +50,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 		@ITextResourceConfigurationService configurationService: ITextResourceConfigurationService,
 		@IEditorService editorService: IEditorService,
 		@IThemeService themeService: IThemeService,
-		@IEditorGroupsService editorGroupService: IEditorGroupsService,
-		@IClipboardService private clipboardService: IClipboardService
+		@IEditorGroupsService editorGroupService: IEditorGroupsService
 	) {
 		super(TextDiffEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, editorService, editorGroupService);
 	}
@@ -75,10 +73,8 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 	}
 
 	createEditorControl(parent: HTMLElement, configuration: ICodeEditorOptions): IDiffEditor {
-		if (this.reverseColor) { // {{SQL CARBON EDIT}}
-			(configuration as IDiffEditorOptions).reverse = true;
-		}
-		return this.instantiationService.createInstance(DiffEditorWidget as any, parent, configuration, this.clipboardService); // {{SQL CARBON EDIT}} strict-null-check...i guess?
+		if (this.reverseColor) { (configuration as IDiffEditorOptions).reverse = true; } // {{SQL CARBON EDIT}}
+		return this.instantiationService.createInstance(DiffEditorWidget, parent, configuration);
 	}
 
 	async setInput(input: EditorInput, options: EditorOptions | undefined, token: CancellationToken): Promise<void> {
@@ -185,7 +181,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 			// because we are triggering another openEditor() call
 			// and do not control the initial intent that resulted
 			// in us now opening as binary.
-			const preservingOptions: IEditorOptions = { activation: EditorActivation.PRESERVE };
+			const preservingOptions: IEditorOptions = { activation: EditorActivation.PRESERVE, pinned: this.group?.isPinned(input) };
 			if (options) {
 				options.overwrite(preservingOptions);
 			} else {
@@ -227,9 +223,9 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 
 		const inputName = this.input?.getName();
 		if (this.input?.isReadonly()) {
-			ariaLabel = inputName ? nls.localize('readonlyEditorWithInputAriaLabel', "{0}. Readonly text compare editor.", inputName) : nls.localize('readonlyEditorAriaLabel', "Readonly text compare editor.");
+			ariaLabel = inputName ? nls.localize('readonlyEditorWithInputAriaLabel', "{0} readonly compare editor", inputName) : nls.localize('readonlyEditorAriaLabel', "Readonly compare editor");
 		} else {
-			ariaLabel = inputName ? nls.localize('editableEditorWithInputAriaLabel', "{0}. Text file compare editor.", inputName) : nls.localize('editableEditorAriaLabel', "Text file compare editor.");
+			ariaLabel = inputName ? nls.localize('editableEditorWithInputAriaLabel', "{0} compare editor", inputName) : nls.localize('editableEditorAriaLabel', "Compare editor");
 		}
 
 		return ariaLabel;
@@ -331,8 +327,8 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 		let modified: URI | undefined;
 
 		if (modelOrInput instanceof DiffEditorInput) {
-			original = modelOrInput.originalInput.getResource();
-			modified = modelOrInput.modifiedInput.getResource();
+			original = modelOrInput.originalInput.resource;
+			modified = modelOrInput.modifiedInput.resource;
 		} else {
 			original = modelOrInput.original.uri;
 			modified = modelOrInput.modified.uri;

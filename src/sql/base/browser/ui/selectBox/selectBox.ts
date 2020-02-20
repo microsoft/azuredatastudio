@@ -58,9 +58,7 @@ export class SelectBox extends vsSelectBox {
 	private inputValidationErrorBackground?: Color;
 	private inputValidationErrorForeground?: Color;
 
-	private element: HTMLElement;
-
-
+	private element?: HTMLElement;
 
 	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
 		super(options.map(option => { return { text: option }; }), 0, contextViewProvider, undefined, selectBoxOptions);
@@ -261,10 +259,12 @@ export class SelectBox extends vsSelectBox {
 	}
 
 	public hideMessage(): void {
-		dom.removeClass(this.element, 'info');
-		dom.removeClass(this.element, 'warning');
-		dom.removeClass(this.element, 'error');
-		dom.addClass(this.element, 'idle');
+		if (this.element) {
+			dom.removeClass(this.element, 'info');
+			dom.removeClass(this.element, 'warning');
+			dom.removeClass(this.element, 'error');
+			dom.addClass(this.element, 'idle');
+		}
 
 		this._hideMessage();
 		this.applyStyles();
@@ -317,6 +317,10 @@ export class SelectBox extends vsSelectBox {
 		else {
 			super.render(container);
 		}
+	}
+
+	public get selectElem(): HTMLSelectElement {
+		return this.selectElement;
 	}
 }
 

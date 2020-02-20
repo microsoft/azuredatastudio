@@ -5,8 +5,8 @@
 
 import 'vs/css!./media/messagePanel';
 import { IMessagesActionContext, CopyMessagesAction, CopyAllMessagesAction } from './actions';
-import QueryRunner, { IQueryMessage } from 'sql/platform/query/common/queryRunner';
-import { IExpandableTree } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
+import QueryRunner, { IQueryMessage } from 'sql/workbench/services/query/common/queryRunner';
+import { IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 
 import { ISelectionData } from 'azdata';
 
@@ -28,7 +28,7 @@ import { $, Dimension, createStyleSheet } from 'vs/base/browser/dom';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { resultsErrorColor } from 'sql/platform/theme/common/colors';
-import { MessagePanelState } from 'sql/workbench/contrib/query/common/messagePanelState';
+import { MessagePanelState } from 'sql/workbench/common/editor/query/messagePanelState';
 
 export interface IResultMessageIntern {
 	id?: string;

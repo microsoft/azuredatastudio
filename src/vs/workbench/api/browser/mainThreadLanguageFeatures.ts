@@ -11,7 +11,7 @@ import * as search from 'vs/workbench/contrib/search/common/search';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { Position as EditorPosition } from 'vs/editor/common/core/position';
 import { Range as EditorRange, IRange } from 'vs/editor/common/core/range';
-import { ExtHostContext, MainThreadLanguageFeaturesShape, ExtHostLanguageFeaturesShape, MainContext, IExtHostContext, ILanguageConfigurationDto, IRegExpDto, IIndentationRuleDto, IOnEnterRuleDto, ILocationDto, IWorkspaceSymbolDto, reviveWorkspaceEditDto, IDocumentFilterDto, IDefinitionLinkDto, ISignatureHelpProviderMetadataDto, ILinkDto, ICallHierarchyItemDto, ISuggestDataDto, ICodeActionDto, ISuggestDataDtoField } from '../common/extHost.protocol';
+import { ExtHostContext, MainThreadLanguageFeaturesShape, ExtHostLanguageFeaturesShape, MainContext, IExtHostContext, ILanguageConfigurationDto, IRegExpDto, IIndentationRuleDto, IOnEnterRuleDto, ILocationDto, IWorkspaceSymbolDto, reviveWorkspaceEditDto, IDocumentFilterDto, IDefinitionLinkDto, ISignatureHelpProviderMetadataDto, ILinkDto, ICallHierarchyItemDto, ISuggestDataDto, ICodeActionDto, ISuggestDataDtoField, ISuggestResultDtoField, ICodeActionProviderMetadataDto, ILanguageWordDefinitionDto } from '../common/extHost.protocol';
 import { LanguageConfigurationRegistry } from 'vs/editor/common/modes/languageConfigurationRegistry';
 import { LanguageConfiguration, IndentationRule, OnEnterRule } from 'vs/editor/common/modes/languageConfiguration';
 import { IModeService } from 'vs/editor/common/services/modeService';
@@ -36,6 +36,34 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 	) {
 		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostLanguageFeatures);
 		this._modeService = modeService;
+
+		if (this._modeService) {
+			const updateAllWordDefinitions = () => {
+				const langWordPairs = LanguageConfigurationRegistry.getWordDefinitions();
+				let wordDefinitionDtos: ILanguageWordDefinitionDto[] = [];
+				for (const [languageId, wordDefinition] of langWordPairs) {
+					const language = this._modeService.getLanguageIdentifier(languageId);
+					if (!language) {
+						continue;
+					}
+					wordDefinitionDtos.push({
+						languageId: language.language,
+						regexSource: wordDefinition.source,
+						regexFlags: wordDefinition.flags
+					});
+				}
+				this._proxy.$setWordDefinitions(wordDefinitionDtos);
+			};
+			LanguageConfigurationRegistry.onDidChange((e) => {
+				const wordDefinition = LanguageConfigurationRegistry.getWordDefinition(e.languageIdentifier.id);
+				this._proxy.$setWordDefinitions([{
+					languageId: e.languageIdentifier.language,
+					regexSource: wordDefinition.source,
+					regexFlags: wordDefinition.flags
+				}]);
+			});
+			updateAllWordDefinitions();
+		}
 	}
 
 	dispose(): void {
@@ -55,11 +83,11 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 
 	//#region --- revive functions
 
-	private static _reviveLocationDto(data: ILocationDto): modes.Location;
-	private static _reviveLocationDto(data: ILocationDto[]): modes.Location[];
-	private static _reviveLocationDto(data: ILocationDto | ILocationDto[]): modes.Location | modes.Location[] {
+	private static _reviveLocationDto(data?: ILocationDto): modes.Location;
+	private static _reviveLocationDto(data?: ILocationDto[]): modes.Location[];
+	private static _reviveLocationDto(data: ILocationDto | ILocationDto[] | undefined): modes.Location | modes.Location[] | undefined {
 		if (!data) {
-			return <modes.Location>data;
+			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 		} else if (Array.isArray(data)) {
 			data.forEach(l => MainThreadLanguageFeatures._reviveLocationDto(l));
 			return <modes.Location[]>data;
@@ -213,6 +241,16 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 		}));
 	}
 
+	// --- debug hover
+
+	$registerEvaluatableExpressionProvider(handle: number, selector: IDocumentFilterDto[]): void {
+		this._registrations.set(handle, modes.EvaluatableExpressionProviderRegistry.register(selector, <modes.EvaluatableExpressionProvider>{
+			provideEvaluatableExpression: (model: ITextModel, position: EditorPosition, token: CancellationToken): Promise<modes.EvaluatableExpression | undefined> => {
+				return this._proxy.$provideEvaluatableExpression(handle, model.uri, position, token);
+			}
+		}));
+	}
+
 	// --- occurrences
 
 	$registerDocumentHighlightProvider(handle: number, selector: IDocumentFilterDto[]): void {
@@ -235,7 +273,7 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 
 	// --- quick fix
 
-	$registerQuickFixSupport(handle: number, selector: IDocumentFilterDto[], providedCodeActionKinds?: string[]): void {
+	$registerQuickFixSupport(handle: number, selector: IDocumentFilterDto[], metadata: ICodeActionProviderMetadataDto): void {
 		this._registrations.set(handle, modes.CodeActionProviderRegistry.register(selector, <modes.CodeActionProvider>{
 			provideCodeActions: async (model: ITextModel, rangeOrSelection: EditorRange | Selection, context: modes.CodeActionContext, token: CancellationToken): Promise<modes.CodeActionList | undefined> => {
 				const listDto = await this._proxy.$provideCodeActions(handle, model.uri, rangeOrSelection, context, token);
@@ -251,7 +289,8 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 					}
 				};
 			},
-			providedCodeActionKinds
+			providedCodeActionKinds: metadata.providedKinds,
+			documentation: metadata.documentation
 		}));
 	}
 
@@ -316,7 +355,7 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 
 	$registerRenameSupport(handle: number, selector: IDocumentFilterDto[], supportResolveLocation: boolean): void {
 		this._registrations.set(handle, modes.RenameProviderRegistry.register(selector, <modes.RenameProvider>{
-			provideRenameEdits: (model: ITextModel, position: EditorPosition, newName: string, token: CancellationToken): Promise<modes.WorkspaceEdit> => {
+			provideRenameEdits: (model: ITextModel, position: EditorPosition, newName: string, token: CancellationToken) => {
 				return this._proxy.$provideRenameEdits(handle, model.uri, position, newName, token).then(reviveWorkspaceEditDto);
 			},
 			resolveRenameLocation: supportResolveLocation
@@ -340,7 +379,7 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 	private static _inflateSuggestDto(defaultRange: IRange | { insert: IRange, replace: IRange }, data: ISuggestDataDto): modes.CompletionItem {
 
 		return {
-			label: data[ISuggestDataDtoField.label],
+			label: data[ISuggestDataDtoField.label2] || data[ISuggestDataDtoField.label],
 			kind: data[ISuggestDataDtoField.kind],
 			tags: data[ISuggestDataDtoField.kindModifier],
 			detail: data[ISuggestDataDtoField.detail],
@@ -369,11 +408,15 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 						// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 required because of strict null checks
 						return undefined;
 					}
+
 					return {
-						suggestions: result.b.map(d => MainThreadLanguageFeatures._inflateSuggestDto(result.a, d)),
-						incomplete: result.c,
-						isDetailsResolved: result.d,
-						dispose: () => typeof result.x === 'number' && this._proxy.$releaseCompletionItems(handle, result.x)
+						suggestions: result[ISuggestResultDtoField.completions].map(d => MainThreadLanguageFeatures._inflateSuggestDto(result[ISuggestResultDtoField.defaultRanges], d)),
+						incomplete: result[ISuggestResultDtoField.isIncomplete] || false,
+						dispose: () => {
+							if (typeof result.x === 'number') {
+								this._proxy.$releaseCompletionItems(handle, result.x);
+							}
+						}
 					};
 				});
 			}

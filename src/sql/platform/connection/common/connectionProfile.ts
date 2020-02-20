@@ -12,7 +12,6 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isString } from 'vs/base/common/types';
 import { deepClone } from 'vs/base/common/objects';
-import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { find } from 'vs/base/common/arrays';
 
@@ -27,7 +26,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	private _id: string;
 	public savePassword: boolean;
 	private _groupName?: string;
-	public groupId: string;
+	public groupId?: string;
 	public saveProfile: boolean;
 
 	public isDisconnecting: boolean = false;
@@ -48,7 +47,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 				let capabilities = this.capabilitiesService.getCapabilities(model.providerName);
 				if (capabilities && capabilities.connection && capabilities.connection.connectionOptions) {
 					const options = capabilities.connection.connectionOptions;
-					let appNameOption = find(options, option => option.specialValueType === ConnectionOptionSpecialType.appName);
+					let appNameOption = find(options, option => option.specialValueType === interfaces.ConnectionOptionSpecialType.appName);
 					if (appNameOption) {
 						let appNameKey = appNameOption.name;
 						this.options[appNameKey] = Constants.applicationName;
@@ -256,7 +255,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		let connectionInfo = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
 		let profile: interfaces.IConnectionProfileStore = {
 			options: {},
-			groupId: connectionProfile.groupId,
+			groupId: connectionProfile.groupId!,
 			providerName: connectionInfo.providerName,
 			savePassword: connectionInfo.savePassword,
 			id: connectionInfo.id

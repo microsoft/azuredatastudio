@@ -17,25 +17,37 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { Range } from 'vs/editor/common/core/range';
 import { FuzzyScore } from 'vs/base/common/filters';
 import { isDisposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { MenuId } from 'vs/platform/actions/common/actions';
 
 export const Context = {
 	Visible: new RawContextKey<boolean>('suggestWidgetVisible', false),
+	DetailsVisible: new RawContextKey<boolean>('suggestWidgetDetailsVisible', false),
 	MultipleSuggestions: new RawContextKey<boolean>('suggestWidgetMultipleSuggestions', false),
 	MakesTextEdit: new RawContextKey('suggestionMakesTextEdit', true),
-	AcceptSuggestionsOnEnter: new RawContextKey<boolean>('acceptSuggestionOnEnter', true)
+	AcceptSuggestionsOnEnter: new RawContextKey<boolean>('acceptSuggestionOnEnter', true),
+	HasInsertAndReplaceRange: new RawContextKey('suggestionHasInsertAndReplaceRange', false),
+	CanResolve: new RawContextKey('suggestionCanResolve', false),
 };
+
+export const suggestWidgetStatusbarMenu = new MenuId('suggestWidgetStatusBar');
 
 export class CompletionItem {
 
 	_brand!: 'ISuggestionItem';
 
+	private static readonly _defaultResolve = () => Promise.resolve();
+
 	readonly resolve: (token: CancellationToken) => Promise<void>;
 	isResolved: boolean = false;
+
 
 	//
 	readonly editStart: IPosition;
 	readonly editInsertEnd: IPosition;
 	readonly editReplaceEnd: IPosition;
+
+	//
+	readonly textLabel: string;
 
 	// perf
 	readonly labelLow: string;
@@ -48,9 +60,6 @@ export class CompletionItem {
 	idx?: number;
 	word?: string;
 
-	//
-	readonly isDetailsResolved: boolean;
-
 	constructor(
 		readonly position: IPosition,
 		readonly completion: modes.CompletionItem,
@@ -58,8 +67,13 @@ export class CompletionItem {
 		readonly provider: modes.CompletionItemProvider,
 		model: ITextModel
 	) {
+		this.textLabel = typeof completion.label === 'string'
+			? completion.label
+			: completion.label.name;
+
 		// ensure lower-variants (perf)
-		this.labelLow = completion.label.toLowerCase();
+		this.labelLow = this.textLabel.toLowerCase();
+
 		this.sortTextLow = completion.sortText && completion.sortText.toLowerCase();
 		this.filterTextLow = completion.filterText && completion.filterText.toLowerCase();
 
@@ -74,18 +88,16 @@ export class CompletionItem {
 			this.editReplaceEnd = new Position(completion.range.replace.endLineNumber, completion.range.replace.endColumn);
 		}
 
-		this.isDetailsResolved = container.isDetailsResolved || typeof provider.resolveCompletionItem === 'undefined';
-
 		// create the suggestion resolver
 		const { resolveCompletionItem } = provider;
 		if (typeof resolveCompletionItem !== 'function') {
-			this.resolve = () => Promise.resolve();
+			this.resolve = CompletionItem._defaultResolve;
 			this.isResolved = true;
 		} else {
 			let cached: Promise<void> | undefined;
 			this.resolve = (token) => {
 				if (!cached) {
-					cached = Promise.resolve(resolveCompletionItem.call(provider, model, position, completion, token)).then(value => {
+					cached = Promise.resolve(resolveCompletionItem.call(provider, model, Position.lift(position), completion, token)).then(value => {
 						assign(completion, value);
 						this.isResolved = true;
 					}, err => {
@@ -189,7 +201,7 @@ export function provideSuggestionItems(
 							}
 							// fill in default sortText when missing
 							if (!suggestion.sortText) {
-								suggestion.sortText = suggestion.label;
+								suggestion.sortText = typeof suggestion.label === 'string' ? suggestion.label : suggestion.label.name;
 							}
 
 							allSuggestions.push(new CompletionItem(position, suggestion, container, provider, model));

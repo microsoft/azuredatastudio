@@ -2880,6 +2880,33 @@ suite('Editor Controller - Cursor Configuration', () => {
 
 		model.dispose();
 	});
+
+	test('issue #90973: Undo brings back model alternative version', () => {
+		let model = createTextModel(
+			[
+				''
+			].join('\n'),
+			{
+				insertSpaces: false,
+			}
+		);
+
+		withTestCodeEditor(null, { model: model }, (editor, cursor) => {
+			const beforeVersion = model.getVersionId();
+			const beforeAltVersion = model.getAlternativeVersionId();
+			cursorCommand(cursor, H.Type, { text: 'Hello' }, 'keyboard');
+			cursorCommand(cursor, H.Undo, {});
+			const afterVersion = model.getVersionId();
+			const afterAltVersion = model.getAlternativeVersionId();
+
+			assert.notEqual(beforeVersion, afterVersion);
+			assert.equal(beforeAltVersion, afterAltVersion);
+		});
+
+		model.dispose();
+	});
+
+
 });
 
 suite('Editor Controller - Indentation Rules', () => {
@@ -4897,6 +4924,51 @@ suite('autoClosingPairs', () => {
 
 			cursorCommand(cursor, H.Type, { text: ']' }, 'keyboard');
 			assert.strictEqual(model.getLineContent(1), 'std::cout << \'"\' << entryMap["a"]');
+		});
+		mode.dispose();
+	});
+
+	test('issue #85983 - editor.autoClosingBrackets: beforeWhitespace is incorrect for Python', () => {
+		const languageId = new LanguageIdentifier('pythonMode', 5);
+		class PythonMode extends MockMode {
+			constructor() {
+				super(languageId);
+				this._register(LanguageConfigurationRegistry.register(this.getLanguageIdentifier(), {
+					autoClosingPairs: [
+						{ open: '{', close: '}' },
+						{ open: '[', close: ']' },
+						{ open: '(', close: ')' },
+						{ open: '\"', close: '\"', notIn: ['string'] },
+						{ open: 'r\"', close: '\"', notIn: ['string', 'comment'] },
+						{ open: 'R\"', close: '\"', notIn: ['string', 'comment'] },
+						{ open: 'u\"', close: '\"', notIn: ['string', 'comment'] },
+						{ open: 'U\"', close: '\"', notIn: ['string', 'comment'] },
+						{ open: 'f\"', close: '\"', notIn: ['string', 'comment'] },
+						{ open: 'F\"', close: '\"', notIn: ['string', 'comment'] },
+						{ open: 'b\"', close: '\"', notIn: ['string', 'comment'] },
+						{ open: 'B\"', close: '\"', notIn: ['string', 'comment'] },
+						{ open: '\'', close: '\'', notIn: ['string', 'comment'] },
+						{ open: 'r\'', close: '\'', notIn: ['string', 'comment'] },
+						{ open: 'R\'', close: '\'', notIn: ['string', 'comment'] },
+						{ open: 'u\'', close: '\'', notIn: ['string', 'comment'] },
+						{ open: 'U\'', close: '\'', notIn: ['string', 'comment'] },
+						{ open: 'f\'', close: '\'', notIn: ['string', 'comment'] },
+						{ open: 'F\'', close: '\'', notIn: ['string', 'comment'] },
+						{ open: 'b\'', close: '\'', notIn: ['string', 'comment'] },
+						{ open: 'B\'', close: '\'', notIn: ['string', 'comment'] },
+						{ open: '`', close: '`', notIn: ['string'] }
+					],
+				}));
+			}
+		}
+		const mode = new PythonMode();
+		usingCursor({
+			text: [
+				'foo\'hello\''
+			],
+			languageIdentifier: mode.getLanguageIdentifier()
+		}, (model, cursor) => {
+			assertType(model, cursor, 1, 4, '(', '(', `does not auto close @ (1, 4)`);
 		});
 		mode.dispose();
 	});

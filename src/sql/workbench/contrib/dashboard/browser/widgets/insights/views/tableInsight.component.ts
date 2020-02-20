@@ -13,8 +13,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
-import { IInsightData } from 'sql/workbench/contrib/charts/browser/interfaces';
-import { IInsightsView } from 'sql/platform/dashboard/browser/insightRegistry';
+import { IInsightsView, IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 
 @Component({
 	template: ''

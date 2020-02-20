@@ -9,8 +9,8 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import * as types from 'vs/base/common/types';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 
-import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
-import { ICellModel, CellExecutionState } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
+import { ICellModel, CellExecutionState } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ILogService } from 'vs/platform/log/common/log';

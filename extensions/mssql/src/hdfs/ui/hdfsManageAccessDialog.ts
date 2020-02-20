@@ -13,6 +13,7 @@ import { HdfsError } from '../webhdfs';
 import { ApiWrapper } from '../../apiWrapper';
 import { IconPathHelper } from '../../iconHelper';
 import { HdfsFileType } from '../fileStatus';
+import { EventEmitter } from 'vscode';
 
 const permissionsTypeIconColumnWidth = 35;
 const permissionsDeleteColumnWidth = 50;
@@ -49,6 +50,7 @@ export class ManageAccessDialog {
 	private posixPermissionCheckboxesMapping: PermissionCheckboxesMapping[] = [];
 	private namedSectionInheritCheckboxes: azdata.CheckBoxComponent[] = [];
 	private addUserOrGroupSelectedType: AclType;
+	private onViewInitializedEvent: EventEmitter<void> = new EventEmitter();
 
 	constructor(private hdfsPath: string, private fileSource: IFileSource, private readonly apiWrapper: ApiWrapper) {
 		this.hdfsModel = new HdfsModel(this.fileSource, this.hdfsPath);
@@ -92,7 +94,6 @@ export class ManageAccessDialog {
 				await modelView.initializeModel(this.rootLoadingComponent);
 				this.modelInitialized = true;
 				this.handlePermissionStatusUpdated(this.hdfsModel.permissionStatus);
-				this.addUserOrGroupInput.focus();
 			});
 			this.dialog.content = [tab];
 		}
@@ -238,6 +239,7 @@ export class ManageAccessDialog {
 			.component();
 		contentContainer.addItem(this.namedUsersAndGroupsPermissionsContainer, { flex: '1', CSSStyles: { 'overflow': 'scroll', 'min-height': '200px' } });
 		this.viewInitialized = true;
+		this.onViewInitializedEvent.fire();
 	}
 
 	private handlePermissionStatusUpdated(permissionStatus: PermissionStatus): void {
@@ -250,80 +252,84 @@ export class ManageAccessDialog {
 			this.initializeView(permissionStatus);
 		}
 
-		this.stickyCheckbox.checked = permissionStatus.stickyBit;
-		if (this.hdfsModel.fileStatus.type === HdfsFileType.Directory) {
-			this.inheritDefaultsCheckbox.checked =
-				!permissionStatus.owner.getPermission(AclEntryScope.default) &&
-				!permissionStatus.group.getPermission(AclEntryScope.default) &&
-				!permissionStatus.other.getPermission(AclEntryScope.default);
-		}
+		this.eventuallyRunOnInitialized(() => {
+			this.stickyCheckbox.checked = permissionStatus.stickyBit;
+			if (this.hdfsModel.fileStatus.type === HdfsFileType.Directory) {
+				this.inheritDefaultsCheckbox.checked =
+					!permissionStatus.owner.getPermission(AclEntryScope.default) &&
+					!permissionStatus.group.getPermission(AclEntryScope.default) &&
+					!permissionStatus.other.getPermission(AclEntryScope.default);
+			}
 
-		this.applyRecursivelyButton.hidden = this.hdfsModel.fileStatus.type !== HdfsFileType.Directory;
+			this.applyRecursivelyButton.hidden = this.hdfsModel.fileStatus.type !== HdfsFileType.Directory;
 
-		this.posixPermissionsContainer.clearItems();
+			this.posixPermissionsContainer.clearItems();
 
-		const posixPermissionData = [permissionStatus.owner, permissionStatus.group, permissionStatus.other].map(aclEntry => {
-			return this.createPermissionsTableRow(aclEntry, false/*includeDelete*/, false/*includeInherit*/);
+			const posixPermissionData = [permissionStatus.owner, permissionStatus.group, permissionStatus.other].map(aclEntry => {
+				return this.createPermissionsTableRow(aclEntry, false/*includeDelete*/, false/*includeInherit*/);
+			});
+
+			const posixPermissionsNamesColumnWidth = 800 + (this.hdfsModel.fileStatus.type === HdfsFileType.Directory ? 0 : permissionsCheckboxColumnWidth * 3);
+			const namedUsersAndGroupsPermissionsNamesColumnWidth = 700 + (this.hdfsModel.fileStatus.type === HdfsFileType.Directory ? 0 : permissionsCheckboxColumnWidth * 3);
+
+			// Default set of columns that are always shown
+			let posixPermissionsColumns = [
+				this.createTableColumn('', loc.userOrGroupIcon, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
+				this.createTableColumn('', loc.defaultUserAndGroups, posixPermissionsNamesColumnWidth, azdata.DeclarativeDataType.string),
+				this.createTableColumn(loc.readHeader, `${loc.accessHeader} ${loc.readHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
+				this.createTableColumn(loc.writeHeader, `${loc.accessHeader} ${loc.writeHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
+				this.createTableColumn(loc.executeHeader, `${loc.accessHeader} ${loc.executeHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component)];
+			let namedUsersAndGroupsColumns = [
+				this.createTableColumn('', loc.userOrGroupIcon, 50, azdata.DeclarativeDataType.component),
+				this.createTableColumn(loc.namedUsersAndGroupsHeader, loc.namedUsersAndGroupsHeader, namedUsersAndGroupsPermissionsNamesColumnWidth, azdata.DeclarativeDataType.string),
+				this.createTableColumn(loc.readHeader, `${loc.accessHeader} ${loc.readHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
+				this.createTableColumn(loc.writeHeader, `${loc.accessHeader} ${loc.writeHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
+				this.createTableColumn(loc.executeHeader, `${loc.accessHeader} ${loc.executeHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component)];
+
+			// Additional columns that are only shown for directories
+			if (this.hdfsModel.fileStatus.type === HdfsFileType.Directory) {
+				posixPermissionsColumns = posixPermissionsColumns.concat([
+					this.createTableColumn(loc.readHeader, `${loc.defaultHeader} ${loc.readHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
+					this.createTableColumn(loc.writeHeader, `${loc.defaultHeader} ${loc.writeHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
+					this.createTableColumn(loc.executeHeader, `${loc.defaultHeader} ${loc.executeHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component)
+				]);
+				namedUsersAndGroupsColumns = namedUsersAndGroupsColumns.concat([
+					this.createTableColumn(loc.inheritDefaultsLabel, loc.inheritDefaultsLabel, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
+					this.createTableColumn(loc.readHeader, `${loc.defaultHeader} ${loc.readHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
+					this.createTableColumn(loc.writeHeader, `${loc.defaultHeader} ${loc.writeHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
+					this.createTableColumn(loc.executeHeader, `${loc.defaultHeader} ${loc.executeHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
+				]);
+			}
+			namedUsersAndGroupsColumns.push(this.createTableColumn('', loc.deleteTitle, permissionsDeleteColumnWidth, azdata.DeclarativeDataType.component));
+
+			const posixPermissionsTable = this.modelBuilder.declarativeTable()
+				.withProperties<azdata.DeclarativeTableProperties>(
+					{
+						columns: posixPermissionsColumns,
+						data: posixPermissionData
+					}).component();
+
+			this.posixPermissionsContainer.addItem(posixPermissionsTable, { CSSStyles: { 'margin-right': '12px' } });
+
+			this.namedUsersAndGroupsPermissionsContainer.clearItems();
+
+			const namedUsersAndGroupsData = permissionStatus.aclEntries.map(aclEntry => {
+				return this.createPermissionsTableRow(aclEntry, true/*includeDelete*/, this.hdfsModel.fileStatus.type === HdfsFileType.Directory/*includeInherit*/);
+			});
+
+			const namedUsersAndGroupsTable = this.modelBuilder.declarativeTable()
+				.withProperties<azdata.DeclarativeTableProperties>(
+					{
+						columns: namedUsersAndGroupsColumns,
+						data: namedUsersAndGroupsData
+					}).component();
+
+			this.namedUsersAndGroupsPermissionsContainer.addItem(namedUsersAndGroupsTable);
+
+			this.rootLoadingComponent.loading = false;
+
+			this.addUserOrGroupInput.focus();
 		});
-
-		const posixPermissionsNamesColumnWidth = 800 + (this.hdfsModel.fileStatus.type === HdfsFileType.Directory ? 0 : permissionsCheckboxColumnWidth * 3);
-		const namedUsersAndGroupsPermissionsNamesColumnWidth = 700 + (this.hdfsModel.fileStatus.type === HdfsFileType.Directory ? 0 : permissionsCheckboxColumnWidth * 3);
-
-		// Default set of columns that are always shown
-		let posixPermissionsColumns = [
-			this.createTableColumn('', loc.userOrGroupIcon, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
-			this.createTableColumn('', loc.defaultUserAndGroups, posixPermissionsNamesColumnWidth, azdata.DeclarativeDataType.string),
-			this.createTableColumn(loc.readHeader, `${loc.accessHeader} ${loc.readHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
-			this.createTableColumn(loc.writeHeader, `${loc.accessHeader} ${loc.writeHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
-			this.createTableColumn(loc.executeHeader, `${loc.accessHeader} ${loc.executeHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component)];
-		let namedUsersAndGroupsColumns = [
-			this.createTableColumn('', loc.userOrGroupIcon, 50, azdata.DeclarativeDataType.component),
-			this.createTableColumn(loc.namedUsersAndGroupsHeader, loc.namedUsersAndGroupsHeader, namedUsersAndGroupsPermissionsNamesColumnWidth, azdata.DeclarativeDataType.string),
-			this.createTableColumn(loc.readHeader, `${loc.accessHeader} ${loc.readHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
-			this.createTableColumn(loc.writeHeader, `${loc.accessHeader} ${loc.writeHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
-			this.createTableColumn(loc.executeHeader, `${loc.accessHeader} ${loc.executeHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component)];
-
-		// Additional columns that are only shown for directories
-		if (this.hdfsModel.fileStatus.type === HdfsFileType.Directory) {
-			posixPermissionsColumns = posixPermissionsColumns.concat([
-				this.createTableColumn(loc.readHeader, `${loc.defaultHeader} ${loc.readHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
-				this.createTableColumn(loc.writeHeader, `${loc.defaultHeader} ${loc.writeHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
-				this.createTableColumn(loc.executeHeader, `${loc.defaultHeader} ${loc.executeHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component)
-			]);
-			namedUsersAndGroupsColumns = namedUsersAndGroupsColumns.concat([
-				this.createTableColumn(loc.inheritDefaultsLabel, loc.inheritDefaultsLabel, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
-				this.createTableColumn(loc.readHeader, `${loc.defaultHeader} ${loc.readHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
-				this.createTableColumn(loc.writeHeader, `${loc.defaultHeader} ${loc.writeHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
-				this.createTableColumn(loc.executeHeader, `${loc.defaultHeader} ${loc.executeHeader}`, permissionsCheckboxColumnWidth, azdata.DeclarativeDataType.component),
-			]);
-		}
-		namedUsersAndGroupsColumns.push(this.createTableColumn('', loc.deleteTitle, permissionsDeleteColumnWidth, azdata.DeclarativeDataType.component));
-
-		const posixPermissionsTable = this.modelBuilder.declarativeTable()
-			.withProperties<azdata.DeclarativeTableProperties>(
-				{
-					columns: posixPermissionsColumns,
-					data: posixPermissionData
-				}).component();
-
-		this.posixPermissionsContainer.addItem(posixPermissionsTable, { CSSStyles: { 'margin-right': '12px' } });
-
-		this.namedUsersAndGroupsPermissionsContainer.clearItems();
-
-		const namedUsersAndGroupsData = permissionStatus.aclEntries.map(aclEntry => {
-			return this.createPermissionsTableRow(aclEntry, true/*includeDelete*/, this.hdfsModel.fileStatus.type === HdfsFileType.Directory/*includeInherit*/);
-		});
-
-		const namedUsersAndGroupsTable = this.modelBuilder.declarativeTable()
-			.withProperties<azdata.DeclarativeTableProperties>(
-				{
-					columns: namedUsersAndGroupsColumns,
-					data: namedUsersAndGroupsData
-				}).component();
-
-		this.namedUsersAndGroupsPermissionsContainer.addItem(namedUsersAndGroupsTable);
-
-		this.rootLoadingComponent.loading = false;
 	}
 
 	private createRadioButton(modelBuilder: azdata.ModelBuilder, label: string, name: string, aclEntryType: AclType): azdata.RadioButtonComponent {
@@ -582,6 +588,25 @@ export class ManageAccessDialog {
 		sectionHeaderContainer.addItem(rightSpacer, { flex: '0 0 auto' });
 
 		return sectionHeaderContainer;
+	}
+
+	/**
+	 * Runs the specified action when the component is initialized. If already initialized just runs
+	 * the action immediately.
+	 * @param action The action to be ran when the page is initialized
+	 */
+	protected eventuallyRunOnInitialized(action: () => void): void {
+		if (!this.viewInitialized) {
+			this.onViewInitializedEvent.event(() => {
+				try {
+					action();
+				} catch (error) {
+					console.error(`Unexpected error running onInitialized action for Manage Access dialog : ${error}`);
+				}
+			});
+		} else {
+			action();
+		}
 	}
 }
 
