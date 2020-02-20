@@ -101,10 +101,14 @@ export class SimpleTokenCache {
 
 	constructor(
 		private serviceName: string,
-		userStoragePath: string
+		userStoragePath: string,
+		forceFileStorage: boolean = false,
 	) {
 		this.serviceName = this.serviceName.replace(/-/g, '_');
-		let keytar = getSystemKeytar();
+		let keytar: Keytar;
+		if (forceFileStorage === false) {
+			keytar = getSystemKeytar();
+		}
 		if (!keytar) {
 			const message = localize('azure.noSystemKeychain', "System keychain is unavailable. Falling back to less secure filebased keychain.");
 			vscode.window.showErrorMessage(message);
