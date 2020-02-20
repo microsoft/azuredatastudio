@@ -2818,7 +2818,7 @@ export class InstallVSIXAction extends Action {
 
 	static readonly ID = 'workbench.extensions.action.installVSIX';
 	static readonly LABEL = localize('installVSIX', "Install from VSIX...");
-	static readonly AVAILABLE = !(product.disabledFeatures?.indexOf(InstallVSIXAction.ID) >= 0);  // {{SQL CARBON EDIT}} add available logic
+	static readonly AVAILABLE = !(product.disabledFeatures && product.disabledFeatures.indexOf(InstallVSIXAction.ID) >= 0);  // {{SQL CARBON EDIT}} add available logic
 
 	constructor(
 		id = InstallVSIXAction.ID,

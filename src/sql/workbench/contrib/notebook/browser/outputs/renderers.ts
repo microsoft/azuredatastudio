@@ -5,7 +5,7 @@
 
 import { default as AnsiUp } from 'ansi_up';
 import { IRenderMime } from 'sql/workbench/services/notebook/browser/outputs/renderMimeInterfaces';
-import { URLExt } from '../../common/models/url';
+import { URLExt } from 'sql/workbench/contrib/notebook/common/models/url';
 import { URI } from 'vs/base/common/uri';
 
 

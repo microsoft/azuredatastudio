@@ -42,8 +42,7 @@ export interface IExtension {
 	readonly latestVersion: string;
 	readonly description: string;
 	readonly url?: string;
-	// {{SQL CARBON EDIT}}
-	readonly downloadPage?: string;
+	readonly downloadPage?: string; // {{SQL CARBON EDIT}}
 	readonly repository?: string;
 	readonly iconUrl: string;
 	readonly iconUrlFallback: string;
