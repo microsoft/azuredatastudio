@@ -168,7 +168,6 @@ class DataResourceTable extends GridTableBase<any> {
 			this.element.appendChild(this._chartContainer);
 			this._chart.render(this._chartContainer);
 		}
-
 	}
 
 	public toggleChartVisibility(): void {

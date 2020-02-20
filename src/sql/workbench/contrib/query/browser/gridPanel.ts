@@ -366,7 +366,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.state = state;
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
-		this.container.className = 'grid-panel';
 
 		this.columns = this.resultSet.columnInfo.map((c, i) => {
 			let isLinked = c.isXml || c.isJson;
@@ -436,6 +435,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}
 
 		this.tableContainer = document.createElement('div');
+		this.tableContainer.className = 'grid-panel';
 		this.tableContainer.style.display = 'inline-block';
 		this.tableContainer.style.width = `calc(100% - ${ACTIONBAR_WIDTH}px)`;
 
