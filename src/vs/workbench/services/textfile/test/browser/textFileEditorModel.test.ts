@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { EncodingMode } from 'vs/workbench/common/editor';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
-import { ITextFileService, ModelState, snapshotToString } from 'vs/workbench/services/textfile/common/textfiles';
+import { ITextFileService, TextFileEditorModelState, snapshotToString } from 'vs/workbench/services/textfile/common/textfiles';
 import { createFileInput, TestFileService, TestTextFileService, workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { toResource } from 'vs/base/test/common/utils';
 import { TextFileEditorModelManager } from 'vs/workbench/services/textfile/common/textFileEditorModelManager';
@@ -100,7 +100,7 @@ suite('Files - TextFileEditorModel', () => {
 
 		model.textEditorModel!.setValue('bar');
 		assert.ok(getLastModifiedTime(model) <= Date.now());
-		assert.ok(model.hasState(ModelState.DIRTY));
+		assert.ok(model.hasState(TextFileEditorModelState.DIRTY));
 
 		assert.equal(accessor.workingCopyService.dirtyCount, 1);
 		assert.equal(accessor.workingCopyService.isDirty(model.resource), true);
@@ -116,11 +116,11 @@ suite('Files - TextFileEditorModel', () => {
 		});
 
 		const pendingSave = model.save();
-		assert.ok(model.hasState(ModelState.PENDING_SAVE));
+		assert.ok(model.hasState(TextFileEditorModelState.PENDING_SAVE));
 
 		await pendingSave;
 
-		assert.ok(model.hasState(ModelState.SAVED));
+		assert.ok(model.hasState(TextFileEditorModelState.SAVED));
 		assert.ok(!model.isDirty());
 		assert.ok(savedEvent);
 		assert.ok(workingCopyEvent);
@@ -169,11 +169,11 @@ suite('Files - TextFileEditorModel', () => {
 		accessor.fileService.writeShouldThrowError = new Error('failed to write');
 		try {
 			const pendingSave = model.save();
-			assert.ok(model.hasState(ModelState.PENDING_SAVE));
+			assert.ok(model.hasState(TextFileEditorModelState.PENDING_SAVE));
 
 			await pendingSave;
 
-			assert.ok(model.hasState(ModelState.ERROR));
+			assert.ok(model.hasState(TextFileEditorModelState.ERROR));
 			assert.ok(model.isDirty());
 			assert.ok(saveErrorEvent);
 
@@ -199,11 +199,11 @@ suite('Files - TextFileEditorModel', () => {
 		accessor.fileService.writeShouldThrowError = new FileOperationError('save conflict', FileOperationResult.FILE_MODIFIED_SINCE);
 		try {
 			const pendingSave = model.save();
-			assert.ok(model.hasState(ModelState.PENDING_SAVE));
+			assert.ok(model.hasState(TextFileEditorModelState.PENDING_SAVE));
 
 			await pendingSave;
 
-			assert.ok(model.hasState(ModelState.CONFLICT));
+			assert.ok(model.hasState(TextFileEditorModelState.CONFLICT));
 			assert.ok(model.isDirty());
 			assert.ok(saveErrorEvent);
 
@@ -273,7 +273,7 @@ suite('Files - TextFileEditorModel', () => {
 
 	test('Load does not trigger save', async function () {
 		const model = instantiationService.createInstance(TextFileEditorModel, toResource.call(this, '/path/index.txt'), 'utf8', undefined);
-		assert.ok(model.hasState(ModelState.SAVED));
+		assert.ok(model.hasState(TextFileEditorModelState.SAVED));
 
 		model.onDidSave(e => assert.fail());
 		model.onDidChangeDirty(e => assert.fail());
@@ -290,7 +290,7 @@ suite('Files - TextFileEditorModel', () => {
 		await model.load();
 		model.textEditorModel!.setValue('foo');
 		assert.ok(model.isDirty());
-		assert.ok(model.hasState(ModelState.DIRTY));
+		assert.ok(model.hasState(TextFileEditorModelState.DIRTY));
 
 		await model.load();
 		assert.ok(model.isDirty());
@@ -502,55 +502,98 @@ suite('Files - TextFileEditorModel', () => {
 			eventCounter++;
 		});
 
-		accessor.textFileService.saveParticipant = {
+		const participant = accessor.textFileService.files.addSaveParticipant({
 			participate: async model => {
 				assert.ok(model.isDirty());
 				model.textEditorModel!.setValue('bar');
 				assert.ok(model.isDirty());
 				eventCounter++;
 			}
-		};
+		});
 
 		await model.load();
 		model.textEditorModel!.setValue('foo');
 
 		await model.save();
-		model.dispose();
 		assert.equal(eventCounter, 2);
+
+		participant.dispose();
+		model.textEditorModel!.setValue('bar');
+
+		await model.save();
+		assert.equal(eventCounter, 3);
+
+		model.dispose();
+	});
+
+	test('Save Participant - skip', async function () {
+		let eventCounter = 0;
+		const model: TextFileEditorModel = instantiationService.createInstance(TextFileEditorModel, toResource.call(this, '/path/index_async.txt'), 'utf8', undefined);
+
+		const participant = accessor.textFileService.files.addSaveParticipant({
+			participate: async model => {
+				eventCounter++;
+			}
+		});
+
+		await model.load();
+		model.textEditorModel!.setValue('foo');
+
+		await model.save({ skipSaveParticipants: true });
+		assert.equal(eventCounter, 0);
+
+		participant.dispose();
+		model.dispose();
 	});
 
 	test('Save Participant, async participant', async function () {
+		let eventCounter = 0;
 		const model: TextFileEditorModel = instantiationService.createInstance(TextFileEditorModel, toResource.call(this, '/path/index_async.txt'), 'utf8', undefined);
 
-		accessor.textFileService.saveParticipant = {
-			participate: (model) => {
+		model.onDidSave(e => {
+			assert.ok(!model.isDirty());
+			eventCounter++;
+		});
+
+		const participant = accessor.textFileService.files.addSaveParticipant({
+			participate: model => {
+				assert.ok(model.isDirty());
+				model.textEditorModel!.setValue('bar');
+				assert.ok(model.isDirty());
+				eventCounter++;
+
 				return timeout(10);
 			}
-		};
+		});
 
 		await model.load();
 		model.textEditorModel!.setValue('foo');
 
 		const now = Date.now();
 		await model.save();
+		assert.equal(eventCounter, 2);
 		assert.ok(Date.now() - now >= 10);
+
 		model.dispose();
+		participant.dispose();
 	});
 
 	test('Save Participant, bad participant', async function () {
 		const model: TextFileEditorModel = instantiationService.createInstance(TextFileEditorModel, toResource.call(this, '/path/index_async.txt'), 'utf8', undefined);
 
-		accessor.textFileService.saveParticipant = {
+		const participant = accessor.textFileService.files.addSaveParticipant({
 			participate: async model => {
 				new Error('boom');
 			}
-		};
+		});
 
 		await model.load();
 		model.textEditorModel!.setValue('foo');
 
 		await model.save();
+
 		model.dispose();
+		participant.dispose();
 	});
 
 	test('Save Participant, participant cancelled when saved again', async function () {
@@ -558,12 +601,15 @@ suite('Files - TextFileEditorModel', () => {
 
 		let participations: boolean[] = [];
 
-		accessor.textFileService.saveParticipant = {
-			participate: async model => {
+		const participant = accessor.textFileService.files.addSaveParticipant({
+			participate: async (model, context, progress, token) => {
 				await timeout(10);
-				participations.push(true);
+
+				if (!token.isCancellationRequested) {
+					participations.push(true);
+				}
 			}
-		};
+		});
 
 		await model.load();
 
@@ -574,12 +620,16 @@ suite('Files - TextFileEditorModel', () => {
 		const p2 = model.save();
 
 		model.textEditorModel!.setValue('foo 2');
-		await model.save();
+		const p3 = model.save();
 
-		await p1;
-		await p2;
+		model.textEditorModel!.setValue('foo 3');
+		const p4 = model.save();
+
+		await Promise.all([p1, p2, p3, p4]);
 		assert.equal(participations.length, 1);
+
 		model.dispose();
+		participant.dispose();
 	});
 
 	test('Save Participant, calling save from within is unsupported but does not explode (sync save)', async function () {
@@ -602,7 +652,7 @@ suite('Files - TextFileEditorModel', () => {
 		let savePromise: Promise<boolean>;
 		let breakLoop = false;
 
-		accessor.textFileService.saveParticipant = {
+		const participant = accessor.textFileService.files.addSaveParticipant({
 			participate: async model => {
 				if (breakLoop) {
 					return;
@@ -618,12 +668,14 @@ suite('Files - TextFileEditorModel', () => {
 				// assert that this is the same promise as the outer one
 				assert.equal(savePromise, newSavePromise);
 			}
-		};
+		});
 
 		await model.load();
 		model.textEditorModel!.setValue('foo');
 
 		savePromise = model.save();
 		await savePromise;
+
+		participant.dispose();
 	}
 });

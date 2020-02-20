@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IGridInfo } from 'sql/workbench/contrib/grid/common/interfaces';
+import { IGridInfo } from 'sql/workbench/contrib/grid/browser/interfaces';
 import { DataService } from 'sql/workbench/services/query/common/dataService';
 
 import { localize } from 'vs/nls';

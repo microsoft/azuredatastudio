@@ -130,19 +130,19 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 	public async getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]> {
 		if (node.payload) {
-			let sessionId = await this.getOrCreateSession(viewId, node);
-			let requestHandle = this.nodeHandleMap.get(generateNodeMapKey(viewId, node)) || node.handle;
-			let treeNode = new TreeNode(undefined, undefined, undefined, requestHandle, undefined, undefined, undefined, undefined, undefined, undefined);
+			const sessionId = await this.getOrCreateSession(viewId, node);
+			const requestHandle = this.nodeHandleMap.get(generateNodeMapKey(viewId, node)) || node.handle;
+			const treeNode = new TreeNode(undefined, undefined, undefined, requestHandle, undefined, undefined, undefined, undefined, undefined, undefined);
 			treeNode.connection = new ConnectionProfile(this.capabilities, node.payload);
-			return this.oe.resolveTreeNodeChildren({
+			const childrenNodes = await this.oe.refreshTreeNode({
 				success: undefined,
 				sessionId,
 				rootNode: undefined,
 				errorMessage: undefined
-			}, treeNode).then(e => e.map(n => this.treeNodeToITreeItem(viewId, n, node)));
-		} else {
-			return Promise.resolve([]);
+			}, treeNode);
+			return childrenNodes.map(n => this.treeNodeToITreeItem(viewId, n, node));
 		}
+		return [];
 	}
 
 	private treeNodeToITreeItem(viewId: string, node: TreeNode, parentNode: ITreeItem): ITreeItem {

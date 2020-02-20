@@ -211,7 +211,7 @@ export abstract class NotebookInput extends EditorInput {
 	private _notebookFindModel: NotebookFindModel;
 
 	constructor(private _title: string,
-		private resource: URI,
+		private _resource: URI,
 		private _textInput: TextInput,
 		@ITextModelService private textModelService: ITextModelService,
 		@IInstantiationService private instantiationService: IInstantiationService,
@@ -219,7 +219,6 @@ export abstract class NotebookInput extends EditorInput {
 		@IExtensionService private extensionService: IExtensionService
 	) {
 		super();
-		this.resource = resource;
 		this._standardKernels = [];
 		this._providersLoaded = this.assignProviders();
 		this._notebookEditorOpenedTimestamp = Date.now();
@@ -286,12 +285,14 @@ export abstract class NotebookInput extends EditorInput {
 	}
 
 	async save(groupId: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+		this.updateModel();
 		let input = await this.textInput.save(groupId, options);
 		await this.setTrustForNewEditor(input);
 		return input;
 	}
 
 	async saveAs(group: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+		this.updateModel();
 		let input = await this.textInput.saveAs(group, options);
 		await this.setTrustForNewEditor(input);
 		return input;
@@ -299,8 +300,8 @@ export abstract class NotebookInput extends EditorInput {
 
 	private async setTrustForNewEditor(newInput: IEditorInput | undefined): Promise<void> {
 		let isTrusted = this._model.getNotebookModel().trustedMode;
-		if (isTrusted && newInput && newInput.getResource() !== this.getResource()) {
-			await this.notebookService.serializeNotebookStateChange(newInput.getResource(), NotebookChangeType.Saved, undefined, true);
+		if (isTrusted && newInput && newInput.resource !== this.resource) {
+			await this.notebookService.serializeNotebookStateChange(newInput.resource, NotebookChangeType.Saved, undefined, true);
 		}
 	}
 
@@ -337,8 +338,8 @@ export abstract class NotebookInput extends EditorInput {
 
 	public abstract getTypeId(): string;
 
-	getResource(): URI {
-		return this.resource;
+	get resource(): URI {
+		return this._resource;
 	}
 
 	public get untitledEditorModel(): IUntitledTextEditorModel {

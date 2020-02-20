@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { JobHistoryComponent } from 'sql/workbench/contrib/jobManagement/browser/jobHistory.component';
-import { IJobManagementService } from '../../../services/jobManagement/common/interfaces';
+import { IJobManagementService } from 'sql/workbench/services/jobManagement/common/interfaces';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { JobsViewComponent } from 'sql/workbench/contrib/jobManagement/browser/jobsView.component';
 import { AlertsViewComponent } from 'sql/workbench/contrib/jobManagement/browser/alertsView.component';
