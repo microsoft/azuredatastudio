@@ -34,7 +34,7 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 		@IEditorService private readonly editorService: IEditorService) { }
 
 	convertInput(activeEditor: IEditorInput): QueryEditorInput | undefined {
-		const queryResultsInput = this.instantiationService.createInstance(QueryResultsInput, activeEditor.getResource().toString(true));
+		const queryResultsInput = this.instantiationService.createInstance(QueryResultsInput, activeEditor.resource.toString(true));
 		let queryEditorInput: QueryEditorInput;
 		if (activeEditor instanceof FileEditorInput) {
 			queryEditorInput = this.instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput);
@@ -81,8 +81,8 @@ export class FileQueryEditorInputFactory implements IEditorInputFactory {
 		const factory = editorInputFactoryRegistry.getEditorInputFactory(FILE_EDITOR_INPUT_ID);
 		const fileEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as FileEditorInput;
 		// only successfully deserilize the file if the resource actually exists
-		if (this.fileService.exists(fileEditorInput.getResource())) {
-			const queryResultsInput = instantiationService.createInstance(QueryResultsInput, fileEditorInput.getResource().toString());
+		if (this.fileService.exists(fileEditorInput.resource)) {
+			const queryResultsInput = instantiationService.createInstance(QueryResultsInput, fileEditorInput.resource.toString());
 			return instantiationService.createInstance(FileQueryEditorInput, '', fileEditorInput, queryResultsInput);
 		} else {
 			fileEditorInput.dispose();
@@ -110,7 +110,7 @@ export class UntitledQueryEditorInputFactory implements IEditorInputFactory {
 	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): UntitledQueryEditorInput | undefined {
 		const factory = editorInputFactoryRegistry.getEditorInputFactory(UntitledTextEditorInput.ID);
 		const untitledEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as UntitledTextEditorInput;
-		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, untitledEditorInput.getResource().toString());
+		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, untitledEditorInput.resource.toString());
 		return instantiationService.createInstance(UntitledQueryEditorInput, '', untitledEditorInput, queryResultsInput);
 	}
 

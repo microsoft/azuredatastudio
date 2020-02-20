@@ -9,8 +9,8 @@ import { nb } from 'azdata';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
-import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/common/models/untitledNotebookInput';
-import { FileNotebookInput } from 'sql/workbench/contrib/notebook/common/models/fileNotebookInput';
+import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
+import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/fileNotebookInput';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { NodeStub, NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/stubs';
@@ -115,7 +115,7 @@ suite('Notebook Input', function (): void {
 		assert.strictEqual(untitledNotebookInput.untitledEditorModel, testModel);
 
 		// getResource
-		assert.strictEqual(untitledNotebookInput.getResource(), untitledUri);
+		assert.strictEqual(untitledNotebookInput.resource, untitledUri);
 
 		// Standard kernels
 		let testKernels = [{

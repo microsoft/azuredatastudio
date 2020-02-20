@@ -31,8 +31,8 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
 import { localize } from 'vs/nls';
 import { IFileService } from 'vs/platform/files/common/files';
-import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/common/models/untitledNotebookInput';
-import { FileNotebookInput } from 'sql/workbench/contrib/notebook/common/models/fileNotebookInput';
+import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
+import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/fileNotebookInput';
 import { find } from 'vs/base/common/arrays';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
