@@ -164,8 +164,11 @@ export abstract class AzureAuth {
 		if (!resource) {
 			return undefined;
 		}
-
-		const { accessToken } = await this.getCachedToken(account.key, resource);
+		const cachedTokens = await this.getCachedToken(account.key, resource);
+		if (!cachedTokens) {
+			return undefined;
+		}
+		const { accessToken } = cachedTokens;
 
 		const azureAccount = account as AzureAccount;
 
@@ -367,7 +370,7 @@ export abstract class AzureAuth {
 		}
 	}
 
-	protected async getCachedToken(account: azdata.AccountKey, resource: Resource): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken }> {
+	protected async getCachedToken(account: azdata.AccountKey, resource: Resource): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken } | undefined> {
 		let accessToken: AccessToken;
 		let refreshToken: RefreshToken;
 		try {
