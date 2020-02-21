@@ -192,10 +192,10 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	}
 
 	private layoutInputBox(): void {
-		if (isNumber(this.width)) {
+		if (this.width) {
 			this.inputElement.width = this.convertSizeToNumber(this.width);
 		}
-		if (isNumber(this.height)) {
+		if (this.height) {
 			this.inputElement.setHeight(this.convertSize(this.height));
 		}
 	}
