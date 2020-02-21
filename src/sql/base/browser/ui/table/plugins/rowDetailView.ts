@@ -71,7 +71,7 @@ export class RowDetailView<T extends Slick.SlickData> {
 		this._grid.getOptions().minRowBuffer = this._options.panelRows + 3;
 
 		this._handler
-			.subscribe(this._grid.onClick, (e: MouseEvent, args: Slick.OnClickEventArgs<T>) => this.handleClick(e, args))
+			.subscribe(this._grid.onClick, (e: DOMEvent, args: Slick.OnClickEventArgs<T>) => this.handleClick(e as MouseEvent, args))
 			.subscribe(this._grid.onSort, () => this.handleSort())
 			.subscribe(this._grid.onScroll, () => this.handleScroll());
 
