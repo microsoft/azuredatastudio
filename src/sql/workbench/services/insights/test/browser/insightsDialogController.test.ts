@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { InsightsDialogController } from 'sql/workbench/services/insights/browser/insightsDialogController';
-import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
+import QueryRunner, { IQueryMessage } from 'sql/workbench/services/query/common/queryRunner';
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
@@ -112,7 +112,7 @@ function getPrimedQueryRunner(data: string[][], columns: string[]): IPrimedQuery
 	const emitter = new Emitter<string>();
 	const querymock = Mock.ofType(QueryRunner, MockBehavior.Strict);
 	querymock.setup(x => x.onQueryEnd).returns(x => emitter.event);
-	querymock.setup(x => x.onMessage).returns(x => new Emitter<azdata.IResultMessage>().event);
+	querymock.setup(x => x.onMessage).returns(x => new Emitter<[IQueryMessage]>().event);
 	querymock.setup(x => x.batchSets).returns(x => {
 		return <Array<azdata.BatchSummary>>[
 			{

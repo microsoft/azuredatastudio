@@ -34,7 +34,11 @@ export interface IEditSessionReadyEvent {
 	message: string;
 }
 
-export interface IQueryMessage extends azdata.IResultMessage {
+export interface IQueryMessage {
+	batchId?: number;
+	isError: boolean;
+	time?: string;
+	message: string;
 	selection?: azdata.ISelectionData;
 }
 
@@ -58,8 +62,8 @@ export default class QueryRunner extends Disposable {
 	private _planXml = new Deferred<string>();
 	public get planXml(): Promise<string> { return this._planXml.promise; }
 
-	private _onMessage = this._register(new Emitter<IQueryMessage>());
-	public get onMessage(): Event<IQueryMessage> { return this._onMessage.event; } // this is the only way typemoq can moq this... needs investigation @todo anthonydresser 5/2/2019
+	private _onMessage = this._register(new Emitter<IQueryMessage[]>());
+	public get onMessage(): Event<IQueryMessage[]> { return this._onMessage.event; } // this is the only way typemoq can moq this... needs investigation @todo anthonydresser 5/2/2019
 
 	private _onResultSet = this._register(new Emitter<azdata.ResultSetSummary>());
 	public readonly onResultSet = this._onResultSet.event;
@@ -225,13 +229,13 @@ export default class QueryRunner extends Disposable {
 			error = error.message;
 		}
 		let message = nls.localize('query.ExecutionFailedError', "Execution failed due to an unexpected error: {0}\t{1}", eol, error);
-		this.handleMessage(<azdata.QueryExecuteMessageParams>{
+		this.handleMessage([<azdata.QueryExecuteMessageParams>{
 			ownerUri: this.uri,
 			message: {
 				isError: true,
 				message: message
 			}
-		});
+		}]);
 		this.handleQueryComplete(<azdata.QueryExecuteCompleteNotificationResult>{ ownerUri: this.uri });
 	}
 
@@ -267,7 +271,7 @@ export default class QueryRunner extends Disposable {
 		this._messages.push(message);
 
 		this._onQueryEnd.fire(timeStamp);
-		this._onMessage.fire(message);
+		this._onMessage.fire([message]);
 	}
 
 	/**
@@ -293,12 +297,12 @@ export default class QueryRunner extends Disposable {
 		let message = {
 			// account for index by 1
 			message: nls.localize('query.message.startQuery', "Started executing query at Line {0}", batch.selection.startLine + 1),
-			time: new Date(batch.executionStart).toLocaleTimeString(),
+			time: batch.executionStart,
 			selection: batch.selection,
 			isError: false
 		};
 		this._messages.push(message);
-		this._onMessage.fire(message);
+		this._onMessage.fire([message]);
 		this._onBatchStart.fire(batch);
 	}
 
@@ -403,13 +407,12 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Handle a Mssage from the service layer
 	 */
-	public handleMessage(obj: azdata.QueryExecuteMessageParams): void {
-		let message = obj.message;
-		message.time = new Date(message.time!).toLocaleTimeString();
-		this._messages.push(message);
+	public handleMessage(messagesObj: azdata.QueryExecuteMessageParams[]): void {
+		const messages = messagesObj.map(m => m.message);
+		this._messages.push(...messages);
 
 		// Send the message to the results pane
-		this._onMessage.fire(message);
+		this._onMessage.fire(messages);
 	}
 
 	/**
@@ -580,7 +583,7 @@ export default class QueryRunner extends Disposable {
 			};
 			this._messages.push(message);
 			// Send the message to the results pane
-			this._onMessage.fire(message);
+			this._onMessage.fire([message]);
 		}
 	}
 

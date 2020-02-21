@@ -28,6 +28,7 @@ import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { assign } from 'vs/base/common/objects';
 import { IConnectionService, IConnectionCompleteEvent, IConnectionChangedEvent } from 'sql/platform/connection/common/connectionService';
 import { Emitter } from 'vs/base/common/event';
+import { serializableToMap } from 'sql/base/common/map';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -496,8 +497,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	public $onResultSetUpdated(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
 		this._queryManagementService.onResultSetUpdated(resultSetInfo);
 	}
-	public $onQueryMessage(handle: number, message: azdata.QueryExecuteMessageParams): void {
-		this._queryManagementService.onMessage(message);
+	public $onQueryMessage(messages: [string, azdata.QueryExecuteMessageParams[]][]): void {
+		this._queryManagementService.onMessage(serializableToMap(messages));
 	}
 	public $onEditSessionReady(handle: number, ownerUri: string, success: boolean, message: string): void {
 		this._queryManagementService.onEditSessionReady(ownerUri, success, message);

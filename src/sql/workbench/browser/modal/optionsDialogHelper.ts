@@ -69,7 +69,7 @@ export function createOptionElement(option: azdata.ServiceOption, rowContainer: 
 
 export function getOptionValueAndCategoryValues(option: azdata.ServiceOption, options: { [optionName: string]: any }, possibleInputs: string[]): any {
 	let optionValue = option.defaultValue;
-	if (options[option.name]) {
+	if (options[option.name] !== undefined) {
 		// if the value type is boolean, the option value can be either boolean or string
 		if (option.valueType === ServiceOptionType.boolean) {
 			if (options[option.name] === true || options[option.name] === trueInputValue) {
