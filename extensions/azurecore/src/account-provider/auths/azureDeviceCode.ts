@@ -46,15 +46,12 @@ export class AzureDeviceCode extends AzureAuth {
 
 	private static readonly USER_FRIENDLY_NAME: string = localize('azure.azureDeviceCodeAuth', 'Azure Device Code');
 	private readonly pageTitle: string;
-	private readonly allScopes: string[] = [];
 	constructor(metadata: AzureAccountProviderMetadata,
 		tokenCache: SimpleTokenCache,
 		context: vscode.ExtensionContext) {
 		super(metadata, tokenCache, context, AzureAuthType.AuthCodeGrant, AzureDeviceCode.USER_FRIENDLY_NAME);
 		this.pageTitle = localize('addAccount', "Add {0} account", this.metadata.displayName);
 
-		this.resources.forEach(s => this.allScopes.push(...s.scopes));
-		this.allScopes.push(...this.scopes);
 	}
 
 	public async login(): Promise<AzureAccount | azdata.PromptFailedResult> {
@@ -62,7 +59,7 @@ export class AzureDeviceCode extends AzureAuth {
 			const uri = `${this.loginEndpointUrl}/${this.commonTenant}/oauth2/v2.0/devicecode`;
 			const postResult = await this.makePostRequest(uri, {
 				client_id: this.clientId,
-				scope: this.allScopes.join(' ')
+				scope: this.scopesString
 			});
 
 			const initialDeviceLogin: DeviceCodeLogin = postResult.data;
@@ -77,31 +74,22 @@ export class AzureDeviceCode extends AzureAuth {
 			let tenants: Tenant[];
 			let subscriptions: Subscription[];
 
-			for (const resource of this.resources) {
-				tokenClaims = this.getTokenClaims(finalDeviceLogin.access_token);
+			tokenClaims = this.getTokenClaims(finalDeviceLogin.access_token);
 
-				accessToken = {
-					token: finalDeviceLogin.access_token,
-					key: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name,
-					resource: resource.id
-				};
-				refreshToken = {
-					token: finalDeviceLogin.refresh_token,
-					key: accessToken.key,
-					resource: resource.id
-				};
+			accessToken = {
+				token: finalDeviceLogin.access_token,
+				key: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name,
+			};
+			refreshToken = {
+				token: finalDeviceLogin.refresh_token,
+				key: accessToken.key,
+			};
 
-				this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, resource, accessToken, refreshToken);
+			this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, accessToken, refreshToken);
 
 
-				switch (resource.id) {
-					case this.metadata.settings.armResource.id: {
-						tenants = await this.getTenants(accessToken);
-						subscriptions = await this.getSubscriptions(accessToken);
-						break;
-					}
-				}
-			}
+			tenants = await this.getTenants(accessToken);
+			subscriptions = await this.getSubscriptions(accessToken);
 
 			const account = await this.createAccount(tokenClaims, accessToken.key, tenants, subscriptions);
 			return account;

@@ -45,11 +45,6 @@ export interface Resource {
 	endpoint: string;
 
 	/**
-	 * List of scopes for resource
-	 */
-	scopes?: string[];
-
-	/**
 	 * Resource ID for azdata
 	 */
 	azureResourceId?: azdata.AzureResource
@@ -112,9 +107,6 @@ interface Settings {
 	 */
 	redirectUri?: string;
 
-	/**
-	 * List of authentication scopes
-	 */
 	scopes?: string[]
 }
 

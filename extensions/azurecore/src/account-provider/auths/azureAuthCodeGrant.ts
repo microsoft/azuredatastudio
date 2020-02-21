@@ -22,7 +22,6 @@ import {
 import {
 	AzureAccountProviderMetadata,
 	Tenant,
-	Resource,
 	AzureAuthType,
 	Subscription,
 	Deferred
@@ -70,7 +69,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		let codeVerifier: string;
 		let scopes: string;
 		{
-			scopes = this.scopes.join(' ');
+			scopes = this.scopesString;
 			codeVerifier = this.toBase64UrlEncoding(crypto.randomBytes(32).toString('base64'));
 			const state = `${serverPort},${encodeURIComponent(nonce)}`;
 			const codeChallenge = this.toBase64UrlEncoding(crypto.createHash('sha256').update(codeVerifier).digest('base64'));
@@ -86,46 +85,38 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		let accessToken: AccessToken;
 		let refreshToken: RefreshToken;
 
-		for (let resource of this.resources) {
-			try {
-				const { accessToken: at, refreshToken: rt, tokenClaims: tc } = await this.getTokenWithAuthCode(authenticatedCode, codeVerifier, this.redirectUri, resource);
-				tokenClaims = tc;
-				accessToken = at;
-				refreshToken = rt;
-			} catch (ex) {
-				if (ex.msg) {
-					vscode.window.showErrorMessage(ex.msg);
-				}
-				console.log(ex);
+		try {
+			const { accessToken: at, refreshToken: rt, tokenClaims: tc } = await this.getTokenWithAuthCode(authenticatedCode, codeVerifier, this.redirectUri);
+			tokenClaims = tc;
+			accessToken = at;
+			refreshToken = rt;
+		} catch (ex) {
+			if (ex.msg) {
+				vscode.window.showErrorMessage(ex.msg);
+			}
+			console.log(ex);
+		}
+
+		if (!accessToken) {
+			const msg = localize('azure.tokenFail', "Failure when retreiving tokens.");
+			authCompleteDeferred.reject(msg);
+			throw Error('Failure when retreiving tokens');
+		}
+
+		tenants = await this.getTenants(accessToken);
+		subscriptions = await this.getSubscriptions(accessToken);
+		try {
+			this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, accessToken, refreshToken);
+		} catch (ex) {
+			console.log(ex);
+			if (ex.msg) {
+				vscode.window.showErrorMessage(ex.msg);
+				authCompleteDeferred.reject(ex.msg);
+			} else {
+				authCompleteDeferred.reject('There was an issue when storing the cache.');
 			}
 
-			if (!accessToken) {
-				const msg = localize('azure.tokenFail', "Failure when retreiving tokens.");
-				authCompleteDeferred.reject(msg);
-				throw Error('Failure when retreiving tokens');
-			}
-
-			switch (resource.id) {
-				case this.metadata.settings.armResource.id: {
-					tenants = await this.getTenants(accessToken);
-					subscriptions = await this.getSubscriptions(accessToken);
-					break;
-				}
-			}
-
-			try {
-				this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, resource, accessToken, refreshToken);
-			} catch (ex) {
-				console.log(ex);
-				if (ex.msg) {
-					vscode.window.showErrorMessage(ex.msg);
-					authCompleteDeferred.reject(ex.msg);
-				} else {
-					authCompleteDeferred.reject('There was an issue when storing the cache.');
-				}
-
-				return { canceled: false } as azdata.PromptFailedResult;
-			}
+			return { canceled: false } as azdata.PromptFailedResult;
 		}
 		const account = this.createAccount(tokenClaims, accessToken.key, tenants, subscriptions);
 		authCompleteDeferred.resolve();
@@ -209,17 +200,16 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		});
 	}
 
-	private async getTokenWithAuthCode(authCode: string, codeVerifier: string, redirectUri: string, resource: Resource): Promise<TokenRefreshResponse | undefined> {
-		const scopes = [...this.metadata.settings.scopes, resource.scopes];
+	private async getTokenWithAuthCode(authCode: string, codeVerifier: string, redirectUri: string): Promise<TokenRefreshResponse | undefined> {
 		const postData = {
 			grant_type: 'authorization_code',
 			code: authCode,
 			client_id: this.clientId,
-			scope: scopes.join(' '),
+			scope: this.scopesString,
 			code_verifier: codeVerifier,
 			redirect_uri: redirectUri
 		};
 
-		return this.getToken(postData, postData.scope, resource);
+		return this.getToken(postData, postData.scope);
 	}
 }

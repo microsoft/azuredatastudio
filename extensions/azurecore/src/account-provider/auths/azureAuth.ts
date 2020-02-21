@@ -27,11 +27,6 @@ export interface AccountKey {
 	 * Account Key
 	 */
 	key: string
-
-	/**
-	 * Resource ID
-	 */
-	resource: string
 }
 
 export interface AccessToken extends AccountKey {
@@ -105,6 +100,7 @@ export abstract class AzureAuth {
 	protected readonly commonTenant: string;
 	protected readonly redirectUri: string;
 	protected readonly scopes: string[];
+	protected readonly scopesString: string;
 	protected readonly clientId: string;
 	protected readonly resources: Resource[];
 
@@ -120,9 +116,10 @@ export abstract class AzureAuth {
 		this.commonTenant = 'common';
 		this.redirectUri = this.metadata.settings.redirectUri;
 		this.clientId = this.metadata.settings.clientId;
-		this.scopes = this.metadata.settings.scopes;
+		this.resources = [this.metadata.settings.armResource, this.metadata.settings.sqlResource];
 
-		this.resources = [this.metadata.settings.armResource];
+		this.scopes = [...this.metadata.settings.scopes];
+		this.scopesString = this.scopes.join(' ');
 	}
 
 	public abstract async login(): Promise<AzureAccount | azdata.PromptFailedResult>;
@@ -131,24 +128,20 @@ export abstract class AzureAuth {
 
 
 	public async refreshAccess(account: azdata.Account): Promise<azdata.Account> {
-		const refreshTokens: RefreshToken[] = [];
-		for (const resource of this.resources) {
-			const response = await this.getCachedToken(account.key, resource);
-			if (!response) {
-				account.isStale = true;
-				return account;
-			}
+		const response = await this.getCachedToken(account.key);
+		if (!response) {
+			account.isStale = true;
+			return account;
+		}
 
-			const refreshToken = response.refreshToken;
-			if (!refreshToken || !refreshToken.key) {
-				account.isStale = true;
-				return account;
-			}
-			refreshTokens.push(refreshToken);
+		const refreshToken = response.refreshToken;
+		if (!refreshToken || !refreshToken.key) {
+			account.isStale = true;
+			return account;
 		}
 
 		try {
-			this.refreshAccessTokens(account, refreshTokens);
+			this.refreshAccessToken(account.key, refreshToken);
 		} catch (ex) {
 			if (ex.message) {
 				vscode.window.showErrorMessage(ex.message);
@@ -164,11 +157,12 @@ export abstract class AzureAuth {
 		if (!resource) {
 			return undefined;
 		}
-		const cachedTokens = await this.getCachedToken(account.key, resource);
+
+		let cachedTokens = await this.getCachedToken(account.key);
 		if (!cachedTokens) {
 			return undefined;
 		}
-		const { accessToken } = cachedTokens;
+		let { accessToken } = cachedTokens;
 
 		const azureAccount = account as AzureAccount;
 
@@ -177,7 +171,6 @@ export abstract class AzureAuth {
 			response[subscription.id] = {
 				token: accessToken.token,
 				key: accessToken.key,
-				resource: accessToken.resource,
 				tokenType: 'Bearer'
 			};
 		});
@@ -186,7 +179,6 @@ export abstract class AzureAuth {
 			response[tenant.id] = {
 				token: accessToken.token,
 				key: accessToken.key,
-				resource: accessToken.resource,
 				tokenType: 'Bearer'
 			};
 		});
@@ -283,7 +275,7 @@ export abstract class AzureAuth {
 		}
 	}
 
-	protected async getToken(postData: { [key: string]: string }, scope: string, resource: Resource): Promise<TokenRefreshResponse | undefined> {
+	protected async getToken(postData: { [key: string]: string }, scope: string): Promise<TokenRefreshResponse | undefined> {
 		try {
 			const tokenUrl = `${this.loginEndpointUrl}${this.commonTenant}/oauth2/v2.0/token`;
 
@@ -292,14 +284,12 @@ export abstract class AzureAuth {
 
 			const accessToken: AccessToken = {
 				token: tokenResponse.data.access_token,
-				key: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name,
-				resource: resource.id,
+				key: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name
 			};
 
 			const refreshToken: RefreshToken = {
 				token: tokenResponse.data.refresh_token,
-				key: accessToken.key,
-				resource: resource.id
+				key: accessToken.key
 			};
 
 			return { accessToken, refreshToken, tokenClaims };
@@ -320,29 +310,16 @@ export abstract class AzureAuth {
 		}
 	}
 
-	protected async refreshAccessTokens(account: azdata.Account, tokens: RefreshToken[]): Promise<void> {
-		for (let resource of this.resources) {
-			const properToken = tokens.find(t => t.resource === resource.id);
-			if (!properToken) {
-				account.isStale = true;
-				return;
-			}
-
-			this.refreshAccessToken(account.key, properToken, resource);
-		}
-	}
-
-	private async refreshAccessToken(account: azdata.AccountKey, rt: RefreshToken, resource: Resource): Promise<void> {
-		const scopes = [...this.metadata.settings.scopes, resource.scopes];
+	private async refreshAccessToken(account: azdata.AccountKey, rt: RefreshToken): Promise<void> {
 		const postData = {
 			grant_type: 'refresh_token',
 			refresh_token: rt.token,
 			client_id: this.clientId,
 			tenant: this.commonTenant,
-			scope: scopes.join(' ')
+			scope: this.scopesString
 		};
 
-		const { accessToken, refreshToken } = await this.getToken(postData, postData.scope, resource);
+		const { accessToken, refreshToken } = await this.getToken(postData, postData.scope);
 
 		if (!accessToken || !refreshToken) {
 			console.log('Access or refresh token were undefined');
@@ -350,11 +327,11 @@ export abstract class AzureAuth {
 			throw new Error(msg);
 		}
 
-		return this.setCachedToken(account, resource, accessToken, refreshToken);
+		return this.setCachedToken(account, accessToken, refreshToken);
 	}
 
 
-	protected async setCachedToken(account: azdata.AccountKey, resource: Resource, accessToken: AccessToken, refreshToken: RefreshToken): Promise<void> {
+	protected async setCachedToken(account: azdata.AccountKey, accessToken: AccessToken, refreshToken: RefreshToken): Promise<void> {
 		const msg = localize('azure.cacheErrorAdd', "Error when adding your account to the cache.");
 
 		if (!accessToken || !accessToken.token || !refreshToken.token || !accessToken.key) {
@@ -362,20 +339,20 @@ export abstract class AzureAuth {
 		}
 
 		try {
-			await this.tokenCache.saveCredential(`${account.accountId}_${resource.id}_access`, JSON.stringify(accessToken));
-			await this.tokenCache.saveCredential(`${account.accountId}_${resource.id}_refresh`, JSON.stringify(refreshToken));
+			await this.tokenCache.saveCredential(`${account.accountId}_access`, JSON.stringify(accessToken));
+			await this.tokenCache.saveCredential(`${account.accountId}_refresh`, JSON.stringify(refreshToken));
 		} catch (ex) {
 			console.error('Error when storing tokens.', ex);
 			throw new Error(msg);
 		}
 	}
 
-	protected async getCachedToken(account: azdata.AccountKey, resource: Resource): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken } | undefined> {
+	protected async getCachedToken(account: azdata.AccountKey): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken } | undefined> {
 		let accessToken: AccessToken;
 		let refreshToken: RefreshToken;
 		try {
-			accessToken = JSON.parse(await this.tokenCache.getCredential(`${account.accountId}_${resource.id}_access`));
-			refreshToken = JSON.parse(await this.tokenCache.getCredential(`${account.accountId}_${resource.id}_refresh`));
+			accessToken = JSON.parse(await this.tokenCache.getCredential(`${account.accountId}_access`));
+			refreshToken = JSON.parse(await this.tokenCache.getCredential(`${account.accountId}_refresh`));
 		} catch (ex) {
 			return undefined;
 		}
@@ -388,7 +365,7 @@ export abstract class AzureAuth {
 			return undefined;
 		}
 
-		if (!accessToken.token || !accessToken.key || !accessToken.resource) {
+		if (!accessToken.token || !accessToken.key) {
 			return undefined;
 		}
 

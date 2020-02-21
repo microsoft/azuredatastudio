@@ -21,30 +21,27 @@ const publicAzureSettings: ProviderSettings = {
 			graphResource: {
 				id: 'graph',
 				endpoint: 'https://graph.microsoft.com',
-				scopes: [
-					'User.Read'
-				],
 				azureResourceId: AzureResource.Graph
 			},
 			armResource: {
 				id: 'arm',
 				endpoint: 'https://management.azure.com',
-				scopes: [
-					'https://management.azure.com/user_impersonation'
-				],
 				azureResourceId: AzureResource.ResourceManagement
 			},
 			sqlResource: {
 				id: 'sql',
-				endpoint: 'https://database.windows.net'
+				endpoint: 'https://database.windows.net',
+				azureResourceId: AzureResource.Sql
 			},
 			ossRdbmsResource: {
 				id: 'ossrdbms',
-				endpoint: 'https://ossrdbms-aad.database.windows.net'
+				endpoint: 'https://ossrdbms-aad.database.windows.net',
+				azureResourceId: AzureResource.OssRdbms
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
+				'https://management.azure.com/user_impersonation',
 			]
 		}
 	}
@@ -63,30 +60,27 @@ const usGovAzureSettings: ProviderSettings = {
 			graphResource: {
 				id: 'graph',
 				endpoint: 'https://graph.windows.net',
-				scopes: [
-					'User.Read'
-				],
 				azureResourceId: AzureResource.Graph
 			},
 			armResource: {
 				id: 'arm',
 				endpoint: 'https://management.usgovcloudapi.net',
-				scopes: [
-					'https://management.usgovcloudapi.net/user_impersonation'
-				],
 				azureResourceId: AzureResource.ResourceManagement
 			},
 			sqlResource: {
 				id: 'sql',
-				endpoint: 'https://database.usgovcloudapi.net'
+				endpoint: 'https://database.usgovcloudapi.net',
+				azureResourceId: AzureResource.Sql
 			},
 			ossRdbmsResource: {
 				id: 'ossrdbms',
-				endpoint: 'https://ossrdbms-aad.database.usgovcloudapi.net'
+				endpoint: 'https://ossrdbms-aad.database.usgovcloudapi.net',
+				azureResourceId: AzureResource.OssRdbms
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
+				'https://management.usgovcloudapi.net/user_impersonation'
 			]
 		}
 	}
