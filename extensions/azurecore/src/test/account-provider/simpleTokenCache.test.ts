@@ -34,6 +34,6 @@ describe('AccountProvider.SimpleTokenCache', function (): void {
 		should(clearResult).not.be.false('TokenResponse not cleared correctly');
 
 		const results = await tokenCache.getCredential(tokenCacheKey);
-		should(results).equal(null);
+		should(results).equal(undefined);
 	});
 });
