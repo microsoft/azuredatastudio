@@ -78,9 +78,7 @@ class ConnectionService extends Disposable implements IConnectionService {
 
 	registerProvider(provider: IConnectionProvider): void {
 		if (!this.knownProviders.has(provider.id)) {
-			this.logService.warn('Unkown provider was registered', provider.id);
-			this.knownProviders.add(provider.id);
-			this.connectionProviders.set(provider.id, { provider: new Deferred<IConnectionProvider>() });
+			throw new Error(`Unknown provider registered: ${provider.id}`);
 		}
 		const disposable = combinedDisposable(
 			provider.onDidConnectionChanged(e => this.onConnectionChanged(e)),
