@@ -15,9 +15,9 @@ import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 import { azureResource } from '../../azure-resource';
 
-export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
-	private static readonly containerId = 'azure.resource.providers.sqlInstanceContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.sqlInstanceContainerLabel', "Azure SQL DB managed instance");
+export class SqlInstanceArcTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
+	private static readonly containerId = 'azure.resource.providers.sqlInstanceArcContainer';
+	private static readonly containerLabel = localize('azure.resource.providers.sqlInstanceArcContainerLabel', "Azure SQL DB managed instance – Azure Arc");
 
 	public constructor(
 		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
@@ -64,8 +64,8 @@ export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<az
 			subscription: undefined,
 			tenantId: undefined,
 			treeItem: {
-				id: SqlInstanceTreeDataProvider.containerId,
-				label: SqlInstanceTreeDataProvider.containerLabel,
+				id: SqlInstanceArcTreeDataProvider.containerId,
+				label: SqlInstanceArcTreeDataProvider.containerLabel,
 				iconPath: {
 					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
 					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')

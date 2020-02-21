@@ -15,9 +15,9 @@ import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 import { azureResource } from '../../azure-resource';
 
-export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
-	private static readonly containerId = 'azure.resource.providers.sqlInstanceContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.sqlInstanceContainerLabel', "Azure SQL DB managed instance");
+export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
+	private static readonly containerId = 'azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainer';
+	private static readonly containerLabel = localize('azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel', "PostgreSQL Hyperscale - Azure Arc");
 
 	public constructor(
 		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
@@ -30,11 +30,12 @@ export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<az
 
 	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer): TreeItem {
 		return {
-			id: `sqlInstance_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
+			id: `databaseServer_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: databaseServer.name,
+			// TODO: should get PGSQL-specific icons (also needed in that extension)
 			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_instance_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/sql_instance.svg')
+				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
+				light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
 			},
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServer,
@@ -43,17 +44,20 @@ export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<az
 				connectionName: undefined,
 				serverName: databaseServer.fullName,
 				databaseName: databaseServer.defaultDatabaseName,
-				userName: databaseServer.loginName,
+				userName: `${databaseServer.loginName}@${databaseServer.fullName}`,
 				password: '',
 				authenticationType: 'SqlLogin',
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: 'MSSQL',
+				providerName: 'PGSQL',
 				saveProfile: false,
-				options: {}
+				options: {
+					// Set default for SSL or will get error complaining about it not being set correctly
+					'sslmode': 'require'
+				}
 			},
-			childProvider: 'MSSQL',
+			childProvider: 'PGSQL',
 			type: ExtensionNodeType.Server
 		};
 	}
@@ -64,8 +68,8 @@ export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<az
 			subscription: undefined,
 			tenantId: undefined,
 			treeItem: {
-				id: SqlInstanceTreeDataProvider.containerId,
-				label: SqlInstanceTreeDataProvider.containerLabel,
+				id: PostgresServerArcTreeDataProvider.containerId,
+				label: PostgresServerArcTreeDataProvider.containerLabel,
 				iconPath: {
 					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
 					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')

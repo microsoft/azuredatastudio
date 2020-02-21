@@ -31,6 +31,11 @@ import { SqlInstanceResourceService } from './azureResource/providers/sqlinstanc
 import { SqlInstanceProvider } from './azureResource/providers/sqlinstance/sqlInstanceProvider';
 import { PostgresServerProvider } from './azureResource/providers/postgresServer/postgresServerProvider';
 import { PostgresServerService } from './azureResource/providers/postgresServer/postgresServerService';
+import { SqlInstanceArcProvider } from './azureResource/providers/sqlinstanceArc/sqlInstanceArcProvider';
+import { SqlInstanceArcResourceService } from './azureResource/providers/sqlinstanceArc/sqlInstanceArcService';
+import { PostgresServerArcProvider } from './azureResource/providers/postgresArcServer/postgresServerProvider';
+import { PostgresServerArcService } from './azureResource/providers/postgresArcServer/postgresServerService';
+import { azureResource } from './azureResource/azure-resource';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -76,12 +81,20 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	return {
 		provideResources() {
-			return [
+			const arcFeaturedEnabled = apiWrapper.getExtensionConfiguration().get('enableArcFeatures');
+			const providers: azureResource.IAzureResourceProvider[] = [
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), apiWrapper, extensionContext),
 				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext),
 				new SqlInstanceProvider(new SqlInstanceResourceService(), apiWrapper, extensionContext),
-				new PostgresServerProvider(new PostgresServerService(), apiWrapper, extensionContext)
+				new PostgresServerProvider(new PostgresServerService(), apiWrapper, extensionContext),
 			];
+			if (arcFeaturedEnabled) {
+				providers.push(
+					new SqlInstanceArcProvider(new SqlInstanceArcResourceService(), apiWrapper, extensionContext),
+					new PostgresServerArcProvider(new PostgresServerArcService(), apiWrapper, extensionContext)
+				);
+			}
+			return providers;
 		}
 	};
 }
