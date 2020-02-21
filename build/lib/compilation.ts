@@ -88,7 +88,7 @@ export function compileTask(src: string, out: string, build: boolean): () => Nod
 			generator.execute();
 		}
 
-		generateGitHubAuthConfig();
+		// generateGitHubAuthConfig();
 
 		return srcPipe
 			.pipe(generator.stream)
