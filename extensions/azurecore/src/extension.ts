@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import * as constants from './constants';
 
 import { AppContext } from './appContext';
 import { ApiWrapper } from './apiWrapper';
@@ -36,6 +35,7 @@ import { SqlInstanceArcResourceService } from './azureResource/providers/sqlinst
 import { PostgresServerArcProvider } from './azureResource/providers/postgresArcServer/postgresServerProvider';
 import { PostgresServerArcService } from './azureResource/providers/postgresArcServer/postgresServerService';
 import { azureResource } from './azureResource/azure-resource';
+import * as loc from './localizedConstants';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -77,6 +77,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
 	pushDisposable(apiWrapper.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
+	pushDisposable(apiWrapper.onDidChangeConfiguration(e => onDidChangeConfiguration(e, apiWrapper), this));
 	registerAzureResourceCommands(appContext, azureResourceTree);
 
 	return {
@@ -102,7 +103,7 @@ export async function activate(context: vscode.ExtensionContext) {
 // Create the folder for storing the token caches
 async function findOrMakeStoragePath() {
 	let defaultLogLocation = getDefaultLogLocation();
-	let storagePath = path.join(defaultLogLocation, constants.extensionName);
+	let storagePath = path.join(defaultLogLocation, loc.extensionName);
 
 	try {
 		await fs.mkdir(defaultLogLocation, { recursive: true });
@@ -144,4 +145,13 @@ function registerAzureServices(appContext: AppContext): void {
 	appContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, new AzureResourceSubscriptionService());
 	appContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, new AzureResourceSubscriptionFilterService(new AzureResourceCacheService(extensionContext)));
 	appContext.registerService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService, new AzureResourceTenantService());
+}
+
+async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent, apiWrapper: ApiWrapper): Promise<void> {
+	if (e.affectsConfiguration('azure.enableArcFeatures')) {
+		const response = await apiWrapper.showInformationMessage(loc.requiresReload, loc.reload);
+		if (response === loc.reload) {
+			await apiWrapper.executeCommand('workbench.action.reloadWindow');
+		}
+	}
 }
