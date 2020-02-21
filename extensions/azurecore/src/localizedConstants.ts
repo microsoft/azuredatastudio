@@ -6,7 +6,7 @@
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-export const extensionName = localize('extensionName', "Azure Accounts");
+export const extensionName = localize('azurecore.extensionName', "Azure Accounts");
 
-export const requiresReload = localize('requiresReload', "Modifying this setting requires reloading the window for all changes to take effect.");
-export const reload = localize('reload', "Reload");
+export const requiresReload = localize('azurecore.requiresReload', "Modifying this setting requires reloading the window for all changes to take effect.");
+export const reload = localize('azurecore.reload', "Reload");
