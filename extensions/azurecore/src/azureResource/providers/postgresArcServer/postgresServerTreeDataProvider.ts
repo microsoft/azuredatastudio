@@ -32,7 +32,6 @@ export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderB
 		return {
 			id: `databaseServer_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: databaseServer.name,
-			// TODO: should get PGSQL-specific icons (also needed in that extension)
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
