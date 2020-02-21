@@ -446,7 +446,6 @@ import 'sql/workbench/contrib/dashboard/browser/containers/dashboardModelViewCon
 import 'sql/workbench/contrib/dashboard/browser/core/dashboardTab.contribution';
 import 'sql/workbench/contrib/dashboard/browser/core/dashboardToolbarHomeAction.contribution';
 
-
 // Model-based Views
 import 'sql/workbench/contrib/modelView/browser/components.contribution';
 import 'sql/workbench/browser/modelComponents/modelViewEditor.contribution';

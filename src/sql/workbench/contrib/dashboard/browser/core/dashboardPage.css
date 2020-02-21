@@ -32,6 +32,7 @@ dashboard-page .actions-container .action-item .action-label{
 
 dashboard-page .actions-container .taskbarSeparator {
 	height: 14px;
+	margin-right: 16px;
 }
 
 dashboard-page .editor-toolbar {
