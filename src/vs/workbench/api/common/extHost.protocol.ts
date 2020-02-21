@@ -52,7 +52,7 @@ import { TunnelOptions } from 'vs/platform/remote/common/tunnel';
 import { Timeline, TimelineChangeEvent, TimelineCursor, TimelineProviderDescriptor } from 'vs/workbench/contrib/timeline/common/timeline';
 import { revive } from 'vs/base/common/marshalling';
 import { CallHierarchyItem } from 'vs/workbench/contrib/callHierarchy/common/callHierarchy';
-import { Serialized } from 'vs/base/common/types';
+import { Dto } from 'vs/base/common/types';
 
 // {{SQL CARBON EDIT}}
 import { ITreeItem as sqlITreeItem } from 'sql/workbench/common/views';
@@ -1196,7 +1196,7 @@ export interface ICodeLensDto {
 	command?: ICommandDto;
 }
 
-export type ICallHierarchyItemDto = Serialized<CallHierarchyItem>;
+export type ICallHierarchyItemDto = Dto<CallHierarchyItem>;
 
 export interface IIncomingCallDto {
 	from: ICallHierarchyItemDto;
