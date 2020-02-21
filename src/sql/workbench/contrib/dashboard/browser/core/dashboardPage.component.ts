@@ -14,7 +14,7 @@ import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/w
 import { WidgetConfig, TabConfig, TabSettingConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { IPropertiesConfig } from 'sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution';
 import { PanelComponent, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
-import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
+import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab, IDashboardToolbarHomeAction } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 import { TabComponent, TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { AngularEventType, IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { DashboardTab, IConfigModifierCollection } from 'sql/workbench/contrib/dashboard/browser/core/interfaces';
@@ -156,10 +156,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		const homeToolbarConfig = this.dashboardService.getSettings<Array<WidgetConfig>>([this.context, 'widgets'].join('.'))[0].widget['tasks-widget'];
 
 		let content = this.getToolbarContent(homeToolbarConfig);
-		if (content.length > 0) {
-			let separator: HTMLElement = Taskbar.createTaskbarSeparator();
-			content.push({ element: separator });
-		}
+
+		// get extension actions contributed to the home toolbar
+		content = content.concat(this.getToolbarContent(dashboardRegistry.toolbarHomeActions));
 
 		const editAction = new EditDashboardAction(this.enableEdit, this);
 		const refreshAction = new RefreshWidgetAction(this.refresh, this);
@@ -189,7 +188,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this.toolbar.setContent(content);
 	}
 
-	private getToolbarContent(toolbarTasks: WidgetConfig): ITaskbarContent[] {
+	private getToolbarContent(toolbarTasks: WidgetConfig | IDashboardToolbarHomeAction[]): ITaskbarContent[] {
 		let tasks = TaskRegistry.getTasks();
 
 		if (types.isArray(toolbarTasks) && toolbarTasks.length > 0) {
@@ -205,8 +204,14 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				}
 				return undefined;
 			}).filter(i => !!i);
+		} else {
+			return [];
 		}
 
+		return this.convertTasksToToolbarContent(tasks);
+	}
+
+	private convertTasksToToolbarContent(tasks: string[]): ITaskbarContent[] {
 		let _tasks = tasks.map(i => MenuRegistry.getCommand(i)).filter(v => !!v);
 
 		let toolbarActions = [];
@@ -219,6 +224,11 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		toolbarActions.forEach(a => {
 			content.push({ action: a });
 		});
+
+		if (content.length > 0) {
+			let separator: HTMLElement = Taskbar.createTaskbarSeparator();
+			content.push({ element: separator });
+		}
 
 		return content;
 	}
