@@ -325,6 +325,11 @@ export interface IEditorOptions {
 	 */
 	scrollPredominantAxis?: boolean;
 	/**
+	 * Enable that the selection with the mouse and keys is doing column selection.
+	 * Defaults to false.
+	 */
+	columnSelection?: boolean;
+	/**
 	 * The modifier to be used to add multiple cursors with the mouse.
 	 * Defaults to 'alt'
 	 */
@@ -3302,6 +3307,7 @@ export const enum EditorOption {
 	autoSurround,
 	codeLens,
 	colorDecorators,
+	columnSelection,
 	comments,
 	contextmenu,
 	copyWithSyntaxHighlighting,
@@ -3525,6 +3531,10 @@ export const EditorOptions = {
 	colorDecorators: register(new EditorBooleanOption(
 		EditorOption.colorDecorators, 'colorDecorators', true,
 		{ description: nls.localize('colorDecorators', "Controls whether the editor should render the inline color decorators and color picker.") }
+	)),
+	columnSelection: register(new EditorBooleanOption(
+		EditorOption.columnSelection, 'columnSelection', false,
+		{ description: nls.localize('columnSelection', "Enable that the selection with the mouse and keys is doing column selection.") }
 	)),
 	comments: register(new EditorComments()),
 	contextmenu: register(new EditorBooleanOption(
