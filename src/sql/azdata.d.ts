@@ -553,9 +553,9 @@ declare module 'azdata' {
 
 		specialValueType: ConnectionOptionSpecialType;
 
-		defaultValue: string;
+		defaultValue?: string;
 
-		categoryValues: CategoryValue[];
+		categoryValues?: CategoryValue[];
 
 		isIdentity: boolean;
 

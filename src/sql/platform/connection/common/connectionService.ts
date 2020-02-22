@@ -143,7 +143,7 @@ class Connection extends Disposable implements IConnection {
 	}
 
 	public async connect(): Promise<IConnectionCompleteEvent> {
-		switch(this.state) {
+		switch (this.state) {
 			case ConnectionState.CONNECTED:
 				throw new Error('Already connected'); // not sure what to do here; callers should really check state first
 			case ConnectionState.CONNECTING:
@@ -165,7 +165,7 @@ class Connection extends Disposable implements IConnection {
 	}
 }
 
-class ConnectionService extends Disposable implements IConnectionService {
+export class ConnectionService extends Disposable implements IConnectionService {
 	_serviceBrand: undefined;
 
 	private readonly knownProviders = new Set<string>(); // providers we know to exist but might not have registed yet
