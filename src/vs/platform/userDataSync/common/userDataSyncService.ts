@@ -41,6 +41,10 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 	private _onDidChangeConflicts: Emitter<SyncSource[]> = this._register(new Emitter<SyncSource[]>());
 	readonly onDidChangeConflicts: Event<SyncSource[]> = this._onDidChangeConflicts.event;
 
+	private _syncErrors: [SyncSource, UserDataSyncError][] = [];
+	private _onSyncErrors: Emitter<[SyncSource, UserDataSyncError][]> = this._register(new Emitter<[SyncSource, UserDataSyncError][]>());
+	readonly onSyncErrors: Event<[SyncSource, UserDataSyncError][]> = this._onSyncErrors.event;
+
 	private _lastSyncTime: number | undefined = undefined;
 	get lastSyncTime(): number | undefined { return this._lastSyncTime; }
 	private _onDidChangeLastSyncTime: Emitter<number> = this._register(new Emitter<number>());
@@ -82,6 +86,7 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 				this.handleSyncError(e, synchroniser.source);
 			}
 		}
+		this.updateLastSyncTime();
 	}
 
 	async push(): Promise<void> {
@@ -93,12 +98,14 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 				this.handleSyncError(e, synchroniser.source);
 			}
 		}
+		this.updateLastSyncTime();
 	}
 
 	async sync(): Promise<void> {
 		await this.checkEnablement();
 
 		const startTime = new Date().getTime();
+		this._syncErrors = [];
 		try {
 			this.logService.trace('Sync started.');
 			if (this.status !== SyncStatus.HasConflicts) {
@@ -124,6 +131,7 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 					await synchroniser.sync(manifest && manifest.latest ? manifest.latest[synchroniser.resourceKey] : undefined);
 				} catch (e) {
 					this.handleSyncError(e, synchroniser.source);
+					this._syncErrors.push([synchroniser.source, UserDataSyncError.toUserDataSyncError(e)]);
 				}
 			}
 
@@ -138,9 +146,11 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 			}
 
 			this.logService.info(`Sync done. Took ${new Date().getTime() - startTime}ms`);
+			this.updateLastSyncTime();
 
 		} finally {
 			this.updateStatus();
+			this._onSyncErrors.fire(this._syncErrors);
 		}
 	}
 
@@ -239,8 +249,8 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 		if (this._status !== status) {
 			this._status = status;
 			this._onDidChangeStatus.fire(status);
-			if (oldStatus !== SyncStatus.Uninitialized && this.status === SyncStatus.Idle) {
-				this.updateLastSyncTime(new Date().getTime());
+			if (oldStatus === SyncStatus.HasConflicts) {
+				this.updateLastSyncTime();
 			}
 		}
 	}
@@ -268,11 +278,11 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 		return SyncStatus.Idle;
 	}
 
-	private updateLastSyncTime(lastSyncTime: number): void {
-		if (this._lastSyncTime !== lastSyncTime) {
-			this._lastSyncTime = lastSyncTime;
-			this.storageService.store(LAST_SYNC_TIME_KEY, lastSyncTime, StorageScope.GLOBAL);
-			this._onDidChangeLastSyncTime.fire(lastSyncTime);
+	private updateLastSyncTime(): void {
+		if (this.status === SyncStatus.Idle) {
+			this._lastSyncTime = new Date().getTime();
+			this.storageService.store(LAST_SYNC_TIME_KEY, this._lastSyncTime, StorageScope.GLOBAL);
+			this._onDidChangeLastSyncTime.fire(this._lastSyncTime);
 		}
 	}
 

@@ -34,7 +34,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { TreeResourceNavigator, WorkbenchObjectTree, getSelectionKeyboardEvent } from 'vs/platform/list/browser/listService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IProgressService, IProgressStep, IProgress } from 'vs/platform/progress/common/progress';
-import { IPatternInfo, ISearchComplete, ISearchConfiguration, ISearchConfigurationProperties, ITextQuery, VIEW_ID, SearchSortOrder } from 'vs/workbench/services/search/common/search';
+import { IPatternInfo, ISearchComplete, ISearchConfiguration, ISearchConfigurationProperties, ITextQuery, VIEW_ID, SearchSortOrder, SearchCompletionExitCode } from 'vs/workbench/services/search/common/search';
 import { ISearchHistoryService, ISearchHistoryValues } from 'vs/workbench/contrib/search/common/searchHistoryService';
 import { diffInserted, diffInsertedOutline, diffRemoved, diffRemovedOutline, editorFindMatchHighlight, editorFindMatchHighlightBorder, listActiveSelectionForeground, foreground } from 'vs/platform/theme/common/colorRegistry';
 import { ICssStyleCollector, ITheme, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
@@ -67,6 +67,7 @@ import { Color, RGBA } from 'vs/base/common/color';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { OpenSearchEditorAction, createEditorFromSearchResult } from 'vs/workbench/contrib/searchEditor/browser/searchEditorActions';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 const $ = dom.$;
 
@@ -173,9 +174,10 @@ export class SearchView extends ViewPane {
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IStorageService storageService: IStorageService,
 		@IOpenerService openerService: IOpenerService,
+		@ITelemetryService telemetryService: ITelemetryService,
 	) {
 
-		super({ ...options, id: VIEW_ID, ariaHeaderLabel: nls.localize('searchView', "Search") }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService);
+		super({ ...options, id: VIEW_ID, ariaHeaderLabel: nls.localize('searchView', "Search") }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
 
 		this.container = dom.$('.search-view');
 
@@ -231,13 +233,8 @@ export class SearchView extends ViewPane {
 
 		this.actions = [
 			this._register(this.instantiationService.createInstance(ClearSearchResultsAction, ClearSearchResultsAction.ID, ClearSearchResultsAction.LABEL)),
+			this._register(this.instantiationService.createInstance(OpenSearchEditorAction, OpenSearchEditorAction.ID, OpenSearchEditorAction.LABEL))
 		];
-
-		if (this.searchConfig.enableSearchEditorPreview) {
-			this.actions.push(
-				this._register(this.instantiationService.createInstance(OpenSearchEditorAction, OpenSearchEditorAction.ID, OpenSearchEditorAction.LABEL))
-			);
-		}
 
 		this.refreshAction = this._register(this.instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL));
 		this.cancelAction = this._register(this.instantiationService.createInstance(CancelSearchAction, CancelSearchAction.ID, CancelSearchAction.LABEL));
@@ -877,7 +874,6 @@ export class SearchView extends ViewPane {
 				this.searchWidget.setValue(selectedText);
 				this.pauseSearching = false;
 				updatedText = true;
-				if (this.searchConfig.searchOnType) { this.triggerQueryChange(); }
 			}
 		}
 
@@ -1346,7 +1342,7 @@ export class SearchView extends ViewPane {
 			this.inputPatternIncludes.onSearchSubmit();
 		});
 
-		this.viewModel.cancelSearch();
+		this.viewModel.cancelSearch(true);
 
 		this.currentSearchQ = this.currentSearchQ
 			.then(() => this.doSearch(query, excludePatternText, includePatternText, triggeredOnType))
@@ -1390,6 +1386,10 @@ export class SearchView extends ViewPane {
 
 			this.updateActions();
 			const hasResults = !this.viewModel.searchResult.isEmpty();
+
+			if (completed?.exit === SearchCompletionExitCode.NewSearchStarted) {
+				return;
+			}
 
 			if (completed && completed.limitHit) {
 				this.searchWidget.searchInput.showMessage({
@@ -1556,23 +1556,19 @@ export class SearchView extends ViewPane {
 				resultMsg += nls.localize('useIgnoresAndExcludesDisabled', " - exclude settings and ignore files are disabled");
 			}
 
-			if (this.searchConfig.enableSearchEditorPreview) {
-				dom.append(messageEl, $('span', undefined, resultMsg + ' - '));
-				const span = dom.append(messageEl, $('span'));
-				const openInEditorLink = dom.append(span, $('a.pointer.prominent', undefined, nls.localize('openInEditor.message', "Open in editor")));
+			dom.append(messageEl, $('span', undefined, resultMsg + ' - '));
+			const span = dom.append(messageEl, $('span'));
+			const openInEditorLink = dom.append(span, $('a.pointer.prominent', undefined, nls.localize('openInEditor.message', "Open in editor")));
 
-				openInEditorLink.title = appendKeyBindingLabel(
-					nls.localize('openInEditor.tooltip', "Copy current search results to an editor"),
-					this.keybindingService.lookupKeybinding(Constants.OpenInEditorCommandId), this.keybindingService);
+			openInEditorLink.title = appendKeyBindingLabel(
+				nls.localize('openInEditor.tooltip', "Copy current search results to an editor"),
+				this.keybindingService.lookupKeybinding(Constants.OpenInEditorCommandId), this.keybindingService);
 
-				this.messageDisposables.push(dom.addDisposableListener(openInEditorLink, dom.EventType.CLICK, (e: MouseEvent) => {
-					dom.EventHelper.stop(e, false);
-					this.instantiationService.invokeFunction(createEditorFromSearchResult, this.searchResult, this.searchIncludePattern.getValue(), this.searchExcludePattern.getValue());
-				}));
+			this.messageDisposables.push(dom.addDisposableListener(openInEditorLink, dom.EventType.CLICK, (e: MouseEvent) => {
+				dom.EventHelper.stop(e, false);
+				this.instantiationService.invokeFunction(createEditorFromSearchResult, this.searchResult, this.searchIncludePattern.getValue(), this.searchExcludePattern.getValue());
+			}));
 
-			} else {
-				dom.append(messageEl, $('span', undefined, resultMsg));
-			}
 			this.reLayout();
 		} else if (!msgWasHidden) {
 			dom.hide(this.messagesElement);

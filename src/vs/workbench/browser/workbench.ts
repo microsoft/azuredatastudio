@@ -386,8 +386,12 @@ export class Workbench extends Layout {
 
 		// Visibility
 		this._register(notificationsCenter.onDidChangeVisibility(() => {
-			notificationsStatus.update(notificationsCenter.isVisible);
+			notificationsStatus.update(notificationsCenter.isVisible, notificationsToasts.isVisible);
 			notificationsToasts.update(notificationsCenter.isVisible);
+		}));
+
+		this._register(notificationsToasts.onDidChangeVisibility(() => {
+			notificationsStatus.update(notificationsCenter.isVisible, notificationsToasts.isVisible);
 		}));
 
 		// Register Commands
