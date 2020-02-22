@@ -157,6 +157,7 @@ class Connection extends Disposable implements IConnection {
 				const didStart = await this.connectionService.connect(this.connectionId, this.profile);
 				if (!didStart) { // quick resolution here if we didn't even start to connect
 					this._lazyConnect.resolve({ failed: true });
+					this.setState(ConnectionState.DISCONNECTED);
 				}
 				return this._lazyConnect.promise;
 			default:

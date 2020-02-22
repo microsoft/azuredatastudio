@@ -11,6 +11,7 @@ import { Emitter } from 'vs/base/common/event';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesServiceImpl';
+import { isUndefined } from 'vs/base/common/types';
 
 const options: { [key: string]: any } = {
 	serverName: 'testServer',
@@ -21,12 +22,11 @@ const options: { [key: string]: any } = {
 
 suite('Connection Service', () => {
 	test('does connect', async () => {
-		const capabilitiesService = new CapabilitiesService();
-		const provider = new TestConnectionProvider();
-		capabilitiesService.registerConnectionProvider(TestConnectionProvider.ID, TestConnectionProvider.properties);
-		const connectionService = new ConnectionService(capabilitiesService, new NullLogService());
-		connectionService.registerProvider(provider);
+		const [connectionService, provider] = createService();
 		const connectStub = sinon.stub(provider, 'connect', (connectionUri: string, options: { [name: string]: any; }) => {
+			setTimeout(() => {
+				provider.onDidConnectionCompleteEmitter.fire({ connectionUri });
+			}, 500);
 			return Promise.resolve(true);
 		});
 
@@ -34,10 +34,109 @@ suite('Connection Service', () => {
 		assert(connection.state === ConnectionState.DISCONNECTED);
 		const result = await connection.connect();
 		assert(result.failed === false);
-		assert(result.errorMessage === '');
+		assert(isUndefined(result.errorMessage));
+		assert(connectStub.calledOnce);
+	});
+
+	test('does provide onDidConnect promise', async () => {
+		const [connectionService, provider] = createService();
+		const connectStub = sinon.stub(provider, 'connect', (connectionUri: string, options: { [name: string]: any; }) => {
+			setTimeout(() => {
+				provider.onDidConnectionCompleteEmitter.fire({ connectionUri });
+			}, 500);
+			return Promise.resolve(true);
+		});
+
+		const connection = connectionService.createOrGetConnection('someuri', { provider: TestConnectionProvider.ID, options });
+		assert(connection.state === ConnectionState.DISCONNECTED);
+		connection.connect();
+
+		const result = await connection.onDidConnect;
+		assert(result.failed === false);
+		assert(isUndefined(result.errorMessage));
+		assert(connectStub.calledOnce);
+	});
+
+	test('does listen for extensions being installed', async () => {
+		const [connectionService, , capabilitiesService] = createService();
+		capabilitiesService.registerConnectionProvider('testProvider2', TestConnectionProvider.properties);
+		const provider = new TestConnectionProvider();
+		sinon.stub(provider, 'id', { get: () => 'testProvider2' });
+		connectionService.registerProvider(provider);
+
+		const connectStub = sinon.stub(provider, 'connect', (connectionUri: string, options: { [name: string]: any; }) => {
+			setTimeout(() => {
+				provider.onDidConnectionCompleteEmitter.fire({ connectionUri });
+			}, 500);
+			return Promise.resolve(true);
+		});
+
+		const connection = connectionService.createOrGetConnection('someuri', { provider: 'testProvider2', options });
+		assert(connection.state === ConnectionState.DISCONNECTED);
+		connection.connect();
+
+		const result = await connection.onDidConnect;
+		assert(result.failed === false);
+		assert(isUndefined(result.errorMessage));
+		assert(connectStub.calledOnce);
+	});
+
+	test('does listen for extensions being uninstalled', async () => {
+		const [connectionService, , capabilitiesService] = createService();
+
+		const disposable = capabilitiesService.registerConnectionProvider('testProvider2', TestConnectionProvider.properties);
+		const provider = new TestConnectionProvider();
+		sinon.stub(provider, 'id', { get: () => 'testProvider2' });
+		connectionService.registerProvider(provider);
+
+		disposable.dispose();
+
+		assert.throws(() => connectionService.createOrGetConnection('someuri', { provider: 'testProvider2', options }));
+	});
+
+	test('returns early if inital connection attempt fails', async () => {
+		const [connectionService, provider] = createService();
+
+		sinon.stub(provider, 'connect', (connectionUri: string, options: { [name: string]: any; }) => {
+			return Promise.resolve(false);
+		});
+
+		const connection = connectionService.createOrGetConnection('someuri', { provider: TestConnectionProvider.ID, options });
+		assert(connection.state === ConnectionState.DISCONNECTED);
+		const result = await connection.connect();
+		assert(result.failed);
+		assert(connection.state === ConnectionState.DISCONNECTED);
+	});
+
+	test('corrects connection state if connection fails', async () => {
+		const [connectionService, provider] = createService();
+		const errorMessage = 'some random error message';
+		const connectStub = sinon.stub(provider, 'connect', (connectionUri: string, options: { [name: string]: any; }) => {
+			setTimeout(() => {
+				provider.onDidConnectionCompleteEmitter.fire({ connectionUri, errorMessage: errorMessage });
+			}, 500);
+			return Promise.resolve(true);
+		});
+
+		const connection = connectionService.createOrGetConnection('someuri', { provider: TestConnectionProvider.ID, options });
+		assert(connection.state === ConnectionState.DISCONNECTED);
+		const result = await connection.connect();
+
+		assert(result.failed);
+		assert(result.errorMessage === errorMessage);
+		assert(connection.state === ConnectionState.DISCONNECTED);
 		assert(connectStub.calledOnce);
 	});
 });
+
+function createService(): [ConnectionService, TestConnectionProvider, CapabilitiesService] {
+	const capabilitiesService = new CapabilitiesService();
+	const provider = new TestConnectionProvider();
+	capabilitiesService.registerConnectionProvider(TestConnectionProvider.ID, TestConnectionProvider.properties);
+	const connectionService = new ConnectionService(capabilitiesService, new NullLogService());
+	connectionService.registerProvider(provider);
+	return [connectionService, provider, capabilitiesService];
+}
 
 class TestConnectionProvider implements IConnectionProvider {
 	public static readonly ID = 'testConnectionProvider';
