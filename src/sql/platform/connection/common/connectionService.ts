@@ -10,7 +10,6 @@ import { Disposable, IDisposable, combinedDisposable, dispose } from 'vs/base/co
 import { entries } from 'sql/base/common/collections';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Deferred } from 'sql/base/common/promise';
-import { ILogService } from 'vs/platform/log/common/log';
 
 export const IConnectionService = createDecorator<IConnectionService>('connectionService');
 
@@ -174,8 +173,7 @@ export class ConnectionService extends Disposable implements IConnectionService 
 	private readonly connections = new Map<string, Connection>();
 
 	constructor(
-		@ICapabilitiesService capabilitiesService: ICapabilitiesService,
-		@ILogService private readonly logService: ILogService
+		@ICapabilitiesService capabilitiesService: ICapabilitiesService
 	) {
 		super();
 		for (const [id, provider] of entries(capabilitiesService.providers)) {
@@ -219,7 +217,7 @@ export class ConnectionService extends Disposable implements IConnectionService 
 		if (connection) {
 			connection.connectionCompleted(event);
 		} else {
-			this.logService.warn('Received connection complete event for non-existed connection');
+			throw new Error('Received connection complete event for non-existed connection');
 		}
 	}
 

@@ -6,7 +6,6 @@
 import * as assert from 'assert';
 import * as sinon from 'sinon';
 import { ConnectionService, IConnectionProvider, IProviderConnectionCompleteEvent, IProviderConnectionChangedEvent, ConnectionState } from 'sql/platform/connection/common/connectionService';
-import { NullLogService } from 'vs/platform/log/common/log';
 import { Emitter } from 'vs/base/common/event';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
@@ -33,7 +32,7 @@ suite('Connection Service', () => {
 		const connection = connectionService.createOrGetConnection('someuri', { provider: TestConnectionProvider.ID, options });
 		assert(connection.state === ConnectionState.DISCONNECTED);
 		const result = await connection.connect();
-		assert(result.failed === false);
+		assert(!result.failed);
 		assert(isUndefined(result.errorMessage));
 		assert(connectStub.calledOnce);
 	});
@@ -52,7 +51,7 @@ suite('Connection Service', () => {
 		connection.connect();
 
 		const result = await connection.onDidConnect;
-		assert(result.failed === false);
+		assert(!result.failed);
 		assert(isUndefined(result.errorMessage));
 		assert(connectStub.calledOnce);
 	});
@@ -76,7 +75,7 @@ suite('Connection Service', () => {
 		connection.connect();
 
 		const result = await connection.onDidConnect;
-		assert(result.failed === false);
+		assert(!result.failed);
 		assert(isUndefined(result.errorMessage));
 		assert(connectStub.calledOnce);
 	});
@@ -127,13 +126,90 @@ suite('Connection Service', () => {
 		assert(connection.state === ConnectionState.DISCONNECTED);
 		assert(connectStub.calledOnce);
 	});
+
+	test('does throw if you connect an already connecting connection', async () => {
+		const [connectionService, provider] = createService();
+		const connectStub = sinon.stub(provider, 'connect', (connectionUri: string, options: { [name: string]: any; }) => {
+			setTimeout(() => {
+				provider.onDidConnectionCompleteEmitter.fire({ connectionUri });
+			}, 500);
+			return Promise.resolve(true);
+		});
+
+		const connection = connectionService.createOrGetConnection('someuri', { provider: TestConnectionProvider.ID, options });
+		assert(connection.state === ConnectionState.DISCONNECTED);
+		const original = connection.connect();
+		assert.rejects(() => connection.connect());
+		const result = await original;
+
+		assert(!result.failed);
+		assert(isUndefined(result.errorMessage));
+		assert(connection.state === ConnectionState.CONNECTED);
+		assert(connectStub.calledOnce);
+	});
+
+	test('does throw if you connect an already connected connection', async () => {
+		const [connectionService, provider] = createService();
+		const connectStub = sinon.stub(provider, 'connect', (connectionUri: string, options: { [name: string]: any; }) => {
+			setTimeout(() => {
+				provider.onDidConnectionCompleteEmitter.fire({ connectionUri });
+			}, 500);
+			return Promise.resolve(true);
+		});
+
+		const connection = connectionService.createOrGetConnection('someuri', { provider: TestConnectionProvider.ID, options });
+		assert(connection.state === ConnectionState.DISCONNECTED);
+		const result = await connection.connect();
+		assert(!result.failed);
+		assert(isUndefined(result.errorMessage));
+		assert(connection.state === ConnectionState.CONNECTED);
+
+		assert.rejects(() => connection.connect());
+
+		assert(connectStub.calledOnce);
+	});
+
+	test('does throw onDidConnect if not currently connecting', async () => {
+		const [connectionService, provider] = createService();
+		const connectStub = sinon.stub(provider, 'connect', (connectionUri: string, options: { [name: string]: any; }) => {
+			setTimeout(() => {
+				provider.onDidConnectionCompleteEmitter.fire({ connectionUri });
+			}, 500);
+			return Promise.resolve(true);
+		});
+
+		const connection = connectionService.createOrGetConnection('someuri', { provider: TestConnectionProvider.ID, options });
+		assert(connection.state === ConnectionState.DISCONNECTED);
+		const result = await connection.connect();
+
+		assert.rejects(() => connection.onDidConnect);
+		assert(!result.failed);
+		assert(isUndefined(result.errorMessage));
+		assert(connectStub.calledOnce);
+	});
+
+	test('does return existing connection if exists', async () => {
+		const [connectionService] = createService();
+		const connection1 = connectionService.createOrGetConnection('someuri', { provider: TestConnectionProvider.ID, options });
+		const connection2 = connectionService.createOrGetConnection('someuri', { provider: TestConnectionProvider.ID, options });
+
+		assert.strictEqual(connection1, connection2);
+	});
+
+	test('does return different connections for different uris', async () => {
+		const [connectionService] = createService();
+		const connection1 = connectionService.createOrGetConnection('someuri', { provider: TestConnectionProvider.ID, options });
+		const connection2 = connectionService.createOrGetConnection('someuri2', { provider: TestConnectionProvider.ID, options });
+
+		assert.notStrictEqual(connection1, connection2);
+	});
 });
 
 function createService(): [ConnectionService, TestConnectionProvider, CapabilitiesService] {
 	const capabilitiesService = new CapabilitiesService();
 	const provider = new TestConnectionProvider();
 	capabilitiesService.registerConnectionProvider(TestConnectionProvider.ID, TestConnectionProvider.properties);
-	const connectionService = new ConnectionService(capabilitiesService, new NullLogService());
+	const connectionService = new ConnectionService(capabilitiesService);
 	connectionService.registerProvider(provider);
 	return [connectionService, provider, capabilitiesService];
 }
