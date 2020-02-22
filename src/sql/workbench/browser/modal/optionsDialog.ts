@@ -37,6 +37,7 @@ import { attachModalDialogStyler, attachPanelStyler } from 'sql/workbench/common
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 export class CategoryView extends ViewPane {
 
@@ -51,9 +52,10 @@ export class CategoryView extends ViewPane {
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IOpenerService protected openerService: IOpenerService,
-		@IThemeService protected themeService: IThemeService
+		@IThemeService protected themeService: IThemeService,
+		@ITelemetryService telemetryService: ITelemetryService,
 	) {
-		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, opener, themeService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, opener, themeService, telemetryService);
 	}
 
 	// we want a fixed size, so when we render to will measure our content and set that to be our
