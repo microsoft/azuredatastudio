@@ -206,14 +206,14 @@ export class RunQueryAction extends QueryTaskbarAction {
 
 	public async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
-			if (this.isConnected(this.editor)) {
+			// if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
 				this.runQuery(this.editor);
-			} else {
-				// If we are not already connected, prompt for connection and run the query if the
-				// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
-				this.connectEditor(this.editor, RunQueryOnConnectionMode.executeQuery, this.editor.getSelection());
-			}
+			// } else {
+			// 	// If we are not already connected, prompt for connection and run the query if the
+			// 	// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
+			// 	this.connectEditor(this.editor, RunQueryOnConnectionMode.executeQuery, this.editor.getSelection());
+			// }
 		}
 		return;
 	}
@@ -237,7 +237,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 			editor = this.editor;
 		}
 
-		if (this.isConnected(editor)) {
+		// if (this.isConnected(editor)) {
 			// if the selection isn't empty then execute the selection
 			// otherwise, either run the statement or the script depending on parameter
 			let selection: ISelectionData = editor.getSelection(false);
@@ -248,7 +248,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 				selection = editor.getSelection();
 				editor.input.runQuery(selection);
 			}
-		}
+		// }
 	}
 
 	protected isCursorPosition(selection: ISelectionData) {

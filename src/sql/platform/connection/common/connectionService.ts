@@ -229,7 +229,9 @@ class ConnectionService extends Disposable implements IConnectionService {
 		if (!this.connectionProviders.has(profile.provider)) {
 			throw new Error(`Provider could not be found: ${profile.provider}`);
 		}
-		return new Connection(connectionId, profile, this);
+		const connection = new Connection(connectionId, profile, this);
+		this.connections.set(connectionId, connection);
+		return connection;
 	}
 
 	public async connect(connectionId: string, profile: IConnectionProfile): Promise<boolean> {
