@@ -122,7 +122,7 @@ describe('Check for invalid filename error tests', function (): void {
 		should(isValidBasenameErrorMessage(formatFileName('...dacpac'))).equal(loc.reservedValueErrorMessage);
 		should(isValidBasenameErrorMessage(null)).equal(loc.undefinedFilenameErrorMessage);
 		should(isValidBasenameErrorMessage(undefined)).equal(loc.undefinedFilenameErrorMessage);
-		should(isValidBasenameErrorMessage('\\')).equal(loc.whitespaceFilenameErrorMessage);
+		should(isValidBasenameErrorMessage('\\')).equal(isWindows ? loc.whitespaceFilenameErrorMessage : loc.invalidFileCharsErrorMessage);
 		should(isValidBasenameErrorMessage('/')).equal(loc.whitespaceFilenameErrorMessage);
 
 		// most file systems do not allow files > 255 length
@@ -175,8 +175,8 @@ describe('Check for invalid filename error tests', function (): void {
 describe('Generate database name from file path tests', function (): void {
 	it('Should generate database name correctly', async () => {
 		should(generateDatabaseName('')).equal('');
-		should(generateDatabaseName('c:\\test\\name.dacpac')).equal('name');
-		should(generateDatabaseName('c:\\test\\name.bacpac')).equal('name');
+		should(generateDatabaseName('c:\\test\\name.dacpac')).equal(isWindows ? 'name' : 'c:\\test\\name');
+		should(generateDatabaseName('c:\\test\\name.bacpac')).equal(isWindows ? 'name' : 'c:\\test\\name');
 		should(generateDatabaseName('~/users/test/name.dacpac')).equal('name');
 		should(generateDatabaseName('~/users/test/name.bacpac')).equal('name');
 		should(generateDatabaseName('name.dacpac')).equal('name');
