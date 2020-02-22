@@ -183,7 +183,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (!model && params.input && params.input.uri) {
 			model = this._connectionStatusManager.getConnectionProfile(params.input.uri);
 		}
-		return this._connectionDialogService.showDialog(this, params, model, connectionResult, options).catch(dialogError => {
+		return this._connectionDialogService.showDialog(params, model, connectionResult).catch(dialogError => {
 			this._logService.warn('failed to open the connection dialog. error: ' + dialogError);
 			throw dialogError;
 		});
@@ -208,27 +208,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 
 		return providerId;
-	}
-
-	/**
-	 * Get the connection providers map and filter out CMS.
-	 */
-	public getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string } {
-		let uniqueProvidersMap = {};
-		let providerNames = entries(providerNameToDisplayNameMap);
-		providerNames.forEach(p => {
-			// Only add CMS provider if explicitly called from CMS extension
-			// otherwise avoid duplicate listing in dropdown
-			if (p[0] !== Constants.cmsProviderName) {
-				uniqueProvidersMap[p[0]] = p[1];
-			} else {
-				if (providerNames.length === 1) {
-					uniqueProvidersMap[p[0]] = p[1];
-				}
-			}
-		});
-
-		return uniqueProvidersMap;
 	}
 
 	/**

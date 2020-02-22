@@ -15,7 +15,7 @@ import { ExtHostModalDialogs } from 'sql/workbench/api/common/extHostModalDialog
 import { ExtHostTasks } from 'sql/workbench/api/common/extHostTasks';
 import { ExtHostDashboardWebviews } from 'sql/workbench/api/common/extHostDashboardWebview';
 import { ExtHostModelView } from 'sql/workbench/api/common/extHostModelView';
-import { ExtHostConnectionManagement } from 'sql/workbench/api/common/extHostConnectionManagement';
+import { ExtHostConnections } from 'sql/workbench/api/common/extHostConnections';
 import { ExtHostDashboard } from 'sql/workbench/api/common/extHostDashboard';
 import { ExtHostObjectExplorer } from 'sql/workbench/api/common/extHostObjectExplorer';
 import { ExtHostModelViewDialog } from 'sql/workbench/api/common/extHostModelViewDialog';
@@ -74,7 +74,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 
 	// Addressable instances
 	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));
-	const extHostConnectionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostConnectionManagement, new ExtHostConnectionManagement(rpcProtocol));
+	const extHostConnectionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostConnectionManagement, new ExtHostConnections(rpcProtocol));
 	const extHostCredentialManagement = rpcProtocol.set(SqlExtHostContext.ExtHostCredentialManagement, new ExtHostCredentialManagement(rpcProtocol));
 	const extHostDataProvider = rpcProtocol.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(rpcProtocol, uriTransformer));
 	const extHostObjectExplorer = rpcProtocol.set(SqlExtHostContext.ExtHostObjectExplorer, new ExtHostObjectExplorer(rpcProtocol));

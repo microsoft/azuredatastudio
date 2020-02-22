@@ -40,6 +40,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { entries } from 'sql/base/common/collections';
 import { attachTabbedPanelStyler, attachModalDialogStyler } from 'sql/workbench/common/styler';
+import { cmsProviderName } from 'sql/platform/connection/common/constants';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -132,12 +133,33 @@ export class ConnectionDialogWidget extends Modal {
 		}
 
 		// Remove duplicate listings (CMS uses the same display name)
-		let uniqueProvidersMap = this._connectionManagementService.getUniqueConnectionProvidersByNameMap(filteredProviderMap);
+		let uniqueProvidersMap = this.getUniqueConnectionProvidersByNameMap(filteredProviderMap);
 		this._providerTypeSelectBox.setOptions(Object.keys(uniqueProvidersMap).map(k => uniqueProvidersMap[k]));
 	}
 
 	private includeProvider(providerName: string, params?: INewConnectionParams): Boolean {
 		return params === undefined || params.providers === undefined || params.providers.some(x => x === providerName);
+	}
+
+	/**
+	 * Get the connection providers map and filter out CMS.
+	 */
+	public getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string } {
+		let uniqueProvidersMap = {};
+		let providerNames = entries(providerNameToDisplayNameMap);
+		providerNames.forEach(p => {
+			// Only add CMS provider if explicitly called from CMS extension
+			// otherwise avoid duplicate listing in dropdown
+			if (p[0] !== cmsProviderName) {
+				uniqueProvidersMap[p[0]] = p[1];
+			} else {
+				if (providerNames.length === 1) {
+					uniqueProvidersMap[p[0]] = p[1];
+				}
+			}
+		});
+
+		return uniqueProvidersMap;
 	}
 
 	protected renderBody(container: HTMLElement): void {

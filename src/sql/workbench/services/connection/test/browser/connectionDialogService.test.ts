@@ -28,7 +28,7 @@ suite('ConnectionDialogService tests', () => {
 		testinstantiationService.stub(IStorageService, new TestStorageService());
 		let errorMessageService = getMockErrorMessageService();
 		connectionDialogService = new ConnectionDialogService(undefined, undefined, errorMessageService.object,
-			undefined, undefined, undefined, new NullLogService());
+			undefined, undefined, undefined, new NullLogService(), undefined);
 		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict,
 			undefined, // connection store
 			undefined, // connection status manager

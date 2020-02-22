@@ -349,7 +349,7 @@ export class AttachToDropdown extends SelectBox {
 	 **/
 	public async openConnectionDialog(useProfile: boolean = false): Promise<boolean> {
 		try {
-			let connection = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
+			let connection = await this._connectionDialogService.openDialogAndWait(
 				{
 					connectionType: ConnectionType.temporary,
 					providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name)
@@ -364,8 +364,8 @@ export class AttachToDropdown extends SelectBox {
 				this.select(0);
 				return false;
 			}
-			let connectionUri = this._connectionManagementService.getConnectionUri(connection);
-			let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
+			let connectionUri = this._connectionManagementService.getConnectionUri(connection as any);
+			let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection as any);
 			let connectedServer = connectionProfile.title ? connectionProfile.title : connectionProfile.serverName;
 			//Check to see if the same server is already there in dropdown. We only have server names in dropdown
 			if (attachToConnections.some(val => val === connectedServer)) {

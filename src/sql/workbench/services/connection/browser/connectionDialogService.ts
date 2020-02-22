@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import {
-	IConnectionManagementService,
-	ConnectionType, INewConnectionParams, IConnectionCompletionOptions, IConnectionResult
+	ConnectionType, INewConnectionParams, IConnectionResult
 } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionDialogWidget, OnShowUIResponse } from 'sql/workbench/services/connection/browser/connectionDialogWidget';
 import { ConnectionController } from 'sql/workbench/services/connection/browser/connectionController';
@@ -32,6 +31,7 @@ import { entries } from 'sql/base/common/collections';
 import { find } from 'vs/base/common/arrays';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IConnectionService, IConnection } from 'sql/platform/connection/common/connectionService';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -67,20 +67,18 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _connectionControllerMap: { [providerName: string]: IConnectionComponentController } = {};
 	private _model: ConnectionProfile;
 	private _params: INewConnectionParams;
-	private _options: IConnectionCompletionOptions;
 	private _inputModel: IConnectionProfile;
 	private _providerNameToDisplayNameMap: { [providerDisplayName: string]: string } = {};
 	private _providerDisplayNames: string[] = [];
 	private _currentProviderType: string = Constants.mssqlProviderName;
 	private _connecting: boolean = false;
 	private _connectionErrorTitle = localize('connectionError', "Connection error");
-	private _dialogDeferredPromise: Deferred<IConnectionProfile>;
+	private _dialogDeferredPromise: Deferred<IConnection | undefined>;
 
 	/**
 	 * This is used to work around the interconnectedness of this code
 	 */
 	private ignoreNextConnect = false;
-	private _connectionManagementService: IConnectionManagementService;
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -89,7 +87,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService,
-		@ILogService private _logService: ILogService
+		@ILogService private _logService: ILogService,
+		@IConnectionService private readonly connectionService: IConnectionService
 	) {
 		this.initializeConnectionProviders();
 	}
@@ -188,9 +187,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this.handleDefaultOnConnect(params, profile).catch(err => onUnexpectedError(err));
 			} else {
 				profile.serverName = trim(profile.serverName);
-				this._connectionManagementService.addSavedPassword(profile).then(async (connectionWithPassword) => {
-					await this.handleDefaultOnConnect(params, connectionWithPassword);
-				}).catch(err => onUnexpectedError(err));
+				// this._connectionManagementService.addSavedPassword(profile).then(async (connectionWithPassword) => {
+				// 	await this.handleDefaultOnConnect(params, connectionWithPassword);
+				// }).catch(err => onUnexpectedError(err));
 			}
 		}
 	}
@@ -206,11 +205,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		if (this.uiController.databaseDropdownExpanded) {
 			this.uiController.closeDatabaseDropdown();
 		} else {
-			if (params && params.input && params.connectionType === ConnectionType.editor) {
-				this._connectionManagementService.cancelEditorConnection(params.input);
-			} else {
-				this._connectionManagementService.cancelConnection(this._model);
-			}
+			// if (params && params.input && params.connectionType === ConnectionType.editor) {
+			// 	this._connectionManagementService.cancelEditorConnection(params.input);
+			// } else {
+			// 	this._connectionManagementService.cancelConnection(this._model);
+			// }
 			if (params && params.input && params.input.onConnectCanceled) {
 				params.input.onConnectCanceled();
 			}
@@ -223,42 +222,35 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 	}
 
-	private async handleDefaultOnConnect(params: INewConnectionParams, connection: IConnectionProfile): Promise<void> {
-		if (this.ignoreNextConnect) {
-			this._connectionDialog.resetConnection();
-			this._connectionDialog.close();
-			this.ignoreNextConnect = false;
-			this._connecting = false;
-			this._dialogDeferredPromise.resolve(connection);
-			return;
-		}
+	private async handleDefaultOnConnect(params: INewConnectionParams, profile: IConnectionProfile): Promise<void> {
+		// if (this.ignoreNextConnect) {
+		// 	this._connectionDialog.resetConnection();
+		// 	this._connectionDialog.close();
+		// 	this.ignoreNextConnect = false;
+		// 	this._connecting = false;
+		// 	this._dialogDeferredPromise.resolve(profile);
+		// 	return;
+		// }
 		let fromEditor = params && params.connectionType === ConnectionType.editor;
-		let isTemporaryConnection = params && params.connectionType === ConnectionType.temporary;
 		let uri: string = undefined;
 		if (fromEditor && params && params.input) {
 			uri = params.input.uri;
 		}
-		let options: IConnectionCompletionOptions = this._options || {
-			params: params,
-			saveTheConnection: !isTemporaryConnection,
-			showDashboard: params && params.showDashboard !== undefined ? params.showDashboard : !fromEditor && !isTemporaryConnection,
-			showConnectionDialogOnError: false,
-			showFirewallRuleOnError: true
-		};
 
 		try {
-			const connectionResult = await this._connectionManagementService.connectAndSaveProfile(connection, uri, options, params && params.input);
+			const connection = await this.connectionService.createOrGetConnection(uri, { provider: profile.providerName, options: profile.options });
+			const connectionResult = await connection.connect();
 			this._connecting = false;
-			if (connectionResult && connectionResult.connected) {
+			if (!connectionResult.failed) {
 				this._connectionDialog.close();
 				if (this._dialogDeferredPromise) {
-					this._dialogDeferredPromise.resolve(connectionResult.connectionProfile);
+					this._dialogDeferredPromise.resolve(connection);
 				}
-			} else if (connectionResult && connectionResult.errorHandled) {
-				this._connectionDialog.resetConnection();
+			// } else if (connectionResult && connectionResult.errorHandled) {
+			// 	this._connectionDialog.resetConnection();
 			} else {
 				this._connectionDialog.resetConnection();
-				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
+				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, '');
 			}
 		} catch (err) {
 			this._connecting = false;
@@ -311,7 +303,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				});
 			}
 			if (!isProviderInParams) {
-				let uniqueProvidersMap = this._connectionManagementService.getUniqueConnectionProvidersByNameMap(this._providerNameToDisplayNameMap);
+				let uniqueProvidersMap = this.getUniqueConnectionProvidersByNameMap(this._providerNameToDisplayNameMap);
 				this._currentProviderType = find(Object.keys(uniqueProvidersMap), (key) => uniqueProvidersMap[key] === input.selectedProviderDisplayName);
 			}
 		}
@@ -330,11 +322,32 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	}
 
+	/**
+	 * Get the connection providers map and filter out CMS.
+	 */
+	public getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string } {
+		let uniqueProvidersMap = {};
+		let providerNames = entries(providerNameToDisplayNameMap);
+		providerNames.forEach(p => {
+			// Only add CMS provider if explicitly called from CMS extension
+			// otherwise avoid duplicate listing in dropdown
+			if (p[0] !== Constants.cmsProviderName) {
+				uniqueProvidersMap[p[0]] = p[1];
+			} else {
+				if (providerNames.length === 1) {
+					uniqueProvidersMap[p[0]] = p[1];
+				}
+			}
+		});
+
+		return uniqueProvidersMap;
+	}
+
 	private handleInitDialog() {
 		this.uiController.initDialog(this._params && this._params.providers, this._model);
 	}
 
-	private handleFillInConnectionInputs(connectionInfo: IConnectionProfile): void {
+	/*private handleFillInConnectionInputs(connectionInfo: IConnectionProfile): void {
 		this._connectionManagementService.addSavedPassword(connectionInfo).then(connectionWithPassword => {
 			if (this._model) {
 				this._model.dispose();
@@ -344,7 +357,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this.uiController.fillInConnectionInputs(this._model);
 		}).catch(err => onUnexpectedError(err));
 		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[connectionInfo.providerName]);
-	}
+	}*/
 
 	private handleProviderOnResetConnection(): void {
 		this.uiController.handleResetConnection();
@@ -390,18 +403,17 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	public openDialogAndWait(
-		connectionManagementService: IConnectionManagementService,
 		params?: INewConnectionParams,
 		model?: IConnectionProfile,
 		connectionResult?: IConnectionResult,
-		doConnect: boolean = true): Promise<IConnectionProfile> {
+		doConnect: boolean = true): Promise<IConnection> {
 
 		if (!doConnect) {
 			this.ignoreNextConnect = true;
 		}
-		this._dialogDeferredPromise = new Deferred<IConnectionProfile>();
+		this._dialogDeferredPromise = new Deferred<IConnection>();
 
-		this.showDialog(connectionManagementService, params,
+		this.showDialog(params,
 			model,
 			connectionResult).then(() => {
 			}, error => {
@@ -411,15 +423,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	public showDialog(
-		connectionManagementService: IConnectionManagementService,
 		params?: INewConnectionParams,
 		model?: IConnectionProfile,
-		connectionResult?: IConnectionResult,
-		connectionOptions?: IConnectionCompletionOptions): Promise<void> {
-
-		this._connectionManagementService = connectionManagementService;
-
-		this._options = connectionOptions;
+		connectionResult?: IConnectionResult): Promise<void> {
 		this._params = params;
 		this._inputModel = model;
 		return new Promise<void>((resolve, reject) => {
@@ -450,14 +456,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			});
 			this._connectionDialog.onShowUiComponent((input) => this.handleShowUiComponent(input));
 			this._connectionDialog.onInitDialog(() => this.handleInitDialog());
-			this._connectionDialog.onFillinConnectionInputs((input) => this.handleFillInConnectionInputs(input));
+			// this._connectionDialog.onFillinConnectionInputs((input) => this.handleFillInConnectionInputs(input));
 			this._connectionDialog.onResetConnection(() => this.handleProviderOnResetConnection());
 			this._connectionDialog.render();
 		}
 		this._connectionDialog.newConnectionParams = params;
 		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[this._currentProviderType]);
 
-		const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections(params.providers);
+		const recentConnections: ConnectionProfile[] = []; //this._connectionManagementService.getRecentConnections(params.providers);
 		await this._connectionDialog.open(recentConnections.length > 0);
 		this.uiController.focusOnOpen();
 		recentConnections.forEach(conn => conn.dispose());

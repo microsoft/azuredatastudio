@@ -3,13 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtHostConnectionManagementShape, SqlMainContext, MainThreadConnectionManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { ExtHostConnectionsShape, SqlMainContext, MainThreadConnectionsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import * as azdata from 'azdata';
 
-export class ExtHostConnectionManagement extends ExtHostConnectionManagementShape {
+export class ExtHostConnections extends ExtHostConnectionsShape {
 
-	private _proxy: MainThreadConnectionManagementShape;
+	private _proxy: MainThreadConnectionsShape;
 	private _nextListenerHandle: number = 0;
 	private _connectionListeners = new Map<number, azdata.connection.ConnectionEventListener>();
 
@@ -17,7 +17,7 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		mainContext: IMainContext
 	) {
 		super();
-		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadConnectionManagement);
+		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadConnections);
 	}
 
 	public $onConnectionEvent(handle: number, type: azdata.connection.ConnectionEventType, ownerUri: string, profile: azdata.IConnectionProfile): void {

@@ -37,7 +37,7 @@ export abstract class ExtHostAccountManagementShape {
 	$accountsChanged(handle: number, accounts: azdata.Account[]): Thenable<void> { throw ni(); }
 }
 
-export abstract class ExtHostConnectionManagementShape {
+export abstract class ExtHostConnectionsShape {
 	$onConnectionEvent(handle: number, type: azdata.connection.ConnectionEventType, ownerUri: string, profile: azdata.IConnectionProfile): void { throw ni(); }
 }
 
@@ -580,7 +580,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onEditSessionReady(handle: number, ownerUri: string, success: boolean, message: string);
 }
 
-export interface MainThreadConnectionManagementShape extends IDisposable {
+export interface MainThreadConnectionsShape extends IDisposable {
 	$registerConnectionEventListener(handle: number, providerId: string): void;
 	$getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]>;
 	$getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile>;
@@ -608,7 +608,7 @@ function ni() { return new Error('Not implemented'); }
 export const SqlMainContext = {
 	// SQL entries
 	MainThreadAccountManagement: createMainId<MainThreadAccountManagementShape>('MainThreadAccountManagement'),
-	MainThreadConnectionManagement: createMainId<MainThreadConnectionManagementShape>('MainThreadConnectionManagement'),
+	MainThreadConnections: createMainId<MainThreadConnectionsShape>('MainThreadConnectionManagement'),
 	MainThreadCredentialManagement: createMainId<MainThreadCredentialManagementShape>('MainThreadCredentialManagement'),
 	MainThreadDataProtocol: createMainId<MainThreadDataProtocolShape>('MainThreadDataProtocol'),
 	MainThreadObjectExplorer: createMainId<MainThreadObjectExplorerShape>('MainThreadObjectExplorer'),
@@ -628,7 +628,7 @@ export const SqlMainContext = {
 
 export const SqlExtHostContext = {
 	ExtHostAccountManagement: createExtId<ExtHostAccountManagementShape>('ExtHostAccountManagement'),
-	ExtHostConnectionManagement: createExtId<ExtHostConnectionManagementShape>('ExtHostConnectionManagement'),
+	ExtHostConnectionManagement: createExtId<ExtHostConnectionsShape>('ExtHostConnectionManagement'),
 	ExtHostCredentialManagement: createExtId<ExtHostCredentialManagementShape>('ExtHostCredentialManagement'),
 	ExtHostDataProtocol: createExtId<ExtHostDataProtocolShape>('ExtHostDataProtocol'),
 	ExtHostObjectExplorer: createExtId<ExtHostObjectExplorerShape>('ExtHostObjectExplorer'),

@@ -5,7 +5,7 @@
 
 import './mainThreadAccountManagement';
 import './mainThreadBackgroundTaskManagement';
-import './mainThreadConnectionManagement';
+import './mainThreadConnections';
 import './mainThreadCredentialManagement';
 import './mainThreadDashboard';
 import './mainThreadDashboardWebview';

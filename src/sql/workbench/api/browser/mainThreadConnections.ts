@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SqlMainContext, MainThreadConnectionManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { SqlMainContext, MainThreadConnectionsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import * as azdata from 'azdata';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
@@ -20,8 +20,8 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { deepClone } from 'vs/base/common/objects';
 
-@extHostNamedCustomer(SqlMainContext.MainThreadConnectionManagement)
-export class MainThreadConnectionManagement extends Disposable implements MainThreadConnectionManagementShape {
+@extHostNamedCustomer(SqlMainContext.MainThreadConnections)
+export class MainThreadConnectionManagement extends Disposable implements MainThreadConnectionsShape {
 
 	// private _proxy: ExtHostConnectionManagementShape;
 
@@ -137,21 +137,21 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		if (connectionCompletionOptions && !connectionCompletionOptions.saveConnection) {
 			connectionType = ConnectionType.temporary;
 		}
-		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
+		let connectionProfile = await this._connectionDialogService.openDialogAndWait(
 			{ connectionType: connectionType, providers: providers }, initialConnectionProfile, undefined);
 		if (connectionProfile) {
-			connectionProfile.options.savePassword = connectionProfile.savePassword;
+			(connectionProfile as any).options.savePassword = (connectionProfile as any).savePassword;
 		}
 		const connection = connectionProfile ? {
-			connectionId: connectionProfile.id,
-			options: connectionProfile.options,
-			providerName: connectionProfile.providerName
+			connectionId: (connectionProfile as any).id,
+			options: (connectionProfile as any).options,
+			providerName: (connectionProfile as any).providerName
 		} : undefined;
 
 		if (connectionCompletionOptions && connectionCompletionOptions.saveConnection) {
 			// Somehow, connectionProfile.saveProfile is false even if initialConnectionProfile.saveProfile is true, reset the flag here.
-			connectionProfile.saveProfile = initialConnectionProfile.saveProfile;
-			await this._connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
+			(connectionProfile as any).saveProfile = initialConnectionProfile.saveProfile;
+			await this._connectionManagementService.connectAndSaveProfile((connectionProfile as any), undefined, {
 				saveTheConnection: isUndefinedOrNull(connectionCompletionOptions.saveConnection) ? true : connectionCompletionOptions.saveConnection,
 				showDashboard: isUndefinedOrNull(connectionCompletionOptions.showDashboard) ? false : connectionCompletionOptions.showDashboard,
 				params: undefined,

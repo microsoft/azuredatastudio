@@ -42,7 +42,6 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IConnectionService } from 'sql/platform/connection/common/connectionService';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -206,16 +205,16 @@ export class RunQueryAction extends QueryTaskbarAction {
 	}
 
 	public async run(): Promise<void> {
-		// if (!this.editor.isSelectionEmpty()) {
-		// 	if (this.isConnected(this.editor)) {
-		// 		// If we are already connected, run the query
+		if (!this.editor.isSelectionEmpty()) {
+			if (this.isConnected(this.editor)) {
+				// If we are already connected, run the query
 				this.runQuery(this.editor);
-		// 	} else {
-		// 		// If we are not already connected, prompt for connection and run the query if the
-		// 		// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
-		// 		this.connectEditor(this.editor, RunQueryOnConnectionMode.executeQuery, this.editor.getSelection());
-		// 	}
-		// }
+			} else {
+				// If we are not already connected, prompt for connection and run the query if the
+				// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
+				this.connectEditor(this.editor, RunQueryOnConnectionMode.executeQuery, this.editor.getSelection());
+			}
+		}
 		return;
 	}
 
@@ -238,18 +237,18 @@ export class RunQueryAction extends QueryTaskbarAction {
 			editor = this.editor;
 		}
 
-		// if (this.isConnected(editor)) {
-		// 	// if the selection isn't empty then execute the selection
-		// 	// otherwise, either run the statement or the script depending on parameter
-		// 	let selection: ISelectionData = editor.getSelection(false);
-		// 	if (runCurrentStatement && selection && this.isCursorPosition(selection)) {
-		// 		editor.input.runQueryStatement(selection);
-		// 	} else {
-		// 		// get the selection again this time with trimming
-				let selection = editor.getSelection();
+		if (this.isConnected(editor)) {
+			// if the selection isn't empty then execute the selection
+			// otherwise, either run the statement or the script depending on parameter
+			let selection: ISelectionData = editor.getSelection(false);
+			if (runCurrentStatement && selection && this.isCursorPosition(selection)) {
+				editor.input.runQueryStatement(selection);
+			} else {
+				// get the selection again this time with trimming
+				selection = editor.getSelection();
 				editor.input.runQuery(selection);
-		// 	}
-		// }
+			}
+		}
 	}
 
 	protected isCursorPosition(selection: ISelectionData) {
@@ -407,13 +406,10 @@ export class ConnectDatabaseAction extends QueryTaskbarAction {
 	public static EnabledChangeClass = 'changeConnection';
 	public static ID = 'connectDatabaseAction';
 
-	private readonly connectionService: IConnectionService;
-
 	constructor(
 		editor: QueryEditor,
 		isChangeConnectionAction: boolean,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IConnectionService connectionService: IConnectionService
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		let label: string;
 		let enabledClass: string;
@@ -429,21 +425,11 @@ export class ConnectDatabaseAction extends QueryTaskbarAction {
 		super(connectionManagementService, editor, ConnectDatabaseAction.ID, enabledClass);
 
 		this.label = label;
-		this.connectionService = connectionService;
 	}
 
 	public async run(): Promise<void> {
-		const response = await this.connectionService.connect(this.editor.input.uri, {
-			provider: 'MSSQL',
-			options: {
-				serverName: 'server',
-				databaseName: 'database',
-				authType: 'SqlLogin',
-				userName: 'user',
-				password: 'password'
-			}
-		});
-		console.log(response);
+		this.connectEditor(this.editor);
+		return;
 	}
 }
 
@@ -463,8 +449,7 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 	constructor(
 		editor: QueryEditor,
 		private _connected: boolean,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IConnectionService private readonly connectionService: IConnectionService
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, editor, ToggleConnectDatabaseAction.ID, undefined);
 	}
@@ -498,17 +483,7 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 				// determine if we need to disconnect, cancel an in-progress connection, or do nothing
 				this.connectionManagementService.disconnectEditor(this.editor.input);
 			} else {
-				const response = await this.connectionService.connect(this.editor.input.uri, {
-					provider: 'MSSQL',
-					options: {
-						server: 'server',
-						database: 'database',
-						authenticationType: 'SqlLogin',
-						user: 'user',
-						password: 'password'
-					}
-				});
-				console.log(response);
+				this.connectEditor(this.editor);
 			}
 		}
 		return;

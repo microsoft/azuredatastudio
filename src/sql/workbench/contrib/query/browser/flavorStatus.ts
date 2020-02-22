@@ -17,9 +17,10 @@ import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { mssqlProviderName, cmsProviderName } from 'sql/platform/connection/common/constants';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IStatusbarService, StatusbarAlignment, IStatusbarEntryAccessor, IStatusbarEntry } from 'vs/workbench/services/statusbar/common/statusbar';
+import { entries } from 'sql/base/common/collections';
 
 export interface ISqlProviderEntry extends IQuickPickItem {
 	providerId: string;
@@ -202,7 +203,7 @@ export class ChangeFlavorAction extends Action {
 		// so we need a way to filter this using a capabilities check, with isn't yet implemented
 
 		let providerNameToDisplayNameMap = this._connectionManagementService.providerNameToDisplayNameMap;
-		let providerOptions = Object.keys(this._connectionManagementService.getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap)).map(p => new SqlProviderEntry(p));
+		let providerOptions = Object.keys(this.getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap)).map(p => new SqlProviderEntry(p));
 
 		return this._quickInputService.pick(providerOptions, { placeHolder: nls.localize('pickSqlProvider', "Select SQL Language Provider") }).then(provider => {
 			if (provider) {
@@ -215,6 +216,27 @@ export class ChangeFlavorAction extends Action {
 				}
 			}
 		});
+	}
+
+	/**
+	 * Get the connection providers map and filter out CMS.
+	 */
+	public getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string } {
+		let uniqueProvidersMap = {};
+		let providerNames = entries(providerNameToDisplayNameMap);
+		providerNames.forEach(p => {
+			// Only add CMS provider if explicitly called from CMS extension
+			// otherwise avoid duplicate listing in dropdown
+			if (p[0] !== cmsProviderName) {
+				uniqueProvidersMap[p[0]] = p[1];
+			} else {
+				if (providerNames.length === 1) {
+					uniqueProvidersMap[p[0]] = p[1];
+				}
+			}
+		});
+
+		return uniqueProvidersMap;
 	}
 
 	private _showMessage(sev: Severity, message: string): Promise<any> {

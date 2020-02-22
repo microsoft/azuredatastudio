@@ -26,7 +26,7 @@ import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/i
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { assign } from 'vs/base/common/objects';
-import { IConnectionService, IConnectionCompleteEvent, IConnectionChangedEvent } from 'sql/platform/connection/common/connectionService';
+import { IConnectionService, IProviderConnectionCompleteEvent, IProviderConnectionChangedEvent } from 'sql/platform/connection/common/connectionService';
 import { Emitter } from 'vs/base/common/event';
 import { serializableToMap } from 'sql/base/common/map';
 
@@ -39,7 +39,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	private _proxy: ExtHostDataProtocolShape;
 
 	private _capabilitiesRegistrations: { [handle: number]: IDisposable; } = Object.create(null); // should we be registering these?
-	private _connectionEvents = new Map<string, { onDidConnectionComplete: Emitter<IConnectionCompleteEvent>; onDidConnectionChange: Emitter<IConnectionChangedEvent> }>();
+	private _connectionEvents = new Map<string, { onDidConnectionComplete: Emitter<IProviderConnectionCompleteEvent>; onDidConnectionChange: Emitter<IProviderConnectionChangedEvent> }>();
 
 	constructor(
 		extHostContext: IExtHostContext,

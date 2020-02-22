@@ -170,8 +170,6 @@ export interface IConnectionManagementService {
 
 	getDefaultProviderId(): string;
 
-	getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string };
-
 	/**
 	 * Cancels the connection
 	 */
