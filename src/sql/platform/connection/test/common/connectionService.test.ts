@@ -5,8 +5,8 @@
 
 import * as assert from 'assert';
 import * as sinon from 'sinon';
-import { ConnectionService, IConnectionProvider, IProviderConnectionCompleteEvent, IProviderConnectionChangedEvent, ConnectionState } from 'sql/platform/connection/common/connectionService';
-import { Emitter } from 'vs/base/common/event';
+import { ConnectionService, IConnectionProvider, IProviderConnectionCompleteEvent, IProviderConnectionChangedEvent, ConnectionState, IConnection } from 'sql/platform/connection/common/connectionService';
+import { Emitter, Event } from 'vs/base/common/event';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesServiceImpl';
@@ -202,6 +202,25 @@ suite('Connection Service', () => {
 		const connection2 = connectionService.createOrGetConnection('someuri2', { provider: TestConnectionProvider.ID, options });
 
 		assert.notStrictEqual(connection1, connection2);
+	});
+
+	test('does return proper id for connection', async () => {
+		const [connectionService] = createService();
+		const connection1 = connectionService.createOrGetConnection('someuri', { provider: TestConnectionProvider.ID, options });
+
+		assert(connectionService.getIdForConnection(connection1), 'someuri');
+	});
+
+	test('does throw if connection for id is not actually a connection', () => {
+		const [connectionService] = createService();
+		const fakeConnection: IConnection = {
+			state: ConnectionState.CONNECTED,
+			connect: () => Promise.resolve({ failed: false }),
+			onDidConnect: Promise.resolve({ failed: false }),
+			onDidStateChange: Event.None,
+			provider: 'provider'
+		};
+		assert.throws(() => connectionService.getIdForConnection(fakeConnection));
 	});
 });
 

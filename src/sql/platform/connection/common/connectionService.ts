@@ -10,6 +10,7 @@ import { Disposable, IDisposable, combinedDisposable, dispose } from 'vs/base/co
 import { entries } from 'sql/base/common/collections';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Deferred } from 'sql/base/common/promise';
+import { assertType } from 'vs/base/common/types';
 
 export const IConnectionService = createDecorator<IConnectionService>('connectionService');
 
@@ -65,6 +66,12 @@ export interface IConnectionService {
 	 * @param profile
 	 */
 	createOrGetConnection(connectionUri: string, profile: IConnectionProfile): IConnection;
+	/**
+	 * Gets the underlying id for a connection from createOrGetConnection.
+	 * Should only be called at the last possible moment, DO NOT PASS AROUND IDS, pass around connections
+	 * @param connection
+	 */
+	getIdForConnection(connection: IConnection): string;
 }
 
 export enum ConnectionState {
@@ -92,6 +99,10 @@ export interface IConnection {
 	 * Only valid if @this.state is @type {ConnectionState.CONNECTING}
 	 */
 	readonly onDidConnect: Promise<IConnectionCompleteEvent>;
+	/**
+	 * The provider for this connection
+	 */
+	readonly provider: string;
 }
 
 class Connection extends Disposable implements IConnection {
@@ -109,6 +120,8 @@ class Connection extends Disposable implements IConnection {
 		}
 		return this._lazyConnect!.promise;
 	}
+
+	public get provider(): string { return this.profile.provider; }
 
 	constructor(
 		public readonly connectionId: string,
@@ -186,6 +199,11 @@ export class ConnectionService extends Disposable implements IConnectionService 
 				this.connectionProviders.delete(e);
 			}
 		}));
+	}
+
+	public getIdForConnection(connection: IConnection): string {
+		assertType(connection instanceof Connection, 'Connection');
+		return connection.connectionId;
 	}
 
 	private tryAddKnownProvider(id: string, provider: ProviderFeatures) {
