@@ -7,12 +7,12 @@ import { ExtensionContext } from 'vscode';
 import { ApiWrapper } from '../../../apiWrapper';
 
 import { azureResource } from '../../azure-resource';
-import { IAzureResourceService, AzureResourceDatabaseServer } from '../../interfaces';
+import { IAzureResourceService } from '../../interfaces';
 import { KustoTreeDataProvider as KustoTreeDataProvider } from './kustoTreeDataProvider';
 
 export class KustoProvider implements azureResource.IAzureResourceProvider {
 	public constructor(
-		private _service: IAzureResourceService<AzureResourceDatabaseServer>,
+		private _service: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
 		private _apiWrapper: ApiWrapper,
 		private _extensionContext: ExtensionContext
 	) {

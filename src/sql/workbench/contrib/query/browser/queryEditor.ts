@@ -244,7 +244,7 @@ export class QueryEditor extends BaseEditor {
 		return this._listDatabasesActionItem;
 	}
 
-	private setTaskbarContent(input: QueryInput): void {
+	private setTaskbarContent(input: QueryEditorInput): void {
 		// Remove current actions from the taskbar
 		while (this.taskbar.length() > 0) {
 			this.taskbar.pull(0);
@@ -255,8 +255,8 @@ export class QueryEditor extends BaseEditor {
 
 		// Set the content in the order we desire
 		let content: ITaskbarContent[];
-
-		if (input.ConnectionProviderName === 'MSSQL') {
+		// TODOKusto: needs to be changed appropriately
+		if (input.getDescription() === 'MSSQL') {
 			content = [
 				{ action: this._runQueryAction },
 				{ action: this._cancelQueryAction },

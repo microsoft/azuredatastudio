@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureResourceDatabaseServer } from '../../interfaces';
+import { azureResource } from '../../azure-resource';
 import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
 
 export interface KustoGraphData extends GraphData {
@@ -15,13 +15,13 @@ export interface KustoGraphData extends GraphData {
 
 const instanceQuery = 'where type == "microsoft.kusto/clusters"';
 
-export class KustoResourceService extends ResourceServiceBase<KustoGraphData, AzureResourceDatabaseServer> {
+export class KustoResourceService extends ResourceServiceBase<KustoGraphData, azureResource.AzureResourceDatabaseServer> {
 
 	protected get query(): string {
 		return instanceQuery;
 	}
 
-	protected convertResource(resource: KustoGraphData): AzureResourceDatabaseServer {
+	protected convertResource(resource: KustoGraphData): azureResource.AzureResourceDatabaseServer {
 		return {
 			id: resource.id,
 			name: resource.name,
