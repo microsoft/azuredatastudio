@@ -22,7 +22,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
-import { TestEditorService, TestDialogService, workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestEditorService, workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
 import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
 import { Event } from 'vs/base/common/event';
@@ -33,6 +33,7 @@ import { TestNotificationService } from 'vs/platform/notification/test/common/te
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
+import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
 
 class TestParsedArgs implements ParsedArgs {
 	[arg: string]: any;

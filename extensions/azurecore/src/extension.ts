@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import * as constants from './constants';
 
 import { AppContext } from './appContext';
 import { ApiWrapper } from './apiWrapper';
@@ -33,6 +32,12 @@ import { KustoResourceService } from './azureResource/providers/kusto/kustoServi
 import { KustoProvider } from './azureResource/providers/kusto/kustoProvider';
 import { PostgresServerProvider } from './azureResource/providers/postgresServer/postgresServerProvider';
 import { PostgresServerService } from './azureResource/providers/postgresServer/postgresServerService';
+import { SqlInstanceArcProvider } from './azureResource/providers/sqlinstanceArc/sqlInstanceArcProvider';
+import { SqlInstanceArcResourceService } from './azureResource/providers/sqlinstanceArc/sqlInstanceArcService';
+import { PostgresServerArcProvider } from './azureResource/providers/postgresArcServer/postgresServerProvider';
+import { PostgresServerArcService } from './azureResource/providers/postgresArcServer/postgresServerService';
+import { azureResource } from './azureResource/azure-resource';
+import * as loc from './localizedConstants';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -74,17 +79,26 @@ export async function activate(context: vscode.ExtensionContext) {
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
 	pushDisposable(apiWrapper.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
+	pushDisposable(apiWrapper.onDidChangeConfiguration(e => onDidChangeConfiguration(e, apiWrapper), this));
 	registerAzureResourceCommands(appContext, azureResourceTree);
 
 	return {
 		provideResources() {
-			return [
+			const arcFeaturedEnabled = apiWrapper.getExtensionConfiguration().get('enableArcFeatures');
+			const providers: azureResource.IAzureResourceProvider[] = [
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), apiWrapper, extensionContext),
 				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext),
 				new KustoProvider(new KustoResourceService(), apiWrapper, extensionContext),
 				new SqlInstanceProvider(new SqlInstanceResourceService(), apiWrapper, extensionContext),
-				new PostgresServerProvider(new PostgresServerService(), apiWrapper, extensionContext)
+				new PostgresServerProvider(new PostgresServerService(), apiWrapper, extensionContext),
 			];
+			if (arcFeaturedEnabled) {
+				providers.push(
+					new SqlInstanceArcProvider(new SqlInstanceArcResourceService(), apiWrapper, extensionContext),
+					new PostgresServerArcProvider(new PostgresServerArcService(), apiWrapper, extensionContext)
+				);
+			}
+			return providers;
 		}
 	};
 }
@@ -92,7 +106,7 @@ export async function activate(context: vscode.ExtensionContext) {
 // Create the folder for storing the token caches
 async function findOrMakeStoragePath() {
 	let defaultLogLocation = getDefaultLogLocation();
-	let storagePath = path.join(defaultLogLocation, constants.extensionName);
+	let storagePath = path.join(defaultLogLocation, loc.extensionName);
 
 	try {
 		await fs.mkdir(defaultLogLocation, { recursive: true });
@@ -134,4 +148,13 @@ function registerAzureServices(appContext: AppContext): void {
 	appContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, new AzureResourceSubscriptionService());
 	appContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, new AzureResourceSubscriptionFilterService(new AzureResourceCacheService(extensionContext)));
 	appContext.registerService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService, new AzureResourceTenantService());
+}
+
+async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent, apiWrapper: ApiWrapper): Promise<void> {
+	if (e.affectsConfiguration('azure.enableArcFeatures')) {
+		const response = await apiWrapper.showInformationMessage(loc.requiresReload, loc.reload);
+		if (response === loc.reload) {
+			await apiWrapper.executeCommand('workbench.action.reloadWindow');
+		}
+	}
 }
