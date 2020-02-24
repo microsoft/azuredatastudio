@@ -139,6 +139,15 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				},
 				connect(connectionProfile: azdata.IConnectionProfile, saveConnection: boolean, showDashboard: boolean): Thenable<azdata.ConnectionResult> {
 					return extHostConnection.connect(connectionProfile, saveConnection, showDashboard);
+				},
+				registerProvider(provider: azdata.ConnectionProvider): vscode.Disposable {
+					return extHostConnection.registerProvider(provider);
+				}
+			};
+
+			const query: typeof azdata.query = {
+				registerProvider(provider: azdata.QueryProvider): vscode.Disposable {
+					return extHostQuery.registerProvider(provider);
 				}
 			};
 
@@ -335,7 +344,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				registerScriptingProvider,
 				registerTaskServicesProvider,
 				registerQueryProvider: provider => {
-					extHostApiDeprecation.report('azdata.dataprotocol.registerConnectionProvider', extension, 'Use azdata.connection.registerProvider');
+					extHostApiDeprecation.report('azdata.dataprotocol.registerConnectionProvider', extension, 'Use azdata.query.registerProvider');
 					return extHostQuery.registerProvider(provider);
 				},
 				registerAdminServicesProvider,
@@ -498,13 +507,13 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				dashboard,
 				workspace,
 				queryeditor: queryEditor,
-				ui: ui,
+				ui,
 				StatusIndicator: sqlExtHostTypes.StatusIndicator,
 				CardType: sqlExtHostTypes.CardType,
 				Orientation: sqlExtHostTypes.Orientation,
 				SqlThemeIcon: sqlExtHostTypes.SqlThemeIcon,
 				TreeComponentItem: sqlExtHostTypes.TreeComponentItem,
-				nb: nb,
+				nb,
 				AzureResource: sqlExtHostTypes.AzureResource,
 				TreeItem: sqlExtHostTypes.TreeItem,
 				extensions: extensions,
@@ -514,7 +523,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				AgentSubSystem: sqlExtHostTypes.AgentSubSystem,
 				ExtensionNodeType: sqlExtHostTypes.ExtensionNodeType,
 				ColumnSizingMode: sqlExtHostTypes.ColumnSizingMode,
-				DatabaseEngineEdition: sqlExtHostTypes.DatabaseEngineEdition
+				DatabaseEngineEdition: sqlExtHostTypes.DatabaseEngineEdition,
+				query
 			};
 		}
 	};

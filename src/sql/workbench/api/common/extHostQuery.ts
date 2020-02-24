@@ -16,7 +16,7 @@ import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 export class ExtHostQuery implements ExtHostQueryShape {
 
 	private static _handlePool: number = 0;
-	private _proxy: MainThreadQueryShape;
+	private readonly _proxy: MainThreadQueryShape;
 
 	private readonly messageRunner = new RunOnceScheduler(() => this.sendMessages(), 1000);
 	private readonly queuedMessages = new Map<number, azdata.QueryExecuteMessageParams[]>();

@@ -6,6 +6,7 @@
 // This is the place for API experiments and proposal.
 
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 
 declare module 'azdata' {
 	/**
@@ -27,6 +28,12 @@ declare module 'azdata' {
 		export function registerConnectionEventListener(listener: connection.ConnectionEventListener): void;
 
 		export function getConnection(uri: string): Thenable<ConnectionProfile>;
+
+		export function registerProvider(provider: azdata.ConnectionProvider): vscode.Disposable;
+	}
+
+	export namespace query {
+		export function registerProvider(provider: azdata.QueryProvider): vscode.Disposable;
 	}
 
 

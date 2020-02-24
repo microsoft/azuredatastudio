@@ -31,7 +31,7 @@ interface ConnectionEvents {
 @extHostNamedCustomer(SqlMainContext.MainThreadConnection)
 export class MainThreadConnection extends Disposable implements MainThreadConnectionShape {
 
-	private _proxy: ExtHostConnectionShape;
+	private readonly _proxy: ExtHostConnectionShape;
 	private readonly _connectionEvents = new Map<number, ConnectionEvents>();
 	private readonly _registrations = new Map<number, IDisposable>();
 
