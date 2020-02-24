@@ -37,7 +37,7 @@ export class AzureModelRegistryService {
 	 * @param account azure account
 	 */
 	public async getSubscriptions(account: azdata.Account | undefined): Promise<azureResource.AzureResourceSubscription[] | undefined> {
-		return await this._apiWrapper.executeCommand(constants.azureSubscriptionsCommand, account);
+		return await this._apiWrapper.executeCommand(constants.azureSubscriptionsCommand, account, true);
 	}
 
 	/**
@@ -48,7 +48,7 @@ export class AzureModelRegistryService {
 	public async getGroups(
 		account: azdata.Account | undefined,
 		subscription: azureResource.AzureResourceSubscription | undefined): Promise<azureResource.AzureResource[] | undefined> {
-		return await this._apiWrapper.executeCommand(constants.azureResourceGroupsCommand, account, subscription);
+		return await this._apiWrapper.executeCommand(constants.azureResourceGroupsCommand, account, subscription, true);
 	}
 
 	/**

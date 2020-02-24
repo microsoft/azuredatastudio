@@ -52,7 +52,7 @@ suite('ExtHostModelView Validation Tests', () => {
 		mockProxy.setup(x => x.$registerEvent(It.isAny(), It.isAny())).returns(() => Promise.resolve());
 		mockProxy.setup(x => x.$setProperties(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 
-		extHostModelView = new ExtHostModelView(mainContext, undefined);
+		extHostModelView = new ExtHostModelView(mainContext, undefined, undefined);
 	});
 
 	// Set of general tests using a couple of common components
@@ -371,7 +371,7 @@ suite('ExtHostModelView Validation Tests', () => {
 			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 			mockProxy.setup(x => x.$removeFromContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 
-			extHostModelView = new ExtHostModelView(mainContext, undefined);
+			extHostModelView = new ExtHostModelView(mainContext, undefined, undefined);
 			extHostModelView.$registerProvider(widgetId, async view => {
 				modelView = view;
 				done();

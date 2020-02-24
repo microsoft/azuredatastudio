@@ -11,8 +11,8 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import * as types from 'vs/base/common/types';
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
-import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { startsWith } from 'vs/base/common/strings';
+import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 
 export interface IOptionElement {
 	optionWidget: any;
@@ -69,7 +69,7 @@ export function createOptionElement(option: azdata.ServiceOption, rowContainer: 
 
 export function getOptionValueAndCategoryValues(option: azdata.ServiceOption, options: { [optionName: string]: any }, possibleInputs: string[]): any {
 	let optionValue = option.defaultValue;
-	if (options[option.name]) {
+	if (options[option.name] !== undefined) {
 		// if the value type is boolean, the option value can be either boolean or string
 		if (option.valueType === ServiceOptionType.boolean) {
 			if (options[option.name] === true || options[option.name] === trueInputValue) {

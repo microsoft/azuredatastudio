@@ -310,6 +310,10 @@ export class Dropdown extends Disposable {
 		this._input.value = val;
 	}
 
+	public get inputElement(): HTMLInputElement {
+		return this._input.inputElement;
+	}
+
 	public focus() {
 		this._input.focus();
 	}

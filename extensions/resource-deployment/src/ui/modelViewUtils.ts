@@ -10,7 +10,9 @@ import { DialogInfoBase, FieldType, FieldInfo, SectionInfo, LabelPosition, FontW
 import { Model } from './model';
 import { getDateTimeString } from '../utils';
 import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
+import * as azurecore from '../../../azurecore/src/azurecore';
 import * as loc from '../localizedConstants';
+import { EOL } from 'os';
 
 const localize = nls.loadMessageBundle();
 
@@ -502,22 +504,33 @@ function handleSelectedAccountChanged(
 ): void {
 	subscriptionValueToSubscriptionMap.clear();
 	subscriptionDropdown.values = [];
-	handleSelectedSubscriptionChanged(selectedAccount, undefined, resourceGroupDropdown);
+	handleSelectedSubscriptionChanged(context, selectedAccount, undefined, resourceGroupDropdown);
 	if (selectedAccount) {
 		if (locationDropdown.values && locationDropdown.values.length === 0) {
 			locationDropdown.values = context.fieldInfo.locations;
 		}
 	} else {
 		locationDropdown.values = [];
+		return;
 	}
-	vscode.commands.executeCommand('azure.accounts.getSubscriptions', selectedAccount).then(subscriptions => {
-		subscriptionDropdown.values = (<azureResource.AzureResourceSubscription[]>subscriptions).map(subscription => {
+	vscode.commands.executeCommand<azurecore.GetSubscriptionsResult>('azure.accounts.getSubscriptions', selectedAccount, true /*ignoreErrors*/).then(response => {
+		if (!response) {
+			return;
+		}
+		if (response.errors.length > 0) {
+			context.container.message = {
+				text: response.errors.join(EOL) || '',
+				description: '',
+				level: azdata.window.MessageLevel.Warning
+			};
+		}
+		subscriptionDropdown.values = response.subscriptions.map(subscription => {
 			const displayName = `${subscription.name} (${subscription.id})`;
 			subscriptionValueToSubscriptionMap.set(displayName, subscription);
 			return displayName;
 		}).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()));
 		const selectedSubscription = subscriptionDropdown.values.length > 0 ? subscriptionValueToSubscriptionMap.get(subscriptionDropdown.values[0]) : undefined;
-		handleSelectedSubscriptionChanged(selectedAccount, selectedSubscription, resourceGroupDropdown);
+		handleSelectedSubscriptionChanged(context, selectedAccount, selectedSubscription, resourceGroupDropdown);
 	}, err => { vscode.window.showErrorMessage(localize('azure.accounts.unexpectedSubscriptionsError', "Unexpected error fetching subscriptions for account {0} ({1}): {2}", selectedAccount?.displayInfo.displayName, selectedAccount?.key.accountId, err.message)); });
 }
 
@@ -544,15 +557,29 @@ function createAzureResourceGroupsDropdown(
 	subscriptionDropdown.onValueChanged(selectedItem => {
 		const selectedAccount = !accountDropdown || !accountDropdown.value ? undefined : accountValueToAccountMap.get(accountDropdown.value.toString());
 		const selectedSubscription = subscriptionValueToSubscriptionMap.get(selectedItem.selected);
-		handleSelectedSubscriptionChanged(selectedAccount, selectedSubscription, resourceGroupDropdown);
+		handleSelectedSubscriptionChanged(context, selectedAccount, selectedSubscription, resourceGroupDropdown);
 	});
 	return resourceGroupDropdown;
 }
 
-function handleSelectedSubscriptionChanged(selectedAccount: azdata.Account | undefined, selectedSubscription: azureResource.AzureResourceSubscription | undefined, resourceGroupDropdown: azdata.DropDownComponent): void {
+function handleSelectedSubscriptionChanged(context: AzureAccountFieldContext, selectedAccount: azdata.Account | undefined, selectedSubscription: azureResource.AzureResourceSubscription | undefined, resourceGroupDropdown: azdata.DropDownComponent): void {
 	resourceGroupDropdown.values = [];
-	vscode.commands.executeCommand('azure.accounts.getResourceGroups', selectedAccount, selectedSubscription).then(resourceGroups => {
-		resourceGroupDropdown.values = (<azureResource.AzureResourceSubscription[]>resourceGroups).map(resourceGroup => resourceGroup.name).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()));
+	if (!selectedAccount || !selectedSubscription) {
+		// Don't need to execute command if we don't have both an account and subscription selected
+		return;
+	}
+	vscode.commands.executeCommand<azurecore.GetResourceGroupsResult>('azure.accounts.getResourceGroups', selectedAccount, selectedSubscription, true /*ignoreErrors*/).then(response => {
+		if (!response) {
+			return;
+		}
+		if (response.errors.length > 0) {
+			context.container.message = {
+				text: response.errors.join(EOL) || '',
+				description: '',
+				level: azdata.window.MessageLevel.Warning
+			};
+		}
+		resourceGroupDropdown.values = response.resourceGroups.map(resourceGroup => resourceGroup.name).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()));
 	}, err => { vscode.window.showErrorMessage(localize('azure.accounts.unexpectedResourceGroupsError', "Unexpected error fetching resource groups for subscription {0} ({1}): {2}", selectedSubscription?.name, selectedSubscription?.id, err.message)); });
 }
 

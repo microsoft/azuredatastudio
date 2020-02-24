@@ -14,13 +14,15 @@ import { URI } from 'vs/base/common/uri';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
 import { IInsightOptions } from 'sql/workbench/contrib/charts/common/interfaces';
-import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
+import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IFileDialogService, FileFilter } from 'vs/platform/dialogs/common/dialogs';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { assign } from 'vs/base/common/objects';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 
 export interface IChartActionContext {
 	options: IInsightOptions;
@@ -35,7 +37,8 @@ export class CreateInsightAction extends Action {
 	constructor(
 		@IEditorService private editorService: IEditorService,
 		@INotificationService private notificationService: INotificationService,
-		@IUntitledTextEditorService private untitledEditorService: IUntitledTextEditorService
+		@IUntitledTextEditorService private untitledEditorService: IUntitledTextEditorService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super(CreateInsightAction.ID, CreateInsightAction.LABEL, CreateInsightAction.ICON);
 	}
@@ -74,7 +77,7 @@ export class CreateInsightAction extends Action {
 
 		let input = this.untitledEditorService.create({ mode: 'json', initialValue: JSON.stringify(widgetConfig) });
 
-		return this.editorService.openEditor(input, { pinned: true })
+		return this.editorService.openEditor(this.instantiationService.createInstance(UntitledTextEditorInput, input), { pinned: true })
 			.then(
 				() => true,
 				error => {

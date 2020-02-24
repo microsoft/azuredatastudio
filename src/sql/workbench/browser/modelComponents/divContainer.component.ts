@@ -15,8 +15,7 @@ import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBa
 
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
-import { ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IComponentDescriptor, IComponent, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 
 class DivItem {
 	constructor(public descriptor: IComponentDescriptor, public config: azdata.DivItemLayout) { }
@@ -165,7 +164,7 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout> im
 		}
 		if (this.clickable && !this.cancelClick) {
 			this.cancelClick = this.renderer.listen(this.divContainer.nativeElement, 'click', () => this.onClick());
-		} else if (!this.clickable) {
+		} else if (!this.clickable && this.cancelClick) {
 			this.cancelClick();
 			this.cancelClick = undefined;
 		}

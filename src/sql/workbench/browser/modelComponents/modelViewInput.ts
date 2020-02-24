@@ -89,11 +89,11 @@ export class ModelViewInput extends EditorInput {
 		return this._title;
 	}
 
-	public getResource(): URI {
+	public get resource(): URI | undefined {
 		if (this._options.resourceName) {
 			return URI.from({ scheme: ModelViewInput.Scheme, path: this._options.resourceName });
 		}
-		return super.getResource();
+		return undefined;
 	}
 
 	public get container(): HTMLElement {

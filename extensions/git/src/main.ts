@@ -22,6 +22,7 @@ import { GitExtensionImpl } from './api/extension';
 // import * as path from 'path';
 // import * as fs from 'fs';
 import { createIPCServer, IIPCServer } from './ipc/ipcServer';
+import { GitTimelineProvider } from './timelineProvider';
 
 const deactivateTasks: { (): Promise<any>; }[] = [];
 
@@ -82,7 +83,8 @@ async function createModel(context: ExtensionContext, outputChannel: OutputChann
 		new GitContentProvider(model),
 		new GitFileSystemProvider(model),
 		new GitDecorations(model),
-		new GitProtocolHandler()
+		new GitProtocolHandler(),
+		new GitTimelineProvider(model)
 	);
 
 	await checkGitVersion(info);
@@ -176,7 +178,8 @@ export async function activate(context: ExtensionContext): Promise<GitExtension>
 		// console.warn(err.message);
 		// outputChannel.appendLine(err.message);
 
-		// warnAboutMissingGit();
+		commands.executeCommand('setContext', 'git.missing', true);
+		// warnAboutMissingGit(); {{SQL CARBON EDIT}} turn-off Git missing prompt
 
 		return new GitExtensionImpl();
 	}
