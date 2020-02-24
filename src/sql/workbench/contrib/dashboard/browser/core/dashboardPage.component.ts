@@ -182,7 +182,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	private getExtensionContributedHomeToolbarContent(content: ITaskbarContent[]): void {
 		let primary: IAction[] = [];
 		let secondary: IAction[] = [];
-		const menu = this.menuService.createMenu(MenuId.DashboardHomeToolbar, this.contextKeyService);
+		const menu = this.menuService.createMenu(MenuId.DashboardToolbar, this.contextKeyService);
 		let groups = menu.getActions({ arg: null, shouldForwardArgs: true });
 		fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined || group === '');
 
