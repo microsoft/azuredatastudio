@@ -1,11 +1,7 @@
 {
 	"requiredPythonPackages": [
 		{ "name": "pymssql", "version": "2.1.4" },
-		{ "name": "sqlmlutils", "version": ""},
-		{ "name": "mlflow", "version": ""},
-		{ "name": "pyodbc", "version": ""},
-		{ "name": "mlflow[sqlserver]", "version": ""},
-		{ "name": "onnx", "version": ""}
+		{ "name": "sqlmlutils", "version": ""}
 	],
 
 	"requiredRPackages": [

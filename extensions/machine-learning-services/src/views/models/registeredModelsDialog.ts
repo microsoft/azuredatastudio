@@ -22,15 +22,16 @@ export class RegisteredModelsDialog extends ModelViewBase {
 		this.dialogView = new DialogView(this._apiWrapper);
 	}
 	public dialogView: DialogView;
+	public currentLanguagesTab: CurrentModelsPage | undefined;
 
 	/**
 	 * Opens a dialog to manage packages used by notebooks.
 	 */
 	public open(): void {
 
-		let currentLanguagesTab = new CurrentModelsPage(this._apiWrapper, this);
+		this.currentLanguagesTab = new CurrentModelsPage(this._apiWrapper, this);
 
-		let dialog = this.dialogView.createDialog('', [currentLanguagesTab]);
+		let dialog = this.dialogView.createDialog('', [this.currentLanguagesTab]);
 		this.mainViewPanel = dialog;
 		dialog.okButton.hidden = true;
 		dialog.cancelButton.label = constants.extLangDoneButtonText;

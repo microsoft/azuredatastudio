@@ -74,7 +74,7 @@ export class AzureModelsComponent extends ModelViewBase implements IPageView, ID
 	/**
 	 * Loads the data in the components
 	 */
-	public async loadData() {
+	public async loadData(): Promise<void> {
 		await this.azureFilterComponent?.loadData();
 	}
 

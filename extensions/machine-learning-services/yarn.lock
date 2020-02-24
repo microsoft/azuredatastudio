@@ -11,25 +11,7 @@
     "@azure/ms-rest-js" "^1.8.1"
     tslib "^1.9.3"
 
-"@azure/arm-resourcegraph@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@azure/arm-resourcegraph/-/arm-resourcegraph-2.0.0.tgz#f766e4a0b4285c114d25e98f22f8c260fe042469"
-  integrity sha512-6tWBlHlqlqUlNP0Ob+6x6uH37YICbgXg03UiVWr9Yno060KJ/0BPwlSfTgjvLkBiyXnutPb6HpH5/+GMUICzYQ==
-  dependencies:
-    "@azure/ms-rest-azure-js" "^1.3.2"
-    "@azure/ms-rest-js" "^1.8.1"
-    tslib "^1.9.3"
-
-"@azure/arm-subscriptions@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@azure/arm-subscriptions/-/arm-subscriptions-1.0.0.tgz#ab65a5cd4d8b8c878ff6621428f29137b84eb1d6"
-  integrity sha512-DoZFcF+ePkGhrxQ4X/LxBoWipqpkZIt9g+itXJ4HaQNExn0hNO27Cs6kNZYpIdCs5Zu+2DbjRs2i8OqG3QbE9w==
-  dependencies:
-    "@azure/ms-rest-azure-js" "^1.1.0"
-    "@azure/ms-rest-js" "^1.1.0"
-    tslib "^1.9.3"
-
-"@azure/ms-rest-azure-js@^1.1.0", "@azure/ms-rest-azure-js@^1.3.2":
+"@azure/ms-rest-azure-js@^1.3.2":
   version "1.3.8"
   resolved "https://registry.yarnpkg.com/@azure/ms-rest-azure-js/-/ms-rest-azure-js-1.3.8.tgz#96b518223d3baa2496b2981bc07288b3d887486e"
   integrity sha512-AHLfDTCyIH6wBK6+CpImI6sc9mLZ17ZgUrTx3Rhwv+3Mb3Z73BxormkarfR6Stb6scrBYitxJ27FXyndXlGAYg==
@@ -37,7 +19,7 @@
     "@azure/ms-rest-js" "^1.8.10"
     tslib "^1.9.3"
 
-"@azure/ms-rest-js@^1.1.0", "@azure/ms-rest-js@^1.8.1", "@azure/ms-rest-js@^1.8.10":
+"@azure/ms-rest-js@^1.8.1", "@azure/ms-rest-js@^1.8.10":
   version "1.8.14"
   resolved "https://registry.yarnpkg.com/@azure/ms-rest-js/-/ms-rest-js-1.8.14.tgz#657fc145db20b6eb3d58d1a2055473aa72eb609d"
   integrity sha512-IrCPN22c8RbKWA06ZXuFwwEb15cSnr0zZ6J8Fspp9ns1SSNTERf7hv+gWvTIis1FlwHy42Mfk8hVu0/r3a0AWA==

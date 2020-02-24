@@ -5,7 +5,7 @@
 
 import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
-import { ModelSourcesComponent } from './modelSourcesComponent';
+import { ModelSourcesComponent, ModelSourceType } from './modelSourcesComponent';
 import { LocalModelsComponent } from './localModelsComponent';
 import { AzureModelsComponent } from './azureModelsComponent';
 import * as constants from '../../common/constants';
@@ -39,7 +39,7 @@ export class RegisterModelWizard extends ModelViewBase {
 
 		this.wizardView = new WizardView(this._apiWrapper);
 
-		let wizard = this.wizardView.createWizard('', [this.modelResources, this.localModelsComponent]);
+		let wizard = this.wizardView.createWizard(constants.registerModelWizardTitle, [this.modelResources, this.localModelsComponent]);
 		this.mainViewPanel = this.parent?.mainViewPanel || wizard;
 		wizard.doneButton.label = constants.azureRegisterModel;
 		wizard.generateScriptButton.hidden = true;
@@ -57,7 +57,6 @@ export class RegisterModelWizard extends ModelViewBase {
 			if (this.parent) {
 				this.parent.refresh();
 			}
-
 		});
 
 		wizard.registerNavigationValidator(() => {
@@ -68,7 +67,7 @@ export class RegisterModelWizard extends ModelViewBase {
 	}
 
 	private loadPages(): void {
-		if (this.modelResources && this.localModelsComponent && this.modelResources.data) {
+		if (this.modelResources && this.localModelsComponent && this.modelResources.data === ModelSourceType.Local) {
 			this.wizardView?.addWizardPage(this.localModelsComponent, 1);
 
 		} else if (this.azureModelsComponent) {
@@ -77,7 +76,7 @@ export class RegisterModelWizard extends ModelViewBase {
 	}
 
 	/**
-	 * Resets the tabs for given provider Id
+	 * Refresh the pages
 	 */
 	public async refresh(): Promise<void> {
 		this.loadPages();

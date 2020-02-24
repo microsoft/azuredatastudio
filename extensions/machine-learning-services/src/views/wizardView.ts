@@ -48,7 +48,7 @@ export class WizardView extends MainViewBase {
 	/**
 	 *
 	 * @param title Creates anew wizard
-	 * @param pages
+	 * @param pages wizard pages
 	 */
 	public createWizard(title: string, pages: IPageView[]): azdata.window.Wizard {
 		this._wizard = this._apiWrapper.createWizard(title);

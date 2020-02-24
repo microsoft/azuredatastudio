@@ -59,19 +59,6 @@ export class CurrentModelsTable extends ModelViewBase {
 								...constants.cssStyles.tableRow
 							},
 						},
-						{ // Size
-							displayName: constants.modelSize,
-							ariaLabel: constants.modelSize,
-							valueType: azdata.DeclarativeDataType.string,
-							isReadOnly: true,
-							width: 150,
-							headerCssStyles: {
-								...constants.cssStyles.tableHeader
-							},
-							rowCssStyles: {
-								...constants.cssStyles.tableRow
-							},
-						},
 						{ // Action
 							displayName: '',
 							valueType: azdata.DeclarativeDataType.component,
@@ -129,7 +116,7 @@ export class CurrentModelsTable extends ModelViewBase {
 			}).component();
 			editLanguageButton.onDidClick(() => {
 			});
-			return [model.id, model.name, model.size, editLanguageButton];
+			return [model.id, model.name, editLanguageButton];
 		}
 
 		return [];

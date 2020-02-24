@@ -49,7 +49,5 @@ export type WorkspacesModelsResponse = ListWorkspaceModelsResult & {
  */
 export interface RegisteredModel {
 	id: number,
-	name: string,
-	groupPath: string,
-	size: number
+	name: string
 }

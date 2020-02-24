@@ -35,9 +35,7 @@ export class RegisteredModelService {
 				result.rows.forEach(row => {
 					list.push({
 						id: +row[0].displayValue,
-						name: row[1].displayValue,
-						groupPath: row[2].displayValue,
-						size: +row[3].displayValue
+						name: row[1].displayValue
 					});
 				});
 			}

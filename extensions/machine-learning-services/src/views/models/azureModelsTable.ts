@@ -88,10 +88,7 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 
 	/**
 	 * Load data in the component
-	 * @param account Azure account
-	 * @param subscription azure subscription
-	 * @param group azure resource group
-	 * @param workspace azure workspace
+	 * @param workspaceResource Azure workspace
 	 */
 	public async loadData(workspaceResource?: AzureWorkspaceResource | undefined): Promise<void> {
 

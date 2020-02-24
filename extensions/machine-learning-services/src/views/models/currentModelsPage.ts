@@ -22,7 +22,7 @@ export class CurrentModelsPage extends ModelViewBase implements IPageView {
 	/**
 	 *
 	 * @param apiWrapper Creates new view
-	 * @param parent
+	 * @param parent page parent
 	 */
 	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase) {
 		super(apiWrapper, parent.root, parent);

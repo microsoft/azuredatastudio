@@ -102,7 +102,6 @@ export abstract class ViewBase extends EventEmitterCollection {
 			if (!callbackEventName) {
 				callbackEventName = ViewBase.getCallbackEventName(eventName);
 			}
-			this.fire(eventName, arg);
 			this.on(callbackEventName, result => {
 				let callbackArgs = <CallbackEventArgs>result;
 				if (callbackArgs) {
@@ -115,6 +114,7 @@ export abstract class ViewBase extends EventEmitterCollection {
 					reject(constants.notSupportedEventArg);
 				}
 			});
+			this.fire(eventName, arg);
 		});
 	}
 

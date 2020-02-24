@@ -120,6 +120,8 @@ export const registerModelWizardTitle = localize('models.RegisterWizard', "Regis
 export const registerModelButton = localize('models.RegisterModelButton', "Register model");
 export const modelRegisteredSuccessfully = localize('models.modelRegisteredSuccessfully', "Model registered successfully");
 export const modelFailedToRegister = localize('models.modelFailedToRegistered', "Model failed to register");
+export const localModelSource = localize('models.localModelSource', "Upload file");
+export const azureModelSource = localize('models.azureModelSource', "Import from AzureML registry");
 
 
 // Links

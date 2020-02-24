@@ -9,10 +9,14 @@ import { ApiWrapper } from '../../common/apiWrapper';
 import * as constants from '../../common/constants';
 import { IPageView, IDataComponent } from '../interfaces';
 
+export enum ModelSourceType {
+	Local,
+	Azure
+}
 /**
  * View tp pick model source
  */
-export class ModelSourcesComponent extends ModelViewBase implements IPageView, IDataComponent<boolean> {
+export class ModelSourcesComponent extends ModelViewBase implements IPageView, IDataComponent<ModelSourceType> {
 
 	private _form: azdata.FormContainer | undefined;
 	private _amlModel: azdata.RadioButtonComponent | undefined;
@@ -32,7 +36,7 @@ export class ModelSourcesComponent extends ModelViewBase implements IPageView, I
 			.withProperties({
 				value: 'local',
 				name: 'modelLocation',
-				label: constants.extLangLocal,
+				label: constants.localModelSource,
 				checked: true
 			}).component();
 
@@ -41,7 +45,7 @@ export class ModelSourcesComponent extends ModelViewBase implements IPageView, I
 			.withProperties({
 				value: 'aml',
 				name: 'modelLocation',
-				label: 'Azure Models',
+				label: constants.azureModelSource,
 			}).component();
 
 		this._localModel.onDidClick(() => {
@@ -72,8 +76,8 @@ export class ModelSourcesComponent extends ModelViewBase implements IPageView, I
 	/**
 	 * Returns selected data
 	 */
-	public get data(): boolean {
-		return this._isLocalModel;
+	public get data(): ModelSourceType {
+		return this._isLocalModel ? ModelSourceType.Local : ModelSourceType.Azure;
 	}
 
 	/**
