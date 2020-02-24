@@ -7,6 +7,13 @@
 	box-sizing: border-box;
 }
 
+.editDataContainer-horizontal {
+	border-top-color: rgb(81,81,81);
+	border-top-width: 1px;
+	border-top-style: solid;
+	padding-top: 5px;
+}
+
 #workbench\.editor\.editDataEditor .monaco-toolbar .monaco-select-box {
 	margin-top: 4px;
 	margin-bottom: 4px;

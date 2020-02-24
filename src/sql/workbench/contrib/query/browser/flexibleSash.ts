@@ -62,7 +62,7 @@ export class HorizontalFlexibleSash extends Disposable implements IHorizontalSas
 		super();
 		this.ratio = HorizontalFlexibleSash.initialRatio;
 		this.left = 0;
-		this.sash = new Sash(container, this, { orientation: Orientation.HORIZONTAL, orthogonalStartSash: new Sash(container, this, {}) });
+		this.sash = new Sash(container, this, { orientation: Orientation.HORIZONTAL });
 
 		this._register(this.sash.onDidStart(() => this.onSashDragStart()));
 		this._register(this.sash.onDidChange((e: ISashEvent) => this.onSashDrag(e)));
