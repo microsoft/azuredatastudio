@@ -13,7 +13,6 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { keys } from 'vs/base/common/map';
 import { assign } from 'vs/base/common/objects';
 import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
-import { IConnection, IConnectionService } from 'sql/platform/connection/common/connectionService';
 
 export const SERVICE_ID = 'queryManagementService';
 
@@ -29,14 +28,14 @@ export interface IQueryManagementService {
 	getRegisteredProviders(): string[];
 	registerRunner(runner: QueryRunner, uri: string): void;
 
-	cancelQuery(connection: IConnection): Promise<azdata.QueryCancelResult>;
-	runQuery(connection: IConnection, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void>;
-	runQueryStatement(connection: IConnection, line: number, column: number): Promise<void>;
-	runQueryString(connection: IConnection, queryString: string): Promise<void>;
-	runQueryAndReturn(connection: IConnection, queryString: string): Promise<azdata.SimpleExecuteResult>;
-	parseSyntax(connection: IConnection, query: string): Promise<azdata.SyntaxParseResult>;
+	cancelQuery(ownerUri: string): Promise<azdata.QueryCancelResult>;
+	runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void>;
+	runQueryStatement(ownerUri: string, line: number, column: number): Promise<void>;
+	runQueryString(ownerUri: string, queryString: string): Promise<void>;
+	runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult>;
+	parseSyntax(ownerUri: string, query: string): Promise<azdata.SyntaxParseResult>;
 	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<azdata.QueryExecuteSubsetResult>;
-	disposeQuery(connection: IConnection): Promise<void>;
+	disposeQuery(ownerUri: string): Promise<void>;
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult>;
 	setQueryExecutionOptions(uri: string, options: azdata.QueryExecutionOptions): Promise<void>;
 
@@ -102,9 +101,8 @@ export class QueryManagementService implements IQueryManagementService {
 	public _handlerCallbackQueue: ((run: QueryRunner) => void)[] = [];
 
 	constructor(
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
-		@IConnectionService private readonly connectionService: IConnectionService
+		@IConnectionManagementService private _connectionService: IConnectionManagementService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 	}
 
@@ -167,9 +165,10 @@ export class QueryManagementService implements IQueryManagementService {
 		return Array.from(keys(this._requestHandlers));
 	}
 
-	private addTelemetry(eventName: string, connection: IConnection, runOptions?: azdata.ExecutionPlanOptions): void {
+	private addTelemetry(eventName: string, ownerUri: string, runOptions?: azdata.ExecutionPlanOptions): void {
+		const providerId: string = this._connectionService.getProviderIdFromUri(ownerUri);
 		const data: ITelemetryEventProperties = {
-			provider: connection.provider,
+			provider: providerId,
 		};
 		if (runOptions) {
 			assign(data, {
@@ -180,21 +179,11 @@ export class QueryManagementService implements IQueryManagementService {
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, eventName).withAdditionalProperties(data).send();
 	}
 
-	private withProvider<T>(connection: IConnection, action: (handler: IQueryRequestHandler, uri: string) => Promise<T>, fallBackToDefaultProvider: boolean = false): Promise<T> {
-		const handler = this._requestHandlers.get(connection.provider);
-		const uri = this.connectionService.getIdForConnection(connection);
-		if (handler) {
-			return action(handler, uri);
-		} else {
-			throw new Error('No Handler Registered');
-		}
-	}
-
 	private _runAction<T>(uri: string, action: (handler: IQueryRequestHandler) => Promise<T>, fallBackToDefaultProvider: boolean = false): Promise<T> {
-		let providerId: string = this._connectionManagementService.getProviderIdFromUri(uri);
+		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
 
 		if (!providerId && fallBackToDefaultProvider) {
-			providerId = this._connectionManagementService.getDefaultProviderId();
+			providerId = this._connectionService.getDefaultProviderId();
 		}
 
 		if (!providerId) {
@@ -208,59 +197,51 @@ export class QueryManagementService implements IQueryManagementService {
 		}
 	}
 
-	public cancelQuery(connection: IConnection): Promise<azdata.QueryCancelResult> {
-		this.addTelemetry(TelemetryKeys.CancelQuery, connection);
-		return this.withProvider(connection, (runner, uri) => {
-			return runner.cancelQuery(uri);
+	public cancelQuery(ownerUri: string): Promise<azdata.QueryCancelResult> {
+		this.addTelemetry(TelemetryKeys.CancelQuery, ownerUri);
+		return this._runAction(ownerUri, (runner) => {
+			return runner.cancelQuery(ownerUri);
 		});
 	}
-
-	public runQuery(connection: IConnection, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void> {
-		this.addTelemetry(TelemetryKeys.RunQuery, connection, runOptions);
-		return this.withProvider(connection, (runner, uri) => {
-			return runner.runQuery(uri, selection, runOptions);
+	public runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void> {
+		this.addTelemetry(TelemetryKeys.RunQuery, ownerUri, runOptions);
+		return this._runAction(ownerUri, (runner) => {
+			return runner.runQuery(ownerUri, selection, runOptions);
 		});
 	}
-
-	public runQueryStatement(connection: IConnection, line: number, column: number): Promise<void> {
-		this.addTelemetry(TelemetryKeys.RunQueryStatement, connection);
-		return this.withProvider(connection, (runner, uri) => {
-			return runner.runQueryStatement(uri, line, column);
+	public runQueryStatement(ownerUri: string, line: number, column: number): Promise<void> {
+		this.addTelemetry(TelemetryKeys.RunQueryStatement, ownerUri);
+		return this._runAction(ownerUri, (runner) => {
+			return runner.runQueryStatement(ownerUri, line, column);
 		});
 	}
-
-	public runQueryString(connection: IConnection, queryString: string): Promise<void> {
-		this.addTelemetry(TelemetryKeys.RunQueryString, connection);
-		return this.withProvider(connection, (runner, uri) => {
-			return runner.runQueryString(uri, queryString);
+	public runQueryString(ownerUri: string, queryString: string): Promise<void> {
+		this.addTelemetry(TelemetryKeys.RunQueryString, ownerUri);
+		return this._runAction(ownerUri, (runner) => {
+			return runner.runQueryString(ownerUri, queryString);
 		});
 	}
-
-	public runQueryAndReturn(connection: IConnection, queryString: string): Promise<azdata.SimpleExecuteResult> {
-		return this.withProvider(connection, (runner, uri) => {
-			return runner.runQueryAndReturn(uri, queryString);
+	public runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult> {
+		return this._runAction(ownerUri, (runner) => {
+			return runner.runQueryAndReturn(ownerUri, queryString);
 		});
 	}
-
-	public parseSyntax(connection: IConnection, query: string): Promise<azdata.SyntaxParseResult> {
-		return this.withProvider(connection, (runner, uri) => {
-			return runner.parseSyntax(uri, query);
+	public parseSyntax(ownerUri: string, query: string): Promise<azdata.SyntaxParseResult> {
+		return this._runAction(ownerUri, (runner) => {
+			return runner.parseSyntax(ownerUri, query);
 		});
 	}
-
 	public getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<azdata.QueryExecuteSubsetResult> {
 		return this._runAction(rowData.ownerUri, (runner) => {
 			return runner.getQueryRows(rowData);
 		});
 	}
-
-	public disposeQuery(connection: IConnection): Promise<void> {
-		return this.withProvider(connection, (runner, uri) => {
-			this._queryRunners.delete(uri);
-			return runner.disposeQuery(uri);
+	public disposeQuery(ownerUri: string): Promise<void> {
+		this._queryRunners.delete(ownerUri);
+		return this._runAction(ownerUri, (runner) => {
+			return runner.disposeQuery(ownerUri);
 		});
 	}
-
 	public setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Promise<void> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.setQueryExecutionOptions(ownerUri, options);
@@ -278,7 +259,6 @@ export class QueryManagementService implements IQueryManagementService {
 			runner.handleQueryComplete(result);
 		});
 	}
-
 	public onBatchStart(batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
 		this._notify(batchInfo.ownerUri, (runner: QueryRunner) => {
 			runner.handleBatchStart(batchInfo);

@@ -5,18 +5,16 @@
 
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { EncodingMode } from 'vs/workbench/common/editor';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
 import { ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
+import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
+import { IConnection } from 'sql/platform/connection/common/connectionService';
 
-type PublicPart<T> = { [K in keyof T]: T[K] };
-
-export class FileQueryEditorInput extends QueryEditorInput implements PublicPart<FileEditorInput> {
+export class FileQueryEditorInput extends QueryEditorInput {
 
 	public static readonly ID = 'workbench.editorInput.fileQueryInput';
 
@@ -24,11 +22,11 @@ export class FileQueryEditorInput extends QueryEditorInput implements PublicPart
 		description: string,
 		text: FileEditorInput,
 		results: QueryResultsInput,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IQueryModelService queryModelService: IQueryModelService,
-		@IConfigurationService configurationService: IConfigurationService
+		connection: IConnection | undefined,
+		@IConfigurationService configurationService: IConfigurationService,
+		@IConnectionDialogService connectionDialogService: IConnectionDialogService
 	) {
-		super(description, text, results, connectionManagementService, queryModelService, configurationService);
+		super(description, text, results, connection, configurationService, connectionDialogService);
 	}
 
 	public resolve(): Promise<ITextFileEditorModel | BinaryEditorModel> {

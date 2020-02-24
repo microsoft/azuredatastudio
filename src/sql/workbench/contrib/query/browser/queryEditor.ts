@@ -17,13 +17,11 @@ import { TextFileEditor } from 'vs/workbench/contrib/files/browser/editors/textF
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { Event } from 'vs/base/common/event';
 import { DisposableStore } from 'vs/base/common/lifecycle';
-import { ISelectionData } from 'azdata';
 import { Action, IActionViewItem } from 'vs/base/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
@@ -83,7 +81,6 @@ export class QueryEditor extends BaseEditor {
 	private _changeConnectionAction: actions.ConnectDatabaseAction;
 	private _listDatabasesAction: actions.ListDatabasesAction;
 	private _estimatedQueryPlanAction: actions.EstimatedQueryPlanAction;
-	private _actualQueryPlanAction: actions.ActualQueryPlanAction;
 	private _listDatabasesActionItem: actions.ListDatabasesActionItem;
 	private _toggleSqlcmdMode: actions.ToggleSqlCmdModeAction;
 
@@ -175,13 +172,12 @@ export class QueryEditor extends BaseEditor {
 		}));
 
 		// Create Actions for the toolbar
-		this._runQueryAction = this.instantiationService.createInstance(actions.RunQueryAction, this);
+		this._runQueryAction = this.instantiationService.createInstance(actions.RunQueryAction);
 		this._cancelQueryAction = this.instantiationService.createInstance(actions.CancelQueryAction, this);
 		this._toggleConnectDatabaseAction = this.instantiationService.createInstance(actions.ToggleConnectDatabaseAction, this, false);
 		this._changeConnectionAction = this.instantiationService.createInstance(actions.ConnectDatabaseAction, this, true);
 		this._listDatabasesAction = this.instantiationService.createInstance(actions.ListDatabasesAction, this);
 		this._estimatedQueryPlanAction = this.instantiationService.createInstance(actions.EstimatedQueryPlanAction, this);
-		this._actualQueryPlanAction = this.instantiationService.createInstance(actions.ActualQueryPlanAction, this);
 		this._toggleSqlcmdMode = this.instantiationService.createInstance(actions.ToggleSqlCmdModeAction, this, false);
 
 		this.setTaskbarContent();
@@ -476,131 +472,6 @@ export class QueryEditor extends BaseEditor {
 				this.input.state.resultsVisible = true;
 			}
 		}
-	}
-
-	// helper functions
-
-	public isSelectionEmpty(): boolean {
-		if (this.currentTextEditor && this.currentTextEditor.getControl()) {
-			let control = this.currentTextEditor.getControl();
-			let codeEditor: ICodeEditor = <ICodeEditor>control;
-
-			if (codeEditor) {
-				let value = codeEditor.getValue();
-				if (value !== undefined && value.length > 0) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Returns the underlying SQL editor's text selection in a 0-indexed format. Returns undefined if there
-	 * is no selected text.
-	 */
-	public getSelection(checkIfRange: boolean = true): ISelectionData {
-		if (this.currentTextEditor && this.currentTextEditor.getControl()) {
-			let vscodeSelection = this.currentTextEditor.getControl().getSelection();
-
-			// If the selection is a range of characters rather than just a cursor position, return the range
-			let isRange: boolean =
-				!(vscodeSelection.getStartPosition().lineNumber === vscodeSelection.getEndPosition().lineNumber &&
-					vscodeSelection.getStartPosition().column === vscodeSelection.getEndPosition().column);
-			if (!checkIfRange || isRange) {
-				let sqlToolsServiceSelection: ISelectionData = {
-					startLine: vscodeSelection.getStartPosition().lineNumber - 1,
-					startColumn: vscodeSelection.getStartPosition().column - 1,
-					endLine: vscodeSelection.getEndPosition().lineNumber - 1,
-					endColumn: vscodeSelection.getEndPosition().column - 1,
-				};
-				return sqlToolsServiceSelection;
-			}
-		}
-
-		// Otherwise return undefined because there is no selected text
-		return undefined;
-	}
-
-	public getAllSelection(): ISelectionData {
-		if (this.currentTextEditor && this.currentTextEditor.getControl()) {
-			let control = this.currentTextEditor.getControl();
-			let codeEditor: ICodeEditor = <ICodeEditor>control;
-			if (codeEditor) {
-				let model = codeEditor.getModel();
-				let totalLines = model.getLineCount();
-				let endColumn = model.getLineMaxColumn(totalLines);
-				let selection: ISelectionData = {
-					startLine: 0,
-					startColumn: 0,
-					endLine: totalLines - 1,
-					endColumn: endColumn - 1,
-				};
-				return selection;
-			}
-		}
-		return undefined;
-	}
-
-	public getAllText(): string {
-		if (this.currentTextEditor && this.currentTextEditor.getControl()) {
-			let control = this.currentTextEditor.getControl();
-			let codeEditor: ICodeEditor = <ICodeEditor>control;
-			if (codeEditor) {
-				let value = codeEditor.getValue();
-				if (value !== undefined && value.length > 0) {
-					return value;
-				} else {
-					return '';
-				}
-			}
-		}
-		return undefined;
-	}
-
-	public getSelectionText(): string {
-		if (this.currentTextEditor && this.currentTextEditor.getControl()) {
-			let control = this.currentTextEditor.getControl();
-			let codeEditor: ICodeEditor = <ICodeEditor>control;
-			let vscodeSelection = control.getSelection();
-
-			if (codeEditor && vscodeSelection) {
-				let model = codeEditor.getModel();
-				let value = model.getValueInRange(vscodeSelection);
-				if (value !== undefined && value.length > 0) {
-					return value;
-				}
-			}
-		}
-		return '';
-	}
-
-	/**
-	 * Calls the runCurrent method of this editor's RunQueryAction
-	 */
-	public async runCurrentQuery(): Promise<void> {
-		return this._runQueryAction.runCurrent();
-	}
-
-	/**
-	 * Calls the runCurrentQueryWithActualPlan method of this editor's ActualQueryPlanAction
-	 */
-	public async runCurrentQueryWithActualPlan(): Promise<void> {
-		return this._actualQueryPlanAction.run();
-	}
-
-	/**
-	 * Calls the run method of this editor's RunQueryAction
-	 */
-	public async runQuery(): Promise<void> {
-		return this._runQueryAction.run();
-	}
-
-	/**
-	 * Calls the run method of this editor's CancelQueryAction
-	 */
-	public async cancelQuery(): Promise<void> {
-		return this._cancelQueryAction.run();
 	}
 
 	public registerQueryModelViewTab(title: string, componentId: string): void {

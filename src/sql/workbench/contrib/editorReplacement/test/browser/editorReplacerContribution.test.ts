@@ -144,7 +144,7 @@ suite('Editor Replacer Contribution', () => {
 		const accessor = instantiationService.createInstance(ServiceAccessor);
 		const service = accessor.untitledTextEditorService;
 		const untitled = instantiationService.createInstance(UntitledTextEditorInput, service.create());
-		const input = instantiationService.createInstance(UntitledQueryEditorInput, '', untitled, undefined);
+		const input = instantiationService.createInstance(UntitledQueryEditorInput, '', untitled, undefined, undefined);
 		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
 		assert(response === undefined);
 

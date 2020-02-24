@@ -6,7 +6,7 @@
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { ICapabilitiesService, ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
-import { Disposable, IDisposable, combinedDisposable, dispose } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable, combinedDisposable, dispose, toDisposable } from 'vs/base/common/lifecycle';
 import { entries } from 'sql/base/common/collections';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Deferred } from 'sql/base/common/promise';
@@ -56,7 +56,7 @@ export interface IConnectionProvider {
 
 export interface IConnectionService {
 	_serviceBrand: undefined;
-	registerProvider(provider: IConnectionProvider);
+	registerProvider(provider: IConnectionProvider): IDisposable;
 	/**
 	 * Creates a connection with the given uri and profile
 	 * If a connection already exists with the given uri A NEW ONE WILL NOT BE CREATED, the existing connection is returned.
@@ -195,8 +195,7 @@ export class ConnectionService extends Disposable implements IConnectionService 
 		this._register(capabilitiesService.onCapabilitiesRegistered(e => this.tryAddKnownProvider(e.id, e.features)));
 		this._register(capabilitiesService.onCapabilitiesUnregistered(e => {
 			if (this.knownProviders.delete(e)) { // only bother deleting the provider if it is a known provider
-				dispose(this.connectionProviders.get(e)!.disposable);
-				this.connectionProviders.delete(e);
+				dispose(this.connectionProviders.get(e)!.disposable); // we delete as part of the disposable
 			}
 		}));
 	}
@@ -213,17 +212,19 @@ export class ConnectionService extends Disposable implements IConnectionService 
 		}
 	}
 
-	public registerProvider(provider: IConnectionProvider): void {
+	public registerProvider(provider: IConnectionProvider): IDisposable {
 		if (!this.knownProviders.has(provider.id)) {
 			throw new Error(`Unknown provider registered: ${provider.id}`);
 		}
 		const disposable = combinedDisposable(
 			provider.onDidConnectionChanged(e => this.onConnectionChanged(e)),
-			provider.onDidConnectionComplete(e => this.onConnectionComplete(e))
+			provider.onDidConnectionComplete(e => this.onConnectionComplete(e)),
+			toDisposable(() => this.connectionProviders.delete(provider.id))
 		);
 		const providerStub = this.connectionProviders.get(provider.id);
 		providerStub.disposable = disposable;
 		providerStub.provider.resolve(provider);
+		return disposable;
 	}
 
 	private onConnectionChanged(event: IProviderConnectionChangedEvent): void {

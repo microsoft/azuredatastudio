@@ -11,6 +11,7 @@ import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/c
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesServiceImpl';
 import { isUndefined } from 'vs/base/common/types';
+import { setImmediate } from 'vs/base/common/platform';
 
 const options: { [key: string]: any } = {
 	serverName: 'testServer',
@@ -23,13 +24,12 @@ suite('Connection Service', () => {
 	test('does connect', async () => {
 		const [connectionService, provider] = createService();
 		const connectStub = sinon.stub(provider, 'connect', (connectionUri: string, options: { [name: string]: any; }) => {
-			setTimeout(() => {
-				provider.onDidConnectionCompleteEmitter.fire({ connectionUri });
-			}, 500);
+			setImmediate(() => provider.onDidConnectionCompleteEmitter.fire({ connectionUri }));
 			return Promise.resolve(true);
 		});
 
 		const connection = connectionService.createOrGetConnection('someuri', { provider: TestConnectionProvider.ID, options });
+		assert(connection.provider === TestConnectionProvider.ID);
 		assert(connection.state === ConnectionState.DISCONNECTED);
 		const result = await connection.connect();
 		assert(!result.failed);
@@ -40,9 +40,7 @@ suite('Connection Service', () => {
 	test('does provide onDidConnect promise', async () => {
 		const [connectionService, provider] = createService();
 		const connectStub = sinon.stub(provider, 'connect', (connectionUri: string, options: { [name: string]: any; }) => {
-			setTimeout(() => {
-				provider.onDidConnectionCompleteEmitter.fire({ connectionUri });
-			}, 500);
+			setImmediate(() => provider.onDidConnectionCompleteEmitter.fire({ connectionUri }));
 			return Promise.resolve(true);
 		});
 
@@ -64,13 +62,12 @@ suite('Connection Service', () => {
 		connectionService.registerProvider(provider);
 
 		const connectStub = sinon.stub(provider, 'connect', (connectionUri: string, options: { [name: string]: any; }) => {
-			setTimeout(() => {
-				provider.onDidConnectionCompleteEmitter.fire({ connectionUri });
-			}, 500);
+			setImmediate(() => provider.onDidConnectionCompleteEmitter.fire({ connectionUri }));
 			return Promise.resolve(true);
 		});
 
 		const connection = connectionService.createOrGetConnection('someuri', { provider: 'testProvider2', options });
+		assert(connection.provider === 'testProvider2');
 		assert(connection.state === ConnectionState.DISCONNECTED);
 		connection.connect();
 
@@ -111,9 +108,7 @@ suite('Connection Service', () => {
 		const [connectionService, provider] = createService();
 		const errorMessage = 'some random error message';
 		const connectStub = sinon.stub(provider, 'connect', (connectionUri: string, options: { [name: string]: any; }) => {
-			setTimeout(() => {
-				provider.onDidConnectionCompleteEmitter.fire({ connectionUri, errorMessage: errorMessage });
-			}, 500);
+			setImmediate(() => provider.onDidConnectionCompleteEmitter.fire({ connectionUri, errorMessage }));
 			return Promise.resolve(true);
 		});
 
@@ -130,9 +125,7 @@ suite('Connection Service', () => {
 	test('does throw if you connect an already connecting connection', async () => {
 		const [connectionService, provider] = createService();
 		const connectStub = sinon.stub(provider, 'connect', (connectionUri: string, options: { [name: string]: any; }) => {
-			setTimeout(() => {
-				provider.onDidConnectionCompleteEmitter.fire({ connectionUri });
-			}, 500);
+			setImmediate(() => provider.onDidConnectionCompleteEmitter.fire({ connectionUri }));
 			return Promise.resolve(true);
 		});
 
@@ -151,9 +144,7 @@ suite('Connection Service', () => {
 	test('does throw if you connect an already connected connection', async () => {
 		const [connectionService, provider] = createService();
 		const connectStub = sinon.stub(provider, 'connect', (connectionUri: string, options: { [name: string]: any; }) => {
-			setTimeout(() => {
-				provider.onDidConnectionCompleteEmitter.fire({ connectionUri });
-			}, 500);
+			setImmediate(() => provider.onDidConnectionCompleteEmitter.fire({ connectionUri }));
 			return Promise.resolve(true);
 		});
 
@@ -172,9 +163,7 @@ suite('Connection Service', () => {
 	test('does throw onDidConnect if not currently connecting', async () => {
 		const [connectionService, provider] = createService();
 		const connectStub = sinon.stub(provider, 'connect', (connectionUri: string, options: { [name: string]: any; }) => {
-			setTimeout(() => {
-				provider.onDidConnectionCompleteEmitter.fire({ connectionUri });
-			}, 500);
+			setImmediate(() => provider.onDidConnectionCompleteEmitter.fire({ connectionUri }));
 			return Promise.resolve(true);
 		});
 

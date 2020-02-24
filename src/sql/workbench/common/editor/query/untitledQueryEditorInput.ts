@@ -5,14 +5,14 @@
 
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
 import { IEncodingSupport, EncodingMode } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
+import { IConnection } from 'sql/platform/connection/common/connectionService';
+import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 
 export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport {
 
@@ -22,11 +22,11 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		description: string,
 		text: UntitledTextEditorInput,
 		results: QueryResultsInput,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IQueryModelService queryModelService: IQueryModelService,
-		@IConfigurationService configurationService: IConfigurationService
+		initialConnection: IConnection | undefined,
+		@IConfigurationService configurationService: IConfigurationService,
+		@IConnectionDialogService connectionDialogService: IConnectionDialogService
 	) {
-		super(description, text, results, connectionManagementService, queryModelService, configurationService);
+		super(description, text, results, initialConnection, configurationService, connectionDialogService);
 	}
 
 	public resolve(): Promise<IUntitledTextEditorModel & IResolvedTextEditorModel> {

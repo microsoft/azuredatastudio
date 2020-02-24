@@ -154,7 +154,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Runs a query for a text selection inside a document
 	 */
-	$runQuery(handle: number, ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Thenable<void> { throw ni(); }
+	$runQuery(handle: number, ownerUri: string, selection?: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void> { throw ni(); }
 	/**
 	 * Runs the current SQL statement query for a text document
 	 */

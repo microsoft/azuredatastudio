@@ -17,11 +17,9 @@ import { append, $ } from 'vs/base/browser/dom';
 import { ISelectionData, QueryExecutionOptions } from 'azdata';
 import {
 	IConnectionManagementService,
-	INewConnectionParams,
 	ConnectionType,
 	RunQueryOnConnectionMode,
-	IConnectionCompletionOptions,
-	IConnectableInput
+	IConnectionCompletionOptions
 } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
@@ -29,11 +27,9 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { Task } from 'sql/workbench/services/tasks/browser/tasksRegistry';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { OEAction } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
@@ -42,6 +38,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { ILogService } from 'vs/platform/log/common/log';
+import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -101,38 +98,8 @@ export abstract class QueryTaskbarAction extends Action {
 	 * Public for testing only.
 	 */
 	protected connectEditor(editor: QueryEditor, runQueryOnCompletion?: RunQueryOnConnectionMode, selection?: ISelectionData): void {
-		let params: INewConnectionParams = {
-			input: editor.input,
-			connectionType: ConnectionType.editor,
-			runQueryOnCompletion: runQueryOnCompletion ? runQueryOnCompletion : RunQueryOnConnectionMode.none,
-			querySelection: selection
-		};
-		this.connectionManagementService.showConnectionDialog(params);
+		this.connectionManagementService.showConnectionDialog();
 	}
-}
-
-export function openNewQuery(accessor: ServicesAccessor, profile?: IConnectionProfile, initalContent?: string, onConnection?: RunQueryOnConnectionMode): Promise<void> {
-	const editorService = accessor.get(IEditorService);
-	const queryEditorService = accessor.get(IQueryEditorService);
-	const objectExplorerService = accessor.get(IObjectExplorerService);
-	const connectionManagementService = accessor.get(IConnectionManagementService);
-	if (!profile) {
-		profile = getCurrentGlobalConnection(objectExplorerService, connectionManagementService, editorService);
-	}
-	return queryEditorService.newSqlEditor(initalContent).then((owner: IConnectableInput) => {
-		// Connect our editor to the input connection
-		let options: IConnectionCompletionOptions = {
-			params: { connectionType: ConnectionType.editor, runQueryOnCompletion: onConnection, input: owner },
-			saveTheConnection: false,
-			showDashboard: false,
-			showConnectionDialogOnError: true,
-			showFirewallRuleOnError: true
-		};
-		if (profile) {
-			return connectionManagementService.connect(profile, owner.uri, options).then();
-		}
-		return undefined;
-	});
 }
 
 // --- actions
@@ -190,70 +157,22 @@ CommandsRegistry.registerCommand({
 /**
  * Action class that runs a query in the active SQL text document.
  */
-export class RunQueryAction extends QueryTaskbarAction {
+export class RunQueryAction extends Action {
 
 	public static EnabledClass = 'start';
 	public static ID = 'runQueryAction';
 
 	constructor(
-		editor: QueryEditor,
-		@IQueryModelService protected readonly queryModelService: IQueryModelService,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService
+		@IEditorService private readonly editorService: IEditorService
 	) {
-		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
-		this.label = nls.localize('runQueryLabel', "Run");
+		super(RunQueryAction.ID, nls.localize('runQueryLabel', "Run"), RunQueryAction.EnabledClass);
 	}
 
-	public async run(): Promise<void> {
-		if (!this.editor.isSelectionEmpty()) {
-			// if (this.isConnected(this.editor)) {
-				// If we are already connected, run the query
-				this.runQuery(this.editor);
-			// } else {
-			// 	// If we are not already connected, prompt for connection and run the query if the
-			// 	// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
-			// 	this.connectEditor(this.editor, RunQueryOnConnectionMode.executeQuery, this.editor.getSelection());
-			// }
+	async run(): Promise<void> {
+		const editor = this.editorService.activeEditor as QueryEditorInput;
+		if (await editor.connect()) {
+
 		}
-		return;
-	}
-
-	public async runCurrent(): Promise<void> {
-		if (!this.editor.isSelectionEmpty()) {
-			if (this.isConnected(this.editor)) {
-				// If we are already connected, run the query
-				this.runQuery(this.editor, true);
-			} else {
-				// If we are not already connected, prompt for connection and run the query if the
-				// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
-				this.connectEditor(this.editor, RunQueryOnConnectionMode.executeCurrentQuery, this.editor.getSelection(false));
-			}
-		}
-		return;
-	}
-
-	public runQuery(editor: QueryEditor, runCurrentStatement: boolean = false) {
-		if (!editor) {
-			editor = this.editor;
-		}
-
-		// if (this.isConnected(editor)) {
-			// if the selection isn't empty then execute the selection
-			// otherwise, either run the statement or the script depending on parameter
-			let selection: ISelectionData = editor.getSelection(false);
-			if (runCurrentStatement && selection && this.isCursorPosition(selection)) {
-				editor.input.runQueryStatement(selection);
-			} else {
-				// get the selection again this time with trimming
-				selection = editor.getSelection();
-				editor.input.runQuery(selection);
-			}
-		// }
-	}
-
-	protected isCursorPosition(selection: ISelectionData) {
-		return selection.startLine === selection.endLine
-			&& selection.startColumn === selection.endColumn;
 	}
 }
 
@@ -474,7 +393,6 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 			this.updateCssClass(ToggleConnectDatabaseAction.ConnectClass);
 		}
 	}
-
 
 	public async run(): Promise<void> {
 		if (!this.editor.input.isSharedSession) {

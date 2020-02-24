@@ -80,7 +80,7 @@ class MockEditorService extends TestEditorService {
 			const accessor = workbenchinstantiationService.createInstance(ServiceAccessor);
 			const service = accessor.untitledTextEditorService;
 			const untitledInput = instantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: URI.file('/test/file') }));
-			this.activeEditor = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, undefined);
+			this.activeEditor = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, undefined, undefined);
 		}
 	}
 }

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
+import { IDisposable, Disposable, combinedDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import {
 	SqlExtHostContext, ExtHostDataProtocolShape,
 	MainThreadDataProtocolShape, SqlMainContext
@@ -29,6 +29,8 @@ import { assign } from 'vs/base/common/objects';
 import { IConnectionService, IProviderConnectionCompleteEvent, IProviderConnectionChangedEvent } from 'sql/platform/connection/common/connectionService';
 import { Emitter } from 'vs/base/common/event';
 import { serializableToMap } from 'sql/base/common/map';
+import { IQueryService } from 'sql/platform/query/common/queryService';
+import { URI } from 'vs/base/common/uri';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -38,8 +40,9 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 
 	private _proxy: ExtHostDataProtocolShape;
 
-	private _capabilitiesRegistrations: { [handle: number]: IDisposable; } = Object.create(null); // should we be registering these?
-	private _connectionEvents = new Map<string, { onDidConnectionComplete: Emitter<IProviderConnectionCompleteEvent>; onDidConnectionChange: Emitter<IProviderConnectionChangedEvent> }>();
+	private readonly _connectionEvents = new Map<string, { onDidConnectionComplete: Emitter<IProviderConnectionCompleteEvent>; onDidConnectionChange: Emitter<IProviderConnectionChangedEvent> }>();
+	private readonly _queryEvents = new Map<string, {  }>();
+	private readonly _registrations = new Map<number, IDisposable>();
 
 	constructor(
 		extHostContext: IExtHostContext,
@@ -57,7 +60,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		@ITaskService private _taskService: ITaskService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@ISerializationService private _serializationService: ISerializationService,
-		@IFileBrowserService private _fileBrowserService: IFileBrowserService
+		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
+		@IQueryService private readonly queryService: IQueryService
 	) {
 		super();
 		if (extHostContext) {
@@ -68,13 +72,14 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		}
 	}
 
-	public $registerConnectionProvider(providerId: string, handle: number): Promise<void> {
+	//#region connection
+	public async $registerConnectionProvider(providerId: string, handle: number): Promise<void> {
 		const emitters = {
 			onDidConnectionChange: new Emitter<any>(),
 			onDidConnectionComplete: new Emitter<any>()
 		};
 		this._connectionEvents.set(providerId, emitters);
-		this.connectionService.registerProvider({
+		const disposable = this.connectionService.registerProvider({
 			id: providerId,
 			connect: (connectionUri: string, options: { [name: string]: any }): Promise<boolean> => {
 				return Promise.resolve(this._proxy.$connect(handle, connectionUri, { options }));
@@ -89,82 +94,50 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			onDidConnectionComplete: emitters.onDidConnectionComplete.event
 		});
 
-		return Promise.resolve();
+		this._registrations.set(handle,
+			combinedDisposable(
+				disposable,
+				toDisposable(() => {
+					emitters.onDidConnectionChange.dispose();
+					emitters.onDidConnectionComplete.dispose();
+				}),
+				toDisposable(() => this._connectionEvents.delete(providerId))
+			)
+		);
 	}
 
-	public $registerQueryProvider(providerId: string, handle: number): Promise<any> {
-		const self = this;
-		this._queryManagementService.addQueryRequestHandler(providerId, {
-			cancelQuery(ownerUri: string): Promise<azdata.QueryCancelResult> {
-				return Promise.resolve(self._proxy.$cancelQuery(handle, ownerUri));
-			},
-			runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void> {
-				return Promise.resolve(self._proxy.$runQuery(handle, ownerUri, selection, runOptions));
-			},
-			runQueryStatement(ownerUri: string, line: number, column: number): Promise<void> {
-				return Promise.resolve(self._proxy.$runQueryStatement(handle, ownerUri, line, column));
-			},
-			runQueryString(ownerUri: string, queryString: string): Promise<void> {
-				return Promise.resolve(self._proxy.$runQueryString(handle, ownerUri, queryString));
-			},
-			runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult> {
-				return Promise.resolve(self._proxy.$runQueryAndReturn(handle, ownerUri, queryString));
-			},
-			parseSyntax(ownerUri: string, query: string): Promise<azdata.SyntaxParseResult> {
-				return Promise.resolve(self._proxy.$parseSyntax(handle, ownerUri, query));
-			},
-			getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<azdata.QueryExecuteSubsetResult> {
-				return Promise.resolve(self._proxy.$getQueryRows(handle, rowData));
-			},
-			setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Promise<void> {
-				return Promise.resolve(self._proxy.$setQueryExecutionOptions(handle, ownerUri, options));
-			},
-			disposeQuery(ownerUri: string): Promise<void> {
-				return Promise.resolve(self._proxy.$disposeQuery(handle, ownerUri));
-			},
-			saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult> {
-				let saveResultsFeatureInfo = self._serializationService.getSaveResultsFeatureMetadataProvider(requestParams.ownerUri);
-				if (saveResultsFeatureInfo && saveResultsFeatureInfo.enabled) {
-					return Promise.resolve(self._proxy.$saveResults(handle, requestParams));
-				}
-				else if (saveResultsFeatureInfo && !saveResultsFeatureInfo.enabled) {
-					return Promise.resolve(self._serializationService.disabledSaveAs());
-				}
-				else {
-					return Promise.resolve(self._serializationService.saveAs(requestParams.resultFormat, requestParams.filePath, undefined, true));
-				}
-			},
-			initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Promise<void> {
-				return Promise.resolve(self._proxy.$initializeEdit(handle, ownerUri, schemaName, objectName, objectType, rowLimit, queryString));
-			},
-			updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Promise<azdata.EditUpdateCellResult> {
-				return Promise.resolve(self._proxy.$updateCell(handle, ownerUri, rowId, columnId, newValue));
-			},
-			commitEdit(ownerUri): Promise<void> {
-				return Promise.resolve(self._proxy.$commitEdit(handle, ownerUri));
-			},
-			createRow(ownerUri: string): Promise<azdata.EditCreateRowResult> {
-				return Promise.resolve(self._proxy.$createRow(handle, ownerUri));
-			},
-			deleteRow(ownerUri: string, rowId: number): Promise<void> {
-				return Promise.resolve(self._proxy.$deleteRow(handle, ownerUri, rowId));
-			},
-			disposeEdit(ownerUri: string): Promise<void> {
-				return Promise.resolve(self._proxy.$disposeEdit(handle, ownerUri));
-			},
-			revertCell(ownerUri: string, rowId: number, columnId: number): Promise<azdata.EditRevertCellResult> {
-				return Promise.resolve(self._proxy.$revertCell(handle, ownerUri, rowId, columnId));
-			},
-			revertRow(ownerUri: string, rowId: number): Promise<void> {
-				return Promise.resolve(self._proxy.$revertRow(handle, ownerUri, rowId));
-			},
-			getEditRows(rowData: azdata.EditSubsetParams): Promise<azdata.EditSubsetResult> {
-				return Promise.resolve(self._proxy.$getEditRows(handle, rowData));
+	// Connection Management handlers
+	public $onConnectionComplete(providerId: string, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
+		this._connectionEvents.get(providerId)?.onDidConnectionComplete.fire({ connectionUri: connectionInfoSummary.ownerUri, errorMessage: connectionInfoSummary.errorMessage || connectionInfoSummary.messages });
+	}
+
+	public $onConnectionChangeNotification(providerId: string, changedConnInfo: azdata.ChangedConnectionInfo): void {
+		this._connectionEvents.get(providerId)?.onDidConnectionChange.fire(changedConnInfo);
+	}
+	//#endregion connection
+
+	////#region query
+	public async $registerQueryProvider(providerId: string, handle: number): Promise<void> {
+		const emitters = {
+		};
+		this._queryEvents.set(providerId, emitters);
+		const disposable = this.queryService.registerProvider({
+			id: providerId,
+			runQuery: (connectionId: string, file: URI): Promise<void> => {
+				return this._proxy.$runQuery(handle, connectionId); // for now we consider the connection to be the file but we shouldn't
 			}
 		});
 
-		return undefined;
+		this._registrations.set(handle,
+			combinedDisposable(
+				disposable,
+				toDisposable(() => {
+				}),
+				toDisposable(() => this._queryEvents.delete(providerId))
+			)
+		);
 	}
+	//#endregion query
 
 	public $registerBackupProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
@@ -468,17 +441,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		return undefined;
 	}
 
-	// Connection Management handlers
-	public $onConnectionComplete(providerId: string, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
-		this._connectionEvents.get(providerId)?.onDidConnectionComplete.fire({ connectionUri: connectionInfoSummary.ownerUri, errorMessage: connectionInfoSummary.errorMessage || connectionInfoSummary.messages });
-	}
-
 	public $onIntelliSenseCacheComplete(handle: number, connectionUri: string): void {
 		this._connectionManagementService.onIntelliSenseCacheComplete(handle, connectionUri);
-	}
-
-	public $onConnectionChangeNotification(providerId: string, changedConnInfo: azdata.ChangedConnectionInfo): void {
-		this._connectionEvents.get(providerId)?.onDidConnectionChange.fire(changedConnInfo);
 	}
 
 	// Query Management handlers
@@ -563,13 +527,11 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		this._jobManagementService.fireOnDidChange();
 	}
 
-	public $unregisterProvider(handle: number): Promise<any> {
-		let capabilitiesRegistration = this._capabilitiesRegistrations[handle];
-		if (capabilitiesRegistration) {
-			capabilitiesRegistration.dispose();
-			delete this._capabilitiesRegistrations[handle];
+	public async $unregisterProvider(handle: number): Promise<void> {
+		const disposable = this._registrations.get(handle);
+		if (disposable) {
+			disposable.dispose();
+			this._registrations.delete(handle);
 		}
-
-		return undefined;
 	}
 }
