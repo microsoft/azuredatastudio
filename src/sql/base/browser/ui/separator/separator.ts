@@ -5,7 +5,7 @@
 
 import { Disposable } from 'vs/base/common/lifecycle';
 
-export class Seperator extends Disposable {
+export class Separator extends Disposable {
 	private readonly element: HTMLHRElement;
 
 	constructor(container: HTMLElement) {

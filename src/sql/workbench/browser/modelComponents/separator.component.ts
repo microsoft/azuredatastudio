@@ -11,23 +11,23 @@ import {
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
-import { Seperator } from 'sql/base/browser/ui/seperator/seperator';
+import { Separator } from 'sql/base/browser/ui/separator/separator';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 @Component({
-	selector: `modelview-seperator`,
+	selector: `modelview-separator`,
 	template: `
 		<div #seperator> </div>
 	`
 })
-export default class SeperatorComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
-	private _seperator: Seperator;
+export default class SeparatorComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+	private _separator: Separator;
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
-	@ViewChild('seperator', { read: ElementRef }) private _seperatorContainer: ElementRef;
+	@ViewChild('separator', { read: ElementRef }) private _separatorContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) themeService: IWorkbenchThemeService,
@@ -43,9 +43,9 @@ export default class SeperatorComponent extends ComponentBase implements ICompon
 	}
 
 	ngAfterViewInit(): void {
-		if (this._seperatorContainer) {
-			this._seperator = new Seperator(this._seperatorContainer.nativeElement);
-			this._register(this._seperator);
+		if (this._separatorContainer) {
+			this._separator = new Separator(this._separatorContainer.nativeElement);
+			this._register(this._separator);
 		}
 	}
 

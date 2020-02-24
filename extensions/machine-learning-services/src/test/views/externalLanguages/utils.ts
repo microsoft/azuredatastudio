@@ -170,7 +170,7 @@ export function createContext(): TestContext {
 			loadingComponent: () => loadingBuilder,
 			fileBrowserTree: undefined!,
 			hyperlink: undefined!,
-			seperator: undefined!
+			separator: undefined!
 		}
 	};
 	let tab: azdata.window.DialogTab = {

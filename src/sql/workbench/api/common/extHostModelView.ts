@@ -163,9 +163,9 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
-	seperator(): azdata.ComponentBuilder<azdata.SeperatorComponent> {
+	separator(): azdata.ComponentBuilder<azdata.SeparatorComponent> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.SeperatorComponent> = this.getComponentBuilder(new SeperatorWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.SeparatorComponent> = this.getComponentBuilder(new SeparatorWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -1541,9 +1541,9 @@ class FileBrowserTreeComponentWrapper extends ComponentWrapper implements azdata
 	}
 }
 
-class SeperatorWrapper extends ComponentWrapper implements azdata.SeperatorComponent {
+class SeparatorWrapper extends ComponentWrapper implements azdata.SeparatorComponent {
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.Seperator, id);
+		super(proxy, handle, ModelComponentTypes.Separator, id);
 	}
 }
 
