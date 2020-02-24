@@ -19,7 +19,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 @Component({
 	selector: `modelview-separator`,
 	template: `
-		<div #seperator> </div>
+		<div #separator> </div>
 	`
 })
 export default class SeparatorComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
