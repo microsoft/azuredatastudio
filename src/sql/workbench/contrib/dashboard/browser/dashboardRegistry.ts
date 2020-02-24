@@ -37,27 +37,19 @@ export interface IDashboardTabGroup {
 	title: string;
 }
 
-export interface IDashboardToolbarHomeAction {
-	name: string
-	when?: string;
-}
-
 export interface IDashboardRegistry {
 	registerDashboardProvider(id: string, properties: ProviderProperties): void;
 	getProperties(id: string): ProviderProperties;
 	registerTab(tab: IDashboardTab): void;
 	registerTabGroup(tabGroup: IDashboardTabGroup): void;
-	registerToolbarHomeAction(action: IDashboardToolbarHomeAction): void;
 	tabs: Array<IDashboardTab>;
 	tabGroups: Array<IDashboardTabGroup>;
-	toolbarHomeActions: Array<IDashboardToolbarHomeAction>;
 }
 
 class DashboardRegistry implements IDashboardRegistry {
 	private _properties = new Map<string, ProviderProperties>();
 	private _tabs = new Array<IDashboardTab>();
 	private _tabGroups = new Array<IDashboardTabGroup>();
-	private _toolbarHomeActions = new Array<IDashboardToolbarHomeAction>();
 	private _configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtension.Configuration);
 
 	/**
@@ -95,20 +87,12 @@ class DashboardRegistry implements IDashboardRegistry {
 		}
 	}
 
-	registerToolbarHomeAction(action: IDashboardToolbarHomeAction): void {
-		this._toolbarHomeActions.push(action);
-	}
-
 	public get tabs(): Array<IDashboardTab> {
 		return this._tabs;
 	}
 
 	public get tabGroups(): Array<IDashboardTabGroup> {
 		return this._tabGroups;
-	}
-
-	public get toolbarHomeActions(): Array<IDashboardToolbarHomeAction> {
-		return this._toolbarHomeActions;
 	}
 }
 
@@ -146,10 +130,6 @@ const dashboardPropertiesPropertyContrib: IJSONSchema = {
 		}
 	}
 };
-
-export function registerToolbarHomeAction(action: IDashboardToolbarHomeAction) {
-	dashboardRegistry.registerToolbarHomeAction(action);
-}
 
 const dashboardPropertyFlavorContrib: IJSONSchema = {
 	description: nls.localize('dashboard.properties.flavor', "A flavor for defining dashboard properties"),

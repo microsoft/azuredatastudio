@@ -14,7 +14,7 @@ import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/w
 import { WidgetConfig, TabConfig, TabSettingConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { IPropertiesConfig } from 'sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution';
 import { PanelComponent, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
-import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab, IDashboardToolbarHomeAction } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
+import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 import { TabComponent, TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { AngularEventType, IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { DashboardTab, IConfigModifierCollection } from 'sql/workbench/contrib/dashboard/browser/core/interfaces';
@@ -217,7 +217,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this.toolbar.setContent(content);
 	}
 
-	private getToolbarContent(toolbarTasks: WidgetConfig | IDashboardToolbarHomeAction[]): ITaskbarContent[] {
+	private getToolbarContent(toolbarTasks: WidgetConfig): ITaskbarContent[] {
 		let tasks = TaskRegistry.getTasks();
 
 		if (types.isArray(toolbarTasks) && toolbarTasks.length > 0) {
