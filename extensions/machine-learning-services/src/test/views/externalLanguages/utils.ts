@@ -169,7 +169,8 @@ export function createContext(): TestContext {
 			toolbarContainer: undefined!,
 			loadingComponent: () => loadingBuilder,
 			fileBrowserTree: undefined!,
-			hyperlink: undefined!
+			hyperlink: undefined!,
+			seperator: undefined!
 		}
 	};
 	let tab: azdata.window.DialogTab = {

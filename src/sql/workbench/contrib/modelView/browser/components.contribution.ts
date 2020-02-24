@@ -30,6 +30,7 @@ import { registerComponentType } from 'sql/platform/dashboard/browser/modelCompo
 import HyperlinkComponent from 'sql/workbench/browser/modelComponents/hyperlink.component';
 import SplitViewContainer from 'sql/workbench/browser/modelComponents/splitviewContainer.component';
 import RadioCardGroup from 'sql/workbench/browser/modelComponents/radioCardGroup.component';
+import SeperatorComponent from 'sql/workbench/browser/modelComponents/seperator.component';
 import { ModelComponentTypes } from 'sql/platform/dashboard/browser/interfaces';
 
 export const DIV_CONTAINER = 'div-container';
@@ -110,3 +111,6 @@ registerComponentType(HYPERLINK_COMPONENT, ModelComponentTypes.Hyperlink, Hyperl
 
 export const RADIOCARDGROUP_COMPONENT = 'radiocardgroup-component';
 registerComponentType(RADIOCARDGROUP_COMPONENT, ModelComponentTypes.RadioCardGroup, RadioCardGroup);
+
+export const SEPERATOR_COMPONENT = 'seperator-component';
+registerComponentType(SEPERATOR_COMPONENT, ModelComponentTypes.Seperator, SeperatorComponent);
