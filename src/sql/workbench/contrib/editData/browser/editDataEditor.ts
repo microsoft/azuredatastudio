@@ -618,6 +618,11 @@ export class EditDataEditor extends BaseEditor {
 			} else {
 				this._sash.hide();
 			}
+			if (this.queryPaneEnabled()) {
+				DOM.toggleClass(this.getContainer(), 'sash-visible', true);
+			} else {
+				DOM.toggleClass(this.getContainer(), 'sash-visible', false);
+			}
 		}
 
 		this._updateTaskbar(newInput);
@@ -670,8 +675,10 @@ export class EditDataEditor extends BaseEditor {
 	public toggleQueryPane(): void {
 		this.editDataInput.queryPaneEnabled = !this.queryPaneEnabled();
 		if (this.queryPaneEnabled()) {
+			DOM.toggleClass(this.getContainer(), 'sash-visible', true);
 			this._showQueryEditor();
 		} else {
+			DOM.toggleClass(this.getContainer(), 'sash-visible', false);
 			this._hideQueryEditor();
 		}
 		this._doLayout(false);
