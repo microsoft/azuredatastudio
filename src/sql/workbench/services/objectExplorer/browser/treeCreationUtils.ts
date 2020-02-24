@@ -40,7 +40,7 @@ export class TreeCreationUtils {
 	/**
 	 * Create a Servers viewlet tree
 	 */
-	public static createRegisteredServersTree(treeContainer: HTMLElement, instantiationService: IInstantiationService): Tree {
+	public static createRegisteredServersTree(treeContainer: HTMLElement, instantiationService: IInstantiationService, horizontalScrollMode: boolean = false): Tree {
 
 		const dataSource = instantiationService.createInstance(ServerTreeDataSource);
 		const actionProvider = instantiationService.createInstance(ServerTreeActionProvider);
@@ -56,7 +56,7 @@ export class TreeCreationUtils {
 				indentPixels: 10,
 				twistiePixels: 20,
 				ariaLabel: nls.localize('treeCreation.regTreeAriaLabel', "Servers"),
-				horizontalScrollMode: ScrollbarVisibility.Auto
+				horizontalScrollMode: horizontalScrollMode ? ScrollbarVisibility.Auto : ScrollbarVisibility.Hidden
 			});
 	}
 }
