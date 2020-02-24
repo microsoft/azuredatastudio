@@ -14,6 +14,7 @@ import { DefaultFilter, DefaultAccessibilityProvider, DefaultController } from '
 import { IController } from 'vs/base/parts/tree/browser/tree';
 import { ServerTreeDragAndDrop, RecentConnectionsDragAndDrop } from 'sql/workbench/services/objectExplorer/browser/dragAndDropController';
 import { RecentConnectionDataSource } from 'sql/workbench/services/objectExplorer/browser/recentConnectionDataSource';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 export class TreeCreationUtils {
 	/**
@@ -54,7 +55,8 @@ export class TreeCreationUtils {
 			{
 				indentPixels: 10,
 				twistiePixels: 20,
-				ariaLabel: nls.localize('treeCreation.regTreeAriaLabel', "Servers")
+				ariaLabel: nls.localize('treeCreation.regTreeAriaLabel', "Servers"),
+				horizontalScrollMode: ScrollbarVisibility.Auto
 			});
 	}
 }
