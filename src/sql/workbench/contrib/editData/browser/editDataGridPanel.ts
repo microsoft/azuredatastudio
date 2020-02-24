@@ -426,7 +426,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 				if (self.dataSet) {
 					self.placeHolderDataSets[0].dataRows = self.dataSet.dataRows;
-					setTimeout(() => this.onResize(), 100);
+					this.onResize();
 				}
 
 
