@@ -10,10 +10,10 @@ import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
 	INotebookService, INotebookManager, INotebookProvider,
-	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, OVERRIDE_EDITOR_THEMING_SETTING, INavigationProvider, ILanguageMagic
+	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, INavigationProvider, ILanguageMagic
 } from 'sql/workbench/services/notebook/browser/notebookService';
-import { RenderMimeRegistry } from 'sql/workbench/contrib/notebook/browser/outputs/registry';
-import { standardRendererFactories } from 'sql/workbench/contrib/notebook/browser/outputs/factories';
+import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
+import { standardRendererFactories } from 'sql/workbench/services/notebook/browser/outputs/factories';
 import { Extensions, INotebookProviderRegistry, NotebookProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Memento } from 'vs/workbench/common/memento';
@@ -23,26 +23,19 @@ import { IExtensionManagementService, IExtensionIdentifier } from 'vs/platform/e
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { Deferred } from 'sql/base/common/promise';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { registerNotebookThemes } from 'sql/workbench/contrib/notebook/browser/notebookStyles';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
-import { notebookConstants, ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { SqlNotebookProvider } from 'sql/workbench/services/notebook/browser/sql/sqlNotebookProvider';
-import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { keys } from 'vs/base/common/map';
 import { IFileService, IFileStatWithMetadata } from 'vs/platform/files/common/files';
 import { Schemas } from 'vs/base/common/network';
 import { ILogService } from 'vs/platform/log/common/log';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -110,9 +103,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _providerToStandardKernels = new Map<string, nb.IStandardKernel[]>();
 	private _registrationComplete = new Deferred<void>();
 	private _isRegistrationComplete = false;
-	private notebookEditorVisible: IContextKey<boolean>;
 	private _themeParticipant: IDisposable;
-	private _overrideEditorThemeSetting: boolean;
 	private _trustedCacheQueue: URI[] = [];
 	private _unTrustedCacheQueue: URI[] = [];
 
@@ -122,14 +113,10 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IExtensionService private _extensionService: IExtensionService,
 		@IExtensionManagementService extensionManagementService: IExtensionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IContextKeyService private _contextKeyService: IContextKeyService,
-		@IEditorService private readonly _editorService: IEditorService,
-		@IEditorGroupsService private readonly _editorGroupsService: IEditorGroupsService,
-		@IConfigurationService private readonly _configurationService: IConfigurationService,
 		@IFileService private readonly _fileService: IFileService,
 		@ILogService private readonly _logService: ILogService,
 		@IQueryManagementService private readonly _queryManagementService: IQueryManagementService,
-		@IEnvironmentService environmentService: IEnvironmentService
+		@ILogService private readonly logService: ILogService
 	) {
 		super();
 		this._providersMemento = new Memento('notebookProviders', this._storageService);
@@ -167,43 +154,12 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 
 		lifecycleService.onWillShutdown(() => this.shutdown());
-		this.hookContextKeyListeners();
-		this.hookNotebookThemesAndConfigListener();
-
 	}
 
 	public dispose(): void {
 		super.dispose();
 		if (this._themeParticipant) {
 			this._themeParticipant.dispose();
-		}
-	}
-
-	private hookContextKeyListeners(): void {
-		const updateEditorContextKeys = () => {
-			const visibleEditors = this._editorService.visibleControls;
-			this.notebookEditorVisible.set(visibleEditors.some(control => control.getId() === NotebookEditor.ID));
-		};
-		if (this._contextKeyService) {
-			this.notebookEditorVisible = NotebookEditorVisibleContext.bindTo(this._contextKeyService);
-		}
-		if (this._editorService) {
-			this._register(this._editorService.onDidActiveEditorChange(() => updateEditorContextKeys()));
-			this._register(this._editorService.onDidVisibleEditorsChange(() => updateEditorContextKeys()));
-			this._register(this._editorGroupsService.onDidAddGroup(() => updateEditorContextKeys()));
-			this._register(this._editorGroupsService.onDidRemoveGroup(() => updateEditorContextKeys()));
-		}
-	}
-
-	private hookNotebookThemesAndConfigListener(): void {
-		if (this._configurationService) {
-			this.updateNotebookThemes();
-			this._register(this._configurationService.onDidChangeConfiguration(e => {
-				if (e.affectsConfiguration(OVERRIDE_EDITOR_THEMING_SETTING)
-					|| e.affectsConfiguration('resultsGrid')) {
-					this.updateNotebookThemes();
-				}
-			}));
 		}
 	}
 
@@ -223,19 +179,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 		this._isRegistrationComplete = true;
 		this._registrationComplete.resolve();
-	}
-
-	private updateNotebookThemes() {
-		let overrideEditorSetting = this._configurationService.getValue<boolean>(OVERRIDE_EDITOR_THEMING_SETTING);
-		if (overrideEditorSetting !== this._overrideEditorThemeSetting) {
-			// Re-add the participant since this will trigger update of theming rules, can't just
-			// update something and ask to change
-			if (this._themeParticipant) {
-				this._themeParticipant.dispose();
-			}
-			this._overrideEditorThemeSetting = overrideEditorSetting;
-			this._themeParticipant = registerNotebookThemes(overrideEditorSetting, this._configurationService);
-		}
 	}
 
 	private updateRegisteredProviders(p: { id: string; registration: NotebookProviderRegistration; }) {
@@ -455,7 +398,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				try {
 					await this._extensionService.whenInstalledExtensionsRegistered();
 				} catch (error) {
-					console.error(error);
+					this.logService.error(error);
 				}
 				instance = await this.waitOnProviderAvailability(providerDescriptor);
 			} else {

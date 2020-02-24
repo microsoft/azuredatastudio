@@ -8,7 +8,7 @@ import 'vs/css!./media/editData';
 import { VirtualizedCollection, AsyncDataProvider, ISlickColumn } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 
-import { IGridDataSet } from 'sql/workbench/contrib/grid/common/interfaces';
+import { IGridDataSet } from 'sql/workbench/contrib/grid/browser/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
 import { GridParentComponent } from 'sql/workbench/contrib/editData/browser/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/workbench/contrib/editData/browser/editDataGridActions';
@@ -394,6 +394,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		undefinedDataSet.dataRows = undefined;
 		undefinedDataSet.resized = new Emitter();
 		self.placeHolderDataSets.push(undefinedDataSet);
+		if (self.placeHolderDataSets[0]) {
+			this.refreshDatasets();
+		}
 		self.refreshGrid();
 
 		// Setup the state of the selected cell
