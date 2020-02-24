@@ -362,13 +362,13 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 					component: pagerFridayCheckboxContainer,
 					title: ''
 				}, {
-					component: view.modelBuilder.seperator().component(),
+					component: view.modelBuilder.separator().component(),
 					title: ''
 				}, {
 					component: pagerSaturdayCheckboxContainer,
 					title: ''
 				}, {
-					component: view.modelBuilder.seperator().component(),
+					component: view.modelBuilder.separator().component(),
 					title: ''
 				}, {
 					component: pagerSundayCheckboxContainer,
