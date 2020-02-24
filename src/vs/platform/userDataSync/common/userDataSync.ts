@@ -36,8 +36,15 @@ export interface ISyncConfiguration {
 	}
 }
 
+export function getDefaultIgnoredSettings(): string[] {
+	const allSettings = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration).getConfigurationProperties();
+	const machineSettings = Object.keys(allSettings).filter(setting => allSettings[setting].scope === ConfigurationScope.MACHINE || allSettings[setting].scope === ConfigurationScope.MACHINE_OVERRIDABLE);
+	return [CONFIGURATION_SYNC_STORE_KEY, ...machineSettings];
+}
+
 export function registerConfiguration(): IDisposable {
 	const ignoredSettingsSchemaId = 'vscode://schemas/ignoredSettings';
+	const ignoredExtensionsSchemaId = 'vscode://schemas/ignoredExtensions';
 	const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration);
 	configurationRegistry.registerConfiguration({
 		id: 'sync',
@@ -84,14 +91,11 @@ export function registerConfiguration(): IDisposable {
 			'sync.ignoredExtensions': {
 				'type': 'array',
 				'description': localize('sync.ignoredExtensions', "List of extensions to be ignored while synchronizing. The identifier of an extension is always ${publisher}.${name}. For example: vscode.csharp."),
-				items: {
-					type: 'string',
-					pattern: EXTENSION_IDENTIFIER_PATTERN,
-					errorMessage: localize('app.extension.identifier.errorMessage', "Expected format '${publisher}.${name}'. Example: 'vscode.csharp'.")
-				},
+				$ref: ignoredExtensionsSchemaId,
 				'default': [],
 				'scope': ConfigurationScope.APPLICATION,
-				uniqueItems: true
+				uniqueItems: true,
+				disallowSyncIgnore: true
 			},
 			'sync.ignoredSettings': {
 				'type': 'array',
@@ -100,20 +104,27 @@ export function registerConfiguration(): IDisposable {
 				'scope': ConfigurationScope.APPLICATION,
 				$ref: ignoredSettingsSchemaId,
 				additionalProperties: true,
-				uniqueItems: true
+				uniqueItems: true,
+				disallowSyncIgnore: true
 			}
 		}
 	});
+	const jsonRegistry = Registry.as<IJSONContributionRegistry>(JSONExtensions.JSONContribution);
 	const registerIgnoredSettingsSchema = () => {
-		const jsonRegistry = Registry.as<IJSONContributionRegistry>(JSONExtensions.JSONContribution);
+		const defaultIgnoreSettings = getDefaultIgnoredSettings().filter(s => s !== CONFIGURATION_SYNC_STORE_KEY);
 		const ignoredSettingsSchema: IJSONSchema = {
 			items: {
 				type: 'string',
-				enum: Object.keys(allSettings.properties)
-			}
+				enum: [...Object.keys(allSettings.properties).filter(setting => defaultIgnoreSettings.indexOf(setting) === -1), ...defaultIgnoreSettings.map(setting => `-${setting}`)]
+			},
 		};
 		jsonRegistry.registerSchema(ignoredSettingsSchemaId, ignoredSettingsSchema);
 	};
+	jsonRegistry.registerSchema(ignoredExtensionsSchemaId, {
+		type: 'string',
+		pattern: EXTENSION_IDENTIFIER_PATTERN,
+		errorMessage: localize('app.extension.identifier.errorMessage', "Expected format '${publisher}.${name}'. Example: 'vscode.csharp'.")
+	});
 	return configurationRegistry.onDidUpdateConfiguration(() => registerIgnoredSettingsSchema());
 }
 
@@ -176,6 +187,7 @@ export enum UserDataSyncErrorCode {
 	// Local Errors
 	LocalPreconditionFailed = 'LocalPreconditionFailed',
 	LocalInvalidContent = 'LocalInvalidContent',
+	LocalError = 'LocalError',
 	Incompatible = 'Incompatible',
 
 	Unknown = 'Unknown',
@@ -210,7 +222,7 @@ export class UserDataSyncStoreError extends UserDataSyncError { }
 export interface ISyncExtension {
 	identifier: IExtensionIdentifier;
 	version?: string;
-	enabled: boolean;
+	disabled?: boolean;
 }
 
 export interface IGlobalState {
@@ -282,6 +294,10 @@ export interface IUserDataSyncService {
 	readonly onDidChangeConflicts: Event<SyncSource[]>;
 
 	readonly onDidChangeLocal: Event<void>;
+	readonly onSyncErrors: Event<[SyncSource, UserDataSyncError][]>;
+
+	readonly lastSyncTime: number | undefined;
+	readonly onDidChangeLastSyncTime: Event<number>;
 
 	pull(): Promise<void>;
 	sync(): Promise<void>;
@@ -297,7 +313,7 @@ export interface IUserDataSyncService {
 export const IUserDataAutoSyncService = createDecorator<IUserDataAutoSyncService>('IUserDataAutoSyncService');
 export interface IUserDataAutoSyncService {
 	_serviceBrand: any;
-	readonly onError: Event<{ code: UserDataSyncErrorCode, source?: SyncSource }>;
+	readonly onError: Event<UserDataSyncError>;
 	triggerAutoSync(): Promise<void>;
 }
 
@@ -306,19 +322,7 @@ export interface IUserDataSyncUtilService {
 	_serviceBrand: undefined;
 	resolveUserBindings(userbindings: string[]): Promise<IStringDictionary<string>>;
 	resolveFormattingOptions(resource: URI): Promise<FormattingOptions>;
-}
-
-export const IUserDataAuthTokenService = createDecorator<IUserDataAuthTokenService>('IUserDataAuthTokenService');
-
-export interface IUserDataAuthTokenService {
-	_serviceBrand: undefined;
-
-	readonly onDidChangeToken: Event<string | undefined>;
-	readonly onTokenFailed: Event<void>;
-
-	getToken(): Promise<string | undefined>;
-	setToken(accessToken: string | undefined): Promise<void>;
-	sendTokenFailed(): void;
+	resolveDefaultIgnoredSettings(): Promise<string[]>;
 }
 
 export const IUserDataSyncLogService = createDecorator<IUserDataSyncLogService>('IUserDataSyncLogService');

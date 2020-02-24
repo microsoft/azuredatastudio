@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.16.0",
-  "distro": "a5e0b0dc6fea0cc54103c84cba1cdc7f49232347",
+  "distro": "4672f37b373e16688fc9cda03d25a138669718e9",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -175,7 +175,7 @@
     "temp-write": "^3.4.0",
     "ts-loader": "^4.4.2",
     "typemoq": "^0.3.2",
-    "typescript": "^3.8.1-rc",
+    "typescript": "3.8.2",
     "typescript-formatter": "7.1.0",
     "vinyl": "^2.0.0",
     "vinyl-fs": "^3.0.0",
