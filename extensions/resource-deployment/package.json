@@ -251,7 +251,7 @@
               },
               {
                 "name": "azdata",
-                "version": "15.0.2070"
+                "version": "15.0.4013"
               }
             ],
             "when": "target=new-aks&&version=bdc2019"
