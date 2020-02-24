@@ -12,9 +12,6 @@ import {
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { Separator } from 'sql/base/browser/ui/separator/separator';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 @Component({
 	selector: `modelview-separator`,
@@ -30,10 +27,7 @@ export default class SeparatorComponent extends ComponentBase implements ICompon
 	@ViewChild('separator', { read: ElementRef }) private _separatorContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) themeService: IWorkbenchThemeService,
-		@Inject(IContextViewService) contextViewService: IContextViewService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(IConfigurationService) configurationService: IConfigurationService
 	) {
 		super(changeRef, el);
 	}
