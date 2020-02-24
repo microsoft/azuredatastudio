@@ -30,7 +30,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
 import * as objects from 'vs/base/common/objects';
 import { Event, Emitter } from 'vs/base/common/event';
-import { Action } from 'vs/base/common/actions';
+import { Action, IAction, IActionViewItem } from 'vs/base/common/actions';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -43,7 +43,10 @@ import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as DOM from 'vs/base/browser/dom';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { TaskRegistry } from 'sql/workbench/services/tasks/browser/tasksRegistry';
-import { MenuRegistry } from 'vs/platform/actions/common/actions';
+import { MenuRegistry, IMenuService, MenuId, MenuItemAction } from 'vs/platform/actions/common/actions';
+import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 const homeTabGroupId = 'home';
@@ -110,7 +113,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		@Inject(IConfigurationService) private configurationService: IConfigurationService,
 		@Inject(ILogService) private logService: ILogService,
 		@Inject(ICommandService) private commandService: ICommandService,
-		@Inject(IContextKeyService) contextKeyService: IContextKeyService
+		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
+		@Inject(IMenuService) private menuService: IMenuService,
+		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
+		@Inject(IContextMenuService) private contextMenuService: IContextMenuService
 	) {
 		super();
 	}
@@ -158,7 +164,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		let content = this.getToolbarContent(homeToolbarConfig);
 
 		// get extension actions contributed to the home toolbar
-		content = content.concat(this.getToolbarContent(dashboardRegistry.toolbarHomeActions));
+		this.getExtensionContributedHomeToolbarContent(content);
 
 		const editAction = new EditDashboardAction(this.enableEdit, this);
 		const refreshAction = new RefreshWidgetAction(this.refresh, this);
@@ -173,11 +179,34 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		return content;
 	}
 
+	private getExtensionContributedHomeToolbarContent(content: ITaskbarContent[]): void {
+		let primary: IAction[] = [];
+		let secondary: IAction[] = [];
+		const menu = this.menuService.createMenu(MenuId.DashboardHomeToolbar, this.contextKeyService);
+		let groups = menu.getActions({ arg: null, shouldForwardArgs: true });
+		fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined || group === '');
+
+		primary.forEach(a => {
+			if (a instanceof MenuItemAction) {
+				// Need to ensure that we don't add the same action multiple times
+				let foundIndex = firstIndex(content, act => act.action && act.action.id === a.id);
+				if (foundIndex < 0) {
+					content.push({ action: a });
+				}
+			}
+		});
+
+		if (primary.length > 0) {
+			let separator: HTMLElement = Taskbar.createTaskbarSeparator();
+			content.push({ element: separator });
+		}
+	}
+
 	private createToolbar(parentElement: HTMLElement, tabName: string): void {
 		// clear out toolbar
 		DOM.clearNode(parentElement);
 		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
-		this.toolbar = this._register(new Taskbar(taskbarContainer));
+		this.toolbar = this._register(new Taskbar(taskbarContainer, { actionViewItemProvider: action => this.actionItemProvider(action as Action) }));
 
 		let content = this.tabToolbarActions.get(tabName);
 		// get toolbar content if it wasn't loaded previously
@@ -235,6 +264,14 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 	private runAction(id: string): Promise<void> {
 		return this.commandService.executeCommand(id, this.connectionManagementService.connectionInfo.connectionProfile);
+	}
+
+	private actionItemProvider(action: Action): IActionViewItem {
+		// Create ActionItem for actions contributed by extensions
+		if (action instanceof MenuItemAction) {
+			return new LabeledMenuItemActionItem(action, this.keybindingService, this.contextMenuService, this.notificationService);
+		}
+		return undefined;
 	}
 
 	private createTabs(homeWidgets: WidgetConfig[]) {

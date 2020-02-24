@@ -119,6 +119,7 @@ export class MenuId {
 	static readonly DataExplorerContext = new MenuId('DataExplorerContext'); // {{SQL CARBON EDIT}}
 	static readonly DataExplorerAction = new MenuId('DataExplorerAction'); // {{SQL CARBON EDIT}}
 	static readonly ExplorerWidgetContext = new MenuId('ExplorerWidgetContext'); // {{SQL CARBON EDIT}}
+	static readonly DashboardHomeToolbar = new MenuId('DashboardHomeToolbar'); // {{SQL CARBON EDIT}}
 
 
 	readonly id: number;
