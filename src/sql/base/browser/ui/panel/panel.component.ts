@@ -19,8 +19,6 @@ import { mixin } from 'vs/base/common/objects';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { firstIndex } from 'vs/base/common/arrays';
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyCode } from 'vs/base/common/keyCodes';
 import * as nls from 'vs/nls';
 
 export interface IPanelOptions {
@@ -52,9 +50,7 @@ let idPool = 0;
 			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title">
 				<div class="tabContainer">
 					<div *ngIf="options.layout === NavigationBarLayout.vertical" class="action-container">
-						<span [title]="toggleTabPanelButtonAriaLabel">
-							<div role="button" [attr.aria-expanded]="_tabExpanded" [attr.aria-label]="toggleTabPanelButtonAriaLabel" [ngClass]="toggleTabPanelButtonCssClass" tabindex="0" (click)="toggleTabPanel()" (keyup)="onKey($event)"></div>
-						</span>
+						<button [attr.aria-expanded]="_tabExpanded" [attr.aria-label]="toggleTabPanelButtonAriaLabel" [ngClass]="toggleTabPanelButtonCssClass" tabindex="0" (click)="toggleTabPanel()"></button>
 					</div>
 					<div #tabList class="tabList" role="tablist" scrollable [horizontalScroll]="AutoScrollbarVisibility" [verticalScroll]="HiddenScrollbarVisibility" [scrollYToX]="true">
 						<div role="presentation" *ngFor="let tab of _tabs">
@@ -126,14 +122,6 @@ export class PanelComponent extends Disposable {
 			tabListControl.classList.add(tabLabelHiddenClassName);
 		}
 		this._cd.detectChanges();
-	}
-
-	onKey(e: KeyboardEvent) {
-		let event = new StandardKeyboardEvent(e);
-		if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
-			this.toggleTabPanel();
-			e.stopPropagation();
-		}
 	}
 
 	ngOnInit(): void {

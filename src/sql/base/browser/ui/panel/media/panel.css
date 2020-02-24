@@ -163,10 +163,14 @@ panel {
 }
 
 .tabbedPanel .tab-action {
-	width: 8px;
-	height: 8px;
-	padding: 3px;
-	cursor: pointer;
+	width: 15px;
+	height: 15px;
+	padding: 0px;
+	border: 0px;
+	background-color: transparent;
+	background-position: 2px center;
+	background-repeat: no-repeat;
+	background-size: 11px 11px;
 }
 
 .tabLabelHidden .tabLabel {
@@ -174,19 +178,19 @@ panel {
 }
 
 .vs .tabbedPanel .tab-action.collapse{
-	content: url("collapse.svg");
+	background-image: url("collapse.svg");
 }
 
 .vs-dark .tabbedPanel .tab-action.collapse,
 .hc-black .tabbedPanel .tab-action.collapse {
-	content: url("collapse_inverse.svg");
+	background-image: url("collapse_inverse.svg");
 }
 
 .vs .tabbedPanel .tab-action.expand {
-	content: url("expand.svg");
+	background-image: url("expand.svg");
 }
 
 .vs-dark .tabbedPanel .tab-action.expand,
 .hc-black .tabbedPanel .tab-action.expand {
-	content: url("expand_inverse.svg");
+	background-image: url("expand_inverse.svg");
 }
