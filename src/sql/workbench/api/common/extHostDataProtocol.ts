@@ -3,18 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import * as azdata from 'azdata';
+import type * as vscode from 'vscode';
+import type * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IURITransformer } from 'vs/base/common/uriIpc';
-import { URI } from 'vs/base/common/uri';
 import { find } from 'vs/base/common/arrays';
-import { RunOnceScheduler } from 'vs/base/common/async';
-import { mapToSerializable } from 'sql/base/common/map';
 
 export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
@@ -28,12 +24,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	private _adapter = new Map<number, azdata.DataProvider>();
 	private _providersByType = new Map<azdata.DataProviderType, azdata.DataProvider[]>();
 
-	private readonly messageRunner = new RunOnceScheduler(() => this.sendMessages(), 1000);
-	private readonly queuedMessages = new Map<number, azdata.QueryExecuteMessageParams[]>();
-
 	constructor(
-		mainContext: IMainContext,
-		private uriTransformer: IURITransformer | null
+		mainContext: IMainContext
 	) {
 		super();
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadDataProtocol);
@@ -85,31 +77,6 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return (providersForType || []) as T[];
 	}
 
-	$registerConnectionProvider(provider: azdata.ConnectionProvider): vscode.Disposable {
-		// TODO reenable adding this to the global providers
-		const handle = this._nextHandle();
-
-		provider.registerOnConnectionComplete(connSummary => {
-			this._proxy.$onConnectionComplete(handle, connSummary);
-		});
-
-		provider.registerOnIntelliSenseCacheComplete(connectionUri => {
-			this._proxy.$onIntelliSenseCacheComplete(handle, connectionUri);
-		});
-
-		provider.registerOnConnectionChanged(changedConnInfo => {
-			this._proxy.$onConnectionChangeNotification(handle, changedConnInfo);
-		});
-
-		this._adapter.set(handle, provider);
-		this._proxy.$registerConnectionProvider(provider.providerId, handle);
-
-		return new Disposable(() => {
-			this._proxy.$unregisterProvider(handle);
-			this._adapter.delete(handle);
-		});
-	}
-
 	$registerBackupProvider(provider: azdata.BackupProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.BackupProvider);
 		this._proxy.$registerBackupProvider(provider.providerId, provider.handle);
@@ -126,86 +93,6 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		let rt = this.registerProvider(provider, DataProviderType.ScriptingProvider);
 		this._proxy.$registerScriptingProvider(provider.providerId, provider.handle);
 		return rt;
-	}
-
-	$registerQueryProvider(provider: azdata.QueryProvider): vscode.Disposable {
-		// TODO reenable adding this to the global providers
-		const handle = this._nextHandle();
-
-		provider.registerOnQueryComplete(result => {
-			if (this.uriTransformer) {
-				result.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(result.ownerUri))).toString(true);
-			}
-			// clear messages to maintain the order of things
-			if (this.messageRunner.isScheduled()) {
-				this.messageRunner.cancel();
-				this.sendMessages();
-			}
-			this._proxy.$onQueryComplete(handle, result);
-		});
-
-		provider.registerOnBatchStart(batchInfo => {
-			if (this.uriTransformer) {
-				batchInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(batchInfo.ownerUri))).toString(true);
-			}
-			this._proxy.$onBatchStart(handle, batchInfo);
-		});
-
-		provider.registerOnBatchComplete(batchInfo => {
-			if (this.uriTransformer) {
-				batchInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(batchInfo.ownerUri))).toString(true);
-			}
-			this._proxy.$onBatchComplete(handle, batchInfo);
-		});
-
-		provider.registerOnResultSetAvailable(resultSetInfo => {
-			if (this.uriTransformer) {
-				resultSetInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(resultSetInfo.ownerUri))).toString(true);
-			}
-			this._proxy.$onResultSetAvailable(handle, resultSetInfo);
-		});
-
-		provider.registerOnResultSetUpdated(resultSetInfo => {
-			if (this.uriTransformer) {
-				resultSetInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(resultSetInfo.ownerUri))).toString(true);
-			}
-			this._proxy.$onResultSetUpdated(handle, resultSetInfo);
-		});
-
-		provider.registerOnMessage(message => {
-			this.handleMessage(handle, message);
-		});
-
-		provider.registerOnEditSessionReady((ownerUri: string, success: boolean, message: string) => {
-			this._proxy.$onEditSessionReady(handle, ownerUri, success, message);
-		});
-
-		this._adapter.set(handle, provider);
-		this._proxy.$registerQueryProvider(provider.providerId, handle);
-
-		return new Disposable(() => {
-			this._proxy.$unregisterProvider(handle);
-			this._adapter.delete(handle);
-		});
-	}
-
-	private handleMessage(handle: number, message: azdata.QueryExecuteMessageParams): void {
-		if (this.uriTransformer) {
-			message.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(message.ownerUri))).toString(true);
-		}
-		if (!this.queuedMessages.has(handle)) {
-			this.queuedMessages.set(handle, []);
-		}
-		this.queuedMessages.get(handle).push(message);
-		if (!this.messageRunner.isScheduled()) {
-			this.messageRunner.schedule();
-		}
-	}
-
-	private sendMessages() {
-		const messages = mapToSerializable(this.queuedMessages);
-		this.queuedMessages.clear();
-		this._proxy.$onQueryMessage(messages);
 	}
 
 	$registerMetadataProvider(provider: azdata.MetadataProvider): vscode.Disposable {
@@ -279,22 +166,6 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.CapabilitiesProvider>(handle).getServerCapabilities(client);
 	}
 
-	// Connection Management handlers
-	$connect(handle: number, connectionUri: string, connection: azdata.ConnectionInfo): Promise<boolean> {
-		if (this.uriTransformer) {
-			connectionUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(connectionUri))).toString(true);
-		}
-		return Promise.resolve(this._resolveProvider<azdata.ConnectionProvider>(handle).connect(connectionUri, connection));
-	}
-
-	$disconnect(handle: number, connectionUri: string): Promise<boolean> {
-		return Promise.resolve(this._resolveProvider<azdata.ConnectionProvider>(handle).disconnect(connectionUri));
-	}
-
-	$cancelConnect(handle: number, connectionUri: string): Promise<boolean> {
-		return Promise.resolve(this._resolveProvider<azdata.ConnectionProvider>(handle).cancelConnect(connectionUri));
-	}
-
 	$changeDatabase(handle: number, connectionUri: string, newDatabase: string): Thenable<boolean> {
 		return this._resolveProvider<azdata.ConnectionProvider>(handle).changeDatabase(connectionUri, newDatabase);
 	}
@@ -326,59 +197,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	// Query Management handlers
-
-	$cancelQuery(handle: number, ownerUri: string): Thenable<azdata.QueryCancelResult> {
-		return this._resolveProvider<azdata.QueryProvider>(handle).cancelQuery(ownerUri);
-	}
-
-	$runQuery(handle: number, ownerUri: string, selection?: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void> {
-		if (this.uriTransformer) {
-			ownerUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(ownerUri))).toString(true);
-		}
-
-		return Promise.resolve(this._resolveProvider<azdata.QueryProvider>(handle).runQuery(ownerUri, selection, runOptions));
-	}
-
-	$runQueryStatement(handle: number, ownerUri: string, line: number, column: number): Thenable<void> {
-		return this._resolveProvider<azdata.QueryProvider>(handle).runQueryStatement(ownerUri, line, column);
-	}
-
-	$runQueryString(handle: number, ownerUri: string, queryString: string): Thenable<void> {
-		return this._resolveProvider<azdata.QueryProvider>(handle).runQueryString(ownerUri, queryString);
-	}
-
-	$runQueryAndReturn(handle: number, ownerUri: string, queryString: string): Thenable<azdata.SimpleExecuteResult> {
-		return this._resolveProvider<azdata.QueryProvider>(handle).runQueryAndReturn(ownerUri, queryString);
-	}
-
-	$setQueryExecutionOptions(handle: number, ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void> {
-		if (this._resolveProvider<azdata.QueryProvider>(handle).setQueryExecutionOptions) {
-			return this._resolveProvider<azdata.QueryProvider>(handle).setQueryExecutionOptions(ownerUri, options);
-		} else {
-			return new Promise((r) => r());
-		}
-	}
-
 	$connectWithProfile(handle: number, ownerUri: string, profile: azdata.connection.ConnectionProfile): Thenable<void> {
 		return new Promise((r) => r());
-	}
-
-	$parseSyntax(handle: number, ownerUri: string, query: string): Thenable<azdata.SyntaxParseResult> {
-		return this._resolveProvider<azdata.QueryProvider>(handle).parseSyntax(ownerUri, query);
-	}
-
-	$getQueryRows(handle: number, rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult> {
-		if (this.uriTransformer) {
-			rowData.ownerUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(rowData.ownerUri))).toString(true);
-		}
-		return this._resolveProvider<azdata.QueryProvider>(handle).getQueryRows(rowData);
-	}
-
-	$disposeQuery(handle: number, ownerUri: string): Thenable<void> {
-		if (this.uriTransformer) {
-			ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(ownerUri))).toString(true);
-		}
-		return this._resolveProvider<azdata.QueryProvider>(handle).disposeQuery(ownerUri);
 	}
 
 	$saveResults(handle: number, requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult> {
@@ -420,10 +240,6 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$getEditRows(handle: number, rowData: azdata.EditSubsetParams): Thenable<azdata.EditSubsetResult> {
 		return this._resolveProvider<azdata.QueryProvider>(handle).getEditRows(rowData);
-	}
-
-	$onEditSessionReady(handle: number, ownerUri: string, success: boolean, message: string): void {
-		this._proxy.$onEditSessionReady(handle, ownerUri, success, message);
 	}
 
 	public $getConnectionIconId(handle: number, connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> {

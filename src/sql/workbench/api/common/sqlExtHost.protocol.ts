@@ -37,11 +37,9 @@ export abstract class ExtHostAccountManagementShape {
 	$accountsChanged(handle: number, accounts: azdata.Account[]): Thenable<void> { throw ni(); }
 }
 
-export abstract class ExtHostConnectionsShape {
+export abstract class ExtHostConnectionShape {
 	$onConnectionEvent(handle: number, type: azdata.connection.ConnectionEventType, ownerUri: string, profile: azdata.IConnectionProfile): void { throw ni(); }
-}
 
-export abstract class ExtHostDataProtocolShape {
 
 	/**
 	 * Establish a connection to a data source using the provided ConnectionInfo instance.
@@ -57,6 +55,9 @@ export abstract class ExtHostDataProtocolShape {
 	 * Cancel a connection to a data source using the provided connectionUri string.
 	 */
 	$cancelConnect(handle: number, connectionUri: string): Promise<boolean> { throw ni(); }
+}
+
+export abstract class ExtHostDataProtocolShape {
 
 	/**
 	 * Change the database for the connection.
@@ -91,11 +92,6 @@ export abstract class ExtHostDataProtocolShape {
 	 * @param params information on what URI was changed and the new language
 	 */
 	$languageFlavorChanged(params: azdata.DidChangeLanguageFlavorParams): void { throw ni(); }
-
-	/**
-	 * Callback when a IntelliSense cache has been built
-	 */
-	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void { throw ni(); }
 
 	$getServerCapabilities(handle: number, client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> { throw ni(); }
 
@@ -140,50 +136,10 @@ export abstract class ExtHostDataProtocolShape {
 	 * Scripting methods
 	 */
 	$scriptAsOperation(handle: number, connectionUri: string, operation: azdata.ScriptOperation, metadata: azdata.ObjectMetadata, paramDetails: azdata.ScriptingParamDetails): Thenable<azdata.ScriptingResult> { throw ni(); }
-
-	/**
-	 * Cancels the currently running query for a URI
-	 */
-	$cancelQuery(handle: number, ownerUri: string): Thenable<azdata.QueryCancelResult> { throw ni(); }
-
-	/**
-	 * Runs a query for a text selection inside a document
-	 */
-	$runQuery(handle: number, ownerUri: string, selection?: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void> { throw ni(); }
-	/**
-	 * Runs the current SQL statement query for a text document
-	 */
-	$runQueryStatement(handle: number, ownerUri: string, line: number, column: number): Thenable<void> { throw ni(); }
-	/**
-	 * Runs a query for a provided query
-	 */
-	$runQueryString(handle: number, ownerUri: string, queryString: string): Thenable<void> { throw ni(); }
-	/**
-	 * Runs a query for a provided query and returns result
-	 */
-	$runQueryAndReturn(handle: number, ownerUri: string, queryString: string): Thenable<azdata.SimpleExecuteResult> { throw ni(); }
-	/**
-	 * Parses a T-SQL string without actually executing it
-	 */
-	$parseSyntax(handle: number, ownerUri: string, query: string): Thenable<azdata.SyntaxParseResult> { throw ni(); }
-	/**
-	 * Gets a subset of rows in a result set in order to display in the UI
-	 */
-	$getQueryRows(handle: number, rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult> { throw ni(); }
-	/**
-	 * Sets the query execution options for a query editor document
-	 */
-	$setQueryExecutionOptions(handle: number, ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void> { throw ni(); }
-
 	/**
 	 * Connect the editor document to the given profile
 	 */
 	$connectWithProfile(handle: number, ownerUri: string, profile: azdata.connection.ConnectionProfile): Thenable<void> { throw ni(); }
-
-	/**
-	 * Disposes the cached information regarding a query
-	 */
-	$disposeQuery(handle: number, ownerUri: string): Thenable<void> { throw ni(); }
 
 	/**
 	 * Refreshes the IntelliSense cache
@@ -503,11 +459,9 @@ export interface MainThreadResourceProviderShape extends IDisposable {
 }
 
 export interface MainThreadDataProtocolShape extends IDisposable {
-	$registerConnectionProvider(providerId: string, handle: number): Promise<any>;
 	$registerBackupProvider(providerId: string, handle: number): Promise<any>;
 	$registerRestoreProvider(providerId: string, handle: number): Promise<any>;
 	$registerScriptingProvider(providerId: string, handle: number): Promise<any>;
-	$registerQueryProvider(providerId: string, handle: number): Promise<any>;
 	$registerProfilerProvider(providerId: string, handle: number): Promise<any>;
 	$registerObjectExplorerProvider(providerId: string, handle: number): Promise<any>;
 	$registerObjectExplorerNodeProvider(providerId: string, supportedProviderId: string, group: string, handle: number): Promise<any>;
@@ -520,15 +474,6 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerAgentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerSerializationProvider(providerId: string, handle: number): Promise<any>;
 	$unregisterProvider(handle: number): Promise<any>;
-	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
-	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
-	$onConnectionChangeNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void;
-	$onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void;
-	$onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void;
-	$onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void;
-	$onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void;
-	$onResultSetUpdated(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void;
-	$onQueryMessage(message: [number, azdata.QueryExecuteMessageParams[]][]): void;
 	$onObjectExplorerSessionCreated(handle: number, message: azdata.ObjectExplorerSession): void;
 	$onObjectExplorerSessionDisconnected(handle: number, message: azdata.ObjectExplorerSession): void;
 	$onObjectExplorerNodeExpanded(providerId: string, message: azdata.ObjectExplorerExpandInfo): void;
@@ -542,15 +487,15 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onSessionStopped(handle: number, response: azdata.ProfilerSessionStoppedParams): void;
 	$onProfilerSessionCreated(handle: number, response: azdata.ProfilerSessionCreatedParams): void;
 	$onJobDataUpdated(handle: Number): void;
-
-	/**
-	 * Callback when a session has completed initialization
-	 */
-	$onEditSessionReady(handle: number, ownerUri: string, success: boolean, message: string);
 }
 
-export interface MainThreadConnectionsShape extends IDisposable {
+export interface MainThreadConnectionShape extends IDisposable {
 	$registerConnectionEventListener(handle: number, providerId: string): void;
+	$registerProvider(providerId: string, handle: number): Promise<void>;
+	$unregisterProvider(handle: number): Promise<void>;
+	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
+	$onConnectionChangeNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void;
+	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
 	$getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]>;
 	$getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile>;
 	$getActiveConnections(): Thenable<azdata.connection.Connection[]>;
@@ -565,6 +510,18 @@ export interface MainThreadConnectionsShape extends IDisposable {
 	$connect(connectionProfile: azdata.IConnectionProfile, saveConnection: boolean, showDashboard: boolean): Thenable<azdata.ConnectionResult>;
 }
 
+export interface MainThreadQueryShape extends IDisposable {
+	$registerProvider(providerId: string, handle: number): Promise<void>;
+	$unregisterProvider(handle: number): Promise<void>;
+	$onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void;
+	$onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void;
+	$onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void;
+	$onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void;
+	$onResultSetUpdated(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void;
+	$onQueryMessage(message: [number, azdata.QueryExecuteMessageParams[]][]): void;
+	$onEditSessionReady(handle: number, ownerUri: string, success: boolean, message: string): void;
+}
+
 export interface MainThreadCredentialManagementShape extends IDisposable {
 	$registerCredentialProvider(handle: number): Promise<any>;
 	$unregisterCredentialProvider(handle: number): Promise<any>;
@@ -577,7 +534,7 @@ function ni() { return new Error('Not implemented'); }
 export const SqlMainContext = {
 	// SQL entries
 	MainThreadAccountManagement: createMainId<MainThreadAccountManagementShape>('MainThreadAccountManagement'),
-	MainThreadConnections: createMainId<MainThreadConnectionsShape>('MainThreadConnectionManagement'),
+	MainThreadConnection: createMainId<MainThreadConnectionShape>('MainThreadConnectionManagement'),
 	MainThreadCredentialManagement: createMainId<MainThreadCredentialManagementShape>('MainThreadCredentialManagement'),
 	MainThreadDataProtocol: createMainId<MainThreadDataProtocolShape>('MainThreadDataProtocol'),
 	MainThreadObjectExplorer: createMainId<MainThreadObjectExplorerShape>('MainThreadObjectExplorer'),
@@ -592,12 +549,13 @@ export const SqlMainContext = {
 	MainThreadQueryEditor: createMainId<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
 	MainThreadNotebook: createMainId<MainThreadNotebookShape>('MainThreadNotebook'),
 	MainThreadNotebookDocumentsAndEditors: createMainId<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors'),
-	MainThreadExtensionManagement: createMainId<MainThreadExtensionManagementShape>('MainThreadExtensionManagement')
+	MainThreadExtensionManagement: createMainId<MainThreadExtensionManagementShape>('MainThreadExtensionManagement'),
+	MainThreadQuery: createMainId<MainThreadQueryShape>('MainThreadQuery')
 };
 
 export const SqlExtHostContext = {
 	ExtHostAccountManagement: createExtId<ExtHostAccountManagementShape>('ExtHostAccountManagement'),
-	ExtHostConnectionManagement: createExtId<ExtHostConnectionsShape>('ExtHostConnectionManagement'),
+	ExtHostConnection: createExtId<ExtHostConnectionShape>('ExtHostConnectionManagement'),
 	ExtHostCredentialManagement: createExtId<ExtHostCredentialManagementShape>('ExtHostCredentialManagement'),
 	ExtHostDataProtocol: createExtId<ExtHostDataProtocolShape>('ExtHostDataProtocol'),
 	ExtHostObjectExplorer: createExtId<ExtHostObjectExplorerShape>('ExtHostObjectExplorer'),
@@ -613,7 +571,8 @@ export const SqlExtHostContext = {
 	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor'),
 	ExtHostNotebook: createExtId<ExtHostNotebookShape>('ExtHostNotebook'),
 	ExtHostNotebookDocumentsAndEditors: createExtId<ExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors'),
-	ExtHostExtensionManagement: createExtId<ExtHostExtensionManagementShape>('ExtHostExtensionManagement')
+	ExtHostExtensionManagement: createExtId<ExtHostExtensionManagementShape>('ExtHostExtensionManagement'),
+	ExtHostQuery: createExtId<ExtHostQueryShape>('ExtHostQuery')
 };
 
 export interface MainThreadDashboardShape extends IDisposable {
@@ -632,6 +591,47 @@ export interface MainThreadModalDialogShape extends IDisposable {
 	$setTitle(handle: number, value: string): void;
 	$setHtml(handle: number, value: string): void;
 	$sendMessage(handle: number, value: any): Thenable<boolean>;
+}
+
+export interface ExtHostQueryShape {
+
+	/**
+	 * Cancels the currently running query for a URI
+	 */
+	$cancelQuery(handle: number, ownerUri: string): Promise<azdata.QueryCancelResult>;
+
+	/**
+	 * Runs a query for a text selection inside a document
+	 */
+	$runQuery(handle: number, ownerUri: string, selection?: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void>;
+	/**
+	 * Runs the current SQL statement query for a text document
+	 */
+	$runQueryStatement(handle: number, ownerUri: string, line: number, column: number): Promise<void>;
+	/**
+	 * Runs a query for a provided query
+	 */
+	$runQueryString(handle: number, ownerUri: string, queryString: string): Promise<void>;
+	/**
+	 * Runs a query for a provided query and returns result
+	 */
+	$runQueryAndReturn(handle: number, ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult>;
+	/**
+	 * Parses a T-SQL string without actually executing it
+	 */
+	$parseSyntax(handle: number, ownerUri: string, query: string): Promise<azdata.SyntaxParseResult>;
+	/**
+	 * Gets a subset of rows in a result set in order to display in the UI
+	 */
+	$getQueryRows(handle: number, rowData: azdata.QueryExecuteSubsetParams): Promise<azdata.QueryExecuteSubsetResult>;
+	/**
+	 * Sets the query execution options for a query editor document
+	 */
+	$setQueryExecutionOptions(handle: number, ownerUri: string, options: azdata.QueryExecutionOptions): Promise<void>;
+	/**
+	 * Disposes the cached information regarding a query
+	 */
+	$disposeQuery(handle: number, ownerUri: string): Promise<void>;
 }
 
 export interface ExtHostModalDialogsShape {

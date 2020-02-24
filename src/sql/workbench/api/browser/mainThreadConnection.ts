@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SqlMainContext, MainThreadConnectionsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { SqlMainContext, MainThreadConnectionShape, ExtHostConnectionShape, SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import * as azdata from 'azdata';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
@@ -12,18 +12,28 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, combinedDisposable, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { generateUuid } from 'vs/base/common/uuid';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { deepClone } from 'vs/base/common/objects';
+import { IProviderConnectionChangedEvent, IProviderConnectionCompleteEvent, IConnectionService } from 'sql/platform/connection/common/connectionService';
+import { Emitter } from 'vs/base/common/event';
+import { values } from 'vs/base/common/collections';
 
-@extHostNamedCustomer(SqlMainContext.MainThreadConnections)
-export class MainThreadConnectionManagement extends Disposable implements MainThreadConnectionsShape {
+interface ConnectionEvents {
+	onDidConnectionComplete: Emitter<IProviderConnectionCompleteEvent>;
+	onDidConnectionChange: Emitter<IProviderConnectionChangedEvent>;
+}
 
-	// private _proxy: ExtHostConnectionManagementShape;
+@extHostNamedCustomer(SqlMainContext.MainThreadConnection)
+export class MainThreadConnection extends Disposable implements MainThreadConnectionShape {
+
+	private _proxy: ExtHostConnectionShape;
+	private readonly _connectionEvents = new Map<number, ConnectionEvents>();
+	private readonly _registrations = new Map<number, IDisposable>();
 
 	constructor(
 		extHostContext: IExtHostContext,
@@ -31,11 +41,64 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IEditorService private _workbenchEditorService: IEditorService,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@IConnectionService private readonly connectionService: IConnectionService,
 	) {
 		super();
 		if (extHostContext) {
-			// this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostConnectionManagement);
+			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostConnection);
+		}
+	}
+
+	//#region connection
+	public async $registerProvider(providerId: string, handle: number): Promise<void> {
+		const emitters = {
+			onDidConnectionChange: new Emitter<IProviderConnectionChangedEvent>(),
+			onDidConnectionComplete: new Emitter<IProviderConnectionCompleteEvent>()
+		};
+		this._connectionEvents.set(handle, emitters);
+		const disposable = this.connectionService.registerProvider({
+			id: providerId,
+			connect: (connectionUri: string, options: { [name: string]: any }): Promise<boolean> => {
+				return this._proxy.$connect(handle, connectionUri, { options });
+			},
+			disconnect: (connectionUri: string): Promise<boolean> => {
+				return this._proxy.$disconnect(handle, connectionUri);
+			},
+			cancelConnect: (connectionUri: string): Promise<boolean> => {
+				return this._proxy.$cancelConnect(handle, connectionUri);
+			},
+			onDidConnectionChanged: emitters.onDidConnectionChange.event,
+			onDidConnectionComplete: emitters.onDidConnectionComplete.event
+		});
+
+		this._registrations.set(handle,
+			combinedDisposable(
+				disposable,
+				...values(emitters),
+				toDisposable(() => this._connectionEvents.delete(handle))
+			)
+		);
+	}
+
+	public $onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
+		this._connectionEvents.get(handle)?.onDidConnectionComplete.fire({ connectionUri: connectionInfoSummary.ownerUri, errorMessage: connectionInfoSummary.errorMessage || connectionInfoSummary.messages });
+	}
+
+	public $onConnectionChangeNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void {
+		this._connectionEvents.get(handle)?.onDidConnectionChange.fire(changedConnInfo);
+	}
+
+	public $onIntelliSenseCacheComplete(handle: number, connectionUri: string): void {
+		this._connectionManagementService.onIntelliSenseCacheComplete(handle, connectionUri);
+	}
+	//#endregion connection
+
+	public async $unregisterProvider(handle: number): Promise<void> {
+		const disposable = this._registrations.get(handle);
+		if (disposable) {
+			disposable.dispose();
+			this._registrations.delete(handle);
 		}
 	}
 

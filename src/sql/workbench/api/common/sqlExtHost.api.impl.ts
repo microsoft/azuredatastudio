@@ -15,7 +15,7 @@ import { ExtHostModalDialogs } from 'sql/workbench/api/common/extHostModalDialog
 import { ExtHostTasks } from 'sql/workbench/api/common/extHostTasks';
 import { ExtHostDashboardWebviews } from 'sql/workbench/api/common/extHostDashboardWebview';
 import { ExtHostModelView } from 'sql/workbench/api/common/extHostModelView';
-import { ExtHostConnections } from 'sql/workbench/api/common/extHostConnections';
+import { ExtHostConnection } from 'sql/workbench/api/common/extHostConnection';
 import { ExtHostDashboard } from 'sql/workbench/api/common/extHostDashboard';
 import { ExtHostObjectExplorer } from 'sql/workbench/api/common/extHostObjectExplorer';
 import { ExtHostModelViewDialog } from 'sql/workbench/api/common/extHostModelViewDialog';
@@ -33,6 +33,8 @@ import { IURITransformerService } from 'vs/workbench/api/common/extHostUriTransf
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IExtensionApiFactory as vsIApiFactory, createApiFactoryAndRegisterActors as vsApiFactory } from 'vs/workbench/api/common/extHost.api.impl';
+import { IExtHostApiDeprecationService } from 'vs/workbench/api/common/extHostApiDeprecationService';
+import { ExtHostQuery } from 'sql/workbench/api/common/extHostQuery';
 
 export interface IAzdataExtensionApiFactory {
 	(extension: IExtensionDescription): typeof azdata;
@@ -69,18 +71,18 @@ export interface IAdsExtensionApiFactory {
 export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionApiFactory {
 	const uriTransformer = accessor.get(IURITransformerService);
 	const rpcProtocol = accessor.get(IExtHostRpcService);
-	const extHostLogService = accessor.get(ILogService);
 	const logService = accessor.get(ILogService);
+	const extHostApiDeprecation = accessor.get(IExtHostApiDeprecationService);
 
 	// Addressable instances
 	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));
-	const extHostConnectionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostConnectionManagement, new ExtHostConnections(rpcProtocol));
+	const extHostConnection = rpcProtocol.set(SqlExtHostContext.ExtHostConnection, new ExtHostConnection(rpcProtocol));
 	const extHostCredentialManagement = rpcProtocol.set(SqlExtHostContext.ExtHostCredentialManagement, new ExtHostCredentialManagement(rpcProtocol));
-	const extHostDataProvider = rpcProtocol.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(rpcProtocol, uriTransformer));
+	const extHostDataProvider = rpcProtocol.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(rpcProtocol));
 	const extHostObjectExplorer = rpcProtocol.set(SqlExtHostContext.ExtHostObjectExplorer, new ExtHostObjectExplorer(rpcProtocol));
 	const extHostResourceProvider = rpcProtocol.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(rpcProtocol));
 	const extHostModalDialogs = rpcProtocol.set(SqlExtHostContext.ExtHostModalDialogs, new ExtHostModalDialogs(rpcProtocol));
-	const extHostTasks = rpcProtocol.set(SqlExtHostContext.ExtHostTasks, new ExtHostTasks(rpcProtocol, extHostLogService));
+	const extHostTasks = rpcProtocol.set(SqlExtHostContext.ExtHostTasks, new ExtHostTasks(rpcProtocol, logService));
 	const extHostBackgroundTaskManagement = rpcProtocol.set(SqlExtHostContext.ExtHostBackgroundTaskManagement, new ExtHostBackgroundTaskManagement(rpcProtocol));
 	const extHostWebviewWidgets = rpcProtocol.set(SqlExtHostContext.ExtHostDashboardWebviews, new ExtHostDashboardWebviews(rpcProtocol));
 	const extHostModelViewTree = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewTreeViews, new ExtHostModelViewTreeViews(rpcProtocol, logService));
@@ -91,6 +93,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol));
 	const extHostNotebookDocumentsAndEditors = rpcProtocol.set(SqlExtHostContext.ExtHostNotebookDocumentsAndEditors, new ExtHostNotebookDocumentsAndEditors(rpcProtocol));
 	const extHostExtensionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostExtensionManagement, new ExtHostExtensionManagement(rpcProtocol));
+	const extHostQuery = rpcProtocol.set(SqlExtHostContext.ExtHostQuery, new ExtHostQuery(rpcProtocol, uriTransformer));
 
 	return {
 		azdata: function (extension: IExtensionDescription): typeof azdata {
@@ -100,42 +103,42 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				ConnectionProfile: sqlExtHostTypes.ConnectionProfile,
 
 				getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {
-					return extHostConnectionManagement.$getCurrentConnection();
+					return extHostConnection.getCurrentConnection();
 				},
 				getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
-					return extHostConnectionManagement.$getConnections(activeConnectionsOnly);
+					return extHostConnection.getConnections(activeConnectionsOnly);
 				},
 				registerConnectionEventListener(listener: azdata.connection.ConnectionEventListener): void {
-					return extHostConnectionManagement.$registerConnectionEventListener(mssqlProviderName, listener);
+					return extHostConnection.registerConnectionEventListener(mssqlProviderName, listener);
 				},
 				getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile> {
-					return extHostConnectionManagement.$getConnection(uri);
+					return extHostConnection.getConnection(uri);
 				},
 				// "sqlops" back-compat APIs
 				getActiveConnections(): Thenable<azdata.connection.Connection[]> {
-					logService.warn('the method azdata.connection.getActiveConnections has been deprecated, replace it with azdata.connection.getConnections');
-					return extHostConnectionManagement.$getActiveConnections();
+					extHostApiDeprecation.report('azdata.connection.getActiveConnections', extension, 'Use azdata.connection.getConnections');
+					return extHostConnection.getActiveConnections();
 				},
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
-					return extHostConnectionManagement.$getCredentials(connectionId);
+					return extHostConnection.getCredentials(connectionId);
 				},
 				getServerInfo(connectionId: string): Thenable<azdata.ServerInfo> {
-					return extHostConnectionManagement.$getServerInfo(connectionId);
+					return extHostConnection.getServerInfo(connectionId);
 				},
 				openConnectionDialog(providers?: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection> {
-					return extHostConnectionManagement.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
+					return extHostConnection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
 				},
 				listDatabases(connectionId: string): Thenable<string[]> {
-					return extHostConnectionManagement.$listDatabases(connectionId);
+					return extHostConnection.listDatabases(connectionId);
 				},
 				getConnectionString(connectionId: string, includePassword: boolean): Thenable<string> {
-					return extHostConnectionManagement.$getConnectionString(connectionId, includePassword);
+					return extHostConnection.getConnectionString(connectionId, includePassword);
 				},
 				getUriForConnection(connectionId: string): Thenable<string> {
-					return extHostConnectionManagement.$getUriForConnection(connectionId);
+					return extHostConnection.getUriForConnection(connectionId);
 				},
 				connect(connectionProfile: azdata.IConnectionProfile, saveConnection: boolean, showDashboard: boolean): Thenable<azdata.ConnectionResult> {
-					return extHostConnectionManagement.$connect(connectionProfile, saveConnection, showDashboard);
+					return extHostConnection.connect(connectionProfile, saveConnection, showDashboard);
 				}
 			};
 
@@ -318,7 +321,10 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			// namespace: dataprotocol
 			const dataprotocol: typeof azdata.dataprotocol = {
 				registerBackupProvider,
-				registerConnectionProvider: provider => extHostDataProvider.$registerConnectionProvider(provider),
+				registerConnectionProvider: provider => {
+					extHostApiDeprecation.report('azdata.dataprotocol.registerConnectionProvider', extension, 'Use azdata.connection.registerProvider');
+					return extHostConnection.registerProvider(provider);
+				},
 				registerFileBrowserProvider,
 				registerMetadataProvider,
 				registerObjectExplorerProvider,
@@ -328,7 +334,10 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				registerRestoreProvider,
 				registerScriptingProvider,
 				registerTaskServicesProvider,
-				registerQueryProvider: provider => extHostDataProvider.$registerQueryProvider(provider),
+				registerQueryProvider: provider => {
+					extHostApiDeprecation.report('azdata.dataprotocol.registerConnectionProvider', extension, 'Use azdata.connection.registerProvider');
+					return extHostQuery.registerProvider(provider);
+				},
 				registerAdminServicesProvider,
 				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
@@ -337,6 +346,11 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
 				getProvider<T extends azdata.DataProvider>(providerId: string, providerType: azdata.DataProviderType) {
+					if (providerType === sqlExtHostTypes.DataProviderType.ConnectionProvider) {
+						extHostApiDeprecation.report('azdata.dataprotocol.getProvider', extension, 'Use azdata.connection.getProvider');
+					} else if (providerType === sqlExtHostTypes.DataProviderType.QueryProvider) {
+						extHostApiDeprecation.report('azdata.dataprotocol.getProvider', extension, 'Use azdata.query.getProvider');
+					}
 					return extHostDataProvider.getProvider<T>(providerId, providerType);
 				},
 				getProvidersByType<T extends azdata.DataProvider>(providerType: azdata.DataProviderType) {
