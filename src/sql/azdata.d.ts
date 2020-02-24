@@ -491,7 +491,8 @@ declare module 'azdata' {
 		readonly providerId: string;
 	}
 
-	export interface ConnectionProvider extends DataProvider {
+	export interface ConnectionProvider {
+		readonly providerId: string;
 		connect(connectionUri: string, connectionInfo: ConnectionInfo): Thenable<boolean>;
 
 		disconnect(connectionUri: string): Thenable<boolean>;
@@ -809,7 +810,8 @@ declare module 'azdata' {
 		options: { [option: string]: any; };
 	}
 
-	export interface QueryProvider extends DataProvider {
+	export interface QueryProvider {
+		readonly providerId: string;
 		cancelQuery(ownerUri: string): Thenable<QueryCancelResult>;
 		runQuery(ownerUri: string, selection: ISelectionData, runOptions?: ExecutionPlanOptions): Thenable<void>;
 		runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
@@ -884,6 +886,9 @@ declare module 'azdata' {
 
 	export interface IResultMessage {
 		batchId?: number;
+		/**
+		 * Is the message an error message; error messages received special formatting
+		 */
 		isError: boolean;
 		time?: string;
 		message: string;

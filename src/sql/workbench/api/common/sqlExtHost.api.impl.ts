@@ -201,55 +201,6 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				}
 			};
 
-			let registerConnectionProvider = (provider: azdata.ConnectionProvider): vscode.Disposable => {
-				// Connection callbacks
-				provider.registerOnConnectionComplete((connSummary: azdata.ConnectionInfoSummary) => {
-					extHostDataProvider.$onConnectComplete(provider.providerId, connSummary);
-				});
-
-				provider.registerOnIntelliSenseCacheComplete((connectionUri: string) => {
-					extHostDataProvider.$onIntelliSenseCacheComplete(provider.handle, connectionUri);
-				});
-
-				provider.registerOnConnectionChanged((changedConnInfo: azdata.ChangedConnectionInfo) => {
-					extHostDataProvider.$onConnectionChanged(provider.providerId, changedConnInfo);
-				});
-
-				return extHostDataProvider.$registerConnectionProvider(provider);
-			};
-
-			let registerQueryProvider = (provider: azdata.QueryProvider): vscode.Disposable => {
-				provider.registerOnQueryComplete((result: azdata.QueryExecuteCompleteNotificationResult) => {
-					extHostDataProvider.$onQueryComplete(provider.handle, result);
-				});
-
-				provider.registerOnBatchStart((batchInfo: azdata.QueryExecuteBatchNotificationParams) => {
-					extHostDataProvider.$onBatchStart(provider.handle, batchInfo);
-				});
-
-				provider.registerOnBatchComplete((batchInfo: azdata.QueryExecuteBatchNotificationParams) => {
-					extHostDataProvider.$onBatchComplete(provider.handle, batchInfo);
-				});
-
-				provider.registerOnResultSetAvailable((resultSetInfo: azdata.QueryExecuteResultSetNotificationParams) => {
-					extHostDataProvider.$onResultSetAvailable(provider.handle, resultSetInfo);
-				});
-
-				provider.registerOnResultSetUpdated((resultSetInfo: azdata.QueryExecuteResultSetNotificationParams) => {
-					extHostDataProvider.$onResultSetUpdated(provider.handle, resultSetInfo);
-				});
-
-				provider.registerOnMessage((message: azdata.QueryExecuteMessageParams) => {
-					extHostDataProvider.$onQueryMessage(message);
-				});
-
-				provider.registerOnEditSessionReady((ownerUri: string, success: boolean, message: string) => {
-					extHostDataProvider.$onEditSessionReady(provider.handle, ownerUri, success, message);
-				});
-
-				return extHostDataProvider.$registerQueryProvider(provider);
-			};
-
 			let registerObjectExplorerProvider = (provider: azdata.ObjectExplorerProvider): vscode.Disposable => {
 				provider.registerOnSessionCreated((response: azdata.ObjectExplorerSession) => {
 					extHostDataProvider.$onObjectExplorerSessionCreated(provider.handle, response);
@@ -367,7 +318,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			// namespace: dataprotocol
 			const dataprotocol: typeof azdata.dataprotocol = {
 				registerBackupProvider,
-				registerConnectionProvider,
+				registerConnectionProvider: extHostDataProvider.$registerConnectionProvider,
 				registerFileBrowserProvider,
 				registerMetadataProvider,
 				registerObjectExplorerProvider,
@@ -377,7 +328,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				registerRestoreProvider,
 				registerScriptingProvider,
 				registerTaskServicesProvider,
-				registerQueryProvider,
+				registerQueryProvider: extHostDataProvider.$registerQueryProvider,
 				registerAdminServicesProvider,
 				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,

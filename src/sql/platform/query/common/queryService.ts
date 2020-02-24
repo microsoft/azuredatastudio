@@ -8,11 +8,13 @@ import { IConnection, ConnectionState, IConnectionService } from 'sql/platform/c
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { IDisposable, combinedDisposable, toDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
+import { Event } from 'vs/base/common/event';
 
 export const IQueryService = createDecorator<IQueryService>('queryService');
 
 export interface IQueryProvider {
 	readonly id: string;
+	readonly onMessage: Event<IResultMessage | IResultMessage[]>;
 	runQuery(connectionId: string, file: URI): Promise<void>;
 }
 
@@ -29,6 +31,11 @@ export interface IQueryService {
 	createOrGetQuery(connection: IConnection, associatedURI?: URI, forceNew?: boolean): IQuery | undefined;
 }
 
+export interface IResultMessage {
+	message: string;
+	isError?: boolean;
+}
+
 export interface IQuery {
 	readonly connection: IConnection;
 	readonly associatedFile?: URI;
@@ -36,13 +43,15 @@ export interface IQuery {
 	runQuery(): Promise<void>;
 }
 
-class Query implements IQuery {
+class Query extends Disposable implements IQuery {
 
 	constructor(
-		#queryService: QueryService,
+		private readonly queryService: QueryService,
 		public readonly connection: IConnection,
-		public readonly associatedFile?: URI
-	) { }
+		public readonly associatedFile: URI
+	) {
+		super();
+	}
 
 	async runQuery(): Promise<void> {
 		await this.queryService.runQuery(this.connection, this.associatedFile);
@@ -53,6 +62,7 @@ export class QueryService extends Disposable implements IQueryService {
 	_serviceBrand: undefined;
 
 	private readonly queryProviders = new Map<string, { provider: IQueryProvider, disposable: IDisposable }>(); // providers that have been registered
+	private readonly queries = new WeakMap<IConnection, Query>();
 
 	constructor(
 		@IConnectionService private readonly connectionService: IConnectionService
@@ -60,8 +70,16 @@ export class QueryService extends Disposable implements IQueryService {
 		super();
 	}
 
-	createOrGetQuery(connection: IConnection, associatedURI?: URI, forceNew?: boolean): IQuery | undefined {
-		return connection.state === ConnectionState.CONNECTED ? new Query(this, connection, associatedURI) : undefined;
+	createOrGetQuery(connection: IConnection, associatedURI: URI, forceNew: boolean = false): IQuery | undefined {
+		const existing = this.queries.get(connection);
+		if (existing && !forceNew) {
+			return existing;
+		}
+		const query = connection.state === ConnectionState.CONNECTED ? new Query(this, connection, associatedURI) : undefined;
+		if (query) {
+			this.queries.set(connection, query);
+		}
+		return query;
 	}
 
 	registerProvider(provider: IQueryProvider): IDisposable {

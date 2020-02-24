@@ -28,9 +28,23 @@ import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { assign } from 'vs/base/common/objects';
 import { IConnectionService, IProviderConnectionCompleteEvent, IProviderConnectionChangedEvent } from 'sql/platform/connection/common/connectionService';
 import { Emitter } from 'vs/base/common/event';
-import { serializableToMap } from 'sql/base/common/map';
-import { IQueryService } from 'sql/platform/query/common/queryService';
+import { IQueryService, IResultMessage } from 'sql/platform/query/common/queryService';
 import { URI } from 'vs/base/common/uri';
+import { values } from 'vs/base/common/collections';
+
+interface ConnectionEvents {
+	onDidConnectionComplete: Emitter<IProviderConnectionCompleteEvent>;
+	onDidConnectionChange: Emitter<IProviderConnectionChangedEvent>;
+}
+
+interface QueryEvents {
+	onQueryComplete: Emitter<void>;
+	onBatchStart: Emitter<void>;
+	onBatchComplete: Emitter<void>;
+	onResultSetAvailable: Emitter<void>;
+	onResultSetUpdated: Emitter<void>;
+	onMessage: Emitter<IResultMessage | IResultMessage[]>;
+}
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -40,8 +54,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 
 	private _proxy: ExtHostDataProtocolShape;
 
-	private readonly _connectionEvents = new Map<string, { onDidConnectionComplete: Emitter<IProviderConnectionCompleteEvent>; onDidConnectionChange: Emitter<IProviderConnectionChangedEvent> }>();
-	private readonly _queryEvents = new Map<string, {  }>();
+	private readonly _connectionEvents = new Map<number, ConnectionEvents>();
+	private readonly _queryEvents = new Map<number, QueryEvents>();
 	private readonly _registrations = new Map<number, IDisposable>();
 
 	constructor(
@@ -75,20 +89,20 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	//#region connection
 	public async $registerConnectionProvider(providerId: string, handle: number): Promise<void> {
 		const emitters = {
-			onDidConnectionChange: new Emitter<any>(),
-			onDidConnectionComplete: new Emitter<any>()
+			onDidConnectionChange: new Emitter<IProviderConnectionChangedEvent>(),
+			onDidConnectionComplete: new Emitter<IProviderConnectionCompleteEvent>()
 		};
-		this._connectionEvents.set(providerId, emitters);
+		this._connectionEvents.set(handle, emitters);
 		const disposable = this.connectionService.registerProvider({
 			id: providerId,
 			connect: (connectionUri: string, options: { [name: string]: any }): Promise<boolean> => {
-				return Promise.resolve(this._proxy.$connect(handle, connectionUri, { options }));
+				return this._proxy.$connect(handle, connectionUri, { options });
 			},
 			disconnect: (connectionUri: string): Promise<boolean> => {
-				return Promise.resolve(this._proxy.$disconnect(handle, connectionUri));
+				return this._proxy.$disconnect(handle, connectionUri);
 			},
 			cancelConnect: (connectionUri: string): Promise<boolean> => {
-				return Promise.resolve(this._proxy.$cancelConnect(handle, connectionUri));
+				return this._proxy.$cancelConnect(handle, connectionUri);
 			},
 			onDidConnectionChanged: emitters.onDidConnectionChange.event,
 			onDidConnectionComplete: emitters.onDidConnectionComplete.event
@@ -97,45 +111,74 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		this._registrations.set(handle,
 			combinedDisposable(
 				disposable,
-				toDisposable(() => {
-					emitters.onDidConnectionChange.dispose();
-					emitters.onDidConnectionComplete.dispose();
-				}),
-				toDisposable(() => this._connectionEvents.delete(providerId))
+				...values(emitters),
+				toDisposable(() => this._connectionEvents.delete(handle))
 			)
 		);
 	}
 
 	// Connection Management handlers
-	public $onConnectionComplete(providerId: string, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
-		this._connectionEvents.get(providerId)?.onDidConnectionComplete.fire({ connectionUri: connectionInfoSummary.ownerUri, errorMessage: connectionInfoSummary.errorMessage || connectionInfoSummary.messages });
+	public $onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
+		this._connectionEvents.get(handle)?.onDidConnectionComplete.fire({ connectionUri: connectionInfoSummary.ownerUri, errorMessage: connectionInfoSummary.errorMessage || connectionInfoSummary.messages });
 	}
 
-	public $onConnectionChangeNotification(providerId: string, changedConnInfo: azdata.ChangedConnectionInfo): void {
-		this._connectionEvents.get(providerId)?.onDidConnectionChange.fire(changedConnInfo);
+	public $onConnectionChangeNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void {
+		this._connectionEvents.get(handle)?.onDidConnectionChange.fire(changedConnInfo);
 	}
 	//#endregion connection
 
 	////#region query
 	public async $registerQueryProvider(providerId: string, handle: number): Promise<void> {
 		const emitters = {
+			onQueryComplete: new Emitter<void>(),
+			onBatchStart: new Emitter<any>(),
+			onBatchComplete: new Emitter<any>(),
+			onResultSetAvailable: new Emitter<any>(),
+			onResultSetUpdated: new Emitter<any>(),
+			onMessage: new Emitter<IResultMessage>()
 		};
-		this._queryEvents.set(providerId, emitters);
+		this._queryEvents.set(handle, emitters);
 		const disposable = this.queryService.registerProvider({
 			id: providerId,
 			runQuery: (connectionId: string, file: URI): Promise<void> => {
 				return this._proxy.$runQuery(handle, connectionId); // for now we consider the connection to be the file but we shouldn't
-			}
+			},
+			onMessage: emitters.onMessage.event
 		});
 
 		this._registrations.set(handle,
 			combinedDisposable(
 				disposable,
-				toDisposable(() => {
-				}),
-				toDisposable(() => this._queryEvents.delete(providerId))
+				...values(emitters),
+				toDisposable(() => this._queryEvents.delete(handle))
 			)
 		);
+	}
+
+	public $onQueryComplete(handle: number): void {
+		this._queryEvents.get(handle)?.onQueryComplete.fire();
+	}
+
+	public $onBatchStart(handle: number): void {
+		this._queryEvents.get(handle)?.onBatchStart.fire();
+	}
+
+	public $onBatchComplete(handle: number): void {
+		this._queryEvents.get(handle)?.onBatchComplete.fire();
+	}
+
+	public $onResultSetAvailable(handle: number): void {
+		this._queryEvents.get(handle)?.onResultSetAvailable.fire();
+	}
+
+	public $onResultSetUpdated(handle: number): void {
+		this._queryEvents.get(handle)?.onResultSetUpdated.fire();
+	}
+
+	public $onQueryMessage(messagesMap: [number, azdata.QueryExecuteMessageParams[]][]): void {
+		for (const [handle, messages] of messagesMap) {
+			this._queryEvents.get(handle)?.onMessage.fire(messages.map(m => ({ message: m.message.message, isError: m.message.isError })));
+		}
 	}
 	//#endregion query
 
@@ -446,24 +489,6 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	}
 
 	// Query Management handlers
-	public $onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void {
-		this._queryManagementService.onQueryComplete(result);
-	}
-	public $onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
-		this._queryManagementService.onBatchStart(batchInfo);
-	}
-	public $onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
-		this._queryManagementService.onBatchComplete(batchInfo);
-	}
-	public $onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
-		this._queryManagementService.onResultSetAvailable(resultSetInfo);
-	}
-	public $onResultSetUpdated(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
-		this._queryManagementService.onResultSetUpdated(resultSetInfo);
-	}
-	public $onQueryMessage(messages: [string, azdata.QueryExecuteMessageParams[]][]): void {
-		this._queryManagementService.onMessage(serializableToMap(messages));
-	}
 	public $onEditSessionReady(handle: number, ownerUri: string, success: boolean, message: string): void {
 		this._queryManagementService.onEditSessionReady(ownerUri, success, message);
 	}

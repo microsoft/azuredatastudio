@@ -46,17 +46,17 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Establish a connection to a data source using the provided ConnectionInfo instance.
 	 */
-	$connect(handle: number, connectionUri: string, connection: azdata.ConnectionInfo): Thenable<boolean> { throw ni(); }
+	$connect(handle: number, connectionUri: string, connection: azdata.ConnectionInfo): Promise<boolean> { throw ni(); }
 
 	/**
 	 * Disconnect from a data source using the provided connectionUri string.
 	 */
-	$disconnect(handle: number, connectionUri: string): Thenable<boolean> { throw ni(); }
+	$disconnect(handle: number, connectionUri: string): Promise<boolean> { throw ni(); }
 
 	/**
 	 * Cancel a connection to a data source using the provided connectionUri string.
 	 */
-	$cancelConnect(handle: number, connectionUri: string): Thenable<boolean> { throw ni(); }
+	$cancelConnect(handle: number, connectionUri: string): Promise<boolean> { throw ni(); }
 
 	/**
 	 * Change the database for the connection.
@@ -91,11 +91,6 @@ export abstract class ExtHostDataProtocolShape {
 	 * @param params information on what URI was changed and the new language
 	 */
 	$languageFlavorChanged(params: azdata.DidChangeLanguageFlavorParams): void { throw ni(); }
-
-	/**
-	 * Callback when a connection request has completed
-	 */
-	$onConnectComplete(providerId: string, connectionInfoSummary: azdata.ConnectionInfoSummary): void { throw ni(); }
 
 	/**
 	 * Callback when a IntelliSense cache has been built
@@ -194,32 +189,6 @@ export abstract class ExtHostDataProtocolShape {
 	 * Refreshes the IntelliSense cache
 	 */
 	$rebuildIntelliSenseCache(handle: number, ownerUri: string): Thenable<void> { throw ni(); }
-
-	/**
-	 * Callback when a query has completed
-	 */
-	$onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void { throw ni(); }
-	/**
-	 * Callback when a batch has started. This enables the UI to display when batch execution has started
-	 */
-	$onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void { throw ni(); }
-	/**
-	 * Callback when a batch is complete. This includes updated information on result sets, time to execute, and
-	 * other relevant batch information
-	 */
-	$onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void { throw ni(); }
-	/**
-	 * Callback when a result set has been returned from query execution and can be displayed
-	 */
-	$onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void { throw ni(); }
-	/**
-	 * Callback when a result set has been returned from query execution and can be displayed
-	 */
-	$onResultSetUpdate(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void { throw ni(); }
-	/**
-	 * Callback when a message generated during query execution is issued
-	 */
-	$onQueryMessage(message: azdata.QueryExecuteMessageParams): void { throw ni(); }
 
 	/**
 	 * Requests saving of the results from a result set into a specific format (CSV, JSON, Excel)
@@ -551,15 +520,15 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerAgentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerSerializationProvider(providerId: string, handle: number): Promise<any>;
 	$unregisterProvider(handle: number): Promise<any>;
-	$onConnectionComplete(providerId: string, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
+	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
-	$onConnectionChangeNotification(providerId: string, changedConnInfo: azdata.ChangedConnectionInfo): void;
+	$onConnectionChangeNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void;
 	$onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void;
 	$onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void;
 	$onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void;
 	$onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void;
 	$onResultSetUpdated(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void;
-	$onQueryMessage(message: [string, azdata.QueryExecuteMessageParams[]][]): void;
+	$onQueryMessage(message: [number, azdata.QueryExecuteMessageParams[]][]): void;
 	$onObjectExplorerSessionCreated(handle: number, message: azdata.ObjectExplorerSession): void;
 	$onObjectExplorerSessionDisconnected(handle: number, message: azdata.ObjectExplorerSession): void;
 	$onObjectExplorerNodeExpanded(providerId: string, message: azdata.ObjectExplorerExpandInfo): void;
