@@ -101,7 +101,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 			this._proxy.$onConnectionChangeNotification(handle, changedConnInfo);
 		});
 
-		return new Disposable(() => this._proxy.$unregisterProvider(handle));
+		this._adapter.set(handle, provider);
+		this._proxy.$registerConnectionProvider(provider.providerId, handle);
+
+		return new Disposable(() => {
+			this._proxy.$unregisterProvider(handle);
+			this._adapter.delete(handle);
+		});
 	}
 
 	$registerBackupProvider(provider: azdata.BackupProvider): vscode.Disposable {
@@ -174,9 +180,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 			this._proxy.$onEditSessionReady(handle, ownerUri, success, message);
 		});
 
+		this._adapter.set(handle, provider);
 		this._proxy.$registerQueryProvider(provider.providerId, handle);
 
-		return new Disposable(() => this._proxy.$unregisterProvider(handle));
+		return new Disposable(() => {
+			this._proxy.$unregisterProvider(handle);
+			this._adapter.delete(handle);
+		});
 	}
 
 	private handleMessage(handle: number, message: azdata.QueryExecuteMessageParams): void {

@@ -75,6 +75,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _connectionErrorTitle = localize('connectionError', "Connection error");
 	private _dialogDeferredPromise: Deferred<IConnection | undefined>;
 
+	private useString?: string;
+
 	/**
 	 * This is used to work around the interconnectedness of this code
 	 */
@@ -238,7 +240,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 
 		try {
-			const connection = await this.connectionService.createOrGetConnection(uri, { provider: profile.providerName, options: profile.options });
+			const connection = await this.connectionService.createOrGetConnection(uri ?? this.useString, { provider: profile.providerName, options: profile.options });
 			let connectionResult: IConnectionCompleteEvent;
 			switch (connection.state) {
 				case ConnectionState.DISCONNECTED:
@@ -249,8 +251,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 						if (this._dialogDeferredPromise) {
 							this._dialogDeferredPromise.resolve(connection);
 						}
-					// } else if (connectionResult && connectionResult.errorHandled) {
-					// 	this._connectionDialog.resetConnection();
+						// } else if (connectionResult && connectionResult.errorHandled) {
+						// 	this._connectionDialog.resetConnection();
 					} else {
 						this._connectionDialog.resetConnection();
 						this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, '');
@@ -264,8 +266,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 						if (this._dialogDeferredPromise) {
 							this._dialogDeferredPromise.resolve(connection);
 						}
-					// } else if (connectionResult && connectionResult.errorHandled) {
-					// 	this._connectionDialog.resetConnection();
+						// } else if (connectionResult && connectionResult.errorHandled) {
+						// 	this._connectionDialog.resetConnection();
 					} else {
 						this._connectionDialog.resetConnection();
 						this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, '');
@@ -430,7 +432,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	public openDialogAndWait(
-		params?: INewConnectionParams,
+		params?: INewConnectionParams | string,
 		model?: IConnectionProfile,
 		connectionResult?: IConnectionResult,
 		doConnect: boolean = true): Promise<IConnection> {
@@ -439,8 +441,10 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this.ignoreNextConnect = true;
 		}
 		this._dialogDeferredPromise = new Deferred<IConnection>();
-
-		this.showDialog(params,
+		if (types.isString(params)) {
+			this.useString = params;
+		}
+		this.showDialog(undefined,
 			model,
 			connectionResult).then(() => {
 			}, error => {

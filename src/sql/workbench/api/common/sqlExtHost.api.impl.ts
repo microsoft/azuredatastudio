@@ -318,7 +318,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			// namespace: dataprotocol
 			const dataprotocol: typeof azdata.dataprotocol = {
 				registerBackupProvider,
-				registerConnectionProvider: extHostDataProvider.$registerConnectionProvider,
+				registerConnectionProvider: provider => extHostDataProvider.$registerConnectionProvider(provider),
 				registerFileBrowserProvider,
 				registerMetadataProvider,
 				registerObjectExplorerProvider,
@@ -328,7 +328,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				registerRestoreProvider,
 				registerScriptingProvider,
 				registerTaskServicesProvider,
-				registerQueryProvider: extHostDataProvider.$registerQueryProvider,
+				registerQueryProvider: provider => extHostDataProvider.$registerQueryProvider(provider),
 				registerAdminServicesProvider,
 				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,

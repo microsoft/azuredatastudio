@@ -14,6 +14,7 @@ import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResult
 import { startsWith } from 'vs/base/common/strings';
 import { IConnection, ConnectionState } from 'sql/platform/connection/common/connectionService';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
+import { IQueryService, IQuery } from 'sql/platform/query/common/queryService';
 
 // const MAX_SIZE = 13;
 
@@ -115,9 +116,10 @@ export abstract class QueryEditorInput extends EditorInput implements IDisposabl
 	public get state(): QueryEditorState { return this._state; }
 
 	private _connection?: IConnection;
-	public get connection(): IConnection | undefined {
-		return this._connection;
-	}
+	public get connection(): IConnection | undefined { return this._connection; }
+
+	private _query?: IQuery;
+	public get query(): IQuery | undefined { return this._query; }
 
 	constructor(
 		private _description: string,
@@ -125,7 +127,8 @@ export abstract class QueryEditorInput extends EditorInput implements IDisposabl
 		protected _results: QueryResultsInput,
 		initialConnection: IConnection | undefined,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IConnectionDialogService private readonly connectionDialogService: IConnectionDialogService
+		@IConnectionDialogService private readonly connectionDialogService: IConnectionDialogService,
+		@IQueryService private readonly queryService: IQueryService
 	) {
 		super();
 
@@ -190,9 +193,22 @@ export abstract class QueryEditorInput extends EditorInput implements IDisposabl
 					return !((await this.connection.connect()).failed);
 			}
 		} else {
-			this._connection = await this.connectionDialogService.openDialogAndWait();
+			this._connection = await this.connectionDialogService.openDialogAndWait(this.uri);
 			// TODO SET UP EVENTS
 			return this.connect();
+		}
+	}
+
+	public async runQuery(): Promise<void> {
+		if (this.query) {
+			await this.query.runQuery();
+		} else {
+			if (await this.connect()) {
+				this._query = this.queryService.createOrGetQuery(this.connection, this.resource);
+				if (this.query) {
+					await this.query.runQuery();
+				}
+			}
 		}
 	}
 

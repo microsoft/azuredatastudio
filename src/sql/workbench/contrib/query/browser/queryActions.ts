@@ -171,7 +171,7 @@ export class RunQueryAction extends Action {
 	async run(): Promise<void> {
 		const editor = this.editorService.activeEditor as QueryEditorInput;
 		if (await editor.connect()) {
-
+			return editor.runQuery();
 		}
 	}
 }

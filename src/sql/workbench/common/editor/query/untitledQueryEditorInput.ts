@@ -13,6 +13,7 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { IConnection } from 'sql/platform/connection/common/connectionService';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
+import { IQueryService } from 'sql/platform/query/common/queryService';
 
 export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport {
 
@@ -24,9 +25,10 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		results: QueryResultsInput,
 		initialConnection: IConnection | undefined,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IConnectionDialogService connectionDialogService: IConnectionDialogService
+		@IConnectionDialogService connectionDialogService: IConnectionDialogService,
+		@IQueryService queryService: IQueryService
 	) {
-		super(description, text, results, initialConnection, configurationService, connectionDialogService);
+		super(description, text, results, initialConnection, configurationService, connectionDialogService, queryService);
 	}
 
 	public resolve(): Promise<IUntitledTextEditorModel & IResolvedTextEditorModel> {

@@ -21,4 +21,10 @@ export interface IConnectionDialogService {
 	 * or dialog is closed
 	 */
 	openDialogAndWait(params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult, doConnect?: boolean): Promise<IConnection>;
+
+	/**
+	 * Opens the connection dialog and returns the promise when connection is made
+	 * or dialog is closed
+	 */
+	openDialogAndWait(useId: string): Promise<IConnection>;
 }

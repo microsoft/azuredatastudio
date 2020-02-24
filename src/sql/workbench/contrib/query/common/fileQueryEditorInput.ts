@@ -13,6 +13,7 @@ import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel'
 import { ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { IConnection } from 'sql/platform/connection/common/connectionService';
+import { IQueryService } from 'sql/platform/query/common/queryService';
 
 export class FileQueryEditorInput extends QueryEditorInput {
 
@@ -24,9 +25,10 @@ export class FileQueryEditorInput extends QueryEditorInput {
 		results: QueryResultsInput,
 		connection: IConnection | undefined,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IConnectionDialogService connectionDialogService: IConnectionDialogService
+		@IConnectionDialogService connectionDialogService: IConnectionDialogService,
+		@IQueryService queryService: IQueryService
 	) {
-		super(description, text, results, connection, configurationService, connectionDialogService);
+		super(description, text, results, connection, configurationService, connectionDialogService, queryService);
 	}
 
 	public resolve(): Promise<ITextFileEditorModel | BinaryEditorModel> {
