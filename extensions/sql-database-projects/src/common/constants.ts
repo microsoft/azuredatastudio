@@ -15,10 +15,14 @@ export const dataSourcesFileName = 'datasources.json';
 export const noOpenProjectMessage = localize('noProjectOpenMessage', "No open database project");
 export const projectNodeName = localize('projectNodeName', "Database Project");
 export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources");
-export const foundDataSourcesFile = localize('foundDataSourcesFile', "Found {0}: ", dataSourcesFileName); // TODO: remove once datasources.json is actually getting removed.
+export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
 
 // Error messages
 
 export const multipleSqlProjFiles = localize('multipleSqlProjFilesSelected', "Multiple .sqlproj files selected; please select only one.");
 export const noSqlProjFiles = localize('noSqlProjFilesSelected', "No .sqlproj file selected; please select one.");
 export const noDataSourcesFile = localize('noDataSourcesFile', "No {0} found", dataSourcesFileName);
+export const missingVersion = localize('missingVersion', "Missing 'version' entry in {0}", dataSourcesFileName);
+export const unrecognizedDataSourcesVersion = localize('unrecognizedDataSourcesVersion', "Unrecognized version: ");
+export const unknownDataSourceType = localize('unknownDataSourceType', "Unknown data source type: ");
+export const invalidSqlConnectionString = localize('invalidSqlConnectionString', "Invalid SQL connection string");
