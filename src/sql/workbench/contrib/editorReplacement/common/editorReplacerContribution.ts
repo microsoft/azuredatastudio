@@ -15,7 +15,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import * as path from 'vs/base/common/path';
 
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -49,12 +49,12 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 		}
 
 		if (!language) { // in the case the input doesn't have a preferred mode set we will attempt to guess the mode from the file path
-			language = this.modeService.getModeIdByFilepathOrFirstLine(editor.getResource());
+			language = this.modeService.getModeIdByFilepathOrFirstLine(editor.resource);
 		}
 
 		if (!language) {
 			// just use the extension
-			language = path.extname(editor.getResource().toString()).slice(1); // remove the .
+			language = path.extname(editor.resource.toString()).slice(1); // remove the .
 		}
 
 		if (!language) {

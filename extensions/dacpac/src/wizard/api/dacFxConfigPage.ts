@@ -102,6 +102,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	protected async createDatabaseDropdown(): Promise<azdata.FormComponent> {
 		const databaseDropdownTitle = loc.sourceDatabase;
 		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+			required: true,
 			ariaLabel: databaseDropdownTitle
 		}).component();
 
@@ -115,7 +116,6 @@ export abstract class DacFxConfigPage extends BasePage {
 		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).withProperties({
 			required: true
 		}).component();
-
 
 		return {
 			component: this.databaseLoader,
@@ -207,7 +207,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	// Compares database name with existing databases on the server
-	protected databaseNameExists(n: string): boolean {
+	public databaseNameExists(n: string): boolean {
 		for (let i = 0; i < this.databaseValues.length; ++i) {
 			if (this.databaseValues[i].toLowerCase() === n.toLowerCase()) {
 				// database name exists

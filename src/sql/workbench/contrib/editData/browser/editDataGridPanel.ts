@@ -8,7 +8,7 @@ import 'vs/css!./media/editData';
 import { VirtualizedCollection, AsyncDataProvider, ISlickColumn } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 
-import { IGridDataSet } from 'sql/workbench/contrib/grid/common/interfaces';
+import { IGridDataSet } from 'sql/workbench/contrib/grid/browser/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
 import { GridParentComponent } from 'sql/workbench/contrib/editData/browser/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/workbench/contrib/editData/browser/editDataGridActions';
@@ -17,7 +17,7 @@ import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColu
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { escape } from 'sql/base/common/strings';
-import { DataService } from 'sql/workbench/contrib/grid/common/dataService';
+import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -114,7 +114,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		// Add the subscription to the list of things to be disposed on destroy, or else on a new component init
 		// may get the "destroyed" object still getting called back.
-		this.subscribeWithDispose(this.dataService.queryEventObserver, (event) => {
+		this.toDispose.add(this.dataService.queryEvents(event => {
 			switch (event.type) {
 				case 'start':
 					self.handleStart(self, event);
@@ -135,7 +135,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					this.logService.error('Unexpected query event type "' + event.type + '" sent');
 					break;
 			}
-		});
+		}));
 		this.dataService.onLoaded();
 	}
 
@@ -392,6 +392,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		undefinedDataSet.columnDefinitions = dataSet.columnDefinitions;
 		undefinedDataSet.dataRows = undefined;
 		self.placeHolderDataSets.push(undefinedDataSet);
+		if (self.placeHolderDataSets[0]) {
+			this.refreshDatasets();
+		}
 		self.refreshGrid();
 
 		// Setup the state of the selected cell

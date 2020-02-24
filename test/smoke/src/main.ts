@@ -29,7 +29,6 @@ import { setup as runQueryEditorTests } from './sql/queryEditor/queryEditor.test
 /*
 import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
 import { setup as setupDataLossTests } from './areas/workbench/data-loss.test';
-import { setup as setupDataExplorerTests } from './areas/explorer/explorer.test';
 import { setup as setupDataPreferencesTests } from './areas/preferences/preferences.test';
 import { setup as setupDataSearchTests } from './areas/search/search.test';
 import { setup as setupDataCSSTests } from './areas/css/css.test';
@@ -65,7 +64,6 @@ const opts = minimist(args, {
 		'verbose',
 		'remote',
 		'web',
-		'headless',
 		'ci'
 	],
 	default: {
@@ -253,8 +251,7 @@ function createOptions(): ApplicationOptions {
 		screenshotsPath,
 		remote: opts.remote,
 		web: opts.web,
-		browser: opts.browser,
-		headless: opts.headless
+		browser: opts.browser
 	};
 }
 
@@ -331,7 +328,6 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	else {
 		/*if (!opts.web) { setupDataMigrationTests(opts['stable-build'], testDataPath); } {{SQL CARBON EDIT}} comment out tests
 		if (!opts.web) { setupDataLossTests(); }
-		setupDataExplorerTests();
 		if (!opts.web) { setupDataPreferencesTests(); }
 		setupDataSearchTests();
 		setupDataCSSTests();

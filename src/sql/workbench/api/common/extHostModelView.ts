@@ -16,6 +16,7 @@ import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape, ExtHos
 import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, ColumnSizingMode } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { firstIndex } from 'vs/base/common/arrays';
+import { ILogService } from 'vs/platform/log/common/log';
 
 class ModelBuilderImpl implements azdata.ModelBuilder {
 	private nextComponentId: number;
@@ -25,7 +26,8 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		private readonly _proxy: MainThreadModelViewShape,
 		private readonly _handle: number,
 		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
-		private readonly _extension: IExtensionDescription
+		private readonly _extension: IExtensionDescription,
+		private readonly logService: ILogService
 	) {
 		this.nextComponentId = 0;
 	}
@@ -82,7 +84,7 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 	private cardDeprecationMessagePrinted = false;
 	card(): azdata.ComponentBuilder<azdata.CardComponent> {
 		if (!this.cardDeprecationMessagePrinted) {
-			console.warn(`Extension '${this._extension.identifier.value}' is using card component which has been replaced by radioCardGroup. the card component will be removed in a future release.`);
+			this.logService.warn(`Extension '${this._extension.identifier.value}' is using card component which has been replaced by radioCardGroup. the card component will be removed in a future release.`);
 			this.cardDeprecationMessagePrinted = true;
 		}
 		let id = this.getNextComponentId();
@@ -1699,9 +1701,10 @@ class ModelViewImpl implements azdata.ModelView {
 		private readonly _connection: azdata.connection.Connection,
 		private readonly _serverInfo: azdata.ServerInfo,
 		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
-		_extension: IExtensionDescription
+		_extension: IExtensionDescription,
+		logService: ILogService
 	) {
-		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle, this._extHostModelViewTree, _extension);
+		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle, this._extHostModelViewTree, _extension, logService);
 	}
 
 	public get onClosed(): vscode.Event<any> {
@@ -1755,7 +1758,8 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 	private readonly _handlerToExtension = new Map<string, IExtensionDescription>();
 	constructor(
 		_mainContext: IMainContext,
-		private _extHostModelViewTree: ExtHostModelViewTreeViewsShape
+		private _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
+		private readonly logService: ILogService
 	) {
 		this._proxy = _mainContext.getProxy(SqlMainContext.MainThreadModelView);
 	}
@@ -1774,7 +1778,7 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 
 	$registerWidget(handle: number, id: string, connection: azdata.connection.Connection, serverInfo: azdata.ServerInfo): void {
 		let extension = this._handlerToExtension.get(id);
-		let view = new ModelViewImpl(this._proxy, handle, connection, serverInfo, this._extHostModelViewTree, extension);
+		let view = new ModelViewImpl(this._proxy, handle, connection, serverInfo, this._extHostModelViewTree, extension, this.logService);
 		this._modelViews.set(handle, view);
 		this._handlers.get(id)(view);
 	}

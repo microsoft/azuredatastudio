@@ -18,7 +18,7 @@ import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabase> {
 
 	private static readonly containerId = 'azure.resource.providers.database.treeDataProvider.databaseContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.database.treeDataProvider.databaseContainerLabel', "SQL Databases");
+	private static readonly containerLabel = localize('azure.resource.providers.database.treeDataProvider.databaseContainerLabel', "SQL database");
 
 	public constructor(
 		databaseService: IAzureResourceService<azureResource.AzureResourceDatabase>,

@@ -53,7 +53,7 @@ import { ProxyIdentifier } from 'vs/workbench/services/extensions/common/proxyId
 import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/common/extensionDescriptionRegistry';
 import * as vscode from 'vscode';
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { originalFSPath } from 'vs/base/common/resources';
+import { originalFSPath, joinPath } from 'vs/base/common/resources';
 import { values } from 'vs/base/common/collections';
 import { ExtHostEditorInsets } from 'vs/workbench/api/common/extHostCodeInsets';
 import { ExtHostLabelService } from 'vs/workbench/api/common/extHostLabelService';
@@ -114,7 +114,6 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostOutputService = rpcProtocol.set(ExtHostContext.ExtHostOutputService, accessor.get(IExtHostOutputService));
 
 	// manually create and register addressable instances
-	const extHostWebviews = rpcProtocol.set(ExtHostContext.ExtHostWebviews, new ExtHostWebviews(rpcProtocol, initData.environment, extHostWorkspace, extHostLogService));
 	const extHostUrls = rpcProtocol.set(ExtHostContext.ExtHostUrls, new ExtHostUrls(rpcProtocol));
 	const extHostDocuments = rpcProtocol.set(ExtHostContext.ExtHostDocuments, new ExtHostDocuments(rpcProtocol, extHostDocumentsAndEditors));
 	const extHostDocumentContentProviders = rpcProtocol.set(ExtHostContext.ExtHostDocumentContentProviders, new ExtHostDocumentContentProvider(rpcProtocol, extHostDocumentsAndEditors, extHostLogService));
@@ -134,7 +133,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostLabelService = rpcProtocol.set(ExtHostContext.ExtHostLabelService, new ExtHostLabelService(rpcProtocol));
 	const extHostTheming = rpcProtocol.set(ExtHostContext.ExtHostTheming, new ExtHostTheming(rpcProtocol));
 	const extHostAuthentication = rpcProtocol.set(ExtHostContext.ExtHostAuthentication, new ExtHostAuthentication(rpcProtocol));
-	const extHostTimeline = rpcProtocol.set(ExtHostContext.ExtHostTimeline, new ExtHostTimeline(rpcProtocol));
+	const extHostTimeline = rpcProtocol.set(ExtHostContext.ExtHostTimeline, new ExtHostTimeline(rpcProtocol, extHostCommands));
+	const extHostWebviews = rpcProtocol.set(ExtHostContext.ExtHostWebviews, new ExtHostWebviews(rpcProtocol, initData.environment, extHostWorkspace, extHostLogService, extHostApiDeprecation, extHostDocuments));
 
 	// Check that no named customers are missing
 	// {{SQL CARBON EDIT}} filter out the services we don't expose
@@ -348,6 +348,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			registerHoverProvider(selector: vscode.DocumentSelector, provider: vscode.HoverProvider): vscode.Disposable {
 				return extHostLanguageFeatures.registerHoverProvider(extension, checkSelector(selector), provider, extension.identifier);
 			},
+			registerEvaluatableExpressionProvider(selector: vscode.DocumentSelector, provider: vscode.EvaluatableExpressionProvider): vscode.Disposable {
+				return extHostLanguageFeatures.registerEvaluatableExpressionProvider(extension, checkSelector(selector), provider, extension.identifier);
+			},
 			registerDocumentHighlightProvider(selector: vscode.DocumentSelector, provider: vscode.DocumentHighlightProvider): vscode.Disposable {
 				return extHostLanguageFeatures.registerDocumentHighlightProvider(extension, checkSelector(selector), provider);
 			},
@@ -478,22 +481,19 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			onDidChangeWindowState(listener, thisArg?, disposables?) {
 				return extHostWindow.onDidChangeWindowState(listener, thisArg, disposables);
 			},
-			// {{SQL CARBON EDIT}} Typing needs to be disabled; enabled strict null checks allows the typing once we get there
-			showInformationMessage(message, first, ...rest) {
-				return extHostMessageService.showMessage(extension, Severity.Info, message, first, rest);
+			showInformationMessage(message: string, ...rest: Array<vscode.MessageOptions | string | vscode.MessageItem>) {
+				return <Thenable<any>>extHostMessageService.showMessage(extension, Severity.Info, message, rest[0], <Array<string | vscode.MessageItem>>rest.slice(1));
 			},
-			// {{SQL CARBON EDIT}} Typing needs to be disabled; enabled strict null checks allows the typing once we get there
-			showWarningMessage(message, first, ...rest) {
-				return extHostMessageService.showMessage(extension, Severity.Warning, message, first, rest);
+			showWarningMessage(message: string, ...rest: Array<vscode.MessageOptions | string | vscode.MessageItem>) {
+				return <Thenable<any>>extHostMessageService.showMessage(extension, Severity.Warning, message, rest[0], <Array<string | vscode.MessageItem>>rest.slice(1));
 			},
-			// {{SQL CARBON EDIT}} Typing needs to be disabled; enabled strict null checks allows the typing once we get there
-			showErrorMessage(message, first, ...rest) {
-				return extHostMessageService.showMessage(extension, Severity.Error, message, first, rest);
+			showErrorMessage(message: string, ...rest: Array<vscode.MessageOptions | string | vscode.MessageItem>) {
+				return <Thenable<any>>extHostMessageService.showMessage(extension, Severity.Error, message, rest[0], <Array<string | vscode.MessageItem>>rest.slice(1));
 			},
-			showQuickPick(items: any, options: vscode.QuickPickOptions, token?: vscode.CancellationToken): any {
+			showQuickPick(items: any, options?: vscode.QuickPickOptions, token?: vscode.CancellationToken): any {
 				return extHostQuickOpen.showQuickPick(items, !!extension.enableProposedApi, options, token);
 			},
-			showWorkspaceFolderPick(options: vscode.WorkspaceFolderPickOptions) {
+			showWorkspaceFolderPick(options?: vscode.WorkspaceFolderPickOptions) {
 				return extHostQuickOpen.showWorkspaceFolderPick(options);
 			},
 			showInputBox(options?: vscode.InputBoxOptions, token?: vscode.CancellationToken) {
@@ -539,10 +539,10 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			createOutputChannel(name: string): vscode.OutputChannel {
 				return extHostOutputService.createOutputChannel(name);
 			},
-			createWebviewPanel(viewType: string, title: string, showOptions: vscode.ViewColumn | { viewColumn: vscode.ViewColumn, preserveFocus?: boolean }, options: vscode.WebviewPanelOptions & vscode.WebviewOptions): vscode.WebviewPanel {
+			createWebviewPanel(viewType: string, title: string, showOptions: vscode.ViewColumn | { viewColumn: vscode.ViewColumn, preserveFocus?: boolean }, options?: vscode.WebviewPanelOptions & vscode.WebviewOptions): vscode.WebviewPanel {
 				return extHostWebviews.createWebviewPanel(extension, viewType, title, showOptions, options);
 			},
-			createWebviewTextEditorInset(editor: vscode.TextEditor, line: number, height: number, options: vscode.WebviewOptions): vscode.WebviewEditorInset {
+			createWebviewTextEditorInset(editor: vscode.TextEditor, line: number, height: number, options?: vscode.WebviewOptions): vscode.WebviewEditorInset {
 				checkProposedApiEnabled(extension);
 				return extHostEditorInsets.createWebviewEditorInset(editor, line, height, options, extension);
 			},
@@ -564,9 +564,17 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			registerWebviewPanelSerializer: (viewType: string, serializer: vscode.WebviewPanelSerializer) => {
 				return extHostWebviews.registerWebviewPanelSerializer(extension, viewType, serializer);
 			},
+			registerWebviewTextEditorProvider: (viewType: string, provider: vscode.WebviewTextEditorProvider, options?: vscode.WebviewPanelOptions) => {
+				checkProposedApiEnabled(extension);
+				return extHostWebviews.registerWebviewTextEditorProvider(extension, viewType, provider, options);
+			},
 			registerWebviewCustomEditorProvider: (viewType: string, provider: vscode.WebviewCustomEditorProvider, options?: vscode.WebviewPanelOptions) => {
 				checkProposedApiEnabled(extension);
 				return extHostWebviews.registerWebviewCustomEditorProvider(extension, viewType, provider, options);
+			},
+			createWebviewEditorCustomDocument: <UserDataType>(viewType: string, resource: vscode.Uri, userData: UserDataType, capabilities: vscode.WebviewCustomEditorCapabilities) => {
+				checkProposedApiEnabled(extension);
+				return extHostWebviews.createWebviewEditorCustomDocument<UserDataType>(viewType, resource, userData, capabilities);
 			},
 			registerDecorationProvider(provider: vscode.DecorationProvider) {
 				checkProposedApiEnabled(extension);
@@ -710,7 +718,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				return extHostDocumentContentProviders.registerTextDocumentContentProvider(scheme, provider);
 			},
 			registerTaskProvider: (type: string, provider: vscode.TaskProvider) => {
-				return undefined; // {{SQL CARBON EDIT}} disable task
+				throw new Error('Tasks api is not allowed in Azure Data Studio'); // {{SQL CARBON EDIT}} disable task
 			},
 			registerFileSystemProvider(scheme, provider, options) {
 				return extHostFileSystem.registerFileSystemProvider(scheme, provider, options);
@@ -754,7 +762,12 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			},
 			openTunnel: (forward: vscode.TunnelOptions) => {
 				checkProposedApiEnabled(extension);
-				return extHostTunnelService.openTunnel(forward);
+				return extHostTunnelService.openTunnel(forward).then(value => {
+					if (!value) {
+						throw new Error('cannot open tunnel');
+					}
+					return value;
+				});
 			},
 			get tunnels() {
 				checkProposedApiEnabled(extension);
@@ -770,9 +783,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				return extHostTunnelService.onDidChangeTunnels(listener, thisArg, disposables);
 
 			},
-			registerTimelineProvider: (scheme: string, provider: vscode.TimelineProvider) => {
+			registerTimelineProvider: (scheme: string | string[], provider: vscode.TimelineProvider) => {
 				checkProposedApiEnabled(extension);
-				return extHostTimeline.registerTimelineProvider(provider, extension.identifier, extHostCommands.converter);
+				return extHostTimeline.registerTimelineProvider(scheme, provider, extension.identifier, extHostCommands.converter);
 			}
 		};
 
@@ -801,76 +814,99 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 		// namespace: debug
 		const debug: typeof vscode.debug = {
 			get activeDebugSession() {
-				return undefined;
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			get activeDebugConsole() {
-				return undefined;
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			get breakpoints() {
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return [];
 			},
 			onDidStartDebugSession(listener, thisArg?, disposables?) {
-				return undefined;
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			onDidTerminateDebugSession(listener, thisArg?, disposables?) {
-				return undefined;
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			onDidChangeActiveDebugSession(listener, thisArg?, disposables?) {
-				return undefined;
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			onDidReceiveDebugSessionCustomEvent(listener, thisArg?, disposables?) {
-				return undefined;
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			onDidChangeBreakpoints(listener, thisArgs?, disposables?) {
-				return undefined;
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			registerDebugConfigurationProvider(debugType: string, provider: vscode.DebugConfigurationProvider) {
-				return undefined;
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			registerDebugAdapterDescriptorFactory(debugType: string, factory: vscode.DebugAdapterDescriptorFactory) {
-				return undefined;
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			registerDebugAdapterTrackerFactory(debugType: string, factory: vscode.DebugAdapterTrackerFactory) {
-				return undefined;
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			startDebugging(folder: vscode.WorkspaceFolder | undefined, nameOrConfig: string | vscode.DebugConfiguration, parentSessionOrOptions?: vscode.DebugSession | vscode.DebugSessionOptions) {
-				return undefined;
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			addBreakpoints(breakpoints: vscode.Breakpoint[]) {
-				return undefined;
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			removeBreakpoints(breakpoints: vscode.Breakpoint[]) {
-				return undefined;
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			asDebugSourceUri(source: vscode.DebugProtocolSource, session?: vscode.DebugSession): vscode.Uri {
-				return undefined;
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
+				return undefined!;
 			}
 		};
 
 		const tasks: typeof vscode.tasks = { // {{SQL CARBON EDIT}} disable tasks api
 			registerTaskProvider: (type: string, provider: vscode.TaskProvider) => {
-				return undefined;
+				extHostLogService.warn('Tasks API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			fetchTasks: (filter?: vscode.TaskFilter): Thenable<vscode.Task[]> => {
-				return undefined;
+				extHostLogService.warn('Tasks API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			executeTask: (task: vscode.Task): Thenable<vscode.TaskExecution> => {
-				return undefined;
+				extHostLogService.warn('Tasks API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			get taskExecutions(): vscode.TaskExecution[] {
-				return undefined;
+				extHostLogService.warn('Tasks API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			onDidStartTask: (listeners, thisArgs?, disposables?) => {
-				return undefined;
+				extHostLogService.warn('Tasks API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			onDidEndTask: (listeners, thisArgs?, disposables?) => {
-				return undefined;
+				extHostLogService.warn('Tasks API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			onDidStartTaskProcess: (listeners, thisArgs?, disposables?) => {
-				return undefined;
+				extHostLogService.warn('Tasks API is disabled in Azure Data Studio');
+				return undefined!;
 			},
 			onDidEndTaskProcess: (listeners, thisArgs?, disposables?) => {
-				return undefined;
+				extHostLogService.warn('Tasks API is disabled in Azure Data Studio');
+				return undefined!;
 			}
 		};
 
@@ -923,6 +959,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			DocumentLink: extHostTypes.DocumentLink,
 			DocumentSymbol: extHostTypes.DocumentSymbol,
 			EndOfLine: extHostTypes.EndOfLine,
+			EvaluatableExpression: extHostTypes.EvaluatableExpression,
 			EventEmitter: Emitter,
 			ExtensionKind: extHostTypes.ExtensionKind,
 			CustomExecution: extHostTypes.CustomExecution,
@@ -1020,6 +1057,11 @@ class Extension<T> implements vscode.Extension<T> {
 		this.extensionPath = path.normalize(originalFSPath(description.extensionLocation));
 		this.packageJSON = description;
 		this.extensionKind = kind;
+	}
+
+	asExtensionUri(relativePath: string): URI {
+		checkProposedApiEnabled(this.packageJSON);
+		return joinPath(this.packageJSON.extensionLocation, relativePath);
 	}
 
 	get isActive(): boolean {

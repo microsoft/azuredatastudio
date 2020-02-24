@@ -10,7 +10,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 import { IAngularEventingService, AngularEventType, IAngularEvent } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/browser/newDashboardTabDialog';
-import { IDashboardTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
+import { IDashboardTab } from 'sql/workbench/services/dashboard/browser/common/interfaces';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 

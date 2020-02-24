@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { URI } from 'vs/base/common/uri';
-import * as resources from 'vs/base/common/resources';
+import { posix } from 'vs/base/common/path';
+import { dirname, isEqual, basenameOrAuthority } from 'vs/base/common/resources';
 import { IconLabel, IIconLabelValueOptions, IIconLabelCreationOptions } from 'vs/base/browser/ui/iconLabel/iconLabel';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IModeService } from 'vs/editor/common/services/modeService';
@@ -148,8 +149,8 @@ export class ResourceLabels extends Disposable {
 		}));
 
 		// notify when untitled labels change
-		this.textFileService.untitled.onDidChangeLabel(resource => {
-			this._widgets.forEach(widget => widget.notifyUntitledLabelChange(resource));
+		this.textFileService.untitled.onDidChangeLabel(model => {
+			this._widgets.forEach(widget => widget.notifyUntitledLabelChange(model.resource));
 		});
 	}
 
@@ -239,7 +240,7 @@ enum Redraw {
 class ResourceLabelWidget extends IconLabel {
 
 	private _onDidRender = this._register(new Emitter<void>());
-	readonly onDidRender: Event<void> = this._onDidRender.event;
+	readonly onDidRender = this._onDidRender.event;
 
 	private readonly renderDisposables = this._register(new DisposableStore());
 
@@ -323,7 +324,7 @@ class ResourceLabelWidget extends IconLabel {
 	}
 
 	notifyUntitledLabelChange(resource: URI): void {
-		if (resources.isEqual(resource, this.label?.resource)) {
+		if (isEqual(resource, this.label?.resource)) {
 			this.render(false);
 		}
 	}
@@ -340,19 +341,19 @@ class ResourceLabelWidget extends IconLabel {
 			}
 
 			if (!name) {
-				name = resources.basenameOrAuthority(resource);
+				name = basenameOrAuthority(resource);
 			}
 		}
 
 		let description: string | undefined;
 		if (!options?.hidePath) {
-			description = this.labelService.getUriLabel(resources.dirname(resource), { relative: true });
+			description = this.labelService.getUriLabel(dirname(resource), { relative: true });
 		}
 
 		this.setResource({ resource, name, description }, options);
 	}
 
-	setResource(label: IResourceLabelProps, options?: IResourceLabelOptions): void {
+	setResource(label: IResourceLabelProps, options: IResourceLabelOptions = Object.create(null)): void {
 		if (label.resource?.scheme === Schemas.untitled) {
 			// Untitled labels are very dynamic because they may change
 			// whenever the content changes (unless a path is associated).
@@ -361,17 +362,26 @@ class ResourceLabelWidget extends IconLabel {
 			// provided. If they are not provided from the label we got
 			// we assume that the client does not want to display them
 			// and as such do not override.
-			const untitledEditor = this.textFileService.untitled.get(label.resource);
-			if (untitledEditor && !untitledEditor.hasAssociatedFilePath) {
+			const untitledModel = this.textFileService.untitled.get(label.resource);
+			if (untitledModel && !untitledModel.hasAssociatedFilePath) {
 				if (typeof label.name === 'string') {
-					label.name = untitledEditor.getName();
+					label.name = untitledModel.name;
 				}
 
 				if (typeof label.description === 'string') {
-					const untitledDescription = untitledEditor.getDescription();
+					let untitledDescription = untitledModel.resource.path;
 					if (label.name !== untitledDescription) {
 						label.description = untitledDescription;
+					} else if (label.description === posix.sep) {
+						label.description = undefined; // unset showing just "/" for untitled without associated resource
 					}
+				}
+
+				let untitledTitle = untitledModel.resource.path;
+				if (untitledModel.name !== untitledTitle) {
+					options.title = `${untitledModel.name} • ${untitledTitle}`;
+				} else {
+					options.title = untitledTitle;
 				}
 			}
 		}
