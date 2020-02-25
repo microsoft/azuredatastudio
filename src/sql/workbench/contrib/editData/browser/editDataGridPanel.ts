@@ -425,22 +425,24 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private refreshGrid(): Thenable<void> {
 		return new Promise<void>(async (resolve, reject) => {
-			const self = this;
-			clearTimeout(self.refreshGridTimeoutHandle);
+
+			clearTimeout(this.refreshGridTimeoutHandle);
+
 			this.refreshGridTimeoutHandle = setTimeout(() => {
 
-				if (self.dataSet) {
-					self.placeHolderDataSets[0].dataRows = self.dataSet.dataRows;
+				if (this.dataSet) {
+					this.placeHolderDataSets[0].dataRows = this.dataSet.dataRows;
 					this.onResize();
 				}
 
 
-				if (self.oldDataRows !== self.placeHolderDataSets[0].dataRows) {
-					self.detectChange();
-					self.oldDataRows = self.placeHolderDataSets[0].dataRows;
+				if (this.oldDataRows !== this.placeHolderDataSets[0].dataRows) {
+					this.detectChange();
+					this.oldDataRows = this.placeHolderDataSets[0].dataRows;
 				}
 
-				if (self.firstRender) {
+				if (this.firstRender) {
+					let self = this;
 					let setActive = function () {
 						if (self.firstRender && self.table) {
 							self.table.setActive();
@@ -450,7 +452,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					setTimeout(() => setActive());
 				}
 				resolve();
-			}, self.refreshGridTimeoutInMs);
+			}, this.refreshGridTimeoutInMs);
 		});
 	}
 
