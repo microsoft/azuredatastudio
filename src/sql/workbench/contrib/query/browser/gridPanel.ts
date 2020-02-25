@@ -6,13 +6,12 @@
 import 'vs/css!./media/gridPanel';
 
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
-import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { ScrollableSplitView, IView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
-import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, RestoreTableAction, ChartDataAction, VisualizerDataAction } from 'sql/workbench/contrib/query/browser/actions';
+import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, RestoreTableAction, ChartDataAction/*, VisualizerDataAction*/ } from 'sql/workbench/contrib/query/browser/actions';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
@@ -21,11 +20,9 @@ import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugi
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
 
-import * as azdata from 'azdata';
-
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+// import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
@@ -42,12 +39,13 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { ILogService } from 'vs/platform/log/common/log';
 import { localize } from 'vs/nls';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
-import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
-import { CancellationToken } from 'vs/base/common/cancellation';
+// import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
+// import { CancellationToken } from 'vs/base/common/cancellation';
 import { GridPanelState, GridTableState } from 'sql/workbench/common/editor/query/gridPanelState';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
-import { Progress } from 'vs/platform/progress/common/progress';
+// import { Progress } from 'vs/platform/progress/common/progress';
+import { IQuery, QueryState, IResultSet, ColumnType } from 'sql/platform/query/common/queryService';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -70,7 +68,7 @@ export class GridPanel extends Disposable {
 	private queryRunnerDisposables = this._register(new DisposableStore());
 	private currentHeight: number;
 
-	private runner: QueryRunner;
+	private _query: IQuery;
 
 	private maximizedGrid: GridTable<any>;
 	private _state: GridPanelState | undefined;
@@ -110,26 +108,20 @@ export class GridPanel extends Disposable {
 		// will need to add logic to save the focused grid and focus that
 	}
 
-	public set queryRunner(runner: QueryRunner) {
+	public set query(query: IQuery) {
 		this.queryRunnerDisposables.clear();
 		this.reset();
-		this.runner = runner;
-		this.queryRunnerDisposables.add(this.runner.onResultSet(this.onResultSet, this));
-		this.queryRunnerDisposables.add(this.runner.onResultSetUpdate(this.updateResultSet, this));
-		this.queryRunnerDisposables.add(this.runner.onQueryStart(() => {
+		this._query = query;
+		this.queryRunnerDisposables.add(this._query.onResultSetAvailable(this.onResultSet, this));
+		this.queryRunnerDisposables.add(this._query.onResultSetUpdated(this.updateResultSet, this));
+		this.queryRunnerDisposables.add(Event.filter(this._query.onDidStateChange, e => e === QueryState.EXECUTING)(() => {
 			if (this.state) {
 				this.state.tableStates = [];
 			}
 			this.reset();
 		}));
-		this.addResultSet(this.runner.batchSets.reduce<azdata.ResultSetSummary[]>((p, e) => {
-			if (this.configurationService.getValue<boolean>('sql.results.streaming')) {
-				p = p.concat(e.resultSetSummaries);
-			} else {
-				p = p.concat(e.resultSetSummaries.filter(c => c.complete));
-			}
-			return p;
-		}, []));
+		const includeUncompleted = this.configurationService.getValue<boolean>('sql.results.streaming');
+		this.addResultSet(this._query.resultSets.filter(e => e.completed || includeUncompleted));
 
 		if (this.state && this.state.scrollPosition) {
 			this.splitView.setScrollPosition(this.state.scrollPosition);
@@ -140,8 +132,8 @@ export class GridPanel extends Disposable {
 		this.splitView.setScrollPosition(this.state.scrollPosition);
 	}
 
-	private onResultSet(resultSet: azdata.ResultSetSummary | azdata.ResultSetSummary[]) {
-		let resultsToAdd: azdata.ResultSetSummary[];
+	private onResultSet(resultSet: IResultSet | IResultSet[]) {
+		let resultsToAdd: IResultSet[];
 		if (!Array.isArray(resultSet)) {
 			resultsToAdd = [resultSet];
 		} else {
@@ -161,7 +153,7 @@ export class GridPanel extends Disposable {
 			this.addResultSet(resultsToAdd);
 			sizeChanges();
 		} else {
-			resultsToAdd = resultsToAdd.filter(e => e.complete);
+			resultsToAdd = resultsToAdd.filter(e => e.completed);
 			if (resultsToAdd.length > 0) {
 				this.addResultSet(resultsToAdd);
 			}
@@ -169,8 +161,8 @@ export class GridPanel extends Disposable {
 		}
 	}
 
-	private updateResultSet(resultSet: azdata.ResultSetSummary | azdata.ResultSetSummary[]) {
-		let resultsToUpdate: azdata.ResultSetSummary[];
+	private updateResultSet(resultSet: IResultSet | IResultSet[]) {
+		let resultsToUpdate: IResultSet[];
 		if (!Array.isArray(resultSet)) {
 			resultsToUpdate = [resultSet];
 		} else {
@@ -185,7 +177,7 @@ export class GridPanel extends Disposable {
 
 		if (this.configurationService.getValue<boolean>('sql.results.streaming')) {
 			for (let set of resultsToUpdate) {
-				let table = find(this.tables, t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id);
+				let table = find(this.tables, t => t.resultSet.id === set.id);
 				if (table) {
 					table.updateResult(set);
 				} else {
@@ -194,7 +186,7 @@ export class GridPanel extends Disposable {
 			}
 			sizeChanges();
 		} else {
-			resultsToUpdate = resultsToUpdate.filter(e => e.complete);
+			resultsToUpdate = resultsToUpdate.filter(e => e.completed);
 			if (resultsToUpdate.length > 0) {
 				this.addResultSet(resultsToUpdate);
 			}
@@ -202,25 +194,25 @@ export class GridPanel extends Disposable {
 		}
 	}
 
-	private addResultSet(resultSet: azdata.ResultSetSummary[]) {
+	private addResultSet(resultSet: IResultSet[]) {
 		let tables: GridTable<any>[] = [];
 
 		for (let set of resultSet) {
 			// ensure we aren't adding a resultSet that is already visible
-			if (find(this.tables, t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id)) {
+			if (find(this.tables, t => t.resultSet.id === set.id)) {
 				continue;
 			}
 			let tableState: GridTableState;
 			if (this.state) {
-				tableState = find(this.state.tableStates, e => e.batchId === set.batchId && e.resultId === set.id);
+				tableState = find(this.state.tableStates, e => e.resultId === set.id);
 			}
 			if (!tableState) {
-				tableState = new GridTableState(set.id, set.batchId);
+				tableState = new GridTableState(set.id);
 				if (this.state) {
 					this.state.tableStates.push(tableState);
 				}
 			}
-			let table = this.instantiationService.createInstance(GridTable, this.runner, set, tableState);
+			let table = this.instantiationService.createInstance(GridTable, set, tableState);
 			this.tableDisposable.add(tableState.onMaximizedChange(e => {
 				if (e) {
 					this.maximizeTable(table.id);
@@ -291,7 +283,7 @@ export class GridPanel extends Disposable {
 		this._state = val;
 		if (this.state) {
 			this.tables.map(t => {
-				let state = find(this.state.tableStates, s => s.batchId === t.resultSet.batchId && s.resultId === t.resultSet.id);
+				let state = find(this.state.tableStates, s => s.resultId === t.resultSet.id);
 				if (!state) {
 					this.state.tableStates.push(t.state);
 				}
@@ -311,11 +303,6 @@ export class GridPanel extends Disposable {
 		this.tables = undefined;
 		super.dispose();
 	}
-}
-
-export interface IDataSet {
-	rowCount: number;
-	columnInfo: azdata.IDbColumn[];
 }
 
 export abstract class GridTableBase<T> extends Disposable implements IView {
@@ -353,7 +340,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	constructor(
 		state: GridTableState,
-		protected _resultSet: azdata.ResultSetSummary,
+		protected _resultSet: IResultSet,
 		protected contextMenuService: IContextMenuService,
 		protected instantiationService: IInstantiationService,
 		protected editorService: IEditorService,
@@ -368,14 +355,14 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.container.style.height = '100%';
 		this.container.className = 'grid-panel';
 
-		this.columns = this.resultSet.columnInfo.map((c, i) => {
-			let isLinked = c.isXml || c.isJson;
+		this.columns = this.resultSet.columns.map((c, i) => {
+			let isLinked = c.type === ColumnType.JSON || c.type === ColumnType.XML;
 
 			return <Slick.Column<T>>{
 				id: i.toString(),
-				name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
+				name: c.title === 'Microsoft SQL Server 2005 XML Showplan'
 					? localize('xmlShowplan', "XML Showplan")
-					: escape(c.columnName),
+					: escape(c.title),
 				field: i.toString(),
 				formatter: isLinked ? hyperLinkFormatter : textFormatter,
 				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined
@@ -383,9 +370,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		});
 	}
 
-	abstract get gridDataProvider(): IGridDataProvider;
-
-	public get resultSet(): azdata.ResultSetSummary {
+	public get resultSet(): IResultSet {
 		return this._resultSet;
 	}
 
@@ -484,11 +469,10 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			this.container.appendChild(actionBarContainer);
 		}
 		let context: IGridActionContext = {
-			gridDataProvider: this.gridDataProvider,
+			gridDataProvider: undefined, //this.gridDataProvider,
 			table: this.table,
 			tableState: this.state,
-			batchId: this.resultSet.batchId,
-			resultId: this.resultSet.id
+			resultId: undefined //this.resultSet.id
 		};
 		this.actionBar = new ActionBar(actionBarContainer, {
 			orientation: actionsOrientation, context: context
@@ -573,21 +557,21 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	private onTableClick(event: ITableMouseEvent) {
 		// account for not having the number column
-		let column = this.resultSet.columnInfo[event.cell.cell - 1];
+		let column = this.resultSet.columns[event.cell.cell - 1];
 		// handle if a showplan link was clicked
-		if (column && (column.isXml || column.isJson)) {
-			this.gridDataProvider.getRowData(event.cell.row, 1).then(async d => {
-				let value = d.resultSubset.rows[0][event.cell.cell - 1];
-				let content = value.displayValue;
+		if (column && (column.type === ColumnType.JSON || column.type === ColumnType.XML)) {
+			// this.gridDataProvider.getRowData(event.cell.row, 1).then(async d => {
+			// 	let value = d.resultSubset.rows[0][event.cell.cell - 1];
+			// 	let content = value.displayValue;
 
-				const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
-				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
-				return this.editorService.openEditor(input);
-			});
+			// 	const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
+			// 	await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
+			// 	return this.editorService.openEditor(input);
+			// });
 		}
 	}
 
-	public updateResult(resultSet: azdata.ResultSetSummary) {
+	public updateResult(resultSet: IResultSet) {
 		this._resultSet = resultSet;
 		if (this.table && this.visible) {
 			this.dataProvider.length = resultSet.rowCount;
@@ -601,7 +585,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		return <IGridActionContext>{
 			cell,
 			selection,
-			gridDataProvider: this.gridDataProvider,
+			// gridDataProvider: this.gridDataProvider,
 			table: this.table,
 			tableState: this.state,
 			selectionModel: this.selectionModel
@@ -642,12 +626,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		return Math.max(this.maxSize, ACTIONBAR_HEIGHT + BOTTOM_PADDING);
 	}
 
-	private loadData(offset: number, count: number): Thenable<T[]> {
-		return this.gridDataProvider.getRowData(offset, count).then(response => {
-			if (!response.resultSubset) {
-				return [];
-			}
-			return response.resultSubset.rows.map(r => {
+	private loadData(offset: number, count: number): Promise<T[]> {
+		return this._resultSet.fetch(offset, count).then(response => {
+			return response.rows.map(r => {
 				let dataWithSchema = {};
 				// skip the first column since its a number column
 				for (let i = 1; i < this.columns.length; i++) {
@@ -744,18 +725,17 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 class GridTable<T> extends GridTableBase<T> {
 	private _gridDataProvider: IGridDataProvider;
 	constructor(
-		private _runner: QueryRunner,
-		resultSet: azdata.ResultSetSummary,
+		resultSet: IResultSet,
 		state: GridTableState,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IContextKeyService private contextKeyService: IContextKeyService,
+		// @IContextKeyService private contextKeyService: IContextKeyService,
 		@IEditorService editorService: IEditorService,
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService
 	) {
 		super(state, resultSet, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
-		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
+		// this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 	}
 
 	get gridDataProvider(): IGridDataProvider {
@@ -782,9 +762,9 @@ class GridTable<T> extends GridTableBase<T> {
 			this.instantiationService.createInstance(ChartDataAction)
 		);
 
-		if (this.contextKeyService.getContextKeyValue('showVisualizer')) {
-			actions.push(this.instantiationService.createInstance(VisualizerDataAction, this._runner));
-		}
+		// if (this.contextKeyService.getContextKeyValue('showVisualizer')) {
+		// 	actions.push(this.instantiationService.createInstance(VisualizerDataAction, this._runner));
+		// }
 
 		return actions;
 	}

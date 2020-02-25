@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/messagePanel';
 import { IMessagesActionContext, CopyMessagesAction, CopyAllMessagesAction } from './actions';
-import QueryRunner, { IQueryMessage } from 'sql/workbench/services/query/common/queryRunner';
 import { IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 
 import { ISelectionData } from 'azdata';
@@ -29,6 +28,8 @@ import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { resultsErrorColor } from 'sql/platform/theme/common/colors';
 import { MessagePanelState } from 'sql/workbench/common/editor/query/messagePanelState';
+import { IQuery, IResultMessage, QueryState } from 'sql/platform/query/common/queryService';
+import { Event } from 'vs/base/common/event';
 
 export interface IResultMessageIntern {
 	id?: string;
@@ -41,12 +42,12 @@ export interface IResultMessageIntern {
 
 export interface IMessagePanelMessage {
 	message: string;
-	isError: boolean;
+	isError?: boolean;
 }
 
 export interface IMessagePanelBatchMessage extends IMessagePanelMessage {
-	selection: ISelectionData;
-	time: string;
+	// selection: ISelectionData;
+	// time: string;
 }
 
 interface IMessageTemplate {
@@ -177,19 +178,19 @@ export class MessagePanel extends Disposable {
 		this.tree.domFocus();
 	}
 
-	public set queryRunner(runner: QueryRunner) {
+	public set query(query: IQuery) {
 		this.queryRunnerDisposables.clear();
 		this.reset();
-		this.queryRunnerDisposables.add(runner.onQueryStart(() => this.reset()));
-		this.queryRunnerDisposables.add(runner.onMessage(e => this.onMessage(e)));
-		this.onMessage(runner.messages);
+		this.queryRunnerDisposables.add(Event.filter(query.onDidStateChange, e => e === QueryState.EXECUTING)(() => this.reset()));
+		this.queryRunnerDisposables.add(query.onMessage(e => this.onMessage(e)));
+		this.onMessage(query.messages);
 	}
 
-	private onMessage(message: IQueryMessage | IQueryMessage[]) {
+	private onMessage(message: IResultMessage | ReadonlyArray<IResultMessage>) {
 		if (isArray(message)) {
 			this.model.messages.push(...message);
 		} else {
-			this.model.messages.push(message);
+			this.model.messages.push(message as IResultMessage);
 		}
 		// convert to old VS Code tree interface with expandable methods
 		let expandableTree: IExpandableTree = <IExpandableTree>this.tree;

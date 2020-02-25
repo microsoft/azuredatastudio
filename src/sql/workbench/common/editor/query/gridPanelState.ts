@@ -34,7 +34,7 @@ export class GridTableState extends Disposable {
 	public selection?: Slick.Range[];
 	public activeCell?: Slick.Cell;
 
-	constructor(public readonly resultId: number, public readonly batchId: number) {
+	constructor(public readonly resultId: string) {
 		super();
 	}
 

@@ -13,6 +13,8 @@ import { MessagePanelState } from 'sql/workbench/common/editor/query/messagePane
 import { GridPanelState } from 'sql/workbench/common/editor/query/gridPanelState';
 import { QueryModelViewState } from 'sql/workbench/common/editor/query/modelViewState';
 import { URI } from 'vs/base/common/uri';
+import { IQuery } from 'sql/platform/query/common/queryService';
+import { Emitter } from 'vs/base/common/event';
 
 export class ResultsViewState {
 	public readonly gridPanelState: GridPanelState = new GridPanelState();
@@ -45,6 +47,11 @@ export class QueryResultsInput extends EditorInput {
 
 	private _state?= new ResultsViewState();
 
+	private _query?: IQuery;
+
+	private readonly _queryAvailable = new Emitter<void>();
+	public readonly queryAvailable = this._queryAvailable.event;
+
 	public get state(): ResultsViewState | undefined {
 		return this._state;
 	}
@@ -59,6 +66,14 @@ export class QueryResultsInput extends EditorInput {
 
 	getName(): string {
 		return localize('extensionsInputName', "Extension");
+	}
+
+	setQuery(query: IQuery) {
+		this._query = query;
+	}
+
+	get query(): IQuery | undefined {
+		return this._query;
 	}
 
 	matches(other: any): boolean {

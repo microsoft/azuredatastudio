@@ -201,12 +201,13 @@ export abstract class QueryEditorInput extends EditorInput implements IDisposabl
 
 	public async runQuery(): Promise<void> {
 		if (this.query) {
-			await this.query.runQuery();
+			await this.query.execute();
 		} else {
 			if (await this.connect()) {
 				this._query = this.queryService.createOrGetQuery(this.connection, this.resource);
 				if (this.query) {
-					await this.query.runQuery();
+					this.results.setQuery(this.query);
+					await this.query.execute();
 				}
 			}
 		}

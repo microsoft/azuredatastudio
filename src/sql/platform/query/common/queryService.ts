@@ -8,14 +8,20 @@ import { IConnection, ConnectionState, IConnectionService } from 'sql/platform/c
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { IDisposable, combinedDisposable, toDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
-import { Event } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export const IQueryService = createDecorator<IQueryService>('queryService');
 
 export interface IQueryProvider {
 	readonly id: string;
 	readonly onMessage: Event<IResultMessage | IResultMessage[]>;
+	readonly onBatchStart: Event<void>;
+	readonly onResultSetAvailable: Event<void>;
+	readonly onResultSetUpdated: Event<void>;
+	readonly onBatchComplete: Event<void>;
+	readonly onQueryComplete: Event<void>;
 	runQuery(connectionId: string, file: URI): Promise<void>;
+	fetchSubset(connectionId: string, resultSetId: number, batchId: number, offset: number, count: number): Promise<IFetchResponse>;
 }
 
 export interface IQueryService {
@@ -36,14 +42,113 @@ export interface IResultMessage {
 	isError?: boolean;
 }
 
-export interface IQuery {
-	readonly connection: IConnection;
-	readonly associatedFile?: URI;
+export interface IResultSet {
+	//TBD
+	readonly id: string;
+	readonly rowCount: number;
+	readonly completed?: boolean;
+	readonly columns: ReadonlyArray<IColumn>;
+	fetch(offset: number, count: number): Promise<IFetchResponse>;
+}
 
-	runQuery(): Promise<void>;
+export interface IFetchResponse {
+	rowCount: number;
+	rows: Array<Array<any>>;
+}
+
+export interface IColumn {
+	title: string;
+	type: ColumnType;
+}
+
+export enum ColumnType {
+	XML,
+	JSON,
+	UNKNOWN
+}
+
+export enum QueryState {
+	EXECUTING,
+	NOT_EXECUTING
+}
+
+export interface IQuery {
+	/**
+	 * Connection associated with this query
+	 */
+	readonly connection: IConnection;
+	/**
+	 * File associated with this query
+	 */
+	readonly associatedFile: URI;
+	/**
+	 * State of the query
+	 */
+	readonly state: QueryState;
+	readonly onDidStateChange: Event<QueryState>;
+
+	/**
+	 * Execute the query with the associatedFile for this query
+	 */
+	execute(): Promise<void>;
+
+	/**
+	 * Messages returned from the query
+	 */
+	readonly messages: ReadonlyArray<IResultMessage>;
+	/**
+	 * Result sets returned from the query
+	 */
+	readonly resultSets: ReadonlyArray<IResultSet>;
+
+	// events
+	onResultSetAvailable: Event<IResultSet>;
+	onResultSetUpdated: Event<IResultSet>;
+	onQueryComplete: Event<void>;
+	onMessage: Event<IResultMessage | IResultMessage[]>;
+
+	//TBD
+	onBatchStart: Event<void>;
+	onBatchComplete: Event<void>;
 }
 
 class Query extends Disposable implements IQuery {
+
+	private _state: QueryState = QueryState.NOT_EXECUTING;
+	public get state(): QueryState { return this._state; }
+
+	private readonly _onDidStateChange = new Emitter<QueryState>();
+	public readonly onDidStateChange = this._onDidStateChange.event;
+
+	private readonly _onMessage = new Emitter<IResultMessage | IResultMessage[]>();
+	public readonly onMessage = this._onMessage.event;
+
+	private readonly _onResultSetAvailable = new Emitter<IResultSet>();
+	public readonly onResultSetAvailable = this._onResultSetAvailable.event;
+
+	private readonly _onResultSetUpdated = new Emitter<IResultSet>();
+	public readonly onResultSetUpdated = this._onResultSetUpdated.event;
+
+	private readonly _onQueryComplete = new Emitter<void>();
+	public readonly onQueryComplete = this._onQueryComplete.event;
+
+	//#region TBD
+	private _onBatchStart = new Emitter<void>();
+	public readonly onBatchStart = this._onBatchStart.event;
+
+	private _onBatchComplete = new Emitter<void>();
+	public readonly onBatchComplete = this._onBatchComplete.event;
+	//#endregion
+
+	private _messages: Array<IResultMessage> = [];
+	public get messages(): ReadonlyArray<IResultMessage> {
+		return this._messages;
+	}
+
+	private _resultSets: Array<IResultSet> = [];
+	public get resultSets(): ReadonlyArray<IResultSet> {
+		return this._resultSets;
+	}
 
 	constructor(
 		private readonly queryService: QueryService,
@@ -53,8 +158,20 @@ class Query extends Disposable implements IQuery {
 		super();
 	}
 
-	async runQuery(): Promise<void> {
-		await this.queryService.runQuery(this.connection, this.associatedFile);
+	private setState(state: QueryState) {
+		if (state !== this.state) {
+			this._state = state;
+			this._onDidStateChange.fire(this.state);
+		}
+	}
+
+	async execute(): Promise<void> {
+		this.setState(QueryState.EXECUTING);
+		await this.queryService.executeQuery(this.connection, this.associatedFile);
+	}
+
+	private fetch(resultSetId: number, batchId: number, offset: number, count: number): Promise<IFetchResponse> {
+		return this.queryService.fetchData(this.connection, resultSetId, batchId, offset, count);
 	}
 }
 
@@ -84,6 +201,12 @@ export class QueryService extends Disposable implements IQueryService {
 
 	registerProvider(provider: IQueryProvider): IDisposable {
 		const disposable = combinedDisposable(
+			provider.onMessage(e => this.onMessage(e)),
+			provider.onBatchStart(e => this.onBatchStart(e)),
+			provider.onResultSetAvailable(e => this.onResultSetAvailable(e)),
+			provider.onResultSetUpdated(e => this.onResultSetUpdated(e)),
+			provider.onBatchComplete(e => this.onBatchComplete(e)),
+			provider.onQueryComplete(e => this.onQueryComplete(e)),
 			toDisposable(() => this.queryProviders.delete(provider.id))
 		);
 		const providerStub = {
@@ -94,13 +217,46 @@ export class QueryService extends Disposable implements IQueryService {
 		return disposable;
 	}
 
-	runQuery(connection: IConnection, file: URI): Promise<void> {
+	private onMessage(e: IResultMessage | IResultMessage[]): any {
+		throw new Error('Method not implemented.');
+	}
+
+	private onBatchStart(e: void): any {
+		throw new Error('Method not implemented.');
+	}
+
+	private onResultSetAvailable(e: void): any {
+		throw new Error('Method not implemented.');
+	}
+
+	private onResultSetUpdated(e: void): any {
+		throw new Error('Method not implemented.');
+	}
+
+	private onBatchComplete(e: void): any {
+		throw new Error('Method not implemented.');
+	}
+
+	private onQueryComplete(e: void): any {
+		throw new Error('Method not implemented.');
+	}
+
+	executeQuery(connection: IConnection, file: URI): Promise<void> {
 		const providerStub = this.queryProviders.get(connection.provider);
 		if (!providerStub) {
 			throw new Error(`Provider could not be found: ${connection.provider}`);
 		}
 		const connectionId = this.connectionService.getIdForConnection(connection);
 		return providerStub.provider.runQuery(connectionId, file);
+	}
+
+	fetchData(connection: IConnection, resultSetId: number, batchId: number, offset: number, count: number): Promise<IFetchResponse> {
+		const providerStub = this.queryProviders.get(connection.provider);
+		if (!providerStub) {
+			throw new Error(`Provider could not be found: ${connection.provider}`);
+		}
+		const connectionId = this.connectionService.getIdForConnection(connection);
+		return providerStub.provider.fetchSubset(connectionId, resultSetId, batchId, offset, count);
 	}
 }
 

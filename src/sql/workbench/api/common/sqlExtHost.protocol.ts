@@ -37,24 +37,23 @@ export abstract class ExtHostAccountManagementShape {
 	$accountsChanged(handle: number, accounts: azdata.Account[]): Thenable<void> { throw ni(); }
 }
 
-export abstract class ExtHostConnectionShape {
-	$onConnectionEvent(handle: number, type: azdata.connection.ConnectionEventType, ownerUri: string, profile: azdata.IConnectionProfile): void { throw ni(); }
-
+export interface ExtHostConnectionShape {
+	$onConnectionEvent(handle: number, type: azdata.connection.ConnectionEventType, ownerUri: string, profile: azdata.IConnectionProfile): void;
 
 	/**
 	 * Establish a connection to a data source using the provided ConnectionInfo instance.
 	 */
-	$connect(handle: number, connectionUri: string, connection: azdata.ConnectionInfo): Promise<boolean> { throw ni(); }
+	$connect(handle: number, connectionUri: string, connection: azdata.ConnectionInfo): Promise<boolean>;
 
 	/**
 	 * Disconnect from a data source using the provided connectionUri string.
 	 */
-	$disconnect(handle: number, connectionUri: string): Promise<boolean> { throw ni(); }
+	$disconnect(handle: number, connectionUri: string): Promise<boolean>;
 
 	/**
 	 * Cancel a connection to a data source using the provided connectionUri string.
 	 */
-	$cancelConnect(handle: number, connectionUri: string): Promise<boolean> { throw ni(); }
+	$cancelConnect(handle: number, connectionUri: string): Promise<boolean>;
 }
 
 export abstract class ExtHostDataProtocolShape {

@@ -8,22 +8,25 @@ import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import type * as azdata from 'azdata';
 import type * as vscode from 'vscode';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
+import { IURITransformer } from 'vs/base/common/uriIpc';
+import { URI } from 'vs/base/common/uri';
 
-export class ExtHostConnection extends ExtHostConnectionShape {
+export class ExtHostConnection implements ExtHostConnectionShape {
 
 	private static _handlePool: number = 0;
 	private _proxy: MainThreadConnectionShape;
 	private _nextListenerHandle: number = 0;
 	private _connectionListeners = new Map<number, azdata.connection.ConnectionEventListener>();
+	private readonly providers = new Map<number, azdata.ConnectionProvider>();
 
 	private _nextHandle(): number {
 		return ExtHostConnection._handlePool++;
 	}
 
 	constructor(
-		mainContext: IMainContext
+		mainContext: IMainContext,
+		private readonly uriTransformer: IURITransformer | null
 	) {
-		super();
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadConnection);
 	}
 
@@ -105,10 +108,37 @@ export class ExtHostConnection extends ExtHostConnectionShape {
 			this._proxy.$onConnectionChangeNotification(handle, changedConnInfo);
 		});
 
+		this.providers.set(handle, provider);
 		this._proxy.$registerProvider(provider.providerId, handle);
 
 		return new Disposable(() => {
 			this._proxy.$unregisterProvider(handle);
+			this.providers.delete(handle);
 		});
+	}
+
+	// Connection Management handlers
+	$connect(handle: number, connectionUri: string, connection: azdata.ConnectionInfo): Promise<boolean> {
+		if (this.uriTransformer) {
+			connectionUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(connectionUri))).toString(true);
+		}
+		return Promise.resolve(this._resolveProvider(handle).connect(connectionUri, connection));
+	}
+
+	$disconnect(handle: number, connectionUri: string): Promise<boolean> {
+		return Promise.resolve(this._resolveProvider(handle).disconnect(connectionUri));
+	}
+
+	$cancelConnect(handle: number, connectionUri: string): Promise<boolean> {
+		return Promise.resolve(this._resolveProvider(handle).cancelConnect(connectionUri));
+	}
+
+	private _resolveProvider(handle: number): azdata.ConnectionProvider {
+		let provider = this.providers.get(handle);
+		if (provider) {
+			return provider;
+		} else {
+			throw new Error(`Unfound provider ${handle}`);
+		}
 	}
 }

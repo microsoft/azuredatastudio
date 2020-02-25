@@ -136,6 +136,7 @@ export class ExtHostQuery implements ExtHostQueryShape {
 			this._proxy.$onEditSessionReady(handle, ownerUri, success, message);
 		});
 
+		this.providers.set(handle, provider);
 		this._proxy.$registerProvider(provider.providerId, handle);
 
 		return new Disposable(() => {

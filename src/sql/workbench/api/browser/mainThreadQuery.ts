@@ -8,7 +8,7 @@ import { SqlMainContext, MainThreadQueryShape, ExtHostQueryShape, SqlExtHostCont
 import { Disposable, IDisposable, combinedDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { Emitter } from 'vs/base/common/event';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { IResultMessage, IQueryService } from 'sql/platform/query/common/queryService';
+import { IResultMessage, IQueryService, IFetchResponse } from 'sql/platform/query/common/queryService';
 import { values } from 'vs/base/common/collections';
 import { URI } from 'vs/base/common/uri';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
@@ -24,7 +24,7 @@ interface QueryEvents {
 }
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQuery)
-export class MainThreadConnection extends Disposable implements MainThreadQueryShape {
+export class MainThreadQuery extends Disposable implements MainThreadQueryShape {
 
 	private _proxy: ExtHostQueryShape;
 	private readonly _queryEvents = new Map<number, QueryEvents>();
@@ -53,10 +53,19 @@ export class MainThreadConnection extends Disposable implements MainThreadQueryS
 		this._queryEvents.set(handle, emitters);
 		const disposable = this.queryService.registerProvider({
 			id: providerId,
+			onMessage: emitters.onMessage.event,
+			onQueryComplete: emitters.onQueryComplete.event,
+			onBatchStart: emitters.onBatchStart.event,
+			onBatchComplete: emitters.onBatchComplete.event,
+			onResultSetAvailable: emitters.onResultSetAvailable.event,
+			onResultSetUpdated: emitters.onResultSetUpdated.event,
 			runQuery: (connectionId: string, file: URI): Promise<void> => {
 				return this._proxy.$runQuery(handle, connectionId); // for now we consider the connection to be the file but we shouldn't
 			},
-			onMessage: emitters.onMessage.event
+			fetchSubset: async (connectionId: string, resultSetId: number, batchId: number, offset: number, count: number): Promise<IFetchResponse> => {
+				const response = await this._proxy.$getQueryRows(handle, { batchIndex: batchId, rowsStartIndex: offset, rowsCount: count, resultSetIndex: resultSetId, ownerUri: connectionId });
+				return { rowCount: response.resultSubset.rowCount, rows: response.resultSubset.rows };
+			}
 		});
 
 		this._registrations.set(handle,
