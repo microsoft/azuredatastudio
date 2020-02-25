@@ -173,7 +173,8 @@ export enum ModelComponentTypes {
 	Dom,
 	Hyperlink,
 	Image,
-	RadioCardGroup
+	RadioCardGroup,
+	Separator
 }
 
 export enum ColumnSizingMode {

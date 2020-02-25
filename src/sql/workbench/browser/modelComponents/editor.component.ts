@@ -24,6 +24,7 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser/simpleProgressIndicator';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 @Component({
 	template: '',
@@ -47,7 +48,8 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
 		@Inject(IModeService) private _modeService: IModeService,
-		@Inject(ILogService) private _logService: ILogService
+		@Inject(ILogService) private _logService: ILogService,
+		@Inject(IEditorService) private readonly editorService: IEditorService
 	) {
 		super(changeRef, el);
 	}
@@ -66,7 +68,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		this._editor.create(this._el.nativeElement);
 		this._editor.setVisible(true);
 		let uri = this.createUri();
-		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, uri, false, 'plaintext', '', '');
+		this._editorInput = this.editorService.createInput({ forceUntitled: true, resource: uri, mode: 'plaintext' }) as UntitledTextEditorInput;
 		await this._editor.setInput(this._editorInput, undefined);
 		const model = await this._editorInput.resolve();
 		this._editorModel = model.textEditorModel;

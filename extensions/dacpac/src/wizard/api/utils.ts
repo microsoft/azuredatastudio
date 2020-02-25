@@ -120,7 +120,7 @@ export function isValidBasenameErrorMessage(name: string | null | undefined): st
 	}
 
 	if (basename === '.' || basename === '..') {
-		return loc.reservedWindowsFilenameErrorMessage; // check for reserved values
+		return loc.reservedValueErrorMessage; // check for reserved values
 	}
 
 	if (isWindows && basename.length !== basename.trim().length) {
@@ -132,4 +132,8 @@ export function isValidBasenameErrorMessage(name: string | null | undefined): st
 	}
 
 	return '';
+}
+
+export function generateDatabaseName(filePath: string): string {
+	return path.parse(filePath).name;
 }

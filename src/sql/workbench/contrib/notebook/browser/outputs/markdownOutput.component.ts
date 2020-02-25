@@ -12,8 +12,8 @@ import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IMimeComponent } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRegistry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
-import { MimeModel } from 'sql/workbench/contrib/notebook/browser/models/mimemodel';
-import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { MimeModel } from 'sql/workbench/services/notebook/browser/outputs/mimemodel';
+import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { URI } from 'vs/base/common/uri';
 
 @Component({

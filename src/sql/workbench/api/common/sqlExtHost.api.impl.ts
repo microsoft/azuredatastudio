@@ -70,6 +70,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const uriTransformer = accessor.get(IURITransformerService);
 	const rpcProtocol = accessor.get(IExtHostRpcService);
 	const extHostLogService = accessor.get(ILogService);
+	const logService = accessor.get(ILogService);
 
 	// Addressable instances
 	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));
@@ -82,15 +83,14 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostTasks = rpcProtocol.set(SqlExtHostContext.ExtHostTasks, new ExtHostTasks(rpcProtocol, extHostLogService));
 	const extHostBackgroundTaskManagement = rpcProtocol.set(SqlExtHostContext.ExtHostBackgroundTaskManagement, new ExtHostBackgroundTaskManagement(rpcProtocol));
 	const extHostWebviewWidgets = rpcProtocol.set(SqlExtHostContext.ExtHostDashboardWebviews, new ExtHostDashboardWebviews(rpcProtocol));
-	const extHostModelViewTree = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewTreeViews, new ExtHostModelViewTreeViews(rpcProtocol));
-	const extHostModelView = rpcProtocol.set(SqlExtHostContext.ExtHostModelView, new ExtHostModelView(rpcProtocol, extHostModelViewTree));
+	const extHostModelViewTree = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewTreeViews, new ExtHostModelViewTreeViews(rpcProtocol, logService));
+	const extHostModelView = rpcProtocol.set(SqlExtHostContext.ExtHostModelView, new ExtHostModelView(rpcProtocol, extHostModelViewTree, logService));
 	const extHostDashboard = rpcProtocol.set(SqlExtHostContext.ExtHostDashboard, new ExtHostDashboard(rpcProtocol));
 	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol, extHostModelView, extHostBackgroundTaskManagement));
 	const extHostQueryEditor = rpcProtocol.set(SqlExtHostContext.ExtHostQueryEditor, new ExtHostQueryEditor(rpcProtocol));
 	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol));
 	const extHostNotebookDocumentsAndEditors = rpcProtocol.set(SqlExtHostContext.ExtHostNotebookDocumentsAndEditors, new ExtHostNotebookDocumentsAndEditors(rpcProtocol));
 	const extHostExtensionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostExtensionManagement, new ExtHostExtensionManagement(rpcProtocol));
-
 
 	return {
 		azdata: function (extension: IExtensionDescription): typeof azdata {
@@ -113,7 +113,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				},
 				// "sqlops" back-compat APIs
 				getActiveConnections(): Thenable<azdata.connection.Connection[]> {
-					console.warn('the method azdata.connection.getActiveConnections has been deprecated, replace it with azdata.connection.getConnections');
+					logService.warn('the method azdata.connection.getActiveConnections has been deprecated, replace it with azdata.connection.getConnections');
 					return extHostConnectionManagement.$getActiveConnections();
 				},
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
@@ -240,7 +240,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				});
 
 				provider.registerOnMessage((message: azdata.QueryExecuteMessageParams) => {
-					extHostDataProvider.$onQueryMessage(provider.handle, message);
+					extHostDataProvider.$onQueryMessage(message);
 				});
 
 				provider.registerOnEditSessionReady((ownerUri: string, success: boolean, message: string) => {

@@ -12,10 +12,10 @@ import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 import { IFileService } from 'vs/platform/files/common/files';
 
-import { JSONObject } from 'sql/workbench/contrib/notebook/common/models/jsonext';
-import { OutputTypes } from 'sql/workbench/contrib/notebook/common/models/contracts';
-import { nbversion } from 'sql/workbench/contrib/notebook/common/models/notebookConstants';
-import { nbformat } from 'sql/workbench/contrib/notebook/common/models/nbformat';
+import { JSONObject } from 'sql/workbench/services/notebook/common/jsonext';
+import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
+import { nbformat } from 'sql/workbench/services/notebook/common/nbformat';
 import { VSBuffer } from 'vs/base/common/buffer';
 
 type MimeBundle = { [key: string]: string | string[] | undefined };

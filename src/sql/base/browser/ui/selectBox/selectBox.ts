@@ -318,6 +318,10 @@ export class SelectBox extends vsSelectBox {
 			super.render(container);
 		}
 	}
+
+	public get selectElem(): HTMLSelectElement {
+		return this.selectElement;
+	}
 }
 
 export interface ISelectBoxOptionsWithLabel extends ISelectBoxOptions {
