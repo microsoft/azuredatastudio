@@ -139,6 +139,7 @@ steps:
       codesign --force --timestamp --options runtime --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/darwin/entitlements.xml -s LPV3BJJYXS *.app
       popd
     displayName: 'Manual codesign'
+    condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
       set -e
