@@ -31,7 +31,7 @@ import { entries } from 'sql/base/common/collections';
 import { find } from 'vs/base/common/arrays';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IConnectionService, IConnection, ConnectionState, IConnectionCompleteEvent } from 'sql/platform/connection/common/connectionService';
+import { IConnectionService, IConnection } from 'sql/platform/connection/common/connectionService';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -241,45 +241,18 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 		try {
 			const connection = await this.connectionService.createOrGetConnection(uri ?? this.useString, { provider: profile.providerName, options: profile.options });
-			let connectionResult: IConnectionCompleteEvent;
-			switch (connection.state) {
-				case ConnectionState.DISCONNECTED:
-					connectionResult = await connection.connect();
-					this._connecting = false;
-					if (!connectionResult.failed) {
-						this._connectionDialog.close();
-						if (this._dialogDeferredPromise) {
-							this._dialogDeferredPromise.resolve(connection);
-						}
-						// } else if (connectionResult && connectionResult.errorHandled) {
-						// 	this._connectionDialog.resetConnection();
-					} else {
-						this._connectionDialog.resetConnection();
-						this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, '');
-					}
-					break;
-				case ConnectionState.CONNECTING:
-					connectionResult = await connection.onDidConnect;
-					this._connecting = false;
-					if (!connectionResult.failed) {
-						this._connectionDialog.close();
-						if (this._dialogDeferredPromise) {
-							this._dialogDeferredPromise.resolve(connection);
-						}
-						// } else if (connectionResult && connectionResult.errorHandled) {
-						// 	this._connectionDialog.resetConnection();
-					} else {
-						this._connectionDialog.resetConnection();
-						this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, '');
-					}
-					break;
-				case ConnectionState.CONNECTED:
-					this._connecting = false;
-					this._connectionDialog.close();
-					if (this._dialogDeferredPromise) {
-						this._dialogDeferredPromise.resolve(connection);
-					}
-					break;
+			let connectionResult = await connection.connect();
+			this._connecting = false;
+			if (!connectionResult.failed) {
+				this._connectionDialog.close();
+				if (this._dialogDeferredPromise) {
+					this._dialogDeferredPromise.resolve(connection);
+				}
+				// } else if (connectionResult && connectionResult.errorHandled) {
+				// 	this._connectionDialog.resetConnection();
+			} else {
+				this._connectionDialog.resetConnection();
+				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, '');
 			}
 		} catch (err) {
 			this._connecting = false;

@@ -19,7 +19,7 @@ export class ExtHostQuery implements ExtHostQueryShape {
 	private readonly _proxy: MainThreadQueryShape;
 
 	private readonly messageRunner = new RunOnceScheduler(() => this.sendMessages(), 1000);
-	private readonly queuedMessages = new Map<number, azdata.QueryExecuteMessageParams[]>();
+	private readonly queuedMessages = new Map<number, Map<string, azdata.IResultMessage[]>>();
 	private readonly providers = new Map<number, azdata.QueryProvider>();
 
 	private _nextHandle(): number {
@@ -150,16 +150,19 @@ export class ExtHostQuery implements ExtHostQueryShape {
 			message.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(message.ownerUri))).toString(true);
 		}
 		if (!this.queuedMessages.has(handle)) {
-			this.queuedMessages.set(handle, []);
+			this.queuedMessages.set(handle, new Map<string, azdata.IResultMessage[]>());
 		}
-		this.queuedMessages.get(handle).push(message);
+		if (!this.queuedMessages.get(handle).has(message.ownerUri)) {
+			this.queuedMessages.get(handle).set(message.ownerUri, []);
+		}
+		this.queuedMessages.get(handle).get(message.ownerUri).push(message.message);
 		if (!this.messageRunner.isScheduled()) {
 			this.messageRunner.schedule();
 		}
 	}
 
 	private sendMessages() {
-		const messages = mapToSerializable(this.queuedMessages);
+		const messages = mapToSerializable(this.queuedMessages, v => mapToSerializable(v));
 		this.queuedMessages.clear();
 		this._proxy.$onQueryMessage(messages);
 	}

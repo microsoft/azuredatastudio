@@ -70,6 +70,7 @@ export class QueryResultsInput extends EditorInput {
 
 	setQuery(query: IQuery) {
 		this._query = query;
+		this._queryAvailable.fire();
 	}
 
 	get query(): IQuery | undefined {

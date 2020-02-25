@@ -115,9 +115,6 @@ class Connection extends Disposable implements IConnection {
 	private _state: ConnectionState = ConnectionState.DISCONNECTED;
 
 	public get onDidConnect(): Promise<IConnectionCompleteEvent> {
-		if (!(this.state === ConnectionState.CONNECTING)) {
-			throw new Error('Connection is not currently connecting');
-		}
 		return this._lazyConnect!.promise;
 	}
 
@@ -157,9 +154,8 @@ class Connection extends Disposable implements IConnection {
 	public async connect(): Promise<IConnectionCompleteEvent> {
 		switch (this.state) {
 			case ConnectionState.CONNECTED:
-				throw new Error('Already connected'); // not sure what to do here; callers should really check state first
 			case ConnectionState.CONNECTING:
-				throw new Error('Already connecting'); // not sure what to do here; callers should really check state first
+				return this.onDidConnect; // intentional fall through
 			case ConnectionState.DISCONNECTED:
 				if (this._lazyConnect) {
 					this._lazyConnect = undefined;

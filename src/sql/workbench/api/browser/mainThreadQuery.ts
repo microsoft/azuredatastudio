@@ -8,19 +8,19 @@ import { SqlMainContext, MainThreadQueryShape, ExtHostQueryShape, SqlExtHostCont
 import { Disposable, IDisposable, combinedDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { Emitter } from 'vs/base/common/event';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { IResultMessage, IQueryService, IFetchResponse } from 'sql/platform/query/common/queryService';
+import { IResultMessage, IQueryService, IFetchResponse, IQueryProviderEvent, IResultSetSummary, ColumnType } from 'sql/platform/query/common/queryService';
 import { values } from 'vs/base/common/collections';
 import { URI } from 'vs/base/common/uri';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import type * as azdata from 'azdata';
 
 interface QueryEvents {
-	onQueryComplete: Emitter<void>;
-	onBatchStart: Emitter<void>;
-	onBatchComplete: Emitter<void>;
-	onResultSetAvailable: Emitter<void>;
-	onResultSetUpdated: Emitter<void>;
-	onMessage: Emitter<IResultMessage | IResultMessage[]>;
+	onQueryComplete: Emitter<IQueryProviderEvent>;
+	onBatchStart: Emitter<IQueryProviderEvent>;
+	onBatchComplete: Emitter<IQueryProviderEvent>;
+	onResultSetAvailable: Emitter<IQueryProviderEvent & IResultSetSummary>;
+	onResultSetUpdated: Emitter<IQueryProviderEvent & IResultSetSummary>;
+	onMessage: Emitter<IQueryProviderEvent & { messages: IResultMessage | IResultMessage[] }>;
 }
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQuery)
@@ -43,20 +43,20 @@ export class MainThreadQuery extends Disposable implements MainThreadQueryShape 
 	////#region query
 	public async $registerProvider(providerId: string, handle: number): Promise<void> {
 		const emitters = {
-			onQueryComplete: new Emitter<void>(),
-			onBatchStart: new Emitter<any>(),
-			onBatchComplete: new Emitter<any>(),
-			onResultSetAvailable: new Emitter<any>(),
-			onResultSetUpdated: new Emitter<any>(),
-			onMessage: new Emitter<IResultMessage>()
+			onQueryComplete: new Emitter<IQueryProviderEvent>(),
+			onBatchStart: new Emitter<IQueryProviderEvent>(),
+			onBatchComplete: new Emitter<IQueryProviderEvent>(),
+			onResultSetAvailable: new Emitter<IQueryProviderEvent & IResultSetSummary>(),
+			onResultSetUpdated: new Emitter<IQueryProviderEvent & IResultSetSummary>(),
+			onMessage: new Emitter<IQueryProviderEvent & { messages: IResultMessage | IResultMessage[] }>()
 		};
 		this._queryEvents.set(handle, emitters);
 		const disposable = this.queryService.registerProvider({
 			id: providerId,
 			onMessage: emitters.onMessage.event,
 			onQueryComplete: emitters.onQueryComplete.event,
-			onBatchStart: emitters.onBatchStart.event,
-			onBatchComplete: emitters.onBatchComplete.event,
+			// onBatchStart: emitters.onBatchStart.event,
+			// onBatchComplete: emitters.onBatchComplete.event,
 			onResultSetAvailable: emitters.onResultSetAvailable.event,
 			onResultSetUpdated: emitters.onResultSetUpdated.event,
 			runQuery: (connectionId: string, file: URI): Promise<void> => {
@@ -77,29 +77,45 @@ export class MainThreadQuery extends Disposable implements MainThreadQueryShape 
 		);
 	}
 
-	public $onQueryComplete(handle: number): void {
-		this._queryEvents.get(handle)?.onQueryComplete.fire();
+	public $onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void {
+		this._queryEvents.get(handle)?.onQueryComplete.fire({ connectionId: result.ownerUri });
 	}
 
-	public $onBatchStart(handle: number): void {
-		this._queryEvents.get(handle)?.onBatchStart.fire();
+	public $onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
+		this._queryEvents.get(handle)?.onBatchStart.fire({ connectionId: batchInfo.ownerUri });
 	}
 
-	public $onBatchComplete(handle: number): void {
-		this._queryEvents.get(handle)?.onBatchComplete.fire();
+	public $onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
+		this._queryEvents.get(handle)?.onBatchComplete.fire({ connectionId: batchInfo.ownerUri });
 	}
 
-	public $onResultSetAvailable(handle: number): void {
-		this._queryEvents.get(handle)?.onResultSetAvailable.fire();
+	public $onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
+		this._queryEvents.get(handle)?.onResultSetAvailable.fire({
+			connectionId: resultSetInfo.ownerUri,
+			id: resultSetInfo.resultSetSummary.id,
+			batchid: resultSetInfo.resultSetSummary.batchId,
+			rowCount: resultSetInfo.resultSetSummary.rowCount,
+			columns: resultSetInfo.resultSetSummary.columnInfo.map(c => ({ title: c.columnName, type: c.isXml ? ColumnType.XML : c.isJson ? ColumnType.JSON : ColumnType.UNKNOWN })),
+			completed: resultSetInfo.resultSetSummary.complete
+		});
 	}
 
-	public $onResultSetUpdated(handle: number): void {
-		this._queryEvents.get(handle)?.onResultSetUpdated.fire();
+	public $onResultSetUpdated(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
+		this._queryEvents.get(handle)?.onResultSetUpdated.fire({
+			connectionId: resultSetInfo.ownerUri,
+			id: resultSetInfo.resultSetSummary.id,
+			batchid: resultSetInfo.resultSetSummary.batchId,
+			rowCount: resultSetInfo.resultSetSummary.rowCount,
+			columns: resultSetInfo.resultSetSummary.columnInfo.map(c => ({ title: c.columnName, type: c.isXml ? ColumnType.XML : c.isJson ? ColumnType.JSON : ColumnType.UNKNOWN })),
+			completed: resultSetInfo.resultSetSummary.complete
+		});
 	}
 
-	public $onQueryMessage(messagesMap: [number, azdata.QueryExecuteMessageParams[]][]): void {
-		for (const [handle, messages] of messagesMap) {
-			this._queryEvents.get(handle)?.onMessage.fire(messages.map(m => ({ message: m.message.message, isError: m.message.isError })));
+	public $onQueryMessage(messagesMap: [number, [string, azdata.IResultMessage[]][]][]): void {
+		for (const [handle, messagesUris] of messagesMap) {
+			for (const [uri, messages] of messagesUris) {
+				this._queryEvents.get(handle)?.onMessage.fire({ connectionId: uri, messages: messages });
+			}
 		}
 	}
 	//#endregion query

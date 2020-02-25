@@ -14,7 +14,7 @@ import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResult
 import { startsWith } from 'vs/base/common/strings';
 import { IConnection, ConnectionState } from 'sql/platform/connection/common/connectionService';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
-import { IQueryService, IQuery } from 'sql/platform/query/common/queryService';
+import { IQueryService, IQuery, QueryState } from 'sql/platform/query/common/queryService';
 
 // const MAX_SIZE = 13;
 
@@ -145,7 +145,8 @@ export abstract class QueryEditorInput extends EditorInput implements IDisposabl
 
 		if (initialConnection) {
 			this._connection = initialConnection;
-			// TODO SET UP EVENTS
+
+			this._connection.onDidStateChange(() => this.updateConnectionState());
 			this.connect(); // intentially run this async
 		}
 	}
@@ -194,9 +195,15 @@ export abstract class QueryEditorInput extends EditorInput implements IDisposabl
 			}
 		} else {
 			this._connection = await this.connectionDialogService.openDialogAndWait(this.uri);
-			// TODO SET UP EVENTS
+			this._connection.onDidStateChange(() => this.updateConnectionState());
+			this.updateConnectionState();
 			return this.connect();
 		}
+	}
+
+	private updateConnectionState(): void {
+		this.state.connected = this.connection.state === ConnectionState.CONNECTED;
+		this.state.connecting = this.connection.state === ConnectionState.CONNECTING;
 	}
 
 	public async runQuery(): Promise<void> {
@@ -206,6 +213,10 @@ export abstract class QueryEditorInput extends EditorInput implements IDisposabl
 			if (await this.connect()) {
 				this._query = this.queryService.createOrGetQuery(this.connection, this.resource);
 				if (this.query) {
+					this.query.onDidStateChange(e => {
+						this.state.executing = e === QueryState.EXECUTING;
+						this.state.resultsVisible = !this.state.resultsVisible && e === QueryState.EXECUTING;
+					});
 					this.results.setQuery(this.query);
 					await this.query.execute();
 				}

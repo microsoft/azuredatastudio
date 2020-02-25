@@ -517,7 +517,7 @@ export interface MainThreadQueryShape extends IDisposable {
 	$onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void;
 	$onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void;
 	$onResultSetUpdated(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void;
-	$onQueryMessage(message: [number, azdata.QueryExecuteMessageParams[]][]): void;
+	$onQueryMessage(message: [number, [string, azdata.IResultMessage[]][]][]): void;
 	$onEditSessionReady(handle: number, ownerUri: string, success: boolean, message: string): void;
 }
 

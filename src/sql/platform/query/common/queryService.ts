@@ -9,17 +9,18 @@ import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { IDisposable, combinedDisposable, toDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { Event, Emitter } from 'vs/base/common/event';
+import { isArray } from 'vs/base/common/types';
 
 export const IQueryService = createDecorator<IQueryService>('queryService');
 
 export interface IQueryProvider {
 	readonly id: string;
-	readonly onMessage: Event<IResultMessage | IResultMessage[]>;
-	readonly onBatchStart: Event<void>;
-	readonly onResultSetAvailable: Event<void>;
-	readonly onResultSetUpdated: Event<void>;
-	readonly onBatchComplete: Event<void>;
-	readonly onQueryComplete: Event<void>;
+	readonly onMessage: Event<IQueryProviderEvent & { messages: IResultMessage | ReadonlyArray<IResultMessage> }>;
+	readonly onResultSetAvailable: Event<IQueryProviderEvent & IResultSetSummary>;
+	readonly onResultSetUpdated: Event<IQueryProviderEvent & IResultSetSummary>;
+	// readonly onBatchStart: Event<IQueryProviderEvent>;
+	// readonly onBatchComplete: Event<IQueryProviderEvent>;
+	readonly onQueryComplete: Event<IQueryProviderEvent>;
 	runQuery(connectionId: string, file: URI): Promise<void>;
 	fetchSubset(connectionId: string, resultSetId: number, batchId: number, offset: number, count: number): Promise<IFetchResponse>;
 }
@@ -42,13 +43,27 @@ export interface IResultMessage {
 	isError?: boolean;
 }
 
-export interface IResultSet {
-	//TBD
-	readonly id: string;
+export interface IResultSetSummary {
+	id: number;
+	batchId: number;
+	rowCount: number;
+	columns: ReadonlyArray<IColumn>;
+	completed: boolean;
+}
+
+interface IResultSetInternal {
+	rowCount: number;
+	completed?: boolean;
+}
+
+export interface IResultSet extends IResultSetInternal {
 	readonly rowCount: number;
 	readonly completed?: boolean;
 	readonly columns: ReadonlyArray<IColumn>;
 	fetch(offset: number, count: number): Promise<IFetchResponse>;
+
+	//TBD
+	readonly id: string;
 }
 
 export interface IFetchResponse {
@@ -105,11 +120,11 @@ export interface IQuery {
 	onResultSetAvailable: Event<IResultSet>;
 	onResultSetUpdated: Event<IResultSet>;
 	onQueryComplete: Event<void>;
-	onMessage: Event<IResultMessage | IResultMessage[]>;
+	onMessage: Event<IResultMessage | ReadonlyArray<IResultMessage>>;
 
 	//TBD
-	onBatchStart: Event<void>;
-	onBatchComplete: Event<void>;
+	// onBatchStart: Event<void>;
+	// onBatchComplete: Event<void>;
 }
 
 class Query extends Disposable implements IQuery {
@@ -120,7 +135,7 @@ class Query extends Disposable implements IQuery {
 	private readonly _onDidStateChange = new Emitter<QueryState>();
 	public readonly onDidStateChange = this._onDidStateChange.event;
 
-	private readonly _onMessage = new Emitter<IResultMessage | IResultMessage[]>();
+	private readonly _onMessage = new Emitter<IResultMessage | ReadonlyArray<IResultMessage>>();
 	public readonly onMessage = this._onMessage.event;
 
 	private readonly _onResultSetAvailable = new Emitter<IResultSet>();
@@ -133,11 +148,11 @@ class Query extends Disposable implements IQuery {
 	public readonly onQueryComplete = this._onQueryComplete.event;
 
 	//#region TBD
-	private _onBatchStart = new Emitter<void>();
-	public readonly onBatchStart = this._onBatchStart.event;
+	// private _onBatchStart = new Emitter<void>();
+	// public readonly onBatchStart = this._onBatchStart.event;
 
-	private _onBatchComplete = new Emitter<void>();
-	public readonly onBatchComplete = this._onBatchComplete.event;
+	// private _onBatchComplete = new Emitter<void>();
+	// public readonly onBatchComplete = this._onBatchComplete.event;
 	//#endregion
 
 	private _messages: Array<IResultMessage> = [];
@@ -173,13 +188,60 @@ class Query extends Disposable implements IQuery {
 	private fetch(resultSetId: number, batchId: number, offset: number, count: number): Promise<IFetchResponse> {
 		return this.queryService.fetchData(this.connection, resultSetId, batchId, offset, count);
 	}
+
+	public handleMessage(e: IResultMessage | ReadonlyArray<IResultMessage>): void {
+		if (isArray(e)) {
+			this._messages.push(...e);
+		} else {
+			this._messages.push(e);
+		}
+		this._onMessage.fire(e);
+	}
+
+	private encodeId(resultId: number, batchId: number): string {
+		return `${resultId}_${batchId}`;
+	}
+
+	// private decodeId(id: string): { resultId: number, batchId: number } {
+	// 	const id_split = id.split('_');
+	// 	return {
+	// 		resultId: Number(id_split[0]),
+	// 		batchId: Number(id_split[1])
+	// 	};
+	// }
+
+	public handleResultSetAvailable(e: IResultSetSummary): void {
+		const resultSet: IResultSet = {
+			columns: e.columns.slice(),
+			id: this.encodeId(e.id, e.batchId),
+			rowCount: e.rowCount,
+			completed: e.completed,
+			fetch: (offset, count): Promise<IFetchResponse> => {
+				return this.fetch(e.id, e.batchId, offset, count);
+			}
+		};
+		this._resultSets.push(resultSet);
+		this._onResultSetAvailable.fire(resultSet);
+	}
+
+	public handleResultSetUpdated(e: IResultSetSummary): void {
+		const id = this.encodeId(e.id, e.batchId);
+		const resultSet = this._resultSets.find(e => e.id === id);
+		(resultSet as IResultSetInternal).rowCount = e.rowCount;
+		(resultSet as IResultSetInternal).completed = e.completed;
+		this._onResultSetUpdated.fire(resultSet);
+	}
+}
+
+export interface IQueryProviderEvent {
+	connectionId: string;
 }
 
 export class QueryService extends Disposable implements IQueryService {
 	_serviceBrand: undefined;
 
 	private readonly queryProviders = new Map<string, { provider: IQueryProvider, disposable: IDisposable }>(); // providers that have been registered
-	private readonly queries = new WeakMap<IConnection, Query>();
+	private readonly queries = new Map<IConnection, Query>();
 
 	constructor(
 		@IConnectionService private readonly connectionService: IConnectionService
@@ -202,10 +264,10 @@ export class QueryService extends Disposable implements IQueryService {
 	registerProvider(provider: IQueryProvider): IDisposable {
 		const disposable = combinedDisposable(
 			provider.onMessage(e => this.onMessage(e)),
-			provider.onBatchStart(e => this.onBatchStart(e)),
 			provider.onResultSetAvailable(e => this.onResultSetAvailable(e)),
 			provider.onResultSetUpdated(e => this.onResultSetUpdated(e)),
-			provider.onBatchComplete(e => this.onBatchComplete(e)),
+			// provider.onBatchStart(e => this.onBatchStart(e)),
+			// provider.onBatchComplete(e => this.onBatchComplete(e)),
 			provider.onQueryComplete(e => this.onQueryComplete(e)),
 			toDisposable(() => this.queryProviders.delete(provider.id))
 		);
@@ -217,27 +279,36 @@ export class QueryService extends Disposable implements IQueryService {
 		return disposable;
 	}
 
-	private onMessage(e: IResultMessage | IResultMessage[]): any {
-		throw new Error('Method not implemented.');
+	private findQuery(connectionId: string): Query {
+		for (const connection of this.queries.keys()) {
+			if (this.connectionService.getIdForConnection(connection) === connectionId) {
+				return this.queries.get(connection)!;
+			}
+		}
+		throw new Error(`Count not find query with connection ${connectionId}`);
 	}
 
-	private onBatchStart(e: void): any {
-		throw new Error('Method not implemented.');
+	private onMessage(e: IQueryProviderEvent & { messages: IResultMessage | ReadonlyArray<IResultMessage> }): void {
+		this.findQuery(e.connectionId).handleMessage(e.messages);
 	}
 
-	private onResultSetAvailable(e: void): any {
-		throw new Error('Method not implemented.');
+	private onResultSetAvailable(e: IQueryProviderEvent & IResultSetSummary): void {
+		this.findQuery(e.connectionId).handleResultSetAvailable(e);
 	}
 
-	private onResultSetUpdated(e: void): any {
-		throw new Error('Method not implemented.');
+	private onResultSetUpdated(e: IQueryProviderEvent & IResultSetSummary): void {
+		this.findQuery(e.connectionId).handleResultSetUpdated(e);
 	}
 
-	private onBatchComplete(e: void): any {
-		throw new Error('Method not implemented.');
-	}
+	// private onBatchStart(e: IQueryProviderEvent): void {
+	// 	throw new Error('Method not implemented.');
+	// }
 
-	private onQueryComplete(e: void): any {
+	// private onBatchComplete(e: IQueryProviderEvent): void {
+	// 	throw new Error('Method not implemented.');
+	// }
+
+	private onQueryComplete(e: IQueryProviderEvent): void {
 		throw new Error('Method not implemented.');
 	}
 
