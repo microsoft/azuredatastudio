@@ -164,7 +164,7 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout> im
 		}
 		if (this.clickable && !this.cancelClick) {
 			this.cancelClick = this.renderer.listen(this.divContainer.nativeElement, 'click', () => this.onClick());
-		} else if (!this.clickable) {
+		} else if (!this.clickable && this.cancelClick) {
 			this.cancelClick();
 			this.cancelClick = undefined;
 		}

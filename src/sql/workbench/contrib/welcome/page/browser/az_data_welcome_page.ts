@@ -46,7 +46,7 @@ export default () => `
 						<li><a href="https://aka.ms/azuredatastudio">${escape(localize('welcomePage.productDocumentation', "Documentation"))}</a></li>
 						<li><a href="https://github.com/Microsoft/azuredatastudio/issues/new/choose">${escape(localize('welcomePage.reportIssue', "Report issue or feature request"))}</a></li>
 						<li><a href="https://github.com/Microsoft/azuredatastudio">${escape(localize('welcomePage.gitHubRepository', "GitHub repository"))}</a></li>
-						<li><a href="https://aka.ms/azdata-releasenotes">${escape(localize('welcomePage.releaseNotes', "Release notes"))}</a></li>
+						<li><a href="https://aka.ms/azuredatastudio-releasenotes">${escape(localize('welcomePage.releaseNotes', "Release notes"))}</a></li>
 					</ul>
 				</div>
 				<p class="showOnStartup"><input type="checkbox" id="showOnStartup" class="checkbox"> <label class="caption" for="showOnStartup">${escape(localize('welcomePage.showOnStartup', "Show welcome page on startup"))}</label></p>

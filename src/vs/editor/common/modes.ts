@@ -635,6 +635,9 @@ export interface CodeActionList extends IDisposable {
  * @internal
  */
 export interface CodeActionProvider {
+
+	displayName?: string
+
 	/**
 	 * Provide commands for the given document and range.
 	 */
@@ -1324,7 +1327,7 @@ export interface WorkspaceEditMetadata {
 	needsConfirmation: boolean;
 	label: string;
 	description?: string;
-	iconPath?: { id: string } | { light: URI, dark: URI };
+	iconPath?: { id: string } | URI | { light: URI, dark: URI };
 }
 
 export interface WorkspaceFileEditOptions {

@@ -287,4 +287,8 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		super.dispose();
 		this._profilerService.disconnectSession(this.id);
 	}
+
+	get resource(): URI | undefined {
+		return undefined;
+	}
 }

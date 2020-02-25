@@ -119,6 +119,7 @@ declare module 'azdata' {
 
 	export interface ModelBuilder {
 		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent>;
+		separator(): ComponentBuilder<SeparatorComponent>;
 	}
 
 	export interface RadioCard {
@@ -151,6 +152,9 @@ declare module 'azdata' {
 
 	export interface RadioCardGroupComponent extends Component, RadioCardGroupComponentProperties {
 		onSelectionChanged: vscode.Event<any>;
+	}
+
+	export interface SeparatorComponent extends Component {
 	}
 
 	export interface DeclarativeTableProperties extends ComponentProperties {

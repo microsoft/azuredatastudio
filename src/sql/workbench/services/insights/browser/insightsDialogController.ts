@@ -142,9 +142,10 @@ export class InsightsDialogController {
 				this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights error"), error);
 			});
 		});
-		queryRunner.onMessage(message => {
-			if (message.isError) {
-				this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights error"), message.message);
+		queryRunner.onMessage(messages => {
+			const errorMessage = messages.find(m => m.isError);
+			if (errorMessage) {
+				this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights error"), errorMessage.message);
 			}
 		});
 	}

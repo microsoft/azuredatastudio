@@ -65,7 +65,7 @@ export abstract class MenubarControl extends Disposable {
 		// 'Terminal': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
 		'Window'?: IMenu;
 		'Help': IMenu;
-		// [index: string]: IMenu | undefined; {{SQL CARBON EDIT}} - Disable unusued menus
+		[index: string]: IMenu | undefined;
 	};
 
 	protected topLevelTitles: { [menu: string]: string } = {

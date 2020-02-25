@@ -41,6 +41,7 @@ import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 class AccountPanel extends ViewPane {
 	public index: number;
@@ -56,8 +57,9 @@ class AccountPanel extends ViewPane {
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IOpenerService openerService: IOpenerService,
+		@ITelemetryService telemetryService: ITelemetryService,
 	) {
-		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -137,7 +139,8 @@ export class AccountDialog extends Modal {
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 		@IQuickInputService private _quickInputService: IQuickInputService,
 		@INotificationService private _notificationService: INotificationService,
-		@IOpenerService protected readonly openerService: IOpenerService
+		@IOpenerService protected readonly openerService: IOpenerService,
+		@ITelemetryService private readonly vstelemetryService: ITelemetryService
 	) {
 		super(
 			localize('linkedAccounts', "Linked accounts"),
@@ -335,7 +338,8 @@ export class AccountDialog extends Modal {
 			this.contextKeyService,
 			this._instantiationService,
 			this.viewDescriptorService,
-			this.openerService
+			this.openerService,
+			this.vstelemetryService
 		);
 
 		attachPanelStyler(providerView, this._themeService);

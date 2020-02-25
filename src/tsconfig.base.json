@@ -11,6 +11,7 @@
 		"strictBindCallApply": true,
 		"strictNullChecks": false,
 		"strictPropertyInitialization": false,
+		"strict": false,
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
 		"paths": {

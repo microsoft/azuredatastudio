@@ -178,7 +178,8 @@ export async function activate(context: ExtensionContext): Promise<GitExtension>
 		// console.warn(err.message);
 		// outputChannel.appendLine(err.message);
 
-		// warnAboutMissingGit();
+		commands.executeCommand('setContext', 'git.missing', true);
+		// warnAboutMissingGit(); {{SQL CARBON EDIT}} turn-off Git missing prompt
 
 		return new GitExtensionImpl();
 	}

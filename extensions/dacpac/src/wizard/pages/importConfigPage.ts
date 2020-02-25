@@ -5,11 +5,11 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as path from 'path';
 import * as loc from '../../localizedConstants';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
+import { generateDatabaseName } from '../api/utils';
 
 export class ImportConfigPage extends DacFxConfigPage {
 
@@ -75,13 +75,13 @@ export class ImportConfigPage extends DacFxConfigPage {
 			let fileUri = fileUris[0];
 			this.fileTextBox.value = fileUri.fsPath;
 			this.model.filePath = fileUri.fsPath;
-			this.model.database = this.generateDatabaseName(this.model.filePath);
+			this.model.database = generateDatabaseName(this.model.filePath);
 			this.databaseTextBox.value = this.model.database;
 		});
 
 		this.fileTextBox.onTextChanged(async () => {
 			this.model.filePath = this.fileTextBox.value;
-			this.model.database = this.generateDatabaseName(this.model.filePath);
+			this.model.database = generateDatabaseName(this.model.filePath);
 			this.databaseTextBox.value = this.model.database;
 		});
 
@@ -90,10 +90,5 @@ export class ImportConfigPage extends DacFxConfigPage {
 			title: loc.fileLocation,
 			actions: [this.fileButton]
 		};
-	}
-
-	private generateDatabaseName(filePath: string): string {
-		let result = path.parse(filePath);
-		return result.name;
 	}
 }

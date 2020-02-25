@@ -28,7 +28,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 	appContext.apiWrapper.registerCommand('azure.accounts.getSubscriptions', async (account?: azdata.Account, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> => {
 		const result: GetSubscriptionsResult = { subscriptions: [], errors: [] };
 		if (!account?.properties?.tenants || !isArray(account.properties.tenants)) {
-			const error = new Error('Invalid account');
+			const error = new Error(localize('azure.accounts.getSubscriptions.invalidParamsError', "Invalid account"));
 			if (!ignoreErrors) {
 				throw error;
 			}
@@ -44,11 +44,15 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 
 				result.subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType)));
 			} catch (err) {
-				console.warn(`Error fetching subscriptions for account ${account.displayInfo.displayName} tenant ${tenant.id} : ${err}`);
+				const error = new Error(localize('azure.accounts.getSubscriptions.queryError', "Error fetching subscriptions for account {0} tenant {1} : {2}",
+					account.displayInfo.displayName,
+					tenant.id,
+					err instanceof Error ? err.message : err));
+				console.warn(error);
 				if (!ignoreErrors) {
-					throw err;
+					throw error;
 				}
-				result.errors.push(err);
+				result.errors.push(error);
 			}
 			return Promise.resolve();
 		}));
@@ -58,7 +62,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 	appContext.apiWrapper.registerCommand('azure.accounts.getResourceGroups', async (account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false): Promise<GetResourceGroupsResult> => {
 		const result: GetResourceGroupsResult = { resourceGroups: [], errors: [] };
 		if (!account?.properties?.tenants || !isArray(account.properties.tenants) || !subscription) {
-			const error = new Error('Invalid account or subscription');
+			const error = new Error(localize('azure.accounts.getResourceGroups.invalidParamsError', "Invalid account or subscription"));
 			if (!ignoreErrors) {
 				throw error;
 			}
@@ -74,11 +78,18 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 
 				result.resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType), account));
 			} catch (err) {
-				console.warn(`Error fetching resource groups for account ${account.displayInfo.displayName} (${account.displayInfo.userId}) subscription ${subscription.id} (${subscription.name}) tenant ${tenant.id} : ${err}`);
+				const error = new Error(localize('azure.accounts.getResourceGroups.queryError', "Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}",
+					account.displayInfo.displayName,
+					account.displayInfo.userId,
+					subscription.id,
+					subscription.name,
+					tenant.id,
+					err instanceof Error ? err.message : err));
+				console.warn(error);
 				if (!ignoreErrors) {
-					throw err;
+					throw error;
 				}
-				result.errors.push(err);
+				result.errors.push(error);
 			}
 			return Promise.resolve();
 		}));
