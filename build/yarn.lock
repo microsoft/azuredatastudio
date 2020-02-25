@@ -3250,10 +3250,10 @@ semver@^6.3.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
 
-service-downloader@0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/service-downloader/-/service-downloader-0.2.0.tgz#2bf8e32e88490ce731249c6d3bd5dc2b7d476223"
-  integrity sha512-LTsD1rqYlA6+lSucMfDo8l1kVJuLwd0nzfvdkQ7IPGUoE4i9WHfFh5MqCkC1b04b9ACjhBOVKgS7p9q4h8cW6A==
+service-downloader@0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/service-downloader/-/service-downloader-0.2.1.tgz#8bd756bc4bc0cbfdf04fe71d4337f19ce6196203"
+  integrity sha512-5IEy2nyMJj/f41pI65b8RMeJyCecGNrMmNCpUW8hckZ9cBMyX+VCp8GjYoM6Mz/X0XSaGVz7V5gtCWjfeJI7gA==
   dependencies:
     async-retry "^1.2.3"
     eventemitter2 "^5.0.1"
