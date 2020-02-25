@@ -200,10 +200,15 @@ export class ChartView extends Disposable implements IPanelView {
 	}
 
 	public setData(rows: DbCellValue[][], columns: string[]): void {
-		this._data = {
-			columns: columns,
-			rows: rows.map(r => r.map(c => c.displayValue))
-		};
+		if (!rows) {
+			this._data = { columns: [], rows: [] };
+			this._notificationService.error(nls.localize('charting.failedToGetRows', "Failed to get rows for the dataset to chart."));
+		} else {
+			this._data = {
+				columns: columns,
+				rows: rows.map(r => r.map(c => c.displayValue))
+			};
+		}
 
 		if (this.insight) {
 			this.insight.data = this._data;
@@ -219,18 +224,9 @@ export class ChartView extends Disposable implements IPanelView {
 				let summary = batch.resultSetSummaries[this._currentData.resultId];
 				if (summary) {
 					this._queryRunner.getQueryRows(0, summary.rowCount, this._currentData.batchId, this._currentData.resultId).then(d => {
-						if (!d.resultSubset.rows) { // be defensive against this
-							this._data = { columns: [], rows: [] };
-							this._notificationService.error(nls.localize('charting.failedToGetRows', "Failed to get rows for the dataset to chart."));
-						} else {
-							this._data = {
-								columns: summary.columnInfo.map(c => c.columnName),
-								rows: d.resultSubset.rows.map(r => r.map(c => c.displayValue))
-							};
-						}
-						if (this.insight) {
-							this.insight.data = this._data;
-						}
+						let rows = d.resultSubset.rows;
+						let columns = summary.columnInfo.map(c => c.columnName);
+						this.setData(rows, columns);
 					});
 				}
 			}
