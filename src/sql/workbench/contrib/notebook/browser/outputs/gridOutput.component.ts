@@ -122,8 +122,7 @@ class DataResourceTable extends GridTableBase<any> {
 		@IInstantiationService protected instantiationService: IInstantiationService,
 		@IEditorService editorService: IEditorService,
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@ISerializationService private _serializationService: ISerializationService
+		@IConfigurationService configurationService: IConfigurationService
 	) {
 		super(state, createResultSet(source), contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.documentUri);
@@ -139,9 +138,6 @@ class DataResourceTable extends GridTableBase<any> {
 	}
 
 	protected getContextActions(): IAction[] {
-		if (!this._serializationService.hasProvider()) {
-			return [];
-		}
 		return [
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
@@ -264,7 +260,6 @@ class DataResourceDataProvider implements IGridDataProvider {
 	get canSerialize(): boolean {
 		return this._serializationService.hasProvider();
 	}
-
 
 	serializeResults(format: SaveFormat, selection: Slick.Range[]): Thenable<void> {
 		let serializer = this._instantiationService.createInstance(ResultSerializer);
