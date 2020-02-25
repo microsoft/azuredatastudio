@@ -74,6 +74,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	public overrideCellFn: (rowNumber, columnId, value?, data?) => string;
 	public loadDataFunction: (offset: number, count: number) => Promise<{}[]>;
 	public onBeforeAppendCell: (row: number, column: number) => string;
+	public onGridRendered: (event: Slick.OnRenderedEventArgs<any>) => void;
 
 	private savedViewState: {
 		gridSelections: Slick.Range[];
@@ -206,6 +207,14 @@ export class EditDataGridPanel extends GridParentComponent {
 			return cellClass;
 		};
 
+		this.onGridRendered = (args: Slick.OnRenderedEventArgs<any>): void => {
+			// After rendering move the focus back to the previous active cell
+			if (this.currentCell.column !== undefined && this.currentCell.row !== undefined
+				&& this.isCellOnScreen(this.currentCell.row, this.currentCell.column)) {
+				this.focusCell(this.currentCell.row, this.currentCell.column, false);
+			}
+
+		};
 
 		// Setup a function for generating a promise to lookup result subsets
 		this.loadDataFunction = (offset: number, count: number): Promise<{}[]> => {
@@ -739,6 +748,18 @@ export class EditDataGridPanel extends GridParentComponent {
 		return this.currentCell.row === row && this.dirtyCells.indexOf(column) !== -1;
 	}
 
+	private isCellOnScreen(row: number, column: number): boolean {
+		let slick: any = this.table;
+		let grid = slick._grid;
+		let viewport = grid.getViewport();
+		let cellBox = grid.getCellNodeBox(row, column);
+		return viewport && cellBox
+			&& viewport.leftPx <= cellBox.left && viewport.rightPx >= cellBox.right
+			&& viewport.top <= cellBox.top && viewport.bottom >= cellBox.bottom;
+	}
+
+
+
 
 	private resetCurrentCell() {
 		this.currentCell = {
@@ -1002,6 +1023,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.table.grid.onBeforeAppendCell.subscribe((e, args) => {
 			// Since we need to return a string here, we are using calling a function instead of event emitter like other events handlers
 			return this.onBeforeAppendCell ? this.onBeforeAppendCell(args.row, args.cell) : undefined;
+		});
+		this.table.grid.onRendered.subscribe((e, args) => {
+			this.onGridRendered(args);
 		});
 	}
 

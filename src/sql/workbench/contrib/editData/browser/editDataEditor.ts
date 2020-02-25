@@ -296,7 +296,6 @@ export class EditDataEditor extends BaseEditor {
 		this._sash.show();
 	}
 
-
 	/**
 	 * Appends the HTML for the SQL editor. Creates new HTML every time.
 	 */
