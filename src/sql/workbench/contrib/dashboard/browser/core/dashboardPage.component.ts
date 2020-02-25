@@ -44,6 +44,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { TaskRegistry } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { MenuRegistry } from 'vs/platform/actions/common/actions';
+import { NAV_SECTION } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardNavSection.contribution';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 const homeTabGroupId = 'home';
@@ -75,6 +76,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	private readonly homeTabId: string = 'homeTab';
 	private tabToolbarActions = new Map<string, ITaskbarContent[]>();
 	private tabToolbarActionsConfig = new Map<string, WidgetConfig>();
+	private tabContents = new Map<string, string>();
 
 	// a set of config modifiers
 	private readonly _configModifiers: Array<(item: Array<WidgetConfig>, collection: IConfigModifierCollection, context: string) => Array<WidgetConfig>> = [
@@ -169,7 +171,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 		let content = this.tabToolbarActions.get(tabName);
 		// get toolbar content if it wasn't loaded previously
-		if (content.length === 0) {
+		if (!content || content.length === 0) {
 			content = this.getToolbarContent(this.tabToolbarActionsConfig.get(tabName));
 			this.addRefreshAction(content);
 			this.tabToolbarActions.set(tabName, content);
@@ -204,6 +206,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				}
 				return undefined;
 			}).filter(i => !!i);
+		} else {
+			return [];
 		}
 
 		let _tasks = tasks.map(i => MenuRegistry.getCommand(i)).filter(v => !!v);
@@ -381,6 +385,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			return { id: value.id, title: value.title, container: { 'error-container': undefined }, alwaysShow: value.alwaysShow, iconClass: value.iconClass };
 		}
 		const key = Object.keys(containerResult.container)[0];
+		this.tabContents.set(value.id, key);
 		if (key === WIDGETS_CONTAINER || key === GRID_CONTAINER) {
 			let configs = <WidgetConfig[]>values(containerResult.container)[0];
 			this._configModifiers.forEach(cb => {
@@ -461,7 +466,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	public handleTabChange(tab: TabComponent): void {
-		if (this.tabToolbarActions.has(tab.identifier)) {
+		const tabContent = this.tabContents.get(tab.identifier);
+		if (tab.identifier === this.homeTabId || tabContent === WIDGETS_CONTAINER || tabContent === GRID_CONTAINER || tabContent === NAV_SECTION) {
 			this.showToolbar = true;
 			this.createToolbar(this.toolbarContainer.nativeElement, tab.identifier);
 		} else { // hide toolbar
