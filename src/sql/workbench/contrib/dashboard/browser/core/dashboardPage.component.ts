@@ -34,7 +34,7 @@ import { Action, IAction, IActionViewItem } from 'vs/base/common/actions';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKeyService, ContextKeyExpr, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { ILogService } from 'vs/platform/log/common/log';
 import { firstIndex, find } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
@@ -79,6 +79,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	private tabToolbarActions = new Map<string, ITaskbarContent[]>();
 	private tabToolbarActionsConfig = new Map<string, WidgetConfig>();
 
+	static tabName = new RawContextKey<string>('tabName', undefined);
+	private _tabName: IContextKey<string>;
+
 	// a set of config modifiers
 	private readonly _configModifiers: Array<(item: Array<WidgetConfig>, collection: IConfigModifierCollection, context: string) => Array<WidgetConfig>> = [
 		dashboardHelper.removeEmpty,
@@ -119,6 +122,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService
 	) {
 		super();
+		this._tabName = DashboardPage.tabName.bindTo(contextKeyService);
 	}
 
 	protected init() {
@@ -514,6 +518,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	public handleTabChange(tab: TabComponent): void {
+		this._tabName.set(tab.identifier);
+
 		if (this.tabToolbarActions.has(tab.identifier)) {
 			this.showToolbar = true;
 			this.createToolbar(this.toolbarContainer.nativeElement, tab.identifier);
