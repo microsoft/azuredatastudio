@@ -59,7 +59,6 @@ panel {
 	display: flex;
 	padding-left: 5px;
 	padding-right: 5px;
-	min-width: 65px;
 	cursor: pointer;
 }
 
@@ -73,12 +72,11 @@ panel {
 	line-height: 45px;
 }
 
-.tabbedPanel .tabList .tab .tabLabel.codicon {
+.tabbedPanel .tabList .tab .tabIcon.codicon {
 	background-repeat: no-repeat;
-	background-position: center center;
-	background-size: 20px;
-	padding: 20px 25px;
-	line-height: 50px;
+	background-position: 2px center;
+	background-size: 16px;
+	padding: 2px 2px 2px 22px;
 }
 
 .tabbedPanel .tabList .actions-container {
@@ -149,7 +147,50 @@ panel {
 	font-weight: bold;
 	margin: 15px 5px 0px 5px;
 	line-height: 35px;
+	height: 35px;
 	border-style: solid;
 	border-width: 0 0 1px 0;
 	border-color: rgb(214, 214, 214);
+}
+
+.tabbedPanel .tabLabelHidden .tab-group-header {
+	display: none;
+}
+
+.tabbedPanel .action-container {
+	display: flex;
+	flex-flow: row-reverse;
+}
+
+.tabbedPanel .tab-action {
+	width: 15px;
+	height: 15px;
+	padding: 0px;
+	border: 0px;
+	background-color: transparent;
+	background-position: 2px center;
+	background-repeat: no-repeat;
+	background-size: 11px 11px;
+}
+
+.tabLabelHidden .tabLabel {
+	display: none;
+}
+
+.vs .tabbedPanel .tab-action.collapse{
+	background-image: url("collapse.svg");
+}
+
+.vs-dark .tabbedPanel .tab-action.collapse,
+.hc-black .tabbedPanel .tab-action.collapse {
+	background-image: url("collapse_inverse.svg");
+}
+
+.vs .tabbedPanel .tab-action.expand {
+	background-image: url("expand.svg");
+}
+
+.vs-dark .tabbedPanel .tab-action.expand,
+.hc-black .tabbedPanel .tab-action.expand {
+	background-image: url("expand_inverse.svg");
 }

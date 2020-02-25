@@ -24,6 +24,24 @@ dashboard-page .dashboard-panel .tab-header .action-item .action-label.close {
 	padding: 5px;
 }
 
+dashboard-page .home-tab-icon {
+	background-image: url("media/home.svg");
+}
+
+dashboard-page .vs-dark .home-tab-icon,
+.hc-black .home-tab-icon {
+	background-image: url("media/home_inverse.svg");
+}
+
+dashboard-page .default-tab-icon {
+	background-image: url("media/default.svg");
+}
+
+dashboard-page .vs-dark .default-tab-icon,
+dashboard-page .hc-black .default-tab-icon {
+	background-image: url("media/default_inverse.svg");
+}
+
 dashboard-page .actions-container .action-item .action-label{
 	padding-left: 20px;
 	padding-right: 5px;

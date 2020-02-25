@@ -42,7 +42,6 @@ export interface TabConfig extends IDashboardTab {
 	editable: boolean;
 	canClose: boolean;
 	actions?: Array<Action>;
-	iconClass?: string;
 	type?: TabType;
 }
 
