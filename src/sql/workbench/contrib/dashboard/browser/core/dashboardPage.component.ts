@@ -74,7 +74,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	// tslint:disable:no-unused-variable
 	private readonly homeTabTitle: string = nls.localize('home', "Home");
 	private readonly homeTabId: string = 'homeTab';
-	private tabToolbarActions = new Map<string, ITaskbarContent[]>();
 	private tabToolbarActionsConfig = new Map<string, WidgetConfig>();
 	private tabContents = new Map<string, string>();
 
@@ -153,18 +152,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		}
 
 		this.showToolbar = true;
-		const homeToolbarContent = this.getHomeToolbarContent();
-		this.tabToolbarActions.set(this.homeTabId, homeToolbarContent);
-		this.createToolbar(this.toolbarContainer.nativeElement, this.homeTabId);
-	}
-
-	private getHomeToolbarContent(): ITaskbarContent[] {
 		const homeToolbarConfig = this.dashboardService.getSettings<Array<WidgetConfig>>([this.context, 'widgets'].join('.'))[0].widget['tasks-widget'];
-
-		let content = this.getToolbarContent(homeToolbarConfig);
-		this.addRefreshAction(content);
-
-		return content;
+		this.tabToolbarActionsConfig.set(this.homeTabId, homeToolbarConfig);
+		this.createToolbar(this.toolbarContainer.nativeElement, this.homeTabId);
 	}
 
 	private createToolbar(parentElement: HTMLElement, tabName: string): void {
@@ -173,13 +163,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
 		this.toolbar = this._register(new Taskbar(taskbarContainer));
 
-		let content = this.tabToolbarActions.get(tabName);
+		let content = [];
 		// get toolbar content if it wasn't loaded previously
-		if (!content || content.length === 0) {
-			content = this.getToolbarContent(this.tabToolbarActionsConfig.get(tabName));
-			this.addRefreshAction(content);
-			this.tabToolbarActions.set(tabName, content);
-		}
+		content = this.getToolbarContent(this.tabToolbarActionsConfig.get(tabName));
+		this.addRefreshAction(content);
 
 		this.toolbar.setContent(content);
 	}
@@ -403,11 +390,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			const index = configs.findIndex(c => c.widget['tasks-widget']);
 			if (index !== -1) {
 				this.tabToolbarActionsConfig.set(value.id, configs[index].widget['tasks-widget']);
-				const content = this.getToolbarContent(configs[index].widget['tasks-widget']);
-				if (content.length > 0) {
-					this.addRefreshAction(content);
-				}
-				this.tabToolbarActions.set(value.id, content);
 				configs.splice(index, 1);
 			}
 
