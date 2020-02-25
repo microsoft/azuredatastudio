@@ -184,6 +184,15 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		}
 	}
 
+	private hasExtensionContributedToolbarContent(): boolean {
+		let primary: IAction[] = [];
+		let secondary: IAction[] = [];
+		const menu = this.menuService.createMenu(MenuId.DashboardToolbar, this.contextKeyService);
+		let groups = menu.getActions({ arg: null, shouldForwardArgs: true });
+		fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined || group === '');
+		return primary.length > 0 || secondary.length > 0;
+	}
+
 	private createToolbar(parentElement: HTMLElement, tabName: string): void {
 		// clear out toolbar
 		DOM.clearNode(parentElement);
@@ -196,7 +205,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 	private getToolbarContent(toolbarTasks: WidgetConfig): ITaskbarContent[] {
 		let tasks = TaskRegistry.getTasks();
-
+		let content;
 		if (types.isArray(toolbarTasks) && toolbarTasks.length > 0) {
 			tasks = toolbarTasks.map(i => {
 				if (types.isString(i)) {
@@ -210,11 +219,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				}
 				return undefined;
 			}).filter(i => !!i);
+			content = this.convertTasksToToolbarContent(tasks);
 		} else {
-			return [];
+			content = [];
 		}
-
-		let content = this.convertTasksToToolbarContent(tasks);
 
 		// get extension actions contributed to the page's toolbar
 		this.getExtensionContributedHomeToolbarContent(content);
@@ -498,7 +506,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	public handleTabChange(tab: TabComponent): void {
 		this._tabName.set(tab.identifier);
 
-		if (this.tabToolbarActionsConfig.has(tab.identifier)) {
+		if (this.tabToolbarActionsConfig.has(tab.identifier) || this.hasExtensionContributedToolbarContent()) {
 			this.showToolbar = true;
 			this.createToolbar(this.toolbarContainer.nativeElement, tab.identifier);
 		} else { // hide toolbar
