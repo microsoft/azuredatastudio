@@ -34,7 +34,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { find, fill } from 'vs/base/common/arrays';
-import { ILogService } from 'vs/platform/log/common/log';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 
 export const NOTEBOOKSVIEW_SELECTOR: string = 'notebooksview-component';
@@ -106,8 +106,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService,
-		@Inject(ITelemetryService) private _telemetryService: ITelemetryService,
-		@Inject(ILogService) private readonly _logService: ILogService
+		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		let notebookCacheObjectMap = this._jobManagementService.notebookCacheObjectMap;
@@ -409,14 +408,14 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 					break;
 				}
 			}
-			this.openLastNRun(targetNotebook, barId, 5).catch(e => this._logService.error(e));
+			this.openLastNRun(targetNotebook, barId, 5).catch(onUnexpectedError);
 			e.stopPropagation();
 		});
 
 		// cache the dataview for future use
 		this._notebookCacheObject.dataView = this.dataView;
 		this.filterValueMap['start'] = [[], this.dataView.getItems()];
-		this.loadJobHistories().catch(e => this._logService.error(e));
+		this.loadJobHistories().catch(onUnexpectedError);
 	}
 
 	private highlightErrorRows(e) {
