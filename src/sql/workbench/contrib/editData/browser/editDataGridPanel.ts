@@ -754,7 +754,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		let cellBox = grid.getCellNodeBox(row, column);
 		return viewport && cellBox
 			&& viewport.leftPx <= cellBox.left && viewport.rightPx >= cellBox.right
-			&& viewport.top <= cellBox.top && viewport.bottom >= cellBox.bottom;
+			&& viewport.top < row + 1 && viewport.bottom > row + 1;
 	}
 
 	private resetCurrentCell() {
