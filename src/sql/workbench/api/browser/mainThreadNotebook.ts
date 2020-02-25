@@ -235,7 +235,9 @@ class SessionManagerWrapper implements azdata.nb.SessionManager {
 
 	private async doStartNew(options: azdata.nb.ISessionOptions): Promise<azdata.nb.ISession> {
 		let sessionDetails = await this._proxy.ext.$startNewSession(this.managerHandle, options);
-		return new SessionWrapper(this._proxy, sessionDetails);
+		const sessionManager = new SessionWrapper(this._proxy, sessionDetails);
+		await sessionManager.initialize();
+		return sessionManager;
 	}
 
 	shutdown(id: string): Thenable<void> {
@@ -258,8 +260,13 @@ class SessionManagerWrapper implements azdata.nb.SessionManager {
 class SessionWrapper implements azdata.nb.ISession {
 	private _kernel: KernelWrapper;
 	constructor(private _proxy: Proxies, private sessionDetails: INotebookSessionDetails) {
-		if (sessionDetails && sessionDetails.kernelDetails) {
-			this._kernel = new KernelWrapper(_proxy, sessionDetails.kernelDetails);
+
+	}
+
+	public async initialize(): Promise<void> {
+		if (this.sessionDetails && this.sessionDetails.kernelDetails) {
+			this._kernel = new KernelWrapper(this._proxy, this.sessionDetails.kernelDetails);
+			return this._kernel.initialize();
 		}
 	}
 
@@ -309,6 +316,7 @@ class SessionWrapper implements azdata.nb.ISession {
 	private async doChangeKernel(kernelInfo: azdata.nb.IKernelSpec): Promise<azdata.nb.IKernel> {
 		let kernelDetails = await this._proxy.ext.$changeKernel(this.sessionDetails.sessionId, kernelInfo);
 		this._kernel = new KernelWrapper(this._proxy, kernelDetails);
+		await this._kernel.initialize();
 		return this._kernel;
 	}
 
@@ -325,13 +333,12 @@ class KernelWrapper implements azdata.nb.IKernel {
 	private _isReady: boolean = false;
 	private _ready = new Deferred<void>();
 	private _info: azdata.nb.IInfoReply;
-	constructor(private _proxy: Proxies, private kernelDetails: INotebookKernelDetails) {
-		this.initialize(kernelDetails);
+	constructor(private readonly _proxy: Proxies, private readonly kernelDetails: INotebookKernelDetails) {
 	}
 
-	private async initialize(kernelDetails: INotebookKernelDetails): Promise<void> {
+	public async initialize(): Promise<void> {
 		try {
-			this._info = await this._proxy.ext.$getKernelReadyStatus(kernelDetails.kernelId);
+			this._info = await this._proxy.ext.$getKernelReadyStatus(this.kernelDetails.kernelId);
 			this._isReady = true;
 			this._ready.resolve();
 		} catch (error) {
