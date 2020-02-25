@@ -259,39 +259,39 @@ class SessionManagerWrapper implements azdata.nb.SessionManager {
 
 class SessionWrapper implements azdata.nb.ISession {
 	private _kernel: KernelWrapper;
-	constructor(private _proxy: Proxies, private sessionDetails: INotebookSessionDetails) {
+	constructor(private _proxy: Proxies, private _sessionDetails: INotebookSessionDetails) {
 
 	}
 
 	public async initialize(): Promise<void> {
-		if (this.sessionDetails && this.sessionDetails.kernelDetails) {
-			this._kernel = new KernelWrapper(this._proxy, this.sessionDetails.kernelDetails);
+		if (this._sessionDetails && this._sessionDetails.kernelDetails) {
+			this._kernel = new KernelWrapper(this._proxy, this._sessionDetails.kernelDetails);
 			return this._kernel.initialize();
 		}
 	}
 
 	get canChangeKernels(): boolean {
-		return this.sessionDetails.canChangeKernels;
+		return this._sessionDetails.canChangeKernels;
 	}
 
 	get id(): string {
-		return this.sessionDetails.id;
+		return this._sessionDetails.id;
 	}
 
 	get path(): string {
-		return this.sessionDetails.path;
+		return this._sessionDetails.path;
 	}
 
 	get name(): string {
-		return this.sessionDetails.name;
+		return this._sessionDetails.name;
 	}
 
 	get type(): string {
-		return this.sessionDetails.type;
+		return this._sessionDetails.type;
 	}
 
 	get status(): azdata.nb.KernelStatus {
-		return this.sessionDetails.status as azdata.nb.KernelStatus;
+		return this._sessionDetails.status as azdata.nb.KernelStatus;
 	}
 
 	get kernel(): azdata.nb.IKernel {
@@ -314,18 +314,18 @@ class SessionWrapper implements azdata.nb.ISession {
 	}
 
 	private async doChangeKernel(kernelInfo: azdata.nb.IKernelSpec): Promise<azdata.nb.IKernel> {
-		let kernelDetails = await this._proxy.ext.$changeKernel(this.sessionDetails.sessionId, kernelInfo);
+		let kernelDetails = await this._proxy.ext.$changeKernel(this._sessionDetails.sessionId, kernelInfo);
 		this._kernel = new KernelWrapper(this._proxy, kernelDetails);
 		await this._kernel.initialize();
 		return this._kernel;
 	}
 
 	private async doConfigureKernel(kernelInfo: azdata.nb.IKernelSpec): Promise<void> {
-		await this._proxy.ext.$configureKernel(this.sessionDetails.sessionId, kernelInfo);
+		await this._proxy.ext.$configureKernel(this._sessionDetails.sessionId, kernelInfo);
 	}
 
 	private async doConfigureConnection(connection: azdata.IConnectionProfile): Promise<void> {
-		await this._proxy.ext.$configureConnection(this.sessionDetails.sessionId, connection);
+		await this._proxy.ext.$configureConnection(this._sessionDetails.sessionId, connection);
 	}
 }
 
