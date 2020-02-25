@@ -147,7 +147,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			this._panel.options = {
 				showTabsWhenOne: true,
 				layout: NavigationBarLayout.vertical,
-				showIcon: false
+				showIcon: true
 			};
 			this.createTabs(tempWidgets);
 		}
@@ -378,7 +378,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			originalConfig: [],
 			editable: true,
 			canClose: false,
-			actions: []
+			actions: [],
+			iconClass: 'home-tab-icon'
 		};
 
 		const homeTabIndex = firstIndex(allTabs, (tab) => tab.isHomeTab === true);
@@ -422,10 +423,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		}
 	}
 
-	private initTabComponents(value: IDashboardTab): { id: string; title: string; container: object; alwaysShow: boolean; } {
+	private initTabComponents(value: IDashboardTab): { id: string; title: string; container: object; alwaysShow: boolean; iconClass?: string } {
 		const containerResult = dashboardHelper.getDashboardContainer(value.container, this.logService);
 		if (!containerResult.result) {
-			return { id: value.id, title: value.title, container: { 'error-container': undefined }, alwaysShow: value.alwaysShow };
+			return { id: value.id, title: value.title, container: { 'error-container': undefined }, alwaysShow: value.alwaysShow, iconClass: value.iconClass };
 		}
 		const key = Object.keys(containerResult.container)[0];
 		if (key === WIDGETS_CONTAINER || key === GRID_CONTAINER) {
@@ -447,13 +448,13 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			}
 
 			if (key === WIDGETS_CONTAINER) {
-				return { id: value.id, title: value.title, container: { 'widgets-container': configs }, alwaysShow: value.alwaysShow };
+				return { id: value.id, title: value.title, container: { 'widgets-container': configs }, alwaysShow: value.alwaysShow, iconClass: value.iconClass };
 			}
 			else {
-				return { id: value.id, title: value.title, container: { 'grid-container': configs }, alwaysShow: value.alwaysShow };
+				return { id: value.id, title: value.title, container: { 'grid-container': configs }, alwaysShow: value.alwaysShow, iconClass: value.iconClass };
 			}
 		}
-		return { id: value.id, title: value.title, container: containerResult.container, alwaysShow: value.alwaysShow };
+		return { id: value.id, title: value.title, container: containerResult.container, alwaysShow: value.alwaysShow, iconClass: value.iconClass };
 	}
 
 	protected getContentType(tab: TabConfig): string {
@@ -463,6 +464,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	private addNewTab(tab: TabConfig): void {
 		const existedTab = find(this.tabs, i => i.id === tab.id);
 		if (!existedTab) {
+			if (!tab.iconClass && tab.type !== 'group-header') {
+				tab.iconClass = 'default-tab-icon';
+			}
 			this.tabs.push(tab);
 			this._cd.detectChanges();
 		}
