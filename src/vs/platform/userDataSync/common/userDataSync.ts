@@ -20,6 +20,7 @@ import { FormattingOptions } from 'vs/base/common/jsonFormatter';
 import { URI } from 'vs/base/common/uri';
 import { isEqual, joinPath } from 'vs/base/common/resources';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { IProductService } from 'vs/platform/product/common/productService';
 
 export const CONFIGURATION_SYNC_STORE_KEY = 'configurationSync.store';
 
@@ -87,6 +88,7 @@ export function registerConfiguration(): IDisposable {
 				description: localize('sync.keybindingsPerPlatform', "Synchronize keybindings per platform."),
 				default: true,
 				scope: ConfigurationScope.APPLICATION,
+				tags: ['sync']
 			},
 			'sync.ignoredExtensions': {
 				'type': 'array',
@@ -95,7 +97,8 @@ export function registerConfiguration(): IDisposable {
 				'default': [],
 				'scope': ConfigurationScope.APPLICATION,
 				uniqueItems: true,
-				disallowSyncIgnore: true
+				disallowSyncIgnore: true,
+				tags: ['sync']
 			},
 			'sync.ignoredSettings': {
 				'type': 'array',
@@ -105,7 +108,8 @@ export function registerConfiguration(): IDisposable {
 				$ref: ignoredSettingsSchemaId,
 				additionalProperties: true,
 				uniqueItems: true,
-				disallowSyncIgnore: true
+				disallowSyncIgnore: true,
+				tags: ['sync']
 			}
 		}
 	});
@@ -140,8 +144,8 @@ export interface IUserDataSyncStore {
 	authenticationProviderId: string;
 }
 
-export function getUserDataSyncStore(configurationService: IConfigurationService): IUserDataSyncStore | undefined {
-	const value = configurationService.getValue<{ url: string, authenticationProviderId: string }>(CONFIGURATION_SYNC_STORE_KEY);
+export function getUserDataSyncStore(productService: IProductService, configurationService: IConfigurationService): IUserDataSyncStore | undefined {
+	const value = productService[CONFIGURATION_SYNC_STORE_KEY] || configurationService.getValue<{ url: string, authenticationProviderId: string }>(CONFIGURATION_SYNC_STORE_KEY);
 	if (value && value.url && value.authenticationProviderId) {
 		return {
 			url: joinPath(URI.parse(value.url), 'v1'),
