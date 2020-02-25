@@ -213,7 +213,6 @@ export class EditDataGridPanel extends GridParentComponent {
 				&& this.isCellOnScreen(this.currentCell.row, this.currentCell.column)) {
 				this.focusCell(this.currentCell.row, this.currentCell.column, false);
 			}
-
 		};
 
 		// Setup a function for generating a promise to lookup result subsets
@@ -757,9 +756,6 @@ export class EditDataGridPanel extends GridParentComponent {
 			&& viewport.leftPx <= cellBox.left && viewport.rightPx >= cellBox.right
 			&& viewport.top <= cellBox.top && viewport.bottom >= cellBox.bottom;
 	}
-
-
-
 
 	private resetCurrentCell() {
 		this.currentCell = {
