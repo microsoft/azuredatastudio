@@ -45,9 +45,7 @@ export class EditDataEditor extends BaseEditor {
 	public static ID: string = 'workbench.editor.editDataEditor';
 
 	// The minimum width/height of the editors hosted in the QueryEditor
-	private readonly _minEditorSize: number = 60;
-	// Minimum position for the sash to ensure editor is at minimum height.
-	private readonly _minPositionSize: number = 40;
+	private readonly _minEditorSize: number = 55;
 
 	private _sash: IFlexibleSash;
 	private _dimension: DOM.Dimension;
@@ -292,27 +290,12 @@ export class EditDataEditor extends BaseEditor {
 			this._sash = this._register(new HorizontalFlexibleSash(parentElement, this._minEditorSize));
 			this._setSashDimension();
 
-			this._register(this._sash.onPositionChange(position => this._positionCheck(position)));
+			this._register(this._sash.onPositionChange(() => this._doLayout()));
 		}
 
 		this._sash.show();
 	}
 
-	/**
-	 * Checks if the current position of the sash doesn't cover the first row of the table.
-	 * If large enough, do layout. Else if too small, hide result editor to prevent crashing.
-	 */
-	private _positionCheck(position: number) {
-		if (position < this._minPositionSize) {
-			this.resultsEditorVisibility = false;
-		}
-		else {
-			if (!this.resultsEditorVisibility) {
-				this.resultsEditorVisibility = true;
-			}
-			this._doLayout();
-		}
-	}
 
 	/**
 	 * Appends the HTML for the SQL editor. Creates new HTML every time.

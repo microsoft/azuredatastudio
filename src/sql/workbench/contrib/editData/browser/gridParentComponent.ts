@@ -62,8 +62,6 @@ export abstract class GridParentComponent extends Disposable {
 	private queryEditorVisible: IContextKey<boolean>;
 
 	// All datasets
-	//main dataset to work on.
-	protected dataSet: IGridDataSet;
 	// Place holder data sets to buffer between data sets and rendered data sets
 	protected placeHolderDataSets: IGridDataSet[] = [];
 	// Datasets currently being rendered on the DOM
