@@ -38,7 +38,7 @@ import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/commo
 import { ILogService } from 'vs/platform/log/common/log';
 import { firstIndex, find } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
-import { RefreshWidgetAction, EditDashboardAction, ToolbarAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
+import { RefreshWidgetAction, ToolbarAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as DOM from 'vs/base/browser/dom';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -156,20 +156,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		const homeToolbarConfig = this.dashboardService.getSettings<Array<WidgetConfig>>([this.context, 'widgets'].join('.'))[0].widget['tasks-widget'];
 
 		let content = this.getToolbarContent(homeToolbarConfig);
-		if (content.length > 0) {
-			let separator: HTMLElement = Taskbar.createTaskbarSeparator();
-			content.push({ element: separator });
-		}
-
-		const editAction = new EditDashboardAction(this.enableEdit, this);
-		const refreshAction = new RefreshWidgetAction(this.refresh, this);
-		const configureDashboardCommand = MenuRegistry.getCommand('configureDashboard');
-		const configureDashboardAction = new ToolbarAction(configureDashboardCommand.id, configureDashboardCommand.title.toString(), TaskRegistry.getOrCreateTaskIconClassName(configureDashboardCommand), this.runAction, this, this.logService);
-
-		content.push(
-			{ action: refreshAction },
-			{ action: editAction },
-			{ action: configureDashboardAction });
+		this.addRefreshAction(content);
 
 		return content;
 	}
@@ -184,9 +171,21 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		// get toolbar content if it wasn't loaded previously
 		if (content.length === 0) {
 			content = this.getToolbarContent(this.tabToolbarActionsConfig.get(tabName));
+			this.addRefreshAction(content);
+			this.tabToolbarActions.set(tabName, content);
 		}
 
 		this.toolbar.setContent(content);
+	}
+
+	private addRefreshAction(content: ITaskbarContent[]): void {
+		if (content.length > 0) {
+			let separator: HTMLElement = Taskbar.createTaskbarSeparator();
+			content.push({ element: separator });
+		}
+
+		const refreshAction = new RefreshWidgetAction(this.refresh, this);
+		content.push({ action: refreshAction });
 	}
 
 	private getToolbarContent(toolbarTasks: WidgetConfig): ITaskbarContent[] {
@@ -396,6 +395,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			if (index !== -1) {
 				this.tabToolbarActionsConfig.set(value.id, configs[index].widget['tasks-widget']);
 				const content = this.getToolbarContent(configs[index].widget['tasks-widget']);
+				if (content.length > 0) {
+					this.addRefreshAction(content);
+				}
 				this.tabToolbarActions.set(value.id, content);
 				configs.splice(index, 1);
 			}
@@ -455,14 +457,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 					tabContent.refresh();
 				});
 			}
-		}
-	}
-
-	public enableEdit(): void {
-		if (this._tabs) {
-			this._tabs.forEach(tabContent => {
-				tabContent.enableEdit();
-			});
 		}
 	}
 
