@@ -198,7 +198,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					self.wizard.registerDisposable(disposable);
 				},
 				onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent): void => {
-					self.inputComponents[name] = component;
+					self.inputComponents[name] = { component: component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
@@ -212,7 +212,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					self.wizard.registerDisposable(disposable);
 				},
 				onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent): void => {
-					self.inputComponents[name] = component;
+					self.inputComponents[name] = { component: component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
@@ -226,7 +226,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					self.wizard.registerDisposable(disposable);
 				},
 				onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent): void => {
-					self.inputComponents[name] = component;
+					self.inputComponents[name] = { component: component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
@@ -235,7 +235,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			const basicSettingsFormItem = { title: '', component: basicSettingsGroup };
 			const dockerSettingsFormItem = { title: '', component: dockerSettingsGroup };
 			this.activeDirectorySection = { title: '', component: activeDirectorySettingsGroup };
-			const authModeDropdown = <azdata.DropDownComponent>this.inputComponents[VariableNames.AuthenticationMode_VariableName];
+			const authModeDropdown = <azdata.DropDownComponent>this.inputComponents[VariableNames.AuthenticationMode_VariableName].component;
 			this.formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[basicSettingsFormItem, dockerSettingsFormItem],
 				{
@@ -290,7 +290,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		getInputBoxComponent(VariableNames.DockerRegistry_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(VariableNames.DockerRegistry_VariableName);
 		getInputBoxComponent(VariableNames.DockerRepository_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(VariableNames.DockerRepository_VariableName);
 		getInputBoxComponent(VariableNames.DockerImageTag_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(VariableNames.DockerImageTag_VariableName);
-		const authModeDropdown = <azdata.DropDownComponent>this.inputComponents[VariableNames.AuthenticationMode_VariableName];
+		const authModeDropdown = <azdata.DropDownComponent>this.inputComponents[VariableNames.AuthenticationMode_VariableName].component;
 		if (authModeDropdown) {
 			authModeDropdown.enabled = this.wizard.model.adAuthSupported;
 			const adAuthSelected = (<azdata.CategoryValue>authModeDropdown.value).name === 'ad';

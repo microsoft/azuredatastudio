@@ -14,10 +14,12 @@
 	"azure.resource.connectsqldb.title": "Add to Servers",
 
 	"accounts.clearTokenCache": "Clear Azure Account Token Cache",
+	"azure.accounts.getSubscriptions.title": "Get Azure Account Subscriptions",
+	"azure.accounts.getResourceGroups.title": "Get Azure Account Subscription Resource Groups",
 
 	"config.enablePublicCloudDescription": "Should Azure public cloud integration be enabled",
 	"config.enableUsGovCloudDescription": "Should US Government Azure cloud (Fairfax) integration be enabled",
 	"config.enableChinaCloudDescription": "Should Azure China integration be enabled",
 	"config.enableGermanyCloudDescription": "Should Azure Germany integration be enabled",
-	"config.useNewSignInExperience": "Use the new Azure sign in experience"
+	"config.enableArcFeatures": "Should features related to Azure Arc be enabled (preview)"
 }

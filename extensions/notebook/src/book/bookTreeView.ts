@@ -10,7 +10,6 @@ import * as fs from 'fs-extra';
 import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem } from './bookTreeItem';
-import { isEditorTitleFree } from '../common/utils';
 import { BookModel } from './bookModel';
 import { Deferred } from '../common/promise';
 import * as loc from '../common/localizedConstants';
@@ -25,8 +24,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private prompter: IPrompter;
 	private _initializeDeferred: Deferred<void> = new Deferred<void>();
 
-	// For testing
-	private _errorMessage: string;
 	private _openAsUntitled: boolean;
 	public viewId: string;
 	public books: BookModel[];
@@ -98,7 +95,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			const sectionToOpen = bookRoot.findChildSection(urlToOpen);
 			const urlPath = sectionToOpen ? sectionToOpen.url : bookRoot.tableOfContents.sections[0].url;
 			const sectionToOpenMarkdown: string = path.join(this.currentBook.bookPath, 'content', urlPath.concat('.md'));
-			const sectionToOpenNotebook: string = path.join(this.currentBook.bookPath, 'content', urlPath.concat('.ipynb'));
+			// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
+			const sectionToOpenNotebook: string = path.posix.join(this.currentBook.bookPath, 'content', urlPath.concat('.ipynb'));
 			if (await fs.pathExists(sectionToOpenMarkdown)) {
 				this.openMarkdown(sectionToOpenMarkdown);
 			}
@@ -292,14 +290,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	public get errorMessage() {
-		return this._errorMessage;
-	}
-
 	getUntitledNotebookUri(resource: string): vscode.Uri {
-		let untitledFileName: vscode.Uri;
-		let nextTitle: string = this.findNextUntitledFileName(resource);
-		untitledFileName = vscode.Uri.parse(`untitled:${nextTitle}`);
+		let untitledFileName = vscode.Uri.parse(`untitled:${resource}`);
 		if (!this.currentBook.getAllBooks().get(untitledFileName.fsPath) && !this.currentBook.getAllBooks().get(path.basename(untitledFileName.fsPath))) {
 			let notebook = this.currentBook.getAllBooks().get(resource);
 			this.currentBook.getAllBooks().set(path.basename(untitledFileName.fsPath), notebook);
@@ -307,18 +299,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return untitledFileName;
 	}
 
-	findNextUntitledFileName(filePath: string): string {
-		const baseName = path.basename(filePath);
-		let idx = 0;
-		let title;
-		do {
-			const suffix = idx === 0 ? '' : `-${idx}`;
-			title = `${baseName}${suffix}`;
-			idx++;
-		} while (!isEditorTitleFree(title));
-
-		return title;
-	}
 
 	//Confirmation message dialog
 	private async confirmReplace(): Promise<boolean> {

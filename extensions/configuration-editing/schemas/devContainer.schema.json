@@ -2,6 +2,7 @@
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"description": "Defines a dev container",
 	"allowComments": true,
+	"allowTrailingCommas": true,
 	"type": "object",
 	"definitions": {
 		"devContainerCommon": {
@@ -28,7 +29,9 @@
 					"type": "array",
 					"description": "Ports that are forwarded from the container to the local machine.",
 					"items": {
-						"type": "integer"
+						"type": "integer",
+						"maximum": 65535,
+						"minimum": 0
 					}
 				},
 				"remoteEnv": {
@@ -44,6 +47,16 @@
 				"remoteUser": {
 					"type": "string",
 					"description": "The user VS Code Server will be started with. The default is the same user as the container."
+				},
+				"initializeCommand": {
+					"type": [
+						"string",
+						"array"
+					],
+					"description": "A command to run locally before anything else. If this is a single string, it will be run in a shell. If this is an array of strings, it will be run as a single command without shell.",
+					"items": {
+						"type": "string"
+					}
 				},
 				"postCreateCommand": {
 					"type": [
@@ -129,7 +142,7 @@
 				}
 			}
 		},
-		"dockerFileContainer": {
+		"dockerFileAndContext": {
 			"type": "object",
 			"properties": {
 				"dockerFile": {
@@ -144,6 +157,64 @@
 			"required": [
 				"dockerFile"
 			]
+		},
+		"dockerFileContainer": {
+			"oneOf": [
+				{
+					"type": "object",
+					"properties": {
+						"build": {
+							"type": "object",
+							"description": "Docker build-related options.",
+							"allOf": [
+								{
+									"$ref": "#/definitions/dockerFileAndContext"
+								},
+								{
+									"$ref": "#/definitions/buildOptions"
+								}
+							]
+					}
+					},
+					"required": [
+						"build"
+					]
+				},
+				{
+					"allOf": [
+						{
+							"$ref": "#/definitions/dockerFileAndContext"
+						},
+						{
+							"type": "object",
+							"properties": {
+								"build": {
+									"description": "Docker build-related options.",
+									"$ref": "#/definitions/buildOptions"
+								}
+							}
+						}
+					]
+				}
+			]
+		},
+		"buildOptions": {
+			"type": "object",
+			"properties": {
+				"target": {
+					"type": "string",
+					"description": "Target stage in a multi-stage build."
+				},
+				"args": {
+					"type": "object",
+					"additionalProperties": {
+						"type": [
+							"string"
+						]
+					},
+					"description": "Build arguments."
+				}
+			}
 		},
 		"imageContainer": {
 			"type": "object",

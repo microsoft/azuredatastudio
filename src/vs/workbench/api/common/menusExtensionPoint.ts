@@ -57,6 +57,8 @@ namespace schema {
 			case 'comments/comment/title': return MenuId.CommentTitle;
 			case 'comments/comment/context': return MenuId.CommentActions;
 			case 'extension/context': return MenuId.ExtensionContext;
+			case 'timeline/title': return MenuId.TimelineTitle;
+			case 'timeline/item/context': return MenuId.TimelineItemContext;
 		}
 
 		return undefined;
@@ -220,6 +222,16 @@ namespace schema {
 				type: 'array',
 				items: menuItem
 			},
+			'timeline/title': {
+				description: localize('view.timelineTitle', "The Timeline view title menu"),
+				type: 'array',
+				items: menuItem
+			},
+			'timeline/item/context': {
+				description: localize('view.timelineContext', "The Timeline view item context menu"),
+				type: 'array',
+				items: menuItem
+			},
 		}
 	};
 
@@ -309,7 +321,7 @@ namespace schema {
 				type: 'string'
 			},
 			icon: {
-				description: localize('vscode.extension.contributes.commandType.icon', '(Optional) Icon which is used to represent the command in the UI. Either a file path or a themable configuration'),
+				description: localize('vscode.extension.contributes.commandType.icon', '(Optional) Icon which is used to represent the command in the UI. Either a file path, an object with file paths for dark and light themes, or a theme icon references, like `$(zap)`'),
 				anyOf: [{
 					type: 'string'
 				},
@@ -419,7 +431,7 @@ ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: schema.IUserFriendlyM
 			}
 
 			const menu = schema.parseMenuId(entry.key);
-			if (typeof menu !== 'number') {
+			if (typeof menu === 'undefined') {
 				collector.warn(localize('menuId.invalid', "`{0}` is not a valid menu identifier", entry.key));
 				return;
 			}

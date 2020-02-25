@@ -30,6 +30,16 @@
       "type": "object",
       "title": "%mls.configuration.title%",
       "properties": {
+        "machineLearningServices.enablePython": {
+          "type": "boolean",
+          "default": "true",
+          "description": "%mls.enablePython.description%"
+        },
+        "machineLearningServices.enableR": {
+          "type": "boolean",
+          "default": "true",
+          "description": "%mls.enableR.description%"
+        },
         "machineLearningServices.pythonPath": {
           "type": "string",
           "default": "python",
@@ -46,6 +56,10 @@
       {
         "command": "mls.command.managePackages",
         "title": "%mls.command.managePackages%"
+      },
+      {
+        "command": "mls.command.manageLanguages",
+        "title": "%mls.command.manageLanguages%"
       },
       {
         "command": "mls.command.odbcdriver",
@@ -86,6 +100,7 @@
               "widget": {
                 "tasks-widget": [
                   "mls.command.managePackages",
+                  "mls.command.manageLanguages",
                   "mls.command.odbcdriver",
                   "mls.command.mlsdocs"
                 ]

@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ProfilerInput } from 'sql/workbench/contrib/profiler/browser/profilerInput';
+import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
 import { TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { IProfilerService, IProfilerViewTemplate } from 'sql/workbench/services/profiler/browser/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { attachTableStyler, attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
-import { IProfilerStateChangedEvent } from 'sql/workbench/contrib/profiler/common/profilerState';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
+import { IProfilerStateChangedEvent } from 'sql/workbench/common/editor/profiler/profilerState';
 import { ProfilerTableEditor, ProfilerTableViewState } from 'sql/workbench/contrib/profiler/browser/profilerTableEditor';
 import * as Actions from 'sql/workbench/contrib/profiler/browser/profilerActions';
 import { CONTEXT_PROFILER_EDITOR, PROFILER_TABLE_COMMAND_SEARCH } from 'sql/workbench/contrib/profiler/common/interfaces';
@@ -51,7 +51,9 @@ import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelect
 import { handleCopyRequest } from 'sql/workbench/contrib/profiler/browser/profilerCopyHandler';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { find } from 'vs/base/common/arrays';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
+import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {
@@ -432,7 +434,8 @@ export class ProfilerEditor extends BaseEditor {
 		editorContainer.className = 'profiler-editor';
 		this._editor.create(editorContainer);
 		this._editor.setVisible(true);
-		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, URI.from({ scheme: Schemas.untitled }), false, 'sql', '', '');
+		const model = this._instantiationService.createInstance(UntitledTextEditorModel, URI.from({ scheme: Schemas.untitled }), false, undefined, 'sql', undefined);
+		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 		this._editor.setInput(this._editorInput, undefined);
 		this._editorInput.resolve().then(model => this._editorModel = model.textEditorModel);
 		return editorContainer;

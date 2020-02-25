@@ -19,7 +19,6 @@ import 'vs/workbench/workbench.common.main';
 
 
 //#region --- workbench (desktop main)
-import 'sql/setup'; // {{SQL CARBON EDIT}}
 
 import 'vs/workbench/electron-browser/desktop.contribution';
 import 'vs/workbench/electron-browser/desktop.main';
@@ -53,7 +52,7 @@ import 'vs/workbench/services/workspaces/electron-browser/workspaceEditingServic
 import 'vs/workbench/services/userDataSync/electron-browser/userDataSyncService';
 import 'vs/workbench/services/userDataSync/electron-browser/settingsSyncService';
 import 'vs/workbench/services/userDataSync/electron-browser/userDataAutoSyncService';
-import 'vs/workbench/services/userDataSync/electron-browser/userDataAuthTokenService';
+import 'vs/workbench/services/authentication/electron-browser/authenticationTokenService';
 import 'vs/workbench/services/authentication/browser/authenticationService';
 import 'vs/workbench/services/host/electron-browser/desktopHostService';
 import 'vs/workbench/services/request/electron-browser/requestService';
@@ -80,8 +79,8 @@ import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';
 import { SqlOAuthService } from 'sql/platform/oAuth/electron-browser/sqlOAuthServiceImpl';
 import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/electron-browser/clipboardService';
-import { IQueryHistoryService } from 'sql/platform/queryHistory/common/queryHistoryService';
-import { QueryHistoryService } from 'sql/platform/queryHistory/common/queryHistoryServiceImpl';
+import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
+import { QueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryServiceImpl';
 
 registerSingleton(ISqlOAuthService, SqlOAuthService);
 registerSingleton(sqlIClipboardService, sqlClipboardService);

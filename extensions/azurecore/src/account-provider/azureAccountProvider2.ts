@@ -41,7 +41,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private isInitialized: boolean = false;
 
 
-	constructor(private metadata: AzureAccountProviderMetadata, private _tokenCache: TokenCache) {
+	constructor(private metadata: AzureAccountProviderMetadata, private _tokenCache: TokenCache, private _context: vscode.ExtensionContext) {
 		this.commonAuthorityUrl = url.resolve(this.metadata.settings.host, AzureAccountProvider.AadCommonTenant);
 	}
 
@@ -79,7 +79,9 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 		context.cache.add([response], (err, result) => {
 			if (err || !result) {
-				console.log(`Unexpected error adding token to cache ${err}`);
+				const msg = localize('azure.tokenCacheFail', "Unexpected error adding token to cache: {0}", err.message);
+				vscode.window.showErrorMessage(msg);
+				console.log(err);
 			}
 		});
 
@@ -189,6 +191,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		nonce: string,
 		authUrl: string) {
 
+		const mediaPath = path.join(this._context.extensionPath, 'media');
+
 		// Utility function
 		const sendFile = async (res: http.ServerResponse, filePath: string, contentType: string): Promise<void> => {
 			let fileContents;
@@ -240,12 +244,13 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 				return;
 			}
 
-			sendFile(res, path.join(__dirname, 'media/landing.html'), 'text/html; charset=utf-8').catch(console.error);
+
+			sendFile(res, path.join(mediaPath, 'landing.html'), 'text/html; charset=utf-8').catch(console.error);
 			this.handleAuthentication(code).catch((e) => console.error(e));
 		};
 
 		const css = (req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => {
-			sendFile(res, path.join(__dirname, 'media/landing.css'), 'text/css; charset=utf-8').catch(console.error);
+			sendFile(res, path.join(mediaPath, 'landing.css'), 'text/css; charset=utf-8').catch(console.error);
 		};
 
 		pathMappings.set('/signin', initialSignIn);
@@ -284,7 +289,9 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			try {
 				graphToken = await this.getToken(userId, value.tenantId, this.metadata.settings.graphResource.id);
 			} catch (ex) {
-				console.log(`Your authentication to the tenant ${value.tenantId} failed: ${ex}`);
+				const msg = localize('azure.authFail', "Your authentication to the tenant {0} failed: {1}", value.tenantId, ex);
+				vscode.window.showErrorMessage(msg);
+				console.log(msg);
 				return undefined;
 			}
 
@@ -305,7 +312,9 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 		tenants = tenants.filter(t => t !== undefined);
 		if (tenants.length === 0) {
-			throw new Error(localize('azure.noTenants', "No azure tenants found. Failing..."));
+			const msg = localize('azure.noTenants', "Failed to add account. No Azure tenants.");
+			vscode.window.showErrorMessage(msg);
+			throw new Error(msg);
 		}
 
 		if (homeTenant) {
