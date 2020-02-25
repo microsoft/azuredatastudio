@@ -34,7 +34,7 @@ import { Action } from 'vs/base/common/actions';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKeyService, ContextKeyExpr, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { ILogService } from 'vs/platform/log/common/log';
 import { firstIndex, find } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
@@ -78,6 +78,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	private tabToolbarActionsConfig = new Map<string, WidgetConfig>();
 	private tabContents = new Map<string, string>();
 
+	static tabName = new RawContextKey<string>('tabName', undefined);
+	private _tabName: IContextKey<string>;
+
 	// a set of config modifiers
 	private readonly _configModifiers: Array<(item: Array<WidgetConfig>, collection: IConfigModifierCollection, context: string) => Array<WidgetConfig>> = [
 		dashboardHelper.removeEmpty,
@@ -115,6 +118,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService
 	) {
 		super();
+		this._tabName = DashboardPage.tabName.bindTo(contextKeyService);
 	}
 
 	protected init() {
@@ -458,14 +462,16 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			this.init();
 		} else {
 			if (this._tabs) {
-				this._tabs.forEach(tabContent => {
-					tabContent.refresh();
-				});
+				const tab = this._tabs.find(t => t.id === this._tabName.get());
+				if (tab) {
+					tab.refresh();
+				}
 			}
 		}
 	}
 
 	public handleTabChange(tab: TabComponent): void {
+		this._tabName.set(tab.identifier);
 		const tabContent = this.tabContents.get(tab.identifier);
 		if (tab.identifier === this.homeTabId || tabContent === WIDGETS_CONTAINER || tabContent === GRID_CONTAINER || tabContent === NAV_SECTION) {
 			this.showToolbar = true;
