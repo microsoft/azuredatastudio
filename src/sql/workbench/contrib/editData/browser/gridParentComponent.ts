@@ -75,7 +75,7 @@ export abstract class GridParentComponent extends Disposable {
 	set messageActive(input: boolean) {
 		this.messageActiveBool = input;
 		if (this.resultActive) {
-			this.resizeGrid();
+			this.resizeGrids();
 		}
 	}
 
@@ -110,7 +110,7 @@ export abstract class GridParentComponent extends Disposable {
 					self.refreshDatasets();
 					break;
 				case GridContentEvents.ResizeContents:
-					self.resizeGrid();
+					self.resizeGrids();
 					break;
 				case GridContentEvents.CopySelection:
 					self.copySelection();
@@ -197,7 +197,7 @@ export abstract class GridParentComponent extends Disposable {
 	protected toggleResultPane(): void {
 		this.resultActive = !this.resultActive;
 		if (this.resultActive) {
-			this.resizeGrid();
+			this.resizeGrids();
 		}
 	}
 
@@ -437,7 +437,7 @@ export abstract class GridParentComponent extends Disposable {
 			this.onScroll(0);
 		}
 		setTimeout(() => {
-			self.resizeGrid();
+			self.resizeGrids();
 			self.table.setActive();
 		});
 	}
@@ -498,11 +498,11 @@ export abstract class GridParentComponent extends Disposable {
 	 */
 	protected abstract tryHandleKeyEvent(e: StandardKeyboardEvent): boolean;
 
-	resizeGrid(): void {
+	resizeGrids(): void {
 		const self = this;
 		setTimeout(() => {
-			setTimeout(() => self.onResize(), 100);
-		});
+			self.onResize();
+		}, 100);
 	}
 
 	protected onResize() {

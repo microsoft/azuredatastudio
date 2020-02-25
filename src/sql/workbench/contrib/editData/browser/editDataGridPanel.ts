@@ -49,9 +49,9 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	// FIELDS
 	// All datasets
-	//main dataset to work on.
-	protected dataSet: IGridDataSet;
 	private gridDataProvider: AsyncDataProvider<any>;
+	//main dataset to work on.
+	private dataSet: IGridDataSet;
 	private oldDataRows: VirtualizedCollection<any>;
 	private firstRender = true;
 	private firstLoad = true;

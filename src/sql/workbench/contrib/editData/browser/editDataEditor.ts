@@ -290,7 +290,7 @@ export class EditDataEditor extends BaseEditor {
 			this._sash = this._register(new HorizontalFlexibleSash(parentElement, this._minEditorSize));
 			this._setSashDimension();
 
-			this._register(this._sash.onPositionChange(() => this._doLayout()));
+			this._register(this._sash.onPositionChange(position => this._doLayout()));
 		}
 
 		this._sash.show();
