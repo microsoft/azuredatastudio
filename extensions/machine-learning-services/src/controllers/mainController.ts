@@ -108,7 +108,7 @@ export default class MainController implements vscode.Disposable {
 		// Model Management
 		//
 		let registeredModelService = new RegisteredModelService(this._apiWrapper, this._config, this._queryRunner, modelImporter);
-		let azureModelsService = new AzureModelRegistryService(this._apiWrapper, this._config);
+		let azureModelsService = new AzureModelRegistryService(this._apiWrapper, this._config, this.httpClient, this._outputChannel);
 		let modelManagementController = new ModelManagementController(this._apiWrapper, this._rootPath, azureModelsService, registeredModelService);
 
 		this._apiWrapper.registerCommand(constants.mlManageLanguagesCommand, (async () => {

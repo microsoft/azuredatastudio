@@ -37,7 +37,8 @@ export class WorkspaceModels {
 const serializer = new msRest.Serializer(Mappers);
 const listModelsOperationSpec: msRest.OperationSpec = {
 	httpMethod: 'GET',
-	path: 'subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/models',
+	path:
+		'modelmanagement/v1.0/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/models',
 	urlParameters: [
 		Parameters.subscriptionId,
 		Parameters.resourceGroupName,

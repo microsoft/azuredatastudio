@@ -61,7 +61,7 @@ export abstract class ViewBase extends EventEmitterCollection {
 	}
 
 	public static getCallbackEventName(eventName: string) {
-		return `${eventName}CallEventNamePostfix`;
+		return `${eventName}${CallEventNamePostfix}`;
 	}
 
 	protected registerEvents() {

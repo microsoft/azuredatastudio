@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { ApiWrapper } from '../common/apiWrapper';
 import * as constants from '../common/constants';
 import { azureResource } from '../typings/azure-resource';
@@ -11,8 +12,15 @@ import { AzureMachineLearningWorkspaces } from '@azure/arm-machinelearningservic
 import { TokenCredentials } from '@azure/ms-rest-js';
 import { WorkspaceModels } from './workspacesModels';
 import { AzureMachineLearningWorkspacesOptions, Workspace } from '@azure/arm-machinelearningservices/esm/models';
-import { WorkspaceModel } from './interfaces';
+import { WorkspaceModel, Asset, IArtifactParts } from './interfaces';
 import { Config } from '../configurations/config';
+import { Assets } from './assets';
+import * as polly from 'polly-js';
+import { Artifacts } from './artifacts';
+import { HttpClient } from '../common/httpClient';
+import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+import * as path from 'path';
+import * as os from 'os';
 
 /**
  * Azure Model Service
@@ -22,7 +30,7 @@ export class AzureModelRegistryService {
 	/**
 	 *
 	 */
-	constructor(private _apiWrapper: ApiWrapper, private _config: Config) {
+	constructor(private _apiWrapper: ApiWrapper, private _config: Config, private _httpClient: HttpClient, private _outputChannel: vscode.OutputChannel) {
 	}
 
 	/**
@@ -37,7 +45,8 @@ export class AzureModelRegistryService {
 	 * @param account azure account
 	 */
 	public async getSubscriptions(account: azdata.Account | undefined): Promise<azureResource.AzureResourceSubscription[] | undefined> {
-		return await this._apiWrapper.executeCommand(constants.azureSubscriptionsCommand, account, true);
+		const data = <azureResource.GetSubscriptionsResult>await this._apiWrapper.executeCommand(constants.azureSubscriptionsCommand, account, true);
+		return data?.subscriptions;
 	}
 
 	/**
@@ -48,7 +57,8 @@ export class AzureModelRegistryService {
 	public async getGroups(
 		account: azdata.Account | undefined,
 		subscription: azureResource.AzureResourceSubscription | undefined): Promise<azureResource.AzureResource[] | undefined> {
-		return await this._apiWrapper.executeCommand(constants.azureResourceGroupsCommand, account, subscription, true);
+		const data = <azureResource.GetResourceGroupsResult>await this._apiWrapper.executeCommand(constants.azureResourceGroupsCommand, account, subscription, true);
+		return data?.resourceGroups;
 	}
 
 	/**
@@ -75,7 +85,7 @@ export class AzureModelRegistryService {
 		account: azdata.Account,
 		subscription: azureResource.AzureResourceSubscription,
 		resourceGroup: azureResource.AzureResource,
-		workspace: Workspace): Promise<azureResource.AzureResource[] | undefined> {
+		workspace: Workspace): Promise<WorkspaceModel[] | undefined> {
 		return await this.fetchModels(account, subscription, resourceGroup, workspace);
 	}
 
@@ -93,13 +103,48 @@ export class AzureModelRegistryService {
 		resourceGroup: azureResource.AzureResource,
 		workspace: Workspace,
 		model: WorkspaceModel): Promise<string> {
-		console.log(account);
-		console.log(subscription);
-		console.log(resourceGroup);
-		console.log(workspace);
-		console.log(model);
-		// TODO: not implemented
-		return '';
+		let downloadedFilePath: string = '';
+
+		for (const tenant of account.properties.tenants) {
+			try {
+				const downloadUrls = await this.getAssetArtifactsDownloadLinks(account, subscription, resourceGroup, workspace, model, tenant);
+				if (downloadUrls && downloadUrls.length > 0) {
+					downloadedFilePath = await this.downloadArtifact(downloadUrls[0]);
+				}
+
+			} catch (error) {
+				console.log(error);
+			}
+		}
+		return downloadedFilePath;
+	}
+
+	/**
+	 * Installs dependencies for the extension
+	 */
+	public async downloadArtifact(downloadUrl: string): Promise<string> {
+		return new Promise<string>((resolve, reject) => {
+			let msgTaskName = constants.downloadModelMsgTaskName;
+			this._apiWrapper.startBackgroundOperation({
+				displayName: msgTaskName,
+				description: msgTaskName,
+				isCancelable: false,
+				operation: async op => {
+					let tempFilePath: string = '';
+					try {
+						tempFilePath = path.join(os.tmpdir(), `ads_ml_temp_${UUID.generateUuid()}`);
+						await this._httpClient.download(downloadUrl, tempFilePath, op, this._outputChannel);
+
+						op.updateStatus(azdata.TaskStatus.Succeeded);
+						resolve(tempFilePath);
+					} catch (error) {
+						let errorMsg = constants.installDependenciesError(error ? error.message : '');
+						op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
+						reject(errorMsg);
+					}
+				}
+			});
+		});
 	}
 
 	private async fetchWorkspaces(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroup: azureResource.AzureResource | undefined): Promise<Workspace[]> {
@@ -124,33 +169,128 @@ export class AzureModelRegistryService {
 		account: azdata.Account,
 		subscription: azureResource.AzureResourceSubscription,
 		resourceGroup: azureResource.AzureResource,
-		workspace: Workspace): Promise<azureResource.AzureResource[]> {
-		let resources: azureResource.AzureResource[] = [];
+		workspace: Workspace): Promise<WorkspaceModel[]> {
+		let resources: WorkspaceModel[] = [];
 
 		for (const tenant of account.properties.tenants) {
 			try {
-				const tokens = await this._apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
-				const token = tokens[tenant.id].token;
-				const tokenType = tokens[tenant.id].tokenType;
-				let baseUri = `https://${workspace.location}.${this._config.amlApiUrl}`;
-				if (workspace.location === 'chinaeast2') {
-					baseUri = `https://${workspace.location}.${this._config.amlApiUrl}`;
-				}
-				const options: AzureMachineLearningWorkspacesOptions = {
-					baseUri: baseUri
-
-				};
-				const client = new AzureMachineLearningWorkspaces(new TokenCredentials(token, tokenType), subscription.id, options);
-				client.apiVersion = this._config.amlApiVersion;
-
+				let baseUri = this.getBaseUrl(workspace, this._config.amlModelManagementUrl);
+				const client = await this.getClient(baseUri, account, subscription, tenant);
 				let modelsClient = new WorkspaceModels(client);
-				let result = await modelsClient.listModels(resourceGroup.name, workspace.name || '');
-				resources.push(...result.map(r => { return { id: r.id || '', name: r.name || '' }; }));
+				resources = resources.concat(await modelsClient.listModels(resourceGroup.name, workspace.name || ''));
+
 			} catch (error) {
 				console.log(error);
 			}
 		}
 
 		return resources;
+	}
+
+	private async fetchModelAsset(
+		subscription: azureResource.AzureResourceSubscription,
+		resourceGroup: azureResource.AzureResource,
+		workspace: Workspace,
+		model: WorkspaceModel,
+		client: AzureMachineLearningWorkspaces): Promise<Asset> {
+
+		const modelId = this.getModelId(model);
+		let modelsClient = new Assets(client);
+		return await modelsClient.queryById(subscription.id, resourceGroup.name, workspace.name || '', modelId);
+	}
+
+	public async getAssetArtifactsDownloadLinks(
+		account: azdata.Account,
+		subscription: azureResource.AzureResourceSubscription,
+		resourceGroup: azureResource.AzureResource,
+		workspace: Workspace,
+		model: WorkspaceModel,
+		tenant: any): Promise<string[]> {
+		let baseUri = this.getBaseUrl(workspace, this._config.amlModelManagementUrl);
+		const modelManagementClient = await this.getClient(baseUri, account, subscription, tenant);
+		const asset = await this.fetchModelAsset(subscription, resourceGroup, workspace, model, modelManagementClient);
+		baseUri = this.getBaseUrl(workspace, this._config.amlExperienceUrl);
+		const experienceClient = await this.getClient(baseUri, account, subscription, tenant);
+		const artifactClient = new Artifacts(experienceClient);
+		let downloadLinks: string[] = [];
+		if (asset && asset.artifacts) {
+			const downloadLinkPromises: Array<Promise<string>> = [];
+			for (const artifact of asset.artifacts) {
+				const parts = artifact.id
+					? this.getPartsFromAssetIdOrPrefix(artifact.id)
+					: this.getPartsFromAssetIdOrPrefix(artifact.prefix);
+
+				if (parts) {
+					const promise = polly()
+						.waitAndRetry(3)
+						.executeForPromise(
+							async (): Promise<string> => {
+								const artifact = await artifactClient.getArtifactContentInformation2(
+									experienceClient.subscriptionId,
+									resourceGroup.name,
+									workspace.name || '',
+									parts.origin,
+									parts.container,
+									{ path: parts.path }
+								);
+								if (artifact) {
+									return artifact.contentUri || '';
+								} else {
+									return Promise.reject();
+								}
+							}
+						);
+					downloadLinkPromises.push(promise);
+				}
+			}
+
+			try {
+				downloadLinks = await Promise.all(downloadLinkPromises);
+			} catch (rejectedPromiseError) {
+				return rejectedPromiseError;
+			}
+		}
+		return downloadLinks;
+	}
+
+	public getPartsFromAssetIdOrPrefix(idOrPrefix: string | undefined): IArtifactParts | undefined {
+		const artifactRegex = /^(.+?)\/(.+?)\/(.+?)$/;
+		if (idOrPrefix) {
+			const parts = artifactRegex.exec(idOrPrefix);
+			if (parts && parts.length === 4) {
+				return {
+					origin: parts[1],
+					container: parts[2],
+					path: parts[3]
+				};
+			}
+		}
+		return undefined;
+	}
+
+	private getBaseUrl(workspace: Workspace, server: string): string {
+		let baseUri = `https://${workspace.location}.${server}`;
+		if (workspace.location === 'chinaeast2') {
+			baseUri = `https://${workspace.location}.${server}`;
+		}
+		return baseUri;
+	}
+
+	private async getClient(baseUri: string, account: azdata.Account, subscription: azureResource.AzureResourceSubscription, tenant: any): Promise<AzureMachineLearningWorkspaces> {
+		const tokens = await this._apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
+		const token = tokens[tenant.id].token;
+		const tokenType = tokens[tenant.id].tokenType;
+		const options: AzureMachineLearningWorkspacesOptions = {
+			baseUri: baseUri
+		};
+		const client = new AzureMachineLearningWorkspaces(new TokenCredentials(token, tokenType), subscription.id, options);
+		client.apiVersion = this._config.amlApiVersion;
+		return client;
+	}
+
+	private getModelId(model: WorkspaceModel): string {
+		const amlAssetRegex = /^aml:\/\/asset\/(.+)$/;
+		const id = model ? amlAssetRegex.exec(model.url || '') : undefined;
+		return id && id.length === 2 ? id[1] : '';
 	}
 }

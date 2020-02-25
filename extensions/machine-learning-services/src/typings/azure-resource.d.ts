@@ -22,4 +22,7 @@ export namespace azureResource {
 	export interface IAzureResourceService<T extends AzureResource> {
 		getResources(subscription: AzureResourceSubscription, credential: msRest.ServiceClientCredentials): Promise<T[]>;
 	}
+
+	export type GetSubscriptionsResult = { subscriptions: AzureResourceSubscription[], errors: Error[] };
+	export type GetResourceGroupsResult = { resourceGroups: AzureResourceResourceGroup[], errors: Error[] };
 }

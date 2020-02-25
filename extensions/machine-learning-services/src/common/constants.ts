@@ -122,6 +122,10 @@ export const modelRegisteredSuccessfully = localize('models.modelRegisteredSucce
 export const modelFailedToRegister = localize('models.modelFailedToRegistered', "Model failed to register");
 export const localModelSource = localize('models.localModelSource', "Upload file");
 export const azureModelSource = localize('models.azureModelSource', "Import from AzureML registry");
+export const downloadModelMsgTaskName = localize('models.downloadModelMsgTaskName', "Downloading Model from Azure");
+export const invalidAzureResourceError = localize('models.invalidAzureResourceError', "Invalid Azure resource");
+export const invalidModelToRegisterError = localize('models.invalidModelToRegisterError', "Invalid model to register");
+
 
 
 // Links

@@ -15,6 +15,8 @@ import { RegisteredModelsDialog } from './registeredModelsDialog';
 import { AzureResourceEventArgs, ListAzureModelsEventName, ListSubscriptionsEventName, ListModelsEventName, ListWorkspacesEventName, ListGroupsEventName, ListAccountsEventName, RegisterLocalModelEventName, RegisterLocalModelEventArgs, RegisterAzureModelEventName, RegisterAzureModelEventArgs, ModelViewBase, SourceModelSelectedEventName, RegisterModelEventName } from './modelViewBase';
 import { ControllerBase } from '../controllerBase';
 import { RegisterModelWizard } from './registerModelWizard';
+import * as fs from 'fs';
+import * as constants from '../../common/constants';
 
 /**
  * Model management UI controller
@@ -45,11 +47,7 @@ export class ModelManagementController extends ControllerBase {
 		root = root || this._root;
 		let view = new RegisterModelWizard(apiWrapper, root, parent);
 
-		if (!parent) {
-			// Register events
-			//
-			controller.registerEvents(view);
-		}
+		controller.registerEvents(view);
 
 		// Open view
 		//
@@ -152,7 +150,7 @@ export class ModelManagementController extends ControllerBase {
 		account: azdata.Account | undefined,
 		subscription: azureResource.AzureResourceSubscription | undefined,
 		resourceGroup: azureResource.AzureResource | undefined,
-		workspace: Workspace | undefined): Promise<azureResource.AzureResource[]> {
+		workspace: Workspace | undefined): Promise<WorkspaceModel[]> {
 		if (!account || !subscription || !resourceGroup || !workspace) {
 			return [];
 		}
@@ -162,6 +160,9 @@ export class ModelManagementController extends ControllerBase {
 	private async registerLocalModel(service: RegisteredModelService, filePath?: string): Promise<void> {
 		if (filePath) {
 			await service.registerLocalModel(filePath);
+		} else {
+			throw Error(constants.invalidModelToRegisterError);
+
 		}
 	}
 
@@ -174,9 +175,14 @@ export class ModelManagementController extends ControllerBase {
 		workspace: Workspace | undefined,
 		model: WorkspaceModel | undefined): Promise<void> {
 		if (!account || !subscription || !resourceGroup || !workspace || !model) {
-			return;
+			throw Error(constants.invalidAzureResourceError);
 		}
 		const filePath = await azureService.downloadModel(account, subscription, resourceGroup, workspace, model);
-		await service.registerLocalModel(filePath);
+		if (filePath) {
+			await service.registerLocalModel(filePath);
+			await fs.promises.unlink(filePath);
+		} else {
+			throw Error(constants.invalidModelToRegisterError);
+		}
 	}
 }

@@ -2918,6 +2918,11 @@ pm-mocha-jenkins-reporter@^0.2.6:
     mkdirp "0.5.0"
     mocha ">=2.0.0"
 
+polly-js@^1.6.3:
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/polly-js/-/polly-js-1.6.5.tgz#78ebd7e87516eddd5da51db34290b6b8e3332aac"
+  integrity sha512-gGouufZpvrYBAeGkLJfty/89hAvFYia3lCxufMj066+aT9ZnR1Edfn/cAkY71Y22EcMPGfIKV4Z4iyi/+YauwQ==
+
 posix-character-classes@^0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/posix-character-classes/-/posix-character-classes-0.1.1.tgz#01eac0fe3b5af71a2a6c02feabb8c1fef7e00eab"

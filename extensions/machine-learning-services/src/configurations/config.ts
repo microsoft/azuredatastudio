@@ -92,9 +92,17 @@ export class Config {
 	/**
 	 * Returns Azure ML API
 	 */
-	public get amlApiUrl(): string {
-		return this._configValues.amlApiUrl;
+	public get amlModelManagementUrl(): string {
+		return this._configValues.amlModelManagementUrl;
 	}
+
+	/**
+	 * Returns Azure ML API
+	 */
+	public get amlExperienceUrl(): string {
+		return this._configValues.amlExperienceUrl;
+	}
+
 
 	/**
 	 * Returns Azure ML API Version

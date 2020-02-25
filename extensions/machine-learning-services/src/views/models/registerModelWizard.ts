@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { ModelSourcesComponent, ModelSourceType } from './modelSourcesComponent';
@@ -20,12 +21,14 @@ export class RegisterModelWizard extends ModelViewBase {
 	public localModelsComponent: LocalModelsComponent | undefined;
 	public azureModelsComponent: AzureModelsComponent | undefined;
 	public wizardView: WizardView | undefined;
+	private _parentView: ModelViewBase | undefined;
 
 	constructor(
 		apiWrapper: ApiWrapper,
 		root: string,
 		parent?: ModelViewBase) {
-		super(apiWrapper, root, parent);
+		super(apiWrapper, root);
+		this._parentView = parent;
 	}
 
 	/**
@@ -40,30 +43,38 @@ export class RegisterModelWizard extends ModelViewBase {
 		this.wizardView = new WizardView(this._apiWrapper);
 
 		let wizard = this.wizardView.createWizard(constants.registerModelWizardTitle, [this.modelResources, this.localModelsComponent]);
-		this.mainViewPanel = this.parent?.mainViewPanel || wizard;
+		this.mainViewPanel = wizard;
 		wizard.doneButton.label = constants.azureRegisterModel;
 		wizard.generateScriptButton.hidden = true;
-		wizard.doneButton.onClick(async () => {
-			try {
-				if (this.modelResources && this.localModelsComponent && this.modelResources.data) {
-					await this.registerLocalModel(this.localModelsComponent.data);
-				} else {
-					await this.registerAzureModel(this.azureModelsComponent?.data);
-				}
-				this.showInfoMessage(constants.modelRegisteredSuccessfully);
-			} catch (error) {
-				this.showErrorMessage(`${constants.modelFailedToRegister} ${constants.getErrorMessage(error)}`);
-			}
-			if (this.parent) {
-				this.parent.refresh();
-			}
-		});
 
-		wizard.registerNavigationValidator(() => {
+		wizard.registerNavigationValidator(async (pageInfo: azdata.window.WizardPageChangeInfo) => {
+			if (pageInfo.newPage === undefined) {
+				await this.registerModel();
+				if (this._parentView) {
+					this._parentView?.refresh();
+				}
+				return true;
+
+			}
 			return true;
 		});
 
 		wizard.open();
+	}
+
+	private async registerModel(): Promise<boolean> {
+		try {
+			if (this.modelResources && this.localModelsComponent && this.modelResources.data === ModelSourceType.Local) {
+				await this.registerLocalModel(this.localModelsComponent.data);
+			} else {
+				await this.registerAzureModel(this.azureModelsComponent?.data);
+			}
+			this.showInfoMessage(constants.modelRegisteredSuccessfully);
+			return true;
+		} catch (error) {
+			this.showErrorMessage(`${constants.modelFailedToRegister} ${constants.getErrorMessage(error)}`);
+			return false;
+		}
 	}
 
 	private loadPages(): void {

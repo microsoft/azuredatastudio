@@ -27,7 +27,8 @@ export class ModelImporter {
 
 	protected async executeScripts(connection: azdata.connection.ConnectionProfile, modelFolderPath: string): Promise<void> {
 
-		//modelFolderPath = modelFolderPath.replace('\\', '/');
+		const parts = modelFolderPath.split('\\');
+		modelFolderPath = parts.join('/');
 
 		let credentials = await this._apiWrapper.getCredentials(connection.connectionId);
 

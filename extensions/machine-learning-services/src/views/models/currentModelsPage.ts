@@ -41,7 +41,6 @@ export class CurrentModelsPage extends ModelViewBase implements IPageView {
 			width: this.buttonMaxLength
 		}).component();
 		registerButton.onDidClick(async () => {
-			await this.onLoading();
 			await this.sendDataRequest(RegisterModelEventName);
 		});
 
