@@ -76,6 +76,42 @@ export class Config {
 	}
 
 	/**
+	 * Returns registered models table name
+	 */
+	public get registeredModelTableName(): string {
+		return this._configValues.registeredModelsTableName;
+	}
+
+	/**
+	 * Returns registered models table name
+	 */
+	public get registeredModelDatabaseName(): string {
+		return this._configValues.registeredModelsDatabaseName;
+	}
+
+	/**
+	 * Returns Azure ML API
+	 */
+	public get amlModelManagementUrl(): string {
+		return this._configValues.amlModelManagementUrl;
+	}
+
+	/**
+	 * Returns Azure ML API
+	 */
+	public get amlExperienceUrl(): string {
+		return this._configValues.amlExperienceUrl;
+	}
+
+
+	/**
+	 * Returns Azure ML API Version
+	 */
+	public get amlApiVersion(): string {
+		return this._configValues.amlApiVersion;
+	}
+
+	/**
 	 * Returns r path from user settings
 	 */
 	public get rExecutable(): string {

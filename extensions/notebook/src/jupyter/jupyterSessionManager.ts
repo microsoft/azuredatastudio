@@ -26,6 +26,7 @@ const configBase = {
 	'kernel_r_credentials': {
 		'url': ''
 	},
+	'livy_session_startup_timeout_seconds': 100,
 	'logging_config': {
 		'version': 1,
 		'formatters': {
