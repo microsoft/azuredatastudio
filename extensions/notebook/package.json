@@ -146,6 +146,11 @@
         "category": "%books-preview-category%"
       },
       {
+        "command": "notebook.command.revealInBooksViewlet",
+        "title": "%title.revealInBooksViewlet%",
+        "category": "%books-preview-category%"
+      },
+      {
         "command": "notebook.command.saveBook",
         "title": "%title.saveJupyterBook%",
         "category": "%books-preview-category%",
@@ -273,6 +278,10 @@
         {
           "command": "notebook.command.searchUntitledBook",
           "when": "false"
+        },
+        {
+          "command": "notebook.command.revealInBooksViewlet",
+          "when": "notebookOpenedFromBook"
         }
       ],
       "touchBar": [
@@ -332,6 +341,13 @@
         {
           "command": "jupyter.cmd.managePackages",
           "when": "providerId == jupyter && notebook:pythonInstalled"
+        }
+      ],
+      "editor/title/context": [
+        {
+          "command": "notebook.command.revealInBooksViewlet",
+          "group": "2_files",
+          "when": "notebookOpenedFromBook && isFileSystemResource"
         }
       ]
     },
