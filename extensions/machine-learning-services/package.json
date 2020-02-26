@@ -80,7 +80,7 @@
         "description": "%description%",
         "provider": "MSSQL",
         "title": "%displayName%",
-        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
+        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && dashboardContext == 'server'",
         "container": {
           "grid-container": [
             {
