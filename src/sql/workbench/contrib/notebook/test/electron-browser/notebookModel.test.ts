@@ -150,7 +150,7 @@ suite('notebook model', function (): void {
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(emptyNotebook));
 		defaultModelOptions.contentManager = mockContentManager.object;
 		// When I initialize the model
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined, undefined);
 		await model.loadContents();
 
 		// Then I expect to have 0 code cell as the contents
@@ -166,7 +166,7 @@ suite('notebook model', function (): void {
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
 		defaultModelOptions.contentManager = mockContentManager.object;
 		// When I initialize the model
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined, undefined);
 		await model.loadContents(true);
 		await model.requestModelLoad();
 
@@ -183,7 +183,7 @@ suite('notebook model', function (): void {
 
 		// When I initalize the model
 		// Then it should throw
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined, undefined);
 		assert.equal(model.inErrorState, false);
 		await assert.rejects(async () => { await model.loadContents(); });
 		assert.equal(model.inErrorState, true);
@@ -196,7 +196,7 @@ suite('notebook model', function (): void {
 		defaultModelOptions.contentManager = mockContentManager.object;
 
 		// When I initalize the model
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined, undefined);
 		await model.loadContents();
 
 		// Then I expect all cells to be in the model
@@ -216,7 +216,7 @@ suite('notebook model', function (): void {
 		sessionReady.resolve();
 		let sessionFired = false;
 
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined, undefined);
 		model.onClientSessionReady((session) => sessionFired = true);
 		await model.loadContents();
 		await model.requestModelLoad();
@@ -253,7 +253,7 @@ suite('notebook model', function (): void {
 		let options: INotebookModelOptions = assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
 			factory: mockModelFactory.object
 		});
-		let model = new NotebookModel(options, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(options, undefined, logService, undefined, undefined, undefined);
 		model.onClientSessionReady((session) => actualSession = session);
 		await model.requestModelLoad();
 
@@ -270,14 +270,14 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should sanitize kernel display name when IP is included', async function (): Promise<void> {
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined, undefined);
 		let displayName = 'PySpark (1.1.1.1)';
 		let sanitizedDisplayName = model.sanitizeDisplayName(displayName);
 		assert.equal(sanitizedDisplayName, 'PySpark');
 	});
 
 	test('Should sanitize kernel display name properly when IP is not included', async function (): Promise<void> {
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined, undefined);
 		let displayName = 'PySpark';
 		let sanitizedDisplayName = model.sanitizeDisplayName(displayName);
 		assert.equal(sanitizedDisplayName, 'PySpark');
@@ -288,7 +288,7 @@ suite('notebook model', function (): void {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
 		defaultModelOptions.contentManager = mockContentManager.object;
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined, undefined);
 		await model.requestModelLoad();
 
 		let actualChanged: NotebookContentChange;
