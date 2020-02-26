@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as mssql from '../../../mssql/src/mssql';
-import { ApiWrapper } from '../common/apiWrapper';
-import { LanguageService } from './languageService';
-import { LanguagesDialog } from '../views/externalLanguages/languagesDialog';
-import { LanguageEditDialog } from '../views/externalLanguages/languageEditDialog';
-import { FileBrowserDialog } from '../views/externalLanguages/fileBrowserDialog';
-import { LanguageViewBase, LanguageUpdateModel } from '../views/externalLanguages/languageViewBase';
-import * as constants from '../common/constants';
+import * as mssql from '../../../../mssql/src/mssql';
+import { ApiWrapper } from '../../common/apiWrapper';
+import { LanguageService } from '../../externalLanguage/languageService';
+import { LanguagesDialog } from './languagesDialog';
+import { LanguageEditDialog } from './languageEditDialog';
+import { FileBrowserDialog } from './fileBrowserDialog';
+import { LanguageViewBase, LanguageUpdateModel } from './languageViewBase';
+import * as constants from '../../common/constants';
 
 export class LanguageController {
 
