@@ -23,7 +23,6 @@ export const openMarkdownCommand = localize('openMarkdownCommand', "Open Markdow
 export const openExternalLinkCommand = localize('openExternalLinkCommand', "Open External Link");
 
 export const missingTocError = localize('bookInitializeFailed', "Failed to find a toc.yml.");
-export const couldNotRevealInBookError = localize('bookRevealFailed', "Failed to reveal the requested file in the book.");
 export function missingFileError(title: string): string { return localize('missingFileError', "Missing file : {0}", title); }
 export function invalidTocFileError(): string { return localize('InvalidError.tocFile', "Invalid toc file"); }
 export function invalidTocError(title: string): string { return localize('Invalid toc.yml', "Error: {0} has an incorrect toc.yml file", title); }

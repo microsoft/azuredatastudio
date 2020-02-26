@@ -281,7 +281,7 @@
         },
         {
           "command": "notebook.command.revealInBooksViewlet",
-          "when": "notebookOpenedFromBook"
+          "when": "false"
         }
       ],
       "touchBar": [
@@ -341,13 +341,6 @@
         {
           "command": "jupyter.cmd.managePackages",
           "when": "providerId == jupyter && notebook:pythonInstalled"
-        }
-      ],
-      "editor/title/context": [
-        {
-          "command": "notebook.command.revealInBooksViewlet",
-          "group": "2_files",
-          "when": "notebookOpenedFromBook && isFileSystemResource"
         }
       ]
     },

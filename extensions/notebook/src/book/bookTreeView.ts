@@ -88,6 +88,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			this.currentBook = book;
 		}
 		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
+		this._bookViewer.onDidChangeVisibility(e => {
+			if (e.visible) {
+				this.revealActiveDocumentInViewlet();
+			}
+		});
 	}
 
 	async showPreviewFile(urlToOpen?: string): Promise<void> {
@@ -121,7 +126,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async revealActiveDocumentInViewlet(uri?: vscode.Uri): Promise<void> {
+	async revealActiveDocumentInViewlet(uri?: vscode.Uri, shouldReveal: boolean = true): Promise<void> {
 		let bookItem: BookTreeItem;
 		if (!uri) {
 			// Notebooks will be a NotebookEditor
@@ -133,9 +138,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			bookItem = this.currentBook.getNotebook(uri.path);
 		}
 		if (bookItem) {
-			await this._bookViewer.reveal(bookItem, { select: true, focus: true });
-		} else {
-			console.error(loc.couldNotRevealInBookError);
+			if (shouldReveal || this._bookViewer.visible) {
+				await this._bookViewer.reveal(bookItem, { select: true, focus: true });
+			}
 		}
 	}
 

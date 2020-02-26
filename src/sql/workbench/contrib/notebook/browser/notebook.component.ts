@@ -16,7 +16,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IAction, Action, IActionViewItem } from 'vs/base/common/actions';
-import { IContextKeyService, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import * as DOM from 'vs/base/browser/dom';
 
@@ -54,6 +54,7 @@ import { find, firstIndex } from 'vs/base/common/arrays';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -71,7 +72,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	@ViewChildren(CodeCellComponent) private codeCells: QueryList<CodeCellComponent>;
 	@ViewChildren(TextCellComponent) private textCells: QueryList<ICellEditorProvider>;
 
-	static readonly OpenedFromBook = new RawContextKey<boolean>('notebookOpenedFromBook', false);
 
 	private _model: NotebookModel;
 	protected _actionBar: Taskbar;
@@ -85,7 +85,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _scrollTop: number;
 	private _navProvider: INavigationProvider;
 	private navigationResult: nb.NavigationResult;
-	private readonly _openedFromBook: IContextKey<boolean>;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -105,12 +104,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
-		@Inject(ITelemetryService) private telemetryService: ITelemetryService
+		@Inject(ITelemetryService) private telemetryService: ITelemetryService,
+		@Inject(ICommandService) private commandService: ICommandService
 	) {
 		super();
 		this.updateProfile();
 		this.isLoading = true;
-		this._openedFromBook = NotebookComponent.OpenedFromBook.bindTo(contextKeyService);
 	}
 
 	private updateProfile(): void {
@@ -124,9 +123,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.setScrollPosition();
 		this.doLoad().catch(e => onUnexpectedError(e));
 		this.initNavSection();
-		this._register(this.editorService.onDidActiveEditorChange(() => {
-			this.setOpenedFromBookContextKeyIfDifferent();
-		}));
 	}
 
 	ngOnDestroy() {
@@ -445,10 +441,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 		if (this.contextKeyService.getContextKeyValue('bookOpened') && this._navProvider) {
 			this._navProvider.getNavigation(this._notebookParams.notebookUri).then(result => {
-				if (result) {
-					this._openedFromBook.set(result.hasNavigation);
-				} else {
-					this._openedFromBook.set(false);
+				if (result && result.hasNavigation) {
+					this.commandService.executeCommand('notebook.command.revealInBooksViewlet', this._notebookParams.notebookUri, false);
 				}
 				this.navigationResult = result;
 				this.addButton(localize('previousButtonLabel', "< Previous"),
@@ -459,8 +453,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			}, err => {
 				this.logService.info(err);
 			});
-		} else {
-			this._openedFromBook.set(false);
 		}
 	}
 
@@ -531,17 +523,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private setContextKeyServiceWithProviderId(providerId: string) {
 		let provider = new RawContextKey<string>('providerId', providerId);
 		provider.bindTo(this.contextKeyService);
-	}
-
-	// Only set the opened from book context key if its value changes on active editor change
-	private setOpenedFromBookContextKeyIfDifferent() {
-		if (this.navigationResult && this._openedFromBook.get() !== this.navigationResult.hasNavigation) {
-			this._openedFromBook.set(this.navigationResult.hasNavigation);
-		}
-		// If no navigation result exists, ensure we set the key to false
-		else if (!this.navigationResult && this._openedFromBook.get()) {
-			this._openedFromBook.set(false);
-		}
 	}
 
 	public get notebookParams(): INotebookParams {
