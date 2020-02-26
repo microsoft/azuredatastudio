@@ -6,10 +6,12 @@
 import * as azdata from 'azdata';
 
 import { ApiWrapper } from '../common/apiWrapper';
+import * as utils from '../common/utils';
 import { Config } from '../configurations/config';
 import { QueryRunner } from '../common/queryRunner';
 import { RegisteredModel } from './interfaces';
 import { ModelImporter } from './modelImporter';
+import * as constants from '../common/constants';
 
 /**
  * Service to registered models
@@ -33,20 +35,57 @@ export class RegisteredModelService {
 			let result = await this.runRegisteredModelsListQuery(connection);
 			if (result && result.rows && result.rows.length > 0) {
 				result.rows.forEach(row => {
-					list.push({
-						id: +row[0].displayValue,
-						name: row[1].displayValue
-					});
+					list.push(this.loadModelData(row));
 				});
 			}
 		}
 		return list;
 	}
 
-	public async registerLocalModel(filePath: string) {
+	private loadModelData(row: azdata.DbCellValue[]): RegisteredModel {
+		return {
+			id: +row[0].displayValue,
+			artifactName: row[1].displayValue,
+			title: row[2].displayValue,
+			description: row[3].displayValue,
+			version: row[4].displayValue,
+			created: row[5].displayValue
+		};
+	}
+
+	public async updateModel(model: RegisteredModel): Promise<RegisteredModel | undefined> {
+		let connection = await this.getCurrentConnection();
+		let updatedModel: RegisteredModel | undefined = undefined;
+		if (connection) {
+			let result = await this.runUpdateModelQuery(connection, model);
+			if (result && result.rows && result.rows.length > 0) {
+				const row = result.rows[0];
+				updatedModel = this.loadModelData(row);
+			}
+		}
+		return updatedModel;
+	}
+
+	public async registerLocalModel(filePath: string, details: RegisteredModel | undefined) {
 		let connection = await this.getCurrentConnection();
 		if (connection) {
+			let currentModels = await this.getRegisteredModels();
 			await this._modelImporter.registerModel(connection, filePath);
+			let updatedModels = await this.getRegisteredModels();
+			if (details && updatedModels.length >= currentModels.length + 1) {
+				updatedModels.sort((a, b) => a.id && b.id ? a.id - b.id : 0);
+				const addedModel = updatedModels[updatedModels.length - 1];
+				addedModel.title = details.title;
+				addedModel.description = details.description;
+				addedModel.version = details.version;
+				const updatedModel = await this.updateModel(addedModel);
+				if (!updatedModel) {
+					throw Error(constants.updateModelFailedError);
+				}
+
+			} else {
+				throw Error(constants.importModelFailedError);
+			}
 		}
 	}
 
@@ -56,22 +95,73 @@ export class RegisteredModelService {
 
 	private async runRegisteredModelsListQuery(connection: azdata.connection.ConnectionProfile): Promise<azdata.SimpleExecuteResult | undefined> {
 		try {
-			return await this._queryRunner.runQuery(connection, this.registeredModelsQuery(this._config.registeredModelDatabaseName, this._config.registeredModelTableName));
+			return await this._queryRunner.runQuery(connection, this.registeredModelsQuery(connection.databaseName, this._config.registeredModelDatabaseName, this._config.registeredModelTableName));
 		} catch {
 			return undefined;
 		}
 	}
 
-	private registeredModelsQuery(databaseName: string, tableName: string) {
+	private async runUpdateModelQuery(connection: azdata.connection.ConnectionProfile, model: RegisteredModel): Promise<azdata.SimpleExecuteResult | undefined> {
+		try {
+			return await this._queryRunner.runQuery(connection, this.getUpdateModelScript(connection.databaseName, this._config.registeredModelDatabaseName, this._config.registeredModelTableName, model));
+		} catch {
+			return undefined;
+		}
+	}
+
+	private registeredModelsQuery(currentDatabaseName: string, databaseName: string, tableName: string): string {
+		if (!currentDatabaseName) {
+			currentDatabaseName = 'master';
+		}
 		return `
-		IF (EXISTS (SELECT name
-			FROM master.dbo.sysdatabases
-			WHERE ('[' + name + ']' = '${databaseName}'
-			OR name = '${databaseName}')))
+		${this.configureTable(databaseName, tableName)}
+		USE ${currentDatabaseName}
+		SELECT artifact_id, artifact_name, name, description, version, created from ${databaseName}.dbo.${tableName}
+		WHERE artifact_name not like 'MLmodel' and artifact_name not like 'conda.yaml'
+		Order by artifact_id
+		`;
+	}
+
+	private configureTable(databaseName: string, tableName: string): string {
+		return `
+		USE ${databaseName}
+		IF EXISTS
+			(  SELECT [name]
+				FROM sys.tables
+				WHERE [name] = '${tableName}'
+			)
 		BEGIN
-			SELECT artifact_id, artifact_name, group_path, artifact_initial_size from ${databaseName}.${tableName}
-			WHERE artifact_name like '%.onnx'
+			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('${tableName}') AND NAME='name')
+				ALTER TABLE [dbo].[${tableName}] ADD [name] [varchar](256) NULL
+			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[${tableName}]') AND NAME='version')
+				ALTER TABLE [dbo].[${tableName}] ADD [version] [varchar](256) NULL
+			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[${tableName}]') AND NAME='created')
+			BEGIN
+				ALTER TABLE [dbo].[${tableName}] ADD [created] [datetime] NULL
+				ALTER TABLE [dbo].[${tableName}] ADD CONSTRAINT CONSTRAINT_NAME DEFAULT GETDATE() FOR created
+			END
+			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[${tableName}]') AND NAME='description')
+				ALTER TABLE [dbo].[${tableName}] ADD [description] [varchar](256) NULL
 		END
+		`;
+	}
+
+	private getUpdateModelScript(currentDatabaseName: string, databaseName: string, tableName: string, model: RegisteredModel): string {
+		if (!currentDatabaseName) {
+			currentDatabaseName = 'master';
+		}
+		return `
+		USE ${databaseName}
+		UPDATE ${tableName}
+			SET
+			name = '${utils.doubleEscapeSingleQuotes(model.title || '')}',
+			version = '${utils.doubleEscapeSingleQuotes(model.version || '')}',
+			description = '${utils.doubleEscapeSingleQuotes(model.description || '')}'
+			WHERE artifact_id = ${model.id};
+
+		USE ${currentDatabaseName}
+		SELECT artifact_id, artifact_name, name, description, version, created from ${databaseName}.dbo.${tableName}
+		WHERE artifact_id = ${model.id};
 		`;
 	}
 }

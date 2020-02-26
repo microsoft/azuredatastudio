@@ -8,16 +8,16 @@ import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 import * as constants from '../../common/constants';
 import { IDataComponent } from '../interfaces';
+import { RegisteredModel } from '../../modelManagement/interfaces';
 
 /**
  * View to pick local models file
  */
-export class LocalModelsComponent extends ModelViewBase implements IDataComponent<string> {
+export class ModelDetailsComponent extends ModelViewBase implements IDataComponent<RegisteredModel> {
 
 	private _form: azdata.FormContainer | undefined;
-	private _flex: azdata.FlexContainer | undefined;
-	private _localPath: azdata.InputBoxComponent | undefined;
-	private _localBrowse: azdata.ButtonComponent | undefined;
+	private _nameComponent: azdata.InputBoxComponent | undefined;
+	private _descriptionComponent: azdata.InputBoxComponent | undefined;
 
 	/**
 	 * Creates new view
@@ -31,63 +31,61 @@ export class LocalModelsComponent extends ModelViewBase implements IDataComponen
 	 * @param modelBuilder Register the components
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
-		this._localPath = modelBuilder.inputBox().withProperties({
+		this._nameComponent = modelBuilder.inputBox().withProperties({
 			value: '',
 			width: this.componentMaxLength - this.browseButtonMaxLength - this.spaceBetweenComponentsLength
 		}).component();
-		this._localBrowse = modelBuilder.button().withProperties({
-			label: constants.browseModels,
-			width: this.browseButtonMaxLength,
-			CSSStyles: {
-				'text-align': 'end'
-			}
+		this._descriptionComponent = modelBuilder.inputBox().withProperties({
+			value: '',
+			multiline: true,
+			width: this.componentMaxLength - this.browseButtonMaxLength - this.spaceBetweenComponentsLength,
+			hight: '50px'
 		}).component();
-		this._localBrowse.onDidClick(async () => {
-			const filePath = await this.getLocalFilePath();
-			if (this._localPath) {
-				this._localPath.value = filePath;
-			}
-		});
-
-		this._flex = modelBuilder.flexContainer()
-			.withLayout({
-				flexFlow: 'row',
-				justifyContent: 'space-between',
-				width: this.componentMaxLength
-			}).withItems([
-				this._localPath, this._localBrowse]
-			).component();
 
 		this._form = modelBuilder.formContainer().withFormItems([{
-			title: '',
-			component: this._flex
+			title: constants.modelName,
+			component: this._nameComponent
+		}, {
+			title: constants.modelDescription,
+			component: this._descriptionComponent
 		}]).component();
 		return this._form;
 	}
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
-		if (this._flex) {
-			formBuilder.addFormItem({
-				title: '',
-				component: this._flex
-			});
+		if (this._nameComponent && this._descriptionComponent) {
+			formBuilder.addFormItems([{
+				title: constants.modelName,
+				component: this._nameComponent
+			}, {
+				title: constants.modelDescription,
+				component: this._descriptionComponent
+			}]);
 		}
 	}
 
 	public removeComponents(formBuilder: azdata.FormBuilder) {
-		if (this._flex) {
+		if (this._nameComponent && this._descriptionComponent) {
 			formBuilder.removeFormItem({
-				title: '',
-				component: this._flex
+				title: constants.modelName,
+				component: this._nameComponent
+			});
+			formBuilder.removeFormItem({
+				title: constants.modelDescription,
+				component: this._descriptionComponent
 			});
 		}
 	}
 
+
 	/**
 	 * Returns selected data
 	 */
-	public get data(): string {
-		return this._localPath?.value || '';
+	public get data(): RegisteredModel {
+		return {
+			title: this._nameComponent?.value,
+			description: this._descriptionComponent?.value
+		};
 	}
 
 	/**
@@ -101,12 +99,5 @@ export class LocalModelsComponent extends ModelViewBase implements IDataComponen
 	 * Refreshes the view
 	 */
 	public async refresh(): Promise<void> {
-	}
-
-	/**
-	 * Returns the page title
-	 */
-	public get title(): string {
-		return constants.localModelsTitle;
 	}
 }

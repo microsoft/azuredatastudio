@@ -76,7 +76,7 @@ describe('Register Model Wizard', () => {
 		let localModels: RegisteredModel[] = [
 			{
 				id: 1,
-				name: 'model'
+				artifactName: 'model'
 			}
 		];
 		view.on(ListModelsEventName, () => {

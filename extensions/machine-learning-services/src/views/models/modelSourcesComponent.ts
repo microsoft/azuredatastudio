@@ -7,18 +7,19 @@ import * as azdata from 'azdata';
 import { ModelViewBase, SourceModelSelectedEventName } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 import * as constants from '../../common/constants';
-import { IPageView, IDataComponent } from '../interfaces';
+import { IDataComponent } from '../interfaces';
 
 export enum ModelSourceType {
 	Local,
 	Azure
 }
 /**
- * View tp pick model source
+ * View to pick model source
  */
-export class ModelSourcesComponent extends ModelViewBase implements IPageView, IDataComponent<ModelSourceType> {
+export class ModelSourcesComponent extends ModelViewBase implements IDataComponent<ModelSourceType> {
 
 	private _form: azdata.FormContainer | undefined;
+	private _flexContainer: azdata.FlexContainer | undefined;
 	private _amlModel: azdata.RadioButtonComponent | undefined;
 	private _localModel: azdata.RadioButtonComponent | undefined;
 	private _isLocalModel: boolean = true;
@@ -58,7 +59,8 @@ export class ModelSourcesComponent extends ModelViewBase implements IPageView, I
 			this.sendRequest(SourceModelSelectedEventName);
 		});
 
-		let flex = modelBuilder.flexContainer()
+
+		this._flexContainer = modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'column',
 				justifyContent: 'space-between'
@@ -67,10 +69,23 @@ export class ModelSourcesComponent extends ModelViewBase implements IPageView, I
 			).component();
 
 		this._form = modelBuilder.formContainer().withFormItems([{
-			title: constants.modelSourcesTitle,
-			component: flex
+			title: '',
+			component: this._flexContainer
 		}]).component();
+
 		return this._form;
+	}
+
+	public addComponents(formBuilder: azdata.FormBuilder) {
+		if (this._flexContainer) {
+			formBuilder.addFormItem({ title: constants.modelSourcesTitle, component: this._flexContainer });
+		}
+	}
+
+	public removeComponents(formBuilder: azdata.FormBuilder) {
+		if (this._flexContainer) {
+			formBuilder.removeFormItem({ title: constants.modelSourcesTitle, component: this._flexContainer });
+		}
 	}
 
 	/**
@@ -91,12 +106,5 @@ export class ModelSourcesComponent extends ModelViewBase implements IPageView, I
 	 * Refreshes the view
 	 */
 	public async refresh(): Promise<void> {
-	}
-
-	/**
-	 * Returns page title
-	 */
-	public get title(): string {
-		return constants.modelSourcesTitle;
 	}
 }

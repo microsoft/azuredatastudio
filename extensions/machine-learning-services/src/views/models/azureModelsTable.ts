@@ -36,9 +36,22 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 			.withProperties<azdata.DeclarativeTableProperties>(
 				{
 					columns: [
-						{ // Id
-							displayName: constants.modeIld,
-							ariaLabel: constants.modeIld,
+						{ // Name
+							displayName: constants.modelName,
+							ariaLabel: constants.modelName,
+							valueType: azdata.DeclarativeDataType.string,
+							isReadOnly: true,
+							width: 150,
+							headerCssStyles: {
+								...constants.cssStyles.tableHeader
+							},
+							rowCssStyles: {
+								...constants.cssStyles.tableRow
+							},
+						},
+						{ // Created
+							displayName: constants.modelCreated,
+							ariaLabel: constants.modelCreated,
 							valueType: azdata.DeclarativeDataType.string,
 							isReadOnly: true,
 							width: 100,
@@ -49,12 +62,12 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 								...constants.cssStyles.tableRow
 							},
 						},
-						{ // Name
-							displayName: constants.modelName,
-							ariaLabel: constants.modelName,
+						{ // Version
+							displayName: constants.modelVersion,
+							ariaLabel: constants.modelVersion,
 							valueType: azdata.DeclarativeDataType.string,
 							isReadOnly: true,
-							width: 150,
+							width: 100,
 							headerCssStyles: {
 								...constants.cssStyles.tableHeader
 							},
@@ -116,7 +129,7 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 			selectModelButton.onDidClick(() => {
 				this._selectedModelId = model.id;
 			});
-			return [model.id, model.name, selectModelButton];
+			return [model.name, model.createdTime, model.frameworkVersion, selectModelButton];
 		}
 
 		return [];

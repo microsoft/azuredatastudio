@@ -15,11 +15,15 @@ import { AzureWorkspaceResource, AzureModelResource } from '../interfaces';
 export interface AzureResourceEventArgs extends AzureWorkspaceResource {
 }
 
-export interface RegisterAzureModelEventArgs extends AzureModelResource {
+export interface RegisterModelEventArgs extends AzureWorkspaceResource {
+	details?: RegisteredModel
+}
+
+export interface RegisterAzureModelEventArgs extends AzureModelResource, RegisterModelEventArgs {
 	model?: WorkspaceModel;
 }
 
-export interface RegisterLocalModelEventArgs extends AzureResourceEventArgs {
+export interface RegisterLocalModelEventArgs extends RegisterModelEventArgs {
 	filePath?: string;
 }
 
@@ -102,9 +106,10 @@ export abstract class ModelViewBase extends ViewBase {
 	 * registers local model
 	 * @param localFilePath local file path
 	 */
-	public async registerLocalModel(localFilePath: string | undefined): Promise<void> {
+	public async registerLocalModel(localFilePath: string | undefined, details: RegisteredModel | undefined): Promise<void> {
 		const args: RegisterLocalModelEventArgs = {
-			filePath: localFilePath
+			filePath: localFilePath,
+			details: details
 		};
 		return await this.sendDataRequest(RegisterLocalModelEventName, args);
 	}
@@ -113,7 +118,10 @@ export abstract class ModelViewBase extends ViewBase {
 	 * registers azure model
 	 * @param args azure resource
 	 */
-	public async registerAzureModel(args: RegisterAzureModelEventArgs | undefined): Promise<void> {
+	public async registerAzureModel(resource: AzureModelResource | undefined, details: RegisteredModel | undefined): Promise<void> {
+		const args: RegisterAzureModelEventArgs = Object.assign({}, resource, {
+			details: details
+		});
 		return await this.sendDataRequest(RegisterAzureModelEventName, args);
 	}
 

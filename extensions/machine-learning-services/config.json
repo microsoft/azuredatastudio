@@ -2,6 +2,8 @@
 	"requiredPythonPackages": [
 		{ "name": "pymssql", "version": "2.1.4" },
 		{ "name": "sqlmlutils", "version": ""}
+		{ "name": "onnx", "version": ""}
+		{ "name": "mlflow", "version": ""}
 	],
 
 	"requiredRPackages": [
@@ -12,7 +14,7 @@
 	"rPackagesRepository": "https://cran.r-project.org",
 
 	"registeredModelsDatabaseName": "MlFlowDB",
-	"registeredModelsTableName": "dbo.artifacts",
+	"registeredModelsTableName": "artifacts",
 	"amlModelManagementUrl": "modelmanagement.azureml.net",
 	"amlExperienceUrl": "experiments.azureml.net",
 	"amlApiVersion": "2018-11-19"

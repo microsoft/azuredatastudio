@@ -101,3 +101,12 @@ export function sortPackageVersions(versions: string[], ascending: boolean = tru
 export function isWindows(): boolean {
 	return process.platform === 'win32';
 }
+
+/**
+ * Escapes all single-quotes (') by prefixing them with another single quote ('')
+ * ' => ''
+ * @param value The string to escape
+ */
+export function doubleEscapeSingleQuotes(value: string): string {
+	return value.replace(/'/g, '\'\'');
+}
