@@ -109,7 +109,7 @@ export class CreateInsightAction extends Action {
 export class ConfigureChartAction extends Action {
 	public static ID = 'chartview.configureChart';
 	public static LABEL = localize('configureChartLabel', "Configure Chart");
-	public static ICON = 'settings';
+	public static ICON = 'filterLabel';
 
 	constructor() {
 		super(ConfigureChartAction.ID, ConfigureChartAction.LABEL, ConfigureChartAction.ICON);
