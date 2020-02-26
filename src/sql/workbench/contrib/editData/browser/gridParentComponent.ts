@@ -499,16 +499,13 @@ export abstract class GridParentComponent extends Disposable {
 	protected abstract tryHandleKeyEvent(e: StandardKeyboardEvent): boolean;
 
 	resizeGrids(): void {
-		const self = this;
 		setTimeout(() => {
-			self.onResize();
-		}, 100);
+			this.onResize();
+		});
 	}
 
 	protected onResize() {
-		if (this.table) {
-			this.table.resizeCanvas();
-		}
+		this.table?.resizeCanvas();
 	}
 
 	/**

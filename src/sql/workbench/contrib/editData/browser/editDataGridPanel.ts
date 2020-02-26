@@ -442,18 +442,18 @@ export class EditDataGridPanel extends GridParentComponent {
 				}
 
 				if (this.firstRender) {
-					let self = this;
-					let setActive = function () {
-						if (self.firstRender && self.table) {
-							self.table.setActive();
-							self.firstRender = false;
-						}
-					};
-					setTimeout(() => setActive());
+					setTimeout(() => this.setActive());
 				}
 				resolve();
 			}, this.refreshGridTimeoutInMs);
 		});
+	}
+
+	private setActive() {
+		if (this.firstRender && this.table) {
+			this.table.setActive();
+			this.firstRender = false;
+		}
 	}
 
 	protected detectChange(): void {
