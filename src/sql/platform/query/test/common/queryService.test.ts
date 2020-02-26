@@ -13,15 +13,16 @@ import { IConnection, ConnectionState } from 'sql/platform/connection/common/con
 
 suite('Query Service', () => {
 
-	const basicConnection: IConnection = {
-		connect: () => Promise.resolve({ failed: false }),
-		onDidConnect: Promise.resolve({ failed: false }),
-		onDidStateChange: Event.None,
-		provider: TestQueryProvider.id,
-		state: ConnectionState.CONNECTED
-	};
-
 	test('does handle basic query', async () => {
+
+		const basicConnection: IConnection = {
+			connect: () => Promise.resolve({ failed: false }),
+			onDidConnect: Promise.resolve({ failed: false }),
+			onDidStateChange: Event.None,
+			provider: TestQueryProvider.ID,
+			state: ConnectionState.CONNECTED
+		};
+
 		const [queryService, connectionService, provider] = createService();
 		const connectionId = 'connectionId';
 		sinon.stub(connectionService, 'getIdForConnection', () => connectionId);
@@ -60,6 +61,28 @@ suite('Query Service', () => {
 		assert(resultSet.completed === resultSetNotification.completed);
 		assert.deepEqual(resultSet.columns, resultSetNotification.columns);
 		assert(resultSet.rowCount === resultSetNotification.rowCount);
+
+		const resultSetUpdated = await new Promise<IResultSet>(r => {
+			Event.once(query.onResultSetUpdated)(e => r(e));
+			provider.onResultSetUpdatedEmitter.fire({ connectionId, ...resultSetNotification, completed: true, rowCount: 200 });
+		});
+
+		assert(resultSetUpdated.completed);
+		assert.deepEqual(resultSetUpdated.columns, resultSetNotification.columns);
+		assert(resultSetUpdated.rowCount === 200);
+
+		await new Promise<void>(r => {
+			Event.once(query.onQueryComplete)(e => r(e));
+			provider.onQueryCompleteEmitter.fire({ connectionId });
+		});
+
+		assert(query.state === QueryState.NOT_EXECUTING);
+
+		assert.deepEqual(query.messages, [messageNotification]);
+		assert(query.resultSets.length === 1);
+		assert.deepEqual(query.resultSets[0].columns, resultSetNotification.columns);
+		assert(query.resultSets[0].rowCount === 200);
+		assert(query.resultSets[0].completed);
 	});
 });
 
@@ -72,8 +95,8 @@ function createService(): [QueryService, TestConnectionService, TestQueryProvide
 }
 
 class TestQueryProvider implements IQueryProvider {
-	static readonly id = 'testqueryprovider';
-	readonly id = TestQueryProvider.id;
+	public static readonly ID = 'testqueryprovider';
+	public get id() { return TestQueryProvider.ID; }
 
 	readonly onMessageEmitter = new Emitter<IQueryProviderEvent & { messages: IResultMessage | ReadonlyArray<IResultMessage> }>();
 	readonly onMessage = this.onMessageEmitter.event;

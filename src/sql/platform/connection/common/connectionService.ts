@@ -114,8 +114,8 @@ class Connection extends Disposable implements IConnection {
 
 	private _state: ConnectionState = ConnectionState.DISCONNECTED;
 
-	public get onDidConnect(): Promise<IConnectionCompleteEvent> {
-		return this._lazyConnect!.promise;
+	public get onDidConnect(): Promise<IConnectionCompleteEvent> | undefined {
+		return this._lazyConnect?.promise;
 	}
 
 	public get provider(): string { return this.profile.provider; }

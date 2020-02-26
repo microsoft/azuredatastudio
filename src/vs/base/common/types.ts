@@ -16,7 +16,7 @@ const _typeof = {
 /**
  * @returns whether the provided parameter is a JavaScript Array or not.
  */
-export function isArray(array: any): array is any[] | ReadonlyArray<any> {
+export function isArray(array: any): array is any[] {
 	if (Array.isArray) {
 		return Array.isArray(array);
 	}

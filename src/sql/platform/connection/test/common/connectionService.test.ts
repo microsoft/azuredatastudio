@@ -122,7 +122,7 @@ suite('Connection Service', () => {
 		assert(connectStub.calledOnce);
 	});
 
-	test('does throw if you connect an already connecting connection', async () => {
+	test('does return if you connect an already connecting connection', async () => {
 		const [connectionService, provider] = createService();
 		const connectStub = sinon.stub(provider, 'connect', (connectionUri: string, options: { [name: string]: any; }) => {
 			setImmediate(() => provider.onDidConnectionCompleteEmitter.fire({ connectionUri }));
@@ -132,16 +132,18 @@ suite('Connection Service', () => {
 		const connection = connectionService.createOrGetConnection('someuri', { provider: TestConnectionProvider.ID, options });
 		assert(connection.state === ConnectionState.DISCONNECTED);
 		const original = connection.connect();
-		assert.rejects(() => connection.connect());
+		const second = await connection.connect();
 		const result = await original;
 
+		assert.deepEqual(result, second);
+
 		assert(!result.failed);
 		assert(isUndefined(result.errorMessage));
 		assert(connection.state === ConnectionState.CONNECTED);
 		assert(connectStub.calledOnce);
 	});
 
-	test('does throw if you connect an already connected connection', async () => {
+	test('does return if you connect an already connected connection', async () => {
 		const [connectionService, provider] = createService();
 		const connectStub = sinon.stub(provider, 'connect', (connectionUri: string, options: { [name: string]: any; }) => {
 			setImmediate(() => provider.onDidConnectionCompleteEmitter.fire({ connectionUri }));
@@ -155,25 +157,10 @@ suite('Connection Service', () => {
 		assert(isUndefined(result.errorMessage));
 		assert(connection.state === ConnectionState.CONNECTED);
 
-		assert.rejects(() => connection.connect());
+		const second = await connection.connect();
 
-		assert(connectStub.calledOnce);
-	});
+		assert.deepEqual(result, second);
 
-	test('does throw onDidConnect if not currently connecting', async () => {
-		const [connectionService, provider] = createService();
-		const connectStub = sinon.stub(provider, 'connect', (connectionUri: string, options: { [name: string]: any; }) => {
-			setImmediate(() => provider.onDidConnectionCompleteEmitter.fire({ connectionUri }));
-			return Promise.resolve(true);
-		});
-
-		const connection = connectionService.createOrGetConnection('someuri', { provider: TestConnectionProvider.ID, options });
-		assert(connection.state === ConnectionState.DISCONNECTED);
-		const result = await connection.connect();
-
-		assert.rejects(() => connection.onDidConnect);
-		assert(!result.failed);
-		assert(isUndefined(result.errorMessage));
 		assert(connectStub.calledOnce);
 	});
 

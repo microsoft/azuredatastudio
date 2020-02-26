@@ -215,7 +215,9 @@ export abstract class QueryEditorInput extends EditorInput implements IDisposabl
 				if (this.query) {
 					this.query.onDidStateChange(e => {
 						this.state.executing = e === QueryState.EXECUTING;
-						this.state.resultsVisible = !this.state.resultsVisible && e === QueryState.EXECUTING;
+						if (!this.state.resultsVisible) {
+							this.state.resultsVisible = e === QueryState.EXECUTING;
+						}
 					});
 					this.results.setQuery(this.query);
 					await this.query.execute();

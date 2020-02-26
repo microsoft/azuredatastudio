@@ -17,9 +17,7 @@ import { append, $ } from 'vs/base/browser/dom';
 import { ISelectionData, QueryExecutionOptions } from 'azdata';
 import {
 	IConnectionManagementService,
-	ConnectionType,
 	RunQueryOnConnectionMode,
-	IConnectionCompletionOptions
 } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
@@ -28,7 +26,6 @@ import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platfor
 import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { Task } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
@@ -39,6 +36,10 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { ILogService } from 'vs/platform/log/common/log';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
+import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
+import { IConnectionService } from 'sql/platform/connection/common/connectionService';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -136,19 +137,16 @@ CommandsRegistry.registerCommand({
 	id: DE_NEW_QUERY_COMMAND_ID,
 	handler: async (accessor, args: TreeViewItemHandleArg) => {
 		if (args.$treeItem) {
-			const queryEditorService = accessor.get(IQueryEditorService);
-			const connectionService = accessor.get(IConnectionManagementService);
+			const connectionService = accessor.get(IConnectionService);
 			const capabilitiesService = accessor.get(ICapabilitiesService);
-			const owner = await queryEditorService.newSqlEditor();
-			// Connect our editor to the input connection
-			let options: IConnectionCompletionOptions = {
-				params: { connectionType: ConnectionType.editor, input: owner },
-				saveTheConnection: false,
-				showDashboard: false,
-				showConnectionDialogOnError: true,
-				showFirewallRuleOnError: true
-			};
-			return connectionService.connect(new ConnectionProfile(capabilitiesService, args.$treeItem.payload), owner.uri, options);
+			const editorService = accessor.get(IEditorService);
+			const instantiationService = accessor.get(IInstantiationService);
+			const options = new ConnectionProfile(capabilitiesService, args.$treeItem.payload).options;
+			const untitled = editorService.createInput({ forceUntitled: true }) as UntitledTextEditorInput;
+			const results = instantiationService.createInstance(QueryResultsInput, untitled.resource.toString(true));
+			const connection = connectionService.createOrGetConnection(untitled.resource.toString(true), { provider: args.$treeItem.providerHandle, options });
+			const input = instantiationService.createInstance(UntitledQueryEditorInput, '', untitled, results, connection);
+			return editorService.openEditor(input);
 		}
 		return true;
 	}

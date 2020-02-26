@@ -93,7 +93,7 @@ export class MainThreadQuery extends Disposable implements MainThreadQueryShape 
 		this._queryEvents.get(handle)?.onResultSetAvailable.fire({
 			connectionId: resultSetInfo.ownerUri,
 			id: resultSetInfo.resultSetSummary.id,
-			batchid: resultSetInfo.resultSetSummary.batchId,
+			batchId: resultSetInfo.resultSetSummary.batchId,
 			rowCount: resultSetInfo.resultSetSummary.rowCount,
 			columns: resultSetInfo.resultSetSummary.columnInfo.map(c => ({ title: c.columnName, type: c.isXml ? ColumnType.XML : c.isJson ? ColumnType.JSON : ColumnType.UNKNOWN })),
 			completed: resultSetInfo.resultSetSummary.complete
@@ -104,7 +104,7 @@ export class MainThreadQuery extends Disposable implements MainThreadQueryShape 
 		this._queryEvents.get(handle)?.onResultSetUpdated.fire({
 			connectionId: resultSetInfo.ownerUri,
 			id: resultSetInfo.resultSetSummary.id,
-			batchid: resultSetInfo.resultSetSummary.batchId,
+			batchId: resultSetInfo.resultSetSummary.batchId,
 			rowCount: resultSetInfo.resultSetSummary.rowCount,
 			columns: resultSetInfo.resultSetSummary.columnInfo.map(c => ({ title: c.columnName, type: c.isXml ? ColumnType.XML : c.isJson ? ColumnType.JSON : ColumnType.UNKNOWN })),
 			completed: resultSetInfo.resultSetSummary.complete

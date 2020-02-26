@@ -193,7 +193,7 @@ class Query extends Disposable implements IQuery {
 		if (isArray(e)) {
 			this._messages.push(...e);
 		} else {
-			this._messages.push(e);
+			this._messages.push(e as IResultMessage);
 		}
 		this._onMessage.fire(e);
 	}
@@ -230,6 +230,11 @@ class Query extends Disposable implements IQuery {
 		(resultSet as IResultSetInternal).rowCount = e.rowCount;
 		(resultSet as IResultSetInternal).completed = e.completed;
 		this._onResultSetUpdated.fire(resultSet);
+	}
+
+	public handleQueryComplete(): void {
+		this.setState(QueryState.NOT_EXECUTING);
+		this._onQueryComplete.fire();
 	}
 }
 
@@ -309,7 +314,7 @@ export class QueryService extends Disposable implements IQueryService {
 	// }
 
 	private onQueryComplete(e: IQueryProviderEvent): void {
-		throw new Error('Method not implemented.');
+		this.findQuery(e.connectionId).handleQueryComplete();
 	}
 
 	executeQuery(connection: IConnection, file: URI): Promise<void> {
