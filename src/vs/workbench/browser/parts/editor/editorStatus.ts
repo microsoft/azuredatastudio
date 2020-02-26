@@ -147,6 +147,7 @@ class StateChange {
 	encoding: boolean = false;
 	EOL: boolean = false;
 	tabFocusMode: boolean = false;
+	columnSelectionMode: boolean = false;
 	screenReaderMode: boolean = false;
 	metadata: boolean = false;
 
@@ -157,6 +158,7 @@ class StateChange {
 		this.encoding = this.encoding || other.encoding;
 		this.EOL = this.EOL || other.EOL;
 		this.tabFocusMode = this.tabFocusMode || other.tabFocusMode;
+		this.columnSelectionMode = this.columnSelectionMode || other.columnSelectionMode;
 		this.screenReaderMode = this.screenReaderMode || other.screenReaderMode;
 		this.metadata = this.metadata || other.metadata;
 	}
@@ -168,6 +170,7 @@ class StateChange {
 			|| this.encoding
 			|| this.EOL
 			|| this.tabFocusMode
+			|| this.columnSelectionMode
 			|| this.screenReaderMode
 			|| this.metadata;
 	}
@@ -180,6 +183,7 @@ type StateDelta = (
 	| { type: 'EOL'; EOL: string | undefined; }
 	| { type: 'indentation'; indentation: string | undefined; }
 	| { type: 'tabFocusMode'; tabFocusMode: boolean; }
+	| { type: 'columnSelectionMode'; columnSelectionMode: boolean; }
 	| { type: 'screenReaderMode'; screenReaderMode: boolean; }
 	| { type: 'metadata'; metadata: string | undefined; }
 );
@@ -203,6 +207,9 @@ class State {
 
 	private _tabFocusMode: boolean | undefined;
 	get tabFocusMode(): boolean | undefined { return this._tabFocusMode; }
+
+	private _columnSelectionMode: boolean | undefined;
+	get columnSelectionMode(): boolean | undefined { return this._columnSelectionMode; }
 
 	private _screenReaderMode: boolean | undefined;
 	get screenReaderMode(): boolean | undefined { return this._screenReaderMode; }
@@ -255,6 +262,13 @@ class State {
 			}
 		}
 
+		if (update.type === 'columnSelectionMode') {
+			if (this._columnSelectionMode !== update.columnSelectionMode) {
+				this._columnSelectionMode = update.columnSelectionMode;
+				change.columnSelectionMode = true;
+			}
+		}
+
 		if (update.type === 'screenReaderMode') {
 			if (this._screenReaderMode !== update.screenReaderMode) {
 				this._screenReaderMode = update.screenReaderMode;
@@ -282,6 +296,7 @@ const nlsEOLCRLF = nls.localize('endOfLineCarriageReturnLineFeed', "CRLF");
 
 export class EditorStatus extends Disposable implements IWorkbenchContribution {
 	private readonly tabFocusModeElement = this._register(new MutableDisposable<IStatusbarEntryAccessor>());
+	private readonly columnSelectionModeElement = this._register(new MutableDisposable<IStatusbarEntryAccessor>());
 	private readonly screenRedearModeElement = this._register(new MutableDisposable<IStatusbarEntryAccessor>());
 	private readonly indentationElement = this._register(new MutableDisposable<IStatusbarEntryAccessor>());
 	private readonly selectionElement = this._register(new MutableDisposable<IStatusbarEntryAccessor>());
@@ -399,6 +414,22 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 			}
 		} else {
 			this.tabFocusModeElement.clear();
+		}
+	}
+
+	private updateColumnSelectionModeElement(visible: boolean): void {
+		if (visible) {
+			if (!this.columnSelectionModeElement.value) {
+				this.columnSelectionModeElement.value = this.statusbarService.addEntry({
+					text: nls.localize('columnSelectionModeEnabled', "Column Selection"),
+					tooltip: nls.localize('disableColumnSelectionMode', "Disable Column Selection Mode"),
+					command: 'editor.action.toggleColumnSelection',
+					backgroundColor: themeColorFromId(STATUS_BAR_PROMINENT_ITEM_BACKGROUND),
+					color: themeColorFromId(STATUS_BAR_PROMINENT_ITEM_FOREGROUND)
+				}, 'status.editor.columnSelectionMode', nls.localize('status.editor.columnSelectionMode', "Column Selection Mode"), StatusbarAlignment.RIGHT, 100.8);
+			}
+		} else {
+			this.columnSelectionModeElement.clear();
 		}
 	}
 
@@ -544,6 +575,7 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 
 	private doRenderNow(changed: StateChange): void {
 		this.updateTabFocusModeElement(!!this.state.tabFocusMode);
+		this.updateColumnSelectionModeElement(!!this.state.columnSelectionMode);
 		this.updateScreenReaderModeElement(!!this.state.screenReaderMode);
 		this.updateIndentationElement(this.state.indentation);
 		this.updateSelectionElement(this.state.selectionStatus && !this.state.screenReaderMode ? this.state.selectionStatus : undefined);
@@ -583,6 +615,7 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 		const activeCodeEditor = activeControl ? withNullAsUndefined(getCodeEditor(activeControl.getControl())) : undefined;
 
 		// Update all states
+		this.onColumnSelectionModeChange(activeCodeEditor);
 		this.onScreenReaderModeChange(activeCodeEditor);
 		this.onSelectionChange(activeCodeEditor);
 		this.onModeChange(activeCodeEditor, activeInput);
@@ -600,6 +633,9 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 
 			// Hook Listener for Configuration changes
 			this.activeEditorListeners.add(activeCodeEditor.onDidChangeConfiguration((event: ConfigurationChangedEvent) => {
+				if (event.hasChanged(EditorOption.columnSelection)) {
+					this.onColumnSelectionModeChange(activeCodeEditor);
+				}
 				if (event.hasChanged(EditorOption.accessibilitySupport)) {
 					this.onScreenReaderModeChange(activeCodeEditor);
 				}
@@ -708,6 +744,16 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 		}
 
 		this.updateState(update);
+	}
+
+	private onColumnSelectionModeChange(editorWidget: ICodeEditor | undefined): void {
+		const info: StateDelta = { type: 'columnSelectionMode', columnSelectionMode: false };
+
+		if (editorWidget && editorWidget.getOption(EditorOption.columnSelection)) {
+			info.columnSelectionMode = true;
+		}
+
+		this.updateState(info);
 	}
 
 	private onScreenReaderModeChange(editorWidget: ICodeEditor | undefined): void {
