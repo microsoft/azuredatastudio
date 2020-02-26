@@ -72,7 +72,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	@ViewChildren(CodeCellComponent) private codeCells: QueryList<CodeCellComponent>;
 	@ViewChildren(TextCellComponent) private textCells: QueryList<ICellEditorProvider>;
 
-
 	private _model: NotebookModel;
 	protected _actionBar: Taskbar;
 	protected isLoading: boolean;

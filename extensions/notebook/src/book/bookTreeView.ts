@@ -128,8 +128,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	async revealActiveDocumentInViewlet(uri?: vscode.Uri, shouldReveal: boolean = true): Promise<void> {
 		let bookItem: BookTreeItem;
+		// If no uri is passed in, try to use the current active notebook editor
 		if (!uri) {
-			// Notebooks will be a NotebookEditor
 			let openDocument = azdata.nb.activeNotebookEditor;
 			if (openDocument) {
 				bookItem = this.currentBook.getNotebook(openDocument.document.uri.path);
@@ -138,6 +138,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			bookItem = this.currentBook.getNotebook(uri.path);
 		}
 		if (bookItem) {
+			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
 			if (shouldReveal || this._bookViewer.visible) {
 				await this._bookViewer.reveal(bookItem, { select: true, focus: true });
 			}

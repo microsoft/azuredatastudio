@@ -112,8 +112,6 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	const untitledBookTreeViewProvider = new BookTreeViewProvider([], extensionContext, true, READONLY_BOOKS_VIEWID);
 	await untitledBookTreeViewProvider.initialized;
 
-
-
 	return {
 		getJupyterController() {
 			return controller;
