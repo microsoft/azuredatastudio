@@ -93,6 +93,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				this.revealActiveDocumentInViewlet();
 			}
 		});
+		azdata.nb.onDidChangeActiveNotebookEditor(e => {
+			this.revealActiveDocumentInViewlet(e.document.uri, false);
+		});
 	}
 
 	async showPreviewFile(urlToOpen?: string): Promise<void> {
