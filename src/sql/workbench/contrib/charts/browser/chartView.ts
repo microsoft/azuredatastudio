@@ -20,7 +20,7 @@ import { attachSelectBoxStyler, attachInputBoxStyler } from 'vs/platform/theme/c
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { CreateInsightAction, CopyAction, SaveImageAction, IChartActionContext } from 'sql/workbench/contrib/charts/browser/actions';
+import { CreateInsightAction, CopyAction, SaveImageAction, IChartActionContext, ConfigureChartAction } from 'sql/workbench/contrib/charts/browser/actions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { IInsightOptions, ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
@@ -55,6 +55,7 @@ export class ChartView extends Disposable implements IPanelView {
 	private taskbar: Taskbar;
 
 	private _createInsightAction: CreateInsightAction;
+	private _configureChartAction: ConfigureChartAction;
 	private _copyAction: CopyAction;
 	private _saveAction: SaveImageAction;
 
@@ -97,6 +98,7 @@ export class ChartView extends Disposable implements IPanelView {
 		this.optionsControl.appendChild(this.typeControls);
 
 		this._createInsightAction = this._instantiationService.createInstance(CreateInsightAction);
+		this._configureChartAction = this._instantiationService.createInstance(ConfigureChartAction);
 		this._copyAction = this._instantiationService.createInstance(CopyAction);
 		this._saveAction = this._instantiationService.createInstance(SaveImageAction);
 
@@ -280,10 +282,11 @@ export class ChartView extends Disposable implements IPanelView {
 			this.taskbar.setContent([
 				{ action: this._createInsightAction },
 				{ action: this._copyAction },
-				{ action: this._saveAction }
+				{ action: this._saveAction },
+				{ action: this._configureChartAction }
 			]);
 		} else {
-			this.taskbar.setContent([{ action: this._createInsightAction }]);
+			this.taskbar.setContent([{ action: this._createInsightAction }, { action: this._configureChartAction }]);
 		}
 	}
 

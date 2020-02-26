@@ -9,6 +9,12 @@
 	background: url("Table.svg") center center no-repeat;
 }
 
+.vs .codicon.table,
+.vs-dark .codicon.table,
+.hc-black .codicon.table {
+	background: url("Table.svg") center center no-repeat;
+}
+
 .vs .icon.aggregatefunction,
 .vs-dark .icon.aggregatefunction,
 .hc-black .icon.aggregatefunction {

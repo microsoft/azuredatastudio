@@ -106,6 +106,20 @@ export class CreateInsightAction extends Action {
 	}
 }
 
+export class ConfigureChartAction extends Action {
+	public static ID = 'chartview.configureChart';
+	public static LABEL = localize('configureChartLabel', "Configure Chart");
+	public static ICON = 'settings';
+
+	constructor() {
+		super(ConfigureChartAction.ID, ConfigureChartAction.LABEL, ConfigureChartAction.ICON);
+	}
+
+	public run(context: IChartActionContext): Promise<boolean> {
+		return Promise.resolve(true);
+	}
+}
+
 export class CopyAction extends Action {
 	public static ID = 'chartview.copy';
 	public static LABEL = localize('copyChartLabel', "Copy as image");
