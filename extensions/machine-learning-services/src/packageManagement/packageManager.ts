@@ -20,8 +20,6 @@ import { PackageConfigModel } from '../configurations/packageConfigModel';
 
 export class PackageManager {
 
-	private _pythonExecutable: string = '';
-	private _rExecutable: string = '';
 	private _sqlPythonPackagePackageManager: SqlPythonPackageManageProvider;
 	private _sqlRPackageManager: SqlRPackageManageProvider;
 	public dependenciesInstalled: boolean = false;
@@ -45,10 +43,15 @@ export class PackageManager {
 	 * Initializes the instance and resister SQL package manager with manage package dialog
 	 */
 	public init(): void {
-		this._pythonExecutable = this._config.pythonExecutable;
-		this._rExecutable = this._config.rExecutable;
 	}
 
+	private get pythonExecutable(): string {
+		return this._config.pythonExecutable;
+	}
+
+	private get _rExecutable(): string {
+		return this._config.rExecutable;
+	}
 	/**
 	 * Returns packageManageProviders
 	 */
@@ -149,7 +152,7 @@ export class PackageManager {
 		if (!this._config.pythonEnabled) {
 			return;
 		}
-		if (!this._pythonExecutable) {
+		if (!this.pythonExecutable) {
 			throw new Error(constants.pythonConfigError);
 		}
 		let installedPackages = await this.getInstalledPipPackages();
@@ -175,7 +178,7 @@ export class PackageManager {
 
 	private async getInstalledPipPackages(): Promise<nbExtensionApis.IPackageDetails[]> {
 		try {
-			let cmd = `"${this._pythonExecutable}" -m pip list --format=json`;
+			let cmd = `"${this.pythonExecutable}" -m pip list --format=json`;
 			let packagesInfo = await this._processService.executeBufferedCommand(cmd, this._outputChannel);
 			let packagesResult: nbExtensionApis.IPackageDetails[] = [];
 			if (packagesInfo) {
@@ -194,7 +197,7 @@ export class PackageManager {
 	}
 
 	private async installPipPackage(requirementFilePath: string): Promise<string> {
-		let cmd = `"${this._pythonExecutable}" -m pip install -r "${requirementFilePath}"`;
+		let cmd = `"${this.pythonExecutable}" -m pip install -r "${requirementFilePath}"`;
 		return await this._processService.executeBufferedCommand(cmd, this._outputChannel);
 	}
 
