@@ -17,7 +17,6 @@ import { CellType } from './contracts/content';
 import { getErrorMessage, isEditorTitleFree } from './common/utils';
 import { NotebookUriHandler } from './protocol/notebookUriHandler';
 import { BookTreeViewProvider } from './book/bookTreeView';
-import { promises as fs } from 'fs';
 
 const localize = nls.loadMessageBundle();
 
@@ -127,7 +126,6 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(READONLY_BOOKS_VIEWID, untitledBookTreeViewProvider));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openCreatedBook', async (bookPath: string) => {
-		await updateBookMetadata(bookPath);
 		bookTreeViewProvider.openBook(bookPath, undefined);
 	}));
 
@@ -246,90 +244,6 @@ async function addCell(cellType: azdata.nb.CellType): Promise<void> {
 		}
 	} catch (err) {
 		vscode.window.showErrorMessage(getErrorMessage(err));
-	}
-}
-
-async function updateBookMetadata(bookPath: string): Promise<void> {
-	try {
-		// get the toc file and update the contents
-		let tocFilePath: string = path.join(bookPath, '_data', 'toc.yml');
-		let result: string;
-		await fs.readFile(tocFilePath).then(data => {
-			result = data.toString();
-			let contentFolders: string[] = [];
-			// check if there any lines matching: - header: <headerValue>
-			let headers = result.match(/- header: [a-zA-Z0-9\\.\s-]+$/gm);
-			// check if there any lines matching: - url: <path to the ipynb or md file>
-			let urls = result.match(/- url: [a-zA-Z0-9\\.\s-\/]+$/gm);
-			// check the first url in the toc file that comes after all the comments.
-			let firstLevelUrls = result.match(/^(?:\s+$[\r\n]+)+(- url: [a-zA-Z0-9\\.\s-\/]+$[\r\n]+)/gm);
-			let title: string;
-			let replacedString: string;
-			if (firstLevelUrls || headers || urls) {
-				// there must only be one first level url
-				if (firstLevelUrls && firstLevelUrls.length === 1) {
-					firstLevelUrls.map(url => {
-						title = url.substring(url.lastIndexOf(path.sep) + 1).replace(/(\r\n|\n|\r)/gm, '');
-						// if there are sub folders inside content, just add this without sections
-						if (!headers) {
-							let markdownUrl = urls[urls.length - 1];
-							title = markdownUrl.substring(markdownUrl.lastIndexOf(path.sep) + 1).replace(/(\r\n|\n|\r)/gm, '');
-							replacedString = `\n- title: ${title}\n  url: /${title}\n  not_numbered: true\n  expand_sections: true\n  sections:\n` + url;
-							result = result.replace(markdownUrl, '');
-						} else {
-							replacedString = `\n- title: ${title}\n  url: /${title}\n  not_numbered: true\n`;
-						}
-						result = result.replace(url, replacedString);
-					});
-				}
-				if (headers) {
-					headers.map(header => {
-						title = header.substring(10).replace(/(\r\n|\n|\r)/gm, '');
-						// for the url you need to have home page on clicking on the header section
-						// check urls that are inside this folder and pick the first one as home
-						contentFolders.push(title.toLocaleLowerCase());
-						let filtered: string[] = urls.filter(x => x.indexOf(`${path.sep}${title.toLocaleLowerCase()}${path.sep}`) > -1);
-						// toc has markdown files listed at the bottom.
-						let index: number = urls.findIndex(x => x === filtered[filtered.length - 1]);
-						let urlValue: string = urls[index].substring(urls[index].lastIndexOf(path.sep) + 1).replace(/(\r\n|\n|\r)/gm, '');
-						replacedString = `- title: ${title}\n  url: /${title}/${urlValue}\n  not_numbered: true\n  expand_sections: true\n  sections:\n`;
-						result = result.replace(header, replacedString);
-						result = result.replace(urls[index], '');
-						urls.splice(index, 1);
-					});
-				}
-				if (urls) {
-					urls.map(url => {
-						title = url.substring(url.lastIndexOf(path.sep) + 1).replace(/(\r\n|\n|\r)/gm, '');
-						let urlValue: string = title;
-						// if there are folders inside content, the url will be that foldrname/filename
-						if (contentFolders.length > 0) {
-							// get each folder from the path bread crumb and check if the last folder is inside content
-							let folders: string[] = url.substring(8).split(path.sep);
-							let parentFolder: number = contentFolders.findIndex(x => x === folders[folders.length - 2]);
-							if (parentFolder > -1) {
-								urlValue = `${contentFolders[parentFolder]}/${title}`;
-							}
-						}
-						replacedString = `  - title: ${title}\n    url: /${urlValue}\n`;
-						result = result.replace(url, replacedString);
-					});
-				}
-				fs.writeFile(tocFilePath, result);
-			} else {
-				new ApiWrapper().showErrorMessage('File Name contains unsupported-characters (ex: underscores or spaces) by Jupyter Book');
-			}
-		});
-		// update the book title
-		let configFilePath: string = path.join(bookPath, '_config.yml');
-		await fs.readFile(configFilePath).then(data => {
-			let titleLine = data.toString().match(/title: [a-zA-Z0-9\\.\s-\/]+$/gm);
-			let title: string = `title: ${path.basename(bookPath)}`;
-			result = data.toString().replace(titleLine[0], title);
-			fs.writeFile(configFilePath, result);
-		});
-	} catch (error) {
-		new ApiWrapper().showErrorMessage(error);
 	}
 }
 
