@@ -26,6 +26,8 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
+import { Registry } from 'vs/platform/registry/common/platform';
+import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/browser/insightRegistry';
 
 //Map used to store names and alternative names for chart types.
 //This is mainly used for comparison when options are parsed into the constructor.
@@ -41,6 +43,8 @@ const altNameHash: { [oldName: string]: string } = {
 	'table': localize('tableAltName', "Table"),
 	'doughnut': localize('doughnutAltName', "Doughnut")
 };
+
+const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
 export class ConfigureChartDialog extends Modal {
 	private optionsControl: HTMLElement;
@@ -69,6 +73,47 @@ export class ConfigureChartDialog extends Modal {
 	) {
 		super(title, name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, undefined);
 		this.options = this._chart.options;
+
+		let self = this;
+		this.options = new Proxy(this.options, {
+			get: function (target, key) {
+				return target[key];
+			},
+			set: function (target, key, value) {
+				let change = false;
+				if (target[key] !== value) {
+					change = true;
+				}
+
+				target[key] = value;
+				// mirror the change in our state
+				if (self.state) {
+					self.state.options[key] = value;
+				}
+
+				if (change) {
+					if (key === 'type') {
+						self.buildOptions();
+					} else {
+						self.verifyOptions();
+					}
+				}
+
+				return true;
+			}
+		}) as IInsightOptions;
+
+		this.optionsControl = DOM.$('div.options-container');
+		const generalControls = DOM.$('div.general-controls');
+		this.typeControls = DOM.$('div.type-controls');
+		this.optionsControl.appendChild(generalControls);
+		this.optionsControl.appendChild(this.typeControls);
+
+		ChartOptions.general[0].options = insightRegistry.getAllIds();
+		ChartOptions.general.map(o => {
+			this.createOption(o, generalControls);
+		});
+		this.buildOptions();
 	}
 
 	public open() {
@@ -89,15 +134,8 @@ export class ConfigureChartDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
-		this.optionsControl = DOM.$('div.options-container');
-		const generalControls = DOM.$('div.general-controls');
-		this.typeControls = DOM.$('div.type-controls');
-		this.optionsControl.appendChild(generalControls);
-		this.optionsControl.appendChild(this.typeControls);
-
 		container.appendChild(this.optionsControl);
-
-		this.buildOptions();
+		this.verifyOptions();
 	}
 
 	protected layout(height?: number): void {
