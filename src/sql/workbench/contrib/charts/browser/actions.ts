@@ -23,6 +23,8 @@ import { assign } from 'vs/base/common/objects';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
+import { ConfigureChartDialog } from 'sql/workbench/contrib/charts/browser/configureChartDialog';
 
 export interface IChartActionContext {
 	options: IInsightOptions;
@@ -111,11 +113,16 @@ export class ConfigureChartAction extends Action {
 	public static LABEL = localize('configureChartLabel', "Configure Chart");
 	public static ICON = 'filterLabel';
 
-	constructor() {
+	private readonly dialog: ConfigureChartDialog;
+
+	constructor(private _chart: ChartView,
+		@IInstantiationService instantiationService: IInstantiationService) {
 		super(ConfigureChartAction.ID, ConfigureChartAction.LABEL, ConfigureChartAction.ICON);
+		this.dialog = instantiationService.createInstance(ConfigureChartDialog, this._chart);
 	}
 
 	public run(context: IChartActionContext): Promise<boolean> {
+		this.dialog.showDialog();
 		return Promise.resolve(true);
 	}
 }
