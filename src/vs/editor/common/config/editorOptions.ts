@@ -2841,9 +2841,14 @@ export interface ISuggestOptions {
 	 */
 	showSnippets?: boolean;
 	/**
-	 * Controls the visibility of the status bar at the bottom of the suggest widget.
+	 * Status bar related settings.
 	 */
-	hideStatusBar?: boolean;
+	statusBar?: {
+		/**
+		 * Controls the visibility of the status bar at the bottom of the suggest widget.
+		 */
+		visible?: boolean;
+	}
 }
 
 export type InternalSuggestOptions = Readonly<Required<ISuggestOptions>>;
@@ -2885,7 +2890,9 @@ class EditorSuggest extends BaseEditorOption<EditorOption.suggest, InternalSugge
 			showFolders: true,
 			showTypeParameters: true,
 			showSnippets: true,
-			hideStatusBar: true
+			statusBar: {
+				visible: false
+			}
 		};
 		super(
 			EditorOption.suggest, 'suggest', defaults,
@@ -3071,10 +3078,10 @@ class EditorSuggest extends BaseEditorOption<EditorOption.suggest, InternalSugge
 					default: true,
 					markdownDescription: nls.localize('editor.suggest.showSnippets', "When enabled IntelliSense shows `snippet`-suggestions.")
 				},
-				'editor.suggest.hideStatusBar': {
+				'editor.suggest.statusBar.visible': {
 					type: 'boolean',
-					default: true,
-					markdownDescription: nls.localize('editor.suggest.hideStatusBar', "Controls the visibility of the status bar at the bottom of the suggest widget.")
+					default: false,
+					markdownDescription: nls.localize('editor.suggest.statusBar.visible', "Controls the visibility of the status bar at the bottom of the suggest widget.")
 				}
 			}
 		);
@@ -3119,7 +3126,9 @@ class EditorSuggest extends BaseEditorOption<EditorOption.suggest, InternalSugge
 			showFolders: EditorBooleanOption.boolean(input.showFolders, this.defaultValue.showFolders),
 			showTypeParameters: EditorBooleanOption.boolean(input.showTypeParameters, this.defaultValue.showTypeParameters),
 			showSnippets: EditorBooleanOption.boolean(input.showSnippets, this.defaultValue.showSnippets),
-			hideStatusBar: EditorBooleanOption.boolean(input.hideStatusBar, this.defaultValue.hideStatusBar),
+			statusBar: {
+				visible: EditorBooleanOption.boolean(input.statusBar?.visible, !!this.defaultValue.statusBar.visible)
+			}
 		};
 	}
 }
