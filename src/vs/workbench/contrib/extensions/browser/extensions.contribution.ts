@@ -87,7 +87,8 @@ Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegis
 		name: localize('extensions', "Extensions"),
 		ctorDescriptor: new SyncDescriptor(ExtensionsViewPaneContainer),
 		icon: 'codicon-extensions',
-		order: 14 // {{SQL CARBON EDIT}}
+		order: 14, // {{SQL CARBON EDIT}}
+		rejectAddedViews: true,
 	}, ViewContainerLocation.Sidebar);
 
 
