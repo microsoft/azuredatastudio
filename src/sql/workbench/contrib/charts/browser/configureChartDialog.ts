@@ -50,7 +50,7 @@ export class ConfigureChartDialog extends Modal {
 	private optionsControl: HTMLElement;
 	private typeControls: HTMLElement;
 
-	private options: IInsightOptions = {
+	private _options: IInsightOptions = {
 		type: ChartType.Bar
 	};
 
@@ -72,10 +72,10 @@ export class ConfigureChartDialog extends Modal {
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(title, name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, undefined);
-		this.options = this._chart.options;
+		this._options = this._chart.options;
 
 		let self = this;
-		this.options = new Proxy(this.options, {
+		this._options = new Proxy(this._options, {
 			get: function (target, key) {
 				return target[key];
 			},
@@ -104,6 +104,8 @@ export class ConfigureChartDialog extends Modal {
 		}) as IInsightOptions;
 
 		this.optionsControl = DOM.$('div.options-container');
+		this.optionsControl.style.padding = '20px';
+
 		const generalControls = DOM.$('div.general-controls');
 		this.typeControls = DOM.$('div.type-controls');
 		this.optionsControl.appendChild(generalControls);
@@ -114,6 +116,10 @@ export class ConfigureChartDialog extends Modal {
 			this.createOption(o, generalControls);
 		});
 		this.buildOptions();
+	}
+
+	public get options(): IInsightOptions {
+		return this._options;
 	}
 
 	public open() {
@@ -145,7 +151,7 @@ export class ConfigureChartDialog extends Modal {
 	}
 
 	private handleApply(): void {
-		this._chart.options = this.options;
+		this._chart.options = this._options;
 	}
 
 	public cancel() {
@@ -170,7 +176,7 @@ export class ConfigureChartDialog extends Modal {
 		};
 		DOM.clearNode(this.typeControls);
 
-		ChartOptions[this.options.type].map(o => {
+		ChartOptions[this._options.type].map(o => {
 			this.createOption(o, this.typeControls);
 		});
 		this.verifyOptions();
@@ -192,8 +198,8 @@ export class ConfigureChartDialog extends Modal {
 					ariaLabel: option.label,
 					checked: value,
 					onChange: () => {
-						if (this.options[option.configEntry] !== checkbox.checked) {
-							this.options[option.configEntry] = checkbox.checked;
+						if (this._options[option.configEntry] !== checkbox.checked) {
+							this._options[option.configEntry] = checkbox.checked;
 						}
 					}
 				});
@@ -207,8 +213,8 @@ export class ConfigureChartDialog extends Modal {
 				dropdown.select(option.options.indexOf(value));
 				dropdown.render(optionInput);
 				dropdown.onDidSelect(e => {
-					if (this.options[option.configEntry] !== option.options[e.index]) {
-						this.options[option.configEntry] = option.options[e.index];
+					if (this._options[option.configEntry] !== option.options[e.index]) {
+						this._options[option.configEntry] = option.options[e.index];
 					}
 				});
 				setFunc = (val: string) => {
@@ -222,8 +228,8 @@ export class ConfigureChartDialog extends Modal {
 				let input = new InputBox(optionInput, this._contextViewService);
 				input.value = value || '';
 				input.onDidChange(e => {
-					if (this.options[option.configEntry] !== e) {
-						this.options[option.configEntry] = e;
+					if (this._options[option.configEntry] !== e) {
+						this._options[option.configEntry] = e;
 					}
 				});
 				setFunc = (val: string) => {
@@ -237,8 +243,8 @@ export class ConfigureChartDialog extends Modal {
 				let numberInput = new InputBox(optionInput, this._contextViewService, { type: 'number' });
 				numberInput.value = value || '';
 				numberInput.onDidChange(e => {
-					if (this.options[option.configEntry] !== Number(e)) {
-						this.options[option.configEntry] = Number(e);
+					if (this._options[option.configEntry] !== Number(e)) {
+						this._options[option.configEntry] = Number(e);
 					}
 				});
 				setFunc = (val: string) => {
@@ -252,8 +258,8 @@ export class ConfigureChartDialog extends Modal {
 				let dateInput = new InputBox(optionInput, this._contextViewService, { type: 'datetime-local' });
 				dateInput.value = value || '';
 				dateInput.onDidChange(e => {
-					if (this.options[option.configEntry] !== e) {
-						this.options[option.configEntry] = e;
+					if (this._options[option.configEntry] !== e) {
+						this._options[option.configEntry] = e;
 					}
 				});
 				setFunc = (val: string) => {
@@ -266,15 +272,15 @@ export class ConfigureChartDialog extends Modal {
 		}
 		this.optionMap[option.configEntry] = { element: optionContainer, set: setFunc };
 		container.appendChild(optionContainer);
-		this.options[option.configEntry] = value;
+		this._options[option.configEntry] = value;
 	}
 
 	private verifyOptions() {
 		for (let key in this.optionMap) {
 			if (this.optionMap.hasOwnProperty(key)) {
-				let option = find(ChartOptions[this.options.type], e => e.configEntry === key);
+				let option = find(ChartOptions[this._options.type], e => e.configEntry === key);
 				if (option && option.if) {
-					if (option.if(this.options)) {
+					if (option.if(this._options)) {
 						DOM.show(this.optionMap[key].element);
 					} else {
 						DOM.hide(this.optionMap[key].element);
@@ -294,7 +300,7 @@ export class ConfigureChartDialog extends Modal {
 		if (this.state.options) {
 			for (let key in this.state.options) {
 				if (this.state.options.hasOwnProperty(key) && this.optionMap[key]) {
-					this.options[key] = this.state.options[key];
+					this._options[key] = this.state.options[key];
 					this.optionMap[key].set(this.state.options[key]);
 				}
 			}
