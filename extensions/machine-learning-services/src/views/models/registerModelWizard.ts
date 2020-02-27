@@ -19,9 +19,6 @@ import { ModelDetailsPage } from './modelDetailsPage';
  */
 export class RegisterModelWizard extends ModelViewBase {
 
-	public modelResources: ModelSourcesComponent | undefined;
-	public localModelsComponent: LocalModelsComponent | undefined;
-	public azureModelsComponent: AzureModelsComponent | undefined;
 	public modelSourcePage: ModelSourcePage | undefined;
 	public modelDetailsPage: ModelDetailsPage | undefined;
 	public wizardView: WizardView | undefined;
@@ -64,6 +61,18 @@ export class RegisterModelWizard extends ModelViewBase {
 		wizard.open();
 	}
 
+	public get modelResources(): ModelSourcesComponent | undefined {
+		return this.modelSourcePage?.modelResources;
+	}
+
+	public get localModelsComponent(): LocalModelsComponent | undefined {
+		return this.modelSourcePage?.localModelsComponent;
+	}
+
+	public get azureModelsComponent(): AzureModelsComponent | undefined {
+		return this.modelSourcePage?.azureModelsComponent;
+	}
+
 	private async registerModel(): Promise<boolean> {
 		try {
 			if (this.modelResources && this.localModelsComponent && this.modelResources.data === ModelSourceType.Local) {
@@ -80,9 +89,6 @@ export class RegisterModelWizard extends ModelViewBase {
 	}
 
 	private loadPages(): void {
-		this.modelResources = this.modelSourcePage?.modelResources;
-		this.localModelsComponent = this.modelSourcePage?.localModelsComponent;
-		this.azureModelsComponent = this.modelSourcePage?.azureModelsComponent;
 	}
 
 	/**

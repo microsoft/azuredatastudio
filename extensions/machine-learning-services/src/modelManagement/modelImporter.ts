@@ -36,7 +36,7 @@ export class ModelImporter {
 			let server = connection.serverName;
 
 			const experimentId = `ads_ml_experiment_${UUID.generateUuid()}`;
-			const credential = connection.userName ? `${connection.userName}:${credentials[azdata.ConnectionOptionSpecialType.password]}` : '';
+			const credential = connection.userName ? `${connection.userName}:${credentials[azdata.ConnectionOptionSpecialType.password]}@` : '';
 			let scripts: string[] = [
 				'import mlflow.onnx',
 				'import onnx',
@@ -44,7 +44,7 @@ export class ModelImporter {
 				`onx = onnx.load("${modelFolderPath}")`,
 				'client = MlflowClient()',
 				`exp_name = "${experimentId}"`,
-				`db_uri_artifact = "mssql+pyodbc://${credential}@${server}/MlFlowDB?driver=ODBC+Driver+17+for+SQL+Server"`,
+				`db_uri_artifact = "mssql+pyodbc://${credential}${server}/MlFlowDB?driver=ODBC+Driver+17+for+SQL+Server&"`,
 				'client.create_experiment(exp_name, artifact_location=db_uri_artifact)',
 				'mlflow.set_experiment(exp_name)',
 				'mlflow.onnx.log_model(onx, "pipeline_vectorize")'
