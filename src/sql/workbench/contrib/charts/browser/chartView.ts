@@ -132,6 +132,7 @@ export class ChartView extends Disposable implements IPanelView {
 	}
 
 	public set options(options: IInsightOptions) {
+		this._options = options;
 		if (this.insight) {
 			this.insight.options = options;
 			this.updateActionbar();
