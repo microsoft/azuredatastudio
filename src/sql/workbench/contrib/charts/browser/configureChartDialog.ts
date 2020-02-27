@@ -47,15 +47,15 @@ const altNameHash: { [oldName: string]: string } = {
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
 export class ConfigureChartDialog extends Modal {
-	private optionsControl: HTMLElement;
-	private typeControls: HTMLElement;
+	private _optionsControl: HTMLElement;
+	private _typeControls: HTMLElement;
 
 	private _options: IInsightOptions = {
 		type: ChartType.Bar
 	};
 
-	private optionDisposables: IDisposable[] = [];
-	private optionMap: { [x: string]: { element: HTMLElement; set: (val) => void } } = {};
+	private _optionDisposables: IDisposable[] = [];
+	private _optionMap: { [x: string]: { element: HTMLElement; set: (val) => void } } = {};
 	private _state: ChartState;
 
 	constructor(
@@ -103,23 +103,19 @@ export class ConfigureChartDialog extends Modal {
 			}
 		}) as IInsightOptions;
 
-		this.optionsControl = DOM.$('div.options-container');
-		this.optionsControl.style.padding = '20px';
+		this._optionsControl = DOM.$('div.options-container');
+		this._optionsControl.style.padding = '20px';
 
 		const generalControls = DOM.$('div.general-controls');
-		this.typeControls = DOM.$('div.type-controls');
-		this.optionsControl.appendChild(generalControls);
-		this.optionsControl.appendChild(this.typeControls);
+		this._typeControls = DOM.$('div.type-controls');
+		this._optionsControl.appendChild(generalControls);
+		this._optionsControl.appendChild(this._typeControls);
 
 		ChartOptions.general[0].options = insightRegistry.getAllIds();
 		ChartOptions.general.map(o => {
 			this.createOption(o, generalControls);
 		});
 		this.buildOptions();
-	}
-
-	public get options(): IInsightOptions {
-		return this._options;
 	}
 
 	public open() {
@@ -132,7 +128,7 @@ export class ConfigureChartDialog extends Modal {
 
 		let okButton = this.addFooterButton(localize('configureChart.ok', "Apply"), () => this.handleApply());
 		let closeButton = this.addFooterButton(localize('optionsDialog.cancel', "Close"), () => this.cancel());
-		// Theme styler
+
 		attachButtonStyler(okButton, this._themeService);
 		attachButtonStyler(closeButton, this._themeService);
 		this._register(this._themeService.onThemeChange(e => this.updateTheme(e)));
@@ -140,7 +136,7 @@ export class ConfigureChartDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
-		container.appendChild(this.optionsControl);
+		container.appendChild(this._optionsControl);
 		this.verifyOptions();
 	}
 
@@ -166,18 +162,18 @@ export class ConfigureChartDialog extends Modal {
 	private buildOptions() {
 		// The first element in the disposables list is for the chart type: the master dropdown that controls other option controls.
 		// whiling rebuilding the options we should not dispose it, otherwise it would react to the theme change event
-		if (this.optionDisposables.length > 1) { // this logic needs to be rewritten
-			dispose(this.optionDisposables.slice(1));
-			this.optionDisposables.splice(1);
+		if (this._optionDisposables.length > 1) { // this logic needs to be rewritten
+			dispose(this._optionDisposables.slice(1));
+			this._optionDisposables.splice(1);
 		}
 
-		this.optionMap = {
-			'type': this.optionMap['type']
+		this._optionMap = {
+			'type': this._optionMap['type']
 		};
-		DOM.clearNode(this.typeControls);
+		DOM.clearNode(this._typeControls);
 
 		ChartOptions[this._options.type].map(o => {
-			this.createOption(o, this.typeControls);
+			this.createOption(o, this._typeControls);
 		});
 		this.verifyOptions();
 	}
@@ -222,7 +218,7 @@ export class ConfigureChartDialog extends Modal {
 						dropdown.select(option.options.indexOf(val));
 					}
 				};
-				this.optionDisposables.push(attachSelectBoxStyler(dropdown, this._themeService));
+				this._optionDisposables.push(attachSelectBoxStyler(dropdown, this._themeService));
 				break;
 			case ControlType.input:
 				let input = new InputBox(optionInput, this._contextViewService);
@@ -237,7 +233,7 @@ export class ConfigureChartDialog extends Modal {
 						input.value = val;
 					}
 				};
-				this.optionDisposables.push(attachInputBoxStyler(input, this._themeService));
+				this._optionDisposables.push(attachInputBoxStyler(input, this._themeService));
 				break;
 			case ControlType.numberInput:
 				let numberInput = new InputBox(optionInput, this._contextViewService, { type: 'number' });
@@ -252,7 +248,7 @@ export class ConfigureChartDialog extends Modal {
 						numberInput.value = val;
 					}
 				};
-				this.optionDisposables.push(attachInputBoxStyler(numberInput, this._themeService));
+				this._optionDisposables.push(attachInputBoxStyler(numberInput, this._themeService));
 				break;
 			case ControlType.dateInput:
 				let dateInput = new InputBox(optionInput, this._contextViewService, { type: 'datetime-local' });
@@ -267,23 +263,23 @@ export class ConfigureChartDialog extends Modal {
 						dateInput.value = val;
 					}
 				};
-				this.optionDisposables.push(attachInputBoxStyler(dateInput, this._themeService));
+				this._optionDisposables.push(attachInputBoxStyler(dateInput, this._themeService));
 				break;
 		}
-		this.optionMap[option.configEntry] = { element: optionContainer, set: setFunc };
+		this._optionMap[option.configEntry] = { element: optionContainer, set: setFunc };
 		container.appendChild(optionContainer);
 		this._options[option.configEntry] = value;
 	}
 
 	private verifyOptions() {
-		for (let key in this.optionMap) {
-			if (this.optionMap.hasOwnProperty(key)) {
+		for (let key in this._optionMap) {
+			if (this._optionMap.hasOwnProperty(key)) {
 				let option = find(ChartOptions[this._options.type], e => e.configEntry === key);
 				if (option && option.if) {
 					if (option.if(this._options)) {
-						DOM.show(this.optionMap[key].element);
+						DOM.show(this._optionMap[key].element);
 					} else {
-						DOM.hide(this.optionMap[key].element);
+						DOM.hide(this._optionMap[key].element);
 					}
 				}
 			}
@@ -291,7 +287,7 @@ export class ConfigureChartDialog extends Modal {
 	}
 
 	public dispose() {
-		dispose(this.optionDisposables);
+		dispose(this._optionDisposables);
 		super.dispose();
 	}
 
@@ -299,9 +295,9 @@ export class ConfigureChartDialog extends Modal {
 		this._state = val;
 		if (this.state.options) {
 			for (let key in this.state.options) {
-				if (this.state.options.hasOwnProperty(key) && this.optionMap[key]) {
+				if (this.state.options.hasOwnProperty(key) && this._optionMap[key]) {
 					this._options[key] = this.state.options[key];
-					this.optionMap[key].set(this.state.options[key]);
+					this._optionMap[key].set(this.state.options[key]);
 				}
 			}
 		}
