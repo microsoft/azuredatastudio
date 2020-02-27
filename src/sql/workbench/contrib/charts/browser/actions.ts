@@ -118,11 +118,11 @@ export class ConfigureChartAction extends Action {
 	constructor(private _chart: ChartView,
 		@IInstantiationService instantiationService: IInstantiationService) {
 		super(ConfigureChartAction.ID, ConfigureChartAction.LABEL, ConfigureChartAction.ICON);
-		this.dialog = instantiationService.createInstance(ConfigureChartDialog, this._chart);
+		this.dialog = instantiationService.createInstance(ConfigureChartDialog, ConfigureChartAction.LABEL, ConfigureChartAction.ID, this._chart);
 	}
 
 	public run(context: IChartActionContext): Promise<boolean> {
-		this.dialog.showDialog();
+		this.dialog.render();
 		return Promise.resolve(true);
 	}
 }

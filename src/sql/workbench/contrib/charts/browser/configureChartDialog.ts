@@ -3,41 +3,46 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import { ChartOptions, IChartOption, ControlType } from './chartOptions';
 import * as DOM from 'vs/base/browser/dom';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
-import { attachSelectBoxStyler, attachInputBoxStyler } from 'vs/platform/theme/common/styler';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { attachSelectBoxStyler, attachInputBoxStyler, attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { IInsightOptions, ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
 import { ChartState } from 'sql/workbench/common/editor/query/chartState';
-import * as nls from 'vs/nls';
+import { localize } from 'vs/nls';
 import { find } from 'vs/base/common/arrays';
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
+import { Modal } from 'sql/workbench/browser/modal/modal';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { ILogService } from 'vs/platform/log/common/log';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 
 //Map used to store names and alternative names for chart types.
 //This is mainly used for comparison when options are parsed into the constructor.
 const altNameHash: { [oldName: string]: string } = {
-	'horizontalBar': nls.localize('horizontalBarAltName', "Horizontal Bar"),
-	'bar': nls.localize('barAltName', "Bar"),
-	'line': nls.localize('lineAltName', "Line"),
-	'pie': nls.localize('pieAltName', "Pie"),
-	'scatter': nls.localize('scatterAltName', "Scatter"),
-	'timeSeries': nls.localize('timeSeriesAltName', "Time Series"),
-	'image': nls.localize('imageAltName', "Image"),
-	'count': nls.localize('countAltName', "Count"),
-	'table': nls.localize('tableAltName', "Table"),
-	'doughnut': nls.localize('doughnutAltName', "Doughnut")
+	'horizontalBar': localize('horizontalBarAltName', "Horizontal Bar"),
+	'bar': localize('barAltName', "Bar"),
+	'line': localize('lineAltName', "Line"),
+	'pie': localize('pieAltName', "Pie"),
+	'scatter': localize('scatterAltName', "Scatter"),
+	'timeSeries': localize('timeSeriesAltName', "Time Series"),
+	'image': localize('imageAltName', "Image"),
+	'count': localize('countAltName', "Count"),
+	'table': localize('tableAltName', "Table"),
+	'doughnut': localize('doughnutAltName', "Doughnut")
 };
 
-export class ConfigureChartDialog extends Disposable {
-	private dialog: azdata.window.Dialog;
-
+export class ConfigureChartDialog extends Modal {
 	private optionsControl: HTMLElement;
 	private typeControls: HTMLElement;
 
@@ -49,66 +54,66 @@ export class ConfigureChartDialog extends Disposable {
 	private optionMap: { [x: string]: { element: HTMLElement; set: (val) => void } } = {};
 	private _state: ChartState;
 
-	private readonly DialogTitle = nls.localize('configureChart.dialogName', "Configure Chart");
-	private readonly InstallButtonText = nls.localize('configureChart.okButtonText', "Apply");
-	private readonly CancelButtonText = nls.localize('configureChart.cancelButtonText', "Cancel");
-
-	constructor(private _chart: ChartView,
+	constructor(
+		title: string,
+		name: string,
+		private _chart: ChartView,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IThemeService private _themeService: IThemeService) {
-		super();
+		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IClipboardService clipboardService: IClipboardService,
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
+	) {
+		super(title, name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, undefined);
 		this.options = this._chart.options;
-		this.buildDialog();
 	}
 
-	private buildDialog(): void {
-		this.dialog = azdata.window.createModelViewDialog(this.DialogTitle);
+	public render() {
+		super.render();
+		attachModalDialogStyler(this, this._themeService);
 
-		this.initializeContent();
-
-		this.dialog.okButton.label = this.InstallButtonText;
-		this.dialog.cancelButton.label = this.CancelButtonText;
-
-		this.dialog.registerCloseValidator(() => this.handleApply());
+		let okButton = this.addFooterButton(localize('configureChart.ok', "Apply"), () => this.handleApply());
+		let closeButton = this.addFooterButton(localize('optionsDialog.cancel', "Cancel"), () => this.cancel());
+		// Theme styler
+		attachButtonStyler(okButton, this._themeService);
+		attachButtonStyler(closeButton, this._themeService);
+		this._register(this._themeService.onThemeChange(e => this.updateTheme(e)));
+		this.updateTheme(this._themeService.getTheme());
 	}
 
-	/**
-	 * Opens a dialog to configure python installation for notebooks.
-	 * @param rejectOnCancel Specifies whether an error should be thrown after clicking Cancel.
-	 * @returns A promise that is resolved when the python installation completes.
-	 */
-	public showDialog(): void {
-		azdata.window.openDialog(this.dialog);
+	protected renderBody(container: HTMLElement) {
+		this.optionsControl = DOM.$('div.options-container');
+		const generalControls = DOM.$('div.general-controls');
+		this.typeControls = DOM.$('div.type-controls');
+		this.optionsControl.appendChild(generalControls);
+		this.optionsControl.appendChild(this.typeControls);
+
+		container.appendChild(this.optionsControl);
+
+		this.buildOptions();
 	}
 
-	private initializeContent(): void {
-		this.dialog.registerContent(async view => {
-			this.optionsControl = DOM.$('div.options-container');
-			const generalControls = DOM.$('div.general-controls');
-			this.typeControls = DOM.$('div.type-controls');
-			this.optionsControl.appendChild(generalControls);
-			this.optionsControl.appendChild(this.typeControls);
+	protected layout(height?: number): void {
+	}
 
-			this.buildOptions();
-
-			let domComp = view.modelBuilder.dom().withProperties<azdata.DomProperties>({
-				html: ''
-			})
-				.component();
-
-			let formModel = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: domComp,
-					title: nls.localize('configureChart.domTitle', "Configure Chart")
-				}]).component();
-
-			await view.initializeModel(formModel);
-		});
+	private updateTheme(theme: ITheme): void {
 	}
 
 	private handleApply(): boolean {
 		this._chart.options = this.options;
 		return true;
+	}
+
+	public cancel() {
+		this.close();
+	}
+
+	public close() {
+		this.dispose();
+		this.hide();
 	}
 
 	private buildOptions() {
