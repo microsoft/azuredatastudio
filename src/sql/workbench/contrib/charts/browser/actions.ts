@@ -113,16 +113,19 @@ export class ConfigureChartAction extends Action {
 	public static LABEL = localize('configureChartLabel', "Configure Chart");
 	public static ICON = 'filterLabel';
 
-	private readonly dialog: ConfigureChartDialog;
+	private dialog: ConfigureChartDialog;
 
 	constructor(private _chart: ChartView,
-		@IInstantiationService instantiationService: IInstantiationService) {
+		@IInstantiationService private readonly instantiationService: IInstantiationService) {
 		super(ConfigureChartAction.ID, ConfigureChartAction.LABEL, ConfigureChartAction.ICON);
-		this.dialog = instantiationService.createInstance(ConfigureChartDialog, ConfigureChartAction.LABEL, ConfigureChartAction.ID, this._chart);
 	}
 
 	public run(context: IChartActionContext): Promise<boolean> {
-		this.dialog.render();
+		if (!this.dialog) {
+			this.dialog = this.instantiationService.createInstance(ConfigureChartDialog, ConfigureChartAction.LABEL, ConfigureChartAction.ID, this._chart);
+			this.dialog.render();
+		}
+		this.dialog.open();
 		return Promise.resolve(true);
 	}
 }

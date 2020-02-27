@@ -71,6 +71,10 @@ export class ConfigureChartDialog extends Modal {
 		this.options = this._chart.options;
 	}
 
+	public open() {
+		this.show();
+	}
+
 	public render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
