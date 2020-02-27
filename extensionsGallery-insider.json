@@ -3125,7 +3125,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/microsoft/Azure-data-services-on-Azure-Arc"
+									"value": "https://azure.microsoft.com/services/azure-arc/hybrid-data-services"
 								}
 							]
 						}
