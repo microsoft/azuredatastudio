@@ -29,6 +29,7 @@ import * as nls from 'vs/nls';
 import { find } from 'vs/base/common/arrays';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { DbCellValue } from 'azdata';
+import { EventEmitter, Event } from 'vscode';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -78,6 +79,8 @@ export class ChartView extends Disposable implements IPanelView {
 	private optionDisposables: IDisposable[] = [];
 	private optionMap: { [x: string]: { element: HTMLElement; set: (val) => void } } = {};
 
+	private readonly _onChartOptionsChange = new EventEmitter<void>();
+
 	constructor(
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IThemeService private _themeService: IThemeService,
@@ -118,7 +121,7 @@ export class ChartView extends Disposable implements IPanelView {
 					if (key === 'type') {
 						self.buildOptions();
 					} else {
-						self.verifyOptions();
+						self.applyChartOptions();
 					}
 				}
 
@@ -128,6 +131,10 @@ export class ChartView extends Disposable implements IPanelView {
 
 		ChartOptions.general[0].options = insightRegistry.getAllIds();
 		this.buildOptions();
+	}
+
+	public get onChartOptionsChange(): Event<void> {
+		return this._onChartOptionsChange.event;
 	}
 
 	public clear() {
@@ -165,7 +172,7 @@ export class ChartView extends Disposable implements IPanelView {
 		} else {
 			this.queryRunner = this._queryRunner;
 		}
-		this.verifyOptions();
+		this.applyChartOptions();
 	}
 
 	public chart(dataId: { batchId: number, resultId: number }) {
@@ -241,7 +248,9 @@ export class ChartView extends Disposable implements IPanelView {
 		if (this.insight) {
 			this.insight.options = this.options;
 		}
-		this.verifyOptions();
+		this.applyChartOptions();
+
+		this._onChartOptionsChange.fire();
 	}
 
 	public updateChartOptionControls(generalControls: HTMLElement, typeControls: HTMLElement): void {
@@ -257,7 +266,7 @@ export class ChartView extends Disposable implements IPanelView {
 		});
 	}
 
-	private verifyOptions() {
+	private applyChartOptions() {
 		this.updateActionbar();
 		for (let key in this.optionMap) {
 			if (this.optionMap.hasOwnProperty(key)) {
