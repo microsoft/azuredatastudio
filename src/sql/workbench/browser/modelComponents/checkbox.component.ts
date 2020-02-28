@@ -89,6 +89,9 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 		if (this.ariaLabel) {
 			this._input.ariaLabel = this.ariaLabel;
 		}
+		if (this.required) {
+			this._input.required = this.required;
+		}
 	}
 
 	// CSS-bound properties
@@ -107,6 +110,14 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 
 	private set label(newValue: string) {
 		this.setPropertyFromUI<azdata.CheckBoxProperties, string>((properties, label) => { properties.label = label; }, newValue);
+	}
+
+	public get required(): boolean {
+		return this.getPropertyOrDefault<azdata.CheckBoxProperties, boolean>((props) => props.required, false);
+	}
+
+	public set required(newValue: boolean) {
+		this.setPropertyFromUI<azdata.CheckBoxProperties, boolean>((props, value) => props.required = value, newValue);
 	}
 
 	public focus(): void {
