@@ -3,12 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs';
 import * as constants from '../common/constants';
 import { promisify } from 'util';
+import { ApiWrapper } from './apiWrapper';
 
 export async function execCommandOnTempFile<T>(content: string, command: (filePath: string) => Promise<T>): Promise<T> {
 	let tempFilePath: string = '';
@@ -109,4 +111,38 @@ export function isWindows(): boolean {
  */
 export function doubleEscapeSingleQuotes(value: string): string {
 	return value.replace(/'/g, '\'\'');
+}
+
+/**
+ * Installs dependencies for the extension
+ */
+export async function executeTasks<T>(apiWrapper: ApiWrapper, taskName: string, dependencies: PromiseLike<T>[], parallel: boolean): Promise<T[]> {
+	return new Promise<T[]>((resolve, reject) => {
+		let msgTaskName = taskName;
+		apiWrapper.startBackgroundOperation({
+			displayName: msgTaskName,
+			description: msgTaskName,
+			isCancelable: false,
+			operation: async op => {
+				try {
+					let result: T[] = [];
+					// Install required packages
+					//
+					if (parallel) {
+						result = await Promise.all(dependencies);
+					} else {
+						for (let index = 0; index < dependencies.length; index++) {
+							result.push(await dependencies[index]);
+						}
+					}
+					op.updateStatus(azdata.TaskStatus.Succeeded);
+					resolve(result);
+				} catch (error) {
+					let errorMsg = constants.taskFailedError(taskName, error ? error.message : '');
+					op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
+					reject(errorMsg);
+				}
+			}
+		});
+	});
 }

@@ -21,6 +21,7 @@ import { HttpClient } from '../common/httpClient';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as path from 'path';
 import * as os from 'os';
+import * as utils from '../common/utils';
 
 /**
  * Azure Model Service
@@ -109,7 +110,7 @@ export class AzureModelRegistryService {
 			try {
 				const downloadUrls = await this.getAssetArtifactsDownloadLinks(account, subscription, resourceGroup, workspace, model, tenant);
 				if (downloadUrls && downloadUrls.length > 0) {
-					downloadedFilePath = await this.downloadArtifact(downloadUrls[0]);
+					downloadedFilePath = await this.execDownloadArtifactTask(downloadUrls[0]);
 				}
 
 			} catch (error) {
@@ -122,29 +123,15 @@ export class AzureModelRegistryService {
 	/**
 	 * Installs dependencies for the extension
 	 */
-	public async downloadArtifact(downloadUrl: string): Promise<string> {
-		return new Promise<string>((resolve, reject) => {
-			let msgTaskName = constants.downloadModelMsgTaskName;
-			this._apiWrapper.startBackgroundOperation({
-				displayName: msgTaskName,
-				description: msgTaskName,
-				isCancelable: false,
-				operation: async op => {
-					let tempFilePath: string = '';
-					try {
-						tempFilePath = path.join(os.tmpdir(), `ads_ml_temp_${UUID.generateUuid()}`);
-						await this._httpClient.download(downloadUrl, tempFilePath, op, this._outputChannel);
+	public async execDownloadArtifactTask(downloadUrl: string): Promise<string> {
+		let results = await utils.executeTasks(this._apiWrapper, constants.downloadModelMsgTaskName, [this.downloadArtifact(downloadUrl)], true);
+		return results[0];
+	}
 
-						op.updateStatus(azdata.TaskStatus.Succeeded);
-						resolve(tempFilePath);
-					} catch (error) {
-						let errorMsg = constants.installDependenciesError(error ? error.message : '');
-						op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
-						reject(errorMsg);
-					}
-				}
-			});
-		});
+	private async downloadArtifact(downloadUrl: string): Promise<string> {
+		let tempFilePath = path.join(os.tmpdir(), `ads_ml_temp_${UUID.generateUuid()}`);
+		await this._httpClient.download(downloadUrl, tempFilePath, this._outputChannel);
+		return tempFilePath;
 	}
 
 	private async fetchWorkspaces(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroup: azureResource.AzureResource | undefined): Promise<Workspace[]> {

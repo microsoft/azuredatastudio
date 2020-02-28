@@ -9,6 +9,9 @@ import { ApiWrapper } from '../common/apiWrapper';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+import * as utils from '../common/utils';
+import { PackageManager } from '../packageManagement/packageManager';
+import * as constants from '../common/constants';
 
 /**
  * Service to import model to database
@@ -18,11 +21,20 @@ export class ModelImporter {
 	/**
 	 *
 	 */
-	constructor(private _outputChannel: vscode.OutputChannel, private _apiWrapper: ApiWrapper, private _processService: ProcessService, private _config: Config) {
+	constructor(private _outputChannel: vscode.OutputChannel, private _apiWrapper: ApiWrapper, private _processService: ProcessService, private _config: Config, private _packageManager: PackageManager) {
 	}
 
 	public async registerModel(connection: azdata.connection.ConnectionProfile, modelFolderPath: string): Promise<void> {
+		await this.installDependencies();
 		await this.executeScripts(connection, modelFolderPath);
+	}
+
+	/**
+	 * Installs dependencies for model importer
+	 */
+	public async installDependencies(): Promise<void> {
+		await utils.executeTasks(this._apiWrapper, constants.installDependenciesMsgTaskName, [
+			this._packageManager.installRequiredPythonPackages(this._config.modelsRequiredPythonPackages)], true);
 	}
 
 	protected async executeScripts(connection: azdata.connection.ConnectionProfile, modelFolderPath: string): Promise<void> {

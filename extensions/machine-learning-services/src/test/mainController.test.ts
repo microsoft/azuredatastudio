@@ -142,6 +142,6 @@ describe('Main Controller', () => {
 		let controller = createController(testContext);
 		await controller.activate();
 
-		should.notEqual(controller.config.requiredPythonPackages.find(x => x.name ==='sqlmlutils'), undefined);
+		should.notEqual(controller.config.requiredSqlPythonPackages.find(x => x.name ==='sqlmlutils'), undefined);
 	});
 });

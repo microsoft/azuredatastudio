@@ -96,6 +96,6 @@ export class RegisterModelWizard extends ModelViewBase {
 	 */
 	public async refresh(): Promise<void> {
 		this.loadPages();
-		this.wizardView?.refresh();
+		await this.wizardView?.refresh();
 	}
 }
