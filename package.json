@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.16.0",
-  "distro": "4672f37b373e16688fc9cda03d25a138669718e9",
+  "distro": "4e85ca0eb0c1b17aceab11996f7c2cf460868e8a",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -184,7 +184,7 @@
     "vinyl": "^2.0.0",
     "vinyl-fs": "^3.0.0",
     "vsce": "1.48.0",
-    "vscode-debugprotocol": "1.39.0-pre.0",
+    "vscode-debugprotocol": "1.39.0",
     "vscode-nls-dev": "^3.3.1",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.3.8",
