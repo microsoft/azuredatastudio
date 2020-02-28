@@ -3,6 +3,7 @@ steps:
     displayName: 'Install developer certificate'
     inputs:
       certSecureFile: 'osx_signing_key.p12'
+    condition: eq(variables['signed'], true)
 
   - script: |
       mkdir -p .build
