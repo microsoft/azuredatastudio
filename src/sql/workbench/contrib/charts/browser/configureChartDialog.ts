@@ -19,6 +19,8 @@ import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 export class ConfigureChartDialog extends Modal {
 	private _optionsControl: HTMLElement;
+	private _generalControls: HTMLElement;
+	private _typeControls: HTMLElement;
 
 	constructor(
 		title: string,
@@ -37,17 +39,18 @@ export class ConfigureChartDialog extends Modal {
 		this._optionsControl = DOM.$('div.options-container');
 		this._optionsControl.style.padding = '20px';
 
-		let generalControls = DOM.$('div.general-controls');
-		let typeControls = DOM.$('div.type-controls');
-		this._optionsControl.appendChild(generalControls);
-		this._optionsControl.appendChild(typeControls);
+		this._generalControls = DOM.$('div.general-controls');
+		this._typeControls = DOM.$('div.type-controls');
+		this._optionsControl.appendChild(this._generalControls);
+		this._optionsControl.appendChild(this._typeControls);
 
 		this._chart.onChartOptionsChange(() => {
-			this._chart.updateChartOptionControls(generalControls, typeControls);
+			this._chart.updateChartOptionControls(this._generalControls, this._typeControls);
 		});
 	}
 
 	public open() {
+		this._chart.updateChartOptionControls(this._generalControls, this._typeControls);
 		this.show();
 	}
 

@@ -29,7 +29,7 @@ import * as nls from 'vs/nls';
 import { find } from 'vs/base/common/arrays';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { DbCellValue } from 'azdata';
-import { EventEmitter, Event } from 'vscode';
+import { Emitter, Event } from 'vs/base/common/event';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -79,7 +79,7 @@ export class ChartView extends Disposable implements IPanelView {
 	private optionDisposables: IDisposable[] = [];
 	private optionMap: { [x: string]: { element: HTMLElement; set: (val) => void } } = {};
 
-	private readonly _onChartOptionsChange = new EventEmitter<void>();
+	private readonly _onChartOptionsChange = new Emitter<void>();
 
 	constructor(
 		@IContextViewService private _contextViewService: IContextViewService,
