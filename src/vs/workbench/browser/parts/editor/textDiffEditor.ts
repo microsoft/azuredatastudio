@@ -30,7 +30,6 @@ import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/commo
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { EditorMemento } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { EditorActivation, IEditorOptions } from 'vs/platform/editor/common/editor';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 /**
  * The text editor that leverages the diff text editor for the editing experience.
@@ -42,7 +41,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 	private diffNavigator: DiffNavigator | undefined;
 	private readonly diffNavigatorDisposables = this._register(new DisposableStore());
 
-	private reverseColor: boolean; // {{SQL CARBON EDIT}} add property
+	private reverseColor?: boolean; // {{SQL CARBON EDIT}} add property
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -51,8 +50,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 		@ITextResourceConfigurationService configurationService: ITextResourceConfigurationService,
 		@IEditorService editorService: IEditorService,
 		@IThemeService themeService: IThemeService,
-		@IEditorGroupsService editorGroupService: IEditorGroupsService,
-		@IClipboardService private clipboardService: IClipboardService
+		@IEditorGroupsService editorGroupService: IEditorGroupsService
 	) {
 		super(TextDiffEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, editorService, editorGroupService);
 	}
@@ -75,10 +73,8 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 	}
 
 	createEditorControl(parent: HTMLElement, configuration: ICodeEditorOptions): IDiffEditor {
-		if (this.reverseColor) { // {{SQL CARBON EDIT}}
-			(configuration as IDiffEditorOptions).reverse = true;
-		}
-		return this.instantiationService.createInstance(DiffEditorWidget as any, parent, configuration, this.clipboardService); // {{SQL CARBON EDIT}} strict-null-check...i guess?
+		if (this.reverseColor) { (configuration as IDiffEditorOptions).reverse = true; } // {{SQL CARBON EDIT}}
+		return this.instantiationService.createInstance(DiffEditorWidget, parent, configuration);
 	}
 
 	async setInput(input: EditorInput, options: EditorOptions | undefined, token: CancellationToken): Promise<void> {
@@ -331,8 +327,8 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 		let modified: URI | undefined;
 
 		if (modelOrInput instanceof DiffEditorInput) {
-			original = modelOrInput.originalInput.getResource();
-			modified = modelOrInput.modifiedInput.getResource();
+			original = modelOrInput.originalInput.resource;
+			modified = modelOrInput.modifiedInput.resource;
 		} else {
 			original = modelOrInput.original.uri;
 			modified = modelOrInput.modified.uri;

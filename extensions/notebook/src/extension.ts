@@ -34,7 +34,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openMarkdown', (resource) => bookTreeViewProvider.openMarkdown(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openExternalLink', (resource) => bookTreeViewProvider.openExternalLink(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.saveBook', () => untitledBookTreeViewProvider.saveJupyterBooks()));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.searchBook', () => bookTreeViewProvider.searchJupyterBooks()));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.searchBook', (item) => bookTreeViewProvider.searchJupyterBooks(item)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.searchUntitledBook', () => untitledBookTreeViewProvider.searchJupyterBooks()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openBook', () => bookTreeViewProvider.openNewBook()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.closeBook', (book: any) => bookTreeViewProvider.closeBook(book)));
@@ -105,7 +105,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		return undefined;
 	}
 
-	let workspaceFolders = vscode.workspace.workspaceFolders || [];
+	let workspaceFolders = vscode.workspace.workspaceFolders?.slice() ?? [];
 	const bookTreeViewProvider = new BookTreeViewProvider(workspaceFolders, extensionContext, false, BOOKS_VIEWID);
 	await bookTreeViewProvider.initialized;
 	const untitledBookTreeViewProvider = new BookTreeViewProvider([], extensionContext, true, READONLY_BOOKS_VIEWID);

@@ -108,6 +108,8 @@ jquery-ui/demos/**
 slickgrid/node_modules/**
 slickgrid/examples/**
 
+kerberos/build/**
+
 # END SQL Modules
 
 nsfw/binding.gyp

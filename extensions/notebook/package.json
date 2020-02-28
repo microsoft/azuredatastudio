@@ -302,11 +302,6 @@
           "group": "1notebook@1"
         },
         {
-          "command": "jupyter.cmd.newNotebook",
-          "when": "connectionProvider == HADOOP_KNOX && nodeType && nodeType == Server",
-          "group": "1root@1"
-        },
-        {
           "command": "jupyter.cmd.analyzeNotebook",
           "when": "nodeType=~/^hdfs/ && nodeLabel=~/[^\\s]+(\\.(csv|tsv|txt))$/ && nodeType == hdfs:file",
           "group": "1notebook@1"
@@ -315,7 +310,7 @@
       "view/item/context": [
         {
           "command": "notebook.command.searchBook",
-          "when": "view == bookTreeView && viewItem == savedBook",
+          "when": "view == bookTreeView && viewItem == savedBook || viewItem  == section",
           "group": "inline"
         },
         {
@@ -410,7 +405,6 @@
           "name": "pysparkkernel",
           "displayName": "PySpark",
           "connectionProviderIds": [
-            "HADOOP_KNOX",
             "MSSQL"
           ]
         },
@@ -418,7 +412,6 @@
           "name": "sparkkernel",
           "displayName": "Spark | Scala",
           "connectionProviderIds": [
-            "HADOOP_KNOX",
             "MSSQL"
           ]
         },
@@ -426,7 +419,6 @@
           "name": "sparkrkernel",
           "displayName": "Spark | R",
           "connectionProviderIds": [
-            "HADOOP_KNOX",
             "MSSQL"
           ]
         },

@@ -3,12 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../mssql';
 import * as os from 'os';
-const localize = nls.loadMessageBundle();
+import * as loc from './localizedConstants';
 
 export interface IPackageInfo {
 	name: string;
@@ -102,12 +101,10 @@ export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompa
 							|| connection.options.database.toLowerCase() === 'master')));
 
 				if (userConnection === undefined) {
-					const getConnectionString = localize('schemaCompare.GetConnectionString', "Do you want to connect to {0}?", caller);
+					const getConnectionString = loc.getConnectionString(caller);
 					// need only yes button - since the modal dialog has a default cancel
-					const yesString = localize('schemaCompare.ApplyYes', "Yes");
-
-					let result = await vscode.window.showWarningMessage(getConnectionString, { modal: true }, yesString);
-					if (result === yesString) {
+					let result = await vscode.window.showWarningMessage(getConnectionString, { modal: true }, loc.YesButtonText);
+					if (result === loc.YesButtonText) {
 						userConnection = await azdata.connection.openConnectionDialog(undefined, connectionProfile);
 					}
 				}

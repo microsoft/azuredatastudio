@@ -19,40 +19,82 @@ import { AzureResourceAccountTreeNode } from './tree/accountTreeNode';
 import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService } from '../azureResource/interfaces';
 import { AzureResourceServiceNames } from './constants';
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
+import { GetSubscriptionsResult, GetResourceGroupsResult } from '../azurecore';
+import { isArray } from 'util';
 
 export function registerAzureResourceCommands(appContext: AppContext, tree: AzureResourceTreeProvider): void {
 
 	// Resource Management commands
-	appContext.apiWrapper.registerCommand('azure.accounts.getSubscriptions', async (account?: azdata.Account): Promise<azureResource.AzureResourceSubscription[]> => {
-		if (!account) {
-			return [];
+	appContext.apiWrapper.registerCommand('azure.accounts.getSubscriptions', async (account?: azdata.Account, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> => {
+		const result: GetSubscriptionsResult = { subscriptions: [], errors: [] };
+		if (!account?.properties?.tenants || !isArray(account.properties.tenants)) {
+			const error = new Error(localize('azure.accounts.getSubscriptions.invalidParamsError', "Invalid account"));
+			if (!ignoreErrors) {
+				throw error;
+			}
+			result.errors.push(error);
+			return result;
 		}
-		const subscriptions = <azureResource.AzureResourceSubscription[]>[];
 		const subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
 		const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
-		for (const tenant of account.properties.tenants) {
-			const token = tokens[tenant.id].token;
-			const tokenType = tokens[tenant.id].tokenType;
+		await Promise.all(account.properties.tenants.map(async (tenant: { id: string | number; }) => {
+			try {
+				const token = tokens[tenant.id].token;
+				const tokenType = tokens[tenant.id].tokenType;
 
-			subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType)));
-		}
-		return subscriptions;
+				result.subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType)));
+			} catch (err) {
+				const error = new Error(localize('azure.accounts.getSubscriptions.queryError', "Error fetching subscriptions for account {0} tenant {1} : {2}",
+					account.displayInfo.displayName,
+					tenant.id,
+					err instanceof Error ? err.message : err));
+				console.warn(error);
+				if (!ignoreErrors) {
+					throw error;
+				}
+				result.errors.push(error);
+			}
+			return Promise.resolve();
+		}));
+		return result;
 	});
 
-	appContext.apiWrapper.registerCommand('azure.accounts.getResourceGroups', async (account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription): Promise<azureResource.AzureResourceResourceGroup[]> => {
-		if (!account || !subscription) {
-			return [];
+	appContext.apiWrapper.registerCommand('azure.accounts.getResourceGroups', async (account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false): Promise<GetResourceGroupsResult> => {
+		const result: GetResourceGroupsResult = { resourceGroups: [], errors: [] };
+		if (!account?.properties?.tenants || !isArray(account.properties.tenants) || !subscription) {
+			const error = new Error(localize('azure.accounts.getResourceGroups.invalidParamsError', "Invalid account or subscription"));
+			if (!ignoreErrors) {
+				throw error;
+			}
+			result.errors.push(error);
+			return result;
 		}
 		const service = new AzureResourceGroupService();
-		const resourceGroups: azureResource.AzureResourceResourceGroup[] = [];
-		for (const tenant of account.properties.tenants) {
-			const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
-			const token = tokens[tenant.id].token;
-			const tokenType = tokens[tenant.id].tokenType;
+		await Promise.all(account.properties.tenants.map(async (tenant: { id: string | number; }) => {
+			try {
+				const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
+				const token = tokens[tenant.id].token;
+				const tokenType = tokens[tenant.id].tokenType;
 
-			resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType)));
-		}
-		return resourceGroups;
+				result.resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType)));
+			} catch (err) {
+				const error = new Error(localize('azure.accounts.getResourceGroups.queryError', "Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}",
+					account.displayInfo.displayName,
+					account.displayInfo.userId,
+					subscription.id,
+					subscription.name,
+					tenant.id,
+					err instanceof Error ? err.message : err));
+				console.warn(error);
+				if (!ignoreErrors) {
+					throw error;
+				}
+				result.errors.push(error);
+			}
+			return Promise.resolve();
+		}));
+
+		return result;
 	});
 
 	// Resource Tree commands

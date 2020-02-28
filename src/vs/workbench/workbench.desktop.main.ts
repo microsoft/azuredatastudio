@@ -19,7 +19,6 @@ import 'vs/workbench/workbench.common.main';
 
 
 //#region --- workbench (desktop main)
-import 'sql/setup'; // {{SQL CARBON EDIT}}
 
 import 'vs/workbench/electron-browser/desktop.contribution';
 import 'vs/workbench/electron-browser/desktop.main';
@@ -53,7 +52,7 @@ import 'vs/workbench/services/workspaces/electron-browser/workspaceEditingServic
 import 'vs/workbench/services/userDataSync/electron-browser/userDataSyncService';
 import 'vs/workbench/services/userDataSync/electron-browser/settingsSyncService';
 import 'vs/workbench/services/userDataSync/electron-browser/userDataAutoSyncService';
-import 'vs/workbench/services/userDataSync/electron-browser/userDataAuthTokenService';
+import 'vs/workbench/services/authentication/electron-browser/authenticationTokenService';
 import 'vs/workbench/services/authentication/browser/authenticationService';
 import 'vs/workbench/services/host/electron-browser/desktopHostService';
 import 'vs/workbench/services/request/electron-browser/requestService';

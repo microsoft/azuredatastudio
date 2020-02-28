@@ -58,6 +58,18 @@
         "title": "%mls.command.managePackages%"
       },
       {
+        "command": "mls.command.manageModels",
+        "title": "%mls.command.manageModels%"
+      },
+      {
+        "command": "mls.command.registerModel",
+        "title": "%mls.command.registerModel%"
+      },
+      {
+        "command": "mls.command.manageLanguages",
+        "title": "%mls.command.manageLanguages%"
+      },
+      {
         "command": "mls.command.odbcdriver",
         "title": "%mls.command.odbcdriver%"
       },
@@ -76,7 +88,7 @@
         "description": "%description%",
         "provider": "MSSQL",
         "title": "%displayName%",
-        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
+        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && dashboardContext == 'server'",
         "container": {
           "grid-container": [
             {
@@ -96,6 +108,18 @@
               "widget": {
                 "tasks-widget": [
                   "mls.command.managePackages",
+                  "mls.command.manageLanguages",
+                  "mls.command.manageModels",
+                  "mls.command.registerModel"
+                ]
+              }
+            },
+            {
+              "name": "%title.documents%",
+              "row": 1,
+              "col": 0,
+              "widget": {
+                "tasks-widget": [
                   "mls.command.odbcdriver",
                   "mls.command.mlsdocs"
                 ]
@@ -109,7 +133,9 @@
   "dependencies": {
     "request": "^2.88.0",
     "vscode-nls": "^4.0.0",
-    "vscode-languageclient": "^5.3.0-next.1"
+    "vscode-languageclient": "^5.3.0-next.1",
+    "@azure/arm-machinelearningservices" : "^3.0.0",
+    "polly-js": "^1.6.3"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",

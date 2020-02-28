@@ -37,6 +37,8 @@ import { assign } from 'vs/base/common/objects';
 import { IFilesConfigurationService } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
+import { IRemotePathService } from 'vs/workbench/services/path/common/remotePathService';
+import { IWorkingCopyFileService } from 'vs/workbench/services/workingCopy/common/workingCopyFileService';
 
 export class NativeTextFileService extends AbstractTextFileService {
 
@@ -53,9 +55,11 @@ export class NativeTextFileService extends AbstractTextFileService {
 		@IProductService private readonly productService: IProductService,
 		@IFilesConfigurationService filesConfigurationService: IFilesConfigurationService,
 		@ITextModelService textModelService: ITextModelService,
-		@ICodeEditorService codeEditorService: ICodeEditorService
+		@ICodeEditorService codeEditorService: ICodeEditorService,
+		@IRemotePathService remotePathService: IRemotePathService,
+		@IWorkingCopyFileService workingCopyFileService: IWorkingCopyFileService
 	) {
-		super(fileService, untitledTextEditorService, lifecycleService, instantiationService, modelService, environmentService, dialogService, fileDialogService, textResourceConfigurationService, filesConfigurationService, textModelService, codeEditorService);
+		super(fileService, untitledTextEditorService, lifecycleService, instantiationService, modelService, environmentService, dialogService, fileDialogService, textResourceConfigurationService, filesConfigurationService, textModelService, codeEditorService, remotePathService, workingCopyFileService);
 	}
 
 	private _encoding: EncodingOracle | undefined;

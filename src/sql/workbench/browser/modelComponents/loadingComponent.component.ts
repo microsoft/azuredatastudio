@@ -13,13 +13,11 @@ import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { localize } from 'vs/nls';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { status } from 'vs/base/browser/ui/aria/aria';
 
 @Component({
 	selector: 'modelview-loadingComponent',
 	template: `
-		<div role="status" aria-live="polite" class="modelview-loading-component-status-message">
-			{{getStatusText()}}
-		</div>
 		<div class="modelview-loadingComponent-container" aria-busy="true" *ngIf="loading">
 			<div class="modelview-loadingComponent-spinner" [title]="getStatusText()" #spinnerElement></div>
 			<div *ngIf="showText" class="modelview-loadingComponent-status-text">{{getStatusText()}}</div>
@@ -66,7 +64,11 @@ export default class LoadingComponent extends ComponentBase implements IComponen
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {
+		const wasLoading = this.loading;
 		super.setProperties(properties);
+		if (wasLoading && !this.loading) {
+			status(this.getStatusText());
+		}
 	}
 
 	public get loading(): boolean {
