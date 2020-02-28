@@ -3079,8 +3079,8 @@
 				{
 					"extensionId": "63",
 					"extensionName": "arcdeployment",
-					"displayName": "Azure Arc deployment (preview)",
-					"shortDescription": "Provides an experience to deploy Azure SQL DB managed instances and Azure Database for PostgreSQL Hyperscale server groups on Azure Arc from Azure Data Studio. This extension is only applicable to customers in the Azure Arc data services private preview.",
+					"displayName": "Azure Arc deployment",
+					"shortDescription": "Provides a notebook-based experience to deploy resources on Azure Arc",
 					"publisher": {
 						"displayName": "Microsoft",
 						"publisherId": "Microsoft",
