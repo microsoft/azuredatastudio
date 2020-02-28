@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import * as azdata from 'azdata';
-import { ICapabilitiesService, ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionConfig, ISaveGroupResult } from 'sql/platform/connection/common/connectionConfig';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
@@ -19,7 +19,7 @@ import { ConfigurationTarget } from 'vs/platform/configuration/common/configurat
 import { find } from 'vs/base/common/arrays';
 
 suite('ConnectionConfig', () => {
-	let capabilitiesService: TypeMoq.Mock<ICapabilitiesService>;
+	let capabilitiesService: TypeMoq.Mock<TestCapabilitiesService>;
 	let msSQLCapabilities: ProviderFeatures;
 	let capabilities: ProviderFeatures[];
 	let onCapabilitiesRegistered = new Emitter<ProviderFeatures>();

@@ -104,7 +104,8 @@ const indentationFilter = [
 	'!extensions/integration-tests/testData/**',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
-	'!**/*.patch'
+	'!**/*.patch',
+	'!resources/linux/snap/electron-launch'
 ];
 
 const copyrightFilter = [

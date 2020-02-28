@@ -9,5 +9,11 @@
 		{ "name": "sqlmlutils", "fileName": "sqlmlutils_0.7.1.zip", "downloadUrl": "https://github.com/microsoft/sqlmlutils/blob/master/R/dist/sqlmlutils_0.7.1.zip?raw=true"}
 	],
 
-	"rPackagesRepository": "https://cran.r-project.org"
+	"rPackagesRepository": "https://cran.r-project.org",
+
+	"registeredModelsDatabaseName": "MlFlowDB",
+	"registeredModelsTableName": "dbo.artifacts",
+	"amlModelManagementUrl": "modelmanagement.azureml.net",
+	"amlExperienceUrl": "experiments.azureml.net",
+	"amlApiVersion": "2018-11-19"
 }

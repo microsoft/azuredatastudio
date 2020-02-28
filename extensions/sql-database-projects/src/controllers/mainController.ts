@@ -8,6 +8,7 @@ import * as nls from 'vscode-nls';
 
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { getErrorMessage } from '../common/utils';
+import { ProjectsController } from './projectController';
 
 const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
 
@@ -19,9 +20,11 @@ const localize = nls.loadMessageBundle();
 export default class MainController implements vscode.Disposable {
 	protected _context: vscode.ExtensionContext;
 	protected dbProjectTreeViewProvider: SqlDatabaseProjectTreeViewProvider = new SqlDatabaseProjectTreeViewProvider();
+	protected projectsController: ProjectsController;
 
 	public constructor(context: vscode.ExtensionContext) {
 		this._context = context;
+		this.projectsController = new ProjectsController(this.dbProjectTreeViewProvider);
 	}
 
 	public get extensionContext(): vscode.ExtensionContext {
@@ -38,24 +41,28 @@ export default class MainController implements vscode.Disposable {
 	private async initializeDatabaseProjects(): Promise<void> {
 		// init commands
 		vscode.commands.registerCommand('sqlDatabaseProjects.new', () => { console.log('"New Database Project" called.'); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.open', async () => { this.openProjectFolder(); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.open', async () => { this.openProjectFromFile(); });
 
 		// init view
-		this.dbProjectTreeViewProvider = new SqlDatabaseProjectTreeViewProvider();
-
 		this.extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(SQL_DATABASE_PROJECTS_VIEW_ID, this.dbProjectTreeViewProvider));
 	}
 
-	public async openProjectFolder(): Promise<void> {
+	/**
+	 * Prompts the user to select a .sqlproj file to open
+	 * TODO: define behavior once projects are automatically opened from workspace
+	 */
+	public async openProjectFromFile(): Promise<void> {
 		try {
 			let filter: { [key: string]: string[] } = {};
 
 			filter[localize('sqlDatabaseProject', "SQL database project")] = ['sqlproj'];
 
-			let file = await vscode.window.showOpenDialog({ filters: filter });
+			let files: vscode.Uri[] | undefined = await vscode.window.showOpenDialog({ filters: filter });
 
-			if (file) {
-				await this.dbProjectTreeViewProvider.openProject(file);
+			if (files) {
+				for (const file of files) {
+					await this.projectsController.openProject(file);
+				}
 			}
 		}
 		catch (err) {
