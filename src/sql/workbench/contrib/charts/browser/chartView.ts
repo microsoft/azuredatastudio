@@ -55,15 +55,15 @@ export class ChartView extends Disposable implements IPanelView {
 	private taskbar: Taskbar;
 
 	private _createInsightAction: CreateInsightAction;
-	private _configureChartAction: ConfigureChartAction;
 	private _copyAction: CopyAction;
 	private _saveAction: SaveImageAction;
+	private _configureChartAction: ConfigureChartAction;
 
 	private _state: ChartState;
 
-	private options: IInsightOptions;
-	private optionMap: { [x: string]: { element: HTMLElement; set: (val) => void } };
-	private optionDisposables: IDisposable[] = [];
+	private options: IInsightOptions = {
+		type: ChartType.Bar
+	};
 
 	/** parent container */
 	private container: HTMLElement;
@@ -73,6 +73,9 @@ export class ChartView extends Disposable implements IPanelView {
 	private taskbarContainer: HTMLElement;
 	/** container for the charting (includes insight and options) */
 	private chartingContainer: HTMLElement;
+
+	private optionDisposables: IDisposable[] = [];
+	private optionMap: { [x: string]: { element: HTMLElement; set: (val) => void } } = {};
 
 	constructor(
 		@IContextViewService private _contextViewService: IContextViewService,
