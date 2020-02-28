@@ -126,6 +126,7 @@ export class ChartView extends Disposable implements IPanelView {
 			}
 		}) as IInsightOptions;
 
+		ChartOptions.general[0].options = insightRegistry.getAllIds();
 		this.buildOptions();
 	}
 
@@ -247,7 +248,6 @@ export class ChartView extends Disposable implements IPanelView {
 		DOM.clearNode(generalControls);
 		DOM.clearNode(typeControls);
 
-		ChartOptions.general[0].options = insightRegistry.getAllIds();
 		ChartOptions.general.map(o => {
 			this.createOption(o, generalControls);
 		});
