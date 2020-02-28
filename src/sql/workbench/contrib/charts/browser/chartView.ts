@@ -62,7 +62,8 @@ export class ChartView extends Disposable implements IPanelView {
 	private _state: ChartState;
 
 	private options: IInsightOptions = {
-		type: ChartType.Bar
+		type: ChartType.Bar,
+		dataDirection: DataDirection.Vertical
 	};
 
 	/** parent container */
@@ -85,19 +86,15 @@ export class ChartView extends Disposable implements IPanelView {
 	) {
 		super();
 
-		this.options = {
-			type: ChartType.Bar,
-			dataDirection: DataDirection.Vertical
-		};
-		this.optionMap = {};
-
 		this.taskbarContainer = DOM.$('div.taskbar-container');
 		this.taskbar = new Taskbar(this.taskbarContainer);
 
 		this._createInsightAction = this._instantiationService.createInstance(CreateInsightAction);
-		this._configureChartAction = this._instantiationService.createInstance(ConfigureChartAction, this);
 		this._copyAction = this._instantiationService.createInstance(CopyAction);
 		this._saveAction = this._instantiationService.createInstance(SaveImageAction);
+		this._configureChartAction = this._instantiationService.createInstance(ConfigureChartAction, this);
+
+		this.taskbar.setContent([{ action: this._createInsightAction }]);
 
 		const self = this;
 		this.options = new Proxy(this.options, {
@@ -128,6 +125,8 @@ export class ChartView extends Disposable implements IPanelView {
 				return true;
 			}
 		}) as IInsightOptions;
+
+		this.buildOptions();
 	}
 
 	public clear() {
