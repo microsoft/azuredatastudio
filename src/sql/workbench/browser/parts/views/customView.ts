@@ -50,6 +50,7 @@ import { NodeContextKey } from 'sql/workbench/browser/parts/views/nodeContext';
 import { UserCancelledConnectionError } from 'sql/base/common/errors';
 import { firstIndex } from 'vs/base/common/arrays';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 export class CustomTreeViewPanel extends ViewPane {
 
@@ -65,9 +66,10 @@ export class CustomTreeViewPanel extends ViewPane {
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IOpenerService protected openerService: IOpenerService,
-		@IThemeService protected themeService: IThemeService
+		@IThemeService protected themeService: IThemeService,
+		@ITelemetryService telemetryService: ITelemetryService,
 	) {
-		super({ ...(options as IViewPaneOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService);
+		super({ ...(options as IViewPaneOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
 		const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).getView(options.id));
 		this.treeView = treeView as ITreeView;
 		this._register(this.treeView.onDidChangeActions(() => this.updateActions(), this));

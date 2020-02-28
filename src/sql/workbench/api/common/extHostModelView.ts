@@ -163,6 +163,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
+	separator(): azdata.ComponentBuilder<azdata.SeparatorComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.SeparatorComponent> = this.getComponentBuilder(new SeparatorWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	dropDown(): azdata.ComponentBuilder<azdata.DropDownComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.DropDownComponent> = this.getComponentBuilder(new DropDownWrapper(this._proxy, this._handle, id), id);
@@ -1531,6 +1538,12 @@ class FileBrowserTreeComponentWrapper extends ComponentWrapper implements azdata
 	public get onDidChange(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
+	}
+}
+
+class SeparatorWrapper extends ComponentWrapper implements azdata.SeparatorComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.Separator, id);
 	}
 }
 

@@ -5,11 +5,11 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as path from 'path';
 import * as loc from '../../localizedConstants';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard, DeployOperationPath, Operation, DeployNewOperationPath, PageName } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
+import { generateDatabaseName } from '../api/utils';
 
 export class DeployConfigPage extends DacFxConfigPage {
 
@@ -88,7 +88,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		this.fileTextBox.onTextChanged(async () => {
 			this.model.filePath = this.fileTextBox.value;
-			this.databaseTextBox.value = this.generateDatabaseName(this.model.filePath);
+			this.databaseTextBox.value = generateDatabaseName(this.model.filePath);
 			if (!this.model.upgradeExisting) {
 				this.model.database = this.databaseTextBox.value;
 			}
@@ -199,10 +199,5 @@ export class DeployConfigPage extends DacFxConfigPage {
 		});
 		this.databaseLoader.loading = false;
 		return true;
-	}
-
-	private generateDatabaseName(filePath: string): string {
-		let result = path.parse(filePath);
-		return result.name;
 	}
 }
