@@ -20,6 +20,8 @@ import * as nls from 'vs/nls';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { DbCellValue } from 'azdata';
 
+export type ChartOptionMap = { [x: string]: { element: HTMLElement; set: (val) => void } };
+
 export class ChartView extends Disposable implements IPanelView {
 	private insight: Insight;
 	private _queryRunner: QueryRunner;
@@ -35,6 +37,7 @@ export class ChartView extends Disposable implements IPanelView {
 	private _state: ChartState;
 
 	private _options: IInsightOptions;
+	private _optionMap: ChartOptionMap;
 
 	/** parent container */
 	private container: HTMLElement;
@@ -45,7 +48,6 @@ export class ChartView extends Disposable implements IPanelView {
 	/** container for the charting (includes insight and options) */
 	private chartingContainer: HTMLElement;
 
-	private optionMap: { [x: string]: { element: HTMLElement; set: (val) => void } } = {};
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -64,6 +66,7 @@ export class ChartView extends Disposable implements IPanelView {
 			type: ChartType.Bar,
 			dataDirection: DataDirection.Vertical
 		};
+		this._optionMap = {};
 	}
 
 	public clear() {
@@ -131,8 +134,9 @@ export class ChartView extends Disposable implements IPanelView {
 		}
 	}
 
-	public set options(options: IInsightOptions) {
+	public setOptions(options: IInsightOptions, optionMap: ChartOptionMap) {
 		this._options = options;
+		this._optionMap = optionMap;
 		if (this.insight) {
 			this.insight.options = options;
 			this.updateActionbar();
@@ -141,6 +145,10 @@ export class ChartView extends Disposable implements IPanelView {
 
 	public get options() {
 		return this._options;
+	}
+
+	public get optionMap() {
+		return this._optionMap;
 	}
 
 	private shouldGraph() {
@@ -181,9 +189,9 @@ export class ChartView extends Disposable implements IPanelView {
 		this._state = val;
 		if (this.state.options) {
 			for (let key in this.state.options) {
-				if (this.state.options.hasOwnProperty(key) && this.optionMap[key]) {
+				if (this.state.options.hasOwnProperty(key) && this._optionMap[key]) {
 					this._options[key] = this.state.options[key];
-					this.optionMap[key].set(this.state.options[key]);
+					this._optionMap[key].set(this.state.options[key]);
 				}
 			}
 		}

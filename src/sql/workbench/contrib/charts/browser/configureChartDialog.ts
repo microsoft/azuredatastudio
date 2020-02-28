@@ -13,11 +13,11 @@ import { attachSelectBoxStyler, attachInputBoxStyler, attachButtonStyler } from 
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
-import { IInsightOptions, ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IInsightOptions } from 'sql/workbench/contrib/charts/common/interfaces';
 import { ChartState } from 'sql/workbench/common/editor/query/chartState';
 import { localize } from 'vs/nls';
 import { find } from 'vs/base/common/arrays';
-import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
+import { ChartView, ChartOptionMap } from 'sql/workbench/contrib/charts/browser/chartView';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
@@ -50,12 +50,10 @@ export class ConfigureChartDialog extends Modal {
 	private _optionsControl: HTMLElement;
 	private _typeControls: HTMLElement;
 
-	private _options: IInsightOptions = {
-		type: ChartType.Bar
-	};
+	private _options: IInsightOptions;
+	private _optionMap: ChartOptionMap;
 
 	private _optionDisposables: IDisposable[] = [];
-	private _optionMap: { [x: string]: { element: HTMLElement; set: (val) => void } } = {};
 	private _state: ChartState;
 
 	constructor(
@@ -73,6 +71,7 @@ export class ConfigureChartDialog extends Modal {
 	) {
 		super(title, name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, undefined);
 		this._options = this._chart.options;
+		this._optionMap = this._chart.optionMap;
 
 		let self = this;
 		this._options = new Proxy(this._options, {
@@ -147,7 +146,7 @@ export class ConfigureChartDialog extends Modal {
 	}
 
 	private handleApply(): void {
-		this._chart.options = this._options;
+		this._chart.setOptions(this._options, this._optionMap);
 	}
 
 	public cancel() {
@@ -170,6 +169,7 @@ export class ConfigureChartDialog extends Modal {
 		this._optionMap = {
 			'type': this._optionMap['type']
 		};
+
 		DOM.clearNode(this._typeControls);
 
 		ChartOptions[this._options.type].map(o => {
