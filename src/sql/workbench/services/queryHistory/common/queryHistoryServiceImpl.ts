@@ -5,7 +5,6 @@
 
 import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
 
-import { IQueryModelService, IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { URI } from 'vs/base/common/uri';
 import { Range } from 'vs/editor/common/core/range';
@@ -32,7 +31,6 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 	public get onQueryHistoryCaptureChanged(): Event<boolean> { return this._onQueryHistoryCaptureChanged.event; }
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
-		@IQueryModelService _queryModelService: IQueryModelService,
 		@IModelService _modelService: IModelService,
 		@IConnectionManagementService _connectionManagementService: IConnectionManagementService,
 		@IConfigurationService private _configurationService: IConfigurationService
@@ -47,7 +45,7 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 			}
 		}));
 
-		this._register(_queryModelService.onQueryEvent((e: IQueryEvent) => {
+		/*this._register(_queryModelService.onQueryEvent((e: IQueryEvent) => {
 			if (this._captureEnabled && e.type === 'queryStop') {
 				const uri: URI = URI.parse(e.uri);
 				// VS Range is 1 based so offset values by 1. The endLine we get back from SqlToolsService is incremented
@@ -74,7 +72,7 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 				this._infos.unshift(newInfo);
 				this._onInfosUpdated.fire(this._infos);
 			}
-		}));
+		}));*/
 	}
 
 	/**

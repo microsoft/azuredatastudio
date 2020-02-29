@@ -25,7 +25,6 @@ import {
 import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }

@@ -32,7 +32,6 @@ import { OEAction } from 'sql/workbench/services/objectExplorer/browser/objectEx
 import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { ILogService } from 'vs/platform/log/common/log';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
@@ -411,7 +410,6 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 	constructor(
 		editor: QueryEditor,
 		private _isSqlCmdMode: boolean,
-		@IQueryManagementService protected readonly queryManagementService: IQueryManagementService,
 		@IConfigurationService protected readonly configurationService: IConfigurationService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@ILogService private readonly logService: ILogService

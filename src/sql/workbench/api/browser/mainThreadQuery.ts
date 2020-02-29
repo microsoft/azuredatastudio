@@ -11,7 +11,6 @@ import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IResultMessage, IQueryService, IFetchResponse, IQueryProviderEvent, IResultSetSummary, ColumnType } from 'sql/platform/query/common/queryService';
 import { values } from 'vs/base/common/collections';
 import { URI } from 'vs/base/common/uri';
-import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import type * as azdata from 'azdata';
 
 interface QueryEvents {
@@ -32,8 +31,7 @@ export class MainThreadQuery extends Disposable implements MainThreadQueryShape 
 
 	constructor(
 		extHostContext: IExtHostContext,
-		@IQueryService private readonly queryService: IQueryService,
-		@IQueryManagementService private readonly queryManagementService: IQueryManagementService
+		@IQueryService private readonly queryService: IQueryService
 	) {
 		super();
 		this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostQuery);

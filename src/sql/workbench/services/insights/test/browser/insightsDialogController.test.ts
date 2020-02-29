@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { InsightsDialogController } from 'sql/workbench/services/insights/browser/insightsDialogController';
-import QueryRunner, { IQueryMessage } from 'sql/workbench/services/query/common/queryRunner';
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 

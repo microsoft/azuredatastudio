@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { SaveResultsRequestParams } from 'azdata';
-import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { URI } from 'vs/base/common/uri';
@@ -65,7 +64,6 @@ export class ResultSerializer {
 	public static tempFileCount: number = 1;
 
 	constructor(
-		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@IEditorService private _editorService: IEditorService,
 		@IWorkspaceContextService private _contextService: IWorkspaceContextService,

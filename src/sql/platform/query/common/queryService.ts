@@ -139,6 +139,14 @@ export interface IQuery {
 	 * Result sets returned from the query
 	 */
 	readonly resultSets: ReadonlyArray<IResultSet>;
+	/**
+	 * Time that the query started
+	 */
+	readonly startTime?: number;
+	/**
+	 * Time that the query finished
+	 */
+	readonly endTime?: number;
 
 	// events
 	onResultSetAvailable: Event<IResultSet>;
@@ -170,6 +178,19 @@ class Query extends Disposable implements IQuery {
 
 	private readonly _onQueryComplete = new Emitter<void>();
 	public readonly onQueryComplete = this._onQueryComplete.event;
+
+	private _startTime?: number;
+	public get startTime(): number | undefined {
+		return this._startTime;
+	}
+
+	private _endTime?: number;
+	public get endTime(): number | undefined {
+		if (this.state === QueryState.EXECUTING) {
+			return undefined; // the end time is unreliable until we know the query has been completed
+		}
+		return this._endTime;
+	}
 
 	//#region TBD
 	// private _onBatchStart = new Emitter<void>();
@@ -208,10 +229,12 @@ class Query extends Disposable implements IQuery {
 		if (this.state === QueryState.EXECUTING) {
 			throw new Error('Query already executing');
 		} else {
-			this.setState(QueryState.EXECUTING);
 			this._resultSets = [];
 			this._messages = [];
+			this._startTime = undefined;
+			this._endTime = undefined;
 			await this.queryService.executeQuery(this.connection, this.associatedFile);
+			this.setState(QueryState.EXECUTING);
 		}
 	}
 

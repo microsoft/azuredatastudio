@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as GridContentEvents from 'sql/workbench/services/query/common/gridContentEvents';
-import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { EditDataEditor } from 'sql/workbench/contrib/editData/browser/editDataEditor';
 

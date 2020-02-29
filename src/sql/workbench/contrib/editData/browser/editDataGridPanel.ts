@@ -17,7 +17,6 @@ import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColu
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { escape } from 'sql/base/common/strings';
-import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

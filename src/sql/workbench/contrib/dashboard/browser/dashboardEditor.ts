@@ -23,7 +23,6 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 
 export class DashboardEditor extends BaseEditor {
 
@@ -38,8 +37,7 @@ export class DashboardEditor extends BaseEditor {
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IDashboardService private _dashboardService: IDashboardService,
 		@IConnectionManagementService private _connMan: IConnectionManagementService,
-		@IStorageService storageService: IStorageService,
-		@IQueryManagementService private queryManagementService: IQueryManagementService
+		@IStorageService storageService: IStorageService
 	) {
 		super(DashboardEditor.ID, telemetryService, themeService, storageService);
 	}

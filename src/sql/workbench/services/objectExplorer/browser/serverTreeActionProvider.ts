@@ -22,7 +22,6 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';
 import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
 import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
-import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { ServerInfoContextKey } from 'sql/workbench/services/connection/common/serverInfoContextKey';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -36,7 +35,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@IMenuService private menuService: IMenuService,
 		@IContextKeyService private _contextKeyService: IContextKeyService
 	) {
@@ -142,7 +140,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 
 	private getContextKeyService(context: ObjectExplorerContext): IContextKeyService {
 		let scopedContextService = this._contextKeyService.createScoped();
-		let connectionContextKey = new ConnectionContextKey(scopedContextService, this._queryManagementService);
+		let connectionContextKey = new ConnectionContextKey(scopedContextService, /*this._queryManagementService*/);
 		let connectionProfile = context && context.profile;
 		connectionContextKey.set(connectionProfile);
 		let serverInfoContextKey = new ServerInfoContextKey(scopedContextService);

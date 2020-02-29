@@ -14,7 +14,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import * as types from 'vs/base/common/types';
 
-import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import { EditDataGridPanel } from 'sql/workbench/contrib/editData/browser/editDataGridPanel';
 import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataResultsInput';
@@ -33,7 +32,6 @@ export class EditDataResultsEditor extends BaseEditor {
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
-		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IStorageService storageService: IStorageService

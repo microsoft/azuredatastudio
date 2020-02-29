@@ -20,6 +20,12 @@ suite('Query Service', () => {
 
 		const query = queryService.createOrGetQuery(basicConnection(), URI.from({ scheme: 'untitled' }));
 
+		sinon.stub(provider, 'runQuery', () => {
+			assert(query.state === QueryState.NOT_EXECUTING, 'State should be set after the request is sent.'); // we expect the state to change AFTER the request has been sent
+			return Promise.resolve();
+		});
+
+
 		assert(query.state === QueryState.NOT_EXECUTING);
 		assert(query.associatedFile.toString() === URI.from({ scheme: 'untitled' }).toString());
 

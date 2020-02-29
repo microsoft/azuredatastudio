@@ -10,10 +10,8 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 
 import * as azdata from 'azdata';
 
-import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
-import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/platform/query/common/constants';
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
@@ -239,8 +237,6 @@ export class RunQueryShortcutAction extends Action {
 
 	constructor(
 		@IEditorService private readonly editorService: IEditorService,
-		@IQueryModelService protected readonly queryModelService: IQueryModelService,
-		@IQueryManagementService private readonly queryManagementService: IQueryManagementService,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
@@ -394,7 +390,6 @@ export class ParseSyntaxAction extends Action {
 		id: string,
 		label: string,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
-		@IQueryManagementService private readonly queryManagementService: IQueryManagementService,
 		@IEditorService private readonly editorService: IEditorService,
 		@INotificationService private readonly notificationService: INotificationService
 	) {

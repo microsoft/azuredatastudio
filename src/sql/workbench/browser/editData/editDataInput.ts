@@ -5,7 +5,6 @@
 
 import { EditorInput, EncodingMode, IEditorInput } from 'vs/workbench/common/editor';
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { Event, Emitter } from 'vs/base/common/event';
 import { EditSessionReadyParams } from 'azdata';
 import { URI } from 'vs/base/common/uri';
@@ -44,7 +43,6 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		private _queryString: string,
 		private _results: EditDataResultsInput,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IQueryModelService private _queryModelService: IQueryModelService,
 		@INotificationService private notificationService: INotificationService
 	) {
 		super();

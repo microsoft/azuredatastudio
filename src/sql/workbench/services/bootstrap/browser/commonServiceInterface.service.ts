@@ -14,7 +14,6 @@ import { IMetadataService } from 'sql/platform/metadata/common/metadataService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
-import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
@@ -77,7 +76,6 @@ export class SingleAdminService {
 
 export class SingleQueryManagementService {
 	constructor(
-		private _queryManagementService: IQueryManagementService,
 		private _uri: string
 	) { }
 
@@ -110,8 +108,7 @@ export class CommonServiceInterface extends AngularDisposable {
 		@Inject(IBootstrapParams) protected _params: IDefaultComponentParams,
 		@Inject(IMetadataService) protected _metadataService: IMetadataService,
 		@Inject(IConnectionManagementService) protected _connectionManagementService: IConnectionManagementService,
-		@Inject(IAdminService) protected _adminService: IAdminService,
-		@Inject(IQueryManagementService) protected _queryManagementService: IQueryManagementService
+		@Inject(IAdminService) protected _adminService: IAdminService
 	) {
 		super();
 		// during testing there may not be params

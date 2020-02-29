@@ -18,7 +18,6 @@ import {
 	DisconnectDatabaseAction, ConnectDatabaseAction, QueryTaskbarAction
 } from 'sql/workbench/contrib/query/browser/queryActions';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
-import { QueryModelService } from 'sql/workbench/services/query/common/queryModelService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import * as TypeMoq from 'typemoq';
@@ -27,7 +26,6 @@ import { TestStorageService, TestFileService, workbenchInstantiationService } fr
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
-import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
 import { URI } from 'vs/base/common/uri';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';

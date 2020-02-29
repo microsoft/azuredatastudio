@@ -21,7 +21,6 @@ import { TestStorageService, workbenchInstantiationService } from 'vs/workbench/
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
-import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
 import { Event } from 'vs/base/common/event';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';

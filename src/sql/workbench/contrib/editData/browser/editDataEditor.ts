@@ -21,7 +21,6 @@ import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
-import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { IEditorDescriptorService } from 'sql/workbench/services/queryEditor/browser/editorDescriptorService';
 import {
 	RefreshTableAction, StopRefreshTableAction, ChangeMaxRowsAction, ChangeMaxRowsActionItem, ShowQueryPaneAction
@@ -74,7 +73,6 @@ export class EditDataEditor extends BaseEditor {
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
-		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IStorageService storageService: IStorageService

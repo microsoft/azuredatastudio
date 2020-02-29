@@ -10,9 +10,7 @@ import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionT
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import * as azdata from 'azdata';
-import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -25,9 +23,7 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 	constructor(
 		extHostContext: IExtHostContext,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorService private _editorService: IEditorService,
-		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@ILogService private _logService: ILogService
 	) {
 		super();

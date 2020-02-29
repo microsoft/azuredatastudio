@@ -23,7 +23,6 @@ import { IExtensionManagementService, IExtensionIdentifier } from 'vs/platform/e
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { Deferred } from 'sql/base/common/promise';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { SqlNotebookProvider } from 'sql/workbench/services/notebook/browser/sql/sqlNotebookProvider';
@@ -114,8 +113,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IExtensionManagementService extensionManagementService: IExtensionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IFileService private readonly _fileService: IFileService,
-		@ILogService private readonly _logService: ILogService,
-		@IQueryManagementService private readonly _queryManagementService: IQueryManagementService,
 		@ILogService private readonly logService: ILogService
 	) {
 		super();
@@ -594,8 +591,8 @@ export class NotebookService extends Disposable implements INotebookService {
 				this._trustedNotebooksMemento.saveMemento();
 			}
 		} catch (err) {
-			if (this._logService) {
-				this._logService.trace(`Failed to save trust state to cache: ${toErrorMessage(err)}`);
+			if (this.logService) {
+				this.logService.trace(`Failed to save trust state to cache: ${toErrorMessage(err)}`);
 			}
 		}
 	}

@@ -5,7 +5,6 @@
 
 import { Action, IActionViewItem, IActionRunner } from 'vs/base/common/actions';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { EditDataEditor } from 'sql/workbench/contrib/editData/browser/editDataEditor';
@@ -66,7 +65,6 @@ export class RefreshTableAction extends EditDataAction {
 	public static ID = 'refreshTableAction';
 
 	constructor(editor: EditDataEditor,
-		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IConnectionManagementService _connectionManagementService: IConnectionManagementService,
 		@INotificationService private _notificationService: INotificationService,
 	) {
@@ -109,7 +107,6 @@ export class StopRefreshTableAction extends EditDataAction {
 	public static ID = 'stopRefreshAction';
 
 	constructor(editor: EditDataEditor,
-		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IConnectionManagementService _connectionManagementService: IConnectionManagementService
 	) {
 		super(editor, StopRefreshTableAction.ID, StopRefreshTableAction.EnabledClass, _connectionManagementService);

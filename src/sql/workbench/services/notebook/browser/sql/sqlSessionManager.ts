@@ -5,7 +5,6 @@
 
 import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage, ResultSetSummary } from 'azdata';
 import { localize } from 'vs/nls';
-import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
