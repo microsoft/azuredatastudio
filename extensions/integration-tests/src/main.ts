@@ -102,8 +102,20 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		while (true);
 	});
+
+	// This function is added as part of Onboarding Hackathon and will be used to add names by
+	vscode.commands.registerCommand('test.showDevelopers', async () => {
+		let teamMembers: string = `
+		Welcome to the team
+		<Add your Github User Name here, do not add your microsoft Alias>
+	`;
+		vscode.window.showInformationMessage(teamMembers, { modal: true }, 'Ok');
+	});
+
 	showStatusBarItem(statusBarItem, EXTENSION_LOADED_TEXT);
 }
+
+
 
 function showStatusBarItem(statusBarItem: vscode.StatusBarItem, text: string) {
 	statusBarItem.text = text;

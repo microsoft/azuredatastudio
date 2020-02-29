@@ -41,6 +41,11 @@
         "command": "test.waitForExtensionsToLoad",
         "title": "Wait For Extensions To Load",
         "category": "Test"
+      },
+      {
+        "command": "test.showDevelopers",
+        "title": "Show Developers",
+        "category": "Test"
       }
     ]
   },
