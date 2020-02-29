@@ -154,16 +154,16 @@ steps:
       Contents: '*/coverage/**'
       TargetFolder: '$(Build.ArtifactStagingDirectory)/test-results/coverage'
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: drop'
-
   - task: PublishTestResults@2
     displayName: 'Publish Test Results test-results.xml'
     inputs:
-      testResultsFiles: '*-test-results.xml'
+      testResultsFiles: '*.xml'
       searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: drop'
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Detection'
