@@ -103,7 +103,8 @@ export function activate(context: vscode.ExtensionContext) {
 		while (true);
 	});
 
-	// This function is added as part of Onboarding Hackathon and will be used to add names by
+	// This function is added as part of Onboarding Hackathon and will be used to add names
+	// by new memebers of the team as part of their first change in the repo
 	vscode.commands.registerCommand('test.showDevelopers', async () => {
 		let teamMembers: string = `
 		Welcome to the team
