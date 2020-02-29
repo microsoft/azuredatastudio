@@ -3,9 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
 import { QUERY_HISTORY_PANEL_ID } from 'sql/workbench/contrib/queryHistory/common/constants';
-import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { Action } from 'vs/base/common/actions';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
@@ -14,8 +12,8 @@ import { localize } from 'vs/nls';
 import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
 import { QueryHistoryNode } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryNode';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { openNewQuery } from 'sql/workbench/services/query/browser/query';
 
 export class ToggleQueryHistoryAction extends TogglePanelAction {
 
@@ -82,7 +80,7 @@ export class OpenQueryAction extends Action {
 
 	public async run(element: QueryHistoryNode): Promise<void> {
 		if (element instanceof QueryHistoryNode && element.info) {
-			return this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText, RunQueryOnConnectionMode.none).then();
+			return this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText).then();
 		}
 	}
 }
@@ -101,7 +99,8 @@ export class RunQueryAction extends Action {
 
 	public async run(element: QueryHistoryNode): Promise<void> {
 		if (element instanceof QueryHistoryNode && element.info) {
-			return this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText, RunQueryOnConnectionMode.executeQuery).then();
+			const input = await this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText);
+			input.runQuery();
 		}
 	}
 }

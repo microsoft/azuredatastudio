@@ -21,7 +21,7 @@ suite('ExtHostDataProtocol', () => {
 					$registerConnectionProvider: (providerId, handle) => Promise.resolve()
 				} as any;
 			}
-		} as any, undefined);
+		} as any);
 	});
 
 	test('Providers are exposed to other extensions', () => {
@@ -46,7 +46,6 @@ suite('ExtHostDataProtocol', () => {
 		// If I register both providers and then get them using the getProvider API
 		extHostDataProtocol.$registerMetadataProvider(extension1MetadataMock.object);
 		extHostDataProtocol.$registerMetadataProvider(extension2MetadataMock.object);
-		extHostDataProtocol.$registerConnectionProvider({} as azdata.ConnectionProvider);
 		let retrievedProvider1 = extHostDataProtocol.getProvider<azdata.MetadataProvider>(extension1Id, DataProviderType.MetadataProvider);
 		let retrievedProvider2 = extHostDataProtocol.getProvider<azdata.MetadataProvider>(extension2Id, DataProviderType.MetadataProvider);
 		let allProviders = extHostDataProtocol.getProvidersByType<azdata.MetadataProvider>(DataProviderType.MetadataProvider);

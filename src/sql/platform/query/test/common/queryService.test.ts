@@ -10,24 +10,15 @@ import { TestConnectionService } from 'sql/platform/connection/test/common/testC
 import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { IConnection, ConnectionState } from 'sql/platform/connection/common/connectionService';
+import { range } from 'vs/base/common/arrays';
 
 suite('Query Service', () => {
-
 	test('does handle basic query', async () => {
-
-		const basicConnection: IConnection = {
-			connect: () => Promise.resolve({ failed: false }),
-			onDidConnect: Promise.resolve({ failed: false }),
-			onDidStateChange: Event.None,
-			provider: TestQueryProvider.ID,
-			state: ConnectionState.CONNECTED
-		};
-
 		const [queryService, connectionService, provider] = createService();
 		const connectionId = 'connectionId';
 		sinon.stub(connectionService, 'getIdForConnection', () => connectionId);
 
-		const query = queryService.createOrGetQuery(basicConnection, URI.from({ scheme: 'untitled' }));
+		const query = queryService.createOrGetQuery(basicConnection(), URI.from({ scheme: 'untitled' }));
 
 		assert(query.state === QueryState.NOT_EXECUTING);
 		assert(query.associatedFile.toString() === URI.from({ scheme: 'untitled' }).toString());
@@ -84,7 +75,123 @@ suite('Query Service', () => {
 		assert(query.resultSets[0].rowCount === 200);
 		assert(query.resultSets[0].completed);
 	});
+
+	test('does clear state on execute', async () => {
+		const [queryService, connectionService, provider] = createService();
+		const connectionId = 'connectionId';
+		sinon.stub(connectionService, 'getIdForConnection', () => connectionId);
+
+		const query = queryService.createOrGetQuery(basicConnection(), URI.from({ scheme: 'untitled' }));
+
+		await query.execute();
+
+		assert(query.state === QueryState.EXECUTING);
+
+		const resultSetNotification = {
+			completed: true,
+			rowCount: 100,
+			batchId: 0,
+			id: 0,
+			columns: [{ title: 'column1', type: ColumnType.UNKNOWN }]
+		};
+
+		const resultSet = await new Promise<IResultSet>(r => {
+			Event.once(query.onResultSetAvailable)(e => r(e));
+			provider.onResultSetAvailableEmitter.fire({ connectionId, ...resultSetNotification });
+		});
+
+		assert(resultSet.completed);
+		assert.deepEqual(resultSet.columns, resultSetNotification.columns);
+		assert(resultSet.rowCount === resultSetNotification.rowCount);
+
+		assert(query.resultSets.length === 1);
+
+		await new Promise<void>(r => {
+			Event.once(query.onQueryComplete)(e => r(e));
+			provider.onQueryCompleteEmitter.fire({ connectionId });
+		});
+
+		assert(query.state === QueryState.NOT_EXECUTING);
+
+		await query.execute();
+
+		assert(query.state === QueryState.EXECUTING);
+
+		const resultSet2 = await new Promise<IResultSet>(r => {
+			Event.once(query.onResultSetAvailable)(e => r(e));
+			provider.onResultSetAvailableEmitter.fire({ connectionId, ...resultSetNotification });
+		});
+
+		assert(resultSet2.completed);
+		assert.deepEqual(resultSet2.columns, resultSetNotification.columns);
+		assert(resultSet2.rowCount === resultSetNotification.rowCount);
+
+		assert(query.resultSets.length === 1);
+
+		await new Promise<void>(r => {
+			Event.once(query.onQueryComplete)(e => r(e));
+			provider.onQueryCompleteEmitter.fire({ connectionId });
+		});
+
+		assert(query.state === QueryState.NOT_EXECUTING);
+	});
+
+	test('does cancel query on request', async () => {
+		const [queryService, connectionService, provider] = createService();
+		const connectionId = 'connectionId';
+		sinon.stub(connectionService, 'getIdForConnection', () => connectionId);
+		const cancelStub = sinon.stub(provider, 'cancelQuery', () => Promise.resolve('message'));
+
+		const query = queryService.createOrGetQuery(basicConnection(), URI.from({ scheme: 'untitled' }));
+		await query.execute();
+
+		assert(query.state === QueryState.EXECUTING);
+		await query.cancel();
+
+		assert(query.state === QueryState.NOT_EXECUTING);
+		assert(cancelStub.calledOnce);
+	});
+
+	test('does fetch data correctly', async () => {
+		const [queryService, connectionService, provider] = createService();
+		const connectionId = 'connectionId';
+		sinon.stub(connectionService, 'getIdForConnection', () => connectionId);
+
+		const resultSetNotification = {
+			completed: true,
+			rowCount: 100,
+			batchId: 0,
+			id: 0,
+			columns: [{ title: 'column1', type: ColumnType.UNKNOWN }]
+		};
+
+		const query = queryService.createOrGetQuery(basicConnection(), URI.from({ scheme: 'untitled' }));
+		await query.execute();
+
+		const resultSet = await new Promise<IResultSet>(r => {
+			Event.once(query.onResultSetAvailable)(e => r(e));
+			provider.onResultSetAvailableEmitter.fire({ connectionId, ...resultSetNotification });
+		});
+
+		const fetchStub = sinon.stub(provider, 'fetchSubset', (): Promise<IFetchResponse> => {
+			return Promise.resolve({
+				rowCount: 100,
+				rows: generateData(100, 1)
+			});
+		});
+
+		const data = await resultSet.fetch(0, 100);
+
+		assert(fetchStub.calledOnce);
+		assert(fetchStub.calledWithExactly(connectionId, 0, 0, 0, 100));
+		assert(data.rowCount === 100);
+		assert(data.rows[0].every((r, i) => r === `0_${i}`)); // check just first row
+	});
 });
+
+function generateData(rowCount: number, columnCount: number): Array<Array<any>> {
+	return range(rowCount).map(r => range(columnCount).map(c => `${r}_${c}`));
+}
 
 function createService(): [QueryService, TestConnectionService, TestQueryProvider] {
 	const connectionService = new TestConnectionService();
@@ -92,6 +199,20 @@ function createService(): [QueryService, TestConnectionService, TestQueryProvide
 	const provider = new TestQueryProvider();
 	queryService.registerProvider(provider);
 	return [queryService, connectionService, provider];
+}
+
+/**
+ * Returns a basic connection to be used, mainly in a function to fix reference errors
+ */
+function basicConnection(): IConnection {
+	return {
+		connect: () => Promise.resolve({ failed: false }),
+		disconnect: () => Promise.resolve(),
+		onDidConnect: Promise.resolve({ failed: false }),
+		onDidStateChange: Event.None,
+		provider: TestQueryProvider.ID,
+		state: ConnectionState.CONNECTED
+	};
 }
 
 class TestQueryProvider implements IQueryProvider {
@@ -115,6 +236,10 @@ class TestQueryProvider implements IQueryProvider {
 	}
 
 	fetchSubset(connectionId: string, resultSetId: number, batchId: number, offset: number, count: number): Promise<IFetchResponse> {
+		throw new Error('Method not implemented.');
+	}
+
+	cancelQuery(connectionId: string): Promise<string> {
 		throw new Error('Method not implemented.');
 	}
 }

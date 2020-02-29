@@ -5,12 +5,11 @@
 
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
-import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { InsightActionContext } from 'sql/workbench/browser/actions';
-import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { isString } from 'vs/base/common/types';
+import { openNewQuery } from 'sql/workbench/services/query/browser/query';
 
 export class RunInsightQueryAction extends Action {
 	public static ID = 'runQuery';
@@ -24,7 +23,7 @@ export class RunInsightQueryAction extends Action {
 		super(id, label);
 	}
 
-	public run(context: InsightActionContext): Promise<boolean> {
+	public async run(context: InsightActionContext): Promise<boolean> {
 		let queryString: string = undefined;
 		let eol: string = this._textResourcePropertiesService.getEOL(undefined);
 		if (context.insight && context.insight.query) {
@@ -36,7 +35,13 @@ export class RunInsightQueryAction extends Action {
 		} else {
 			return Promise.resolve(false);
 		}
-		return this.instantiationService.invokeFunction(openNewQuery, context.profile, queryString,
-			RunQueryOnConnectionMode.executeQuery).then(() => true, () => false);
+
+		try {
+			const input = await this.instantiationService.invokeFunction(openNewQuery, context.profile, queryString);
+			input.runQuery();
+			return true;
+		} catch (e) {
+			return false;
+		}
 	}
 }

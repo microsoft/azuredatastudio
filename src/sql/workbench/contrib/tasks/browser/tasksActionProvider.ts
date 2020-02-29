@@ -8,7 +8,7 @@ import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TaskNode, TaskStatus, TaskExecutionMode } from 'sql/workbench/services/tasks/common/tasksNode';
-import { CancelAction, ScriptAction } from 'sql/workbench/contrib/tasks/common/tasksAction';
+import { CancelAction, ScriptAction } from 'sql/workbench/contrib/tasks/browser/tasksAction';
 
 /**
  *  Provides actions for the history tasks

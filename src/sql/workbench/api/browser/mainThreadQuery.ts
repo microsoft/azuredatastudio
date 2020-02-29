@@ -62,6 +62,10 @@ export class MainThreadQuery extends Disposable implements MainThreadQueryShape 
 			runQuery: (connectionId: string, file: URI): Promise<void> => {
 				return this._proxy.$runQuery(handle, connectionId); // for now we consider the connection to be the file but we shouldn't
 			},
+			cancelQuery: async (connectionId: string): Promise<string> => {
+				const response = await this._proxy.$cancelQuery(handle, connectionId);
+				return response.messages;
+			},
 			fetchSubset: async (connectionId: string, resultSetId: number, batchId: number, offset: number, count: number): Promise<IFetchResponse> => {
 				const response = await this._proxy.$getQueryRows(handle, { batchIndex: batchId, rowsStartIndex: offset, rowsCount: count, resultSetIndex: resultSetId, ownerUri: connectionId });
 				return { rowCount: response.resultSubset.rowCount, rows: response.resultSubset.rows };

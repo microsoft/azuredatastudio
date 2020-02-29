@@ -192,11 +192,27 @@ suite('Connection Service', () => {
 		const fakeConnection: IConnection = {
 			state: ConnectionState.CONNECTED,
 			connect: () => Promise.resolve({ failed: false }),
+			disconnect: () => Promise.resolve(),
 			onDidConnect: Promise.resolve({ failed: false }),
 			onDidStateChange: Event.None,
 			provider: 'provider'
 		};
 		assert.throws(() => connectionService.getIdForConnection(fakeConnection));
+	});
+
+	test('does disconnect properly', async () => {
+		const [connectionService, provider] = createService();
+		const disconnectStub = sinon.stub(provider, 'disconnect', (): Promise<boolean> => Promise.resolve(true));
+
+		const connection1 = connectionService.createOrGetConnection('someuri', { provider: TestConnectionProvider.ID, options });
+		await connection1.connect();
+
+		assert(connection1.state === ConnectionState.CONNECTED);
+
+		await connection1.disconnect();
+
+		assert(disconnectStub.calledOnce);
+		assert(connection1.state === ConnectionState.DISCONNECTED);
 	});
 });
 
@@ -267,14 +283,15 @@ class TestConnectionProvider implements IConnectionProvider {
 	public readonly onDidConnectionChanged = this.onDidConnectionChangedEmitter.event;
 
 	connect(connectionUri: string, options: { [name: string]: any; }): Promise<boolean> {
-		throw new Error('Method not implemented.');
+		setImmediate(() => this.onDidConnectionCompleteEmitter.fire({ connectionUri }));
+		return Promise.resolve(true);
 	}
 
 	disconnect(connectionUri: string): Promise<boolean> {
-		throw new Error('Method not implemented.');
+		return Promise.resolve(true);
 	}
 
 	cancelConnect(connectionUri: string): Promise<boolean> {
-		throw new Error('Method not implemented.');
+		return Promise.resolve(true);
 	}
 }

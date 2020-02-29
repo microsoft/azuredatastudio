@@ -95,6 +95,10 @@ export interface IConnection {
 	 */
 	connect(): Promise<IConnectionCompleteEvent>;
 	/**
+	 * Attempt to disconnect the current connection. If it is not connected will throw
+	 */
+	disconnect(): Promise<void>;
+	/**
 	 * A helper for subscribing to the next time this connection finishes connecting (success or failure).
 	 * Only valid if @this.state is @type {ConnectionState.CONNECTING}
 	 */
@@ -172,6 +176,16 @@ class Connection extends Disposable implements IConnection {
 				throw new Error('Connection not disconnected'); // not sure what to do here; callers should really check state first
 		}
 	}
+
+	public async disconnect(): Promise<void> {
+		if (this.state !== ConnectionState.CONNECTED) {
+			throw new Error('Connection is not connected');
+		}
+
+		await this.connectionService.disconnect(this.connectionId, this.profile); // should we be checking this return value?
+
+		this.setState(ConnectionState.DISCONNECTED);
+	}
 }
 
 export class ConnectionService extends Disposable implements IConnectionService {
@@ -248,13 +262,22 @@ export class ConnectionService extends Disposable implements IConnectionService 
 		return connection;
 	}
 
+	//#region @type{Query} helpers
 	public async connect(connectionId: string, profile: IConnectionProfile): Promise<boolean> {
-		const providerStub = this.connectionProviders.get(profile.provider);
+		return (await this.withProvider(profile.provider)).connect(connectionId, profile);
+	}
+
+	public async disconnect(connectionId: string, profile: IConnectionProfile): Promise<boolean> {
+		return (await this.withProvider(profile.provider)).disconnect(connectionId);
+	}
+	//#endregion
+
+	private withProvider(provider: string): Promise<IConnectionProvider> {
+		const providerStub = this.connectionProviders.get(provider);
 		if (!providerStub) {
-			throw new Error(`Provider could not be found: ${profile.provider}`);
+			throw new Error(`Connection provider could not be found: ${provider}`);
 		}
-		const provider = await providerStub.provider;
-		return provider.connect(connectionId, profile.options);
+		return providerStub.provider;
 	}
 }
 

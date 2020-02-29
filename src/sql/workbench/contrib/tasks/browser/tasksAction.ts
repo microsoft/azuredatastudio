@@ -7,9 +7,10 @@ import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { ITaskService } from 'sql/workbench/services/tasks/common/tasksService';
 import { TaskNode } from 'sql/workbench/services/tasks/common/tasksNode';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import Severity from 'vs/base/common/severity';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { openNewQuery } from 'sql/workbench/services/query/browser/query';
 
 export class CancelAction extends Action {
 	public static ID = 'taskHistory.cancel';
@@ -52,7 +53,7 @@ export class ScriptAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IQueryEditorService private _queryEditorService: IQueryEditorService
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super(id, label);
 	}
@@ -60,7 +61,7 @@ export class ScriptAction extends Action {
 	public async run(element: TaskNode): Promise<boolean> {
 		if (element instanceof TaskNode) {
 			if (element.script && element.script !== '') {
-				this._queryEditorService.newSqlEditor(element.script);
+				this.instantiationService.invokeFunction(openNewQuery, undefined, element.script);
 			}
 		}
 		return true;

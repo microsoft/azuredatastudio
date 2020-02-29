@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
-import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -42,18 +41,14 @@ CommandsRegistry.registerCommand({
 	handler: async (accessor, args: TreeViewItemHandleArg) => {
 		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const oeShimService = accessor.get(IOEShimService);
-		const queryEditorService = accessor.get(IQueryEditorService);
-		const connectionManagementService = accessor.get(IConnectionManagementService);
-		const scriptingService = accessor.get(IScriptingService);
-		const errorMessageService = accessor.get(IErrorMessageService);
 		const progressService = accessor.get(IProgressService);
+		const instantationService = accessor.get(IInstantiationService);
 		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
 		const baseContext: BaseActionContext = {
 			profile: profile,
 			object: oeShimService.getNodeInfoForTreeItem(args.$treeItem).metadata
 		};
-		const scriptCreateAction = new ScriptCreateAction(ScriptCreateAction.ID, ScriptCreateAction.LABEL,
-			queryEditorService, connectionManagementService, scriptingService, errorMessageService);
+		const scriptCreateAction = instantationService.createInstance(ScriptCreateAction, ScriptCreateAction.ID, ScriptCreateAction.LABEL);
 		return progressService.withProgress({ location: VIEWLET_ID }, () => scriptCreateAction.run(baseContext));
 	}
 });
@@ -64,18 +59,14 @@ CommandsRegistry.registerCommand({
 	handler: async (accessor, args: TreeViewItemHandleArg) => {
 		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const oeShimService = accessor.get(IOEShimService);
-		const queryEditorService = accessor.get(IQueryEditorService);
-		const connectionManagementService = accessor.get(IConnectionManagementService);
-		const scriptingService = accessor.get(IScriptingService);
-		const errorMessageService = accessor.get(IErrorMessageService);
 		const progressService = accessor.get(IProgressService);
+		const instantationService = accessor.get(IInstantiationService);
 		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
 		const baseContext: BaseActionContext = {
 			profile: profile,
 			object: oeShimService.getNodeInfoForTreeItem(args.$treeItem).metadata
 		};
-		const scriptDeleteAction = new ScriptDeleteAction(ScriptDeleteAction.ID, ScriptDeleteAction.LABEL,
-			queryEditorService, connectionManagementService, scriptingService, errorMessageService);
+		const scriptDeleteAction = instantationService.createInstance(ScriptDeleteAction, ScriptDeleteAction.ID, ScriptDeleteAction.LABEL);
 		return progressService.withProgress({ location: VIEWLET_ID }, () => scriptDeleteAction.run(baseContext));
 	}
 });
@@ -86,17 +77,14 @@ CommandsRegistry.registerCommand({
 	handler: async (accessor, args: TreeViewItemHandleArg) => {
 		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const oeShimService = accessor.get(IOEShimService);
-		const queryEditorService = accessor.get(IQueryEditorService);
-		const connectionManagementService = accessor.get(IConnectionManagementService);
-		const scriptingService = accessor.get(IScriptingService);
+		const instantiationService = accessor.get(IInstantiationService);
 		const progressService = accessor.get(IProgressService);
 		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
 		const baseContext: BaseActionContext = {
 			profile: profile,
 			object: oeShimService.getNodeInfoForTreeItem(args.$treeItem).metadata
 		};
-		const scriptSelectAction = new ScriptSelectAction(ScriptSelectAction.ID, ScriptSelectAction.LABEL,
-			queryEditorService, connectionManagementService, scriptingService);
+		const scriptSelectAction = instantiationService.createInstance(ScriptSelectAction, ScriptSelectAction.ID, ScriptSelectAction.LABEL);
 		return progressService.withProgress({ location: VIEWLET_ID }, () => scriptSelectAction.run(baseContext));
 	}
 });
@@ -107,18 +95,14 @@ CommandsRegistry.registerCommand({
 	handler: async (accessor, args: TreeViewItemHandleArg) => {
 		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const oeShimService = accessor.get(IOEShimService);
-		const queryEditorService = accessor.get(IQueryEditorService);
-		const connectionManagementService = accessor.get(IConnectionManagementService);
-		const scriptingService = accessor.get(IScriptingService);
 		const progressService = accessor.get(IProgressService);
-		const errorMessageService = accessor.get(IErrorMessageService);
+		const instantationService = accessor.get(IInstantiationService);
 		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
 		const baseContext: BaseActionContext = {
 			profile: profile,
 			object: oeShimService.getNodeInfoForTreeItem(args.$treeItem).metadata
 		};
-		const scriptExecuteAction = new ScriptExecuteAction(ScriptExecuteAction.ID, ScriptExecuteAction.LABEL,
-			queryEditorService, connectionManagementService, scriptingService, errorMessageService);
+		const scriptExecuteAction = instantationService.createInstance(ScriptExecuteAction, ScriptExecuteAction.ID, ScriptExecuteAction.LABEL);
 		return progressService.withProgress({ location: VIEWLET_ID }, () => scriptExecuteAction.run(baseContext));
 	}
 });
@@ -129,18 +113,14 @@ CommandsRegistry.registerCommand({
 	handler: async (accessor, args: TreeViewItemHandleArg) => {
 		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const oeShimService = accessor.get(IOEShimService);
-		const queryEditorService = accessor.get(IQueryEditorService);
-		const connectionManagementService = accessor.get(IConnectionManagementService);
-		const scriptingService = accessor.get(IScriptingService);
 		const progressService = accessor.get(IProgressService);
-		const errorMessageService = accessor.get(IErrorMessageService);
+		const instantationService = accessor.get(IInstantiationService);
 		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
 		const baseContext: BaseActionContext = {
 			profile: profile,
 			object: oeShimService.getNodeInfoForTreeItem(args.$treeItem).metadata
 		};
-		const scriptAlterAction = new ScriptAlterAction(ScriptAlterAction.ID, ScriptAlterAction.LABEL,
-			queryEditorService, connectionManagementService, scriptingService, errorMessageService);
+		const scriptAlterAction = instantationService.createInstance(ScriptAlterAction, ScriptAlterAction.ID, ScriptAlterAction.LABEL);
 		return progressService.withProgress({ location: VIEWLET_ID }, () => scriptAlterAction.run(baseContext));
 	}
 });
@@ -336,12 +316,10 @@ export async function handleOeRefreshCommand(accessor: ServicesAccessor, args: O
 export class ExplorerScriptSelectAction extends ScriptSelectAction {
 	constructor(
 		id: string, label: string,
-		@IQueryEditorService queryEditorService: IQueryEditorService,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IScriptingService scriptingService: IScriptingService,
+		@IInstantiationService instantiationService: IInstantiationService,
 		@IProgressService private readonly progressService: IProgressService
 	) {
-		super(id, label, queryEditorService, connectionManagementService, scriptingService);
+		super(id, label, instantiationService);
 	}
 
 	public run(actionContext: BaseActionContext): Promise<boolean> {
@@ -352,13 +330,10 @@ export class ExplorerScriptSelectAction extends ScriptSelectAction {
 export class ExplorerScriptCreateAction extends ScriptCreateAction {
 	constructor(
 		id: string, label: string,
-		@IQueryEditorService queryEditorService: IQueryEditorService,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IScriptingService scriptingService: IScriptingService,
-		@IErrorMessageService errorMessageService: IErrorMessageService,
+		@IInstantiationService instantiationService: IInstantiationService,
 		@IProgressService private readonly progressService: IProgressService
 	) {
-		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
+		super(id, label, instantiationService);
 	}
 
 	public run(actionContext: BaseActionContext): Promise<boolean> {
@@ -369,13 +344,10 @@ export class ExplorerScriptCreateAction extends ScriptCreateAction {
 export class ExplorerScriptAlterAction extends ScriptAlterAction {
 	constructor(
 		id: string, label: string,
-		@IQueryEditorService queryEditorService: IQueryEditorService,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IScriptingService scriptingService: IScriptingService,
-		@IErrorMessageService errorMessageService: IErrorMessageService,
+		@IInstantiationService instantiationService: IInstantiationService,
 		@IProgressService private readonly progressService: IProgressService
 	) {
-		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
+		super(id, label, instantiationService);
 	}
 
 	public run(actionContext: BaseActionContext): Promise<boolean> {
@@ -386,13 +358,10 @@ export class ExplorerScriptAlterAction extends ScriptAlterAction {
 export class ExplorerScriptExecuteAction extends ScriptExecuteAction {
 	constructor(
 		id: string, label: string,
-		@IQueryEditorService queryEditorService: IQueryEditorService,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IScriptingService scriptingService: IScriptingService,
-		@IErrorMessageService errorMessageService: IErrorMessageService,
+		@IInstantiationService instantiationService: IInstantiationService,
 		@IProgressService private readonly progressService: IProgressService
 	) {
-		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
+		super(id, label, instantiationService);
 	}
 
 	public run(actionContext: BaseActionContext): Promise<boolean> {

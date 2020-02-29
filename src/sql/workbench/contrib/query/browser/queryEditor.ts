@@ -80,7 +80,7 @@ export class QueryEditor extends BaseEditor {
 	private _toggleConnectDatabaseAction: actions.ToggleConnectDatabaseAction;
 	private _changeConnectionAction: actions.ConnectDatabaseAction;
 	private _listDatabasesAction: actions.ListDatabasesAction;
-	private _estimatedQueryPlanAction: actions.EstimatedQueryPlanAction;
+	// private _estimatedQueryPlanAction: actions.EstimatedQueryPlanAction;
 	private _listDatabasesActionItem: actions.ListDatabasesActionItem;
 	private _toggleSqlcmdMode: actions.ToggleSqlCmdModeAction;
 
@@ -173,11 +173,11 @@ export class QueryEditor extends BaseEditor {
 
 		// Create Actions for the toolbar
 		this._runQueryAction = this.instantiationService.createInstance(actions.RunQueryAction);
-		this._cancelQueryAction = this.instantiationService.createInstance(actions.CancelQueryAction, this);
-		this._toggleConnectDatabaseAction = this.instantiationService.createInstance(actions.ToggleConnectDatabaseAction, this, false);
+		this._cancelQueryAction = this.instantiationService.createInstance(actions.CancelQueryAction);
+		this._toggleConnectDatabaseAction = this.instantiationService.createInstance(actions.ToggleConnectDatabaseAction, false);
 		this._changeConnectionAction = this.instantiationService.createInstance(actions.ConnectDatabaseAction, this, true);
 		this._listDatabasesAction = this.instantiationService.createInstance(actions.ListDatabasesAction, this);
-		this._estimatedQueryPlanAction = this.instantiationService.createInstance(actions.EstimatedQueryPlanAction, this);
+		// this._estimatedQueryPlanAction = this.instantiationService.createInstance(actions.EstimatedQueryPlanAction, this);
 		this._toggleSqlcmdMode = this.instantiationService.createInstance(actions.ToggleSqlCmdModeAction, this, false);
 
 		this.setTaskbarContent();
@@ -209,13 +209,13 @@ export class QueryEditor extends BaseEditor {
 
 		if (stateChangeEvent.connectingChange) {
 			this._runQueryAction.enabled = !this.input.state.connecting;
-			this._estimatedQueryPlanAction.enabled = !this.input.state.connecting;
+			// this._estimatedQueryPlanAction.enabled = !this.input.state.connecting;
 
 		}
 
 		if (stateChangeEvent.executingChange) {
 			this._runQueryAction.enabled = !this.input.state.executing;
-			this._estimatedQueryPlanAction.enabled = !this.input.state.executing;
+			// this._estimatedQueryPlanAction.enabled = !this.input.state.executing;
 			this._cancelQueryAction.enabled = this.input.state.executing;
 		}
 
@@ -261,7 +261,7 @@ export class QueryEditor extends BaseEditor {
 			{ action: this._changeConnectionAction },
 			{ action: this._listDatabasesAction },
 			{ element: separator },
-			{ action: this._estimatedQueryPlanAction },
+			// { action: this._estimatedQueryPlanAction },
 			{ action: this._toggleSqlcmdMode }
 		];
 

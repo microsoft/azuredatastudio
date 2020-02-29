@@ -17,7 +17,6 @@ import { IQueryModelService } from 'sql/workbench/services/query/common/queryMod
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/platform/query/common/constants';
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
-import { EditDataEditor } from 'sql/workbench/contrib/editData/browser/editDataEditor';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
@@ -98,10 +97,10 @@ export class RunQueryKeyboardAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): Promise<void> {
-		const editor = this._editorService.activeControl;
-		if (editor instanceof QueryEditor || editor instanceof EditDataEditor) {
-			editor.runQuery();
+	public async run(): Promise<void> {
+		const editor = this._editorService.activeEditor;
+		if (editor instanceof QueryEditorInput) {
+			await editor.runQuery();
 		}
 		return Promise.resolve(null);
 	}
@@ -124,7 +123,7 @@ export class RunCurrentQueryKeyboardAction extends Action {
 	}
 
 	public run(): Promise<void> {
-		const editor = this._editorService.activeControl;
+		const editor = this._editorService.activeEditor;
 		if (editor instanceof QueryEditor) {
 			editor.runCurrentQuery();
 		}
@@ -146,7 +145,7 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 	}
 
 	public run(): Promise<void> {
-		const editor = this._editorService.activeControl;
+		const editor = this._editorService.activeEditor;
 		if (editor instanceof QueryEditor) {
 			editor.runCurrentQueryWithActualPlan();
 		}
@@ -172,9 +171,9 @@ export class CancelQueryKeyboardAction extends Action {
 	}
 
 	public run(): Promise<void> {
-		const editor = this._editorService.activeControl;
-		if (editor instanceof QueryEditor || editor instanceof EditDataEditor) {
-			editor.cancelQuery();
+		const editor = this._editorService.activeEditor;
+		if (editor instanceof QueryEditorInput) {
+			editor.query?.cancel();
 		}
 		return Promise.resolve(null);
 	}

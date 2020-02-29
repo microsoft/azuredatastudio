@@ -21,7 +21,26 @@ export interface IQueryProvider {
 	// readonly onBatchStart: Event<IQueryProviderEvent>;
 	// readonly onBatchComplete: Event<IQueryProviderEvent>;
 	readonly onQueryComplete: Event<IQueryProviderEvent>;
+	/**
+	 * Run a query
+	 * @param connectionId connection to use for running the query
+	 * @param file file to use for running the query
+	 */
 	runQuery(connectionId: string, file: URI): Promise<void>;
+	/**
+	 * Cancel an actively running query
+	 * @param connectionId
+	 * @returns Possibly retuns messages about the cancel?
+	 */
+	cancelQuery(connectionId: string): Promise<string>;
+	/**
+	 * Fetch a subset of a query result
+	 * @param connectionId connection for the results
+	 * @param resultSetId result set requesting for
+	 * @param batchId batch requesting for
+	 * @param offset index into the result set to start returning
+	 * @param count number of rows to return
+	 */
 	fetchSubset(connectionId: string, resultSetId: number, batchId: number, offset: number, count: number): Promise<IFetchResponse>;
 }
 
@@ -108,6 +127,11 @@ export interface IQuery {
 	execute(): Promise<void>;
 
 	/**
+	 * Cancel the query if currently executing, otherwise it will throw
+	 */
+	cancel(): Promise<void>;
+
+	/**
 	 * Messages returned from the query
 	 */
 	readonly messages: ReadonlyArray<IResultMessage>;
@@ -181,8 +205,20 @@ class Query extends Disposable implements IQuery {
 	}
 
 	async execute(): Promise<void> {
-		this.setState(QueryState.EXECUTING);
-		await this.queryService.executeQuery(this.connection, this.associatedFile);
+		if (this.state === QueryState.EXECUTING) {
+			throw new Error('Query already executing');
+		} else {
+			this.setState(QueryState.EXECUTING);
+			this._resultSets = [];
+			this._messages = [];
+			await this.queryService.executeQuery(this.connection, this.associatedFile);
+		}
+	}
+
+	async cancel(): Promise<void> {
+		const message = await this.queryService.cancelQuery(this.connection);
+		this.handleMessage({ message }); // should we be doing this?
+		this.setState(QueryState.NOT_EXECUTING); // no sure if this is needed or if querycomplete gets called, but this is just being safe
 	}
 
 	private fetch(resultSetId: number, batchId: number, offset: number, count: number): Promise<IFetchResponse> {
@@ -317,22 +353,32 @@ export class QueryService extends Disposable implements IQueryService {
 		this.findQuery(e.connectionId).handleQueryComplete();
 	}
 
+	//#region @type{Query} helpers
 	executeQuery(connection: IConnection, file: URI): Promise<void> {
-		const providerStub = this.queryProviders.get(connection.provider);
-		if (!providerStub) {
-			throw new Error(`Provider could not be found: ${connection.provider}`);
-		}
+		const provider = this.withProvider(connection.provider);
 		const connectionId = this.connectionService.getIdForConnection(connection);
-		return providerStub.provider.runQuery(connectionId, file);
+		return provider.runQuery(connectionId, file);
+	}
+
+	cancelQuery(connection: IConnection): Promise<string> {
+		const provider = this.withProvider(connection.provider);
+		const connectionId = this.connectionService.getIdForConnection(connection);
+		return provider.cancelQuery(connectionId);
 	}
 
 	fetchData(connection: IConnection, resultSetId: number, batchId: number, offset: number, count: number): Promise<IFetchResponse> {
-		const providerStub = this.queryProviders.get(connection.provider);
-		if (!providerStub) {
-			throw new Error(`Provider could not be found: ${connection.provider}`);
-		}
+		const provider = this.withProvider(connection.provider);
 		const connectionId = this.connectionService.getIdForConnection(connection);
-		return providerStub.provider.fetchSubset(connectionId, resultSetId, batchId, offset, count);
+		return provider.fetchSubset(connectionId, resultSetId, batchId, offset, count);
+	}
+	//#endregion
+
+	private withProvider(provider: string): IQueryProvider {
+		const providerStub = this.queryProviders.get(provider);
+		if (!providerStub) {
+			throw new Error(`Query provider could not be found: ${provider}`);
+		}
+		return providerStub.provider;
 	}
 }
 

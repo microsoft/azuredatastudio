@@ -24,11 +24,11 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { IURLService, IURLHandler } from 'vs/platform/url/common/url';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { find } from 'vs/base/common/arrays';
+import { openNewQuery } from 'sql/workbench/services/query/browser/query';
 
 const connectAuthority = 'connect';
 

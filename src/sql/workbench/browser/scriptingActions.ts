@@ -10,7 +10,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { IScriptingService, ScriptOperation } from 'sql/platform/scripting/common/scriptingService';
 import { BaseActionContext } from 'sql/workbench/browser/actions';
 import { scriptSelect, script, scriptEditSelect } from 'sql/workbench/browser/scriptingUtils';
-import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class ScriptSelectAction extends Action {
 	public static ID = 'selectTop';
@@ -18,20 +18,15 @@ export class ScriptSelectAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
-		@IScriptingService protected _scriptingService: IScriptingService
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super(id, label);
 	}
 
 	public async run(actionContext: BaseActionContext): Promise<boolean> {
-		return scriptSelect(
+		return this.instantiationService.invokeFunction(scriptSelect,
 			actionContext.profile,
-			actionContext.object,
-			this._connectionManagementService,
-			this._queryEditorService,
-			this._scriptingService
+			actionContext.object
 		);
 	}
 }
@@ -42,24 +37,16 @@ export class ScriptExecuteAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
-		@IScriptingService protected _scriptingService: IScriptingService,
-		@IErrorMessageService protected _errorMessageService: IErrorMessageService
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super(id, label);
 	}
 
 	public async run(actionContext: BaseActionContext): Promise<boolean> {
-		return script(
+		return this.instantiationService.invokeFunction(script,
 			actionContext.profile,
 			actionContext.object,
-			this._connectionManagementService,
-			this._queryEditorService,
-			this._scriptingService,
-			ScriptOperation.Execute,
-			this._errorMessageService
-		);
+			ScriptOperation.Execute);
 	}
 }
 
@@ -69,23 +56,16 @@ export class ScriptAlterAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
-		@IScriptingService protected _scriptingService: IScriptingService,
-		@IErrorMessageService protected _errorMessageService: IErrorMessageService
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super(id, label);
 	}
 
 	public async run(actionContext: BaseActionContext): Promise<boolean> {
-		return script(
+		return this.instantiationService.invokeFunction(script,
 			actionContext.profile,
 			actionContext.object,
-			this._connectionManagementService,
-			this._queryEditorService,
-			this._scriptingService,
-			ScriptOperation.Alter,
-			this._errorMessageService
+			ScriptOperation.Alter
 		);
 	}
 }
@@ -120,23 +100,16 @@ export class ScriptCreateAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
-		@IScriptingService protected _scriptingService: IScriptingService,
-		@IErrorMessageService protected _errorMessageService: IErrorMessageService
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super(id, label);
 	}
 
 	public async run(actionContext: BaseActionContext): Promise<boolean> {
-		return script(
+		return this.instantiationService.invokeFunction(script,
 			actionContext.profile,
 			actionContext.object,
-			this._connectionManagementService,
-			this._queryEditorService,
-			this._scriptingService,
-			ScriptOperation.Create,
-			this._errorMessageService
+			ScriptOperation.Create
 		);
 	}
 }
@@ -147,23 +120,16 @@ export class ScriptDeleteAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
-		@IScriptingService protected _scriptingService: IScriptingService,
-		@IErrorMessageService protected _errorMessageService: IErrorMessageService
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super(id, label);
 	}
 
 	public async run(actionContext: BaseActionContext): Promise<boolean> {
-		return script(
+		return this.instantiationService.invokeFunction(script,
 			actionContext.profile,
 			actionContext.object,
-			this._connectionManagementService,
-			this._queryEditorService,
-			this._scriptingService,
-			ScriptOperation.Delete,
-			this._errorMessageService
+			ScriptOperation.Delete
 		);
 	}
 }

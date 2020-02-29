@@ -162,7 +162,8 @@ import { IAngularEventingService } from 'sql/platform/angularEventing/browser/an
 import { AngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingServiceImpl';
 import { ISerializationService, SerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IMetadataService, MetadataService } from 'sql/platform/metadata/common/metadataService';
-import { ITaskService, TaskService } from 'sql/workbench/services/tasks/common/tasksService';
+import { ITaskService } from 'sql/workbench/services/tasks/common/tasksService';
+import { TaskService } from 'sql/workbench/services/tasks/browser/tasksService';
 import { IEditorDescriptorService, EditorDescriptorService } from 'sql/workbench/services/queryEditor/browser/editorDescriptorService';
 import { IAdminService, AdminService } from 'sql/workbench/services/admin/common/adminService';
 import { IJobManagementService } from 'sql/workbench/services/jobManagement/common/interfaces';
