@@ -39,6 +39,7 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
+import { MainThreadNotebook } from 'sql/workbench/api/browser/mainThreadNotebook';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -360,6 +361,17 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
 		return Promise.resolve(this.doOpenEditor(resource, options));
+	}
+
+	$trySetTrusted(uri: UriComponents, isTrusted: boolean = true): Promise<boolean> {
+		let uriString = URI.revive(uri).toString();
+		let editor: MainThreadNotebookEditor = this._notebookEditors.get(uriString);
+		if (editor) {
+			editor.model.trustedMode = isTrusted;
+			return Promise.resolve(isTrusted);
+		} else {
+			return Promise.resolve(false);
+		}
 	}
 
 	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean> {

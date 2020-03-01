@@ -50,6 +50,7 @@ export class ExtHostNotebookDocumentData implements IDisposable {
 				get cells() { return data._cells; },
 				get kernelSpec() { return data._kernelSpec; },
 				save() { return data._save(); },
+				setTrusted(isTrusted) { return data._setTrusted(isTrusted); },
 				validateCellRange(range) { return data._validateRange(range); },
 			};
 		}
@@ -61,7 +62,13 @@ export class ExtHostNotebookDocumentData implements IDisposable {
 			return Promise.reject(new Error('Document has been closed'));
 		}
 		return this._proxy.$trySaveDocument(this._uri);
+	}
 
+	private _setTrusted(isTrusted: boolean) {
+		if (this._isDisposed) {
+			return Promise.reject(new Error('Document has been closed'));
+		}
+		return this._proxy.$trySetTrusted(this._uri, isTrusted);
 	}
 
 	public onModelChanged(data: INotebookModelChangedData) {

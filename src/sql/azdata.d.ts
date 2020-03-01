@@ -4314,6 +4314,11 @@ declare module 'azdata' {
 			 * @return The given range or a new, adjusted range.
 			 */
 			validateCellRange(range: CellRange): CellRange;
+
+			/**
+			 * Sets the notebook to trusted by default.
+			 */
+			setTrusted(state: boolean);
 		}
 
 		/**
@@ -4508,6 +4513,11 @@ declare module 'azdata' {
 			 * @param index The index of the cell to remove.
 			 */
 			deleteCell(index: number): void;
+
+			/**
+			 * Sets the notebook trust mode to the designated state.
+			 */
+			setTrusted(isTrusted: boolean): boolean;
 		}
 
 		/**

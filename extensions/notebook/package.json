@@ -41,6 +41,14 @@
           "type": "number",
           "default": 5000,
           "description": "%notebook.maxTableRows.description%"
+        },
+        "notebook.trustedBooks":{
+          "type": "array",
+          "default": [],
+          "description": "%notebook.trustedBooks.description%",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -152,6 +160,15 @@
         "icon": {
           "dark": "resources/dark/save_inverse.svg",
           "light": "resources/light/save.svg"
+        }
+      },
+      {
+        "command": "notebook.command.trustBook",
+        "title": "%title.trustBook%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/trust_inverse.svg",
+          "light": "resources/light/trust.svg"
         }
       },
       {
@@ -273,6 +290,10 @@
         {
           "command": "notebook.command.searchUntitledBook",
           "when": "false"
+        },
+        {
+          "command": "notebook.command.trustBook",
+          "when": "false"
         }
       ],
       "touchBar": [
@@ -305,6 +326,11 @@
         }
       ],
       "view/item/context": [
+        {
+          "command": "notebook.command.trustBook",
+          "when": "view == bookTreeView && viewItem == savedBook",
+          "group": "inline"
+        },
         {
           "command": "notebook.command.searchBook",
           "when": "view == bookTreeView && viewItem == savedBook",
