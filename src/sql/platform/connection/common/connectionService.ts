@@ -264,7 +264,7 @@ export class ConnectionService extends Disposable implements IConnectionService 
 
 	//#region @type{Query} helpers
 	public async connect(connectionId: string, profile: IConnectionProfile): Promise<boolean> {
-		return (await this.withProvider(profile.provider)).connect(connectionId, profile);
+		return (await this.withProvider(profile.provider)).connect(connectionId, profile.options);
 	}
 
 	public async disconnect(connectionId: string, profile: IConnectionProfile): Promise<boolean> {
