@@ -119,8 +119,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		try {
 			if (this._openAsUntitled) {
 				this.openNotebookAsUntitled(resource);
-			}
-			else {
+			} else {
 				let doc = await vscode.workspace.openTextDocument(resource);
 				vscode.window.showTextDocument(doc);
 			}
