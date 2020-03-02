@@ -52,6 +52,7 @@ export class ModelManagementController extends ControllerBase {
 		// Open view
 		//
 		view.open();
+		await view.refresh();
 		return view;
 	}
 
@@ -90,7 +91,7 @@ export class ModelManagementController extends ControllerBase {
 		});
 		view.on(RegisterLocalModelEventName, async (arg) => {
 			let registerArgs = <RegisterLocalModelEventArgs>arg;
-			await this.executeAction(view, RegisterLocalModelEventName, this.registerLocalModel, this._registeredModelService, registerArgs.filePath);
+			await this.executeAction(view, RegisterLocalModelEventName, this.registerLocalModel, this._registeredModelService, registerArgs.filePath, registerArgs.details);
 			view.refresh();
 		});
 		view.on(RegisterModelEventName, async () => {
@@ -99,7 +100,7 @@ export class ModelManagementController extends ControllerBase {
 		view.on(RegisterAzureModelEventName, async (arg) => {
 			let registerArgs = <RegisterAzureModelEventArgs>arg;
 			await this.executeAction(view, RegisterAzureModelEventName, this.registerAzureModel, this._amlService, this._registeredModelService,
-				registerArgs.account, registerArgs.subscription, registerArgs.group, registerArgs.workspace, registerArgs.model);
+				registerArgs.account, registerArgs.subscription, registerArgs.group, registerArgs.workspace, registerArgs.model, registerArgs.details);
 		});
 		view.on(SourceModelSelectedEventName, () => {
 			view.refresh();
@@ -157,9 +158,9 @@ export class ModelManagementController extends ControllerBase {
 		return await service.getModels(account, subscription, resourceGroup, workspace) || [];
 	}
 
-	private async registerLocalModel(service: RegisteredModelService, filePath?: string): Promise<void> {
+	private async registerLocalModel(service: RegisteredModelService, filePath: string, details: RegisteredModel | undefined): Promise<void> {
 		if (filePath) {
-			await service.registerLocalModel(filePath);
+			await service.registerLocalModel(filePath, details);
 		} else {
 			throw Error(constants.invalidModelToRegisterError);
 
@@ -173,13 +174,15 @@ export class ModelManagementController extends ControllerBase {
 		subscription: azureResource.AzureResourceSubscription | undefined,
 		resourceGroup: azureResource.AzureResource | undefined,
 		workspace: Workspace | undefined,
-		model: WorkspaceModel | undefined): Promise<void> {
-		if (!account || !subscription || !resourceGroup || !workspace || !model) {
+		model: WorkspaceModel | undefined,
+		details: RegisteredModel | undefined): Promise<void> {
+		if (!account || !subscription || !resourceGroup || !workspace || !model || !details) {
 			throw Error(constants.invalidAzureResourceError);
 		}
 		const filePath = await azureService.downloadModel(account, subscription, resourceGroup, workspace, model);
 		if (filePath) {
-			await service.registerLocalModel(filePath);
+
+			await service.registerLocalModel(filePath, details);
 			await fs.promises.unlink(filePath);
 		} else {
 			throw Error(constants.invalidModelToRegisterError);
