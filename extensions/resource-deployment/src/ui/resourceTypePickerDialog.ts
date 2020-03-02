@@ -297,7 +297,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 	private createAgreementCheckbox(agreementInfo: AgreementInfo): azdata.FlexContainer {
 		const checkbox = this._view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
-			ariaLabel: this.getAgreementDisplayText(agreementInfo)
+			ariaLabel: this.getAgreementDisplayText(agreementInfo),
+			required: true
 		}).component();
 		checkbox.checked = false;
 		this._toDispose.push(checkbox.onChanged(() => {

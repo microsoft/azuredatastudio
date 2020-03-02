@@ -18,7 +18,7 @@ import { IWorkingCopy } from 'vs/workbench/services/workingCopy/common/workingCo
 
 export const ICustomEditorService = createDecorator<ICustomEditorService>('customEditorService');
 
-export const CONTEXT_HAS_CUSTOM_EDITORS = new RawContextKey<boolean>('hasCustomEditors', false);
+export const CONTEXT_CUSTOM_EDITORS = new RawContextKey<string>('customEditors', '');
 export const CONTEXT_FOCUSED_CUSTOM_EDITOR_IS_EDITABLE = new RawContextKey<boolean>('focusedCustomEditorIsEditable', false);
 
 export interface ICustomEditor {
@@ -74,7 +74,7 @@ export interface ICustomEditorModel extends IWorkingCopy {
 	readonly onWillSave: Event<CustomEditorSaveEvent>;
 	readonly onWillSaveAs: Event<CustomEditorSaveAsEvent>;
 
-	onBackup(f: () => CancelablePromise<boolean>): void;
+	onBackup(f: () => CancelablePromise<void>): void;
 
 	setDirty(dirty: boolean): void;
 	undo(): void;
