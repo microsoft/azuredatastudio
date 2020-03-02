@@ -47,6 +47,7 @@ export const msgNo = localize('msgNo', "No");
 export const managePackageCommandError = localize('mls.managePackages.error', "Either no connection is available or the server does not have external script enabled.");
 export function taskFailedError(taskName: string, err: string): string { return localize('mls.taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
 export const installDependenciesMsgTaskName = localize('mls.installDependencies.msgTaskName', "Installing Machine Learning extension dependencies");
+export const noResultError = localize('mls.noResultError', "No Result returned");
 export const requiredPackagesNotInstalled = localize('mls.requiredPackagesNotInstalled', "The required dependencies are not installed");
 export function confirmInstallPythonPackages(packages: string): string {
 	return localize('mls.installDependencies.confirmInstallPythonPackages'
@@ -128,8 +129,7 @@ export const modelDetailsPageTitle = localize('models.modelDetailsPageTitle', "P
 export const modelLocalSourceTitle = localize('models.modelLocalSourceTitle', "Source file");
 export const currentModelsTitle = localize('models.currentModelsTitle', "Models");
 export const azureRegisterModel = localize('models.azureRegisterModel', "Register");
-export const registerModelWizardTitle = localize('models.RegisterWizard', "Register model");
-export const registerModelButton = localize('models.RegisterModelButton', "Register model");
+export const registerModelTitle = localize('models.RegisterWizard', "Register model");
 export const modelRegisteredSuccessfully = localize('models.modelRegisteredSuccessfully', "Model registered successfully");
 export const modelFailedToRegister = localize('models.modelFailedToRegistered', "Model failed to register");
 export const localModelSource = localize('models.localModelSource', "Upload file");

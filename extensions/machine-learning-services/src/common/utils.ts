@@ -114,6 +114,15 @@ export function doubleEscapeSingleQuotes(value: string): string {
 }
 
 /**
+ * Escapes all single-bracket ([]) by replacing them with another bracket quote ([[]])
+ * ' => ''
+ * @param value The string to escape
+ */
+export function doubleEscapeSingleBrackets(value: string): string {
+	return value.replace(/\[/g, '[[').replace(/\]/g, ']]');
+}
+
+/**
  * Installs dependencies for the extension
  */
 export async function executeTasks<T>(apiWrapper: ApiWrapper, taskName: string, dependencies: PromiseLike<T>[], parallel: boolean): Promise<T[]> {

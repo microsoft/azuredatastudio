@@ -113,54 +113,72 @@ export class RegisteredModelService {
 		if (!currentDatabaseName) {
 			currentDatabaseName = 'master';
 		}
+		let escapedTableName = utils.doubleEscapeSingleBrackets(tableName);
+		let escapedDbName = utils.doubleEscapeSingleBrackets(databaseName);
+		let escapedCurrentDbName = utils.doubleEscapeSingleBrackets(currentDatabaseName);
+
 		return `
 		${this.configureTable(databaseName, tableName)}
-		USE ${currentDatabaseName}
-		SELECT artifact_id, artifact_name, name, description, version, created from ${databaseName}.dbo.${tableName}
+		USE [${escapedCurrentDbName}]
+		SELECT artifact_id, artifact_name, name, description, version, created
+		FROM [${escapedDbName}].dbo.[${escapedTableName}]
 		WHERE artifact_name not like 'MLmodel' and artifact_name not like 'conda.yaml'
 		Order by artifact_id
 		`;
 	}
 
+	/**
+	 * Update the table and adds extra columns (name, description, version) if doesn't already exist.
+	 * Note: this code is temporary and will be removed weh the table supports the required schema
+	 * @param databaseName
+	 * @param tableName
+	 */
 	private configureTable(databaseName: string, tableName: string): string {
+		let escapedTableName = utils.doubleEscapeSingleBrackets(tableName);
+		let escapedDbName = utils.doubleEscapeSingleBrackets(databaseName);
+
 		return `
-		USE ${databaseName}
+		USE [${escapedDbName}]
 		IF EXISTS
 			(  SELECT [name]
 				FROM sys.tables
-				WHERE [name] = '${tableName}'
+				WHERE [name] = '${utils.doubleEscapeSingleQuotes(tableName)}'
 			)
 		BEGIN
-			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('${tableName}') AND NAME='name')
-				ALTER TABLE [dbo].[${tableName}] ADD [name] [varchar](256) NULL
-			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[${tableName}]') AND NAME='version')
-				ALTER TABLE [dbo].[${tableName}] ADD [version] [varchar](256) NULL
-			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[${tableName}]') AND NAME='created')
+			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('${escapedTableName}') AND NAME='name')
+				ALTER TABLE [dbo].[${escapedTableName}] ADD [name] [varchar](256) NULL
+			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[${escapedTableName}]') AND NAME='version')
+				ALTER TABLE [dbo].[${escapedTableName}] ADD [version] [varchar](256) NULL
+			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[${escapedTableName}]') AND NAME='created')
 			BEGIN
-				ALTER TABLE [dbo].[${tableName}] ADD [created] [datetime] NULL
-				ALTER TABLE [dbo].[${tableName}] ADD CONSTRAINT CONSTRAINT_NAME DEFAULT GETDATE() FOR created
+				ALTER TABLE [dbo].[${escapedTableName}] ADD [created] [datetime] NULL
+				ALTER TABLE [dbo].[${escapedTableName}] ADD CONSTRAINT CONSTRAINT_NAME DEFAULT GETDATE() FOR created
 			END
-			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[${tableName}]') AND NAME='description')
-				ALTER TABLE [dbo].[${tableName}] ADD [description] [varchar](256) NULL
+			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[${escapedTableName}]') AND NAME='description')
+				ALTER TABLE [dbo].[${escapedTableName}] ADD [description] [varchar](256) NULL
 		END
 		`;
 	}
 
 	private getUpdateModelScript(currentDatabaseName: string, databaseName: string, tableName: string, model: RegisteredModel): string {
+
 		if (!currentDatabaseName) {
 			currentDatabaseName = 'master';
 		}
+		let escapedTableName = utils.doubleEscapeSingleBrackets(tableName);
+		let escapedDbName = utils.doubleEscapeSingleBrackets(databaseName);
+		let escapedCurrentDbName = utils.doubleEscapeSingleBrackets(currentDatabaseName);
 		return `
-		USE ${databaseName}
-		UPDATE ${tableName}
+		USE [${escapedDbName}]
+		UPDATE ${escapedTableName}
 			SET
 			name = '${utils.doubleEscapeSingleQuotes(model.title || '')}',
 			version = '${utils.doubleEscapeSingleQuotes(model.version || '')}',
 			description = '${utils.doubleEscapeSingleQuotes(model.description || '')}'
 			WHERE artifact_id = ${model.id};
 
-		USE ${currentDatabaseName}
-		SELECT artifact_id, artifact_name, name, description, version, created from ${databaseName}.dbo.${tableName}
+		USE [${escapedCurrentDbName}]
+		SELECT artifact_id, artifact_name, name, description, version, created from ${escapedDbName}.dbo.[${escapedTableName}]
 		WHERE artifact_id = ${model.id};
 		`;
 	}

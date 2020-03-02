@@ -40,7 +40,7 @@ export class RegisterModelWizard extends ModelViewBase {
 		this.modelDetailsPage = new ModelDetailsPage(this._apiWrapper, this);
 		this.wizardView = new WizardView(this._apiWrapper);
 
-		let wizard = this.wizardView.createWizard(constants.registerModelWizardTitle, [this.modelSourcePage, this.modelDetailsPage]);
+		let wizard = this.wizardView.createWizard(constants.registerModelTitle, [this.modelSourcePage, this.modelDetailsPage]);
 
 		this.mainViewPanel = wizard;
 		wizard.doneButton.label = constants.azureRegisterModel;

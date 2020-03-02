@@ -23,9 +23,7 @@ describe('Register Model Wizard', () => {
 		view.open();
 		await view.refresh();
 		should.notEqual(view.wizardView, undefined);
-		should.notEqual(view.localModelsComponent, undefined);
-		should.notEqual(view.azureModelsComponent, undefined);
-		should.notEqual(view.modelResources, undefined);
+		should.notEqual(view.modelSourcePage, undefined);
 	});
 
 	it('Should load data successfully ', async function (): Promise<void> {

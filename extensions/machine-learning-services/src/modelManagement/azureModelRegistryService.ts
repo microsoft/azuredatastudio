@@ -125,7 +125,7 @@ export class AzureModelRegistryService {
 	 */
 	public async execDownloadArtifactTask(downloadUrl: string): Promise<string> {
 		let results = await utils.executeTasks(this._apiWrapper, constants.downloadModelMsgTaskName, [this.downloadArtifact(downloadUrl)], true);
-		return results[0];
+		return results && results.length > 0 ? results[0] : constants.noResultError;
 	}
 
 	private async downloadArtifact(downloadUrl: string): Promise<string> {

@@ -12,7 +12,7 @@ import { ModelDetailsComponent } from './modelDetailsComponent';
 import { RegisteredModel } from '../../modelManagement/interfaces';
 
 /**
- * View to pick model source
+ * View to pick model details
  */
 export class ModelDetailsPage extends ModelViewBase implements IPageView, IDataComponent<RegisteredModel> {
 

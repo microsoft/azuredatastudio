@@ -39,7 +39,7 @@ export class MainViewBase {
 
 	public async refresh(): Promise<void> {
 		if (this._pages) {
-			await Promise.all(this._pages.map(p => p.refresh()));
+			await Promise.all(this._pages.map(async (p) => await p.refresh()));
 		}
 	}
 }
