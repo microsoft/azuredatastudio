@@ -42,7 +42,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.createBook', async () => {
 		let untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${createBookPath}`);
-		vscode.workspace.openTextDocument(createBookPath).then((document) => {
+		await vscode.workspace.openTextDocument(createBookPath).then((document) => {
 			azdata.nb.showNotebookDocument(untitledFileName, {
 				connectionProfile: null,
 				initialContent: document.getText(),
