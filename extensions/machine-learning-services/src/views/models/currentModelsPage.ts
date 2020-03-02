@@ -37,7 +37,7 @@ export class CurrentModelsPage extends ModelViewBase implements IPageView {
 		this._tableComponent = this._dataTable.component;
 
 		let registerButton = modelBuilder.button().withProperties({
-			label: constants.registerModelButton,
+			label: constants.registerModelTitle,
 			width: this.buttonMaxLength
 		}).component();
 		registerButton.onDidClick(async () => {
