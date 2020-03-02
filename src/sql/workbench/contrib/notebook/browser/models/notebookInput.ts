@@ -231,7 +231,7 @@ export abstract class NotebookInput extends EditorInput {
 		return this._textInput;
 	}
 
-	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<boolean> {
+	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<void> {
 		return this._textInput.revert(group, options);
 	}
 
