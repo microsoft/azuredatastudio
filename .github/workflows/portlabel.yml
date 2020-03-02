@@ -1,0 +1,16 @@
+name: Port Request Labeler
+
+on:
+  pull_request:
+    branches:
+      - release/**
+
+jobs:
+  release_labeler:
+    name: Release labeler
+    runs-on: ubuntu-latest
+    steps:
+      - uses: aaomidi/AutoLabel@master
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN}}"
+          label: "Port Request"
