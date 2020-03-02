@@ -103,7 +103,8 @@ const indentationFilter = [
 	'!extensions/mssql/notebooks/**',
 	'!extensions/integration-tests/testData/**',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts'
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
+	'!resources/linux/snap/electron-launch'
 ];
 
 const copyrightFilter = [

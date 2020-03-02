@@ -33,12 +33,12 @@ export class CurrentModelsTable extends ModelViewBase {
 			.withProperties<azdata.DeclarativeTableProperties>(
 				{
 					columns: [
-						{ // Id
-							displayName: constants.modeIld,
-							ariaLabel: constants.modeIld,
+						{ // Artifact name
+							displayName: constants.modelArtifactName,
+							ariaLabel: constants.modelArtifactName,
 							valueType: azdata.DeclarativeDataType.string,
 							isReadOnly: true,
-							width: 100,
+							width: 150,
 							headerCssStyles: {
 								...constants.cssStyles.tableHeader
 							},
@@ -49,6 +49,19 @@ export class CurrentModelsTable extends ModelViewBase {
 						{ // Name
 							displayName: constants.modelName,
 							ariaLabel: constants.modelName,
+							valueType: azdata.DeclarativeDataType.string,
+							isReadOnly: true,
+							width: 150,
+							headerCssStyles: {
+								...constants.cssStyles.tableHeader
+							},
+							rowCssStyles: {
+								...constants.cssStyles.tableRow
+							},
+						},
+						{ // Created
+							displayName: constants.modelCreated,
+							ariaLabel: constants.modelCreated,
 							valueType: azdata.DeclarativeDataType.string,
 							isReadOnly: true,
 							width: 150,
@@ -116,7 +129,7 @@ export class CurrentModelsTable extends ModelViewBase {
 			}).component();
 			editLanguageButton.onDidClick(() => {
 			});
-			return [model.id, model.name, editLanguageButton];
+			return [model.artifactName, model.title, model.created, editLanguageButton];
 		}
 
 		return [];

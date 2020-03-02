@@ -15,7 +15,7 @@ import { AzureWorkspaceResource, IDataComponent } from '../interfaces';
 /**
  * View to render filters to pick an azure resource
  */
-const componentWidth = 200;
+const componentWidth = 300;
 export class AzureResourceFilterComponent extends ModelViewBase implements IDataComponent<AzureWorkspaceResource> {
 
 	private _form: azdata.FormContainer;
@@ -75,6 +75,45 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 			title: constants.azureModelWorkspace,
 			component: this._workspaces
 		}]).component();
+	}
+
+	public addComponents(formBuilder: azdata.FormBuilder) {
+		if (this._accounts && this._subscriptions && this._groups && this._workspaces) {
+			formBuilder.addFormItems([{
+				title: constants.azureAccount,
+				component: this._accounts
+			}, {
+				title: constants.azureSubscription,
+				component: this._subscriptions
+			}, {
+				title: constants.azureGroup,
+				component: this._groups
+			}, {
+				title: constants.azureModelWorkspace,
+				component: this._workspaces
+			}]);
+		}
+	}
+
+	public removeComponents(formBuilder: azdata.FormBuilder) {
+		if (this._accounts && this._subscriptions && this._groups && this._workspaces) {
+			formBuilder.removeFormItem({
+				title: constants.azureAccount,
+				component: this._accounts
+			});
+			formBuilder.removeFormItem({
+				title: constants.azureSubscription,
+				component: this._subscriptions
+			});
+			formBuilder.removeFormItem({
+				title: constants.azureGroup,
+				component: this._groups
+			});
+			formBuilder.removeFormItem({
+				title: constants.azureModelWorkspace,
+				component: this._workspaces
+			});
+		}
 	}
 
 	/**
