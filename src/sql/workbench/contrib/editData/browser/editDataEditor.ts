@@ -582,7 +582,7 @@ export class EditDataEditor extends BaseEditor {
 
 		this._createEditor(<EditDataResultsInput>input.results, this._resultsEditorContainer)
 			.then(result => {
-				this._onResultsEditorCreated(<EditDataResultsEditor>result, input.results, this.options);
+				this._onResultsEditorCreated(<EditDataResultsEditor>result, input.results, this._options);
 				this.resultsEditorVisibility = true;
 				this.hideQueryResultsView = false;
 				this._doLayout(true);
