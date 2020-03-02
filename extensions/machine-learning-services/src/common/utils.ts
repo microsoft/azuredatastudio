@@ -146,3 +146,24 @@ export async function executeTasks<T>(apiWrapper: ApiWrapper, taskName: string, 
 		});
 	});
 }
+
+export async function promptConfirm(message: string, apiWrapper: ApiWrapper): Promise<boolean> {
+	let choices: { [id: string]: boolean } = {};
+	choices[constants.msgYes] = true;
+	choices[constants.msgNo] = false;
+
+	let options = {
+		placeHolder: message
+	};
+
+	let result = await apiWrapper.showQuickPick(Object.keys(choices).map(c => {
+		return {
+			label: c
+		};
+	}), options);
+	if (result === undefined) {
+		throw Error('invalid selection');
+	}
+
+	return choices[result.label] || false;
+}

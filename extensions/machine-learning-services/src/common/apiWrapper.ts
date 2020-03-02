@@ -101,4 +101,8 @@ export class ApiWrapper {
 	public getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{ [key: string]: any }> {
 		return azdata.accounts.getSecurityToken(account, resource);
 	}
+
+	public showQuickPick<T extends vscode.QuickPickItem>(items: T[] | Thenable<T[]>, options?: vscode.QuickPickOptions, token?: vscode.CancellationToken): Thenable<T | undefined> {
+		return vscode.window.showQuickPick(items, options, token);
+	}
 }

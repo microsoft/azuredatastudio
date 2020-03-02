@@ -73,9 +73,9 @@ export class PackageManager {
 			let isPythonInstalled = await this._queryRunner.isPythonInstalled(connection);
 			let isRInstalled = await this._queryRunner.isRInstalled(connection);
 			let defaultProvider: SqlRPackageManageProvider | SqlPythonPackageManageProvider | undefined;
-			if (connection && isPythonInstalled) {
+			if (connection && isPythonInstalled && this._sqlPythonPackagePackageManager.canUseProvider) {
 				defaultProvider = this._sqlPythonPackagePackageManager;
-			} else if (connection && isRInstalled) {
+			} else if (connection && isRInstalled && this._sqlRPackageManager.canUseProvider) {
 				defaultProvider = this._sqlRPackageManager;
 			}
 			if (connection && defaultProvider) {
@@ -149,11 +149,17 @@ export class PackageManager {
 		});
 
 		if (fileContent) {
-			this._outputChannel.appendLine(constants.installDependenciesPackages);
-			let result = await utils.execCommandOnTempFile<string>(fileContent, async (tempFilePath) => {
-				return await this.installPipPackage(tempFilePath);
-			});
-			this._outputChannel.appendLine(result);
+			let confirmed = await utils.promptConfirm(constants.confirmInstallPythonPackages(fileContent), this._apiWrapper);
+			if (confirmed) {
+				this._outputChannel.appendLine(constants.installDependenciesPackages);
+				let result = await utils.execCommandOnTempFile<string>(fileContent, async (tempFilePath) => {
+					return await this.installPipPackage(tempFilePath);
+				});
+				this._outputChannel.appendLine(result);
+
+			} else {
+				throw Error(constants.requiredPackagesNotInstalled);
+			}
 		} else {
 			this._outputChannel.appendLine(constants.installDependenciesPackagesAlreadyInstalled);
 		}

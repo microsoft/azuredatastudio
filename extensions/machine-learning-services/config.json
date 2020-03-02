@@ -8,26 +8,6 @@
 			{
 				"name": "sqlmlutils",
 				"version": ""
-			},
-			{
-				"name": "onnx",
-				"version": ""
-			},
-			{
-				"name": "onnxruntime",
-				"version": ""
-			},
-			{
-				"name": "mlflow",
-				"version": ""
-			},
-			{
-				"name": "pyodbc",
-				"version": ""
-			},
-			{
-				"name": "mlflow[sqlserver]",
-				"version": ""
 			}
 		],
 		"requiredRPackages": [
@@ -67,7 +47,7 @@
 				"version": ""
 			},
 			{
-				"name": "mlflow[sqlserver]",
+				"name": "mlflow-dbstore",
 				"version": ""
 			}
 		]

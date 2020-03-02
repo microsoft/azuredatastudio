@@ -48,7 +48,11 @@ export class RegisterModelWizard extends ModelViewBase {
 		wizard.displayPageTitles = true;
 		wizard.registerNavigationValidator(async (pageInfo: azdata.window.WizardPageChangeInfo) => {
 			if (pageInfo.newPage === undefined) {
+				wizard.cancelButton.enabled = false;
+				wizard.backButton.enabled = false;
 				await this.registerModel();
+				wizard.cancelButton.enabled = true;
+				wizard.backButton.enabled = true;
 				if (this._parentView) {
 					this._parentView?.refresh();
 				}

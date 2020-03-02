@@ -42,9 +42,16 @@ export const rPathConfigKey = 'rPath';
 
 // Localized texts
 //
+export const msgYes = localize('msgYes', "Yes");
+export const msgNo = localize('msgNo', "No");
 export const managePackageCommandError = localize('mls.managePackages.error', "Either no connection is available or the server does not have external script enabled.");
 export function taskFailedError(taskName: string, err: string): string { return localize('mls.taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
 export const installDependenciesMsgTaskName = localize('mls.installDependencies.msgTaskName', "Installing Machine Learning extension dependencies");
+export const requiredPackagesNotInstalled = localize('mls.requiredPackagesNotInstalled', "The required dependencies are not installed");
+export function confirmInstallPythonPackages(packages: string): string {
+	return localize('mls.installDependencies.confirmInstallPythonPackages'
+		, "The following Python packages are required to install: {0}. Are you sure you want to install?", packages);
+}
 export const installDependenciesPackages = localize('mls.installDependencies.packages', "Installing required packages ...");
 export const installDependenciesPackagesAlreadyInstalled = localize('mls.installDependencies.packagesAlreadyInstalled', "Required packages are already installed.");
 export function installDependenciesGetPackagesError(err: string): string { return localize('mls.installDependencies.getPackagesError', "Failed to get installed python packages. Error: {0}", err); }
