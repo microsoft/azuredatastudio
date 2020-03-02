@@ -53,7 +53,9 @@ class TestEnvironmentService implements IWorkbenchEnvironmentService {
 
 	get configuration(): IWindowConfiguration {
 		return {
-			userEnv: this.userEnv
+			userEnv: this.userEnv,
+			sessionId: 'id',
+			_: []
 		} as IWindowConfiguration;
 	}
 

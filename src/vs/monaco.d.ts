@@ -6187,6 +6187,7 @@ declare namespace monaco.languages {
 	}
 
 	export interface DocumentSemanticTokensProvider {
+		onDidChange?: IEvent<void>;
 		getLegend(): SemanticTokensLegend;
 		provideDocumentSemanticTokens(model: editor.ITextModel, lastResultId: string | null, token: CancellationToken): ProviderResult<SemanticTokens | SemanticTokensEdits>;
 		releaseDocumentSemanticTokens(resultId: string | undefined): void;
