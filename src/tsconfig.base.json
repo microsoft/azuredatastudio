@@ -21,6 +21,12 @@
 			"sql/*": [
 				"./sql/*"
 			]
-		}
+		},
+		"lib": [
+			"ES2015",
+			"DOM",
+			"DOM.Iterable",
+			"WebWorker.ImportScripts"
+		]
 	}
 }
