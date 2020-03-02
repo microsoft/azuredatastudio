@@ -53,8 +53,6 @@ import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
-import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { WorkspaceService } from 'vs/workbench/services/configuration/browser/configurationService';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 
 

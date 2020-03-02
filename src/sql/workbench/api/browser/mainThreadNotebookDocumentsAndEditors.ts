@@ -39,7 +39,6 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
-import { MainThreadNotebook } from 'sql/workbench/api/browser/mainThreadNotebook';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();

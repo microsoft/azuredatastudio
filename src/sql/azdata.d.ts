@@ -4513,11 +4513,6 @@ declare module 'azdata' {
 			 * @param index The index of the cell to remove.
 			 */
 			deleteCell(index: number): void;
-
-			/**
-			 * Sets the notebook trust mode to the designated state.
-			 */
-			setTrusted(isTrusted: boolean): boolean;
 		}
 
 		/**

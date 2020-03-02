@@ -82,7 +82,7 @@ export class NotebookEditorEdit {
 		return range;
 	}
 
-	setTrusted(isTrusted: boolean): void {
+	setTrusted(isTrusted: boolean) {
 		this._document.setTrusted(isTrusted);
 	}
 

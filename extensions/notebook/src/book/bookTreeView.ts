@@ -22,8 +22,6 @@ const msgBookAlreadyTrusted = localize('msgBookAlreadyTrusted', "Book is already
 const Content = 'content';
 
 export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem> {
-
-export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined> = new vscode.EventEmitter<BookTreeItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<BookTreeItem | undefined> = this._onDidChangeTreeData.event;
 	private _throttleTimer: any;
