@@ -19,7 +19,7 @@ import { memoize } from 'vs/base/common/decorators';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Event } from 'vs/base/common/event';
 import { LayoutRequestParams } from 'sql/workbench/services/dialog/browser/dialogContainer.component';
-import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
+import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { IComponentDescriptor, IModelStore, IComponent } from 'sql/platform/dashboard/browser/interfaces';
@@ -75,11 +75,11 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 	}
 
 	ngOnInit() {
-		this._register(this.themeService.onThemeChange(event => this.updateTheme(event)));
+		this._register(this.themeService.onDidColorThemeChange(event => this.updateTheme(event)));
 	}
 
 	ngAfterViewInit() {
-		this.updateTheme(this.themeService.getTheme());
+		this.updateTheme(this.themeService.getColorTheme());
 		if (this.componentHost) {
 			this.loadComponent();
 		}
@@ -148,7 +148,7 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 		el.style.position = 'relative';
 	}
 
-	private updateTheme(theme: ITheme): void {
+	private updateTheme(theme: IColorTheme): void {
 		// TODO handle theming appropriately
 		let el = <HTMLElement>this._ref.nativeElement;
 		let backgroundColor = theme.getColor(colors.editorBackground, true);

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./notebook';
 
-import { registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
 import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, editorBackground, lighten } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
@@ -15,7 +15,7 @@ import { getZoomLevel } from 'vs/base/browser/browser';
 import * as types from 'vs/base/common/types';
 
 export function registerNotebookThemes(overrideEditorThemeSetting: boolean, configurationService: IConfigurationService): IDisposable {
-	return registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
+	return registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 
 		let lightBoxShadow = '0px 4px 6px 0px rgba(0, 0, 0, 0.14)';
 		let darkBoxShadow = '0px 4px 6px 0px rgba(0, 0, 0, 1)';

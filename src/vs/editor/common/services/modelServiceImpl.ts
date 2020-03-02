@@ -207,11 +207,22 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 		};
 	}
 
+	private _getEOL(resource: URI | undefined, language: string): string {
+		if (resource) {
+			return this._resourcePropertiesService.getEOL(resource, language);
+		}
+		const eol = this._configurationService.getValue<string>('files.eol', { overrideIdentifier: language });
+		if (eol && eol !== 'auto') {
+			return eol;
+		}
+		return platform.OS === platform.OperatingSystem.Linux || platform.OS === platform.OperatingSystem.Macintosh ? '\n' : '\r\n';
+	}
+
 	public getCreationOptions(language: string, resource: URI | undefined, isForSimpleWidget: boolean): ITextModelCreationOptions {
 		let creationOptions = this._modelCreationOptionsByLanguageAndResource[language + resource];
 		if (!creationOptions) {
 			const editor = this._configurationService.getValue<IRawEditorConfig>('editor', { overrideIdentifier: language, resource });
-			const eol = this._resourcePropertiesService.getEOL(resource, language);
+			const eol = this._getEOL(resource, language);
 			creationOptions = ModelServiceImpl._readModelOptions({ editor, eol }, isForSimpleWidget);
 			this._modelCreationOptionsByLanguageAndResource[language + resource] = creationOptions;
 		}
@@ -516,7 +527,7 @@ class SemanticStyling extends Disposable {
 		this._caches = new WeakMap<DocumentSemanticTokensProvider, SemanticColoringProviderStyling>();
 		if (this._themeService) {
 			// workaround for tests which use undefined... :/
-			this._register(this._themeService.onThemeChange(() => {
+			this._register(this._themeService.onDidColorThemeChange(() => {
 				this._caches = new WeakMap<DocumentSemanticTokensProvider, SemanticColoringProviderStyling>();
 			}));
 		}
@@ -651,7 +662,7 @@ class SemanticColoringProviderStyling {
 				modifierSet = modifierSet >> 1;
 			}
 
-			const tokenStyle = this._themeService.getTheme().getTokenStyleMetadata(tokenType, tokenModifiers);
+			const tokenStyle = this._themeService.getColorTheme().getTokenStyleMetadata(tokenType, tokenModifiers);
 			if (typeof tokenStyle === 'undefined') {
 				metadata = Constants.NO_STYLING;
 			} else {
@@ -759,7 +770,7 @@ class ModelSemanticColoring extends Disposable {
 
 		if (themeService) {
 			// workaround for tests which use undefined... :/
-			this._register(themeService.onThemeChange(_ => {
+			this._register(themeService.onDidColorThemeChange(_ => {
 				// clear out existing tokens
 				this._setSemanticTokens(null, null, null, []);
 				this._fetchSemanticTokens.schedule();

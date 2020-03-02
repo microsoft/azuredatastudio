@@ -33,7 +33,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
-import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
+import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
@@ -220,8 +220,8 @@ export class ConnectionDialogWidget extends Modal {
 		this._connectionUIContainer = DOM.$('.connection-provider-info', { id: 'connectionProviderInfo' });
 		this._body.append(this._connectionUIContainer);
 
-		this._register(this._themeService.onThemeChange(e => this.updateTheme(e)));
-		this.updateTheme(this._themeService.getTheme());
+		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
+		this.updateTheme(this._themeService.getColorTheme());
 	}
 
 	/**
@@ -240,7 +240,7 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	// Update theming that is specific to connection flyout body
-	private updateTheme(theme: ITheme): void {
+	private updateTheme(theme: IColorTheme): void {
 		const borderColor = theme.getColor(contrastBorder);
 		const border = borderColor ? borderColor.toString() : null;
 		const backgroundColor = theme.getColor(SIDE_BAR_BACKGROUND);

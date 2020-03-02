@@ -297,13 +297,13 @@ export class ProfilerEditor extends BaseEditor {
 		profilerTableContainer.style.height = '100%';
 		profilerTableContainer.style.overflow = 'hidden';
 		profilerTableContainer.style.position = 'relative';
-		let theme = this.themeService.getTheme();
+		let theme = this.themeService.getColorTheme();
 		if (theme.type === DARK) {
 			DOM.addClass(profilerTableContainer, VS_DARK_THEME);
 		} else if (theme.type === HIGH_CONTRAST) {
 			DOM.addClass(profilerTableContainer, VS_HC_THEME);
 		}
-		this.themeService.onThemeChange(e => {
+		this.themeService.onDidColorThemeChange(e => {
 			DOM.removeClasses(profilerTableContainer, VS_DARK_THEME, VS_HC_THEME);
 			if (e.type === DARK) {
 				DOM.addClass(profilerTableContainer, VS_DARK_THEME);

@@ -15,7 +15,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
+import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { URI } from 'vs/base/common/uri';
 
 import * as azdata from 'azdata';
@@ -184,8 +184,8 @@ export class FirewallRuleDialog extends Modal {
 			ariaLabel: LocalizedStrings.TO
 		});
 
-		this._register(this._themeService.onThemeChange(e => this.updateTheme(e)));
-		this.updateTheme(this._themeService.getTheme());
+		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
+		this.updateTheme(this._themeService.getColorTheme());
 
 		this._register(DOM.addDisposableListener(this._IPAddressElement, DOM.EventType.CLICK, () => {
 			this.onFirewallRuleOptionSelected(true);
@@ -219,7 +219,7 @@ export class FirewallRuleDialog extends Modal {
 	}
 
 	// Update theming that is specific to firewall rule flyout body
-	private updateTheme(theme: ITheme): void {
+	private updateTheme(theme: IColorTheme): void {
 		const linkColor = theme.getColor(buttonBackground);
 		const link = linkColor ? linkColor.toString() : null;
 		if (this._helpLink) {

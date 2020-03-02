@@ -15,7 +15,7 @@ import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as types from 'vs/base/common/types';
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
-import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
+import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IPointDataSet } from 'sql/workbench/contrib/charts/browser/interfaces';
 import { IInsightsView, IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 import { ChartType, LegendPosition } from 'sql/workbench/contrib/charts/common/interfaces';
@@ -61,8 +61,8 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	}
 
 	init() {
-		this._register(this.themeService.onThemeChange(e => this.updateTheme(e)));
-		this.updateTheme(this.themeService.getTheme());
+		this._register(this.themeService.onDidColorThemeChange(e => this.updateTheme(e)));
+		this.updateTheme(this.themeService.getColorTheme());
 		// Note: must use a boolean to not render the canvas until all properties such as the labels and chart type are set.
 		// This is because chart.js doesn't auto-update anything other than dataset when re-rendering so defaults are used
 		// hence it's easier to not render until ready
@@ -96,7 +96,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 		return this._options;
 	}
 
-	protected updateTheme(e: ITheme): void {
+	protected updateTheme(e: IColorTheme): void {
 		const foregroundColor = e.getColor(colors.editorForeground);
 		const foreground = foregroundColor ? foregroundColor.toString() : null;
 		const backgroundColor = e.getColor(colors.editorBackground);

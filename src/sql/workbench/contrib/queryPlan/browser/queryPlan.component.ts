@@ -11,7 +11,7 @@ import * as QP from 'html-query-plan';
 import { IQueryPlanParams, IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { registerThemingParticipant, ICssStyleCollector, ITheme } from 'vs/platform/theme/common/themeService';
+import { registerThemingParticipant, ICssStyleCollector, IColorTheme } from 'vs/platform/theme/common/themeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 
 export const QUERYPLAN_SELECTOR: string = 'queryplan-component';
@@ -53,7 +53,7 @@ export class QueryPlanComponent implements OnDestroy, OnInit {
 		}
 	}
 
-	private _updateTheme(theme: ITheme, collector: ICssStyleCollector) {
+	private _updateTheme(theme: IColorTheme, collector: ICssStyleCollector) {
 		let backgroundColor = theme.getColor(colors.editorBackground);
 		let foregroundColor = theme.getColor(colors.editorForeground);
 

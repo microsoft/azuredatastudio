@@ -27,7 +27,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { append, $ } from 'vs/base/browser/dom';
-import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
+import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
@@ -123,8 +123,8 @@ export class OptionsDialog extends Modal {
 		// Theme styler
 		attachButtonStyler(okButton, this._themeService);
 		attachButtonStyler(closeButton, this._themeService);
-		this._register(this._themeService.onThemeChange(e => this.updateTheme(e)));
-		this.updateTheme(this._themeService.getTheme());
+		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
+		this.updateTheme(this._themeService.getColorTheme());
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -142,7 +142,7 @@ export class OptionsDialog extends Modal {
 	}
 
 	// Update theming that is specific to options dialog flyout body
-	private updateTheme(theme: ITheme): void {
+	private updateTheme(theme: IColorTheme): void {
 		let borderColor = theme.getColor(contrastBorder);
 		let border = borderColor ? borderColor.toString() : null;
 		if (this._dividerBuilder) {

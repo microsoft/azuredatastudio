@@ -10,7 +10,7 @@ import { IChartConfig } from 'sql/workbench/contrib/dashboard/browser/widgets/in
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { editorLineNumbers } from 'vs/editor/common/view/editorColorRegistry';
 import { ChangeDetectorRef, Inject, forwardRef } from '@angular/core';
-import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
+import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { customMixin } from 'sql/workbench/contrib/charts/browser/interfaces';
 import { ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
@@ -127,7 +127,7 @@ export default class BarChart extends ChartInsight {
 		super.setConfig(config);
 	}
 
-	protected updateTheme(e: ITheme): void {
+	protected updateTheme(e: IColorTheme): void {
 		super.updateTheme(e);
 		const foregroundColor = e.getColor(colors.editorForeground);
 		const foreground = foregroundColor ? foregroundColor.toString() : null;

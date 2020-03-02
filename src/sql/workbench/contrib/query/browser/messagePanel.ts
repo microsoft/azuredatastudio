@@ -16,7 +16,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
-import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
+import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { OpenMode, ClickBehavior, ICancelableEvent, IControllerOptions } from 'vs/base/parts/tree/browser/treeDefaults';
 import { WorkbenchTreeController } from 'vs/platform/list/browser/listService';
@@ -102,8 +102,8 @@ export class MessagePanel extends Disposable {
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
 		this._register(attachListStyler(this.tree, this.themeService));
-		this._register(this.themeService.onThemeChange(this.applyStyles, this));
-		this.applyStyles(this.themeService.getTheme());
+		this._register(this.themeService.onDidColorThemeChange(this.applyStyles, this));
+		this.applyStyles(this.themeService.getColorTheme());
 		this.controller.onKeyDown = (tree, event) => {
 			if (event.ctrlKey && event.code === 'KeyC') {
 				let context: IMessagesActionContext = {
@@ -210,7 +210,7 @@ export class MessagePanel extends Disposable {
 		}
 	}
 
-	private applyStyles(theme: ITheme): void {
+	private applyStyles(theme: IColorTheme): void {
 		const errorColor = theme.getColor(resultsErrorColor);
 		const content: string[] = [];
 		if (errorColor) {

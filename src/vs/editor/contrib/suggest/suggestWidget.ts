@@ -25,7 +25,7 @@ import { Context as SuggestContext, CompletionItem, suggestWidgetStatusbarMenu }
 import { CompletionModel } from './completionModel';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
-import { IThemeService, ITheme, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { IThemeService, IColorTheme, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { registerColor, editorWidgetBackground, listFocusBackground, activeContrastBorder, listHighlightForeground, editorForeground, editorWidgetBorder, focusBorder, textLinkForeground, textCodeBlockBackground } from 'vs/platform/theme/common/colorRegistry';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { MarkdownRenderer } from 'vs/editor/contrib/markdown/markdownRenderer';
@@ -210,7 +210,7 @@ class ItemRenderer implements IListRenderer<CompletionItem, ISuggestionTemplateD
 			data.iconContainer.className = 'icon hide';
 			data.colorspan.style.backgroundColor = color[0];
 
-		} else if (suggestion.kind === CompletionItemKind.File && this._themeService.getIconTheme().hasFileIcons) {
+		} else if (suggestion.kind === CompletionItemKind.File && this._themeService.getFileIconTheme().hasFileIcons) {
 			// special logic for 'file' completion items
 			data.icon.className = 'icon hide';
 			data.iconContainer.className = 'icon hide';
@@ -218,7 +218,7 @@ class ItemRenderer implements IListRenderer<CompletionItem, ISuggestionTemplateD
 			const detailClasses = getIconClasses(this._modelService, this._modeService, URI.from({ scheme: 'fake', path: suggestion.detail }), FileKind.FILE);
 			labelOptions.extraClasses = labelClasses.length > detailClasses.length ? labelClasses : detailClasses;
 
-		} else if (suggestion.kind === CompletionItemKind.Folder && this._themeService.getIconTheme().hasFolderIcons) {
+		} else if (suggestion.kind === CompletionItemKind.Folder && this._themeService.getFileIconTheme().hasFolderIcons) {
 			// special logic for 'folder' completion items
 			data.icon.className = 'icon hide';
 			data.iconContainer.className = 'icon hide';
@@ -627,7 +627,7 @@ export class SuggestWidget implements IContentWidget, IListVirtualDelegate<Compl
 			listInactiveFocusBackground: editorSuggestWidgetSelectedBackground,
 			listInactiveFocusOutline: activeContrastBorder
 		}));
-		this.toDispose.add(themeService.onThemeChange(t => this.onThemeChange(t)));
+		this.toDispose.add(themeService.onDidColorThemeChange(t => this.onThemeChange(t)));
 		this.toDispose.add(editor.onDidLayoutChange(() => this.onEditorLayoutChange()));
 		this.toDispose.add(this.list.onMouseDown(e => this.onListMouseDownOrTap(e)));
 		this.toDispose.add(this.list.onTap(e => this.onListMouseDownOrTap(e)));
@@ -645,7 +645,7 @@ export class SuggestWidget implements IContentWidget, IListVirtualDelegate<Compl
 		this.ctxSuggestWidgetDetailsVisible = SuggestContext.DetailsVisible.bindTo(contextKeyService);
 		this.ctxSuggestWidgetMultipleSuggestions = SuggestContext.MultipleSuggestions.bindTo(contextKeyService);
 
-		this.onThemeChange(themeService.getTheme());
+		this.onThemeChange(themeService.getColorTheme());
 
 		this.toDispose.add(addStandardDisposableListener(this.details.element, 'keydown', e => {
 			this._onDetailsKeydown.fire(e);
@@ -712,7 +712,7 @@ export class SuggestWidget implements IContentWidget, IListVirtualDelegate<Compl
 		this.editor.focus();
 	}
 
-	private onThemeChange(theme: ITheme) {
+	private onThemeChange(theme: IColorTheme) {
 		const backgroundColor = theme.getColor(editorSuggestWidgetBackground);
 		if (backgroundColor) {
 			this.listElement.style.backgroundColor = backgroundColor.toString();

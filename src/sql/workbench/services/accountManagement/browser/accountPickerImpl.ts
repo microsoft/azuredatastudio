@@ -15,7 +15,7 @@ import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
-import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
+import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 
 import * as azdata from 'azdata';
 import { DropdownList } from 'sql/base/browser/ui/dropdownList/dropdownList';
@@ -128,8 +128,8 @@ export class AccountPicker extends Disposable {
 			DOM.hide(this._refreshContainer);
 		}
 
-		this._register(this._themeService.onThemeChange(e => this.updateTheme(e)));
-		this.updateTheme(this._themeService.getTheme());
+		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
+		this.updateTheme(this._themeService.getColorTheme());
 
 		// Load the initial contents of the view model
 		this.viewModel.initialize()
@@ -226,7 +226,7 @@ export class AccountPicker extends Disposable {
 	/**
 	 * Update theming that is specific to account picker
 	 */
-	private updateTheme(theme: ITheme): void {
+	private updateTheme(theme: IColorTheme): void {
 		const linkColor = theme.getColor(buttonBackground);
 		const link = linkColor ? linkColor.toString() : null;
 		this._refreshContainer.style.color = link;

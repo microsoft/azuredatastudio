@@ -235,7 +235,7 @@ export class FileBrowserDialog extends Modal {
 		this._register(attachButtonStyler(this._okButton, this._themeService));
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));
 
-		this._register(this._themeService.onThemeChange(e => this.updateTheme()));
+		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme()));
 	}
 
 	// Update theming that is specific to file browser

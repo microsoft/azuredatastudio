@@ -232,7 +232,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		this.menus = this._register(instantiationService.createInstance(TitleMenus, this.id));
 		this._register(this.menus.onDidChangeTitle(() => this._onDidChangeActions.fire()));
 		this._register(this.themeService.onDidFileIconThemeChange(() => this.doRefresh([this.root]) /** soft refresh **/));
-		this._register(this.themeService.onThemeChange(() => this.doRefresh([this.root]) /** soft refresh **/));
+		this._register(this.themeService.onDidColorThemeChange(() => this.doRefresh([this.root]) /** soft refresh **/));
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('explorer.decorations')) {
 				this.doRefresh([this.root]); /** soft refresh **/
@@ -809,7 +809,7 @@ class TreeRenderer extends Disposable implements ITreeRenderer<ITreeItem, FuzzyS
 		const treeItemLabel: ITreeItemLabel | undefined = node.label ? node.label : resource ? { label: basename(resource) } : undefined;
 		const description = isString(node.description) ? node.description : resource && node.description === true ? this.labelService.getUriLabel(dirname(resource), { relative: true }) : undefined;
 		const label = treeItemLabel ? treeItemLabel.label : undefined;
-		const icon = this.themeService.getTheme().type === LIGHT ? node.icon : node.iconDark;
+		const icon = this.themeService.getColorTheme().type === LIGHT ? node.icon : node.iconDark;
 		const iconUrl = icon ? URI.revive(icon) : null;
 		const title = node.tooltip ? node.tooltip : resource ? undefined : label;
 		const sqlIcon = node.sqlIcon;
@@ -892,7 +892,7 @@ class Aligner extends Disposable {
 	}
 
 	private hasIcon(node: ITreeItem): boolean {
-		const icon = this.themeService.getTheme().type === LIGHT ? node.icon : node.iconDark;
+		const icon = this.themeService.getColorTheme().type === LIGHT ? node.icon : node.iconDark;
 		if (icon) {
 			return true;
 		}
