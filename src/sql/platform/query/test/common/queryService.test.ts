@@ -11,6 +11,7 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { IConnection, ConnectionState } from 'sql/platform/connection/common/connectionService';
 import { range } from 'vs/base/common/arrays';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
 suite('Query Service', () => {
 	test('does handle basic query', async () => {
@@ -91,6 +92,8 @@ suite('Query Service', () => {
 
 		await query.execute();
 
+		assert(!isUndefinedOrNull(query.startTime) && query.startTime !== 0); // we can't verify the exact time but we can verify its not non-sensical
+		assert(isUndefinedOrNull(query.endTime), 'there should be no endtime before the query has completed');
 		assert(query.state === QueryState.EXECUTING);
 
 		const resultSetNotification = {
@@ -100,6 +103,9 @@ suite('Query Service', () => {
 			id: 0,
 			columns: [{ title: 'column1', type: ColumnType.UNKNOWN }]
 		};
+
+		const startTime = Date.now();
+		provider.onBatchStartEmitter.fire({ connectionId, executionStart: startTime, id: 0 });
 
 		const resultSet = await new Promise<IResultSet>(r => {
 			Event.once(query.onResultSetAvailable)(e => r(e));
@@ -112,16 +118,26 @@ suite('Query Service', () => {
 
 		assert(query.resultSets.length === 1);
 
+		const endTime = Date.now();
+		provider.onBatchCompleteEmitter.fire({ connectionId, executionEnd: endTime });
+
 		await new Promise<void>(r => {
 			Event.once(query.onQueryComplete)(e => r(e));
 			provider.onQueryCompleteEmitter.fire({ connectionId });
 		});
 
+		assert(query.startTime === startTime); // by the end the start and end time should be exactly that was sent by the provider
+		assert(query.endTime === endTime);
 		assert(query.state === QueryState.NOT_EXECUTING);
 
 		await query.execute();
 
+		assert(!isUndefinedOrNull(query.startTime) && query.startTime !== 0); // we can't verify the exact time but we can verify its not non-sensical
+		assert(isUndefinedOrNull(query.endTime), 'there should be no endtime before the query has completed');
 		assert(query.state === QueryState.EXECUTING);
+
+		const startTime2 = Date.now();
+		provider.onBatchStartEmitter.fire({ connectionId, executionStart: startTime2, id: 0 });
 
 		const resultSet2 = await new Promise<IResultSet>(r => {
 			Event.once(query.onResultSetAvailable)(e => r(e));
@@ -134,11 +150,16 @@ suite('Query Service', () => {
 
 		assert(query.resultSets.length === 1);
 
+		const endTime2 = Date.now();
+		provider.onBatchCompleteEmitter.fire({ connectionId, executionEnd: endTime2 });
+
 		await new Promise<void>(r => {
 			Event.once(query.onQueryComplete)(e => r(e));
 			provider.onQueryCompleteEmitter.fire({ connectionId });
 		});
 
+		assert(query.startTime === startTime2); // by the end the start and end time should be exactly that was sent by the provider
+		assert(query.endTime === endTime2);
 		assert(query.state === QueryState.NOT_EXECUTING);
 	});
 
@@ -236,6 +257,12 @@ class TestQueryProvider implements IQueryProvider {
 
 	readonly onQueryCompleteEmitter = new Emitter<IQueryProviderEvent>();
 	readonly onQueryComplete = this.onQueryCompleteEmitter.event;
+
+	readonly onBatchStartEmitter = new Emitter<IQueryProviderEvent & { executionStart: number; id: number; }>();
+	readonly onBatchStart = this.onBatchStartEmitter.event;
+
+	readonly onBatchCompleteEmitter = new Emitter<IQueryProviderEvent & { executionEnd: number; }>();
+	readonly onBatchComplete = this.onBatchCompleteEmitter.event;
 
 	runQuery(connectionId: string, file: URI): Promise<void> {
 		return Promise.resolve();

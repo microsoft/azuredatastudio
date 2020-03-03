@@ -57,6 +57,7 @@ export class TimeElapsedStatusBarContributions extends Disposable implements IWo
 			const query = activeEditor.query;
 			if (query) {
 				this._displayValue(query);
+				this.disposable.add(query.onDidStateChange(() => this.update()));
 			} else {
 				this.disposable.add(activeEditor.state.onChange(e => e.executingChange && this.update()));
 			}
@@ -84,8 +85,6 @@ export class TimeElapsedStatusBarContributions extends Disposable implements IWo
 				text: parseNumAsTimeString(value, false)
 			});
 			this.show();
-		} else {
-			this.hide();
 		}
 	}
 }
@@ -143,7 +142,7 @@ export class RowCountStatusBarContributions extends Disposable implements IWorkb
 	}
 
 	private displayValue(query: IQuery) {
-		const rowCount = query.resultSets.reduce((p, c) =>  p + c.rowCount, 0);
+		const rowCount = query.resultSets.reduce((p, c) => p + c.rowCount, 0);
 		const text = localize('rowCount', "{0} rows", rowCount.toLocaleString());
 		this.statusItem.update({ text });
 		this.show();
@@ -175,6 +174,7 @@ export class QueryStatusStatusBarContributions extends Disposable implements IWo
 	}
 
 	private update() {
+		this.hide();
 		this.disposable.clear();
 		const activeEditor = this.editorService.activeEditor;
 		if (activeEditor instanceof QueryEditorInput) {
@@ -182,15 +182,11 @@ export class QueryStatusStatusBarContributions extends Disposable implements IWo
 			if (query) {
 				if (query.state === QueryState.EXECUTING) {
 					this.show();
-				} else {
-					this.hide();
 				}
 				this.disposable.add(query.onDidStateChange(() => this.update()));
 			} else {
 				this.disposable.add(activeEditor.state.onChange(e => e.executingChange && this.update()));
 			}
-		} else {
-			this.hide();
 		}
 	}
 

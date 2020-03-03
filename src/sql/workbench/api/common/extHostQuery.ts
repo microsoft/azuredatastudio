@@ -33,7 +33,6 @@ export class ExtHostQuery implements ExtHostQueryShape {
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadQuery);
 	}
 
-
 	$cancelQuery(handle: number, ownerUri: string): Promise<azdata.QueryCancelResult> {
 		return Promise.resolve(this._resolveProvider(handle).cancelQuery(ownerUri));
 	}

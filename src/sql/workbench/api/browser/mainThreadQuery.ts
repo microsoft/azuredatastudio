@@ -15,8 +15,8 @@ import type * as azdata from 'azdata';
 
 interface QueryEvents {
 	onQueryComplete: Emitter<IQueryProviderEvent>;
-	onBatchStart: Emitter<IQueryProviderEvent>;
-	onBatchComplete: Emitter<IQueryProviderEvent>;
+	onBatchStart: Emitter<IQueryProviderEvent & { executionStart: number, id: number }>;
+	onBatchComplete: Emitter<IQueryProviderEvent & { executionEnd: number }>;
 	onResultSetAvailable: Emitter<IQueryProviderEvent & IResultSetSummary>;
 	onResultSetUpdated: Emitter<IQueryProviderEvent & IResultSetSummary>;
 	onMessage: Emitter<IQueryProviderEvent & { messages: IResultMessage | IResultMessage[] }>;
@@ -42,8 +42,8 @@ export class MainThreadQuery extends Disposable implements MainThreadQueryShape 
 	public async $registerProvider(providerId: string, handle: number): Promise<void> {
 		const emitters = {
 			onQueryComplete: new Emitter<IQueryProviderEvent>(),
-			onBatchStart: new Emitter<IQueryProviderEvent>(),
-			onBatchComplete: new Emitter<IQueryProviderEvent>(),
+			onBatchStart: new Emitter<IQueryProviderEvent & { executionStart: number, id: number }>(),
+			onBatchComplete: new Emitter<IQueryProviderEvent & { executionEnd: number }>(),
 			onResultSetAvailable: new Emitter<IQueryProviderEvent & IResultSetSummary>(),
 			onResultSetUpdated: new Emitter<IQueryProviderEvent & IResultSetSummary>(),
 			onMessage: new Emitter<IQueryProviderEvent & { messages: IResultMessage | IResultMessage[] }>()
@@ -53,8 +53,8 @@ export class MainThreadQuery extends Disposable implements MainThreadQueryShape 
 			id: providerId,
 			onMessage: emitters.onMessage.event,
 			onQueryComplete: emitters.onQueryComplete.event,
-			// onBatchStart: emitters.onBatchStart.event,
-			// onBatchComplete: emitters.onBatchComplete.event,
+			onBatchStart: emitters.onBatchStart.event,
+			onBatchComplete: emitters.onBatchComplete.event,
 			onResultSetAvailable: emitters.onResultSetAvailable.event,
 			onResultSetUpdated: emitters.onResultSetUpdated.event,
 			runQuery: (connectionId: string, file: URI): Promise<void> => {
@@ -84,11 +84,11 @@ export class MainThreadQuery extends Disposable implements MainThreadQueryShape 
 	}
 
 	public $onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
-		this._queryEvents.get(handle)?.onBatchStart.fire({ connectionId: batchInfo.ownerUri });
+		this._queryEvents.get(handle)?.onBatchStart.fire({ connectionId: batchInfo.ownerUri, id: batchInfo.batchSummary.id, executionStart: new Date(batchInfo.batchSummary.executionStart).getTime() });
 	}
 
 	public $onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
-		this._queryEvents.get(handle)?.onBatchComplete.fire({ connectionId: batchInfo.ownerUri });
+		this._queryEvents.get(handle)?.onBatchComplete.fire({ connectionId: batchInfo.ownerUri, executionEnd: new Date(batchInfo.batchSummary.executionEnd).getTime() });
 	}
 
 	public $onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {

@@ -45,7 +45,7 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 			}
 		}));
 
-		/*this._register(_queryModelService.onQueryEvent((e: IQueryEvent) => {
+		this._register(_queryModelService.onQueryEvent((e: IQueryEvent) => {
 			if (this._captureEnabled && e.type === 'queryStop') {
 				const uri: URI = URI.parse(e.uri);
 				// VS Range is 1 based so offset values by 1. The endLine we get back from SqlToolsService is incremented
@@ -72,7 +72,7 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 				this._infos.unshift(newInfo);
 				this._onInfosUpdated.fire(this._infos);
 			}
-		}));*/
+		}));
 	}
 
 	/**

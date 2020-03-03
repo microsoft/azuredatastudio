@@ -18,8 +18,8 @@ export interface IQueryProvider {
 	readonly onMessage: Event<IQueryProviderEvent & { messages: IResultMessage | ReadonlyArray<IResultMessage> }>;
 	readonly onResultSetAvailable: Event<IQueryProviderEvent & IResultSetSummary>;
 	readonly onResultSetUpdated: Event<IQueryProviderEvent & IResultSetSummary>;
-	// readonly onBatchStart: Event<IQueryProviderEvent>;
-	// readonly onBatchComplete: Event<IQueryProviderEvent>;
+	readonly onBatchStart: Event<IQueryProviderEvent & { executionStart: number, id: number }>;
+	readonly onBatchComplete: Event<IQueryProviderEvent & { executionEnd: number }>;
 	readonly onQueryComplete: Event<IQueryProviderEvent>;
 	/**
 	 * Run a query
@@ -234,6 +234,7 @@ class Query extends Disposable implements IQuery {
 			this._startTime = undefined;
 			this._endTime = undefined;
 			await this.queryService.executeQuery(this.connection, this.associatedFile);
+			this._startTime = Date.now(); // create a bogus start time and we will do our best to update when we get a time from the provider
 			this.setState(QueryState.EXECUTING);
 		}
 	}
@@ -295,6 +296,16 @@ class Query extends Disposable implements IQuery {
 		this.setState(QueryState.NOT_EXECUTING);
 		this._onQueryComplete.fire();
 	}
+
+	public handleBatchStart(e: { id: number, executionStart: number }): void {
+		if (e.id === 0) { // only accept the first one
+			this._startTime = e.executionStart;
+		}
+	}
+
+	public handleBatchEnd(e: { executionEnd: number }): void {
+		this._endTime = e.executionEnd; // continously overwrite this and assume the last one we get is the correct one
+	}
 }
 
 export interface IQueryProviderEvent {
@@ -330,8 +341,8 @@ export class QueryService extends Disposable implements IQueryService {
 			provider.onMessage(e => this.onMessage(e)),
 			provider.onResultSetAvailable(e => this.onResultSetAvailable(e)),
 			provider.onResultSetUpdated(e => this.onResultSetUpdated(e)),
-			// provider.onBatchStart(e => this.onBatchStart(e)),
-			// provider.onBatchComplete(e => this.onBatchComplete(e)),
+			provider.onBatchStart(e => this.onBatchStart(e)),
+			provider.onBatchComplete(e => this.onBatchComplete(e)),
 			provider.onQueryComplete(e => this.onQueryComplete(e)),
 			toDisposable(() => this.queryProviders.delete(provider.id))
 		);
@@ -364,13 +375,13 @@ export class QueryService extends Disposable implements IQueryService {
 		this.findQuery(e.connectionId).handleResultSetUpdated(e);
 	}
 
-	// private onBatchStart(e: IQueryProviderEvent): void {
-	// 	throw new Error('Method not implemented.');
-	// }
+	private onBatchStart(e: IQueryProviderEvent & { executionStart: number, id: number }): void {
+		this.findQuery(e.connectionId).handleBatchStart(e);
+	}
 
-	// private onBatchComplete(e: IQueryProviderEvent): void {
-	// 	throw new Error('Method not implemented.');
-	// }
+	private onBatchComplete(e: IQueryProviderEvent & { executionEnd: number }): void {
+		this.findQuery(e.connectionId).handleBatchEnd(e);
+	}
 
 	private onQueryComplete(e: IQueryProviderEvent): void {
 		this.findQuery(e.connectionId).handleQueryComplete();
