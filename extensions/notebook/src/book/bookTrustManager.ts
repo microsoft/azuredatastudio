@@ -9,27 +9,41 @@ import { BookModel } from './bookModel';
 
 export interface IBookTrustManager {
 	isNotebookTrustedByDefault(notebookUri: string): boolean;
-	setBookAsTrusted(bookTreeItem: BookTreeItem): boolean;
+	setBookAsTrusted(bookRootPath: string): boolean;
+}
+
+export interface IBookTrustManagerWorkspaceDetails {
+	rootPath: string;
+	getConfiguration(section?: string | undefined): vscode.WorkspaceConfiguration;
 }
 
 export class BookTrustManager implements IBookTrustManager {
 
 	private static notebookConfiguration: string = 'notebook';
 	private static notebookTrustedBooksConfiguration: string = 'trustedBooks';
+	private trustedLocalBooks: Record<string, boolean> = {};
 
-	constructor(private books: BookModel[]) { }
+	constructor(private books: BookModel[], private workspaceDetails?: IBookTrustManagerWorkspaceDetails) {
+		if (!workspaceDetails) {
+			workspaceDetails = {
+				getConfiguration: vscode.workspace.getConfiguration,
+				rootPath: vscode.workspace.rootPath
+			};
+		}
+	}
 
 	isNotebookTrustedByDefault(notebookUri: string): boolean {
-		let workspace = this.getNotebookWorkspaceFolder(notebookUri);
-		let normalizedWorkspacePath = path.normalize(workspace.uri.fsPath);
-		let trustedBookDirectory = this.getTrustedBookDirectory(notebookUri, workspace);
+		let normalizedBookDirectory = this.getBookDirectory(notebookUri);
+		let trustedBookDirectory = this.getTrustedBookDirectory(notebookUri, normalizedBookDirectory);
 
-		if (workspace && trustedBookDirectory) {
-			let trustedBook = this.getTrustedBook(normalizedWorkspacePath, trustedBookDirectory);
+		if (normalizedBookDirectory && trustedBookDirectory) {
+			let trustedBook = this.getTrustedBook(normalizedBookDirectory, trustedBookDirectory);
 
 			if (trustedBook) {
-				let fullBookBaseUri = path.join(normalizedWorkspacePath, trustedBookDirectory, 'content');
-				let requestingNotebookFormattedUri = notebookUri.substring(fullBookBaseUri.length).replace('.ipynb', '');
+				let fullBookBaseUri = trustedBookDirectory !== normalizedBookDirectory
+					? path.join(normalizedBookDirectory, trustedBookDirectory) : normalizedBookDirectory;
+				let fullBookBaseUriWithContent = path.join(fullBookBaseUri, 'content');
+				let requestingNotebookFormattedUri = notebookUri.substring(fullBookBaseUriWithContent.length).replace('.ipynb', '');
 				let notebookInTOC = trustedBook.tableOfContents.sections.find(jupyterSection => {
 					let normalizedJupyterSectionUrl = jupyterSection.url && path.normalize(jupyterSection.url);
 					return normalizedJupyterSectionUrl === requestingNotebookFormattedUri;
@@ -41,28 +55,44 @@ export class BookTrustManager implements IBookTrustManager {
 		return false;
 	}
 
-	setBookAsTrusted(bookTreeItem: BookTreeItem): boolean {
+	setBookAsTrusted(bookRootPath: string): boolean {
 		// add this TOC to the configuration list
-		let workspacePathLength: number = path.resolve(vscode.workspace.rootPath).length;
-		let relativeBookPath: string = path.normalize(path.resolve(bookTreeItem.book.root).substring(workspacePathLength + 1));
-		let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(BookTrustManager.notebookConfiguration);
-		let existingNotebooks: string[] = config[BookTrustManager.notebookTrustedBooksConfiguration];
+		let workspacePathLength: number = this.workspaceDetails.rootPath ? path.resolve(this.workspaceDetails.rootPath).length : 0;
+		let relativeBookPathStartingIndex = !!workspacePathLength ? workspacePathLength + 1 : 0;
+		let relativeBookPath: string = path.normalize(path.resolve(bookRootPath).substring(relativeBookPathStartingIndex));
+		let existingBooks: string[] = this.getTrustedBooksInConfig();
 
 		// if no match found in the configuration, then add it
-		if (!existingNotebooks.find(notebookPath => path.normalize(notebookPath) === relativeBookPath)) {
-			existingNotebooks.push(relativeBookPath);
+		if (!existingBooks.find(notebookPath => path.normalize(notebookPath) === relativeBookPath)) {
+			existingBooks.push(relativeBookPath);
 
 			// update the configuration
-			config.update(BookTrustManager.notebookTrustedBooksConfiguration, existingNotebooks);
+			this.setTrustedBooksInConfig(existingBooks);
 			return true;
 		}
 		return false;
 	}
 
-	getTrustedBookDirectory(notebookUri: string, workspace: vscode.WorkspaceFolder): string {
-		let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(BookTrustManager.notebookConfiguration);
-		let trustedBookDirectories: string[] = config.get(BookTrustManager.notebookTrustedBooksConfiguration);
-		let notebookUriWithoutBase: string = notebookUri.substring(path.normalize(workspace.uri.fsPath).length + 1);
+	getBookDirectory(notebookUri: string): string {
+		let workspace: vscode.WorkspaceFolder = this.getNotebookWorkspaceFolder(notebookUri);
+		let normalizedContainerPath: string = workspace ? path.normalize(workspace?.uri.fsPath) : undefined;
+
+		if (!normalizedContainerPath) {
+			normalizedContainerPath = this.books
+				.map(book => book.bookPath)
+				.find(book => notebookUri.startsWith(book));
+		}
+		return normalizedContainerPath;
+	}
+
+	getTrustedBookDirectory(notebookUri: string, containerRootDirectory: string): string {
+		let trustedBookDirectories: string[] = this.getTrustedBooksInConfig();
+
+		if (trustedBookDirectories.some(trustedBookPath => trustedBookPath === containerRootDirectory)) {
+			return containerRootDirectory;
+		}
+
+		let notebookUriWithoutBase: string = notebookUri.substring(path.normalize(containerRootDirectory).length + 1);
 		return trustedBookDirectories.find(dir => notebookUriWithoutBase.startsWith(dir));
 	}
 
@@ -72,7 +102,7 @@ export class BookTrustManager implements IBookTrustManager {
 			.reduce((accumulator, currentBookItemList) => accumulator.concat(currentBookItemList)) // flatten them to a single list
 			.find(bookTreeItem => {
 				let normalizedRootPath = path.normalize(bookTreeItem.root);
-				let fqnBookRootPath = path.join(workspaceUri, baseBookUri);
+				let fqnBookRootPath = workspaceUri !== baseBookUri ? path.join(workspaceUri, baseBookUri) : baseBookUri;
 				return normalizedRootPath.startsWith(fqnBookRootPath);
 			});
 		return trustedBook;
@@ -80,10 +110,33 @@ export class BookTrustManager implements IBookTrustManager {
 
 	getNotebookWorkspaceFolder(notebookUri: string): vscode.WorkspaceFolder {
 		let workspace = vscode.workspace;
-		let workspaceFolder = workspace.workspaceFolders.find(wsFolder => {
+		let workspaceFolder = workspace.workspaceFolders?.find(wsFolder => {
 			let normalizedWsFolderUri = path.normalize(wsFolder.uri.fsPath);
 			return notebookUri.startsWith(normalizedWsFolderUri);
 		});
 		return workspaceFolder;
+	}
+
+	getTrustedBooksInConfig(): string[] {
+		if (this.workspaceDetails.rootPath) {
+			let config: vscode.WorkspaceConfiguration = this.workspaceDetails.getConfiguration(BookTrustManager.notebookConfiguration);
+			let trustedBookDirectories: string[] = config.get(BookTrustManager.notebookTrustedBooksConfiguration);
+			return trustedBookDirectories;
+		} else {
+			return Object.keys(this.trustedLocalBooks);
+		}
+	}
+
+	setTrustedBooksInConfig(books: string[]) {
+		if (this.workspaceDetails.rootPath) {
+			let config: vscode.WorkspaceConfiguration = this.workspaceDetails.getConfiguration(BookTrustManager.notebookConfiguration);
+
+			config.update(BookTrustManager.notebookTrustedBooksConfiguration, books);
+		} else {
+			this.trustedLocalBooks = {};
+			this.books.forEach(book => {
+				this.trustedLocalBooks[book.bookPath] = true;
+			});
+		}
 	}
 }

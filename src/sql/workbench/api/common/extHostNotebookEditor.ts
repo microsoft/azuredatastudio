@@ -83,6 +83,8 @@ export class NotebookEditorEdit {
 	}
 
 	setTrusted(isTrusted: boolean) {
+		// ignore error "property 'setTrusted' does not exist on type 'NotebookDocument'." as it is merged from azdata.proposed.d.ts
+		// @ts-ignore
 		this._document.setTrusted(isTrusted);
 	}
 

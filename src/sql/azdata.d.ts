@@ -4314,11 +4314,6 @@ declare module 'azdata' {
 			 * @return The given range or a new, adjusted range.
 			 */
 			validateCellRange(range: CellRange): CellRange;
-
-			/**
-			 * Sets the notebook to trusted by default.
-			 */
-			setTrusted(state: boolean);
 		}
 
 		/**

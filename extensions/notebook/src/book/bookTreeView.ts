@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as nls from 'vscode-nls';
+import { ApiWrapper } from '../common/apiWrapper';
 import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem } from './bookTreeItem';
@@ -16,9 +16,6 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 
-const localize = nls.loadMessageBundle();
-const msgBookTrusted = localize('msgBookTrusted', "Book is now automatically trusted.");
-const msgBookAlreadyTrusted = localize('msgBookAlreadyTrusted', "Book is already trusted.");
 const Content = 'content';
 
 export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem> {
@@ -29,7 +26,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _extensionContext: vscode.ExtensionContext;
 	private prompter: IPrompter;
 	private _initializeDeferred: Deferred<void> = new Deferred<void>();
-
+	private _apiWrapper: ApiWrapper;
 	private _openAsUntitled: boolean;
 	private _trustResourceCache: Record<string, boolean> = {};
 	private _bookTrustManager: IBookTrustManager;
@@ -46,6 +43,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this.viewId = view;
 		this.prompter = new CodeAdapter();
 		this._bookTrustManager = new BookTrustManager(this.books);
+		this._apiWrapper = new ApiWrapper();
 	}
 
 	private async initialize(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
@@ -64,13 +62,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return this._initializeDeferred.promise;
 	}
 
-	trustBook(bookTreeItem: BookTreeItem): any {
-		let hasTrustedBook = this._bookTrustManager.setBookAsTrusted(bookTreeItem);
+	trustBook(bookTreeItem: BookTreeItem): void {
+		let hasTrustedBook = this._bookTrustManager.setBookAsTrusted(bookTreeItem.root);
 
 		if (hasTrustedBook) {
-			vscode.window.showInformationMessage(msgBookTrusted);
+			this._apiWrapper.showInfoMessage(loc.msgBookTrusted);
 		} else {
-			vscode.window.showInformationMessage(msgBookAlreadyTrusted);
+			this._apiWrapper.showInfoMessage(loc.msgBookAlreadyTrusted);
 		}
 	}
 
@@ -135,6 +133,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				let normalizedResource = path.normalize(resource);
 				if (!cache[normalizedResource] && this._bookTrustManager.isNotebookTrustedByDefault(normalizedResource)) {
 					let openDocumentListenerUnsubscriber = azdata.nb.onDidOpenNotebookDocument(function (document: azdata.nb.NotebookDocument) {
+						// ignore error "property 'setTrusted' does not exist on type 'NotebookDocument'." as it is merged from azdata.proposed.d.ts
+						// @ts-ignore
 						document.setTrusted(true);
 						cache[normalizedResource] = true;
 						openDocumentListenerUnsubscriber.dispose();
