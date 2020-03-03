@@ -10,7 +10,9 @@ jobs:
     name: Release labeler
     runs-on: ubuntu-latest
     steps:
-      - uses: aaomidi/AutoLabel@master
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - uses: ./build/actions/AutoLabel/dist/index.js
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN}}"
           label: "Port Request"
