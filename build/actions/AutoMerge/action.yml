@@ -1,0 +1,6 @@
+name: 'Auto Merge'
+description: 'Automatically merges a PR based on command'
+author: 'aaomidi'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'

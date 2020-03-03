@@ -104,7 +104,8 @@ const indentationFilter = [
 	'!extensions/integration-tests/testData/**',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
-	'!resources/linux/snap/electron-launch'
+	'!resources/linux/snap/electron-launch',
+	'!build/actions/**/dist/*.js'
 ];
 
 const copyrightFilter = [
@@ -169,7 +170,8 @@ const copyrightFilter = [
 	'!**/*.gif',
 	'!**/*.xlf',
 	'!**/*.dacpac',
-	'!**/*.bacpac'
+	'!**/*.bacpac',
+	'!build/actions/**/dist/*.js'
 ];
 
 const jsHygieneFilter = [
@@ -182,7 +184,8 @@ const jsHygieneFilter = [
 	'!src/vs/nls.build.js',
 	'!src/**/insane.js',
 	'!src/**/marked.js',
-	'!**/test/**'
+	'!**/test/**',
+	'!build/actions/**/dist/*.js' // {{ SQL CARBON EDIT }}
 ];
 
 const tsHygieneFilter = [
@@ -200,7 +203,7 @@ const tsHygieneFilter = [
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts', // {{SQL CARBON EDIT}},
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts', // {{SQL CARBON EDIT}},
 	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts', // {{SQL CARBON EDIT}} skip this because we have no plans on touching this and its not ours
-	'!src/vs/workbench/contrib/extensions/browser/extensionTipsService.ts' // {{SQL CARBON EDIT}} skip this because known issue
+	'!src/vs/workbench/contrib/extensions/browser/extensionTipsService.ts', // {{SQL CARBON EDIT}} skip this because known issue
 ];
 
 const copyrightHeaderLines = [
