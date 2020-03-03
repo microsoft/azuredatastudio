@@ -362,7 +362,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		return Promise.resolve(this.doOpenEditor(resource, options));
 	}
 
-	$trySetTrusted(uri: UriComponents, isTrusted: boolean = true): Promise<boolean> {
+	$trySetTrusted(uri: UriComponents, isTrusted: boolean): Promise<boolean> {
 		let uriString = URI.revive(uri).toString();
 		let editor: MainThreadNotebookEditor = this._notebookEditors.get(uriString);
 		if (editor) {
