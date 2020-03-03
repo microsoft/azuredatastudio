@@ -102,7 +102,7 @@ export class EditConnectionAction extends Action {
 			return false;
 		}
 
-		await this._connectionManagementService.showConnectionDialog(undefined, undefined, this._connectionProfile);
+		await this._connectionManagementService.showEditConnectionDialog(this._connectionProfile);
 		return true;
 	}
 }

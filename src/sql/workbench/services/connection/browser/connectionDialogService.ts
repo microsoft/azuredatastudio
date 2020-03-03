@@ -440,7 +440,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	private async doShowDialog(params: INewConnectionParams): Promise<void> {
 		if (!this._connectionDialog) {
-			this._connectionDialog = this._instantiationService.createInstance(ConnectionDialogWidget, this._providerDisplayNames, this._providerNameToDisplayNameMap[this._model.providerName], this._providerNameToDisplayNameMap, true);
+			this._connectionDialog = this._instantiationService.createInstance(ConnectionDialogWidget, this._providerDisplayNames, this._providerNameToDisplayNameMap[this._model.providerName], this._providerNameToDisplayNameMap);
 			this._connectionDialog.onCancel(() => {
 				this._connectionDialog.databaseDropdownExpanded = this.uiController.databaseDropdownExpanded;
 				this.handleOnCancel(this._connectionDialog.newConnectionParams);

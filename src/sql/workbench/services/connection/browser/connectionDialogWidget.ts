@@ -91,7 +91,6 @@ export class ConnectionDialogWidget extends Modal {
 		private providerDisplayNameOptions: string[],
 		private selectedProviderType: string,
 		private providerNameToDisplayNameMap: { [providerDisplayName: string]: string },
-		private isEdit: boolean,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IThemeService themeService: IThemeService,
@@ -105,9 +104,7 @@ export class ConnectionDialogWidget extends Modal {
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(localize('connection', "Connection"), TelemetryKeys.Connection, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasSpinner: true, hasErrors: true });
-		if (this.isEdit) {
-			console.log('called from edit');
-		}
+
 	}
 
 	/**
