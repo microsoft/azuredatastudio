@@ -18,6 +18,7 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { InMemoryStorageService } from 'vs/platform/storage/common/storage';
 import { find } from 'vs/base/common/arrays';
+import { generateUuid } from 'vs/base/common/uuid';
 
 suite('ConnectionStore', () => {
 	let defaultNamedProfile: IConnectionProfile = deepFreeze({
@@ -26,7 +27,7 @@ suite('ConnectionStore', () => {
 		databaseName: 'bcd',
 		authenticationType: 'SqlLogin',
 		userName: 'cde',
-		password: 'asdf!@#$',
+		password: generateUuid(),
 		savePassword: true,
 		groupId: '',
 		groupFullName: '',
