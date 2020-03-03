@@ -96,11 +96,21 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 			},
 			widget: {
 				'tasks-widget': [
-					'newQuery',
-					'mssqlCluster.task.newNotebook',
 					{ name: 'backup', when: '!mssql:iscloud && mssql:engineedition != 11' },
-					{ name: 'restore', when: '!mssql:iscloud && mssql:engineedition != 11' }
+					{ name: 'restore', when: '!mssql:iscloud && mssql:engineedition != 11' },
+					'newQuery',
+					'mssqlCluster.task.newNotebook'
 				]
+			}
+		},
+		{
+			name: 'Search',
+			gridItemConfig: {
+				sizex: 1,
+				sizey: 2
+			},
+			widget: {
+				'explorer-widget': {}
 			}
 		}
 	]
