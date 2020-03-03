@@ -44,13 +44,14 @@ export class ConfigureChartDialog extends Modal {
 		this._optionsControl.appendChild(this._generalControls);
 		this._optionsControl.appendChild(this._typeControls);
 
+		this._chart.initChartOptionControls(this._generalControls);
 		this._chart.onChartOptionsChange(() => {
-			this._chart.updateChartOptionControls(this._generalControls, this._typeControls);
+			this._chart.updateChartOptionControls(this._typeControls);
 		});
 	}
 
 	public open() {
-		this._chart.updateChartOptionControls(this._generalControls, this._typeControls);
+		this._chart.updateChartOptionControls(this._typeControls);
 		this.show();
 	}
 

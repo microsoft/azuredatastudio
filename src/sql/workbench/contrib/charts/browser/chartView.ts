@@ -244,22 +244,23 @@ export class ChartView extends Disposable implements IPanelView {
 
 		this.updateActionbar();
 
-		this._onChartOptionsChange.fire();
-
 		if (this.insight) {
 			this.insight.options = this.options;
 		}
 		this.verifyOptions();
+
+		this._onChartOptionsChange.fire();
 	}
 
-	public updateChartOptionControls(generalControls: HTMLElement, typeControls: HTMLElement): void {
+	public initChartOptionControls(generalControls: HTMLElement): void {
 		DOM.clearNode(generalControls);
-		DOM.clearNode(typeControls);
-
 		ChartOptions.general.map(o => {
 			this.createOption(o, generalControls);
 		});
+	}
 
+	public updateChartOptionControls(typeControls: HTMLElement): void {
+		DOM.clearNode(typeControls);
 		ChartOptions[this.options.type].map(o => {
 			this.createOption(o, typeControls);
 		});
