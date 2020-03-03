@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as DOM from 'vs/base/browser/dom';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { localize } from 'vs/nls';
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
@@ -18,10 +17,6 @@ import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 export class ConfigureChartDialog extends Modal {
-	private _optionsControl: HTMLElement;
-	private _generalControls: HTMLElement;
-	private _typeControls: HTMLElement;
-
 	constructor(
 		title: string,
 		name: string,
@@ -35,23 +30,9 @@ export class ConfigureChartDialog extends Modal {
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(title, name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, undefined);
-
-		this._optionsControl = DOM.$('div.options-container');
-		this._optionsControl.style.padding = '20px';
-
-		this._generalControls = DOM.$('div.general-controls');
-		this._typeControls = DOM.$('div.type-controls');
-		this._optionsControl.appendChild(this._generalControls);
-		this._optionsControl.appendChild(this._typeControls);
-
-		this._chart.initChartOptionControls(this._generalControls);
-		this._chart.onChartOptionsChange(() => {
-			this._chart.updateChartOptionControls(this._typeControls);
-		});
 	}
 
 	public open() {
-		this._chart.updateChartOptionControls(this._typeControls);
 		this.show();
 	}
 
@@ -67,7 +48,7 @@ export class ConfigureChartDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
-		container.appendChild(this._optionsControl);
+		container.appendChild(this._chart.optionsControl);
 	}
 
 	protected layout(height?: number): void {

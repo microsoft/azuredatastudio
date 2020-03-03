@@ -24,12 +24,11 @@ import { CreateInsightAction, CopyAction, SaveImageAction, IChartActionContext, 
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { IInsightOptions, ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
-import { ChartState, DataDirection } from 'sql/workbench/common/editor/query/chartState';
+import { ChartState } from 'sql/workbench/common/editor/query/chartState';
 import * as nls from 'vs/nls';
 import { find } from 'vs/base/common/arrays';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { DbCellValue } from 'azdata';
-import { Emitter, Event } from 'vs/base/common/event';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -63,12 +62,16 @@ export class ChartView extends Disposable implements IPanelView {
 	private _state: ChartState;
 
 	private options: IInsightOptions = {
-		type: ChartType.Bar,
-		dataDirection: DataDirection.Vertical
+		type: ChartType.Bar
 	};
+
 
 	/** parent container */
 	private container: HTMLElement;
+	/** container for the options controls */
+	public readonly optionsControl: HTMLElement;
+	/** container for type specific controls */
+	private typeControls: HTMLElement;
 	/** container for the insight */
 	private insightContainer: HTMLElement;
 	/** container for the action bar */
@@ -78,8 +81,6 @@ export class ChartView extends Disposable implements IPanelView {
 
 	private optionDisposables: IDisposable[] = [];
 	private optionMap: { [x: string]: { element: HTMLElement; set: (val) => void } } = {};
-
-	private readonly _onChartOptionsChange = new Emitter<void>();
 
 	constructor(
 		@IContextViewService private _contextViewService: IContextViewService,
@@ -91,12 +92,18 @@ export class ChartView extends Disposable implements IPanelView {
 		this.taskbarContainer = DOM.$('div.taskbar-container');
 		this.taskbar = new Taskbar(this.taskbarContainer);
 
+		this.optionsControl = DOM.$('div.options-container');
+		const generalControls = DOM.$('div.general-controls');
+		this.optionsControl.appendChild(generalControls);
+		this.typeControls = DOM.$('div.type-controls');
+		this.optionsControl.appendChild(this.typeControls);
+
 		this._createInsightAction = this._instantiationService.createInstance(CreateInsightAction);
 		this._copyAction = this._instantiationService.createInstance(CopyAction);
 		this._saveAction = this._instantiationService.createInstance(SaveImageAction);
 		this._configureChartAction = this._instantiationService.createInstance(ConfigureChartAction, this);
 
-		this.taskbar.setContent([{ action: this._createInsightAction }]);
+		this.taskbar.setContent([{ action: this._createInsightAction }, { action: this._configureChartAction }]);
 
 		const self = this;
 		this.options = new Proxy(this.options, {
@@ -128,12 +135,12 @@ export class ChartView extends Disposable implements IPanelView {
 			}
 		}) as IInsightOptions;
 
-		ChartOptions.general[0].options = insightRegistry.getAllIds();
-		this.buildOptions();
-	}
 
-	public get onChartOptionsChange(): Event<void> {
-		return this._onChartOptionsChange.event;
+		ChartOptions.general[0].options = insightRegistry.getAllIds();
+		ChartOptions.general.map(o => {
+			this.createOption(o, generalControls);
+		});
+		this.buildOptions();
 	}
 
 	public clear() {
@@ -161,6 +168,7 @@ export class ChartView extends Disposable implements IPanelView {
 			this.container.appendChild(this.taskbarContainer);
 			this.container.appendChild(this.chartingContainer);
 			this.chartingContainer.appendChild(this.insightContainer);
+
 			this.insight = new Insight(this.insightContainer, this.options, this._instantiationService);
 		}
 
@@ -241,29 +249,16 @@ export class ChartView extends Disposable implements IPanelView {
 		this.optionMap = {
 			'type': this.optionMap['type']
 		};
+		DOM.clearNode(this.typeControls);
 
 		this.updateActionbar();
-
+		ChartOptions[this.options.type].map(o => {
+			this.createOption(o, this.typeControls);
+		});
 		if (this.insight) {
 			this.insight.options = this.options;
 		}
 		this.verifyOptions();
-
-		this._onChartOptionsChange.fire();
-	}
-
-	public initChartOptionControls(generalControls: HTMLElement): void {
-		DOM.clearNode(generalControls);
-		ChartOptions.general.map(o => {
-			this.createOption(o, generalControls);
-		});
-	}
-
-	public updateChartOptionControls(typeControls: HTMLElement): void {
-		DOM.clearNode(typeControls);
-		ChartOptions[this.options.type].map(o => {
-			this.createOption(o, typeControls);
-		});
 	}
 
 	private verifyOptions() {

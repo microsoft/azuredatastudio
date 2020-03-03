@@ -27,6 +27,7 @@
 }
 
 .options-container {
+	padding: 20px;
 	min-width: 250px;
 	padding-right: 10px;
 }
