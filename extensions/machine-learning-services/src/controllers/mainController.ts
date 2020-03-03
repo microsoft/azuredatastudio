@@ -103,7 +103,7 @@ export default class MainController implements vscode.Disposable {
 		let mssqlService = await this.getLanguageExtensionService();
 		let languagesModel = new LanguageService(this._apiWrapper, mssqlService);
 		let languageController = new LanguageController(this._apiWrapper, this._rootPath, languagesModel);
-		let modelImporter = new ModelImporter(this._outputChannel, this._apiWrapper, this._processService, this._config);
+		let modelImporter = new ModelImporter(this._outputChannel, this._apiWrapper, this._processService, this._config, packageManager);
 
 		// Model Management
 		//
