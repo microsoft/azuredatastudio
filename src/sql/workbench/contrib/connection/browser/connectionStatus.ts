@@ -88,3 +88,4 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		});
 	}
 }
+
