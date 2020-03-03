@@ -168,7 +168,6 @@ export class ChartView extends Disposable implements IPanelView {
 			this.container.appendChild(this.taskbarContainer);
 			this.container.appendChild(this.chartingContainer);
 			this.chartingContainer.appendChild(this.insightContainer);
-
 			this.insight = new Insight(this.insightContainer, this.options, this._instantiationService);
 		}
 
