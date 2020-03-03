@@ -235,14 +235,6 @@ steps:
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  - task: PublishTestResults@2
-    displayName: 'Publish Integration and Smoke Test Results'
-    inputs:
-      testResultsFiles: 'dawin-integration-tests-results.xml'
-      searchFolder: '$(Build.ArtifactStagingDirectory)\test-results'
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-
   - task: PublishCodeCoverageResults@1
     displayName: 'Publish code coverage from $(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
     inputs:

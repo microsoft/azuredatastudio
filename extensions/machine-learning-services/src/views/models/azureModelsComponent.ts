@@ -8,10 +8,9 @@ import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { AzureResourceFilterComponent } from './azureResourceFilterComponent';
 import { AzureModelsTable } from './azureModelsTable';
-import * as constants from '../../common/constants';
-import { IPageView, IDataComponent, AzureModelResource } from '../interfaces';
+import { IDataComponent, AzureModelResource } from '../interfaces';
 
-export class AzureModelsComponent extends ModelViewBase implements IPageView, IDataComponent<AzureModelResource> {
+export class AzureModelsComponent extends ModelViewBase implements IDataComponent<AzureModelResource> {
 
 	public azureModelsTable: AzureModelsTable | undefined;
 	public azureFilterComponent: AzureResourceFilterComponent | undefined;
@@ -46,13 +45,34 @@ export class AzureModelsComponent extends ModelViewBase implements IPageView, ID
 		});
 
 		this._form = modelBuilder.formContainer().withFormItems([{
-			title: constants.azureModelFilter,
+			title: '',
 			component: this.azureFilterComponent.component
 		}, {
-			title: constants.azureModels,
+			title: '',
 			component: this._loader
 		}]).component();
 		return this._form;
+	}
+
+	public addComponents(formBuilder: azdata.FormBuilder) {
+		if (this.azureFilterComponent && this._loader) {
+			this.azureFilterComponent.addComponents(formBuilder);
+
+			formBuilder.addFormItems([{
+				title: '',
+				component: this._loader
+			}]);
+		}
+	}
+
+	public removeComponents(formBuilder: azdata.FormBuilder) {
+		if (this.azureFilterComponent && this._loader) {
+			this.azureFilterComponent.removeComponents(formBuilder);
+			formBuilder.removeFormItem({
+				title: '',
+				component: this._loader
+			});
+		}
 	}
 
 	private async onLoading(): Promise<void> {
@@ -92,12 +112,5 @@ export class AzureModelsComponent extends ModelViewBase implements IPageView, ID
 	 */
 	public async refresh(): Promise<void> {
 		await this.loadData();
-	}
-
-	/**
-	 * Returns the title of the page
-	 */
-	public get title(): string {
-		return constants.azureModelsTitle;
 	}
 }

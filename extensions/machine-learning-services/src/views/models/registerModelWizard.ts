@@ -11,15 +11,16 @@ import { LocalModelsComponent } from './localModelsComponent';
 import { AzureModelsComponent } from './azureModelsComponent';
 import * as constants from '../../common/constants';
 import { WizardView } from '../wizardView';
+import { ModelSourcePage } from './modelSourcePage';
+import { ModelDetailsPage } from './modelDetailsPage';
 
 /**
  * Wizard to register a model
  */
 export class RegisterModelWizard extends ModelViewBase {
 
-	public modelResources: ModelSourcesComponent | undefined;
-	public localModelsComponent: LocalModelsComponent | undefined;
-	public azureModelsComponent: AzureModelsComponent | undefined;
+	public modelSourcePage: ModelSourcePage | undefined;
+	public modelDetailsPage: ModelDetailsPage | undefined;
 	public wizardView: WizardView | undefined;
 	private _parentView: ModelViewBase | undefined;
 
@@ -35,21 +36,23 @@ export class RegisterModelWizard extends ModelViewBase {
 	 * Opens a dialog to manage packages used by notebooks.
 	 */
 	public open(): void {
-
-		this.modelResources = new ModelSourcesComponent(this._apiWrapper, this);
-		this.localModelsComponent = new LocalModelsComponent(this._apiWrapper, this);
-		this.azureModelsComponent = new AzureModelsComponent(this._apiWrapper, this);
-
+		this.modelSourcePage = new ModelSourcePage(this._apiWrapper, this);
+		this.modelDetailsPage = new ModelDetailsPage(this._apiWrapper, this);
 		this.wizardView = new WizardView(this._apiWrapper);
 
-		let wizard = this.wizardView.createWizard(constants.registerModelWizardTitle, [this.modelResources, this.localModelsComponent]);
+		let wizard = this.wizardView.createWizard(constants.registerModelTitle, [this.modelSourcePage, this.modelDetailsPage]);
+
 		this.mainViewPanel = wizard;
 		wizard.doneButton.label = constants.azureRegisterModel;
 		wizard.generateScriptButton.hidden = true;
-
+		wizard.displayPageTitles = true;
 		wizard.registerNavigationValidator(async (pageInfo: azdata.window.WizardPageChangeInfo) => {
 			if (pageInfo.newPage === undefined) {
+				wizard.cancelButton.enabled = false;
+				wizard.backButton.enabled = false;
 				await this.registerModel();
+				wizard.cancelButton.enabled = true;
+				wizard.backButton.enabled = true;
 				if (this._parentView) {
 					this._parentView?.refresh();
 				}
@@ -62,12 +65,24 @@ export class RegisterModelWizard extends ModelViewBase {
 		wizard.open();
 	}
 
+	public get modelResources(): ModelSourcesComponent | undefined {
+		return this.modelSourcePage?.modelResources;
+	}
+
+	public get localModelsComponent(): LocalModelsComponent | undefined {
+		return this.modelSourcePage?.localModelsComponent;
+	}
+
+	public get azureModelsComponent(): AzureModelsComponent | undefined {
+		return this.modelSourcePage?.azureModelsComponent;
+	}
+
 	private async registerModel(): Promise<boolean> {
 		try {
 			if (this.modelResources && this.localModelsComponent && this.modelResources.data === ModelSourceType.Local) {
-				await this.registerLocalModel(this.localModelsComponent.data);
+				await this.registerLocalModel(this.localModelsComponent.data, this.modelDetailsPage?.data);
 			} else {
-				await this.registerAzureModel(this.azureModelsComponent?.data);
+				await this.registerAzureModel(this.azureModelsComponent?.data, this.modelDetailsPage?.data);
 			}
 			this.showInfoMessage(constants.modelRegisteredSuccessfully);
 			return true;
@@ -78,12 +93,6 @@ export class RegisterModelWizard extends ModelViewBase {
 	}
 
 	private loadPages(): void {
-		if (this.modelResources && this.localModelsComponent && this.modelResources.data === ModelSourceType.Local) {
-			this.wizardView?.addWizardPage(this.localModelsComponent, 1);
-
-		} else if (this.azureModelsComponent) {
-			this.wizardView?.addWizardPage(this.azureModelsComponent, 1);
-		}
 	}
 
 	/**
@@ -91,6 +100,6 @@ export class RegisterModelWizard extends ModelViewBase {
 	 */
 	public async refresh(): Promise<void> {
 		this.loadPages();
-		this.wizardView?.refresh();
+		await this.wizardView?.refresh();
 	}
 }

@@ -42,9 +42,17 @@ export const rPathConfigKey = 'rPath';
 
 // Localized texts
 //
+export const msgYes = localize('msgYes', "Yes");
+export const msgNo = localize('msgNo', "No");
 export const managePackageCommandError = localize('mls.managePackages.error', "Either no connection is available or the server does not have external script enabled.");
-export function installDependenciesError(err: string): string { return localize('mls.installDependencies.error', "Failed to install dependencies. Error: {0}", err); }
+export function taskFailedError(taskName: string, err: string): string { return localize('mls.taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
 export const installDependenciesMsgTaskName = localize('mls.installDependencies.msgTaskName', "Installing Machine Learning extension dependencies");
+export const noResultError = localize('mls.noResultError', "No Result returned");
+export const requiredPackagesNotInstalled = localize('mls.requiredPackagesNotInstalled', "The required dependencies are not installed");
+export function confirmInstallPythonPackages(packages: string): string {
+	return localize('mls.installDependencies.confirmInstallPythonPackages'
+		, "The following Python packages are required to install: {0}. Are you sure you want to install?", packages);
+}
 export const installDependenciesPackages = localize('mls.installDependencies.packages', "Installing required packages ...");
 export const installDependenciesPackagesAlreadyInstalled = localize('mls.installDependencies.packagesAlreadyInstalled', "Required packages are already installed.");
 export function installDependenciesGetPackagesError(err: string): string { return localize('mls.installDependencies.getPackagesError', "Failed to get installed python packages. Error: {0}", err); }
@@ -101,23 +109,27 @@ export const extLangSelectedPath = localize('extLang.selectedPath', "Selected Pa
 export const extLangInstallFailedError = localize('extLang.installFailedError', "Failed to install language");
 export const extLangUpdateFailedError = localize('extLang.updateFailedError', "Failed to update language");
 
-export const modeIld = localize('models.id', "Id");
+export const modelArtifactName = localize('models.artifactName', "Artifact Name");
 export const modelName = localize('models.name', "Name");
-export const modelSize = localize('models.size', "Size");
+export const modelDescription = localize('models.description', "Description");
+export const modelCreated = localize('models.created', "Date Created");
+export const modelVersion = localize('models.version', "Version");
 export const browseModels = localize('models.browseButton', "...");
-export const azureAccount = localize('models.azureAccount', "Account");
-export const azureSubscription = localize('models.azureSubscription', "Subscription");
-export const azureGroup = localize('models.azureGroup', "Resource Group");
-export const azureModelWorkspace = localize('models.azureModelWorkspace', "Workspace");
+export const azureAccount = localize('models.azureAccount', "Azure account");
+export const azureSubscription = localize('models.azureSubscription', "Azure subscription");
+export const azureGroup = localize('models.azureGroup', "Azure resource group");
+export const azureModelWorkspace = localize('models.azureModelWorkspace', "Azure ML workspace");
 export const azureModelFilter = localize('models.azureModelFilter', "Filter");
 export const azureModels = localize('models.azureModels', "Models");
 export const azureModelsTitle = localize('models.azureModelsTitle', "Azure models");
 export const localModelsTitle = localize('models.localModelsTitle', "Local models");
 export const modelSourcesTitle = localize('models.modelSourcesTitle', "Source location");
+export const modelSourcePageTitle = localize('models.modelSourcePageTitle', "Ender model source details");
+export const modelDetailsPageTitle = localize('models.modelDetailsPageTitle', "Provide model details");
+export const modelLocalSourceTitle = localize('models.modelLocalSourceTitle', "Source file");
 export const currentModelsTitle = localize('models.currentModelsTitle', "Models");
 export const azureRegisterModel = localize('models.azureRegisterModel', "Register");
-export const registerModelWizardTitle = localize('models.RegisterWizard', "Register");
-export const registerModelButton = localize('models.RegisterModelButton', "Register model");
+export const registerModelTitle = localize('models.RegisterWizard', "Register model");
 export const modelRegisteredSuccessfully = localize('models.modelRegisteredSuccessfully', "Model registered successfully");
 export const modelFailedToRegister = localize('models.modelFailedToRegistered', "Model failed to register");
 export const localModelSource = localize('models.localModelSource', "Upload file");
@@ -125,6 +137,8 @@ export const azureModelSource = localize('models.azureModelSource', "Import from
 export const downloadModelMsgTaskName = localize('models.downloadModelMsgTaskName', "Downloading Model from Azure");
 export const invalidAzureResourceError = localize('models.invalidAzureResourceError', "Invalid Azure resource");
 export const invalidModelToRegisterError = localize('models.invalidModelToRegisterError', "Invalid model to register");
+export const updateModelFailedError = localize('models.updateModelFailedError', "Failed to update the model");
+export const importModelFailedError = localize('models.importModelFailedError', "Failed to register the model");
 
 
 

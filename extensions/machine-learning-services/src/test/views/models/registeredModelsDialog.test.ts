@@ -30,7 +30,7 @@ describe('Registered Models Dialog', () => {
 		let models: RegisteredModel[] = [
 			{
 				id: 1,
-				name: 'model'
+				artifactName: 'model'
 			}
 		];
 		view.on(ListModelsEventName, () => {
