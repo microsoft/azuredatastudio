@@ -121,7 +121,7 @@ export class ChartView extends Disposable implements IPanelView {
 					if (key === 'type') {
 						self.buildOptions();
 					} else {
-						self.applyChartOptions();
+						self.verifyOptions();
 					}
 				}
 
@@ -172,7 +172,7 @@ export class ChartView extends Disposable implements IPanelView {
 		} else {
 			this.queryRunner = this._queryRunner;
 		}
-		this.applyChartOptions();
+		this.verifyOptions();
 	}
 
 	public chart(dataId: { batchId: number, resultId: number }) {
@@ -248,7 +248,7 @@ export class ChartView extends Disposable implements IPanelView {
 		if (this.insight) {
 			this.insight.options = this.options;
 		}
-		this.applyChartOptions();
+		this.verifyOptions();
 
 		this._onChartOptionsChange.fire();
 	}
@@ -266,7 +266,7 @@ export class ChartView extends Disposable implements IPanelView {
 		});
 	}
 
-	private applyChartOptions() {
+	private verifyOptions() {
 		this.updateActionbar();
 		for (let key in this.optionMap) {
 			if (this.optionMap.hasOwnProperty(key)) {
