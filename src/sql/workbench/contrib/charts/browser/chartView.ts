@@ -88,7 +88,6 @@ export class ChartView extends Disposable implements IPanelView {
 		@INotificationService private readonly _notificationService: INotificationService
 	) {
 		super();
-
 		this.taskbarContainer = DOM.$('div.taskbar-container');
 		this.taskbar = new Taskbar(this.taskbarContainer);
 
@@ -245,12 +244,12 @@ export class ChartView extends Disposable implements IPanelView {
 
 		this.updateActionbar();
 
+		this._onChartOptionsChange.fire();
+
 		if (this.insight) {
 			this.insight.options = this.options;
 		}
 		this.verifyOptions();
-
-		this._onChartOptionsChange.fire();
 	}
 
 	public updateChartOptionControls(generalControls: HTMLElement, typeControls: HTMLElement): void {
