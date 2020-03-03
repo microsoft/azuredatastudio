@@ -25,9 +25,13 @@ export class BookTrustManager implements IBookTrustManager {
 
 	constructor(private books: BookModel[], private workspaceDetails?: IBookTrustManagerWorkspaceDetails) {
 		if (!workspaceDetails) {
-			workspaceDetails = {
-				getConfiguration: vscode.workspace.getConfiguration,
-				rootPath: vscode.workspace.rootPath
+			this.workspaceDetails = {
+				get getConfiguration() {
+					return vscode.workspace.getConfiguration;
+				},
+				get rootPath() {
+					return vscode.workspace.rootPath;
+				}
 			};
 		}
 	}
