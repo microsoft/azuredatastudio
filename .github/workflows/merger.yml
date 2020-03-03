@@ -1,0 +1,14 @@
+name: AutoMerger
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  release_labeler:
+    name: Auto Merger
+    runs-on: ubuntu-latest
+    steps:
+      - uses: aaomidi/AutoMerge@master
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
