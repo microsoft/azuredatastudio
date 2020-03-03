@@ -623,7 +623,7 @@ export class ProfilerEditor extends BaseEditor {
 abstract class SettingsCommand extends Command {
 
 	protected getProfilerEditor(accessor: ServicesAccessor): ProfilerEditor {
-		const activeEditor = accessor.get(IEditorService).activeControl;
+		const activeEditor = accessor.get(IEditorService).activeEditorPane;
 		if (activeEditor instanceof ProfilerEditor) {
 			return activeEditor;
 		}

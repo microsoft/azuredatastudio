@@ -33,7 +33,7 @@ function isConnected(editor: QueryEditor, connectionManagementService: IConnecti
 }
 
 function runActionOnActiveQueryEditor(editorService: IEditorService, action: (QueryEditor) => void): void {
-	const candidates = [editorService.activeControl, ...editorService.visibleControls].filter(e => e instanceof QueryEditor);
+	const candidates = [editorService.activeEditorPane, ...editorService.visibleEditorPanes].filter(e => e instanceof QueryEditor);
 	if (candidates.length > 0) {
 		action(candidates[0]);
 	}
@@ -73,7 +73,7 @@ export class FocusOnCurrentQueryKeyboardAction extends Action {
 	}
 
 	public run(): Promise<void> {
-		const editor = this._editorService.activeControl;
+		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			editor.focus();
 		}
@@ -99,7 +99,7 @@ export class RunQueryKeyboardAction extends Action {
 	}
 
 	public run(): Promise<void> {
-		const editor = this._editorService.activeControl;
+		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor || editor instanceof EditDataEditor) {
 			editor.runQuery();
 		}
@@ -124,7 +124,7 @@ export class RunCurrentQueryKeyboardAction extends Action {
 	}
 
 	public run(): Promise<void> {
-		const editor = this._editorService.activeControl;
+		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			editor.runCurrentQuery();
 		}
@@ -146,7 +146,7 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 	}
 
 	public run(): Promise<void> {
-		const editor = this._editorService.activeControl;
+		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			editor.runCurrentQueryWithActualPlan();
 		}
@@ -172,7 +172,7 @@ export class CancelQueryKeyboardAction extends Action {
 	}
 
 	public run(): Promise<void> {
-		const editor = this._editorService.activeControl;
+		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor || editor instanceof EditDataEditor) {
 			editor.cancelQuery();
 		}
@@ -224,7 +224,7 @@ export class ToggleQueryResultsKeyboardAction extends Action {
 	}
 
 	public run(): Promise<void> {
-		const editor = this._editorService.activeControl;
+		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			editor.toggleResultsEditorVisibility();
 		}
@@ -404,7 +404,7 @@ export class ParseSyntaxAction extends Action {
 	}
 
 	public run(): Promise<void> {
-		const editor = this.editorService.activeControl;
+		const editor = this.editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			if (!editor.isSelectionEmpty()) {
 				if (this.isConnected(editor)) {

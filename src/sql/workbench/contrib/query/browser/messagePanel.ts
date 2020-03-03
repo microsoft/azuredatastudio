@@ -387,7 +387,7 @@ export class MessageController extends WorkbenchTreeController {
 		if (element.selection) {
 			let selection: ISelectionData = element.selection;
 			// this is a batch statement
-			let editor = this.workbenchEditorService.activeControl as QueryEditor;
+			let editor = this.workbenchEditorService.activeEditorPane as QueryEditor;
 			const codeEditor = <ICodeEditor>editor.getControl();
 			codeEditor.focus();
 			codeEditor.setSelection({ endColumn: selection.endColumn + 1, endLineNumber: selection.endLine + 1, startColumn: selection.startColumn + 1, startLineNumber: selection.startLine + 1 });

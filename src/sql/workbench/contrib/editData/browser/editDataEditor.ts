@@ -7,7 +7,7 @@ import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 
-import { EditorOptions, EditorInput, IEditorControl, IEditor } from 'vs/workbench/common/editor';
+import { EditorOptions, EditorInput, IEditorControl, IEditorPane } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -521,7 +521,7 @@ export class EditDataEditor extends BaseEditor {
 					this._createEditor(<UntitledTextEditorInput>newInput.sql, this._sqlEditorContainer)
 				]);
 			};
-			onEditorsCreated = (result: IEditor[]) => {
+			onEditorsCreated = (result: IEditorPane[]) => {
 				return Promise.all([
 					this._onResultsEditorCreated(<EditDataResultsEditor>result[0], newInput.results, options),
 					this._onSqlEditorCreated(<TextResourceEditor>result[1], newInput.sql, options)
@@ -629,7 +629,7 @@ export class EditDataEditor extends BaseEditor {
 			let visible = currentEditorIsVisible;
 			if (!currentEditorIsVisible) {
 				// Current editor is closing but still tracked as visible. Check if any other editor is visible
-				const candidates = [...this._editorService.visibleControls].filter(e => {
+				const candidates = [...this._editorService.visibleEditorPanes].filter(e => {
 					if (e && e.getId) {
 						return e.getId() === EditDataEditor.ID;
 					}

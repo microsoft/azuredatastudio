@@ -99,7 +99,7 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 		let uri = event.editor.resource.toString();
 		if (uri && uri in this._sqlStatusEditors) {
 			// If active editor is being closed, hide the query status.
-			let activeEditor = this.editorService.activeControl;
+			let activeEditor = this.editorService.activeEditorPane;
 			if (activeEditor) {
 				let currentUri = activeEditor.input.resource.toString();
 				if (uri === currentUri) {
@@ -112,7 +112,7 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 	}
 
 	private _onEditorsChanged(): void {
-		let activeEditor = this.editorService.activeControl;
+		let activeEditor = this.editorService.activeEditorPane;
 		if (activeEditor) {
 			let uri = activeEditor.input.resource.toString();
 
@@ -143,7 +143,7 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 
 	// Show/hide query status for active editor
 	private _showStatus(uri: string): void {
-		let activeEditor = this.editorService.activeControl;
+		let activeEditor = this.editorService.activeEditorPane;
 		if (activeEditor) {
 			let currentUri = activeEditor.input.resource.toString();
 			if (uri === currentUri) {
@@ -185,7 +185,7 @@ export class ChangeFlavorAction extends Action {
 	}
 
 	public run(): Promise<any> {
-		let activeEditor = this._editorService.activeControl;
+		let activeEditor = this._editorService.activeEditorPane;
 		let currentUri = activeEditor?.input.resource.toString();
 		if (this._connectionManagementService.isConnected(currentUri)) {
 			let currentProvider = this._connectionManagementService.getProviderIdFromUri(currentUri);
@@ -206,7 +206,7 @@ export class ChangeFlavorAction extends Action {
 
 		return this._quickInputService.pick(providerOptions, { placeHolder: nls.localize('pickSqlProvider', "Select SQL Language Provider") }).then(provider => {
 			if (provider) {
-				let activeEditor = this._editorService.activeControl.getControl();
+				let activeEditor = this._editorService.activeEditorPane.getControl();
 				const editorWidget = getCodeEditor(activeEditor);
 				if (editorWidget) {
 					if (currentUri) {
