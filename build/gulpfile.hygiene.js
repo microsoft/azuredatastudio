@@ -34,7 +34,8 @@ const all = [
 	'src/**/*',
 	'test/**/*',
 	'!test/**/out/**',
-	'!**/node_modules/**'
+	'!**/node_modules/**',
+	'!build/actions/**' // {{ SQL CARBON EDIT }}
 ];
 
 const indentationFilter = [
@@ -104,8 +105,7 @@ const indentationFilter = [
 	'!extensions/integration-tests/testData/**',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
-	'!resources/linux/snap/electron-launch',
-	'!build/actions/**/dist/*.js'
+	'!resources/linux/snap/electron-launch'
 ];
 
 const copyrightFilter = [
@@ -170,8 +170,7 @@ const copyrightFilter = [
 	'!**/*.gif',
 	'!**/*.xlf',
 	'!**/*.dacpac',
-	'!**/*.bacpac',
-	'!build/actions/**/dist/*.js'
+	'!**/*.bacpac'
 ];
 
 const jsHygieneFilter = [
@@ -184,8 +183,7 @@ const jsHygieneFilter = [
 	'!src/vs/nls.build.js',
 	'!src/**/insane.js',
 	'!src/**/marked.js',
-	'!**/test/**',
-	'!build/actions/**/dist/*.js' // {{ SQL CARBON EDIT }}
+	'!**/test/**'
 ];
 
 const tsHygieneFilter = [
