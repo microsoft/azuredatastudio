@@ -107,7 +107,7 @@ export class AccountPicker extends Disposable {
 
 		this._dropdown = this._register(new DropdownList(this._rootElement, option, this._listContainer, this._accountList, addAccountAction));
 		this._register(attachDropdownStyler(this._dropdown, this._themeService));
-		this._register(this._accountList.onSelectionChange((e: IListEvent<azdata.Account>) => {
+		this._register(this._accountList.onDidChangeSelection((e: IListEvent<azdata.Account>) => {
 			if (e.elements.length === 1) {
 				this._dropdown.renderLabel();
 				this.onAccountSelectionChange(e.elements[0]);
