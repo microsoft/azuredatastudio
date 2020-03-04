@@ -74,7 +74,19 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
+		} finally {
+			let tocFileWatcher = vscode.workspace.createFileSystemWatcher(
+				new vscode.RelativePattern(path.join(bookPath, '_data')!, '*.{yml,js}'), false, false, false);
+			tocFileWatcher.onDidChange(() => {
+				// refresh the book
+				let index = this.books.findIndex(book => book.bookPath === bookPath);
+				this.refreshTreeItem(this.books[index].bookItems[0]);
+			});
 		}
+	}
+
+	refreshTreeItem(node?: BookTreeItem): void {
+		this._onDidChangeTreeData.fire();
 	}
 
 	async closeBook(book?: BookTreeItem): Promise<void> {
@@ -84,7 +96,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			if (index > -1) {
 				let deletedBook: BookModel[] = this.books.splice(index, 1);
 				if (this.currentBook === deletedBook[0]) {
-					this.currentBook = this.books.length > 0 ? this.books[0] : undefined;
+					this.currentBook = this.books.length > 0 ? this.books[this.books.length - 1] : undefined;
 				}
 				this._onDidChangeTreeData.fire();
 			}
