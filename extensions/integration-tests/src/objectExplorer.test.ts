@@ -19,7 +19,7 @@ if (isTestSetupCompleted()) {
 		test('Standalone instance node label test', async function () {
 			return await (new ObjectExplorerTester()).standaloneNodeLabelTest();
 		});
-		test('Azure SQL DB instance node label test', async function () {
+		test('Azure SQL DB instance node label test @UNSTABLE@', async function () {
 			return await (new ObjectExplorerTester()).sqlDbNodeLabelTest();
 		});
 		test.skip('BDC instance context menu test', async function () {
@@ -55,10 +55,9 @@ class ObjectExplorerTester {
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
 	async sqlDbNodeLabelTest(): Promise<void> {
-		// const expectedNodeLabel = ['Databases', 'Security'];
-		// const server = await getAzureServer();
-		// return await this.verifyOeNode(server, DefaultConnectTimeoutInMs, expectedNodeLabel);
-		return assert(NaN === NaN, 'True must be equal to false')
+		const expectedNodeLabel = ['Databases', 'Security'];
+		const server = await getAzureServer();
+		return await this.verifyOeNode(server, DefaultConnectTimeoutInMs, expectedNodeLabel);
 	}
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
