@@ -97,7 +97,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 			this._onMessageDisposable.dispose();
 		}
 
-		this._webview = this.webviewService.createWebview(this.id,
+		this._webview = this.webviewService.createWebviewElement(this.id,
 			{},
 			{
 				allowScripts: true,
