@@ -26,16 +26,16 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _extensionContext: vscode.ExtensionContext;
 	private prompter: IPrompter;
 	private _initializeDeferred: Deferred<void> = new Deferred<void>();
-	private _apiWrapper: ApiWrapper;
 	private _openAsUntitled: boolean;
 	private _trustResourceCache: Record<string, boolean> = {};
 	private _bookTrustManager: IBookTrustManager;
+	private _apiWrapper: ApiWrapper;
 
 	public viewId: string;
 	public books: BookModel[];
 	public currentBook: BookModel;
 
-	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string) {
+	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, apiWrapper?: ApiWrapper) {
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
 		this.books = [];
@@ -43,7 +43,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this.viewId = view;
 		this.prompter = new CodeAdapter();
 		this._bookTrustManager = new BookTrustManager(this.books);
-		this._apiWrapper = new ApiWrapper();
+		this._apiWrapper = apiWrapper;
 	}
 
 	private async initialize(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
@@ -65,10 +65,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	trustBook(bookTreeItem: BookTreeItem): void {
 		let hasTrustedBook = this._bookTrustManager.setBookAsTrusted(bookTreeItem.root);
 
-		if (hasTrustedBook) {
-			this._apiWrapper.showInfoMessage(loc.msgBookTrusted);
-		} else {
-			this._apiWrapper.showInfoMessage(loc.msgBookAlreadyTrusted);
+		if (this._apiWrapper) {
+			if (hasTrustedBook) {
+				this._apiWrapper.showInfoMessage(loc.msgBookTrusted);
+			} else {
+				this._apiWrapper.showInfoMessage(loc.msgBookAlreadyTrusted);
+			}
 		}
 	}
 
@@ -133,8 +135,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				let normalizedResource = path.normalize(resource);
 				if (!cache[normalizedResource] && this._bookTrustManager.isNotebookTrustedByDefault(normalizedResource)) {
 					let openDocumentListenerUnsubscriber = azdata.nb.onDidOpenNotebookDocument(function (document: azdata.nb.NotebookDocument) {
-						// ignore error "property 'setTrusted' does not exist on type 'NotebookDocument'." as it is merged from azdata.proposed.d.ts
-						// @ts-ignore
 						document.setTrusted(true);
 						cache[normalizedResource] = true;
 						openDocumentListenerUnsubscriber.dispose();

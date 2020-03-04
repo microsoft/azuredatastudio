@@ -29,11 +29,13 @@ declare module 'azdata' {
 		export function getConnection(uri: string): Thenable<ConnectionProfile>;
 	}
 
-	export interface NotebookDocument {
-		/**
-		 * Sets the notebook to trusted by default.
-		 */
-		setTrusted(state: boolean);
+	export namespace nb {
+		export interface NotebookDocument {
+			/**
+			 * Sets the notebook to trusted by default.
+			 */
+			setTrusted(state: boolean);
+		}
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'

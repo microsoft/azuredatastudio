@@ -118,9 +118,9 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	}
 
 	let workspaceFolders = vscode.workspace.workspaceFolders?.slice() ?? [];
-	const bookTreeViewProvider = new BookTreeViewProvider(workspaceFolders, extensionContext, false, BOOKS_VIEWID);
+	const bookTreeViewProvider = new BookTreeViewProvider(workspaceFolders, extensionContext, false, BOOKS_VIEWID, appContext.apiWrapper);
 	await bookTreeViewProvider.initialized;
-	const untitledBookTreeViewProvider = new BookTreeViewProvider([], extensionContext, true, READONLY_BOOKS_VIEWID);
+	const untitledBookTreeViewProvider = new BookTreeViewProvider([], extensionContext, true, READONLY_BOOKS_VIEWID, appContext.apiWrapper);
 	await untitledBookTreeViewProvider.initialized;
 
 	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(BOOKS_VIEWID, bookTreeViewProvider));
