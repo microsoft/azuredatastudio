@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as loc from '../../localizedConstants';
 import { DacFxDataModel } from './models';
+import { isSystemDatabase } from './utils';
 
 export abstract class BasePage {
 
@@ -107,14 +108,15 @@ export abstract class BasePage {
 	protected async getDatabaseValues(): Promise<string[]> {
 		let idx = -1;
 		let count = -1;
-		this.databaseValues = (await azdata.connection.listDatabases(this.model.server.connectionId)).map(db => {
-			count++;
-			if (this.model.database && db === this.model.database) {
-				idx = count;
-			}
+		this.databaseValues = (await azdata.connection.listDatabases(this.model.server.connectionId)).filter(db => !isSystemDatabase(db))
+			.map(db => {
+				count++;
+				if (this.model.database && db === this.model.database) {
+					idx = count;
+				}
 
-			return db;
-		});
+				return db;
+			});
 
 		if (idx >= 0) {
 			let tmp = this.databaseValues[0];

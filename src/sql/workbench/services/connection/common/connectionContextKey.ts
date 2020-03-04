@@ -14,12 +14,18 @@ export class ConnectionContextKey implements IContextKey<IConnectionProfile> {
 	static Database = new RawContextKey<string>('databaseName', undefined);
 	static Connection = new RawContextKey<IConnectionProfile>('connection', undefined);
 	static IsQueryProvider = new RawContextKey<boolean>('isQueryProvider', false);
+	static IsSystemDb = new RawContextKey<boolean>('isSystemDb', false);
+	static IsDefaultDb = new RawContextKey<boolean>('isDefaultDb', false);
 
 	private _providerKey: IContextKey<string>;
 	private _serverKey: IContextKey<string>;
 	private _databaseKey: IContextKey<string>;
 	private _connectionKey: IContextKey<IConnectionProfile>;
 	private _isQueryProviderKey: IContextKey<boolean>;
+	private _isSystemDb: IContextKey<boolean>;
+	private _isDefaultDb: IContextKey<boolean>;
+
+	private _systemDbs = new Set<string>(['master', 'model', 'msdb', 'tempdb']);
 
 	constructor(
 		@IContextKeyService contextKeyService: IContextKeyService,
@@ -30,6 +36,8 @@ export class ConnectionContextKey implements IContextKey<IConnectionProfile> {
 		this._databaseKey = ConnectionContextKey.Database.bindTo(contextKeyService);
 		this._connectionKey = ConnectionContextKey.Connection.bindTo(contextKeyService);
 		this._isQueryProviderKey = ConnectionContextKey.IsQueryProvider.bindTo(contextKeyService);
+		this._isSystemDb = ConnectionContextKey.IsSystemDb.bindTo(contextKeyService);
+		this._isDefaultDb = ConnectionContextKey.IsDefaultDb.bindTo(contextKeyService);
 	}
 
 	set(value: IConnectionProfile) {
@@ -39,6 +47,8 @@ export class ConnectionContextKey implements IContextKey<IConnectionProfile> {
 		this._serverKey.set(value && value.serverName);
 		this._databaseKey.set(value && value.databaseName);
 		this._isQueryProviderKey.set(value && value.providerName && queryProviders.indexOf(value.providerName) !== -1);
+		this._isSystemDb.set(value && this._systemDbs.has(value.databaseName));
+		this._isDefaultDb.set(value && value.databaseName === '');
 	}
 
 	reset(): void {
@@ -47,6 +57,8 @@ export class ConnectionContextKey implements IContextKey<IConnectionProfile> {
 		this._databaseKey.reset();
 		this._connectionKey.reset();
 		this._isQueryProviderKey.reset();
+		this._isSystemDb.reset();
+		this._isDefaultDb.reset();
 	}
 
 	public get(): IConnectionProfile {
