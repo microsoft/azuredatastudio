@@ -29,7 +29,7 @@ import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lif
 import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { registerColor, focusBorder, textLinkForeground, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
+import { registerColor, focusBorder, textLinkForeground, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder, tileBackground, buttonStandardBackground, buttonStandardBorder, buttonStandard, welcomeFont, welcomePath, moreRecent, entity, tileBorder, buttonStandardHoverColor } from 'vs/platform/theme/common/colorRegistry';
 import { getExtraColor } from 'vs/workbench/contrib/welcome/walkThrough/common/walkThroughUtils';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IEditorInputFactory, EditorInput } from 'vs/workbench/common/editor';
@@ -46,6 +46,7 @@ import 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page'; // {{S
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
 
+const fs = require('fs');
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
 const telemetryFrom = 'welcomePage';
@@ -171,6 +172,7 @@ interface Strings {
 	installing: string;
 	extensionNotFound: string;
 }
+
 
 /* __GDPR__
 	"installExtension" : {
@@ -360,6 +362,45 @@ class WelcomePage extends Disposable {
 				windowOpenable = { workspaceUri: recent.workspace.configPath };
 			}
 
+			const daysOfWeek: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+			const monthsOfYear: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+
+			let lastOpened: string;
+			let mtime: any = fs.statSync(fullPath).mtime;
+			let currentDate: Date = new Date;
+			let daysLapsed: number;
+			let delta = Math.abs(mtime - currentDate.getTime()) / 1000;
+
+			let hours = mtime.getHours();
+			let minutes = mtime.getMinutes();
+			let ampm = hours >= 12 ? 'pm' : 'am';
+			hours = hours % 12;
+			hours = hours ? hours : 12; // the hour '0' should be '12'
+			minutes = minutes < 10 ? '0' + minutes : minutes;
+			let strTime = hours + ':' + minutes + ' ' + ampm;
+
+			// calculate (and subtract) whole days
+			daysLapsed = Math.floor(delta / 86400);
+			delta -= daysLapsed * 86400;
+
+			// what's left is seconds
+			let secondsLapsed = delta % 60;  // in theory the modulus is not required
+
+			if (daysLapsed === 0 && secondsLapsed < 60) {
+				lastOpened = `Just Now`;
+			}
+			else if (daysLapsed === 1) {
+				lastOpened = `Yesterday at ${strTime}`;
+
+			}
+			else if (daysLapsed <= 7) {
+				lastOpened = `${daysOfWeek[mtime.getDay()]} at ${strTime}`;
+
+			} else {
+				lastOpened = `${monthsOfYear[mtime.getMonth()]}  ${mtime.getDate()}`;
+			}
+
+
 			const { name, parentPath } = splitName(fullPath);
 
 			const li = document.createElement('li');
@@ -383,7 +424,7 @@ class WelcomePage extends Disposable {
 			const span = document.createElement('span');
 			span.classList.add('path');
 			span.classList.add('detail');
-			span.innerText = parentPath;
+			span.innerText = lastOpened;
 			span.title = fullPath;
 			li.appendChild(span);
 
@@ -619,9 +660,34 @@ export const buttonHoverBackground = registerColor('welcomePage.buttonHoverBackg
 export const welcomePageBackground = registerColor('welcomePage.background', { light: null, dark: null, hc: null }, localize('welcomePage.background', 'Background color for the Welcome page.'));
 
 registerThemingParticipant((theme, collector) => {
+
 	const backgroundColor = theme.getColor(welcomePageBackground);
 	if (backgroundColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer { background-color: ${backgroundColor}; }`);
+	}
+	const tileColor = theme.getColor(tileBackground);
+	if (tileColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile { background-color: ${tileColor};  }`);
+	}
+	const tileBorderColor = theme.getColor(tileBorder);
+	if (tileBorderColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile { border-color: ${tileBorderColor}; }`);
+	}
+	const buttonStandardBackgroundColor = theme.getColor(buttonStandardBackground);
+	if (buttonStandardBackgroundColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--standard { background-color: ${buttonStandardBackgroundColor}}`);
+	}
+	const buttonStandardBorderColor = theme.getColor(buttonStandardBorder);
+	if (buttonStandardBorderColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer a.btn--standard { border: 1px solid ${buttonStandardBorderColor}}`);
+	}
+	const buttonStandardColor = theme.getColor(buttonStandard);
+	if (buttonStandardColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer a.btn--standard { color: ${buttonStandardColor}}`);
+	}
+	const buttonStandardHover = theme.getColor(buttonStandardHoverColor);
+	if (buttonStandardColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer a.btn--standard:hover { color: ${buttonStandardHover}}`);
 	}
 	const foregroundColor = theme.getColor(foreground);
 	if (foregroundColor) {
@@ -638,6 +704,22 @@ registerThemingParticipant((theme, collector) => {
 	const buttonHoverColor = getExtraColor(theme, buttonHoverBackground, { dark: 'rgba(200, 235, 255, .072)', extra_dark: 'rgba(200, 235, 255, .072)', light: 'rgba(0,0,0,.10)', hc: null });
 	if (buttonHoverColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .commands .item button:hover { background: ${buttonHoverColor}; }`);
+	}
+	const fontColor = theme.getColor(welcomeFont);
+	if (fontColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage h1, h2, h3, h4, h5, h6, h7, p { color: ${fontColor}; }`);
+	}
+	const moreRecentColor = theme.getColor(moreRecent);
+	if (moreRecentColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .moreRecent { color: ${moreRecentColor}; }`);
+	}
+	const entityColor = theme.getColor(entity);
+	if (entityColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .entity { color: ${entityColor}; }`);
+	}
+	const pathColor = theme.getColor(welcomePath);
+	if (pathColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .path { color: ${pathColor}; }`);
 	}
 	const link = theme.getColor(textLinkForeground);
 	if (link) {
