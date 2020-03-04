@@ -8,12 +8,13 @@ import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResult
 
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { EncodingMode } from 'vs/workbench/common/editor';
+import { EncodingMode, IMoveResult, GroupIdentifier } from 'vs/workbench/common/editor';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
 import { ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { IConnection } from 'sql/platform/connection/common/connectionService';
 import { IQueryService } from 'sql/platform/query/common/queryService';
+import { URI } from 'vs/base/common/uri';
 
 export class FileQueryEditorInput extends QueryEditorInput {
 
@@ -81,5 +82,9 @@ export class FileQueryEditorInput extends QueryEditorInput {
 
 	public isResolved(): boolean {
 		return this.text.isResolved();
+	}
+
+	public move(group: GroupIdentifier, target: URI): IMoveResult {
+		return this.text.move(group, target);
 	}
 }

@@ -3,12 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs';
 import * as constants from '../common/constants';
 import { promisify } from 'util';
+import { ApiWrapper } from './apiWrapper';
 
 export async function execCommandOnTempFile<T>(content: string, command: (filePath: string) => Promise<T>): Promise<T> {
 	let tempFilePath: string = '';
@@ -100,4 +102,77 @@ export function sortPackageVersions(versions: string[], ascending: boolean = tru
 
 export function isWindows(): boolean {
 	return process.platform === 'win32';
+}
+
+/**
+ * Escapes all single-quotes (') by prefixing them with another single quote ('')
+ * ' => ''
+ * @param value The string to escape
+ */
+export function doubleEscapeSingleQuotes(value: string): string {
+	return value.replace(/'/g, '\'\'');
+}
+
+/**
+ * Escapes all single-bracket ([]) by replacing them with another bracket quote ([[]])
+ * ' => ''
+ * @param value The string to escape
+ */
+export function doubleEscapeSingleBrackets(value: string): string {
+	return value.replace(/\[/g, '[[').replace(/\]/g, ']]');
+}
+
+/**
+ * Installs dependencies for the extension
+ */
+export async function executeTasks<T>(apiWrapper: ApiWrapper, taskName: string, dependencies: PromiseLike<T>[], parallel: boolean): Promise<T[]> {
+	return new Promise<T[]>((resolve, reject) => {
+		let msgTaskName = taskName;
+		apiWrapper.startBackgroundOperation({
+			displayName: msgTaskName,
+			description: msgTaskName,
+			isCancelable: false,
+			operation: async op => {
+				try {
+					let result: T[] = [];
+					// Install required packages
+					//
+					if (parallel) {
+						result = await Promise.all(dependencies);
+					} else {
+						for (let index = 0; index < dependencies.length; index++) {
+							result.push(await dependencies[index]);
+						}
+					}
+					op.updateStatus(azdata.TaskStatus.Succeeded);
+					resolve(result);
+				} catch (error) {
+					let errorMsg = constants.taskFailedError(taskName, error ? error.message : '');
+					op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
+					reject(errorMsg);
+				}
+			}
+		});
+	});
+}
+
+export async function promptConfirm(message: string, apiWrapper: ApiWrapper): Promise<boolean> {
+	let choices: { [id: string]: boolean } = {};
+	choices[constants.msgYes] = true;
+	choices[constants.msgNo] = false;
+
+	let options = {
+		placeHolder: message
+	};
+
+	let result = await apiWrapper.showQuickPick(Object.keys(choices).map(c => {
+		return {
+			label: c
+		};
+	}), options);
+	if (result === undefined) {
+		throw Error('invalid selection');
+	}
+
+	return choices[result.label] || false;
 }

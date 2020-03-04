@@ -21,11 +21,9 @@ describe('Register Model Wizard', () => {
 
 		let view = new RegisterModelWizard(testContext.apiWrapper.object, '');
 		view.open();
-
+		await view.refresh();
 		should.notEqual(view.wizardView, undefined);
-		should.notEqual(view.localModelsComponent, undefined);
-		should.notEqual(view.azureModelsComponent, undefined);
-		should.notEqual(view.modelResources, undefined);
+		should.notEqual(view.modelSourcePage, undefined);
 	});
 
 	it('Should load data successfully ', async function (): Promise<void> {
@@ -76,7 +74,7 @@ describe('Register Model Wizard', () => {
 		let localModels: RegisteredModel[] = [
 			{
 				id: 1,
-				name: 'model'
+				artifactName: 'model'
 			}
 		];
 		view.on(ListModelsEventName, () => {
