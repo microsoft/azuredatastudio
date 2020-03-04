@@ -257,7 +257,7 @@ export default () => `
 						</div>
 					</div>
 					<div class="col col--xxl--start_3__span_2">
-						<div class="extension tile icon--sql_server">
+						<div class="extension icon--sql_server">
 							<div class="flex flex--a_center extension__inner">
 								<div class="icon"></div>
 								<div class="description">
@@ -271,7 +271,7 @@ export default () => `
 						</div>
 					</div>
 					<div class="col col--xxl--start_3__span_2">
-						<div class="extension tile icon--sql_server">
+						<div class="extension icon--sql_server">
 							<div class="flex flex--a_center extension__inner">
 								<div class="icon"></div>
 								<div class="description">
@@ -285,7 +285,7 @@ export default () => `
 						</div>
 					</div>
 					<div class="col col--xxl--start_3__span_2">
-						<div class="extension tile icon--sql_server">
+						<div class="extension icon--sql_server">
 							<div class="flex flex--a_center extension__inner">
 								<div class="icon"></div>
 								<div class="description">
@@ -299,7 +299,7 @@ export default () => `
 						</div>
 					</div>
 					<div class="col col--xxl--start_3__span_2">
-						<div class="extension tile icon--sql_server">
+						<div class="extension icon--sql_server">
 							<div class="flex flex--a_center extension__inner">
 								<div class="icon"></div>
 								<div class="description">
