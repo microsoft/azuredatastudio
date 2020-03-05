@@ -2,11 +2,11 @@
   "name": "auto-merge",
   "version": "1.0.0",
   "main": "src/index.js",
-  "repository": "git@github.com:aaomidi/AutoLabel.git",
+  "repository": "git@github.com:aaomidi/AutoMerge.git",
   "author": "Amir Omidi <amir@aaomidi.com>",
   "license": "MIT",
   "scripts": {
-    "package": "tsc && ncc build out/index.js -o dist",
+    "package": "ncc build src/index.ts -o dist",
     "lint": "eslint src/index.js"
   },
   "devDependencies": {

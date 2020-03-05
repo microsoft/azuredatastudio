@@ -34,7 +34,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(722);
+/******/ 		return __webpack_require__(325);
 /******/ 	};
 /******/ 	// initialize runtime
 /******/ 	runtime(__webpack_require__);
@@ -7838,6 +7838,105 @@ isStream.transform = stream =>
 	typeof stream._transformState === 'object';
 
 module.exports = isStream;
+
+
+/***/ }),
+
+/***/ 325:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const actions_toolkit_1 = __webpack_require__(461);
+const tools = new actions_toolkit_1.Toolkit({
+    event: 'issue_comment',
+    secrets: ['GITHUB_TOKEN']
+});
+const labelToCheckFor = tools.inputs.label || 'Approved';
+const fileToCheckFor = tools.inputs.filePath || './.github/mergers.json';
+const checkMerged = (repoContext, pullNumber) => __awaiter(void 0, void 0, void 0, function* () {
+    let isMerged;
+    try {
+        const result = yield tools.github.pulls.checkIfMerged(Object.assign(Object.assign({}, repoContext), { pull_number: pullNumber }));
+        isMerged = result.status === 204;
+    }
+    catch (ex) {
+        isMerged = false;
+    }
+    return isMerged;
+});
+const checkCollabrator = (repoContext, username) => __awaiter(void 0, void 0, void 0, function* () {
+    let isCollabrator;
+    try {
+        const result = yield tools.github.repos.checkCollaborator(Object.assign(Object.assign({}, repoContext), { username }));
+        isCollabrator = result.status === 204;
+    }
+    catch (ex) {
+        isCollabrator = false;
+    }
+    return isCollabrator;
+});
+tools.command('merge', (args, match) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const issue = tools.context.payload.issue;
+        if ((issue === null || issue === void 0 ? void 0 : issue.pull_request) === undefined) {
+            console.log('This command only works on pull requests');
+            return;
+        }
+        const sender = tools.context.payload.sender;
+        const senderName = (_a = sender === null || sender === void 0 ? void 0 : sender.login) !== null && _a !== void 0 ? _a : ' Unknown Sender';
+        const issueNumber = issue === null || issue === void 0 ? void 0 : issue.number;
+        if (!issueNumber) {
+            return tools.log.error('Issue number not defined.');
+        }
+        const isMerged = yield checkMerged(tools.context.repo, issueNumber);
+        if (isMerged === true) {
+            console.log('PR is already merged');
+            return;
+        }
+        const mergers = JSON.parse(tools.getFile(fileToCheckFor));
+        if (!mergers.includes(senderName)) {
+            console.log('Unrecognized user tried to merge!', senderName);
+            return;
+        }
+        const isCollabrator = yield checkCollabrator(tools.context.repo, senderName);
+        if (isCollabrator !== true) {
+            console.log('User is not a collabrator');
+            return;
+        }
+        const labels = issue.labels || [];
+        const foundLabel = labels.find(l => l.name === labelToCheckFor);
+        if (foundLabel === undefined) {
+            console.log(`Label ${labelToCheckFor} must be applied`);
+            const createCommentParams = Object.assign(Object.assign({}, tools.context.repo), { issue_number: issueNumber, body: `The label ${labelToCheckFor} is required for using this command.` });
+            yield tools.github.issues.createComment(createCommentParams);
+            return;
+        }
+        const createCommentParams = Object.assign(Object.assign({}, tools.context.repo), { issue_number: issueNumber, body: `Merging PR based on approval from @${senderName}` });
+        const commentResult = yield tools.github.issues.createComment(createCommentParams);
+        if (commentResult.status !== 201) {
+            console.log('Comment not created');
+            return;
+        }
+        const mergeResult = yield tools.github.pulls.merge(Object.assign(Object.assign({}, tools.context.repo), { pull_number: issueNumber, merge_method: 'squash' }));
+        console.log(mergeResult);
+    }
+    catch (ex) {
+        console.error(ex);
+    }
+}));
+console.log('Running...');
 
 
 /***/ }),
@@ -16980,66 +17079,6 @@ module.exports = {
   }
 };
 
-
-/***/ }),
-
-/***/ 722:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const actions_toolkit_1 = __webpack_require__(461);
-const tools = new actions_toolkit_1.Toolkit({
-    event: 'issue_comment',
-    secrets: ['GITHUB_TOKEN']
-});
-tools.command('merge', (args, match) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    try {
-        const issue = tools.context.payload.issue;
-        const sender = tools.context.payload.sender;
-        const senderName = (_a = sender === null || sender === void 0 ? void 0 : sender.login) !== null && _a !== void 0 ? _a : ' Unknown Sender';
-        const issueNumber = issue === null || issue === void 0 ? void 0 : issue.number;
-        if (!issueNumber) {
-            return tools.log.error('Issue number not defined.');
-        }
-        let isMerged;
-        try {
-            const mergedResult = yield tools.github.pulls.checkIfMerged(Object.assign(Object.assign({}, tools.context.repo), { pull_number: issueNumber }));
-            isMerged = mergedResult.status === 204;
-        }
-        catch (ex) {
-            isMerged = false;
-        }
-        if (isMerged === true) {
-            console.log('PR is already merged');
-            return;
-        }
-        const createCommentParams = Object.assign(Object.assign({}, tools.context.repo), { issue_number: issueNumber, body: `Merging PR based on approval from @${senderName}` });
-        const commentResult = yield tools.github.issues.createComment(createCommentParams);
-        if (commentResult.status !== 201) {
-            console.log('Comment not created');
-            return;
-        }
-        const mergeResult = yield tools.github.pulls.merge(Object.assign(Object.assign({}, tools.context.repo), { pull_number: issueNumber, merge_method: 'squash' }));
-        console.log(mergeResult);
-    }
-    catch (ex) {
-        console.error(ex);
-    }
-}));
-console.log('Running...');
-//# sourceMappingURL=index.js.map
 
 /***/ }),
 

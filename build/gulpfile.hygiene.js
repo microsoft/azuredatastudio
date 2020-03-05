@@ -35,7 +35,7 @@ const all = [
 	'test/**/*',
 	'!test/**/out/**',
 	'!**/node_modules/**',
-	'!build/actions/**' // {{ SQL CARBON EDIT }}
+	'!build/actions/**/dist/*' // {{ SQL CARBON EDIT }}
 ];
 
 const indentationFilter = [
@@ -105,7 +105,8 @@ const indentationFilter = [
 	'!extensions/integration-tests/testData/**',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
-	'!resources/linux/snap/electron-launch'
+	'!resources/linux/snap/electron-launch',
+	'!build/actions/**/dist/*'
 ];
 
 const copyrightFilter = [
