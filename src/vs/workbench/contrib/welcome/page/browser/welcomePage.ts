@@ -29,7 +29,7 @@ import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lif
 import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { registerColor, focusBorder, textLinkForeground, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder, tileBackground, buttonStandardBackground, buttonStandardBorder, buttonStandard, welcomeFont, welcomePath, moreRecent, entity, tileBorder, buttonStandardHoverColor } from 'vs/platform/theme/common/colorRegistry';
+import { registerColor, focusBorder, textLinkForeground, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder, tileBackground, buttonStandardBackground, buttonStandardBorder, buttonStandard, welcomeFont, welcomePath, moreRecent, entity, tileBorder, buttonStandardHoverColor, disabledButton, disabledButtonBackground } from 'vs/platform/theme/common/colorRegistry';
 import { getExtraColor } from 'vs/workbench/contrib/welcome/walkThrough/common/walkThroughUtils';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IEditorInputFactory, EditorInput } from 'vs/workbench/common/editor';
@@ -142,19 +142,24 @@ export class WelcomePageAction extends Action {
 interface ExtensionSuggestion {
 	name: string;
 	title?: string;
+	description?: string;
 	id: string;
 	isKeymap?: boolean;
 	isCommand?: boolean;
+	isExtensionPack?: boolean;
+	icon?: string;
 }
 
 const extensionPacks: ExtensionSuggestion[] = [
-	{ name: localize('welcomePage.javaScript', "JavaScript"), id: 'dbaeumer.vscode-eslint' },
-	{ name: localize('welcomePage.python', "Python"), id: 'ms-python.python' },
-	// { name: localize('welcomePage.go', "Go"), id: 'lukehoban.go' },
-	{ name: localize('welcomePage.php', "PHP"), id: 'felixfbecker.php-pack' },
-	{ name: localize('welcomePage.azure', "Azure"), title: localize('welcomePage.showAzureExtensions', "Show Azure extensions"), id: 'workbench.extensions.action.showAzureExtensions', isCommand: true },
-	{ name: localize('welcomePage.docker', "Docker"), id: 'ms-azuretools.vscode-docker' },
+	{ name: localize('welcomePage.adminPack', "SQL Admin Pack"), title: localize('welcomePage.showAdminPack', "SQL Admin Pack"), description: 'Admin Pack for SQL Server is a collection of popular database administration extensions to help you manage SQL Server', id: 'microsoft.admin-pack', isExtensionPack: true },
 ];
+
+const extensions: ExtensionSuggestion[] = [
+	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: 'Develop PowerShell scripts in Azure Data Studio', icon: 'https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png' },
+	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: 'Support for Data Virtualization in SQL Server, including Create External Data wizards.', icon: '../../../workbench/contrib/welcome/microsoftFlagIcon.svg' },
+	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: 'PostgreSQL extension for Azure Data Studio', icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png' },
+];
+
 
 const keymapExtensions: ExtensionSuggestion[] = [
 	{ name: localize('welcomePage.vim', "Vim"), id: 'vscodevim.vim', isKeymap: true },
@@ -335,8 +340,9 @@ class WelcomePage extends Disposable {
 			this._register(this.labelService.onDidChangeFormatters(updateEntries));
 		}).then(undefined, onUnexpectedError);
 
-		this.addExtensionList(container, '.extensionPackList', extensionPacks, extensionPackStrings);
+		this.addExtensionList(container, '.extension_list', extensions, extensionPackStrings);
 		this.addExtensionList(container, '.keymapList', keymapExtensions, keymapStrings);
+		this.addExtensionPack(container, '.extensionPack', extensionPacks, extensionPackStrings);
 
 		this.updateInstalledExtensions(container, installedExtensions);
 		this._register(this.instantiationService.invokeFunction(onExtensionChanged)(ids => {
@@ -436,34 +442,68 @@ class WelcomePage extends Disposable {
 		const list = container.querySelector(listSelector);
 		if (list) {
 			suggestions.forEach((extension, i) => {
-				if (i) {
-					list.appendChild(document.createTextNode(localize('welcomePage.extensionListSeparator', ", ")));
-				}
+				const flexDivContainerClasses = ['flex', 'flex--a_center', 'extension__inner'];
+				const outerDivContainerElm = document.createElement('div');
+				const flexDivContainerElm = document.createElement('div');
+				const descriptionContainerElm = document.createElement('div');
+				const imgContainerElm = document.createElement('div');
+				const iconElm = document.createElement('img');
+				const headerElm = document.createElement('h4');
+				const bodyElm = document.createElement('p');
 
+				outerDivContainerElm.classList.add('extension');
+				flexDivContainerElm.classList.add(...flexDivContainerClasses);
+				descriptionContainerElm.classList.add('description');
+				imgContainerElm.classList.add('img_container');
+				iconElm.classList.add('icon');
+
+				iconElm.src = extension.icon;
+
+				imgContainerElm.appendChild(iconElm);
+				flexDivContainerElm.appendChild(imgContainerElm);
+				flexDivContainerElm.appendChild(descriptionContainerElm);
+				descriptionContainerElm.appendChild(headerElm);
+				descriptionContainerElm.appendChild(bodyElm);
+				outerDivContainerElm.appendChild(flexDivContainerElm);
+				headerElm.innerText = extension.name;
+				bodyElm.innerText = extension.description;
+				list.appendChild(outerDivContainerElm);
+			});
+		}
+	}
+
+	private addExtensionPack(container: HTMLElement, anchorSelector: string, suggestions: ExtensionSuggestion[], strings: Strings) {
+		const btnContainer = container.querySelector(anchorSelector);
+		if (btnContainer) {
+			suggestions.forEach((extension, i) => {
 				const a = document.createElement('a');
-				a.innerText = extension.name;
-				a.title = extension.title || (extension.isKeymap ? localize('welcomePage.installKeymap', "Install {0} keymap", extension.name) : localize('welcomePage.installExtensionPack', "Install additional support for {0}", extension.name));
-				if (extension.isCommand) {
-					a.href = `command:${extension.id}`;
-					list.appendChild(a);
-				} else {
-					a.classList.add('installExtension');
-					a.setAttribute('data-extension', extension.id);
-					a.href = 'javascript:void(0)';
-					a.addEventListener('click', e => {
-						this.installExtension(extension, strings);
-						e.preventDefault();
-						e.stopPropagation();
-					});
-					list.appendChild(a);
+				const classes = ['btn', 'btn--standard', 'a_self--end'];
+				const btn = document.createElement('button');
+				const description = document.querySelector('.extension_pack__body');
+				const header = document.querySelector('.extension_pack__header');
 
-					const span = document.createElement('span');
-					span.innerText = extension.name;
-					span.title = extension.isKeymap ? localize('welcomePage.installedKeymap', "{0} keymap is already installed", extension.name) : localize('welcomePage.installedExtensionPack', "{0} support is already installed", extension.name);
-					span.classList.add('enabledExtension');
-					span.setAttribute('data-extension', extension.id);
-					list.appendChild(span);
-				}
+				a.classList.add(...classes);
+				a.innerText = 'Install';
+				a.title = extension.title || (extension.isKeymap ? localize('welcomePage.installKeymap', "Install {0} keymap", extension.name) : localize('welcomePage.installExtensionPack', "Install additional support for {0}", extension.name));
+				a.classList.add('installExtension');
+				a.setAttribute('data-extension', extension.id);
+				a.href = 'javascript:void(0)';
+				a.addEventListener('click', e => {
+					this.installExtension(extension, strings);
+					e.preventDefault();
+					e.stopPropagation();
+				});
+				btnContainer.appendChild(a);
+				btn.innerText = 'Installed';
+				btn.title = extension.isKeymap ? localize('welcomePage.installedKeymap', "{0} keymap is already installed", extension.name) : localize('welcomePage.installedExtensionPack', "{0} support is already installed", extension.name);
+				btn.classList.add('enabledExtension');
+				btn.classList.add(...classes);
+				btn.setAttribute('disabled', 'true');
+				btn.setAttribute('data-extension', extension.id);
+				btnContainer.appendChild(btn);
+
+				description.innerHTML = extension.description;
+				header.innerHTML = extension.name;
 			});
 		}
 	}
@@ -675,19 +715,19 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const buttonStandardBackgroundColor = theme.getColor(buttonStandardBackground);
 	if (buttonStandardBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--standard { background-color: ${buttonStandardBackgroundColor}}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--standard { background-color: ${buttonStandardBackgroundColor};}`);
 	}
 	const buttonStandardBorderColor = theme.getColor(buttonStandardBorder);
 	if (buttonStandardBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer a.btn--standard { border: 1px solid ${buttonStandardBorderColor}}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer a.btn--standard { border: 1px solid ${buttonStandardBorderColor};}`);
 	}
 	const buttonStandardColor = theme.getColor(buttonStandard);
 	if (buttonStandardColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer a.btn--standard { color: ${buttonStandardColor}}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer a.btn--standard { color: ${buttonStandardColor};}`);
 	}
 	const buttonStandardHover = theme.getColor(buttonStandardHoverColor);
 	if (buttonStandardColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer a.btn--standard:hover { color: ${buttonStandardHover}}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer a.btn--standard:hover { color: ${buttonStandardHover}; border: 1px solid ${buttonStandardHover};}`);
 	}
 	const foregroundColor = theme.getColor(foreground);
 	if (foregroundColor) {
@@ -700,6 +740,14 @@ registerThemingParticipant((theme, collector) => {
 	const buttonColor = getExtraColor(theme, buttonBackground, { dark: 'rgba(0, 0, 0, .2)', extra_dark: 'rgba(200, 235, 255, .042)', light: 'rgba(0,0,0,.04)', hc: 'black' });
 	if (buttonColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .commands .item button { background: ${buttonColor}; }`);
+	}
+	const disabledButtonColor = theme.getColor(disabledButton);
+	if (disabledButtonColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .btn:disabled { color: ${disabledButtonColor}; }`);
+	}
+	const disabledButtonBackgroundColor = theme.getColor(disabledButtonBackground);
+	if (disabledButtonColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .btn:disabled { background: ${disabledButtonBackgroundColor}; }`);
 	}
 	const buttonHoverColor = getExtraColor(theme, buttonHoverBackground, { dark: 'rgba(200, 235, 255, .072)', extra_dark: 'rgba(200, 235, 255, .072)', light: 'rgba(0,0,0,.10)', hc: null });
 	if (buttonHoverColor) {
