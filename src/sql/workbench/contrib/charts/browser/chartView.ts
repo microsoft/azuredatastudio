@@ -83,7 +83,7 @@ export class ChartView extends Disposable implements IPanelView {
 	private optionMap: { [x: string]: { element: HTMLElement; set: (val) => void } } = {};
 
 	constructor(
-		private readonly _renderOptions: boolean,
+		private readonly _renderOptionsInline: boolean,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IThemeService private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -104,7 +104,7 @@ export class ChartView extends Disposable implements IPanelView {
 		this._saveAction = this._instantiationService.createInstance(SaveImageAction);
 		this._configureChartAction = this._instantiationService.createInstance(ConfigureChartAction, this);
 
-		if (this._renderOptions) {
+		if (this._renderOptionsInline) {
 			this.taskbar.setContent([{ action: this._createInsightAction }]);
 		} else {
 			this.taskbar.setContent([{ action: this._createInsightAction }, { action: this._configureChartAction }]);
@@ -173,7 +173,7 @@ export class ChartView extends Disposable implements IPanelView {
 			this.container.appendChild(this.taskbarContainer);
 			this.container.appendChild(this.chartingContainer);
 			this.chartingContainer.appendChild(this.insightContainer);
-			if (this._renderOptions) {
+			if (this._renderOptionsInline) {
 				this.chartingContainer.appendChild(this.optionsControl);
 			}
 			this.insight = new Insight(this.insightContainer, this.options, this._instantiationService);
@@ -296,7 +296,7 @@ export class ChartView extends Disposable implements IPanelView {
 		} else {
 			actions = [{ action: this._createInsightAction }];
 		}
-		if (!this._renderOptions) {
+		if (!this._renderOptionsInline) {
 			actions.push({ action: this._configureChartAction });
 		}
 		this.taskbar.setContent(actions);
