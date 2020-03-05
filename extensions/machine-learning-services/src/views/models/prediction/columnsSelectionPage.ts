@@ -10,7 +10,7 @@ import * as constants from '../../../common/constants';
 import { IPageView, IDataComponent } from '../../interfaces';
 import { ColumnsFilterComponent } from './columnsFilterComponent';
 import { OutputColumnsComponent } from './outputColumnsComponent';
-import { PredictParameters } from '../../../modelManagement/interfaces';
+import { PredictParameters } from '../../../prediction/interfaces';
 
 /**
  * View to pick model source

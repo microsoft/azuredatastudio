@@ -9,7 +9,7 @@ import { ApiWrapper } from '../../../common/apiWrapper';
 import * as constants from '../../../common/constants';
 import { IDataComponent } from '../../interfaces';
 import { ColumnsTable } from './columnsTable';
-import { PredictColumn, PredictInputParameters, DatabaseTable } from '../../../modelManagement/interfaces';
+import { PredictColumn, PredictInputParameters, DatabaseTable } from '../../../prediction/interfaces';
 
 /**
  * View to render filters to pick an azure resource

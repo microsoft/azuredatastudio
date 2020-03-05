@@ -124,6 +124,5 @@ export class ApiWrapper {
 
 	public showTextDocument(uri: vscode.Uri, options?: vscode.TextDocumentShowOptions): Thenable<vscode.TextEditor> {
 		return vscode.window.showTextDocument(uri, options);
-
 	}
 }

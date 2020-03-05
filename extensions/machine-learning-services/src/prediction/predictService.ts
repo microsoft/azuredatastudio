@@ -8,7 +8,8 @@ import * as azdata from 'azdata';
 import { ApiWrapper } from '../common/apiWrapper';
 import { QueryRunner } from '../common/queryRunner';
 import * as utils from '../common/utils';
-import { RegisteredModel, PredictParameters, PredictColumn, DatabaseTable } from '../modelManagement/interfaces';
+import { RegisteredModel } from '../modelManagement/interfaces';
+import { PredictParameters, PredictColumn, DatabaseTable } from '../prediction/interfaces';
 import { Config } from '../configurations/config';
 //import * as constants from '../common/constants';
 

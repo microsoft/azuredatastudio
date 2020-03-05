@@ -8,7 +8,8 @@ import * as azdata from 'azdata';
 import { azureResource } from '../../typings/azure-resource';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { ViewBase } from '../viewBase';
-import { RegisteredModel, WorkspaceModel, PredictParameters, DatabaseTable } from '../../modelManagement/interfaces';
+import { RegisteredModel, WorkspaceModel } from '../../modelManagement/interfaces';
+import { PredictParameters, DatabaseTable } from '../../prediction/interfaces';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { AzureWorkspaceResource, AzureModelResource } from '../interfaces';
 

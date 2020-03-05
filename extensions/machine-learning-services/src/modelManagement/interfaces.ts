@@ -215,21 +215,3 @@ export interface ArtifactAPIGetArtifactContentInformation2OptionalParams extends
 	 */
 	accountName?: string;
 }
-
-export interface PredictColumn {
-	name: string;
-	dataType?: string;
-	displayName?: string;
-}
-export interface DatabaseTable {
-	databaseName: string | undefined;
-	tableName: string | undefined;
-	schema: string | undefined
-}
-
-export interface PredictInputParameters extends DatabaseTable {
-	inputColumns: PredictColumn[] | undefined
-}
-export interface PredictParameters extends PredictInputParameters {
-	outputColumns: PredictColumn[] | undefined
-}

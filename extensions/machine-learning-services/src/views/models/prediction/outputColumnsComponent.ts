@@ -8,7 +8,7 @@ import { ModelViewBase } from '../modelViewBase';
 import { ApiWrapper } from '../../../common/apiWrapper';
 import * as constants from '../../../common/constants';
 import { IDataComponent } from '../../interfaces';
-import { PredictColumn } from '../../../modelManagement/interfaces';
+import { PredictColumn } from '../../../prediction/interfaces';
 
 /**
  * View to render filters to pick an azure resource

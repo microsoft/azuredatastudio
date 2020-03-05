@@ -8,7 +8,7 @@ import * as constants from '../../../common/constants';
 import { ModelViewBase } from '../modelViewBase';
 import { ApiWrapper } from '../../../common/apiWrapper';
 import { IDataComponent } from '../../interfaces';
-import { PredictColumn, DatabaseTable } from '../../../modelManagement/interfaces';
+import { PredictColumn, DatabaseTable } from '../../../prediction/interfaces';
 
 /**
  * View to render azure models in a table

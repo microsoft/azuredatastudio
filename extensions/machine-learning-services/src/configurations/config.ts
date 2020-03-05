@@ -83,8 +83,8 @@ export class Config {
 	}
 
 	/**
- * Returns registered models table schema name
- */
+	 * Returns registered models table schema name
+	 */
 	public get registeredModelTableSchemaName(): string {
 		return this._configValues.modelManagement.registeredModelsTableSchemaName;
 	}

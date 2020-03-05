@@ -5,7 +5,7 @@
 import * as azdata from 'azdata';
 import { azureResource } from '../typings/azure-resource';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
-import { WorkspaceModel, PredictColumn } from '../modelManagement/interfaces';
+import { WorkspaceModel } from '../modelManagement/interfaces';
 
 export interface IDataComponent<T> {
 	data: T | undefined;
@@ -32,9 +32,4 @@ export interface AzureModelResource extends AzureWorkspaceResource {
 	model?: WorkspaceModel;
 }
 
-export interface TableColumns {
-	dbName?: string | undefined,
-	tableName?: string | undefined,
-	columns?: PredictColumn[] | undefined
-}
 
