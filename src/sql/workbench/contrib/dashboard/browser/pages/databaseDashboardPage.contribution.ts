@@ -102,6 +102,16 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 					{ name: 'restore', when: '!mssql:iscloud && mssql:engineedition != 11' }
 				]
 			}
+		},
+		{
+			name: 'Search',
+			gridItemConfig: {
+				sizex: 1,
+				sizey: 2
+			},
+			widget: {
+				'explorer-widget': {}
+			}
 		}
 	]
 };

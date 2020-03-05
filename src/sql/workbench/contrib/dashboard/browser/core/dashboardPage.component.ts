@@ -47,6 +47,8 @@ import { MenuRegistry, IMenuService, MenuId, MenuItemAction } from 'vs/platform/
 import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { NAV_SECTION } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardNavSection.contribution';
+
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 const homeTabGroupId = 'home';
@@ -77,6 +79,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	private readonly homeTabTitle: string = nls.localize('home', "Home");
 	private readonly homeTabId: string = 'homeTab';
 	private tabToolbarActionsConfig = new Map<string, WidgetConfig>();
+	private tabContents = new Map<string, string>();
 
 	static tabName = new RawContextKey<string>('tabName', undefined);
 	private _tabName: IContextKey<string>;
@@ -135,7 +138,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			let tempWidgets = this.dashboardService.getSettings<Array<WidgetConfig>>([this.context, 'widgets'].join('.'));
 			// remove tasks widget because those will be shown in the toolbar
 			const index = tempWidgets.findIndex(c => c.widget['tasks-widget']);
-			tempWidgets.splice(index, 1);
+			if (index !== -1) {
+				tempWidgets.splice(index, 1);
+			}
 
 			this._originalConfig = objects.deepClone(tempWidgets);
 			let properties = this.getProperties();
@@ -199,8 +204,27 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
 		this.toolbar = this._register(new Taskbar(taskbarContainer, { actionViewItemProvider: action => this.actionItemProvider(action as Action) }));
 
-		let content = this.getToolbarContent(this.tabToolbarActionsConfig.get(tabName));
+		let content = [];
+		content = this.getToolbarContent(this.tabToolbarActionsConfig.get(tabName));
+		this.addRefreshAction(content);
+
+		if (tabName === this.homeTabId) {
+			const configureDashboardCommand = MenuRegistry.getCommand('configureDashboard');
+			const configureDashboardAction = new ToolbarAction(configureDashboardCommand.id, configureDashboardCommand.title.toString(), TaskRegistry.getOrCreateTaskIconClassName(configureDashboardCommand), this.runAction, this, this.logService);
+			content.push({ action: configureDashboardAction });
+		}
+
 		this.toolbar.setContent(content);
+	}
+
+	private addRefreshAction(content: ITaskbarContent[]): void {
+		if (content.length > 0) {
+			let separator: HTMLElement = Taskbar.createTaskbarSeparator();
+			content.push({ element: separator });
+		}
+
+		const refreshAction = new RefreshWidgetAction(this.refresh, this);
+		content.push({ action: refreshAction });
 	}
 
 	private getToolbarContent(toolbarTasks: WidgetConfig): ITaskbarContent[] {
@@ -421,6 +445,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			return { id: value.id, title: value.title, container: { 'error-container': undefined }, alwaysShow: value.alwaysShow, iconClass: value.iconClass };
 		}
 		const key = Object.keys(containerResult.container)[0];
+		this.tabContents.set(value.id, key);
 		if (key === WIDGETS_CONTAINER || key === GRID_CONTAINER) {
 			let configs = <WidgetConfig[]>values(containerResult.container)[0];
 			this._configModifiers.forEach(cb => {
@@ -488,25 +513,19 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			this.init();
 		} else {
 			if (this._tabs) {
-				this._tabs.forEach(tabContent => {
-					tabContent.refresh();
-				});
+				const tab = this._tabs.find(t => t.id === this._tabName.get());
+				if (tab) {
+					tab.refresh();
+				}
 			}
-		}
-	}
-
-	public enableEdit(): void {
-		if (this._tabs) {
-			this._tabs.forEach(tabContent => {
-				tabContent.enableEdit();
-			});
 		}
 	}
 
 	public handleTabChange(tab: TabComponent): void {
 		this._tabName.set(tab.identifier);
-
-		if (this.tabToolbarActionsConfig.has(tab.identifier) || this.hasExtensionContributedToolbarContent()) {
+		const tabContent = this.tabContents.get(tab.identifier);
+		if (tab.identifier === this.homeTabId || tabContent === WIDGETS_CONTAINER || tabContent === GRID_CONTAINER || tabContent === NAV_SECTION
+			|| this.hasExtensionContributedToolbarContent()) {
 			this.showToolbar = true;
 			this.createToolbar(this.toolbarContainer.nativeElement, tab.identifier);
 		} else { // hide toolbar
