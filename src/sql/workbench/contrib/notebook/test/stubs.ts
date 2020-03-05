@@ -205,6 +205,9 @@ export class NotebookServiceStub implements INotebookService {
 	get languageMagics(): ILanguageMagic[] {
 		throw new Error('Method not implemented.');
 	}
+	setTrusted(notebookUri: URI, isTrusted: boolean): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
 	registerProvider(providerId: string, provider: INotebookProvider): void {
 		throw new Error('Method not implemented.');
 	}
