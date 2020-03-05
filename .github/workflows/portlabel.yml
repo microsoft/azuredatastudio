@@ -13,6 +13,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
       - uses: ./build/actions/AutoLabel/dist/index.js
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN}}"
           label: "Port Request"
