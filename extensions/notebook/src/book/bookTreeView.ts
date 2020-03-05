@@ -134,10 +134,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (!uri) {
 			let openDocument = azdata.nb.activeNotebookEditor;
 			if (openDocument) {
-				bookItem = this.currentBook.getNotebook(openDocument.document.uri.path);
+				bookItem = this.currentBook.getNotebook(openDocument.document.uri.fsPath);
 			}
-		} else if (uri.path) {
-			bookItem = this.currentBook.getNotebook(uri.path);
+		} else if (uri.fsPath) {
+			bookItem = this.currentBook.getNotebook(uri.fsPath);
 		}
 		if (bookItem) {
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
