@@ -150,14 +150,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			if (this._openAsUntitled) {
 				this.openNotebookAsUntitled(resource);
 			} else {
-				// because notebooks can be untrusted after having them trusted by default, let us keep a list of visited
-				// notebooks we have already trusted -- this will keep us from overriding the user's changes.
+				// let us keep a list of already visited notebooks so that we do not trust them again, potentially
+				// overriding user changes
 				let normalizedResource = path.normalize(resource);
-				if (this._visitedNotebooks.indexOf(normalizedResource) !== -1
+				if (this._visitedNotebooks.indexOf(normalizedResource) === -1
 					&& this._bookTrustManager.isNotebookTrustedByDefault(normalizedResource)) {
 					let openDocumentListenerUnsubscriber = azdata.nb.onDidOpenNotebookDocument(function (document: azdata.nb.NotebookDocument) {
 						document.setTrusted(true);
-						this._trustResourceCache.push(normalizedResource);
+						this._visitedNotebooks.push(normalizedResource);
 						openDocumentListenerUnsubscriber.dispose();
 					});
 				}
