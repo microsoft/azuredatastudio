@@ -202,11 +202,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		// clear out toolbar
 		DOM.clearNode(parentElement);
 		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
-		this.toolbar = this._register(new Taskbar(taskbarContainer, { actionViewItemProvider: action => this.actionItemProvider(action as Action) }));
+		this.toolbar = this._register(new Taskbar(taskbarContainer, { actionViewItemProvider: action => this.createActionItemProvider(action as Action) }));
 
 		let content = [];
 		content = this.getToolbarContent(this.tabToolbarActionsConfig.get(tabName));
-		this.addRefreshAction(content);
 
 		if (tabName === this.homeTabId) {
 			const configureDashboardCommand = MenuRegistry.getCommand('configureDashboard');
@@ -215,16 +214,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		}
 
 		this.toolbar.setContent(content);
-	}
-
-	private addRefreshAction(content: ITaskbarContent[]): void {
-		if (content.length > 0) {
-			let separator: HTMLElement = Taskbar.createTaskbarSeparator();
-			content.push({ element: separator });
-		}
-
-		const refreshAction = new RefreshWidgetAction(this.refresh, this);
-		content.push({ action: refreshAction });
 	}
 
 	private getToolbarContent(toolbarTasks: WidgetConfig): ITaskbarContent[] {
@@ -282,7 +271,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		return this.commandService.executeCommand(id, this.connectionManagementService.connectionInfo.connectionProfile);
 	}
 
-	private actionItemProvider(action: Action): IActionViewItem {
+	private createActionItemProvider(action: Action): IActionViewItem {
 		// Create ActionItem for actions contributed by extensions
 		if (action instanceof MenuItemAction) {
 			return new LabeledMenuItemActionItem(action, this.keybindingService, this.contextMenuService, this.notificationService);
