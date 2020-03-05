@@ -21,6 +21,7 @@ async function run() {
 			tools.log.error('PR Number was undefined');
 			return;
 		}
+
 		tools.github.issues.addLabels({
 			...tools.context.repo,
 			labels: [label],

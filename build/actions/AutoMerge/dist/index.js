@@ -7890,7 +7890,7 @@ const checkCollabrator = (repoContext, username) => __awaiter(void 0, void 0, vo
     }
     return isCollabrator;
 });
-tools.command('merge', (args, match) => __awaiter(void 0, void 0, void 0, function* () {
+tools.command('merge', () => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
         const issue = tools.context.payload.issue;

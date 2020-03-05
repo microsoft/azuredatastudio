@@ -32,7 +32,7 @@ const checkMerged = async (repoContext: RepoContext, pullNumber: number): Promis
 			...repoContext,
 			pull_number: pullNumber
 		});
-		isMerged = result.status === 204
+		isMerged = result.status === 204;
 	} catch (ex) {
 		isMerged = false;
 	}
@@ -46,14 +46,14 @@ const checkCollabrator = async (repoContext: RepoContext, username: string): Pro
 			...repoContext,
 			username,
 		});
-		isCollabrator = result.status === 204
+		isCollabrator = result.status === 204;
 	} catch (ex) {
 		isCollabrator = false;
 	}
 	return isCollabrator;
 };
 
-tools.command('merge', async (args, match) => {
+tools.command('merge', async () => {
 	try {
 		const issue = tools.context.payload.issue;
 
@@ -102,7 +102,7 @@ tools.command('merge', async (args, match) => {
 				...tools.context.repo,
 				issue_number: issueNumber,
 				body: `The label ${labelToCheckFor} is required for using this command.`
-			}
+			};
 			await tools.github.issues.createComment(createCommentParams);
 			return;
 		}
@@ -111,7 +111,7 @@ tools.command('merge', async (args, match) => {
 			...tools.context.repo,
 			issue_number: issueNumber,
 			body: `Merging PR based on approval from @${senderName}`
-		}
+		};
 
 		const commentResult = await tools.github.issues.createComment(createCommentParams);
 
@@ -124,11 +124,11 @@ tools.command('merge', async (args, match) => {
 			...tools.context.repo,
 			pull_number: issueNumber,
 			merge_method: 'squash'
-		})
+		});
 		console.log(mergeResult);
 	} catch (ex) {
 		console.error(ex);
 	}
 });
 
-console.log('Running...')
+console.log('Running...');
