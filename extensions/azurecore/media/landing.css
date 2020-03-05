@@ -14,9 +14,9 @@ body {
 	padding: 15px 30px;
 	display: flex;
 	flex-direction: column;
-	color: white;
+	color: #007acc;
 	font-family: "Segoe UI","Helvetica Neue","Helvetica",Arial,sans-serif;
-	background-color: #007acc;
+	background-color: white;
 }
 
 .branding {
@@ -28,21 +28,37 @@ body {
 	font-size: 20px;
 	letter-spacing: -0.04rem;
 	font-weight: 400;
-	color: white;
+	color: #007acc;
 	text-decoration: none;
 }
 
 .message-container {
 	flex-grow: 1;
 	display: flex;
+	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	margin: 0 30px;
 }
 
-.message {
+.text {
+	text-align: center;
+}
+
+.message-image img {
+	max-width: 300px;
+	width: 100%
+}
+
+.message-large {
+	font-weight: 500;
+	font-size: 1.5rem;
+}
+
+.message-small {
 	font-weight: 300;
-	font-size: 1.3rem;
+	font-size: 1.1rem;
+	color: gray;
 }
 
 body.error .message {
