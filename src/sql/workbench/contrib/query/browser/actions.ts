@@ -78,6 +78,7 @@ export class SaveResultAction extends Action {
 	public async run(context: IGridActionContext): Promise<boolean> {
 		if (!context.gridDataProvider.canSerialize) {
 			this.notificationService.warn(localize('saveToFileNotSupported', "Save to file is not supported by the backing data source"));
+			return false;
 		}
 		try {
 			await context.gridDataProvider.serializeResults(this.format, mapForNumberColumn(context.selection));

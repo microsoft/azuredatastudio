@@ -247,16 +247,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			`);
 		}
 
-		// Styling for all links in notebooks
-		const linkForeground = theme.getColor(textLinkForeground);
-		if (linkForeground) {
-			collector.addRule(`
-			.notebookEditor .scrollable a {
-				color: ${linkForeground};
-			}
-			`);
-		}
-
 		// Styling for tables in notebooks
 		const borderColor = theme.getColor(SIDE_BAR_BACKGROUND);
 		if (borderColor) {
@@ -269,6 +259,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 
 		// Styling for markdown cells & links in notebooks.
 		// This matches the values used by default in all web views
+		const linkForeground = theme.getColor(textLinkForeground);
 		if (linkForeground) {
 			collector.addRule(`
 			.notebookEditor a:link {
