@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as constants from '../common/constants';
 import { ApiWrapper } from '../common/apiWrapper';
 import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
@@ -27,7 +28,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private prompter: IPrompter;
 	private _initializeDeferred: Deferred<void> = new Deferred<void>();
 	private _openAsUntitled: boolean;
-	private _visitedNotebooks: string[] = [];
 	private _bookTrustManager: IBookTrustManager;
 	private _apiWrapper: ApiWrapper;
 
@@ -60,6 +60,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	public get initialized(): Promise<void> {
 		return this._initializeDeferred.promise;
+	}
+
+	get _visitedNotebooks(): string[] {
+		return this._extensionContext.globalState.get(constants.visitedNotebooksMementoKey, []);
+	}
+
+	set _visitedNotebooks(value: string[]) {
+		this._extensionContext.globalState.update(constants.visitedNotebooksMementoKey, value);
 	}
 
 	trustBook(bookTreeItem?: BookTreeItem): void {
@@ -153,11 +161,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				// let us keep a list of already visited notebooks so that we do not trust them again, potentially
 				// overriding user changes
 				let normalizedResource = path.normalize(resource);
-				if (this._visitedNotebooks.indexOf(normalizedResource) === -1
+				let self = this;
+				if (self._visitedNotebooks.indexOf(normalizedResource) === -1
 					&& this._bookTrustManager.isNotebookTrustedByDefault(normalizedResource)) {
 					let openDocumentListenerUnsubscriber = azdata.nb.onDidOpenNotebookDocument(function (document: azdata.nb.NotebookDocument) {
 						document.setTrusted(true);
-						this._visitedNotebooks.push(normalizedResource);
+						self._visitedNotebooks = self._visitedNotebooks.concat([normalizedResource]);
 						openDocumentListenerUnsubscriber.dispose();
 					});
 				}

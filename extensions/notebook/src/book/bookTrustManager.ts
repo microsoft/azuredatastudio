@@ -136,7 +136,7 @@ export class BookTrustManager implements IBookTrustManager {
 
 		// if notebook is stored in a workspace folder, then store only the relative directory
 		if (matchingWorkspaceFolder) {
-			bookPathToChange.replace(path.normalize(matchingWorkspaceFolder.uri.fsPath), '');
+			bookPathToChange = bookPathToChange.replace(path.normalize(matchingWorkspaceFolder.uri.fsPath), '');
 		}
 
 		let trustedBooks: string[] = this.getTrustedBookPathsInConfig();

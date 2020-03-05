@@ -34,6 +34,8 @@ export const localhostName = 'localhost';
 export const localhostTitle = localize('managePackages.localhost', "localhost");
 export const PackageNotFoundError = localize('managePackages.packageNotFound', "Could not find the specified package");
 
+export const visitedNotebooksMementoKey = 'notebooks.visited';
+
 export enum BuiltInCommands {
 	SetContext = 'setContext'
 }
