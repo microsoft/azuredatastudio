@@ -76,6 +76,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
 		} finally {
+			// add file watcher on toc file.
 			fsw.watchFile(path.join(bookPath, '_data', 'toc.yml'), async (curr, prev) => {
 				if (curr.mtime > prev.mtime) {
 					let index = this.books.findIndex(book => book.bookPath === bookPath);
@@ -103,8 +104,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				}
 			}
 		} catch (e) {
-			vscode.window.showErrorMessage('Close Book Failed');
+			vscode.window.showErrorMessage(loc.closeBookError(book.root, e instanceof Error ? e.message : e));
 		} finally {
+			// remove watch on toc file.
 			fsw.unwatchFile(path.join(deletedBook.bookPath, '_data', 'toc.yml'));
 		}
 	}
