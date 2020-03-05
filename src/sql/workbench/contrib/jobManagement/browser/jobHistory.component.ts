@@ -227,7 +227,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 				self._showSteps = false;
 			}
 			if (self._agentViewComponent.showHistory) {
-				this._jobManagementService.onStepsChange(self._stepRows);
+				self._jobManagementService.onStepsChange(self._stepRows);
 				self._cd.detectChanges();
 			}
 		}
