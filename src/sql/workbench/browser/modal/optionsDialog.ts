@@ -29,7 +29,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { append, $ } from 'vs/base/browser/dom';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
@@ -38,6 +37,7 @@ import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 export class CategoryView extends ViewPane {
 
@@ -98,7 +98,7 @@ export class OptionsDialog extends Modal {
 		title: string,
 		name: string,
 		options: IOptionsDialogOptions,
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
