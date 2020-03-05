@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as fsw from 'fs';
 import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem } from './bookTreeItem';
@@ -75,31 +76,37 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
 		} finally {
-			let tocFileWatcher = vscode.workspace.createFileSystemWatcher(
-				new vscode.RelativePattern(path.join(bookPath, '_data')!, '*.{yml,js}'), false, false, false);
-			tocFileWatcher.onDidChange(() => {
-				// refresh the book
-				let index = this.books.findIndex(book => book.bookPath === bookPath);
-				this.refreshTreeItem(this.books[index].bookItems[0]);
+			fsw.watchFile(path.join(bookPath, '_data', 'toc.yml'), async (curr, prev) => {
+				if (curr.mtime > prev.mtime) {
+					let index = this.books.findIndex(book => book.bookPath === bookPath);
+					await this.closeBook(this.books[index]);
+					await this.openBook(bookPath);
+					/* await this.books[index].initializeContents().then(() => {
+						this._onDidChangeTreeData.fire(this.books[index].bookItems[0]);
+					}); */
+				}
 			});
 		}
 	}
 
-	refreshTreeItem(node?: BookTreeItem): void {
-		this._onDidChangeTreeData.fire();
-	}
-
-	async closeBook(book?: BookTreeItem): Promise<void> {
+	async closeBook(book?: BookModel): Promise<void> {
 		// remove book from the saved books
-		if (book) {
-			let index: number = this.books.indexOf(this.books.find(b => b.bookPath.replace(/\\/g, '/') === book.root));
-			if (index > -1) {
-				let deletedBook: BookModel[] = this.books.splice(index, 1);
-				if (this.currentBook === deletedBook[0]) {
-					this.currentBook = this.books.length > 0 ? this.books[this.books.length - 1] : undefined;
+		let deletedBook: BookModel;
+		try {
+			if (book) {
+				let index: number = this.books.indexOf(this.books.find(b => b.bookPath === book.bookPath));
+				if (index > -1) {
+					deletedBook = this.books.splice(index, 1)[0];
+					if (this.currentBook === deletedBook) {
+						this.currentBook = this.books.length > 0 ? this.books[this.books.length - 1] : undefined;
+					}
+					this._onDidChangeTreeData.fire();
 				}
-				this._onDidChangeTreeData.fire();
 			}
+		} catch (e) {
+			vscode.window.showErrorMessage('Close Book Failed');
+		} finally {
+			fsw.unwatchFile(path.join(deletedBook.bookPath, '_data', 'toc.yml'));
 		}
 	}
 
