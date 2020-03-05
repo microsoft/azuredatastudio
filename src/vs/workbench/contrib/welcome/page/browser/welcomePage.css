@@ -92,6 +92,9 @@
 	.ads_homepage .col--xl--start_1__span_2 {
 		grid-column: 1 / span 2;
 	}
+	.ads_homepage .col-xl--start_3__span_2 {
+		grid-column: 3 / span 2;
+	}
 }
 
 @media only screen and (min-width: 1365px) {
@@ -103,6 +106,9 @@
 	}
 	.ads_homepage .col--xxl--start_3__span_2 {
 		grid-column: 3 / span 2;
+	}
+	.ads_homepage .row--xxl--start_1__span_4 {
+		grid-row: 1 / span 4;
 	}
 }
 
@@ -304,6 +310,17 @@
 .ads_homepage .btn.dropdown ul li ul li a {
 	text-decoration: none;
 	color: #000;
+}
+
+.ads_homepage .btn:disabled {
+	width: auto;
+	height: 24px;
+	padding: 0 4px;
+	border: 0;
+}
+
+.ads_homepage .btn:disabled:hover {
+	cursor: default;
 }
 
 .ads_homepage .icon--arrow_down {
@@ -830,6 +847,7 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 	color: #fff;
 	font-size: 28px;
 	z-index: 9;
+	text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 .ads_homepage .extension_pack__body {
@@ -857,7 +875,7 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 } */
 
 .ads_homepage .extension_pack__btn_container {
-	padding: 28px 0;
+	padding: 15px 0 30px;
 }
 
 .ads_homepage .extension_pack__description {
@@ -871,6 +889,12 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 	justify-content: space-between;
 	align-items: flex-start;
 	padding: 39px 20px 20px;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+}
+
+.ads_homepage .extension_pack {
+	border-radius: 5px;
 }
 
 .ads_homepage .extension_pack__description:before {
@@ -881,6 +905,8 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 	bottom: 0;
 	left: 0;
 	background-image: linear-gradient(0.49deg, rgba(50, 49, 48, 0.85) 16.75%, rgba(50, 49, 48, 0) 96.25%);
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
 }
 
 .ads_homepage .extension_pack__description__grid_container {
@@ -901,13 +927,14 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 	margin-bottom: 10px;
 }
 
-.ads_homepage .extension .icon, .ads_homepage .extension_pack .icon {
-	background: url('../../microsoftSqlServerIcon.svg');
-	background-size: contain;
-	background-position: left;
-	background-repeat: no-repeat;
-	min-width: 100px;
-	height: 36px;
+.ads_homepage .extension .img_container {
+	width: 70px;
+	margin-right: 27px;
+}
+
+.ads_homepage .extension .icon, .ads_homepage .extensions .img_container .icon {
+	width: 50px;
+	margin: auto;
 }
 
 .ads_homepage .extension_pack .extension_pack__extension_list {
@@ -915,8 +942,11 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 }
 
 .ads_homepage .extension_pack .extension_pack__extension_container {
-	border-bottom: 1px solid #e5e5e5;
-	padding: 28px 0;
+	padding: 12px 0;
+}
+
+.ads_homepage .extension_pack .extension_pack__extension_container:first-of-type {
+	padding: 45px 0 15px;
 }
 
 .ads_homepage .extension_pack .extension_pack__extension_container .icon {
@@ -946,6 +976,11 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 
 .monaco-workbench .part.editor>.content .welcomePage .commands .item button .enabledExtension {
 	display: none;
+}
+
+.monaco-workbench .part.editor>.content .welcomePage .extensionPack {
+	display: flex;
+	justify-content: flex-end;
 }
 
 .monaco-workbench .part.editor>.content .welcomePage .commands .item button .installExtension.installed {
@@ -992,4 +1027,12 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 
 .monaco-workbench.linux .part.editor>.content .welcomePage li.linux-only {
 	display: list-item;
+}
+
+.monaco-workbench .part.editor>.content .welcomePage .installExtension.installed {
+	display: none;
+}
+
+.monaco-workbench .part.editor>.content .welcomePage .enabledExtension.installed {
+	display: inline;
 }
