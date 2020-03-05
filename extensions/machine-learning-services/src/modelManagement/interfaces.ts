@@ -49,12 +49,13 @@ export type WorkspacesModelsResponse = ListWorkspaceModelsResult & {
  * An interface representing registered model
  */
 export interface RegisteredModel {
-	id?: number,
-	artifactName?: string,
-	title?: string,
-	created?: string,
-	version?: string
-	description?: string
+	id?: number;
+	artifactName?: string;
+	title?: string;
+	created?: string;
+	version?: string;
+	description?: string;
+	filePath?: string;
 }
 
 /**
@@ -213,4 +214,22 @@ export interface ArtifactAPIGetArtifactContentInformation2OptionalParams extends
 	 * @member {string} [accountName]
 	 */
 	accountName?: string;
+}
+
+export interface PredictColumn {
+	name: string;
+	dataType?: string;
+	displayName?: string;
+}
+export interface DatabaseTable {
+	databaseName: string | undefined;
+	tableName: string | undefined;
+	schema: string | undefined
+}
+
+export interface PredictInputParameters extends DatabaseTable {
+	inputColumns: PredictColumn[] | undefined
+}
+export interface PredictParameters extends PredictInputParameters {
+	outputColumns: PredictColumn[] | undefined
 }

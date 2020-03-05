@@ -32,6 +32,7 @@ export class RegisteredModelService {
 		let connection = await this.getCurrentConnection();
 		let list: RegisteredModel[] = [];
 		if (connection) {
+			await this.runConfigureQuery(connection);
 			let result = await this.runRegisteredModelsListQuery(connection);
 			if (result && result.rows && result.rows.length > 0) {
 				result.rows.forEach(row => {
@@ -109,17 +110,35 @@ export class RegisteredModelService {
 		}
 	}
 
+	private async runConfigureQuery(connection: azdata.connection.ConnectionProfile): Promise<azdata.SimpleExecuteResult | undefined> {
+		try {
+			return await this._queryRunner.runQuery(connection, this.getConfigureQuery(connection.databaseName, this._config.registeredModelDatabaseName, this._config.registeredModelTableName));
+		} catch {
+			return undefined;
+		}
+	}
+
+	private getConfigureQuery(currentDatabaseName: string, databaseName: string, tableName: string): string {
+		if (!currentDatabaseName) {
+			currentDatabaseName = 'master';
+		}
+		let escapedCurrentDbName = utils.doubleEscapeSingleBrackets(currentDatabaseName);
+
+		return `
+		${this.configureTable(databaseName, tableName)}
+		USE [${escapedCurrentDbName}]
+		`;
+	}
+
+
 	private registeredModelsQuery(currentDatabaseName: string, databaseName: string, tableName: string): string {
 		if (!currentDatabaseName) {
 			currentDatabaseName = 'master';
 		}
 		let escapedTableName = utils.doubleEscapeSingleBrackets(tableName);
 		let escapedDbName = utils.doubleEscapeSingleBrackets(databaseName);
-		let escapedCurrentDbName = utils.doubleEscapeSingleBrackets(currentDatabaseName);
 
 		return `
-		${this.configureTable(databaseName, tableName)}
-		USE [${escapedCurrentDbName}]
 		SELECT artifact_id, artifact_name, name, description, version, created
 		FROM [${escapedDbName}].dbo.[${escapedTableName}]
 		WHERE artifact_name not like 'MLmodel' and artifact_name not like 'conda.yaml'
@@ -138,6 +157,13 @@ export class RegisteredModelService {
 		let escapedDbName = utils.doubleEscapeSingleBrackets(databaseName);
 
 		return `
+		IF NOT EXISTS (
+			SELECT [name]
+				FROM sys.databases
+				WHERE [name] = N'${databaseName}'
+		)
+		CREATE DATABASE ${databaseName}
+		GO
 		USE [${escapedDbName}]
 		IF EXISTS
 			(  SELECT [name]
@@ -156,6 +182,25 @@ export class RegisteredModelService {
 			END
 			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[${escapedTableName}]') AND NAME='description')
 				ALTER TABLE [dbo].[${escapedTableName}] ADD [description] [varchar](256) NULL
+		END
+		Else
+		BEGIN
+		CREATE TABLE [dbo].[${escapedTableName}](
+			[artifact_id] [int] IDENTITY(1,1) NOT NULL,
+			[artifact_name] [varchar](256) NOT NULL,
+			[group_path] [varchar](256) NOT NULL,
+			[artifact_content] [varbinary](max) NOT NULL,
+			[artifact_initial_size] [bigint] NULL,
+			[name] [varchar](256) NULL,
+			[version] [varchar](256) NULL,
+			[created] [datetime] NULL,
+			[description] [varchar](256) NULL,
+		CONSTRAINT [artifact_pk] PRIMARY KEY CLUSTERED
+		(
+			[artifact_id] ASC
+		)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+		) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+		ALTER TABLE [dbo].[artifacts] ADD  CONSTRAINT [CONSTRAINT_NAME]  DEFAULT (getdate()) FOR [created]
 		END
 		`;
 	}

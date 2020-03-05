@@ -25,6 +25,11 @@ export async function execCommandOnTempFile<T>(content: string, command: (filePa
 	}
 }
 
+export async function readFileInHex(filePath: string): Promise<string> {
+	let buffer = await fs.promises.readFile(filePath);
+	return `0X${buffer.toString('hex')}`;
+}
+
 export async function exists(path: string): Promise<boolean> {
 	return promisify(fs.exists)(path);
 }
@@ -175,4 +180,9 @@ export async function promptConfirm(message: string, apiWrapper: ApiWrapper): Pr
 	}
 
 	return choices[result.label] || false;
+}
+
+export function makeLinuxPath(filePath: string): string {
+	const parts = filePath.split('\\');
+	return parts.join('/');
 }

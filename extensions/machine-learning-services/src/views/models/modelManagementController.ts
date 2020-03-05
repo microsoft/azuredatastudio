@@ -9,14 +9,17 @@ import { azureResource } from '../../typings/azure-resource';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { AzureModelRegistryService } from '../../modelManagement/azureModelRegistryService';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
-import { RegisteredModel, WorkspaceModel } from '../../modelManagement/interfaces';
+import { RegisteredModel, WorkspaceModel, PredictParameters, DatabaseTable } from '../../modelManagement/interfaces';
 import { RegisteredModelService } from '../../modelManagement/registeredModelService';
-import { RegisteredModelsDialog } from './registeredModelsDialog';
-import { AzureResourceEventArgs, ListAzureModelsEventName, ListSubscriptionsEventName, ListModelsEventName, ListWorkspacesEventName, ListGroupsEventName, ListAccountsEventName, RegisterLocalModelEventName, RegisterLocalModelEventArgs, RegisterAzureModelEventName, RegisterAzureModelEventArgs, ModelViewBase, SourceModelSelectedEventName, RegisterModelEventName } from './modelViewBase';
+import { RegisteredModelsDialog } from './registerModels/registeredModelsDialog';
+import { AzureResourceEventArgs, ListAzureModelsEventName, ListSubscriptionsEventName, ListModelsEventName, ListWorkspacesEventName, ListGroupsEventName, ListAccountsEventName, RegisterLocalModelEventName, RegisterLocalModelEventArgs, RegisterAzureModelEventName, RegisterAzureModelEventArgs, ModelViewBase, SourceModelSelectedEventName, RegisterModelEventName, DownloadAzureModelEventName, ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, PredictModelEventName, PredictModelEventArgs } from './modelViewBase';
 import { ControllerBase } from '../controllerBase';
-import { RegisterModelWizard } from './registerModelWizard';
+import { RegisterModelWizard } from './registerModels/registerModelWizard';
 import * as fs from 'fs';
 import * as constants from '../../common/constants';
+import { PredictWizard } from './prediction/predictWizard';
+import { AzureModelResource } from '../interfaces';
+import { PredictService } from '../../prediction/predictService';
 
 /**
  * Model management UI controller
@@ -30,7 +33,8 @@ export class ModelManagementController extends ControllerBase {
 		apiWrapper: ApiWrapper,
 		private _root: string,
 		private _amlService: AzureModelRegistryService,
-		private _registeredModelService: RegisteredModelService) {
+		private _registeredModelService: RegisteredModelService,
+		private _predictService: PredictService) {
 		super(apiWrapper);
 	}
 
@@ -55,6 +59,23 @@ export class ModelManagementController extends ControllerBase {
 		await view.refresh();
 		return view;
 	}
+
+	/**
+	 * Opens the wizard for prediction
+	 */
+	public async predictModel(): Promise<ModelViewBase> {
+
+		let view = new PredictWizard(this._apiWrapper, this._root);
+
+		this.registerEvents(view);
+
+		// Open view
+		//
+		view.open();
+		await view.refresh();
+		return view;
+	}
+
 
 	/**
 	 * Register events in the main view
@@ -101,6 +122,28 @@ export class ModelManagementController extends ControllerBase {
 			let registerArgs = <RegisterAzureModelEventArgs>arg;
 			await this.executeAction(view, RegisterAzureModelEventName, this.registerAzureModel, this._amlService, this._registeredModelService,
 				registerArgs.account, registerArgs.subscription, registerArgs.group, registerArgs.workspace, registerArgs.model, registerArgs.details);
+		});
+		view.on(DownloadAzureModelEventName, async (arg) => {
+			let registerArgs = <AzureModelResource>arg;
+			await this.executeAction(view, DownloadAzureModelEventName, this.downloadAzureModel, this._amlService,
+				registerArgs.account, registerArgs.subscription, registerArgs.group, registerArgs.workspace, registerArgs.model);
+		});
+		view.on(ListDatabaseNamesEventName, async () => {
+			await this.executeAction(view, ListDatabaseNamesEventName, this.getDatabaseList, this._predictService);
+		});
+		view.on(ListTableNamesEventName, async (arg) => {
+			let dbName = <string>arg;
+			await this.executeAction(view, ListTableNamesEventName, this.getTableList, this._predictService, dbName);
+		});
+		view.on(ListColumnNamesEventName, async (arg) => {
+			let tableColumnsArgs = <DatabaseTable>arg;
+			await this.executeAction(view, ListColumnNamesEventName, this.getTableColumnsList, this._predictService,
+				tableColumnsArgs);
+		});
+		view.on(PredictModelEventName, async (arg) => {
+			let predictArgs = <PredictModelEventArgs>arg;
+			await this.executeAction(view, PredictModelEventName, this.generatePredictScript, this._predictService,
+				predictArgs, predictArgs.model);
 		});
 		view.on(SourceModelSelectedEventName, () => {
 			view.refresh();
@@ -184,6 +227,48 @@ export class ModelManagementController extends ControllerBase {
 
 			await service.registerLocalModel(filePath, details);
 			await fs.promises.unlink(filePath);
+		} else {
+			throw Error(constants.invalidModelToRegisterError);
+		}
+	}
+
+	public async getDatabaseList(predictService: PredictService): Promise<string[]> {
+		return await predictService.getDatabaseList();
+	}
+
+	public async getTableList(predictService: PredictService, databaseName: string): Promise<DatabaseTable[]> {
+		return await predictService.getTableList(databaseName);
+	}
+
+	public async getTableColumnsList(predictService: PredictService, databaseTable: DatabaseTable): Promise<string[]> {
+		return await predictService.getTableColumnsList(databaseTable);
+	}
+
+	private async generatePredictScript(
+		predictService: PredictService,
+		predictParams: PredictParameters,
+		registeredMode: RegisteredModel
+	): Promise<string> {
+		if (!predictParams || !registeredMode) {
+			throw Error('Fail');
+		}
+		const result = await predictService.generatePredictScript(predictParams, registeredMode);
+		return result;
+	}
+
+	private async downloadAzureModel(
+		azureService: AzureModelRegistryService,
+		account: azdata.Account | undefined,
+		subscription: azureResource.AzureResourceSubscription | undefined,
+		resourceGroup: azureResource.AzureResource | undefined,
+		workspace: Workspace | undefined,
+		model: WorkspaceModel | undefined): Promise<string> {
+		if (!account || !subscription || !resourceGroup || !workspace || !model) {
+			throw Error(constants.invalidAzureResourceError);
+		}
+		const filePath = await azureService.downloadModel(account, subscription, resourceGroup, workspace, model);
+		if (filePath) {
+			return filePath;
 		} else {
 			throw Error(constants.invalidModelToRegisterError);
 		}

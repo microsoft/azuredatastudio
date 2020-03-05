@@ -26,6 +26,7 @@
 	"modelManagement": {
 		"registeredModelsDatabaseName": "MlFlowDB",
 		"registeredModelsTableName": "artifacts",
+		"registeredModelsTableSchemaName": "dbo",
 		"amlModelManagementUrl": "modelmanagement.azureml.net",
 		"amlExperienceUrl": "experiments.azureml.net",
 		"amlApiVersion": "2018-11-19",

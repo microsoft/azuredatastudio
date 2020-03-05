@@ -5,10 +5,10 @@
 
 import { CurrentModelsPage } from './currentModelsPage';
 
-import { ModelViewBase } from './modelViewBase';
-import * as constants from '../../common/constants';
-import { ApiWrapper } from '../../common/apiWrapper';
-import { DialogView } from '../dialogView';
+import { ModelViewBase } from '../modelViewBase';
+import * as constants from '../../../common/constants';
+import { ApiWrapper } from '../../../common/apiWrapper';
+import { DialogView } from '../../dialogView';
 
 /**
  * Dialog to render registered model views

@@ -12,6 +12,7 @@ import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as utils from '../common/utils';
 import { PackageManager } from '../packageManagement/packageManager';
 import * as constants from '../common/constants';
+import * as os from 'os';
 
 /**
  * Service to import model to database
@@ -39,8 +40,8 @@ export class ModelImporter {
 
 	protected async executeScripts(connection: azdata.connection.ConnectionProfile, modelFolderPath: string): Promise<void> {
 
-		const parts = modelFolderPath.split('\\');
-		modelFolderPath = parts.join('/');
+		let home = utils.makeLinuxPath(os.homedir());
+		modelFolderPath = utils.makeLinuxPath(modelFolderPath);
 
 		let credentials = await this._apiWrapper.getCredentials(connection.connectionId);
 
@@ -51,9 +52,12 @@ export class ModelImporter {
 			const credential = connection.userName ? `${connection.userName}:${credentials[azdata.ConnectionOptionSpecialType.password]}@` : '';
 			let scripts: string[] = [
 				'import mlflow.onnx',
+				`tracking_uri = "file://${home}/mlruns"`,
+				'print(tracking_uri)',
 				'import onnx',
 				'from mlflow.tracking.client import MlflowClient',
 				`onx = onnx.load("${modelFolderPath}")`,
+				`mlflow.set_tracking_uri(tracking_uri)`,
 				'client = MlflowClient()',
 				`exp_name = "${experimentId}"`,
 				`db_uri_artifact = "mssql+pyodbc://${credential}${server}/MlFlowDB?driver=ODBC+Driver+17+for+SQL+Server&"`,

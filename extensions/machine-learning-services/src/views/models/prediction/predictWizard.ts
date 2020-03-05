@@ -4,23 +4,25 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { ModelViewBase } from './modelViewBase';
-import { ApiWrapper } from '../../common/apiWrapper';
-import { ModelSourcesComponent, ModelSourceType } from './modelSourcesComponent';
-import { LocalModelsComponent } from './localModelsComponent';
-import { AzureModelsComponent } from './azureModelsComponent';
-import * as constants from '../../common/constants';
-import { WizardView } from '../wizardView';
-import { ModelSourcePage } from './modelSourcePage';
-import { ModelDetailsPage } from './modelDetailsPage';
+import { ModelViewBase } from '../modelViewBase';
+import { ApiWrapper } from '../../../common/apiWrapper';
+import { ModelSourcesComponent, ModelSourceType } from '../modelSourcesComponent';
+import { LocalModelsComponent } from '../localModelsComponent';
+import { AzureModelsComponent } from '../azureModelsComponent';
+import * as constants from '../../../common/constants';
+import { WizardView } from '../../wizardView';
+import { ModelSourcePage } from '../modelSourcePage';
+import { ColumnsSelectionPage } from './columnsSelectionPage';
+import { RegisteredModel } from '../../../modelManagement/interfaces';
 
 /**
  * Wizard to register a model
  */
-export class RegisterModelWizard extends ModelViewBase {
+export class PredictWizard extends ModelViewBase {
 
 	public modelSourcePage: ModelSourcePage | undefined;
-	public modelDetailsPage: ModelDetailsPage | undefined;
+	//public modelDetailsPage: ModelDetailsPage | undefined;
+	public columnsSelectionPage: ColumnsSelectionPage | undefined;
 	public wizardView: WizardView | undefined;
 	private _parentView: ModelViewBase | undefined;
 
@@ -36,21 +38,24 @@ export class RegisterModelWizard extends ModelViewBase {
 	 * Opens a dialog to manage packages used by notebooks.
 	 */
 	public open(): void {
-		this.modelSourcePage = new ModelSourcePage(this._apiWrapper, this);
-		this.modelDetailsPage = new ModelDetailsPage(this._apiWrapper, this);
+		this.modelSourcePage = new ModelSourcePage(this._apiWrapper, this, [ModelSourceType.RegisteredModels, ModelSourceType.Local, ModelSourceType.Azure]);
+		//this.modelDetailsPage = new ModelDetailsPage(this._apiWrapper, this);
+		this.columnsSelectionPage = new ColumnsSelectionPage(this._apiWrapper, this);
 		this.wizardView = new WizardView(this._apiWrapper);
 
-		let wizard = this.wizardView.createWizard(constants.registerModelTitle, [this.modelSourcePage, this.modelDetailsPage]);
+		let wizard = this.wizardView.createWizard(constants.makePredictionTitle,
+			[this.modelSourcePage,
+			this.columnsSelectionPage]);
 
 		this.mainViewPanel = wizard;
-		wizard.doneButton.label = constants.azureRegisterModel;
+		wizard.doneButton.label = constants.predictModel;
 		wizard.generateScriptButton.hidden = true;
 		wizard.displayPageTitles = true;
 		wizard.registerNavigationValidator(async (pageInfo: azdata.window.WizardPageChangeInfo) => {
 			if (pageInfo.newPage === undefined) {
 				wizard.cancelButton.enabled = false;
 				wizard.backButton.enabled = false;
-				await this.registerModel();
+				await this.predict();
 				wizard.cancelButton.enabled = true;
 				wizard.backButton.enabled = true;
 				if (this._parentView) {
@@ -77,14 +82,19 @@ export class RegisterModelWizard extends ModelViewBase {
 		return this.modelSourcePage?.azureModelsComponent;
 	}
 
-	private async registerModel(): Promise<boolean> {
+	private async predict(): Promise<boolean> {
 		try {
+
+			let modelFilePath: string = '';
 			if (this.modelResources && this.localModelsComponent && this.modelResources.data === ModelSourceType.Local) {
-				await this.registerLocalModel(this.localModelsComponent.data, this.modelDetailsPage?.data);
-			} else {
-				await this.registerAzureModel(this.azureModelsComponent?.data, this.modelDetailsPage?.data);
+				modelFilePath = this.localModelsComponent.data;
+			} else if (this.modelResources && this.azureModelsComponent && this.modelResources.data === ModelSourceType.Azure) {
+				modelFilePath = await this.downloadAzureModel(this.azureModelsComponent?.data);
 			}
-			this.showInfoMessage(constants.modelRegisteredSuccessfully);
+			let registeredModel: RegisteredModel = Object.assign({}, { filePath: modelFilePath },
+				this.modelSourcePage?.registeredModelsComponent?.data);
+
+			await this.generatePredictScript(registeredModel, this.columnsSelectionPage?.data);
 			return true;
 		} catch (error) {
 			this.showErrorMessage(`${constants.modelFailedToRegister} ${constants.getErrorMessage(error)}`);
