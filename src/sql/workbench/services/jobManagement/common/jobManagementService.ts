@@ -8,8 +8,6 @@ import * as azdata from 'azdata';
 import { IJobManagementService, IJobStepsViewRow } from 'sql/workbench/services/jobManagement/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { Event, Emitter } from 'vs/base/common/event';
-import { Subject } from 'rxjs/Subject';
-import { Observable } from 'rxjs/Observable';
 
 export class JobManagementService implements IJobManagementService {
 	_serviceBrand: undefined;
@@ -18,8 +16,8 @@ export class JobManagementService implements IJobManagementService {
 	public readonly onDidChange: Event<void> = this._onDidChange.event;
 
 	// data oservables for steps tree
-	private _stepsChanged: Subject<IJobStepsViewRow[]> = new Subject<IJobStepsViewRow[]>();
-	public stepsChanged: Observable<IJobStepsViewRow[]> = this._stepsChanged.asObservable();
+	private _stepsChanged: Emitter<IJobStepsViewRow[]> = new Emitter<IJobStepsViewRow[]>();
+	public stepsChanged: Event<IJobStepsViewRow[]> = this._stepsChanged.event;
 
 	private _providers: { [handle: string]: azdata.AgentServicesProvider; } = Object.create(null);
 	private _jobCacheObjectMap: { [server: string]: JobCacheObject; } = {};
@@ -69,7 +67,7 @@ export class JobManagementService implements IJobManagementService {
 
 	// Notify Steps changed to steps tree
 	public onStepsChange(data: IJobStepsViewRow[]): void {
-		this._stepsChanged.next(data);
+		this._stepsChanged.fire(data);
 	}
 
 	// Notebooks
