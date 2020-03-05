@@ -119,8 +119,7 @@ export default () => `
 								<ul class="list">
 									<!-- Filled programmatically -->
 									<li class="moreRecent">
-										<a href="command:workbench.action.openRecent">${escape(localize("welcomePage.moreRecent",
-						"Show more"))}</a>
+										<a href="command:workbench.action.openRecent">${escape(localize("welcomePage.moreRecent", "Show more"))}</a>
 										<i class="icon--arrow_down--dark"></i>
 									</li>
 								</ul>
@@ -159,14 +158,14 @@ export default () => `
 						<h4>
 							<a class="link"
 								href="https://aka.ms/azuredatastudio">${escape(localize("welcomePage.productDocumentation",
-							"Documentation"))}</a>
+						"Documentation"))}</a>
 						</h4>
 						<p>Discover the capabilities offered by Aure Data Studio and learn how to make the most of them.
 						</p>
 						<h4>
 							<a class="link"
 								href="https://aka.ms/azuredatastudio">${escape(localize("welcomePage.productDocumentation",
-								"Documentation"))}</a>
+							"Documentation"))}</a>
 						</h4>
 						<p>Discover the capabilities offered by Aure Data Studio and learn how to make the most of them.
 						</p>
@@ -194,24 +193,19 @@ export default () => `
 					<h2>Extend your data studio</h2>
 					<a class="link--show_all" href="#">Show All <span class="entity">&rarr;</span></a>
 				</div>
-				<div class="row ads_grid lg--cols-2 xxl--cols-4 xl--rows-4">
+				<div class="row ads_grid lg--cols-2 xxl--cols-4">
 					<div
 						class="ads_grid row--lg--start_1__span_4 col--lg--start_1__span_2 col--lg--start_1__span_2 row--lg--start_1__span_2 lg--cols-2 tile no_hover extension_pack">
 						<div class="extension_pack__description">
-							<h2 class="extension_pack__header">SQL Admin Pack</h2>
-							<p class="extension_pack__body">Admin Pack for SQL Server is a collection of popular
-								database administration extensions
-								to help you manage SQL Server.</p>
+							<h2 class="extension_pack__header"></h2>
+							<p class="extension_pack__body"></p>
 						</div>
 						<div class="extension_pack__extension_list flex flex--d_column flex--j_evenly">
 							<div class="extension_pack__extension_container flex flex--j_center">
 								<div class="flex">
 									<div class="icon"></div>
 									<div class="description">
-										<h4>Redgate SQL Search</h4>
-										<p>
-											Lorem ipsum dolor sit amet
-										</p>
+										<h4>SQL Server Agent</h4>
 									</div>
 								</div>
 							</div>
@@ -219,10 +213,7 @@ export default () => `
 								<div class="flex">
 									<div class="icon"></div>
 									<div class="description">
-										<h4>Redgate SQL Search</h4>
-										<p>
-											Lorem ipsum dolor sit amet
-										</p>
+										<h4>SQL Server Profiler</h4>
 									</div>
 								</div>
 							</div>
@@ -230,10 +221,7 @@ export default () => `
 								<div class="flex">
 									<div class="icon"></div>
 									<div class="description">
-										<h4>Redgate SQL Search</h4>
-										<p>
-											Lorem ipsum dolor sit amet
-										</p>
+										<h4>SQL Server Import</h4>
 									</div>
 								</div>
 							</div>
@@ -241,77 +229,19 @@ export default () => `
 								<div class="flex">
 									<div class="icon"></div>
 									<div class="description">
-										<h4>Redgate SQL Search</h4>
-										<p>
-											Lorem ipsum dolor sit amet
-										</p>
+										<h4>SQL Server dacpac</h4>
 									</div>
 								</div>
 							</div>
 							<div class="flex flex--j_end extension_pack__btn_container flex flex--d_column"">
-							<a class=" btn btn--standard a_self--end href="#">Install
-								</a>
-								<a class="a_self--end link--learn_more" href="#">Learn more <span
-										class="entity">&rarr;</span></a>
-							</div>
+							<div class=" extensionPack" href="#"></div>
+							<a class="a_self--end link--learn_more" href="#">Learn more <span
+									class="entity">&rarr;</span></a>
 						</div>
 					</div>
-					<div class="col col--xxl--start_3__span_2">
-						<div class="extension icon--sql_server">
-							<div class="flex flex--a_center extension__inner">
-								<div class="icon"></div>
-								<div class="description">
-									<h4>Redgate SQL Search</h4>
-									<p>
-										SQL Server Import for ADS supports importing CSV or JSON files into....some more
-										description goes here goes here description
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col col--xxl--start_3__span_2">
-						<div class="extension icon--sql_server">
-							<div class="flex flex--a_center extension__inner">
-								<div class="icon"></div>
-								<div class="description">
-									<h4>Redgate SQL Search</h4>
-									<p>
-										SQL Server Import for ADS supports importing CSV or JSON files into....some more
-										description goes here goes here description
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col col--xxl--start_3__span_2">
-						<div class="extension icon--sql_server">
-							<div class="flex flex--a_center extension__inner">
-								<div class="icon"></div>
-								<div class="description">
-									<h4>Redgate SQL Search</h4>
-									<p>
-										SQL Server Import for ADS supports importing CSV or JSON files into....some more
-										description goes here goes here description
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col col--xxl--start_3__span_2">
-						<div class="extension icon--sql_server">
-							<div class="flex flex--a_center extension__inner">
-								<div class="icon"></div>
-								<div class="description">
-									<h4>Redgate SQL Search</h4>
-									<p>
-										SQL Server Import for ADS supports importing CSV or JSON files into....some more
-										description goes here goes here description
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
+				</div>
+				<div class="extension_list col col--xxl--start_3__span_2 row--xxl--start_1__span_4 flex flex--d_column">
+					<!-- Dynamically populated -->
 				</div>
 				<br /><br /><br />
 			</div>
