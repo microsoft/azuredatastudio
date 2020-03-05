@@ -7,17 +7,28 @@ import * as azdata from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { JobCacheObject, AlertsCacheObject, ProxiesCacheObject, OperatorsCacheObject, NotebookCacheObject } from './jobManagementService';
 import { Event } from 'vs/base/common/event';
+import { Observable } from 'rxjs/Observable';
 
 export const SERVICE_ID = 'jobManagementService';
 
 export const IJobManagementService = createDecorator<IJobManagementService>(SERVICE_ID);
 
+export interface IJobStepsViewRow {
+	stepId: string;
+	stepName: string;
+	message: string;
+	rowID: string;
+	runStatus: string;
+}
+
 export interface IJobManagementService {
 	_serviceBrand: undefined;
 	onDidChange: Event<void>;
+	stepsChanged: Observable<IJobStepsViewRow[]>;
 
 	registerProvider(providerId: string, provider: azdata.AgentServicesProvider): void;
 	fireOnDidChange(): void;
+	onStepsChange(data: IJobStepsViewRow[]): void;
 
 	getJobs(connectionUri: string): Thenable<azdata.AgentJobsResult>;
 	getJobHistory(connectionUri: string, jobID: string, jobName: string): Thenable<azdata.AgentJobHistoryResult>;

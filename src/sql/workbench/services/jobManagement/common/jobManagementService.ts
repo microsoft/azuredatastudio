@@ -5,15 +5,21 @@
 
 import { localize } from 'vs/nls';
 import * as azdata from 'azdata';
-import { IJobManagementService } from 'sql/workbench/services/jobManagement/common/interfaces';
+import { IJobManagementService, IJobStepsViewRow } from 'sql/workbench/services/jobManagement/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { Event, Emitter } from 'vs/base/common/event';
+import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
 
 export class JobManagementService implements IJobManagementService {
 	_serviceBrand: undefined;
 
 	private _onDidChange = new Emitter<void>();
 	public readonly onDidChange: Event<void> = this._onDidChange.event;
+
+	// data oservables for steps tree
+	private _stepsChanged: Subject<IJobStepsViewRow[]> = new Subject<IJobStepsViewRow[]>();
+	public stepsChanged: Observable<IJobStepsViewRow[]> = this._stepsChanged.asObservable();
 
 	private _providers: { [handle: string]: azdata.AgentServicesProvider; } = Object.create(null);
 	private _jobCacheObjectMap: { [server: string]: JobCacheObject; } = {};
@@ -23,8 +29,7 @@ export class JobManagementService implements IJobManagementService {
 	private _notebookCacheObjectMap: { [server: string]: NotebookCacheObject; } = {};
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService
-	) {
-	}
+	) { }
 
 	public fireOnDidChange(): void {
 		this._onDidChange.fire(void 0);
@@ -60,6 +65,11 @@ export class JobManagementService implements IJobManagementService {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.deleteJobStep(connectionUri, stepInfo);
 		});
+	}
+
+	// Notify Steps changed to steps tree
+	public onStepsChange(data: IJobStepsViewRow[]): void {
+		this._stepsChanged.next(data);
 	}
 
 	// Notebooks
