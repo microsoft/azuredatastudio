@@ -32,6 +32,7 @@
 	"books-preview-category": "Jupyter Books",
 	"title.saveJupyterBook": "Save Book",
 	"title.trustBook": "Trust Book",
+	"title.untrustBook": "Untrust Book",
 	"title.searchJupyterBook": "Search Book",
 	"title.SavedBooks": "Saved Books",
 	"title.UnsavedBooks": "Unsaved Books",

@@ -32,7 +32,7 @@ declare module 'azdata' {
 	export namespace nb {
 		export interface NotebookDocument {
 			/**
-			 * Sets the notebook to trusted by default.
+			 * Sets the trust mode for the notebook document.
 			 */
 			setTrusted(state: boolean);
 		}

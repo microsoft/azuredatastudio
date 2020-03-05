@@ -4,12 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 import * as path from 'path';
 import * as vscode from 'vscode';
+import * as constants from './../common/constants';
 import { BookTreeItem } from './bookTreeItem';
 import { BookModel } from './bookModel';
 
 export interface IBookTrustManager {
 	isNotebookTrustedByDefault(notebookUri: string): boolean;
 	setBookAsTrusted(bookRootPath: string): boolean;
+	setBookAsUntrusted(bookRootPath: string): boolean
 }
 
 export interface IBookTrustManagerWorkspaceDetails {
@@ -17,10 +19,15 @@ export interface IBookTrustManagerWorkspaceDetails {
 	getConfiguration(section?: string | undefined): vscode.WorkspaceConfiguration;
 }
 
+enum TrustBookOperation {
+	Add,
+	Remove
+}
+
 export class BookTrustManager implements IBookTrustManager {
 
-	private static notebookConfiguration: string = 'notebook';
-	private static notebookTrustedBooksConfiguration: string = 'trustedBooks';
+	private static notebookConfiguration: string = constants.notebookConfigKey;
+	private static notebookTrustedBooksConfiguration: string = constants.trustedBooksConfigKey;
 	private trustedLocalBooks: string[] = [];
 
 	constructor(private books: BookModel[], private workspaceDetails?: IBookTrustManagerWorkspaceDetails) {
@@ -79,33 +86,19 @@ export class BookTrustManager implements IBookTrustManager {
 
 		return trustablePaths;
 	}
+
 	getAllBooks(): BookTreeItem[] {
 		return this.books
 			.map(book => book.bookItems) // select all the books
 			.reduce((accumulator, currentBookItemList) => accumulator.concat(currentBookItemList)); // flatten them to a single list
 	}
 
+	setBookAsUntrusted(bookRootPath: string): boolean {
+		return this.updateTrustedBooks(bookRootPath, TrustBookOperation.Remove);
+	}
+
 	setBookAsTrusted(bookRootPath: string): boolean {
-		let rootPathToStore: string = path.normalize(bookRootPath);
-		let matchingWorkspaceFolder: vscode.WorkspaceFolder = this.workspaceDetails.workspaceFolders
-			.find(ws => rootPathToStore.startsWith(path.normalize(ws.uri.fsPath)));
-
-		// if notebook is stored in a workspace folder, then store only the relative directory
-		if (matchingWorkspaceFolder) {
-			rootPathToStore.replace(path.normalize(matchingWorkspaceFolder.uri.fsPath), '');
-		}
-
-		let existingBooks: string[] = this.getTrustedBookPathsInConfig();
-
-		// if no match found in the configuration, then add it
-		if (!existingBooks.find(notebookPath => path.normalize(notebookPath) === rootPathToStore)) {
-			existingBooks.push(rootPathToStore);
-
-			// update the configuration
-			this.setTrustedBookPathsInConfig(existingBooks);
-			return true;
-		}
-		return false;
+		return this.updateTrustedBooks(bookRootPath, TrustBookOperation.Add);
 	}
 
 	getTrustedBookPathsInConfig(): string[] {
@@ -133,5 +126,32 @@ export class BookTrustManager implements IBookTrustManager {
 
 	hasWorkspaceFolders(): boolean {
 		return this.workspaceDetails.workspaceFolders && this.workspaceDetails.workspaceFolders.length > 0;
+	}
+
+	updateTrustedBooks(bookPath: string, operation: TrustBookOperation) {
+		let modifiedTrustedBooks = false;
+		let bookPathToChange: string = path.normalize(bookPath);
+		let matchingWorkspaceFolder: vscode.WorkspaceFolder = this.workspaceDetails.workspaceFolders
+			.find(ws => bookPathToChange.startsWith(path.normalize(ws.uri.fsPath)));
+
+		// if notebook is stored in a workspace folder, then store only the relative directory
+		if (matchingWorkspaceFolder) {
+			bookPathToChange.replace(path.normalize(matchingWorkspaceFolder.uri.fsPath), '');
+		}
+
+		let trustedBooks: string[] = this.getTrustedBookPathsInConfig();
+		let existingBookIndex = trustedBooks.map(trustedBookPath => path.normalize(trustedBookPath)).indexOf(bookPathToChange);
+
+		if (existingBookIndex !== -1 && operation === TrustBookOperation.Remove) {
+			trustedBooks.splice(existingBookIndex, 1);
+			modifiedTrustedBooks = true;
+		} else if (existingBookIndex === -1 && operation === TrustBookOperation.Add) {
+			trustedBooks.push(bookPathToChange);
+			modifiedTrustedBooks = true;
+		}
+
+		this.setTrustedBookPathsInConfig(trustedBooks);
+
+		return modifiedTrustedBooks;
 	}
 }

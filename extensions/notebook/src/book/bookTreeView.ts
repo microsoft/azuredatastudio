@@ -27,7 +27,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private prompter: IPrompter;
 	private _initializeDeferred: Deferred<void> = new Deferred<void>();
 	private _openAsUntitled: boolean;
-	private _trustResourceCache: Record<string, boolean> = {};
+	private _visitedNotebooks: string[] = [];
 	private _bookTrustManager: IBookTrustManager;
 	private _apiWrapper: ApiWrapper;
 
@@ -62,14 +62,34 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return this._initializeDeferred.promise;
 	}
 
-	trustBook(bookTreeItem: BookTreeItem): void {
-		let hasTrustedBook = this._bookTrustManager.setBookAsTrusted(bookTreeItem.root);
+	trustBook(bookTreeItem?: BookTreeItem): void {
+		let bookPathToTrust = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath;
 
-		if (this._apiWrapper) {
-			if (hasTrustedBook) {
-				this._apiWrapper.showInfoMessage(loc.msgBookTrusted);
-			} else {
-				this._apiWrapper.showInfoMessage(loc.msgBookAlreadyTrusted);
+		if (bookPathToTrust) {
+			let trustChanged = this._bookTrustManager.setBookAsTrusted(bookPathToTrust);
+
+			if (this._apiWrapper) {
+				if (trustChanged) {
+					this._apiWrapper.showInfoMessage(loc.msgBookTrusted);
+				} else {
+					this._apiWrapper.showInfoMessage(loc.msgBookAlreadyTrusted);
+				}
+			}
+		}
+	}
+
+	untrustBook(bookTreeItem?: BookTreeItem): void {
+		let bookPathToTrust = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath;
+
+		if (bookPathToTrust) {
+			let trustChanged = this._bookTrustManager.setBookAsUntrusted(bookPathToTrust);
+
+			if (this._apiWrapper) {
+				if (trustChanged) {
+					this._apiWrapper.showInfoMessage(loc.msgBookUntrusted);
+				} else {
+					this._apiWrapper.showInfoMessage(loc.msgBookAlreadyUntrusted);
+				}
 			}
 		}
 	}
@@ -130,13 +150,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			if (this._openAsUntitled) {
 				this.openNotebookAsUntitled(resource);
 			} else {
-				// leave alone cached trusted statuses
-				let cache = this._trustResourceCache;
+				// because notebooks can be untrusted after having them trusted by default, let us keep a list of visited
+				// notebooks we have already trusted -- this will keep us from overriding the user's changes.
 				let normalizedResource = path.normalize(resource);
-				if (!cache[normalizedResource] && this._bookTrustManager.isNotebookTrustedByDefault(normalizedResource)) {
+				if (this._visitedNotebooks.indexOf(normalizedResource) !== -1
+					&& this._bookTrustManager.isNotebookTrustedByDefault(normalizedResource)) {
 					let openDocumentListenerUnsubscriber = azdata.nb.onDidOpenNotebookDocument(function (document: azdata.nb.NotebookDocument) {
 						document.setTrusted(true);
-						cache[normalizedResource] = true;
+						this._trustResourceCache.push(normalizedResource);
 						openDocumentListenerUnsubscriber.dispose();
 					});
 				}

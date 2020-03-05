@@ -49,8 +49,6 @@ export class ExtHostNotebookDocumentData implements IDisposable {
 				get cells() { return data._cells; },
 				get kernelSpec() { return data._kernelSpec; },
 				save() { return data._save(); },
-				// ignore error "setTrusted' does not exist in type 'NotebookDocument'." as it is merged from azdata.proposed.d.ts
-				// @ts-ignore
 				setTrusted(isTrusted) { data._setTrusted(isTrusted); },
 				validateCellRange(range) { return data._validateRange(range); },
 			};

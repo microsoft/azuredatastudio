@@ -16,6 +16,7 @@ export const pythonVersion = '3.6.6';
 export const pythonPathConfigKey = 'pythonPath';
 export const existingPythonConfigKey = 'useExistingPython';
 export const notebookConfigKey = 'notebook';
+export const trustedBooksConfigKey = 'trustedBooks';
 export const maxBookSearchDepth = 'maxBookSearchDepth';
 
 export const winPlatform = 'win32';
