@@ -79,11 +79,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			fsw.watchFile(path.join(bookPath, '_data', 'toc.yml'), async (curr, prev) => {
 				if (curr.mtime > prev.mtime) {
 					let index = this.books.findIndex(book => book.bookPath === bookPath);
-					await this.closeBook(this.books[index]);
-					await this.openBook(bookPath);
-					/* await this.books[index].initializeContents().then(() => {
+					await this.books[index].initializeContents().then(() => {
 						this._onDidChangeTreeData.fire(this.books[index].bookItems[0]);
-					}); */
+					});
+					this._onDidChangeTreeData.fire();
 				}
 			});
 		}
