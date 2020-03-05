@@ -41,8 +41,13 @@ body {
 	margin: 0 30px;
 }
 
+.text {
+	text-align: center;
+}
+
 .message-image img {
-	width: 300px;
+	max-width: 300px;
+	width: 100%
 }
 
 .message-large {
