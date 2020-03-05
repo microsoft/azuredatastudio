@@ -6,7 +6,7 @@
       name: 'Needs Logs',
       allowTriggerByBot: false,
       action: 'comment',
-      comment: 'Looks like we need for info to debug your particular issue. If you could attach your logs (ensure no private data is in them) to the issue it would help us fix the issue much faster.\n\nTo find your logs run the command `Developer: Open Logs Folder`, this will open the log file locally. We generally care most about renderer.log'
+      comment: "We need more info to debug your particular issue. If you could attach your logs to the issue (ensure no private data is in them), it would help us fix the issue much faster.\n\nTo find your logs:\n\n- Open command palette (Click **View** -> **Command Palette**)\n- Run the command: **`Developer: Open Logs Folder`**\n\nThis will open the log file locally. Please include renderer.log"
     }
   ]
 }
