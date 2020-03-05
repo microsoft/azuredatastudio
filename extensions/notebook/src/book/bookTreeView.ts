@@ -88,12 +88,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async closeBook(book?: BookModel): Promise<void> {
+	async closeBook(book?: BookTreeItem): Promise<void> {
 		// remove book from the saved books
 		let deletedBook: BookModel;
 		try {
 			if (book) {
-				let index: number = this.books.indexOf(this.books.find(b => b.bookPath === book.bookPath));
+				let index: number = this.books.indexOf(this.books.find(b => b.bookPath.replace(/\\/g, '/') === book.root));
 				if (index > -1) {
 					deletedBook = this.books.splice(index, 1)[0];
 					if (this.currentBook === deletedBook) {
