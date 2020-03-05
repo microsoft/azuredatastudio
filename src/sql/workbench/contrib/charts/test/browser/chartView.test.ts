@@ -31,5 +31,5 @@ function createChartView(): ChartView {
 	const instantiationService = new TestInstantiationService();
 	const notificationService = new TestNotificationService();
 	instantiationService.stub(IThemeService, themeService);
-	return new ChartView(contextViewService, themeService, instantiationService, notificationService);
+	return new ChartView(true, contextViewService, themeService, instantiationService, notificationService);
 }
