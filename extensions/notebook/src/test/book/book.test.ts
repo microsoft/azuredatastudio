@@ -101,6 +101,8 @@ describe('BookTreeViewProviderTests', function () {
 				sections: [expectedNotebook1, expectedMarkdown, expectedExternalLink],
 				title: 'Test Book'
 			};
+			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
+
 			await fs.mkdir(rootFolderPath);
 			await fs.mkdir(bookFolderPath);
 			await fs.mkdir(nonBookFolderPath);
@@ -112,7 +114,6 @@ describe('BookTreeViewProviderTests', function () {
 			await fs.writeFile(notebook2File, '');
 			await fs.writeFile(notebook3File, '');
 			await fs.writeFile(markdownFile, '');
-			appContext = new AppContext(undefined, new ApiWrapper());
 		});
 
 		it('should initialize correctly with empty workspace array', async () => {
@@ -225,10 +226,10 @@ describe('BookTreeViewProviderTests', function () {
 				name: '',
 				index: 0
 			};
+			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
 			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [folder], mockExtensionContext, false, 'bookTreeView');
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
-			appContext = new AppContext(undefined, new ApiWrapper());
 		});
 
 		it('should ignore toc.yml files not in _data folder', async () => {
@@ -268,10 +269,10 @@ describe('BookTreeViewProviderTests', function () {
 				name: '',
 				index: 0
 			};
+			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
 			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [folder], mockExtensionContext, false, 'bookTreeView');
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
-			appContext = new AppContext(undefined, new ApiWrapper());
 		});
 
 		it('should show error message if config.yml file not found', async () => {
@@ -327,10 +328,10 @@ describe('BookTreeViewProviderTests', function () {
 				name: '',
 				index: 0
 			};
+			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
 			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [folder], mockExtensionContext, false, 'bookTreeView');
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
-			appContext = new AppContext(undefined, new ApiWrapper());
 		});
 
 		it('should show error if notebook or markdown file is missing', async function (): Promise<void> {
