@@ -27,7 +27,7 @@
 		"onCommand:markdown.api.render",
     "onCommand:notebook.showPreview",
 		"onWebviewPanel:markdown.preview",
-		"onWebviewEditor:vscode.markdown.preview.editor"
+		"onCustomEditor:vscode.markdown.preview.editor"
 	],
 	"contributes": {
 		"commands": [
@@ -310,7 +310,7 @@
 		"markdown.previewScripts": [
 			"./media/index.js"
 		],
-		"webviewEditors": [
+		"customEditors": [
 			{
 				"viewType": "vscode.markdown.preview.editor",
 				"displayName": "(Experimental) VS Code Markdown Preview",

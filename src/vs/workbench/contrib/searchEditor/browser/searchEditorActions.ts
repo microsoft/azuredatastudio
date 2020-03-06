@@ -54,6 +54,14 @@ export const toggleSearchEditorContextLinesCommand = (accessor: ServicesAccessor
 	}
 };
 
+export const selectAllSearchEditorMatchesCommand = (accessor: ServicesAccessor) => {
+	const editorService = accessor.get(IEditorService);
+	const input = editorService.activeEditor;
+	if (input instanceof SearchEditorInput) {
+		(editorService.activeControl as SearchEditor).focusAllResults();
+	}
+};
+
 
 export class OpenSearchEditorAction extends Action {
 
@@ -104,6 +112,24 @@ export class OpenResultsInEditorAction extends Action {
 		const searchView = getSearchView(this.viewsService);
 		if (searchView) {
 			await this.instantiationService.invokeFunction(createEditorFromSearchResult, searchView.searchResult, searchView.searchIncludePattern.getValue(), searchView.searchExcludePattern.getValue());
+		}
+	}
+}
+
+export class RerunSearchEditorSearchAction extends Action {
+	static readonly ID: string = Constants.RerunSearchEditorSearchCommandId;
+	static readonly LABEL = localize('search.rerunSearchInEditor', "Search Again");
+
+	constructor(id: string, label: string,
+		@IEditorService private readonly editorService: IEditorService,
+	) {
+		super(id, label, 'codicon-refresh');
+	}
+
+	async run() {
+		const input = this.editorService.activeEditor;
+		if (input instanceof SearchEditorInput) {
+			(this.editorService.activeControl as SearchEditor).triggerSearch({ resetCursor: false });
 		}
 	}
 }

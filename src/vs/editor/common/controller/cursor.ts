@@ -297,7 +297,7 @@ export class Cursor extends viewEvents.ViewEventEmitter implements ICursors {
 		return this._cursors.getAll();
 	}
 
-	public setStates(source: string, reason: CursorChangeReason, states: PartialCursorState[] | null): void {
+	public setStates(source: string, reason: CursorChangeReason, states: PartialCursorState[] | null): boolean {
 		if (states !== null && states.length > Cursor.MAX_CURSOR_COUNT) {
 			states = states.slice(0, Cursor.MAX_CURSOR_COUNT);
 			this._onDidReachMaxCursorCount.fire(undefined);
@@ -311,7 +311,7 @@ export class Cursor extends viewEvents.ViewEventEmitter implements ICursors {
 
 		this._validateAutoClosedActions();
 
-		this._emitStateChangedIfNecessary(source, reason, oldState);
+		return this._emitStateChangedIfNecessary(source, reason, oldState);
 	}
 
 	public setColumnSelectData(columnSelectData: IColumnSelectData): void {
@@ -411,7 +411,9 @@ export class Cursor extends viewEvents.ViewEventEmitter implements ICursors {
 		} else {
 			if (this._hasFocus && e.resultingSelection && e.resultingSelection.length > 0) {
 				const cursorState = CursorState.fromModelSelections(e.resultingSelection);
-				this.setStates('modelChange', e.isUndoing ? CursorChangeReason.Undo : e.isRedoing ? CursorChangeReason.Redo : CursorChangeReason.RecoverFromMarkers, cursorState);
+				if (this.setStates('modelChange', e.isUndoing ? CursorChangeReason.Undo : e.isRedoing ? CursorChangeReason.Redo : CursorChangeReason.RecoverFromMarkers, cursorState)) {
+					this._revealRange('modelChange', RevealTarget.Primary, viewEvents.VerticalRevealType.Simple, true, editorCommon.ScrollType.Smooth);
+				}
 			} else {
 				const selectionsFromMarkers = this._cursors.readSelectionFromMarkers();
 				this.setStates('modelChange', CursorChangeReason.RecoverFromMarkers, CursorState.fromModelSelections(selectionsFromMarkers));
@@ -428,15 +430,14 @@ export class Cursor extends viewEvents.ViewEventEmitter implements ICursors {
 			return this._columnSelectData;
 		}
 		const primaryCursor = this._cursors.getPrimaryCursor();
-		const primaryPos = primaryCursor.viewState.selectionStart.getStartPosition();
-		const viewLineNumber = primaryPos.lineNumber;
-		const viewVisualColumn = CursorColumns.visibleColumnFromColumn2(this.context.config, this.context.viewModel, primaryPos);
+		const viewSelectionStart = primaryCursor.viewState.selectionStart.getStartPosition();
+		const viewPosition = primaryCursor.viewState.position;
 		return {
 			isReal: false,
-			fromViewLineNumber: viewLineNumber,
-			fromViewVisualColumn: viewVisualColumn,
-			toViewLineNumber: viewLineNumber,
-			toViewVisualColumn: viewVisualColumn,
+			fromViewLineNumber: viewSelectionStart.lineNumber,
+			fromViewVisualColumn: CursorColumns.visibleColumnFromColumn2(this.context.config, this.context.viewModel, viewSelectionStart),
+			toViewLineNumber: viewPosition.lineNumber,
+			toViewVisualColumn: CursorColumns.visibleColumnFromColumn2(this.context.config, this.context.viewModel, viewPosition),
 		};
 	}
 

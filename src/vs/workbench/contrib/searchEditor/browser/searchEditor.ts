@@ -35,7 +35,7 @@ import { InputBoxFocusedKey } from 'vs/workbench/contrib/search/common/constants
 import { ITextQueryBuilderOptions, QueryBuilder } from 'vs/workbench/contrib/search/common/queryBuilder';
 import { getOutOfWorkspaceEditorResources } from 'vs/workbench/contrib/search/common/search';
 import { SearchModel } from 'vs/workbench/contrib/search/common/searchModel';
-import { InSearchEditor, SearchEditorFindMatchClass } from 'vs/workbench/contrib/searchEditor/browser/constants';
+import { InSearchEditor, SearchEditorFindMatchClass, SearchEditorID } from 'vs/workbench/contrib/searchEditor/browser/constants';
 import type { SearchConfiguration, SearchEditorInput } from 'vs/workbench/contrib/searchEditor/browser/searchEditorInput';
 import { extractSearchQuery, serializeSearchConfiguration, serializeSearchResultForEditor } from 'vs/workbench/contrib/searchEditor/browser/searchEditorSerialization';
 import { IPatternInfo, ISearchConfigurationProperties, ITextQuery } from 'vs/workbench/services/search/common/search';
@@ -47,6 +47,8 @@ import { assertIsDefined } from 'vs/base/common/types';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { Position } from 'vs/editor/common/core/position';
+import { Selection } from 'vs/editor/common/core/selection';
 
 const RESULT_LINE_REGEX = /^(\s+)(\d+)(:| )(\s+)(.*)$/;
 const FILE_LINE_REGEX = /^(\S.*):$/;
@@ -54,7 +56,7 @@ const FILE_LINE_REGEX = /^(\S.*):$/;
 type SearchEditorViewState = ICodeEditorViewState & { focused: 'input' | 'editor' };
 
 export class SearchEditor extends BaseTextEditor {
-	static readonly ID: string = 'workbench.editor.searchEditor';
+	static readonly ID: string = SearchEditorID;
 
 	static readonly SEARCH_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'searchEditorViewState';
 
@@ -192,6 +194,7 @@ export class SearchEditor extends BaseTextEditor {
 			const runAgainLink = DOM.append(this.messageBox, DOM.$('a.pointer.prominent.message', {}, localize('runSearch', "Run Search")));
 			this.messageDisposables.push(DOM.addDisposableListener(runAgainLink, DOM.EventType.CLICK, async () => {
 				await this.triggerSearch();
+				this.searchResultEditor.focus();
 				this.toggleRunAgainMessage(false);
 			}));
 		}
@@ -295,8 +298,48 @@ export class SearchEditor extends BaseTextEditor {
 		this.toggleIncludesExcludes();
 	}
 
+	cleanState() {
+		this.getInput()?.setDirty(false);
+	}
+
 	private get searchConfig(): ISearchConfigurationProperties {
 		return this.configurationService.getValue<ISearchConfigurationProperties>('search');
+	}
+
+	private iterateThroughMatches(reverse: boolean) {
+		const model = this.searchResultEditor.getModel();
+		if (!model) { return; }
+
+		const lastLine = model.getLineCount() ?? 1;
+		const lastColumn = model.getLineLength(lastLine);
+
+		const fallbackStart = reverse ? new Position(lastLine, lastColumn) : new Position(1, 1);
+
+		const currentPosition = this.searchResultEditor.getSelection()?.getStartPosition() ?? fallbackStart;
+
+		const matchRanges = this.getInput()?.getMatchRanges();
+		if (!matchRanges) { return; }
+
+		const matchRange = (reverse ? findPrevRange : findNextRange)(matchRanges, currentPosition);
+
+		this.searchResultEditor.setSelection(matchRange);
+		this.searchResultEditor.revealLineInCenterIfOutsideViewport(matchRange.startLineNumber);
+		this.searchResultEditor.focus();
+	}
+
+	focusNextResult() {
+		this.iterateThroughMatches(false);
+	}
+
+	focusPreviousResult() {
+		this.iterateThroughMatches(true);
+	}
+
+	focusAllResults() {
+		this.searchResultEditor
+			.setSelections((this.getInput()?.getMatchRanges() ?? []).map(
+				range => new Selection(range.startLineNumber, range.startColumn, range.endLineNumber, range.endColumn)));
+		this.searchResultEditor.focus();
 	}
 
 	async triggerSearch(_options?: { resetCursor?: boolean; delay?: number; }) {
@@ -307,7 +350,7 @@ export class SearchEditor extends BaseTextEditor {
 				await this.doRunSearch();
 				this.toggleRunAgainMessage(false);
 				if (options.resetCursor) {
-					this.searchResultEditor.setSelection(new Range(1, 1, 1, 1));
+					this.searchResultEditor.setPosition(new Position(1, 1));
 					this.searchResultEditor.setScrollPosition({ scrollTop: 0, scrollLeft: 0 });
 				}
 			}, options.delay);
@@ -523,3 +566,24 @@ registerThemingParticipant((theme, collector) => {
 });
 
 export const searchEditorTextInputBorder = registerColor('searchEditor.textInputBorder', { dark: inputBorder, light: inputBorder, hc: inputBorder }, localize('textInputBoxBorder', "Search editor text input box border."));
+
+function findNextRange(matchRanges: Range[], currentPosition: Position) {
+	for (const matchRange of matchRanges) {
+		if (Position.isBefore(currentPosition, matchRange.getStartPosition())) {
+			return matchRange;
+		}
+	}
+	return matchRanges[0];
+}
+
+function findPrevRange(matchRanges: Range[], currentPosition: Position) {
+	for (let i = matchRanges.length - 1; i >= 0; i--) {
+		const matchRange = matchRanges[i];
+		if (Position.isBefore(matchRange.getStartPosition(), currentPosition)) {
+			{
+				return matchRange;
+			}
+		}
+	}
+	return matchRanges[matchRanges.length - 1];
+}

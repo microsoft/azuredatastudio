@@ -49,7 +49,7 @@ import { SaveReason } from 'vs/workbench/common/editor';
 import { ExtensionActivationReason } from 'vs/workbench/api/common/extHostExtensionActivator';
 import { TunnelDto } from 'vs/workbench/api/common/extHostTunnelService';
 import { TunnelOptions } from 'vs/platform/remote/common/tunnel';
-import { Timeline, TimelineChangeEvent, TimelineCursor, TimelineProviderDescriptor } from 'vs/workbench/contrib/timeline/common/timeline';
+import { Timeline, TimelineChangeEvent, TimelineOptions, TimelineProviderDescriptor } from 'vs/workbench/contrib/timeline/common/timeline';
 import { revive } from 'vs/base/common/marshalling';
 import { CallHierarchyItem } from 'vs/workbench/contrib/callHierarchy/common/callHierarchy';
 import { Dto } from 'vs/base/common/types';
@@ -624,7 +624,7 @@ export interface ExtHostWebviewsShape {
 	$onSave(resource: UriComponents, viewType: string): Promise<void>;
 	$onSaveAs(resource: UriComponents, viewType: string, targetResource: UriComponents): Promise<void>;
 
-	$backup(resource: UriComponents, viewType: string, cancellation: CancellationToken): Promise<boolean>;
+	$backup(resource: UriComponents, viewType: string, cancellation: CancellationToken): Promise<void>;
 }
 
 export interface MainThreadUrlsShape extends IDisposable {
@@ -1472,7 +1472,7 @@ export interface ExtHostTunnelServiceShape {
 }
 
 export interface ExtHostTimelineShape {
-	$getTimeline(source: string, uri: UriComponents, cursor: TimelineCursor, token: CancellationToken, options?: { cacheResults?: boolean }): Promise<Timeline | undefined>;
+	$getTimeline(source: string, uri: UriComponents, options: TimelineOptions, token: CancellationToken, internalOptions?: { cacheResults?: boolean }): Promise<Timeline | undefined>;
 }
 
 // --- proxy identifiers

@@ -544,7 +544,16 @@ export class CompositeActionViewItem extends ActivityActionViewItem {
 				if (this.compositeTransfer.hasData(DraggedCompositeIdentifier.prototype)) {
 					const data = this.compositeTransfer.getData(DraggedCompositeIdentifier.prototype);
 					if (Array.isArray(data) && data[0].id !== this.activity.id) {
-						this.updateFromDragging(container, true);
+						const validDropTarget = this.dndHandler.onDragEnter(new CompositeDragAndDropData('composite', data[0].id), this.activity.id, e);
+						this.updateFromDragging(container, validDropTarget);
+					}
+				}
+
+				if (this.compositeTransfer.hasData(DraggedViewIdentifier.prototype)) {
+					const data = this.compositeTransfer.getData(DraggedViewIdentifier.prototype);
+					if (Array.isArray(data) && data[0].id !== this.activity.id) {
+						const validDropTarget = this.dndHandler.onDragEnter(new CompositeDragAndDropData('view', data[0].id), this.activity.id, e);
+						this.updateFromDragging(container, validDropTarget);
 					}
 				}
 			},
@@ -575,7 +584,8 @@ export class CompositeActionViewItem extends ActivityActionViewItem {
 			},
 
 			onDragLeave: e => {
-				if (this.compositeTransfer.hasData(DraggedCompositeIdentifier.prototype)) {
+				if (this.compositeTransfer.hasData(DraggedCompositeIdentifier.prototype) ||
+					this.compositeTransfer.hasData(DraggedViewIdentifier.prototype)) {
 					this.updateFromDragging(container, false);
 				}
 			},
@@ -608,6 +618,8 @@ export class CompositeActionViewItem extends ActivityActionViewItem {
 					const data = this.compositeTransfer.getData(DraggedViewIdentifier.prototype);
 					if (Array.isArray(data)) {
 						const draggedViewId = data[0].id;
+						this.updateFromDragging(container, false);
+						this.compositeTransfer.clearData(DraggedViewIdentifier.prototype);
 
 						this.dndHandler.drop(new CompositeDragAndDropData('view', draggedViewId), this.activity.id, e);
 					}

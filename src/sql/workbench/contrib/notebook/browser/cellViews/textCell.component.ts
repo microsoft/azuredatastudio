@@ -200,6 +200,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			this.setLoading(false);
 			let outputElement = <HTMLElement>this.output.nativeElement;
 			outputElement.innerHTML = this.markdownResult.element.innerHTML;
+			this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 		}
 	}
 
@@ -330,5 +331,18 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			return parent;
 		}
 		return children;
+	}
+
+	private getRenderedTextOutput(): string[] {
+		let textOutput: string[] = [];
+		let elements = this.getHtmlElements();
+		elements.forEach(element => {
+			if (element && element.innerText) {
+				textOutput.push(element.innerText);
+			} else {
+				textOutput.push('');
+			}
+		});
+		return textOutput;
 	}
 }
