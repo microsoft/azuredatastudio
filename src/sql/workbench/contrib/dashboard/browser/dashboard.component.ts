@@ -20,6 +20,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import * as themeColors from 'vs/workbench/common/theme';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export const DASHBOARD_SELECTOR: string = 'dashboard-component';
 
@@ -60,7 +61,7 @@ export class DashboardComponent extends AngularDisposable implements OnInit {
 		});
 		if (profile && (!profile.databaseName || Utils.isMaster(profile))) {
 			// Route to the server page as this is the default database
-			this._router.navigate(['server-dashboard']);
+			this._router.navigate(['server-dashboard']).catch(onUnexpectedError);
 		}
 	}
 
