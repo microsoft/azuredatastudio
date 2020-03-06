@@ -488,6 +488,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				get onDidOpenNotebookDocument() {
 					return extHostNotebookDocumentsAndEditors.onDidOpenNotebookDocument;
 				},
+				get onDidChangeActiveNotebookEditor() {
+					return extHostNotebookDocumentsAndEditors.onDidChangeActiveNotebookEditor;
+				},
 				get onDidChangeNotebookCell() {
 					return extHostNotebookDocumentsAndEditors.onDidChangeNotebookCell;
 				},

@@ -13,6 +13,7 @@ import { BookTreeItem } from './bookTreeItem';
 import { BookModel } from './bookModel';
 import { Deferred } from '../common/promise';
 import * as loc from '../common/localizedConstants';
+import { ApiWrapper } from '../common/apiWrapper';
 
 const Content = 'content';
 
@@ -25,20 +26,21 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _extensionContext: vscode.ExtensionContext;
 	private prompter: IPrompter;
 	private _initializeDeferred: Deferred<void> = new Deferred<void>();
-
+	private _bookViewer: vscode.TreeView<BookTreeItem>;
 	private _openAsUntitled: boolean;
+	private _apiWrapper: ApiWrapper;
 	public viewId: string;
 	public books: BookModel[];
 	public currentBook: BookModel;
 
-	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string) {
+	constructor(apiWrapper: ApiWrapper, workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string) {
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
 		this.books = [];
 		this.initialize(workspaceFolders).catch(e => console.error(e));
 		this.viewId = view;
 		this.prompter = new CodeAdapter();
-
+		this._apiWrapper = apiWrapper ? apiWrapper : new ApiWrapper();
 	}
 
 	private async initialize(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
@@ -89,6 +91,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (!this.currentBook) {
 			this.currentBook = book;
 		}
+		this._bookViewer = this._apiWrapper.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
+		this._bookViewer.onDidChangeVisibility(e => {
+			if (e.visible) {
+				this.revealActiveDocumentInViewlet();
+			}
+		});
+		azdata.nb.onDidChangeActiveNotebookEditor(e => {
+			this.revealActiveDocumentInViewlet(e.document.uri, false);
+		});
 	}
 
 	async showPreviewFile(urlToOpen?: string): Promise<void> {
@@ -118,6 +129,26 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openNotebookError(resource, e instanceof Error ? e.message : e));
+		}
+	}
+
+	async revealActiveDocumentInViewlet(uri?: vscode.Uri, shouldReveal: boolean = true): Promise<void> {
+		let bookItem: BookTreeItem;
+		// If no uri is passed in, try to use the current active notebook editor
+		if (!uri) {
+			let openDocument = azdata.nb.activeNotebookEditor;
+			if (openDocument) {
+				bookItem = this.currentBook.getNotebook(openDocument.document.uri.fsPath);
+			}
+		} else if (uri.fsPath) {
+			bookItem = this.currentBook.getNotebook(uri.fsPath);
+		}
+		if (bookItem) {
+			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
+			if (shouldReveal || this._bookViewer.visible) {
+				// Note: 3 is the maximum number of levels that the vscode APIs let you expand to
+				await this._bookViewer.reveal(bookItem, { select: true, focus: true, expand: 3 });
+			}
 		}
 	}
 
@@ -289,7 +320,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			else {
 				return undefined;
 			}
-			return this.currentBook.getAllBooks().get(parentPath);
+			return this.currentBook.getAllNotebooks().get(parentPath);
 		} else {
 			return undefined;
 		}
@@ -297,9 +328,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	getUntitledNotebookUri(resource: string): vscode.Uri {
 		let untitledFileName = vscode.Uri.parse(`untitled:${resource}`);
-		if (!this.currentBook.getAllBooks().get(untitledFileName.fsPath) && !this.currentBook.getAllBooks().get(path.basename(untitledFileName.fsPath))) {
-			let notebook = this.currentBook.getAllBooks().get(resource);
-			this.currentBook.getAllBooks().set(path.basename(untitledFileName.fsPath), notebook);
+		if (!this.currentBook.getAllNotebooks().get(untitledFileName.fsPath) && !this.currentBook.getAllNotebooks().get(path.basename(untitledFileName.fsPath))) {
+			let notebook = this.currentBook.getAllNotebooks().get(resource);
+			this.currentBook.getAllNotebooks().set(path.basename(untitledFileName.fsPath), notebook);
 		}
 		return untitledFileName;
 	}
