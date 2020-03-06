@@ -27,6 +27,36 @@ export class TelemetryFeature implements StaticFeature {
 	}
 }
 
+export class AccountFeature implements StaticFeature {
+
+	constructor(private _client: SqlOpsDataClient) { }
+
+	fillClientCapabilities(capabilities: ClientCapabilities): void {
+		Utils.ensure(capabilities, 'telemetry')!.telemetry = true;
+	}
+
+	initialize(): void {
+		this._client.onRequest(contracts.SecurityTokenRequest.type, async e => {
+			const accountList = await azdata.accounts.getAllAccounts();
+
+			if (accountList.length < 1) {
+				console.log('No azure accounts present. Unable to find an account.');
+				return null;
+			} else if (accountList.length > 1) {
+				console.log('Multiple azure accounts present. Unable to determine which account to use.');
+				return null;
+			}
+			let account = accountList[0];
+			const securityToken: { [key: string]: any } = await azdata.accounts.getSecurityToken(account, azdata.AzureResource.Sql);
+			const tenant = account.properties.tenants.find((t: { [key: string]: string }) => e.authority.includes(t.id));
+			let params: contracts.RequestSecurityTokenResponse = {
+				token: securityToken[tenant.id].token
+			};
+			return params;
+		});
+	}
+}
+
 export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 	private static readonly messagesTypes: RPCMessageType[] = [
 		contracts.AgentJobsRequest.type,

@@ -31,6 +31,22 @@ export class TelemetryParams {
 
 // ------------------------------- </ Telemetry Sent Event > ----------------------------------
 
+// ------------------------------- < Security Token Request > ------------------------------------------
+export interface RequestSecurityTokenParams {
+	authority: string;
+	resource: string;
+	scope: string;
+}
+
+export interface RequestSecurityTokenResponse {
+	token: string;
+}
+
+export namespace SecurityTokenRequest {
+	export const type = new RequestType<RequestSecurityTokenParams, RequestSecurityTokenResponse, void, void>('account/securityTokenRequest');
+}
+// ------------------------------- </ Security Token Request > ------------------------------------------
+
 // ------------------------------- < Agent Management > ------------------------------------
 // Job management parameters
 export interface AgentJobsParams {
