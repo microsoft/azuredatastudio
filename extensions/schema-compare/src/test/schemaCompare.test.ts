@@ -55,6 +55,12 @@ const mockTargetEndpoint: mssql.SchemaCompareEndpointInfo = {
 
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 
+describe('Dummy test @UNSTABLE@', () => {
+	it('Dummy test', () => {
+		should(true).equal(true);
+	});
+});
+
 describe('SchemaCompareDialog.openDialog', function (): void {
 	beforeEach(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();

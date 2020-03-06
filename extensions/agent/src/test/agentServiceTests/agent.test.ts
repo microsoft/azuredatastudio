@@ -11,6 +11,12 @@ import * as azdata from 'azdata';
 const testOwnerUri = 'agent://testuri';
 let mockAgentService: TypeMoq.IMock<azdata.AgentServicesProvider>;
 
+describe('Dummy test @UNSTABLE@', () => {
+	it('Dummy test', () => {
+		should(true).equal(true);
+	});
+});
+
 describe('Agent extension create job objects', function (): void {
 	beforeEach(() => {
 		mockAgentService = TypeMoq.Mock.ofType<azdata.AgentServicesProvider>();

@@ -12,6 +12,12 @@ import 'mocha';
 import CredentialServiceTokenCache from '../../account-provider/tokenCache';
 import { CredentialsTestProvider } from '../stubs/credentialsTestProvider';
 
+describe('Dummy test @UNSTABLE@', () => {
+	it('Dummy test', () => {
+		should(true).equal(true);
+	});
+});
+
 describe('AccountProvider.TokenCache', function (): void {
 	it('Can save and load tokens', async function (): Promise<void> {
 		const tokenResponse: adal.TokenResponse = {

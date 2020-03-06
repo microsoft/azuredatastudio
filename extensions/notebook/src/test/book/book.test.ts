@@ -40,6 +40,12 @@ export function equalBookItems(book: BookTreeItem, expectedBook: IExpectedBookIt
 	}
 }
 
+describe('Dummy test @UNSTABLE@', () => {
+	it('Dummy test', () => {
+		should(true).equal(true);
+	});
+});
+
 describe('BookTreeViewProviderTests', function () {
 
 	describe('BookTreeViewProvider', () => {

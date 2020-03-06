@@ -10,6 +10,12 @@ import 'mocha';
 import { CmsResourceItemType } from '../cmsResource/constants';
 import { CmsResourceMessageTreeNode } from '../cmsResource/messageTreeNode';
 
+describe('Dummy test @UNSTABLE@', () => {
+	it('Dummy test', () => {
+		should(true).equal(true);
+	});
+});
+
 describe('CmsResourceMessageTreeNode.info', function (): void {
 	it('Should be correct when created.', async function (): Promise<void> {
 		const mockMessage = 'Test message';

@@ -51,6 +51,12 @@ function createContext(): TestContext {
 	};
 }
 
+describe('Dummy test @UNSTABLE@', () => {
+	it('Dummy test', () => {
+		should(true).equal(true);
+	});
+});
+
 describe('Query Runner', () => {
 	it('getPythonPackages Should return empty list if not provider found', async function (): Promise<void> {
 		let testContext = createContext();

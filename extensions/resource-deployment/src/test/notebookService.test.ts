@@ -10,6 +10,12 @@ import assert = require('assert');
 import { NotebookInfo } from '../interfaces';
 import { IPlatformService } from '../services/platformService';
 
+suite('Dummy test @UNSTABLE@', () => {
+	test('Dummy test', () => {
+		assert.equal(true, true, 'true should be true');
+	});
+});
+
 suite('Notebook Service Tests', function (): void {
 
 	test('getNotebook with string parameter', () => {

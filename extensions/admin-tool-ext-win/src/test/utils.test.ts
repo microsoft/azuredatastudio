@@ -10,6 +10,12 @@ import { buildSsmsMinCommandArgs, buildUrn, LaunchSsmsDialogParams } from '../ma
 import { doubleEscapeSingleQuotes, backEscapeDoubleQuotes } from '../utils';
 import { ExtHostObjectExplorerNodeStub } from './stubs';
 
+describe('Dummy test @UNSTABLE@', () => {
+	it('Dummy test', () => {
+		should(true).equal(true);
+	});
+});
+
 describe('buildSsmsMinCommandArgs Method Tests', () => {
 	it('Should be built correctly with all params and UseAAD as false', function (): void {
 		const params: LaunchSsmsDialogParams = {

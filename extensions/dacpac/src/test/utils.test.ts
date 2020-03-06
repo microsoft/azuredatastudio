@@ -13,6 +13,12 @@ import { DeployConfigPage } from '../wizard/pages/deployConfigPage';
 
 const isWindows = os.platform() === 'win32';
 
+describe('Dummy test @UNSTABLE@', () => {
+	it('Dummy test', () => {
+		should(true).equal(true);
+	});
+});
+
 describe('Sanitize database name for filename tests', function (): void {
 	it('Should only validate if one character is passed', async () => {
 		should(isValidFilenameCharacter(null)).equal(false);
