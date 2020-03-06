@@ -780,15 +780,15 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const buttonStandardBorderColor = theme.getColor(buttonStandardBorder);
 	if (buttonStandardBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer a.btn--standard { border: 1px solid ${buttonStandardBorderColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--standard { border: 1px solid ${buttonStandardBorderColor};}`);
 	}
 	const buttonStandardColor = theme.getColor(buttonStandard);
 	if (buttonStandardColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer a.btn--standard { color: ${buttonStandardColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--standard { color: ${buttonStandardColor};}`);
 	}
 	const buttonStandardHover = theme.getColor(buttonStandardHoverColor);
 	if (buttonStandardColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer a.btn--standard:hover { color: ${buttonStandardHover}; border: 1px solid ${buttonStandardHover};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--standard:hover { color: ${buttonStandardHover}; border: 1px solid ${buttonStandardHover};}`);
 	}
 	const foregroundColor = theme.getColor(foreground);
 	if (foregroundColor) {
