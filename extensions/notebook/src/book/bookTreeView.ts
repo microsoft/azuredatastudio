@@ -89,25 +89,25 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async closeBook(book?: BookTreeItem): Promise<void> {
+	async closeBook(book: BookTreeItem): Promise<void> {
 		// remove book from the saved books
 		let deletedBook: BookModel;
 		try {
-			if (book) {
-				let index: number = this.books.indexOf(this.books.find(b => b.bookPath.replace(/\\/g, '/') === book.root));
-				if (index > -1) {
-					deletedBook = this.books.splice(index, 1)[0];
-					if (this.currentBook === deletedBook) {
-						this.currentBook = this.books.length > 0 ? this.books[this.books.length - 1] : undefined;
-					}
-					this._onDidChangeTreeData.fire();
+			let index: number = this.books.indexOf(this.books.find(b => b.bookPath.replace(/\\/g, '/') === book.root));
+			if (index > -1) {
+				deletedBook = this.books.splice(index, 1)[0];
+				if (this.currentBook === deletedBook) {
+					this.currentBook = this.books.length > 0 ? this.books[this.books.length - 1] : undefined;
 				}
+				this._onDidChangeTreeData.fire();
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.closeBookError(book.root, e instanceof Error ? e.message : e));
 		} finally {
 			// remove watch on toc file.
-			fsw.unwatchFile(path.join(deletedBook.bookPath, '_data', 'toc.yml'));
+			if (deletedBook) {
+				fsw.unwatchFile(path.join(deletedBook.bookPath, '_data', 'toc.yml'));
+			}
 		}
 	}
 
