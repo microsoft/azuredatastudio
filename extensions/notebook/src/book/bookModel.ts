@@ -37,6 +37,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	}
 
 	public async initializeContents(): Promise<void> {
+		this._tableOfContentPaths = [];
+		this._bookItems = [];
 		await this.getTableOfContentFiles(this.bookPath);
 		await this.readBooks();
 	}
@@ -157,8 +159,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 							let uriToNotebook: vscode.Uri = vscode.Uri.file(pathToNotebook);
 							if (!this._allNotebooks.get(uriToNotebook.fsPath)) {
 								this._allNotebooks.set(uriToNotebook.fsPath, notebook);
-								notebooks.push(notebook);
 							}
+							notebooks.push(notebook);
 						}
 					} else if (await fs.pathExists(pathToMarkdown)) {
 						let markdown: BookTreeItem = new BookTreeItem({
