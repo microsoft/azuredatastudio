@@ -29,7 +29,7 @@ import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lif
 import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { registerColor, focusBorder, textLinkForeground, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder, tileBackground, buttonStandardBackground, buttonStandardBorder, buttonStandard, welcomeFont, welcomePath, moreRecent, entity, tileBorder, buttonStandardHoverColor, disabledButton, disabledButtonBackground } from 'vs/platform/theme/common/colorRegistry';
+import { registerColor, focusBorder, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder, tileBackground, buttonStandardBackground, buttonStandardBorder, buttonStandard, welcomeFont, welcomePath, moreRecent, entity, tileBorder, buttonStandardHoverColor, disabledButton, disabledButtonBackground, welcomeLink } from 'vs/platform/theme/common/colorRegistry';
 import { getExtraColor } from 'vs/workbench/contrib/welcome/walkThrough/common/walkThroughUtils';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IEditorInputFactory, EditorInput } from 'vs/workbench/common/editor';
@@ -176,7 +176,7 @@ const extensionPacks: ExtensionSuggestion[] = [
 				icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg'
 			},
 			{
-				name: 'SQL Server dacpac',
+				name: 'SQL Server Dacpac',
 				link: 'https://docs.microsoft.com/sql/azure-data-studio/sql-server-dacpac-extension?view=sql-server-2017',
 				icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg'
 			}
@@ -192,11 +192,11 @@ const extensions: ExtensionSuggestion[] = [
 ];
 
 
-const keymapExtensions: ExtensionSuggestion[] = [
-	{ name: localize('welcomePage.vim', "Vim"), id: 'vscodevim.vim', isKeymap: true },
-	{ name: localize('welcomePage.sublime', "Sublime"), id: 'ms-vscode.sublime-keybindings', isKeymap: true },
-	{ name: localize('welcomePage.atom', "Atom"), id: 'ms-vscode.atom-keybindings', isKeymap: true },
-];
+// const keymapExtensions: ExtensionSuggestion[] = [
+// 	{ name: localize('welcomePage.vim', "Vim"), id: 'vscodevim.vim', isKeymap: true },
+// 	{ name: localize('welcomePage.sublime', "Sublime"), id: 'ms-vscode.sublime-keybindings', isKeymap: true },
+// 	{ name: localize('welcomePage.atom', "Atom"), id: 'ms-vscode.atom-keybindings', isKeymap: true },
+// ];
 
 interface Strings {
 	installEvent: string;
@@ -271,16 +271,16 @@ const extensionPackStrings: Strings = {
 		]
 	}
 */
-const keymapStrings: Strings = {
-	installEvent: 'installKeymap',
-	installedEvent: 'installedKeymap',
-	detailsEvent: 'detailsKeymap',
+// const keymapStrings: Strings = {
+// 	installEvent: 'installKeymap',
+// 	installedEvent: 'installedKeymap',
+// 	detailsEvent: 'detailsKeymap',
 
-	alreadyInstalled: localize('welcomePage.keymapAlreadyInstalled', "The {0} keyboard shortcuts are already installed."),
-	reloadAfterInstall: localize('welcomePage.willReloadAfterInstallingKeymap', "The window will reload after installing the {0} keyboard shortcuts."),
-	installing: localize('welcomePage.installingKeymap', "Installing the {0} keyboard shortcuts..."),
-	extensionNotFound: localize('welcomePage.keymapNotFound', "The {0} keyboard shortcuts with id {1} could not be found."),
-};
+// 	alreadyInstalled: localize('welcomePage.keymapAlreadyInstalled', "The {0} keyboard shortcuts are already installed."),
+// 	reloadAfterInstall: localize('welcomePage.willReloadAfterInstallingKeymap', "The window will reload after installing the {0} keyboard shortcuts."),
+// 	installing: localize('welcomePage.installingKeymap', "Installing the {0} keyboard shortcuts..."),
+// 	extensionNotFound: localize('welcomePage.keymapNotFound', "The {0} keyboard shortcuts with id {1} could not be found."),
+// };
 
 const welcomeInputTypeId = 'workbench.editors.welcomePageInput';
 
@@ -768,11 +768,11 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const tileColor = theme.getColor(tileBackground);
 	if (tileColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile { background-color: ${tileColor};  }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile:not(.extension):not(.extension_pack) { background-color: ${tileColor};  }`);
 	}
 	const tileBorderColor = theme.getColor(tileBorder);
 	if (tileBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile { border-color: ${tileBorderColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile:not(.extension):not(.extension_pack) { border-color: ${tileBorderColor}; }`);
 	}
 	const buttonStandardBackgroundColor = theme.getColor(buttonStandardBackground);
 	if (buttonStandardBackgroundColor) {
@@ -830,7 +830,7 @@ registerThemingParticipant((theme, collector) => {
 	if (pathColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .path { color: ${pathColor}; }`);
 	}
-	const link = theme.getColor(textLinkForeground);
+	const link = theme.getColor(welcomeLink);
 	if (link) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a { color: ${link}; }`);
 	}
