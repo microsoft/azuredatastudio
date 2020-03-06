@@ -101,8 +101,8 @@ export default () => `
 					</div>
 				</div>
 			</div>
-			<div class="ads_homepage__section content row ads_grid lg--cols-6 sm--cols-1">
-				<div class="col--lg--span-4 col--lg--start_1__span_4 col--sm--start_1__span_1 resources">
+			<div class="ads_homepage__section content row ads_grid xl--cols-12 sm--cols-1">
+				<div class="col--lg--span-4 col--xl--start_1__span_7 col--xl--start_1__span_6 col--sm--start_1__span_1 resources">
 					<h2>${escape(localize("welcomePage.resources", "Resources"))}</h2>
 					<div class="tabs">
 						<input class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
@@ -128,7 +128,7 @@ export default () => `
 						<label class="caption" for="showOnStartup">${escape(localize("welcomePage.showOnStartup", "Show welcome page on startup"))}</label>
 					</p>
 				</div>
-				<div class="col--lg--start_5__span_2 col--sm--start_1__span_1">
+				<div class="col--xl--start_9__span_5 col--sm--start_1__span_1">
 					<div class="links">
 						<h2>${escape(localize("welcomePage.usefuLinks", "Useful Links"))}</h2>
 						<h4>
@@ -148,22 +148,25 @@ export default () => `
 						<p>${escape(localize("welcomePage.documentationBody",
 									"Visit the documentation center for quickstarts, how-to guides, and references for PowerShell, APIs, etc."))}
 						</p>
+
+
 						<div class="videos_container row">
-							<div class="videos_container__video">
-								<video width="100%" controls="">
-									<source src="vid.mp4" type="video/mp4" />
-									Your browser does not support HTML5 video.
-								</video>
-								<h4>${escape(localize("welcomePage.videoDescriptionOverview",
+							<h2>Videos</h2>
+							<div class="flex flex--d_row">
+								<div class="videos_container__video">
+									<a href="https://www.youtube.com/watch?v=Orv7fptVoUA" class="video overview"><img src="../../../workbench/contrib/welcome/video_overview.png" />
+										<h4>${escape(localize("welcomePage.videoDescriptionOverview",
 										"Overview of Azure Data Studio"))}</h4>
-							</div>
-							<div class="videos_container__video">
-								<video width="100%" controls="">
-									<source src="vid.mp4" type="video/mp4" />
-									Your browser does not support HTML5 video.
-								</video>
-								<h4>${escape(localize("welcomePage.videoDescriptionIntroduction",
+									</a>
+
+								</div>
+								<div class="videos_container__video">
+								<a href="https://www.youtube.com/watch?v=Nt4kIHQ0IOc" class="video overview"><img src="../../../workbench/contrib/welcome/video_introduction.png" />
+									<h4>${escape(localize("welcomePage.videoDescriptionIntroduction",
 											"Introduction to Azure Data Studio Notebooks | Data Exposed"))}</h4>
+								</a>
+
+								</div>
 							</div>
 						</div>
 					</div>
@@ -172,8 +175,7 @@ export default () => `
 			<div class="ads_homepage__section content extensions">
 				<div class="flex flex--j_between">
 					<h2>Extend your data studio</h2>
-					<a class="link--show_all" href="#">${escape(localize("welcomePage.showAll",
-												"Show All"))} <span class="entity">&rarr;</span></a>
+					<a class="link--show_all flex" href="command:workbench.extensions.action.showLanguageExtensions">${escape(localize("welcomePage.showAll", "Show All"))} <span class="icon--arrow_right"></span></a>
 				</div>
 				<div class="row ads_grid grip_gap--50 lg--cols-2 xxl--cols-8">
 					<div
@@ -186,8 +188,9 @@ export default () => `
 							<div class="extension_pack__extension_list flex flex--d_column flex--j_evenly flex--a_start"></div>
 							<div class="flex flex--j_end extension_pack__btn_container flex flex--j_between flex--a_center"">
 							<div class=" extensionPack" href="#"></div>
-							<a class="a_self--end link--learn_more" href="#">${escape(localize("welcomePage.learnMore",
-													"Learn more "))} <span class="entity">&rarr;</span></a>
+							<a class="a_self--end link--learn_more flex flex--a_center" href="https://github.com/microsoft/azuredatastudio/tree/master/extensions/admin-pack">${escape(localize("welcomePage.learnMore",
+												"Learn more "))}
+													<span class="icon--arrow_right"></span></a>
 						</div>
 					</div>
 				</div>
