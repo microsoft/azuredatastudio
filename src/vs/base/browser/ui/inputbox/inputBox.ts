@@ -514,7 +514,7 @@ export class InputBox extends Widget {
 
 		this.state = 'open';
 
-		// ARIA Support
+		// ARIA Support {{SQL CARBON EDIT}} Always announce message when shown
 		let alertText: string;
 		if (this.message.type === MessageType.ERROR) {
 			alertText = nls.localize('alertErrorMessage', "Error: {0}", this.message.content);
