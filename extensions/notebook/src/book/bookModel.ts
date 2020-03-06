@@ -43,8 +43,12 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		await this.readBooks();
 	}
 
-	public getAllBooks(): Map<string, BookTreeItem> {
+	public getAllNotebooks(): Map<string, BookTreeItem> {
 		return this._allNotebooks;
+	}
+
+	public getNotebook(uri: string): BookTreeItem | undefined {
+		return this._allNotebooks.get(uri);
 	}
 
 	public async getTableOfContentFiles(folderPath: string): Promise<void> {

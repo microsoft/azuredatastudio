@@ -110,6 +110,9 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(urlToOpen));
 	}));
 
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.revealInBooksViewlet', (uri: vscode.Uri, shouldReveal: boolean) => bookTreeViewProvider.revealActiveDocumentInViewlet(uri, shouldReveal)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.revealInUntitledBooksViewlet', (uri: vscode.Uri, shouldReveal: boolean) => untitledBookTreeViewProvider.revealActiveDocumentInViewlet(uri, shouldReveal)));
+
 	let appContext = new AppContext(extensionContext, new ApiWrapper());
 	controller = new JupyterController(appContext);
 	let result = await controller.activate();
@@ -118,13 +121,10 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	}
 
 	let workspaceFolders = vscode.workspace.workspaceFolders?.slice() ?? [];
-	const bookTreeViewProvider = new BookTreeViewProvider(workspaceFolders, extensionContext, false, BOOKS_VIEWID);
+	const bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, workspaceFolders, extensionContext, false, BOOKS_VIEWID);
 	await bookTreeViewProvider.initialized;
-	const untitledBookTreeViewProvider = new BookTreeViewProvider([], extensionContext, true, READONLY_BOOKS_VIEWID);
+	const untitledBookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], extensionContext, true, READONLY_BOOKS_VIEWID);
 	await untitledBookTreeViewProvider.initialized;
-
-	vscode.window.createTreeView(BOOKS_VIEWID, { treeDataProvider: bookTreeViewProvider });
-	vscode.window.createTreeView(READONLY_BOOKS_VIEWID, { treeDataProvider: untitledBookTreeViewProvider });
 
 	return {
 		getJupyterController() {
