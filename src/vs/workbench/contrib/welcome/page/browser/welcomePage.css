@@ -347,6 +347,19 @@
 	border-radius: 4px;
 }
 
+.hc-black .ads_homepage .btn.dropdown ul li ul {
+	background: black;
+	border: 1px solid #2b56f2;
+}
+
+.vs-dark .ads_homepage .btn.dropdown ul li ul {
+	background: #1b1a19;
+}
+
+.hc-black .ads_homepage .btn.dropdown ul li ul li a {
+	color: #fff !important;
+}
+
 .ads_homepage .btn.dropdown ul li:hover>ul, .ads_homepage .btn.dropdown ul li ul:hover {
 	z-index: 9;
 	visibility: visible;
@@ -365,6 +378,14 @@
 	background: #efefef;
 }
 
+.ads_homepage .btn.dropdown ul li ul li:hover {
+	background: #efefef;
+}
+
+.hc-black .ads_homepage .btn.dropdown ul li ul li:hover, .vs-dark .ads_homepage .btn.dropdown ul li ul li:hover {
+	background: #252525;
+}
+
 .ads_homepage .btn.dropdown ul li ul li a {
 	text-decoration: none;
 	color: #000;
@@ -374,7 +395,7 @@
 	width: auto;
 	height: 24px;
 	padding: 4px 16px;
-	border: 0;
+	border: 0 !important;
 }
 
 .ads_homepage .btn:disabled:hover {
@@ -649,7 +670,7 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 .ads_homepage .header__bottom_nav__tile {
 	position: relative;
 	height: 160px;
-	padding: 10px;
+	padding: 10px 20px 10px 10px;
 	text-align: center;
 	display: flex;
 	flex-direction: column;
