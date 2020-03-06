@@ -75,12 +75,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
 				await this.showPreviewFile(urlToOpen);
 			}
-		} catch (e) {
-			vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
-		} finally {
 			// add file watcher on toc file.
-			fsw.watchFile(path.join(bookPath, '_data', 'toc.yml'), async (curr, prev) => {
-				if (curr.mtime > prev.mtime) {
+			fsw.watch(path.join(bookPath, '_data', 'toc.yml'), async (event, filename) => {
+				if (event === 'change') {
 					let index = this.books.findIndex(book => book.bookPath === bookPath);
 					await this.books[index].initializeContents().then(() => {
 						this._onDidChangeTreeData.fire(this.books[index].bookItems[0]);
@@ -88,6 +85,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					this._onDidChangeTreeData.fire();
 				}
 			});
+		} catch (e) {
+			vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
 		}
 	}
 
