@@ -4225,11 +4225,6 @@ declare module 'azdata' {
 		export const onDidOpenNotebookDocument: vscode.Event<NotebookDocument>;
 
 		/**
-		 * An event that is emitted when the active Notebook editor is changed.
-		 */
-		export const onDidChangeActiveNotebookEditor: vscode.Event<NotebookEditor>;
-
-		/**
 		 * An event that is emitted when a [notebook's](#NotebookDocument) cell contents are changed.
 		 */
 		export const onDidChangeNotebookCell: vscode.Event<NotebookCellChangeEvent>;

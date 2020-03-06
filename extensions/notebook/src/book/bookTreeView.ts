@@ -13,6 +13,7 @@ import { BookTreeItem } from './bookTreeItem';
 import { BookModel } from './bookModel';
 import { Deferred } from '../common/promise';
 import * as loc from '../common/localizedConstants';
+import { ApiWrapper } from '../common/apiWrapper';
 
 const Content = 'content';
 
@@ -27,18 +28,19 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _initializeDeferred: Deferred<void> = new Deferred<void>();
 	private _bookViewer: vscode.TreeView<BookTreeItem>;
 	private _openAsUntitled: boolean;
+	private _apiWrapper: ApiWrapper;
 	public viewId: string;
 	public books: BookModel[];
 	public currentBook: BookModel;
 
-	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string) {
+	constructor(apiWrapper: ApiWrapper, workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string) {
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
 		this.books = [];
 		this.initialize(workspaceFolders).catch(e => console.error(e));
 		this.viewId = view;
 		this.prompter = new CodeAdapter();
-
+		this._apiWrapper = apiWrapper ? apiWrapper : new ApiWrapper();
 	}
 
 	private async initialize(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
@@ -89,7 +91,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (!this.currentBook) {
 			this.currentBook = book;
 		}
-		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
+		this._bookViewer = this._apiWrapper.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
 		this._bookViewer.onDidChangeVisibility(e => {
 			if (e.visible) {
 				this.revealActiveDocumentInViewlet();
@@ -144,7 +146,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (bookItem) {
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
 			if (shouldReveal || this._bookViewer.visible) {
-				await this._bookViewer.reveal(bookItem, { select: true, focus: true });
+				// Note: 3 is the maximum number of levels that the vscode APIs let you expand to
+				await this._bookViewer.reveal(bookItem, { select: true, focus: true, expand: 3 });
 			}
 		}
 	}
