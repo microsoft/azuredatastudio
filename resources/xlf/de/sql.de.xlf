@@ -3434,9 +3434,6 @@
         <source xml:lang="en">Discover what's new in the latest release</source>
         <target state="translated">Neuerungen in der aktuellen Version erkunden</target>
       </trans-unit>
-            <trans-unit id="welcomePage.gettingStartedDesciption">
-        <source xml:lang="en">Discover the capabilities offered by Aure Data Studio and learn how to make the most of them.</source>
-      </trans-unit>
       <trans-unit id="welcomePage.azdataBlogDescription">
         <source xml:lang="en">New monthly blog posts each month showcasing our new features</source>
         <target state="translated">Monatliche Vorstellung neuer Features in Blogbeiträgen</target>
@@ -3448,69 +3445,6 @@
       <trans-unit id="welcomePage.followTwitterDescription">
         <source xml:lang="en">Keep up to date with how the community is using Azure Data Studio and to talk directly with the engineers.</source>
         <target state="translated">Informieren Sie sich darüber, wie die Community Azure Data Studio verwendet, und kommunizieren Sie direkt mit den Technikern.</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.createConnection">
-        <source xml:lang="en">Create a Connection</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.createConnectionBody">
-        <source xml:lang="en">Install extensions to enhance the tool’s capabilities.</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.runQuery">
-        <source xml:lang="en">Run a query</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.runQueryBody">
-        <source xml:lang="en">Access your data in a query editor.</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.createNotebook">
-        <source xml:lang="en">Create a notebook</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.createNotebookBody">
-        <source xml:lang="en">Start a local computational notebook.</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.deployServer">
-        <source xml:lang="en">Deploy a server</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.deployServerBody">
-        <source xml:lang="en">Install an image of SQL Server to a remote location.</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.resources">
-        <source xml:lang="en">Resources</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.history">
-        <source xml:lang="en">History</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.name">
-        <source xml:lang="en">Name</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.lastOpened">
-        <source xml:lang="en">Last Opened</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.userfulLinks">
-        <source xml:lang="en">Useful Links</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.gettingStarted">
-        <source xml:lang="en">Getting Started</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.gettingStartedBody">
-        <source xml:lang="en">Discover the capabilities offered by Aure Data Studio and learn how to make the most of them.</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.documentation">
-        <source xml:lang="en">Documentation</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.documentationBody">
-        <source xml:lang="en">Visit the documentation center for quickstarts, how-to guides, and references for PowerShell, APIs, etc.</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.videoDescriptionOverview">
-        <source xml:lang="en">Overview of Azure Data Studio</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.videoDescriptionIntroduction">
-        <source xml:lang="en">Introduction to Azure Data Studio Notebooks | Data Exposed</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.learnMore">
-        <source xml:lang="en">Learn more</source>
-      </trans-unit>
-      <trans-unit id="welcomePage.showAll">
-        <source xml:lang="en">Show All</source>
       </trans-unit>
     </body>
   </file>
