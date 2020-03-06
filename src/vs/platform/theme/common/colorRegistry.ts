@@ -203,6 +203,8 @@ export const moreRecent = registerColor('moreRecent', { light: '#000', dark: '#f
 export const entity = registerColor('entity', { light: '#000', dark: '#0078D4', hc: '#3AA0F3' }, nls.localize('entity', "The color for entity symbols"));
 export const disabledButton = registerColor('disabledButton', { light: '#A19F9D', dark: '#797775', hc: '#797775' }, nls.localize('disabledButton', "The color for a standard disabled button"));
 export const disabledButtonBackground = registerColor('disabledButtonBackground', { light: '#F3F2F1', dark: '#252423', hc: '#252423' }, nls.localize('disabledButtonBackground', "The background color for standard disabled button"));
+export const welcomeLink = registerColor('welcomeLink', { light: '#0078d4', dark: '#3aa0f3', hc: '#3aa0f3' }, nls.localize('welcomeLink', "Foreground color for links in text."));
+
 
 // ------ text colors
 export const textSeparatorForeground = registerColor('textSeparator.foreground', { light: '#0000002e', dark: '#ffffff2e', hc: Color.black }, nls.localize('textSeparatorForeground', "Color for text separators."));
