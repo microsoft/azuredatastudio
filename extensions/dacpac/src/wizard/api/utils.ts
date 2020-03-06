@@ -137,8 +137,3 @@ export function isValidBasenameErrorMessage(name: string | null | undefined): st
 export function generateDatabaseName(filePath: string): string {
 	return path.parse(filePath).name;
 }
-
-export function isSystemDatabase(name: string): boolean {
-	const systemDbs = new Set<string>(['master', 'model', 'msdb', 'tempdb']);
-	return systemDbs.has(name);
-}

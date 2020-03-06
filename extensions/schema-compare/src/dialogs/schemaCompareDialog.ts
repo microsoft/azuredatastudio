@@ -9,7 +9,7 @@ import * as loc from '../localizedConstants';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { promises as fs } from 'fs';
 import { TelemetryReporter, TelemetryViews } from '../telemetry';
-import { getEndpointName, getRootPath, isSystemDatabase } from '../utils';
+import { getEndpointName, getRootPath } from '../utils';
 import * as mssql from '../../../mssql';
 
 const titleFontSize: number = 13;
@@ -642,8 +642,7 @@ export class SchemaCompareDialog {
 
 		let idx = -1;
 		let count = -1;
-		let values = (await azdata.connection.listDatabases(connectionId)).filter(db => !isSystemDatabase(db))
-			.sort((a, b) => a.localeCompare(b))
+		let values = (await azdata.connection.listDatabases(connectionId)).sort((a, b) => a.localeCompare(b))
 			.map(db => {
 				count++;
 

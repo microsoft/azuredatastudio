@@ -127,8 +127,3 @@ export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompa
 export function getRootPath(): string {
 	return vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : os.homedir();
 }
-
-export function isSystemDatabase(name: string): boolean {
-	const systemDbs = new Set<string>(['master', 'model', 'msdb', 'tempdb']);
-	return systemDbs.has(name);
-}
