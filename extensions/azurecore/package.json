@@ -152,6 +152,14 @@
         {
           "command": "azure.resource.connectsqlserver",
           "when": "false"
+        },
+        {
+          "command": "azure.accounts.getSubscriptions",
+          "when": "false"
+        },
+        {
+          "command": "azure.accounts.getResourceGroups",
+          "when": "false"
         }
       ],
       "view/title": [

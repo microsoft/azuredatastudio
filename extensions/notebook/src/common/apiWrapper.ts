@@ -83,4 +83,8 @@ export class ApiWrapper {
 	public parseUri(uri: string): vscode.Uri {
 		return vscode.Uri.parse(uri);
 	}
+
+	public createTreeView<T>(viewId: string, options: vscode.TreeViewOptions<T>): vscode.TreeView<T> {
+		return vscode.window.createTreeView(viewId, options);
+	}
 }
