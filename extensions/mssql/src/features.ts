@@ -40,18 +40,21 @@ export class AccountFeature implements StaticFeature {
 			const accountList = await azdata.accounts.getAllAccounts();
 
 			if (accountList.length < 1) {
-				console.log('No azure accounts present. Unable to find an account.');
-				return null;
+				// TODO: Prompt user to add account
+				throw new Error('No azure accounts present. Unable to find an account.');
 			} else if (accountList.length > 1) {
-				console.log('Multiple azure accounts present. Unable to determine which account to use.');
-				return null;
+				// TODO: Prompt user to select an account
+				throw new Error('Multiple azure accounts present. Unable to determine which account to use.');
 			}
+
 			let account = accountList[0];
-			const securityToken: { [key: string]: any } = await azdata.accounts.getSecurityToken(account, azdata.AzureResource.Sql);
+			const securityToken: { [key: string]: any } = await azdata.accounts.getSecurityToken(account, azdata.AzureResource.AzureKeyVault);
 			const tenant = account.properties.tenants.find((t: { [key: string]: string }) => e.authority.includes(t.id));
+
 			let params: contracts.RequestSecurityTokenResponse = {
 				token: securityToken[tenant.id].token
 			};
+
 			return params;
 		});
 	}

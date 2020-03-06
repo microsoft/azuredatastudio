@@ -33,6 +33,10 @@ const publicAzureSettings: ProviderSettings = {
 				id: 'https://ossrdbms-aad.database.windows.net',
 				endpoint: 'https://ossrdbms-aad.database.windows.net'
 			},
+			azureKeyVaultResource: {
+				id: 'https://vault.azure.net',
+				endpoint: 'https://vault.azure.net'
+			},
 			redirectUri: 'http://localhost/redirect'
 		}
 	}
@@ -55,6 +59,10 @@ const usGovAzureSettings: ProviderSettings = {
 			armResource: {
 				id: 'https://management.core.usgovcloudapi.net/',
 				endpoint: 'https://management.usgovcloudapi.net'
+			},
+			azureKeyVaultResource: {
+				id: 'https://vault.usgovcloudapi.net',
+				endpoint: 'https://vault.usgovcloudapi.net'
 			},
 			redirectUri: 'http://localhost/redirect'
 		}
@@ -79,6 +87,10 @@ const germanyAzureSettings: ProviderSettings = {
 				id: 'https://management.core.cloudapi.de/',
 				endpoint: 'https://management.microsoftazure.de'
 			},
+			azureKeyVaultResource: {
+				id: 'https://vault.microsoftazure.de',
+				endpoint: 'https://vault.microsoftazure.de'
+			},
 			redirectUri: 'http://localhost/redirect'
 		}
 	}
@@ -100,6 +112,10 @@ const chinaAzureSettings: ProviderSettings = {
 			armResource: {
 				id: 'https://management.core.chinacloudapi.cn/',
 				endpoint: 'https://managemement.chinacloudapi.net'
+			},
+			azureKeyVaultResource: {
+				id: 'https://vault.azure.cn',
+				endpoint: 'https://vault.azure.cn'
 			},
 			redirectUri: 'http://localhost/redirect'
 		}

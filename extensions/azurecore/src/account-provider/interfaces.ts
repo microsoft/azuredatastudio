@@ -80,6 +80,11 @@ interface Settings {
 	ossRdbmsResource?: Resource;
 
 	/**
+	 * Information that describes the Azure Key Vault resource
+	 */
+	azureKeyVaultResource?: Resource;
+
+	/**
 	 * A list of tenant IDs to authenticate against. If defined, then these IDs will be used
 	 * instead of querying the tenants endpoint of the armResource
 	 */

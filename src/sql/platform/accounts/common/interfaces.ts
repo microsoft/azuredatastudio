@@ -45,7 +45,8 @@ export interface IAccountManagementService {
 export enum AzureResource {
 	ResourceManagement = 0,
 	Sql = 1,
-	OssRdbms = 2
+	OssRdbms = 2,
+	AzureKeyVault = 3
 }
 
 export interface IAccountStore {
