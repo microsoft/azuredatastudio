@@ -235,7 +235,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		this._register(this.themeService.onThemeChange(() => this.doRefresh([this.root]) /** soft refresh **/));
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('explorer.decorations')) {
-				this.doRefresh([this.root]); /** soft refresh **/
+				this.doRefresh([this.root]).catch(onUnexpectedError); /** soft refresh **/
 			}
 		}));
 		this.markdownRenderer = instantiationService.createInstance(MarkdownRenderer);
@@ -272,7 +272,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 				}
 			};
 			this.updateMessage();
-			this.refresh();
+			this.refresh().catch(onUnexpectedError);
 		} else {
 			this._dataProvider = null;
 			this.updateMessage();
@@ -361,7 +361,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 			}
 
 			if (this.isVisible && this.elementsToRefresh.length) {
-				this.doRefresh(this.elementsToRefresh);
+				this.doRefresh(this.elementsToRefresh).catch(onUnexpectedError);
 				this.elementsToRefresh = [];
 			}
 		}

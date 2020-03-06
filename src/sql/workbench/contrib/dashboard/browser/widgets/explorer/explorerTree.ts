@@ -24,6 +24,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTreeContext';
 import { ObjectMetadataWrapper } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/objectMetadataWrapper';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export declare type TreeResource = IConnectionProfile | ObjectMetadataWrapper;
 
@@ -113,7 +114,7 @@ export class ExplorerController extends TreeDefaults.DefaultController {
 
 	private handleItemDoubleClick(element: IConnectionProfile): void {
 		this.progressService.showWhile(this._connectionService.changeDatabase(element.databaseName).then(result => {
-			this._router.navigate(['database-dashboard']);
+			this._router.navigate(['database-dashboard']).catch(onUnexpectedError);
 		}));
 	}
 
@@ -123,7 +124,7 @@ export class ExplorerController extends TreeDefaults.DefaultController {
 			const focus = tree.getFocus();
 			if (focus && !(focus instanceof ObjectMetadataWrapper)) {
 				this._connectionService.changeDatabase(focus.databaseName).then(result => {
-					this._router.navigate(['database-dashboard']);
+					this._router.navigate(['database-dashboard']).catch(onUnexpectedError);
 				});
 			}
 		}

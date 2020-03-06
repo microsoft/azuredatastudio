@@ -20,6 +20,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export class ServerDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
@@ -68,6 +69,6 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 			this.dashboardService.connectionManagementService.connectionInfo.connectionProfile.databaseName = null;
 			this.init();
 			this._cd.detectChanges();
-		});
+		}).catch(onUnexpectedError);
 	}
 }

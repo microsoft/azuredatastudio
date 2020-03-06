@@ -305,7 +305,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						this._connectionManagementService.disconnect(connection).then(() => {
 							connection.isDisconnecting = false;
 						}).catch((e) => this.logService.error(e));
-					});
+					}).catch((e) => this.logService.error(e));
 				}
 			}
 		} else {
