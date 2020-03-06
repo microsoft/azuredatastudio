@@ -11,7 +11,7 @@ import { BookModel } from './bookModel';
 export interface IBookTrustManager {
 	isNotebookTrustedByDefault(notebookUri: string): boolean;
 	setBookAsTrusted(bookRootPath: string): boolean;
-	setBookAsUntrusted(bookRootPath: string): boolean
+	setBookAsUntrusted(bookRootPath: string): boolean;
 }
 
 export interface IBookTrustManagerWorkspaceDetails {
@@ -47,21 +47,22 @@ export class BookTrustManager implements IBookTrustManager {
 		let allBooks: BookTreeItem[] = this.getAllBooks();
 		let trustableBookPaths = this.getTrustableBookPaths();
 		let trustableBooks: BookTreeItem[] = allBooks
-			.filter(bookItem => trustableBookPaths.some(trustableBookPath => trustableBookPath === path.normalize(bookItem.book.root)));
+			.filter(bookItem => trustableBookPaths.some(trustableBookPath => trustableBookPath === path.join(bookItem.book.root, path.sep)));
 		let isNotebookTrusted = this.isNotebookPartOfBooks(notebookUri, trustableBooks);
 
 		return isNotebookTrusted;
 	}
 
 	isNotebookPartOfBooks(notebookUri: string, books: BookTreeItem[]) {
+		let normalizedNotebookUri = path.normalize(notebookUri);
 		let isPartOfNotebook: boolean = false;
-		let trustedBook: BookTreeItem = books.find(book => notebookUri.startsWith(path.resolve(book.root)));
+		let trustedBookItem: BookTreeItem = books.find(bookItem => normalizedNotebookUri.startsWith(path.join(bookItem.book.root, path.sep)));
 
-		if (trustedBook) {
-			let fullBookBaseUriWithContent = path.join(trustedBook.root, 'content');
-			let requestingNotebookFormattedUri = notebookUri.substring(fullBookBaseUriWithContent.length).replace('.ipynb', '');
-			let notebookInTOC = trustedBook.tableOfContents.sections.find(jupyterSection => {
-				let normalizedJupyterSectionUrl = jupyterSection.url && path.normalize(jupyterSection.url);
+		if (trustedBookItem) {
+			let fullBookBaseUriWithContent = path.join(trustedBookItem.book.root, 'content', path.sep);
+			let requestingNotebookFormattedUri = normalizedNotebookUri.replace(fullBookBaseUriWithContent, '').replace('.ipynb', '');
+			let notebookInTOC = trustedBookItem.book.tableOfContents.sections.find(jupyterSection => {
+				let normalizedJupyterSectionUrl = jupyterSection.url && path.normalize(jupyterSection.url).replace(/^\\/, '');
 				return normalizedJupyterSectionUrl === requestingNotebookFormattedUri;
 			});
 			isPartOfNotebook = !!notebookInTOC;
@@ -77,8 +78,8 @@ export class BookTrustManager implements IBookTrustManager {
 		if (this.hasWorkspaceFolders()) {
 			trustablePaths = bookPathsInConfig
 				.map(trustableBookPath => this.workspaceDetails.workspaceFolders
-					.map(workspaceFolder => path.join(workspaceFolder.uri.fsPath, trustableBookPath))
-					.reduce((accumulator, currentTrustableBookPaths) => accumulator.concat(currentTrustableBookPaths)));
+					.map(workspaceFolder => path.join(workspaceFolder.uri.fsPath, trustableBookPath)))
+				.reduce((accumulator, currentTrustableBookPaths) => accumulator.concat(currentTrustableBookPaths), []);
 
 		} else {
 			trustablePaths = bookPathsInConfig;
@@ -90,7 +91,7 @@ export class BookTrustManager implements IBookTrustManager {
 	getAllBooks(): BookTreeItem[] {
 		return this.books
 			.map(book => book.bookItems) // select all the books
-			.reduce((accumulator, currentBookItemList) => accumulator.concat(currentBookItemList)); // flatten them to a single list
+			.reduce((accumulator, currentBookItemList) => accumulator.concat(currentBookItemList), []);
 	}
 
 	setBookAsUntrusted(bookRootPath: string): boolean {
@@ -130,13 +131,16 @@ export class BookTrustManager implements IBookTrustManager {
 
 	updateTrustedBooks(bookPath: string, operation: TrustBookOperation) {
 		let modifiedTrustedBooks = false;
-		let bookPathToChange: string = path.normalize(bookPath);
-		let matchingWorkspaceFolder: vscode.WorkspaceFolder = this.workspaceDetails.workspaceFolders
-			.find(ws => bookPathToChange.startsWith(path.normalize(ws.uri.fsPath)));
+		let bookPathToChange: string = path.join(bookPath, path.sep);
 
-		// if notebook is stored in a workspace folder, then store only the relative directory
-		if (matchingWorkspaceFolder) {
-			bookPathToChange = bookPathToChange.replace(path.normalize(matchingWorkspaceFolder.uri.fsPath), '');
+		if (this.hasWorkspaceFolders()) {
+			let matchingWorkspaceFolder: vscode.WorkspaceFolder = this.workspaceDetails.workspaceFolders
+				.find(ws => bookPathToChange.startsWith(path.normalize(ws.uri.fsPath)));
+
+			// if notebook is stored in a workspace folder, then store only the relative directory
+			if (matchingWorkspaceFolder) {
+				bookPathToChange = bookPathToChange.replace(path.normalize(matchingWorkspaceFolder.uri.fsPath), '');
+			}
 		}
 
 		let trustedBooks: string[] = this.getTrustedBookPathsInConfig();
