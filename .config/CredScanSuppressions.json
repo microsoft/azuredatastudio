@@ -1,0 +1,9 @@
+{
+    "tool": "Credential Scanner",
+    "suppressions": [
+        {
+            "file": "src\\vs\\base\\test\\common\\uri.test.ts",
+            "_justification": "External code"
+        }
+    ]
+}
