@@ -36,6 +36,7 @@ import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataRes
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
@@ -581,12 +582,12 @@ export class EditDataEditor extends BaseEditor {
 		this._createResultsEditorContainer();
 
 		this._createEditor(<EditDataResultsInput>input.results, this._resultsEditorContainer)
-			.then(result => {
-				this._onResultsEditorCreated(<EditDataResultsEditor>result, input.results, this.options);
+			.then(async result => {
+				await this._onResultsEditorCreated(<EditDataResultsEditor>result, input.results, this.options);
 				this.resultsEditorVisibility = true;
 				this.hideQueryResultsView = false;
 				this._doLayout(true);
-			});
+			}).catch(onUnexpectedError);
 	}
 
 	/**
