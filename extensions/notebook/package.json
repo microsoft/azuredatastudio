@@ -146,6 +146,11 @@
         "category": "%books-preview-category%"
       },
       {
+        "command": "notebook.command.revealInBooksViewlet",
+        "title": "%title.revealInBooksViewlet%",
+        "category": "%books-preview-category%"
+      },
+      {
         "command": "notebook.command.saveBook",
         "title": "%title.saveJupyterBook%",
         "category": "%books-preview-category%",
@@ -281,6 +286,10 @@
         },
         {
           "command": "notebook.command.searchUntitledBook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.revealInBooksViewlet",
           "when": "false"
         }
       ],
