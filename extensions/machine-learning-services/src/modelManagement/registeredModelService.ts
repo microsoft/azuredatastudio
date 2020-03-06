@@ -32,8 +32,10 @@ export class RegisteredModelService {
 		let connection = await this.getCurrentConnection();
 		let list: RegisteredModel[] = [];
 		if (connection) {
-			await this.runConfigureQuery(connection);
-			let result = await this.runRegisteredModelsListQuery(connection);
+			let query = this.getConfigureQuery(connection.databaseName);
+			await this._queryRunner.safeRunQuery(connection, query);
+			query = this.registeredModelsQuery();
+			let result = await this._queryRunner.safeRunQuery(connection, query);
 			if (result && result.rows && result.rows.length > 0) {
 				result.rows.forEach(row => {
 					list.push(this.loadModelData(row));
@@ -94,14 +96,6 @@ export class RegisteredModelService {
 		return await this._apiWrapper.getCurrentConnection();
 	}
 
-	private async runRegisteredModelsListQuery(connection: azdata.connection.ConnectionProfile): Promise<azdata.SimpleExecuteResult | undefined> {
-		try {
-			return await this._queryRunner.runQuery(connection, this.registeredModelsQuery(connection.databaseName, this._config.registeredModelDatabaseName, this._config.registeredModelTableName));
-		} catch {
-			return undefined;
-		}
-	}
-
 	private async runUpdateModelQuery(connection: azdata.connection.ConnectionProfile, model: RegisteredModel): Promise<azdata.SimpleExecuteResult | undefined> {
 		try {
 			return await this._queryRunner.runQuery(connection, this.getUpdateModelScript(connection.databaseName, this._config.registeredModelDatabaseName, this._config.registeredModelTableName, model));
@@ -110,37 +104,14 @@ export class RegisteredModelService {
 		}
 	}
 
-	private async runConfigureQuery(connection: azdata.connection.ConnectionProfile): Promise<azdata.SimpleExecuteResult | undefined> {
-		try {
-			return await this._queryRunner.runQuery(connection, this.getConfigureQuery(connection.databaseName, this._config.registeredModelDatabaseName, this._config.registeredModelTableName));
-		} catch {
-			return undefined;
-		}
+	private getConfigureQuery(currentDatabaseName: string): string {
+		return utils.withDbChange(currentDatabaseName, this._config.registeredModelDatabaseName, this.configureTable());
 	}
 
-	private getConfigureQuery(currentDatabaseName: string, databaseName: string, tableName: string): string {
-		if (!currentDatabaseName) {
-			currentDatabaseName = 'master';
-		}
-		let escapedCurrentDbName = utils.doubleEscapeSingleBrackets(currentDatabaseName);
-
-		return `
-		${this.configureTable(databaseName, tableName)}
-		USE [${escapedCurrentDbName}]
-		`;
-	}
-
-
-	private registeredModelsQuery(currentDatabaseName: string, databaseName: string, tableName: string): string {
-		if (!currentDatabaseName) {
-			currentDatabaseName = 'master';
-		}
-		let escapedTableName = utils.doubleEscapeSingleBrackets(tableName);
-		let escapedDbName = utils.doubleEscapeSingleBrackets(databaseName);
-
+	private registeredModelsQuery(): string {
 		return `
 		SELECT artifact_id, artifact_name, name, description, version, created
-		FROM [${escapedDbName}].dbo.[${escapedTableName}]
+		FROM ${utils.getRegisteredModelsThreePartsName(this._config)}
 		WHERE artifact_name not like 'MLmodel' and artifact_name not like 'conda.yaml'
 		Order by artifact_id
 		`;
@@ -152,40 +123,42 @@ export class RegisteredModelService {
 	 * @param databaseName
 	 * @param tableName
 	 */
-	private configureTable(databaseName: string, tableName: string): string {
-		let escapedTableName = utils.doubleEscapeSingleBrackets(tableName);
-		let escapedDbName = utils.doubleEscapeSingleBrackets(databaseName);
+	private configureTable(): string {
+		let databaseName = this._config.registeredModelDatabaseName;
+		let tableName = this._config.registeredModelTableName;
+		let schemaName = this._config.registeredModelTableSchemaName;
 
 		return `
 		IF NOT EXISTS (
 			SELECT [name]
 				FROM sys.databases
-				WHERE [name] = N'${databaseName}'
+				WHERE [name] = N'${utils.doubleEscapeSingleQuotes(databaseName)}'
 		)
-		CREATE DATABASE ${databaseName}
+		CREATE DATABASE [${utils.doubleEscapeSingleBrackets(databaseName)}]
 		GO
-		USE [${escapedDbName}]
+		USE [${utils.doubleEscapeSingleBrackets(databaseName)}]
 		IF EXISTS
-			(  SELECT [name]
-				FROM sys.tables
-				WHERE [name] = '${utils.doubleEscapeSingleQuotes(tableName)}'
+			(  SELECT [t.name], [s.name]
+				FROM sys.tables t join sys.schemas s on t.schema_id=t.schema_id
+				WHERE [t.name] = '${utils.doubleEscapeSingleQuotes(tableName)}'
+				AND [s.name] = '${utils.doubleEscapeSingleQuotes(schemaName)}'
 			)
 		BEGIN
-			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('${escapedTableName}') AND NAME='name')
-				ALTER TABLE [dbo].[${escapedTableName}] ADD [name] [varchar](256) NULL
-			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[${escapedTableName}]') AND NAME='version')
-				ALTER TABLE [dbo].[${escapedTableName}] ADD [version] [varchar](256) NULL
-			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[${escapedTableName}]') AND NAME='created')
+			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('${utils.getRegisteredModelsTowPartsName(this._config)}') AND NAME='name')
+				ALTER TABLE ${utils.getRegisteredModelsTowPartsName(this._config)} ADD [name] [varchar](256) NULL
+			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('${utils.getRegisteredModelsTowPartsName(this._config)}') AND NAME='version')
+				ALTER TABLE ${utils.getRegisteredModelsTowPartsName(this._config)} ADD [version] [varchar](256) NULL
+			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('${utils.getRegisteredModelsTowPartsName(this._config)}') AND NAME='created')
 			BEGIN
-				ALTER TABLE [dbo].[${escapedTableName}] ADD [created] [datetime] NULL
-				ALTER TABLE [dbo].[${escapedTableName}] ADD CONSTRAINT CONSTRAINT_NAME DEFAULT GETDATE() FOR created
+				ALTER TABLE ${utils.getRegisteredModelsTowPartsName(this._config)} ADD [created] [datetime] NULL
+				ALTER TABLE ${utils.getRegisteredModelsTowPartsName(this._config)} ADD CONSTRAINT CONSTRAINT_NAME DEFAULT GETDATE() FOR created
 			END
-			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[${escapedTableName}]') AND NAME='description')
-				ALTER TABLE [dbo].[${escapedTableName}] ADD [description] [varchar](256) NULL
+			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('${utils.getRegisteredModelsTowPartsName(this._config)}') AND NAME='description')
+				ALTER TABLE ${utils.getRegisteredModelsTowPartsName(this._config)} ADD [description] [varchar](256) NULL
 		END
 		Else
 		BEGIN
-		CREATE TABLE [dbo].[${escapedTableName}](
+		CREATE TABLE ${utils.getRegisteredModelsTowPartsName(this._config)}(
 			[artifact_id] [int] IDENTITY(1,1) NOT NULL,
 			[artifact_name] [varchar](256) NOT NULL,
 			[group_path] [varchar](256) NOT NULL,

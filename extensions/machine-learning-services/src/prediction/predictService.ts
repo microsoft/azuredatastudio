@@ -11,15 +11,14 @@ import * as utils from '../common/utils';
 import { RegisteredModel } from '../modelManagement/interfaces';
 import { PredictParameters, PredictColumn, DatabaseTable } from '../prediction/interfaces';
 import { Config } from '../configurations/config';
-//import * as constants from '../common/constants';
 
 /**
- * Service to registered models
+ * Service to make prediction
  */
 export class PredictService {
 
 	/**
-	 *
+	 * Creates new instance
 	 */
 	constructor(
 		private _apiWrapper: ApiWrapper,
@@ -27,6 +26,9 @@ export class PredictService {
 		private _config: Config) {
 	}
 
+	/**
+	 * Returns the list of databases
+	 */
 	public async getDatabaseList(): Promise<string[]> {
 		let connection = await this.getCurrentConnection();
 		if (connection) {
@@ -35,21 +37,25 @@ export class PredictService {
 		return [];
 	}
 
+	/**
+	 * Generates prediction script given model info and predict parameters
+	 * @param predictParams predict parameters
+	 * @param registeredModel model parameters
+	 */
 	public async generatePredictScript(
 		predictParams: PredictParameters,
-		registeredMode: RegisteredModel
+		registeredModel: RegisteredModel
 	): Promise<string> {
 		let connection = await this.getCurrentConnection();
 		let query = '';
-		if (registeredMode.id) {
+		if (registeredModel.id) {
 			query = this.getPredictScriptWithModelId(
-				registeredMode.id || 0,
+				registeredModel.id || 0,
 				predictParams.inputColumns || [],
 				predictParams.outputColumns || [],
-				predictParams.databaseName || '',
-				predictParams.tableName || '');
+				predictParams);
 		} else {
-			let modelBytes = await utils.readFileInHex(registeredMode.filePath || '');
+			let modelBytes = await utils.readFileInHex(registeredModel.filePath || '');
 			query = this.getPredictScriptWithModelBytes(modelBytes, predictParams.inputColumns || [],
 				predictParams.outputColumns || [],
 				predictParams);
@@ -60,17 +66,20 @@ export class PredictService {
 		});
 		await this._apiWrapper.showTextDocument(document.uri);
 		await this._apiWrapper.connect(document.uri.toString(), connection.connectionId);
-		this._apiWrapper.runQuery(document.uri.toString());
-
+		this._apiWrapper.runQuery(document.uri.toString(), undefined, false);
 		return query;
 	}
 
+	/**
+	 * Returns list of tables given database name
+	 * @param databaseName database name
+	 */
 	public async getTableList(databaseName: string): Promise<DatabaseTable[]> {
 		let connection = await this.getCurrentConnection();
 		let list: DatabaseTable[] = [];
 		if (connection) {
-			let query = this.withDbChange(connection.databaseName, databaseName, this.getTablesScript(databaseName));
-			let result = await this.safeRunQuery(connection, query);
+			let query = utils.withDbChange(connection.databaseName, databaseName, this.getTablesScript(databaseName));
+			let result = await this._queryRunner.safeRunQuery(connection, query);
 			if (result && result.rows && result.rows.length > 0) {
 				result.rows.forEach(row => {
 					list.push({
@@ -84,12 +93,16 @@ export class PredictService {
 		return list;
 	}
 
+	/**
+	 *Returns list of column names of a database
+	 * @param databaseTable table info
+	 */
 	public async getTableColumnsList(databaseTable: DatabaseTable): Promise<string[]> {
 		let connection = await this.getCurrentConnection();
 		let list: string[] = [];
 		if (connection && databaseTable.databaseName) {
-			const query = this.withDbChange(connection.databaseName, databaseTable.databaseName, this.getTableColumnsScript(databaseTable));
-			let result = await this.safeRunQuery(connection, query);
+			const query = utils.withDbChange(connection.databaseName, databaseTable.databaseName, this.getTableColumnsScript(databaseTable));
+			let result = await this._queryRunner.safeRunQuery(connection, query);
 			if (result && result.rows && result.rows.length > 0) {
 				result.rows.forEach(row => {
 					list.push(row[0].displayValue);
@@ -103,40 +116,21 @@ export class PredictService {
 		return await this._apiWrapper.getCurrentConnection();
 	}
 
-	private withDbChange(currentDb: string, databaseName: string, script: string): string {
-		if (!currentDb) {
-			currentDb = 'master';
-		}
-		let escapedDbName = utils.doubleEscapeSingleBrackets(databaseName);
-		let escapedCurrentDbName = utils.doubleEscapeSingleBrackets(currentDb);
-		return `
-		USE [${escapedDbName}]
-		${script}
-		USE [${escapedCurrentDbName}]
-		`;
-	}
-
-	private async safeRunQuery(connection: azdata.connection.ConnectionProfile, query: string): Promise<azdata.SimpleExecuteResult | undefined> {
-		try {
-			return await this._queryRunner.runQuery(connection, query);
-		} catch {
-			return undefined;
-		}
-	}
-
 	private getTableColumnsScript(databaseTable: DatabaseTable): string {
 		return `
-		SELECT COLUMN_NAME,*
+SELECT COLUMN_NAME,*
 FROM INFORMATION_SCHEMA.COLUMNS
-WHERE TABLE_NAME='${databaseTable.tableName}' AND TABLE_SCHEMA='${databaseTable.schema}' AND TABLE_CATALOG='${databaseTable.databaseName}'
+WHERE TABLE_NAME='${utils.doubleEscapeSingleQuotes(databaseTable.tableName)}'
+AND TABLE_SCHEMA='${utils.doubleEscapeSingleQuotes(databaseTable.schema)}'
+AND TABLE_CATALOG='${utils.doubleEscapeSingleQuotes(databaseTable.databaseName)}'
 		`;
 	}
 
 	private getTablesScript(databaseName: string): string {
 		return `
-		SELECT TABLE_NAME,TABLE_SCHEMA
+SELECT TABLE_NAME,TABLE_SCHEMA
 FROM INFORMATION_SCHEMA.TABLES
-WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_CATALOG='${databaseName}'
+WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_CATALOG='${utils.doubleEscapeSingleQuotes(databaseName)}'
 		`;
 	}
 
@@ -144,19 +138,18 @@ WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_CATALOG='${databaseName}'
 		modelId: number,
 		columns: PredictColumn[],
 		outputColumns: PredictColumn[],
-		databaseName: string,
-		tableName: string): string {
+		databaseNameTable: DatabaseTable): string {
 		return `
 DECLARE @model VARBINARY(max) = (
 	SELECT artifact_content
-	FROM [${this._config.registeredModelDatabaseName}].${this._config.registeredModelTableSchemaName}.[${this._config.registeredModelTableName}]
+	FROM ${utils.getRegisteredModelsThreePartsName(this._config)}
 	WHERE artifact_id = ${modelId}
 );
 WITH predict_input
 AS (
 	SELECT TOP 1000
 	${this.getColumnNames(columns, 'pi')}
-	FROM [${databaseName}].[dbo].[${tableName}] as pi
+	FROM [${utils.doubleEscapeSingleBrackets(databaseNameTable.databaseName)}].[${databaseNameTable.schema}].[${utils.doubleEscapeSingleBrackets(databaseNameTable.tableName)}] as pi
 )
 SELECT
 ${this.getInputColumnNames(columns, 'predict_input')}, ${this.getColumnNames(outputColumns, 'p')}
@@ -177,7 +170,7 @@ WITH predict_input
 AS (
 	SELECT TOP 1000
 	${this.getColumnNames(columns, 'pi')}
-	FROM [${databaseNameTable.databaseName}].[${databaseNameTable.schema}].[${databaseNameTable.tableName}] as pi
+	FROM [${utils.doubleEscapeSingleBrackets(databaseNameTable.databaseName)}].[${databaseNameTable.schema}].[${utils.doubleEscapeSingleBrackets(databaseNameTable.tableName)}] as pi
 )
 SELECT
 ${this.getInputColumnNames(columns, 'predict_input')}, ${this.getColumnNames(outputColumns, 'p')}
@@ -193,6 +186,7 @@ WITH (
 			return c.displayName ? `${tableName}.${c.name} AS ${c.displayName}` : `${tableName}.${c.name}`;
 		}).join(',\n');
 	}
+
 	private getInputColumnNames(columns: PredictColumn[], tableName: string) {
 		return columns.map(c => {
 			return c.displayName ? `${tableName}.${c.displayName}` : `${tableName}.${c.name}`;

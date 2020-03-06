@@ -163,4 +163,21 @@ export class QueryRunner {
 		}
 		return result;
 	}
+
+	/**
+	 * Executes the query but doesn't fail it is fails
+	 * @param connection SQL connection
+	 * @param query query to run
+	 */
+	public async safeRunQuery(connection: azdata.connection.ConnectionProfile, query: string): Promise<azdata.SimpleExecuteResult | undefined> {
+		try {
+			return await this.runQuery(connection, query);
+		} catch (error) {
+			console.log(error);
+			return undefined;
+		}
+	}
 }
+
+
+
