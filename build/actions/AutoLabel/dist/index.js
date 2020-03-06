@@ -7863,7 +7863,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const actions_toolkit_1 = __webpack_require__(461);
 const tools = new actions_toolkit_1.Toolkit({
-    event: 'issue_comment',
+    event: 'pull_request',
     secrets: ['GITHUB_TOKEN']
 });
 const label = tools.inputs.label || 'Port Request';

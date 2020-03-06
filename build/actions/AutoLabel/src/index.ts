@@ -6,7 +6,7 @@
 import { Toolkit } from 'actions-toolkit';
 
 const tools = new Toolkit({
-	event: 'issue_comment',
+	event: 'pull_request',
 	secrets: ['GITHUB_TOKEN']
 });
 
