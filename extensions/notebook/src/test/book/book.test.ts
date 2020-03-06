@@ -101,6 +101,8 @@ describe('BookTreeViewProviderTests', function () {
 				sections: [expectedNotebook1, expectedMarkdown, expectedExternalLink],
 				title: 'Test Book'
 			};
+			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
+
 			await fs.mkdir(rootFolderPath);
 			await fs.mkdir(bookFolderPath);
 			await fs.mkdir(nonBookFolderPath);
@@ -225,6 +227,7 @@ describe('BookTreeViewProviderTests', function () {
 				name: '',
 				index: 0
 			};
+			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
 			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [folder], mockExtensionContext, false, 'bookTreeView');
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
@@ -268,6 +271,7 @@ describe('BookTreeViewProviderTests', function () {
 				name: '',
 				index: 0
 			};
+			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
 			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [folder], mockExtensionContext, false, 'bookTreeView');
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
@@ -327,6 +331,7 @@ describe('BookTreeViewProviderTests', function () {
 				name: '',
 				index: 0
 			};
+			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
 			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [folder], mockExtensionContext, false, 'bookTreeView');
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
