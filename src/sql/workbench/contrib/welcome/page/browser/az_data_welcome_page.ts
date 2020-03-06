@@ -126,30 +126,6 @@ export default () => `
 								<p class="none detail">No recent folders</p>
 							</div>
 						</div>
-						<input class="input" name="tabs" type="radio" id="tab-2" />
-						<label class="label" for="tab-2">Pinned</label>
-						<div class="panel">
-							<div class="recent pinned">
-								<div class="flex flex--j_between list__header__container">
-									<h4 class="icon--document list__header">Name</h4>
-									<h4>Last Opened</h4>
-								</div>
-								<ul class="list">
-									<li>
-										<a title="AzureNotebook.ipynb"
-											aria-label="Open folder welcomePage.css with path BackupFiles"
-											href="javascript:void(0)">AzureNotebook.ipynb</a>
-										<span class="path detail" title="welcomePage.css">Feb 22</span>
-									</li>
-									<li>
-										<a title="Database_343.sql" aria-label="Open folder Notes with path Documents"
-											href="javascript:void(0)">Database_343.sql</a>
-										<span class="path detail" title="Notes">Feb 24</span>
-									</li>
-								</ul>
-
-							</div>
-						</div>
 					</div>
 				</div>
 				<div class="col--lg--start_5__span_2 col--sm--start_1__span_1">
@@ -157,15 +133,17 @@ export default () => `
 						<h2>Useful Links</h2>
 						<h4>
 							<a class="link"
-								href="https://aka.ms/azuredatastudio">${escape(localize("welcomePage.productDocumentation",
-						"Documentation"))}</a>
+								href="https://aka.ms/azuredatastudio">${escape(localize("welcomePage.gettingStarted",
+						"Getting Started"))}<span class="icon--link"</a>
 						</h4>
-						<p>Discover the capabilities offered by Aure Data Studio and learn how to make the most of them.
+						<p>
+						${escape(localize("welcomePage.gettingStartedDesciption",
+							"Discover the capabilities offered by Aure Data Studio and learn how to make the most of them."))}
 						</p>
 						<h4>
 							<a class="link"
 								href="https://aka.ms/azuredatastudio">${escape(localize("welcomePage.productDocumentation",
-							"Documentation"))}</a>
+								"Documentation"))}<span class="icon--link"</a></a>
 						</h4>
 						<p>Discover the capabilities offered by Aure Data Studio and learn how to make the most of them.
 						</p>
@@ -193,54 +171,22 @@ export default () => `
 					<h2>Extend your data studio</h2>
 					<a class="link--show_all" href="#">Show All <span class="entity">&rarr;</span></a>
 				</div>
-				<div class="row ads_grid lg--cols-2 xxl--cols-4">
+				<div class="row ads_grid lg--cols-2 xxl--cols-30">
 					<div
-						class="ads_grid row--lg--start_1__span_4 col--lg--start_1__span_2 col--lg--start_1__span_2 row--lg--start_1__span_2 lg--cols-2 tile no_hover extension_pack">
+						class="ads_grid col--sm--start_1__span_14 row--xxl--start_1__span_4 col--lg--start_1__span_14 lg--cols-2 tile no_hover extension_pack">
 						<div class="extension_pack__description">
 							<h2 class="extension_pack__header"></h2>
 							<p class="extension_pack__body"></p>
 						</div>
-						<div class="extension_pack__extension_list flex flex--d_column flex--j_evenly">
-							<div class="extension_pack__extension_container flex flex--j_center">
-								<div class="flex">
-									<div class="icon"></div>
-									<div class="description">
-										<h4>SQL Server Agent</h4>
-									</div>
-								</div>
-							</div>
-							<div class="extension_pack__extension_container flex flex--j_center">
-								<div class="flex">
-									<div class="icon"></div>
-									<div class="description">
-										<h4>SQL Server Profiler</h4>
-									</div>
-								</div>
-							</div>
-							<div class="extension_pack__extension_container flex flex--j_center">
-								<div class="flex">
-									<div class="icon"></div>
-									<div class="description">
-										<h4>SQL Server Import</h4>
-									</div>
-								</div>
-							</div>
-							<div class="extension_pack__extension_container flex flex--j_center">
-								<div class="flex">
-									<div class="icon"></div>
-									<div class="description">
-										<h4>SQL Server dacpac</h4>
-									</div>
-								</div>
-							</div>
-							<div class="flex flex--j_end extension_pack__btn_container flex flex--d_column"">
+						<div class="extension_pack__extensions flex flex--d_column flex--j_evenly flex--a_start">
+							<div class="extension_pack__extension_list flex flex--d_column flex--j_evenly flex--a_start"></div>
+							<div class="flex flex--j_end extension_pack__btn_container flex flex--j_between flex--a_center"">
 							<div class=" extensionPack" href="#"></div>
-							<a class="a_self--end link--learn_more" href="#">Learn more <span
-									class="entity">&rarr;</span></a>
+							<a class="a_self--end link--learn_more" href="#">Learn more <span class="entity">&rarr;</span></a>
 						</div>
 					</div>
 				</div>
-				<div class="extension_list col col--xxl--start_3__span_2 row--xxl--start_1__span_4 flex flex--d_column">
+				<div class="extension_list col col--sm--start_1__span_14 col--xxl--start_16__span_15 row--xxl--start_1__span_4 flex flex--d_column">
 					<!-- Dynamically populated -->
 				</div>
 				<br /><br /><br />
