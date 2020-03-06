@@ -148,16 +148,47 @@ interface ExtensionSuggestion {
 	isCommand?: boolean;
 	isExtensionPack?: boolean;
 	icon?: string;
+	link?: string;
+	extensionPackExtensions?: any[];
 }
 
+
 const extensionPacks: ExtensionSuggestion[] = [
-	{ name: localize('welcomePage.adminPack', "SQL Admin Pack"), title: localize('welcomePage.showAdminPack', "SQL Admin Pack"), description: 'Admin Pack for SQL Server is a collection of popular database administration extensions to help you manage SQL Server', id: 'microsoft.admin-pack', isExtensionPack: true },
+	{
+		name: localize('welcomePage.adminPack', "SQL Admin Pack"),
+		title: localize('welcomePage.showAdminPack', "SQL Admin Pack"),
+		description: 'Admin Pack for SQL Server is a collection of popular database administration extensions to help you manage SQL Server',
+		id: 'microsoft.admin-pack',
+		extensionPackExtensions: [
+			{
+				name: 'SQL Server Agent',
+				link: 'https://docs.microsoft.com/sql/azure-data-studio/sql-server-agent-extension?view=sql-server-2017',
+				icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg'
+			},
+			{
+				name: 'SQL Server Profiler',
+				link: 'https://docs.microsoft.com/sql/azure-data-studio/sql-server-profiler-extension?view=sql-server-2017',
+				icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg'
+			},
+			{
+				name: 'SQL Server Import',
+				link: 'https://docs.microsoft.com/sql/azure-data-studio/sql-server-import-extension?view=sql-server-2017',
+				icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg'
+			},
+			{
+				name: 'SQL Server dacpac',
+				link: 'https://docs.microsoft.com/sql/azure-data-studio/sql-server-dacpac-extension?view=sql-server-2017',
+				icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg'
+			}
+		],
+		isExtensionPack: true
+	},
 ];
 
 const extensions: ExtensionSuggestion[] = [
-	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: 'Develop PowerShell scripts in Azure Data Studio', icon: 'https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png' },
-	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: 'Support for Data Virtualization in SQL Server, including Create External Data wizards.', icon: '../../../workbench/contrib/welcome/microsoftFlagIcon.svg' },
-	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: 'PostgreSQL extension for Azure Data Studio', icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png' },
+	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: 'Develop PowerShell scripts in Azure Data Studio', icon: 'https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png', link: 'https://docs.microsoft.com/en-us/sql/azure-data-studio/powershell-extension?view=sql-server-ver15' },
+	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: 'Support for Data Virtualization in SQL Server, including Create External Data wizards.', icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg', link: 'https://docs.microsoft.com/en-us/sql/azure-data-studio/data-virtualization-extension?view=sql-server-ver15' },
+	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: 'PostgreSQL extension for Azure Data Studio', icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png', link: 'https://docs.microsoft.com/en-us/sql/azure-data-studio/postgres-extension?view=sql-server-ver15' },
 ];
 
 
@@ -341,7 +372,6 @@ class WelcomePage extends Disposable {
 		}).then(undefined, onUnexpectedError);
 
 		this.addExtensionList(container, '.extension_list', extensions, extensionPackStrings);
-		this.addExtensionList(container, '.keymapList', keymapExtensions, keymapStrings);
 		this.addExtensionPack(container, '.extensionPack', extensionPacks, extensionPackStrings);
 
 		this.updateInstalledExtensions(container, installedExtensions);
@@ -443,7 +473,7 @@ class WelcomePage extends Disposable {
 		if (list) {
 			suggestions.forEach((extension, i) => {
 				const flexDivContainerClasses = ['flex', 'flex--a_center', 'extension__inner'];
-				const outerDivContainerElm = document.createElement('div');
+				const outerAnchorContainerElm = document.createElement('a');
 				const flexDivContainerElm = document.createElement('div');
 				const descriptionContainerElm = document.createElement('div');
 				const imgContainerElm = document.createElement('div');
@@ -451,7 +481,9 @@ class WelcomePage extends Disposable {
 				const headerElm = document.createElement('h4');
 				const bodyElm = document.createElement('p');
 
-				outerDivContainerElm.classList.add('extension');
+				outerAnchorContainerElm.classList.add('extension');
+				outerAnchorContainerElm.classList.add('tile');
+				outerAnchorContainerElm.href = extension.link;
 				flexDivContainerElm.classList.add(...flexDivContainerClasses);
 				descriptionContainerElm.classList.add('description');
 				imgContainerElm.classList.add('img_container');
@@ -464,10 +496,10 @@ class WelcomePage extends Disposable {
 				flexDivContainerElm.appendChild(descriptionContainerElm);
 				descriptionContainerElm.appendChild(headerElm);
 				descriptionContainerElm.appendChild(bodyElm);
-				outerDivContainerElm.appendChild(flexDivContainerElm);
+				outerAnchorContainerElm.appendChild(flexDivContainerElm);
 				headerElm.innerText = extension.name;
 				bodyElm.innerText = extension.description;
-				list.appendChild(outerDivContainerElm);
+				list.appendChild(outerAnchorContainerElm);
 			});
 		}
 	}
@@ -504,6 +536,35 @@ class WelcomePage extends Disposable {
 
 				description.innerHTML = extension.description;
 				header.innerHTML = extension.name;
+
+				const extensionListContainer = document.querySelector('.extension_pack__extension_list');
+				extension.extensionPackExtensions.forEach((j) => {
+					const outerContainerElem = document.createElement('div');
+					const flexContainerElem = document.createElement('div');
+					const iconContainerElem = document.createElement('img');
+					const descriptionContainerElem = document.createElement('div');
+					const h4Elem = document.createElement('h4');
+					const anchorElem = document.createElement('a');
+
+					const outerContainerClasses = ['extension_pack__extension_container', 'flex', 'flex--j_center'];
+					const flexContainerClasses = ['flex', 'flex--a_center'];
+
+					outerContainerElem.classList.add(...outerContainerClasses);
+					flexContainerElem.classList.add(...flexContainerClasses);
+					iconContainerElem.classList.add('icon');
+					descriptionContainerElem.classList.add('description');
+
+					outerContainerElem.appendChild(flexContainerElem);
+					flexContainerElem.appendChild(iconContainerElem);
+					flexContainerElem.appendChild(descriptionContainerElem);
+					descriptionContainerElem.appendChild(anchorElem);
+					anchorElem.appendChild(h4Elem);
+
+					h4Elem.innerText = j.name;
+					iconContainerElem.src = j.icon;
+
+					extensionListContainer.appendChild(outerContainerElem);
+				});
 			});
 		}
 	}
