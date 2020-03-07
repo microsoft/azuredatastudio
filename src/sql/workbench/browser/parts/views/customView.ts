@@ -99,14 +99,6 @@ export class CustomTreeViewPane extends ViewPane {
 		this.treeView.layout(height, width);
 	}
 
-	getActions(): IAction[] {
-		return [...this.treeView.getPrimaryActions()];
-	}
-
-	getSecondaryActions(): IAction[] {
-		return [...this.treeView.getSecondaryActions()];
-	}
-
 	getActionViewItem(action: IAction): IActionViewItem | undefined {
 		return action instanceof MenuItemAction ? new ContextAwareMenuEntryActionViewItem(action, this.keybindingService, this.notificationService, this.contextMenuService) : undefined;
 	}
