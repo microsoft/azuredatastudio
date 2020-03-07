@@ -29,31 +29,6 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IWorkbenchContribution, Extensions as WorkbenchContributionsExtensions, IWorkbenchContributionsRegistry } from 'vs/workbench/common/contributions';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
-import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
-
-/*
- * An update participant that ensures any un-tracked changes are synced to the JSON file contents for a
- * Notebook before save occurs. While every effort is made to ensure model changes are notified and a listener
- * updates the backing model in-place, this is a backup mechanism to hard-update the file before save in case
- * some are missed.
- */
-class NotebookUpdateParticipant implements ITextFileSaveParticipant { // {{SQL CARBON EDIT}} add notebook participant
-
-	constructor(
-		@INotebookService private notebookService: INotebookService
-	) {
-		// Nothing
-	}
-
-	public participate(model: IResolvedTextFileEditorModel, env: { reason: SaveReason }): Promise<void> {
-		let uri = model.resource;
-		let notebookEditor = this.notebookService.findNotebookEditor(uri);
-		if (notebookEditor) {
-			notebookEditor.notebookParams.input.updateModel();
-		}
-		return Promise.resolve();
-	}
-}
 
 class TrimWhitespaceParticipant implements ITextFileSaveParticipant {
 

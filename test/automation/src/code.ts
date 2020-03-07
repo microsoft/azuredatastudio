@@ -258,9 +258,7 @@ export class Code {
 	}
 
 	async waitForWindowIds(fn: (windowIds: number[]) => boolean): Promise<void> {
-		// {{SQL CARBON EDIT}}
-		await poll(() => this.driver.getWindowIds(), fn, `get window ids`, 600, 100);
-		// {{END}}
+		await poll(() => this.driver.getWindowIds(), fn, `get window ids`, 600, 100); // {{SQL CARBON EDIT}}
 	}
 
 	async dispatchKeybinding(keybinding: string): Promise<void> {
