@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as fsw from 'fs';
 import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem } from './bookTreeItem';
@@ -74,8 +75,40 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
 				await this.showPreviewFile(urlToOpen);
 			}
+			// add file watcher on toc file.
+			fsw.watch(path.join(bookPath, '_data', 'toc.yml'), async (event, filename) => {
+				if (event === 'change') {
+					let index = this.books.findIndex(book => book.bookPath === bookPath);
+					await this.books[index].initializeContents().then(() => {
+						this._onDidChangeTreeData.fire(this.books[index].bookItems[0]);
+					});
+					this._onDidChangeTreeData.fire();
+				}
+			});
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
+		}
+	}
+
+	async closeBook(book: BookTreeItem): Promise<void> {
+		// remove book from the saved books
+		let deletedBook: BookModel;
+		try {
+			let index: number = this.books.indexOf(this.books.find(b => b.bookPath.replace(/\\/g, '/') === book.root));
+			if (index > -1) {
+				deletedBook = this.books.splice(index, 1)[0];
+				if (this.currentBook === deletedBook) {
+					this.currentBook = this.books.length > 0 ? this.books[this.books.length - 1] : undefined;
+				}
+				this._onDidChangeTreeData.fire();
+			}
+		} catch (e) {
+			vscode.window.showErrorMessage(loc.closeBookError(book.root, e instanceof Error ? e.message : e));
+		} finally {
+			// remove watch on toc file.
+			if (deletedBook) {
+				fsw.unwatchFile(path.join(deletedBook.bookPath, '_data', 'toc.yml'));
+			}
 		}
 	}
 

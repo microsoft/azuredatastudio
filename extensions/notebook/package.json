@@ -187,6 +187,10 @@
         }
       },
       {
+        "command": "notebook.command.closeBook",
+        "title": "%title.closeJupyterBook%"
+      },
+      {
         "command": "notebook.command.createBook",
         "title": "%title.createJupyterBook%",
         "category": "%books-preview-category%",
@@ -289,6 +293,10 @@
           "when": "false"
         },
         {
+          "command": "notebook.command.closeBook",
+          "when": "false"
+        },
+        {
           "command": "notebook.command.revealInBooksViewlet",
           "when": "false"
         }
@@ -332,6 +340,10 @@
           "command": "notebook.command.saveBook",
           "when": "view == unsavedBookTreeView && viewItem == unsavedBook && unsavedBooks",
           "group": "inline"
+        },
+        {
+          "command": "notebook.command.closeBook",
+          "when": "view == bookTreeView && viewItem == savedBook"
         }
       ],
       "view/title": [
