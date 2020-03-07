@@ -1,0 +1,16 @@
+name: AutoMerger
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  release_labeler:
+    name: Auto Merger
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - uses: ./build/actions/AutoMerge
+        env:
+          GITHUB_TOKEN: "${{ secrets.GithubMerger }}"

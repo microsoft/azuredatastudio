@@ -138,8 +138,12 @@ function configureCommandlineSwitchesSync(cliArgs) {
 		'disable-hardware-acceleration',
 
 		// provided by Electron
-		'disable-color-correct-rendering'
+		'disable-color-correct-rendering',
+
+		// override for the color profile to use
+		'force-color-profile'
 	];
+
 	if (process.platform === 'linux') {
 		SUPPORTED_ELECTRON_SWITCHES.push('force-renderer-accessibility');
 	}
@@ -154,7 +158,16 @@ function configureCommandlineSwitchesSync(cliArgs) {
 		}
 
 		const argvValue = argvConfig[argvKey];
-		if (argvValue === true || argvValue === 'true') {
+
+		// Color profile
+		if (argvKey === 'force-color-profile') {
+			if (argvValue) {
+				app.commandLine.appendSwitch(argvKey, argvValue);
+			}
+		}
+
+		// Others
+		else if (argvValue === true || argvValue === 'true') {
 			if (argvKey === 'disable-hardware-acceleration') {
 				app.disableHardwareAcceleration(); // needs to be called explicitly
 			} else {
@@ -338,7 +351,7 @@ function setCurrentWorkingDirectory() {
 function registerListeners() {
 
 	/**
-	 * Mac: when someone drops a file to the not-yet running VSCode, the open-file event fires even before
+	 * macOS: when someone drops a file to the not-yet running VSCode, the open-file event fires even before
 	 * the app-ready event. We listen very early for open-file and remember this upon startup as path to open.
 	 *
 	 * @type {string[]}
@@ -350,7 +363,7 @@ function registerListeners() {
 	});
 
 	/**
-	 * React to open-url requests.
+	 * macOS: react to open-url requests.
 	 *
 	 * @type {string[]}
 	 */

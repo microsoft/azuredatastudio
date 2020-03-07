@@ -83,8 +83,8 @@ export class ServerGroupDialog extends Modal {
 		const cancelLabel = localize('serverGroup.cancel', "Cancel");
 		this._addServerButton = this.addFooterButton(okLabel, () => this.addGroup());
 		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel());
-		this.registerListeners();
 		this.isRendered = true;
+		this.registerListeners();
 	}
 
 	protected layout(height?: number): void {

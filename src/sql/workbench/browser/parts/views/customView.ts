@@ -50,6 +50,7 @@ import { NodeContextKey } from 'sql/workbench/browser/parts/views/nodeContext';
 import { UserCancelledConnectionError } from 'sql/base/common/errors';
 import { firstIndex } from 'vs/base/common/arrays';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 export class CustomTreeViewPanel extends ViewPane {
 
@@ -65,9 +66,10 @@ export class CustomTreeViewPanel extends ViewPane {
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IOpenerService protected openerService: IOpenerService,
-		@IThemeService protected themeService: IThemeService
+		@IThemeService protected themeService: IThemeService,
+		@ITelemetryService telemetryService: ITelemetryService,
 	) {
-		super({ ...(options as IViewPaneOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService);
+		super({ ...(options as IViewPaneOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
 		const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).getView(options.id));
 		this.treeView = treeView as ITreeView;
 		this._register(this.treeView.onDidChangeActions(() => this.updateActions(), this));
@@ -233,7 +235,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		this._register(this.themeService.onThemeChange(() => this.doRefresh([this.root]) /** soft refresh **/));
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('explorer.decorations')) {
-				this.doRefresh([this.root]); /** soft refresh **/
+				this.doRefresh([this.root]).catch(onUnexpectedError); /** soft refresh **/
 			}
 		}));
 		this.markdownRenderer = instantiationService.createInstance(MarkdownRenderer);
@@ -270,7 +272,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 				}
 			};
 			this.updateMessage();
-			this.refresh();
+			this.refresh().catch(onUnexpectedError);
 		} else {
 			this._dataProvider = null;
 			this.updateMessage();
@@ -359,7 +361,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 			}
 
 			if (this.isVisible && this.elementsToRefresh.length) {
-				this.doRefresh(this.elementsToRefresh);
+				this.doRefresh(this.elementsToRefresh).catch(onUnexpectedError);
 				this.elementsToRefresh = [];
 			}
 		}

@@ -15,7 +15,7 @@ export class AdditionalKeyBindings<T> implements Slick.Plugin<T> {
 
 	public init(grid: Slick.Grid<T>) {
 		this.grid = grid;
-		this.handler.subscribe(this.grid.onKeyDown, (e: KeyboardEvent, args) => this.handleKeyDown(e, args));
+		this.handler.subscribe(this.grid.onKeyDown, (e: DOMEvent, args) => this.handleKeyDown(e as KeyboardEvent, args));
 	}
 
 	public destroy() {

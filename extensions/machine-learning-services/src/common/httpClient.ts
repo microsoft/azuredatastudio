@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as request from 'request';
@@ -36,7 +35,7 @@ export class HttpClient {
 		});
 	}
 
-	public download(downloadUrl: string, targetPath: string, backgroundOperation: azdata.BackgroundOperation, outputChannel: vscode.OutputChannel): Promise<void> {
+	public download(downloadUrl: string, targetPath: string, outputChannel: vscode.OutputChannel): Promise<void> {
 		return new Promise((resolve, reject) => {
 
 			let totalMegaBytes: number | undefined = undefined;
@@ -44,12 +43,12 @@ export class HttpClient {
 			let printThreshold = 0.1;
 			let downloadRequest = request.get(downloadUrl, { timeout: DownloadTimeout })
 				.on('error', downloadError => {
-					backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, constants.downloadError);
+					outputChannel.appendLine(constants.downloadError);
 					reject(downloadError);
 				})
 				.on('response', (response) => {
 					if (response.statusCode !== 200) {
-						backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, constants.downloadError);
+						outputChannel.appendLine(constants.downloadError);
 						return reject(response.statusMessage);
 					}
 					let contentLength = response.headers['content-length'];
@@ -73,7 +72,6 @@ export class HttpClient {
 					resolve();
 				})
 				.on('error', (downloadError) => {
-					backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, 'Error');
 					reject(downloadError);
 					downloadRequest.abort();
 				});

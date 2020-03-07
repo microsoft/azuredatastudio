@@ -132,7 +132,14 @@ export abstract class DacFxConfigPage extends BasePage {
 			return false;
 		}
 
-		let values = await this.getDatabaseValues();
+		let values: string[];
+		try {
+			values = await this.getDatabaseValues();
+		} catch (e) {
+			// if the user doesn't have access to master, just set the database to the one the current connection is to
+			values = [this.model.server.databaseName];
+			console.warn(e);
+		}
 
 		// only update values and regenerate filepath if this is the first time and database isn't set yet
 		if (this.model.database !== values[0]) {
@@ -207,7 +214,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	// Compares database name with existing databases on the server
-	protected databaseNameExists(n: string): boolean {
+	public databaseNameExists(n: string): boolean {
 		for (let i = 0; i < this.databaseValues.length; ++i) {
 			if (this.databaseValues[i].toLowerCase() === n.toLowerCase()) {
 				// database name exists
