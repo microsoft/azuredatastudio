@@ -109,9 +109,15 @@ steps:
 
   - script: |
       set -e
-      ./scripts/test.sh --build --coverage --reporter mocha-junit-reporter
+      ./scripts/test.sh --build --coverage --tfs "Unit Tests" --runGlob "**/sql/**/*.test.js"
     displayName: Run unit tests
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - script: |
+      set -e
+      ./scripts/test-unstable.sh --build --coverage --tfs "Unstable Unit Tests" --runGlob "**/sql/**/*.test.js"
+    displayName: Run unit tests
+    condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
 
   - script: |
       set -e
@@ -230,9 +236,8 @@ steps:
   - task: PublishTestResults@2
     displayName: 'Publish Test Results test-results.xml'
     inputs:
-      testResultsFiles: 'test-results.xml'
-      searchFolder: '$(Build.SourcesDirectory)'
-    continueOnError: true
+      testResultsFiles: '*.xml'
+      searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - task: PublishCodeCoverageResults@1
@@ -241,7 +246,6 @@ steps:
       codeCoverageTool: Cobertura
       summaryFileLocation: '$(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
       reportDirectory: '$(Build.SourcesDirectory)/.build/coverage'
-    continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
