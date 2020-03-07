@@ -334,7 +334,6 @@ export class SaveParticipantsContribution extends Disposable implements IWorkben
 		this._register(this.textFileService.files.addSaveParticipant(this.instantiationService.createInstance(FormatOnSaveParticipant)));
 		this._register(this.textFileService.files.addSaveParticipant(this.instantiationService.createInstance(FinalNewLineParticipant)));
 		this._register(this.textFileService.files.addSaveParticipant(this.instantiationService.createInstance(TrimFinalNewLinesParticipant)));
-		this._register(this.textFileService.files.addSaveParticipant(this.instantiationService.createInstance(NotebookUpdateParticipant)));
 	}
 }
 
