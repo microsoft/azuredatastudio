@@ -102,7 +102,7 @@ export default () => `
 				</div>
 			</div>
 			<div class="ads_homepage__section content row ads_grid xl--cols-12 sm--cols-1">
-				<div class="col--lg--span-4 col--xl--start_1__span_7 col--xl--start_1__span_6 col--sm--start_1__span_1 resources">
+				<div class="col--lg--span-4 col--xl--start_1__span_7 col--sm--start_1__span_1 resources">
 					<h2>${escape(localize("welcomePage.resources", "Resources"))}</h2>
 					<div class="tabs">
 						<input class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
@@ -128,7 +128,7 @@ export default () => `
 						<label class="caption" for="showOnStartup">${escape(localize("welcomePage.showOnStartup", "Show welcome page on startup"))}</label>
 					</p>
 				</div>
-				<div class="col--xl--start_9__span_5 col--sm--start_1__span_1">
+				<div class="col--xl--start_9__span_6 col--sm--start_1__span_1">
 					<div class="links">
 						<h2>${escape(localize("welcomePage.usefuLinks", "Useful Links"))}</h2>
 						<h4>
