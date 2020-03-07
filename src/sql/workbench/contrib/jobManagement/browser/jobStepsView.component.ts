@@ -107,9 +107,9 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 		this._register(attachListStyler(this._tree, this.themeService));
 		const stepsTooltip = nls.localize('agent.steps', "Steps");
 		jQuery('.steps-header > .steps-icon').attr('title', stepsTooltip);
-		this._jobManagementService.stepsChanged((data: JobStepsViewRow[]) => {
+		this._jobManagementService.stepsChanged(async (data: JobStepsViewRow[]) => {
 			this._treeDataSource.data = data;
-			this._tree.refresh();
+			await this._tree.refresh();
 		});
 		this._telemetryService.publicLog(TelemetryKeys.JobStepsView);
 	}
