@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { localize } from 'vs/nls';
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
 import { Modal } from 'sql/workbench/browser/modal/modal';
@@ -43,8 +43,6 @@ export class ConfigureChartDialog extends Modal {
 		let closeButton = this.addFooterButton(localize('optionsDialog.close', "Close"), () => this.close());
 
 		attachButtonStyler(closeButton, this._themeService);
-		this._register(this._themeService.onThemeChange(e => this.updateTheme(e)));
-		this.updateTheme(this._themeService.getTheme());
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -52,9 +50,6 @@ export class ConfigureChartDialog extends Modal {
 	}
 
 	protected layout(height?: number): void {
-	}
-
-	private updateTheme(theme: ITheme): void {
 	}
 
 	public close() {
