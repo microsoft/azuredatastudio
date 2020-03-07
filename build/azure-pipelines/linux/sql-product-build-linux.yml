@@ -121,7 +121,7 @@ steps:
 
   - script: |
       set -e
-      ./scripts/test-unstable.sh --build --coverage --tfs "Unstable Unit Tests" --runGlob "**/sql/**/*.test.js"
+      DISPLAY=:10 ./scripts/test-unstable.sh --build --coverage --tfs "Unstable Unit Tests" --runGlob "**/sql/**/*.test.js"
     displayName: Run unstable unit tests
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
 
