@@ -29,13 +29,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _initializeDeferred: Deferred<void> = new Deferred<void>();
 	private _openAsUntitled: boolean;
 	private _bookTrustManager: IBookTrustManager;
-	private _apiWrapper: ApiWrapper;
 
 	public viewId: string;
 	public books: BookModel[];
 	public currentBook: BookModel;
 
-	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, apiWrapper?: ApiWrapper) {
+	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, private _apiWrapper: ApiWrapper) {
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
 		this.books = [];
@@ -43,7 +42,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this.viewId = view;
 		this.prompter = new CodeAdapter();
 		this._bookTrustManager = new BookTrustManager(this.books);
-		this._apiWrapper = apiWrapper;
 	}
 
 	private async initialize(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
@@ -161,12 +159,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				// let us keep a list of already visited notebooks so that we do not trust them again, potentially
 				// overriding user changes
 				let normalizedResource = path.normalize(resource);
-				let self = this;
-				if (self._visitedNotebooks.indexOf(normalizedResource) === -1
+
+				if (this._visitedNotebooks.indexOf(normalizedResource) === -1
 					&& this._bookTrustManager.isNotebookTrustedByDefault(normalizedResource)) {
-					let openDocumentListenerUnsubscriber = azdata.nb.onDidOpenNotebookDocument(function (document: azdata.nb.NotebookDocument) {
+					let openDocumentListenerUnsubscriber = azdata.nb.onDidOpenNotebookDocument((document: azdata.nb.NotebookDocument) => {
 						document.setTrusted(true);
-						self._visitedNotebooks = self._visitedNotebooks.concat([normalizedResource]);
+						this._visitedNotebooks = this._visitedNotebooks.concat([normalizedResource]);
 						openDocumentListenerUnsubscriber.dispose();
 					});
 				}

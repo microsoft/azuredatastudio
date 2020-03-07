@@ -18,7 +18,6 @@ describe('BookTrustManagerTests', function () {
 			trustedSubFolders = ['/SubFolder/'];
 
 			workspaceDetails = {
-				// @ts-ignore
 				getConfiguration: () => {
 					return {
 						get: () => trustedSubFolders,
