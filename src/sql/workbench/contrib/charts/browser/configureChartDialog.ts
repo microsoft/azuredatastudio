@@ -40,7 +40,7 @@ export class ConfigureChartDialog extends Modal {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 
-		let closeButton = this.addFooterButton(localize('optionsDialog.close', "Close"), () => this.cancel());
+		let closeButton = this.addFooterButton(localize('optionsDialog.close', "Close"), () => this.close());
 
 		attachButtonStyler(closeButton, this._themeService);
 		this._register(this._themeService.onThemeChange(e => this.updateTheme(e)));
@@ -55,10 +55,6 @@ export class ConfigureChartDialog extends Modal {
 	}
 
 	private updateTheme(theme: ITheme): void {
-	}
-
-	public cancel() {
-		this.close();
 	}
 
 	public close() {
