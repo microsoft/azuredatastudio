@@ -41,7 +41,6 @@ export class ConfigureChartDialog extends Modal {
 		attachModalDialogStyler(this, this._themeService);
 
 		let closeButton = this.addFooterButton(localize('optionsDialog.close', "Close"), () => this.close());
-
 		attachButtonStyler(closeButton, this._themeService);
 	}
 
