@@ -31,6 +31,7 @@ See the [change log](https://github.com/Microsoft/azuredatastudio/blob/master/CH
 
 ## **Feature Highlights**
 
+
 - Cross-Platform DB management for Windows, macOS and Linux with simple XCopy deployment
 - SQL Server Connection Management with Connection Dialog, Server Groups, Azure Integration and Registered Servers
 - Object Explorer supporting schema browsing and contextual command execution
