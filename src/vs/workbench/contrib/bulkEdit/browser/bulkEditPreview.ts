@@ -89,7 +89,7 @@ export class BulkFileOperation {
 		readonly parent: BulkFileOperations
 	) { }
 
-	addEdit(index: number, type: BulkFileOperationType, edit: WorkspaceTextEdit | WorkspaceFileEdit, ) {
+	addEdit(index: number, type: BulkFileOperationType, edit: WorkspaceTextEdit | WorkspaceFileEdit,) {
 		this.type |= type;
 		this.originalEdits.set(index, edit);
 		if (WorkspaceTextEdit.is(edit)) {
@@ -259,6 +259,17 @@ export class BulkFileOperations {
 				}
 			}
 		}
+
+		// sort (once) categories atop which have unconfirmed edits
+		this.categories.sort((a, b) => {
+			if (a.metadata.needsConfirmation === b.metadata.needsConfirmation) {
+				return a.metadata.label.localeCompare(b.metadata.label);
+			} else if (a.metadata.needsConfirmation) {
+				return -1;
+			} else {
+				return 1;
+			}
+		});
 
 		return this;
 	}
