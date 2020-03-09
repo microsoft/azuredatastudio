@@ -34,6 +34,17 @@ export class ConfigureChartDialog extends Modal {
 
 	public open() {
 		this.show();
+		this.focusFirstElement();
+	}
+
+	private focusFirstElement(): void {
+		let generalControlsItems = this._chart.optionsControl.getElementsByClassName('general-controls');
+		if (generalControlsItems?.length > 0) {
+			let inputControlItems = generalControlsItems[0].getElementsByClassName('monaco-select-box');
+			if (inputControlItems?.length > 0) {
+				(inputControlItems[0] as HTMLElement).focus();
+			}
+		}
 	}
 
 	public render() {
