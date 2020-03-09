@@ -12,6 +12,10 @@ import { CommandContext, BuiltInCommands } from './constants';
  * this API from our code
  */
 export class ApiWrapper {
+	public getWorkspaceFolders(): vscode.WorkspaceFolder[] {
+		throw vscode.workspace.workspaceFolders;
+	}
+
 	public createOutputChannel(name: string): vscode.OutputChannel {
 		return vscode.window.createOutputChannel(name);
 	}

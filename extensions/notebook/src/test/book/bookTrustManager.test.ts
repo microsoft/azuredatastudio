@@ -6,8 +6,11 @@
 import * as should from 'should';
 import * as path from 'path';
 import * as TypeMoq from 'typemoq';
+import * as constants from '../../common/constants';
 import { IBookTrustManager, BookTrustManager } from '../../book/bookTrustManager';
 import { BookTreeItem, BookTreeItemFormat, BookTreeItemType } from '../../book/bookTreeItem';
+import { ApiWrapper } from '../../common/apiWrapper';
+import { WorkspaceConfiguration } from 'vscode';
 
 describe('BookTrustManagerTests', function () {
 
@@ -20,27 +23,32 @@ describe('BookTrustManagerTests', function () {
 		beforeEach(() => {
 			trustedSubFolders = ['/SubFolder/'];
 
-			workspaceDetails = {
-				getConfiguration: () => {
-					return {
-						get: () => trustedSubFolders,
-						update: () => { }
-					};
-				},
-				workspaceFolders: [
-					{
-						uri: {
-							fsPath: '/temp/'
-						}
-					},
-					{
-						uri: {
-							fsPath: '/temp2/'
-						}
-					},
-				]
-			};
+			// Mock Workspace Configuration
+			let workspaceConfigurtionMock: TypeMoq.IMock<WorkspaceConfiguration> = TypeMoq.Mock.ofType<WorkspaceConfiguration>();
+			workspaceConfigurtionMock.setup(config => config.get(TypeMoq.It.isValue(constants.trustedBooksConfigKey))).returns(() => trustedSubFolders);
+			workspaceConfigurtionMock.setup(config => config.set(TypeMoq.It.isAnyString, TypeMoq.It.isAnyString)).returns(() => {});
 
+			// Mock Api Wrapper
+			let apiWrapperMock: TypeMoq.IMock<ApiWrapper> = TypeMoq.Mock.ofType<ApiWrapper>();
+
+			apiWrapperMock.setup(api => api.getWorkspaceFolders()).returns(() => [
+				{
+					// @ts-ignore - Don't need all URI properties for this tests
+					uri: {
+						fsPath: '/temp/'
+					},
+				},
+				{
+					// @ts-ignore - Don't need all URI properties for this tests
+					uri: {
+						fsPath: '/temp2/'
+					}
+				},
+			]);
+
+			apiWrapperMock.setup(api => api.getConfiguration(TypeMoq.It.isValue(constants.notebookConfigKey))).returns(() => workspaceConfigurtionMock.object);
+
+			// Mock Book Data
 			let bookTreeItemFormat1:BookTreeItemFormat = {
 				root: '/temp/SubFolder/',
 				tableOfContents: {
@@ -97,8 +105,8 @@ describe('BookTrustManagerTests', function () {
 			}, {
 				bookItems: [new BookTreeItem(bookTreeItemFormat3, undefined)]
 			}];
-			// @ts-ignore
-			bookTrustManager = new BookTrustManager(books, workspaceDetails);
+
+			bookTrustManager = new BookTrustManager(books, apiWrapperMock.object);
 		});
 
 		it('should trust notebooks in a trusted book within a workspace', async () => {
@@ -176,16 +184,14 @@ describe('BookTrustManagerTests', function () {
 		this.beforeEach(() => {
 			trustedFolders = ['/temp/SubFolder/'];
 
-			workspaceDetails = {
-				// @ts-ignore
-				getConfiguration: () => {
-					return {
-						get: () => trustedFolders,
-						update: () => { }
-					};
-				},
-				workspaceFolders: []
-			};
+			// Mock Workspace Configuration
+			let workspaceConfigurtionMock: TypeMoq.IMock<WorkspaceConfiguration> = TypeMoq.Mock.ofType<WorkspaceConfiguration>();
+
+			// Mock Api Wrapper
+			let apiWrapperMock: TypeMoq.IMock<ApiWrapper> = TypeMoq.Mock.ofType<ApiWrapper>();
+
+			apiWrapperMock.setup(api => api.getWorkspaceFolders()).returns(() => []);
+			apiWrapperMock.setup(api => api.getConfiguration(TypeMoq.It.isValue(constants.notebookConfigKey))).returns(() => workspaceConfigurtionMock.object);
 			let bookTreeItemFormat1:BookTreeItemFormat = {
 				root: '/temp/SubFolder/',
 				tableOfContents: {
@@ -229,8 +235,8 @@ describe('BookTrustManagerTests', function () {
 			}, {
 				bookItems: [new BookTreeItem(bookTreeItemFormat2, undefined)],
 			}];
-			// @ts-ignore
-			bookTrustManager = new BookTrustManager(books, workspaceDetails);
+
+			bookTrustManager = new BookTrustManager(books, apiWrapperMock.object);
 		});
 
 		it('should trust notebooks in a trusted book in a folder', async () => {

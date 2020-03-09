@@ -41,7 +41,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this.initialize(workspaceFolders).catch(e => console.error(e));
 		this.viewId = view;
 		this.prompter = new CodeAdapter();
-		this._bookTrustManager = new BookTrustManager(this.books);
+		this._bookTrustManager = new BookTrustManager(this.books, _apiWrapper);
 	}
 
 	private async initialize(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
