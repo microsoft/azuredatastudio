@@ -298,8 +298,7 @@ export class AccountDialog extends Modal {
 		let providerView = new AccountPanel(
 			{
 				id: newProvider.addedProvider.id,
-				title: newProvider.addedProvider.displayName,
-				ariaHeaderLabel: newProvider.addedProvider.displayName
+				title: newProvider.addedProvider.displayName
 			},
 			this._keybindingService,
 			this._contextMenuService,

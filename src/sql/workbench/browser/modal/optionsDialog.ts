@@ -239,7 +239,7 @@ export class OptionsDialog extends Modal {
 			this.fillInOptions(bodyContainer, serviceOptions);
 
 			let viewSize = this._optionCategoryPadding + serviceOptions.length * this._optionRowSize;
-			let categoryView = this._instantiationService.createInstance(CategoryView, bodyContainer, viewSize, { title: category, ariaHeaderLabel: category, id: category });
+			let categoryView = this._instantiationService.createInstance(CategoryView, bodyContainer, viewSize, { title: category, id: category });
 			this.splitview.addView(categoryView, viewSize);
 			categoryView.render();
 			attachPanelStyler(categoryView, this._themeService);

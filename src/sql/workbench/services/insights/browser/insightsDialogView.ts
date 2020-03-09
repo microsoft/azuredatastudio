@@ -222,12 +222,12 @@ export class InsightsDialogView extends Modal {
 
 		this._topTableData = new TableDataView();
 		this._bottomTableData = new TableDataView();
-		let topTableView = this._instantiationService.createInstance(InsightTableView, this._topColumns, this._topTableData, { forceFitColumns: true }, { id: 'insights.top', title: itemsHeaderTitle, ariaHeaderLabel: itemsHeaderTitle }) as InsightTableView<ListResource>;
+		let topTableView = this._instantiationService.createInstance(InsightTableView, this._topColumns, this._topTableData, { forceFitColumns: true }, { id: 'insights.top', title: itemsHeaderTitle }) as InsightTableView<ListResource>;
 		topTableView.render();
 		attachPanelStyler(topTableView, this._themeService);
 		this._topTable = topTableView.table;
 		this._topTable.setSelectionModel(new RowSelectionModel<ListResource>());
-		let bottomTableView = this._instantiationService.createInstance(InsightTableView, this._bottomColumns, this._bottomTableData, { forceFitColumns: true }, { id: 'insights.bottom', title: itemsDetailHeaderTitle, ariaHeaderLabel: itemsDetailHeaderTitle }) as InsightTableView<ListResource>;
+		let bottomTableView = this._instantiationService.createInstance(InsightTableView, this._bottomColumns, this._bottomTableData, { forceFitColumns: true }, { id: 'insights.bottom', title: itemsDetailHeaderTitle }) as InsightTableView<ListResource>;
 		bottomTableView.render();
 		attachPanelStyler(bottomTableView, this._themeService);
 		this._bottomTable = bottomTableView.table;
