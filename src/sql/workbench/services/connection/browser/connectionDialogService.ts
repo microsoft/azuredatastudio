@@ -355,6 +355,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	private updateModelServerCapabilities(model: IConnectionProfile) {
+
 		if (this._model) {
 			this._model.dispose();
 		}
@@ -376,7 +377,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 		let newProfile = new ConnectionProfile(this._capabilitiesService, model || providerName);
 		newProfile.saveProfile = true;
-		newProfile.generateNewId();
+		if (!newProfile.id) {
+			newProfile.generateNewId();
+		}
 		// If connecting from a query editor set "save connection" to false
 		if (this._params && this._params.input && this._params.connectionType === ConnectionType.editor) {
 			newProfile.saveProfile = false;
