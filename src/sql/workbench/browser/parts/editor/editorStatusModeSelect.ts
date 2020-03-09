@@ -12,7 +12,6 @@ import { localize } from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
-import { isThenable } from 'vs/base/common/async';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -42,7 +41,7 @@ export async function setMode(accessor: ServicesAccessor, modeSupport: IModeSupp
 		if (newInputCreator) { // if we know how to handle the new language, tranform the input and replace the editor (e.x notebook, sql, etc)
 			const newInput = newInputCreator.convertInput(input || activeEditor);
 			if (newInput) {  // the factory will return undefined if it doesn't know how to handle the input
-				await editorService.replaceEditors([{ editor: activeEditor, replacement: isThenable(newInput) ? await newInput : newInput }], activeControl.group);
+				await editorService.replaceEditors([{ editor: activeEditor, replacement: await newInput }], activeControl.group);
 			}
 		} else if (oldInputCreator) { // if we don't know handle to handle the new language but we know how to handle the current language, replace the editor with the reverted input (e.x sql -> text)
 			await editorService.replaceEditors([{ editor: activeEditor, replacement: input }], activeControl.group);
