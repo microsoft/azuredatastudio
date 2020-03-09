@@ -194,6 +194,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public get resource(): URI { return this._text.resource; }
 
 	public getName(longForm?: boolean): string {
+		const originalName = this.text.isUntitled() ? this.text.resource.path : this.text.getName();
 		if (this.configurationService.getValue('sql.showConnectionInfoInTitle')) {
 			let profile = this.connectionManagementService.getConnectionProfile(this.uri);
 			let title = '';
@@ -209,9 +210,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			} else {
 				title += localize('disconnected', "disconnected");
 			}
-			return this._text.getName() + (longForm ? (' - ' + title) : ` - ${trimTitle(title)}`);
+			return originalName + (longForm ? (' - ' + title) : ` - ${trimTitle(title)}`);
 		} else {
-			return this._text.getName();
+			return originalName;
 		}
 	}
 
