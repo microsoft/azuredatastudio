@@ -48,27 +48,8 @@ export class BookTrustManager implements IBookTrustManager {
 		let trustableBookPaths = this.getTrustableBookPaths();
 		let trustableBooks: BookTreeItem[] = allBooks
 			.filter(bookItem => trustableBookPaths.some(trustableBookPath => trustableBookPath === path.join(bookItem.book.root, path.sep)));
-		let isNotebookTrusted = this.isNotebookPartOfBooks(notebookUri, trustableBooks);
-
+		let isNotebookTrusted = trustableBooks.filter(bookItem => !!bookItem).some(bookItem => bookItem.hasNotebook(notebookUri));
 		return isNotebookTrusted;
-	}
-
-	isNotebookPartOfBooks(notebookUri: string, books: BookTreeItem[]) {
-		let normalizedNotebookUri = path.normalize(notebookUri);
-		let isPartOfNotebook: boolean = false;
-		let trustedBookItem: BookTreeItem = books.find(bookItem => normalizedNotebookUri.startsWith(path.join(bookItem.book.root, path.sep)));
-
-		if (trustedBookItem) {
-			let fullBookBaseUriWithContent = path.join(trustedBookItem.book.root, 'content', path.sep);
-			let requestingNotebookFormattedUri = path.normalize(normalizedNotebookUri.replace(fullBookBaseUriWithContent, '').replace('.ipynb', ''));
-			let notebookInTOC = trustedBookItem.book.tableOfContents.sections.find(jupyterSection => {
-				let normalizedJupyterSectionUrl = jupyterSection.url && path.normalize(jupyterSection.url.replace(/^\\/, '').replace(/^\//, ''));
-				return normalizedJupyterSectionUrl === requestingNotebookFormattedUri;
-			});
-			isPartOfNotebook = !!notebookInTOC;
-		}
-
-		return isPartOfNotebook;
 	}
 
 	getTrustableBookPaths() {

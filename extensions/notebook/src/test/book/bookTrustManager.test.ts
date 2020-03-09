@@ -5,7 +5,9 @@
 
 import * as should from 'should';
 import * as path from 'path';
+import * as TypeMoq from 'typemoq';
 import { IBookTrustManager, BookTrustManager } from '../../book/bookTrustManager';
+import { BookTreeItem, BookTreeItemFormat, BookTreeItemType } from '../../book/bookTreeItem';
 
 describe('BookTrustManagerTests', function () {
 
@@ -39,52 +41,61 @@ describe('BookTrustManagerTests', function () {
 				]
 			};
 
+			let bookTreeItemFormat1:BookTreeItemFormat = {
+				root: '/temp/SubFolder/',
+				tableOfContents: {
+					sections: [
+						{
+							url: path.join(path.sep, 'sample', 'notebook')
+						},
+						{
+							url: path.join(path.sep, 'sample', 'notebook2')
+						}
+					]
+				},
+				isUntitled: undefined,
+				page: undefined,
+				title: undefined,
+				treeItemCollapsibleState: undefined,
+				type: BookTreeItemType.Book
+			};
+
+			let bookTreeItemFormat2:BookTreeItemFormat = {
+				root: '/temp/SubFolder2/',
+				tableOfContents: {
+					sections: [
+						{
+							url: path.join(path.sep, 'sample', 'notebook')
+						}
+					]
+				},
+				isUntitled: undefined,
+				page: undefined,
+				title: undefined,
+				treeItemCollapsibleState: undefined,
+				type: BookTreeItemType.Book
+			};
+
+			let bookTreeItemFormat3: BookTreeItemFormat = {
+				root: '/temp2/SubFolder3/',
+				tableOfContents: {
+					sections: [
+						{
+							url: path.join(path.sep, 'sample', 'notebook')
+						}
+					]
+				},
+				isUntitled: undefined,
+				page: undefined,
+				title: undefined,
+				treeItemCollapsibleState: undefined,
+				type: BookTreeItemType.Book
+			};
+
 			books = [{
-				bookItems: [
-					{
-						book: {
-							root: '/temp/SubFolder/',
-							tableOfContents: {
-								sections: [
-									{
-										url: path.join(path.sep, 'sample', 'notebook')
-									},
-									{
-										url: path.join(path.sep, 'sample', 'notebook2')
-									}
-								]
-							}
-						},
-					},
-					{
-						book: {
-							root: '/temp/SubFolder2/',
-							tableOfContents: {
-								sections: [
-									{
-										url: path.join(path.sep, 'sample', 'notebook')
-									}
-								]
-							}
-						},
-					},
-				]
-			},
-			{
-				bookItems: [
-					{
-						book: {
-							root: '/temp2/SubFolder3/',
-							tableOfContents: {
-								sections: [
-									{
-										url: path.join(path.sep, 'sample', 'notebook')
-									}
-								]
-							}
-						},
-					}
-				]
+				bookItems: [new BookTreeItem(bookTreeItemFormat1, undefined), new BookTreeItem(bookTreeItemFormat2, undefined)]
+			}, {
+				bookItems: [new BookTreeItem(bookTreeItemFormat3, undefined)]
 			}];
 			// @ts-ignore
 			bookTrustManager = new BookTrustManager(books, workspaceDetails);
@@ -175,42 +186,48 @@ describe('BookTrustManagerTests', function () {
 				},
 				workspaceFolders: []
 			};
+			let bookTreeItemFormat1:BookTreeItemFormat = {
+				root: '/temp/SubFolder/',
+				tableOfContents: {
+					sections: [
+						{
+							url: path.join(path.sep, 'sample', 'notebook')
+						},
+						{
+							url: path.join(path.sep, 'sample', 'notebook2')
+						}
+					]
+				},
+				isUntitled: undefined,
+				page: undefined,
+				title: undefined,
+				treeItemCollapsibleState: undefined,
+				type: BookTreeItemType.Book
+			};
+
+			let bookTreeItemFormat2:BookTreeItemFormat = {
+				root: '/temp/SubFolder2/',
+				tableOfContents: {
+					sections: [
+						{
+							url: path.join(path.sep, 'sample', 'notebook')
+						},
+						{
+							url: path.join(path.sep, 'sample', 'notebook2')
+						}
+					]
+				},
+				isUntitled: undefined,
+				page: undefined,
+				title: undefined,
+				treeItemCollapsibleState: undefined,
+				type: BookTreeItemType.Book
+			};
 
 			books = [{
-				bookItems: [
-					{
-						book: {
-							root: '/temp/SubFolder/',
-							tableOfContents: {
-								sections: [
-									{
-										url: path.join(path.sep, 'sample', 'notebook')
-									},
-									{
-										url: path.join(path.sep, 'sample', 'notebook2')
-									}
-								]
-							}
-						},
-					}]
+				bookItems: [new BookTreeItem(bookTreeItemFormat1, undefined)]
 			}, {
-				bookItems: [
-					{
-						book: {
-							root: '/temp/SubFolder2/',
-							tableOfContents: {
-								sections: [
-									{
-										url: path.join(path.sep, 'sample', 'notebook')
-									},
-									{
-										url: path.join(path.sep, 'sample', 'notebook2')
-									}
-								]
-							}
-						},
-					},
-				]
+				bookItems: [new BookTreeItem(bookTreeItemFormat2, undefined)],
 			}];
 			// @ts-ignore
 			bookTrustManager = new BookTrustManager(books, workspaceDetails);
