@@ -111,9 +111,9 @@ suite('Advanced options helper tests', () => {
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
 		assert.equal(optionValue, 'ReadWrite');
 		assert.equal(possibleInputs.length, 3);
-		assert.equal(possibleInputs[0], '');
-		assert.equal(possibleInputs[1], 'ReadWrite');
-		assert.equal(possibleInputs[2], 'ReadOnly');
+		assert.equal(possibleInputs[0].text, '');
+		assert.equal(possibleInputs[1].text, 'ReadWrite');
+		assert.equal(possibleInputs[2].text, 'ReadOnly');
 	});
 
 	test('create default and required category options should set the option value and possible inputs correctly', () => {
@@ -123,8 +123,8 @@ suite('Advanced options helper tests', () => {
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
 		assert.equal(optionValue, 'ReadWrite');
 		assert.equal(possibleInputs.length, 2);
-		assert.equal(possibleInputs[0], 'ReadWrite');
-		assert.equal(possibleInputs[1], 'ReadOnly');
+		assert.equal(possibleInputs[0].text, 'ReadWrite');
+		assert.equal(possibleInputs[1].text, 'ReadOnly');
 	});
 
 	test('create no default and not required category options should set the option value and possible inputs correctly', () => {
@@ -134,9 +134,9 @@ suite('Advanced options helper tests', () => {
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
 		assert.equal(optionValue, '');
 		assert.equal(possibleInputs.length, 3);
-		assert.equal(possibleInputs[0], '');
-		assert.equal(possibleInputs[1], 'ReadWrite');
-		assert.equal(possibleInputs[2], 'ReadOnly');
+		assert.equal(possibleInputs[0].text, '');
+		assert.equal(possibleInputs[1].text, 'ReadWrite');
+		assert.equal(possibleInputs[2].text, 'ReadOnly');
 	});
 
 	test('create no default but required category options should set the option value and possible inputs correctly', () => {
@@ -146,8 +146,8 @@ suite('Advanced options helper tests', () => {
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
 		assert.equal(optionValue, 'ReadWrite');
 		assert.equal(possibleInputs.length, 2);
-		assert.equal(possibleInputs[0], 'ReadWrite');
-		assert.equal(possibleInputs[1], 'ReadOnly');
+		assert.equal(possibleInputs[0].text, 'ReadWrite');
+		assert.equal(possibleInputs[1].text, 'ReadOnly');
 	});
 
 	test('create not required category options with option value should set the option value and possible inputs correctly', () => {
@@ -158,9 +158,9 @@ suite('Advanced options helper tests', () => {
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
 		assert.equal(optionValue, 'ReadOnly');
 		assert.equal(possibleInputs.length, 3);
-		assert.equal(possibleInputs[0], '');
-		assert.equal(possibleInputs[1], 'ReadWrite');
-		assert.equal(possibleInputs[2], 'ReadOnly');
+		assert.equal(possibleInputs[0].text, '');
+		assert.equal(possibleInputs[1].text, 'ReadWrite');
+		assert.equal(possibleInputs[2].text, 'ReadOnly');
 	});
 
 	test('create required category options with option value should set the option value and possible inputs correctly', () => {
@@ -171,8 +171,8 @@ suite('Advanced options helper tests', () => {
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
 		assert.equal(optionValue, 'ReadOnly');
 		assert.equal(possibleInputs.length, 2);
-		assert.equal(possibleInputs[0], 'ReadWrite');
-		assert.equal(possibleInputs[1], 'ReadOnly');
+		assert.equal(possibleInputs[0].text, 'ReadWrite');
+		assert.equal(possibleInputs[1].text, 'ReadOnly');
 	});
 
 	test('create default but not required boolean options should set the option value and possible inputs correctly', () => {
@@ -182,9 +182,9 @@ suite('Advanced options helper tests', () => {
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
 		assert.equal(optionValue, 'False');
 		assert.equal(possibleInputs.length, 3);
-		assert.equal(possibleInputs[0], '');
-		assert.equal(possibleInputs[1], 'True');
-		assert.equal(possibleInputs[2], 'False');
+		assert.equal(possibleInputs[0].text, '');
+		assert.equal(possibleInputs[1].text, 'True');
+		assert.equal(possibleInputs[2].text, 'False');
 	});
 
 	test('create default and required boolean options should set the option value and possible inputs correctly', () => {
@@ -194,8 +194,8 @@ suite('Advanced options helper tests', () => {
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
 		assert.equal(optionValue, 'False');
 		assert.equal(possibleInputs.length, 2);
-		assert.equal(possibleInputs[0], 'True');
-		assert.equal(possibleInputs[1], 'False');
+		assert.equal(possibleInputs[0].text, 'True');
+		assert.equal(possibleInputs[1].text, 'False');
 	});
 
 	test('create no default and not required boolean options should set the option value and possible inputs correctly', () => {
@@ -205,9 +205,9 @@ suite('Advanced options helper tests', () => {
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
 		assert.equal(optionValue, '');
 		assert.equal(possibleInputs.length, 3);
-		assert.equal(possibleInputs[0], '');
-		assert.equal(possibleInputs[1], 'True');
-		assert.equal(possibleInputs[2], 'False');
+		assert.equal(possibleInputs[0].text, '');
+		assert.equal(possibleInputs[1].text, 'True');
+		assert.equal(possibleInputs[2].text, 'False');
 	});
 
 	test('create no default but required boolean options should set the option value and possible inputs correctly', () => {
@@ -217,8 +217,8 @@ suite('Advanced options helper tests', () => {
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
 		assert.equal(optionValue, 'True');
 		assert.equal(possibleInputs.length, 2);
-		assert.equal(possibleInputs[0], 'True');
-		assert.equal(possibleInputs[1], 'False');
+		assert.equal(possibleInputs[0].text, 'True');
+		assert.equal(possibleInputs[1].text, 'False');
 	});
 
 	test('create not required boolean options with option value should set the option value and possible inputs correctly', () => {
@@ -229,9 +229,9 @@ suite('Advanced options helper tests', () => {
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
 		assert.equal(optionValue, 'True');
 		assert.equal(possibleInputs.length, 3);
-		assert.equal(possibleInputs[0], '');
-		assert.equal(possibleInputs[1], 'True');
-		assert.equal(possibleInputs[2], 'False');
+		assert.equal(possibleInputs[0].text, '');
+		assert.equal(possibleInputs[1].text, 'True');
+		assert.equal(possibleInputs[2].text, 'False');
 	});
 
 	test('create required boolean options with option value should set the option value and possible inputs correctly', () => {
@@ -242,8 +242,8 @@ suite('Advanced options helper tests', () => {
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
 		assert.equal(optionValue, 'False');
 		assert.equal(possibleInputs.length, 2);
-		assert.equal(possibleInputs[0], 'True');
-		assert.equal(possibleInputs[1], 'False');
+		assert.equal(possibleInputs[0].text, 'True');
+		assert.equal(possibleInputs[1].text, 'False');
 	});
 
 	test('create default number options should set the option value and possible inputs correctly', () => {

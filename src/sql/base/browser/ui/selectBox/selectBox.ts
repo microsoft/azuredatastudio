@@ -156,7 +156,7 @@ export class SelectBox extends vsSelectBox {
 	public select(index: number): void {
 		super.select(index);
 		if (this._dialogOptions !== undefined) {
-			this._selectedOption = this._dialogOptions[index].text;
+			this._selectedOption = this._dialogOptions[index]?.text;
 		}
 	}
 
