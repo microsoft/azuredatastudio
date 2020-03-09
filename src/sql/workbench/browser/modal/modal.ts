@@ -528,8 +528,12 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Set the title of the modal
 	 */
 	protected set title(title: string) {
-		if (this._title !== undefined) {
+		this._title = title;
+		if (this._modalTitle) {
 			this._modalTitle.innerText = title;
+		}
+		if (this._bodyContainer) {
+			this._bodyContainer.setAttribute('aria-label', title);
 		}
 	}
 
