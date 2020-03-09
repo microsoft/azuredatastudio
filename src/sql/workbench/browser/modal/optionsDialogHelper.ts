@@ -92,7 +92,7 @@ export function getOptionValueAndCategoryValues(option: azdata.ServiceOption, op
 		if (option.valueType === ServiceOptionType.boolean) {
 			possibleInputs.push({ text: trueInputValue }, { text: falseInputValue });
 		} else {
-			option.categoryValues.map(c => possibleInputs.push({ text: c.name, description: c.displayName }));
+			option.categoryValues.forEach(c => possibleInputs.push({ text: c.name, description: c.displayName }));
 		}
 
 		// If the option value is not set and default value is null, the option value should be set to the first possible input.
