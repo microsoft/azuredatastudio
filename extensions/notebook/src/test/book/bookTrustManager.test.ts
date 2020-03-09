@@ -179,8 +179,6 @@ describe('BookTrustManagerTests', function () {
 		let books: any[];
 
 		beforeEach(() => {
-			let trustedFolders = ['/temp/SubFolder/'];
-
 			// Mock Workspace Configuration
 			let workspaceConfigurtionMock: TypeMoq.IMock<WorkspaceConfiguration> = TypeMoq.Mock.ofType<WorkspaceConfiguration>();
 
