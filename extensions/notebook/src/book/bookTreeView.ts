@@ -84,22 +84,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	untrustBook(bookTreeItem?: BookTreeItem): void {
-		let bookPathToTrust = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath;
-
-		if (bookPathToTrust) {
-			let trustChanged = this._bookTrustManager.setBookAsUntrusted(bookPathToTrust);
-
-			if (this._apiWrapper) {
-				if (trustChanged) {
-					this._apiWrapper.showInfoMessage(loc.msgBookUntrusted);
-				} else {
-					this._apiWrapper.showInfoMessage(loc.msgBookAlreadyUntrusted);
-				}
-			}
-		}
-	}
-
 	async openBook(bookPath: string, urlToOpen?: string): Promise<void> {
 		try {
 			let books: BookModel[] = this.books.filter(book => book.bookPath === bookPath) || [];
