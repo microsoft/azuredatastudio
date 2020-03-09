@@ -11,7 +11,7 @@
 	],
 	"rules": {
 		"@typescript-eslint/no-floating-promises": [
-			"warn",
+			"error",
 			{
 				"ignoreVoid": true
 			}

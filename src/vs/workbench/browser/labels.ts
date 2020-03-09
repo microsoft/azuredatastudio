@@ -252,7 +252,7 @@ class ResourceLabelWidget extends IconLabel {
 		@IModelService private readonly modelService: IModelService,
 		@IDecorationsService private readonly decorationsService: IDecorationsService,
 		@ILabelService private readonly labelService: ILabelService,
-		@ITextFileService private readonly textFileService: ITextFileService,
+		// @ITextFileService private readonly textFileService: ITextFileService,
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService
 	) {
 		super(container, options);
@@ -346,7 +346,7 @@ class ResourceLabelWidget extends IconLabel {
 	}
 
 	setResource(label: IResourceLabelProps, options: IResourceLabelOptions = Object.create(null)): void {
-		if (label.resource?.scheme === Schemas.untitled) {
+		/*if (label.resource?.scheme === Schemas.untitled) { {{SQL CARBON EDIT}} we don't want to special case untitled files
 			// Untitled labels are very dynamic because they may change
 			// whenever the content changes (unless a path is associated).
 			// As such we always ask the actual editor for it's name and
@@ -376,7 +376,7 @@ class ResourceLabelWidget extends IconLabel {
 					options.title = untitledTitle;
 				}
 			}
-		}
+		}*/
 
 		const hasPathLabelChanged = this.hasPathLabelChanged(label, options);
 		const clearIconCache = this.clearIconCache(label, options);

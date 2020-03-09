@@ -110,7 +110,7 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { .\scripts\test-unstable.bat --build --coverage --reporter mocha-junit-reporter }
+      exec { .\scripts\test-unstable.bat --build --tfs }
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
     displayName: Run unstable tests

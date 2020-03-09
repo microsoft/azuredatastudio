@@ -34,6 +34,7 @@ import { deepClone, assign } from 'vs/base/common/objects';
 import { Event } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
 import * as DOM from 'vs/base/browser/dom';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -251,7 +252,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		return (index: number): void => {
 			// If the user is deleting a new row that hasn't been committed yet then use the revert code
 			if (self.newRowVisible && index === self.dataSet.dataRows.getLength() - 2) {
-				self.revertCurrentRow();
+				self.revertCurrentRow().catch(onUnexpectedError);
 			}
 			else if (self.isNullRow(index)) {
 				// Don't try to delete NULL (new) row since it doesn't actually exist and will throw an error
@@ -270,7 +271,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	onRevertRow(): () => void {
 		const self = this;
 		return (): void => {
-			self.revertCurrentRow();
+			self.revertCurrentRow().catch(onUnexpectedError);
 		};
 	}
 
@@ -478,7 +479,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		let handled: boolean = false;
 
 		if (e.keyCode === KeyCode.Escape) {
-			this.revertCurrentRow();
+			this.revertCurrentRow().catch(onUnexpectedError);
 			handled = true;
 		}
 		return handled;
@@ -714,7 +715,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					self.setCellDirtyState(self.currentCell.row, self.currentCell.column, result.cell.isDirty);
 				}, (error: any) => {
 					self.notificationService.error(error);
-				});
+				}).catch(onUnexpectedError);
 			}
 		}
 	}

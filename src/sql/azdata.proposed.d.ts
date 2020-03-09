@@ -206,4 +206,12 @@ declare module 'azdata' {
 	export interface CheckBoxProperties {
 		required?: boolean;
 	}
+
+	export namespace nb {
+		/**
+		 * An event that is emitted when the active Notebook editor is changed.
+		 */
+		export const onDidChangeActiveNotebookEditor: vscode.Event<NotebookEditor>;
+	}
 }
+
