@@ -3134,7 +3134,7 @@
 					"flags": "preview"
 				},
 				{
-                  "extensionId": "63",
+                  "extensionId": "64",
                   "extensionName": "qpi",
                   "displayName": "Query Performance Insight",
                   "shortDescription": "ADS UI for the latest version of QPI library",
