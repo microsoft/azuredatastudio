@@ -3132,7 +3132,47 @@
 					],
 					"statistics": [],
 					"flags": "preview"
-				}
+				},
+				{
+                  "extensionId": "63",
+                  "extensionName": "qpi",
+                  "displayName": "Query Performance Insight",
+                  "shortDescription": "ADS UI for the latest version of QPI library",
+                  "publisher": {
+                    "displayName":"Jovan Popovic",
+                    "publisherId": "jocapc",
+                    "publisherName":"jocapc"
+                  },
+                  "versions": [
+                    {
+                      "version": "0.1.6",
+                      "lastUpdated": "03/08/2020",
+                      "assetUri": "",
+                      "fallbackAssetUri": "fallbackAssetUri",
+                      "files": [
+                        {
+                          "assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+                          "source": "https://github.com/JocaPC/AzureDataStudio-QPI/releases/download/stable/qpi-0.1.6.vsix"
+                        },
+                      {
+                        "assetType": "Microsoft.VisualStudio.Services.Content.Details",
+                      "source": "https://raw.githubusercontent.com/jocapc/AzureDataStudio-QPI/master/README.md"
+                      },
+                      {
+                        "assetType": "Microsoft.VisualStudio.Services.Content.License",
+                        "source": "https://raw.githubusercontent.com/jocapc/AzureDataStudio-QPI/master/LICENSE"
+                      }
+                      ],
+                      "properties": [
+                        { "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
+                        { "key": "Microsoft.VisualStudio.Services.Links.Source", "value": "https://github.com/jocapc/AzureDataStudio-QPI"},
+                        { "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"}
+                      ]
+                    }
+                  ],
+                  "statistics": [],
+                  "flags": "preview"
+                }
 			],
 			"resultMetadata": [
 				{
@@ -3140,7 +3180,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 53
+							"count": 54
 						}
 					]
 				}
