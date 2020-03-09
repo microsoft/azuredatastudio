@@ -333,6 +333,7 @@ export class ChartView extends Disposable implements IPanelView {
 			case ControlType.combo:
 				//pass options into changeAltNames in order for SelectBox to show user-friendly names.
 				let dropdown = new SelectBox(option.displayableOptions || this.changeToAltNames(option.options), undefined, this._contextViewService);
+				dropdown.setAriaLabel(option.label);
 				dropdown.select(option.options.indexOf(value));
 				dropdown.render(optionInput);
 				dropdown.onDidSelect(e => {
@@ -352,6 +353,7 @@ export class ChartView extends Disposable implements IPanelView {
 				break;
 			case ControlType.input:
 				let input = new InputBox(optionInput, this._contextViewService);
+				input.setAriaLabel(option.label);
 				input.value = value || '';
 				input.onDidChange(e => {
 					if (this.options[option.configEntry] !== e) {
@@ -370,6 +372,7 @@ export class ChartView extends Disposable implements IPanelView {
 				break;
 			case ControlType.numberInput:
 				let numberInput = new InputBox(optionInput, this._contextViewService, { type: 'number' });
+				numberInput.setAriaLabel(option.label);
 				numberInput.value = value || '';
 				numberInput.onDidChange(e => {
 					if (this.options[option.configEntry] !== Number(e)) {
@@ -388,6 +391,7 @@ export class ChartView extends Disposable implements IPanelView {
 				break;
 			case ControlType.dateInput:
 				let dateInput = new InputBox(optionInput, this._contextViewService, { type: 'datetime-local' });
+				dateInput.setAriaLabel(option.label);
 				dateInput.value = value || '';
 				dateInput.onDidChange(e => {
 					if (this.options[option.configEntry] !== e) {
