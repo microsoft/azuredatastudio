@@ -58,6 +58,10 @@
         "title": "%mls.command.managePackages%"
       },
       {
+        "command": "mls.command.predictModel",
+        "title": "%mls.command.predictModel%"
+      },
+      {
         "command": "mls.command.manageModels",
         "title": "%mls.command.manageModels%"
       },
@@ -110,7 +114,7 @@
                   "mls.command.managePackages",
                   "mls.command.manageLanguages",
                   "mls.command.manageModels",
-                  "mls.command.registerModel"
+                  "mls.command.predictModel"
                 ]
               }
             },

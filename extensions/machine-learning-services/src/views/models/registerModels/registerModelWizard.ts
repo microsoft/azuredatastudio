@@ -4,15 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { ModelViewBase } from './modelViewBase';
-import { ApiWrapper } from '../../common/apiWrapper';
-import { ModelSourcesComponent, ModelSourceType } from './modelSourcesComponent';
-import { LocalModelsComponent } from './localModelsComponent';
-import { AzureModelsComponent } from './azureModelsComponent';
-import * as constants from '../../common/constants';
-import { WizardView } from '../wizardView';
-import { ModelSourcePage } from './modelSourcePage';
-import { ModelDetailsPage } from './modelDetailsPage';
+import { ModelViewBase } from '../modelViewBase';
+import { ApiWrapper } from '../../../common/apiWrapper';
+import { ModelSourcesComponent, ModelSourceType } from '../modelSourcesComponent';
+import { LocalModelsComponent } from '../localModelsComponent';
+import { AzureModelsComponent } from '../azureModelsComponent';
+import * as constants from '../../../common/constants';
+import { WizardView } from '../../wizardView';
+import { ModelSourcePage } from '../modelSourcePage';
+import { ModelDetailsPage } from '../modelDetailsPage';
 
 /**
  * Wizard to register a model
@@ -47,19 +47,20 @@ export class RegisterModelWizard extends ModelViewBase {
 		wizard.generateScriptButton.hidden = true;
 		wizard.displayPageTitles = true;
 		wizard.registerNavigationValidator(async (pageInfo: azdata.window.WizardPageChangeInfo) => {
-			if (pageInfo.newPage === undefined) {
+			let validated = this.wizardView ? await this.wizardView.validate(pageInfo) : false;
+			if (validated && pageInfo.newPage === undefined) {
 				wizard.cancelButton.enabled = false;
 				wizard.backButton.enabled = false;
-				await this.registerModel();
+				let result = await this.registerModel();
 				wizard.cancelButton.enabled = true;
 				wizard.backButton.enabled = true;
 				if (this._parentView) {
-					this._parentView?.refresh();
+					await this._parentView?.refresh();
 				}
-				return true;
+				return result;
 
 			}
-			return true;
+			return validated;
 		});
 
 		wizard.open();
