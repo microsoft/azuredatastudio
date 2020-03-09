@@ -60,9 +60,9 @@ export class BookTrustManager implements IBookTrustManager {
 
 		if (trustedBookItem) {
 			let fullBookBaseUriWithContent = path.join(trustedBookItem.book.root, 'content', path.sep);
-			let requestingNotebookFormattedUri = normalizedNotebookUri.replace(fullBookBaseUriWithContent, '').replace('.ipynb', '');
+			let requestingNotebookFormattedUri = path.normalize(normalizedNotebookUri.replace(fullBookBaseUriWithContent, '').replace('.ipynb', ''));
 			let notebookInTOC = trustedBookItem.book.tableOfContents.sections.find(jupyterSection => {
-				let normalizedJupyterSectionUrl = jupyterSection.url && path.normalize(jupyterSection.url).replace(/^\\/, '');
+				let normalizedJupyterSectionUrl = jupyterSection.url && path.normalize(jupyterSection.url.replace(/^\\/, '').replace(/^\//, ''));
 				return normalizedJupyterSectionUrl === requestingNotebookFormattedUri;
 			});
 			isPartOfNotebook = !!notebookInTOC;

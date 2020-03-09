@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as should from 'should';
+import * as path from 'path';
 import { IBookTrustManager, BookTrustManager } from '../../book/bookTrustManager';
 
 describe('BookTrustManagerTests', function () {
@@ -14,7 +15,7 @@ describe('BookTrustManagerTests', function () {
 		let workspaceDetails: object;
 		let books: any[];
 
-		this.beforeEach(() => {
+		beforeEach(() => {
 			trustedSubFolders = ['/SubFolder/'];
 
 			workspaceDetails = {
@@ -46,10 +47,10 @@ describe('BookTrustManagerTests', function () {
 							tableOfContents: {
 								sections: [
 									{
-										url: '\\sample\\notebook'
+										url: path.join(path.sep, 'sample', 'notebook')
 									},
 									{
-										url: '\\sample\\notebook2'
+										url: path.join(path.sep, 'sample', 'notebook2')
 									}
 								]
 							}
@@ -61,7 +62,7 @@ describe('BookTrustManagerTests', function () {
 							tableOfContents: {
 								sections: [
 									{
-										url: '\\sample\\notebook'
+										url: path.join(path.sep, 'sample', 'notebook')
 									}
 								]
 							}
@@ -77,7 +78,7 @@ describe('BookTrustManagerTests', function () {
 							tableOfContents: {
 								sections: [
 									{
-										url: '\\sample\\notebook'
+										url: path.join(path.sep, 'sample', 'notebook')
 									}
 								]
 							}
@@ -183,10 +184,10 @@ describe('BookTrustManagerTests', function () {
 							tableOfContents: {
 								sections: [
 									{
-										url: '\\sample\\notebook'
+										url: path.join(path.sep, 'sample', 'notebook')
 									},
 									{
-										url: '\\sample\\notebook2'
+										url: path.join(path.sep, 'sample', 'notebook2')
 									}
 								]
 							}
@@ -200,10 +201,10 @@ describe('BookTrustManagerTests', function () {
 							tableOfContents: {
 								sections: [
 									{
-										url: '\\sample\\notebook'
+										url: path.join(path.sep, 'sample', 'notebook')
 									},
 									{
-										url: '\\sample\\notebook2'
+										url: path.join(path.sep, 'sample', 'notebook2')
 									}
 								]
 							}
@@ -280,57 +281,5 @@ describe('BookTrustManagerTests', function () {
 			should(isNotebookTrusted).be.false("Notebook should NOT be trusted");
 		});
 
-	});
-
-	describe('TrustingFQN', () => {
-
-		let bookTrustManager: IBookTrustManager;
-		let trustedFolders: string[];
-		let workspaceDetails: object;
-		let books: any[];
-
-		this.beforeEach(() => {
-			trustedFolders = ['/temp/SubFolder/'];
-
-			workspaceDetails = {
-				// @ts-ignore
-				getConfiguration: () => {
-					return {
-						get: () => trustedFolders,
-						update: () => { }
-					};
-				},
-				workspaceFolders: []
-			};
-
-			books = [{
-				bookItems: [{
-					book: {
-						root: '/temp/SubFolder/',
-						tableOfContents: {
-							sections: [
-								{
-									url: 'temp\\SubFolder\\content\\sample\\notebook'
-								},
-								{
-									url: 'temp\\SubFolder\\content\\sample\\notebook2'
-								}
-							]
-						}
-					}
-				}]
-			}];
-			// @ts-ignore
-			bookTrustManager = new BookTrustManager(books, workspaceDetails);
-		});
-
-		it('should trust notebooks that contain fqn in the uri', async () => {
-			bookTrustManager.setBookAsTrusted('/temp/SubFolder/');
-
-			let notebookUri = '/temp/SubFolder/content/sample/notebook.ipynb';
-			let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
-
-			should(isNotebookTrusted).be.false("Notebook should be trusted");
-		});
 	});
 });

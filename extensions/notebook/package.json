@@ -172,11 +172,6 @@
         }
       },
       {
-        "command": "notebook.command.untrustBook",
-        "title": "%title.untrustBook%",
-        "category": "%books-preview-category%"
-      },
-      {
         "command": "notebook.command.searchBook",
         "title": "%title.searchJupyterBook%",
         "category": "%books-preview-category%",
@@ -307,9 +302,6 @@
         },
         {
           "command": "notebook.command.trustBook"
-        },
-        {
-          "command": "notebook.command.untrustBook"
         }
       ],
       "touchBar": [
