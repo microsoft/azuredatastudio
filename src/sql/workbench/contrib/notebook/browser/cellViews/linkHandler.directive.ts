@@ -58,7 +58,7 @@ export class LinkHandlerDirective {
 			// ignore
 		}
 		if (uri && this.openerService && this.isSupportedLink(uri)) {
-			if (uri.fragment && uri.fragment.length > 0 && uri.path === this.workbenchFilePath.path) {
+			if (uri.fragment && uri.fragment.length > 0 && uri.path.toLowerCase() === this.workbenchFilePath.path.toLowerCase()) {
 				this.notebookService.navigateTo(this.notebookUri, uri.fragment);
 			} else {
 				this.openerService.open(uri).catch(onUnexpectedError);
