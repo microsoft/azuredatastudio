@@ -10,9 +10,10 @@ import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { $ } from 'vs/base/browser/dom';
+import { ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
 
 suite('Advanced options helper tests', () => {
-	let possibleInputs: string[];
+	let possibleInputs: ISelectOptionItem[];
 	let options: { [name: string]: any };
 	let categoryOption: azdata.ServiceOption;
 	let booleanOption: azdata.ServiceOption;

@@ -13,6 +13,7 @@ import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
 import { startsWith } from 'vs/base/common/strings';
 import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
+import { ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
 
 export interface IOptionElement {
 	optionWidget: any;
@@ -22,7 +23,7 @@ export interface IOptionElement {
 
 export function createOptionElement(option: azdata.ServiceOption, rowContainer: HTMLElement, options: { [name: string]: any },
 	optionsMap: { [optionName: string]: IOptionElement }, contextViewService: IContextViewService, onFocus: (name) => void): void {
-	let possibleInputs: string[] = [];
+	let possibleInputs: ISelectOptionItem[] = [];
 	let optionValue = getOptionValueAndCategoryValues(option, options, possibleInputs);
 	let optionWidget: any;
 	let inputElement: HTMLElement;
@@ -67,7 +68,7 @@ export function createOptionElement(option: azdata.ServiceOption, rowContainer: 
 	inputElement.onfocus = () => onFocus(option.name);
 }
 
-export function getOptionValueAndCategoryValues(option: azdata.ServiceOption, options: { [optionName: string]: any }, possibleInputs: string[]): any {
+export function getOptionValueAndCategoryValues(option: azdata.ServiceOption, options: { [optionName: string]: any }, possibleInputs: ISelectOptionItem[]): any {
 	let optionValue = option.defaultValue;
 	if (options[option.name] !== undefined) {
 		// if the value type is boolean, the option value can be either boolean or string
@@ -85,18 +86,18 @@ export function getOptionValueAndCategoryValues(option: azdata.ServiceOption, op
 	if (option.valueType === ServiceOptionType.boolean || option.valueType === ServiceOptionType.category) {
 		// If the option is not required, the empty string should be add at the top of possible choices
 		if (!option.isRequired) {
-			possibleInputs.push('');
+			possibleInputs.push({ text: '' });
 		}
 
 		if (option.valueType === ServiceOptionType.boolean) {
-			possibleInputs.push(trueInputValue, falseInputValue);
+			possibleInputs.push({ text: trueInputValue }, { text: falseInputValue });
 		} else {
-			option.categoryValues.map(c => possibleInputs.push(c.name));
+			option.categoryValues.map(c => possibleInputs.push({ text: c.name, description: c.displayName }));
 		}
 
 		// If the option value is not set and default value is null, the option value should be set to the first possible input.
 		if (optionValue === null || optionValue === undefined) {
-			optionValue = possibleInputs[0];
+			optionValue = possibleInputs[0].text;
 		}
 	}
 	return optionValue;
