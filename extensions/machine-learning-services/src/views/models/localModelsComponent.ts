@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
+
 import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 import * as constants from '../../common/constants';
@@ -43,9 +45,17 @@ export class LocalModelsComponent extends ModelViewBase implements IDataComponen
 			}
 		}).component();
 		this._localBrowse.onDidClick(async () => {
-			const filePath = await this.getLocalFilePath();
+
+			let options: vscode.OpenDialogOptions = {
+				canSelectFiles: true,
+				canSelectFolders: false,
+				canSelectMany: false,
+				filters: { 'ONNX File': ['onnx'] }
+			};
+
+			const filePaths = await this.getLocalPaths(options);
 			if (this._localPath) {
-				this._localPath.value = filePath;
+				this._localPath.value = filePaths && filePaths.length > 0 ? filePaths[0] : '';
 			}
 		});
 
