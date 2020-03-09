@@ -63,7 +63,6 @@ export class ConfigureChartDialog extends Modal {
 	}
 
 	public close() {
-		this.dispose();
 		this.hide();
 	}
 }
