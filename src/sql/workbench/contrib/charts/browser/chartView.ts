@@ -102,11 +102,11 @@ export class ChartView extends Disposable implements IPanelView {
 		this._createInsightAction = this._instantiationService.createInstance(CreateInsightAction);
 		this._copyAction = this._instantiationService.createInstance(CopyAction);
 		this._saveAction = this._instantiationService.createInstance(SaveImageAction);
-		this._configureChartAction = this._instantiationService.createInstance(ConfigureChartAction, this);
 
 		if (this._renderOptionsInline) {
 			this.taskbar.setContent([{ action: this._createInsightAction }]);
 		} else {
+			this._configureChartAction = this._instantiationService.createInstance(ConfigureChartAction, this);
 			this.taskbar.setContent([{ action: this._createInsightAction }, { action: this._configureChartAction }]);
 		}
 
