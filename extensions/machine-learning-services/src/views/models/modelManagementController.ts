@@ -149,7 +149,7 @@ export class ModelManagementController extends ControllerBase {
 		view.on(PredictModelEventName, async (arg) => {
 			let predictArgs = <PredictModelEventArgs>arg;
 			await this.executeAction(view, PredictModelEventName, this.generatePredictScript, this._predictService,
-				predictArgs, predictArgs.model);
+				predictArgs, predictArgs.model, predictArgs.filePath);
 		});
 		view.on(SourceModelSelectedEventName, () => {
 			view.refresh();

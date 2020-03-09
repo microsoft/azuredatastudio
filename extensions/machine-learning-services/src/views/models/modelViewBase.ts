@@ -27,7 +27,6 @@ export interface RegisterAzureModelEventArgs extends AzureModelResource, Registe
 export interface PredictModelEventArgs extends PredictParameters {
 	model?: RegisteredModel;
 	filePath?: string;
-	loadFromRegisteredModel: boolean;
 }
 
 export interface RegisterLocalModelEventArgs extends RegisterModelEventArgs {

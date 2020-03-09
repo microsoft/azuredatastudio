@@ -51,7 +51,7 @@ export class PredictService {
 		let query = '';
 		if (registeredModel && registeredModel.id) {
 			query = this.getPredictScriptWithModelId(
-				registeredModel.id || 0,
+				registeredModel.id,
 				predictParams.inputColumns || [],
 				predictParams.outputColumns || [],
 				predictParams);
