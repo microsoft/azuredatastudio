@@ -17,7 +17,6 @@ describe('BookTrustManagerTests', function () {
 	describe('TrustingInWorkspaces', () => {
 		let bookTrustManager: IBookTrustManager;
 		let trustedSubFolders: string[];
-		let workspaceDetails: object;
 		let books: any[];
 
 		beforeEach(() => {
@@ -177,12 +176,10 @@ describe('BookTrustManagerTests', function () {
 	describe('TrustingInFolder', () => {
 
 		let bookTrustManager: IBookTrustManager;
-		let trustedFolders: string[];
-		let workspaceDetails: object;
 		let books: any[];
 
-		this.beforeEach(() => {
-			trustedFolders = ['/temp/SubFolder/'];
+		beforeEach(() => {
+			let trustedFolders = ['/temp/SubFolder/'];
 
 			// Mock Workspace Configuration
 			let workspaceConfigurtionMock: TypeMoq.IMock<WorkspaceConfiguration> = TypeMoq.Mock.ofType<WorkspaceConfiguration>();

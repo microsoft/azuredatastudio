@@ -301,7 +301,8 @@
           "when": "false"
         },
         {
-          "command": "notebook.command.trustBook"
+          "command": "notebook.command.trustBook",
+          "when": "view == bookTreeView && viewItem == savedBook"
         }
       ],
       "touchBar": [
