@@ -169,7 +169,6 @@ export class BookTreeItem extends vscode.TreeItem {
 		let normalizedNotebookUri = path.normalize(notebookUri);
 		let isPartOfNotebook: boolean = false;
 		let fullBookBaseUriWithContent = path.join(this.root, 'content', path.sep);
-		console.log('fullBookBaseUriWithContent:' + fullBookBaseUriWithContent);
 		let requestingNotebookFormattedUri = path.normalize(normalizedNotebookUri.replace(fullBookBaseUriWithContent, '').replace('.ipynb', ''));
 		let notebookInTOC = this.tableOfContents.sections.find(jupyterSection => {
 			let normalizedJupyterSectionUrl = jupyterSection.url && path.normalize(jupyterSection.url.replace(/^\\/, '').replace(/^\//, ''));
