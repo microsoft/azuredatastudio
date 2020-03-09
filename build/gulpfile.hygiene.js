@@ -34,7 +34,8 @@ const all = [
 	'src/**/*',
 	'test/**/*',
 	'!test/**/out/**',
-	'!**/node_modules/**'
+	'!**/node_modules/**',
+	'!build/actions/**/dist/*' // {{ SQL CARBON EDIT }}
 ];
 
 const indentationFilter = [
@@ -95,6 +96,7 @@ const indentationFilter = [
 	'!**/*.dockerfile',
 	'!extensions/markdown-language-features/media/*.js',
 	// {{SQL CARBON EDIT}}
+	'!build/actions/**/dist/*',
 	'!**/*.{xlf,docx,sql,vsix,bacpac,ipynb}',
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
