@@ -70,7 +70,19 @@ export class WizardView extends MainViewBase {
 		this._wizard.onPageChanged(async (info) => {
 			this.onWizardPageChanged(info);
 		});
+
 		return this._wizard;
+	}
+
+	public async validate(pageInfo: azdata.window.WizardPageChangeInfo): Promise<boolean> {
+		if (pageInfo.lastPage !== undefined) {
+			let idxLast = pageInfo.lastPage;
+			let lastPage = this._pages[idxLast];
+			if (lastPage && lastPage.validate) {
+				return await lastPage.validate();
+			}
+		}
+		return true;
 	}
 
 	private onWizardPageChanged(pageInfo: azdata.window.WizardPageChangeInfo) {

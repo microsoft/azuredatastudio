@@ -194,7 +194,7 @@ export function makeLinuxPath(filePath: string): string {
  * @param databaseName
  * @param script
  */
-export function withDbChange(currentDb: string, databaseName: string, script: string): string {
+export function getScriptWithDBChange(currentDb: string, databaseName: string, script: string): string {
 	if (!currentDb) {
 		currentDb = 'master';
 	}
@@ -220,7 +220,7 @@ export function getRegisteredModelsThreePartsName(config: Config) {
 
 /**
  * Returns full name of model registration table
- * @param config config
+ * @param config config object
  */
 export function getRegisteredModelsTowPartsName(config: Config) {
 	const schema = doubleEscapeSingleBrackets(config.registeredModelTableSchemaName);

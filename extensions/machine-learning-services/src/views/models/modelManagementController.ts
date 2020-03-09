@@ -9,11 +9,16 @@ import { azureResource } from '../../typings/azure-resource';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { AzureModelRegistryService } from '../../modelManagement/azureModelRegistryService';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
-import { RegisteredModel, WorkspaceModel } from '../../modelManagement/interfaces';
+import { RegisteredModel, WorkspaceModel, RegisteredModelDetails } from '../../modelManagement/interfaces';
 import { PredictParameters, DatabaseTable } from '../../prediction/interfaces';
 import { RegisteredModelService } from '../../modelManagement/registeredModelService';
 import { RegisteredModelsDialog } from './registerModels/registeredModelsDialog';
-import { AzureResourceEventArgs, ListAzureModelsEventName, ListSubscriptionsEventName, ListModelsEventName, ListWorkspacesEventName, ListGroupsEventName, ListAccountsEventName, RegisterLocalModelEventName, RegisterLocalModelEventArgs, RegisterAzureModelEventName, RegisterAzureModelEventArgs, ModelViewBase, SourceModelSelectedEventName, RegisterModelEventName, DownloadAzureModelEventName, ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, PredictModelEventName, PredictModelEventArgs } from './modelViewBase';
+import {
+	AzureResourceEventArgs, ListAzureModelsEventName, ListSubscriptionsEventName, ListModelsEventName, ListWorkspacesEventName,
+	ListGroupsEventName, ListAccountsEventName, RegisterLocalModelEventName, RegisterLocalModelEventArgs, RegisterAzureModelEventName,
+	RegisterAzureModelEventArgs, ModelViewBase, SourceModelSelectedEventName, RegisterModelEventName, DownloadAzureModelEventName,
+	ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, PredictModelEventName, PredictModelEventArgs
+} from './modelViewBase';
 import { ControllerBase } from '../controllerBase';
 import { RegisterModelWizard } from './registerModels/registerModelWizard';
 import * as fs from 'fs';
@@ -202,7 +207,7 @@ export class ModelManagementController extends ControllerBase {
 		return await service.getModels(account, subscription, resourceGroup, workspace) || [];
 	}
 
-	private async registerLocalModel(service: RegisteredModelService, filePath: string, details: RegisteredModel | undefined): Promise<void> {
+	private async registerLocalModel(service: RegisteredModelService, filePath: string, details: RegisteredModelDetails | undefined): Promise<void> {
 		if (filePath) {
 			await service.registerLocalModel(filePath, details);
 		} else {
@@ -219,7 +224,7 @@ export class ModelManagementController extends ControllerBase {
 		resourceGroup: azureResource.AzureResource | undefined,
 		workspace: Workspace | undefined,
 		model: WorkspaceModel | undefined,
-		details: RegisteredModel | undefined): Promise<void> {
+		details: RegisteredModelDetails | undefined): Promise<void> {
 		if (!account || !subscription || !resourceGroup || !workspace || !model || !details) {
 			throw Error(constants.invalidAzureResourceError);
 		}
@@ -248,12 +253,13 @@ export class ModelManagementController extends ControllerBase {
 	private async generatePredictScript(
 		predictService: PredictService,
 		predictParams: PredictParameters,
-		registeredMode: RegisteredModel
+		registeredModel: RegisteredModel | undefined,
+		filePath: string | undefined
 	): Promise<string> {
-		if (!predictParams || !registeredMode) {
-			throw Error('Fail');
+		if (!predictParams) {
+			throw Error(constants.invalidModelToPredictError);
 		}
-		const result = await predictService.generatePredictScript(predictParams, registeredMode);
+		const result = await predictService.generatePredictScript(predictParams, registeredModel, filePath);
 		return result;
 	}
 

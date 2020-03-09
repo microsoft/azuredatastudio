@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import { azureResource } from '../../typings/azure-resource';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { ViewBase } from '../viewBase';
-import { RegisteredModel, WorkspaceModel } from '../../modelManagement/interfaces';
+import { RegisteredModel, WorkspaceModel, RegisteredModelDetails } from '../../modelManagement/interfaces';
 import { PredictParameters, DatabaseTable } from '../../prediction/interfaces';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { AzureWorkspaceResource, AzureModelResource } from '../interfaces';
@@ -17,7 +17,7 @@ export interface AzureResourceEventArgs extends AzureWorkspaceResource {
 }
 
 export interface RegisterModelEventArgs extends AzureWorkspaceResource {
-	details?: RegisteredModel
+	details?: RegisteredModelDetails
 }
 
 export interface RegisterAzureModelEventArgs extends AzureModelResource, RegisterModelEventArgs {
@@ -25,7 +25,9 @@ export interface RegisterAzureModelEventArgs extends AzureModelResource, Registe
 }
 
 export interface PredictModelEventArgs extends PredictParameters {
-	model?: WorkspaceModel
+	model?: RegisteredModel;
+	filePath?: string;
+	loadFromRegisteredModel: boolean;
 }
 
 export interface RegisterLocalModelEventArgs extends RegisterModelEventArgs {
@@ -142,7 +144,7 @@ export abstract class ModelViewBase extends ViewBase {
 	 * registers local model
 	 * @param localFilePath local file path
 	 */
-	public async registerLocalModel(localFilePath: string | undefined, details: RegisteredModel | undefined): Promise<void> {
+	public async registerLocalModel(localFilePath: string | undefined, details: RegisteredModelDetails | undefined): Promise<void> {
 		const args: RegisterLocalModelEventArgs = {
 			filePath: localFilePath,
 			details: details
@@ -162,7 +164,7 @@ export abstract class ModelViewBase extends ViewBase {
 	 * registers azure model
 	 * @param args azure resource
 	 */
-	public async registerAzureModel(resource: AzureModelResource | undefined, details: RegisteredModel | undefined): Promise<void> {
+	public async registerAzureModel(resource: AzureModelResource | undefined, details: RegisteredModelDetails | undefined): Promise<void> {
 		const args: RegisterAzureModelEventArgs = Object.assign({}, resource, {
 			details: details
 		});
@@ -173,9 +175,11 @@ export abstract class ModelViewBase extends ViewBase {
 	 * registers azure model
 	 * @param args azure resource
 	 */
-	public async generatePredictScript(model: RegisteredModel | undefined, params: PredictParameters | undefined): Promise<void> {
+	public async generatePredictScript(model: RegisteredModel | undefined, filePath: string | undefined, params: PredictParameters | undefined): Promise<void> {
 		const args: PredictModelEventArgs = Object.assign({}, params, {
-			model: model
+			model: model,
+			filePath: filePath,
+			loadFromRegisteredModel: !filePath
 		});
 		return await this.sendDataRequest(PredictModelEventName, args);
 	}

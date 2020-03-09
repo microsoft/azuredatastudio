@@ -9,7 +9,7 @@ import { ApiWrapper } from '../common/apiWrapper';
 import * as utils from '../common/utils';
 import { Config } from '../configurations/config';
 import { QueryRunner } from '../common/queryRunner';
-import { RegisteredModel } from './interfaces';
+import { RegisteredModel, RegisteredModelDetails } from './interfaces';
 import { ModelImporter } from './modelImporter';
 import * as constants from '../common/constants';
 
@@ -60,7 +60,8 @@ export class RegisteredModelService {
 		let connection = await this.getCurrentConnection();
 		let updatedModel: RegisteredModel | undefined = undefined;
 		if (connection) {
-			let result = await this.runUpdateModelQuery(connection, model);
+			const query = this.getUpdateModelScript(connection.databaseName, model);
+			let result = await this._queryRunner.safeRunQuery(connection, query);
 			if (result && result.rows && result.rows.length > 0) {
 				const row = result.rows[0];
 				updatedModel = this.loadModelData(row);
@@ -69,7 +70,7 @@ export class RegisteredModelService {
 		return updatedModel;
 	}
 
-	public async registerLocalModel(filePath: string, details: RegisteredModel | undefined) {
+	public async registerLocalModel(filePath: string, details: RegisteredModelDetails | undefined) {
 		let connection = await this.getCurrentConnection();
 		if (connection) {
 			let currentModels = await this.getRegisteredModels();
@@ -96,16 +97,8 @@ export class RegisteredModelService {
 		return await this._apiWrapper.getCurrentConnection();
 	}
 
-	private async runUpdateModelQuery(connection: azdata.connection.ConnectionProfile, model: RegisteredModel): Promise<azdata.SimpleExecuteResult | undefined> {
-		try {
-			return await this._queryRunner.runQuery(connection, this.getUpdateModelScript(connection.databaseName, this._config.registeredModelDatabaseName, this._config.registeredModelTableName, model));
-		} catch {
-			return undefined;
-		}
-	}
-
 	private getConfigureQuery(currentDatabaseName: string): string {
-		return utils.withDbChange(currentDatabaseName, this._config.registeredModelDatabaseName, this.configureTable());
+		return utils.getScriptWithDBChange(currentDatabaseName, this._config.registeredModelDatabaseName, this.configureTable());
 	}
 
 	private registeredModelsQuery(): string {
@@ -178,25 +171,19 @@ export class RegisteredModelService {
 		`;
 	}
 
-	private getUpdateModelScript(currentDatabaseName: string, databaseName: string, tableName: string, model: RegisteredModel): string {
+	private getUpdateModelScript(currentDatabaseName: string, model: RegisteredModel): string {
+		let updateScript = `
+		UPDATE ${utils.getRegisteredModelsTowPartsName(this._config)}
+		SET
+		name = '${utils.doubleEscapeSingleQuotes(model.title || '')}',
+		version = '${utils.doubleEscapeSingleQuotes(model.version || '')}',
+		description = '${utils.doubleEscapeSingleQuotes(model.description || '')}'
+		WHERE artifact_id = ${model.id}`;
 
-		if (!currentDatabaseName) {
-			currentDatabaseName = 'master';
-		}
-		let escapedTableName = utils.doubleEscapeSingleBrackets(tableName);
-		let escapedDbName = utils.doubleEscapeSingleBrackets(databaseName);
-		let escapedCurrentDbName = utils.doubleEscapeSingleBrackets(currentDatabaseName);
 		return `
-		USE [${escapedDbName}]
-		UPDATE ${escapedTableName}
-			SET
-			name = '${utils.doubleEscapeSingleQuotes(model.title || '')}',
-			version = '${utils.doubleEscapeSingleQuotes(model.version || '')}',
-			description = '${utils.doubleEscapeSingleQuotes(model.description || '')}'
-			WHERE artifact_id = ${model.id};
-
-		USE [${escapedCurrentDbName}]
-		SELECT artifact_id, artifact_name, name, description, version, created from ${escapedDbName}.dbo.[${escapedTableName}]
+		${utils.getScriptWithDBChange(currentDatabaseName, this._config.registeredModelDatabaseName, updateScript)}
+		SELECT artifact_id, artifact_name, name, description, version, created
+		FROM ${utils.getRegisteredModelsThreePartsName(this._config)}
 		WHERE artifact_id = ${model.id};
 		`;
 	}

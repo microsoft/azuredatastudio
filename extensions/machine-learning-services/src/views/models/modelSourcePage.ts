@@ -103,4 +103,21 @@ export class ModelSourcePage extends ModelViewBase implements IPageView, IDataCo
 	public get title(): string {
 		return constants.modelSourcePageTitle;
 	}
+
+	public validate(): Promise<boolean> {
+		let validated = false;
+		if (this.modelResources && this.modelResources.data === ModelSourceType.Local && this.localModelsComponent) {
+			validated = this.localModelsComponent.data !== undefined && this.localModelsComponent.data.length > 0;
+
+		} else if (this.modelResources && this.modelResources.data === ModelSourceType.Azure && this.azureModelsComponent) {
+			validated = this.azureModelsComponent.data !== undefined && this.azureModelsComponent.data.model !== undefined;
+
+		} else if (this.modelResources && this.modelResources.data === ModelSourceType.RegisteredModels && this.registeredModelsComponent) {
+			validated = this.registeredModelsComponent.data !== undefined;
+		}
+		if (!validated) {
+			this.showErrorMessage(constants.invalidModelToSelectError);
+		}
+		return Promise.resolve(validated);
+	}
 }

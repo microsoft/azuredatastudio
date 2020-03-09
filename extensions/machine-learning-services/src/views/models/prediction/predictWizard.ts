@@ -39,7 +39,6 @@ export class PredictWizard extends ModelViewBase {
 	 */
 	public open(): void {
 		this.modelSourcePage = new ModelSourcePage(this._apiWrapper, this, [ModelSourceType.RegisteredModels, ModelSourceType.Local, ModelSourceType.Azure]);
-		//this.modelDetailsPage = new ModelDetailsPage(this._apiWrapper, this);
 		this.columnsSelectionPage = new ColumnsSelectionPage(this._apiWrapper, this);
 		this.wizardView = new WizardView(this._apiWrapper);
 
@@ -52,7 +51,8 @@ export class PredictWizard extends ModelViewBase {
 		wizard.generateScriptButton.hidden = true;
 		wizard.displayPageTitles = true;
 		wizard.registerNavigationValidator(async (pageInfo: azdata.window.WizardPageChangeInfo) => {
-			if (pageInfo.newPage === undefined) {
+			let validated = this.wizardView ? await this.wizardView.validate(pageInfo) : false;
+			if (validated && pageInfo.newPage === undefined) {
 				wizard.cancelButton.enabled = false;
 				wizard.backButton.enabled = false;
 				await this.predict();
@@ -64,7 +64,7 @@ export class PredictWizard extends ModelViewBase {
 				return true;
 
 			}
-			return true;
+			return validated;
 		});
 
 		wizard.open();
@@ -84,17 +84,17 @@ export class PredictWizard extends ModelViewBase {
 
 	private async predict(): Promise<boolean> {
 		try {
-
 			let modelFilePath: string = '';
+			let registeredModel: RegisteredModel | undefined = undefined;
 			if (this.modelResources && this.localModelsComponent && this.modelResources.data === ModelSourceType.Local) {
 				modelFilePath = this.localModelsComponent.data;
 			} else if (this.modelResources && this.azureModelsComponent && this.modelResources.data === ModelSourceType.Azure) {
 				modelFilePath = await this.downloadAzureModel(this.azureModelsComponent?.data);
+			} else {
+				registeredModel = this.modelSourcePage?.registeredModelsComponent?.data;
 			}
-			let registeredModel: RegisteredModel = Object.assign({}, { filePath: modelFilePath },
-				this.modelSourcePage?.registeredModelsComponent?.data);
 
-			await this.generatePredictScript(registeredModel, this.columnsSelectionPage?.data);
+			await this.generatePredictScript(registeredModel, modelFilePath, this.columnsSelectionPage?.data);
 			return true;
 		} catch (error) {
 			this.showErrorMessage(`${constants.modelFailedToRegister} ${constants.getErrorMessage(error)}`);
@@ -102,14 +102,10 @@ export class PredictWizard extends ModelViewBase {
 		}
 	}
 
-	private loadPages(): void {
-	}
-
 	/**
 	 * Refresh the pages
 	 */
 	public async refresh(): Promise<void> {
-		this.loadPages();
 		await this.wizardView?.refresh();
 	}
 }

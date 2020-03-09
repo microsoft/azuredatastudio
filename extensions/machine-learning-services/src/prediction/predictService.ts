@@ -44,18 +44,19 @@ export class PredictService {
 	 */
 	public async generatePredictScript(
 		predictParams: PredictParameters,
-		registeredModel: RegisteredModel
+		registeredModel: RegisteredModel | undefined,
+		filePath: string | undefined
 	): Promise<string> {
 		let connection = await this.getCurrentConnection();
 		let query = '';
-		if (registeredModel.id) {
+		if (registeredModel && registeredModel.id) {
 			query = this.getPredictScriptWithModelId(
 				registeredModel.id || 0,
 				predictParams.inputColumns || [],
 				predictParams.outputColumns || [],
 				predictParams);
-		} else {
-			let modelBytes = await utils.readFileInHex(registeredModel.filePath || '');
+		} else if (filePath) {
+			let modelBytes = await utils.readFileInHex(filePath || '');
 			query = this.getPredictScriptWithModelBytes(modelBytes, predictParams.inputColumns || [],
 				predictParams.outputColumns || [],
 				predictParams);
@@ -78,7 +79,7 @@ export class PredictService {
 		let connection = await this.getCurrentConnection();
 		let list: DatabaseTable[] = [];
 		if (connection) {
-			let query = utils.withDbChange(connection.databaseName, databaseName, this.getTablesScript(databaseName));
+			let query = utils.getScriptWithDBChange(connection.databaseName, databaseName, this.getTablesScript(databaseName));
 			let result = await this._queryRunner.safeRunQuery(connection, query);
 			if (result && result.rows && result.rows.length > 0) {
 				result.rows.forEach(row => {
@@ -101,7 +102,7 @@ export class PredictService {
 		let connection = await this.getCurrentConnection();
 		let list: string[] = [];
 		if (connection && databaseTable.databaseName) {
-			const query = utils.withDbChange(connection.databaseName, databaseTable.databaseName, this.getTableColumnsScript(databaseTable));
+			const query = utils.getScriptWithDBChange(connection.databaseName, databaseTable.databaseName, this.getTableColumnsScript(databaseTable));
 			let result = await this._queryRunner.safeRunQuery(connection, query);
 			if (result && result.rows && result.rows.length > 0) {
 				result.rows.forEach(row => {

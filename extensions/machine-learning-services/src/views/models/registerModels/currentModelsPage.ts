@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 
 import * as constants from '../../../common/constants';
-import { ModelViewBase, RegisterModelEventName } from '../modelViewBase';
+import { ModelViewBase } from '../modelViewBase';
 import { CurrentModelsTable } from './currentModelsTable';
 import { ApiWrapper } from '../../../common/apiWrapper';
 import { IPageView } from '../../interfaces';
@@ -37,19 +37,8 @@ export class CurrentModelsPage extends ModelViewBase implements IPageView {
 		this._dataTable.registerComponent(modelBuilder);
 		this._tableComponent = this._dataTable.component;
 
-		let registerButton = modelBuilder.button().withProperties({
-			label: constants.registerModelTitle,
-			width: this.buttonMaxLength
-		}).component();
-		registerButton.onDidClick(async () => {
-			await this.sendDataRequest(RegisterModelEventName);
-		});
-
 		let formModelBuilder = modelBuilder.formContainer();
-		formModelBuilder.addFormItem({
-			title: '',
-			component: registerButton
-		});
+
 		if (this._tableComponent) {
 			formModelBuilder.addFormItem({
 				component: this._tableComponent,

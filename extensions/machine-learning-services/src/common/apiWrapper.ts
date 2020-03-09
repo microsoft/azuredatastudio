@@ -125,4 +125,8 @@ export class ApiWrapper {
 	public showTextDocument(uri: vscode.Uri, options?: vscode.TextDocumentShowOptions): Thenable<vscode.TextEditor> {
 		return vscode.window.showTextDocument(uri, options);
 	}
+
+	public createButton(label: string, position?: azdata.window.DialogButtonPosition): azdata.window.Button {
+		return azdata.window.createButton(label, position);
+	}
 }

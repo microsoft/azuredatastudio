@@ -148,6 +148,9 @@ export const registeredModelsSource = localize('models.registeredModelsSource', 
 export const downloadModelMsgTaskName = localize('models.downloadModelMsgTaskName', "Downloading Model from Azure");
 export const invalidAzureResourceError = localize('models.invalidAzureResourceError', "Invalid Azure resource");
 export const invalidModelToRegisterError = localize('models.invalidModelToRegisterError', "Invalid model to register");
+export const invalidModelToPredictError = localize('models.invalidModelToPredictError', "Invalid model to predict");
+export const invalidModelToSelectError = localize('models.invalidModelToSelectError', "Please select a valid model");
+export const modelNameRequiredError = localize('models.modelNameRequiredError', "Model name is required.");
 export const updateModelFailedError = localize('models.updateModelFailedError', "Failed to update the model");
 export const importModelFailedError = localize('models.importModelFailedError', "Failed to register the model");
 
