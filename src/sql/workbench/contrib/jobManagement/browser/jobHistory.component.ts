@@ -12,7 +12,7 @@ import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetecto
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AgentViewComponent } from 'sql/workbench/contrib/jobManagement/browser/agentView.component';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
-import { RunJobAction, StopJobAction, EditJobAction, JobsRefreshAction } from 'sql/workbench/services/jobManagement/browser/jobActions';
+import { RunJobAction, StopJobAction, EditJobAction, JobsRefreshAction } from 'sql/workbench/contrib/jobManagement/browser/jobActions';
 import { JobCacheObject } from 'sql/workbench/services/jobManagement/common/jobManagementService';
 import { JobManagementUtilities } from 'sql/workbench/services/jobManagement/browser/jobManagementUtilities';
 import { IJobManagementService } from 'sql/workbench/services/jobManagement/common/interfaces';
@@ -208,12 +208,10 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		if (self.agentJobHistoryInfo) {
 			self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
 			if (self.agentJobHistoryInfo.steps) {
-				let jobStepStatus = this.didJobFail(self.agentJobHistoryInfo);
 				self._stepRows = self.agentJobHistoryInfo.steps.map(step => {
 					let stepViewRow = new JobStepsViewRow();
 					stepViewRow.message = step.message;
-					stepViewRow.runStatus = jobStepStatus ? JobManagementUtilities.convertToStatusString(0) :
-						JobManagementUtilities.convertToStatusString(step.runStatus);
+					stepViewRow.runStatus = JobManagementUtilities.convertToStatusString(step.runStatus);
 					self._runStatus = JobManagementUtilities.convertToStatusString(self.agentJobHistoryInfo.runStatus);
 					stepViewRow.stepName = step.stepDetails.stepName;
 					stepViewRow.stepId = step.stepDetails.id.toString();
@@ -224,23 +222,15 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 				self._stepRows[0].stepId = nls.localize('stepRow.stepID', "Step ID");
 				self._stepRows[0].stepName = nls.localize('stepRow.stepName', "Step Name");
 				self._stepRows[0].message = nls.localize('stepRow.message', "Message");
-				this._showSteps = self._stepRows.length > 1;
+				self._showSteps = self._stepRows.length > 1;
 			} else {
 				self._showSteps = false;
 			}
 			if (self._agentViewComponent.showHistory) {
+				self._jobManagementService.onStepsChange(self._stepRows);
 				self._cd.detectChanges();
 			}
 		}
-	}
-
-	private didJobFail(job: azdata.AgentJobHistoryInfo): boolean {
-		for (let i = 0; i < job.steps.length; i++) {
-			if (job.steps[i].runStatus === 0) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private buildHistoryTree(self: JobHistoryComponent, jobHistories: azdata.AgentJobHistoryInfo[]) {

@@ -8,7 +8,7 @@ import * as commands from 'sql/workbench/contrib/scripting/browser/scriptingActi
 import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/mssqlNodeContext';
 import { localize } from 'vs/nls';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
+import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
 import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';

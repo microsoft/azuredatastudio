@@ -60,7 +60,7 @@ export abstract class RequireInterceptor {
 		const extensionPaths = await this._extHostExtensionService.getExtensionPathIndex();
 
 		this.register(new VSCodeNodeModuleFactory(this._apiFactory.vscode, extensionPaths, this._extensionRegistry, configProvider, this._logService)); // {{SQL CARBON EDIT}} // add node module
-		this.register(new AzdataNodeModuleFactory(this._apiFactory.azdata, extensionPaths)); // {{SQL CARBON EDIT}} // add node module
+		this.register(new AzdataNodeModuleFactory(this._apiFactory.azdata, extensionPaths, this._logService)); // {{SQL CARBON EDIT}} // add node module
 		this.register(this._instaService.createInstance(KeytarNodeModuleFactory));
 		if (this._initData.remote.isRemote) {
 			this.register(this._instaService.createInstance(OpenNodeModuleFactory, extensionPaths, this._initData.environment.appUriScheme));

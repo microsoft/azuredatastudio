@@ -12,8 +12,8 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { Memento } from 'vs/workbench/common/memento';
 
 import AccountStore from 'sql/platform/accounts/common/accountStore';
-import { AccountDialogController } from 'sql/workbench/contrib/accounts/browser/accountDialogController';
-import { AutoOAuthDialogController } from 'sql/workbench/contrib/accounts/browser/autoOAuthDialogController';
+import { AccountDialogController } from 'sql/workbench/services/accountManagement/browser/accountDialogController';
+import { AutoOAuthDialogController } from 'sql/workbench/services/accountManagement/browser/autoOAuthDialogController';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
@@ -23,6 +23,7 @@ import { URI } from 'vs/base/common/uri';
 import { firstIndex } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -52,7 +53,8 @@ export class AccountManagementService implements IAccountManagementService {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IStorageService private _storageService: IStorageService,
 		@IClipboardService private _clipboardService: IClipboardService,
-		@IOpenerService private _openerService: IOpenerService
+		@IOpenerService private _openerService: IOpenerService,
+		@ILogService private readonly logService: ILogService
 	) {
 		// Create the account store
 		if (!this._mementoObj) {
@@ -301,7 +303,7 @@ export class AccountManagementService implements IAccountManagementService {
 		this.doWithProvider(providerId, provider => provider.provider.autoOAuthCancelled())
 			.then(	// Swallow errors
 				null,
-				err => { console.warn(`Error when cancelling auto OAuth: ${err}`); }
+				err => { this.logService.warn(`Error when cancelling auto OAuth: ${err}`); }
 			)
 			.then(() => this.autoOAuthDialogController.closeAutoOAuthDialog());
 	}

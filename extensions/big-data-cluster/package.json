@@ -112,10 +112,7 @@
 			{
 				"command": "bigDataClusters.command.addController",
 				"title": "%command.addController.title%",
-				"icon": {
-					"light": "resources/light/add.svg",
-					"dark": "resources/dark/add_inverse.svg"
-				}
+				"icon": "$(add)"
 			},
 			{
 				"command": "bigDataClusters.command.deleteController",
@@ -125,10 +122,7 @@
 			{
 				"command": "bigDataClusters.command.refreshController",
 				"title": "%command.refreshController.title%",
-				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh_inverse.svg"
-				}
+				"icon": "$(refresh)"
 			},
 			{
 				"command": "bigDataClusters.command.manageController",

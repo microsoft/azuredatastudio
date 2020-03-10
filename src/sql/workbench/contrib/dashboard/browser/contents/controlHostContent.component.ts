@@ -12,7 +12,7 @@ import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser
 
 import * as azdata from 'azdata';
 import { memoize } from 'vs/base/common/decorators';
-import { AgentViewComponent } from '../../../jobManagement/browser/agentView.component';
+import { AgentViewComponent } from 'sql/workbench/contrib/jobManagement/browser/agentView.component';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('./controlHostContent.component.html')),

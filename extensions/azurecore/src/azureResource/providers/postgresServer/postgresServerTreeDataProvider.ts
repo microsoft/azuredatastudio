@@ -17,7 +17,7 @@ import { azureResource } from '../../azure-resource';
 
 export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly containerId = 'azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel', "Azure Database for PostgreSQL Servers");
+	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel', "Azure Database for PostgreSQL server");
 
 	public constructor(
 		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
@@ -32,7 +32,6 @@ export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase
 		return {
 			id: `databaseServer_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: databaseServer.name,
-			// TODO: should get PGSQL-specific icons (also needed in that extension)
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')

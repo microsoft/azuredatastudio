@@ -14,7 +14,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { AngularEventType, IAngularEvent, IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
-import { IDashboardTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
+import { IDashboardTab } from 'sql/workbench/services/dashboard/browser/common/interfaces';
 import { TabSettingConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 
@@ -26,6 +26,7 @@ import * as nls from 'vs/nls';
 import { deepClone } from 'vs/base/common/objects';
 import { RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 const DASHBOARD_SETTINGS = 'dashboard';
 
@@ -116,7 +117,7 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 							if (this._router.url === '/database-dashboard') {
 								this._updatePage.fire();
 							} else {
-								this._router.navigate(['database-dashboard']);
+								this._router.navigate(['database-dashboard']).catch(onUnexpectedError);
 							}
 						} else {
 							this._notificationService.notify({
@@ -134,7 +135,7 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 				);
 				break;
 			case AngularEventType.NAV_SERVER:
-				this._router.navigate(['server-dashboard']);
+				this._router.navigate(['server-dashboard']).catch(onUnexpectedError);
 				break;
 			case AngularEventType.DELETE_WIDGET:
 				this._onDeleteWidget.fire(event.payload.id);

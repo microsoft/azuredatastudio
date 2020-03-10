@@ -138,6 +138,10 @@ export class ApiWrapper {
 		return this.getConfiguration(constants.extensionConfigSectionName);
 	}
 
+	public get onDidChangeConfiguration(): vscode.Event<vscode.ConfigurationChangeEvent> {
+		return vscode.workspace.onDidChangeConfiguration;
+	}
+
 	/**
 	 * Parse uri
 	 */

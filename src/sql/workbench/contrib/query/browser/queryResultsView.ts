@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
+import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
@@ -13,8 +13,8 @@ import { ChartTab } from 'sql/workbench/contrib/charts/browser/chartTab';
 import { QueryPlanTab } from 'sql/workbench/contrib/queryPlan/browser/queryPlan';
 import { TopOperationsTab } from 'sql/workbench/contrib/queryPlan/browser/topOperations';
 import { QueryModelViewTab } from 'sql/workbench/contrib/query/browser/modelViewTab/queryModelViewTab';
-import { MessagePanelState } from 'sql/workbench/contrib/query/common/messagePanelState';
-import { GridPanelState } from 'sql/workbench/contrib/query/common/gridPanelState';
+import { MessagePanelState } from 'sql/workbench/common/editor/query/messagePanelState';
+import { GridPanelState } from 'sql/workbench/common/editor/query/gridPanelState';
 
 import * as nls from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

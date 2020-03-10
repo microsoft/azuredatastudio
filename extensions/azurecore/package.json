@@ -41,6 +41,17 @@
             "description": "%config.enablePublicCloudDescription%"
           }
         }
+      },
+      {
+        "type": "object",
+        "title": "Azure",
+        "properties": {
+          "azure.enableArcFeatures": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.enableArcFeatures%"
+          }
+        }
       }
     ],
     "account-type": [
@@ -78,34 +89,22 @@
       {
         "command": "azure.resource.signin",
         "title": "%azure.resource.signin.title%",
-        "icon": {
-          "dark": "resources/dark/add_inverse.svg",
-          "light": "resources/light/add.svg"
-        }
+        "icon": "$(add)"
       },
       {
         "command": "azure.resource.refreshall",
         "title": "%azure.resource.refreshall.title%",
-        "icon": {
-          "dark": "resources/dark/refresh_inverse.svg",
-          "light": "resources/light/refresh.svg"
-        }
+        "icon": "$(refresh)"
       },
       {
         "command": "azure.resource.refresh",
         "title": "%azure.resource.refresh.title%",
-        "icon": {
-          "dark": "resources/dark/refresh_inverse.svg",
-          "light": "resources/light/refresh.svg"
-        }
+        "icon": "$(refresh)"
       },
       {
         "command": "azure.resource.selectsubscriptions",
         "title": "%azure.resource.selectsubscriptions.title%",
-        "icon": {
-          "dark": "resources/dark/filter_inverse.svg",
-          "light": "resources/light/filter.svg"
-        }
+        "icon": "$(filter)"
       },
       {
         "command": "azure.resource.connectsqlserver",
@@ -152,6 +151,14 @@
         },
         {
           "command": "azure.resource.connectsqlserver",
+          "when": "false"
+        },
+        {
+          "command": "azure.accounts.getSubscriptions",
+          "when": "false"
+        },
+        {
+          "command": "azure.accounts.getResourceGroups",
           "when": "false"
         }
       ],
@@ -203,7 +210,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.4"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
   },
   "resolutions": {
     "esprima": "^4.0.0"

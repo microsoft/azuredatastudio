@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
-import { AdvancedPropertiesController } from 'sql/workbench/contrib/connection/browser/advancedPropertiesController';
+import { AdvancedPropertiesController } from 'sql/workbench/services/connection/browser/advancedPropertiesController';
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';

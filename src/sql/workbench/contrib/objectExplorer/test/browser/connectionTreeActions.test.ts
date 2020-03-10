@@ -11,22 +11,22 @@ import {
 	RefreshAction, AddServerAction, DeleteConnectionAction, DisconnectConnectionAction,
 	ActiveConnectionsFilterAction, RecentConnectionsFilterAction
 }
-	from 'sql/workbench/contrib/objectExplorer/browser/connectionTreeAction';
+	from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/testErrorMessageService';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
-import * as  LocalizedConstants from 'sql/workbench/contrib/connection/common/localizedConstants';
+import * as  LocalizedConstants from 'sql/workbench/services/connection/browser/localizedConstants';
 import { ObjectExplorerService, ObjectExplorerNodeEventArgs } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
-import { TreeNode } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
+import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import { ServerTreeDataSource } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeDataSource';
+import { ServerTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/serverTreeDataSource';
 import { Emitter, Event } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
-import { ObjectExplorerActionsContext } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerActions';
+import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 import { IConnectionResult, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
-import { TreeSelectionHandler } from 'sql/workbench/contrib/objectExplorer/browser/treeSelectionHandler';
+import { TreeSelectionHandler } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { UNSAVED_GROUP_ID, mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { $ } from 'vs/base/browser/dom';

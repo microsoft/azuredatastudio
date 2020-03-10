@@ -20,7 +20,7 @@ import * as ConnectionConstants from 'sql/platform/connection/common/constants';
 import { EditDataEditor } from 'sql/workbench/contrib/editData/browser/editDataEditor';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
+import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { firstIndex } from 'vs/base/common/arrays';
 
 const singleQuote = '\'';

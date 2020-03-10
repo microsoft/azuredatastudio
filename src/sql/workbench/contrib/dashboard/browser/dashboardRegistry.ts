@@ -14,29 +14,11 @@ import { DATABASE_DASHBOARD_TABS } from 'sql/workbench/contrib/dashboard/browser
 import { SERVER_DASHBOARD_TABS } from 'sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution';
 import { DASHBOARD_CONFIG_ID, DASHBOARD_TABS_KEY_PROPERTY } from 'sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution';
 import { find } from 'vs/base/common/arrays';
+import { IDashboardTab, IDashboardTabGroup } from 'sql/workbench/services/dashboard/browser/common/interfaces';
 
 export const Extensions = {
 	DashboardContributions: 'dashboard.contributions'
 };
-
-export interface IDashboardTab {
-	id: string;
-	title: string;
-	provider: string | string[];
-	publisher: string;
-	description?: string;
-	container?: { [key: string]: any };
-	when?: string;
-	alwaysShow?: boolean;
-	isHomeTab?: boolean;
-	group?: string;
-	iconClass?: string;
-}
-
-export interface IDashboardTabGroup {
-	id: string;
-	title: string;
-}
 
 export interface IDashboardRegistry {
 	registerDashboardProvider(id: string, properties: ProviderProperties): void;

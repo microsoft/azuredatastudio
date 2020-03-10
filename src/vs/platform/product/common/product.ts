@@ -21,11 +21,11 @@ if (isWeb) {
 	// Running out of sources
 	if (Object.keys(product).length === 0) {
 		assign(product, {
-			version: '1.41.0-dev',
-			vscodeVersion: '1.39.0-dev',
-			nameLong: 'Visual Studio Code Web Dev',
-			nameShort: 'VSCode Web Dev',
-			urlProtocol: 'code-oss'
+			version: '1.16.0-dev',
+			vscodeVersion: '1.43.0-dev',
+			nameLong: 'Azure Data Studio Web Dev',
+			nameShort: 'Azure Data Studio Web Dev',
+			urlProtocol: 'azuredatastudio-oss'
 		});
 	}
 }

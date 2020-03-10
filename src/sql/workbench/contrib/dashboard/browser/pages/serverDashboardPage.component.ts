@@ -24,6 +24,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IMenuService } from 'vs/platform/actions/common/actions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export class ServerDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
@@ -76,6 +77,6 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 			this.dashboardService.connectionManagementService.connectionInfo.connectionProfile.databaseName = null;
 			this.init();
 			this._cd.detectChanges();
-		});
+		}).catch(onUnexpectedError);
 	}
 }

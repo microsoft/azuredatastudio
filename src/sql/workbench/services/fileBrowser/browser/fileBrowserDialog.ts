@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/fileBrowserDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { InputBox, OnLoseFocusParams } from 'sql/base/browser/ui/inputBox/inputBox';

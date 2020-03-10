@@ -45,7 +45,7 @@ export interface IQueryManagementService {
 	onBatchComplete(batchInfo: azdata.QueryExecuteBatchNotificationParams): void;
 	onResultSetAvailable(resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void;
 	onResultSetUpdated(resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void;
-	onMessage(message: azdata.QueryExecuteMessageParams): void;
+	onMessage(message: Map<string, azdata.QueryExecuteMessageParams[]>): void;
 
 	// Edit Data Callbacks
 	onEditSessionReady(ownerUri: string, success: boolean, message: string): void;
@@ -283,10 +283,12 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public onMessage(message: azdata.QueryExecuteMessageParams): void {
-		this._notify(message.ownerUri, (runner: QueryRunner) => {
-			runner.handleMessage(message);
-		});
+	public onMessage(messagesMap: Map<string, azdata.QueryExecuteMessageParams[]>): void {
+		for (const [uri, messages] of messagesMap) {
+			this._notify(uri, (runner: QueryRunner) => {
+				runner.handleMessage(messages);
+			});
+		}
 	}
 
 	// Edit Data Functions

@@ -17,7 +17,7 @@ import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { GridTableState } from 'sql/workbench/contrib/query/common/gridPanelState';
+import { GridTableState } from 'sql/workbench/common/editor/query/gridPanelState';
 import * as Constants from 'sql/workbench/contrib/extensions/common/constants';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
@@ -78,6 +78,7 @@ export class SaveResultAction extends Action {
 	public async run(context: IGridActionContext): Promise<boolean> {
 		if (!context.gridDataProvider.canSerialize) {
 			this.notificationService.warn(localize('saveToFileNotSupported', "Save to file is not supported by the backing data source"));
+			return false;
 		}
 		try {
 			await context.gridDataProvider.serializeResults(this.format, mapForNumberColumn(context.selection));

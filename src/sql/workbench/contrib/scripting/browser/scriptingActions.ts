@@ -15,12 +15,12 @@ import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/
 import { BaseActionContext } from 'sql/workbench/browser/actions';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ScriptCreateAction, ScriptDeleteAction, ScriptSelectAction, ScriptExecuteAction, ScriptAlterAction, EditDataAction } from 'sql/workbench/browser/scriptingActions';
-import { ObjectExplorerActionsContext, getTreeNode } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerActions';
+import { ObjectExplorerActionsContext, getTreeNode } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
-import { TreeSelectionHandler } from 'sql/workbench/contrib/objectExplorer/browser/treeSelectionHandler';
-import { TreeUpdateUtils } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
-import { TreeNode } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
+import { TreeSelectionHandler } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
+import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
+import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { VIEWLET_ID } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
 import { ILogService } from 'vs/platform/log/common/log';
 import { getErrorMessage } from 'vs/base/common/errors';

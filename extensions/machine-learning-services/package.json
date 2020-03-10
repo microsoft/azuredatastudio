@@ -58,6 +58,18 @@
         "title": "%mls.command.managePackages%"
       },
       {
+        "command": "mls.command.predictModel",
+        "title": "%mls.command.predictModel%"
+      },
+      {
+        "command": "mls.command.manageModels",
+        "title": "%mls.command.manageModels%"
+      },
+      {
+        "command": "mls.command.registerModel",
+        "title": "%mls.command.registerModel%"
+      },
+      {
         "command": "mls.command.manageLanguages",
         "title": "%mls.command.manageLanguages%"
       },
@@ -80,7 +92,7 @@
         "description": "%description%",
         "provider": "MSSQL",
         "title": "%displayName%",
-        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
+        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && dashboardContext == 'server'",
         "container": {
           "grid-container": [
             {
@@ -101,6 +113,17 @@
                 "tasks-widget": [
                   "mls.command.managePackages",
                   "mls.command.manageLanguages",
+                  "mls.command.manageModels",
+                  "mls.command.predictModel"
+                ]
+              }
+            },
+            {
+              "name": "%title.documents%",
+              "row": 1,
+              "col": 0,
+              "widget": {
+                "tasks-widget": [
                   "mls.command.odbcdriver",
                   "mls.command.mlsdocs"
                 ]
@@ -114,7 +137,9 @@
   "dependencies": {
     "request": "^2.88.0",
     "vscode-nls": "^4.0.0",
-    "vscode-languageclient": "^5.3.0-next.1"
+    "vscode-languageclient": "^5.3.0-next.1",
+    "@azure/arm-machinelearningservices" : "^3.0.0",
+    "polly-js": "^1.6.3"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",
@@ -125,7 +150,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.4"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
   },
   "resolutions": {
       "esprima": "^4.0.0"

@@ -85,7 +85,29 @@ export async function queryGraphResources<T extends GraphData>(resourceClient: R
 			await doQuery(response.skipToken);
 		}
 	};
-	await doQuery();
+	try {
+		await doQuery();
+	} catch (err) {
+		try {
+			if (err.response?.body) {
+				// The response object contains more useful error info than the error originally comes back with
+				const response = JSON.parse(err.response.body);
+				if (response.error?.details && Array.isArray(response.error.details) && response.error.details.length > 0) {
+					if (response.error.details[0].message) {
+						err.message = `${response.error.details[0].message}\n${err.message}`;
+					}
+					if (response.error.details[0].code) {
+						err.message = `${err.message} (${response.error.details[0].code})`;
+					}
+				}
+			}
+		} catch (err2) {
+			// Just log, we still want to throw the original error if something happens parsing the error
+			console.log(`Unexpected error while parsing error from querying resources : ${err2}`);
+		}
+		throw err;
+	}
+
 	return allResources;
 }
 

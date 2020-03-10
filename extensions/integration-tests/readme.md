@@ -28,3 +28,9 @@ The integration test suite has been added to ADS windows pipeline to run the tes
 		2. Smoke Test can be launched in 2 ways:
 			1. In the new window navigate to the test/smoke folder and run: node smoke/index.js
 			2. Or, In a VSCode window opened by step above, open AzureDataStudio folder and then select the 'Launch Smoke Test' option.
+
+## How to debug the tests
+1. Set the debug target to `Attach to Extension Host`
+1. Run the script to start the tests
+1. Wait for the Window to reload (it does this after installing and activating the extensions)
+1. Run the debug target - it should now attach to the Extension Host process and hit breakpoints set in the integration tests

@@ -9,10 +9,10 @@ import 'vs/css!./media/styles';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { Subscription, Subject } from 'rxjs/Rx';
 import * as Constants from 'sql/platform/query/common/constants';
-import { IGridInfo, IGridDataSet } from 'sql/workbench/contrib/grid/common/interfaces';
+import { IGridInfo, IGridDataSet } from 'sql/workbench/contrib/grid/browser/interfaces';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { DataService } from 'sql/workbench/services/query/common/dataService';
-import * as actions from 'sql/workbench/contrib/editData/common/gridActions';
+import * as actions from 'sql/workbench/contrib/editData/browser/gridActions';
 import * as GridContentEvents from 'sql/workbench/services/query/common/gridContentEvents';
 import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocussedContext, QueryEditorVisibleContext } from 'sql/workbench/contrib/query/common/queryContext';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
@@ -499,12 +499,13 @@ export abstract class GridParentComponent extends Disposable {
 	protected abstract tryHandleKeyEvent(e: StandardKeyboardEvent): boolean;
 
 	resizeGrids(): void {
-		const self = this;
 		setTimeout(() => {
-			for (let grid of self.renderedDataSets) {
-				grid.resized.fire();
-			}
+			this.onResize();
 		});
+	}
+
+	protected onResize() {
+		this.table?.resizeCanvas();
 	}
 
 	/**

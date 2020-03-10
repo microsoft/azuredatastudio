@@ -251,7 +251,7 @@
               },
               {
                 "name": "azdata",
-                "version": "15.0.2070"
+                "version": "15.0.4013"
               }
             ],
             "when": "target=new-aks&&version=bdc2019"
@@ -362,7 +362,7 @@
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.4"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
   },
   "resolutions": {
       "esprima": "^4.0.0"

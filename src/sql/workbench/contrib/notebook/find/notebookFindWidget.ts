@@ -161,6 +161,14 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 
 		this._applyTheme(themeService.getTheme());
 		this._register(themeService.onThemeChange(this._applyTheme.bind(this)));
+
+		this.onkeyup(this._domNode, e => {
+			if (e.equals(KeyCode.Escape)) {
+				this._state.change({ isRevealed: false, searchScope: null }, false);
+				e.preventDefault();
+				return;
+			}
+		});
 	}
 
 	// ----- IOverlayWidget API

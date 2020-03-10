@@ -3,23 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
-import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
-import { EditDataInput } from 'sql/workbench/contrib/editData/browser/editDataInput';
-import { IConnectableInput, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
+import { EditDataInput } from 'sql/workbench/browser/editData/editDataInput';
+import { IConnectableInput } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
+import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { URI } from 'vs/base/common/uri';
-import * as paths from 'vs/base/common/extpath';
-import { isLinux } from 'vs/base/common/platform';
 import { Schemas } from 'vs/base/common/network';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { replaceConnection } from 'sql/workbench/browser/taskUtilities';
-import { EditDataResultsInput } from 'sql/workbench/contrib/editData/browser/editDataResultsInput';
-import { ILogService } from 'vs/platform/log/common/log';
+import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataResultsInput';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
@@ -35,9 +30,7 @@ export class QueryEditorService implements IQueryEditorService {
 		@IUntitledTextEditorService private _untitledEditorService: IUntitledTextEditorService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IConfigurationService private _configurationService: IConfigurationService,
-		@ILogService private _logService: ILogService
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 	}
 
@@ -103,29 +96,6 @@ export class QueryEditorService implements IQueryEditorService {
 		const editor = await this._editorService.openEditor(editDataInput, { pinned: true });
 		let params = editor.input as EditDataInput;
 		return params;
-	}
-
-	onSaveAsCompleted(oldResource: URI, newResource: URI): void {
-		let oldResourceString: string = oldResource.toString();
-
-		this._editorService.editors.forEach(input => {
-			if (input instanceof QueryEditorInput) {
-				const resource = input.getResource();
-
-				// Update Editor if file (or any parent of the input) got renamed or moved
-				// Note: must check the new file name for this since this method is called after the rename is completed
-				if (paths.isEqualOrParent(resource.fsPath, newResource.fsPath, !isLinux /* ignorecase */)) {
-					// In this case, we know that this is a straight rename so support this as a rename / replace operation
-					replaceConnection(oldResourceString, newResource.toString(), this._connectionManagementService).then(result => {
-						if (result && result.connected) {
-							input.onConnectSuccess();
-						} else {
-							input.onConnectReject();
-						}
-					}).catch((e) => this._logService.error(e));
-				}
-			}
-		});
 	}
 
 	////// Private functions

@@ -8,7 +8,7 @@ import 'vs/css!./media/output';
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, SimpleChange, AfterViewInit, forwardRef, ChangeDetectorRef, ComponentRef, ComponentFactoryResolver } from '@angular/core';
 import { Event } from 'vs/base/common/event';
 import { nb } from 'azdata';
-import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import * as outputProcessor from 'sql/workbench/contrib/notebook/browser/models/outputProcessor';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';

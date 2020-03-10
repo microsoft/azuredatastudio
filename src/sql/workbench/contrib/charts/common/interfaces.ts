@@ -3,17 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export class ChartState {
-	dataId?: { batchId: number, resultId: number };
-	options: IInsightOptions = {
-		type: ChartType.Bar
-	};
-
-	dispose() {
-
-	}
-}
-
 export interface IInsightOptions {
 	type: InsightType | ChartType;
 	dataDirection?: DataDirection;

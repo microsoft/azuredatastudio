@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { DashboardEditor } from 'sql/workbench/contrib/dashboard/browser/dashboardEditor';
-import { DashboardInput } from 'sql/workbench/contrib/dashboard/browser/dashboardInput';
+import { DashboardInput } from 'sql/workbench/browser/editor/profiler/dashboardInput';
 
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
@@ -17,7 +17,7 @@ import { SERVER_DASHBOARD_PROPERTIES, serverDashboardPropertiesSchema, SERVER_DA
 import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/mssqlNodeContext';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
+import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
 import { DE_MANAGE_COMMAND_ID, OE_MANAGE_COMMAND_ID } from 'sql/workbench/contrib/dashboard/browser/dashboardActions';
 
 const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);

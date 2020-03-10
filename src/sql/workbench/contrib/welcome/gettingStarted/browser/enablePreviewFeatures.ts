@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AbstractEnablePreviewFeatures } from 'sql/workbench/contrib/welcome/gettingStarted/common/enablePreviewFeatures';
+import { AbstractEnablePreviewFeatures } from 'sql/workbench/contrib/welcome/gettingStarted/browser/abstractEnablePreviewFeatures';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IHostService } from 'vs/workbench/services/host/browser/host';

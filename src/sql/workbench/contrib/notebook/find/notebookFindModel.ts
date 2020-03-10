@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vs/base/common/lifecycle';
-import { INotebookFindModel, ICellModel, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as types from 'vs/base/common/types';
-import { NotebookRange, NotebookFindMatch, NotebookFindDecorations } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
+import { NotebookFindMatch, NotebookFindDecorations } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 import * as model from 'vs/editor/common/model';
 import { ModelDecorationOptions, DidChangeDecorationsEmitter, createTextBuffer } from 'vs/editor/common/model/textModel';
 import { IModelDecorationsChangedEvent } from 'vs/editor/common/model/textModelEvents';
@@ -19,10 +20,11 @@ import { singleLetterHash, isHighSurrogate } from 'vs/base/common/strings';
 import { Command, ServicesAccessor } from 'vs/editor/browser/editorExtensions';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { NOTEBOOK_COMMAND_SEARCH, NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
-import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { NOTEBOOK_COMMAND_SEARCH } from 'sql/workbench/services/notebook/common/notebookContext';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { ActiveEditorContext } from 'vs/workbench/common/editor';
+import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 
 function _normalizeOptions(options: model.IModelDecorationOptions): ModelDecorationOptions {
 	if (options instanceof ModelDecorationOptions) {
@@ -525,9 +527,8 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 
 	private searchFn(cell: ICellModel, exp: string, matchCase: boolean = false, wholeWord: boolean = false, maxMatches?: number): NotebookRange[] {
 		let findResults: NotebookRange[] = [];
-		let cellVal = cell.cellType === 'markdown' ? this.cleanUpCellSource(cell.source) : cell.source;
+		let cellVal = cell.cellType === 'markdown' ? cell.renderedOutputTextContent : cell.source;
 		if (cellVal) {
-
 			if (typeof cellVal === 'string') {
 				let findStartResults = this.search(cellVal, exp, matchCase, wholeWord, maxMatches);
 				findStartResults.forEach(start => {
@@ -573,7 +574,11 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 					break;
 				}
 			} else {
-				start = searchText.indexOf(exp) + index + 1;
+				start = searchText.indexOf(exp) + index;
+				// Editors aren't 0-based; the first character position in an editor is 1, so adding 1 to the first found index
+				if (index === 0) {
+					start++;
+				}
 			}
 			findResults.push(start);
 			index = start + exp.length;
@@ -678,7 +683,7 @@ class SearchNotebookCommand extends SettingsCommand {
 
 export const findCommand = new SearchNotebookCommand({
 	id: NOTEBOOK_COMMAND_SEARCH,
-	precondition: ContextKeyExpr.and(NotebookEditorVisibleContext),
+	precondition: ActiveEditorContext.isEqualTo(NotebookEditor.ID),
 	kbOpts: {
 		primary: KeyMod.CtrlCmd | KeyCode.KEY_F,
 		weight: KeybindingWeight.EditorContrib

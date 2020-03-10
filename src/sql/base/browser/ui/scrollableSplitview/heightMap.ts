@@ -45,6 +45,7 @@ export class HeightMap {
 			viewItem = this.heightMap[i - 1];
 
 			if (!viewItem) {
+				// eslint-disable-next-line no-console
 				console.error('view item doesnt exist');
 				return undefined;
 			}
@@ -100,6 +101,7 @@ export class HeightMap {
 			viewItem = this.heightMap[i];
 
 			if (!viewItem) {
+				// eslint-disable-next-line no-console
 				console.error('view item doesnt exist');
 				return;
 			}

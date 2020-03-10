@@ -39,14 +39,14 @@
       }
     ],
     "menus": {
-        "commandPalette": [
-          {
-            "command": "sqlDatabaseProjects.new"
-          },
-          {
-            "command": "sqlDatabaseProjects.open"
-          }
-        ]
+      "commandPalette": [
+        {
+          "command": "sqlDatabaseProjects.new"
+        },
+        {
+          "command": "sqlDatabaseProjects.open"
+        }
+      ]
     },
     "views": {
       "explorer": [
@@ -59,9 +59,11 @@
     }
   },
   "dependencies": {
-    "vscode-nls": "^3.2.1"
+    "vscode-nls": "^3.2.1",
+    "xml2js": "^0.4.23"
   },
   "devDependencies": {
+    "@types/xml2js": "^0.4.5",
     "tslint": "^5.8.0",
     "typescript": "^2.6.1"
   }

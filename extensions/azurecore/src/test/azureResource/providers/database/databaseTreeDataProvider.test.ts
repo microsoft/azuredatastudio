@@ -121,7 +121,7 @@ describe('AzureResourceDatabaseTreeDataProvider.getChildren', function (): void 
 		should(child.subscription).undefined();
 		should(child.tenantId).undefined();
 		should(child.treeItem.id).equal('azure.resource.providers.database.treeDataProvider.databaseContainer');
-		should(child.treeItem.label).equal('SQL Databases');
+		should(child.treeItem.label).equal('SQL database');
 		should(child.treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);
 		should(child.treeItem.contextValue).equal('azure.resource.itemType.databaseContainer');
 	});

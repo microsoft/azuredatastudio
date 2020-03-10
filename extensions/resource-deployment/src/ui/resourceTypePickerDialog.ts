@@ -199,9 +199,11 @@ export class ResourceTypePickerDialog extends DialogBase {
 		const currentRefreshTimestamp = this.toolRefreshTimestamp;
 		const headerRowHeight = 28;
 		this._toolsTable.height = 25 * Math.max(this.toolRequirements.length, 1) + headerRowHeight;
-		this._dialogObject.message = {
-			text: ''
-		};
+		if (!this._installationInProgress) { // Wipe the informational message clean unless installation is already in progress.
+			this._dialogObject.message = {
+				text: ''
+			};
+		}
 		this._installToolButton.hidden = true;
 		if (this.toolRequirements.length === 0) {
 			this._dialogObject.okButton.enabled = true;
@@ -295,7 +297,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 	private createAgreementCheckbox(agreementInfo: AgreementInfo): azdata.FlexContainer {
 		const checkbox = this._view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
-			ariaLabel: this.getAgreementDisplayText(agreementInfo)
+			ariaLabel: this.getAgreementDisplayText(agreementInfo),
+			required: true
 		}).component();
 		checkbox.checked = false;
 		this._toDispose.push(checkbox.onChanged(() => {

@@ -14,7 +14,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/contrib/jobManagement/browser/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import { JobCacheObject } from 'sql/workbench/services/jobManagement/common/jobManagementService';
-import { EditJobAction, DeleteJobAction, NewJobAction, RunJobAction } from 'sql/workbench/services/jobManagement/browser/jobActions';
+import { EditJobAction, DeleteJobAction, NewJobAction, RunJobAction } from 'sql/workbench/contrib/jobManagement/browser/jobActions';
 import { JobManagementUtilities } from 'sql/workbench/services/jobManagement/browser/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/workbench/services/jobManagement/common/interfaces';
@@ -33,6 +33,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { find, fill } from 'vs/base/common/arrays';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -389,7 +390,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		// cache the dataview for future use
 		this._jobCacheObject.dataView = this.dataView;
 		this.filterValueMap['start'] = [[], this.dataView.getItems()];
-		this.loadJobHistories();
+		this.loadJobHistories().catch(onUnexpectedError);
 	}
 
 	private highlightErrorRows(e) {
@@ -541,7 +542,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			// so they can be expanded quicker
 			let failing = separatedJobs[0];
 			let passing = separatedJobs[1];
-			Promise.all([this.curateJobHistory(failing, ownerUri), this.curateJobHistory(passing, ownerUri)]);
+			await Promise.all([this.curateJobHistory(failing, ownerUri), this.curateJobHistory(passing, ownerUri)]);
 		}
 	}
 

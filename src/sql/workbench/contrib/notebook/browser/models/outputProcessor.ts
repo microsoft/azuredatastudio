@@ -4,10 +4,10 @@
 | Distributed under the terms of the Modified BSD License.
 |----------------------------------------------------------------------------*/
 
-import { MimeModel } from './mimemodel';
 import { nb } from 'azdata';
 import { JSONObject, isPrimitive } from 'sql/workbench/services/notebook/common/jsonext';
 import { nbformat } from 'sql/workbench/services/notebook/common/nbformat';
+import { MimeModel } from 'sql/workbench/services/notebook/browser/outputs/mimemodel';
 
 /**
  * A multiline string.

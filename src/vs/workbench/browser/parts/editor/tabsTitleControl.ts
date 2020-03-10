@@ -795,13 +795,9 @@ export class TabsTitleControl extends TitleControl {
 
 		// {{SQL CARBON EDIT}} -- Display the editor's tab color
 		if (isTab) {
-			const tabContainer = this.tabsContainer.children[index];
-			if (tabContainer instanceof HTMLElement) {
-				let editor = this.group.getEditors(index);
-				if (editor.length > 0) {
-					this.setEditorTabColor(editor[0], tabContainer, isActiveTab);
-				}
-			}
+			this.doWithTab(index!, editor!, (editor, index, tabContainer) => {
+				this.setEditorTabColor(editor, tabContainer, isActiveTab);
+			});
 		}
 	}
 

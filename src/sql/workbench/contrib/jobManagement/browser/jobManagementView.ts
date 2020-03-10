@@ -14,7 +14,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { JobsRefreshAction, IJobActionInfo } from 'sql/workbench/services/jobManagement/browser/jobActions';
+import { JobsRefreshAction, IJobActionInfo } from 'sql/workbench/contrib/jobManagement/browser/jobActions';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';

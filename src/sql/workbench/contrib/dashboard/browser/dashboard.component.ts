@@ -16,6 +16,7 @@ import { AngularDisposable } from 'sql/base/browser/lifecycle';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export const DASHBOARD_SELECTOR: string = 'dashboard-component';
 
@@ -42,7 +43,7 @@ export class DashboardComponent extends AngularDisposable implements OnInit {
 		const profile: IConnectionProfile = this._bootstrapService.getOriginalConnectionProfile();
 		if (profile && (!profile.databaseName || Utils.isMaster(profile))) {
 			// Route to the server page as this is the default database
-			this._router.navigate(['server-dashboard']);
+			this._router.navigate(['server-dashboard']).catch(onUnexpectedError);
 		}
 	}
 

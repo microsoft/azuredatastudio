@@ -1,5 +1,11 @@
 # Change Log
 
+## Version 1.15.1
+* Release date: February 19, 2020
+* Release status: General Availability
+* Resolved [#9145 Edit Data render the result grid incorrectly when using custom query](https://github.com/microsoft/azuredatastudio/issues/9145).
+* Resolved [#9149 Show Active Connections](https://github.com/microsoft/azuredatastudio/issues/9149).
+
 ## Version 1.15.0
 * Release date: February 13, 2020
 * Release status: General Availability

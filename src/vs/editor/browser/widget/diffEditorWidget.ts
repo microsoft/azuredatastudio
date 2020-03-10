@@ -86,7 +86,7 @@ class VisualEditorState {
 
 	constructor(
 		private _contextMenuService: IContextMenuService,
-		private _clipboardService: IClipboardService | null
+		private _clipboardService: IClipboardService
 	) {
 		this._zones = [];
 		this.inlineDiffMargins = [];
@@ -136,7 +136,7 @@ class VisualEditorState {
 				this._zones.push(zoneId);
 				this._zonesMap[String(zoneId)] = true;
 
-				if (newDecorations.zones[i].diff && viewZone.marginDomNode && this._clipboardService) {
+				if (newDecorations.zones[i].diff && viewZone.marginDomNode) {
 					viewZone.suppressMouseDown = false;
 					this.inlineDiffMargins.push(new InlineDiffMargin(zoneId, viewZone.marginDomNode, editor, newDecorations.zones[i].diff!, this._contextMenuService, this._clipboardService));
 				}
@@ -223,7 +223,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 	constructor(
 		domElement: HTMLElement,
 		options: IDiffEditorOptions,
-		clipboardService: IClipboardService | null,
+		@IClipboardService clipboardService: IClipboardService,
 		@IEditorWorkerService editorWorkerService: IEditorWorkerService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IInstantiationService instantiationService: IInstantiationService,
@@ -828,6 +828,10 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 
 	public revealRangeNearTop(range: IRange, scrollType: editorCommon.ScrollType = editorCommon.ScrollType.Smooth): void {
 		this.modifiedEditor.revealRangeNearTop(range, scrollType);
+	}
+
+	public revealRangeNearTopIfOutsideViewport(range: IRange, scrollType: editorCommon.ScrollType = editorCommon.ScrollType.Smooth): void {
+		this.modifiedEditor.revealRangeNearTopIfOutsideViewport(range, scrollType);
 	}
 
 	public revealRangeAtTop(range: IRange, scrollType: editorCommon.ScrollType = editorCommon.ScrollType.Smooth): void {

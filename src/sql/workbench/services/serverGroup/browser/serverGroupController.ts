@@ -7,21 +7,21 @@ import Severity from 'vs/base/common/severity';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
-import { SERVER_GROUP_CONFIG, SERVER_GROUP_COLORS_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IServerGroupController, IServerGroupDialogCallbacks } from 'sql/platform/serverGroup/common/serverGroupController';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ServerGroupDialog } from 'sql/workbench/contrib/objectExplorer/browser/serverGroupDialog';
-import { ServerGroupViewModel } from 'sql/workbench/contrib/objectExplorer/common/serverGroupViewModel';
+import { ServerGroupDialog } from 'sql/workbench/services/serverGroup/browser/serverGroupDialog';
+import { ServerGroupViewModel } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { SERVER_GROUP_CONFIG, SERVER_GROUP_COLORS_CONFIG } from 'sql/workbench/services/serverGroup/common/interfaces';
 
 export class ServerGroupController implements IServerGroupController {
 	_serviceBrand: undefined;
 
-	private _serverGroupDialog: ServerGroupDialog;
-	private _callbacks: IServerGroupDialogCallbacks;
-	private _group: ConnectionProfileGroup;
-	private _viewModel: ServerGroupViewModel;
+	private _serverGroupDialog?: ServerGroupDialog;
+	private _callbacks?: IServerGroupDialogCallbacks;
+	private _group?: ConnectionProfileGroup;
+	private _viewModel?: ServerGroupViewModel;
 
 	constructor(
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
@@ -32,13 +32,14 @@ export class ServerGroupController implements IServerGroupController {
 	}
 
 	private handleOnAddServerGroup(): void {
+		const viewModel = this._viewModel!;
 		if (this._group) {
 			let tempGroup: ConnectionProfileGroup = this.copyConnectionProfileGroup(this._group);
-			this._group.name = this._viewModel.groupName;
-			this._group.color = this._viewModel.groupColor;
-			this._group.description = this._viewModel.groupDescription;
+			this._group.name = viewModel.groupName;
+			this._group.color = viewModel.groupColor;
+			this._group.description = viewModel.groupDescription;
 			this.connectionManagementService.editGroup(this._group).then(() => {
-				this._serverGroupDialog.close();
+				this._serverGroupDialog!.close();
 			}).catch(err => {
 				// rollback changes made
 				this._group = tempGroup;
@@ -55,9 +56,9 @@ export class ServerGroupController implements IServerGroupController {
 			};
 			this.connectionManagementService.saveProfileGroup(newGroup).then(groupId => {
 				if (this._callbacks) {
-					this._callbacks.onAddGroup(this._serverGroupDialog.groupName);
+					this._callbacks.onAddGroup(this._serverGroupDialog!.groupName);
 				}
-				this._serverGroupDialog.close();
+				this._serverGroupDialog!.close();
 			}).catch(err => {
 				this._errorMessageService.showDialog(Severity.Error, '', err);
 			});
@@ -76,33 +77,31 @@ export class ServerGroupController implements IServerGroupController {
 
 
 	public showCreateGroupDialog(callbacks?: IServerGroupDialogCallbacks): Promise<void> {
-		this._group = null;
-		this._viewModel = new ServerGroupViewModel(undefined, this._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_COLORS_CONFIG]);
+		this._group = undefined;
+		this._viewModel = new ServerGroupViewModel(undefined, this._configurationService.getValue<{ [key: string]: any }>(SERVER_GROUP_CONFIG)[SERVER_GROUP_COLORS_CONFIG]);
 		this._callbacks = callbacks ? callbacks : undefined;
 		return this.openServerGroupDialog();
 	}
 
 	public showEditGroupDialog(group: ConnectionProfileGroup): Promise<void> {
 		this._group = group;
-		this._viewModel = new ServerGroupViewModel(group, this._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_COLORS_CONFIG]);
+		this._viewModel = new ServerGroupViewModel(group, this._configurationService.getValue<{ [key: string]: any }>(SERVER_GROUP_CONFIG)[SERVER_GROUP_COLORS_CONFIG]);
 		return this.openServerGroupDialog();
 	}
 
 	private openServerGroupDialog(): Promise<void> {
 		if (!this._serverGroupDialog) {
 			this._serverGroupDialog = this._instantiationService.createInstance(ServerGroupDialog);
-			this._serverGroupDialog.viewModel = this._viewModel;
+			this._serverGroupDialog.setViewModel(this._viewModel!);
 			this._serverGroupDialog.onCancel(() => { });
 			this._serverGroupDialog.onAddServerGroup(() => this.handleOnAddServerGroup());
 			this._serverGroupDialog.onCloseEvent(() => this.handleOnClose());
 			this._serverGroupDialog.render();
 		} else {
 			// reset the view model in the view
-			this._serverGroupDialog.viewModel = this._viewModel;
+			this._serverGroupDialog.setViewModel(this._viewModel!);
 		}
 
-		return new Promise<void>(() => {
-			this._serverGroupDialog.open();
-		});
+		return Promise.resolve(this._serverGroupDialog.open());
 	}
 }

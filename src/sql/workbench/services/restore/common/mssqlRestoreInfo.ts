@@ -8,9 +8,8 @@ import * as azdata from 'azdata';
 export class MssqlRestoreInfo implements azdata.RestoreInfo {
 
 	options: { [name: string]: any };
-	taskExecutionMode: azdata.TaskExecutionMode;
 
-	public constructor() {
+	public constructor(public taskExecutionMode: azdata.TaskExecutionMode) {
 		this.options = {};
 	}
 

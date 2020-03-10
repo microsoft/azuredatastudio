@@ -127,6 +127,7 @@ declare module 'azdata' {
 	export interface ModelBuilder {
 		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent>;
 		tabbedPanel(): TabbedPanelComponentBuilder;
+		separator(): ComponentBuilder<SeparatorComponent>;
 	}
 
 	export interface RadioCard {
@@ -159,6 +160,9 @@ declare module 'azdata' {
 
 	export interface RadioCardGroupComponent extends Component, RadioCardGroupComponentProperties {
 		onSelectionChanged: vscode.Event<any>;
+	}
+
+	export interface SeparatorComponent extends Component {
 	}
 
 	export interface DeclarativeTableProperties extends ComponentProperties {
@@ -271,4 +275,16 @@ declare module 'azdata' {
 	export interface InputBoxProperties extends ComponentProperties {
 		validationErrorMessage?: string;
 	}
+
+	export interface CheckBoxProperties {
+		required?: boolean;
+	}
+
+	export namespace nb {
+		/**
+		 * An event that is emitted when the active Notebook editor is changed.
+		 */
+		export const onDidChangeActiveNotebookEditor: vscode.Event<NotebookEditor>;
+	}
 }
+

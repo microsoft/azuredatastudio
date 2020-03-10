@@ -8,10 +8,10 @@ import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventE
 
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions';
-import { ICellModel, notebookConstants, CellExecutionState } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel, CellExecutionState } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { RunCellAction, CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
-import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
+import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -24,7 +24,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { Event, Emitter } from 'vs/base/common/event';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/browser/notebookService';
-import * as notebookUtils from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
 import { CollapseComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/collapse.component';
@@ -35,6 +34,8 @@ import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/u
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser/simpleProgressIndicator';
+import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
+import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -305,7 +306,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			}
 			if (this._editorModel && this._editor && this._editorModel.getLineCount() > 1) {
 				// Only try to match once we've typed past the first line
-				let magicName = notebookUtils.tryMatchCellMagic(this._editorModel.getLineContent(1));
+				let magicName = tryMatchCellMagic(this._editorModel.getLineContent(1));
 				if (magicName) {
 					let kernelName = this._model.clientSession && this._model.clientSession.kernel ? this._model.clientSession.kernel.name : undefined;
 					let magic = this._model.notebookOptions.cellMagicMapper.toLanguageMagic(magicName, kernelName);

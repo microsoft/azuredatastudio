@@ -12,7 +12,7 @@ import { localize } from 'vs/nls';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { parseNumAsTimeString } from 'sql/platform/connection/common/utils';
 import { Event } from 'vs/base/common/event';
-import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
+import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { IStatusbarService, IStatusbarEntryAccessor, StatusbarAlignment } from 'vs/workbench/services/statusbar/common/statusbar';
 
 export class TimeElapsedStatusBarContributions extends Disposable implements IWorkbenchContribution {

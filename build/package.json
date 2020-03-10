@@ -48,9 +48,9 @@
     "rollup": "^1.20.3",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "service-downloader": "github:anthonydresser/service-downloader#0.1.7",
+    "service-downloader": "0.2.1",
     "terser": "4.3.8",
-    "typescript": "^3.8.1-rc",
+    "typescript": "3.8.2",
     "vsce": "1.48.0",
     "vscode-telemetry-extractor": "^1.5.4",
     "xml2js": "^0.4.17"

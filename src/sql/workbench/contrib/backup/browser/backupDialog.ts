@@ -55,7 +55,7 @@ export class BackupDialog extends Modal {
 	 * Get the bootstrap params and perform the bootstrap
 	 */
 	private bootstrapAngular(bodyContainer: HTMLElement) {
-		bootstrapAngular(this._instantiationService,
+		this._instantiationService.invokeFunction(bootstrapAngular,
 			BackupModule,
 			bodyContainer,
 			BACKUP_SELECTOR,

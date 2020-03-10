@@ -146,6 +146,11 @@
         "category": "%books-preview-category%"
       },
       {
+        "command": "notebook.command.revealInBooksViewlet",
+        "title": "%title.revealInBooksViewlet%",
+        "category": "%books-preview-category%"
+      },
+      {
         "command": "notebook.command.saveBook",
         "title": "%title.saveJupyterBook%",
         "category": "%books-preview-category%",
@@ -175,6 +180,19 @@
       {
         "command": "notebook.command.openBook",
         "title": "%title.openJupyterBook%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/open_notebook_inverse.svg",
+          "light": "resources/light/open_notebook.svg"
+        }
+      },
+      {
+        "command": "notebook.command.closeBook",
+        "title": "%title.closeJupyterBook%"
+      },
+      {
+        "command": "notebook.command.createBook",
+        "title": "%title.createJupyterBook%",
         "category": "%books-preview-category%",
         "icon": {
           "dark": "resources/dark/open_notebook_inverse.svg",
@@ -273,6 +291,14 @@
         {
           "command": "notebook.command.searchUntitledBook",
           "when": "false"
+        },
+        {
+          "command": "notebook.command.closeBook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.revealInBooksViewlet",
+          "when": "false"
         }
       ],
       "touchBar": [
@@ -294,11 +320,6 @@
           "group": "1notebook@1"
         },
         {
-          "command": "jupyter.cmd.newNotebook",
-          "when": "connectionProvider == HADOOP_KNOX && nodeType && nodeType == Server",
-          "group": "1root@1"
-        },
-        {
           "command": "jupyter.cmd.analyzeNotebook",
           "when": "nodeType=~/^hdfs/ && nodeLabel=~/[^\\s]+(\\.(csv|tsv|txt))$/ && nodeType == hdfs:file",
           "group": "1notebook@1"
@@ -307,7 +328,7 @@
       "view/item/context": [
         {
           "command": "notebook.command.searchBook",
-          "when": "view == bookTreeView && viewItem == savedBook",
+          "when": "view == bookTreeView && viewItem == savedBook || viewItem  == section",
           "group": "inline"
         },
         {
@@ -319,6 +340,10 @@
           "command": "notebook.command.saveBook",
           "when": "view == unsavedBookTreeView && viewItem == unsavedBook && unsavedBooks",
           "group": "inline"
+        },
+        {
+          "command": "notebook.command.closeBook",
+          "when": "view == bookTreeView && viewItem == savedBook"
         }
       ],
       "view/title": [
@@ -326,6 +351,10 @@
           "command": "notebook.command.openBook",
           "when": "view == bookTreeView",
           "group": "navigation"
+        },
+        {
+          "command": "notebook.command.createBook",
+          "when": "view == bookTreeView"
         }
       ],
       "notebook/toolbar": [
@@ -398,7 +427,6 @@
           "name": "pysparkkernel",
           "displayName": "PySpark",
           "connectionProviderIds": [
-            "HADOOP_KNOX",
             "MSSQL"
           ]
         },
@@ -406,7 +434,6 @@
           "name": "sparkkernel",
           "displayName": "Spark | Scala",
           "connectionProviderIds": [
-            "HADOOP_KNOX",
             "MSSQL"
           ]
         },
@@ -414,7 +441,6 @@
           "name": "sparkrkernel",
           "displayName": "Spark | R",
           "connectionProviderIds": [
-            "HADOOP_KNOX",
             "MSSQL"
           ]
         },
@@ -484,7 +510,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.3",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.4"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
   },
   "resolutions": {
       "esprima": "^4.0.0"
