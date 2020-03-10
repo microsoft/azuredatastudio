@@ -190,23 +190,8 @@ export const activeContrastBorder = registerColor('contrastActiveBorder', { ligh
 
 export const selectionBackground = registerColor('selection.background', { light: null, dark: null, hc: null }, nls.localize('selectionBackground', "The background color of text selections in the workbench (e.g. for input fields or text areas). Note that this does not apply to selections within the editor."));
 
-// -- Welcome Page Colors
-export const tileBackground = registerColor('tileBackground', { light: '#fff', dark: '#1B1A19', hc: '#1B1A19' }, nls.localize('tileBackground', "The background color of tiles"));
-export const tileBorder = registerColor('tileBorder', { light: '#fff', dark: '#8A8886', hc: '#2B56F2' }, nls.localize('tileBorder', "The background color of tiles"));
-export const buttonStandardBorder = registerColor('buttonStandardBorder', { light: '#8A8886', dark: '#FFF', hc: '#264BD3' }, nls.localize('buttonStandardBorder', "The border color for standard button"));
-export const buttonStandardBackground = registerColor('buttonStandardBackground', { light: '#FFF', dark: '#1B1A19', hc: '#1B1A19' }, nls.localize('buttonStandardBackground', "The background color for the standard button"));
-export const buttonStandard = registerColor('buttonStandard', { light: '#323130', dark: '#fff', hc: '#fff' }, nls.localize('buttonStandard', "The font color for primary button"));
-export const buttonStandardHoverColor = registerColor('buttonStandardHover', { light: '#0078D4', dark: '#3794ff', hc: '#3794ff' }, nls.localize('buttonStandardHover', "The hover color for standard buttons"));
-export const welcomePath = registerColor('welcomePath', { light: '#323130', dark: '#fff', hc: '#fff' }, nls.localize('welcomePath', "The border color for primary button"));
-export const welcomeFont = registerColor('welcomeFontColor', { light: '#323130', dark: '#fff', hc: '#fff' }, nls.localize('welcomeFontColor', "The border color for primary button"));
-export const moreRecent = registerColor('moreRecent', { light: '#000', dark: '#fff', hc: '#fff' }, nls.localize('moreRecent', "The border color for primary button"));
-export const entity = registerColor('entity', { light: '#000', dark: '#0078D4', hc: '#3AA0F3' }, nls.localize('entity', "The color for entity symbols"));
-export const disabledButton = registerColor('disabledButton', { light: '#A19F9D', dark: '#797775', hc: '#797775' }, nls.localize('disabledButton', "The color for a standard disabled button"));
-export const disabledButtonBackground = registerColor('disabledButtonBackground', { light: '#F3F2F1', dark: '#252423', hc: '#252423' }, nls.localize('disabledButtonBackground', "The background color for standard disabled button"));
-export const welcomeLink = registerColor('welcomeLink', { light: '#0078d4', dark: '#3aa0f3', hc: '#3aa0f3' }, nls.localize('welcomeLink', "Foreground color for links in text."));
-
-
 // ------ text colors
+
 export const textSeparatorForeground = registerColor('textSeparator.foreground', { light: '#0000002e', dark: '#ffffff2e', hc: Color.black }, nls.localize('textSeparatorForeground', "Color for text separators."));
 export const textLinkForeground = registerColor('textLink.foreground', { light: '#006AB1', dark: '#3794FF', hc: '#3794FF' }, nls.localize('textLinkForeground', "Foreground color for links in text."));
 export const textLinkActiveForeground = registerColor('textLink.activeForeground', { light: '#006AB1', dark: '#3794FF', hc: '#3794FF' }, nls.localize('textLinkActiveForeground', "Foreground color for links in text when clicked on and on mouse hover."));
