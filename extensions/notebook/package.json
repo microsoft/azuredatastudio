@@ -154,6 +154,11 @@
         "category": "%books-preview-category%"
       },
       {
+        "command": "notebook.command.revealInBooksViewlet",
+        "title": "%title.revealInBooksViewlet%",
+        "category": "%books-preview-category%"
+      },
+      {
         "command": "notebook.command.saveBook",
         "title": "%title.saveJupyterBook%",
         "category": "%books-preview-category%",
@@ -197,6 +202,10 @@
           "dark": "resources/dark/open_notebook_inverse.svg",
           "light": "resources/light/open_notebook.svg"
         }
+      },
+      {
+        "command": "notebook.command.closeBook",
+        "title": "%title.closeJupyterBook%"
       },
       {
         "command": "notebook.command.createBook",
@@ -303,6 +312,14 @@
         {
           "command": "notebook.command.trustBook",
           "when": "view == bookTreeView && viewItem == savedBook"
+        },
+        {
+          "command": "notebook.command.closeBook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.revealInBooksViewlet",
+          "when": "false"
         }
       ],
       "touchBar": [
@@ -349,6 +366,10 @@
           "command": "notebook.command.saveBook",
           "when": "view == unsavedBookTreeView && viewItem == unsavedBook && unsavedBooks",
           "group": "inline"
+        },
+        {
+          "command": "notebook.command.closeBook",
+          "when": "view == bookTreeView && viewItem == savedBook"
         }
       ],
       "view/title": [
@@ -515,7 +536,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.3",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.4"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
   },
   "resolutions": {
       "esprima": "^4.0.0"

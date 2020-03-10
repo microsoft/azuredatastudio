@@ -22,6 +22,7 @@ import { ModelManagementController } from '../views/models/modelManagementContro
 import { RegisteredModelService } from '../modelManagement/registeredModelService';
 import { AzureModelRegistryService } from '../modelManagement/azureModelRegistryService';
 import { ModelImporter } from '../modelManagement/modelImporter';
+import { PredictService } from '../prediction/predictService';
 
 /**
  * The main controller class that initializes the extension
@@ -109,7 +110,9 @@ export default class MainController implements vscode.Disposable {
 		//
 		let registeredModelService = new RegisteredModelService(this._apiWrapper, this._config, this._queryRunner, modelImporter);
 		let azureModelsService = new AzureModelRegistryService(this._apiWrapper, this._config, this.httpClient, this._outputChannel);
-		let modelManagementController = new ModelManagementController(this._apiWrapper, this._rootPath, azureModelsService, registeredModelService);
+		let predictService = new PredictService(this._apiWrapper, this._queryRunner, this._config);
+		let modelManagementController = new ModelManagementController(this._apiWrapper, this._rootPath,
+			azureModelsService, registeredModelService, predictService);
 
 		this._apiWrapper.registerCommand(constants.mlManageLanguagesCommand, (async () => {
 			await languageController.manageLanguages();
@@ -119,6 +122,9 @@ export default class MainController implements vscode.Disposable {
 		}));
 		this._apiWrapper.registerCommand(constants.mlRegisterModelCommand, (async () => {
 			await modelManagementController.registerModel();
+		}));
+		this._apiWrapper.registerCommand(constants.mlsPredictModelCommand, (async () => {
+			await modelManagementController.predictModel();
 		}));
 		this._apiWrapper.registerCommand(constants.mlsDependenciesCommand, (async () => {
 			await packageManager.installDependencies();
@@ -134,6 +140,9 @@ export default class MainController implements vscode.Disposable {
 		});
 		this._apiWrapper.registerTaskHandler(constants.mlRegisterModelCommand, async () => {
 			await modelManagementController.registerModel();
+		});
+		this._apiWrapper.registerTaskHandler(constants.mlsPredictModelCommand, async () => {
+			await modelManagementController.predictModel();
 		});
 		this._apiWrapper.registerTaskHandler(constants.mlOdbcDriverCommand, async () => {
 			await this.serverConfigManager.openOdbcDriverDocuments();

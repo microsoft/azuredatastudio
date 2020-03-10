@@ -69,9 +69,9 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		this._onSelectionOrFocusChange = new Emitter();
 		this._actionProvider = this._instantiationService.createInstance(ServerTreeActionProvider);
-		capabilitiesService.onCapabilitiesRegistered(() => {
+		capabilitiesService.onCapabilitiesRegistered(async () => {
 			if (this._connectionManagementService.hasRegisteredServers()) {
-				this.refreshTree();
+				await this.refreshTree();
 				this._treeSelectionHandler.onTreeActionStateChange(false);
 			}
 		});
@@ -114,7 +114,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		CommandsRegistry.registerCommand({
 			id: 'registeredServers.clearSearchServerResult',
 			handler: (accessor: ServicesAccessor, ...args: any[]) => {
-				this.refreshTree();
+				this.refreshTree().catch(errors.onUnexpectedError);
 			}
 		});
 	}
@@ -151,14 +151,14 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 
 		// Refresh Tree when these events are emitted
 		this._register(this._connectionManagementService.onAddConnectionProfile((newProfile: IConnectionProfile) => {
-			this.handleAddConnectionProfile(newProfile);
+			this.handleAddConnectionProfile(newProfile).catch(errors.onUnexpectedError);
 		}));
 		this._register(this._connectionManagementService.onDeleteConnectionProfile(() => {
-			this.refreshTree();
+			this.refreshTree().catch(errors.onUnexpectedError);
 		}));
 		this._register(this._connectionManagementService.onDisconnect((connectionParams) => {
 			if (this.isObjectExplorerConnectionUri(connectionParams.connectionUri)) {
-				this.deleteObjectExplorerNodeAndRefreshTree(connectionParams.connectionProfile);
+				this.deleteObjectExplorerNodeAndRefreshTree(connectionParams.connectionProfile).catch(errors.onUnexpectedError);
 			}
 		}));
 

@@ -11,6 +11,7 @@ import * as fs from 'fs';
 import * as constants from '../common/constants';
 import { promisify } from 'util';
 import { ApiWrapper } from './apiWrapper';
+import { Config } from '../configurations/config';
 
 export async function execCommandOnTempFile<T>(content: string, command: (filePath: string) => Promise<T>): Promise<T> {
 	let tempFilePath: string = '';
@@ -23,6 +24,11 @@ export async function execCommandOnTempFile<T>(content: string, command: (filePa
 	finally {
 		await fs.promises.unlink(tempFilePath);
 	}
+}
+
+export async function readFileInHex(filePath: string): Promise<string> {
+	let buffer = await fs.promises.readFile(filePath);
+	return `0X${buffer.toString('hex')}`;
 }
 
 export async function exists(path: string): Promise<boolean> {
@@ -109,8 +115,8 @@ export function isWindows(): boolean {
  * ' => ''
  * @param value The string to escape
  */
-export function doubleEscapeSingleQuotes(value: string): string {
-	return value.replace(/'/g, '\'\'');
+export function doubleEscapeSingleQuotes(value: string | undefined): string {
+	return value ? value.replace(/'/g, '\'\'') : '';
 }
 
 /**
@@ -118,8 +124,8 @@ export function doubleEscapeSingleQuotes(value: string): string {
  * ' => ''
  * @param value The string to escape
  */
-export function doubleEscapeSingleBrackets(value: string): string {
-	return value.replace(/\[/g, '[[').replace(/\]/g, ']]');
+export function doubleEscapeSingleBrackets(value: string | undefined): string {
+	return value ? value.replace(/\[/g, '[[').replace(/\]/g, ']]') : '';
 }
 
 /**
@@ -175,4 +181,49 @@ export async function promptConfirm(message: string, apiWrapper: ApiWrapper): Pr
 	}
 
 	return choices[result.label] || false;
+}
+
+export function makeLinuxPath(filePath: string): string {
+	const parts = filePath.split('\\');
+	return parts.join('/');
+}
+
+/**
+ *
+ * @param currentDb Wraps the given script with database switch scripts
+ * @param databaseName
+ * @param script
+ */
+export function getScriptWithDBChange(currentDb: string, databaseName: string, script: string): string {
+	if (!currentDb) {
+		currentDb = 'master';
+	}
+	let escapedDbName = doubleEscapeSingleBrackets(databaseName);
+	let escapedCurrentDbName = doubleEscapeSingleBrackets(currentDb);
+	return `
+	USE [${escapedDbName}]
+	${script}
+	USE [${escapedCurrentDbName}]
+	`;
+}
+
+/**
+ * Returns full name of model registration table
+ * @param config config
+ */
+export function getRegisteredModelsThreePartsName(config: Config) {
+	const dbName = doubleEscapeSingleBrackets(config.registeredModelDatabaseName);
+	const schema = doubleEscapeSingleBrackets(config.registeredModelTableSchemaName);
+	const tableName = doubleEscapeSingleBrackets(config.registeredModelTableName);
+	return `[${dbName}].${schema}.[${tableName}]`;
+}
+
+/**
+ * Returns full name of model registration table
+ * @param config config object
+ */
+export function getRegisteredModelsTowPartsName(config: Config) {
+	const schema = doubleEscapeSingleBrackets(config.registeredModelTableSchemaName);
+	const tableName = doubleEscapeSingleBrackets(config.registeredModelTableName);
+	return `[${schema}].[${tableName}]`;
 }

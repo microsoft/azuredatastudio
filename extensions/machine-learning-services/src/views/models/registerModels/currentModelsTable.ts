@@ -4,24 +4,26 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as constants from '../../common/constants';
-import { ModelViewBase } from './modelViewBase';
-import { ApiWrapper } from '../../common/apiWrapper';
-import { RegisteredModel } from '../../modelManagement/interfaces';
+import * as constants from '../../../common/constants';
+import { ModelViewBase } from '../modelViewBase';
+import { ApiWrapper } from '../../../common/apiWrapper';
+import { RegisteredModel } from '../../../modelManagement/interfaces';
+import { IDataComponent } from '../../interfaces';
 
 /**
  * View to render registered models table
  */
-export class CurrentModelsTable extends ModelViewBase {
+export class CurrentModelsTable extends ModelViewBase implements IDataComponent<RegisteredModel> {
 
-	private _table: azdata.DeclarativeTableComponent;
+	private _table: azdata.DeclarativeTableComponent | undefined;
+	private _modelBuilder: azdata.ModelBuilder | undefined;
+	private _selectedModel: any;
 
 	/**
 	 * Creates new view
 	 */
-	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: ModelViewBase) {
+	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase) {
 		super(apiWrapper, parent.root, parent);
-		this._table = this.registerComponent(this._modelBuilder);
 	}
 
 	/**
@@ -29,6 +31,7 @@ export class CurrentModelsTable extends ModelViewBase {
 	 * @param modelBuilder register the components
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.DeclarativeTableComponent {
+		this._modelBuilder = modelBuilder;
 		this._table = modelBuilder.declarativeTable()
 			.withProperties<azdata.DeclarativeTableProperties>(
 				{
@@ -92,10 +95,23 @@ export class CurrentModelsTable extends ModelViewBase {
 		return this._table;
 	}
 
+	public addComponents(formBuilder: azdata.FormBuilder) {
+		if (this.component) {
+			formBuilder.addFormItem({ title: constants.modelSourcesTitle, component: this.component });
+		}
+	}
+
+	public removeComponents(formBuilder: azdata.FormBuilder) {
+		if (this.component) {
+			formBuilder.removeFormItem({ title: constants.modelSourcesTitle, component: this.component });
+		}
+	}
+
+
 	/**
 	 * Returns the component
 	 */
-	public get component(): azdata.DeclarativeTableComponent {
+	public get component(): azdata.DeclarativeTableComponent | undefined {
 		return this._table;
 	}
 
@@ -103,36 +119,43 @@ export class CurrentModelsTable extends ModelViewBase {
 	 * Loads the data in the component
 	 */
 	public async loadData(): Promise<void> {
-		let models: RegisteredModel[] | undefined;
+		if (this._table) {
+			let models: RegisteredModel[] | undefined;
 
-		models = await this.listModels();
-		let tableData: any[][] = [];
+			models = await this.listModels();
+			let tableData: any[][] = [];
 
-		if (models) {
-			tableData = tableData.concat(models.map(model => this.createTableRow(model)));
+			if (models) {
+				tableData = tableData.concat(models.map(model => this.createTableRow(model)));
+			}
+
+			this._table.data = tableData;
 		}
-
-		this._table.data = tableData;
 	}
 
 	private createTableRow(model: RegisteredModel): any[] {
 		if (this._modelBuilder) {
-			let editLanguageButton = this._modelBuilder.button().withProperties({
-				label: '',
-				title: constants.deleteTitle,
-				iconPath: {
-					dark: this.asAbsolutePath('images/dark/edit_inverse.svg'),
-					light: this.asAbsolutePath('images/light/edit.svg')
-				},
+			let selectModelButton = this._modelBuilder.radioButton().withProperties({
+				name: 'amlModel',
+				value: model.id,
 				width: 15,
-				height: 15
+				height: 15,
+				checked: false
 			}).component();
-			editLanguageButton.onDidClick(() => {
+			selectModelButton.onDidClick(() => {
+				this._selectedModel = model;
 			});
-			return [model.artifactName, model.title, model.created, editLanguageButton];
+			return [model.artifactName, model.title, model.created, selectModelButton];
 		}
 
 		return [];
+	}
+
+	/**
+	 * Returns selected data
+	 */
+	public get data(): RegisteredModel | undefined {
+		return this._selectedModel;
 	}
 
 	/**

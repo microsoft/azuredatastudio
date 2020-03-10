@@ -46,6 +46,19 @@ export class WizardView extends MainViewBase {
 	}
 
 	/**
+	 * Adds wizard page
+	 * @param page page
+	 * @param index page index
+	 */
+	public removeWizardPage(page: IPageView, index: number): void {
+		if (this._wizard && this._pages[index] === page) {
+			this._pages = this._pages.splice(index);
+			this._wizard.removePage(index);
+		}
+	}
+
+
+	/**
 	 *
 	 * @param title Creates anew wizard
 	 * @param pages wizard pages
@@ -57,7 +70,19 @@ export class WizardView extends MainViewBase {
 		this._wizard.onPageChanged(async (info) => {
 			this.onWizardPageChanged(info);
 		});
+
 		return this._wizard;
+	}
+
+	public async validate(pageInfo: azdata.window.WizardPageChangeInfo): Promise<boolean> {
+		if (pageInfo.lastPage !== undefined) {
+			let idxLast = pageInfo.lastPage;
+			let lastPage = this._pages[idxLast];
+			if (lastPage && lastPage.validate) {
+				return await lastPage.validate();
+			}
+		}
+		return true;
 	}
 
 	private onWizardPageChanged(pageInfo: azdata.window.WizardPageChangeInfo) {
@@ -72,5 +97,9 @@ export class WizardView extends MainViewBase {
 		if (page && page.onEnter) {
 			page.onEnter();
 		}
+	}
+
+	public get wizard(): azdata.window.Wizard | undefined {
+		return this._wizard;
 	}
 }

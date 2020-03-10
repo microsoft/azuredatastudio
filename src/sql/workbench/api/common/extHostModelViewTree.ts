@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
+import * as errors from 'vs/base/common/errors';
 import * as vscode from 'vscode';
 import { SqlMainContext, ExtHostModelViewTreeViewsShape, MainThreadModelViewShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ITreeComponentItem } from 'sql/workbench/common/views';
@@ -132,7 +133,7 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 		} else {
 			const handlesToRefresh = this.getHandlesToRefresh(elements);
 			if (handlesToRefresh.length) {
-				this.refreshHandles(handlesToRefresh);
+				this.refreshHandles(handlesToRefresh).catch(errors.onUnexpectedError);
 			}
 		}
 	}
