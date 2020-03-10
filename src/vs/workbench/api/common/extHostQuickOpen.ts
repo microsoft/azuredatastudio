@@ -261,8 +261,21 @@ class ExtHostQuickInput implements QuickInput {
 		this._onDidChangeValueEmitter
 	];
 
+
 	constructor(protected _proxy: MainThreadQuickOpenShape, protected _extensionId: ExtensionIdentifier, private _onDidDispose: () => void) {
 	}
+
+	// {SQL CARBON EDIT} START ok button visibility
+	private _ok = false;
+	get ok() {
+		return this._ok;
+	}
+
+	set ok(ok: boolean) {
+		this._ok = ok;
+		this.update({ ok });
+	}
+	// {SQL CARBON EDIT} END ok button visibility
 
 	get title() {
 		return this._title;
