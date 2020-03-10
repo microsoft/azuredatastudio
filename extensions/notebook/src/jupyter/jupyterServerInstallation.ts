@@ -10,6 +10,7 @@ import * as azdata from 'azdata';
 import { ExecOptions } from 'child_process';
 import * as request from 'request';
 import * as zip from 'adm-zip';
+import * as tar from 'tar';
 
 import { ApiWrapper } from '../common/apiWrapper';
 import * as constants from '../common/constants';
@@ -237,6 +238,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
 								resolve();
 							}
+							// Delete zip file
 							fs.unlink(pythonPackagePathLocal, (err) => {
 								if (err) {
 									backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
@@ -247,23 +249,23 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 							outputChannel.appendLine(msgPythonDownloadComplete);
 							backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
 							resolve();
+						} else {
+							tar.extract({ file: pythonPackagePathLocal, cwd: installPath }).then(() => {
+								// Delete tar file
+								fs.unlink(pythonPackagePathLocal, (err) => {
+									if (err) {
+										backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
+										reject(err);
+									}
+								});
+								outputChannel.appendLine(msgPythonDownloadComplete);
+								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
+								resolve();
+							}).catch(err => {
+								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
+								reject(err);
+							});
 						}
-						// decompress(pythonPackagePathLocal, installPath).then(files => {
-						// 	//Delete zip/tar file
-						// 	fs.unlink(pythonPackagePathLocal, (err) => {
-						// 		if (err) {
-						// 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
-						// 			reject(err);
-						// 		}
-						// 	});
-
-						// 	outputChannel.appendLine(msgPythonDownloadComplete);
-						// 	backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
-						// 	resolve();
-						// }).catch(err => {
-						// 	backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
-						// 	reject(err);
-						// });
 					})
 					.on('error', (downloadError) => {
 						backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadError);
