@@ -11,6 +11,7 @@ import { Validator, InputComponents, createSection, createGroupContainer, create
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 import { AuthenticationMode } from '../deployClusterWizardModel';
+import * as loc from '../../../localizedConstants';
 const localize = nls.loadMessageBundle();
 
 const NumberInputWidth = '100px';
@@ -344,44 +345,44 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.portColumnHeader = createLabel(view, { text: localize('deployCluster.PortHeader', "Port"), width: NumberInputWidth });
 		this.endpointHeaderRow = createFlexContainer(view, [this.endpointNameColumnHeader, this.dnsColumnHeader, this.portColumnHeader]);
 
-		this.controllerNameLabel = createLabel(view, { text: localize('deployCluster.ControllerText', "Controller"), width: labelWidth, required: true });
+		this.controllerNameLabel = createLabel(view, { text: loc.controllerPort, width: labelWidth, required: true });
 		this.controllerDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.ControllerDNSName', "Controller DNS name"), required: false, width: inputWidth });
-		this.controllerPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ControllerPortName', "Controller port"), required: true, width: NumberInputWidth, min: 1 });
+		this.controllerPortInput = createNumberInput(view, { ariaLabel: loc.controllerPort, required: true, width: NumberInputWidth, min: 1 });
 		this.controllerEndpointRow = createFlexContainer(view, [this.controllerNameLabel, this.controllerDNSInput, this.controllerPortInput]);
 		this.inputComponents[VariableNames.ControllerDNSName_VariableName] = { component: this.controllerDNSInput };
 		this.inputComponents[VariableNames.ControllerPort_VariableName] = { component: this.controllerPortInput };
 
-		this.SqlServerNameLabel = createLabel(view, { text: localize('deployCluster.MasterSqlText', "SQL Server Master"), width: labelWidth, required: true });
+		this.SqlServerNameLabel = createLabel(view, { text: loc.sqlServerMasterPort, width: labelWidth, required: true });
 		this.sqlServerDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.MasterSQLServerDNSName', "SQL Server Master DNS name"), required: false, width: inputWidth });
-		this.sqlServerPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.MasterSQLServerPortName', "SQL Server Master port"), required: true, width: NumberInputWidth, min: 1 });
+		this.sqlServerPortInput = createNumberInput(view, { ariaLabel: loc.sqlServerMasterPort, required: true, width: NumberInputWidth, min: 1 });
 		this.sqlServerEndpointRow = createFlexContainer(view, [this.SqlServerNameLabel, this.sqlServerDNSInput, this.sqlServerPortInput]);
 		this.inputComponents[VariableNames.SQLServerDNSName_VariableName] = { component: this.sqlServerDNSInput };
 		this.inputComponents[VariableNames.SQLServerPort_VariableName] = { component: this.sqlServerPortInput };
 
-		this.gatewayNameLabel = createLabel(view, { text: localize('deployCluster.GatewayText', "Gateway"), width: labelWidth, required: true });
+		this.gatewayNameLabel = createLabel(view, { text: loc.gatewayPort, width: labelWidth, required: true });
 		this.gatewayDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.GatewayDNSName', "Gateway DNS name"), required: false, width: inputWidth });
-		this.gatewayPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.GatewayPortName', "Gateway port"), required: true, width: NumberInputWidth, min: 1 });
+		this.gatewayPortInput = createNumberInput(view, { ariaLabel: loc.gatewayPort, required: true, width: NumberInputWidth, min: 1 });
 		this.gatewayEndpointRow = createFlexContainer(view, [this.gatewayNameLabel, this.gatewayDNSInput, this.gatewayPortInput]);
 		this.inputComponents[VariableNames.GatewayDNSName_VariableName] = { component: this.gatewayDNSInput };
 		this.inputComponents[VariableNames.GateWayPort_VariableName] = { component: this.gatewayPortInput };
 
-		this.serviceProxyNameLabel = createLabel(view, { text: localize('deployCluster.ServiceProxyText', "Management proxy"), width: labelWidth, required: true });
+		this.serviceProxyNameLabel = createLabel(view, { text: loc.managementProxyPort, width: labelWidth, required: true });
 		this.serviceProxyDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.ServiceProxyDNSName', "Management proxy DNS name"), required: false, width: inputWidth });
-		this.serviceProxyPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ServiceProxyPortName', "Management proxy port"), required: true, width: NumberInputWidth, min: 1 });
+		this.serviceProxyPortInput = createNumberInput(view, { ariaLabel: loc.managementProxyPort, required: true, width: NumberInputWidth, min: 1 });
 		this.serviceProxyEndpointRow = createFlexContainer(view, [this.serviceProxyNameLabel, this.serviceProxyDNSInput, this.serviceProxyPortInput]);
 		this.inputComponents[VariableNames.ServiceProxyDNSName_VariableName] = { component: this.serviceProxyDNSInput };
 		this.inputComponents[VariableNames.ServiceProxyPort_VariableName] = { component: this.serviceProxyPortInput };
 
-		this.appServiceProxyNameLabel = createLabel(view, { text: localize('deployCluster.AppServiceProxyText', "Application proxy"), width: labelWidth, required: true });
+		this.appServiceProxyNameLabel = createLabel(view, { text: loc.applicationProxyPort, width: labelWidth, required: true });
 		this.appServiceProxyDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.AppServiceProxyDNSName', "Application proxy DNS name"), required: false, width: inputWidth });
-		this.appServiceProxyPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.AppServiceProxyPortName', "Application proxy port"), required: true, width: NumberInputWidth, min: 1 });
+		this.appServiceProxyPortInput = createNumberInput(view, { ariaLabel: loc.applicationProxyPort, required: true, width: NumberInputWidth, min: 1 });
 		this.appServiceProxyEndpointRow = createFlexContainer(view, [this.appServiceProxyNameLabel, this.appServiceProxyDNSInput, this.appServiceProxyPortInput]);
 		this.inputComponents[VariableNames.AppServiceProxyDNSName_VariableName] = { component: this.appServiceProxyDNSInput };
 		this.inputComponents[VariableNames.AppServiceProxyPort_VariableName] = { component: this.appServiceProxyPortInput };
 
-		this.readableSecondaryNameLabel = createLabel(view, { text: localize('deployCluster.ReadableSecondaryText', "Readable secondary"), width: labelWidth, required: true });
+		this.readableSecondaryNameLabel = createLabel(view, { text: loc.readableSecondaryPort, width: labelWidth, required: true });
 		this.readableSecondaryDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.ReadableSecondaryDNSName', "Readable secondary DNS name"), required: false, width: inputWidth });
-		this.readableSecondaryPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ReadableSecondaryPortName', "Readable secondary port"), required: false, width: NumberInputWidth, min: 1 });
+		this.readableSecondaryPortInput = createNumberInput(view, { ariaLabel: loc.readableSecondaryPort, required: false, width: NumberInputWidth, min: 1 });
 		this.readableSecondaryEndpointRow = createFlexContainer(view, [this.readableSecondaryNameLabel, this.readableSecondaryDNSInput, this.readableSecondaryPortInput]);
 		this.inputComponents[VariableNames.ReadableSecondaryDNSName_VariableName] = { component: this.readableSecondaryDNSInput };
 		this.inputComponents[VariableNames.ReadableSecondaryPort_VariableName] = { component: this.readableSecondaryPortInput };

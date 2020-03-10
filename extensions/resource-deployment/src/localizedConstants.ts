@@ -11,3 +11,10 @@ export const account = localize('azure.account', "Azure Account");
 export const subscription = localize('azure.account.subscription', "Subscription");
 export const resourceGroup = localize('azure.account.resourceGroup', "Resource Group");
 export const location = localize('azure.account.location', "Azure Location");
+
+export const controllerPort = localize('deployCluster.ControllerPortName', "Controller port");
+export const sqlServerMasterPort = localize('deployCluster.MasterSQLServerPortName', "SQL Server Master port");
+export const gatewayPort = localize('deployCluster.GatewayPortName', "Gateway port");
+export const managementProxyPort = localize('deployCluster.ServiceProxyPortName', "Management proxy port");
+export const applicationProxyPort = localize('deployCluster.AppServiceProxyPortName', "Application proxy port");
+export const readableSecondaryPort = localize('deployCluster.ReadableSecondaryPortName', "Readable secondary port");
