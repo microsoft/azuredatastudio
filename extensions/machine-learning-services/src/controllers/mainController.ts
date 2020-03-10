@@ -13,8 +13,7 @@ import { ApiWrapper } from '../common/apiWrapper';
 import { QueryRunner } from '../common/queryRunner';
 import { ProcessService } from '../common/processService';
 import { Config } from '../configurations/config';
-import { ServerConfigWidget } from '../widgets/serverConfigWidgets';
-import { ServerConfigManager } from '../serverConfig/serverConfigManager';
+import { PackageManagementService } from '../packageManagement/packageManagementService';
 import { HttpClient } from '../common/httpClient';
 import { LanguageController } from '../views/externalLanguages/languageController';
 import { LanguageService } from '../externalLanguage/languageService';
@@ -38,7 +37,7 @@ export default class MainController implements vscode.Disposable {
 		private _queryRunner: QueryRunner,
 		private _processService: ProcessService,
 		private _packageManager?: PackageManager,
-		private _serverConfigManager?: ServerConfigManager,
+		private _serverConfigManager?: PackageManagementService,
 		private _httpClient?: HttpClient
 	) {
 		this._outputChannel = this._apiWrapper.createOutputChannel(constants.extensionOutputChannel);
@@ -90,9 +89,6 @@ export default class MainController implements vscode.Disposable {
 		this._outputChannel.show(true);
 		let nbApis = await this.getNotebookExtensionApis();
 		await this._config.load();
-
-		let tasks = new ServerConfigWidget(this._apiWrapper, this.serverConfigManager);
-		tasks.register();
 
 		let packageManager = this.getPackageManager(nbApis);
 		this._apiWrapper.registerCommand(constants.mlManagePackagesCommand, (async () => {
@@ -157,7 +153,7 @@ export default class MainController implements vscode.Disposable {
 	 */
 	public getPackageManager(nbApis: nbExtensionApis.IExtensionApi): PackageManager {
 		if (!this._packageManager) {
-			this._packageManager = new PackageManager(this._outputChannel, this._rootPath, this._apiWrapper, this._queryRunner, this._processService, this._config, this.httpClient);
+			this._packageManager = new PackageManager(this._outputChannel, this._rootPath, this._apiWrapper, this.serverConfigManager, this._processService, this._config, this.httpClient);
 			this._packageManager.init();
 			this._packageManager.packageManageProviders.forEach(provider => {
 				nbApis.registerPackageManager(provider.providerId, provider);
@@ -169,9 +165,9 @@ export default class MainController implements vscode.Disposable {
 	/**
 	 * Returns the server config manager instance
 	 */
-	public get serverConfigManager(): ServerConfigManager {
+	public get serverConfigManager(): PackageManagementService {
 		if (!this._serverConfigManager) {
-			this._serverConfigManager = new ServerConfigManager(this._apiWrapper, this._queryRunner);
+			this._serverConfigManager = new PackageManagementService(this._apiWrapper, this._queryRunner);
 		}
 		return this._serverConfigManager;
 	}

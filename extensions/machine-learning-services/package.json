@@ -1,5 +1,5 @@
 {
-  "name": "machineLearningServices",
+  "name": "machine-learning-services",
   "displayName": "%displayName%",
   "description": "%description%",
   "version": "1.0.0",
@@ -96,19 +96,9 @@
         "container": {
           "grid-container": [
             {
-              "name": "%title.configurations%",
-              "row": 0,
-              "col": 0,
-              "widget": {
-                "modelview": {
-                  "id": "ml.tasks"
-                }
-              }
-            },
-            {
               "name": "%title.tasks%",
               "row": 0,
-              "col": 1,
+              "col": 0,
               "widget": {
                 "tasks-widget": [
                   "mls.command.managePackages",
@@ -120,8 +110,8 @@
             },
             {
               "name": "%title.documents%",
-              "row": 1,
-              "col": 0,
+              "row": 0,
+              "col": 1,
               "widget": {
                 "tasks-widget": [
                   "mls.command.odbcdriver",

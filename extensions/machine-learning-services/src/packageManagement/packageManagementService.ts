@@ -9,8 +9,9 @@ import { QueryRunner } from '../common/queryRunner';
 import * as constants from '../common/constants';
 import { ApiWrapper } from '../common/apiWrapper';
 import * as utils from '../common/utils';
+import * as nbExtensionApis from '../typings/notebookServices';
 
-export class ServerConfigManager {
+export class PackageManagementService {
 
 	/**
 	 * Creates a new instance of ServerConfigManager
@@ -76,15 +77,41 @@ export class ServerConfigManager {
 	 * @param connection SQL Connection
 	 * @param enable if true external script will be enabled
 	 */
-	public async updateExternalScriptConfig(connection: azdata.connection.ConnectionProfile, enable: boolean): Promise<boolean> {
-		await this._queryRunner.updateExternalScriptConfig(connection, enable);
+	public async enableExternalScriptConfig(connection: azdata.connection.ConnectionProfile): Promise<boolean> {
 		let current = await this._queryRunner.isMachineLearningServiceEnabled(connection);
-		if (current === enable) {
-			this._apiWrapper.showInfoMessage(enable ? constants.mlsEnabledMessage : constants.mlsDisabledMessage);
+
+		if (current) {
+			return current;
+		}
+		let confirmed = await utils.promptConfirm(constants.confirmEnableExternalScripts, this._apiWrapper);
+		if (confirmed) {
+			await this._queryRunner.updateExternalScriptConfig(connection, true);
+			current = await this._queryRunner.isMachineLearningServiceEnabled(connection);
+			if (current) {
+				this._apiWrapper.showInfoMessage(constants.mlsEnabledMessage);
+			} else {
+				this._apiWrapper.showErrorMessage(constants.mlsConfigUpdateFailed);
+			}
 		} else {
-			this._apiWrapper.showErrorMessage(constants.mlsConfigUpdateFailed);
+			this._apiWrapper.showErrorMessage(constants.externalScriptsIsRequiredError);
 		}
 
 		return current;
+	}
+
+	/**
+	 * Returns python packages installed in SQL server instance
+	 * @param connection SQL Connection
+	 */
+	public async getPythonPackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
+		return this._queryRunner.getPythonPackages(connection);
+	}
+
+	/**
+	 * Returns python packages installed in SQL server instance
+	 * @param connection SQL Connection
+	 */
+	public async getRPackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
+		return this._queryRunner.getRPackages(connection);
 	}
 }
