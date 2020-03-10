@@ -12,7 +12,6 @@ import { ApiWrapper } from '../common/apiWrapper';
 export interface IBookTrustManager {
 	isNotebookTrustedByDefault(notebookUri: string): boolean;
 	setBookAsTrusted(bookRootPath: string): boolean;
-	setBookAsUntrusted(bookRootPath: string): boolean;
 }
 
 enum TrustBookOperation {
@@ -57,10 +56,6 @@ export class BookTrustManager implements IBookTrustManager {
 		return this.books
 			.map(book => book.bookItems) // select all the books
 			.reduce((accumulator, currentBookItemList) => accumulator.concat(currentBookItemList), []);
-	}
-
-	setBookAsUntrusted(bookRootPath: string): boolean {
-		return this.updateTrustedBooks(bookRootPath, TrustBookOperation.Remove);
 	}
 
 	setBookAsTrusted(bookRootPath: string): boolean {

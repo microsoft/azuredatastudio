@@ -189,9 +189,9 @@ describe('BookTrustManagerTests', function () {
 
 		let bookTrustManager: IBookTrustManager;
 		let books: BookModel[];
+		let trustedFolders: string[] = [];
 
 		beforeEach(() => {
-			let trustedFolders: string[] = [];
 			// Mock Workspace Configuration
 			let workspaceConfigurtionMock: TypeMoq.IMock<WorkspaceConfiguration> = TypeMoq.Mock.ofType<WorkspaceConfiguration>();
 			workspaceConfigurtionMock.setup(config => config.get(TypeMoq.It.isValue(constants.trustedBooksConfigKey))).returns(() => [].concat(trustedFolders));
@@ -302,7 +302,7 @@ describe('BookTrustManagerTests', function () {
 
 			should(isNotebookTrusted).be.true("Notebook should be trusted");
 
-			bookTrustManager.setBookAsUntrusted('/temp/SubFolder/');
+			trustedFolders = [];
 
 			let isNotebookTrustedAfterChange = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
