@@ -14,7 +14,6 @@ import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser
 import { IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
-import * as nls from 'vs/nls';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -26,7 +25,6 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 
 export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
-		name: nls.localize('databasePageName', "DATABASE DASHBOARD"),
 		widget: {
 			'properties-widget': undefined
 		},

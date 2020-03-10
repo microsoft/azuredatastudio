@@ -5,7 +5,7 @@
  *--------------------------------------------------------------------------------------------*/
 -->
 <div #parent style="position: absolute; height: 100%; width: 100%;">
-	<div [style.margin-right.px]="_clipped ? 30 : 0" [style.width]="_clipped ? 94 + '%' : '100%'" style="overflow: hidden">
+	<div [style.margin-right.px]="_clipped ? 30 : 0" [style.width]="_clipped ? 94 + '%' : '100%'" style="overflow: hidden; border-bottom: 1px solid rgb(234, 234, 234); padding-bottom: 15px">
 		<span #child style="white-space : nowrap; width: fit-content">
 			<ng-template ngFor let-item [ngForOf]="properties">
 				<span style="margin-left: 10px; display: inline-block;">

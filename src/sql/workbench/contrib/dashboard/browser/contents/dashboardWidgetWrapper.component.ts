@@ -161,7 +161,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		// If _config.name is not set, set it to _config.widget.name
 		if (!this._config.name) {
 			const widget = values(this._config.widget)[0];
-			if (widget.name) {
+			if (widget && widget.name) {
 				this._config.name = widget.name;
 			}
 		}
@@ -249,15 +249,9 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			el.style.borderStyle = 'solid';
 		} else if (borderColor) {
 			borderString = borderColor.toString();
-			el.style.border = '3px solid ' + borderColor.toString();
+			el.style.border = '1px solid ' + borderColor.toString();
 		} else {
 			el.style.border = 'none';
-		}
-
-		if (borderString) {
-			headerEl.style.backgroundColor = borderString;
-		} else {
-			headerEl.style.backgroundColor = '';
 		}
 
 		if (this._config.fontSize) {
