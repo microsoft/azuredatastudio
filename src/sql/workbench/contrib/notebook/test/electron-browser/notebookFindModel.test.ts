@@ -200,6 +200,41 @@ suite('Notebook Find Model', function (): void {
 		assert.equal(notebookFindModel.findMatches.length, 3, 'Find failed');
 	});
 
+	test('Should match find results for multiple results on same line', async function (): Promise<void> {
+		let codeContent: nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Code,
+				source: ['abc abc abc abc abc abcabc ab a b c'],
+				metadata: { language: 'python' },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'python',
+					language: 'python'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		await initNotebookModel(codeContent);
+		//initialize find
+		let notebookFindModel = new NotebookFindModel(model);
+		// Intentionally not using max_find_count here, as 7 items should be found
+		await notebookFindModel.find('abc', false, false, 10);
+
+		assert.equal(notebookFindModel.findMatches.length, 7, 'Find failed to find number of matches correctly');
+
+		assert.deepEqual(notebookFindModel.findMatches[0].range, new NotebookRange(model.cells[0], 1, 1, 1, 4));
+		assert.deepEqual(notebookFindModel.findMatches[1].range, new NotebookRange(model.cells[0], 1, 5, 1, 8));
+		assert.deepEqual(notebookFindModel.findMatches[2].range, new NotebookRange(model.cells[0], 1, 9, 1, 12));
+		assert.deepEqual(notebookFindModel.findMatches[3].range, new NotebookRange(model.cells[0], 1, 13, 1, 16));
+		assert.deepEqual(notebookFindModel.findMatches[4].range, new NotebookRange(model.cells[0], 1, 17, 1, 20));
+		assert.deepEqual(notebookFindModel.findMatches[5].range, new NotebookRange(model.cells[0], 1, 21, 1, 24));
+		assert.deepEqual(notebookFindModel.findMatches[6].range, new NotebookRange(model.cells[0], 1, 24, 1, 27));
+	});
+
+
 	test('Should find results correctly with & without matching case selection', async function (): Promise<void> {
 		// Need to set rendered text content for 2nd cell
 		setRenderedTextContent(1);
