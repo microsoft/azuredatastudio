@@ -28,6 +28,7 @@ import { ClientSession } from 'sql/workbench/services/notebook/browser/models/cl
 import { TestStorageService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -69,6 +70,7 @@ suite('Notebook Find Model', function (): void {
 	let defaultModelOptions: INotebookModelOptions;
 	const logService = new NullLogService();
 	let model: NotebookModel;
+	let markdownRenderer: NotebookMarkdownRenderer = new NotebookMarkdownRenderer();
 
 	setup(async () => {
 		sessionReady = new Deferred<void>();
@@ -108,12 +110,15 @@ suite('Notebook Find Model', function (): void {
 	});
 
 	test('Should find results in the notebook', async function (): Promise<void> {
+		// Need to set rendered text content for 2nd cell
+		setRenderedTextContent(1);
+
 		//initialize find
 		let notebookFindModel = new NotebookFindModel(model);
 		await notebookFindModel.find('markdown', false, false, max_find_count);
 
 		assert(notebookFindModel.findMatches, 'Find in notebook failed.');
-		assert.equal(notebookFindModel.findMatches.length, 2, 'Find couldnt find all occurances');
+		assert.equal(notebookFindModel.findMatches.length, 2, 'Find couldnt find all occurrences');
 	});
 
 	test('Should not find results in the notebook', async function (): Promise<void> {
@@ -125,6 +130,9 @@ suite('Notebook Find Model', function (): void {
 	});
 
 	test('Should match find result ranges', async function (): Promise<void> {
+		// Need to set rendered text content for 2nd cell
+		setRenderedTextContent(1);
+
 		let notebookFindModel = new NotebookFindModel(model);
 		await notebookFindModel.find('markdown', false, false, max_find_count);
 
@@ -153,6 +161,9 @@ suite('Notebook Find Model', function (): void {
 			nbformat_minor: 5
 		};
 		await initNotebookModel(markdownContent);
+
+		// Need to set rendered text content for 1st cell
+		setRenderedTextContent(0);
 
 		let notebookFindModel = new NotebookFindModel(model);
 		await notebookFindModel.find('best', false, false, max_find_count);
@@ -190,6 +201,9 @@ suite('Notebook Find Model', function (): void {
 	});
 
 	test('Should find results correctly with & without matching case selection', async function (): Promise<void> {
+		// Need to set rendered text content for 2nd cell
+		setRenderedTextContent(1);
+
 		//initialize find
 		let notebookFindModel = new NotebookFindModel(model);
 		await notebookFindModel.find('insert', false, false, max_find_count);
@@ -285,4 +299,10 @@ suite('Notebook Find Model', function (): void {
 		await model.requestModelLoad();
 	}
 
+	function setRenderedTextContent(cellIndex: number): void {
+		model.cells[cellIndex].renderedOutputTextContent = [markdownRenderer.render({
+			isTrusted: true,
+			value: model.cells[cellIndex].source[0]
+		}).element.innerText.toString()];
+	}
 });

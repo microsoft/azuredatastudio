@@ -39,6 +39,7 @@ import { IViewPaneOptions, ViewPane } from 'vs/workbench/browser/parts/views/vie
 import { attachModalDialogStyler, attachPanelStyler } from 'sql/workbench/common/styler';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 class AccountPanel extends ViewPane {
 	public index: number;
@@ -54,8 +55,9 @@ class AccountPanel extends ViewPane {
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IOpenerService openerService: IOpenerService,
+		@ITelemetryService telemetryService: ITelemetryService,
 	) {
-		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -133,7 +135,8 @@ export class AccountDialog extends Modal {
 		@ILogService logService: ILogService,
 		@IViewDescriptorService private viewDescriptorService: IViewDescriptorService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
-		@IOpenerService protected readonly openerService: IOpenerService
+		@IOpenerService protected readonly openerService: IOpenerService,
+		@ITelemetryService private readonly vstelemetryService: ITelemetryService,
 	) {
 		super(
 			localize('linkedAccounts', "Linked accounts"),
@@ -305,7 +308,8 @@ export class AccountDialog extends Modal {
 			this.contextKeyService,
 			this._instantiationService,
 			this.viewDescriptorService,
-			this.openerService
+			this.openerService,
+			this.vstelemetryService
 		);
 
 		attachPanelStyler(providerView, this._themeService);

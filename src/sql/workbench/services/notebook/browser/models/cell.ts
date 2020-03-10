@@ -37,6 +37,7 @@ export class CellModel implements ICellModel {
 	private _cellGuid: string;
 	private _future: FutureInternal;
 	private _outputs: nb.ICellOutput[] = [];
+	private _renderedOutputTextContent: string[] = [];
 	private _isEditMode: boolean;
 	private _onOutputsChanged = new Emitter<IOutputChangedEvent>();
 	private _onCellModeChanged = new Emitter<boolean>();
@@ -462,6 +463,14 @@ export class CellModel implements ICellModel {
 
 	public get outputs(): Array<nb.ICellOutput> {
 		return this._outputs;
+	}
+
+	public get renderedOutputTextContent(): string[] {
+		return this._renderedOutputTextContent;
+	}
+
+	public set renderedOutputTextContent(content: string[]) {
+		this._renderedOutputTextContent = content;
 	}
 
 	private handleReply(msg: nb.IShellMessage): void {

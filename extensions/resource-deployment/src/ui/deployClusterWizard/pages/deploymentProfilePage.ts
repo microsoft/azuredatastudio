@@ -29,7 +29,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 			this._cardContainer = view.modelBuilder.radioCardGroup().withProperties<azdata.RadioCardGroupComponentProperties>({
 				cards: [],
 				cardWidth: '240px',
-				cardHeight: '340px',
+				cardHeight: '355px',
 				ariaLabel: localize('deploymentDialog.deploymentOptions', "Deployment options"),
 				width: '1000px'
 			}).component();

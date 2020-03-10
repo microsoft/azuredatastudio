@@ -544,18 +544,12 @@
       {
         "command": "cms.resource.refresh",
         "title": "%cms.resource.refresh.title%",
-        "icon": {
-          "light": "resources/light/refresh.svg",
-          "dark": "resources/dark/refresh_inverse.svg"
-        }
+        "icon": "$(refresh)"
       },
       {
         "command": "cms.resource.registerCmsServer",
         "title": "%cms.resource.registerCmsServer.title%",
-        "icon": {
-          "light": "resources/light/add.svg",
-          "dark": "resources/dark/add_inverse.svg"
-        }
+        "icon": "$(add)"
       },
       {
         "command": "cms.resource.deleteCmsServer",

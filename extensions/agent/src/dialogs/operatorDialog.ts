@@ -215,8 +215,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 
 			this.pagerFridayCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: OperatorDialog.PagerFridayCheckBoxLabel,
-					width: 80
+					label: OperatorDialog.PagerFridayCheckBoxLabel
 				}).component();
 			this.pagerFridayCheckBox.onChanged(() => {
 				if (this.pagerFridayCheckBox.checked) {
@@ -241,8 +240,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 
 			this.pagerSaturdayCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: OperatorDialog.PagerSaturdayCheckBoxLabel,
-					width: 80
+					label: OperatorDialog.PagerSaturdayCheckBoxLabel
 				}).component();
 
 			this.pagerSaturdayCheckBox.onChanged(() => {
@@ -288,8 +286,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 
 			this.pagerSundayCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: OperatorDialog.PagerSundayCheckBoxLabel,
-					width: 80
+					label: OperatorDialog.PagerSundayCheckBoxLabel
 				}).component();
 
 			this.pagerSundayCheckBox.onChanged(() => {
@@ -359,18 +356,25 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 					}, {
 						component: this.pagerThursdayCheckBox,
 						title: ''
-					}, {
-						component: pagerFridayCheckboxContainer,
-						title: ''
-					}, {
-						component: pagerSaturdayCheckboxContainer,
-						title: ''
-					}, {
-						component: pagerSundayCheckboxContainer,
-						title: ''
 					}],
 					title: OperatorDialog.PagerDutyScheduleLabel
-				}]).withLayout({ width: '100%' }).component();
+				}, {
+					component: pagerFridayCheckboxContainer,
+					title: ''
+				}, {
+					component: view.modelBuilder.separator().component(),
+					title: ''
+				}, {
+					component: pagerSaturdayCheckboxContainer,
+					title: ''
+				}, {
+					component: view.modelBuilder.separator().component(),
+					title: ''
+				}, {
+					component: pagerSundayCheckboxContainer,
+					title: ''
+				}
+				]).withLayout({ width: '100%' }).component();
 			await view.initializeModel(formModel);
 		});
 	}

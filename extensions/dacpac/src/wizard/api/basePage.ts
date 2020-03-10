@@ -12,7 +12,7 @@ export abstract class BasePage {
 	protected readonly wizardPage: azdata.window.WizardPage;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: azdata.ModelView;
-	protected databaseValues: string[];
+	public databaseValues: string[];
 
 	/**
 	 * This method constructs all the elements of the page.

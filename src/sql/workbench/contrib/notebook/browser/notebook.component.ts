@@ -54,6 +54,7 @@ import { find, firstIndex } from 'vs/base/common/arrays';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -102,7 +103,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
-		@Inject(ITelemetryService) private telemetryService: ITelemetryService
+		@Inject(ITelemetryService) private telemetryService: ITelemetryService,
+		@Inject(ICommandService) private commandService: ICommandService
 	) {
 		super();
 		this.updateProfile();
@@ -226,10 +228,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private setScrollPosition(): void {
 		if (this._notebookParams && this._notebookParams.input) {
-			this._notebookParams.input.layoutChanged(() => {
+			this._register(this._notebookParams.input.layoutChanged(() => {
 				let containerElement = <HTMLElement>this.container.nativeElement;
 				containerElement.scrollTop = this._scrollTop;
-			});
+			}));
 		}
 	}
 
@@ -437,6 +439,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._navProvider = this.notebookService.getNavigationProvider(this._notebookParams.notebookUri);
 
 		if (this.contextKeyService.getContextKeyValue('bookOpened') && this._navProvider) {
+			// If there's a book opened but the current notebook isn't part of the book, this is a no-op
+			this.commandService.executeCommand('notebook.command.revealInBooksViewlet', this._notebookParams.notebookUri, false);
 			this._navProvider.getNavigation(this._notebookParams.notebookUri).then(result => {
 				this.navigationResult = result;
 				this.addButton(localize('previousButtonLabel', "< Previous"),

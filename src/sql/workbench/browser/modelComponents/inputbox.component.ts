@@ -192,10 +192,10 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	}
 
 	private layoutInputBox(): void {
-		if (isNumber(this.width)) {
+		if (isNumber(this.width) || this.width) {
 			this.inputElement.width = this.convertSizeToNumber(this.width);
 		}
-		if (isNumber(this.height)) {
+		if (isNumber(this.height) || this.height) {
 			this.inputElement.setHeight(this.convertSize(this.height));
 		}
 	}
@@ -219,7 +219,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 				if (isNumber(this.min)) {
 					input.inputElement.min = this.min.toString();
 				}
-				if (isNumber(this.max === undefined)) {
+				if (isNumber(this.max)) {
 					input.inputElement.max = this.max.toString();
 				}
 			}

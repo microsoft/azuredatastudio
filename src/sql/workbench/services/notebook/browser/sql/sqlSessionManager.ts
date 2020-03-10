@@ -340,10 +340,12 @@ class SqlKernel extends Disposable implements nb.IKernel {
 				this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error);
 			});
 		}));
-		this._register(queryRunner.onMessage(message => {
+		this._register(queryRunner.onMessage(messages => {
 			// TODO handle showing a messages output (should be updated with all messages, only changing 1 output in total)
-			if (this._future && isUndefinedOrNull(message.selection)) {
-				this._future.handleMessage(message);
+			for (const message of messages) {
+				if (this._future && isUndefinedOrNull(message.selection)) {
+					this._future.handleMessage(message);
+				}
 			}
 		}));
 		this._register(queryRunner.onBatchEnd(batch => {

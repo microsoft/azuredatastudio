@@ -28,6 +28,7 @@ import { ChartState } from 'sql/workbench/common/editor/query/chartState';
 import * as nls from 'vs/nls';
 import { find } from 'vs/base/common/arrays';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { DbCellValue } from 'azdata';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -198,6 +199,22 @@ export class ChartView extends Disposable implements IPanelView {
 		this.shouldGraph();
 	}
 
+	public setData(rows: DbCellValue[][], columns: string[]): void {
+		if (!rows) {
+			this._data = { columns: [], rows: [] };
+			this._notificationService.error(nls.localize('charting.failedToGetRows', "Failed to get rows for the dataset to chart."));
+		} else {
+			this._data = {
+				columns: columns,
+				rows: rows.map(r => r.map(c => c.displayValue))
+			};
+		}
+
+		if (this.insight) {
+			this.insight.data = this._data;
+		}
+	}
+
 	private shouldGraph() {
 		// Check if we have the necessary information
 		if (this._currentData && this._queryRunner) {
@@ -207,18 +224,9 @@ export class ChartView extends Disposable implements IPanelView {
 				let summary = batch.resultSetSummaries[this._currentData.resultId];
 				if (summary) {
 					this._queryRunner.getQueryRows(0, summary.rowCount, this._currentData.batchId, this._currentData.resultId).then(d => {
-						if (!d.resultSubset.rows) { // be defensive against this
-							this._data = { columns: [], rows: [] };
-							this._notificationService.error(nls.localize('charting.failedToGetRows', "Failed to get rows for the dataset to chart."));
-						} else {
-							this._data = {
-								columns: summary.columnInfo.map(c => c.columnName),
-								rows: d.resultSubset.rows.map(r => r.map(c => c.displayValue))
-							};
-						}
-						if (this.insight) {
-							this.insight.data = this._data;
-						}
+						let rows = d.resultSubset.rows;
+						let columns = summary.columnInfo.map(c => c.columnName);
+						this.setData(rows, columns);
 					});
 				}
 			}

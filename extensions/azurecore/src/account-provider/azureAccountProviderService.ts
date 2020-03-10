@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as constants from '../constants';
 import * as azdata from 'azdata';
 import * as events from 'events';
 import * as nls from 'vscode-nls';
@@ -13,6 +12,7 @@ import CredentialServiceTokenCache from './tokenCache';
 import providerSettings from './providerSettings';
 import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider2';
 import { AzureAccountProviderMetadata, ProviderSettings } from './interfaces';
+import * as loc from '../localizedConstants';
 
 let localize = nls.loadMessageBundle();
 
@@ -78,11 +78,11 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			.then(
 				() => {
 					let message = localize('clearTokenCacheSuccess', "Token cache successfully cleared");
-					vscode.window.showInformationMessage(`${constants.extensionName}: ${message}`);
+					vscode.window.showInformationMessage(`${loc.extensionName}: ${message}`);
 				},
 				err => {
 					let message = localize('clearTokenCacheFailure', "Failed to clear token cache");
-					vscode.window.showErrorMessage(`${constants.extensionName}: ${message}: ${err}`);
+					vscode.window.showErrorMessage(`${loc.extensionName}: ${message}: ${err}`);
 				});
 	}
 

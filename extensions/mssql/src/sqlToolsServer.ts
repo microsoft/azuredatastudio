@@ -131,8 +131,8 @@ function generateHandleServerProviderEvent() {
 			case Events.DOWNLOAD_END:
 				outputChannel.appendLine(localize('downloadServiceDoneChannelMsg', "Done installing {0}", Constants.serviceName));
 				break;
-			default:
-				console.error(`Unknown event from Server Provider ${e}`);
+			case Events.ENTRY_EXTRACTED:
+				outputChannel.appendLine(localize('entryExtractedChannelMsg', "Extracted {0} ({1}/{2})", args[0], args[1], args[2]));
 				break;
 		}
 	};

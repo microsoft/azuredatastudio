@@ -8,6 +8,7 @@
 	width: 100%;
 	display: flex;
 	flex-direction: column;
+	overflow: scroll;
 }
 
 .actionbar-container {
@@ -25,6 +26,6 @@
 }
 
 .options-container {
-	width: 250px;
+	min-width: 250px;
 	padding-right: 10px;
 }

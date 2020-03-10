@@ -36,22 +36,22 @@ export class Config {
 	/**
 	 * Returns the config value of required python packages
 	 */
-	public get requiredPythonPackages(): PackageConfigModel[] {
-		return this._configValues.requiredPythonPackages;
+	public get requiredSqlPythonPackages(): PackageConfigModel[] {
+		return this._configValues.sqlPackageManagement.requiredPythonPackages;
 	}
 
 	/**
 	 * Returns the config value of required r packages
 	 */
-	public get requiredRPackages(): PackageConfigModel[] {
-		return this._configValues.requiredRPackages;
+	public get requiredSqlRPackages(): PackageConfigModel[] {
+		return this._configValues.sqlPackageManagement.requiredRPackages;
 	}
 
 	/**
 	 * Returns r packages repository
 	 */
 	public get rPackagesRepository(): string {
-		return this._configValues.rPackagesRepository;
+		return this._configValues.sqlPackageManagement.rPackagesRepository;
 	}
 
 	/**
@@ -73,6 +73,49 @@ export class Config {
 	 */
 	public get rEnabled(): boolean {
 		return this.config.get(constants.rEnabledConfigKey) || false;
+	}
+
+	/**
+	 * Returns registered models table name
+	 */
+	public get registeredModelTableName(): string {
+		return this._configValues.modelManagement.registeredModelsTableName;
+	}
+
+	/**
+	 * Returns registered models table name
+	 */
+	public get registeredModelDatabaseName(): string {
+		return this._configValues.modelManagement.registeredModelsDatabaseName;
+	}
+
+	/**
+	 * Returns Azure ML API
+	 */
+	public get amlModelManagementUrl(): string {
+		return this._configValues.modelManagement.amlModelManagementUrl;
+	}
+
+	/**
+	 * Returns Azure ML API
+	 */
+	public get amlExperienceUrl(): string {
+		return this._configValues.modelManagement.amlExperienceUrl;
+	}
+
+
+	/**
+	 * Returns Azure ML API Version
+	 */
+	public get amlApiVersion(): string {
+		return this._configValues.modelManagement.amlApiVersion;
+	}
+
+	/**
+	 * Returns model management python packages
+	 */
+	public get modelsRequiredPythonPackages(): PackageConfigModel[] {
+		return this._configValues.modelManagement.requiredPythonPackages;
 	}
 
 	/**

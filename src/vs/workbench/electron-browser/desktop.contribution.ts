@@ -353,6 +353,10 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 			'disable-color-correct-rendering': {
 				type: 'boolean',
 				description: nls.localize('argv.disableColorCorrectRendering', 'Resolves issues around color profile selection. ONLY change this option if you encounter graphic issues.')
+			},
+			'force-color-profile': {
+				type: 'string',
+				markdownDescription: nls.localize('argv.forceColorProfile', 'Allows to override the color profile to use. If you experience colors appear badly, try to set this to `srgb` and restart.')
 			}
 		}
 	};

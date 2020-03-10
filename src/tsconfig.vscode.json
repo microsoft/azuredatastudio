@@ -2,15 +2,10 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"noEmit": true,
-		"noImplicitAny": true,
 		"experimentalDecorators": true,
 		"noImplicitReturns": true,
 		"noUnusedLocals": true,
-		"noImplicitThis": true,
-		"alwaysStrict": true,
-		"strictBindCallApply": true,
-		"strictNullChecks": true,
-		"strictPropertyInitialization": true,
+		"strict": true,
 		"forceConsistentCasingInFileNames": true,
 		"skipLibCheck": true
 	},

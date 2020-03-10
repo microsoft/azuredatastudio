@@ -785,7 +785,7 @@ export class MenuItemExtensionAction extends ExtensionAction {
 			return;
 		}
 		if (this.action.id === TOGGLE_IGNORE_EXTENSION_ACTION_ID) {
-			this.checked = this.configurationService.getValue<string[]>('sync.ignoredExtensions').some(id => areSameExtensions({ id }, this.extension!.identifier));
+			this.checked = !this.configurationService.getValue<string[]>('sync.ignoredExtensions').some(id => areSameExtensions({ id }, this.extension!.identifier));
 		}
 	}
 
@@ -2690,7 +2690,7 @@ export class SystemDisabledWarningAction extends ExtensionAction {
 				if (server) {
 					this.tooltip = localize('Install in other server to enable', "Install the extension on '{0}' to enable.", server.label);
 				} else {
-					this.tooltip = localize('disabled because of extension kind', "This extension cannot be enabled in the remote server.");
+					this.tooltip = localize('disabled because of extension kind', "This extension has defined that it cannot run on the remote server");
 				}
 				return;
 			}

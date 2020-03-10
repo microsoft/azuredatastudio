@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+/* eslint-disable @typescript-eslint/no-floating-promises */
+
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
 import { deepClone, assign } from 'vs/base/common/objects';
@@ -159,6 +161,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 	button(): azdata.ComponentBuilder<azdata.ButtonComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.ButtonComponent> = this.getComponentBuilder(new ButtonWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	separator(): azdata.ComponentBuilder<azdata.SeparatorComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.SeparatorComponent> = this.getComponentBuilder(new SeparatorWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -1531,6 +1540,12 @@ class FileBrowserTreeComponentWrapper extends ComponentWrapper implements azdata
 	public get onDidChange(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
+	}
+}
+
+class SeparatorWrapper extends ComponentWrapper implements azdata.SeparatorComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.Separator, id);
 	}
 }
 

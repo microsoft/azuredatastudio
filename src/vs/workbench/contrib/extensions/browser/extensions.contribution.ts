@@ -87,7 +87,8 @@ Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegis
 		name: localize('extensions', "Extensions"),
 		ctorDescriptor: new SyncDescriptor(ExtensionsViewPaneContainer),
 		icon: 'codicon-extensions',
-		order: 14 // {{SQL CARBON EDIT}}
+		order: 14, // {{SQL CARBON EDIT}}
+		rejectAddedViews: true,
 	}, ViewContainerLocation.Sidebar);
 
 
@@ -450,7 +451,7 @@ registerAction2(class extends Action2 {
 	constructor() {
 		super({
 			id: TOGGLE_IGNORE_EXTENSION_ACTION_ID,
-			title: { value: localize('workbench.extensions.action.toggleIgnoreExtension', "Don't Sync This Extension"), original: `Don't Sync This Extension` },
+			title: { value: localize('workbench.extensions.action.toggleIgnoreExtension', "Sync This Extension"), original: `Sync This Extension` },
 			menu: {
 				id: MenuId.ExtensionContext,
 				group: '2_configure',

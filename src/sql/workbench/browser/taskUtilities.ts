@@ -11,6 +11,7 @@ import {
 } from 'sql/platform/connection/common/connectionManagement';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { DashboardInput } from 'sql/workbench/browser/editor/profiler/dashboardInput';
 
 export function replaceConnection(oldUri: string, newUri: string, connectionService: IConnectionManagementService): Promise<IConnectionResult> {
 	return new Promise<IConnectionResult>((resolve, reject) => {
@@ -58,7 +59,7 @@ export function replaceConnection(oldUri: string, newUri: string, connectionServ
 */
 export function getCurrentGlobalConnection(objectExplorerService: IObjectExplorerService, connectionManagementService: IConnectionManagementService, workbenchEditorService: IEditorService, topLevelOnly: boolean = false): IConnectionProfile {
 	let connection: IConnectionProfile;
-
+	// object Explorer Connection
 	let objectExplorerSelection = objectExplorerService.getSelectedProfileAndDatabase();
 	if (objectExplorerSelection) {
 		let objectExplorerProfile = objectExplorerSelection.profile;
@@ -76,7 +77,13 @@ export function getCurrentGlobalConnection(objectExplorerService: IObjectExplore
 
 	let activeInput = workbenchEditorService.activeEditor;
 	if (activeInput) {
-		connection = connectionManagementService.getConnectionProfile(activeInput.resource.toString());
+		// dashboard Connection
+		if (activeInput instanceof DashboardInput) {
+			connection = connectionManagementService.getConnectionProfile(activeInput.uri.toString());
+		} else {
+			// editor Connection
+			connection = connectionManagementService.getConnectionProfile(activeInput.resource.toString());
+		}
 	}
 
 	return connection;

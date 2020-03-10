@@ -148,7 +148,7 @@ export class QueryRunner {
 		return isEnabled;
 	}
 
-	private async runQuery(connection: azdata.connection.ConnectionProfile, query: string): Promise<azdata.SimpleExecuteResult | undefined> {
+	public async runQuery(connection: azdata.connection.ConnectionProfile, query: string): Promise<azdata.SimpleExecuteResult | undefined> {
 		let result: azdata.SimpleExecuteResult | undefined = undefined;
 		try {
 			if (connection) {

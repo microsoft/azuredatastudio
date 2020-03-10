@@ -34,7 +34,8 @@ const all = [
 	'src/**/*',
 	'test/**/*',
 	'!test/**/out/**',
-	'!**/node_modules/**'
+	'!**/node_modules/**',
+	'!build/actions/**/dist/*' // {{ SQL CARBON EDIT }}
 ];
 
 const indentationFilter = [
@@ -95,6 +96,7 @@ const indentationFilter = [
 	'!**/*.dockerfile',
 	'!extensions/markdown-language-features/media/*.js',
 	// {{SQL CARBON EDIT}}
+	'!build/actions/**/dist/*',
 	'!**/*.{xlf,docx,sql,vsix,bacpac,ipynb}',
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
@@ -103,7 +105,8 @@ const indentationFilter = [
 	'!extensions/mssql/notebooks/**',
 	'!extensions/integration-tests/testData/**',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts'
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
+	'!resources/linux/snap/electron-launch'
 ];
 
 const copyrightFilter = [

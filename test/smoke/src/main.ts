@@ -31,7 +31,6 @@ import { setup as setupDataMigrationTests } from './areas/workbench/data-migrati
 import { setup as setupDataLossTests } from './areas/workbench/data-loss.test';
 import { setup as setupDataPreferencesTests } from './areas/preferences/preferences.test';
 import { setup as setupDataSearchTests } from './areas/search/search.test';
-import { setup as setupDataCSSTests } from './areas/css/css.test';
 import { setup as setupDataEditorTests } from './areas/editor/editor.test';
 import { setup as setupDataStatusbarTests } from './areas/statusbar/statusbar.test';
 import { setup as setupDataExtensionTests } from './areas/extensions/extensions.test';
@@ -63,8 +62,7 @@ const opts = minimist(args, {
 	boolean: [
 		'verbose',
 		'remote',
-		'web',
-		'ci'
+		'web'
 	],
 	default: {
 		verbose: false
@@ -319,27 +317,17 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 		});
 	}
 
-	// CI only tests (must be reliable)
-	if (opts.ci) {
-		// TODO@Ben figure out tests that can run continously and reliably
-	}
-
-	// Non-CI execution (all tests)
-	else {
-		/*if (!opts.web) { setupDataMigrationTests(opts['stable-build'], testDataPath); } {{SQL CARBON EDIT}} comment out tests
-		if (!opts.web) { setupDataLossTests(); }
-		if (!opts.web) { setupDataPreferencesTests(); }
-		setupDataSearchTests();
-		setupDataCSSTests();
-		setupDataEditorTests();
-		setupDataStatusbarTests(!!opts.web);
-		if (!opts.web) { setupDataExtensionTests(); }
-		setupTerminalTests();
-		if (!opts.web) { setupDataMultirootTests(); }
-		if (!opts.web) { setupDataLocalizationTests(); }
-		if (!opts.web) { setupLaunchTests(); }*/
-
-		runProfilerTests(); // {{SQL CARBON EDIT}} add our tests
-		runQueryEditorTests(); // {{SQL CARBON EDIT}} add our tests
-	}
+	/*if (!opts.web) { setupDataMigrationTests(opts['stable-build'], testDataPath); }
+	if (!opts.web) { setupDataLossTests(); }
+	if (!opts.web) { setupDataPreferencesTests(); }
+	setupDataSearchTests();
+	setupDataEditorTests();
+	setupDataStatusbarTests(!!opts.web);
+	if (!opts.web) { setupDataExtensionTests(); }
+	setupTerminalTests();
+	if (!opts.web) { setupDataMultirootTests(); }
+	if (!opts.web) { setupDataLocalizationTests(); }
+	if (!opts.web) { setupLaunchTests(); }*/
+	runProfilerTests(); // {{SQL CARBON EDIT}} add our tests
+	runQueryEditorTests(); // {{SQL CARBON EDIT}} add our tests
 });

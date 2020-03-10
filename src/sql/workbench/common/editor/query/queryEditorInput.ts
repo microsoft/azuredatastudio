@@ -193,10 +193,6 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public isDirty(): boolean { return this._text.isDirty(); }
 	public get resource(): URI { return this._text.resource; }
 
-	public matchInputInstanceType(inputType: any): boolean {
-		return (this._text instanceof inputType);
-	}
-
 	public getName(longForm?: boolean): string {
 		if (this.configurationService.getValue('sql.showConnectionInfoInTitle')) {
 			let profile = this.connectionManagementService.getConnectionProfile(this.uri);
@@ -289,7 +285,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	public onDisconnect(): void {
 		this.state.connected = false;
-		this._onDidChangeLabel.fire();
+		if (!this.isDisposed()) {
+			this._onDidChangeLabel.fire();
+		}
 	}
 
 	public onRunQuery(): void {
@@ -309,10 +307,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	public dispose() {
+		super.dispose(); // we want to dispose first so that for future logic we know we are disposed
 		this.queryModelService.disposeQuery(this.uri);
 		this.connectionManagementService.disconnectEditor(this, true);
-
-		super.dispose();
 	}
 
 	public get isSharedSession(): boolean {

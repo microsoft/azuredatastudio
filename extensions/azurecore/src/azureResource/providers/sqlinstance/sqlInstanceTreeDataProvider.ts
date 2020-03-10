@@ -17,7 +17,7 @@ import { azureResource } from '../../azure-resource';
 
 export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly containerId = 'azure.resource.providers.sqlInstanceContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.sqlInstanceContainerLabel', "SQL Managed Instances");
+	private static readonly containerLabel = localize('azure.resource.providers.sqlInstanceContainerLabel', "Azure SQL DB managed instance");
 
 	public constructor(
 		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,

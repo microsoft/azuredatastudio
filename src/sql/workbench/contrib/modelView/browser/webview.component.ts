@@ -19,6 +19,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { ComponentEventType, IModelStore, IComponentDescriptor, IComponent } from 'sql/platform/dashboard/browser/interfaces';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 function reviveWebviewOptions(options: vscode.WebviewOptions): vscode.WebviewOptions {
 	return {
@@ -95,7 +96,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 			}));
 
 			this.setHtml();
-		});
+		}).catch(onUnexpectedError);
 	}
 
 	ngOnDestroy(): void {
@@ -141,7 +142,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 			this._ready.then(() => {
 				let element = <HTMLElement>this._el.nativeElement;
 				element.style.position = this.position;
-			});
+			}).catch(onUnexpectedError);
 		}
 	}
 
@@ -164,7 +165,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 					this._extensionLocationUri = URI.revive(this.extensionLocation);
 				}
 				this.sendMessage();
-			});
+			}).catch(onUnexpectedError);
 		}
 	}
 
