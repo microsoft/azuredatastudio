@@ -13,7 +13,7 @@ import { CommandContext, BuiltInCommands } from './constants';
  */
 export class ApiWrapper {
 	public getWorkspaceFolders(): vscode.WorkspaceFolder[] {
-		throw vscode.workspace.workspaceFolders;
+		return [].concat(vscode.workspace.workspaceFolders || []);
 	}
 
 	public createOutputChannel(name: string): vscode.OutputChannel {

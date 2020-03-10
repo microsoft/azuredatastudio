@@ -21,8 +21,6 @@ enum TrustBookOperation {
 }
 
 export class BookTrustManager implements IBookTrustManager {
-	private trustedLocalBooks: string[] = [];
-
 	constructor(private books: BookModel[], private apiWrapper: ApiWrapper) { }
 
 	isNotebookTrustedByDefault(notebookUri: string): boolean {
@@ -68,26 +66,17 @@ export class BookTrustManager implements IBookTrustManager {
 	}
 
 	getTrustedBookPathsInConfig(): string[] {
-		let trustedBookPaths: string[] = this.trustedLocalBooks;
+		let config: vscode.WorkspaceConfiguration = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
+		let trustedBookDirectories: string[] = config.get(constants.trustedBooksConfigKey);
 
-		if (this.hasWorkspaceFolders()) {
-			let config: vscode.WorkspaceConfiguration = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
-			let trustedBookDirectories: string[] = config.get(constants.trustedBooksConfigKey);
-
-			trustedBookPaths = trustedBookDirectories;
-		}
-
-		return trustedBookPaths;
+		return trustedBookDirectories;
 	}
 
 	setTrustedBookPathsInConfig(bookPaths: string[]) {
-		if (this.hasWorkspaceFolders()) {
-			let config: vscode.WorkspaceConfiguration = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
+		let config: vscode.WorkspaceConfiguration = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
+		let storeInWorspace: boolean = this.hasWorkspaceFolders();
 
-			config.update(constants.trustedBooksConfigKey, bookPaths);
-		} else {
-			this.trustedLocalBooks = bookPaths;
-		}
+		config.update(constants.trustedBooksConfigKey, bookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
 	}
 
 	hasWorkspaceFolders(): boolean {
