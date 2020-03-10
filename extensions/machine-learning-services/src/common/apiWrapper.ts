@@ -105,4 +105,28 @@ export class ApiWrapper {
 	public showQuickPick<T extends vscode.QuickPickItem>(items: T[] | Thenable<T[]>, options?: vscode.QuickPickOptions, token?: vscode.CancellationToken): Thenable<T | undefined> {
 		return vscode.window.showQuickPick(items, options, token);
 	}
+
+	public listDatabases(connectionId: string): Thenable<string[]> {
+		return azdata.connection.listDatabases(connectionId);
+	}
+
+	public openTextDocument(options?: { language?: string; content?: string; }): Thenable<vscode.TextDocument> {
+		return vscode.workspace.openTextDocument(options);
+	}
+
+	public connect(fileUri: string, connectionId: string): Thenable<void> {
+		return azdata.queryeditor.connect(fileUri, connectionId);
+	}
+
+	public runQuery(fileUri: string, options?: Map<string, string>, runCurrentQuery?: boolean): void {
+		azdata.queryeditor.runQuery(fileUri, options, runCurrentQuery);
+	}
+
+	public showTextDocument(uri: vscode.Uri, options?: vscode.TextDocumentShowOptions): Thenable<vscode.TextEditor> {
+		return vscode.window.showTextDocument(uri, options);
+	}
+
+	public createButton(label: string, position?: azdata.window.DialogButtonPosition): azdata.window.Button {
+		return azdata.window.createButton(label, position);
+	}
 }
