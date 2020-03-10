@@ -232,7 +232,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 						if (utils.getOSPlatform() === utils.Platform.Windows) {
 							try {
 								let zippedFile = new zip(pythonPackagePathLocal);
-								await zippedFile.extractAllToAsync(installPath);
+								zippedFile.extractAllTo(installPath);
 							} catch (err) {
 								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
 								resolve();
