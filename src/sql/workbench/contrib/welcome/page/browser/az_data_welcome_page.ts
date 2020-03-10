@@ -27,8 +27,9 @@ export default () => `
 				</div>
 				<div class="section deploy">
 					<h2 class="caption">${escape(localize('welcomePage.deploy', "Deploy"))}</h2>
+					<!--The resourceDeployment.new command can be removed if this option is removed from the welcome page-->
 					<ul>
-						<li><a href="command:azdata.resource.deploy">${escape(localize('welcomePage.newDeployment', "New Deployment…"))}</a></li>
+						<li><a href="command:resourceDeployment.new">${escape(localize('welcomePage.newDeployment', "New Deployment…"))}</a></li>
 					</ul>
 				</div>
 				<div class="section recent">
