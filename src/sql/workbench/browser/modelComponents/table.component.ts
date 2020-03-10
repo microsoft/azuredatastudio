@@ -316,10 +316,12 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	}
 
 	public focus(): void {
-		if (!this._table.grid.getActiveCell()) {
-			this._table.grid.setActiveCell(0, 0);
+		if (this._table.grid.getDataLength() > 0) {
+			if (!this._table.grid.getActiveCell()) {
+				this._table.grid.setActiveCell(0, 0);
+			}
+			this._table.grid.getActiveCellNode().focus();
 		}
-		this._table.grid.getActiveCellNode().focus();
 	}
 
 	// CSS-bound properties
