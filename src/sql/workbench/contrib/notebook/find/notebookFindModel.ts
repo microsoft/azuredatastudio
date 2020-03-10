@@ -574,7 +574,11 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 					break;
 				}
 			} else {
-				start = searchText.indexOf(exp) + index + 1;
+				start = searchText.indexOf(exp) + index;
+				// Editors aren't 0-based; the first character position in an editor is 1, so adding 1 to the first found index
+				if (index === 0) {
+					start++;
+				}
 			}
 			findResults.push(start);
 			index = start + exp.length;
