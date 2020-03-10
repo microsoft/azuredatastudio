@@ -11,21 +11,22 @@ import { IBookTrustManager, BookTrustManager } from '../../book/bookTrustManager
 import { BookTreeItem, BookTreeItemFormat, BookTreeItemType } from '../../book/bookTreeItem';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { WorkspaceConfiguration, ConfigurationTarget } from 'vscode';
+import { BookModel } from '../../book/bookModel';
 
 describe('BookTrustManagerTests', function () {
 
 	describe('TrustingInWorkspaces', () => {
 		let bookTrustManager: IBookTrustManager;
 		let trustedSubFolders: string[];
-		let books: any[];
+		let books: BookModel[];
 
 		beforeEach(() => {
 			trustedSubFolders = ['/SubFolder/'];
 
 			// Mock Workspace Configuration
 			let workspaceConfigurtionMock: TypeMoq.IMock<WorkspaceConfiguration> = TypeMoq.Mock.ofType<WorkspaceConfiguration>();
-			workspaceConfigurtionMock.setup(config => config.get(TypeMoq.It.isValue(constants.trustedBooksConfigKey))).returns(() => trustedSubFolders);
-			workspaceConfigurtionMock.setup(config => config.update(TypeMoq.It.isValue(constants.trustedBooksConfigKey), TypeMoq.It.isAny)).returns((key:string, newValues:string[]) => {
+			workspaceConfigurtionMock.setup(config => config.get(TypeMoq.It.isValue(constants.trustedBooksConfigKey))).returns(() => [].concat(trustedSubFolders));
+			workspaceConfigurtionMock.setup(config => config.update(TypeMoq.It.isValue(constants.trustedBooksConfigKey), TypeMoq.It.isAny(), TypeMoq.It.isValue(false))).returns((key: string, newValues: string[]) => {
 				trustedSubFolders.splice(0, trustedSubFolders.length, ...newValues); // Replace
 				return Promise.resolve();
 			});
@@ -51,7 +52,7 @@ describe('BookTrustManagerTests', function () {
 			apiWrapperMock.setup(api => api.getConfiguration(TypeMoq.It.isValue(constants.notebookConfigKey))).returns(() => workspaceConfigurtionMock.object);
 
 			// Mock Book Data
-			let bookTreeItemFormat1:BookTreeItemFormat = {
+			let bookTreeItemFormat1: BookTreeItemFormat = {
 				root: '/temp/SubFolder/',
 				tableOfContents: {
 					sections: [
@@ -70,7 +71,7 @@ describe('BookTrustManagerTests', function () {
 				type: BookTreeItemType.Book
 			};
 
-			let bookTreeItemFormat2:BookTreeItemFormat = {
+			let bookTreeItemFormat2: BookTreeItemFormat = {
 				root: '/temp/SubFolder2/',
 				tableOfContents: {
 					sections: [
@@ -102,11 +103,19 @@ describe('BookTrustManagerTests', function () {
 				type: BookTreeItemType.Book
 			};
 
-			books = [{
-				bookItems: [new BookTreeItem(bookTreeItemFormat1, undefined), new BookTreeItem(bookTreeItemFormat2, undefined)]
-			}, {
-				bookItems: [new BookTreeItem(bookTreeItemFormat3, undefined)]
-			}];
+			let bookModel1Mock: TypeMoq.IMock<BookModel> = TypeMoq.Mock.ofType<BookModel>();
+			bookModel1Mock.setup(model => model.bookItems).returns(() => [new BookTreeItem(bookTreeItemFormat1, undefined), new BookTreeItem(bookTreeItemFormat2, undefined)]);
+			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue('/temp/SubFolder/content/sample/notebook.ipynb'))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
+			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue('/temp/SubFolder/content/sample/notebook2.ipynb'))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
+			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue('/temp/SubFolder2/content/sample/notebook.ipynb'))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
+			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isAnyString())).returns((uri: string) => undefined);
+
+			let bookModel2Mock: TypeMoq.IMock<BookModel> = TypeMoq.Mock.ofType<BookModel>();
+			bookModel2Mock.setup(model => model.bookItems).returns(() => [new BookTreeItem(bookTreeItemFormat3, undefined)]);
+			bookModel2Mock.setup(model => model.getNotebook(TypeMoq.It.isValue('/temp2/SubFolder/content/sample/notebook.ipynb'))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
+			bookModel2Mock.setup(model => model.getNotebook(TypeMoq.It.isAnyString())).returns((uri: string) => undefined);
+
+			books = [bookModel1Mock.object, bookModel2Mock.object];
 
 			bookTrustManager = new BookTrustManager(books, apiWrapperMock.object);
 		});
@@ -136,8 +145,8 @@ describe('BookTrustManagerTests', function () {
 
 			should(isNotebookTrustedBeforeChange).be.false("Notebook should NOT be trusted");
 
-			// add the notebook
-			trustedSubFolders.push('/SubFolder2/');
+			// add another book subfolder
+			bookTrustManager.setBookAsTrusted('/SubFolder2/');
 
 			let isNotebookTrustedAfterChange = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
@@ -165,7 +174,7 @@ describe('BookTrustManagerTests', function () {
 			should(isNotebookTrusted).be.false("Random notebooks should not be trusted");
 		});
 
-		it('should NOT trust notebook inside trusted subfolder when absent in table of contents ', async() => {
+		it('should NOT trust notebook inside trusted subfolder when absent in table of contents ', async () => {
 			bookTrustManager.setBookAsTrusted('/temp/SubFolder/');
 
 			let notebookUri = '/temp/SubFolder/content/sample/notInToc.ipynb';
@@ -179,14 +188,14 @@ describe('BookTrustManagerTests', function () {
 	describe('TrustingInFolder', () => {
 
 		let bookTrustManager: IBookTrustManager;
-		let books: any[];
+		let books: BookModel[];
 
 		beforeEach(() => {
-			let trustedFolders:string[] = [];
+			let trustedFolders: string[] = [];
 			// Mock Workspace Configuration
 			let workspaceConfigurtionMock: TypeMoq.IMock<WorkspaceConfiguration> = TypeMoq.Mock.ofType<WorkspaceConfiguration>();
-			workspaceConfigurtionMock.setup(config => config.get(TypeMoq.It.isValue(constants.trustedBooksConfigKey))).returns(() => trustedFolders);
-			workspaceConfigurtionMock.setup(config => config.update(TypeMoq.It.isValue(constants.trustedBooksConfigKey), TypeMoq.It.isAny, TypeMoq.It.isValue(ConfigurationTarget.Global))).returns((key:string, newValues:string[], target:ConfigurationTarget) => {
+			workspaceConfigurtionMock.setup(config => config.get(TypeMoq.It.isValue(constants.trustedBooksConfigKey))).returns(() => [].concat(trustedFolders));
+			workspaceConfigurtionMock.setup(config => config.update(TypeMoq.It.isValue(constants.trustedBooksConfigKey), TypeMoq.It.isAny(), TypeMoq.It.isValue(ConfigurationTarget.Global))).returns((key: string, newValues: string[], target: ConfigurationTarget) => {
 				trustedFolders.splice(0, trustedFolders.length, ...newValues); // Replace
 				return Promise.resolve();
 			});
@@ -197,7 +206,7 @@ describe('BookTrustManagerTests', function () {
 
 			apiWrapperMock.setup(api => api.getWorkspaceFolders()).returns(() => []);
 			apiWrapperMock.setup(api => api.getConfiguration(TypeMoq.It.isValue(constants.notebookConfigKey))).returns(() => workspaceConfigurtionMock.object);
-			let bookTreeItemFormat1:BookTreeItemFormat = {
+			let bookTreeItemFormat1: BookTreeItemFormat = {
 				root: '/temp/SubFolder/',
 				tableOfContents: {
 					sections: [
@@ -216,7 +225,7 @@ describe('BookTrustManagerTests', function () {
 				type: BookTreeItemType.Book
 			};
 
-			let bookTreeItemFormat2:BookTreeItemFormat = {
+			let bookTreeItemFormat2: BookTreeItemFormat = {
 				root: '/temp/SubFolder2/',
 				tableOfContents: {
 					sections: [
@@ -235,11 +244,19 @@ describe('BookTrustManagerTests', function () {
 				type: BookTreeItemType.Book
 			};
 
-			books = [{
-				bookItems: [new BookTreeItem(bookTreeItemFormat1, undefined)]
-			}, {
-				bookItems: [new BookTreeItem(bookTreeItemFormat2, undefined)],
-			}];
+			let bookModel1Mock: TypeMoq.IMock<BookModel> = TypeMoq.Mock.ofType<BookModel>();
+			bookModel1Mock.setup(model => model.bookItems).returns(() => [new BookTreeItem(bookTreeItemFormat1, undefined)]);
+			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue('/temp/SubFolder/content/sample/notebook.ipynb'))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
+			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue('/temp/SubFolder/content/sample/notebook2.ipynb'))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
+			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isAnyString())).returns((uri: string) => undefined);
+
+			let bookModel2Mock: TypeMoq.IMock<BookModel> = TypeMoq.Mock.ofType<BookModel>();
+			bookModel2Mock.setup(model => model.bookItems).returns(() => [new BookTreeItem(bookTreeItemFormat2, undefined)]);
+			bookModel2Mock.setup(model => model.getNotebook(TypeMoq.It.isValue('/temp/SubFolder2/content/sample/notebook.ipynb'))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
+			bookModel2Mock.setup(model => model.getNotebook(TypeMoq.It.isValue('/temp/SubFolder2/content/sample/notebook2.ipynb'))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
+			bookModel2Mock.setup(model => model.getNotebook(TypeMoq.It.isAnyString())).returns((uri: string) => undefined);
+
+			books = [bookModel1Mock.object, bookModel2Mock.object];
 
 			bookTrustManager = new BookTrustManager(books, apiWrapperMock.object);
 		});
@@ -299,7 +316,7 @@ describe('BookTrustManagerTests', function () {
 			should(isNotebookTrusted).be.false("Random notebooks should not be trusted");
 		});
 
-		it('should NOT trust notebook inside trusted subfolder when absent in table of contents ', async() => {
+		it('should NOT trust notebook inside trusted subfolder when absent in table of contents ', async () => {
 			bookTrustManager.setBookAsTrusted('/temp/SubFolder/');
 
 			let notebookUri = '/temp/SubFolder/content/sample/notInToc.ipynb';

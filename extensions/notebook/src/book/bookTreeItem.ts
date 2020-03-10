@@ -161,24 +161,6 @@ export class BookTreeItem extends vscode.TreeItem {
 		return this.findChildSectionRecur(this, url);
 	}
 
-	/**
-	 * Determines whether a notebook is part of this book.
-	 * @param notebookUri Notebook uri Full URI of the notebook.
-	 */
-	public hasNotebook(notebookUri: string): boolean {
-		let normalizedNotebookUri = path.normalize(notebookUri);
-		let isPartOfNotebook: boolean = false;
-		let fullBookBaseUriWithContent = path.join(this.root, 'content', path.sep);
-		let requestingNotebookFormattedUri = path.normalize(normalizedNotebookUri.replace(fullBookBaseUriWithContent, '').replace('.ipynb', ''));
-		let notebookInTOC = this.tableOfContents.sections.find(jupyterSection => {
-			let normalizedJupyterSectionUrl = jupyterSection.url && path.normalize(jupyterSection.url.replace(/^\\/, '').replace(/^\//, ''));
-			return normalizedJupyterSectionUrl === requestingNotebookFormattedUri;
-		});
-		isPartOfNotebook = !!notebookInTOC;
-
-		return isPartOfNotebook;
-	}
-
 	private findChildSectionRecur(section: IJupyterBookSection, url: string): IJupyterBookSection | undefined {
 		if (section.url && section.url === url) {
 			return section;

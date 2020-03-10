@@ -32,20 +32,18 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _bookTrustManager: IBookTrustManager;
 
 	private _bookViewer: vscode.TreeView<BookTreeItem>;
-	private _apiWrapper: ApiWrapper;
 	public viewId: string;
 	public books: BookModel[];
 	public currentBook: BookModel;
 
-	constructor(apiWrapper: ApiWrapper, workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string) {
+	constructor(private _apiWrapper: ApiWrapper, workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string) {
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
 		this.books = [];
 		this.initialize(workspaceFolders).catch(e => console.error(e));
 		this.viewId = view;
 		this.prompter = new CodeAdapter();
-		this._bookTrustManager = new BookTrustManager(this.books, apiWrapper);
-		this._apiWrapper = apiWrapper ? apiWrapper : new ApiWrapper();
+		this._bookTrustManager = new BookTrustManager(this.books, _apiWrapper);
 	}
 
 	private async initialize(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
@@ -78,12 +76,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (bookPathToTrust) {
 			let trustChanged = this._bookTrustManager.setBookAsTrusted(bookPathToTrust);
 
-			if (this._apiWrapper) {
-				if (trustChanged) {
-					this._apiWrapper.showInfoMessage(loc.msgBookTrusted);
-				} else {
-					this._apiWrapper.showInfoMessage(loc.msgBookAlreadyTrusted);
-				}
+			if (trustChanged) {
+				this._apiWrapper.showInfoMessage(loc.msgBookTrusted);
+			} else {
+				this._apiWrapper.showInfoMessage(loc.msgBookAlreadyTrusted);
 			}
 		}
 	}

@@ -24,11 +24,13 @@ export class BookTrustManager implements IBookTrustManager {
 	constructor(private books: BookModel[], private apiWrapper: ApiWrapper) { }
 
 	isNotebookTrustedByDefault(notebookUri: string): boolean {
-		let allBooks: BookTreeItem[] = this.getAllBooks();
+		let normalizedNotebookUri: string = path.normalize(notebookUri);
+		let treeBookItems: BookTreeItem[] = this.getBookTreeItems();
 		let trustableBookPaths = this.getTrustableBookPaths();
-		let trustableBooks: BookTreeItem[] = allBooks
-			.filter(bookItem => trustableBookPaths.some(trustableBookPath => trustableBookPath === path.join(bookItem.book.root, path.sep)));
-		let isNotebookTrusted = trustableBooks.filter(bookItem => !!bookItem).some(bookItem => bookItem.hasNotebook(notebookUri));
+		let hasTrustedBookPath: boolean = treeBookItems
+			.filter(bookItem => trustableBookPaths.some(trustableBookPath => trustableBookPath === path.join(bookItem.book.root, path.sep)))
+			.some(bookItem => normalizedNotebookUri.startsWith(path.join(bookItem.root, 'content', path.sep)));
+		let isNotebookTrusted = hasTrustedBookPath && this.books.some(bookModel => bookModel.getNotebook(normalizedNotebookUri));
 		return isNotebookTrusted;
 	}
 
@@ -51,7 +53,7 @@ export class BookTrustManager implements IBookTrustManager {
 		return trustablePaths;
 	}
 
-	getAllBooks(): BookTreeItem[] {
+	getBookTreeItems(): BookTreeItem[] {
 		return this.books
 			.map(book => book.bookItems) // select all the books
 			.reduce((accumulator, currentBookItemList) => accumulator.concat(currentBookItemList), []);
