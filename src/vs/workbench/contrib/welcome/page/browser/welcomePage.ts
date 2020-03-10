@@ -29,7 +29,8 @@ import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lif
 import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { registerColor, focusBorder, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder, tileBackground, buttonStandardBackground, buttonStandardBorder, buttonStandard, welcomeFont, welcomePath, moreRecent, entity, tileBorder, buttonStandardHoverColor, disabledButton, disabledButtonBackground, welcomeLink } from 'vs/platform/theme/common/colorRegistry';
+import { focusBorder, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder, tileBackground, buttonStandardBackground, buttonStandardBorder, buttonStandard, welcomeFont, welcomePath, moreRecent, entity, tileBorder, buttonStandardHoverColor, disabledButton, disabledButtonBackground, welcomeLink } from 'sql/platform/theme/common/colorRegistry';
+import { registerColor } from 'vs/platform/theme/common/colorRegistry';
 import { getExtraColor } from 'vs/workbench/contrib/welcome/walkThrough/common/walkThroughUtils';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IEditorInputFactory, EditorInput } from 'vs/workbench/common/editor';
@@ -45,8 +46,10 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}}
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
+// eslint-disable-next-line code-layering
+import { stat } from 'vs/base/node/pfs';
 
-const fs = require('fs');
+
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
 const telemetryFrom = 'welcomePage';
@@ -186,17 +189,11 @@ const extensionPacks: ExtensionSuggestion[] = [
 ];
 
 const extensions: ExtensionSuggestion[] = [
-	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: 'Develop PowerShell scripts in Azure Data Studio', icon: 'https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png', link: 'https://docs.microsoft.com/en-us/sql/azure-data-studio/powershell-extension?view=sql-server-ver15' },
-	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: 'Support for Data Virtualization in SQL Server, including Create External Data wizards.', icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg', link: 'https://docs.microsoft.com/en-us/sql/azure-data-studio/data-virtualization-extension?view=sql-server-ver15' },
-	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: 'PostgreSQL extension for Azure Data Studio', icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png', link: 'https://docs.microsoft.com/en-us/sql/azure-data-studio/postgres-extension?view=sql-server-ver15' },
+	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: 'Develop PowerShell scripts in Azure Data Studio', icon: 'https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png', link: 'https://docs.microsoft.com/sql/azure-data-studio/powershell-extension?view=sql-server-ver15' },
+	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: 'Support for Data Virtualization in SQL Server, including Create External Data wizards.', icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg', link: 'https://docs.microsoft.com/sql/azure-data-studio/data-virtualization-extension?view=sql-server-ver15' },
+	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: 'PostgreSQL extension for Azure Data Studio', icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png', link: 'https://docs.microsoft.com/sql/azure-data-studio/postgres-extension?view=sql-server-ver15' },
 ];
 
-
-// const keymapExtensions: ExtensionSuggestion[] = [
-// 	{ name: localize('welcomePage.vim', "Vim"), id: 'vscodevim.vim', isKeymap: true },
-// 	{ name: localize('welcomePage.sublime', "Sublime"), id: 'ms-vscode.sublime-keybindings', isKeymap: true },
-// 	{ name: localize('welcomePage.atom', "Atom"), id: 'ms-vscode.atom-keybindings', isKeymap: true },
-// ];
 
 interface Strings {
 	installEvent: string;
@@ -358,15 +355,15 @@ class WelcomePage extends Disposable {
 			if (!ul) {
 				return;
 			}
-			const moreRecent = ul.querySelector('.moreRecent')!;
 			const workspacesToShow = workspaces.slice(0, 5);
+
 			const updateEntries = () => {
-				const listEntries = this.createListEntries(workspacesToShow);
 				while (ul.firstChild) {
 					ul.removeChild(ul.firstChild);
 				}
-				ul.append(...listEntries, moreRecent);
+				this.createListEntries(workspacesToShow);
 			};
+
 			updateEntries();
 			this._register(this.labelService.onDidChangeFormatters(updateEntries));
 		}).then(undefined, onUnexpectedError);
@@ -390,6 +387,7 @@ class WelcomePage extends Disposable {
 		return recents.map(recent => {
 			let fullPath: string;
 			let windowOpenable: IWindowOpenable;
+			let mtime: any;
 			if (isRecentFolder(recent)) {
 				windowOpenable = { folderUri: recent.folderUri };
 				fullPath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: true });
@@ -397,76 +395,42 @@ class WelcomePage extends Disposable {
 				fullPath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
 				windowOpenable = { workspaceUri: recent.workspace.configPath };
 			}
+			stat(fullPath).then((value) => {
+				mtime = value.mtime;
+				const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+				const lastOpened: string = mtime.toLocaleDateString(undefined, options);
+				const { name, parentPath } = splitName(fullPath);
+				const li = document.createElement('li');
+				const a = document.createElement('a');
+				const span = document.createElement('span');
+				const ul = document.querySelector('.recent ul');
 
-			const daysOfWeek: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-			const monthsOfYear: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
-
-			let lastOpened: string;
-			let mtime: any = fs.statSync(fullPath).mtime;
-			let currentDate: Date = new Date;
-			let daysLapsed: number;
-			let delta = Math.abs(mtime - currentDate.getTime()) / 1000;
-
-			let hours = mtime.getHours();
-			let minutes = mtime.getMinutes();
-			let ampm = hours >= 12 ? 'pm' : 'am';
-			hours = hours % 12;
-			hours = hours ? hours : 12; // the hour '0' should be '12'
-			minutes = minutes < 10 ? '0' + minutes : minutes;
-			let strTime = hours + ':' + minutes + ' ' + ampm;
-
-			// calculate (and subtract) whole days
-			daysLapsed = Math.floor(delta / 86400);
-			delta -= daysLapsed * 86400;
-
-			// what's left is seconds
-			let secondsLapsed = delta % 60;  // in theory the modulus is not required
-
-			if (daysLapsed === 0 && secondsLapsed < 60) {
-				lastOpened = `Just Now`;
-			}
-			else if (daysLapsed === 1) {
-				lastOpened = `Yesterday at ${strTime}`;
-
-			}
-			else if (daysLapsed <= 7) {
-				lastOpened = `${daysOfWeek[mtime.getDay()]} at ${strTime}`;
-
-			} else {
-				lastOpened = `${monthsOfYear[mtime.getMonth()]}  ${mtime.getDate()}`;
-			}
-
-
-			const { name, parentPath } = splitName(fullPath);
-
-			const li = document.createElement('li');
-			const a = document.createElement('a');
-
-			a.innerText = name;
-			a.title = fullPath;
-			a.setAttribute('aria-label', localize('welcomePage.openFolderWithPath', "Open folder {0} with path {1}", name, parentPath));
-			a.href = 'javascript:void(0)';
-			a.addEventListener('click', e => {
-				this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {
-					id: 'openRecentFolder',
-					from: telemetryFrom
+				a.innerText = name;
+				a.title = fullPath;
+				a.setAttribute('aria-label', localize('welcomePage.openFolderWithPath', "Open folder {0} with path {1}", name, parentPath));
+				a.href = 'javascript:void(0)';
+				a.addEventListener('click', e => {
+					this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {
+						id: 'openRecentFolder',
+						from: telemetryFrom
+					});
+					this.hostService.openWindow([windowOpenable], { forceNewWindow: e.ctrlKey || e.metaKey });
+					e.preventDefault();
+					e.stopPropagation();
 				});
-				this.hostService.openWindow([windowOpenable], { forceNewWindow: e.ctrlKey || e.metaKey });
-				e.preventDefault();
-				e.stopPropagation();
+				li.appendChild(a);
+
+				span.classList.add('path');
+				span.classList.add('detail');
+				span.innerText = lastOpened;
+				span.title = fullPath;
+				li.appendChild(span);
+				ul.appendChild(li);
+				return li;
 			});
-			li.appendChild(a);
-
-			const span = document.createElement('span');
-			span.classList.add('path');
-			span.classList.add('detail');
-			span.innerText = lastOpened;
-			span.title = fullPath;
-			li.appendChild(span);
-
-			return li;
 		});
 	}
+
 
 	private addExtensionList(container: HTMLElement, listSelector: string, suggestions: ExtensionSuggestion[], strings: Strings) {
 		const list = container.querySelector(listSelector);
