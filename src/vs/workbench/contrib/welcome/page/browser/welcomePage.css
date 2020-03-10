@@ -291,10 +291,11 @@
 }
 
 .ads_homepage .btn.dropdown ul li ul li {
-	width: 84%;
-	padding: 1em;
+	width: 78%;
+	padding: 1em 1em 1em 1.5em;
 	clear: both;
 	font-size: 14px;
+	text-align: left;
 }
 
 .ads_homepage .btn.dropdown ul li ul li:hover {
@@ -959,7 +960,7 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	background-image: linear-gradient(0.49deg, rgba(50, 49, 48, 0.85) 16.75%, rgba(50, 49, 48, 0) 96.25%);
+	background-image: linear-gradient(0.49deg, rgba(50, 49, 48, 0.55) 82.75%, rgba(50, 49, 48, 0) 96.25%);
 	border-top-left-radius: 5px;
 	border-bottom-left-radius: 5px;
 }
@@ -1041,7 +1042,7 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 	display: initial;
 }
 
-.monaco-workbench .part.editor>.content .welcomePage .commands .item button .enabledExtension {
+.monaco-workbench .part.editor>.content .welcomePage .enabledExtension {
 	display: none;
 }
 
@@ -1050,12 +1051,12 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 	justify-content: flex-end;
 }
 
-.monaco-workbench .part.editor>.content .welcomePage .commands .item button .installExtension.installed {
-	display: none;
+.monaco-workbench .part.editor>.content .welcomePage .installExtension.installed {
+	display: initial;
 }
 
-.monaco-workbench .part.editor>.content .welcomePage .commands .item button .enabledExtension.installed {
-	display: inline;
+.monaco-workbench .part.editor>.content .welcomePage .commands .item button .enabledExtension {
+	display: none;
 }
 
 .monaco-workbench .part.editor>.content .welcomePageContainer.max-height-685px .title {
