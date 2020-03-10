@@ -236,7 +236,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 								zippedFile.extractAllTo(installPath);
 							} catch (err) {
 								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
-								resolve();
+								reject(err);
 							}
 							// Delete zip file
 							fs.unlink(pythonPackagePathLocal, (err) => {
