@@ -3,6 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+.vs .codicon.settings {
+	background-image: url('settings.svg');
+}
+
+.vs-dark .codicon.settings,
+.hc-black .codicon.settings {
+	background-image: url('settings_inverse.svg');
+}
+
 .vs .codicon.backup {
 	background: url("backup.svg") center center no-repeat;
 }
