@@ -10,7 +10,7 @@ import * as constants from '../../common/constants';
 import { IBookTrustManager, BookTrustManager } from '../../book/bookTrustManager';
 import { BookTreeItem, BookTreeItemFormat, BookTreeItemType } from '../../book/bookTreeItem';
 import { ApiWrapper } from '../../common/apiWrapper';
-import { WorkspaceConfiguration } from 'vscode';
+import { WorkspaceConfiguration, ConfigurationTarget } from 'vscode';
 
 describe('BookTrustManagerTests', function () {
 
@@ -25,7 +25,10 @@ describe('BookTrustManagerTests', function () {
 			// Mock Workspace Configuration
 			let workspaceConfigurtionMock: TypeMoq.IMock<WorkspaceConfiguration> = TypeMoq.Mock.ofType<WorkspaceConfiguration>();
 			workspaceConfigurtionMock.setup(config => config.get(TypeMoq.It.isValue(constants.trustedBooksConfigKey))).returns(() => trustedSubFolders);
-			workspaceConfigurtionMock.setup(config => config.set(TypeMoq.It.isAnyString, TypeMoq.It.isAnyString)).returns(() => {});
+			workspaceConfigurtionMock.setup(config => config.update(TypeMoq.It.isValue(constants.trustedBooksConfigKey), TypeMoq.It.isAny)).returns((key:string, newValues:string[]) => {
+				trustedSubFolders.splice(0, trustedSubFolders.length, ...newValues); // Replace
+				return Promise.resolve();
+			});
 
 			// Mock Api Wrapper
 			let apiWrapperMock: TypeMoq.IMock<ApiWrapper> = TypeMoq.Mock.ofType<ApiWrapper>();
@@ -179,8 +182,15 @@ describe('BookTrustManagerTests', function () {
 		let books: any[];
 
 		beforeEach(() => {
+			let trustedFolders:string[] = [];
 			// Mock Workspace Configuration
 			let workspaceConfigurtionMock: TypeMoq.IMock<WorkspaceConfiguration> = TypeMoq.Mock.ofType<WorkspaceConfiguration>();
+			workspaceConfigurtionMock.setup(config => config.get(TypeMoq.It.isValue(constants.trustedBooksConfigKey))).returns(() => trustedFolders);
+			workspaceConfigurtionMock.setup(config => config.update(TypeMoq.It.isValue(constants.trustedBooksConfigKey), TypeMoq.It.isAny, TypeMoq.It.isValue(ConfigurationTarget.Global))).returns((key:string, newValues:string[], target:ConfigurationTarget) => {
+				trustedFolders.splice(0, trustedFolders.length, ...newValues); // Replace
+				return Promise.resolve();
+			});
+
 
 			// Mock Api Wrapper
 			let apiWrapperMock: TypeMoq.IMock<ApiWrapper> = TypeMoq.Mock.ofType<ApiWrapper>();
