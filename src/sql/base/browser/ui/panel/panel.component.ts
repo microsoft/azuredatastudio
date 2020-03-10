@@ -50,9 +50,9 @@ let idPool = 0;
 			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title">
 				<div class="tabContainer">
 					<div *ngIf="options.layout === NavigationBarLayout.vertical" class="action-container">
-						<button [attr.aria-expanded]="_tabExpanded" [attr.aria-label]="toggleTabPanelButtonAriaLabel" [ngClass]="toggleTabPanelButtonCssClass" tabindex="0" (click)="toggleTabPanel()"></button>
+						<button [attr.aria-expanded]="_tabExpanded" [title]="toggleTabPanelButtonAriaLabel" [attr.aria-label]="toggleTabPanelButtonAriaLabel" [ngClass]="toggleTabPanelButtonCssClass" tabindex="0" (click)="toggleTabPanel()"></button>
 					</div>
-					<div #tabList class="tabList" role="tablist" scrollable [horizontalScroll]="AutoScrollbarVisibility" [verticalScroll]="HiddenScrollbarVisibility" [scrollYToX]="true">
+					<div *ngIf="_tabExpanded" class="tabList" role="tablist" scrollable [horizontalScroll]="AutoScrollbarVisibility" [verticalScroll]="HiddenScrollbarVisibility" [scrollYToX]="true">
 						<div role="presentation" *ngFor="let tab of _tabs">
 							<ng-container *ngIf="tab.type!=='group-header'">
 								<tab-header role="presentation" [active]="_activeTab === tab" [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
@@ -83,7 +83,6 @@ export class PanelComponent extends Disposable {
 	@Input() public actions?: Array<Action>;
 	@ContentChildren(TabComponent) private readonly _tabs!: QueryList<TabComponent>;
 	@ViewChild(ScrollableDirective) private scrollable?: ScrollableDirective;
-	@ViewChild('tabList', { read: ElementRef }) private _tabList!: ElementRef;
 
 	@Output() public onTabChange = new EventEmitter<TabComponent>();
 	@Output() public onTabClose = new EventEmitter<TabComponent>();
@@ -114,13 +113,6 @@ export class PanelComponent extends Disposable {
 
 	toggleTabPanel(): void {
 		this._tabExpanded = !this._tabExpanded;
-		const tabListControl = this._tabList.nativeElement as HTMLElement;
-		const tabLabelHiddenClassName = 'tabLabelHidden';
-		if (this._tabExpanded && tabListControl.classList.contains(tabLabelHiddenClassName)) {
-			tabListControl.classList.remove(tabLabelHiddenClassName);
-		} else {
-			tabListControl.classList.add(tabLabelHiddenClassName);
-		}
 		this._cd.detectChanges();
 	}
 

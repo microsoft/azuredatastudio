@@ -153,10 +153,6 @@ panel {
 	border-color: rgb(214, 214, 214);
 }
 
-.tabbedPanel .tabLabelHidden .tab-group-header {
-	display: none;
-}
-
 .tabbedPanel .action-container {
 	display: flex;
 	flex-flow: row-reverse;
@@ -171,10 +167,6 @@ panel {
 	background-position: 2px center;
 	background-repeat: no-repeat;
 	background-size: 11px 11px;
-}
-
-.tabLabelHidden .tabLabel {
-	display: none;
 }
 
 .vs .tabbedPanel .tab-action.collapse{
