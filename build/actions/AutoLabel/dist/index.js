@@ -16758,7 +16758,7 @@ exports.Deprecation = Deprecation;
  * isobject <https://github.com/jonschlinkert/isobject>
  *
  * Copyright (c) 2014-2017, Jon Schlinkert.
- * Released under the MIT License.
+ * Released under the Source EULA.
  */
 
 function isObject(val) {
@@ -16769,7 +16769,7 @@ function isObject(val) {
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *
  * Copyright (c) 2014-2017, Jon Schlinkert.
- * Released under the MIT License.
+ * Released under the Source EULA.
  */
 
 function isObjectObject(o) {
@@ -31507,7 +31507,7 @@ exports.restEndpointMethods = restEndpointMethods;
  * write <https://github.com/jonschlinkert/write>
  *
  * Copyright (c) 2014-2017, Jon Schlinkert.
- * Released under the MIT License.
+ * Released under the Source EULA.
  */
 
 
