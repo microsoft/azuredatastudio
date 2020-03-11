@@ -660,7 +660,7 @@ export class NotebookIntervalNode {
 abstract class SettingsCommand extends Command {
 
 	protected getNotebookEditor(accessor: ServicesAccessor): NotebookEditor {
-		const activeEditor = accessor.get(IEditorService).activeControl;
+		const activeEditor = accessor.get(IEditorService).activeEditorPane;
 		if (activeEditor instanceof NotebookEditor) {
 			return activeEditor;
 		}

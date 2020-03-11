@@ -147,9 +147,9 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				});
 			}));
 
-			this._table.grid.onKeyDown.subscribe((e: KeyboardEvent) => {
+			this._table.grid.onKeyDown.subscribe((e: DOMEvent) => {
 				if (this.moveFocusOutWithTab) {
-					let event = new StandardKeyboardEvent(e);
+					let event = new StandardKeyboardEvent(e as KeyboardEvent);
 					if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 						e.stopImmediatePropagation();
 						(<HTMLElement>(<HTMLElement>this._inputContainer.nativeElement).previousElementSibling).focus();

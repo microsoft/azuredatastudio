@@ -6,7 +6,7 @@
 import { nb } from 'azdata';
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, ViewChildren, QueryList } from '@angular/core';
 
-import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
 import { INotificationService, INotification } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
@@ -54,6 +54,7 @@ import { find, firstIndex } from 'vs/base/common/arrays';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 
 
@@ -260,7 +261,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					});
 					this.notificationService.error(errorWithAction);
 
-					let editors = this.editorService.visibleControls;
+					let editors = this.editorService.visibleEditorPanes;
 					for (let editor of editors) {
 						if (editor && editor.input.resource === this._notebookParams.input.notebookUri) {
 							await editor.group.closeEditor(this._notebookParams.input as NotebookInput, { preserveFocus: true }); // sketchy

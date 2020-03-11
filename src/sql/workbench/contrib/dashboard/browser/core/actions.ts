@@ -196,8 +196,8 @@ export class CollapseWidgetAction extends Action {
 	private static readonly ID = 'collapseWidget';
 	private static readonly COLLPASE_LABEL = nls.localize('collapseWidget', "Collapse");
 	private static readonly EXPAND_LABEL = nls.localize('expandWidget', "Expand");
-	private static readonly COLLAPSE_ICON = 'maximize-panel-action';
-	private static readonly EXPAND_ICON = 'minimize-panel-action';
+	private static readonly COLLAPSE_ICON = 'codicon-chevron-up';
+	private static readonly EXPAND_ICON = 'codicon-chevron-down';
 
 	constructor(
 		private _uri: string,

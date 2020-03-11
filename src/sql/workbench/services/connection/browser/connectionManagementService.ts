@@ -543,7 +543,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions, ) {
+	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions,) {
 		let connectionManagementInfo = this._connectionStatusManager.findConnection(uri);
 		if (options.showDashboard) {
 			this.showDashboardForConnectionManagementInfo(connectionManagementInfo.connectionProfile);

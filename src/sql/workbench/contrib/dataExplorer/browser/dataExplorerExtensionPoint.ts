@@ -14,7 +14,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { coalesce } from 'vs/base/common/arrays';
 
-import { CustomTreeViewPanel, CustomTreeView } from 'sql/workbench/browser/parts/views/customView';
+import { CustomTreeViewPane, CustomTreeView } from 'sql/workbench/browser/parts/views/customView';
 import { VIEWLET_ID } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 
@@ -106,7 +106,7 @@ export class DataExplorerContainerExtensionHandler implements IWorkbenchContribu
 						const viewDescriptor = <ITreeViewDescriptor>{
 							id: item.id,
 							name: item.name,
-							ctorDescriptor: new SyncDescriptor(CustomTreeViewPanel),
+							ctorDescriptor: new SyncDescriptor(CustomTreeViewPane),
 							when: ContextKeyExpr.deserialize(item.when),
 							canToggleVisibility: true,
 							collapsed: this.showCollapsed(container),
