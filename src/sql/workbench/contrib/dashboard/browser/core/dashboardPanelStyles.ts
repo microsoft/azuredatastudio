@@ -7,8 +7,7 @@ import 'vs/css!./dashboardPanel';
 
 import { registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import {
-	TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_ACTIVE_BORDER, TAB_INACTIVE_BACKGROUND,
-	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER
+	TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_ACTIVE_BORDER, EDITOR_GROUP_BORDER
 } from 'vs/workbench/common/theme';
 import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 
@@ -26,7 +25,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 			}
 
 			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header.active {
-				background-color: ${tabActiveBackground};
+				background-color: #e1f0fe;
 				outline-color: ${tabActiveBackground};
 			}
 
@@ -49,33 +48,9 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 		`);
 	}
 
-	// Title Inactive
-	const tabInactiveBackground = theme.getColor(TAB_INACTIVE_BACKGROUND);
-	const tabInactiveForeground = theme.getColor(TAB_INACTIVE_FOREGROUND);
-	if (tabInactiveBackground || tabInactiveForeground) {
-		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab .tabLabel {
-				color: ${tabInactiveForeground};
-			}
-
-			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header {
-				background-color: ${tabInactiveBackground};
-			}
-		`);
-	}
 
 	// Panel title background
-	const panelTitleBackground = theme.getColor(EDITOR_GROUP_HEADER_TABS_BACKGROUND);
-	if (panelTitleBackground) {
-		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title {
-				background-color: ${panelTitleBackground};
-			}
-		`);
-	}
-
-	// Panel title background
-	const tabBorder = theme.getColor(TAB_BORDER);
+	const tabBorder = '#FFFFFF';//theme.getColor(TAB_BORDER);
 	if (tabBorder) {
 		collector.addRule(`
 			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header {
