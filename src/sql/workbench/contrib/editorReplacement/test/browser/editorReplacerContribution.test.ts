@@ -13,7 +13,7 @@ import { URI } from 'vs/base/common/uri';
 import { IOpenEditorOverrideHandler, IOpenEditorOverride, IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IDisposable, toDisposable, dispose } from 'vs/base/common/lifecycle';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { IEditorInput, EditorInput, IUntitledTextResourceInput } from 'vs/workbench/common/editor';
+import { IEditorInput, EditorInput, IUntitledTextResourceEditorInput } from 'vs/workbench/common/editor';
 import { ITextEditorOptions, IEditorOptions } from 'vs/platform/editor/common/editor';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
@@ -205,7 +205,7 @@ class MockEditorService extends TestEditorService {
 		return Promise.resolve(_editor);
 	}
 
-	createInput(_input: IUntitledTextResourceInput): EditorInput {
+	createInput(_input: IUntitledTextResourceEditorInput): EditorInput {
 		const accessor = this.instantiationService.createInstance(ServiceAccessor);
 		const service = accessor.untitledTextEditorService;
 		return this.instantiationService.createInstance(UntitledTextEditorInput, service.create());
