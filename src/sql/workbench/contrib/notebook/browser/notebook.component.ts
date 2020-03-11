@@ -300,6 +300,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			notebookUri: this._notebookParams.notebookUri,
 			connectionService: this.connectionManagementService,
 			notificationService: this.notificationService,
+
 			notebookManagers: this.notebookManagers,
 			contentManager: this._notebookParams.input.contentManager,
 			cellMagicMapper: new CellMagicMapper(this.notebookService.languageMagics),
@@ -406,13 +407,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		attachToDropdown.render(attachToContainer);
 		attachSelectBoxStyler(attachToDropdown, this.themeService);
 
-		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Code"), 'notebook-button icon-add');
-		addCodeCellButton.cellType = CellTypes.Code;
+		let addCellButton = new AddCellAction('notebook.AddCodeCell', localize('cell', "Cell"), 'notebook-button icon-add-blue-large');
+		addCellButton.cellType = CellTypes.Code;
 
-		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Text"), 'notebook-button icon-add');
-		addTextCellButton.cellType = CellTypes.Markdown;
+		let addCellMenuButton = new AddCellAction('notebook.AddCodeCell', localize('cell', "Cell"), 'notebook-button icon-down-arrow');
+		addCellMenuButton.cellType = CellTypes.Code;
 
-		this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run Cells"), 'notebook-button icon-run-cells');
+		//let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Text"), 'notebook-button icon-add');
+		//addTextCellButton.cellType = CellTypes.Markdown;
+
+		this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run all"), 'notebook-button icon-run-cells-blue');
 		let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', localize('clearResults', "Clear Results"), 'notebook-button icon-clear-results');
 
 		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted');
@@ -424,12 +428,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
 		this._actionBar.context = this;
 		this._actionBar.setContent([
-			{ action: addCodeCellButton },
-			{ action: addTextCellButton },
-			{ element: kernelContainer },
-			{ element: attachToContainer },
-			{ action: this._trustedAction },
+			{ action: addCellButton },
+			{ action: addCellMenuButton },
 			{ action: this._runAllCellsAction },
+			{ element: Taskbar.createTaskbarSeparator() },
+			{ element: attachToContainer },
+			{ element: kernelContainer },
+			{ action: this._trustedAction },
 			{ action: clearResultsButton },
 			{ action: collapseCellsAction }
 		]);

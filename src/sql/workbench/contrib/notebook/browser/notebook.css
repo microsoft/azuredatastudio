@@ -58,6 +58,18 @@
 	background-image: url("./media/dark/add_inverse.svg");
 }
 
+.notebookEditor .notebook-button.icon-add-blue-large {
+	background-image: url("./media/light/add_blue_large.svg");
+}
+
+.notebookEditor .notebook-button.icon-down-arrow {
+	background-image: url("./media/light/down_arrow.svg");
+}
+
+.notebookEditor .notebook-button.icon-run-cells-blue {
+	background-image: url("./media/light/run_cells_blue.svg");
+}
+
 .notebookEditor .notebook-button.icon-run-cells {
 	background-image: url("./media/light/run_cells.svg");
 }

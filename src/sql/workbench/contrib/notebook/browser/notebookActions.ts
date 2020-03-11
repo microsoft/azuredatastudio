@@ -30,8 +30,8 @@ import { INotebookEditor } from 'sql/workbench/services/notebook/browser/noteboo
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
-const kernelLabel: string = localize('Kernel', "Kernel: ");
-const attachToLabel: string = localize('AttachTo', "Attach To: ");
+const kernelLabel: string = localize('Kernel', "Language ");
+const attachToLabel: string = localize('AttachTo', "Attach to ");
 const msgLoadingContexts = localize('loadingContexts', "Loading contexts...");
 const msgChangeConnection = localize('changeConnection', "Change Connection");
 const msgSelectConnection = localize('selectConnection', "Select Connection");
