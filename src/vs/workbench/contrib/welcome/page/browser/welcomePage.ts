@@ -29,7 +29,7 @@ import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lif
 import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { focusBorder, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder, tileBackground, buttonStandardBackground, buttonStandardBorder, buttonStandard, welcomeFont, welcomePath, moreRecent, entity, tileBorder, buttonStandardHoverColor, disabledButton, disabledButtonBackground, welcomeLink } from 'sql/platform/theme/common/colorRegistry';
+import { focusBorder, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder, tileBackground, buttonStandardBackground, buttonStandardBorder, buttonStandard, welcomeFont, welcomePath, moreRecent, entity, tileBorder, buttonStandardHoverColor, disabledButton, disabledButtonBackground, welcomeLink, buttonPrimaryBackground, buttonPrimary, buttonPrimaryBorder, buttonPrimaryBackgroundHover, buttonPrimaryBackgroundActive, buttonDropdownBackground, buttonDropdown, buttonDropdownBorder, buttonDropdownBackgroundHover, tileBoxShadow, tileBoxShadowHover, extensionPackBorder, welcomeLinkActive, gradientOne, gradientTwo, gradientBackground, welcomeLabel, welcomeLabelChecked, welcomeLabelBorder, buttonPrimaryText, extensionPackHeader, extensionPackHeaderShadow, extensionPackBody, buttonDropdownBoxShadow, listBorder, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor } from 'sql/platform/theme/common/colorRegistry';
 import { registerColor } from 'vs/platform/theme/common/colorRegistry';
 import { getExtraColor } from 'vs/workbench/contrib/welcome/walkThrough/common/walkThroughUtils';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
@@ -46,8 +46,6 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}}
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
-// eslint-disable-next-line code-layering
-import { stat } from 'vs/base/node/pfs';
 
 
 const configurationKey = 'workbench.startupEditor';
@@ -301,6 +299,7 @@ class WelcomePage extends Disposable {
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IHostService private readonly hostService: IHostService,
+		@IFileService fileService: IFileService,
 		@IProductService private readonly productService: IProductService,
 
 	) {
@@ -320,7 +319,7 @@ class WelcomePage extends Disposable {
 			name: localize('welcome.title', "Welcome"),
 			resource,
 			telemetryFrom,
-			onReady: (container: HTMLElement) => this.onReady(container, recentlyOpened, installedExtensions)
+			onReady: (container: HTMLElement) => this.onReady(container, recentlyOpened, installedExtensions, fileService)
 		});
 	}
 
@@ -328,7 +327,7 @@ class WelcomePage extends Disposable {
 		return this.editorService.openEditor(this.editorInput, { pinned: false });
 	}
 
-	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>): void {
+	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>, fileService): void {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
 		const showOnStartup = <HTMLInputElement>container.querySelector('#showOnStartup');
 		if (enabled) {
@@ -361,7 +360,7 @@ class WelcomePage extends Disposable {
 				while (ul.firstChild) {
 					ul.removeChild(ul.firstChild);
 				}
-				this.createListEntries(workspacesToShow);
+				this.createListEntries(workspacesToShow, fileService);
 			};
 
 			updateEntries();
@@ -383,30 +382,36 @@ class WelcomePage extends Disposable {
 		}));
 	}
 
-	private createListEntries(recents: (IRecentWorkspace | IRecentFolder)[]) {
+
+
+
+	private createListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService) {
 		return recents.map(recent => {
-			let fullPath: string;
+			let relativePath: string;
+			let fullPath: URI;
 			let windowOpenable: IWindowOpenable;
-			let mtime: any;
+			let mtime: Date;
 			if (isRecentFolder(recent)) {
 				windowOpenable = { folderUri: recent.folderUri };
-				fullPath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: true });
+				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: true });
+				fullPath = recent.folderUri;
 			} else {
-				fullPath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
+				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
 				windowOpenable = { workspaceUri: recent.workspace.configPath };
 			}
-			stat(fullPath).then((value) => {
-				mtime = value.mtime;
+			return fileService.resolve(fullPath).then((value) => {
+				let date = new Date(value.mtime * 1000);
+				mtime = date;
 				const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
 				const lastOpened: string = mtime.toLocaleDateString(undefined, options);
-				const { name, parentPath } = splitName(fullPath);
+				const { name, parentPath } = splitName(relativePath);
 				const li = document.createElement('li');
 				const a = document.createElement('a');
 				const span = document.createElement('span');
 				const ul = document.querySelector('.recent ul');
 
 				a.innerText = name;
-				a.title = fullPath;
+				a.title = relativePath;
 				a.setAttribute('aria-label', localize('welcomePage.openFolderWithPath', "Open folder {0} with path {1}", name, parentPath));
 				a.href = 'javascript:void(0)';
 				a.addEventListener('click', e => {
@@ -423,7 +428,7 @@ class WelcomePage extends Disposable {
 				span.classList.add('path');
 				span.classList.add('detail');
 				span.innerText = lastOpened;
-				span.title = fullPath;
+				span.title = relativePath;
 				li.appendChild(span);
 				ul.appendChild(li);
 				return li;
@@ -738,6 +743,38 @@ registerThemingParticipant((theme, collector) => {
 	if (tileBorderColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile:not(.extension):not(.extension_pack) { border-color: ${tileBorderColor}; }`);
 	}
+	const tileBoxShadowColor = theme.getColor(tileBoxShadow);
+	if (tileBoxShadowColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .tile:not(.extension):not(.extension_pack) { box-shadow: 0px 1px 4px ${tileBoxShadowColor}; }`);
+	}
+	const tileBoxShadowHoverColor = theme.getColor(tileBoxShadowHover);
+	if (tileBoxShadowHoverColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .tile:hover:not(.no_hover) { box-shadow: 0px 1px 4px ${tileBoxShadowHoverColor}; }`);
+	}
+	const buttonPrimarydBackgroundColor = theme.getColor(buttonPrimaryBackground);
+	if (buttonPrimarydBackgroundColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--primary { background-color: ${buttonPrimarydBackgroundColor};}`);
+	}
+	const buttonPrimaryColor = theme.getColor(buttonPrimary);
+	if (buttonPrimaryColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--primary { color: ${buttonPrimaryColor};}`);
+	}
+	const buttonPrimaryTextColor = theme.getColor(buttonPrimaryText);
+	if (buttonPrimaryTextColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown__text { color: ${buttonPrimaryTextColor};}`);
+	}
+	const buttonPrimaryBorderColor = theme.getColor(buttonPrimaryBorder);
+	if (buttonPrimaryBorderColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--primary { border-color: ${buttonPrimaryBorderColor};}`);
+	}
+	const buttonPrimaryBackgroundHoverColor = theme.getColor(buttonPrimaryBackgroundHover);
+	if (buttonPrimaryBackgroundHoverColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--primary:hover { background: ${buttonPrimaryBackgroundHoverColor};}`);
+	}
+	const buttonPrimaryBackgroundActiveColor = theme.getColor(buttonPrimaryBackgroundActive);
+	if (buttonPrimaryBackgroundActiveColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--primary:active { background: ${buttonPrimaryBackgroundActiveColor};}`);
+	}
 	const buttonStandardBackgroundColor = theme.getColor(buttonStandardBackground);
 	if (buttonStandardBackgroundColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--standard { background-color: ${buttonStandardBackgroundColor};}`);
@@ -753,6 +790,52 @@ registerThemingParticipant((theme, collector) => {
 	const buttonStandardHover = theme.getColor(buttonStandardHoverColor);
 	if (buttonStandardColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--standard:hover { color: ${buttonStandardHover}; border: 1px solid ${buttonStandardHover};}`);
+	}
+	const buttonDropdownBackgroundColor = theme.getColor(buttonDropdownBackground);
+	if (buttonDropdownBackgroundColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .btn.dropdown ul li ul { background: ${buttonDropdownBackgroundColor};}`);
+	}
+	const buttonDropdownColor = theme.getColor(buttonDropdown);
+	if (buttonDropdownColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .btn.dropdown ul li ul li a { color: ${buttonDropdownColor};}`);
+	}
+	const buttonDropdownBoxShadowColor = theme.getColor(buttonDropdownBoxShadow);
+	if (buttonDropdownBoxShadowColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .btn.dropdown ul li ul { box-shadow: 0px 4px 4px ${buttonDropdownBoxShadowColor};}`);
+	}
+	const buttonDropdownBorderColor = theme.getColor(buttonDropdownBorder);
+	if (buttonDropdownBorderColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .btn.dropdown ul li ul li { border-color: ${buttonDropdownBorderColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .btn.dropdown ul li ul { border-color: ${buttonDropdownBorderColor};}`);
+	}
+	const buttonDropdownBackgroundHoverColor = theme.getColor(buttonDropdownBackgroundHover);
+	if (buttonDropdownBackgroundHoverColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .btn.dropdown ul li ul li:hover { background: ${buttonDropdownBackgroundHoverColor};}`);
+	}
+	const listBorderColor = theme.getColor(listBorder);
+	if (listBorderColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent), .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .history .list__header__container, .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent), .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .pinned .list__header__container { border-color: ${listBorderColor};}`);
+	}
+	const extensionPackBorderColor = theme.getColor(extensionPackBorder);
+	if (extensionPackBorderColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .tile.extension_pack { border-color: ${extensionPackBorderColor};}`);
+	}
+	const extensionPackBodyColor = theme.getColor(extensionPackBody);
+	if (extensionPackBodyColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack__body { color: ${extensionPackBodyColor};}`);
+	}
+	const extensionPackHeaderColor = theme.getColor(extensionPackHeader);
+	if (extensionPackHeaderColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack__header { color: ${extensionPackHeaderColor};}`);
+	}
+	const extensionPackHeaderTextShadow = theme.getColor(extensionPackHeaderShadow);
+	if (extensionPackHeaderTextShadow) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack__header { text-shadow: 0px 4px 4px ${extensionPackHeaderTextShadow};}`);
+	}
+	const extensionPackGradientColorOne = theme.getColor(extensionPackGradientColorOneColor);
+	const extensionPackGradientColorTwo = theme.getColor(extensionPackGradientColorTwoColor);
+	if (extensionPackGradientColorOne && extensionPackGradientColorTwo) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack__description:before { background-image: linear-gradient(0.49deg, ${extensionPackGradientColorOne} 82.75%, ${extensionPackGradientColorTwo});}`);
 	}
 	const foregroundColor = theme.getColor(foreground);
 	if (foregroundColor) {
@@ -798,6 +881,10 @@ registerThemingParticipant((theme, collector) => {
 	if (link) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a { color: ${link}; }`);
 	}
+	const linkActive = theme.getColor(welcomeLinkActive);
+	if (linkActive) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a:active { color: ${linkActive}; }`);
+	}
 	const activeLink = theme.getColor(textLinkActiveForeground);
 	if (activeLink) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a:hover,
@@ -814,5 +901,23 @@ registerThemingParticipant((theme, collector) => {
 	const activeBorder = theme.getColor(activeContrastBorder);
 	if (activeBorder) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .commands .item button:hover { outline-color: ${activeBorder}; }`);
+	}
+	const labelColor = theme.getColor(welcomeLabel);
+	if (labelColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .resources .label { color: ${labelColor}; }`);
+	}
+	const labelColorChecked = theme.getColor(welcomeLabelChecked);
+	if (labelColorChecked) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .resources .input:checked+.label { color: ${labelColorChecked}; }`);
+	}
+	const labelBorderColorChecked = theme.getColor(welcomeLabelBorder);
+	if (labelBorderColorChecked) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .resources .input:checked+.label { border-color: ${labelBorderColorChecked}; }`);
+	}
+	const gradientOneColor = theme.getColor(gradientOne);
+	const gradientTwoColor = theme.getColor(gradientTwo);
+	const gradientBackgroundColor = theme.getColor(gradientBackground);
+	if (gradientTwoColor && gradientOneColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .gradient { background-image: linear-gradient(0deg, ${gradientOneColor} 0%, ${gradientTwoColor} 100%); background-color: ${gradientBackgroundColor}}`);
 	}
 });
