@@ -197,6 +197,7 @@ class MockEditorService extends TestEditorService {
 class TestModeService implements IModeService {
 	_serviceBrand: undefined;
 	onDidCreateMode: Event<IMode>;
+	onLanguagesMaybeChanged: Event<void>;
 
 	isRegisteredMode(mimetypeOrModeId: string): boolean {
 		throw new Error('Method not implemented.');
