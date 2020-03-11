@@ -19,7 +19,7 @@ import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensio
 import { transformOutgoingURIs } from 'vs/base/common/uriIpc';
 import { ILogService } from 'vs/platform/log/common/log';
 import { getNLSConfiguration, InternalNLSConfiguration } from 'vs/server/remoteLanguagePacks';
-import { ContextKeyExpr, ContextKeyDefinedExpr, ContextKeyNotExpr, ContextKeyEqualsExpr, ContextKeyNotEqualsExpr, ContextKeyRegexExpr, IContextKeyExprMapper } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyExpr, ContextKeyDefinedExpr, ContextKeyNotExpr, ContextKeyEqualsExpr, ContextKeyNotEqualsExpr, ContextKeyRegexExpr, IContextKeyExprMapper, ContextKeyExpression } from 'vs/platform/contextkey/common/contextkey';
 import { listProcesses } from 'vs/base/node/ps';
 import { getMachineInfo, collectWorkspaceStats } from 'vs/platform/diagnostics/node/diagnosticsService';
 import { IDiagnosticInfoOptions, IDiagnosticInfo } from 'vs/platform/diagnostics/common/diagnostics';
@@ -173,20 +173,20 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 		};
 
 		const _exprKeyMapper = new class implements IContextKeyExprMapper {
-			mapDefined(key: string): ContextKeyExpr {
+			mapDefined(key: string): ContextKeyExpression {
 				return ContextKeyDefinedExpr.create(key);
 			}
-			mapNot(key: string): ContextKeyExpr {
+			mapNot(key: string): ContextKeyExpression {
 				return ContextKeyNotExpr.create(key);
 			}
-			mapEquals(key: string, value: any): ContextKeyExpr {
+			mapEquals(key: string, value: any): ContextKeyExpression {
 				if (key === 'resourceScheme' && typeof value === 'string') {
 					return ContextKeyEqualsExpr.create(key, _mapResourceSchemeValue(value, false));
 				} else {
 					return ContextKeyEqualsExpr.create(key, value);
 				}
 			}
-			mapNotEquals(key: string, value: any): ContextKeyExpr {
+			mapNotEquals(key: string, value: any): ContextKeyExpression {
 				if (key === 'resourceScheme' && typeof value === 'string') {
 					return ContextKeyNotEqualsExpr.create(key, _mapResourceSchemeValue(value, false));
 				} else {
