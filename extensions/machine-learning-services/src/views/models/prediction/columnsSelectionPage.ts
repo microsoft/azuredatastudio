@@ -8,7 +8,7 @@ import { ModelViewBase } from '../modelViewBase';
 import { ApiWrapper } from '../../../common/apiWrapper';
 import * as constants from '../../../common/constants';
 import { IPageView, IDataComponent } from '../../interfaces';
-import { ColumnsFilterComponent } from './columnsFilterComponent';
+import { InputColumnsComponent } from './inputColumnsComponent';
 import { OutputColumnsComponent } from './outputColumnsComponent';
 import { PredictParameters } from '../../../prediction/interfaces';
 
@@ -19,7 +19,7 @@ export class ColumnsSelectionPage extends ModelViewBase implements IPageView, ID
 
 	private _form: azdata.FormContainer | undefined;
 	private _formBuilder: azdata.FormBuilder | undefined;
-	public columnsFilterComponent: ColumnsFilterComponent | undefined;
+	public inputColumnsComponent: InputColumnsComponent | undefined;
 	public outputColumnsComponent: OutputColumnsComponent | undefined;
 
 	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase) {
@@ -32,9 +32,9 @@ export class ColumnsSelectionPage extends ModelViewBase implements IPageView, ID
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		this._formBuilder = modelBuilder.formContainer();
-		this.columnsFilterComponent = new ColumnsFilterComponent(this._apiWrapper, this);
-		this.columnsFilterComponent.registerComponent(modelBuilder);
-		this.columnsFilterComponent.addComponents(this._formBuilder);
+		this.inputColumnsComponent = new InputColumnsComponent(this._apiWrapper, this);
+		this.inputColumnsComponent.registerComponent(modelBuilder);
+		this.inputColumnsComponent.addComponents(this._formBuilder);
 		this.refresh();
 
 		this.outputColumnsComponent = new OutputColumnsComponent(this._apiWrapper, this);
@@ -49,8 +49,8 @@ export class ColumnsSelectionPage extends ModelViewBase implements IPageView, ID
 	 * Returns selected data
 	 */
 	public get data(): PredictParameters | undefined {
-		return this.columnsFilterComponent?.data && this.outputColumnsComponent?.data ?
-			Object.assign({}, this.columnsFilterComponent.data, { outputColumns: this.outputColumnsComponent.data }) :
+		return this.inputColumnsComponent?.data && this.outputColumnsComponent?.data ?
+			Object.assign({}, this.inputColumnsComponent.data, { outputColumns: this.outputColumnsComponent.data }) :
 			undefined;
 	}
 
@@ -65,14 +65,33 @@ export class ColumnsSelectionPage extends ModelViewBase implements IPageView, ID
 	 * Refreshes the view
 	 */
 	public async refresh(): Promise<void> {
+		await this.load();
 		if (this._formBuilder) {
-			if (this.columnsFilterComponent) {
-				await this.columnsFilterComponent.refresh();
+			if (this.inputColumnsComponent) {
+				await this.inputColumnsComponent.refresh();
 			}
 			if (this.outputColumnsComponent) {
 				await this.outputColumnsComponent.refresh();
 			}
 		}
+	}
+
+	public async load(): Promise<void> {
+
+	}
+
+	public async onEnter(): Promise<void> {
+		await this.inputColumnsComponent?.onLoading();
+		await this.outputColumnsComponent?.onLoading();
+		const modelParameters = await this.loadModelParameters();
+		if (modelParameters && this.inputColumnsComponent && this.outputColumnsComponent) {
+			this.inputColumnsComponent.modelParameters = modelParameters;
+			this.outputColumnsComponent.modelParameters = modelParameters;
+			await this.inputColumnsComponent.refresh();
+			await this.outputColumnsComponent.refresh();
+		}
+		await this.inputColumnsComponent?.onLoaded();
+		await this.outputColumnsComponent?.onLoaded();
 	}
 
 	/**

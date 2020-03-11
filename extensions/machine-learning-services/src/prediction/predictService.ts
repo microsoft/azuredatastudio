@@ -9,7 +9,7 @@ import { ApiWrapper } from '../common/apiWrapper';
 import { QueryRunner } from '../common/queryRunner';
 import * as utils from '../common/utils';
 import { RegisteredModel } from '../modelManagement/interfaces';
-import { PredictParameters, PredictColumn, DatabaseTable } from '../prediction/interfaces';
+import { PredictParameters, PredictColumn, DatabaseTable, TableColumn } from '../prediction/interfaces';
 import { Config } from '../configurations/config';
 
 /**
@@ -98,15 +98,18 @@ export class PredictService {
 	 *Returns list of column names of a database
 	 * @param databaseTable table info
 	 */
-	public async getTableColumnsList(databaseTable: DatabaseTable): Promise<string[]> {
+	public async getTableColumnsList(databaseTable: DatabaseTable): Promise<TableColumn[]> {
 		let connection = await this.getCurrentConnection();
-		let list: string[] = [];
+		let list: TableColumn[] = [];
 		if (connection && databaseTable.databaseName) {
 			const query = utils.getScriptWithDBChange(connection.databaseName, databaseTable.databaseName, this.getTableColumnsScript(databaseTable));
 			let result = await this._queryRunner.safeRunQuery(connection, query);
 			if (result && result.rows && result.rows.length > 0) {
 				result.rows.forEach(row => {
-					list.push(row[0].displayValue);
+					list.push({
+						columnName: row[0].displayValue,
+						dataType: row[1].displayValue
+					});
 				});
 			}
 		}
@@ -119,7 +122,7 @@ export class PredictService {
 
 	private getTableColumnsScript(databaseTable: DatabaseTable): string {
 		return `
-SELECT COLUMN_NAME,*
+SELECT COLUMN_NAME,DATA_TYPE
 FROM INFORMATION_SCHEMA.COLUMNS
 WHERE TABLE_NAME='${utils.doubleEscapeSingleQuotes(databaseTable.tableName)}'
 AND TABLE_SCHEMA='${utils.doubleEscapeSingleQuotes(databaseTable.schema)}'
@@ -184,19 +187,19 @@ WITH (
 
 	private getColumnNames(columns: PredictColumn[], tableName: string) {
 		return columns.map(c => {
-			return c.displayName ? `${tableName}.${c.name} AS ${c.displayName}` : `${tableName}.${c.name}`;
+			return c.paramName && c.paramName !== c.columnName ? `${tableName}.${c.columnName} AS ${c.paramName}` : `${tableName}.${c.columnName}`;
 		}).join(',\n');
 	}
 
 	private getInputColumnNames(columns: PredictColumn[], tableName: string) {
 		return columns.map(c => {
-			return c.displayName ? `${tableName}.${c.displayName}` : `${tableName}.${c.name}`;
+			return c.paramName ? `${tableName}.${c.paramName}` : `${tableName}.${c.columnName}`;
 		}).join(',\n');
 	}
 
 	private getColumnTypes(columns: PredictColumn[]) {
 		return columns.map(c => {
-			return `${c.name} ${c.dataType}`;
+			return `${c.columnName} ${c.dataType}`;
 		}).join(',\n');
 	}
 }

@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as constants from '../../../common/constants';
 import { ModelViewBase } from '../modelViewBase';
 import { ApiWrapper } from '../../../common/apiWrapper';
@@ -18,6 +19,9 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	private _table: azdata.DeclarativeTableComponent | undefined;
 	private _modelBuilder: azdata.ModelBuilder | undefined;
 	private _selectedModel: any;
+	private _downloadedFile: string | undefined;
+	private _onModelSelectionChanged: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
+	public readonly onModelSelectionChanged: vscode.Event<void> = this._onModelSelectionChanged.event;
 
 	/**
 	 * Creates new view
@@ -131,6 +135,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 
 			this._table.data = tableData;
 		}
+		this.onModelSelected();
 	}
 
 	private createTableRow(model: RegisteredModel): any[] {
@@ -144,6 +149,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 			}).component();
 			selectModelButton.onDidClick(() => {
 				this._selectedModel = model;
+				this.onModelSelected();
 			});
 			return [model.artifactName, model.title, model.created, selectModelButton];
 		}
@@ -151,11 +157,23 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 		return [];
 	}
 
+	private onModelSelected(): void {
+		this._onModelSelectionChanged.fire();
+		this._downloadedFile = undefined;
+	}
+
 	/**
 	 * Returns selected data
 	 */
 	public get data(): RegisteredModel | undefined {
 		return this._selectedModel;
+	}
+
+	public async getDownloadedModel(): Promise<string> {
+		if (!this._downloadedFile) {
+			this._downloadedFile = await this.downloadRegisteredModel(this.data);
+		}
+		return this._downloadedFile;
 	}
 
 	/**

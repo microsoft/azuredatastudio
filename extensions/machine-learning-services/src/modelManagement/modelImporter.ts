@@ -13,6 +13,7 @@ import * as utils from '../common/utils';
 import { PackageManager } from '../packageManagement/packageManager';
 import * as constants from '../common/constants';
 import * as os from 'os';
+import { ModelParameters } from './interfaces';
 
 /**
  * Service to import model to database
@@ -27,7 +28,7 @@ export class ModelImporter {
 
 	public async registerModel(connection: azdata.connection.ConnectionProfile, modelFolderPath: string): Promise<void> {
 		await this.installDependencies();
-		await this.executeScripts(connection, modelFolderPath);
+		await this.executeDeployScripts(connection, modelFolderPath);
 	}
 
 	/**
@@ -38,8 +39,53 @@ export class ModelImporter {
 			this._packageManager.installRequiredPythonPackages(this._config.modelsRequiredPythonPackages)], true);
 	}
 
-	protected async executeScripts(connection: azdata.connection.ConnectionProfile, modelFolderPath: string): Promise<void> {
+	public async loadModelParameters(modelFolderPath: string): Promise<ModelParameters> {
+		return await this.executeModelParametersScripts(modelFolderPath);
+	}
 
+	protected async executeModelParametersScripts(modelFolderPath: string): Promise<ModelParameters> {
+		modelFolderPath = utils.makeLinuxPath(modelFolderPath);
+
+		let scripts: string[] = [
+			'import onnx',
+			'import json',
+			`onnx_model_path = '${modelFolderPath}'`,
+			`onnx_model = onnx.load_model(onnx_model_path)`,
+			`type_map = {
+				onnx.TensorProto.DataType.FLOAT: 'real',
+				onnx.TensorProto.DataType.UINT8: 'tinyint',
+				onnx.TensorProto.DataType.INT16: 'smallint',
+				onnx.TensorProto.DataType.INT32: 'int',
+				onnx.TensorProto.DataType.INT64: 'bigint',
+				onnx.TensorProto.DataType.STRING: 'varchar(MAX)',
+				onnx.TensorProto.DataType.DOUBLE: 'float'}`,
+			`parameters = {
+				"inputs": [],
+				"outputs": []
+			}`,
+			`def addParameters(list, paramType):
+			for id, p in enumerate(list):
+				p_type = ''
+
+				if p.type.tensor_type.elem_type in type_map:
+					p_type = type_map[p.type.tensor_type.elem_type]
+
+				parameters[paramType].append({
+					'name': p.name,
+					'type': p_type
+				})`,
+
+			'addParameters(onnx_model.graph.input, "inputs")',
+			'addParameters(onnx_model.graph.output, "outputs")',
+			'print(json.dumps(parameters))'
+		];
+		let pythonExecutable = this._config.pythonExecutable;
+		let output = await this._processService.execScripts(pythonExecutable, scripts, [], this._outputChannel);
+		let parametersJson = JSON.parse(output);
+		return Object.assign({}, parametersJson);
+	}
+
+	protected async executeDeployScripts(connection: azdata.connection.ConnectionProfile, modelFolderPath: string): Promise<void> {
 		let home = utils.makeLinuxPath(os.homedir());
 		modelFolderPath = utils.makeLinuxPath(modelFolderPath);
 

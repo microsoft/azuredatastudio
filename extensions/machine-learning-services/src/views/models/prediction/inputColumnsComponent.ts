@@ -10,11 +10,12 @@ import * as constants from '../../../common/constants';
 import { IDataComponent } from '../../interfaces';
 import { ColumnsTable } from './columnsTable';
 import { PredictColumn, PredictInputParameters, DatabaseTable } from '../../../prediction/interfaces';
+import { ModelParameters } from '../../../modelManagement/interfaces';
 
 /**
  * View to render filters to pick an azure resource
  */
-export class ColumnsFilterComponent extends ModelViewBase implements IDataComponent<PredictInputParameters> {
+export class InputColumnsComponent extends ModelViewBase implements IDataComponent<PredictInputParameters> {
 
 	private _form: azdata.FormContainer | undefined;
 	private _databases: azdata.DropDownComponent | undefined;
@@ -22,6 +23,7 @@ export class ColumnsFilterComponent extends ModelViewBase implements IDataCompon
 	private _columns: ColumnsTable | undefined;
 	private _dbNames: string[] = [];
 	private _tableNames: DatabaseTable[] = [];
+	private _modelParameters: ModelParameters | undefined;
 
 	/**
 	 * Creates a new view
@@ -53,13 +55,13 @@ export class ColumnsFilterComponent extends ModelViewBase implements IDataCompon
 
 
 		this._form = modelBuilder.formContainer().withFormItems([{
-			title: constants.azureAccount,
+			title: constants.columnDatabase,
 			component: this._databases
 		}, {
-			title: constants.azureSubscription,
+			title: constants.columnTable,
 			component: this._tables
 		}, {
-			title: constants.azureGroup,
+			title: constants.inputColumns,
 			component: this._columns.component
 		}]).component();
 		return this._form;
@@ -125,6 +127,22 @@ export class ColumnsFilterComponent extends ModelViewBase implements IDataCompon
 		await this.onDatabaseSelected();
 	}
 
+	public set modelParameters(value: ModelParameters) {
+		this._modelParameters = value;
+	}
+
+	public async onLoading(): Promise<void> {
+		if (this._columns) {
+			await this._columns.onLoading();
+		}
+	}
+
+	public async onLoaded(): Promise<void> {
+		if (this._columns) {
+			await this._columns.onLoaded();
+		}
+	}
+
 	/**
 	 * refreshes the view
 	 */
@@ -146,7 +164,7 @@ export class ColumnsFilterComponent extends ModelViewBase implements IDataCompon
 	}
 
 	private async onTableSelected(): Promise<void> {
-		this._columns?.loadData(this.databaseTable);
+		this._columns?.loadInputs(this._modelParameters, this.databaseTable);
 	}
 
 	private get databaseName(): string | undefined {

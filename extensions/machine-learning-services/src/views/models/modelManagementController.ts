@@ -9,15 +9,15 @@ import { azureResource } from '../../typings/azure-resource';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { AzureModelRegistryService } from '../../modelManagement/azureModelRegistryService';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
-import { RegisteredModel, WorkspaceModel, RegisteredModelDetails } from '../../modelManagement/interfaces';
-import { PredictParameters, DatabaseTable } from '../../prediction/interfaces';
+import { RegisteredModel, WorkspaceModel, RegisteredModelDetails, ModelParameters } from '../../modelManagement/interfaces';
+import { PredictParameters, DatabaseTable, TableColumn } from '../../prediction/interfaces';
 import { RegisteredModelService } from '../../modelManagement/registeredModelService';
 import { RegisteredModelsDialog } from './registerModels/registeredModelsDialog';
 import {
 	AzureResourceEventArgs, ListAzureModelsEventName, ListSubscriptionsEventName, ListModelsEventName, ListWorkspacesEventName,
 	ListGroupsEventName, ListAccountsEventName, RegisterLocalModelEventName, RegisterLocalModelEventArgs, RegisterAzureModelEventName,
 	RegisterAzureModelEventArgs, ModelViewBase, SourceModelSelectedEventName, RegisterModelEventName, DownloadAzureModelEventName,
-	ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, PredictModelEventName, PredictModelEventArgs
+	ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, PredictModelEventName, PredictModelEventArgs, DownloadRegisteredModelEventName, LoadModelParametersEventName
 } from './modelViewBase';
 import { ControllerBase } from '../controllerBase';
 import { RegisterModelWizard } from './registerModels/registerModelWizard';
@@ -74,6 +74,11 @@ export class ModelManagementController extends ControllerBase {
 		let view = new PredictWizard(this._apiWrapper, this._root);
 
 		this.registerEvents(view);
+		view.on(LoadModelParametersEventName, async () => {
+			const modelFileName = await view.getModelFileName();
+			await this.executeAction(view, LoadModelParametersEventName, this.loadModelParameters, this._registeredModelService,
+				modelFileName);
+		});
 
 		// Open view
 		//
@@ -150,6 +155,11 @@ export class ModelManagementController extends ControllerBase {
 			let predictArgs = <PredictModelEventArgs>arg;
 			await this.executeAction(view, PredictModelEventName, this.generatePredictScript, this._predictService,
 				predictArgs, predictArgs.model, predictArgs.filePath);
+		});
+		view.on(DownloadRegisteredModelEventName, async (arg) => {
+			let model = <RegisteredModel>arg;
+			await this.executeAction(view, DownloadRegisteredModelEventName, this.downloadRegisteredModel, this._registeredModelService,
+				model);
 		});
 		view.on(SourceModelSelectedEventName, () => {
 			view.refresh();
@@ -246,7 +256,7 @@ export class ModelManagementController extends ControllerBase {
 		return await predictService.getTableList(databaseName);
 	}
 
-	public async getTableColumnsList(predictService: PredictService, databaseTable: DatabaseTable): Promise<string[]> {
+	public async getTableColumnsList(predictService: PredictService, databaseTable: DatabaseTable): Promise<TableColumn[]> {
 		return await predictService.getTableColumnsList(databaseTable);
 	}
 
@@ -261,6 +271,24 @@ export class ModelManagementController extends ControllerBase {
 		}
 		const result = await predictService.generatePredictScript(predictParams, registeredModel, filePath);
 		return result;
+	}
+
+	private async downloadRegisteredModel(
+		registeredModelService: RegisteredModelService,
+		model: RegisteredModel | undefined): Promise<string> {
+		if (!model) {
+			throw Error(constants.invalidModelToPredictError);
+		}
+		return await registeredModelService.downloadModel(model);
+	}
+
+	private async loadModelParameters(
+		registeredModelService: RegisteredModelService,
+		model: string | undefined): Promise<ModelParameters | undefined> {
+		if (!model) {
+			return undefined;
+		}
+		return await registeredModelService.loadModelParameters(model);
 	}
 
 	private async downloadAzureModel(

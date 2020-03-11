@@ -9,7 +9,7 @@ import { ApiWrapper } from '../common/apiWrapper';
 import * as utils from '../common/utils';
 import { Config } from '../configurations/config';
 import { QueryRunner } from '../common/queryRunner';
-import { RegisteredModel, RegisteredModelDetails } from './interfaces';
+import { RegisteredModel, RegisteredModelDetails, ModelParameters } from './interfaces';
 import { ModelImporter } from './modelImporter';
 import * as constants from '../common/constants';
 
@@ -68,6 +68,26 @@ export class RegisteredModelService {
 			}
 		}
 		return updatedModel;
+	}
+
+	public async downloadModel(model: RegisteredModel): Promise<string> {
+		let connection = await this.getCurrentConnection();
+		if (connection) {
+			const query = this.getModelContentScript(model);
+			let result = await this._queryRunner.safeRunQuery(connection, query);
+			if (result && result.rows && result.rows.length > 0) {
+				const content = result.rows[0][0].displayValue;
+				return await utils.writeFileFromHex(content);
+			} else {
+				throw Error(constants.invalidModelToSelectError);
+			}
+		} else {
+			throw Error(constants.noConnectionError);
+		}
+	}
+
+	public async loadModelParameters(filePath: string): Promise<ModelParameters> {
+		return await this._modelImporter.loadModelParameters(filePath);
 	}
 
 	public async registerLocalModel(filePath: string, details: RegisteredModelDetails | undefined) {
@@ -183,6 +203,14 @@ export class RegisteredModelService {
 		return `
 		${utils.getScriptWithDBChange(currentDatabaseName, this._config.registeredModelDatabaseName, updateScript)}
 		SELECT artifact_id, artifact_name, name, description, version, created
+		FROM ${utils.getRegisteredModelsThreePartsName(this._config)}
+		WHERE artifact_id = ${model.id};
+		`;
+	}
+
+	private getModelContentScript(model: RegisteredModel): string {
+		return `
+		SELECT artifact_content
 		FROM ${utils.getRegisteredModelsThreePartsName(this._config)}
 		WHERE artifact_id = ${model.id};
 		`;

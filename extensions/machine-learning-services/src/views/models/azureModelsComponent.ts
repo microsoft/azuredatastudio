@@ -17,6 +17,7 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 
 	private _loader: azdata.LoadingComponent | undefined;
 	private _form: azdata.FormContainer | undefined;
+	private _downloadedFile: string | undefined;
 
 	/**
 	 * Component to render a view to pick an azure model
@@ -37,8 +38,11 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 			.withProperties({
 				loading: true
 			}).component();
+		this.azureModelsTable.onModelSelectionChanged(() => {
+			this._downloadedFile = undefined;
+		});
 
-		this.azureFilterComponent.onWorkspacesSelected(async () => {
+		this.azureFilterComponent.onWorkspacesSelectedChanged(async () => {
 			await this.onLoading();
 			await this.azureModelsTable?.loadData(this.azureFilterComponent?.data);
 			await this.onLoaded();
@@ -105,6 +109,13 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 		return Object.assign({}, this.azureFilterComponent?.data, {
 			model: this.azureModelsTable?.data
 		});
+	}
+
+	public async getDownloadedModel(): Promise<string> {
+		if (!this._downloadedFile) {
+			this._downloadedFile = await this.downloadAzureModel(this.data);
+		}
+		return this._downloadedFile;
 	}
 
 	/**

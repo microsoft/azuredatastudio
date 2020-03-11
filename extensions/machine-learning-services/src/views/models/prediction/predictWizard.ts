@@ -21,7 +21,6 @@ import { RegisteredModel } from '../../../modelManagement/interfaces';
 export class PredictWizard extends ModelViewBase {
 
 	public modelSourcePage: ModelSourcePage | undefined;
-	//public modelDetailsPage: ModelDetailsPage | undefined;
 	public columnsSelectionPage: ColumnsSelectionPage | undefined;
 	public wizardView: WizardView | undefined;
 	private _parentView: ModelViewBase | undefined;
@@ -52,14 +51,14 @@ export class PredictWizard extends ModelViewBase {
 		wizard.displayPageTitles = true;
 		wizard.registerNavigationValidator(async (pageInfo: azdata.window.WizardPageChangeInfo) => {
 			let validated = this.wizardView ? await this.wizardView.validate(pageInfo) : false;
-			if (validated && pageInfo.newPage === undefined) {
-				wizard.cancelButton.enabled = false;
-				wizard.backButton.enabled = false;
-				await this.predict();
-				wizard.cancelButton.enabled = true;
-				wizard.backButton.enabled = true;
-				if (this._parentView) {
-					this._parentView?.refresh();
+			if (validated) {
+				if (pageInfo.newPage === undefined) {
+					this.onLoading();
+					await this.predict();
+					this.onLoaded();
+					if (this._parentView) {
+						this._parentView?.refresh();
+					}
 				}
 				return true;
 
@@ -68,6 +67,21 @@ export class PredictWizard extends ModelViewBase {
 		});
 
 		wizard.open();
+	}
+
+	private onLoading(): void {
+		this.refreshButtons(true);
+	}
+
+	private onLoaded(): void {
+		this.refreshButtons(false);
+	}
+
+	private refreshButtons(loading: boolean): void {
+		if (this.wizardView && this.wizardView.wizard) {
+			this.wizardView.wizard.cancelButton.enabled = !loading;
+			this.wizardView.wizard.cancelButton.enabled = !loading;
+		}
 	}
 
 	public get modelResources(): ModelSourcesComponent | undefined {
@@ -82,6 +96,17 @@ export class PredictWizard extends ModelViewBase {
 		return this.modelSourcePage?.azureModelsComponent;
 	}
 
+	public async getModelFileName(): Promise<string> {
+		if (this.modelResources && this.localModelsComponent && this.modelResources.data === ModelSourceType.Local) {
+			return this.localModelsComponent.data;
+		} else if (this.modelResources && this.azureModelsComponent && this.modelResources.data === ModelSourceType.Azure) {
+			return await this.azureModelsComponent.getDownloadedModel();
+		} else if (this.modelSourcePage && this.modelSourcePage.registeredModelsComponent) {
+			return await this.modelSourcePage.registeredModelsComponent.getDownloadedModel();
+		}
+		return '';
+	}
+
 	private async predict(): Promise<boolean> {
 		try {
 			let modelFilePath: string = '';
@@ -89,7 +114,7 @@ export class PredictWizard extends ModelViewBase {
 			if (this.modelResources && this.localModelsComponent && this.modelResources.data === ModelSourceType.Local) {
 				modelFilePath = this.localModelsComponent.data;
 			} else if (this.modelResources && this.azureModelsComponent && this.modelResources.data === ModelSourceType.Azure) {
-				modelFilePath = await this.downloadAzureModel(this.azureModelsComponent?.data);
+				modelFilePath = await this.azureModelsComponent.getDownloadedModel();
 			} else {
 				registeredModel = this.modelSourcePage?.registeredModelsComponent?.data;
 			}

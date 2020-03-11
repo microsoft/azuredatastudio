@@ -227,3 +227,20 @@ export function getRegisteredModelsTowPartsName(config: Config) {
 	const tableName = doubleEscapeSingleBrackets(config.registeredModelTableName);
 	return `[${schema}].[${tableName}]`;
 }
+
+export function hexToBytes(hexContent: string): number[] {
+	let bytes = [];
+	if (hexContent) {
+		for (let c = 0; c < hexContent.length; c += 2) {
+			bytes.push(parseInt(hexContent.substr(c, 2), 16));
+		}
+	}
+	return bytes;
+}
+
+export async function writeFileFromHex(content: string): Promise<string> {
+	content = content.startsWith('0x') || content.startsWith('0X') ? content.substr(2) : content;
+	const tempFilePath = path.join(os.tmpdir(), `ads_ml_temp_${UUID.generateUuid()}`);
+	await fs.promises.writeFile(tempFilePath, Buffer.from(content, 'hex'));
+	return tempFilePath;
+}
