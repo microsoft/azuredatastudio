@@ -8,8 +8,9 @@ import * as path from 'path';
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import { ExecOptions } from 'child_process';
-// import * as decompress from 'decompress';
 import * as request from 'request';
+import * as zip from 'adm-zip';
+import * as tar from 'tar';
 
 import { ApiWrapper } from '../common/apiWrapper';
 import * as constants from '../common/constants';
@@ -22,7 +23,7 @@ import CodeAdapter from '../prompts/adapter';
 
 const localize = nls.loadMessageBundle();
 const msgInstallPkgProgress = localize('msgInstallPkgProgress', "Notebook dependencies installation is in progress");
-// const msgPythonDownloadComplete = localize('msgPythonDownloadComplete', "Python download is complete");
+const msgPythonDownloadComplete = localize('msgPythonDownloadComplete', "Python download is complete");
 const msgPythonDownloadError = localize('msgPythonDownloadError', "Error while downloading python setup");
 const msgPythonDownloadPending = localize('msgPythonDownloadPending', "Downloading python package");
 const msgPythonUnpackPending = localize('msgPythonUnpackPending', "Unpacking python package");
@@ -229,22 +230,42 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 								return reject(err);
 							}
 						}
-						// decompress(pythonPackagePathLocal, installPath).then(files => {
-						// 	//Delete zip/tar file
-						// 	fs.unlink(pythonPackagePathLocal, (err) => {
-						// 		if (err) {
-						// 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
-						// 			reject(err);
-						// 		}
-						// 	});
+						if (utils.getOSPlatform() === utils.Platform.Windows) {
+							try {
+								let zippedFile = new zip(pythonPackagePathLocal);
+								zippedFile.extractAllTo(installPath);
+							} catch (err) {
+								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
+								reject(err);
+							}
+							// Delete zip file
+							fs.unlink(pythonPackagePathLocal, (err) => {
+								if (err) {
+									backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
+									reject(err);
+								}
+							});
 
-						// 	outputChannel.appendLine(msgPythonDownloadComplete);
-						// 	backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
-						// 	resolve();
-						// }).catch(err => {
-						// 	backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
-						// 	reject(err);
-						// });
+							outputChannel.appendLine(msgPythonDownloadComplete);
+							backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
+							resolve();
+						} else {
+							tar.extract({ file: pythonPackagePathLocal, cwd: installPath }).then(() => {
+								// Delete tar file
+								fs.unlink(pythonPackagePathLocal, (err) => {
+									if (err) {
+										backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
+										reject(err);
+									}
+								});
+								outputChannel.appendLine(msgPythonDownloadComplete);
+								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
+								resolve();
+							}).catch(err => {
+								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
+								reject(err);
+							});
+						}
 					})
 					.on('error', (downloadError) => {
 						backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadError);
