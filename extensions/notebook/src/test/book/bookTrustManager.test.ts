@@ -105,14 +105,14 @@ describe('BookTrustManagerTests', function () {
 
 			let bookModel1Mock: TypeMoq.IMock<BookModel> = TypeMoq.Mock.ofType<BookModel>();
 			bookModel1Mock.setup(model => model.bookItems).returns(() => [new BookTreeItem(bookTreeItemFormat1, undefined), new BookTreeItem(bookTreeItemFormat2, undefined)]);
-			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue('/temp/SubFolder/content/sample/notebook.ipynb'))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
-			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue('/temp/SubFolder/content/sample/notebook2.ipynb'))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
-			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue('/temp/SubFolder2/content/sample/notebook.ipynb'))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
+			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep,'temp','SubFolder','content','sample', 'notebook.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
+			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep,'temp','SubFolder','content','sample', 'notebook2.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
+			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep,'temp','SubFolder2','content','sample', 'notebook.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
 			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isAnyString())).returns((uri: string) => undefined);
 
 			let bookModel2Mock: TypeMoq.IMock<BookModel> = TypeMoq.Mock.ofType<BookModel>();
 			bookModel2Mock.setup(model => model.bookItems).returns(() => [new BookTreeItem(bookTreeItemFormat3, undefined)]);
-			bookModel2Mock.setup(model => model.getNotebook(TypeMoq.It.isValue('/temp2/SubFolder/content/sample/notebook.ipynb'))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
+			bookModel2Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep,'temp2','SubFolder','content','sample','notebook.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
 			bookModel2Mock.setup(model => model.getNotebook(TypeMoq.It.isAnyString())).returns((uri: string) => undefined);
 
 			books = [bookModel1Mock.object, bookModel2Mock.object];
@@ -121,8 +121,8 @@ describe('BookTrustManagerTests', function () {
 		});
 
 		it('should trust notebooks in a trusted book within a workspace', async () => {
-			let notebookUri1 = '/temp/SubFolder/content/sample/notebook.ipynb';
-			let notebookUri2 = '/temp/SubFolder/content/sample/notebook2.ipynb';
+			let notebookUri1 = path.join(path.sep,'temp','SubFolder','content','sample', 'notebook.ipynb');
+			let notebookUri2 = path.join(path.sep,'temp','SubFolder','content','sample', 'notebook2.ipynb');
 
 			let isNotebook1Trusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri1);
 			let isNotebook2Trusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri2);
@@ -133,14 +133,14 @@ describe('BookTrustManagerTests', function () {
 		});
 
 		it('should NOT trust a notebook in an untrusted book within a workspace', async () => {
-			let notebookUri = '/temp/SubFolder2/content/sample/notebook.ipynb';
+			let notebookUri = path.join(path.sep,'temp','SubFolder2','content', 'sample', 'notebook.ipynb');
 			let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
 			should(isNotebookTrusted).be.false("Notebook should be trusted");
 		});
 
 		it('should trust notebook after book has been trusted within a workspace', async () => {
-			let notebookUri = '/temp/SubFolder2/content/sample/notebook.ipynb';
+			let notebookUri = path.join(path.sep,'temp','SubFolder2','content', 'sample', 'notebook.ipynb');
 			let isNotebookTrustedBeforeChange = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
 			should(isNotebookTrustedBeforeChange).be.false("Notebook should NOT be trusted");
@@ -154,7 +154,7 @@ describe('BookTrustManagerTests', function () {
 		});
 
 		it('should NOT trust a notebook when untrusting a book within a workspace', async () => {
-			let notebookUri = '/temp/SubFolder/content/sample/notebook.ipynb';
+			let notebookUri = path.join(path.sep,'temp','SubFolder','content', 'sample', 'notebook.ipynb');
 			let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
 			should(isNotebookTrusted).be.true("Notebook should be trusted");
@@ -168,7 +168,7 @@ describe('BookTrustManagerTests', function () {
 		});
 
 		it('should NOT trust an unknown book within a workspace', async () => {
-			let notebookUri = '/randomfolder/randomsubfolder/content/randomnotebook.ipynb';
+			let notebookUri = path.join(path.sep, 'randomfolder', 'randomsubfolder', 'content', 'randomnotebook.ipynb');
 			let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
 			should(isNotebookTrusted).be.false("Random notebooks should not be trusted");
@@ -177,8 +177,7 @@ describe('BookTrustManagerTests', function () {
 		it('should NOT trust notebook inside trusted subfolder when absent in table of contents ', async () => {
 			bookTrustManager.setBookAsTrusted('/temp/SubFolder/');
 
-			let notebookUri = '/temp/SubFolder/content/sample/notInToc.ipynb';
-
+			let notebookUri = path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notInToc.ipynb');
 			let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
 			should(isNotebookTrusted).be.false("Notebook should NOT be trusted");
@@ -246,14 +245,14 @@ describe('BookTrustManagerTests', function () {
 
 			let bookModel1Mock: TypeMoq.IMock<BookModel> = TypeMoq.Mock.ofType<BookModel>();
 			bookModel1Mock.setup(model => model.bookItems).returns(() => [new BookTreeItem(bookTreeItemFormat1, undefined)]);
-			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue('/temp/SubFolder/content/sample/notebook.ipynb'))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
-			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue('/temp/SubFolder/content/sample/notebook2.ipynb'))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
+			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep,'temp','SubFolder','content', 'sample', 'notebook.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
+			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep,'temp','SubFolder','content', 'sample', 'notebook2.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
 			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isAnyString())).returns((uri: string) => undefined);
 
 			let bookModel2Mock: TypeMoq.IMock<BookModel> = TypeMoq.Mock.ofType<BookModel>();
 			bookModel2Mock.setup(model => model.bookItems).returns(() => [new BookTreeItem(bookTreeItemFormat2, undefined)]);
-			bookModel2Mock.setup(model => model.getNotebook(TypeMoq.It.isValue('/temp/SubFolder2/content/sample/notebook.ipynb'))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
-			bookModel2Mock.setup(model => model.getNotebook(TypeMoq.It.isValue('/temp/SubFolder2/content/sample/notebook2.ipynb'))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
+			bookModel2Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep,'temp','SubFolder2','content', 'sample', 'notebook.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
+			bookModel2Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep,'temp','SubFolder2','content', 'sample', 'notebook2.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
 			bookModel2Mock.setup(model => model.getNotebook(TypeMoq.It.isAnyString())).returns((uri: string) => undefined);
 
 			books = [bookModel1Mock.object, bookModel2Mock.object];
@@ -264,8 +263,8 @@ describe('BookTrustManagerTests', function () {
 		it('should trust notebooks in a trusted book in a folder', async () => {
 			bookTrustManager.setBookAsTrusted('/temp/SubFolder/');
 
-			let notebookUri1 = '/temp/SubFolder/content/sample/notebook.ipynb';
-			let notebookUri2 = '/temp/SubFolder/content/sample/notebook2.ipynb';
+			let notebookUri1 = path.join(path.sep,'temp','SubFolder','content', 'sample', 'notebook.ipynb');
+			let notebookUri2 = path.join(path.sep,'temp','SubFolder','content', 'sample', 'notebook2.ipynb');
 
 			let isNotebook1Trusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri1);
 			let isNotebook2Trusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri2);
@@ -276,14 +275,14 @@ describe('BookTrustManagerTests', function () {
 		});
 
 		it('should NOT trust a notebook in an untrusted book in a folder', async () => {
-			let notebookUri = '/temp/SubFolder2/content/sample/notebook.ipynb';
+			let notebookUri = path.join(path.sep,'temp','SubFolder2','content', 'sample', 'notebook.ipynb');
 			let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
 			should(isNotebookTrusted).be.false("Notebook should be trusted");
 		});
 
 		it('should trust notebook after book has been added to a folder', async () => {
-			let notebookUri = '/temp/SubFolder2/content/sample/notebook.ipynb';
+			let notebookUri = path.join(path.sep,'temp','SubFolder2','content', 'sample','notebook.ipynb');
 			let isNotebookTrustedBeforeChange = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
 			should(isNotebookTrustedBeforeChange).be.false("Notebook should NOT be trusted");
@@ -297,7 +296,7 @@ describe('BookTrustManagerTests', function () {
 
 		it('should NOT trust a notebook when untrusting a book in folder', async () => {
 			bookTrustManager.setBookAsTrusted('/temp/SubFolder/');
-			let notebookUri = '/temp/SubFolder/content/sample/notebook.ipynb';
+			let notebookUri = path.join(path.sep,'temp','SubFolder','content', 'sample', 'notebook.ipynb');
 			let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
 			should(isNotebookTrusted).be.true("Notebook should be trusted");
@@ -310,7 +309,7 @@ describe('BookTrustManagerTests', function () {
 		});
 
 		it('should NOT trust an unknown book', async () => {
-			let notebookUri = '/randomfolder/randomsubfolder/content/randomnotebook.ipynb';
+			let notebookUri = path.join(path.sep, 'randomfolder', 'randomsubfolder', 'content', 'randomnotebook.ipynb');
 			let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
 			should(isNotebookTrusted).be.false("Random notebooks should not be trusted");
@@ -319,8 +318,7 @@ describe('BookTrustManagerTests', function () {
 		it('should NOT trust notebook inside trusted subfolder when absent in table of contents ', async () => {
 			bookTrustManager.setBookAsTrusted('/temp/SubFolder/');
 
-			let notebookUri = '/temp/SubFolder/content/sample/notInToc.ipynb';
-
+			let notebookUri =  path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notInToc.ipynb');
 			let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
 			should(isNotebookTrusted).be.false("Notebook should NOT be trusted");
