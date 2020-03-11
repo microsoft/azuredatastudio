@@ -84,17 +84,17 @@
 }
 
 .ads_homepage h1 {
-	font-size: 36px;
+	font-size: 3em;
 	font-weight: normal;
 }
 
 .ads_homepage h2 {
-	font-size: 18px;
+	font-size: 1.5em;
 	font-weight: 600;
 }
 
 .ads_homepage h3 {
-	font-size: 14px;
+	font-size: 1.16em;
 	font-weight: 600;
 }
 
@@ -103,7 +103,7 @@
 }
 
 .ads_homepage p {
-	font-size: 12px;
+	font-size: 1em;
 }
 
 .ads_homepage a {
@@ -111,7 +111,7 @@
 }
 
 .ads_homepage .caption {
-	font-size: 13px;
+	font-size: 1.08em;
 }
 
 .ads_homepage .content:not(.extensions) {
@@ -180,7 +180,7 @@
 	width: 100%;
 	height: 34px;
 	padding-top: 1px;
-	font-size: 13px;
+	font-size: 1.08em;
 	line-height: 29px;
 	border-radius: 2px;
 	display: flex;
@@ -273,7 +273,7 @@
 	width: 78%;
 	padding: 1em 1em 1em 1.5em;
 	clear: both;
-	font-size: 14px;
+	font-size: 1.16em;
 	text-align: left;
 	border: 1px solid;
 }
@@ -522,7 +522,7 @@
 	padding: 10px;
 	cursor: pointer;
 	font-weight: bold;
-	font-size: 14px;
+	font-size: 1.16em;
 	transition: background 0.1s, color 0.1s;
 }
 
@@ -611,7 +611,7 @@
 }
 
 .ads_homepage a.link--show_all {
-	font-size: 14px;
+	font-size: 1.16em;
 	padding-top: 7px;
 }
 
@@ -715,7 +715,7 @@
 	list-style: none;
 	border-bottom: 1px solid;
 	text-align: left;
-	font-size: 13px;
+	font-size: 1em;
 	display: flex;
 	position: relative;
 	justify-content: space-between;
@@ -794,6 +794,7 @@
 }
 
 .ads_homepage .ads_homepage__section .links h4 {
+	font-size: 1.16em;
 	margin-bottom: 4px;
 }
 
@@ -842,18 +843,18 @@
 }
 
 .ads_homepage .extension_pack__header {
-	font-size: 28px;
+	font-size: 2.33em;
 	z-index: 9;
 }
 
 .ads_homepage .extension_pack__body {
-	font-size: 16px;
+	font-size: 1.33em;
 	z-index: 9;
 }
 
 @media only screen and (min-width: 700px) {
 	.ads_homepage .extension_pack__body {
-		font-size: 18px;
+		font-size: 1.5em;
 	}
 }
 
@@ -944,7 +945,7 @@
 }
 
 .ads_homepage .extension_pack .extension_pack__extension_container .description h4 {
-	font-size: 16px;
+	font-size: 1.33em;
 }
 
 .ads_homepage .extension_pack .extension_pack__extension_container .icon {
@@ -960,7 +961,6 @@
 .monaco-workbench .part.editor>.content .welcomePage .ads_homepage a {
 	text-decoration: none;
 	font-weight: normal;
-	font-size: 14px;
 }
 
 .monaco-workbench .part.editor>.content .welcomePage.emptyRecent .splash .recent .list {
