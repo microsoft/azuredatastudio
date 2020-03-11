@@ -5,11 +5,11 @@
 
 import * as azdata from 'azdata';
 
-import * as constants from '../../common/constants';
-import { ModelViewBase, RegisterModelEventName } from './modelViewBase';
+import * as constants from '../../../common/constants';
+import { ModelViewBase } from '../modelViewBase';
 import { CurrentModelsTable } from './currentModelsTable';
-import { ApiWrapper } from '../../common/apiWrapper';
-import { IPageView } from '../interfaces';
+import { ApiWrapper } from '../../../common/apiWrapper';
+import { IPageView } from '../../interfaces';
 
 /**
  * View to render current registered models
@@ -33,28 +33,21 @@ export class CurrentModelsPage extends ModelViewBase implements IPageView {
 	 * @param modelBuilder register the components
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
-		this._dataTable = new CurrentModelsTable(this._apiWrapper, modelBuilder, this);
+		this._dataTable = new CurrentModelsTable(this._apiWrapper, this);
+		this._dataTable.registerComponent(modelBuilder);
 		this._tableComponent = this._dataTable.component;
 
-		let registerButton = modelBuilder.button().withProperties({
-			label: constants.registerModelTitle,
-			width: this.buttonMaxLength
-		}).component();
-		registerButton.onDidClick(async () => {
-			await this.sendDataRequest(RegisterModelEventName);
-		});
+		let formModelBuilder = modelBuilder.formContainer();
 
-		let formModel = modelBuilder.formContainer()
-			.withFormItems([{
-				title: '',
-				component: registerButton
-			}, {
+		if (this._tableComponent) {
+			formModelBuilder.addFormItem({
 				component: this._tableComponent,
 				title: ''
-			}]).component();
+			});
+		}
 
 		this._loader = modelBuilder.loadingComponent()
-			.withItem(formModel)
+			.withItem(formModelBuilder.component())
 			.withProperties({
 				loading: true
 			}).component();

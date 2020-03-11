@@ -480,7 +480,6 @@
   },
   "dependencies": {
     "@jupyterlab/services": "^3.2.1",
-    "decompress": "^4.2.0",
     "error-ex": "^1.3.1",
     "fast-glob": "^3.0.4",
     "figures": "^2.0.0",
@@ -494,7 +493,6 @@
     "ws": "^7.2.0"
   },
   "devDependencies": {
-    "@types/decompress": "^4.2.3",
     "@types/fs-extra": "^5.0.0",
     "@types/glob": "^7.1.1",
     "@types/js-yaml": "^3.12.1",
@@ -510,10 +508,10 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.3",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.4"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
   },
   "resolutions": {
-      "esprima": "^4.0.0"
+    "esprima": "^4.0.0"
   },
   "enableProposedApi": true
 }

@@ -3,7 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ViewBase, LocalFileEventName, LocalFolderEventName } from './viewBase';
+import * as vscode from 'vscode';
+
+import { ViewBase, LocalPathsEventName } from './viewBase';
 import { ApiWrapper } from '../common/apiWrapper';
 
 /**
@@ -36,11 +38,8 @@ export abstract class ControllerBase {
 	 * @param view view
 	 */
 	public registerEvents(view: ViewBase): void {
-		view.on(LocalFileEventName, async () => {
-			await this.executeAction(view, LocalFileEventName, this.getLocalFilePath, this._apiWrapper);
-		});
-		view.on(LocalFolderEventName, async () => {
-			await this.executeAction(view, LocalFolderEventName, this.getLocalFolderPath, this._apiWrapper);
+		view.on(LocalPathsEventName, async (args) => {
+			await this.executeAction(view, LocalPathsEventName, this.getLocalPaths, this._apiWrapper, args);
 		});
 	}
 
@@ -48,25 +47,8 @@ export abstract class ControllerBase {
 	 * Returns local file path picked by the user
 	 * @param apiWrapper apiWrapper
 	 */
-	public async getLocalFilePath(apiWrapper: ApiWrapper): Promise<string> {
-		let result = await apiWrapper.showOpenDialog({
-			canSelectFiles: true,
-			canSelectFolders: false,
-			canSelectMany: false
-		});
-		return result && result.length > 0 ? result[0].fsPath : '';
-	}
-
-	/**
-	 * Returns local folder path picked by the user
-	 * @param apiWrapper apiWrapper
-	 */
-	public async getLocalFolderPath(apiWrapper: ApiWrapper): Promise<string> {
-		let result = await apiWrapper.showOpenDialog({
-			canSelectFiles: false,
-			canSelectFolders: true,
-			canSelectMany: false
-		});
-		return result && result.length > 0 ? result[0].fsPath : '';
+	public async getLocalPaths(apiWrapper: ApiWrapper, options: vscode.OpenDialogOptions): Promise<string[]> {
+		let result = await apiWrapper.showOpenDialog(options);
+		return result ? result?.map(x => x.fsPath) : [];
 	}
 }

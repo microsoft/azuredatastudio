@@ -126,7 +126,7 @@ class DataResourceTable extends GridTableBase<any> {
 	) {
 		super(state, createResultSet(source), contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.documentUri);
-		this._chart = this.instantiationService.createInstance(ChartView);
+		this._chart = this.instantiationService.createInstance(ChartView, false);
 	}
 
 	get gridDataProvider(): IGridDataProvider {
@@ -389,13 +389,13 @@ export class NotebookChartAction extends ToggleableAction {
 	public static SHOWCHART_LABEL = localize('notebook.showChart', "Show chart");
 	public static SHOWCHART_ICON = 'viewChart';
 
-	public static HIDECHART_LABEL = localize('notebook.hideChart', "Hide chart");
-	public static HIDECHART_ICON = 'close';
+	public static SHOWTABLE_LABEL = localize('notebook.showTable', "Show table");
+	public static SHOWTABLE_ICON = 'table';
 
 	constructor(private resourceTable: DataResourceTable) {
 		super(NotebookChartAction.ID, {
-			toggleOnLabel: NotebookChartAction.HIDECHART_LABEL,
-			toggleOnClass: NotebookChartAction.HIDECHART_ICON,
+			toggleOnLabel: NotebookChartAction.SHOWTABLE_LABEL,
+			toggleOnClass: NotebookChartAction.SHOWTABLE_ICON,
 			toggleOffLabel: NotebookChartAction.SHOWCHART_LABEL,
 			toggleOffClass: NotebookChartAction.SHOWCHART_ICON,
 			isOn: false

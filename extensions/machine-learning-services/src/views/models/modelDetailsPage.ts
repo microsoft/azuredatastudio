@@ -9,12 +9,12 @@ import { ApiWrapper } from '../../common/apiWrapper';
 import * as constants from '../../common/constants';
 import { IPageView, IDataComponent } from '../interfaces';
 import { ModelDetailsComponent } from './modelDetailsComponent';
-import { RegisteredModel } from '../../modelManagement/interfaces';
+import { RegisteredModelDetails } from '../../modelManagement/interfaces';
 
 /**
  * View to pick model details
  */
-export class ModelDetailsPage extends ModelViewBase implements IPageView, IDataComponent<RegisteredModel> {
+export class ModelDetailsPage extends ModelViewBase implements IPageView, IDataComponent<RegisteredModelDetails> {
 
 	private _form: azdata.FormContainer | undefined;
 	private _formBuilder: azdata.FormBuilder | undefined;
@@ -43,7 +43,7 @@ export class ModelDetailsPage extends ModelViewBase implements IPageView, IDataC
 	/**
 	 * Returns selected data
 	 */
-	public get data(): RegisteredModel | undefined {
+	public get data(): RegisteredModelDetails | undefined {
 		return this.modelDetails?.data;
 	}
 
@@ -65,5 +65,14 @@ export class ModelDetailsPage extends ModelViewBase implements IPageView, IDataC
 	 */
 	public get title(): string {
 		return constants.modelDetailsPageTitle;
+	}
+
+	public validate(): Promise<boolean> {
+		if (this.data && this.data.title) {
+			return Promise.resolve(true);
+		} else {
+			this.showErrorMessage(constants.modelNameRequiredError);
+			return Promise.resolve(false);
+		}
 	}
 }

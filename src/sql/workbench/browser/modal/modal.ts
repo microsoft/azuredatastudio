@@ -339,7 +339,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		// Try to find focusable element in dialog pane rather than overall container. _modalBodySection contains items in the pane for a wizard.
 		// This ensures that we are setting the focus on a useful element in the form when possible.
 		const focusableElements = this._modalBodySection ?
-			this._modalBodySection.querySelectorAll('input') :
+			this._modalBodySection.querySelectorAll(tabbableElementsQuerySelector) :
 			this._bodyContainer.querySelectorAll(tabbableElementsQuerySelector);
 
 		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
@@ -528,8 +528,12 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Set the title of the modal
 	 */
 	protected set title(title: string) {
-		if (this._title !== undefined) {
+		this._title = title;
+		if (this._modalTitle) {
 			this._modalTitle.innerText = title;
+		}
+		if (this._bodyContainer) {
+			this._bodyContainer.setAttribute('aria-label', title);
 		}
 	}
 

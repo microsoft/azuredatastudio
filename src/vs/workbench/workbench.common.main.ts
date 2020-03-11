@@ -466,4 +466,7 @@ import 'sql/workbench/contrib/restore/browser/restore.contribution';
 // Scripting
 import 'sql/workbench/contrib/scripting/browser/scripting.contribution';
 
+// Resource Deployment
+import 'sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution';
+
 //#endregion

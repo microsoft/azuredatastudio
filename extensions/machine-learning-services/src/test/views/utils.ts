@@ -246,6 +246,7 @@ export function createViewContext(): ViewTestContext {
 		modelView: undefined!,
 		valid: true
 	};
+	apiWrapper.setup(x => x.createButton(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => dialogButton);
 	apiWrapper.setup(x => x.createTab(TypeMoq.It.isAny())).returns(() => tab);
 	apiWrapper.setup(x => x.createWizard(TypeMoq.It.isAny())).returns(() => wizard);
 	apiWrapper.setup(x => x.createWizardPage(TypeMoq.It.isAny())).returns(() => wizardPage);
