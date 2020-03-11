@@ -5,10 +5,10 @@
 
 import { CurrentModelsPage } from './currentModelsPage';
 
-import { ModelViewBase } from './modelViewBase';
-import * as constants from '../../common/constants';
-import { ApiWrapper } from '../../common/apiWrapper';
-import { DialogView } from '../dialogView';
+import { ModelViewBase, RegisterModelEventName } from '../modelViewBase';
+import * as constants from '../../../common/constants';
+import { ApiWrapper } from '../../../common/apiWrapper';
+import { DialogView } from '../../dialogView';
 
 /**
  * Dialog to render registered model views
@@ -31,7 +31,13 @@ export class RegisteredModelsDialog extends ModelViewBase {
 
 		this.currentLanguagesTab = new CurrentModelsPage(this._apiWrapper, this);
 
+		let registerModelButton = this._apiWrapper.createButton(constants.registerModelTitle);
+		registerModelButton.onClick(async () => {
+			await this.sendDataRequest(RegisterModelEventName);
+		});
+
 		let dialog = this.dialogView.createDialog('', [this.currentLanguagesTab]);
+		dialog.customButtons = [registerModelButton];
 		this.mainViewPanel = dialog;
 		dialog.okButton.hidden = true;
 		dialog.cancelButton.label = constants.extLangDoneButtonText;
