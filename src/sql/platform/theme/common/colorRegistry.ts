@@ -78,6 +78,3 @@ export const welcomeLinkActive = registerColor('welcomeLinkActive', { light: '#0
 export const welcomeLabel = registerColor('welcomeLabel', { light: '#0078d7', dark: '#0078d7', hc: '#0078d7' }, nls.localize('welcomeLabel', "The font color for label tags"));
 export const welcomeLabelChecked = registerColor('welcomeLabel', { light: '#000', dark: '#fff', hc: '#fff' }, nls.localize('welcomeLabelChecked', "The font color for labels that have been checked"));
 export const welcomeLabelBorder = registerColor('welcomeLabel', { light: '#000', dark: '#fff', hc: '#fff' }, nls.localize('welcomeLabelBorder', "The border color for labels"));
-
-
-//registerColor, focusBorder, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder
