@@ -153,7 +153,7 @@ export class NotebookFindDecorations implements IDisposable {
 	}
 
 	public checkValidEditor(range: NotebookRange): boolean {
-		return range && range.cell && range.cell.cellType === 'code' && !!(this._editor.getCellEditor(range.cell.cellGuid));
+		return range && range.cell && !!(this._editor.getCellEditor(range.cell.cellGuid)) && (range.cell.cellType === 'code' || range.isMarkdownSourceCell);
 	}
 
 	public set(findMatches: NotebookFindMatch[], findScope: NotebookRange | null): void {

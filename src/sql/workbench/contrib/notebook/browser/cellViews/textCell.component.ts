@@ -26,7 +26,7 @@ import { ISanitizer, defaultSanitizer } from 'sql/workbench/services/notebook/br
 import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
-import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookRange, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -103,6 +103,14 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this.markdownResult.dispose();
 			}
 		}));
+	}
+
+	public get cellEditors(): ICellEditorProvider[] {
+		let editors: ICellEditorProvider[] = [];
+		if (this.markdowncodeCell) {
+			editors.push(...this.markdowncodeCell.toArray());
+		}
+		return editors;
 	}
 
 	//Gets sanitizer from ISanitizer interface
@@ -230,6 +238,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	public toggleEditMode(editMode?: boolean): void {
 		this.isEditMode = editMode !== undefined ? editMode : !this.isEditMode;
+		this.cellModel.isEditMode = this.isEditMode;
 		this.updateMoreActions();
 		this.updatePreview();
 		this._changeRef.detectChanges();

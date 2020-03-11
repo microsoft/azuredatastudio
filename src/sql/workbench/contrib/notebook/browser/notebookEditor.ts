@@ -211,6 +211,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		await this.setNotebookModel();
 		if (this._findState.isRevealed) {
 			this._triggerInputChange();
+			this.registerCellModeChanges();
 		} else {
 			this._findDecorations.clearDecorations();
 		}
@@ -328,6 +329,30 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 				}
 			}
 		}
+	}
+
+	private registerCellModeChanges(): void {
+		this._notebookModel.cells.forEach(cell => {
+			this._register(cell.onCellModeChanged((state) => {
+				let changeEvent: FindReplaceStateChangedEvent = {
+					moveCursor: true,
+					updateHistory: true,
+					searchString: true,
+					replaceString: false,
+					isRevealed: false,
+					isReplaceRevealed: false,
+					isRegex: false,
+					wholeWord: false,
+					matchCase: false,
+					preserveCase: false,
+					searchScope: true,
+					matchesPosition: false,
+					matchesCount: false,
+					currentMatch: false
+				};
+				this._onFindStateChange(changeEvent).catch(e => { onUnexpectedError(e); });
+			}));
+		});
 	}
 
 	public setSelection(range: NotebookRange): void {

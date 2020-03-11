@@ -527,6 +527,17 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 
 	private searchFn(cell: ICellModel, exp: string, matchCase: boolean = false, wholeWord: boolean = false, maxMatches?: number): NotebookRange[] {
 		let findResults: NotebookRange[] = [];
+		if (cell.cellType === 'markdown' && cell.isEditMode && typeof cell.source !== 'string') {
+			let cellSource = cell.source;
+			for (let j = 0; j < cellSource.length; j++) {
+				let findStartResults = this.search(cellSource[j], exp, matchCase, wholeWord, maxMatches - findResults.length);
+				findStartResults.forEach(start => {
+					// lineNumber: j+1 since notebook editors aren't zero indexed.
+					let range = new NotebookRange(cell, j + 1, start, j + 1, start + exp.length, true);
+					findResults.push(range);
+				});
+			}
+		}
 		let cellVal = cell.cellType === 'markdown' ? cell.renderedOutputTextContent : cell.source;
 		if (cellVal) {
 			if (typeof cellVal === 'string') {
