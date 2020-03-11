@@ -21,7 +21,7 @@ export class TestQueryEditorService implements IQueryEditorService {
 	}
 
 	newSqlEditor(sqlContent?: string, connectionProviderName?: string, isDirty?: boolean, objectName?: string): Promise<IConnectableInput> {
-		const base = this.editorService.createInput({ forceUntitled: true }) as UntitledTextEditorInput;
+		const base = this.editorService.createEditorInput({ forceUntitled: true }) as UntitledTextEditorInput;
 		return Promise.resolve(this.instantiationService.createInstance(UntitledQueryEditorInput, '', base, new QueryResultsInput(base.resource.toString(true))));
 	}
 
