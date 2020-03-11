@@ -8096,6 +8096,9 @@ declare module 'vscode' {
 		 * An event signaling when the selected items have changed.
 		 */
 		readonly onDidChangeSelection: Event<T[]>;
+
+		// {SQL CARBON EDIT} Allow setting the behavior of the QuickPick
+		ok: boolean;
 	}
 
 	/**

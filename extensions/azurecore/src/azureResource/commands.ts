@@ -149,13 +149,26 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			};
 		}).sort((a, b) => a.label.localeCompare(b.label));
 
-		const selectedSubscriptionQuickPickItems = await window.showQuickPick(subscriptionQuickPickItems, { canPickMany: true });
-		if (selectedSubscriptionQuickPickItems && selectedSubscriptionQuickPickItems.length > 0) {
-			await tree.refresh(node, false);
+		const selectedQuickPickItems = subscriptionQuickPickItems.filter(s => s.picked);
 
-			selectedSubscriptions = selectedSubscriptionQuickPickItems.map((subscriptionItem) => subscriptionItem.subscription);
-			await subscriptionFilterService.saveSelectedSubscriptions(accountNode.account, selectedSubscriptions);
-		}
+		const quickPick = window.createQuickPick<AzureResourceSubscriptionQuickPickItem>();
+		quickPick.ok = true;
+		quickPick.items = subscriptionQuickPickItems;
+		quickPick.canSelectMany = true;
+		quickPick.selectedItems = selectedQuickPickItems;
+
+		quickPick.show();
+
+		quickPick.onDidAccept(async event => {
+			quickPick.hide();
+			const selectedSubscriptionQuickPickItems = quickPick.selectedItems;
+			if (selectedSubscriptionQuickPickItems && selectedSubscriptionQuickPickItems.length > 0) {
+				await tree.refresh(node, false);
+
+				selectedSubscriptions = selectedSubscriptionQuickPickItems.map((subscriptionItem) => subscriptionItem.subscription);
+				await subscriptionFilterService.saveSelectedSubscriptions(accountNode.account, selectedSubscriptions);
+			}
+		});
 	});
 
 	appContext.apiWrapper.registerCommand('azure.resource.refreshall', () => tree.notifyNodeChanged(undefined));
