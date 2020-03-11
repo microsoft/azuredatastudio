@@ -13,6 +13,7 @@ import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser
 import * as azdata from 'azdata';
 import { memoize } from 'vs/base/common/decorators';
 import { AgentViewComponent } from 'sql/workbench/contrib/jobManagement/browser/agentView.component';
+import { AsmtViewComponent } from 'sql/workbench/contrib/assessment/browser/asmtView.component';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('./controlHostContent.component.html')),
@@ -30,6 +31,7 @@ export class ControlHostContent {
 
 	/* Children components */
 	@ViewChild('agent') private _agentViewComponent: AgentViewComponent;
+	@ViewChild('asmt') private _asmtViewComponent: AsmtViewComponent;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
@@ -38,7 +40,13 @@ export class ControlHostContent {
 	}
 
 	public layout(): void {
-		this._agentViewComponent.layout();
+		if (this._agentViewComponent !== undefined) {
+			this._agentViewComponent.layout();
+		}
+		if (this._asmtViewComponent !== undefined) {
+			this._asmtViewComponent.layout();
+		}
+
 	}
 
 	public get id(): string {
@@ -71,6 +79,8 @@ export class ControlHostContent {
 	}
 
 	public refresh() {
-		this._agentViewComponent.refresh = true;
+		if (this._agentViewComponent !== undefined) {
+			this._agentViewComponent.refresh = true;
+		}
 	}
 }

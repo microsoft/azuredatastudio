@@ -1,0 +1,70 @@
+{
+  "name": "assessment",
+  "displayName": "SQL Server Assessment",
+  "description": "SQL Server Assessement description",
+  "version": "0.45.0",
+  "publisher": "Microsoft",
+  "preview": true,
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
+  "icon": "images/sqlserver.png",
+  "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
+  "engines": {
+    "vscode": "^1.25.0"
+  },
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "extensionDependencies": [
+    "Microsoft.mssql"
+  ],
+  "contributes": {
+    "outputChannels": [
+      "sqlagent"
+    ],
+    "dashboard.tabs": [
+      {
+        "id": "data-management-asmt",
+        "description": "Assessment",
+        "provider": "MSSQL",
+        "title": "SQL Assessment",
+        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11",
+        "container": {
+          "controlhost-container": {
+            "type": "assessment"
+          }
+        }
+      }
+    ],
+    "commands": [
+    ],
+    "menus": {
+
+    }
+  },
+  "dependencies": {
+    "vscode-nls": "^3.2.1"
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^12.11.7",
+    "mocha": "^5.2.0",
+    "mocha-junit-reporter": "^1.17.0",
+    "mocha-multi-reporters": "^1.1.7",
+    "should": "^13.2.1",
+    "typemoq": "^2.1.0",
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.4"
+  },
+  "resolutions": {
+      "esprima": "^4.0.0"
+  },
+  "__metadata": {
+    "id": "10",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
+  }
+}

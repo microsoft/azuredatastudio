@@ -41,6 +41,8 @@ declare module 'azdata' {
 
 		export function registerCapabilitiesServiceProvider(provider: CapabilitiesProvider): vscode.Disposable;
 
+		export function registerAssessmentServicesProvider(provider: AssessmentServicesProvider): vscode.Disposable;
+
 		/**
 		 * Get the provider corresponding to the given provider ID and type
 		 * @param providerId The ID that the provider was registered with
@@ -1798,6 +1800,35 @@ declare module 'azdata' {
 		deleteJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<ResultStatus>;
 
 		registerOnUpdated(handler: () => any): void;
+
+
+	}
+
+	export interface AssessmentResultItem {
+		rulesetVersion: string;
+		rulesetName: string;
+		targetType: number;
+		targetName: string;
+		checkId: string;
+		tags: string[];
+		displayName: string;
+		description: string;
+		message: string;
+		helpLink: string;
+		level: string;
+		timestamp: string;
+		kind: number;
+	}
+
+	export interface AssessmentResult extends ResultStatus {
+		items: AssessmentResultItem[];
+		apiVersion: string;
+	}
+
+	export interface AssessmentServicesProvider extends DataProvider {
+		assessmentInvoke(ownerUri: string, targetType: number): Thenable<AssessmentResult>;
+		getAssessmentItems(ownerUri: string, targetType: number): Thenable<AssessmentResult>;
+		generateAssessmentScript(items: AssessmentResultItem[]): Thenable<ResultStatus>;
 	}
 
 	// DacFx interfaces  -----------------------------------------------------------------------
@@ -4102,7 +4133,8 @@ declare module 'azdata' {
 		CapabilitiesProvider = 'CapabilitiesProvider',
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 		IconProvider = 'IconProvider',
-		SerializationProvider = 'SerializationProvider'
+		SerializationProvider = 'SerializationProvider',
+		AssessmentServicesProvider = 'AssessmentServicesProvider'
 	}
 
 	/**

@@ -674,6 +674,7 @@ export namespace SchemaCompareCancellationRequest {
 
 // ------------------------------- <Schema Compare> -----------------------------
 
+<<<<<<< HEAD
 // ------------------------------- <Sql Assessment> -----------------------------
 
 export interface SqlAssessmentParams {
@@ -683,11 +684,23 @@ export interface SqlAssessmentParams {
 
 export interface GenerateSqlAssessmentScriptParams {
 	items: mssql.SqlAssessmentResultItem[];
+=======
+// ------------------------------- <Assessment> -----------------------------
+
+export interface AssessmentParams {
+	ownerUri: string;
+	targetType: number
+}
+
+export interface GenerateAssessmentScriptParams {
+	items: azdata.AssessmentResultItem[];
+>>>>>>> Assessment core extension
 	taskExecutionMode: azdata.TaskExecutionMode;
 	targetServerName: string;
 	targetDatabaseName: string;
 }
 
+<<<<<<< HEAD
 export namespace SqlAssessmentInvokeRequest {
 	export const type = new RequestType<SqlAssessmentParams, mssql.SqlAssessmentResult, void, void>('assessment/invoke');
 }
@@ -702,6 +715,21 @@ export namespace GenerateSqlAssessmentScriptRequest {
 
 // ------------------------------- <Sql Assessment> -----------------------------
 
+=======
+export namespace AssessmentInvokeRequest {
+	export const type = new RequestType<AssessmentParams, azdata.AssessmentResult, void, void>('assessment/invoke');
+}
+
+export namespace GetAssessmentItemsRequest {
+	export const type = new RequestType<AssessmentParams, azdata.AssessmentResult, void, void>('assessment/getAssessmentItems');
+}
+
+export namespace GenerateAssessmentScriptRequest {
+	export const type = new RequestType<GenerateAssessmentScriptParams, azdata.ResultStatus, void, void>('assessment/generateScript');
+}
+
+// ------------------------------- <Assessment> -----------------------------
+>>>>>>> Assessment core extension
 
 // ------------------------------- <Serialization> -----------------------------
 export namespace SerializeDataStartRequest {

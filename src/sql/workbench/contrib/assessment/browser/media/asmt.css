@@ -1,0 +1,248 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+asmtview-component {
+	height: 100%;
+	width: 100%;
+	display: block;
+}
+
+.asmt-heading {
+	font-weight: bold;
+	font-size: large;
+}
+
+#asmtViewDiv .propertiesSectionTitle {
+	margin-bottom: 20px;
+	font-size: larger;
+}
+
+#asmtViewDiv .propertyBlock {
+	display: inline-block;
+	margin: 0px 0px 20px 20px;
+}
+
+#asmtViewDiv .propertyLabel {
+	font-size: 11px;
+}
+
+.asmt-heading-container {
+	height: 30px;
+	border-bottom: 3px solid #f4f4f4;
+	display: -webkit-box;
+	margin-left: 10px;
+}
+
+.vs-dark .asmt-actionbar-container {
+	border-top: 3px solid #444444;
+}
+
+.hc-black .asmt-actionbar-container {
+	border-top: 3px solid #2b56f2;
+}
+
+.asmt-actionbar-container {
+	padding-bottom: 10px;
+	border-top: 3px solid #f4f4f4;
+}
+
+.asmtview-grid {
+	height: calc(100% - 75px);
+	width: 100%;
+	display: block;
+}
+
+.vs-dark #asmtViewDiv .slick-header-column {
+	background: #333333 !important;
+}
+
+
+#asmtViewDiv .slick-header-column {
+	background-color: transparent !important;
+	border: 0px !important;
+	font-weight: bold;
+}
+
+.hc-black #asmtDiv asmtview-component .asmtview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+	border: 1px solid #2b56f2;
+}
+
+#asmtDiv asmtview-component .asmtview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+	border-right: transparent !important;
+	border-left: transparent !important;
+	line-height: 33px !important;
+}
+
+#asmtDiv asmtview-component .asmtview-grid .grid-canvas .ui-widget-content.slick-row {
+	background: #ffffc0 !important;
+}
+
+
+.asmtview-grid>.monaco-table .slick-viewport>.grid-canvas>.ui-widget-content.slick-row .slick-cell>.error-val,
+.asmtview-grid>.monaco-table .slick-viewport>.grid-canvas>.ui-widget-content.slick-row .slick-cell>.carbon-taskbar.error-val>.codicon,
+.asmtview-grid .detail-container .error-val {
+	width: 100%;
+	opacity: 1;
+	font-weight: 700;
+	text-overflow: ellipsis;
+	color: orangered;
+}
+
+.asmtview-grid>.monaco-table .slick-viewport>.grid-canvas>.ui-widget-content.slick-row .slick-cell>.warning-val,
+.asmtview-grid .detail-container .warning-val {
+	width: 100%;
+	opacity: 1;
+	font-weight: 700;
+	text-overflow: ellipsis;
+	color: darkgoldenrod;
+}
+
+
+.asmtview-grid>.monaco-table .slick-viewport>.grid-canvas>.ui-widget-content.slick-row .slick-cell._detail_selector.error-row {
+	opacity: 1;
+}
+
+#asmtDiv .detail-container {
+	max-height: 100px !important;
+	line-height: 20px;
+}
+
+#asmtDiv .detail {
+	padding: 5px;
+}
+
+#asmtDiv .preload {
+	font-size: 13px;
+}
+
+#asmtDiv .dynamic-cell-detail> :first-child {
+	vertical-align: middle;
+	line-height: 13px;
+	padding: 10px;
+	margin-left: 20px;
+}
+
+
+asmtview-component .asmtview-grid .grid-canvas>.ui-widget-content.slick-row>.slick-cell {
+	cursor: pointer;
+}
+
+.vs-dark .asmtview-grid>.monaco-table .slick-header-columns .slick-resizable-handle {
+	border-left: 1px dotted white;
+}
+
+.hc-black .asmtview-grid>.monaco-table .slick-header-columns .slick-resizable-handle {
+	border-left: 1px dotted #2b56f2;
+}
+
+.asmtview-grid>.monaco-table .slick-header-columns .slick-resizable-handle {
+	border-left: 1px dotted #444444;
+}
+
+#asmtDiv .codicon.in-progress {
+	padding-left: 0px;
+}
+
+#asmtDiv .carbon-taskbar .action-item {
+	margin-left: 0px;
+}
+
+#asmtDiv .asmtview-grid>.monaco-table .slick-viewport>.grid-canvas>.ui-widget-content.slick-row:hover>.slick-cell,
+#asmtDiv .asmtview-grid>.monaco-table .slick-viewport>.grid-canvas>.ui-widget-content.slick-row.hovered>.slick-cell,
+#asmtDiv .asmtview-grid>.monaco-table .slick-viewport>.grid-canvas>.ui-widget-content.slick-row>.slick-cell.hovered {
+	background: #dcdcdc !important;
+}
+
+.vs-dark #asmtDiv .asmtview-grid>.monaco-table .slick-viewport>.grid-canvas>.ui-widget-content.slick-row:hover>.slick-cell,
+.vs-dark #asmtDiv .asmtview-grid>.monaco-table .slick-viewport>.grid-canvas>.ui-widget-content.slick-row>.slick-cell.hovered,
+.vs-dark #asmtDiv .asmtview-grid>.monaco-table .slick-viewport>.grid-canvas>.ui-widget-content.slick-row.hovered>.slick-cell {
+	background: #444444 !important;
+}
+
+.hc-black #asmtDiv .asmtview-grid>.monaco-table .slick-viewport>.grid-canvas>.ui-widget-content.slick-row:hover>.slick-cell,
+.hc-black #asmtDiv .asmtview-grid>.monaco-table .slick-viewport>.grid-canvas>.ui-widget-content.slick-row>.slick-cell.hovered,
+.hc-black #asmtDiv .asmtview-grid>.monaco-table .slick-viewport>.grid-canvas>.ui-widget-content.slick-row.hovered>.slick-cell {
+	background: none !important;
+}
+
+.vs .action-label.codicon.refreshIcon {
+	background-image: url("refresh.svg");
+}
+
+.vs-dark .action-label.codicon.refreshIcon,
+.hc-black .action-label.codicon.refreshIcon {
+	background-image: url("refresh_inverse.svg");
+}
+
+.asmt-actionbar-container .monaco-action-bar>ul.actions-container>li.action-item {
+	padding-left: 20px;
+}
+
+.asmt-actionbar-container .actions-container .action-item .action-label {
+	padding-right: 0px;
+}
+
+asmtview-component .asmtview-grid .slick-cell.error-row {
+	opacity: 0;
+}
+
+
+#asmtDiv asmtview-component .monaco-toolbar.carbon-taskbar {
+	margin: 10px 0px 10px 0px;
+}
+
+#asmtDiv .slick-cell {
+	border-right: none;
+}
+
+.monaco-tree .monaco-tree-rows>.monaco-tree-row>.content>.object-element-group>.icon {
+	float: left;
+	height: 16px;
+	width: 16px;
+	padding-right: 10px;
+}
+
+.vs .action-label.codicon.defaultServerIcon {
+	background-image: url("default_server.svg");
+}
+
+.vs-dark .action-label.codicon.defaultServerIcon,
+.hc-black .action-label.codicon.defaultServerIcon {
+	background-image: url("default_server_inverse.svg");
+}
+
+.vs .action-label.codicon.defaultDatabaseIcon,
+.vs-dark .action-label.codicon.defaultDatabaseIcon,
+.hc-black .action-label.codicon.defaultDatabaseIcon {
+	background-image: url("database.svg");
+}
+
+#asmtDiv .helpLink {
+	margin-left: 5px;
+}
+
+.vs .action-label.codicon.exportAsScriptIcon {
+	background-image: url("newquery.svg");
+}
+
+.vs-dark .action-label.codicon.exportAsScriptIcon,
+.hc-black .action-label.codicon.exportAsScriptIcon {
+	background-image: url("newquery_inverse.svg");
+}
+
+.vs .action-label.codicon.asmt-learnmore {
+	background-image: url("configuredashboard.svg");
+}
+
+.vs-dark .action-label.codicon.asmt-learnmore,
+.hc-black .action-label.codicon.asmt-learnmore {
+	background-image: url("configuredashboard_inverse.svg");
+}
+
+#asmtDiv .placeholder {
+	font-style: italic;
+	position: relative;
+	top: 50px;
+}

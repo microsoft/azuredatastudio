@@ -1,0 +1,64 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<div id="asmtViewDiv" class="fullsize">
+	<div style="margin: 10px 0px 0px 10px;">
+		<div style="float: left; margin-right: 30px;">
+			<div class="propertiesSectionTitle">
+				<span>API information</span>
+			</div>
+			<div>
+				<div class="propertyBlock">
+					<div>
+						<span class="propertyLabel">API Version:</span>
+						<span>{{api}}</span>
+					</div>
+					<div>
+						<span class="propertyLabel">Default Ruleset Version:</span>
+						<span>{{ruleset}}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div>
+			<div class="propertiesSectionTitle">
+				<span>SQL Server Instance Details</span>
+			</div>
+			<div>
+				<div class="propertyBlock">
+					<div>
+						<span class="propertyLabel">Version:</span>
+						<span>{{connectionInfo.serverVersion}}</span>
+					</div>
+					<div>
+						<span class="propertyLabel">Edition:</span>
+						<span>{{connectionInfo.serverEdition}}</span>
+					</div>
+				</div>
+				<div class="propertyBlock">
+					<div>
+						<span class="propertyLabel">Instance Name:</span>
+						<span>{{instanceName}}</span>
+					</div>
+					<div>
+						<span class="propertyLabel">OS Version:</span>
+						<span>{{connectionInfo.osVersion}}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<panel class="dashboard-panel" [options]="panelOpt">
+		<tab class="fullsize">
+			<ng-template>
+				<div id="asmtDiv" class="fullsize">
+					<asmt-results-view-component></asmt-results-view-component>
+				</div>
+			</ng-template>
+		</tab>
+	</panel>
+</div>

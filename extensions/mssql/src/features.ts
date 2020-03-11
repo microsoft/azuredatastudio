@@ -746,7 +746,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				}
 			);
 		};
-
+		// Job management methods
 		return azdata.dataprotocol.registerAgentServicesProvider({
 			providerId: client.providerId,
 			getJobs,
@@ -851,4 +851,70 @@ export class SerializationFeature extends SqlOpsFeature<undefined> {
 			continueSerialization
 		});
 	}
+}
+
+export class AssessmentServicesFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		contracts.AssessmentInvokeRequest.type,
+		contracts.GetAssessmentItemsRequest.type
+	];
+	constructor(client: SqlOpsDataClient) {
+		super(client, AssessmentServicesFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		let assessmentInvoke = (ownerUri: string, targetType: number): Thenable<azdata.AssessmentResult> => {
+			let params: contracts.AssessmentParams = { ownerUri: ownerUri, targetType: targetType };
+			return client.sendRequest(contracts.AssessmentInvokeRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(contracts.AssessmentInvokeRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let getAssessmentItems = (ownerUri: string, targetType: number): Thenable<azdata.AssessmentResult> => {
+			let params: contracts.AssessmentParams = { ownerUri: ownerUri, targetType: targetType };
+			return client.sendRequest(contracts.GetAssessmentItemsRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(contracts.GetAssessmentItemsRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let generateAssessmentScript = (items: azdata.AssessmentResultItem[]): Thenable<azdata.AssessmentResult> => {
+			let params: contracts.GenerateAssessmentScriptParams = { items: items, taskExecutionMode: azdata.TaskExecutionMode.script, targetServerName: '', targetDatabaseName: '' };
+			return client.sendRequest(contracts.GenerateAssessmentScriptRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(contracts.GenerateAssessmentScriptRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		return azdata.dataprotocol.registerAssessmentServicesProvider({
+			providerId: client.providerId,
+			assessmentInvoke,
+			getAssessmentItems,
+			generateAssessmentScript
+		});
+	}
+
+
 }

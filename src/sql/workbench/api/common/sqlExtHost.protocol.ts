@@ -488,6 +488,26 @@ export abstract class ExtHostDataProtocolShape {
 	 * Serialization continuation request
 	 */
 	$continueSerialization(handle: number, requestParams: azdata.SerializeDataContinueRequestParams): Thenable<azdata.SerializeDataResult> { throw ni(); }
+
+
+	/**
+	 * SQL Assessment Section
+	 */
+
+	/**
+	* Perform an assessment
+	*/
+	$assessmentInvoke(handle: number, connectionUri: string, targetType: number): Thenable<azdata.AssessmentResult> { throw ni(); }
+
+	/**
+	 * Get applicable assessment rules
+	 */
+	$getAssessmentItems(handle: number, connectionUri: string, targetType: number): Thenable<azdata.AssessmentResult> { throw ni(); }
+
+	/**
+	 * Generate an assessment script based on recent results
+	 */
+	$generateAssessmentScript(handle: number, items: azdata.AssessmentResultItem[]): Thenable<azdata.ResultStatus> { throw ni(); }
 }
 
 /**
@@ -574,6 +594,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onSessionStopped(handle: number, response: azdata.ProfilerSessionStoppedParams): void;
 	$onProfilerSessionCreated(handle: number, response: azdata.ProfilerSessionCreatedParams): void;
 	$onJobDataUpdated(handle: Number): void;
+	$registerAssessmentServicesProvider(providerId: string, handle: number): Promise<any>;
 
 	/**
 	 * Callback when a session has completed initialization
