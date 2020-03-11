@@ -613,15 +613,18 @@ export class NotebookService extends Disposable implements INotebookService {
 	 * @param isTrusted True if the notebook is to be trusted, false otherwise.
 	 */
 	async setTrusted(notebookUri: URI, isTrusted: boolean): Promise<boolean> {
-		if (isTrusted) {
-			this._trustedCacheQueue.push(notebookUri);
+		let editor = this.findNotebookEditor(notebookUri);
+
+		if (editor && editor.model) {
+			if (isTrusted) {
+				this._trustedCacheQueue.push(notebookUri);
+			} else {
+				this._unTrustedCacheQueue.push(notebookUri);
+			}
 			await this.updateTrustedCache();
-			return true;
-		} else if (isTrusted === false) {
-			this._unTrustedCacheQueue.push(notebookUri);
-			await this.updateTrustedCache();
-			return true;
+			editor.model.trustedMode = isTrusted;
 		}
-		return false;
+
+		return isTrusted;
 	}
 }
