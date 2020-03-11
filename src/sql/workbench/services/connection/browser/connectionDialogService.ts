@@ -73,6 +73,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _providerDisplayNames: string[] = [];
 	private _currentProviderType: string = Constants.mssqlProviderName;
 	private _connecting: boolean = false;
+	//additional boolean check I made.
+	private _isEditing: boolean = false;
 	private _connectionErrorTitle = localize('connectionError', "Connection error");
 	private _dialogDeferredPromise: Deferred<IConnectionProfile>;
 
@@ -89,7 +91,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService,
-		@ILogService private _logService: ILogService
+		@ILogService private _logService: ILogService,
 	) {
 		this.initializeConnectionProviders();
 	}
@@ -377,7 +379,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 		let newProfile = new ConnectionProfile(this._capabilitiesService, model || providerName);
 		newProfile.saveProfile = true;
-		if (!newProfile.id) {
+		if (!this._isEditing) {
 			newProfile.generateNewId();
 		}
 		// If connecting from a query editor set "save connection" to false
@@ -418,7 +420,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		params?: INewConnectionParams,
 		model?: IConnectionProfile,
 		connectionResult?: IConnectionResult,
-		connectionOptions?: IConnectionCompletionOptions): Promise<void> {
+		connectionOptions?: IConnectionCompletionOptions,
+		isEditing?: boolean
+	): Promise<void> {
 
 		this._connectionManagementService = connectionManagementService;
 
@@ -461,7 +465,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[this._currentProviderType]);
 
 		const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections(params.providers);
-		await this._connectionDialog.open(recentConnections.length > 0);
+		if (!this._isEditing) {
+			await this._connectionDialog.open(recentConnections.length > 0);
+		}
 		this.uiController.focusOnOpen();
 		recentConnections.forEach(conn => conn.dispose());
 	}
