@@ -152,8 +152,8 @@ interface IExtensionEditorTemplate {
 	builtin: HTMLElement;
 	license: HTMLElement;
 	publisher: HTMLElement;
-	installCount: HTMLElement;
-	rating: HTMLElement;
+	// installCount: HTMLElement; // {{SQL CARBON EDIT}} remove install count widget
+	// rating: HTMLElement; // {{SQL CARBON EDIT}} remove rating widget
 	repository: HTMLElement;
 	description: HTMLElement;
 	extensionActionBar: ActionBar;
@@ -226,9 +226,10 @@ export class ExtensionEditor extends BaseEditor {
 		const subtitle = append(details, $('.subtitle'));
 		const publisher = append(subtitle, $('span.publisher.clickable', { title: localize('publisher', "Publisher name"), tabIndex: 0 }));
 
-		const installCount = append(subtitle, $('span.install', { title: localize('install count', "Install count"), tabIndex: 0 }));
+		// {{SQL CARBON EDIT}} remove rating and install count widgets
+		// const installCount = append(subtitle, $('span.install', { title: localize('install count', "Install count"), tabIndex: 0 }));
 
-		const rating = append(subtitle, $('span.rating.clickable', { title: localize('rating', "Rating"), tabIndex: 0 }));
+		// const rating = append(subtitle, $('span.rating.clickable', { title: localize('rating', "Rating"), tabIndex: 0 }));
 
 		const repository = append(subtitle, $('span.repository.clickable'));
 		repository.textContent = localize('repository', 'Repository');
@@ -282,13 +283,13 @@ export class ExtensionEditor extends BaseEditor {
 			iconContainer,
 			identifier,
 			ignoreActionbar,
-			installCount,
+			// installCount, // {{SQL CARBON EDIT}} remove install count widget
 			license,
 			name,
 			navbar,
 			preview,
 			publisher,
-			rating,
+			// rating, // {{SQL CARBON EDIT}} remove rating widget
 			repository,
 			subtext,
 			subtextContainer
@@ -362,10 +363,10 @@ export class ExtensionEditor extends BaseEditor {
 
 		toggleClass(template.name, 'clickable', !!extension.url);
 		toggleClass(template.publisher, 'clickable', !!extension.publisher); // {{SQL CARBON EDIT}} !!extension.url -> !!extension.publisher, for ADS we don't have marketplace website, but still want to make it clickable and filter extensions by publisher
-		toggleClass(template.rating, 'clickable', !!extension.url);
+		// toggleClass(template.rating, 'clickable', !!extension.url); // {{SQL CARBON EDIT}} remove rating widget
 		if (extension.url) {
 			this.transientDisposables.add(this.onClick(template.name, () => this.openerService.open(URI.parse(extension.url!))));
-			this.transientDisposables.add(this.onClick(template.rating, () => this.openerService.open(URI.parse(`${extension.url}#review-details`))));
+			// this.transientDisposables.add(this.onClick(template.rating, () => this.openerService.open(URI.parse(`${extension.url}#review-details`)))); // {{SQL CARBON EDIT}} remove rating widget
 			this.transientDisposables.add(this.onClick(template.publisher, () => {
 				this.viewletService.openViewlet(VIEWLET_ID, true)
 					.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
