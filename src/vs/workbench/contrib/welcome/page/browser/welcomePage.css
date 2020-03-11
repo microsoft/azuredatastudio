@@ -211,27 +211,17 @@
 }
 
 .ads_homepage .btn--primary {
-	background: #0078d4;
-	color: #fff !important;
-	border: 1px solid #0078d4;
+	border: 1px solid;
 }
 
 .ads_homepage .btn--primary:hover {
-	background: #106ebe;
 	cursor: pointer;
 }
 
-.ads_homepage .btn--primary:active {
-	background: #005a9e;
-}
+.ads_homepage .btn--primary:active {}
 
 .ads_homepage .btn--standard:hover {
-	background: #f3f2f1;
 	cursor: pointer;
-}
-
-.ads_homepage .btn--standard:active {
-	background: #edebe9;
 }
 
 .ads_homepage .btn.dropdown ul {
@@ -256,7 +246,6 @@
 }
 
 .ads_homepage .btn.dropdown ul li ul {
-	background: #fff;
 	visibility: hidden;
 	opacity: 0;
 	min-width: 10rem;
@@ -266,21 +255,11 @@
 	transition: all 0.5s ease;
 	margin-top: 1rem;
 	display: none;
-	box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 	border-radius: 4px;
 }
 
-.hc-black .ads_homepage .btn.dropdown ul li ul {
-	background: black;
-	border: 1px solid #2b56f2;
-}
-
-.vs-dark .ads_homepage .btn.dropdown ul li ul {
-	background: #1b1a19;
-}
-
-.hc-black .ads_homepage .btn.dropdown ul li ul li a {
-	color: #fff !important;
+.ads_homepage .btn.dropdown ul li ul {
+	border: 1px solid;
 }
 
 .ads_homepage .btn.dropdown ul li:hover>ul, .ads_homepage .btn.dropdown ul li ul:hover {
@@ -296,23 +275,11 @@
 	clear: both;
 	font-size: 14px;
 	text-align: left;
-}
-
-.ads_homepage .btn.dropdown ul li ul li:hover {
-	background: #efefef;
-}
-
-.ads_homepage .btn.dropdown ul li ul li:hover {
-	background: #efefef;
-}
-
-.hc-black .ads_homepage .btn.dropdown ul li ul li:hover, .vs-dark .ads_homepage .btn.dropdown ul li ul li:hover {
-	background: #252525;
+	border: 1px solid;
 }
 
 .ads_homepage .btn.dropdown ul li ul li a {
 	text-decoration: none;
-	color: #000;
 }
 
 .ads_homepage .btn:disabled {
@@ -389,7 +356,6 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	color: #fff !important;
 	text-decoration: none;
 }
 
@@ -398,7 +364,6 @@
 }
 
 .ads_homepage .link {
-	color: #0078d4;
 	text-decoration: none;
 }
 
@@ -407,19 +372,17 @@
 }
 
 .ads_homepage .link:hover {
-	color: #004578;
 	text-decoration: underline;
 	cursor: pointer;
 }
 
 .ads_homepage .tile:not(.extension):not(.extension_pack) {
-	border: 1px solid #e5e5e5;
+	border: 1px solid;
 	border-radius: 4px;
-	box-shadow: 0px 1px 4px rgba(0, 1, 4, 0.13);
 }
 
 .ads_homepage .tile.extension_pack {
-	border: 1px solid #8A8886;
+	border: 1px solid;
 	border-radius: 4px;
 }
 
@@ -430,11 +393,9 @@
 
 .ads_homepage .tile:hover:not(.no_hover) {
 	cursor: pointer;
-	box-shadow: 0px 4px 8px rgba(0, 3, 8, 0.14);
 }
 
 .ads_homepage .link:active {
-	color: #004578;
 	text-decoration: underline;
 }
 
@@ -464,14 +425,7 @@
 	padding: 15px 15px;
 }
 
-body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
-	background-image: linear-gradient(0deg, #f0f0f0 0%, rgba(156, 48, 48, 0) 100%, rgba(242, 242, 242, 0.0572917) 100%);
-	background-color: #fff;
-	background-size: cover;
-}
-
-.vs-dark .ads_homepage .gradient, .hc-black .ads_homepage .gradient {
-	background-image: linear-gradient(0deg, rgba(0, 0, 0, .2) 0%, rgba(255, 255, 255, 0.1) 100%);
+.ads_homepage .gradient {
 	background-size: cover;
 }
 
@@ -569,7 +523,6 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 	cursor: pointer;
 	font-weight: bold;
 	font-size: 14px;
-	color: #0078d7;
 	transition: background 0.1s, color 0.1s;
 }
 
@@ -620,10 +573,8 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 	flex-direction: column;
 	justify-content: flex-start;
 	align-items: center;
-	background: #fff;
-	border: 1px solid #e5e5e5;
+	border: 1px solid;
 	border-radius: 4px;
-	box-shadow: 0px 1px 4px rgba(0, 1, 4, 0.13);
 	transition: all 0.5s ease;
 	margin: 0;
 }
@@ -631,7 +582,6 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 .vs-dark .ads_homepage .header__bottom_nav__tile, .hc-black .ads_homepage .header__bottom_nav__tile {
 	border: 1px solid;
 	border-radius: 4px;
-	color: #fff;
 }
 
 @media only screen and (max-width: 389px) {
@@ -667,7 +617,6 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 
 .monaco-workbench .part.editor>.content .ads_homepage a.header__bottom_nav__tile__link {
 	text-decoration: none;
-	color: #000;
 }
 
 .ads_homepage .header__bottom_nav__tile .icon {
@@ -718,13 +667,11 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 }
 
 .ads_homepage .resources .input:checked+.label {
-	color: #000;
 	border-bottom: 3px solid;
 }
 
 .vs-dark .ads_homepage .resources .input:checked+.label, .hc-black .ads_homepage .resources .input:checked+.label {
-	color: #fff;
-	border-bottom: 3px solid #fff;
+	border-bottom: 3px solid;
 }
 
 .ads_homepage .resources .label {
@@ -766,7 +713,7 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent), .ads_homepage .ads_homepage__section .history .list__header__container, .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent), .ads_homepage .ads_homepage__section .pinned .list__header__container {
 	height: 33px;
 	list-style: none;
-	border-bottom: 1px solid rgba(204, 204, 204, 0.8);
+	border-bottom: 1px solid;
 	text-align: left;
 	font-size: 13px;
 	display: flex;
@@ -778,10 +725,6 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 
 .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) a, .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) a {
 	padding: 0 0 2px 21px;
-}
-
-.vs-dark .ads_homepage .ads_homepage__section .history .list li a, .vs-dark .ads_homepage .ads_homepage__section .pinned .list li a, .vs-dark .ads_homepage .ads_homepage__section .history .list li span, .vs-dark .ads_homepage .ads_homepage__section .pinned .list li span, .hc-black .ads_homepage .ads_homepage__section .history .list li a, .hc-black .ads_homepage .ads_homepage__section .pinned .list li a, .hc-black .ads_homepage .ads_homepage__section .history .list li span, .hc-black .ads_homepage .ads_homepage__section .pinned .list li span {
-	color: #fff;
 }
 
 .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) a, .ads_homepage .ads_homepage__section .pinned .list li a, .ads_homepage .icon--document {
@@ -899,14 +842,11 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 }
 
 .ads_homepage .extension_pack__header {
-	color: #fff;
 	font-size: 28px;
 	z-index: 9;
-	text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 .ads_homepage .extension_pack__body {
-	color: #fff;
 	font-size: 16px;
 	z-index: 9;
 }
@@ -960,7 +900,6 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	background-image: linear-gradient(0.49deg, rgba(50, 49, 48, 0.55) 82.75%, rgba(50, 49, 48, 0) 96.25%);
 	border-top-left-radius: 5px;
 	border-bottom-left-radius: 5px;
 }
@@ -970,7 +909,6 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 }
 
 .ads_homepage .extension_pack__description .text_container {
-	background: #fff;
 	text-align: center;
 	padding: 20px;
 }
@@ -1016,7 +954,6 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 }
 
 .monaco-workbench .part.editor>.content .ads_homepage .extensions .extensions__tile__link {
-	color: #000;
 	text-decoration: none;
 }
 
@@ -1028,10 +965,6 @@ body:not(.vs-dark):not(.hc-black) .ads_homepage .gradient {
 
 .monaco-workbench .part.editor>.content .welcomePage.emptyRecent .splash .recent .list {
 	display: none;
-}
-
-.monaco-workbench .part.editor>.content .welcomePage.emptyRecent .splash .recent .list li:hover {
-	background: #efefef;
 }
 
 .monaco-workbench .part.editor>.content .welcomePage .splash .recent .none {
