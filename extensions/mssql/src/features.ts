@@ -5,7 +5,7 @@
 
 import { SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import { ClientCapabilities, StaticFeature, RPCMessageType, ServerCapabilities } from 'vscode-languageclient';
-import { Disposable } from 'vscode';
+import { Disposable, window } from 'vscode';
 import { Telemetry } from './telemetry';
 import * as contracts from './contracts';
 import * as azdata from 'azdata';
@@ -41,10 +41,12 @@ export class AccountFeature implements StaticFeature {
 
 			if (accountList.length < 1) {
 				// TODO: Prompt user to add account
-				throw new Error('No azure accounts present. Unable to find an account.');
+				window.showErrorMessage('Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query.');
+				return null;
 			} else if (accountList.length > 1) {
 				// TODO: Prompt user to select an account
-				throw new Error('Multiple azure accounts present. Unable to determine which account to use.');
+				window.showErrorMessage('Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, which is not supported if multiple linked Azure accounts are present. Make sure only one linked Azure account exists and retry the query.');
+				return null;
 			}
 
 			let account = accountList[0];
