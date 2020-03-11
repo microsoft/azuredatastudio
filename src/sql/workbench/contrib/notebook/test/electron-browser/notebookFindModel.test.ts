@@ -25,7 +25,7 @@ import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/t
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ClientSession } from 'sql/workbench/services/notebook/browser/models/clientSession';
-import { TestStorageService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';

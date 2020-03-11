@@ -27,9 +27,8 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { append, $ } from 'vs/base/browser/dom';
-import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
+import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
@@ -38,6 +37,7 @@ import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 export class CategoryView extends ViewPane {
 
@@ -98,7 +98,7 @@ export class OptionsDialog extends Modal {
 		title: string,
 		name: string,
 		options: IOptionsDialogOptions,
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -123,8 +123,8 @@ export class OptionsDialog extends Modal {
 		// Theme styler
 		attachButtonStyler(okButton, this._themeService);
 		attachButtonStyler(closeButton, this._themeService);
-		this._register(this._themeService.onThemeChange(e => this.updateTheme(e)));
-		this.updateTheme(this._themeService.getTheme());
+		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
+		this.updateTheme(this._themeService.getColorTheme());
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -142,7 +142,7 @@ export class OptionsDialog extends Modal {
 	}
 
 	// Update theming that is specific to options dialog flyout body
-	private updateTheme(theme: ITheme): void {
+	private updateTheme(theme: IColorTheme): void {
 		let borderColor = theme.getColor(contrastBorder);
 		let border = borderColor ? borderColor.toString() : null;
 		if (this._dividerBuilder) {
@@ -239,7 +239,7 @@ export class OptionsDialog extends Modal {
 			this.fillInOptions(bodyContainer, serviceOptions);
 
 			let viewSize = this._optionCategoryPadding + serviceOptions.length * this._optionRowSize;
-			let categoryView = this._instantiationService.createInstance(CategoryView, bodyContainer, viewSize, { title: category, ariaHeaderLabel: category, id: category });
+			let categoryView = this._instantiationService.createInstance(CategoryView, bodyContainer, viewSize, { title: category, id: category });
 			this.splitview.addView(categoryView, viewSize);
 			categoryView.render();
 			attachPanelStyler(categoryView, this._themeService);

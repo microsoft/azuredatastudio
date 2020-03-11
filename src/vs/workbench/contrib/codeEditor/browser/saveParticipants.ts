@@ -55,7 +55,7 @@ class NotebookUpdateParticipant implements ITextFileSaveParticipant { // {{SQL C
 	}
 }
 
-class TrimWhitespaceParticipant implements ITextFileSaveParticipant {
+export class TrimWhitespaceParticipant implements ITextFileSaveParticipant {
 
 	constructor(
 		@IConfigurationService private readonly configurationService: IConfigurationService,
