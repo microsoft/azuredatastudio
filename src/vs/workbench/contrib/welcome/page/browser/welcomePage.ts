@@ -42,7 +42,6 @@ import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { joinPath } from 'vs/base/common/resources';
 import { IRecentlyOpened, isRecentWorkspace, IRecentWorkspace, IRecentFolder, isRecentFolder, IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}}
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
 
@@ -274,11 +273,10 @@ class WelcomePage extends Disposable {
 
 		const recentlyOpened = this.workspacesService.getRecentlyOpened();
 		const installedExtensions = this.instantiationService.invokeFunction(getInstalledExtensions);
-		// {{SQL CARBON EDIT}} - Redirect to ADS welcome page
-		const resource = URI.parse(require.toUrl('./az_data_welcome_page'))
+		const resource = URI.parse(require.toUrl('./vs_code_welcome_page'))
 			.with({
 				scheme: Schemas.walkThrough,
-				query: JSON.stringify({ moduleId: 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page' })
+				query: JSON.stringify({ moduleId: 'vs/workbench/contrib/welcome/page/browser/az_data_welcome_page' })
 			});
 		this.editorInput = this.instantiationService.createInstance(WalkThroughInput, {
 			typeId: welcomeInputTypeId,
