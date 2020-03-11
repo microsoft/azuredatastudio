@@ -21,7 +21,7 @@ import { IOverlayWidget, IOverlayWidgetPosition, OverlayWidgetPositionPreference
 import { FIND_IDS, CONTEXT_FIND_INPUT_FOCUSED } from 'vs/editor/contrib/find/findModel';
 import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { ITheme, IThemeService } from 'vs/platform/theme/common/themeService';
+import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -159,8 +159,8 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 
 		this._notebookController.addOverlayWidget(this);
 
-		this._applyTheme(themeService.getTheme());
-		this._register(themeService.onThemeChange(this._applyTheme.bind(this)));
+		this._applyTheme(themeService.getColorTheme());
+		this._register(themeService.onDidColorThemeChange(this._applyTheme.bind(this)));
 
 		this.onkeyup(this._domNode, e => {
 			if (e.equals(KeyCode.Escape)) {
@@ -299,7 +299,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 		}
 	}
 
-	private _applyTheme(theme: ITheme) {
+	private _applyTheme(theme: IColorTheme) {
 		let inputStyles: IFindInputStyles = {
 			inputActiveOptionBorder: theme.getColor(colors.inputActiveOptionBorder),
 			inputBackground: theme.getColor(colors.inputBackground),

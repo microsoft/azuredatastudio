@@ -84,7 +84,9 @@ class NavBar extends Disposable {
 	private _onChange = this._register(new Emitter<{ id: string | null, focus: boolean }>());
 	get onChange(): Event<{ id: string | null, focus: boolean }> { return this._onChange.event; }
 
-	private currentId: string | null = null;
+	private _currentId: string | null = null;
+	get currentId(): string | null { return this._currentId; }
+
 	private actions: Action[];
 	private actionbar: ActionBar;
 
@@ -114,11 +116,11 @@ class NavBar extends Disposable {
 	}
 
 	update(): void {
-		this._update(this.currentId);
+		this._update(this._currentId);
 	}
 
-	_update(id: string | null = this.currentId, focus?: boolean): Promise<void> {
-		this.currentId = id;
+	_update(id: string | null = this._currentId, focus?: boolean): Promise<void> {
+		this._currentId = id;
 		this._onChange.fire({ id, focus: !!focus });
 		this.actions.forEach(a => a.checked = a.id === id);
 		return Promise.resolve(undefined);
@@ -150,8 +152,8 @@ interface IExtensionEditorTemplate {
 	builtin: HTMLElement;
 	license: HTMLElement;
 	publisher: HTMLElement;
-	installCount: HTMLElement;
-	rating: HTMLElement;
+	// installCount: HTMLElement; // {{SQL CARBON EDIT}} remove install count widget
+	// rating: HTMLElement; // {{SQL CARBON EDIT}} remove rating widget
 	repository: HTMLElement;
 	description: HTMLElement;
 	extensionActionBar: ActionBar;
@@ -224,9 +226,10 @@ export class ExtensionEditor extends BaseEditor {
 		const subtitle = append(details, $('.subtitle'));
 		const publisher = append(subtitle, $('span.publisher.clickable', { title: localize('publisher', "Publisher name"), tabIndex: 0 }));
 
-		const installCount = append(subtitle, $('span.install', { title: localize('install count', "Install count"), tabIndex: 0 }));
+		// {{SQL CARBON EDIT}} remove rating and install count widgets
+		// const installCount = append(subtitle, $('span.install', { title: localize('install count', "Install count"), tabIndex: 0 }));
 
-		const rating = append(subtitle, $('span.rating.clickable', { title: localize('rating', "Rating"), tabIndex: 0 }));
+		// const rating = append(subtitle, $('span.rating.clickable', { title: localize('rating', "Rating"), tabIndex: 0 }));
 
 		const repository = append(subtitle, $('span.repository.clickable'));
 		repository.textContent = localize('repository', 'Repository');
@@ -280,13 +283,13 @@ export class ExtensionEditor extends BaseEditor {
 			iconContainer,
 			identifier,
 			ignoreActionbar,
-			installCount,
+			// installCount, // {{SQL CARBON EDIT}} remove install count widget
 			license,
 			name,
 			navbar,
 			preview,
 			publisher,
-			rating,
+			// rating, // {{SQL CARBON EDIT}} remove rating widget
 			repository,
 			subtext,
 			subtextContainer
@@ -309,12 +312,12 @@ export class ExtensionEditor extends BaseEditor {
 
 	async setInput(input: ExtensionsInput, options: EditorOptions | undefined, token: CancellationToken): Promise<void> {
 		if (this.template) {
-			await this.updateTemplate(input, this.template);
+			await this.updateTemplate(input, this.template, !!options?.preserveFocus);
 		}
 		return super.setInput(input, options, token);
 	}
 
-	private async updateTemplate(input: ExtensionsInput, template: IExtensionEditorTemplate): Promise<void> {
+	private async updateTemplate(input: ExtensionsInput, template: IExtensionEditorTemplate, preserveFocus: boolean): Promise<void> {
 		const runningExtensions = await this.extensionService.getExtensions();
 		const colorThemes = await this.workbenchThemeService.getColorThemes();
 		const fileIconThemes = await this.workbenchThemeService.getFileIconThemes();
@@ -360,10 +363,10 @@ export class ExtensionEditor extends BaseEditor {
 
 		toggleClass(template.name, 'clickable', !!extension.url);
 		toggleClass(template.publisher, 'clickable', !!extension.publisher); // {{SQL CARBON EDIT}} !!extension.url -> !!extension.publisher, for ADS we don't have marketplace website, but still want to make it clickable and filter extensions by publisher
-		toggleClass(template.rating, 'clickable', !!extension.url);
+		// toggleClass(template.rating, 'clickable', !!extension.url); // {{SQL CARBON EDIT}} remove rating widget
 		if (extension.url) {
 			this.transientDisposables.add(this.onClick(template.name, () => this.openerService.open(URI.parse(extension.url!))));
-			this.transientDisposables.add(this.onClick(template.rating, () => this.openerService.open(URI.parse(`${extension.url}#review-details`))));
+			// this.transientDisposables.add(this.onClick(template.rating, () => this.openerService.open(URI.parse(`${extension.url}#review-details`)))); // {{SQL CARBON EDIT}} remove rating widget
 			this.transientDisposables.add(this.onClick(template.publisher, () => {
 				this.viewletService.openViewlet(VIEWLET_ID, true)
 					.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
@@ -444,31 +447,34 @@ export class ExtensionEditor extends BaseEditor {
 		template.content.innerHTML = ''; // Clear content before setting navbar actions.
 
 		template.navbar.clear();
-		template.navbar.onChange(e => this.onNavbarChange(extension, e, template), this, this.transientDisposables);
 
 		if (extension.hasReadme()) {
 			template.navbar.push(NavbarSection.Readme, localize('details', "Details"), localize('detailstooltip', "Extension details, rendered from the extension's 'README.md' file"));
 		}
-		this.extensionManifest.get()
-			.promise
-			.then(manifest => {
-				if (manifest) {
-					combinedInstallAction.manifest = manifest;
-				}
-				if (extension.extensionPack.length) {
-					template.navbar.push(NavbarSection.ExtensionPack, localize('extensionPack', "Extension Pack"), localize('extensionsPack', "Set of extensions that can be installed together"));
-				}
-				if (manifest && manifest.contributes) {
-					template.navbar.push(NavbarSection.Contributions, localize('contributions', "Feature Contributions"), localize('contributionstooltip', "Lists contributions to VS Code by this extension"));
-				}
-				if (extension.hasChangelog()) {
-					template.navbar.push(NavbarSection.Changelog, localize('changelog', "Changelog"), localize('changelogtooltip', "Extension update history, rendered from the extension's 'CHANGELOG.md' file"));
-				}
-				if (extension.dependencies.length) {
-					template.navbar.push(NavbarSection.Dependencies, localize('dependencies', "Dependencies"), localize('dependenciestooltip', "Lists extensions this extension depends on"));
-				}
-				this.editorLoadComplete = true;
-			});
+
+		const manifest = await this.extensionManifest.get().promise;
+		if (manifest) {
+			combinedInstallAction.manifest = manifest;
+		}
+		if (extension.extensionPack.length) {
+			template.navbar.push(NavbarSection.ExtensionPack, localize('extensionPack', "Extension Pack"), localize('extensionsPack', "Set of extensions that can be installed together"));
+		}
+		if (manifest && manifest.contributes) {
+			template.navbar.push(NavbarSection.Contributions, localize('contributions', "Feature Contributions"), localize('contributionstooltip', "Lists contributions to VS Code by this extension"));
+		}
+		if (extension.hasChangelog()) {
+			template.navbar.push(NavbarSection.Changelog, localize('changelog', "Changelog"), localize('changelogtooltip', "Extension update history, rendered from the extension's 'CHANGELOG.md' file"));
+		}
+		if (extension.dependencies.length) {
+			template.navbar.push(NavbarSection.Dependencies, localize('dependencies', "Dependencies"), localize('dependenciestooltip', "Lists extensions this extension depends on"));
+		}
+
+		if (template.navbar.currentId) {
+			this.onNavbarChange(extension, { id: template.navbar.currentId, focus: !preserveFocus }, template);
+		}
+		template.navbar.onChange(e => this.onNavbarChange(extension, e, template), this, this.transientDisposables);
+
+		this.editorLoadComplete = true;
 	}
 
 	private setSubText(extension: IExtension, reloadAction: ReloadAction, template: IExtensionEditorTemplate): void {
@@ -528,6 +534,7 @@ export class ExtensionEditor extends BaseEditor {
 			if (e.enabled === false) {
 				hide(template.subtextContainer);
 			}
+			this.layout();
 		}));
 	}
 
@@ -598,18 +605,18 @@ export class ExtensionEditor extends BaseEditor {
 		try {
 			const body = await this.renderMarkdown(cacheResult, template);
 
-			const webviewElement = this.contentDisposables.add(this.webviewService.createWebviewEditorOverlay('extensionEditor', {
+			const webview = this.contentDisposables.add(this.webviewService.createWebviewOverlay('extensionEditor', {
 				enableFindWidget: true,
 			}, {}));
 
-			webviewElement.claim(this);
-			webviewElement.layoutWebviewOverElement(template.content);
-			webviewElement.html = body;
+			webview.claim(this);
+			webview.layoutWebviewOverElement(template.content);
+			webview.html = body;
 
-			this.contentDisposables.add(webviewElement.onDidFocus(() => this.fireOnDidFocus()));
+			this.contentDisposables.add(webview.onDidFocus(() => this.fireOnDidFocus()));
 			const removeLayoutParticipant = arrays.insert(this.layoutParticipants, {
 				layout: () => {
-					webviewElement.layoutWebviewOverElement(template.content);
+					webview.layoutWebviewOverElement(template.content);
 				}
 			});
 			this.contentDisposables.add(toDisposable(removeLayoutParticipant));
@@ -617,15 +624,15 @@ export class ExtensionEditor extends BaseEditor {
 			let isDisposed = false;
 			this.contentDisposables.add(toDisposable(() => { isDisposed = true; }));
 
-			this.contentDisposables.add(this.themeService.onThemeChange(async () => {
+			this.contentDisposables.add(this.themeService.onDidColorThemeChange(async () => {
 				// Render again since syntax highlighting of code blocks may have changed
 				const body = await this.renderMarkdown(cacheResult, template);
 				if (!isDisposed) { // Make sure we weren't disposed of in the meantime
-					webviewElement.html = body;
+					webview.html = body;
 				}
 			}));
 
-			this.contentDisposables.add(webviewElement.onDidClickLink(link => {
+			this.contentDisposables.add(webview.onDidClickLink(link => {
 				if (!link) {
 					return;
 				}
@@ -637,7 +644,7 @@ export class ExtensionEditor extends BaseEditor {
 				}
 			}, null, this.contentDisposables));
 
-			return webviewElement;
+			return webview;
 		} catch (e) {
 			const p = append(template.content, $('p.nocontent'));
 			p.textContent = noContentCopy;
@@ -1224,7 +1231,7 @@ export class ExtensionEditor extends BaseEditor {
 					$('th', undefined, localize('schema', "Schema"))
 				),
 				...contrib.map(v => $('tr', undefined,
-					$('td', undefined, $('code', undefined, v.fileMatch)),
+					$('td', undefined, $('code', undefined, Array.isArray(v.fileMatch) ? v.fileMatch.join(', ') : v.fileMatch)),
 					$('td', undefined, v.url)
 				))));
 
@@ -1484,9 +1491,9 @@ registerAction2(class StartExtensionEditorFindPreviousAction extends Action2 {
 });
 
 function getExtensionEditor(accessor: ServicesAccessor): ExtensionEditor | null {
-	const activeControl = accessor.get(IEditorService).activeControl as ExtensionEditor;
-	if (activeControl instanceof ExtensionEditor) {
-		return activeControl;
+	const activeEditorPane = accessor.get(IEditorService).activeEditorPane;
+	if (activeEditorPane instanceof ExtensionEditor) {
+		return activeEditorPane;
 	}
 	return null;
 }

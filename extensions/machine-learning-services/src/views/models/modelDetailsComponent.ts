@@ -8,12 +8,12 @@ import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 import * as constants from '../../common/constants';
 import { IDataComponent } from '../interfaces';
-import { RegisteredModel } from '../../modelManagement/interfaces';
+import { RegisteredModelDetails } from '../../modelManagement/interfaces';
 
 /**
  * View to pick local models file
  */
-export class ModelDetailsComponent extends ModelViewBase implements IDataComponent<RegisteredModel> {
+export class ModelDetailsComponent extends ModelViewBase implements IDataComponent<RegisteredModelDetails> {
 
 	private _form: azdata.FormContainer | undefined;
 	private _nameComponent: azdata.InputBoxComponent | undefined;
@@ -81,9 +81,9 @@ export class ModelDetailsComponent extends ModelViewBase implements IDataCompone
 	/**
 	 * Returns selected data
 	 */
-	public get data(): RegisteredModel {
+	public get data(): RegisteredModelDetails {
 		return {
-			title: this._nameComponent?.value,
+			title: this._nameComponent?.value || '',
 			description: this._descriptionComponent?.value
 		};
 	}

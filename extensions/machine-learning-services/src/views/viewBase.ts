@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
+
 import * as constants from '../common/constants';
 import { ApiWrapper } from '../common/apiWrapper';
 import * as path from 'path';
@@ -21,8 +23,7 @@ export interface CallbackEventArgs {
 }
 
 export const CallEventNamePostfix = 'Callback';
-export const LocalFileEventName = 'localFile';
-export const LocalFolderEventName = 'localFolder';
+export const LocalPathsEventName = 'localPaths';
 
 /**
  * Base class for views
@@ -51,7 +52,7 @@ export abstract class ViewBase extends EventEmitterCollection {
 	}
 
 	protected getEventNames(): string[] {
-		return [LocalFolderEventName, LocalFileEventName];
+		return [LocalPathsEventName];
 	}
 
 	protected getCallbackEventNames(): string[] {
@@ -118,12 +119,8 @@ export abstract class ViewBase extends EventEmitterCollection {
 		});
 	}
 
-	public async getLocalFilePath(): Promise<string> {
-		return await this.sendDataRequest(LocalFileEventName);
-	}
-
-	public async getLocalFolderPath(): Promise<string> {
-		return await this.sendDataRequest(LocalFolderEventName);
+	public async getLocalPaths(options: vscode.OpenDialogOptions): Promise<string[]> {
+		return await this.sendDataRequest(LocalPathsEventName, options);
 	}
 
 	public async getLocationTitle(): Promise<string> {
@@ -174,12 +171,12 @@ export abstract class ViewBase extends EventEmitterCollection {
 	}
 
 	public showErrorMessage(message: string, error?: any): void {
-		this.showMessage(`${message} ${constants.getErrorMessage(error)}`, azdata.window.MessageLevel.Error);
+		this.showMessage(`${message} ${error ? constants.getErrorMessage(error) : ''}`, azdata.window.MessageLevel.Error);
 	}
 
 	private showMessage(message: string, level: azdata.window.MessageLevel): void {
-		if (this._mainViewPanel) {
-			this._mainViewPanel.message = {
+		if (this.mainViewPanel) {
+			this.mainViewPanel.message = {
 				text: message,
 				level: level
 			};

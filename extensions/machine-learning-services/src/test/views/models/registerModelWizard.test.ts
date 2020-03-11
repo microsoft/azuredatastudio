@@ -13,7 +13,7 @@ import { azureResource } from '../../../typings/azure-resource';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { ViewBase } from '../../../views/viewBase';
 import { WorkspaceModel } from '../../../modelManagement/interfaces';
-import { RegisterModelWizard } from '../../../views/models/registerModelWizard';
+import { RegisterModelWizard } from '../../../views/models/registerModels/registerModelWizard';
 
 describe('Register Model Wizard', () => {
 	it('Should create view components successfully ', async function (): Promise<void> {
@@ -74,7 +74,8 @@ describe('Register Model Wizard', () => {
 		let localModels: RegisteredModel[] = [
 			{
 				id: 1,
-				artifactName: 'model'
+				artifactName: 'model',
+				title: 'model'
 			}
 		];
 		view.on(ListModelsEventName, () => {

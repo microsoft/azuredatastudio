@@ -22,7 +22,7 @@ import { Memento } from 'vs/workbench/common/memento';
 import { Emitter } from 'vs/base/common/event';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { TestStorageService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
