@@ -17,7 +17,7 @@ import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { IsMacContext, HasMacNativeTabsContext } from 'vs/workbench/browser/contextkeys'; // {{SQL CARBON EDIT}} remove import
+import { IsMacContext } from 'vs/platform/contextkey/common/contextkeys';
 import { NoEditorsVisibleContext, SingleEditorGroupsContext } from 'vs/workbench/common/editor';
 import { IElectronService } from 'vs/platform/electron/node/electron';
 import { IJSONContributionRegistry, Extensions as JSONExtensions } from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
@@ -84,7 +84,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 
 				MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 					command,
-					when: HasMacNativeTabsContext
+					when: ContextKeyExpr.equals('config.window.nativeTabs', 'true')
 				});
 			});
 		}

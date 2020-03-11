@@ -221,7 +221,7 @@ export class ChartDataAction extends Action {
 		// show the visualizer extension recommendation notification
 		this.extensionTipsService.promptRecommendedExtensionsByScenario(Constants.visualizerExtensions);
 
-		const activeEditor = this.editorService.activeControl as QueryEditor;
+		const activeEditor = this.editorService.activeEditorPane as QueryEditor;
 		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
 		return Promise.resolve(true);
 	}

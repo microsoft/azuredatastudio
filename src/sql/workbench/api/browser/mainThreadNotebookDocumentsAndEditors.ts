@@ -468,7 +468,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				const model = this._untitledEditorService.create({ untitledResource: uri, mode: 'notebook', initialValue: options.initialContent });
 				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 			} else {
-				fileInput = this._editorService.createInput({ forceFile: true, resource: uri, mode: 'notebook' }) as FileEditorInput;
+				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: 'notebook' }) as FileEditorInput;
 			}
 		}
 		let input: NotebookInput;

@@ -17,7 +17,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 /* VS imports */
 import * as themeColors from 'vs/workbench/common/theme';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
-import { registerThemingParticipant, ICssStyleCollector, ITheme } from 'vs/platform/theme/common/themeService';
+import { registerThemingParticipant, ICssStyleCollector, IColorTheme } from 'vs/platform/theme/common/themeService';
 import * as types from 'vs/base/common/types';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
@@ -149,7 +149,7 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 		return tile;
 	}
 
-	private registerThemeing(theme: ITheme, collector: ICssStyleCollector) {
+	private registerThemeing(theme: IColorTheme, collector: ICssStyleCollector) {
 		const contrastBorder = theme.getColor(colors.contrastBorder);
 		const sideBarColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND);
 		if (contrastBorder) {

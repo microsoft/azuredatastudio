@@ -12,7 +12,8 @@ import * as path from 'vs/base/common/path';
 
 import { Workspace, toWorkspaceFolder, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { ConfigurationResolverService } from 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
-import { TestContextService, TestFileService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestFileService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestContextService } from 'vs/workbench/test/common/workbenchTestServices';
 import { IExtensionHostDebugParams, IDebugParams, ParsedArgs } from 'vs/platform/environment/common/environment';
 import { URI } from 'vs/base/common/uri';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
@@ -53,7 +54,9 @@ class TestEnvironmentService implements IWorkbenchEnvironmentService {
 
 	get configuration(): IWindowConfiguration {
 		return {
-			userEnv: this.userEnv
+			userEnv: this.userEnv,
+			sessionId: 'id',
+			_: []
 		} as IWindowConfiguration;
 	}
 

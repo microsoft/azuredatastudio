@@ -20,8 +20,8 @@ const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(La
  */
 export async function setMode(accessor: ServicesAccessor, modeSupport: IModeSupport, activeEditor: IEditorInput, language: string): Promise<void> {
 	const editorService = accessor.get(IEditorService);
-	const activeWidget = getCodeEditor(editorService.activeTextEditorWidget);
-	const activeControl = editorService.activeControl;
+	const activeWidget = getCodeEditor(editorService.activeTextEditorControl);
+	const activeControl = editorService.activeEditorPane;
 	const textModel = activeWidget.getModel();
 	const oldLanguage = textModel.getLanguageIdentifier().language;
 	if (language !== oldLanguage) {
