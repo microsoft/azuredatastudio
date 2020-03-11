@@ -14,22 +14,32 @@ import { TestNotificationService } from 'vs/platform/notification/test/common/te
 
 suite('Chart View', () => {
 	test('initializes without error', () => {
-		const chartview = createChartView();
+		const chartview = createChartView(true);
 		assert(chartview);
 	});
 
 	test('renders without error', () => {
-		const chartview = createChartView();
+		const chartview = createChartView(true);
+		chartview.render(document.createElement('div'));
+	});
+
+	test('initializes without error - without options', () => {
+		const chartview = createChartView(false);
+		assert(chartview);
+	});
+
+	test('renders without error - without options', () => {
+		const chartview = createChartView(false);
 		chartview.render(document.createElement('div'));
 	});
 });
 
-function createChartView(): ChartView {
+function createChartView(renderOptions: boolean): ChartView {
 	const layoutService = new TestLayoutService();
 	const contextViewService = new ContextViewService(layoutService);
 	const themeService = new TestThemeService();
 	const instantiationService = new TestInstantiationService();
 	const notificationService = new TestNotificationService();
 	instantiationService.stub(IThemeService, themeService);
-	return new ChartView(contextViewService, themeService, instantiationService, notificationService);
+	return new ChartView(renderOptions, contextViewService, themeService, instantiationService, notificationService);
 }

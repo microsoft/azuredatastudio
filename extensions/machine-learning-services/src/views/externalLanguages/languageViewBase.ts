@@ -59,7 +59,7 @@ export abstract class LanguageViewBase {
 	public browseButtonMaxLength = 20;
 	public spaceBetweenComponentsLength = 10;
 
-	constructor(protected _apiWrapper: ApiWrapper, protected _root?: string, protected _parent?: LanguageViewBase, ) {
+	constructor(protected _apiWrapper: ApiWrapper, protected _root?: string, protected _parent?: LanguageViewBase,) {
 		if (this._parent) {
 			if (!this._root) {
 				this._root = this._parent.root;
