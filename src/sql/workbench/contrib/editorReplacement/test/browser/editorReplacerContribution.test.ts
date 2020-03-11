@@ -205,7 +205,7 @@ class MockEditorService extends TestEditorService {
 		return Promise.resolve(_editor);
 	}
 
-	createInput(_input: IUntitledTextResourceEditorInput): EditorInput {
+	createEditorInput(_input: IUntitledTextResourceEditorInput): EditorInput {
 		const accessor = this.instantiationService.createInstance(ServiceAccessor);
 		const service = accessor.untitledTextEditorService;
 		return this.instantiationService.createInstance(UntitledTextEditorInput, service.create());
