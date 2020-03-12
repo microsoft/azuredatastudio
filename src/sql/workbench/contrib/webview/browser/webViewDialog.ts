@@ -14,7 +14,6 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
 import { toDisposable } from 'vs/base/common/lifecycle';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWebviewService, WebviewElement } from 'vs/workbench/contrib/webview/browser/webview';
@@ -22,6 +21,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 export class WebViewDialog extends Modal {
 
@@ -44,7 +44,7 @@ export class WebViewDialog extends Modal {
 	constructor(
 		@IThemeService themeService: IThemeService,
 		@IClipboardService clipboardService: IClipboardService,
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+		@ILayoutService layoutService: ILayoutService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
@@ -91,7 +91,7 @@ export class WebViewDialog extends Modal {
 	protected renderBody(container: HTMLElement) {
 		this._body = DOM.append(container, DOM.$('div.webview-dialog'));
 
-		this._webview = this.webviewService.createWebview(this.id,
+		this._webview = this.webviewService.createWebviewElement(this.id,
 			{},
 			{
 				allowScripts: true

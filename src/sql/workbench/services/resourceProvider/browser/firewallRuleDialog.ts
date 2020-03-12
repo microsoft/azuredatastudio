@@ -15,7 +15,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
+import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { URI } from 'vs/base/common/uri';
 
 import * as azdata from 'azdata';
@@ -27,11 +27,11 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IAccountPickerService } from 'sql/workbench/services/accountManagement/browser/accountPicker';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 // TODO: Make the help link 1) extensible (01/08/2018, https://github.com/Microsoft/azuredatastudio/issues/450)
 // in case that other non-Azure sign in is to be used
@@ -66,7 +66,7 @@ export class FirewallRuleDialog extends Modal {
 
 	constructor(
 		@IAccountPickerService private _accountPickerService: IAccountPickerService,
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextViewService private _contextViewService: IContextViewService,
@@ -184,8 +184,8 @@ export class FirewallRuleDialog extends Modal {
 			ariaLabel: LocalizedStrings.TO
 		});
 
-		this._register(this._themeService.onThemeChange(e => this.updateTheme(e)));
-		this.updateTheme(this._themeService.getTheme());
+		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
+		this.updateTheme(this._themeService.getColorTheme());
 
 		this._register(DOM.addDisposableListener(this._IPAddressElement, DOM.EventType.CLICK, () => {
 			this.onFirewallRuleOptionSelected(true);
@@ -219,7 +219,7 @@ export class FirewallRuleDialog extends Modal {
 	}
 
 	// Update theming that is specific to firewall rule flyout body
-	private updateTheme(theme: ITheme): void {
+	private updateTheme(theme: IColorTheme): void {
 		const linkColor = theme.getColor(buttonBackground);
 		const link = linkColor ? linkColor.toString() : null;
 		if (this._helpLink) {
