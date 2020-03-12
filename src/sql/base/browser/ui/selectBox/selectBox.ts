@@ -86,7 +86,8 @@ export class SelectBox extends vsSelectBox {
 		this._selectedOption = selectedOption;
 		this._dialogOptions = optionItems;
 		this._register(this.onDidSelect(newInput => {
-			this._selectedOption = newInput.selected;
+			const selected = optionItems[newInput.index];
+			this._selectedOption = selected.backendValue;
 		}));
 
 		this.enabledSelectBackground = this.selectBackground;

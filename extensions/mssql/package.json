@@ -687,11 +687,11 @@
           "objectType": null,
           "categoryValues": [
             {
-              "displayName": null,
+              "displayName": "Disabled",
               "name": "Disabled"
             },
             {
-              "displayName": null,
+              "displayName": "Enabled",
               "name": "Enabled"
             }
           ],
