@@ -19,35 +19,33 @@ export default () => `
 								<div>
 									<h1>Azure Data Studio</h1>
 									<div class="flex btn_container">
-										<div class="btn btn--primary dropdown" role="navigation">
-											<ul>
+										<div>
+											<button id="dropdown_btn" class="btn btn--primary dropdown" role="navigation">
+												<div class="dropdown__text" style="pointer-events: none;">
+													<span>New</span><i class="icon--arrow_down"></i>
+												</div>
+											</button>
+											<ul id="dropdown" class="dropdown-content">
 												<li>
-													<a class="dropdown__text" href="#">
-														<span>New</span><i class="icon--arrow_down"></i>
-													</a>
-													<ul class="dropdown">
-														<li>
-															<a href="command:registeredServers.addConnection">${escape(localize('welcomePage.newConnection',
+													<a href="command:registeredServers.addConnection">${escape(localize('welcomePage.newConnection',
 	"New connection"))}</a>
-														</li>
-														<li>
-															<a href="command:workbench.action.files.newUntitledFile">${escape(localize('welcomePage.newQuery',
+												</li>
+												<li>
+													<a href="command:workbench.action.files.newUntitledFile">${escape(localize('welcomePage.newQuery',
 		"New query"))}</a>
-														</li>
-														<li>
-															<a href="command:notebook.command.new">${escape(localize('welcomePage.newNotebook',
+												</li>
+												<li>
+													<a href="command:notebook.command.new">${escape(localize('welcomePage.newNotebook',
 			"New notebook"))}</a>
-														</li>
-														<li class="mac-only">
-															<a
-																href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac',
+												</li>
+												<li class="mac-only">
+													<a
+														href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac',
 				"Open file"))}</a>
-														</li>
-														<li class="windows-only linux-only">
-															<a href="command:workbench.action.files.openFile">${escape(localize('welcomePage.openFileLinuxPC',
+												</li>
+												<li class="windows-only linux-only">
+													<a href="command:workbench.action.files.openFile">${escape(localize('welcomePage.openFileLinuxPC',
 					"Open file"))}</a>
-														</li>
-													</ul>
 												</li>
 											</ul>
 										</div>
@@ -64,8 +62,8 @@ export default () => `
 						<div class="col">
 							<a class="header__bottom_nav__tile__link" href="command:registeredServers.addConnection">
 								<div class="header__bottom_nav__tile tile tile--connection content">
-									<h3>${escape(localize('welcomePage.createConnection', "Create a Connection"))}</h3>
-									<p>${escape(localize('welcomePage.createConnectionBody', "Install extensions to enhance the tool’s capabilities."))}</p>
+									<h3>${escape(localize('welcomePage.createConnection', "Create a connection"))}</h3>
+									<p>${escape(localize('welcomePage.createConnectionBody', "Connect to a database instance through the connection dialog."))}</p>
 									<div class="icon connection"></div>
 								</div>
 							</a>
@@ -75,7 +73,7 @@ export default () => `
 								href="command:workbench.action.files.newUntitledFile">
 								<div class="header__bottom_nav__tile tile tile--query content">
 									<h3>${escape(localize('welcomePage.runQuery', "Run a query"))}</h3>
-									<p>${escape(localize('welcomePage.runQueryBody', "Access your data in a query editor."))}</p>
+									<p>${escape(localize('welcomePage.runQueryBody', "Interact with data through a query editor."))}</p>
 									<div class="icon query"></div>
 								</div>
 							</a>
@@ -84,7 +82,7 @@ export default () => `
 							<a class="header__bottom_nav__tile__link" href="command:notebook.command.new">
 								<div class="header__bottom_nav__tile tile tile--notebook content">
 									<h3>${escape(localize('welcomePage.createNotebook', "Create a notebook"))}</h3>
-									<p>${escape(localize('welcomePage.createNotebookBody', "Start a local computational notebook."))}</p>
+									<p>${escape(localize('welcomePage.createNotebookBody', "Build a new notebook using a native notebook editor."))}</p>
 									<div class="icon notebook"></div>
 								</div>
 							</a>
@@ -93,7 +91,7 @@ export default () => `
 							<a class="header__bottom_nav__tile__link" href="command:azdata.resource.deploy">
 								<div class="header__bottom_nav__tile tile tile--server content">
 									<h3>${escape(localize('welcomePage.deployServer', "Deploy a server"))}</h3>
-									<p>${escape(localize('welcomePage.deployServerBody', "Install an image of SQL Server to a remote location."))}</p>
+									<p>${escape(localize('welcomePage.deployServerBody', "Create a new instance of SQL Server on the platform of your choice."))}</p>
 									<div class="icon server"></div>
 								</div>
 							</a>
@@ -134,7 +132,7 @@ export default () => `
 						<h4>
 							<a class="link"
 								href="https://aka.ms/azuredatastudio">${escape(localize('welcomePage.gettingStarted',
-						"Getting Started"))}<span class="icon--link"</a>
+						"Getting Started"))}<span class="icon--link"></a>
 						</h4>
 						<p>
 						${escape(localize('welcomePage.gettingStartedBody',
@@ -175,13 +173,13 @@ export default () => `
 			<div class="ads_homepage__section content extensions">
 				<div class="flex flex--j_between">
 					<h2>Extend your data studio</h2>
-					<a class="link--show_all flex" href="command:workbench.extensions.action.showLanguageExtensions">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon--arrow_right"></span></a>
+					<a class="link--show_all flex" href="command:extensions.listView.focus">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon--arrow_right"></span></a>
 				</div>
 				<div class="row ads_grid grip_gap--50 lg--cols-2 xxl--cols-8">
 					<div
 						class="ads_grid col--sm--start_1__span_2 row--xxl--start_1__span_4 col--xxl--start_1__span_4 lg--cols-2 tile no_hover extension_pack">
 						<div class="extension_pack__description">
-							<h2 class="extension_pack__header"></h2>
+							<div class="extension_pack__header"></div>
 							<p class="extension_pack__body"></p>
 						</div>
 						<div class="extension_pack__extensions flex flex--d_column flex--j_evenly flex--a_start">
