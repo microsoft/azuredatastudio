@@ -948,14 +948,4 @@ registerThemingParticipant((theme, collector) => {
 	if (gradientTwoColor && gradientOneColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .gradient { background-image: linear-gradient(0deg, ${gradientOneColor} 0%, ${gradientTwoColor} 100%); background-color: ${gradientBackgroundColor}}`);
 	}
-
-	const documentIconThemed = theme.getColor(documentIcon);
-	if (documentIconThemed) {
-		collector.addRule(`.ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) a, .ads_homepage .ads_homepage__section .pinned .list li a, .ads_homepage .icon--document {
-			background: url(${documentIconThemed});
-			background-size: 13px 16px;
-			background-position: center left;
-			background-repeat: no-repeat;
-		}`);
-	}
 });

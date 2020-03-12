@@ -80,8 +80,3 @@ export const welcomeLabel = registerColor('welcomeLabel', { light: '#0078d7', da
 export const welcomeLabelChecked = registerColor('welcomeLabel', { light: '#000', dark: '#fff', hc: '#fff' }, nls.localize('welcomeLabelChecked', "The font color for labels that have been checked"));
 export const welcomeLabelBorder = registerColor('welcomeLabel', { light: '#000', dark: '#fff', hc: '#fff' }, nls.localize('welcomeLabelBorder', "The border color for labels"));
 export const focusOutline = registerColor('focusOutline', { light: '#000', dark: '#fff', hc: '#fff' }, nls.localize('focusOutline', "The focus outline color"));
-
-
-// Icons
-
-export const documentIcon = registerColor('documentIcon', { light: 'src/vs/workbench/contrib/welcome/icon_file_document.svg', dark: 'src/vs/workbench/contrib/welcome/icon_file_document.svg', hc: 'src/vs/workbench/contrib/welcome/icon_file_document.svg' }, nls.localize('welcomePath', "The color for welcome paths"));
