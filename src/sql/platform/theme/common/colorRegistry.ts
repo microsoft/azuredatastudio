@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerColor, transparent } from 'vs/platform/theme/common/colorRegistry';
+import { registerColor } from 'vs/platform/theme/common/colorRegistry';
 import { Color, RGBA } from 'vs/base/common/color';
 import * as nls from 'vs/nls';
 
