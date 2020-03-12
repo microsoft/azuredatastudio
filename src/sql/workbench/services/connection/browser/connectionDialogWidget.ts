@@ -233,7 +233,7 @@ export class ConnectionDialogWidget extends Modal {
 		attachModalDialogStyler(this, this._themeService);
 		const connectLabel = localize('connectionDialog.connect', "Connect");
 		const cancelLabel = localize('connectionDialog.cancel', "Cancel");
-		this._connectButton = this.addFooterButton(connectLabel, () => this.connect());
+		this._connectButton = this.addFooterButton(connectLabel, (e) => this.connect(e));
 		this._connectButton.enabled = false;
 		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel());
 		this.registerListeners();
