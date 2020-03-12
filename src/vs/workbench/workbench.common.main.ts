@@ -470,4 +470,7 @@ import 'sql/workbench/contrib/scripting/browser/scripting.contribution';
 // Resource Deployment
 import 'sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution';
 
+// Extension
+import 'sql/workbench/contrib/extensions/browser/extensions.contribution';
+
 //#endregion
