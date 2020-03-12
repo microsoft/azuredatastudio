@@ -8,7 +8,7 @@ import 'vs/css!./dashboardPanel';
 import { registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import {
 	TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_ACTIVE_BORDER, TAB_INACTIVE_BACKGROUND,
-	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, DASHBOARD_TAB_ACTIVE_BACKGROUND
+	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, DASHBOARD_TAB_ACTIVE_BACKGROUND, SIDE_BAR_BACKGROUND
 } from 'vs/workbench/common/theme';
 import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 
@@ -116,5 +116,14 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 				border-right-style: solid;
 			}
 		`);
+	}
+
+	const sideBorder = theme.getColor(SIDE_BAR_BACKGROUND);
+	if (divider) {
+		collector.addRule(`panel.dashboard-panel > .tabbedPanel.vertical > .title > .tabContainer {
+			border-right-width: 1px;
+			border-right-style: solid;
+			border-right-color: ${sideBorder};
+		}`);
 	}
 });

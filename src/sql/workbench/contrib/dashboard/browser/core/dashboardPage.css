@@ -58,7 +58,6 @@ dashboard-page .editor-toolbar {
 	flex-flow: row;
 	width: 100%;
 	align-items: center;
-	border-bottom-color:rgb(234, 234, 234);
 	border-bottom-width: 1px;
 	border-bottom-style: solid;
 	height:26px;
