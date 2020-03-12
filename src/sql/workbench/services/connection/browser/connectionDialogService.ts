@@ -188,6 +188,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				}
 
 				if (this._isEditing) {
+					//if the server itself is changed, the profile returned by the widget will have a new id.
+					//we must retain the original model id to reuse the connection profile.
 					profile.id = this._model.id;
 				}
 
