@@ -58,6 +58,10 @@
         "title": "%mls.command.managePackages%"
       },
       {
+        "command": "mls.command.predictModel",
+        "title": "%mls.command.predictModel%"
+      },
+      {
         "command": "mls.command.manageModels",
         "title": "%mls.command.manageModels%"
       },
@@ -110,7 +114,7 @@
                   "mls.command.managePackages",
                   "mls.command.manageLanguages",
                   "mls.command.manageModels",
-                  "mls.command.registerModel"
+                  "mls.command.predictModel"
                 ]
               }
             },
@@ -146,7 +150,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.4"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
   },
   "resolutions": {
       "esprima": "^4.0.0"

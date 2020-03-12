@@ -421,6 +421,8 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.endpointSection.collapsed = !adAuth;
 		if (adAuth) {
 			this.endpointHeaderRow.addItems([this.endpointNameColumnHeader, this.dnsColumnHeader, this.portColumnHeader]);
+		} else {
+			this.endpointHeaderRow.addItems([this.endpointNameColumnHeader, this.portColumnHeader]);
 		}
 
 		getInputBoxComponent(VariableNames.ControllerDNSName_VariableName, this.inputComponents).required = adAuth;

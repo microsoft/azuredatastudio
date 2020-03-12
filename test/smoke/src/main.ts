@@ -31,6 +31,7 @@ import { setup as setupDataMigrationTests } from './areas/workbench/data-migrati
 import { setup as setupDataLossTests } from './areas/workbench/data-loss.test';
 import { setup as setupDataPreferencesTests } from './areas/preferences/preferences.test';
 import { setup as setupDataSearchTests } from './areas/search/search.test';
+import { setup as setupDataLanguagesTests } from './areas/languages/languages.test';
 import { setup as setupDataEditorTests } from './areas/editor/editor.test';
 import { setup as setupDataStatusbarTests } from './areas/statusbar/statusbar.test';
 import { setup as setupDataExtensionTests } from './areas/extensions/extensions.test';
@@ -321,6 +322,7 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	if (!opts.web) { setupDataLossTests(); }
 	if (!opts.web) { setupDataPreferencesTests(); }
 	setupDataSearchTests();
+	setupDataLanguagesTests();
 	setupDataEditorTests();
 	setupDataStatusbarTests(!!opts.web);
 	if (!opts.web) { setupDataExtensionTests(); }

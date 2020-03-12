@@ -16,6 +16,7 @@ export interface IPageView {
 	component: azdata.Component | undefined;
 	onEnter?: () => Promise<void>;
 	onLeave?: () => Promise<void>;
+	validate?: () => Promise<boolean>;
 	refresh: () => Promise<void>;
 	viewPanel: azdata.window.ModelViewPanel | undefined;
 	title: string;
@@ -31,4 +32,5 @@ export interface AzureWorkspaceResource {
 export interface AzureModelResource extends AzureWorkspaceResource {
 	model?: WorkspaceModel;
 }
+
 

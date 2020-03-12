@@ -13,4 +13,4 @@ jobs:
         uses: actions/checkout@v2
       - uses: ./build/actions/AutoMerge
         env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          GITHUB_TOKEN: "${{ secrets.GithubMerger }}"

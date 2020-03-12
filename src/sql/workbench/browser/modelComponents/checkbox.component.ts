@@ -32,7 +32,7 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef, ) {
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,) {
 		super(changeRef, el);
 	}
 

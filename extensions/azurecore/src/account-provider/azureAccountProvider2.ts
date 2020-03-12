@@ -255,9 +255,14 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			sendFile(res, path.join(mediaPath, 'landing.css'), 'text/css; charset=utf-8').catch(console.error);
 		};
 
+		const svg = (req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => {
+			sendFile(res, path.join(mediaPath, 'SignIn.svg'), 'image/svg+xml').catch(console.error);
+		};
+
 		pathMappings.set('/signin', initialSignIn);
 		pathMappings.set('/callback', authCallback);
 		pathMappings.set('/landing.css', css);
+		pathMappings.set('/SignIn.svg', svg);
 	}
 
 	private async makeWebRequest(accessToken: TokenResponse, uri: string): Promise<any> {
