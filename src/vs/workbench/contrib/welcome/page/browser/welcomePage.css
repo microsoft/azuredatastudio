@@ -796,7 +796,7 @@
 	text-decoration: none;
 }
 
-.ads_homepage .ads_homepage__section .links h4 {
+.ads_homepage .ads_homepage__section .links .link_header {
 	font-size: 1.16em;
 	margin-bottom: 4px;
 }

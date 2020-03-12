@@ -129,20 +129,20 @@ export default () => `
 				<div class="col--xl--start_9__span_6 col--sm--start_1__span_1">
 					<div class="links">
 						<h2>${escape(localize('welcomePage.usefuLinks', "Useful Links"))}</h2>
-						<h4>
+						<div class="link_header">
 							<a class="link"
 								href="https://aka.ms/azuredatastudio">${escape(localize('welcomePage.gettingStarted',
 						"Getting Started"))}<span class="icon--link"></a>
-						</h4>
+						</div>
 						<p>
 						${escape(localize('welcomePage.gettingStartedBody',
 							"Discover the capabilities offered by Aure Data Studio and learn how to make the most of them."))}
 						</p>
-						<h4>
+						<div class="link_header">
 							<a class="link"
 								href="https://aka.ms/azuredatastudio">${escape(localize('welcomePage.documentation',
 								"Documentation"))}<span class="icon--link"</a></a>
-						</h4>
+						</div>
 						<p>${escape(localize('welcomePage.documentationBody',
 									"Visit the documentation center for quickstarts, how-to guides, and references for PowerShell, APIs, etc."))}
 						</p>
