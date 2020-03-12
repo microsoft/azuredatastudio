@@ -187,6 +187,10 @@ export class ConnectionDialogService implements IConnectionDialogService {
 					profile.savePassword = true;
 				}
 
+				if (this._isEditing) {
+					profile.id = this._model.id;
+				}
+
 				this.handleDefaultOnConnect(params, profile).catch(err => onUnexpectedError(err));
 			} else {
 				profile.serverName = trim(profile.serverName);
@@ -380,7 +384,10 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		let newProfile = new ConnectionProfile(this._capabilitiesService, model || providerName);
 		newProfile.saveProfile = true;
 		if (!model.id) {
+			this._isEditing = false;
 			newProfile.generateNewId();
+		} else {
+			this._isEditing = true;
 		}
 		// If connecting from a query editor set "save connection" to false
 		if (this._params && this._params.input && this._params.connectionType === ConnectionType.editor) {
@@ -464,9 +471,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[this._currentProviderType]);
 
 		const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections(params.providers);
-		if (!this._isEditing) {
-			await this._connectionDialog.open(recentConnections.length > 0);
-		}
+		await this._connectionDialog.open(recentConnections.length > 0);
 		this.uiController.focusOnOpen();
 		recentConnections.forEach(conn => conn.dispose());
 	}

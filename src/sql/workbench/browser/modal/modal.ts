@@ -408,11 +408,11 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * @param label Label to show on the button
 	 * @param onSelect The callback to call when the button is selected
 	 */
-	protected addFooterButton(label: string, onSelect: (e) => void, orientation: 'left' | 'right' = 'right'): Button {
+	protected addFooterButton(label: string, onSelect: () => void, orientation: 'left' | 'right' = 'right'): Button {
 		let footerButton = DOM.$('.footer-button');
 		let button = new Button(footerButton);
 		button.label = label;
-		button.onDidClick((e) => onSelect(e)); // @todo this should be registered to dispose but that brakes some dialogs
+		button.onDidClick(() => onSelect()); // @todo this should be registered to dispose but that brakes some dialogs
 		if (orientation === 'left') {
 			DOM.append(this._leftFooter, footerButton);
 		} else {
