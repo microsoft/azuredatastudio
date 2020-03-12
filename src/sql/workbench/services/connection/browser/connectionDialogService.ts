@@ -379,7 +379,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 		let newProfile = new ConnectionProfile(this._capabilitiesService, model || providerName);
 		newProfile.saveProfile = true;
-		if (!this._isEditing) {
+		if (!model.id) {
 			newProfile.generateNewId();
 		}
 		// If connecting from a query editor set "save connection" to false
@@ -421,7 +421,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		model?: IConnectionProfile,
 		connectionResult?: IConnectionResult,
 		connectionOptions?: IConnectionCompletionOptions,
-		isEditing?: boolean
 	): Promise<void> {
 
 		this._connectionManagementService = connectionManagementService;

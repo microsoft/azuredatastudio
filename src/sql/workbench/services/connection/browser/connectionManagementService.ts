@@ -233,7 +233,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 		let params = { connectionType: ConnectionType.default };
 
-		return this._connectionDialogService.showDialog(this, params, model, undefined, undefined, true).catch(dialogError => {
+		return this._connectionDialogService.showDialog(this, params, model).catch(dialogError => {
 			this._logService.warn('failed to open the connection dialog. error: ' + dialogError);
 			throw dialogError;
 		});
