@@ -80,7 +80,7 @@ export class ModelImporter {
 			'print(json.dumps(parameters))'
 		];
 		let pythonExecutable = this._config.pythonExecutable;
-		let output = await this._processService.execScripts(pythonExecutable, scripts, [], this._outputChannel);
+		let output = await this._processService.execScripts(pythonExecutable, scripts, [], undefined);
 		let parametersJson = JSON.parse(output);
 		return Object.assign({}, parametersJson);
 	}

@@ -19,6 +19,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	private _table: azdata.DeclarativeTableComponent | undefined;
 	private _modelBuilder: azdata.ModelBuilder | undefined;
 	private _selectedModel: any;
+	private _loader: azdata.LoadingComponent | undefined;
 	private _downloadedFile: string | undefined;
 	private _onModelSelectionChanged: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	public readonly onModelSelectionChanged: vscode.Event<void> = this._onModelSelectionChanged.event;
@@ -34,7 +35,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	 *
 	 * @param modelBuilder register the components
 	 */
-	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.DeclarativeTableComponent {
+	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		this._modelBuilder = modelBuilder;
 		this._table = modelBuilder.declarativeTable()
 			.withProperties<azdata.DeclarativeTableProperties>(
@@ -96,7 +97,12 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 					ariaLabel: constants.mlsConfigTitle
 				})
 			.component();
-		return this._table;
+		this._loader = modelBuilder.loadingComponent()
+			.withItem(this._table)
+			.withProperties({
+				loading: true
+			}).component();
+		return this._loader;
 	}
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
@@ -115,14 +121,15 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	/**
 	 * Returns the component
 	 */
-	public get component(): azdata.DeclarativeTableComponent | undefined {
-		return this._table;
+	public get component(): azdata.Component | undefined {
+		return this._loader;
 	}
 
 	/**
 	 * Loads the data in the component
 	 */
 	public async loadData(): Promise<void> {
+		await this.onLoading();
 		if (this._table) {
 			let models: RegisteredModel[] | undefined;
 
@@ -136,6 +143,19 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 			this._table.data = tableData;
 		}
 		this.onModelSelected();
+		await this.onLoaded();
+	}
+
+	public async onLoading(): Promise<void> {
+		if (this._loader) {
+			await this._loader.updateProperties({ loading: true });
+		}
+	}
+
+	public async onLoaded(): Promise<void> {
+		if (this._loader) {
+			await this._loader.updateProperties({ loading: false });
+		}
 	}
 
 	private createTableRow(model: RegisteredModel): any[] {

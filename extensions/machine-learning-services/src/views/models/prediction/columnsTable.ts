@@ -20,11 +20,12 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 	private _parameters: PredictColumn[] = [];
 	private _loader: azdata.LoadingComponent;
 	private _dataTypes: string[] = [
+		'bigint',
 		'int',
-		'nvarchar(MAX)',
-		'varchar(MAX)',
+		'smallint',
+		'real',
 		'float',
-		'double',
+		'varchar(MAX)',
 		'bit'
 	];
 
@@ -106,7 +107,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 	 * @param workspaceResource Azure workspace
 	 */
 	public async loadInputs(modelParameters: ModelParameters | undefined, table: DatabaseTable): Promise<void> {
-		this.onLoading();
+		await this.onLoading();
 		this._parameters = [];
 		let tableData: any[][] = [];
 
@@ -120,7 +121,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 
 			this._table.data = tableData;
 		}
-		this.onLoaded();
+		await this.onLoaded();
 	}
 
 	public async loadOutputs(modelParameters: ModelParameters | undefined): Promise<void> {
@@ -163,7 +164,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 					}
 				}
 			});
-			return [`${name}(${modelParameter.type})`, nameInput];
+			return [`${name}(${modelParameter.type ? modelParameter.type : constants.unsupportedModelParameterType})`, nameInput];
 		}
 
 		return [];
@@ -177,23 +178,24 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				width: 150
 			}).component();
 			const name = modelParameter.name;
-			const column = values.find(x => x.name === modelParameter.name);
-			if (column) {
-				nameInput.value = column;
+			let column = values.find(x => x.name === modelParameter.name);
+			if (!column) {
+				column = values[0];
 			}
-			this._parameters.push({ columnName: name, paramName: name });
+			nameInput.value = column;
+
+			this._parameters.push({ columnName: column.name, paramName: name });
 
 			nameInput.onValueChanged(() => {
 				const selectedColumn = nameInput.value;
 				const value = selectedColumn ? (<azdata.CategoryValue>selectedColumn).name : undefined;
-				if (value !== name) {
-					let selectedRow = this._parameters.find(x => x.paramName === name);
-					if (selectedRow) {
-						selectedRow.columnName = value || '';
-					}
+
+				let selectedRow = this._parameters.find(x => x.paramName === name);
+				if (selectedRow) {
+					selectedRow.columnName = value || '';
 				}
 			});
-			return [`${name}(${modelParameter.type})`, nameInput];
+			return [`${name}(${modelParameter.type ? modelParameter.type : constants.unsupportedModelParameterType})`, nameInput];
 		}
 
 		return [];

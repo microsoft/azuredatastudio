@@ -15,7 +15,7 @@ import { IPageView } from '../../interfaces';
  * View to render current registered models
  */
 export class CurrentModelsPage extends ModelViewBase implements IPageView {
-	private _tableComponent: azdata.DeclarativeTableComponent | undefined;
+	private _tableComponent: azdata.Component | undefined;
 	private _dataTable: CurrentModelsTable | undefined;
 	private _loader: azdata.LoadingComponent | undefined;
 

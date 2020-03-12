@@ -155,6 +155,8 @@ export const invalidModelToSelectError = localize('models.invalidModelToSelectEr
 export const modelNameRequiredError = localize('models.modelNameRequiredError', "Model name is required.");
 export const updateModelFailedError = localize('models.updateModelFailedError', "Failed to update the model");
 export const importModelFailedError = localize('models.importModelFailedError', "Failed to register the model");
+export const loadModelParameterFailedError = localize('models.loadModelParameterFailedError', "Failed to load model parameters'");
+export const unsupportedModelParameterType = localize('models.unsupportedModelParameterType', "unsupported");
 
 
 

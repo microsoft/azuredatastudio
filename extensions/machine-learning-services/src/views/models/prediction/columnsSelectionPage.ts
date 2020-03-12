@@ -83,12 +83,16 @@ export class ColumnsSelectionPage extends ModelViewBase implements IPageView, ID
 	public async onEnter(): Promise<void> {
 		await this.inputColumnsComponent?.onLoading();
 		await this.outputColumnsComponent?.onLoading();
-		const modelParameters = await this.loadModelParameters();
-		if (modelParameters && this.inputColumnsComponent && this.outputColumnsComponent) {
-			this.inputColumnsComponent.modelParameters = modelParameters;
-			this.outputColumnsComponent.modelParameters = modelParameters;
-			await this.inputColumnsComponent.refresh();
-			await this.outputColumnsComponent.refresh();
+		try {
+			const modelParameters = await this.loadModelParameters();
+			if (modelParameters && this.inputColumnsComponent && this.outputColumnsComponent) {
+				this.inputColumnsComponent.modelParameters = modelParameters;
+				this.outputColumnsComponent.modelParameters = modelParameters;
+				await this.inputColumnsComponent.refresh();
+				await this.outputColumnsComponent.refresh();
+			}
+		} catch (error) {
+			this.showErrorMessage(constants.loadModelParameterFailedError, error);
 		}
 		await this.inputColumnsComponent?.onLoaded();
 		await this.outputColumnsComponent?.onLoaded();
