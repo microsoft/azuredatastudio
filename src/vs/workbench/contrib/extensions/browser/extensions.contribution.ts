@@ -232,7 +232,13 @@ CommandsRegistry.registerCommand('_extensions.manage', (accessor: ServicesAccess
 	}
 });
 
-CommandsRegistry.registerCommand('extension.open', (accessor: ServicesAccessor, extensionId: string) => {
+CommandsRegistry.registerCommand('extension.open', (accessor: ServicesAccessor, extensionId: string | { id: string }) => { // {{SQL CARBON EDIT}} extend the extensionId parameter to accept object type.
+	// {{SQL CARBON EDIT}}
+	// handle the scenario when command is invoked in HTML, and only JSON object can be used.
+	if (typeof extensionId === 'object') {
+		extensionId = extensionId.id;
+	}
+
 	const extensionService = accessor.get(IExtensionsWorkbenchService);
 
 	return extensionService.queryGallery({ names: [extensionId], pageSize: 1 }, CancellationToken.None).then(pager => {
