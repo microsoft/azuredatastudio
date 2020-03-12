@@ -111,6 +111,8 @@
 }
 
 .ads_homepage .caption {
+	position: relative;
+	bottom: 3px;
 	font-size: 1.08em;
 }
 
@@ -352,6 +354,11 @@
 
 .ads_homepage .showOnStartup {
 	margin-top: 10px;
+}
+
+.ads_homepage .showOnStartup input {
+	width: 15px;
+	height: 15px;
 }
 
 .ads_homepage .link {
