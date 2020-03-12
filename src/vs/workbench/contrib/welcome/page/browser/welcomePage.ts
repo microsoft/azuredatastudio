@@ -29,7 +29,7 @@ import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lif
 import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { focusBorder, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder, tileBackground, buttonStandardBackground, buttonStandardBorder, buttonStandard, welcomeFont, welcomePath, moreRecent, entity, tileBorder, buttonStandardHoverColor, disabledButton, disabledButtonBackground, welcomeLink, buttonPrimaryBackground, buttonPrimary, buttonPrimaryBorder, buttonPrimaryBackgroundHover, buttonPrimaryBackgroundActive, buttonDropdownBackground, buttonDropdown, buttonDropdownBorder, buttonDropdownBackgroundHover, tileBoxShadow, tileBoxShadowHover, extensionPackBorder, welcomeLinkActive, gradientOne, gradientTwo, gradientBackground, welcomeLabel, welcomeLabelChecked, welcomeLabelBorder, buttonPrimaryText, extensionPackHeader, extensionPackHeaderShadow, extensionPackBody, buttonDropdownBoxShadow, listBorder, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor } from 'sql/platform/theme/common/colorRegistry';
+import { focusBorder, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder, tileBackground, buttonStandardBackground, buttonStandardBorder, buttonStandard, welcomeFont, welcomePath, moreRecent, entity, tileBorder, buttonStandardHoverColor, disabledButton, disabledButtonBackground, welcomeLink, buttonPrimaryBackground, buttonPrimary, buttonPrimaryBorder, buttonPrimaryBackgroundHover, buttonPrimaryBackgroundActive, buttonDropdownBackground, buttonDropdown, buttonDropdownBorder, buttonDropdownBackgroundHover, tileBoxShadow, tileBoxShadowHover, extensionPackBorder, welcomeLinkActive, gradientOne, gradientTwo, gradientBackground, welcomeLabel, welcomeLabelChecked, welcomeLabelBorder, buttonPrimaryText, extensionPackHeader, extensionPackHeaderShadow, extensionPackBody, buttonDropdownBoxShadow, listBorder, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, documentIcon, buttonDropdownHover, focusOutline } from 'sql/platform/theme/common/colorRegistry';
 import { registerColor } from 'vs/platform/theme/common/colorRegistry';
 import { getExtraColor } from 'vs/workbench/contrib/welcome/walkThrough/common/walkThroughUtils';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
@@ -330,6 +330,7 @@ class WelcomePage extends Disposable {
 	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>, fileService): void {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
 		const showOnStartup = <HTMLInputElement>container.querySelector('#showOnStartup');
+
 		if (enabled) {
 			showOnStartup.setAttribute('checked', 'checked');
 		}
@@ -341,6 +342,23 @@ class WelcomePage extends Disposable {
 		if (prodName) {
 			prodName.innerHTML = this.productService.nameLong;
 		}
+
+		const dropdownBtn = document.querySelector('#dropdown_btn');
+		const dropdown = document.querySelector('#dropdown');
+
+		dropdownBtn.addEventListener('click', () => {
+			dropdown.classList.toggle('show');
+		});
+
+		window.addEventListener('click', (event) => {
+			const target = event.target as HTMLTextAreaElement;
+			if (!target.matches('.dropdown')) {
+				console.log('we made it');
+				if (dropdown.classList.contains('show')) {
+					dropdown.classList.remove('show');
+				}
+			}
+		});
 
 		recentlyOpened.then(({ workspaces }) => {
 			// Filter out the current workspace
@@ -400,9 +418,9 @@ class WelcomePage extends Disposable {
 				windowOpenable = { workspaceUri: recent.workspace.configPath };
 			}
 			return fileService.resolve(fullPath).then((value) => {
-				let date = new Date(value.mtime * 1000);
+				let date = new Date(value.mtime);
 				mtime = date;
-				const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+				const options = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
 				const lastOpened: string = mtime.toLocaleDateString(undefined, options);
 				const { name, parentPath } = splitName(relativePath);
 				const li = document.createElement('li');
@@ -447,7 +465,7 @@ class WelcomePage extends Disposable {
 				const descriptionContainerElm = document.createElement('div');
 				const imgContainerElm = document.createElement('div');
 				const iconElm = document.createElement('img');
-				const headerElm = document.createElement('h4');
+				const pElm = document.createElement('p');
 				const bodyElm = document.createElement('p');
 
 				outerAnchorContainerElm.classList.add('extension');
@@ -457,16 +475,17 @@ class WelcomePage extends Disposable {
 				descriptionContainerElm.classList.add('description');
 				imgContainerElm.classList.add('img_container');
 				iconElm.classList.add('icon');
+				pElm.classList.add('extension_header');
 
 				iconElm.src = extension.icon;
 
 				imgContainerElm.appendChild(iconElm);
 				flexDivContainerElm.appendChild(imgContainerElm);
 				flexDivContainerElm.appendChild(descriptionContainerElm);
-				descriptionContainerElm.appendChild(headerElm);
+				descriptionContainerElm.appendChild(pElm);
 				descriptionContainerElm.appendChild(bodyElm);
 				outerAnchorContainerElm.appendChild(flexDivContainerElm);
-				headerElm.innerText = extension.name;
+				pElm.innerText = extension.name;
 				bodyElm.innerText = extension.description;
 				list.appendChild(outerAnchorContainerElm);
 			});
@@ -512,7 +531,7 @@ class WelcomePage extends Disposable {
 					const flexContainerElem = document.createElement('div');
 					const iconContainerElem = document.createElement('img');
 					const descriptionContainerElem = document.createElement('div');
-					const h4Elem = document.createElement('h4');
+					const pElem = document.createElement('p');
 					const anchorElem = document.createElement('a');
 
 					const outerContainerClasses = ['extension_pack__extension_container', 'flex', 'flex--j_center'];
@@ -521,15 +540,16 @@ class WelcomePage extends Disposable {
 					outerContainerElem.classList.add(...outerContainerClasses);
 					flexContainerElem.classList.add(...flexContainerClasses);
 					iconContainerElem.classList.add('icon');
+					pElem.classList.add('extension_pack__extension_list__header');
 					descriptionContainerElem.classList.add('description');
 
 					outerContainerElem.appendChild(flexContainerElem);
 					flexContainerElem.appendChild(iconContainerElem);
 					flexContainerElem.appendChild(descriptionContainerElem);
 					descriptionContainerElem.appendChild(anchorElem);
-					anchorElem.appendChild(h4Elem);
+					anchorElem.appendChild(pElem);
 
-					h4Elem.innerText = j.name;
+					pElem.innerText = j.name;
 					iconContainerElem.src = j.icon;
 
 					extensionListContainer.appendChild(outerContainerElem);
@@ -793,24 +813,28 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const buttonDropdownBackgroundColor = theme.getColor(buttonDropdownBackground);
 	if (buttonDropdownBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .btn.dropdown ul li ul { background: ${buttonDropdownBackgroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content { background: ${buttonDropdownBackgroundColor};}`);
 	}
 	const buttonDropdownColor = theme.getColor(buttonDropdown);
 	if (buttonDropdownColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .btn.dropdown ul li ul li a { color: ${buttonDropdownColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content li a { color: ${buttonDropdownColor};}`);
 	}
 	const buttonDropdownBoxShadowColor = theme.getColor(buttonDropdownBoxShadow);
 	if (buttonDropdownBoxShadowColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .btn.dropdown ul li ul { box-shadow: 0px 4px 4px ${buttonDropdownBoxShadowColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content { box-shadow: 0px 4px 4px ${buttonDropdownBoxShadowColor};}`);
 	}
 	const buttonDropdownBorderColor = theme.getColor(buttonDropdownBorder);
 	if (buttonDropdownBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .btn.dropdown ul li ul li { border-color: ${buttonDropdownBorderColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .btn.dropdown ul li ul { border-color: ${buttonDropdownBorderColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content li { border-color: ${buttonDropdownBorderColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage .dropdown-content { border-color: ${buttonDropdownBorderColor};}`);
 	}
 	const buttonDropdownBackgroundHoverColor = theme.getColor(buttonDropdownBackgroundHover);
 	if (buttonDropdownBackgroundHoverColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .btn.dropdown ul li ul li:hover { background: ${buttonDropdownBackgroundHoverColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content li:hover { background: ${buttonDropdownBackgroundHoverColor};}`);
+	}
+	const buttonDropdownHoverColor = theme.getColor(buttonDropdownHover);
+	if (buttonDropdownHoverColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content li:hover a{ color: ${buttonDropdownHoverColor};}`);
 	}
 	const listBorderColor = theme.getColor(listBorder);
 	if (listBorderColor) {
@@ -902,6 +926,10 @@ registerThemingParticipant((theme, collector) => {
 	if (activeBorder) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .commands .item button:hover { outline-color: ${activeBorder}; }`);
 	}
+	const focusOutlineColor = theme.getColor(focusOutline);
+	if (focusOutlineColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage #dropdown_btn:focus { outline-color: ${focusOutlineColor}; }`);
+	}
 	const labelColor = theme.getColor(welcomeLabel);
 	if (labelColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .resources .label { color: ${labelColor}; }`);
@@ -919,5 +947,15 @@ registerThemingParticipant((theme, collector) => {
 	const gradientBackgroundColor = theme.getColor(gradientBackground);
 	if (gradientTwoColor && gradientOneColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .gradient { background-image: linear-gradient(0deg, ${gradientOneColor} 0%, ${gradientTwoColor} 100%); background-color: ${gradientBackgroundColor}}`);
+	}
+
+	const documentIconThemed = theme.getColor(documentIcon);
+	if (documentIconThemed) {
+		collector.addRule(`.ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) a, .ads_homepage .ads_homepage__section .pinned .list li a, .ads_homepage .icon--document {
+			background: url(${documentIconThemed});
+			background-size: 13px 16px;
+			background-position: center left;
+			background-repeat: no-repeat;
+		}`);
 	}
 });
