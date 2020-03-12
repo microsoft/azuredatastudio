@@ -70,8 +70,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		// let self = this;
 
 		let promises: Thenable<void>[] = providerSettings.map(provider => {
-			// return self._accountProviders[provider.metadata.id].clearTokenCache();
-			return Promise.resolve();
+			return this._accountProviders[provider.metadata.id]?.clearTokenCache();
 		});
 
 		return Promise.all(promises)
