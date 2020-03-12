@@ -76,7 +76,7 @@
 
 .ads_homepage {
 	max-width: 1920px;
-	font-family: Segoe UI;
+	font-family: Segoe UI, Frutiger, Frutiger Linotype, Dejavu Sans, Helvetica Neue, Arial, sans-serif;
 }
 
 .ads_homepage h1, .ads_homepage h2, .ads_homepage h3, .ads_homepage h4, .ads_homepage h5, .ads_homepage p {
@@ -205,8 +205,11 @@
 	.ads_homepage .btn {
 		margin: 0 8px 0 0;
 		width: 77px;
-		height: 24px;
+		height: 25px;
 		line-height: 18px;
+	}
+	.mac .ads_homepage .dropdown.btn {
+		line-height: 1.6em;
 	}
 }
 
@@ -218,55 +221,43 @@
 	cursor: pointer;
 }
 
-.ads_homepage .btn--primary:active {}
-
 .ads_homepage .btn--standard:hover {
 	cursor: pointer;
 }
 
-.ads_homepage .btn.dropdown ul {
-	width: 100%;
-	list-style: none;
-	margin: 0;
-	padding-left: 0;
+.ads_homepage #dropdown_btn:focus {
+	outline: 1px solid;
 }
 
-.ads_homepage .btn.dropdown li {
-	width: 100%;
-	height: 100%;
-	display: block;
-	float: left;
-	position: relative;
-	text-decoration: none;
-	transition-duration: 0.5s;
-}
-
-.ads_homepage .btn.dropdown li:hover {
-	cursor: pointer;
-}
-
-.ads_homepage .btn.dropdown ul li ul {
-	visibility: hidden;
-	opacity: 0;
-	min-width: 10rem;
+.ads_homepage .dropdown-content {
+	z-index: 9;
 	position: absolute;
-	left: 53px;
-	top: 0;
-	transition: all 0.5s ease;
-	margin-top: 1rem;
 	display: none;
+	box-sizing: border-box;
 	border-radius: 4px;
+	list-style: none;
+	padding: 8px 0px;
+	margin: 0;
 }
 
-.ads_homepage .btn.dropdown ul li ul {
-	border: 1px solid;
+.ads_homepage .dropdown-content li {
+	font-size: 1em;
+}
+
+.ads_homepage .dropdown-content li a {
+	display: block;
+	width: 69%;
+	height: 100%;
+	padding: 5px 20px;
+}
+
+.dropdown-content.show {
+	position: absolute;
+	display: block;
 }
 
 .ads_homepage .btn.dropdown ul li:hover>ul, .ads_homepage .btn.dropdown ul li ul:hover {
 	z-index: 9;
-	visibility: visible;
-	opacity: 1;
-	display: block;
 }
 
 .ads_homepage .btn.dropdown ul li ul li {
@@ -384,6 +375,11 @@
 .ads_homepage .tile.extension_pack {
 	border: 1px solid;
 	border-radius: 4px;
+}
+
+.ads_homepage .extension_pack__extension_list__header, .ads_homepage .extension_header {
+	font-weight: 600;
+	font-size: 1.33em;
 }
 
 .ads_homepage .tile {
@@ -843,6 +839,7 @@
 }
 
 .ads_homepage .extension_pack__header {
+	font-weight: 600;
 	font-size: 2.33em;
 	z-index: 9;
 }
