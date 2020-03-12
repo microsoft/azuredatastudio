@@ -53,6 +53,7 @@ export default () => `
 											href="command:workbench.action.files.openFile">
 											${escape(localize('welcomePage.openFileLinuxPC', "Open file"))}
 										</a>
+										<a class="mac-only" href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac', "Open file"))}</a>
 									</div>
 								</div>
 							</div>
