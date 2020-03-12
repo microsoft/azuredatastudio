@@ -187,9 +187,9 @@ const extensionPacks: ExtensionSuggestion[] = [
 ];
 
 const extensions: ExtensionSuggestion[] = [
-	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: 'Develop PowerShell scripts in Azure Data Studio', icon: 'https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png', link: 'https://docs.microsoft.com/sql/azure-data-studio/powershell-extension?view=sql-server-ver15' },
-	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: 'Support for Data Virtualization in SQL Server, including Create External Data wizards.', icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg', link: 'https://docs.microsoft.com/sql/azure-data-studio/data-virtualization-extension?view=sql-server-ver15' },
-	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: 'PostgreSQL extension for Azure Data Studio', icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png', link: 'https://docs.microsoft.com/sql/azure-data-studio/postgres-extension?view=sql-server-ver15' },
+	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: 'Develop PowerShell scripts in Azure Data Studio', icon: 'https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png', link: 'command:azdata.extension.open?%7B%22id%22%3A%22microsoft.powershell%22%7D' },
+	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: 'Support for Data Virtualization in SQL Server, including Create External Data wizards.', icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg', link: 'command:azdata.extension.open?%7B%22id%22%3A%22microsoft.datavirtualization%22%7D' },
+	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: 'PostgreSQL extension for Azure Data Studio', icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png', link: 'command:azdata.extension.open?%7B%22id%22%3A%22microsoft.azuredatastudio-postgresql%22%7D' },
 ];
 
 

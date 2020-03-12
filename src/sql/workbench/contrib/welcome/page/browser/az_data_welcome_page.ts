@@ -190,7 +190,7 @@ export default () => `
 							<div class="extension_pack__extension_list flex flex--d_column flex--j_evenly flex--a_start"></div>
 							<div class="flex flex--j_end extension_pack__btn_container flex flex--j_between flex--a_center"">
 							<div class=" extensionPack" href="#"></div>
-							<a class="a_self--end link--learn_more flex flex--a_center" href="https://github.com/microsoft/azuredatastudio/tree/master/extensions/admin-pack">${escape(localize('welcomePage.learnMore',
+							<a class="a_self--end link--learn_more flex flex--a_center" href="command:azdata.extension.open?%7B%22id%22%3A%22microsoft.admin-pack%22%7D">${escape(localize('welcomePage.learnMore',
 												"Learn more "))}
 													<span class="icon--arrow_right themed_icon--alt"></span></a>
 						</div>
