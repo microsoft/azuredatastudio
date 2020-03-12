@@ -27,6 +27,12 @@
 	}
 }
 
+@media only screen and (min-width: 1365px) {
+	.ads_homepage .ads_grid.xxl--cols-4 {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
+
 @media only screen and (min-width: 1024px) {
 	.ads_homepage .ads_grid.xl--cols-4 {
 		grid-template-columns: repeat(4, 1fr);
@@ -545,7 +551,7 @@
 	padding-top: 30px;
 }
 
-@media only screen and (min-width: 1024px) {
+@media only screen and (min-width: 1365px) {
 	.ads_homepage .header__top_nav {
 		margin-bottom: 117px;
 		padding-top: 69px;

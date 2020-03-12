@@ -59,7 +59,7 @@ export default () => `
 							</div>
 						</div>
 					</div>
-					<div class="row header__bottom_nav__tiles ads_grid sm--cols-2 xl--cols-4">
+					<div class="row header__bottom_nav__tiles ads_grid sm--cols-2 xxl--cols-4">
 						<div class="col">
 							<a class="header__bottom_nav__tile__link" href="command:registeredServers.addConnection">
 								<div class="header__bottom_nav__tile tile tile--connection content">
