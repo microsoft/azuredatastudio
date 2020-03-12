@@ -70,22 +70,6 @@ async function rollupModule(options: IRollupOptions) {
 	}
 }
 
-export function rollupAngularSlickgrid(root: string): Promise<void> {
-	return new Promise(async (resolve, reject) => {
-		const result = await rollupModule({
-			moduleName: 'angular2-slickgrid',
-			inputFile: path.resolve(root, 'node_modules', 'angular2-slickgrid', 'out', 'index.js'),
-			outputDirectory: path.resolve(root, 'node_modules', 'angular2-slickgrid', 'out', 'bundles'),
-			outputFileName: 'angular2-slickgrid.umd.js'
-		});
-
-		if (!result.result) {
-			return reject(`angular2-slickgrid failed to bundle - ${result.exception}`);
-		}
-		resolve();
-	});
-}
-
 export function rollupAngular(root: string): Promise<void> {
 	return new Promise(async (resolve, reject) => {
 
