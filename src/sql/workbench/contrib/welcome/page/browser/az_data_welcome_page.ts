@@ -163,11 +163,10 @@ export default () => `
 
 								</div>
 								<div class="videos_container__video">
-								<a href="https://www.youtube.com/watch?v=Nt4kIHQ0IOc" class="video overview"><img src="../../../workbench/contrib/welcome/video_introduction.png" />
-									<h4>${escape(localize('welcomePage.videoDescriptionIntroduction',
+									<a href="https://www.youtube.com/watch?v=Nt4kIHQ0IOc" class="video overview"><img src="../../../workbench/contrib/welcome/video_introduction.png" />
+										<h4>${escape(localize('welcomePage.videoDescriptionIntroduction',
 											"Introduction to Azure Data Studio Notebooks | Data Exposed"))}</h4>
-								</a>
-
+									</a>
 								</div>
 							</div>
 						</div>

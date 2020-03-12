@@ -233,6 +233,10 @@
 	cursor: pointer;
 }
 
+.ads_homepage .btn--standard {
+	line-height: 1.6em;
+}
+
 .ads_homepage #dropdown_btn:focus {
 	outline: 1px solid;
 }
@@ -496,7 +500,7 @@
 	}
 }
 
-@media only screen and (min-width: 1024px) {
+@media only screen and (min-width: 1365px) {
 	.ads_homepage__section.hero {
 		background-size: 597px;
 		background-repeat: no-repeat;
@@ -971,6 +975,7 @@
 }
 
 .monaco-workbench .part.editor>.content .welcomePage.emptyRecent .splash .recent .none {
+	margin-top: 15px;
 	display: initial;
 }
 
