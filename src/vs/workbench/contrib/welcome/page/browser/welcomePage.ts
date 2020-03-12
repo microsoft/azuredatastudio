@@ -353,7 +353,6 @@ class WelcomePage extends Disposable {
 		window.addEventListener('click', (event) => {
 			const target = event.target as HTMLTextAreaElement;
 			if (!target.matches('.dropdown')) {
-				console.log('we made it');
 				if (dropdown.classList.contains('show')) {
 					dropdown.classList.remove('show');
 				}
