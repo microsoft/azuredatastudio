@@ -29,7 +29,8 @@ import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lif
 import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { registerColor, focusBorder, textLinkForeground, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
+import { focusBorder, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder, tileBackground, buttonStandardBackground, buttonStandardBorder, buttonStandard, welcomeFont, welcomePath, moreRecent, entity, tileBorder, buttonStandardHoverColor, disabledButton, disabledButtonBackground, welcomeLink, buttonPrimaryBackground, buttonPrimary, buttonPrimaryBorder, buttonPrimaryBackgroundHover, buttonPrimaryBackgroundActive, buttonDropdownBackground, buttonDropdown, buttonDropdownBorder, buttonDropdownBackgroundHover, tileBoxShadow, tileBoxShadowHover, extensionPackBorder, welcomeLinkActive, gradientOne, gradientTwo, gradientBackground, welcomeLabel, welcomeLabelChecked, welcomeLabelBorder, buttonPrimaryText, extensionPackHeader, extensionPackHeaderShadow, extensionPackBody, buttonDropdownBoxShadow, listBorder, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, buttonDropdownHover, focusOutline, themedIcon, listLink, themedAltIcon } from 'sql/platform/theme/common/colorRegistry';
+import { registerColor } from 'vs/platform/theme/common/colorRegistry';
 import { getExtraColor } from 'vs/workbench/contrib/welcome/walkThrough/common/walkThroughUtils';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IEditorInputFactory, EditorInput } from 'vs/workbench/common/editor';
@@ -45,6 +46,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}}
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
+
 
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
@@ -141,25 +143,55 @@ export class WelcomePageAction extends Action {
 interface ExtensionSuggestion {
 	name: string;
 	title?: string;
+	description?: string;
 	id: string;
 	isKeymap?: boolean;
 	isCommand?: boolean;
+	isExtensionPack?: boolean;
+	icon?: string;
+	link?: string;
+	extensionPackExtensions?: any[];
 }
 
+
 const extensionPacks: ExtensionSuggestion[] = [
-	{ name: localize('welcomePage.javaScript', "JavaScript"), id: 'dbaeumer.vscode-eslint' },
-	{ name: localize('welcomePage.python', "Python"), id: 'ms-python.python' },
-	// { name: localize('welcomePage.go', "Go"), id: 'lukehoban.go' },
-	{ name: localize('welcomePage.php', "PHP"), id: 'felixfbecker.php-pack' },
-	{ name: localize('welcomePage.azure', "Azure"), title: localize('welcomePage.showAzureExtensions', "Show Azure extensions"), id: 'workbench.extensions.action.showAzureExtensions', isCommand: true },
-	{ name: localize('welcomePage.docker', "Docker"), id: 'ms-azuretools.vscode-docker' },
+	{
+		name: localize('welcomePage.adminPack', "SQL Admin Pack"),
+		title: localize('welcomePage.showAdminPack', "SQL Admin Pack"),
+		description: 'Admin Pack for SQL Server is a collection of popular database administration extensions to help you manage SQL Server',
+		id: 'microsoft.admin-pack',
+		extensionPackExtensions: [
+			{
+				name: 'SQL Server Agent',
+				link: 'https://docs.microsoft.com/sql/azure-data-studio/sql-server-agent-extension?view=sql-server-2017',
+				icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg'
+			},
+			{
+				name: 'SQL Server Profiler',
+				link: 'https://docs.microsoft.com/sql/azure-data-studio/sql-server-profiler-extension?view=sql-server-2017',
+				icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg'
+			},
+			{
+				name: 'SQL Server Import',
+				link: 'https://docs.microsoft.com/sql/azure-data-studio/sql-server-import-extension?view=sql-server-2017',
+				icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg'
+			},
+			{
+				name: 'SQL Server Dacpac',
+				link: 'https://docs.microsoft.com/sql/azure-data-studio/sql-server-dacpac-extension?view=sql-server-2017',
+				icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg'
+			}
+		],
+		isExtensionPack: true
+	},
 ];
 
-const keymapExtensions: ExtensionSuggestion[] = [
-	{ name: localize('welcomePage.vim', "Vim"), id: 'vscodevim.vim', isKeymap: true },
-	{ name: localize('welcomePage.sublime', "Sublime"), id: 'ms-vscode.sublime-keybindings', isKeymap: true },
-	{ name: localize('welcomePage.atom', "Atom"), id: 'ms-vscode.atom-keybindings', isKeymap: true },
+const extensions: ExtensionSuggestion[] = [
+	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: 'Develop PowerShell scripts in Azure Data Studio', icon: 'https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png', link: 'command:azdata.extension.open?%7B%22id%22%3A%22microsoft.powershell%22%7D' },
+	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: 'Support for Data Virtualization in SQL Server, including Create External Data wizards.', icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg', link: 'command:azdata.extension.open?%7B%22id%22%3A%22microsoft.datavirtualization%22%7D' },
+	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: 'PostgreSQL extension for Azure Data Studio', icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png', link: 'command:azdata.extension.open?%7B%22id%22%3A%22microsoft.azuredatastudio-postgresql%22%7D' },
 ];
+
 
 interface Strings {
 	installEvent: string;
@@ -171,6 +203,7 @@ interface Strings {
 	installing: string;
 	extensionNotFound: string;
 }
+
 
 /* __GDPR__
 	"installExtension" : {
@@ -233,16 +266,16 @@ const extensionPackStrings: Strings = {
 		]
 	}
 */
-const keymapStrings: Strings = {
-	installEvent: 'installKeymap',
-	installedEvent: 'installedKeymap',
-	detailsEvent: 'detailsKeymap',
+// const keymapStrings: Strings = {
+// 	installEvent: 'installKeymap',
+// 	installedEvent: 'installedKeymap',
+// 	detailsEvent: 'detailsKeymap',
 
-	alreadyInstalled: localize('welcomePage.keymapAlreadyInstalled', "The {0} keyboard shortcuts are already installed."),
-	reloadAfterInstall: localize('welcomePage.willReloadAfterInstallingKeymap', "The window will reload after installing the {0} keyboard shortcuts."),
-	installing: localize('welcomePage.installingKeymap', "Installing the {0} keyboard shortcuts..."),
-	extensionNotFound: localize('welcomePage.keymapNotFound', "The {0} keyboard shortcuts with id {1} could not be found."),
-};
+// 	alreadyInstalled: localize('welcomePage.keymapAlreadyInstalled', "The {0} keyboard shortcuts are already installed."),
+// 	reloadAfterInstall: localize('welcomePage.willReloadAfterInstallingKeymap', "The window will reload after installing the {0} keyboard shortcuts."),
+// 	installing: localize('welcomePage.installingKeymap', "Installing the {0} keyboard shortcuts..."),
+// 	extensionNotFound: localize('welcomePage.keymapNotFound', "The {0} keyboard shortcuts with id {1} could not be found."),
+// };
 
 const welcomeInputTypeId = 'workbench.editors.welcomePageInput';
 
@@ -266,6 +299,7 @@ class WelcomePage extends Disposable {
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IHostService private readonly hostService: IHostService,
+		@IFileService fileService: IFileService,
 		@IProductService private readonly productService: IProductService,
 
 	) {
@@ -285,7 +319,7 @@ class WelcomePage extends Disposable {
 			name: localize('welcome.title', "Welcome"),
 			resource,
 			telemetryFrom,
-			onReady: (container: HTMLElement) => this.onReady(container, recentlyOpened, installedExtensions)
+			onReady: (container: HTMLElement) => this.onReady(container, recentlyOpened, installedExtensions, fileService)
 		});
 	}
 
@@ -293,9 +327,10 @@ class WelcomePage extends Disposable {
 		return this.editorService.openEditor(this.editorInput, { pinned: false });
 	}
 
-	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>): void {
+	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>, fileService): void {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
 		const showOnStartup = <HTMLInputElement>container.querySelector('#showOnStartup');
+
 		if (enabled) {
 			showOnStartup.setAttribute('checked', 'checked');
 		}
@@ -307,6 +342,22 @@ class WelcomePage extends Disposable {
 		if (prodName) {
 			prodName.innerHTML = this.productService.nameLong;
 		}
+
+		const dropdownBtn = document.querySelector('#dropdown_btn');
+		const dropdown = document.querySelector('#dropdown');
+
+		dropdownBtn.addEventListener('click', () => {
+			dropdown.classList.toggle('show');
+		});
+
+		window.addEventListener('click', (event) => {
+			const target = event.target as HTMLTextAreaElement;
+			if (!target.matches('.dropdown')) {
+				if (dropdown.classList.contains('show')) {
+					dropdown.classList.remove('show');
+				}
+			}
+		});
 
 		recentlyOpened.then(({ workspaces }) => {
 			// Filter out the current workspace
@@ -320,21 +371,21 @@ class WelcomePage extends Disposable {
 			if (!ul) {
 				return;
 			}
-			const moreRecent = ul.querySelector('.moreRecent')!;
 			const workspacesToShow = workspaces.slice(0, 5);
+
 			const updateEntries = () => {
-				const listEntries = this.createListEntries(workspacesToShow);
 				while (ul.firstChild) {
 					ul.removeChild(ul.firstChild);
 				}
-				ul.append(...listEntries, moreRecent);
+				this.createListEntries(workspacesToShow, fileService);
 			};
+
 			updateEntries();
 			this._register(this.labelService.onDidChangeFormatters(updateEntries));
 		}).then(undefined, onUnexpectedError);
 
-		this.addExtensionList(container, '.extensionPackList', extensionPacks, extensionPackStrings);
-		this.addExtensionList(container, '.keymapList', keymapExtensions, keymapStrings);
+		this.addExtensionList(container, '.extension_list', extensions, extensionPackStrings);
+		this.addExtensionPack(container, '.extensionPack', extensionPacks, extensionPackStrings);
 
 		this.updateInstalledExtensions(container, installedExtensions);
 		this._register(this.instantiationService.invokeFunction(onExtensionChanged)(ids => {
@@ -348,81 +399,164 @@ class WelcomePage extends Disposable {
 		}));
 	}
 
-	private createListEntries(recents: (IRecentWorkspace | IRecentFolder)[]) {
+
+
+
+	private createListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService) {
 		return recents.map(recent => {
-			let fullPath: string;
+			let relativePath: string;
+			let fullPath: URI;
 			let windowOpenable: IWindowOpenable;
+			let mtime: Date;
 			if (isRecentFolder(recent)) {
 				windowOpenable = { folderUri: recent.folderUri };
-				fullPath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: true });
+				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: true });
+				fullPath = recent.folderUri;
 			} else {
-				fullPath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
+				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
 				windowOpenable = { workspaceUri: recent.workspace.configPath };
 			}
+			return fileService.resolve(fullPath).then((value) => {
+				let date = new Date(value.mtime);
+				mtime = date;
+				const options = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+				const lastOpened: string = mtime.toLocaleDateString(undefined, options);
+				const { name, parentPath } = splitName(relativePath);
+				const li = document.createElement('li');
+				const icon = document.createElement('i');
+				const a = document.createElement('a');
+				const span = document.createElement('span');
+				const ul = document.querySelector('.recent ul');
 
-			const { name, parentPath } = splitName(fullPath);
-
-			const li = document.createElement('li');
-			const a = document.createElement('a');
-
-			a.innerText = name;
-			a.title = fullPath;
-			a.setAttribute('aria-label', localize('welcomePage.openFolderWithPath', "Open folder {0} with path {1}", name, parentPath));
-			a.href = 'javascript:void(0)';
-			a.addEventListener('click', e => {
-				this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {
-					id: 'openRecentFolder',
-					from: telemetryFrom
+				icon.title = relativePath;
+				a.innerText = name;
+				a.title = relativePath;
+				a.setAttribute('aria-label', localize('welcomePage.openFolderWithPath', "Open folder {0} with path {1}", name, parentPath));
+				a.href = 'javascript:void(0)';
+				a.addEventListener('click', e => {
+					this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {
+						id: 'openRecentFolder',
+						from: telemetryFrom
+					});
+					this.hostService.openWindow([windowOpenable], { forceNewWindow: e.ctrlKey || e.metaKey });
+					e.preventDefault();
+					e.stopPropagation();
 				});
-				this.hostService.openWindow([windowOpenable], { forceNewWindow: e.ctrlKey || e.metaKey });
-				e.preventDefault();
-				e.stopPropagation();
+				icon.classList.add('themed_icon');
+				li.appendChild(icon);
+				li.appendChild(icon);
+				li.appendChild(a);
+				span.classList.add('path');
+				span.classList.add('detail');
+				span.innerText = lastOpened;
+				span.title = relativePath;
+				li.appendChild(span);
+				ul.appendChild(li);
+				return li;
 			});
-			li.appendChild(a);
-
-			const span = document.createElement('span');
-			span.classList.add('path');
-			span.classList.add('detail');
-			span.innerText = parentPath;
-			span.title = fullPath;
-			li.appendChild(span);
-
-			return li;
 		});
 	}
+
 
 	private addExtensionList(container: HTMLElement, listSelector: string, suggestions: ExtensionSuggestion[], strings: Strings) {
 		const list = container.querySelector(listSelector);
 		if (list) {
 			suggestions.forEach((extension, i) => {
-				if (i) {
-					list.appendChild(document.createTextNode(localize('welcomePage.extensionListSeparator', ", ")));
-				}
+				const flexDivContainerClasses = ['flex', 'flex--a_center', 'extension__inner'];
+				const outerAnchorContainerElm = document.createElement('a');
+				const flexDivContainerElm = document.createElement('div');
+				const descriptionContainerElm = document.createElement('div');
+				const imgContainerElm = document.createElement('div');
+				const iconElm = document.createElement('img');
+				const pElm = document.createElement('p');
+				const bodyElm = document.createElement('p');
 
+				outerAnchorContainerElm.classList.add('extension');
+				outerAnchorContainerElm.classList.add('tile');
+				outerAnchorContainerElm.href = extension.link;
+				flexDivContainerElm.classList.add(...flexDivContainerClasses);
+				descriptionContainerElm.classList.add('description');
+				imgContainerElm.classList.add('img_container');
+				iconElm.classList.add('icon');
+				pElm.classList.add('extension_header');
+
+				iconElm.src = extension.icon;
+
+				imgContainerElm.appendChild(iconElm);
+				flexDivContainerElm.appendChild(imgContainerElm);
+				flexDivContainerElm.appendChild(descriptionContainerElm);
+				descriptionContainerElm.appendChild(pElm);
+				descriptionContainerElm.appendChild(bodyElm);
+				outerAnchorContainerElm.appendChild(flexDivContainerElm);
+				pElm.innerText = extension.name;
+				bodyElm.innerText = extension.description;
+				list.appendChild(outerAnchorContainerElm);
+			});
+		}
+	}
+
+	private addExtensionPack(container: HTMLElement, anchorSelector: string, suggestions: ExtensionSuggestion[], strings: Strings) {
+		const btnContainer = container.querySelector(anchorSelector);
+		if (btnContainer) {
+			suggestions.forEach((extension, i) => {
 				const a = document.createElement('a');
-				a.innerText = extension.name;
-				a.title = extension.title || (extension.isKeymap ? localize('welcomePage.installKeymap', "Install {0} keymap", extension.name) : localize('welcomePage.installExtensionPack', "Install additional support for {0}", extension.name));
-				if (extension.isCommand) {
-					a.href = `command:${extension.id}`;
-					list.appendChild(a);
-				} else {
-					a.classList.add('installExtension');
-					a.setAttribute('data-extension', extension.id);
-					a.href = 'javascript:void(0)';
-					a.addEventListener('click', e => {
-						this.installExtension(extension, strings);
-						e.preventDefault();
-						e.stopPropagation();
-					});
-					list.appendChild(a);
+				const classes = ['btn', 'btn--standard', 'a_self--end', 'flex', 'flex--a_center', 'flex--j_center'];
+				const btn = document.createElement('button');
+				const description = document.querySelector('.extension_pack__body');
+				const header = document.querySelector('.extension_pack__header');
 
-					const span = document.createElement('span');
-					span.innerText = extension.name;
-					span.title = extension.isKeymap ? localize('welcomePage.installedKeymap', "{0} keymap is already installed", extension.name) : localize('welcomePage.installedExtensionPack', "{0} support is already installed", extension.name);
-					span.classList.add('enabledExtension');
-					span.setAttribute('data-extension', extension.id);
-					list.appendChild(span);
-				}
+				a.classList.add(...classes);
+				a.innerText = 'Install';
+				a.title = extension.title || (extension.isKeymap ? localize('welcomePage.installKeymap', "Install {0} keymap", extension.name) : localize('welcomePage.installExtensionPack', "Install additional support for {0}", extension.name));
+				a.classList.add('installExtension');
+				a.setAttribute('data-extension', extension.id);
+				a.href = 'javascript:void(0)';
+				a.addEventListener('click', e => {
+					this.installExtension(extension, strings);
+					e.preventDefault();
+					e.stopPropagation();
+				});
+				btnContainer.appendChild(a);
+				btn.innerText = 'Installed';
+				btn.title = extension.isKeymap ? localize('welcomePage.installedKeymap', "{0} keymap is already installed", extension.name) : localize('welcomePage.installedExtensionPack', "{0} support is already installed", extension.name);
+				btn.classList.add('enabledExtension');
+				btn.classList.add(...classes);
+				btn.setAttribute('disabled', 'true');
+				btn.setAttribute('data-extension', extension.id);
+				btnContainer.appendChild(btn);
+
+				description.innerHTML = extension.description;
+				header.innerHTML = extension.name;
+
+				const extensionListContainer = document.querySelector('.extension_pack__extension_list');
+				extension.extensionPackExtensions.forEach((j) => {
+					const outerContainerElem = document.createElement('div');
+					const flexContainerElem = document.createElement('div');
+					const iconContainerElem = document.createElement('img');
+					const descriptionContainerElem = document.createElement('div');
+					const pElem = document.createElement('p');
+					const anchorElem = document.createElement('a');
+
+					const outerContainerClasses = ['extension_pack__extension_container', 'flex', 'flex--j_center'];
+					const flexContainerClasses = ['flex', 'flex--a_center'];
+
+					outerContainerElem.classList.add(...outerContainerClasses);
+					flexContainerElem.classList.add(...flexContainerClasses);
+					iconContainerElem.classList.add('icon');
+					pElem.classList.add('extension_pack__extension_list__header');
+					descriptionContainerElem.classList.add('description');
+
+					outerContainerElem.appendChild(flexContainerElem);
+					flexContainerElem.appendChild(iconContainerElem);
+					flexContainerElem.appendChild(descriptionContainerElem);
+					descriptionContainerElem.appendChild(anchorElem);
+					anchorElem.appendChild(pElem);
+
+					pElem.innerText = j.name;
+					iconContainerElem.src = j.icon;
+
+					extensionListContainer.appendChild(outerContainerElem);
+				});
 			});
 		}
 	}
@@ -619,9 +753,120 @@ export const buttonHoverBackground = registerColor('welcomePage.buttonHoverBackg
 export const welcomePageBackground = registerColor('welcomePage.background', { light: null, dark: null, hc: null }, localize('welcomePage.background', 'Background color for the Welcome page.'));
 
 registerThemingParticipant((theme, collector) => {
+
 	const backgroundColor = theme.getColor(welcomePageBackground);
 	if (backgroundColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer { background-color: ${backgroundColor}; }`);
+	}
+	const tileColor = theme.getColor(tileBackground);
+	if (tileColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile:not(.extension):not(.extension_pack) { background-color: ${tileColor};  }`);
+	}
+	const tileBorderColor = theme.getColor(tileBorder);
+	if (tileBorderColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile:not(.extension):not(.extension_pack) { border-color: ${tileBorderColor}; }`);
+	}
+	const tileBoxShadowColor = theme.getColor(tileBoxShadow);
+	if (tileBoxShadowColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .tile:not(.extension):not(.extension_pack) { box-shadow: 0px 1px 4px ${tileBoxShadowColor}; }`);
+	}
+	const tileBoxShadowHoverColor = theme.getColor(tileBoxShadowHover);
+	if (tileBoxShadowHoverColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .tile:hover:not(.no_hover) { box-shadow: 0px 1px 4px ${tileBoxShadowHoverColor}; }`);
+	}
+	const buttonPrimarydBackgroundColor = theme.getColor(buttonPrimaryBackground);
+	if (buttonPrimarydBackgroundColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--primary { background-color: ${buttonPrimarydBackgroundColor};}`);
+	}
+	const buttonPrimaryColor = theme.getColor(buttonPrimary);
+	if (buttonPrimaryColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--primary { color: ${buttonPrimaryColor};}`);
+	}
+	const buttonPrimaryTextColor = theme.getColor(buttonPrimaryText);
+	if (buttonPrimaryTextColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown__text { color: ${buttonPrimaryTextColor};}`);
+	}
+	const buttonPrimaryBorderColor = theme.getColor(buttonPrimaryBorder);
+	if (buttonPrimaryBorderColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--primary { border-color: ${buttonPrimaryBorderColor};}`);
+	}
+	const buttonPrimaryBackgroundHoverColor = theme.getColor(buttonPrimaryBackgroundHover);
+	if (buttonPrimaryBackgroundHoverColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--primary:hover { background: ${buttonPrimaryBackgroundHoverColor};}`);
+	}
+	const buttonPrimaryBackgroundActiveColor = theme.getColor(buttonPrimaryBackgroundActive);
+	if (buttonPrimaryBackgroundActiveColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--primary:active { background: ${buttonPrimaryBackgroundActiveColor};}`);
+	}
+	const buttonStandardBackgroundColor = theme.getColor(buttonStandardBackground);
+	if (buttonStandardBackgroundColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--standard { background-color: ${buttonStandardBackgroundColor};}`);
+	}
+	const buttonStandardBorderColor = theme.getColor(buttonStandardBorder);
+	if (buttonStandardBorderColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--standard { border: 1px solid ${buttonStandardBorderColor};}`);
+	}
+	const buttonStandardColor = theme.getColor(buttonStandard);
+	if (buttonStandardColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--standard { color: ${buttonStandardColor};}`);
+	}
+	const buttonStandardHover = theme.getColor(buttonStandardHoverColor);
+	if (buttonStandardColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--standard:hover { color: ${buttonStandardHover}; border: 1px solid ${buttonStandardHover};}`);
+	}
+	const buttonDropdownBackgroundColor = theme.getColor(buttonDropdownBackground);
+	if (buttonDropdownBackgroundColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content { background: ${buttonDropdownBackgroundColor};}`);
+	}
+	const buttonDropdownColor = theme.getColor(buttonDropdown);
+	if (buttonDropdownColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content li a { color: ${buttonDropdownColor};}`);
+	}
+	const buttonDropdownBoxShadowColor = theme.getColor(buttonDropdownBoxShadow);
+	if (buttonDropdownBoxShadowColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content { box-shadow: 0px 4px 4px ${buttonDropdownBoxShadowColor};}`);
+	}
+	const buttonDropdownBorderColor = theme.getColor(buttonDropdownBorder);
+	if (buttonDropdownBorderColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content li { border-color: ${buttonDropdownBorderColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage .dropdown-content { border-color: ${buttonDropdownBorderColor};}`);
+	}
+	const buttonDropdownBackgroundHoverColor = theme.getColor(buttonDropdownBackgroundHover);
+	if (buttonDropdownBackgroundHoverColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content li:hover { background: ${buttonDropdownBackgroundHoverColor};}`);
+	}
+	const buttonDropdownHoverColor = theme.getColor(buttonDropdownHover);
+	if (buttonDropdownHoverColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content li:hover a{ color: ${buttonDropdownHoverColor};}`);
+	}
+	const listBorderColor = theme.getColor(listBorder);
+	if (listBorderColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent), .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .history .list__header__container, .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent), .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .pinned .list__header__container { border-color: ${listBorderColor};}`);
+	}
+	const listLinkColor = theme.getColor(listLink);
+	if (listLinkColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .history .list li a { color: ${listLinkColor};}`);
+	}
+	const extensionPackBorderColor = theme.getColor(extensionPackBorder);
+	if (extensionPackBorderColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .tile.extension_pack { border-color: ${extensionPackBorderColor};}`);
+	}
+	const extensionPackBodyColor = theme.getColor(extensionPackBody);
+	if (extensionPackBodyColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack__body { color: ${extensionPackBodyColor};}`);
+	}
+	const extensionPackHeaderColor = theme.getColor(extensionPackHeader);
+	if (extensionPackHeaderColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack__header { color: ${extensionPackHeaderColor};}`);
+	}
+	const extensionPackHeaderTextShadow = theme.getColor(extensionPackHeaderShadow);
+	if (extensionPackHeaderTextShadow) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack__header { text-shadow: 0px 4px 4px ${extensionPackHeaderTextShadow};}`);
+	}
+	const extensionPackGradientColorOne = theme.getColor(extensionPackGradientColorOneColor);
+	const extensionPackGradientColorTwo = theme.getColor(extensionPackGradientColorTwoColor);
+	if (extensionPackGradientColorOne && extensionPackGradientColorTwo) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack__description:before { background-image: linear-gradient(0.49deg, ${extensionPackGradientColorOne} 82.75%, ${extensionPackGradientColorTwo});}`);
 	}
 	const foregroundColor = theme.getColor(foreground);
 	if (foregroundColor) {
@@ -635,13 +880,41 @@ registerThemingParticipant((theme, collector) => {
 	if (buttonColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .commands .item button { background: ${buttonColor}; }`);
 	}
+	const disabledButtonColor = theme.getColor(disabledButton);
+	if (disabledButtonColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .btn:disabled { color: ${disabledButtonColor}; }`);
+	}
+	const disabledButtonBackgroundColor = theme.getColor(disabledButtonBackground);
+	if (disabledButtonColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .btn:disabled { background: ${disabledButtonBackgroundColor}; }`);
+	}
 	const buttonHoverColor = getExtraColor(theme, buttonHoverBackground, { dark: 'rgba(200, 235, 255, .072)', extra_dark: 'rgba(200, 235, 255, .072)', light: 'rgba(0,0,0,.10)', hc: null });
 	if (buttonHoverColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .commands .item button:hover { background: ${buttonHoverColor}; }`);
 	}
-	const link = theme.getColor(textLinkForeground);
+	const fontColor = theme.getColor(welcomeFont);
+	if (fontColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage h1, h2, h3, h4, h5, h6, h7, p { color: ${fontColor}; }`);
+	}
+	const moreRecentColor = theme.getColor(moreRecent);
+	if (moreRecentColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .moreRecent { color: ${moreRecentColor}; }`);
+	}
+	const entityColor = theme.getColor(entity);
+	if (entityColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .entity { color: ${entityColor}; }`);
+	}
+	const pathColor = theme.getColor(welcomePath);
+	if (pathColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .path { color: ${pathColor}; }`);
+	}
+	const link = theme.getColor(welcomeLink);
 	if (link) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a { color: ${link}; }`);
+	}
+	const linkActive = theme.getColor(welcomeLinkActive);
+	if (linkActive) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a:active { color: ${linkActive}; }`);
 	}
 	const activeLink = theme.getColor(textLinkActiveForeground);
 	if (activeLink) {
@@ -659,5 +932,35 @@ registerThemingParticipant((theme, collector) => {
 	const activeBorder = theme.getColor(activeContrastBorder);
 	if (activeBorder) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .commands .item button:hover { outline-color: ${activeBorder}; }`);
+	}
+	const focusOutlineColor = theme.getColor(focusOutline);
+	if (focusOutlineColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage #dropdown_btn:focus { outline-color: ${focusOutlineColor}; }`);
+	}
+	const labelColor = theme.getColor(welcomeLabel);
+	if (labelColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .resources .label { color: ${labelColor}; }`);
+	}
+	const labelColorChecked = theme.getColor(welcomeLabelChecked);
+	if (labelColorChecked) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .resources .input:checked+.label { color: ${labelColorChecked}; }`);
+	}
+	const labelBorderColorChecked = theme.getColor(welcomeLabelBorder);
+	if (labelBorderColorChecked) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .resources .input:checked+.label { border-color: ${labelBorderColorChecked}; }`);
+	}
+	const themedIconColor = theme.getColor(themedIcon);
+	if (themedIconColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .themed_icon { background-color: ${themedIconColor}; }`);
+	}
+	const themedIconAltColor = theme.getColor(themedAltIcon);
+	if (themedIconAltColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .themed_icon--alt { background-color: ${themedIconAltColor}; }`);
+	}
+	const gradientOneColor = theme.getColor(gradientOne);
+	const gradientTwoColor = theme.getColor(gradientTwo);
+	const gradientBackgroundColor = theme.getColor(gradientBackground);
+	if (gradientTwoColor && gradientOneColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .gradient { background-image: linear-gradient(0deg, ${gradientOneColor} 0%, ${gradientTwoColor} 100%); background-color: ${gradientBackgroundColor}}`);
 	}
 });
