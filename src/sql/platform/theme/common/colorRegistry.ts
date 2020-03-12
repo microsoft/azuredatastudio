@@ -48,7 +48,8 @@ export const buttonDropdownBackground = registerColor('buttonDropdownBackground'
 export const buttonDropdownBoxShadow = registerColor('buttonDropdownBoxShadow', { light: dropdownBoxShadow, dark: dropdownBoxShadow, hc: dropdownBoxShadow }, nls.localize('buttonDropdownBoxShadow', "The button dropdown box shadow color"));
 export const buttonDropdown = registerColor('buttonDropdown', { light: '#000', dark: '#fff', hc: '#fff' }, nls.localize('buttonDropdown', "The button dropdown color"));
 export const buttonDropdownBorder = registerColor('buttonDropdownBorder', { light: 'transparent', dark: 'transparent', hc: '#2b56f2' }, nls.localize('buttonDropdownBorder', "The button dropdown border color"));
-export const buttonDropdownBackgroundHover = registerColor('buttonDropdownBackgroundHover', { light: '#efefef', dark: '#252525', hc: '#252525' }, nls.localize('buttonDropdownBackgroundHover', "The button dropdown background hover color"));
+export const buttonDropdownBackgroundHover = registerColor('buttonDropdownBackgroundHover', { light: '#3062d6', dark: '#3062d6', hc: '#3062d6' }, nls.localize('buttonDropdownBackgroundHover', "The button dropdown background hover color"));
+export const buttonDropdownHover = registerColor('buttonDropdownHover', { light: '#fff', dark: '#fff', hc: '#fff' }, nls.localize('buttonDropdownHover', "The button dropdown hover color"));
 export const extensionPackBorder = registerColor('extensionPackBorder', { light: '#8A8886', dark: '#8A8886', hc: '#2B56F2' }, nls.localize('extensionPackBorder', "The extension pack border color"));
 export const extensionPackHeader = registerColor('extensionPackHeader', { light: '#fff', dark: '#fff', hc: '#fff' }, nls.localize('extensionPackHeader', "The extensions pack header color"));
 export const extensionPackBody = registerColor('extensionPackBody', { light: '#fff', dark: '#fff', hc: '#fff' }, nls.localize('extensionPackBody', "The extension pack body color"));
@@ -78,3 +79,9 @@ export const welcomeLinkActive = registerColor('welcomeLinkActive', { light: '#0
 export const welcomeLabel = registerColor('welcomeLabel', { light: '#0078d7', dark: '#0078d7', hc: '#0078d7' }, nls.localize('welcomeLabel', "The font color for label tags"));
 export const welcomeLabelChecked = registerColor('welcomeLabel', { light: '#000', dark: '#fff', hc: '#fff' }, nls.localize('welcomeLabelChecked', "The font color for labels that have been checked"));
 export const welcomeLabelBorder = registerColor('welcomeLabel', { light: '#000', dark: '#fff', hc: '#fff' }, nls.localize('welcomeLabelBorder', "The border color for labels"));
+export const focusOutline = registerColor('focusOutline', { light: '#000', dark: '#fff', hc: '#fff' }, nls.localize('focusOutline', "The focus outline color"));
+
+
+// Icons
+
+export const documentIcon = registerColor('documentIcon', { light: 'src/vs/workbench/contrib/welcome/icon_file_document.svg', dark: 'src/vs/workbench/contrib/welcome/icon_file_document.svg', hc: 'src/vs/workbench/contrib/welcome/icon_file_document.svg' }, nls.localize('welcomePath', "The color for welcome paths"));
