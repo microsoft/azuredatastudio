@@ -116,13 +116,13 @@ export default () => `
 								<ul class="list">
 									<!-- Filled programmatically -->
 								</ul>
+								<p class="none detail">No recent folders</p>
 								<ul class="moreRecent--list">
 									<li class="moreRecent">
 										<a href="command:workbench.action.openRecent">${escape(localize('welcomePage.moreRecent', "Show more"))}</a>
 										<i class="icon--arrow_down--dark"></i>
 									</li>
 								</ul>
-								<p class="none detail">No recent folders</p>
 							</div>
 						</div>
 					</div>
