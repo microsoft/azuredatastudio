@@ -410,10 +410,6 @@ function packagePkgTask(platform, arch, pkgTarget) {
 				return rollupAngular(REMOTE_FOLDER);
 			});
 
-			const rollupAngularSlickgridTask = task.define(`vscode-web-${type}${dashed(platform)}${dashed(arch)}-angular-slickgrid-rollup`, () => {
-				return rollupAngularSlickgrid(REMOTE_FOLDER);
-			});
-
 			const rebuildExtensions = ['big-data-cluster', 'mssql', 'notebook'];
 			const EXTENSIONS = path.join(REPO_ROOT, 'extensions');
 			function exec(cmdLine, cwd) {
