@@ -307,6 +307,8 @@
 	margin-top: 2px;
 	-webkit-mask: url('../../arrowRightIcon.svg') no-repeat;
 	-webkit-mask-size: 13px 16px;
+	mask: url('../../arrowRightIcon.svg') no-repeat;
+	mask-size: 13px 16px;
 	height: 16px;
 	width: 16px;
 }
@@ -318,6 +320,8 @@
 	margin-left: 4px;
 	-webkit-mask: url('../../link_icon.svg') no-repeat;
 	-webkit-mask-size: 11px 11px;
+	mask: url('../../link_icon.svg') no-repeat;
+	mask-size: 11px 11px;
 	height: 11px;
 	width: 11px;
 }
@@ -330,6 +334,8 @@
 	padding-top: 3px;
 	-webkit-mask: url('../../arrowDown_dark.svg') no-repeat;
 	-webkit-mask-size: 13px 16px;
+	mask: url('../../arrowDown_dark.svg') no-repeat;
+	mask-size: 13px 16px;
 	height: 16px;
 	width: 16px;
 }
@@ -742,6 +748,8 @@
 .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) i, .ads_homepage .ads_homepage__section .pinned .list li i, .ads_homepage .icon--document {
 	-webkit-mask: url('../../icon_file_document.svg') no-repeat;
 	-webkit-mask-size: 13px 16px;
+	mask: url('../../arrowDown_dark.svg') no-repeat;
+	mask-size: 13px 16px;
 	height: 16px;
 	width: 16px;
 }
@@ -749,6 +757,8 @@
 .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) i[title$='.ipynb'], .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) i[title$='.ipynb'] {
 	-webkit-mask: url('../../icon_file_ipynb.svg') no-repeat;
 	-webkit-mask-size: 13px 16px;
+	mask: url('../../icon_file_ipynb.svg') no-repeat;
+	mask-size: 13px 16px;
 	height: 16px;
 	width: 16px;
 }
@@ -756,6 +766,8 @@
 .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) i[title$='.sql'], .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) i[title$='.sql'] {
 	-webkit-mask: url('../../icon_file_sql.svg') no-repeat;
 	-webkit-mask-size: 13px 16px;
+	mask: url('../../icon_file_sql.svg') no-repeat;
+	mask-size: 13px 16px;
 	height: 16px;
 	width: 16px;
 }
@@ -763,6 +775,8 @@
 .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) i[title$='.csv'], .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) a[title$='.csv'] {
 	-webkit-mask: url('../../icon_file_csv.svg') no-repeat;
 	-webkit-mask-size: 13px 16px;
+	mask: url('../../icon_file_csv.svg') no-repeat;
+	mask-size: 13px 16px;
 	height: 16px;
 	width: 16px;
 }
@@ -811,10 +825,6 @@
 .ads_homepage .ads_homepage__section .links .videos_container .video img {
 	max-width: 100%;
 }
-
-.ads_homepage .ads_homepage__section .links .videos_container .video.overview {}
-
-.ads_homepage .ads_homepage__section .links .videos_container .video.introduction {}
 
 .ads_homepage .extensions .row {
 	padding-bottom: 35px;
