@@ -304,10 +304,11 @@
 	height: 16px;
 	margin-left: 6px;
 	padding-top: 3px;
-	background: url('../../arrowRightIcon.svg');
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-position: center center;
+	margin-top: 2px;
+	-webkit-mask: url('../../arrowRightIcon.svg') no-repeat;
+	-webkit-mask-size: 13px 16px;
+	height: 16px;
+	width: 16px;
 }
 
 .ads_homepage .icon--link {
@@ -315,10 +316,10 @@
 	width: 11px;
 	height: 11px;
 	margin-left: 4px;
-	background: url('../../link_icon.svg');
-	background-size: 11px 11px;
-	background-repeat: no-repeat;
-	background-position: center center;
+	-webkit-mask: url('../../link_icon.svg') no-repeat;
+	-webkit-mask-size: 11px 11px;
+	height: 11px;
+	width: 11px;
 }
 
 .ads_homepage .icon--arrow_down--dark {
@@ -327,13 +328,13 @@
 	height: 6px;
 	margin-left: 6px;
 	padding-top: 3px;
-	background: url('../../arrowDown_dark.svg');
-	background-size: 11px 6px;
-	background-repeat: no-repeat;
-	background-position: right center;
+	-webkit-mask: url('../../arrowDown_dark.svg') no-repeat;
+	-webkit-mask-size: 13px 16px;
+	height: 16px;
+	width: 16px;
 }
 
-.vs-dark .ads_homepage .icon--arrow_down--dark, .hc-black .ads_homepage .icon--arrow_down--dark {
+/* .vs-dark .ads_homepage .icon--arrow_down--dark, .hc-black .ads_homepage .icon--arrow_down--dark {
 	display: block;
 	width: 11px;
 	height: 6px;
@@ -343,7 +344,7 @@
 	background-size: 11px 6px;
 	background-repeat: no-repeat;
 	background-position: right center;
-}
+} */
 
 .ads_homepage .dropdown__text {
 	display: flex;
@@ -710,7 +711,7 @@
 }
 
 .ads_homepage .ads_homepage__section .history .list__header, .ads_homepage .ads_homepage__section .pinned .list__header {
-	padding: 0 0 2px 21px;
+	padding: 0 0 2px 11px;
 }
 
 .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent), .ads_homepage .ads_homepage__section .history .list__header__container, .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent), .ads_homepage .ads_homepage__section .pinned .list__header__container {
@@ -721,78 +722,64 @@
 	font-size: 1em;
 	display: flex;
 	position: relative;
-	justify-content: space-between;
+	justify-content: flex-end;
 	align-items: center;
 	text-decoration: none;
 }
 
+.ads_homepage .ads_homepage__section .history .list__header__container .list__header--last_opened {
+	margin-left: auto;
+}
+
+.ads_homepage .ads_homepage__section .history .detail {
+	margin-left: auto;
+}
+
 .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) a, .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) a {
-	padding: 0 0 2px 21px;
+	padding: 0 0 2px 11px;
 }
 
-.ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) a, .ads_homepage .ads_homepage__section .pinned .list li a, .ads_homepage .icon--document {
-	background: url('../../icon_file_document.svg');
-	background-size: 13px 16px;
-	background-position: center left;
-	background-repeat: no-repeat;
+.ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) i, .ads_homepage .ads_homepage__section .pinned .list li i, .ads_homepage .icon--document {
+	-webkit-mask: url('../../icon_file_document.svg') no-repeat;
+	-webkit-mask-size: 13px 16px;
+	height: 16px;
+	width: 16px;
 }
 
-.vs-dark .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) a, .vs-dark .ads_homepage .ads_homepage__section .pinned .list li a, .vs-dark .ads_homepage .icon--document, .hc-black .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) a, .hc-black .ads_homepage .ads_homepage__section .pinned .list li a, .hc-black .ads_homepage .icon--document {
-	background: url('../../icon_file_document__dark_theme.svg');
-	background-size: 13px 16px;
-	background-position: center left;
-	background-repeat: no-repeat;
+.ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) i[title$='.ipynb'], .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) i[title$='.ipynb'] {
+	-webkit-mask: url('../../icon_file_ipynb.svg') no-repeat;
+	-webkit-mask-size: 13px 16px;
+	height: 16px;
+	width: 16px;
 }
 
-.ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) a[title$='.ipynb'], .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) a[title$='.ipynb'] {
-	background: url('../../icon_file_ipynb.svg');
-	background-size: 14px 16px;
-	background-position: center left;
-	background-repeat: no-repeat;
+.ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) i[title$='.sql'], .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) i[title$='.sql'] {
+	-webkit-mask: url('../../icon_file_sql.svg') no-repeat;
+	-webkit-mask-size: 13px 16px;
+	height: 16px;
+	width: 16px;
 }
 
-.vs-dark .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) a[title$='.ipynb'], .vs-dark .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) a[title$='.ipynb'], .hc-black .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) a[title$='.ipynb'], .hc-black .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) a[title$='.ipynb'] {
-	background: url('../../icon_file_ipynb__dark_theme.svg');
-	background-size: 14px 16px;
-	background-position: center left;
-	background-repeat: no-repeat;
+.ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) i[title$='.csv'], .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) a[title$='.csv'] {
+	-webkit-mask: url('../../icon_file_csv.svg') no-repeat;
+	-webkit-mask-size: 13px 16px;
+	height: 16px;
+	width: 16px;
 }
 
-.ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) a[title$='.sql'], .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) a[title$='.sql'] {
-	background: url('../../icon_file_sql.svg');
-	background-size: 16px 16px;
-	background-position: center left;
-	background-repeat: no-repeat;
+.ads_homepage .ads_homepage__section .history .moreRecent--list {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
 }
 
-.vs-dark .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) a[title$='.sql'], .vs-dark .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) a[title$='.sql'], .hc-black .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) a[title$='.sql'], .hc-black .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) a[title$='.sql'] {
-	background: url('../../icon_file_sql__dark_theme.svg');
-	background-size: 16px 16px;
-	background-position: center left;
-	background-repeat: no-repeat;
-}
-
-.ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) a[title$='.csv'], .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) a[title$='.csv'] {
-	background: url('../../icon_file_csv.svg');
-	background-size: 13px 12px;
-	background-position: center left;
-	background-repeat: no-repeat;
-}
-
-.vs-dark .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) a[title$='.csv'], .vs-dark .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) a[title$='.csv'], .hc-black .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) a[title$='.csv'], .hc-black .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) a[title$='.csv'] {
-	background: url('../../icon_file_csv__dark_theme.svg');
-	background-size: 13px 12px;
-	background-position: center left;
-	background-repeat: no-repeat;
-}
-
-.ads_homepage .ads_homepage__section .history .list li.moreRecent {
+.ads_homepage .ads_homepage__section .history .moreRecent--list li.moreRecent {
 	display: flex;
 	align-items: center;
 	margin-top: 10px;
 }
 
-.ads_homepage .ads_homepage__section .history .list li.moreRecent a {
+.ads_homepage .ads_homepage__section .history .moreRecent--list li.moreRecent a {
 	text-decoration: none;
 }
 
@@ -865,14 +852,6 @@
 .ads_homepage .extension_pack {
 	grid-gap: 0;
 }
-
-/* @media only screen and (min-width: 640px) {
-	.ads_homepage .extension_pack {
-		grid-column: 1 / span 2;
-		display: grid;
-		grid-template-rows: 1fr 1fr;
-	}
-} */
 
 .ads_homepage .extension_pack__btn_container {
 	padding: 17px 0 23px;

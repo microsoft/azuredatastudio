@@ -107,12 +107,15 @@ export default () => `
 						<label class="label" for="tab-1">${escape(localize('welcomePage.history', "History"))}</label>
 						<div class="panel">
 							<div class="recent history">
-								<div class="flex flex--j_between list__header__container">
-									<h4 class="icon--document list__header">${escape(localize('welcomePage.name', "Name"))}</h4>
-									<h4>${escape(localize('welcomePage.lastOpened', "Last Opened"))}</h4>
+								<div class="flex list__header__container">
+									<i class="icon--document themed_icon"></i>
+									<h4 class="list__header">${escape(localize('welcomePage.name', "Name"))}</h4>
+									<h4 class="list__header--last_opened">${escape(localize('welcomePage.lastOpened', "Last Opened"))}</h4>
 								</div>
 								<ul class="list">
 									<!-- Filled programmatically -->
+								</ul>
+								<ul class="moreRecent--list">
 									<li class="moreRecent">
 										<a href="command:workbench.action.openRecent">${escape(localize('welcomePage.moreRecent', "Show more"))}</a>
 										<i class="icon--arrow_down--dark"></i>
@@ -132,7 +135,7 @@ export default () => `
 						<div class="link_header">
 							<a class="link"
 								href="https://aka.ms/azuredatastudio">${escape(localize('welcomePage.gettingStarted',
-						"Getting Started"))}<span class="icon--link"></a>
+						"Getting Started"))}<span class="icon--link themed_icon--alt"></a>
 						</div>
 						<p>
 						${escape(localize('welcomePage.gettingStartedBody',
@@ -141,7 +144,7 @@ export default () => `
 						<div class="link_header">
 							<a class="link"
 								href="https://aka.ms/azuredatastudio">${escape(localize('welcomePage.documentation',
-								"Documentation"))}<span class="icon--link"</a></a>
+								"Documentation"))}<span class="icon--link themed_icon--alt"</a></a>
 						</div>
 						<p>${escape(localize('welcomePage.documentationBody',
 									"Visit the documentation center for quickstarts, how-to guides, and references for PowerShell, APIs, etc."))}
@@ -173,7 +176,7 @@ export default () => `
 			<div class="ads_homepage__section content extensions">
 				<div class="flex flex--j_between">
 					<h2>Extend your data studio</h2>
-					<a class="link--show_all flex" href="command:extensions.listView.focus">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon--arrow_right"></span></a>
+					<a class="link--show_all flex" href="command:extensions.listView.focus">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon--arrow_right themed_icon--alt"></span></a>
 				</div>
 				<div class="row ads_grid grip_gap--50 lg--cols-2 xxl--cols-8">
 					<div
@@ -188,7 +191,7 @@ export default () => `
 							<div class=" extensionPack" href="#"></div>
 							<a class="a_self--end link--learn_more flex flex--a_center" href="https://github.com/microsoft/azuredatastudio/tree/master/extensions/admin-pack">${escape(localize('welcomePage.learnMore',
 												"Learn more "))}
-													<span class="icon--arrow_right"></span></a>
+													<span class="icon--arrow_right themed_icon--alt"></span></a>
 						</div>
 					</div>
 				</div>

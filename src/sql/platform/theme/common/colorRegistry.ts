@@ -51,12 +51,15 @@ export const buttonDropdownBorder = registerColor('buttonDropdownBorder', { ligh
 export const buttonDropdownBackgroundHover = registerColor('buttonDropdownBackgroundHover', { light: '#3062d6', dark: '#3062d6', hc: '#3062d6' }, nls.localize('buttonDropdownBackgroundHover', "The button dropdown background hover color"));
 export const buttonDropdownHover = registerColor('buttonDropdownHover', { light: '#fff', dark: '#fff', hc: '#fff' }, nls.localize('buttonDropdownHover', "The button dropdown hover color"));
 export const extensionPackBorder = registerColor('extensionPackBorder', { light: '#8A8886', dark: '#8A8886', hc: '#2B56F2' }, nls.localize('extensionPackBorder', "The extension pack border color"));
+export const listLink = registerColor('extensionPackBorder', { light: '#323130', dark: '#fff', hc: '#fff' }, nls.localize('extensionPackBorder', "The extension pack border color"));
 export const extensionPackHeader = registerColor('extensionPackHeader', { light: '#fff', dark: '#fff', hc: '#fff' }, nls.localize('extensionPackHeader', "The extensions pack header color"));
 export const extensionPackBody = registerColor('extensionPackBody', { light: '#fff', dark: '#fff', hc: '#fff' }, nls.localize('extensionPackBody', "The extension pack body color"));
 export const listBorder = registerColor('listBorder', { light: '#ccc', dark: '#ccc', hc: '#ccc' }, nls.localize('listBorder', "The list item border"));
 export const extensionPackHeaderShadow = registerColor('extensionPackHeaderShadow', { light: textShadow, dark: textShadow, hc: textShadow }, nls.localize('extensionPackHeaderShadow', "The extension pack header text shadowcolor"));
 export const extensionPackGradientColorOneColor = registerColor('extensionPackGradientColorOne', { light: extensionPackGradientOne, dark: extensionPackGradientOne, hc: extensionPackGradientOne }, nls.localize('extensionPackGradientColorOne', "The top color for the extension pack gradient"));
 export const extensionPackGradientColorTwoColor = registerColor('extensionPackGradientColorTwo', { light: extensionPackGradientTwo, dark: extensionPackGradientTwo, hc: extensionPackGradientTwo }, nls.localize('extensionPackGradientColorTwo', "The bottom color for the extension pack gradient"));
+export const themedIcon = registerColor('themedIcon', { light: '#000', dark: '#fff', hc: '#fff' }, nls.localize('themedIcon', "The color for themed icons"));
+export const themedAltIcon = registerColor('themedAltIcon', { light: '#0078d4', dark: '#0078d4', hc: '#0078d4' }, nls.localize('themedAltIcon', "The color for alternately themed icons"));
 
 export const gradientOneColorOne = new Color(new RGBA(0, 0, 0, .2));
 

@@ -29,7 +29,7 @@ import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lif
 import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { focusBorder, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder, tileBackground, buttonStandardBackground, buttonStandardBorder, buttonStandard, welcomeFont, welcomePath, moreRecent, entity, tileBorder, buttonStandardHoverColor, disabledButton, disabledButtonBackground, welcomeLink, buttonPrimaryBackground, buttonPrimary, buttonPrimaryBorder, buttonPrimaryBackgroundHover, buttonPrimaryBackgroundActive, buttonDropdownBackground, buttonDropdown, buttonDropdownBorder, buttonDropdownBackgroundHover, tileBoxShadow, tileBoxShadowHover, extensionPackBorder, welcomeLinkActive, gradientOne, gradientTwo, gradientBackground, welcomeLabel, welcomeLabelChecked, welcomeLabelBorder, buttonPrimaryText, extensionPackHeader, extensionPackHeaderShadow, extensionPackBody, buttonDropdownBoxShadow, listBorder, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, documentIcon, buttonDropdownHover, focusOutline } from 'sql/platform/theme/common/colorRegistry';
+import { focusBorder, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder, tileBackground, buttonStandardBackground, buttonStandardBorder, buttonStandard, welcomeFont, welcomePath, moreRecent, entity, tileBorder, buttonStandardHoverColor, disabledButton, disabledButtonBackground, welcomeLink, buttonPrimaryBackground, buttonPrimary, buttonPrimaryBorder, buttonPrimaryBackgroundHover, buttonPrimaryBackgroundActive, buttonDropdownBackground, buttonDropdown, buttonDropdownBorder, buttonDropdownBackgroundHover, tileBoxShadow, tileBoxShadowHover, extensionPackBorder, welcomeLinkActive, gradientOne, gradientTwo, gradientBackground, welcomeLabel, welcomeLabelChecked, welcomeLabelBorder, buttonPrimaryText, extensionPackHeader, extensionPackHeaderShadow, extensionPackBody, buttonDropdownBoxShadow, listBorder, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, documentIcon, buttonDropdownHover, focusOutline, themedIcon, listLink, themedAltIcon } from 'sql/platform/theme/common/colorRegistry';
 import { registerColor } from 'vs/platform/theme/common/colorRegistry';
 import { getExtraColor } from 'vs/workbench/contrib/welcome/walkThrough/common/walkThroughUtils';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
@@ -424,10 +424,12 @@ class WelcomePage extends Disposable {
 				const lastOpened: string = mtime.toLocaleDateString(undefined, options);
 				const { name, parentPath } = splitName(relativePath);
 				const li = document.createElement('li');
+				const icon = document.createElement('i');
 				const a = document.createElement('a');
 				const span = document.createElement('span');
 				const ul = document.querySelector('.recent ul');
 
+				icon.title = relativePath;
 				a.innerText = name;
 				a.title = relativePath;
 				a.setAttribute('aria-label', localize('welcomePage.openFolderWithPath', "Open folder {0} with path {1}", name, parentPath));
@@ -441,8 +443,10 @@ class WelcomePage extends Disposable {
 					e.preventDefault();
 					e.stopPropagation();
 				});
+				icon.classList.add('themed_icon');
+				li.appendChild(icon);
+				li.appendChild(icon);
 				li.appendChild(a);
-
 				span.classList.add('path');
 				span.classList.add('detail');
 				span.innerText = lastOpened;
@@ -840,6 +844,10 @@ registerThemingParticipant((theme, collector) => {
 	if (listBorderColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent), .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .history .list__header__container, .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent), .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .pinned .list__header__container { border-color: ${listBorderColor};}`);
 	}
+	const listLinkColor = theme.getColor(listLink);
+	if (listLinkColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .history .list li a { color: ${listLinkColor};}`);
+	}
 	const extensionPackBorderColor = theme.getColor(extensionPackBorder);
 	if (extensionPackBorderColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .tile.extension_pack { border-color: ${extensionPackBorderColor};}`);
@@ -941,6 +949,14 @@ registerThemingParticipant((theme, collector) => {
 	const labelBorderColorChecked = theme.getColor(welcomeLabelBorder);
 	if (labelBorderColorChecked) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .resources .input:checked+.label { border-color: ${labelBorderColorChecked}; }`);
+	}
+	const themedIconColor = theme.getColor(themedIcon);
+	if (themedIconColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .themed_icon { background-color: ${themedIconColor}; }`);
+	}
+	const themedIconAltColor = theme.getColor(themedAltIcon);
+	if (themedIconAltColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .themed_icon--alt { background-color: ${themedIconAltColor}; }`);
 	}
 	const gradientOneColor = theme.getColor(gradientOne);
 	const gradientTwoColor = theme.getColor(gradientTwo);
