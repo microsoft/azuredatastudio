@@ -128,7 +128,7 @@ export class NotebookFindDecorations implements IDisposable {
 
 	private removePrevDecorations(): void {
 		if (this._currentMatch && this._currentMatch.cell) {
-			let pevEditor = this._currentMatch.cell.cellType === 'markdown' ? undefined : this._editor.getCellEditor(this._currentMatch.cell.cellGuid);
+			let pevEditor = this._currentMatch.cell.cellType === 'markdown' && !this._currentMatch.isMarkdownSourceCell ? undefined : this._editor.getCellEditor(this._currentMatch.cell.cellGuid);
 			if (pevEditor) {
 				pevEditor.getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
 					changeAccessor.removeDecoration(this._rangeHighlightDecorationId);
