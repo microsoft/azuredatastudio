@@ -49,7 +49,7 @@ import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuratio
 					nls.localize('workbench.editor.untitled.labelFormat.content', "The name of the untitled file is derived from the contents of its first line unless it has an associated file path. It will fallback to the name in case the line is empty or contains no word characters."),
 					nls.localize('workbench.editor.untitled.labelFormat.name', "The name of the untitled file is not derived from the contents of the file."),
 				],
-				'default': 'content',
+				'default': 'name', // {{SQL CARBON EDIT}} change default from content to name
 				'description': nls.localize({
 					comment: ['This is the description for a setting. Values surrounded by parenthesis are not to be translated.'],
 					key: 'untitledLabelFormat'

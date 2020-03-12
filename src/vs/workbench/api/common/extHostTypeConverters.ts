@@ -127,12 +127,17 @@ export namespace DiagnosticTag {
 
 export namespace Diagnostic {
 	export function from(value: vscode.Diagnostic): IMarkerData {
-		let code: string | { value: string; target: URI } | undefined = isString(value.code) || isNumber(value.code) ? String(value.code) : undefined;
-		if (value.code2) {
-			code = {
-				value: String(value.code2.value),
-				target: value.code2.target
-			};
+		let code: string | { value: string; target: URI } | undefined;
+
+		if (value.code) {
+			if (isString(value.code) || isNumber(value.code)) {
+				code = String(value.code);
+			} else {
+				code = {
+					value: String(value.code.value),
+					target: value.code.target,
+				};
+			}
 		}
 
 		return {
@@ -1088,11 +1093,12 @@ export namespace EndOfLine {
 }
 
 export namespace ProgressLocation {
-	export function from(loc: vscode.ProgressLocation): MainProgressLocation {
+	export function from(loc: vscode.ProgressLocation, viewId?: string): MainProgressLocation | string {
 		switch (loc) {
 			case types.ProgressLocation.SourceControl: return MainProgressLocation.Scm;
 			case types.ProgressLocation.Window: return MainProgressLocation.Window;
 			case types.ProgressLocation.Notification: return MainProgressLocation.Notification;
+			case types.ProgressLocation.View: return viewId ?? '';
 		}
 		throw new Error(`Unknown 'ProgressLocation'`);
 	}

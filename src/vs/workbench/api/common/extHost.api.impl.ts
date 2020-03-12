@@ -146,7 +146,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostClipboard = new ExtHostClipboard(rpcProtocol);
 	const extHostMessageService = new ExtHostMessageService(rpcProtocol, extHostLogService);
 	const extHostDialogs = new ExtHostDialogs(rpcProtocol);
-	const extHostStatusBar = new ExtHostStatusBar(rpcProtocol);
+	const extHostStatusBar = new ExtHostStatusBar(rpcProtocol, extHostCommands.converter);
 	const extHostLanguages = new ExtHostLanguages(rpcProtocol, extHostDocuments);
 
 	// Register API-ish commands
@@ -188,12 +188,21 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			registerAuthenticationProvider(provider: vscode.AuthenticationProvider): vscode.Disposable {
 				return extHostAuthentication.registerAuthenticationProvider(provider);
 			},
-			get providers() {
-				return extHostAuthentication.providers(extension);
-			},
 			get onDidChangeAuthenticationProviders(): Event<vscode.AuthenticationProvidersChangeEvent> {
 				return extHostAuthentication.onDidChangeAuthenticationProviders;
-			}
+			},
+			get providerIds(): string[] {
+				return extHostAuthentication.providerIds;
+			},
+			getSessions(providerId: string, scopes: string[]): Thenable<readonly vscode.AuthenticationSession[]> {
+				return extHostAuthentication.getSessions(extension, providerId, scopes);
+			},
+			login(providerId: string, scopes: string[]): Thenable<vscode.AuthenticationSession> {
+				return extHostAuthentication.login(extension, providerId, scopes);
+			},
+			get onDidChangeSessions(): Event<string[]> {
+				return extHostAuthentication.onDidChangeSessions;
+			},
 		};
 
 		// namespace: commands
@@ -534,6 +543,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				return extHostProgress.withProgress(extension, { location: extHostTypes.ProgressLocation.SourceControl }, (progress, token) => task({ report(n: number) { /*noop*/ } }));
 			},
 			withProgress<R>(options: vscode.ProgressOptions, task: (progress: vscode.Progress<{ message?: string; worked?: number }>, token: vscode.CancellationToken) => Thenable<R>) {
+				if (options.location === extHostTypes.ProgressLocation.View) {
+					checkProposedApiEnabled(extension);
+				}
 				return extHostProgress.withProgress(extension, options, task);
 			},
 			createOutputChannel(name: string): vscode.OutputChannel {
@@ -564,17 +576,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			registerWebviewPanelSerializer: (viewType: string, serializer: vscode.WebviewPanelSerializer) => {
 				return extHostWebviews.registerWebviewPanelSerializer(extension, viewType, serializer);
 			},
-			registerWebviewTextEditorProvider: (viewType: string, provider: vscode.WebviewTextEditorProvider, options?: vscode.WebviewPanelOptions) => {
+			registerCustomEditorProvider: (viewType: string, provider: vscode.CustomEditorProvider | vscode.CustomTextEditorProvider, options?: vscode.WebviewPanelOptions) => {
 				checkProposedApiEnabled(extension);
-				return extHostWebviews.registerWebviewTextEditorProvider(extension, viewType, provider, options);
-			},
-			registerWebviewCustomEditorProvider: (viewType: string, provider: vscode.WebviewCustomEditorProvider, options?: vscode.WebviewPanelOptions) => {
-				checkProposedApiEnabled(extension);
-				return extHostWebviews.registerWebviewCustomEditorProvider(extension, viewType, provider, options);
-			},
-			createWebviewEditorCustomDocument: <UserDataType>(viewType: string, resource: vscode.Uri, userData: UserDataType, capabilities: vscode.WebviewCustomEditorCapabilities) => {
-				checkProposedApiEnabled(extension);
-				return extHostWebviews.createWebviewEditorCustomDocument<UserDataType>(viewType, resource, userData, capabilities);
+				return extHostWebviews.registerCustomEditorProvider(extension, viewType, provider, options);
 			},
 			registerDecorationProvider(provider: vscode.DecorationProvider) {
 				checkProposedApiEnabled(extension);
@@ -774,11 +778,6 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				return extHostTunnelService.getTunnels();
 			},
 			onDidChangeTunnels: (listener, thisArg?, disposables?) => {
-				checkProposedApiEnabled(extension);
-				return extHostTunnelService.onDidChangeTunnels(listener, thisArg, disposables);
-
-			},
-			onDidTunnelsChange: (listener, thisArg?, disposables?) => {
 				checkProposedApiEnabled(extension);
 				return extHostTunnelService.onDidChangeTunnels(listener, thisArg, disposables);
 
@@ -1045,6 +1044,7 @@ class Extension<T> implements vscode.Extension<T> {
 	private _identifier: ExtensionIdentifier;
 
 	readonly id: string;
+	readonly extensionUri: URI;
 	readonly extensionPath: string;
 	readonly packageJSON: IExtensionDescription;
 	readonly extensionKind: vscode.ExtensionKind;
@@ -1054,6 +1054,7 @@ class Extension<T> implements vscode.Extension<T> {
 		this._originExtensionId = originExtensionId;
 		this._identifier = description.identifier;
 		this.id = description.identifier.value;
+		this.extensionUri = description.extensionLocation;
 		this.extensionPath = path.normalize(originalFSPath(description.extensionLocation));
 		this.packageJSON = description;
 		this.extensionKind = kind;

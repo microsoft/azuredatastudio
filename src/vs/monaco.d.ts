@@ -175,6 +175,14 @@ declare namespace monaco {
 			fragment?: string;
 		}): Uri;
 		/**
+		 * Join a Uri path with path fragments and normalizes the resulting path.
+		 *
+		 * @param resource The input Uri.
+		 * @param pathFragment The path fragment to add to the Uri path.
+		 * @returns The resulting Uri.
+		 */
+		static joinPaths(resource: Uri, ...pathFragment: string[]): Uri;
+		/**
 		 * Creates a string representation for this Uri. It's guaranteed that calling
 		 * `Uri.parse` with the result of this function creates an Uri which is equal
 		 * to this Uri.
@@ -381,7 +389,6 @@ declare namespace monaco {
 		 */
 		MAX_VALUE = 112
 	}
-
 	export class KeyMod {
 		static readonly CtrlCmd: number;
 		static readonly Shift: number;
@@ -1370,6 +1377,10 @@ declare namespace monaco.editor {
 		 * If set, the decoration will be rendered in the lines decorations with this CSS class name.
 		 */
 		linesDecorationsClassName?: string | null;
+		/**
+		 * If set, the decoration will be rendered in the lines decorations with this CSS class name, but only for the first line in case of line wrapping.
+		 */
+		firstLineDecorationClassName?: string | null;
 		/**
 		 * If set, the decoration will be rendered in the margin (covering its full width) with this CSS class name.
 		 */
@@ -3032,6 +3043,11 @@ declare namespace monaco.editor {
 		 */
 		showFoldingControls?: 'always' | 'mouseover';
 		/**
+		 * Controls whether clicking on the empty content after a folded line will unfold the line.
+		 * Defaults to false.
+		 */
+		unfoldOnClickAfterEndOfLine?: boolean;
+		/**
 		 * Enable highlighting of matching brackets.
 		 * Defaults to 'always'.
 		 */
@@ -3443,7 +3459,7 @@ declare namespace monaco.editor {
 		 * Control the minimap rendering mode.
 		 * Defaults to 'actual'.
 		 */
-		mode?: 'actual' | 'cover' | 'contain';
+		size?: 'proportional' | 'fill' | 'fit';
 		/**
 		 * Control the rendering of the minimap slider.
 		 * Defaults to 'mouseover'.
@@ -3753,9 +3769,14 @@ declare namespace monaco.editor {
 		 */
 		showSnippets?: boolean;
 		/**
-		 * Controls the visibility of the status bar at the bottom of the suggest widget.
+		 * Status bar related settings.
 		 */
-		hideStatusBar?: boolean;
+		statusBar?: {
+			/**
+			 * Controls the visibility of the status bar at the bottom of the suggest widget.
+			 */
+			visible?: boolean;
+		};
 	}
 
 	export type InternalSuggestOptions = Readonly<Required<ISuggestOptions>>;
@@ -3824,85 +3845,86 @@ declare namespace monaco.editor {
 		folding = 31,
 		foldingStrategy = 32,
 		foldingHighlight = 33,
-		fontFamily = 34,
-		fontInfo = 35,
-		fontLigatures = 36,
-		fontSize = 37,
-		fontWeight = 38,
-		formatOnPaste = 39,
-		formatOnType = 40,
-		glyphMargin = 41,
-		gotoLocation = 42,
-		hideCursorInOverviewRuler = 43,
-		highlightActiveIndentGuide = 44,
-		hover = 45,
-		inDiffEditor = 46,
-		letterSpacing = 47,
-		lightbulb = 48,
-		lineDecorationsWidth = 49,
-		lineHeight = 50,
-		lineNumbers = 51,
-		lineNumbersMinChars = 52,
-		links = 53,
-		matchBrackets = 54,
-		minimap = 55,
-		mouseStyle = 56,
-		mouseWheelScrollSensitivity = 57,
-		mouseWheelZoom = 58,
-		multiCursorMergeOverlapping = 59,
-		multiCursorModifier = 60,
-		multiCursorPaste = 61,
-		occurrencesHighlight = 62,
-		overviewRulerBorder = 63,
-		overviewRulerLanes = 64,
-		padding = 65,
-		parameterHints = 66,
-		peekWidgetDefaultFocus = 67,
-		definitionLinkOpensInPeek = 68,
-		quickSuggestions = 69,
-		quickSuggestionsDelay = 70,
-		readOnly = 71,
-		renderControlCharacters = 72,
-		renderIndentGuides = 73,
-		renderFinalNewline = 74,
-		renderLineHighlight = 75,
-		renderValidationDecorations = 76,
-		renderWhitespace = 77,
-		revealHorizontalRightPadding = 78,
-		roundedSelection = 79,
-		rulers = 80,
-		scrollbar = 81,
-		scrollBeyondLastColumn = 82,
-		scrollBeyondLastLine = 83,
-		scrollPredominantAxis = 84,
-		selectionClipboard = 85,
-		selectionHighlight = 86,
-		selectOnLineNumbers = 87,
-		showFoldingControls = 88,
-		showUnused = 89,
-		snippetSuggestions = 90,
-		smoothScrolling = 91,
-		stopRenderingLineAfter = 92,
-		suggest = 93,
-		suggestFontSize = 94,
-		suggestLineHeight = 95,
-		suggestOnTriggerCharacters = 96,
-		suggestSelection = 97,
-		tabCompletion = 98,
-		useTabStops = 99,
-		wordSeparators = 100,
-		wordWrap = 101,
-		wordWrapBreakAfterCharacters = 102,
-		wordWrapBreakBeforeCharacters = 103,
-		wordWrapColumn = 104,
-		wordWrapMinified = 105,
-		wrappingIndent = 106,
-		wrappingStrategy = 107,
-		editorClassName = 108,
-		pixelRatio = 109,
-		tabFocusMode = 110,
-		layoutInfo = 111,
-		wrappingInfo = 112
+		unfoldOnClickAfterEndOfLine = 34,
+		fontFamily = 35,
+		fontInfo = 36,
+		fontLigatures = 37,
+		fontSize = 38,
+		fontWeight = 39,
+		formatOnPaste = 40,
+		formatOnType = 41,
+		glyphMargin = 42,
+		gotoLocation = 43,
+		hideCursorInOverviewRuler = 44,
+		highlightActiveIndentGuide = 45,
+		hover = 46,
+		inDiffEditor = 47,
+		letterSpacing = 48,
+		lightbulb = 49,
+		lineDecorationsWidth = 50,
+		lineHeight = 51,
+		lineNumbers = 52,
+		lineNumbersMinChars = 53,
+		links = 54,
+		matchBrackets = 55,
+		minimap = 56,
+		mouseStyle = 57,
+		mouseWheelScrollSensitivity = 58,
+		mouseWheelZoom = 59,
+		multiCursorMergeOverlapping = 60,
+		multiCursorModifier = 61,
+		multiCursorPaste = 62,
+		occurrencesHighlight = 63,
+		overviewRulerBorder = 64,
+		overviewRulerLanes = 65,
+		padding = 66,
+		parameterHints = 67,
+		peekWidgetDefaultFocus = 68,
+		definitionLinkOpensInPeek = 69,
+		quickSuggestions = 70,
+		quickSuggestionsDelay = 71,
+		readOnly = 72,
+		renderControlCharacters = 73,
+		renderIndentGuides = 74,
+		renderFinalNewline = 75,
+		renderLineHighlight = 76,
+		renderValidationDecorations = 77,
+		renderWhitespace = 78,
+		revealHorizontalRightPadding = 79,
+		roundedSelection = 80,
+		rulers = 81,
+		scrollbar = 82,
+		scrollBeyondLastColumn = 83,
+		scrollBeyondLastLine = 84,
+		scrollPredominantAxis = 85,
+		selectionClipboard = 86,
+		selectionHighlight = 87,
+		selectOnLineNumbers = 88,
+		showFoldingControls = 89,
+		showUnused = 90,
+		snippetSuggestions = 91,
+		smoothScrolling = 92,
+		stopRenderingLineAfter = 93,
+		suggest = 94,
+		suggestFontSize = 95,
+		suggestLineHeight = 96,
+		suggestOnTriggerCharacters = 97,
+		suggestSelection = 98,
+		tabCompletion = 99,
+		useTabStops = 100,
+		wordSeparators = 101,
+		wordWrap = 102,
+		wordWrapBreakAfterCharacters = 103,
+		wordWrapBreakBeforeCharacters = 104,
+		wordWrapColumn = 105,
+		wordWrapMinified = 106,
+		wrappingIndent = 107,
+		wrappingStrategy = 108,
+		editorClassName = 109,
+		pixelRatio = 110,
+		tabFocusMode = 111,
+		layoutInfo = 112,
+		wrappingInfo = 113
 	}
 	export const EditorOptions: {
 		acceptSuggestionOnCommitCharacter: IEditorOption<EditorOption.acceptSuggestionOnCommitCharacter, boolean>;
@@ -3939,6 +3961,7 @@ declare namespace monaco.editor {
 		folding: IEditorOption<EditorOption.folding, boolean>;
 		foldingStrategy: IEditorOption<EditorOption.foldingStrategy, 'auto' | 'indentation'>;
 		foldingHighlight: IEditorOption<EditorOption.foldingHighlight, boolean>;
+		unfoldOnClickAfterEndOfLine: IEditorOption<EditorOption.unfoldOnClickAfterEndOfLine, boolean>;
 		fontFamily: IEditorOption<EditorOption.fontFamily, string>;
 		fontInfo: IEditorOption<EditorOption.fontInfo, FontInfo>;
 		fontLigatures2: IEditorOption<EditorOption.fontLigatures, string>;
@@ -5444,7 +5467,7 @@ declare namespace monaco.languages {
 		preselect?: boolean;
 		/**
 		 * A string or snippet that should be inserted in a document when selecting
-		 * this completion. When `falsy` the [label](#CompletionItem.label)
+		 * this completion.
 		 * is used.
 		 */
 		insertText: string;
@@ -6028,11 +6051,11 @@ declare namespace monaco.languages {
 	}
 
 	/**
-	 * A provider of colors for editor models.
+	 * A provider of folding ranges for editor models.
 	 */
 	export interface FoldingRangeProvider {
 		/**
-		 * Provides the color ranges for a specific model.
+		 * Provides the folding ranges for a specific model.
 		 */
 		provideFoldingRanges(model: editor.ITextModel, context: FoldingContext, token: CancellationToken): ProviderResult<FoldingRange[]>;
 	}
@@ -6175,6 +6198,7 @@ declare namespace monaco.languages {
 	}
 
 	export interface DocumentSemanticTokensProvider {
+		onDidChange?: IEvent<void>;
 		getLegend(): SemanticTokensLegend;
 		provideDocumentSemanticTokens(model: editor.ITextModel, lastResultId: string | null, token: CancellationToken): ProviderResult<SemanticTokens | SemanticTokensEdits>;
 		releaseDocumentSemanticTokens(resultId: string | undefined): void;

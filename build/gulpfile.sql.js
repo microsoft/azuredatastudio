@@ -103,6 +103,9 @@ function installService() {
 		// fix path since it won't be correct
 		config.installDirectory = path.join(__dirname, '../extensions/mssql/src', config.installDirectory);
 		let installer = new serviceDownloader(config);
+		installer.eventEmitter.onAny((event, ...values) => {
+			console.log(`ServiceDownloader Event : ${event}${values && values.length > 0 ? ` - ${values.join(' ')}` : ''}`);
+		});
 		let serviceInstallFolder = installer.getInstallDirectory(runtime);
 		console.log('Cleaning up the install folder: ' + serviceInstallFolder);
 		return del(serviceInstallFolder + '/*').then(() => {
@@ -124,6 +127,9 @@ gulp.task('install-ssmsmin', () => {
 	// fix path since it won't be correct
 	config.installDirectory = path.join(__dirname, '..', 'extensions', 'admin-tool-ext-win', config.installDirectory);
 	let installer = new serviceDownloader(config);
+	installer.eventEmitter.onAny((event, ...values) => {
+		console.log(`ServiceDownloader Event : ${event}${values && values.length > 0 ? ` - ${values.join(' ')}` : ''}`);
+	});
 	const serviceInstallFolder = installer.getInstallDirectory(runtime);
 	const serviceCleanupFolder = path.join(serviceInstallFolder, '..');
 	console.log('Cleaning up the install folder: ' + serviceCleanupFolder);

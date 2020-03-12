@@ -2302,6 +2302,11 @@ declare module 'azdata' {
 		 * and call the end OAuth method.
 		 */
 		autoOAuthCancelled(): Thenable<void>;
+
+		/**
+		 * Clears token cache
+		 */
+		clearTokenCache(): Thenable<void>;
 	}
 
 	// Resource provider interfaces  -----------------------------------------------------------------------

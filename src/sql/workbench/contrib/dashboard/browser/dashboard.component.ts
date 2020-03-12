@@ -15,10 +15,12 @@ import { RefreshWidgetAction, EditDashboardAction } from 'sql/workbench/contrib/
 import { DashboardPage } from 'sql/workbench/contrib/dashboard/browser/core/dashboardPage.component';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 
-import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import * as themeColors from 'vs/workbench/common/theme';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export const DASHBOARD_SELECTOR: string = 'dashboard-component';
 
@@ -59,7 +61,7 @@ export class DashboardComponent extends AngularDisposable implements OnInit {
 		});
 		if (profile && (!profile.databaseName || Utils.isMaster(profile))) {
 			// Route to the server page as this is the default database
-			this._router.navigate(['server-dashboard']);
+			this._router.navigate(['server-dashboard']).catch(onUnexpectedError);
 		}
 	}
 

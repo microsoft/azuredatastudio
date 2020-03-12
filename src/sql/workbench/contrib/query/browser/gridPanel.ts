@@ -336,6 +336,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	public id = generateUuid();
 	readonly element: HTMLElement = this.container;
+	protected tableContainer: HTMLElement;
 
 	private _state: GridTableState;
 
@@ -366,7 +367,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.state = state;
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
-		this.container.className = 'grid-panel';
 
 		this.columns = this.resultSet.columnInfo.map((c, i) => {
 			let isLinked = c.isXml || c.isJson;
@@ -435,11 +435,12 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			this.container.appendChild(actionBarContainer);
 		}
 
-		let tableContainer = document.createElement('div');
-		tableContainer.style.display = 'inline-block';
-		tableContainer.style.width = `calc(100% - ${ACTIONBAR_WIDTH}px)`;
+		this.tableContainer = document.createElement('div');
+		this.tableContainer.className = 'grid-panel';
+		this.tableContainer.style.display = 'inline-block';
+		this.tableContainer.style.width = `calc(100% - ${ACTIONBAR_WIDTH}px)`;
 
-		this.container.appendChild(tableContainer);
+		this.container.appendChild(this.tableContainer);
 
 		let collection = new VirtualizedCollection(
 			50,
@@ -463,7 +464,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			defaultColumnWidth: 120
 		};
 		this.dataProvider = new AsyncDataProvider(collection);
-		this.table = this._register(new Table(tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
+		this.table = this._register(new Table(this.tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setTableTitle(localize('resultsGrid', "Results grid"));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
@@ -581,6 +582,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				let content = value.displayValue;
 
 				const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
+				await input.load();
 				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
 				return this.editorService.openEditor(input);
 			});

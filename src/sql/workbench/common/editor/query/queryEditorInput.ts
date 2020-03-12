@@ -172,7 +172,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	// Description is shown beside the tab name in the combobox of open editors
 	public getDescription(): string { return this._description; }
 	public supportsSplitEditor(): boolean { return false; }
-	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<boolean> {
+	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<void> {
 		return this._text.revert(group, options);
 	}
 
@@ -193,10 +193,6 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public isDirty(): boolean { return this._text.isDirty(); }
 	public get resource(): URI { return this._text.resource; }
 
-	public matchInputInstanceType(inputType: any): boolean {
-		return (this._text instanceof inputType);
-	}
-
 	public getName(longForm?: boolean): string {
 		if (this.configurationService.getValue('sql.showConnectionInfoInTitle')) {
 			let profile = this.connectionManagementService.getConnectionProfile(this.uri);
@@ -213,9 +209,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			} else {
 				title += localize('disconnected', "disconnected");
 			}
-			return this._text.getName() + (longForm ? (' - ' + title) : ` - ${trimTitle(title)}`);
+			return this.text.getName() + (longForm ? (' - ' + title) : ` - ${trimTitle(title)}`);
 		} else {
-			return this._text.getName();
+			return this.text.getName();
 		}
 	}
 
@@ -289,7 +285,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	public onDisconnect(): void {
 		this.state.connected = false;
-		this._onDidChangeLabel.fire();
+		if (!this.isDisposed()) {
+			this._onDidChangeLabel.fire();
+		}
 	}
 
 	public onRunQuery(): void {
@@ -309,10 +307,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	public dispose() {
+		super.dispose(); // we want to dispose first so that for future logic we know we are disposed
 		this.queryModelService.disposeQuery(this.uri);
 		this.connectionManagementService.disconnectEditor(this, true);
-
-		super.dispose();
 	}
 
 	public get isSharedSession(): boolean {

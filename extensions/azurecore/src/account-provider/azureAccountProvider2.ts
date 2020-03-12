@@ -44,6 +44,10 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	constructor(private metadata: AzureAccountProviderMetadata, private _tokenCache: TokenCache, private _context: vscode.ExtensionContext) {
 		this.commonAuthorityUrl = url.resolve(this.metadata.settings.host, AzureAccountProvider.AadCommonTenant);
 	}
+	// interface method
+	clearTokenCache(): Thenable<void> {
+		return this._tokenCache.clear();
+	}
 
 	// interface method
 	initialize(storedAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
@@ -91,7 +95,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private async getAccessTokens(account: azdata.Account, resource: azdata.AzureResource): Promise<AzureAccountSecurityTokenCollection> {
 		const resourceIdMap = new Map<azdata.AzureResource, string>([
 			[azdata.AzureResource.ResourceManagement, this.metadata.settings.armResource.id],
-			[azdata.AzureResource.Sql, this.metadata.settings.sqlResource.id]
+			[azdata.AzureResource.Sql, this.metadata.settings.sqlResource.id],
+			[azdata.AzureResource.OssRdbms, this.metadata.settings.ossRdbmsResource.id]
 		]);
 		const tenantRefreshPromises: Promise<{ tenantId: any, securityToken: AzureAccountSecurityToken }>[] = [];
 		const tokenCollection: AzureAccountSecurityTokenCollection = {};
@@ -253,9 +258,14 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			sendFile(res, path.join(mediaPath, 'landing.css'), 'text/css; charset=utf-8').catch(console.error);
 		};
 
+		const svg = (req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => {
+			sendFile(res, path.join(mediaPath, 'SignIn.svg'), 'image/svg+xml').catch(console.error);
+		};
+
 		pathMappings.set('/signin', initialSignIn);
 		pathMappings.set('/callback', authCallback);
 		pathMappings.set('/landing.css', css);
+		pathMappings.set('/SignIn.svg', svg);
 	}
 
 	private async makeWebRequest(accessToken: TokenResponse, uri: string): Promise<any> {

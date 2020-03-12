@@ -78,6 +78,7 @@ export class SaveResultAction extends Action {
 	public async run(context: IGridActionContext): Promise<boolean> {
 		if (!context.gridDataProvider.canSerialize) {
 			this.notificationService.warn(localize('saveToFileNotSupported', "Save to file is not supported by the backing data source"));
+			return false;
 		}
 		try {
 			await context.gridDataProvider.serializeResults(this.format, mapForNumberColumn(context.selection));
@@ -220,7 +221,7 @@ export class ChartDataAction extends Action {
 		// show the visualizer extension recommendation notification
 		this.extensionTipsService.promptRecommendedExtensionsByScenario(Constants.visualizerExtensions);
 
-		const activeEditor = this.editorService.activeControl as QueryEditor;
+		const activeEditor = this.editorService.activeEditorPane as QueryEditor;
 		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
 		return Promise.resolve(true);
 	}

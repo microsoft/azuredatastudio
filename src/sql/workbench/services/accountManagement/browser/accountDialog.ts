@@ -32,7 +32,6 @@ import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 's
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IViewPaneOptions, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
@@ -42,6 +41,7 @@ import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/commo
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 class AccountPanel extends ViewPane {
 	public index: number;
@@ -125,7 +125,7 @@ export class AccountDialog extends Modal {
 	public get onCloseEvent(): Event<void> { return this._onCloseEmitter.event; }
 
 	constructor(
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
@@ -328,8 +328,7 @@ export class AccountDialog extends Modal {
 		let providerView = new AccountPanel(
 			{
 				id: newProvider.addedProvider.id,
-				title: newProvider.addedProvider.displayName,
-				ariaHeaderLabel: newProvider.addedProvider.displayName
+				title: newProvider.addedProvider.displayName
 			},
 			this._keybindingService,
 			this._contextMenuService,

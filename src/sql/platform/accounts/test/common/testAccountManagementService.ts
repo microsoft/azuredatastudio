@@ -85,6 +85,9 @@ export class TestAccountManagementService implements IAccountManagementService {
 }
 
 export class AccountProviderStub implements azdata.AccountProvider {
+	clearTokenCache(): Thenable<void> {
+		return Promise.resolve();
+	}
 	autoOAuthCancelled(): Thenable<void> {
 		return Promise.resolve();
 	}
