@@ -497,7 +497,7 @@ class WelcomePage extends Disposable {
 		if (btnContainer) {
 			suggestions.forEach((extension, i) => {
 				const a = document.createElement('a');
-				const classes = ['btn', 'btn--standard', 'a_self--end'];
+				const classes = ['btn', 'btn--standard', 'a_self--end', 'flex', 'flex--a_center', 'flex--j_center'];
 				const btn = document.createElement('button');
 				const description = document.querySelector('.extension_pack__body');
 				const header = document.querySelector('.extension_pack__header');
