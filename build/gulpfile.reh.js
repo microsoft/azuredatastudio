@@ -31,7 +31,7 @@ const { compileExtensionsBuildTask } = require('./gulpfile.extensions');
 const { vscodeWebEntryPoints, vscodeWebResourceIncludes, vscodeWebPatchProductTask } = require('./gulpfile.vscode.web');
 const remote = require('gulp-remote-retry-src');
 const cp = require('child_process');
-const { rollupAngular, rollupAngularSlickgrid } = require('./lib/rollup');
+const { rollupAngular } = require('./lib/rollup');
 
 const REPO_ROOT = path.dirname(__dirname);
 const commit = util.getVersion(REPO_ROOT);
@@ -440,7 +440,6 @@ function packagePkgTask(platform, arch, pkgTarget) {
 				compileExtensionsBuildTask,
 				cleanupExtensions,
 				rollupAngularTask,
-				rollupAngularSlickgridTask,
 				util.rimraf(path.join(BUILD_ROOT, destinationFolderName)),
 				packageTask(type, platform, arch, sourceFolderName, destinationFolderName)
 			));
