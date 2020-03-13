@@ -76,6 +76,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (bookPathToTrust) {
 			let trustChanged = this._bookTrustManager.setBookAsTrusted(bookPathToTrust);
 
+			// update trust state of opened items
+			if (azdata.nb.notebookDocuments && azdata.nb.notebookDocuments.length) {
+				azdata.nb.notebookDocuments.forEach(document => {
+					if (this._bookTrustManager.isNotebookTrustedByDefault(document.uri.fsPath)) {
+						document.setTrusted(true);
+					}
+				});
+			}
+
 			if (trustChanged) {
 				this._apiWrapper.showInfoMessage(loc.msgBookTrusted);
 			} else {
