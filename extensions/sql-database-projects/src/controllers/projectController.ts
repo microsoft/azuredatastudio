@@ -76,9 +76,11 @@ export class ProjectsController {
 
 		const newProjFilePath = path.join(newProjUri.fsPath, newProjFileName);
 
-		if (fs.access(newProjFilePath)) {
+		try {
+			await fs.access(newProjFilePath);
 			throw new Error(`A project named ${newProjFileName} already exists in ${newProjUri.fsPath}.`);
 		}
+		catch { } // file doesn't already exist
 
 		fs.writeFile(newProjFilePath, newProjFileContents);
 		this.openProject(vscode.Uri.file(newProjFilePath));
@@ -136,7 +138,9 @@ export class ProjectsController {
 			return; // user cancelled
 		}
 
-		const newEntry = await project.addScriptItem(suggestedName + '.sql', this.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName }));
+		// TODO: file already exists?
+
+		const newEntry = await project.addScriptItem(itemObjectName + '.sql', this.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName }));
 
 		vscode.commands.executeCommand('vscode.open', newEntry.fsUri);
 
