@@ -88,9 +88,6 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 		const authenticatedCode = await this.addServerListeners(this.server, nonce, loginUrl, authCompletePromise);
 
-		let tenants: Tenant[];
-		let subscriptions: Subscription[];
-
 		let tokenClaims: TokenClaims;
 		let accessToken: AccessToken;
 		let refreshToken: RefreshToken;
@@ -113,7 +110,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			throw Error('Failure when retreiving tokens');
 		}
 
-		tenants = await this.getTenants(accessToken);
+		const tenants = await this.getTenants(accessToken);
 
 
 		try {
@@ -132,7 +129,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 		const account = this.createAccount(tokenClaims, accessToken.key, tenants);
 
-		subscriptions = await this.getSubscriptions(account);
+		const subscriptions = await this.getSubscriptions(account);
 		account.properties.subscriptions = subscriptions;
 
 		authCompleteDeferred.resolve();

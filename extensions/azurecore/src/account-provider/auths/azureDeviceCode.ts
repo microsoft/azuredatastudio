@@ -31,7 +31,7 @@ interface DeviceCodeLogin { // https://docs.microsoft.com/en-us/azure/active-dir
 	interval: number;
 	message: string;
 	user_code: string;
-	verification_uri: string
+	verification_url: string
 }
 
 interface DeviceCodeLoginResult {
@@ -59,12 +59,12 @@ export class AzureDeviceCode extends AzureAuth {
 			const uri = `${this.loginEndpointUrl}/${this.commonTenant}/oauth2/devicecode`;
 			const postResult = await this.makePostRequest(uri, {
 				client_id: this.clientId,
-				scope: this.scopesString
+				resource: this.metadata.settings.signInResourceId
 			});
 
 			const initialDeviceLogin: DeviceCodeLogin = postResult.data;
 
-			await azdata.accounts.beginAutoOAuthDeviceCode(this.metadata.id, this.pageTitle, initialDeviceLogin.message, initialDeviceLogin.user_code, initialDeviceLogin.verification_uri);
+			await azdata.accounts.beginAutoOAuthDeviceCode(this.metadata.id, this.pageTitle, initialDeviceLogin.message, initialDeviceLogin.user_code, initialDeviceLogin.verification_url);
 
 			const finalDeviceLogin = await this.setupPolling(initialDeviceLogin);
 
@@ -88,12 +88,11 @@ export class AzureDeviceCode extends AzureAuth {
 
 			this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, accessToken, refreshToken);
 
-
-			// tenants = await this.getTenants(accessToken);
-			// subscriptions = await this.getSubscriptions(accessToken);
-
-			// const account = await this.createAccount(tokenClaims, accessToken.key, tenants, subscriptions);
-			return undefined;
+			const tenants = await this.getTenants(accessToken);
+			const account = this.createAccount(tokenClaims, accessToken.key, tenants);
+			const subscriptions = await this.getSubscriptions(account);
+			account.properties.subscriptions = subscriptions;
+			return account;
 		} catch (ex) {
 			console.log(ex);
 			if (ex.msg) {
@@ -137,7 +136,7 @@ export class AzureDeviceCode extends AzureAuth {
 				grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
 				client_id: this.clientId,
 				tenant: this.commonTenant,
-				device_code: info.device_code
+				code: info.device_code
 			};
 
 			const postResult = await this.makePostRequest(uri, postData);
