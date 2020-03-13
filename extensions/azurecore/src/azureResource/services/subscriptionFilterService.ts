@@ -54,19 +54,21 @@ export class AzureResourceSubscriptionFilterService implements IAzureResourceSub
 			filters.push(...selectedSubscriptionsCache[accountId].map((subcription) => `${accountId}/${subcription.id}/${subcription.name}`));
 		}
 
-		const resourceFilterConfig = this._config.inspect<string[]>(AzureResourceSubscriptionFilterService.filterConfigName);
-		let configTarget = ConfigurationTarget.Global;
-		if (resourceFilterConfig) {
-			if (resourceFilterConfig.workspaceFolderValue) {
-				configTarget = ConfigurationTarget.WorkspaceFolder;
-			} else if (resourceFilterConfig.workspaceValue) {
-				configTarget = ConfigurationTarget.Workspace;
-			} else if (resourceFilterConfig.globalValue) {
-				configTarget = ConfigurationTarget.Global;
+		if (this._config) {
+			const resourceFilterConfig = this._config.inspect<string[]>(AzureResourceSubscriptionFilterService.filterConfigName);
+			let configTarget = ConfigurationTarget.Global;
+			if (resourceFilterConfig) {
+				if (resourceFilterConfig.workspaceFolderValue) {
+					configTarget = ConfigurationTarget.WorkspaceFolder;
+				} else if (resourceFilterConfig.workspaceValue) {
+					configTarget = ConfigurationTarget.Workspace;
+				} else if (resourceFilterConfig.globalValue) {
+					configTarget = ConfigurationTarget.Global;
+				}
 			}
-		}
 
-		await this._config.update(AzureResourceSubscriptionFilterService.filterConfigName, filters, configTarget);
+			await this._config.update(AzureResourceSubscriptionFilterService.filterConfigName, filters, configTarget);
+		}
 	}
 
 	private _config: WorkspaceConfiguration = undefined;
