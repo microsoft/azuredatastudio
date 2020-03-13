@@ -27,9 +27,12 @@ export class ProjectsController {
 	}
 
 	public async openProject(projectFile: vscode.Uri) {
-		// TODO: check if project is already open
-
-		console.log('Loading project: ' + projectFile.fsPath);
+		for (const proj of this.projects) {
+			if (proj.projectFile === projectFile.fsPath) {
+				vscode.window.showInformationMessage(`Project '${projectFile.fsPath}' is already opened.`);
+				return;
+			}
+		}
 
 		// Read project file
 		const newProject = new Project(projectFile.fsPath);
@@ -62,7 +65,7 @@ export class ProjectsController {
 			'PROJECT_GUID': '00000000-0000-0000-0000-000000000000'//Guid.create().toString() // TODO: extension building problems when using this library?
 		};
 
-		let newProjFile = newSqlProjectTemplate;
+		let newProjFileContents = newSqlProjectTemplate;
 
 		for (const macro in macroDict) {
 
@@ -71,7 +74,7 @@ export class ProjectsController {
 				throw new Error(`New Project value ${macroDict[macro]} is invalid because it contains ${macroIndicator}`);
 			}
 
-			newProjFile = newProjFile.replace(new RegExp(macroIndicator + macro + macroIndicator, 'g'), macroDict[macro]);
+			newProjFileContents = newProjFileContents.replace(new RegExp(macroIndicator + macro + macroIndicator, 'g'), macroDict[macro]);
 		}
 
 		let newProjFileName = newProjName;
@@ -80,10 +83,13 @@ export class ProjectsController {
 			newProjFileName += constants.sqlprojExtension;
 		}
 
-		// TODO: check if already exists
 		const newProjFilePath = path.join(newProjUri.fsPath, newProjFileName);
 
-		fs.writeFile(newProjFilePath, newProjFile);
+		if (fs.access(newProjFilePath)) {
+			throw new Error(`A project named ${newProjFileName} already exists in ${newProjUri.fsPath}.`);
+		}
+
+		fs.writeFile(newProjFilePath, newProjFileContents);
 		this.openProject(vscode.Uri.file(newProjFilePath));
 	}
 
