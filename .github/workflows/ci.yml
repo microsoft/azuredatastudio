@@ -49,7 +49,7 @@ jobs:
     #   name: Download Built-in Extensions
     - run: DISPLAY=:10 ./scripts/test.sh --tfs "Unit Tests" --coverage --runGlob "**/sql/**/*.test.js"
       name: Run Unit Tests (Electron)
-    - run: DISPLAY=:10 ./scripts/test-extension-unit.sh
+    - run: DISPLAY=:10 ./scripts/test-extensions-unit.sh
       name: Run Extension Unit Tests (Electron)
     # {{SQL CARBON EDIT}} Add coveralls
     - name: Upload Core Coverage
