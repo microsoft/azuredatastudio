@@ -15,7 +15,7 @@ export abstract class TabChild extends AngularDisposable {
 @Component({
 	selector: 'tab',
 	template: `
-		<div role="tabpanel" [attr.aria-labelledby]="identifier" tabindex="0" class="visibility" [class.hidden]="shouldBeHidden()" *ngIf="shouldBeIfed()" class="fullsize">
+		<div role="tabpanel" [attr.aria-labelledby]="identifier" class="visibility" [class.hidden]="shouldBeHidden()" *ngIf="shouldBeIfed()" class="fullsize">
 			<ng-container *ngTemplateOutlet="templateRef"></ng-container>
 		</div>
 	`
