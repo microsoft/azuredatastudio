@@ -50,7 +50,15 @@ export class FileNode extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		return new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.None);
+		const treeItem = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.None);
+
+		treeItem.command = {
+			title: 'Open file',
+			command: 'vscode.open',
+			arguments: [this.fileSystemUri]
+		};
+
+		return treeItem;
 	}
 }
 

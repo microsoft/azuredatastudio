@@ -61,7 +61,7 @@ export class Project {
 	}
 
 	private createProjectEntry(relativePath: string, entryType: EntryType): ProjectEntry {
-		return new ProjectEntry(vscode.Uri.file(path.join(this.projectFile, relativePath)), entryType);
+		return new ProjectEntry(vscode.Uri.file(path.join(path.dirname(this.projectFile), relativePath)), entryType);
 	}
 }
 
