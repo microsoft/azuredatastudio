@@ -49,12 +49,26 @@ jobs:
     #   name: Download Built-in Extensions
     - run: DISPLAY=:10 ./scripts/test.sh --tfs "Unit Tests" --coverage --runGlob "**/sql/**/*.test.js"
       name: Run Unit Tests (Electron)
+    - run: DISPLAY=:10 ./scripts/test-extension-unit.sh
+      name: Run Extension Unit Tests (Electron)
     # {{SQL CARBON EDIT}} Add coveralls
-    - name: Coveralls GitHub Action
+    - name: Upload Core Coverage
+      uses: coverallsapp/github-action@v1.0.1
+      with:
+        parallel: true
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: '.build/coverage-single/lcov.info'
+    - name: Upload Extension Coverage
+      uses: coverallsapp/github-action@v1.0.1
+      with:
+        parallel: true
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: './extensions/azurecore/coverage/lcov.info'
+    - name: Coveralls Github Action
       uses: coverallsapp/github-action@v1.0.1
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: '.build/coverage-single/lcov.info'
+        parallel-finished: true
 
     # Fails with cryptic error (e.g. https://github.com/microsoft/vscode/pull/90292/checks?check_run_id=433681926#step:13:9)
     # - run: DISPLAY=:10 yarn test-browser --browser chromium
