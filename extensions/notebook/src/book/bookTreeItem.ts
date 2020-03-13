@@ -45,7 +45,7 @@ export class BookTreeItem extends vscode.TreeItem {
 				this.contextValue = 'savedBook';
 			}
 		} else {
-			if (book.type === BookTreeItemType.Markdown && book.page.expand_sections) {
+			if (book.page && book.page.sections && book.page.sections.length > 0) {
 				this.contextValue = 'section';
 			}
 			this.setPageVariables();

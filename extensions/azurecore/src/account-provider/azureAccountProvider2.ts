@@ -44,6 +44,10 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	constructor(private metadata: AzureAccountProviderMetadata, private _tokenCache: TokenCache, private _context: vscode.ExtensionContext) {
 		this.commonAuthorityUrl = url.resolve(this.metadata.settings.host, AzureAccountProvider.AadCommonTenant);
 	}
+	// interface method
+	clearTokenCache(): Thenable<void> {
+		return this._tokenCache.clear();
+	}
 
 	// interface method
 	initialize(storedAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
