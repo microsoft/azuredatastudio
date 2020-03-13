@@ -24,7 +24,7 @@ async function getFileKeytar(filePath: string, credentialService: azdata.Credent
 	const key = await credentialService.readCredential(`${fileName}-key`);
 	let ivBuffer: Buffer;
 	let keyBuffer: Buffer;
-	if (iv?.password === null || key?.password === null) {
+	if (!iv?.password || !key?.password) {
 		ivBuffer = crypto.randomBytes(16);
 		keyBuffer = crypto.randomBytes(32);
 		try {

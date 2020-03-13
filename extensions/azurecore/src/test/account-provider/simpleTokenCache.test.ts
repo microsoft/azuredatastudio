@@ -16,6 +16,7 @@ describe('AccountProvider.SimpleTokenCache', function (): void {
 		const tokenCacheKey = 'azureTokenCache-testkey';
 		const tokenCachePassword = 'azureTokenCache-testpassword';
 		const tokenCache = new SimpleTokenCache('testTokenService', os.tmpdir(), true, new CredentialsTestProvider());
+		await tokenCache.init();
 
 		const result = await tokenCache.saveCredential(tokenCacheKey, tokenCachePassword);
 		should(result).not.be.true('TokenResponse not added correctly');
@@ -27,6 +28,7 @@ describe('AccountProvider.SimpleTokenCache', function (): void {
 		const tokenCacheKey = 'azureTokenCache-testkey';
 		const tokenCachePassword = 'azureTokenCache-testpassword';
 		const tokenCache = new SimpleTokenCache('testTokenService', os.tmpdir(), true, new CredentialsTestProvider());
+		await tokenCache.init();
 
 		const addResult = await tokenCache.saveCredential(tokenCacheKey, tokenCachePassword);
 		should(addResult).not.be.false('TokenResponse not added correctly');

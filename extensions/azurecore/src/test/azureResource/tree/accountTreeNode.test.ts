@@ -76,10 +76,13 @@ const mockSubscriptions = [mockSubscription1, mockSubscription2];
 const mockFilteredSubscriptions = [mockSubscription1];
 
 const mockTokens: { [key: string]: any } = {};
-mockTokens[mockTenantId] = {
-	token: 'mock_token',
-	tokenType: 'Bearer'
-};
+
+[mockSubscription1.id, mockSubscription2.id, mockTenantId].forEach(s => {
+	mockTokens[s] = {
+		token: 'mock_token',
+		tokenType: 'Bearer'
+	};
+});
 
 const mockCredential = new TokenCredentials(mockTokens[mockTenantId].token, mockTokens[mockTenantId].tokenType);
 
