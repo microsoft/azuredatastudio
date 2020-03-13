@@ -1,0 +1,11 @@
+{
+  perform: true,
+  commands: [
+    {
+      type: 'label',
+      name: 'Needs Logs',
+      action: 'comment',
+      comment: "We need more info to debug your particular issue. If you could attach your logs to the issue (ensure no private data is in them), it would help us fix the issue much faster.\n\nTo find your logs:\n\n- Open command palette (Click **View** -> **Command Palette**)\n- Run the command: **`Developer: Open Logs Folder`**\n\nThis will open the log file locally. Please include renderer.log"
+    }
+  ]
+}
