@@ -55,68 +55,53 @@ jobs:
     - name: Upload Core Coverage
       uses: coverallsapp/github-action@v1.0.1
       with:
-        parallel: true
         github-token: ${{ secrets.GITHUB_TOKEN }}
         path-to-lcov: '.build/coverage-single/lcov.info'
     - name: Upload admin-tool-ext-win Extension Coverage
       uses: coverallsapp/github-action@v1.0.1
       with:
-        parallel: true
         github-token: ${{ secrets.GITHUB_TOKEN }}
         path-to-lcov: './extensions/admin-tool-ext-win/coverage/lcov.info'
     - name: Upload agent Extension Coverage
       uses: coverallsapp/github-action@v1.0.1
       with:
-        parallel: true
         github-token: ${{ secrets.GITHUB_TOKEN }}
         path-to-lcov: './extensions/agent/coverage/lcov.info'
     - name: Upload azurecore Extension Coverage
       uses: coverallsapp/github-action@v1.0.1
       with:
-        parallel: true
         github-token: ${{ secrets.GITHUB_TOKEN }}
         path-to-lcov: './extensions/azurecore/coverage/lcov.info'
     - name: Upload cms Extension Coverage
       uses: coverallsapp/github-action@v1.0.1
       with:
-        parallel: true
         github-token: ${{ secrets.GITHUB_TOKEN }}
         path-to-lcov: './extensions/cms/coverage/lcov.info'
     - name: Upload dacpac Extension Coverage
       uses: coverallsapp/github-action@v1.0.1
       with:
-        parallel: true
         github-token: ${{ secrets.GITHUB_TOKEN }}
         path-to-lcov: './extensions/dacpac/coverage/lcov.info'
     - name: Upload schema-compare Extension Coverage
       uses: coverallsapp/github-action@v1.0.1
       with:
-        parallel: true
         github-token: ${{ secrets.GITHUB_TOKEN }}
         path-to-lcov: './extensions/schema-compare/coverage/lcov.info'
     - name: Upload notebook Extension Coverage
       uses: coverallsapp/github-action@v1.0.1
       with:
-        parallel: true
         github-token: ${{ secrets.GITHUB_TOKEN }}
         path-to-lcov: './extensions/notebook/coverage/lcov.info'
     - name: Upload resource-deployment Extension Coverage
       uses: coverallsapp/github-action@v1.0.1
       with:
-        parallel: true
         github-token: ${{ secrets.GITHUB_TOKEN }}
         path-to-lcov: './extensions/resource-deployment/coverage/lcov.info'
     - name: Upload machine-learning-services Extension Coverage
       uses: coverallsapp/github-action@v1.0.1
       with:
-        parallel: true
         github-token: ${{ secrets.GITHUB_TOKEN }}
         path-to-lcov: './extensions/machine-learning-services/coverage/lcov.info'
-    - name: Coveralls Github Action
-      uses: coverallsapp/github-action@v1.0.1
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        parallel-finished: true
 
     # Fails with cryptic error (e.g. https://github.com/microsoft/vscode/pull/90292/checks?check_run_id=433681926#step:13:9)
     # - run: DISPLAY=:10 yarn test-browser --browser chromium
