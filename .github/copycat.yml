@@ -1,0 +1,5 @@
+{
+	perform: true,
+	target_owner: 'anthonydresser',
+	target_repo: 'testissues'
+}
