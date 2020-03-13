@@ -110,6 +110,10 @@ export class ProjectsController {
 		}
 	}
 
+	public addItem(itemType: string, itemObjectName: string) {
+		vscode.window.showInformationMessage(`creating new ${itemType} called ${itemObjectName}`);
+	}
+
 	public refreshProjectsTree() {
 		this.projectTreeViewProvider.load(this.projects);
 	}

@@ -41,6 +41,26 @@
         "command": "sqlDatabaseProjects.close",
         "title": "%sqlDatabaseProjects.close%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.newTable",
+        "title": "%sqlDatabaseProjects.newTable%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.newView",
+        "title": "%sqlDatabaseProjects.newView%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.newStoredProcedure",
+        "title": "%sqlDatabaseProjects.newStoredProcedure%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.newItem",
+        "title": "%sqlDatabaseProjects.newItem%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -55,6 +75,22 @@
       "view/item/context": [
         {
           "command": "sqlDatabaseProjects.close",
+          "when": "view == sqlDatabaseProjectsView"
+        },
+        {
+          "command": "sqlDatabaseProjects.newTable",
+          "when": "view == sqlDatabaseProjectsView"
+        },
+        {
+          "command": "sqlDatabaseProjects.newView",
+          "when": "view == sqlDatabaseProjectsView"
+        },
+        {
+          "command": "sqlDatabaseProjects.newStoredProcedure",
+          "when": "view == sqlDatabaseProjectsView"
+        },
+        {
+          "command": "sqlDatabaseProjects.newItem",
           "when": "view == sqlDatabaseProjectsView"
         }
       ]

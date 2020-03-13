@@ -64,4 +64,5 @@ export const newSqlProjectTemplate = `<?xml version="1.0" encoding="utf-8"?>
 \u0020\u0020<ItemGroup>
 \u0020\u0020\u0020\u0020<Folder Include="Properties" />
 \u0020\u0020</ItemGroup>
-</Project>`;
+</Project>
+`;

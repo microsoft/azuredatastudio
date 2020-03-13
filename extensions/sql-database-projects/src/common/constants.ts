@@ -27,3 +27,9 @@ export const missingVersion = localize('missingVersion', "Missing 'version' entr
 export const unrecognizedDataSourcesVersion = localize('unrecognizedDataSourcesVersion', "Unrecognized version: ");
 export const unknownDataSourceType = localize('unknownDataSourceType', "Unknown data source type: ");
 export const invalidSqlConnectionString = localize('invalidSqlConnectionString', "Invalid SQL connection string");
+
+// Project script types
+
+export const tableFriendlyName = localize('tableFriendlyName', "Table");
+export const viewFriendlyName = localize('viewFriendlyName', "View");
+export const storedProcedureFriendlyName = localize('storedProcedureFriendlyName', "Stored Procedure");

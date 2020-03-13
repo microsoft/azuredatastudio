@@ -1,8 +1,14 @@
 {
+	"title.projectsView": "Projects",
+
 	"sqlDatabaseProjects.displayName": "Database Projects",
 	"sqlDatabaseProjects.description": "Design and deploy SQL database schemas",
 	"sqlDatabaseProjects.new": "New Database Project",
 	"sqlDatabaseProjects.open": "Open Database Project",
 	"sqlDatabaseProjects.close": "Close Database Project",
-	"title.projectsView": "Projects"
+
+	"sqlDatabaseProjects.newTable": "Add Table",
+	"sqlDatabaseProjects.newView": "Add View",
+	"sqlDatabaseProjects.newStoredProcedure": "Add Stored Procedure",
+	"sqlDatabaseProjects.newItem": "Add Item..."
 }
