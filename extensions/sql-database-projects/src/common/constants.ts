@@ -9,6 +9,7 @@ const localize = nls.loadMessageBundle();
 
 // Placeholder values
 export const dataSourcesFileName = 'datasources.json';
+export const sqlprojExtension = '.sqlproj';
 
 // UI Strings
 

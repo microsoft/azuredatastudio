@@ -20,6 +20,14 @@ export abstract class DataSource {
 	}
 }
 
+export class NoDataSourcesFileError extends Error {
+	constructor(message?: string) {
+		super(message);
+		Object.setPrototypeOf(this, new.target.prototype);
+		this.name = NoDataSourcesFileError.name;
+	}
+}
+
 /**
  * parses the specified file to load DataSource objects
  */
@@ -30,7 +38,8 @@ export async function load(dataSourcesFilePath: string): Promise<DataSource[]> {
 		fileContents = await fs.readFile(dataSourcesFilePath);
 	}
 	catch (err) {
-		throw new Error(constants.noDataSourcesFile);
+		// TODO: differentiate between file not existing and other types of failures; need to know whether to prompt to create new
+		throw new NoDataSourcesFileError(constants.noDataSourcesFile);
 	}
 
 	const rawJsonContents = JSON.parse(fileContents.toString());
