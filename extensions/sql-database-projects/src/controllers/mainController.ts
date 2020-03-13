@@ -10,6 +10,7 @@ import * as templateMap from '../templates/templateMap';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { getErrorMessage } from '../common/utils';
 import { ProjectsController } from './projectController';
+import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 
 const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
 
@@ -43,12 +44,12 @@ export default class MainController implements vscode.Disposable {
 		// init commands
 		vscode.commands.registerCommand('sqlDatabaseProjects.new', async () => { this.createNewProject(); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.open', async () => { this.openProjectFromFile(); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.close', (arg: any) => { this.projectsController.closeProject(arg); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.close', (node: BaseProjectTreeItem) => { this.projectsController.closeProject(node); });
 
-		vscode.commands.registerCommand('sqlDatabaseProjects.newTable', () => { this.addItemPrompt(templateMap.table); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newView', () => { this.addItemPrompt(templateMap.view); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newStoredProcedure', () => { this.addItemPrompt(templateMap.storedProcedure); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newItem', () => { this.addItemPrompt(); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newTable', (node: BaseProjectTreeItem) => { this.projectsController.addItemPrompt(node, templateMap.table); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newView', (node: BaseProjectTreeItem) => { this.projectsController.addItemPrompt(node, templateMap.view); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newStoredProcedure', (node: BaseProjectTreeItem) => { this.projectsController.addItemPrompt(node, templateMap.storedProcedure); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newItem', (node: BaseProjectTreeItem) => { this.projectsController.addItemPrompt(node); });
 
 		// init view
 		this.extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(SQL_DATABASE_PROJECTS_VIEW_ID, this.dbProjectTreeViewProvider));
@@ -116,37 +117,6 @@ export default class MainController implements vscode.Disposable {
 		catch (err) {
 			vscode.window.showErrorMessage(getErrorMessage(err));
 		}
-	}
-
-	public async addItemPrompt(itemType?: string) {
-
-
-		if (!itemType) {
-			let itemFriendlyNames: string[] = [];
-
-			for (const itemType of templateMap.projectScriptTypes) {
-				itemFriendlyNames.push(itemType.friendlyName);
-			}
-
-			itemType = await vscode.window.showQuickPick(itemFriendlyNames, {
-				canPickMany: false
-			});
-
-			if (!itemType) {
-				return; // user cancelled
-			}
-		}
-
-		const itemObjectName = await vscode.window.showInputBox({
-			prompt: 'New item name:',
-			value: 'NewItem',
-		});
-
-		if (!itemObjectName) {
-			return; // user cancelled
-		}
-
-		this.projectsController.addItem(itemType, itemObjectName);
 	}
 
 	public dispose(): void {

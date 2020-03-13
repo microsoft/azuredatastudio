@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
+import * as templateMap from '../templates/templateMap';
 
 
 import { Project } from '../models/project';
@@ -60,24 +61,12 @@ export class ProjectsController {
 	}
 
 	public async createNewProject(newProjName: string, newProjUri: vscode.Uri) {
-		const macroIndicator = '@@';
-
 		const macroDict: Record<string, string> = {
 			'PROJECT_NAME': newProjName,
 			'PROJECT_GUID': '00000000-0000-0000-0000-000000000000'//Guid.create().toString() // TODO: extension building problems when using this library?
 		};
 
-		let newProjFileContents = newSqlProjectTemplate;
-
-		for (const macro in macroDict) {
-
-			// check if value contains the macroIndicator, which could break expansion for successive macros
-			if (macroDict[macro].includes(macroIndicator)) {
-				throw new Error(`New Project value ${macroDict[macro]} is invalid because it contains ${macroIndicator}`);
-			}
-
-			newProjFileContents = newProjFileContents.replace(new RegExp(macroIndicator + macro + macroIndicator, 'g'), macroDict[macro]);
-		}
+		let newProjFileContents = this.macroExpansion(newSqlProjectTemplate, macroDict);
 
 		let newProjFileName = newProjName;
 
@@ -95,23 +84,79 @@ export class ProjectsController {
 		this.openProject(vscode.Uri.file(newProjFilePath));
 	}
 
-	public closeProject(arg: any) {
-		if (!(arg instanceof BaseProjectTreeItem)) {
-			// TODO: if this really does have to show up in the command palette, what's the expected behavior?
-			// Prompt for project name as input, or silently exit the flow?
-			return;
+	public closeProject(treeNode: BaseProjectTreeItem) {
+		const project = this.getProjectFromTreeNode(treeNode);
+		this.projects = this.projects.filter((e) => { return e !== project; });
+		this.refreshProjectsTree();
+	}
+
+	private getProjectFromTreeNode(treeNode: BaseProjectTreeItem): Project | undefined {
+		if (treeNode.root instanceof ProjectRootTreeItem) {
+			return (treeNode.root as ProjectRootTreeItem).project;
 		}
-
-		let rootNode = (arg as BaseProjectTreeItem).root;
-
-		if (rootNode instanceof ProjectRootTreeItem) {
-			this.projects = this.projects.filter((e) => { return e !== (rootNode as ProjectRootTreeItem).project; });
-			this.refreshProjectsTree();
+		else {
+			return undefined;
 		}
 	}
 
-	public addItem(itemType: string, itemObjectName: string) {
-		vscode.window.showInformationMessage(`creating new ${itemType} called ${itemObjectName}`);
+	public async addItemPrompt(treeNode: BaseProjectTreeItem, itemTypeName?: string) {
+		const project = this.getProjectFromTreeNode(treeNode);
+
+		if (!project) {
+			return;
+		}
+
+		if (!itemTypeName) {
+			let itemFriendlyNames: string[] = [];
+
+			for (const itemType of templateMap.projectScriptTypes) {
+				itemFriendlyNames.push(itemType.friendlyName);
+			}
+
+			itemTypeName = await vscode.window.showQuickPick(itemFriendlyNames, {
+				canPickMany: false
+			});
+
+			if (!itemTypeName) {
+				return; // user cancelled
+			}
+		}
+
+		const itemType = templateMap.projectScriptTypeMap[itemTypeName];
+
+		// TODO: ask project for suggested name that doesn't conflict
+		const suggestedName = itemType.friendlyName.replace(new RegExp('\s', 'g'), '') + '1';
+
+		const itemObjectName = await vscode.window.showInputBox({
+			prompt: `New ${itemType.friendlyName} name:`,
+			value: suggestedName,
+		});
+
+		if (!itemObjectName) {
+			return; // user cancelled
+		}
+
+		const newEntry = await project.addScriptItem(suggestedName + '.sql', this.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName }));
+
+		vscode.commands.executeCommand('vscode.open', newEntry.fsUri);
+
+		this.refreshProjectsTree();
+	}
+
+	private macroExpansion(template: string, macroDict: Record<string, string>): string {
+		const macroIndicator = '@@';
+		let output = template;
+
+		for (const macro in macroDict) {
+			// check if value contains the macroIndicator, which could break expansion for successive macros
+			if (macroDict[macro].includes(macroIndicator)) {
+				throw new Error(`Macro value ${macroDict[macro]} is invalid because it contains ${macroIndicator}`);
+			}
+
+			output = output.replace(new RegExp(macroIndicator + macro + macroIndicator, 'g'), macroDict[macro]);
+		}
+
+		return output;
 	}
 
 	public refreshProjectsTree() {

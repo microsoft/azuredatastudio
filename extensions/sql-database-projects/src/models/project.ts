@@ -63,6 +63,15 @@ export class Project {
 	private createProjectEntry(relativePath: string, entryType: EntryType): ProjectEntry {
 		return new ProjectEntry(vscode.Uri.file(path.join(path.dirname(this.projectFile), relativePath)), entryType);
 	}
+
+	public async addScriptItem(fileName: string, contents: string): Promise<ProjectEntry> {
+		await fs.writeFile(path.join(path.dirname(this.projectFile), fileName), contents);
+
+		const fileEntry = this.createProjectEntry(fileName, EntryType.File);
+		this.files.push(fileEntry);
+
+		return fileEntry;
+	}
 }
 
 /**
@@ -72,16 +81,16 @@ export class ProjectEntry {
 	/**
 	 * Absolute file system URI
 	 */
-	uri: vscode.Uri;
+	fsUri: vscode.Uri;
 	type: EntryType;
 
 	constructor(uri: vscode.Uri, type: EntryType) {
-		this.uri = uri;
+		this.fsUri = uri;
 		this.type = type;
 	}
 
 	public toString(): string {
-		return this.uri.path;
+		return this.fsUri.path;
 	}
 }
 
