@@ -891,6 +891,7 @@ export interface ExtHostNotebookDocumentsAndEditorsShape {
 }
 
 export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable {
+	$trySetTrusted(_uri: UriComponents, isTrusted: boolean): Thenable<boolean>;
 	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string>;
 	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
