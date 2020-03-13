@@ -45,7 +45,7 @@ export class SqlInstanceArcTreeDataProvider extends ResourceTreeDataProviderBase
 				databaseName: databaseServer.defaultDatabaseName,
 				userName: databaseServer.loginName,
 				password: '',
-				authenticationType: 'SqlLogin',
+				authenticationType: 'AzureMFA',
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',

@@ -116,7 +116,11 @@ export abstract class AzureAuth {
 		this.commonTenant = 'common';
 		this.redirectUri = this.metadata.settings.redirectUri;
 		this.clientId = this.metadata.settings.clientId;
-		this.resources = [this.metadata.settings.armResource, this.metadata.settings.sqlResource];
+
+		this.resources = [
+			this.metadata.settings.armResource, this.metadata.settings.sqlResource,
+			this.metadata.settings.graphResource, this.metadata.settings.ossRdbmsResource
+		];
 
 		this.scopes = [...this.metadata.settings.scopes];
 		this.scopesString = this.scopes.join(' ');
@@ -158,9 +162,14 @@ export abstract class AzureAuth {
 			return undefined;
 		}
 
-		let cachedTokens = await this.getCachedToken(account.key);
+		let cachedTokens = await this.getCachedToken(account.key, resource.endpoint);
 		if (!cachedTokens) {
-			return undefined;
+			const baseToken = await this.getCachedToken(account.key);
+			await this.refreshAccessToken(account.key, baseToken.refreshToken, resource.endpoint);
+			cachedTokens = await this.getCachedToken(account.key, resource.endpoint);
+			if (!cachedTokens) {
+				return undefined;
+			}
 		}
 		let { accessToken } = cachedTokens;
 
@@ -188,7 +197,7 @@ export abstract class AzureAuth {
 
 	public async clearCredentials(account: azdata.AccountKey): Promise<void> {
 		for (const resource of this.resources) {
-			this.deleteCachedToken(account, resource);
+			this.deleteCachedToken(account, resource.endpoint);
 		}
 	}
 
@@ -275,9 +284,9 @@ export abstract class AzureAuth {
 		}
 	}
 
-	protected async getToken(postData: { [key: string]: string }, scope: string): Promise<TokenRefreshResponse | undefined> {
+	protected async getToken(postData: { [key: string]: string }): Promise<TokenRefreshResponse | undefined> {
 		try {
-			const tokenUrl = `${this.loginEndpointUrl}${this.commonTenant}/oauth2/v2.0/token`;
+			const tokenUrl = `${this.loginEndpointUrl}${this.commonTenant}/oauth2/token`;
 
 			const tokenResponse = await this.makePostRequest(tokenUrl, postData);
 			const tokenClaims = this.getTokenClaims(tokenResponse.data.access_token);
@@ -310,16 +319,19 @@ export abstract class AzureAuth {
 		}
 	}
 
-	private async refreshAccessToken(account: azdata.AccountKey, rt: RefreshToken): Promise<void> {
-		const postData = {
+	private async refreshAccessToken(account: azdata.AccountKey, rt: RefreshToken, resourceId?: string): Promise<void> {
+		const postData: { [key: string]: string } = {
 			grant_type: 'refresh_token',
 			refresh_token: rt.token,
 			client_id: this.clientId,
 			tenant: this.commonTenant,
-			scope: this.scopesString
 		};
 
-		const { accessToken, refreshToken } = await this.getToken(postData, postData.scope);
+		if (resourceId) {
+			postData.resource = resourceId;
+		}
+
+		const { accessToken, refreshToken } = await this.getToken(postData);
 
 		if (!accessToken || !refreshToken) {
 			console.log('Access or refresh token were undefined');
@@ -327,32 +339,34 @@ export abstract class AzureAuth {
 			throw new Error(msg);
 		}
 
-		return this.setCachedToken(account, accessToken, refreshToken);
+		return this.setCachedToken(account, accessToken, refreshToken, resourceId);
 	}
 
 
-	protected async setCachedToken(account: azdata.AccountKey, accessToken: AccessToken, refreshToken: RefreshToken): Promise<void> {
+	protected async setCachedToken(account: azdata.AccountKey, accessToken: AccessToken, refreshToken: RefreshToken, resourceId?: string): Promise<void> {
 		const msg = localize('azure.cacheErrorAdd', "Error when adding your account to the cache.");
-
+		resourceId = resourceId ?? '';
 		if (!accessToken || !accessToken.token || !refreshToken.token || !accessToken.key) {
 			throw new Error(msg);
 		}
 
 		try {
-			await this.tokenCache.saveCredential(`${account.accountId}_access`, JSON.stringify(accessToken));
-			await this.tokenCache.saveCredential(`${account.accountId}_refresh`, JSON.stringify(refreshToken));
+			await this.tokenCache.saveCredential(`${account.accountId}_access_${resourceId}`, JSON.stringify(accessToken));
+			await this.tokenCache.saveCredential(`${account.accountId}_refresh_${resourceId}`, JSON.stringify(refreshToken));
 		} catch (ex) {
 			console.error('Error when storing tokens.', ex);
 			throw new Error(msg);
 		}
 	}
 
-	protected async getCachedToken(account: azdata.AccountKey): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken } | undefined> {
+	protected async getCachedToken(account: azdata.AccountKey, resourceId?: string): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken } | undefined> {
+		resourceId = resourceId ?? '';
+
 		let accessToken: AccessToken;
 		let refreshToken: RefreshToken;
 		try {
-			accessToken = JSON.parse(await this.tokenCache.getCredential(`${account.accountId}_access`));
-			refreshToken = JSON.parse(await this.tokenCache.getCredential(`${account.accountId}_refresh`));
+			accessToken = JSON.parse(await this.tokenCache.getCredential(`${account.accountId}_access_${resourceId}`));
+			refreshToken = JSON.parse(await this.tokenCache.getCredential(`${account.accountId}_refresh_${resourceId}`));
 		} catch (ex) {
 			return undefined;
 		}
@@ -376,10 +390,12 @@ export abstract class AzureAuth {
 
 	}
 
-	protected async deleteCachedToken(account: azdata.AccountKey, resource: Resource): Promise<void> {
+	protected async deleteCachedToken(account: azdata.AccountKey, resourceId: string): Promise<void> {
+		resourceId = resourceId ?? '';
 		try {
-			await this.tokenCache.clearCredential(`${account.accountId}_${resource.id}_access`);
-			await this.tokenCache.clearCredential(`${account.accountId}_${resource.id}_refresh`);
+
+			await this.tokenCache.clearCredential(`${account.accountId}_access_${resourceId}`);
+			await this.tokenCache.clearCredential(`${account.accountId}_refresh_${resourceId}`);
 		} catch (ex) {
 			const msg = localize('azure.cacheErrrorRemove', "Error when removing your account from the cache.");
 			console.error('Error when removing tokens.', ex);
@@ -389,13 +405,30 @@ export abstract class AzureAuth {
 
 	protected createAccount(tokenClaims: TokenClaims, key: string, tenants: Tenant[], subscriptions: Subscription[]): AzureAccount {
 		// Determine if this is a microsoft account
-		let msa = tokenClaims.iss === 'https://sts.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/';
+		let accountIssuer = 'unknown';
 
-		let contextualDisplayName = msa
-			? localize('microsoftAccountDisplayName', "Microsoft Account")
-			: tokenClaims.name;
+		if (tokenClaims.iss === 'https://sts.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/') {
+			accountIssuer = 'corp';
+		}
+		if (tokenClaims?.idp === 'live.com') {
+			accountIssuer = 'msft';
+		}
 
-		let accountType = msa
+		const displayName = tokenClaims.name ?? tokenClaims.email ?? tokenClaims.unique_name;
+
+		let contextualDisplayName: string;
+		switch (accountIssuer) {
+			case 'corp':
+				contextualDisplayName = localize('azure.microsoftCorpAccount', "Microsoft Corp");
+				break;
+			case 'msft':
+				contextualDisplayName = localize('azure.microsoftAccountDisplayName', 'Microsoft Account');
+				break;
+			default:
+				contextualDisplayName = displayName;
+		}
+
+		let accountType = accountIssuer === 'msft'
 			? this.MicrosoftAccountType
 			: this.WorkSchoolAccountType;
 
@@ -409,11 +442,11 @@ export abstract class AzureAuth {
 				accountType: accountType,
 				userId: key,
 				contextualDisplayName: contextualDisplayName,
-				displayName: tokenClaims.name
+				displayName
 			},
 			properties: {
 				providerSettings: this.metadata,
-				isMsAccount: msa,
+				isMsAccount: accountIssuer === 'msft',
 				tenants,
 				subscriptions,
 				azureAuthType: this.authType

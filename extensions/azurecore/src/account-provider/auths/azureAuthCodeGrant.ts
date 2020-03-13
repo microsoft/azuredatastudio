@@ -10,6 +10,7 @@ import * as nls from 'vscode-nls';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as http from 'http';
+import * as qs from 'qs';
 
 import {
 	AzureAuth,
@@ -67,13 +68,22 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		// The login code to use
 		let loginUrl: string;
 		let codeVerifier: string;
-		let scopes: string;
 		{
-			scopes = this.scopesString;
 			codeVerifier = this.toBase64UrlEncoding(crypto.randomBytes(32).toString('base64'));
 			const state = `${serverPort},${encodeURIComponent(nonce)}`;
 			const codeChallenge = this.toBase64UrlEncoding(crypto.createHash('sha256').update(codeVerifier).digest('base64'));
-			loginUrl = `${this.loginEndpointUrl}${this.commonTenant}/oauth2/v2.0/authorize?response_type=code&response_mode=query&client_id=${encodeURIComponent(this.clientId)}&redirect_uri=${encodeURIComponent(this.redirectUri)}&state=${state}&scope=${encodeURIComponent(scopes)}&prompt=select_account&code_challenge_method=S256&code_challenge=${codeChallenge}`;
+			const loginQuery = {
+				response_type: 'code',
+				response_mode: 'query',
+				client_id: this.clientId,
+				redirect_uri: this.redirectUri,
+				state,
+				prompt: 'select_account',
+				code_challenge_method: 'S256',
+				code_challenge: codeChallenge,
+				resource: this.metadata.settings.signInResourceId
+			};
+			loginUrl = `${this.loginEndpointUrl}${this.commonTenant}/oauth2/authorize?${qs.stringify(loginQuery)}`;
 		}
 
 		const authenticatedCode = await this.addServerListeners(this.server, nonce, loginUrl, authCompletePromise);
@@ -104,7 +114,9 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		}
 
 		tenants = await this.getTenants(accessToken);
+
 		subscriptions = await this.getSubscriptions(accessToken);
+
 		try {
 			this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, accessToken, refreshToken);
 		} catch (ex) {
@@ -179,7 +191,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 					return;
 				}
 
-				if (stateSplit[1] !== nonce) {
+				if (stateSplit[1] !== encodeURIComponent(nonce)) {
 					res.writeHead(400, { 'content-type': 'text/html' });
 					res.write(localize('azureAuth.nonceError', "Authentication failed due to a nonce mismatch, please close ADS and try again."));
 					res.end();
@@ -205,11 +217,11 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			grant_type: 'authorization_code',
 			code: authCode,
 			client_id: this.clientId,
-			scope: this.scopesString,
 			code_verifier: codeVerifier,
-			redirect_uri: redirectUri
+			redirect_uri: redirectUri,
+			resource: this.metadata.settings.signInResourceId
 		};
 
-		return this.getToken(postData, postData.scope);
+		return this.getToken(postData);
 	}
 }

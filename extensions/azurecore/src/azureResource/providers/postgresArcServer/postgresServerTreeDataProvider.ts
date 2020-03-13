@@ -45,7 +45,7 @@ export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderB
 				databaseName: databaseServer.defaultDatabaseName,
 				userName: `${databaseServer.loginName}@${databaseServer.fullName}`,
 				password: '',
-				authenticationType: 'SqlLogin',
+				authenticationType: 'AzureMFA',
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',

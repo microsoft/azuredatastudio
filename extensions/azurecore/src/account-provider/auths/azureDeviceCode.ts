@@ -56,7 +56,7 @@ export class AzureDeviceCode extends AzureAuth {
 
 	public async login(): Promise<AzureAccount | azdata.PromptFailedResult> {
 		try {
-			const uri = `${this.loginEndpointUrl}/${this.commonTenant}/oauth2/v2.0/devicecode`;
+			const uri = `${this.loginEndpointUrl}/${this.commonTenant}/oauth2/devicecode`;
 			const postResult = await this.makePostRequest(uri, {
 				client_id: this.clientId,
 				scope: this.scopesString
@@ -131,7 +131,7 @@ export class AzureDeviceCode extends AzureAuth {
 	private async checkForResult(info: DeviceCodeLogin): Promise<DeviceCodeLoginResult> {
 		const msg = localize('azure.deviceCodeCheckFail', "Error encountered when trying to check for login results");
 		try {
-			const uri = `${this.loginEndpointUrl}/${this.commonTenant}/oauth2/v2.0/token`;
+			const uri = `${this.loginEndpointUrl}/${this.commonTenant}/oauth2/token`;
 			const postData = {
 				grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
 				client_id: this.clientId,

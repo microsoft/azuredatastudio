@@ -36,7 +36,7 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 				account: element.account,
 				subscription: element.subscription,
 				tenantId: element.tenantId,
-				treeItem: this.getTreeItemForResource(resource)
+				treeItem: this.getTreeItemForResource(resource, element.account)
 			}).sort((a, b) => a.treeItem.label.localeCompare(b.treeItem.label));
 		} catch (error) {
 			console.log(AzureResourceErrorMessageUtil.getErrorMessage(error));
@@ -52,7 +52,7 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 		return resources;
 	}
 
-	protected abstract getTreeItemForResource(resource: T): azdata.TreeItem;
+	protected abstract getTreeItemForResource(resource: T, account: azdata.Account): azdata.TreeItem;
 
 	protected abstract createContainerNode(): azureResource.IAzureResourceNode;
 }

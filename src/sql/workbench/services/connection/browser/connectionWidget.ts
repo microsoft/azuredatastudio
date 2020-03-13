@@ -518,7 +518,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 	private async fillInAzureAccountOptions(): Promise<void> {
 		let oldSelection = this._azureAccountDropdown.value;
-		this._azureAccountList = await this._accountManagementService.getAccountsForProvider(this._azureProviderId);
+		const accounts = await this._accountManagementService.getAccounts();
+		this._azureAccountList = accounts.filter(a => a.key.providerId.startsWith('azure'));
 		let accountDropdownOptions = this._azureAccountList.map(account => account.key.accountId);
 		if (accountDropdownOptions.length === 0) {
 			// If there are no accounts add a blank option so that add account isn't automatically selected
@@ -821,7 +822,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	public get azureAccount(): string {
-		return this.authenticationType === AuthenticationType.AzureMFAAndUser ? this._azureAccountDropdown.value : undefined;
+		return this.authenticationType === AuthenticationType.AzureMFAAndUser || this.authenticationType === AuthenticationType.AzureMFA ? this._azureAccountDropdown.value : undefined;
 	}
 
 	private validateAzureAccountSelection(showMessage: boolean = true): boolean {
