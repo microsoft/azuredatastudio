@@ -152,14 +152,14 @@ DECLARE @model VARBINARY(max) = (
 WITH predict_input
 AS (
 	SELECT TOP 1000
-	${this.getColumnNames(columns, 'pi')}
+	${this.getInputColumnNames(columns, 'pi')}
 	FROM [${utils.doubleEscapeSingleBrackets(databaseNameTable.databaseName)}].[${databaseNameTable.schema}].[${utils.doubleEscapeSingleBrackets(databaseNameTable.tableName)}] as pi
 )
 SELECT
-${this.getInputColumnNames(columns, 'predict_input')}, ${this.getColumnNames(outputColumns, 'p')}
+${this.getPredictColumnNames(columns, 'predict_input')}, ${this.getInputColumnNames(outputColumns, 'p')}
 FROM PREDICT(MODEL = @model, DATA = predict_input)
 WITH (
-	${this.getColumnTypes(outputColumns)}
+	${this.getOutputParameters(outputColumns)}
 ) AS p
 `;
 	}
@@ -173,33 +173,43 @@ WITH (
 WITH predict_input
 AS (
 	SELECT TOP 1000
-	${this.getColumnNames(columns, 'pi')}
+	${this.getInputColumnNames(columns, 'pi')}
 	FROM [${utils.doubleEscapeSingleBrackets(databaseNameTable.databaseName)}].[${databaseNameTable.schema}].[${utils.doubleEscapeSingleBrackets(databaseNameTable.tableName)}] as pi
 )
 SELECT
-${this.getInputColumnNames(columns, 'predict_input')}, ${this.getColumnNames(outputColumns, 'p')}
+${this.getPredictColumnNames(columns, 'predict_input')}, ${this.getOutputColumnNames(outputColumns, 'p')}
 FROM PREDICT(MODEL = ${modelBytes}, DATA = predict_input)
 WITH (
-	${this.getColumnTypes(outputColumns)}
+	${this.getOutputParameters(outputColumns)}
 ) AS p
 `;
 	}
 
-	private getColumnNames(columns: PredictColumn[], tableName: string) {
+	private getInputColumnNames(columns: PredictColumn[], tableName: string) {
 		return columns.map(c => {
-			return c.paramName && c.paramName !== c.columnName ? `${tableName}.${c.columnName} AS ${c.paramName}` : `${tableName}.${c.columnName}`;
+			return this.getColumnName(tableName, c.paramName || '', c.columnName);
 		}).join(',\n');
 	}
 
-	private getInputColumnNames(columns: PredictColumn[], tableName: string) {
+	private getOutputColumnNames(columns: PredictColumn[], tableName: string) {
+		return columns.map(c => {
+			return this.getColumnName(tableName, c.columnName, c.paramName || '');
+		}).join(',\n');
+	}
+
+	private getColumnName(tableName: string, columnName: string, displayName: string) {
+		return columnName && columnName !== displayName ? `${tableName}.${columnName} AS ${displayName}` : `${tableName}.${columnName}`;
+	}
+
+	private getPredictColumnNames(columns: PredictColumn[], tableName: string) {
 		return columns.map(c => {
 			return c.paramName ? `${tableName}.${c.paramName}` : `${tableName}.${c.columnName}`;
 		}).join(',\n');
 	}
 
-	private getColumnTypes(columns: PredictColumn[]) {
+	private getOutputParameters(columns: PredictColumn[]) {
 		return columns.map(c => {
-			return `${c.columnName} ${c.dataType}`;
+			return `${c.paramName} ${c.dataType}`;
 		}).join(',\n');
 	}
 }

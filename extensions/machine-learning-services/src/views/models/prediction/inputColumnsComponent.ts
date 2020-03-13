@@ -8,9 +8,9 @@ import { ModelViewBase } from '../modelViewBase';
 import { ApiWrapper } from '../../../common/apiWrapper';
 import * as constants from '../../../common/constants';
 import { IDataComponent } from '../../interfaces';
-import { ColumnsTable } from './columnsTable';
 import { PredictColumn, PredictInputParameters, DatabaseTable } from '../../../prediction/interfaces';
 import { ModelParameters } from '../../../modelManagement/interfaces';
+import { ColumnsTable } from './columnsTable';
 
 /**
  * View to render filters to pick an azure resource
@@ -24,7 +24,10 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 	private _dbNames: string[] = [];
 	private _tableNames: DatabaseTable[] = [];
 	private _modelParameters: ModelParameters | undefined;
+	private _dbTableComponent: azdata.FlexContainer | undefined;
 
+	//private componentLength = 200;
+	private tableMaxLength = this.componentMaxLength * 2 + 70;
 	/**
 	 * Creates a new view
 	 */
@@ -54,12 +57,35 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 		});
 
 
-		this._form = modelBuilder.formContainer().withFormItems([{
+		const databaseForm = modelBuilder.formContainer().withFormItems([{
 			title: constants.columnDatabase,
 			component: this._databases
-		}, {
+		}]).withLayout({
+			padding: '0px'
+		}).component();
+		const tableForm = modelBuilder.formContainer().withFormItems([{
 			title: constants.columnTable,
 			component: this._tables
+		}]).withLayout({
+			padding: '0px'
+		}).component();
+		this._dbTableComponent = modelBuilder.flexContainer().withItems([
+			databaseForm,
+			tableForm
+		], {
+			flex: '0 0 auto',
+			CSSStyles: {
+				'align-items': 'flex-start'
+			}
+		}).withLayout({
+			flexFlow: 'row',
+			justifyContent: 'space-between',
+			width: this.tableMaxLength
+		}).component();
+
+		this._form = modelBuilder.formContainer().withFormItems([{
+			title: '',
+			component: this._dbTableComponent
 		}, {
 			title: constants.inputColumns,
 			component: this._columns.component
@@ -68,13 +94,10 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 	}
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
-		if (this._databases && this._tables && this._columns) {
+		if (this._columns && this._dbTableComponent) {
 			formBuilder.addFormItems([{
-				title: constants.columnDatabase,
-				component: this._databases
-			}, {
-				title: constants.columnTable,
-				component: this._tables
+				title: '',
+				component: this._dbTableComponent
 			}, {
 				title: constants.inputColumns,
 				component: this._columns.component
@@ -83,17 +106,13 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 	}
 
 	public removeComponents(formBuilder: azdata.FormBuilder) {
-		if (this._databases && this._tables && this._columns) {
+		if (this._columns && this._dbTableComponent) {
 			formBuilder.removeFormItem({
-				title: constants.azureAccount,
-				component: this._databases
+				title: '',
+				component: this._dbTableComponent
 			});
 			formBuilder.removeFormItem({
-				title: constants.azureSubscription,
-				component: this._tables
-			});
-			formBuilder.removeFormItem({
-				title: constants.azureGroup,
+				title: constants.inputColumns,
 				component: this._columns.component
 			});
 		}

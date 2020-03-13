@@ -43,37 +43,97 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 	 * @param modelBuilder model builder
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.LoadingComponent {
+		let columnHeader: azdata.DeclarativeTableColumn[];
+		if (this._forInput) {
+			columnHeader = [
+				{ // Action
+					displayName: constants.columnName,
+					ariaLabel: constants.columnName,
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: true,
+					width: 50,
+					headerCssStyles: {
+						...constants.cssStyles.tableHeader
+					},
+					rowCssStyles: {
+						...constants.cssStyles.tableRow
+					},
+				},
+				{ // Name
+					displayName: '',
+					ariaLabel: '',
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: true,
+					width: 50,
+					headerCssStyles: {
+						...constants.cssStyles.tableHeader
+					},
+					rowCssStyles: {
+						...constants.cssStyles.tableRow
+					},
+				},
+				{ // Name
+					displayName: constants.inputName,
+					ariaLabel: constants.inputName,
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: true,
+					width: 120,
+					headerCssStyles: {
+						...constants.cssStyles.tableHeader
+					},
+					rowCssStyles: {
+						...constants.cssStyles.tableRow
+					},
+				}
+			];
+		} else {
+			columnHeader = [
+				{ // Name
+					displayName: constants.outputName,
+					ariaLabel: constants.outputName,
+					valueType: azdata.DeclarativeDataType.string,
+					isReadOnly: true,
+					width: 200,
+					headerCssStyles: {
+						...constants.cssStyles.tableHeader
+					},
+					rowCssStyles: {
+						...constants.cssStyles.tableRow
+					},
+				},
+				{ // Action
+					displayName: constants.displayName,
+					ariaLabel: constants.displayName,
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: true,
+					width: 50,
+					headerCssStyles: {
+						...constants.cssStyles.tableHeader
+					},
+					rowCssStyles: {
+						...constants.cssStyles.tableRow
+					},
+				},
+				{ // Action
+					displayName: constants.dataTypeName,
+					ariaLabel: constants.dataTypeName,
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: true,
+					width: 50,
+					headerCssStyles: {
+						...constants.cssStyles.tableHeader
+					},
+					rowCssStyles: {
+						...constants.cssStyles.tableRow
+					},
+				}
+			];
+		}
 		this._table = modelBuilder.declarativeTable()
+
 			.withProperties<azdata.DeclarativeTableProperties>(
 				{
-					columns: [
-						{ // Name
-							displayName: this._forInput ? constants.inputName : constants.outputName,
-							ariaLabel: this._forInput ? constants.inputName : constants.outputName,
-							valueType: azdata.DeclarativeDataType.string,
-							isReadOnly: true,
-							width: 120,
-							headerCssStyles: {
-								...constants.cssStyles.tableHeader
-							},
-							rowCssStyles: {
-								...constants.cssStyles.tableRow
-							},
-						},
-						{ // Action
-							displayName: this._forInput ? constants.columnName : constants.dataTypeName,
-							ariaLabel: this._forInput ? constants.columnName : constants.dataTypeName,
-							valueType: azdata.DeclarativeDataType.component,
-							isReadOnly: true,
-							width: 50,
-							headerCssStyles: {
-								...constants.cssStyles.tableHeader
-							},
-							rowCssStyles: {
-								...constants.cssStyles.tableRow
-							},
-						}
-					],
+					columns: columnHeader,
 					data: [],
 					ariaLabel: constants.mlsConfigTitle
 				})
@@ -146,7 +206,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 
 			let nameInput = this._modelBuilder.dropDown().withProperties({
 				values: dataTypes,
-				width: 150
+				width: this.componentMaxLength
 			}).component();
 			const name = modelParameter.name;
 			const dataType = dataTypes.find(x => x === modelParameter.type);
@@ -164,7 +224,17 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 					}
 				}
 			});
-			return [`${name}(${modelParameter.type ? modelParameter.type : constants.unsupportedModelParameterType})`, nameInput];
+			let displayNameInput = this._modelBuilder.inputBox().withProperties({
+				value: name,
+				width: 200
+			}).component();
+			displayNameInput.onTextChanged(() => {
+				let selectedRow = this._parameters.find(x => x.paramName === name);
+				if (selectedRow) {
+					selectedRow.columnName = displayNameInput.value || name;
+				}
+			});
+			return [`${name}(${modelParameter.type ? modelParameter.type : constants.unsupportedModelParameterType})`, displayNameInput, nameInput];
 		}
 
 		return [];
@@ -175,7 +245,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 			const values = columns.map(c => { return { name: c.columnName, displayName: `${c.columnName}(${c.dataType})` }; });
 			let nameInput = this._modelBuilder.dropDown().withProperties({
 				values: values,
-				width: 150
+				width: this.componentMaxLength
 			}).component();
 			const name = modelParameter.name;
 			let column = values.find(x => x.name === modelParameter.name);
@@ -195,7 +265,23 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 					selectedRow.columnName = value || '';
 				}
 			});
-			return [`${name}(${modelParameter.type ? modelParameter.type : constants.unsupportedModelParameterType})`, nameInput];
+			const label = this._modelBuilder.inputBox().withProperties({
+				value: `${name}(${modelParameter.type ? modelParameter.type : constants.unsupportedModelParameterType})`,
+				enabled: false,
+				width: this.componentMaxLength
+			}).component();
+			const image = this._modelBuilder.image().withProperties({
+				width: 50,
+				height: 50,
+				iconPath: {
+					dark: this.asAbsolutePath('images/arrow.svg'),
+					light: this.asAbsolutePath('images/arrow.svg')
+				},
+				iconWidth: 20,
+				iconHeight: 20,
+				title: 'maps'
+			}).component();
+			return [nameInput, image, label];
 		}
 
 		return [];
