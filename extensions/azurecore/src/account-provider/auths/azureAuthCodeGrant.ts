@@ -22,9 +22,7 @@ import {
 
 import {
 	AzureAccountProviderMetadata,
-	Tenant,
 	AzureAuthType,
-	Subscription,
 	Deferred
 } from '../interfaces';
 
