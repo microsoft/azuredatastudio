@@ -43,11 +43,11 @@ export class AccountFeature implements StaticFeature {
 
 			if (accountList.length < 1) {
 				// TODO: Prompt user to add account
-				window.showErrorMessage(localize('mssql.missingLinkedAzureAccount', 'Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query.'));
+				window.showErrorMessage(localize('mssql.missingLinkedAzureAccount', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query."));
 				return null;
 			} else if (accountList.length > 1) {
 				// TODO: Prompt user to select an account
-				window.showErrorMessage(localize('mssql.multipleLinkedAzureAccount', 'Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, which is not supported if multiple linked Azure accounts are present. Make sure only one linked Azure account exists and retry the query.'));
+				window.showErrorMessage(localize('mssql.multipleLinkedAzureAccount', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, which is not supported if multiple linked Azure accounts are present. Make sure only one linked Azure account exists and retry the query."));
 				return null;
 			}
 
