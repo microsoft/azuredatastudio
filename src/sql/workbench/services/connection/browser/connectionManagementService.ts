@@ -224,22 +224,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
-	 * Opens the edit connection dialog
-	 * @param model the existing connection profile to edit on.
-	 */
-	public showEditConnectionDialog(model: interfaces.IConnectionProfile): Promise<void> {
-		if (!model) {
-			return Promise.reject();
-		}
-		let params = { connectionType: ConnectionType.default };
-
-		return this._connectionDialogService.showDialog(this, params, model).catch(dialogError => {
-			this._logService.warn('failed to open the connection dialog. error: ' + dialogError);
-			throw dialogError;
-		});
-	}
-
-	/**
 	 * Load the password for the profile
 	 * @param connectionProfile Connection Profile
 	 */
