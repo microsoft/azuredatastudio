@@ -73,8 +73,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _providerDisplayNames: string[] = [];
 	private _currentProviderType: string = Constants.mssqlProviderName;
 	private _connecting: boolean = false;
-	//additional boolean check I made.
-	private _isEditing: boolean = false;
 	private _connectionErrorTitle = localize('connectionError', "Connection error");
 	private _dialogDeferredPromise: Deferred<IConnectionProfile>;
 
@@ -187,11 +185,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 					profile.savePassword = true;
 				}
 
-				if (this._isEditing) {
-					//if the server itself is changed, the profile returned by the widget will have a new id.
-					//we must retain the original model id to reuse the connection profile.
-					profile.id = this._model.id;
-				}
 
 				this.handleDefaultOnConnect(params, profile).catch(err => onUnexpectedError(err));
 			} else {
@@ -385,11 +378,10 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 		let newProfile = new ConnectionProfile(this._capabilitiesService, model || providerName);
 		newProfile.saveProfile = true;
-		if (!model.id) {
-			this._isEditing = false;
+		if (model && !model.id) {
 			newProfile.generateNewId();
 		} else {
-			this._isEditing = true;
+			newProfile.generateNewId();
 		}
 		// If connecting from a query editor set "save connection" to false
 		if (this._params && this._params.input && this._params.connectionType === ConnectionType.editor) {
