@@ -3,5 +3,6 @@
 	"sqlDatabaseProjects.description": "Design and deploy SQL database schemas",
 	"sqlDatabaseProjects.new": "New Database Project",
 	"sqlDatabaseProjects.open": "Open Database Project",
+	"sqlDatabaseProjects.close": "Close Database Project",
 	"title.projectsView": "Projects"
 }

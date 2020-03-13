@@ -36,6 +36,11 @@
         "command": "sqlDatabaseProjects.open",
         "title": "%sqlDatabaseProjects.open%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.close",
+        "title": "%sqlDatabaseProjects.close%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -45,6 +50,12 @@
         },
         {
           "command": "sqlDatabaseProjects.open"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "sqlDatabaseProjects.close",
+          "when": "view == sqlDatabaseProjectsView"
         }
       ]
     },

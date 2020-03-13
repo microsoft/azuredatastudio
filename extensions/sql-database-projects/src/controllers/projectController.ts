@@ -13,6 +13,8 @@ import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { promises as fs } from 'fs';
 import { newSqlProjectTemplate } from '../templates/newSqlProjTemplate';
+import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
+import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 
 /**
  * Controller for managing project lifecycle
@@ -91,6 +93,21 @@ export class ProjectsController {
 
 		fs.writeFile(newProjFilePath, newProjFileContents);
 		this.openProject(vscode.Uri.file(newProjFilePath));
+	}
+
+	public closeProject(arg: any) {
+		if (!(arg instanceof BaseProjectTreeItem)) {
+			// TODO: if this really does have to show up in the command palette, what's the expected behavior?
+			// Prompt for project name as input, or silently exit the flow?
+			return;
+		}
+
+		let rootNode = (arg as BaseProjectTreeItem).root;
+
+		if (rootNode instanceof ProjectRootTreeItem) {
+			this.projects = this.projects.filter((e) => { return e !== (rootNode as ProjectRootTreeItem).project; });
+			this.refreshProjectsTree();
+		}
 	}
 
 	public refreshProjectsTree() {

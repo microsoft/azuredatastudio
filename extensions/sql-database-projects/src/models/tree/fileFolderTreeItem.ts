@@ -58,6 +58,8 @@ export class FileNode extends BaseProjectTreeItem {
 			arguments: [this.fileSystemUri]
 		};
 
+		treeItem.contextValue = 'File';
+
 		return treeItem;
 	}
 }

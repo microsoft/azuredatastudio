@@ -40,11 +40,6 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 	}
 
 	public load(projects: Project[]) {
-		if (projects.length === 0) {
-			vscode.window.showErrorMessage(constants.noSqlProjFiles);
-			return;
-		}
-
 		let newRoots: BaseProjectTreeItem[] = [];
 
 		for (const proj of projects) {
@@ -52,7 +47,9 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 			newRoots.push(SpacerTreeItem);
 		}
 
-		newRoots.pop(); // get rid of the trailing SpacerTreeItem
+		if (newRoots[newRoots.length - 1] === SpacerTreeItem) {
+			newRoots.pop(); // get rid of the trailing SpacerTreeItem
+		}
 
 		this.roots = newRoots;
 		this._onDidChangeTreeData.fire();
