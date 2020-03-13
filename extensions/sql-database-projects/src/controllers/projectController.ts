@@ -27,6 +27,8 @@ export class ProjectsController {
 	}
 
 	public async openProject(projectFile: vscode.Uri) {
+		// TODO: check if project is already open
+
 		console.log('Loading project: ' + projectFile.fsPath);
 
 		// Read project file
