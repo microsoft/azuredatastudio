@@ -13,6 +13,6 @@ export class AzureResourceTenantService implements IAzureResourceTenantService {
 		const subClient = new SubscriptionClient(credentials, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 
 		const result = await subClient.subscriptions.get(subscription.id);
-		return result.id;
+		return result.subscriptionId;
 	}
 }

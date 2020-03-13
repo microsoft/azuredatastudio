@@ -24,7 +24,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////////
 	private _accountDisposals: { [accountProviderId: string]: vscode.Disposable };
 	private _accountProviders: { [accountProviderId: string]: azdata.AccountProvider };
-	// private _credentialProvider: azdata.CredentialProvider;
+	private _credentialProvider: azdata.CredentialProvider;
 	private _configChangePromiseChain: Thenable<void>;
 	private _currentConfig: vscode.WorkspaceConfiguration;
 	private _event: events.EventEmitter;
@@ -54,6 +54,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		// 2c) Perform an initial config change handling
 		return azdata.credentials.getProvider(AzureAccountProviderService.CredentialNamespace)
 			.then(credProvider => {
+				self._credentialProvider = credProvider;
 
 				self._context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(self.onDidChangeConfiguration, self));
 				self.onDidChangeConfiguration();
@@ -128,10 +129,11 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 		let self = this;
 
-		return new Promise((resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			try {
 				let tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
-				let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath);
+				let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, true, this._credentialProvider);
+				await simpleTokenCache.init();
 				let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, simpleTokenCache, this._context);
 				self._accountProviders[provider.metadata.id] = accountProvider;
 				self._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);

@@ -3,12 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as keytarType from 'keytar';
-import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
-import { promises as fs } from 'fs';
-import { join } from 'path';
-
-const localize = nls.loadMessageBundle();
+import { join, parse } from 'path';
+import { FileDatabase } from './fileDatabase';
+import * as crypto from 'crypto';
+import * as azdata from 'azdata';
 
 function getSystemKeytar(): Keytar | undefined {
 	try {
@@ -20,71 +18,55 @@ function getSystemKeytar(): Keytar | undefined {
 	return undefined;
 }
 
-interface PasswordFile {
-	[serviceName: string]: { [accountName: string]: string };
-}
+async function getFileKeytar(filePath: string, credentialService: azdata.CredentialProvider): Promise<Keytar | undefined> {
+	const fileName = parse(filePath).base;
+	const iv = await credentialService.readCredential(`${fileName}-iv`);
+	const key = await credentialService.readCredential(`${fileName}-key`);
+	let ivBuffer: Buffer;
+	let keyBuffer: Buffer;
+	if (iv?.password === null || key?.password === null) {
+		ivBuffer = crypto.randomBytes(16);
+		keyBuffer = crypto.randomBytes(32);
+		try {
+			await credentialService.saveCredential(`${fileName}-iv`, ivBuffer.toString('hex'));
+			await credentialService.saveCredential(`${fileName}-key`, keyBuffer.toString('hex'));
+		} catch (ex) {
+			console.log(ex);
+		}
+	} else {
+		ivBuffer = Buffer.from(iv.password, 'hex');
+		keyBuffer = Buffer.from(key.password, 'hex');
+	}
 
-function getFileKeytar(filePath: string): Keytar | undefined {
-	const readFile = async (): Promise<PasswordFile> => {
-		const fileString = await fs.readFile(filePath, { encoding: 'utf8' });
-		const passwordFile: PasswordFile = JSON.parse(fileString);
-		return passwordFile;
+	const fileSaver = async (content: string): Promise<string> => {
+		const cipherIv = crypto.createCipheriv('aes-256-gcm', keyBuffer, ivBuffer);
+		return `${cipherIv.update(content, 'utf8', 'hex')}${cipherIv.final('hex')}%${cipherIv.getAuthTag().toString('hex')}`;
 	};
 
-	const saveFile = async (passwordFile: PasswordFile): Promise<void> => {
-		return fs.writeFile(filePath, JSON.stringify(passwordFile), { encoding: 'utf8' });
+	const fileOpener = async (content: string): Promise<string> => {
+		const decipherIv = crypto.createDecipheriv('aes-256-gcm', keyBuffer, ivBuffer);
+
+		const split = content.split('%');
+		decipherIv.setAuthTag(Buffer.from(split[1], 'hex'));
+
+		return `${decipherIv.update(split[0], 'hex', 'utf8')}${decipherIv.final('utf8')}`;
 	};
+
+	const db = new FileDatabase(filePath, fileOpener, fileSaver);
+	await db.initialize();
 
 	const fileKeytar: Keytar = {
 		async getPassword(service: string, account: string): Promise<string> {
-			try {
-				const passwordFile = await readFile();
-				return passwordFile[service][account];
-			} catch (ex) {
-				console.log(ex);
-				return undefined;
-			}
+			return db.get(`${service}-${account}`);
 		},
 
 		async setPassword(service: string, account: string, password: string): Promise<void> {
-			let passwordFile: PasswordFile;
-			try {
-				passwordFile = await readFile();
-			} catch (ex) {
-				passwordFile = {};
-			}
-
-			if (!passwordFile[service]) {
-				passwordFile[service] = {};
-			}
-			passwordFile[service][account] = password;
-			return await saveFile(passwordFile);
+			await db.set(`${service}-${account}`, password);
 		},
 
 		async deletePassword(service: string, account: string): Promise<boolean> {
-			const passwordFile = await readFile();
-			if (!passwordFile[service]) {
-				return true;
-			}
-			delete passwordFile[service][account];
-			await saveFile(passwordFile);
-
+			await db.delete(`${service}-${account}`);
 			return true;
-		},
-
-		async findCredentials(service: string): Promise<{ account: string, password: string }[]> {
-			const passwordFile = await readFile();
-			const serviceSection = passwordFile[service];
-			if (!serviceSection) {
-				return [];
-			}
-
-			return Object.keys(serviceSection).map((account) => {
-				return {
-					account,
-					password: serviceSection[account]
-				};
-			});
 		}
 	};
 	return fileKeytar;
@@ -94,25 +76,27 @@ export type Keytar = {
 	getPassword: typeof keytarType['getPassword'];
 	setPassword: typeof keytarType['setPassword'];
 	deletePassword: typeof keytarType['deletePassword'];
-	findCredentials: typeof keytarType['findCredentials'];
 };
 export class SimpleTokenCache {
 	private keytar: Keytar;
 
 	constructor(
 		private serviceName: string,
-		userStoragePath: string,
-		forceFileStorage: boolean = false,
+		private readonly userStoragePath: string,
+		private readonly forceFileStorage: boolean = false,
+		private readonly credentialService: azdata.CredentialProvider,
 	) {
+
+	}
+
+	async init(): Promise<void> {
 		this.serviceName = this.serviceName.replace(/-/g, '_');
 		let keytar: Keytar;
-		if (forceFileStorage === false) {
+		if (this.forceFileStorage === false) {
 			keytar = getSystemKeytar();
 		}
 		if (!keytar) {
-			const message = localize('azure.noSystemKeychain', "System keychain is unavailable. Falling back to less secure filebased keychain.");
-			vscode.window.showErrorMessage(message);
-			keytar = getFileKeytar(join(userStoragePath, serviceName));
+			keytar = await getFileKeytar(join(this.userStoragePath, this.serviceName), this.credentialService);
 		}
 		this.keytar = keytar;
 	}

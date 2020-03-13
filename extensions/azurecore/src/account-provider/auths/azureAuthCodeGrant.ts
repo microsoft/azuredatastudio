@@ -115,7 +115,6 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 		tenants = await this.getTenants(accessToken);
 
-		subscriptions = await this.getSubscriptions(accessToken);
 
 		try {
 			this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, accessToken, refreshToken);
@@ -130,7 +129,12 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 			return { canceled: false } as azdata.PromptFailedResult;
 		}
-		const account = this.createAccount(tokenClaims, accessToken.key, tenants, subscriptions);
+
+		const account = this.createAccount(tokenClaims, accessToken.key, tenants);
+
+		subscriptions = await this.getSubscriptions(account);
+		account.properties.subscriptions = subscriptions;
+
 		authCompleteDeferred.resolve();
 		return account;
 	}
@@ -160,6 +164,10 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 		server.on('/landing.css', (req, reqUrl, res) => {
 			sendFile(res, path.join(mediaPath, 'landing.css'), 'text/css; charset=utf-8').catch(console.error);
+		});
+
+		server.on('/SignIn.svg', (req, reqUrl, res) => {
+			sendFile(res, path.join(mediaPath, 'SignIn.svg'), 'image/svg+xml').catch(console.error);
 		});
 
 		server.on('/signin', (req, reqUrl, res) => {

@@ -80,7 +80,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 				return [AzureResourceMessageTreeNode.create(AzureResourceAccountTreeNode.noSubscriptionsLabel, this)];
 			} else {
 				let subTreeNodes = await Promise.all(subscriptions.map(async (subscription) => {
-					const token = tokens[Object.keys(tokens)[0]];
+					const token = tokens[subscription.id];
 					const tenantId = await this._tenantService.getTenantId(subscription, this.account, new TokenCredentials(token.token, token.tokenType));
 
 					return new AzureResourceSubscriptionTreeNode(this.account, subscription, tenantId, this.appContext, this.treeChangeHandler, this);
