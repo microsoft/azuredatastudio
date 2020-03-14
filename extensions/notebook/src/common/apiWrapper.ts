@@ -65,6 +65,10 @@ export class ApiWrapper {
 		return vscode.commands.executeCommand(BuiltInCommands.SetContext, key, value);
 	}
 
+	public getNotebookDocuments() {
+		return azdata.nb.notebookDocuments;
+	}
+
 	/**
 	 * Get the configuration for a extensionName
 	 * @param extensionName The string name of the extension to get the configuration for
