@@ -1,5 +1,5 @@
 {
-	"extends": "shared.tsconfig.json",
+	"extends": "./shared.tsconfig.json",
 	"compilerOptions": {
 		"target": "es6"
 	}
