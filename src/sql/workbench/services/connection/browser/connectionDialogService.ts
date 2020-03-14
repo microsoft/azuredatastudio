@@ -380,7 +380,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		newProfile.saveProfile = true;
 		if (model && !model.id) {
 			newProfile.generateNewId();
-		} else {
+		}
+		else {
 			newProfile.generateNewId();
 		}
 		// If connecting from a query editor set "save connection" to false
