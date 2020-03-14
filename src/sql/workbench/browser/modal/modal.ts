@@ -27,6 +27,7 @@ import { find, firstIndex } from 'vs/base/common/arrays';
 import { IThemable } from 'vs/base/common/styler';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { alert } from 'vs/base/browser/ui/aria/aria';
 
 export enum MessageLevel {
 	Error = 0,
@@ -63,6 +64,7 @@ export interface IModalOptions {
 	hasTitleIcon?: boolean;
 	hasErrors?: boolean;
 	hasSpinner?: boolean;
+	spinnerTitle?: string;
 }
 
 const defaultOptions: IModalOptions = {
@@ -245,6 +247,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalFooterSection = DOM.append(this._modalContent, DOM.$('.modal-footer'));
 			if (this._modalOptions.hasSpinner) {
 				this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.codicon.in-progress'));
+				this._spinnerElement.setAttribute('title', this._modalOptions.spinnerTitle);
 				DOM.hide(this._spinnerElement);
 			}
 			this._leftFooter = DOM.append(this._modalFooterSection, DOM.$('.left-footer'));
@@ -511,6 +514,9 @@ export abstract class Modal extends Disposable implements IThemable {
 		if (this._modalOptions.hasSpinner) {
 			if (show) {
 				DOM.show(this._spinnerElement);
+				if (this._modalOptions.spinnerTitle) {
+					alert(this._modalOptions.spinnerTitle);
+				}
 			} else {
 				DOM.hide(this._spinnerElement);
 			}
