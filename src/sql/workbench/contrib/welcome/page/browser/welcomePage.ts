@@ -777,7 +777,7 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const tileBoxShadowHoverColor = theme.getColor(tileBoxShadowHover);
 	if (tileBoxShadowHoverColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .tile:hover:not(.no_hover) { box-shadow: 0px 1px 4px ${tileBoxShadowHoverColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .tile:hover:not(.no_hover) { box-shadow: 0px 3px 8px ${tileBoxShadowHoverColor}; }`);
 	}
 	const buttonPrimarydBackgroundColor = theme.getColor(buttonPrimaryBackground);
 	if (buttonPrimarydBackgroundColor) {
