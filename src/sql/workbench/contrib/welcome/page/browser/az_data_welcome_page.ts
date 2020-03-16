@@ -45,7 +45,7 @@ export default () => `
 														href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac',
 				"Open file"))}</a>
 				</li>
-				<li id="#dropdown_windows_linux-only">
+				<li id="dropdown_windows_linux-only">
 													<a tabIndex="-1" class="move windows-only linux-only" href="command:workbench.action.files.openFile">${escape(localize('welcomePage.openFileLinuxPC',
 					"Open file"))}</a>
 					</li>
@@ -108,7 +108,7 @@ export default () => `
 					<h2>${escape(localize('welcomePage.resources', "Resources"))}</h2>
 					<div class="tabs">
 						<input class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
-						<label class="label" for="tab-1">${escape(localize('welcomePage.history', "History"))}</label>
+						<label class="label" for="tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</label>
 						<div class="panel">
 							<div class="recent history">
 								<div class="flex list__header__container">
