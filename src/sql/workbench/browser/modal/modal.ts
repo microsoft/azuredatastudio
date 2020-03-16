@@ -501,9 +501,11 @@ export abstract class Modal extends Disposable implements IThemable {
 				DOM.prepend(this._modalContent, (this._messageElement));
 			}
 		} else {
-			// Set the focus manually otherwise it'll escape the dialog to something behind it
-			this.setInitialFocusedElement();
 			DOM.removeNode(this._messageElement);
+			// Set the focus to first focus element if the focus is not within the dialog
+			if (!DOM.isAncestor(document.activeElement, this._bodyContainer)) {
+				this.setInitialFocusedElement();
+			}
 		}
 	}
 
