@@ -901,6 +901,7 @@
 @media only screen and (min-width: 700px) {
 	.ads_homepage .extension_pack__body {
 		font-size: 1.5em;
+		line-height: 1.2em;
 	}
 }
 
