@@ -1051,7 +1051,7 @@ export class ContextKeyLessThanEqualsExpr implements IContextKeyExpression {
 	}
 
 	public equals(other: ContextKeyExpression): boolean {
-		if (other instanceof ContextKeyLessThanEqualsExpr) {
+		if (other.type === this.type) {
 			return (this.key === other.key && this.value === other.value);
 		}
 		return false;
