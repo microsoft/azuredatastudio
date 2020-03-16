@@ -102,10 +102,12 @@ export class SimpleTokenCache {
 	}
 
 	async saveCredential(id: string, key: string): Promise<void> {
+		if (key.length > 2500) { // Windows limitation
+			console.log('ERROR HIT', key.length);
+			throw new Error('Key length is longer than 2500 chars');
+		}
+		console.log('ERROR CONTINUE', key.length);
 		try {
-			if (key.length > 2500) { // Windows limitation
-				throw new Error('Key length is longer than 2500 chars');
-			}
 			return await this.keytar.setPassword(this.serviceName, id, key);
 		} catch (ex) {
 			console.log(`Adding key failed: ${ex}`);

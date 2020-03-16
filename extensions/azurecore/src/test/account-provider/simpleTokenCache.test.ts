@@ -24,6 +24,16 @@ describe('AccountProvider.SimpleTokenCache', function (): void {
 		const results = await tokenCache.getCredential(tokenCacheKey);
 		should(results).equal(tokenCachePassword);
 	});
+
+	it('Password length limit', async function (): Promise<void> {
+		const tokenCacheKey = 'azureTokenCache-testkey';
+		const tokenCachePassword = 'a'.repeat(3000);
+		const tokenCache = new SimpleTokenCache('testTokenService', os.tmpdir(), true, new CredentialsTestProvider());
+		await tokenCache.init();
+
+		tokenCache.saveCredential(tokenCacheKey, tokenCachePassword).should.be.rejected();
+	});
+
 	it('Can save and clear credentials', async function (): Promise<void> {
 		const tokenCacheKey = 'azureTokenCache-testkey';
 		const tokenCachePassword = 'azureTokenCache-testpassword';
