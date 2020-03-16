@@ -1021,9 +1021,11 @@
 	font-weight: 600;
 	font-size: 2.33em;
 	z-index: 9;
+	margin-bottom: 10px;
 }
 
 .ads_homepage .extension_pack__body {
+	line-height: 1.5em;
 	font-size: 1.33em;
 	z-index: 9;
 }
@@ -1146,7 +1148,7 @@
 
 .monaco-workbench .part.editor>.content .welcomePage.emptyRecent .splash .recent .none {
 	margin-top: 15px;
-	display: initial;
+	display: block;
 }
 
 .monaco-workbench .part.editor>.content .welcomePage .enabledExtension {
