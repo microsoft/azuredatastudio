@@ -10,7 +10,8 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import CredentialServiceTokenCache from './tokenCache';
 import providerSettings from './providerSettings';
-import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider2';
+import { AzureAccountProvider as OAuthAzureAccountProvider } from './azureAccountProvider2';
+import { AzureAccountProvider as DeviceCodeAzureAccountProvider } from './azureAccountProvider';
 import { AzureAccountProviderMetadata, ProviderSettings } from './interfaces';
 import * as loc from '../localizedConstants';
 
@@ -132,12 +133,18 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 		return new Promise((resolve, reject) => {
 			try {
-				//let config = vscode.workspace.getConfiguration(AzureAccountProviderService.ConfigurationSection);
+				let config = vscode.workspace.getConfiguration(AzureAccountProviderService.ConfigurationSection);
 
 				let tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
 				let tokenCachePath = path.join(this._userStoragePath, tokenCacheKey);
 				let tokenCache = new CredentialServiceTokenCache(self._credentialProvider, tokenCacheKey, tokenCachePath);
-				let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, tokenCache, this._context);
+				const enableDeviceCode = config.get('enableDeviceCodeLogin');
+				let accountProvider: azdata.AccountProvider;
+				if (enableDeviceCode === undefined || enableDeviceCode === false) {
+					accountProvider = new OAuthAzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, tokenCache, this._context);
+				} else {
+					accountProvider = new DeviceCodeAzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, tokenCache);
+				}
 				self._accountProviders[provider.metadata.id] = accountProvider;
 				self._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
 				resolve();
