@@ -11,5 +11,5 @@
 
 .colorbox.checked {
 	opacity: 1;
-	outline: none;
+	outline: 2px dotted;
 }
