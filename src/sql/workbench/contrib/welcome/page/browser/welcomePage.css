@@ -368,12 +368,11 @@
 	border-style: solid;
 }
 
-.ads_homepage .tool_tip:hover .tool_tip__text {
-	border: 1px solid;
+.ads_homepage #tool_tip__container--desktop:hover .tool_tip__text {
 	visibility: visible;
 }
 
-.ads_homepage .tool_tip:hover .tool_tip__text h3 {
+.ads_homepage .tool_tip .tool_tip__text h3 {
 	margin-bottom: 10px;
 }
 

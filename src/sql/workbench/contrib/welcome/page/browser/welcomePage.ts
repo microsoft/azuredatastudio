@@ -362,7 +362,7 @@ class WelcomePage extends Disposable {
 				e.preventDefault();
 				return;
 			}
-			if (e.keyCode === 38) {
+			if (e.keyCode === 38 || e.keyCode === 37) {
 				if (e.target === dropdownFirstElement) {
 					dropdownLastElement.focus();
 				} else {
@@ -370,7 +370,7 @@ class WelcomePage extends Disposable {
 					movePrev.focus();
 				}
 			}
-			else if (e.keyCode === 40) {
+			else if (e.keyCode === 40 || e.keyCode === 39) {
 				if (e.target === dropdownLastElement) {
 					dropdownFirstElement.focus();
 				} else {
@@ -768,8 +768,8 @@ registerThemingParticipant((theme, collector) => {
 	if (tileBorderColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile:not(.extension):not(.extension_pack) { border-color: ${tileBorderColor}; }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool_tip .tool_tip__text:after { border-color: transparent transparent ${tileBorderColor}; transparent }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool_tip .tool_tip__text { border-color: ${tileBorderColor};  }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .modal_content { border-color: ${tileBorderColor};  }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool_tip .tool_tip__text { border: 1px solid ${tileBorderColor};  }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .modal_content { border: 1px solid ${tileBorderColor};  }`);
 	}
 	const tileBoxShadowColor = theme.getColor(tileBoxShadow);
 	if (tileBoxShadowColor) {
