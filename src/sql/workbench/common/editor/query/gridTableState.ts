@@ -5,6 +5,7 @@
 
 import { dispose, Disposable } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
+import { isUndefined } from 'vs/base/common/types';
 
 export class GridPanelState {
 	public tableStates: GridTableState[] = [];
@@ -30,7 +31,7 @@ export class GridTableState extends Disposable {
 	/* The top row of the current scroll */
 	public scrollPositionY = 0;
 	public scrollPositionX = 0;
-	public columnSizes?: number[] = undefined;
+	public columnSizes?: number[];
 	public selection?: Slick.Range[];
 	public activeCell?: Slick.Cell;
 
@@ -43,7 +44,7 @@ export class GridTableState extends Disposable {
 	}
 
 	public set canBeMaximized(val: boolean | undefined) {
-		if (!val || val === this._canBeMaximized) {
+		if (isUndefined(val) || val === this._canBeMaximized) {
 			return;
 		}
 		this._canBeMaximized = val;
@@ -55,7 +56,7 @@ export class GridTableState extends Disposable {
 	}
 
 	public set maximized(val: boolean | undefined) {
-		if (!val || val === this._maximized) {
+		if (isUndefined(val) || val === this._maximized) {
 			return;
 		}
 		this._maximized = val;
