@@ -246,14 +246,15 @@
 	position: absolute;
 	display: none;
 	box-sizing: border-box;
-	border-radius: 4px;
 	list-style: none;
-	padding: 8px 0px;
+	padding: 8px 0px 8px 0;
 	margin: 0;
+	width: 16em;
+	position: absolute;
 }
 
-.ads_homepage .dropdown-content li {
-	font-size: 1em;
+.ads_homepage .dropdown-content li a {
+	font-size: 1.1em;
 }
 
 .ads_homepage .dropdown-content li a {
@@ -272,7 +273,7 @@
 	z-index: 9;
 }
 
-.ads_homepage .btn.dropdown ul li ul li {
+.ads_homepage .btn.dropdown ul li ul li a {
 	width: 78%;
 	padding: 1em 1em 1em 1.5em;
 	clear: both;
@@ -281,8 +282,18 @@
 	border: 1px solid;
 }
 
-.ads_homepage .btn.dropdown ul li ul li a {
+.ads_homepage .dropdown_nav {
+	position: relative;
+}
+
+.ads_homepage .btn.dropdown ul li ul a {
 	text-decoration: none;
+}
+
+.ads_homepage .dropdown-content li a {
+	width: 86%;
+	padding: 6px 0 6px 28px;
+	display: block;
 }
 
 .ads_homepage .btn:disabled {
@@ -361,6 +372,10 @@
 	background-repeat: no-repeat;
 	background-position: right center;
 } */
+
+.ads_homepage .dropdown_navigation {
+	position: relative;
+}
 
 .ads_homepage .dropdown__text {
 	display: flex;
@@ -578,6 +593,16 @@
 	margin-top: 35px;
 }
 
+.ads_homepage .header__bottom_nav__tiles {
+	grid-template-columns: repeat(2, 1fr);
+}
+
+@media only screen and (min-width: 1365px) {
+	.ads_homepage .header__bottom_nav__tiles {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
+
 @media only screen and (min-width: 1024px) {
 	.ads_homepage .header__bottom_nav {
 		margin-top: 112px;
@@ -680,6 +705,16 @@
 	background-image: url('../../serverIcon.svg');
 	background-size: contain;
 	background-repeat: no-repeat;
+}
+
+.ads_homepage .middle_section {
+	grid-template-columns: 1fr;
+}
+
+@media only screen and (min-width: 1024px) {
+	.ads_homepage .middle_section {
+		grid-template-columns: repeat(12, 1fr);
+	}
 }
 
 .ads_homepage .resources .input:focus+.label {
@@ -1011,15 +1046,15 @@
 }
 
 .monaco-workbench.mac .part.editor>.content .welcomePage .mac-only {
-	display: initial;
+	display: block;
 }
 
 .monaco-workbench.windows .part.editor>.content .welcomePage .windows-only {
-	display: initial;
+	display: block;
 }
 
 .monaco-workbench.linux .part.editor>.content .welcomePage .linux-only {
-	display: initial;
+	display: block;
 }
 
 .monaco-workbench.mac .part.editor>.content .welcomePage li.mac-only {
