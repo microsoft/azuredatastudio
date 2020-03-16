@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./welcomePage';
-import 'vs/workbench/contrib/welcome/page/browser/vs_code_welcome_page';
+import 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page';
 import { URI } from 'vs/base/common/uri';
 import * as strings from 'vs/base/common/strings';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -43,7 +43,6 @@ import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { joinPath } from 'vs/base/common/resources';
 import { IRecentlyOpened, isRecentWorkspace, IRecentWorkspace, IRecentFolder, isRecentFolder, IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}}
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
 
@@ -187,9 +186,9 @@ const extensionPacks: ExtensionSuggestion[] = [
 ];
 
 const extensions: ExtensionSuggestion[] = [
-	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: 'Develop PowerShell scripts in Azure Data Studio', icon: 'https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png', link: 'command:azdata.extension.open?%7B%22id%22%3A%22microsoft.powershell%22%7D' },
-	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: 'Support for Data Virtualization in SQL Server, including Create External Data wizards.', icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg', link: 'command:azdata.extension.open?%7B%22id%22%3A%22microsoft.datavirtualization%22%7D' },
-	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: 'PostgreSQL extension for Azure Data Studio', icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png', link: 'command:azdata.extension.open?%7B%22id%22%3A%22microsoft.azuredatastudio-postgresql%22%7D' },
+	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: 'Write and execute PowerShell scripts using Azure Data Studio\'\s rich query editor', icon: 'https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png', link: 'command:azdata.extension.open?%7B%22id%22%3A%22microsoft.powershell%22%7D' },
+	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: 'Virtualize data with SQL Server 2019 and create external tables using interactive wizards', icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg', link: 'command:azdata.extension.open?%7B%22id%22%3A%22microsoft.datavirtualization%22%7D' },
+	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: 'Connect, query, and manage Postgres databases with Azure Data Studio', icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png', link: 'command:azdata.extension.open?%7B%22id%22%3A%22microsoft.azuredatastudio-postgresql%22%7D' },
 ];
 
 
@@ -204,32 +203,6 @@ interface Strings {
 	extensionNotFound: string;
 }
 
-
-/* __GDPR__
-	"installExtension" : {
-		"${include}": [
-			"${WelcomePageInstall-1}"
-		]
-	}
-*/
-/* __GDPR__
-	"installedExtension" : {
-		"${include}": [
-			"${WelcomePageInstalled-1}",
-			"${WelcomePageInstalled-2}",
-			"${WelcomePageInstalled-3}",
-			"${WelcomePageInstalled-4}",
-			"${WelcomePageInstalled-6}"
-		]
-	}
-*/
-/* __GDPR__
-	"detailsExtension" : {
-		"${include}": [
-			"${WelcomePageDetails-1}"
-		]
-	}
-*/
 const extensionPackStrings: Strings = {
 	installEvent: 'installExtension',
 	installedEvent: 'installedExtension',
@@ -241,48 +214,10 @@ const extensionPackStrings: Strings = {
 	extensionNotFound: localize('welcomePage.extensionPackNotFound', "Support for {0} with id {1} could not be found."),
 };
 
-/* __GDPR__
-	"installKeymap" : {
-		"${include}": [
-			"${WelcomePageInstall-1}"
-		]
-	}
-*/
-/* __GDPR__
-	"installedKeymap" : {
-		"${include}": [
-			"${WelcomePageInstalled-1}",
-			"${WelcomePageInstalled-2}",
-			"${WelcomePageInstalled-3}",
-			"${WelcomePageInstalled-4}",
-			"${WelcomePageInstalled-6}"
-		]
-	}
-*/
-/* __GDPR__
-	"detailsKeymap" : {
-		"${include}": [
-			"${WelcomePageDetails-1}"
-		]
-	}
-*/
-// const keymapStrings: Strings = {
-// 	installEvent: 'installKeymap',
-// 	installedEvent: 'installedKeymap',
-// 	detailsEvent: 'detailsKeymap',
-
-// 	alreadyInstalled: localize('welcomePage.keymapAlreadyInstalled', "The {0} keyboard shortcuts are already installed."),
-// 	reloadAfterInstall: localize('welcomePage.willReloadAfterInstallingKeymap', "The window will reload after installing the {0} keyboard shortcuts."),
-// 	installing: localize('welcomePage.installingKeymap', "Installing the {0} keyboard shortcuts..."),
-// 	extensionNotFound: localize('welcomePage.keymapNotFound', "The {0} keyboard shortcuts with id {1} could not be found."),
-// };
 
 const welcomeInputTypeId = 'workbench.editors.welcomePageInput';
-
 class WelcomePage extends Disposable {
-
 	readonly editorInput: WalkThroughInput;
-
 	constructor(
 		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
@@ -301,14 +236,11 @@ class WelcomePage extends Disposable {
 		@IHostService private readonly hostService: IHostService,
 		@IFileService fileService: IFileService,
 		@IProductService private readonly productService: IProductService,
-
 	) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
-
 		const recentlyOpened = this.workspacesService.getRecentlyOpened();
 		const installedExtensions = this.instantiationService.invokeFunction(getInstalledExtensions);
-		// {{SQL CARBON EDIT}} - Redirect to ADS welcome page
 		const resource = URI.parse(require.toUrl('./az_data_welcome_page'))
 			.with({
 				scheme: Schemas.walkThrough,
@@ -322,43 +254,22 @@ class WelcomePage extends Disposable {
 			onReady: (container: HTMLElement) => this.onReady(container, recentlyOpened, installedExtensions, fileService)
 		});
 	}
-
 	public openEditor() {
 		return this.editorService.openEditor(this.editorInput, { pinned: false });
 	}
-
 	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>, fileService): void {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
 		const showOnStartup = <HTMLInputElement>container.querySelector('#showOnStartup');
-
 		if (enabled) {
 			showOnStartup.setAttribute('checked', 'checked');
 		}
 		showOnStartup.addEventListener('click', e => {
 			this.configurationService.updateValue(configurationKey, showOnStartup.checked ? 'welcomePage' : 'newUntitledFile', ConfigurationTarget.USER);
 		});
-
 		const prodName = container.querySelector('.welcomePage .title .caption') as HTMLElement;
 		if (prodName) {
 			prodName.innerHTML = this.productService.nameLong;
 		}
-
-		const dropdownBtn = document.querySelector('#dropdown_btn');
-		const dropdown = document.querySelector('#dropdown');
-
-		dropdownBtn.addEventListener('click', () => {
-			dropdown.classList.toggle('show');
-		});
-
-		window.addEventListener('click', (event) => {
-			const target = event.target as HTMLTextAreaElement;
-			if (!target.matches('.dropdown')) {
-				if (dropdown.classList.contains('show')) {
-					dropdown.classList.remove('show');
-				}
-			}
-		});
-
 		recentlyOpened.then(({ workspaces }) => {
 			// Filter out the current workspace
 			workspaces = workspaces.filter(recent => !this.contextService.isCurrentWorkspace(isRecentWorkspace(recent) ? recent.workspace : recent.folderUri));
@@ -372,21 +283,17 @@ class WelcomePage extends Disposable {
 				return;
 			}
 			const workspacesToShow = workspaces.slice(0, 5);
-
 			const updateEntries = () => {
 				while (ul.firstChild) {
 					ul.removeChild(ul.firstChild);
 				}
 				this.createListEntries(workspacesToShow, fileService);
 			};
-
 			updateEntries();
 			this._register(this.labelService.onDidChangeFormatters(updateEntries));
 		}).then(undefined, onUnexpectedError);
-
 		this.addExtensionList(container, '.extension_list', extensions, extensionPackStrings);
 		this.addExtensionPack(container, '.extensionPack', extensionPacks, extensionPackStrings);
-
 		this.updateInstalledExtensions(container, installedExtensions);
 		this._register(this.instantiationService.invokeFunction(onExtensionChanged)(ids => {
 			for (const id of ids) {
@@ -397,6 +304,81 @@ class WelcomePage extends Disposable {
 				}
 			}
 		}));
+		this.createDropDown();
+	}
+
+
+	private createDropDown() {
+		const dropdownBtn = document.querySelector('#dropdown_btn');
+		const dropdown = document.querySelector('#dropdown') as HTMLInputElement;
+
+		dropdownBtn.addEventListener('click', () => {
+			dropdown.classList.toggle('show');
+		});
+
+		dropdownBtn.addEventListener('keydown', (e: KeyboardEvent) => {
+			if (e.keyCode === 13 || e.keyCode === 32) {
+				const dropdownFirstElement = document.querySelector('#dropdown').firstElementChild.children[0] as HTMLInputElement;
+				dropdown.classList.toggle('show');
+				dropdownFirstElement.focus();
+			}
+		});
+
+		dropdown.addEventListener('keydown', (e: KeyboardEvent) => {
+			if (e.keyCode === 27) {
+				if (dropdown.classList.contains('show')) {
+					dropdown.classList.remove('show');
+					const currentSelection = document.querySelector('.move:focus') as HTMLInputElement;
+					currentSelection.blur();
+				}
+			}
+		});
+
+
+		const body = document.querySelector('body');
+
+		if (body.classList.contains('windows') || body.classList.contains('linux')) {
+			const macOnly = document.querySelector('#dropdown_mac-only');
+			macOnly.remove();
+		} else if (body.classList.contains('mac')) {
+			const windowsLinuxOnly = document.querySelector('#dropdown_windows_linux-only');
+			windowsLinuxOnly.remove();
+		}
+
+
+		window.addEventListener('click', (event) => {
+			const target = event.target as HTMLTextAreaElement;
+			if (!target.matches('.dropdown')) {
+				if (dropdown.classList.contains('show')) {
+					dropdown.classList.remove('show');
+				}
+			}
+		});
+
+		dropdown.addEventListener('keydown', function (e: KeyboardEvent) {
+			const dropdownLastElement = document.querySelector('#dropdown').lastElementChild.children[0] as HTMLInputElement;
+			const dropdownFirstElement = document.querySelector('#dropdown').firstElementChild.children[0] as HTMLInputElement;
+			if (e.keyCode === 9) {
+				e.preventDefault();
+				return;
+			}
+			if (e.keyCode === 38) {
+				if (e.target === dropdownFirstElement) {
+					dropdownLastElement.focus();
+				} else {
+					const movePrev = <HTMLElement>document.querySelector('.move:focus').parentElement.previousElementSibling.children[0] as HTMLElement;
+					movePrev.focus();
+				}
+			}
+			else if (e.keyCode === 40) {
+				if (e.target === dropdownLastElement) {
+					dropdownFirstElement.focus();
+				} else {
+					const moveNext = <HTMLElement>document.querySelector('.move:focus').parentElement.nextElementSibling.children[0] as HTMLElement;
+					moveNext.focus();
+				}
+			}
+		});
 	}
 
 
@@ -820,7 +802,7 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const buttonDropdownColor = theme.getColor(buttonDropdown);
 	if (buttonDropdownColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content li a { color: ${buttonDropdownColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a { color: ${buttonDropdownColor};}`);
 	}
 	const buttonDropdownBoxShadowColor = theme.getColor(buttonDropdownBoxShadow);
 	if (buttonDropdownBoxShadowColor) {
@@ -828,16 +810,16 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const buttonDropdownBorderColor = theme.getColor(buttonDropdownBorder);
 	if (buttonDropdownBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content li { border-color: ${buttonDropdownBorderColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a { border-color: ${buttonDropdownBorderColor};}`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage .dropdown-content { border-color: ${buttonDropdownBorderColor};}`);
 	}
 	const buttonDropdownBackgroundHoverColor = theme.getColor(buttonDropdownBackgroundHover);
 	if (buttonDropdownBackgroundHoverColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content li:hover { background: ${buttonDropdownBackgroundHoverColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a:hover, .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a:focus { background: ${buttonDropdownBackgroundHoverColor};}`);
 	}
 	const buttonDropdownHoverColor = theme.getColor(buttonDropdownHover);
 	if (buttonDropdownHoverColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content li:hover a{ color: ${buttonDropdownHoverColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a:hover, .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a:focus { color: ${buttonDropdownHoverColor};}`);
 	}
 	const listBorderColor = theme.getColor(listBorder);
 	if (listBorderColor) {
