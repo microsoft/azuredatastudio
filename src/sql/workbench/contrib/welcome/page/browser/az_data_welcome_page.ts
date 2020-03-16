@@ -37,35 +37,19 @@ export default () => `
 									<h1>Azure Data Studio</h1>
 									<div class="flex btn_container">
 										<div>
-											<button id="dropdown_btn" class="btn btn--primary dropdown" role="navigation">
+											<button id="dropdown_btn" class="btn btn--primary dropdown" role="navigation" aria-haspopup="true" aria-controls="dropdown">
 												<div class="dropdown__text" style="pointer-events: none;">
 													<span>New</span><i class="icon--arrow_down"></i>
 												</div>
 											</button>
 											<nav role="navigation" class="dropdown_nav">
-											<ul id="dropdown" class="dropdown-content" aria-hidden="true" aria-label="submenu">
-											<li>
-													<a tabIndex="-1" class="move" href="command:registeredServers.addConnection">${escape(localize('welcomePage.newConnection',
-	"New connection"))}</a>
-	</li>
-	<li>
-													<a tabIndex="-1" class="move" href="command:workbench.action.files.newUntitledFile">${escape(localize('welcomePage.newQuery',
-		"New query"))}</a>
-		</li>
-		<li>
-													<a tabIndex="-1" class="move" href="command:notebook.command.new">${escape(localize('welcomePage.newNotebook',
-			"New notebook"))}</a>
-			</li>
-			<li id="dropdown_mac-only">
-													<a tabIndex="-1" class="move mac-only"
-														href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac',
-				"Open file"))}</a>
-				</li>
-				<li id="dropdown_windows_linux-only">
-													<a tabIndex="-1" class="move windows-only linux-only" href="command:workbench.action.files.openFile">${escape(localize('welcomePage.openFileLinuxPC',
-					"Open file"))}</a>
-					</li>
-											</ul>
+												<ul id="dropdown" class="dropdown-content" aria-hidden="true" aria-label="submenu" role="menu" aria-labelledby="dropdown_btn">
+													<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:registeredServers.addConnection">${escape(localize('welcomePage.newConnection', "New connection"))}</a></li>
+													<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:workbench.action.files.newUntitledFile">${escape(localize('welcomePage.newQuery', "New query"))}</a></li>
+													<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:notebook.command.new">${escape(localize('welcomePage.newNotebook', "New notebook"))}</a></li>
+													<li role="none" id="dropdown_mac-only"><a role="menuitem" tabIndex="-1" class="move mac-only" href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac', "Open file"))}</a></li>
+													<li role="none" id="dropdown_windows_linux-only"><a role="menuitem" tabIndex="-1" class="move windows-only linux-only" href="command:workbench.action.files.openFile">${escape(localize('welcomePage.openFileLinuxPC', "Open file"))}</a></li>
+												</ul>
 											</nav>
 										</div>
 										<a class="windows-only linux-only btn btn--standard"
@@ -155,19 +139,19 @@ export default () => `
 						<div class="link_header">
 							<a class="link"
 								href="https://aka.ms/azuredatastudio">${escape(localize('welcomePage.gettingStarted',
-						"Getting Started"))}<span class="icon--link themed_icon--alt"></a>
+	"Getting Started"))}<span class="icon--link themed_icon--alt"></a>
 						</div>
 						<p>
 						${escape(localize('welcomePage.gettingStartedBody',
-							"Discover the capabilities offered by Aure Data Studio and learn how to make the most of them."))}
+		"Discover the capabilities offered by Aure Data Studio and learn how to make the most of them."))}
 						</p>
 						<div class="link_header">
 							<a class="link"
 								href="https://aka.ms/azuredatastudio">${escape(localize('welcomePage.documentation',
-								"Documentation"))}<span class="icon--link themed_icon--alt"</a></a>
+			"Documentation"))}<span class="icon--link themed_icon--alt"</a></a>
 						</div>
 						<p>${escape(localize('welcomePage.documentationBody',
-									"Visit the documentation center for quickstarts, how-to guides, and references for PowerShell, APIs, etc."))}
+				"Visit the documentation center for quickstarts, how-to guides, and references for PowerShell, APIs, etc."))}
 						</p>
 
 
@@ -177,14 +161,14 @@ export default () => `
 								<div class="videos_container__video">
 									<a href="https://www.youtube.com/watch?v=Orv7fptVoUA" class="video overview"><img src="../../../workbench/contrib/welcome/video_overview.png" />
 										<h4>${escape(localize('welcomePage.videoDescriptionOverview',
-										"Overview of Azure Data Studio"))}</h4>
+					"Overview of Azure Data Studio"))}</h4>
 									</a>
 
 								</div>
 								<div class="videos_container__video">
 									<a href="https://www.youtube.com/watch?v=Nt4kIHQ0IOc" class="video overview"><img src="../../../workbench/contrib/welcome/video_introduction.png" />
 										<h4>${escape(localize('welcomePage.videoDescriptionIntroduction',
-											"Introduction to Azure Data Studio Notebooks | Data Exposed"))}</h4>
+						"Introduction to Azure Data Studio Notebooks | Data Exposed"))}</h4>
 									</a>
 								</div>
 							</div>
@@ -209,7 +193,7 @@ export default () => `
 							<div class="flex flex--j_end extension_pack__btn_container flex flex--j_between flex--a_center"">
 							<div class="extensionPack" href="#"></div>
 							<a class="a_self--end link--learn_more flex flex--a_center" href="command:azdata.extension.open?%7B%22id%22%3A%22microsoft.admin-pack%22%7D">${escape(localize('welcomePage.learnMore',
-												"Learn more "))}
+							"Learn more "))}
 													<span class="icon--arrow_right themed_icon--alt"></span></a>
 						</div>
 					</div>
