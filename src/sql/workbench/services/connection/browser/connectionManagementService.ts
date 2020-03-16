@@ -463,6 +463,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (!tokenFillSuccess) {
 			throw new Error(nls.localize('connection.noAzureAccount', "Failed to get Azure account token for connection"));
 		}
+		//temporary call for testing.
+		this.editExistingConnection(uri, connection);
+
 		return this.createNewConnection(uri, connection).then(async connectionResult => {
 			if (connectionResult && connectionResult.connected) {
 				// The connected succeeded so add it to our active connections now, optionally adding it to the MRU based on
@@ -543,7 +546,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions,) {
+	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions) {
 		let connectionManagementInfo = this._connectionStatusManager.findConnection(uri);
 		if (options.showDashboard) {
 			this.showDashboardForConnectionManagementInfo(connectionManagementInfo.connectionProfile);
@@ -1034,6 +1037,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Functions to handle the connecting life cycle
 	 */
 
+	private editExistingConnection(uri: string, connection: interfaces.IConnectionProfile): Promise<IConnectionResult> {
+		return new Promise<IConnectionResult>((resolve, reject) => {
+			//console.log('editExistingConnection promise fired.');
+		});
+	}
 	// Connect an open URI to a connection profile
 	private createNewConnection(uri: string, connection: interfaces.IConnectionProfile): Promise<IConnectionResult> {
 		const self = this;
