@@ -11,7 +11,23 @@ export default () => `
 	<div class="welcomePage">
 		<div class="ads_homepage splash">
 			<div class="gradient">
-			<div class="preview_text"><p>Preview</p><i class="i themed_icon"></i></div>
+				<div class="preview_text tool_tip">
+					<div class="tool_tip__container desktop" id="tool_tip__container--desktop">
+						<p>Preview</p><i class="icon--info themed_icon"></i><span class="tool_tip__text">
+						<h3>This page is in preview</h3>
+						<p>Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development.</p></span>
+					</div>
+					<div class="tool_tip__container desktop" id="tool_tip__container--mobile">
+						<p>Preview</p><i class="icon--info themed_icon"></i>
+					</div>
+				</div>
+				<div id="preview_modal" class="modal">
+					<div class="modal_content">
+						<span class="close_icon">x</span>
+						<h3>This page is in preview</h3>
+						<p>Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development.</p>
+					</div>
+				</div>
 				<div class="ads_homepage__section section header hero">
 					<div class="row start">
 						<div class="header__top_nav">
@@ -191,7 +207,7 @@ export default () => `
 						<div class="extension_pack__extensions flex flex--d_column flex--j_evenly flex--a_start">
 							<div class="extension_pack__extension_list flex flex--d_column flex--j_evenly flex--a_start"></div>
 							<div class="flex flex--j_end extension_pack__btn_container flex flex--j_between flex--a_center"">
-							<div class=" extensionPack" href="#"></div>
+							<div class="extensionPack" href="#"></div>
 							<a class="a_self--end link--learn_more flex flex--a_center" href="command:azdata.extension.open?%7B%22id%22%3A%22microsoft.admin-pack%22%7D">${escape(localize('welcomePage.learnMore',
 												"Learn more "))}
 													<span class="icon--arrow_right themed_icon--alt"></span></a>

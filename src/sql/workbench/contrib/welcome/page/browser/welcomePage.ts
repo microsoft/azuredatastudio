@@ -379,6 +379,24 @@ class WelcomePage extends Disposable {
 				}
 			}
 		});
+
+		const modal = document.querySelector('#preview_modal') as HTMLElement;
+		const btn = document.querySelector('#tool_tip__container--mobile') as HTMLElement;
+		const span = document.querySelector('.close_icon') as HTMLElement;
+
+		btn.addEventListener('click', function () {
+			modal.style.display = 'block';
+		});
+
+		span.addEventListener('click', function () {
+			modal.style.display = 'none';
+		});
+
+		window.onclick = function (event) {
+			if (event.target === modal) {
+				modal.style.display = 'none';
+			}
+		};
 	}
 
 
@@ -743,10 +761,15 @@ registerThemingParticipant((theme, collector) => {
 	const tileColor = theme.getColor(tileBackground);
 	if (tileColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile:not(.extension):not(.extension_pack) { background-color: ${tileColor};  }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool_tip .tool_tip__text { background-color: ${tileColor};  }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .modal_content { background-color: ${tileColor};  }`);
 	}
 	const tileBorderColor = theme.getColor(tileBorder);
 	if (tileBorderColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile:not(.extension):not(.extension_pack) { border-color: ${tileBorderColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool_tip .tool_tip__text:after { border-color: transparent transparent ${tileBorderColor}; transparent }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool_tip .tool_tip__text { border-color: ${tileBorderColor};  }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .modal_content { border-color: ${tileBorderColor};  }`);
 	}
 	const tileBoxShadowColor = theme.getColor(tileBoxShadow);
 	if (tileBoxShadowColor) {
