@@ -11,6 +11,7 @@ export default () => `
 	<div class="welcomePage">
 		<div class="ads_homepage splash">
 			<div class="gradient">
+			<div class="preview_text"><p>Preview</p><i class="i themed_icon"></i></div>
 				<div class="ads_homepage__section section header hero">
 					<div class="row start">
 						<div class="header__top_nav">
@@ -25,29 +26,31 @@ export default () => `
 													<span>New</span><i class="icon--arrow_down"></i>
 												</div>
 											</button>
-											<ul id="dropdown" class="dropdown-content">
-												<li>
-													<a href="command:registeredServers.addConnection">${escape(localize('welcomePage.newConnection',
+											<nav role="navigation" class="dropdown_nav">
+											<ul id="dropdown" class="dropdown-content" aria-hidden="true" aria-label="submenu">
+											<li>
+													<a tabIndex="-1" class="move" href="command:registeredServers.addConnection">${escape(localize('welcomePage.newConnection',
 	"New connection"))}</a>
-												</li>
-												<li>
-													<a href="command:workbench.action.files.newUntitledFile">${escape(localize('welcomePage.newQuery',
+	</li>
+	<li>
+													<a tabIndex="-1" class="move" href="command:workbench.action.files.newUntitledFile">${escape(localize('welcomePage.newQuery',
 		"New query"))}</a>
-												</li>
-												<li>
-													<a href="command:notebook.command.new">${escape(localize('welcomePage.newNotebook',
+		</li>
+		<li>
+													<a tabIndex="-1" class="move" href="command:notebook.command.new">${escape(localize('welcomePage.newNotebook',
 			"New notebook"))}</a>
-												</li>
-												<li class="mac-only">
-													<a
+			</li>
+			<li id="dropdown_mac-only">
+													<a tabIndex="-1" class="move mac-only"
 														href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac',
 				"Open file"))}</a>
-												</li>
-												<li class="windows-only linux-only">
-													<a href="command:workbench.action.files.openFile">${escape(localize('welcomePage.openFileLinuxPC',
+				</li>
+				<li id="#dropdown_windows_linux-only">
+													<a tabIndex="-1" class="move windows-only linux-only" href="command:workbench.action.files.openFile">${escape(localize('welcomePage.openFileLinuxPC',
 					"Open file"))}</a>
-												</li>
+					</li>
 											</ul>
+											</nav>
 										</div>
 										<a class="windows-only linux-only btn btn--standard"
 											href="command:workbench.action.files.openFile">
@@ -59,7 +62,7 @@ export default () => `
 							</div>
 						</div>
 					</div>
-					<div class="row header__bottom_nav__tiles ads_grid sm--cols-2 xxl--cols-4">
+					<div class="row header__bottom_nav__tiles ads_grid">
 						<div class="col">
 							<a class="header__bottom_nav__tile__link" href="command:registeredServers.addConnection">
 								<div class="header__bottom_nav__tile tile tile--connection content">
@@ -100,7 +103,7 @@ export default () => `
 					</div>
 				</div>
 			</div>
-			<div class="ads_homepage__section content row ads_grid xl--cols-12 sm--cols-1">
+			<div class="ads_homepage__section middle_section content row ads_grid">
 				<div class="col--lg--span-4 col--xl--start_1__span_7 col--sm--start_1__span_1 resources">
 					<h2>${escape(localize('welcomePage.resources', "Resources"))}</h2>
 					<div class="tabs">
