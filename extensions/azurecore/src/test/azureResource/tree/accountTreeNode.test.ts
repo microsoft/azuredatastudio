@@ -252,7 +252,6 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 		should(children.length).equal(mockSubscriptionCache.length);
 
 		for (let ix = 0; ix < mockSubscriptionCache.length; ix++) {
-			console.log(children[ix].nodePathValue);
 			should(children[ix].nodePathValue).equal(`account_${mockAccount.key.accountId}.subscription_${mockSubscriptionCache[ix].id}.tenant_${mockTenantId}`);
 		}
 	});
