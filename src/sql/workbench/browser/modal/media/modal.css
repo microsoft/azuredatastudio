@@ -214,7 +214,16 @@
 
 .modal.flyout-dialog .dialog-message-button {
 	min-width: 60px;
-	margin-right: 10px;
+	margin: 3px 10px 3px 3px;
+}
+
+.modal.flyout-dialog .dialog-message.info .dialog-message-button > a:focus,
+.modal.flyout-dialog .dialog-message.error .dialog-message-button > a:focus{
+	outline-color: #FFFFFF;
+}
+
+.modal.flyout-dialog .dialog-message.warning .dialog-message-button > a:focus{
+	outline-color: #000000;
 }
 
 .modal.flyout-dialog .dialog-message-button > a {
