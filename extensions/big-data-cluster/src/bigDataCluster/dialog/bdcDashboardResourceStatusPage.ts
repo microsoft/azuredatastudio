@@ -82,8 +82,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 							isReadOnly: true,
 							width: 25,
 							headerCssStyles: {
-								'border': 'none',
-								'background-color': '#FFFFFF'
+								'border': 'none'
 							},
 							rowCssStyles: {
 								'border-top': 'solid 1px #ccc',
@@ -99,7 +98,6 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 							width: 100,
 							headerCssStyles: {
 								'border': 'none',
-								'background-color': '#FFFFFF',
 								...cssStyles.tableHeader
 							},
 							rowCssStyles: {
@@ -116,7 +114,6 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 							width: 150,
 							headerCssStyles: {
 								'border': 'none',
-								'background-color': '#FFFFFF',
 								...cssStyles.tableHeader
 							},
 							rowCssStyles: {
@@ -133,7 +130,6 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 							width: 100,
 							headerCssStyles: {
 								'border': 'none',
-								'background-color': '#FFFFFF',
 								'text-align': 'left',
 								...cssStyles.tableHeader
 							},
@@ -151,8 +147,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 							isReadOnly: true,
 							width: 150,
 							headerCssStyles: {
-								'border': 'none',
-								'background-color': '#FFFFFF'
+								'border': 'none'
 							},
 							rowCssStyles: {
 								'border-top': 'solid 1px #ccc',
@@ -186,7 +181,6 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 					width: 125,
 					headerCssStyles: {
 						'border': 'none',
-						'background-color': '#FFFFFF',
 						...cssStyles.tableHeader
 					},
 					rowCssStyles: {
@@ -203,7 +197,6 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 					width: 100,
 					headerCssStyles: {
 						'border': 'none',
-						'background-color': '#FFFFFF',
 						...cssStyles.tableHeader
 					},
 					rowCssStyles: {
@@ -225,7 +218,6 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 					width: 100,
 					headerCssStyles: {
 						'border': 'none',
-						'background-color': '#FFFFFF',
 						'text-align': 'left',
 						...cssStyles.tableHeader
 					},
@@ -246,7 +238,6 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 				width: 100,
 				headerCssStyles: {
 					'border': 'none',
-					'background-color': '#FFFFFF',
 					'text-align': 'left',
 					...cssStyles.tableHeader
 				},
