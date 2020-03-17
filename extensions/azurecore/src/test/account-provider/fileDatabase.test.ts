@@ -24,7 +24,7 @@ const v2 = 'v2';
 
 // These tests don't work on Linux systems because gnome-keyring doesn't like running on headless machines.
 describe('AccountProvider.FileDatabase', function (): void {
-	beforeEach(async function (): void {
+	beforeEach(async function (): Promise<void> {
 		fileName = crypto.randomBytes(4).toString('hex');
 		fileDatabase = new FileDatabase(path.join(os.tmpdir(), fileName));
 		await fileDatabase.initialize();
@@ -55,7 +55,7 @@ describe('AccountProvider.FileDatabase', function (): void {
 	});
 
 	it('delete prefix', async function (): Promise<void> {
-		await Promise.all([fileDatabase.set(k1, v1), fileDatabase.set(k2, v2)])
+		await Promise.all([fileDatabase.set(k1, v1), fileDatabase.set(k2, v2)]);
 
 		let x = fileDatabase.get(k1);
 		should(x).be.equal(v1);
