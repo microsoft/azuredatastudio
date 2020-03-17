@@ -309,9 +309,9 @@
 	border-style: solid;
 }
 
-.ads_homepage #tool_tip__container--desktop:hover .tool_tip__text {
+/* .ads_homepage #tool_tip__container--desktop:hover .tool_tip__text {
 	visibility: visible;
-}
+} */
 
 .ads_homepage #tool_tip__container--desktop .tool_tip__text.show {
 	visibility: visible;

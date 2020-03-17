@@ -305,15 +305,23 @@ class WelcomePage extends Disposable {
 			}
 		}));
 		this.createDropDown();
-		this.createPreviewToolTip();
+		this.createDesktopPreviewToolTip();
 		this.createPreviewModal();
 	}
 
-	private createPreviewToolTip() {
+
+	private createDesktopPreviewToolTip() {
 		const previewLink = document.querySelector('#preview_link--desktop');
 		const tooltip = document.querySelector('#tooltip__text--desktop');
 		const previewModalBody = document.querySelector('.preview_tooltip__body') as HTMLElement;
 		const previewModalHeader = document.querySelector('.preview_tooltip__header') as HTMLElement;
+
+		previewLink.addEventListener('mouseover', () => {
+			tooltip.classList.toggle('show');
+		});
+		previewLink.addEventListener('mouseout', () => {
+			tooltip.classList.remove('show');
+		});
 
 		previewLink.addEventListener('keydown', (e: KeyboardEvent) => {
 			if (e.keyCode === 13 || e.keyCode === 32) {
@@ -323,6 +331,14 @@ class WelcomePage extends Disposable {
 		});
 
 		previewLink.addEventListener('keydown', (e: KeyboardEvent) => {
+			if (e.keyCode === 27) {
+				if (tooltip.classList.contains('show')) {
+					tooltip.classList.remove('show');
+				}
+			}
+		});
+
+		tooltip.addEventListener('keydown', (e: KeyboardEvent) => {
 			if (e.keyCode === 27) {
 				if (tooltip.classList.contains('show')) {
 					tooltip.classList.remove('show');

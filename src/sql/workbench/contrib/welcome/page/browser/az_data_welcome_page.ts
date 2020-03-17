@@ -13,8 +13,8 @@ export default () => `
 			<div class="gradient">
 				<div class="preview_text tool_tip">
 					<div class="tool_tip__container" id="tool_tip__container--desktop">
-						<a id="preview_link--desktop" class="preview_link" tabindex="0" name="preview"><p>Preview</p><i class="icon--info themed_icon"></i></a>
-						<span id="tooltip__text--desktop" class="tool_tip__text">
+						<a aria-describedby="tooltip__text--desktop" id="preview_link--desktop" class="preview_link" tabindex="0" name="preview"><p>Preview</p><i class="icon--info themed_icon"></i></a>
+						<span role="tooltip" id="tooltip__text--desktop" class="tool_tip__text">
 							<h3 tabindex="0" class="preview_tooltip__header">This page is in preview</h3>
 							<p tabindex="0" class="preview_tooltip__body">Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development.</p>
 						</span>
@@ -23,7 +23,7 @@ export default () => `
 						<a aria-haspopup="true" class="preview_link" tabindex="0" id="preview_link--mobile" name="previewMobile"><p>Preview</p><i class="icon--info themed_icon"></i></a>
 					</div>
 				</div>
-				<div id="preview_modal" class="modal" aria-modal=true>
+				<div id="preview_modal" class="modal" aria-modal="true">
 					<div class="modal_content">
 						<span class="close_icon">x</span>
 						<h3 tabindex="0" class="preview_modal__header">This page is in preview</h3>
