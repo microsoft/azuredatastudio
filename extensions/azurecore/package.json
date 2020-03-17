@@ -230,7 +230,7 @@
     "@azure/arm-subscriptions": "^2.0.0",
     "adal-node": "^0.2.1",
     "axios": "^0.19.2",
-    "keytar": "^5.2.0",
+    "keytar": "^5.4.0",
     "qs": "^6.9.1",
     "request": "2.88.0",
     "vscode-nls": "^4.0.0"

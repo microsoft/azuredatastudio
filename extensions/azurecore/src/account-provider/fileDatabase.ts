@@ -46,6 +46,14 @@ export class FileDatabase {
 		this.isDirty = true;
 	}
 
+	public getPrefix(keyPrefix: string): { key: string, value: string }[] {
+		return Object.entries(this.db).filter(([key]) => {
+			return key.startsWith(keyPrefix);
+		}).map(([key, value]) => {
+			return { key, value };
+		});
+	}
+
 	public async deletePrefix(keyPrefix: string): Promise<void> {
 		await this.waitForFileSave();
 		Object.keys(this.db).forEach(s => {
@@ -55,6 +63,7 @@ export class FileDatabase {
 		});
 		this.isDirty = true;
 	}
+
 
 	public async initialize(): Promise<void> {
 		this.setupSaveTask();

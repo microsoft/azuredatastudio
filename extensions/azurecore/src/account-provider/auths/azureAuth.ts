@@ -220,8 +220,12 @@ export abstract class AzureAuth {
 	}
 
 	public async clearCredentials(account: azdata.AccountKey): Promise<void> {
-		for (const resource of this.resources) {
-			this.deleteCachedToken(account, resource.id);
+		try {
+			this.deleteAccountCache(account);
+		} catch (ex) {
+			const msg = localize('azure.cacheErrrorRemove', "Error when removing your account from the cache.");
+			console.error('Error when removing tokens.', ex);
+			throw new Error(msg);
 		}
 	}
 
@@ -374,7 +378,7 @@ export abstract class AzureAuth {
 	}
 
 
-	protected async setCachedToken(account: azdata.AccountKey, accessToken: AccessToken, refreshToken: RefreshToken, resourceId?: string, tenantId?: string): Promise<void> {
+	public async setCachedToken(account: azdata.AccountKey, accessToken: AccessToken, refreshToken: RefreshToken, resourceId?: string, tenantId?: string): Promise<void> {
 		const msg = localize('azure.cacheErrorAdd', "Error when adding your account to the cache.");
 		resourceId = resourceId ?? '';
 		tenantId = tenantId ?? '';
@@ -391,7 +395,7 @@ export abstract class AzureAuth {
 		}
 	}
 
-	protected async getCachedToken(account: azdata.AccountKey, resourceId?: string, tenantId?: string): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken } | undefined> {
+	public async getCachedToken(account: azdata.AccountKey, resourceId?: string, tenantId?: string): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken } | undefined> {
 		resourceId = resourceId ?? '';
 		tenantId = tenantId ?? '';
 
@@ -423,16 +427,11 @@ export abstract class AzureAuth {
 
 	}
 
-	protected async deleteCachedToken(account: azdata.AccountKey, resourceId: string): Promise<void> {
-		resourceId = resourceId ?? '';
-		try {
+	public async deleteAccountCache(account: azdata.AccountKey): Promise<void> {
+		const results = await this.tokenCache.findCredentials(account.accountId);
 
-			await this.tokenCache.clearCredential(`${account.accountId}_access_${resourceId}`);
-			await this.tokenCache.clearCredential(`${account.accountId}_refresh_${resourceId}`);
-		} catch (ex) {
-			const msg = localize('azure.cacheErrrorRemove', "Error when removing your account from the cache.");
-			console.error('Error when removing tokens.', ex);
-			throw new Error(msg);
+		for (let { account } of results) {
+			await this.tokenCache.clearCredential(account);
 		}
 	}
 

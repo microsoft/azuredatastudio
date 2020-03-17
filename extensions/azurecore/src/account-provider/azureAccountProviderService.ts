@@ -132,7 +132,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		return new Promise(async (resolve, reject) => {
 			try {
 				let tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
-				let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, true, this._credentialProvider);
+				let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, false, this._credentialProvider);
 				await simpleTokenCache.init();
 				let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, simpleTokenCache, this._context);
 				self._accountProviders[provider.metadata.id] = accountProvider;

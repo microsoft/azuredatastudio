@@ -18,6 +18,10 @@ function getSystemKeytar(): Keytar | undefined {
 	return undefined;
 }
 
+export type MultipleAccountsResponse = { account: string, password: string }[];
+
+const separator = '§';
+
 async function getFileKeytar(filePath: string, credentialService: azdata.CredentialProvider): Promise<Keytar | undefined> {
 	const fileName = parse(filePath).base;
 	const iv = await credentialService.readCredential(`${fileName}-iv`);
@@ -57,16 +61,30 @@ async function getFileKeytar(filePath: string, credentialService: azdata.Credent
 
 	const fileKeytar: Keytar = {
 		async getPassword(service: string, account: string): Promise<string> {
-			return db.get(`${service}-${account}`);
+			return db.get(`${service}${separator}${account}`);
 		},
 
 		async setPassword(service: string, account: string, password: string): Promise<void> {
-			await db.set(`${service}-${account}`, password);
+			await db.set(`${service}${separator}${account}`, password);
 		},
 
 		async deletePassword(service: string, account: string): Promise<boolean> {
-			await db.delete(`${service}-${account}`);
+			await db.delete(`${service}${separator}${account}`);
 			return true;
+		},
+
+		async getPasswords(service: string): Promise<MultipleAccountsResponse> {
+			const result = db.getPrefix(`${service}`);
+			if (!result) {
+				return [];
+			}
+
+			return result.map(({ key, value }) => {
+				return {
+					account: key.split(separator)[1],
+					password: value
+				};
+			});
 		}
 	};
 	return fileKeytar;
@@ -76,7 +94,10 @@ export type Keytar = {
 	getPassword: typeof keytarType['getPassword'];
 	setPassword: typeof keytarType['setPassword'];
 	deletePassword: typeof keytarType['deletePassword'];
+	getPasswords: (service: string) => Promise<MultipleAccountsResponse>;
+	findCredentials?: typeof keytarType['findCredentials'];
 };
+
 export class SimpleTokenCache {
 	private keytar: Keytar;
 
@@ -94,6 +115,19 @@ export class SimpleTokenCache {
 		let keytar: Keytar;
 		if (this.forceFileStorage === false) {
 			keytar = getSystemKeytar();
+
+			// Override how findCredentials works
+			keytar.getPasswords = async (service: string): Promise<MultipleAccountsResponse> => {
+				const [serviceName, accountPrefix] = service.split(separator);
+				if (!serviceName || !accountPrefix) {
+					throw new Error('Service did not have seperator: ' + service);
+				}
+
+				const results = await keytar.findCredentials(serviceName);
+				return results.filter(({ account }) => {
+					return account.startsWith(accountPrefix);
+				});
+			};
 		}
 		if (!keytar) {
 			keytar = await getFileKeytar(join(this.userStoragePath, this.serviceName), this.credentialService);
@@ -103,10 +137,8 @@ export class SimpleTokenCache {
 
 	async saveCredential(id: string, key: string): Promise<void> {
 		if (key.length > 2500) { // Windows limitation
-			console.log('ERROR HIT', key.length);
 			throw new Error('Key length is longer than 2500 chars');
 		}
-		console.log('ERROR CONTINUE', key.length);
 		try {
 			return await this.keytar.setPassword(this.serviceName, id, key);
 		} catch (ex) {
@@ -136,4 +168,12 @@ export class SimpleTokenCache {
 		}
 	}
 
+	async findCredentials(prefix: string): Promise<{ account: string, password: string }[]> {
+		try {
+			return await this.keytar.getPasswords(`${this.serviceName}${separator}${prefix}`);
+		} catch (ex) {
+			console.log(`Finding credentials failed: ${ex}`);
+			return undefined;
+		}
+	}
 }
