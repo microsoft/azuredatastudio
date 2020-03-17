@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 1.16.0
+* Release date: March 18, 2020
+* Release status: General Availability
+TBA
+
 ## Version 1.15.1
 * Release date: February 19, 2020
 * Release status: General Availability
