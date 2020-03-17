@@ -186,15 +186,18 @@ export class WizardModal extends Modal {
 		if (validate && !await this.validateNavigation(index)) {
 			return;
 		}
+
+		let dialogPaneToShow: DialogPane | undefined = undefined;
 		this._dialogPanes.forEach((dialogPane, page) => {
 			if (page === pageToShow) {
+				dialogPaneToShow = dialogPane;
 				dialogPane.show(focus);
 			} else {
 				dialogPane.hide();
 			}
 		});
 
-		status(localize('wizardPageChangedMessage', "Step {0}: {1}", index + 1, pageToShow.title));
+		status(localize('wizardPageChangedMessage', "{0} {1}", dialogPaneToShow.pageNumberDisplayText, dialogPaneToShow.title));
 		this.setButtonsForPage(index);
 		this._wizard.setCurrentPage(index);
 		let currentPageValid = this._wizard.pages[this._wizard.currentPage].valid;
