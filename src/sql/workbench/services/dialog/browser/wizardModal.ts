@@ -197,7 +197,9 @@ export class WizardModal extends Modal {
 			}
 		});
 
-		status(localize('wizardPageChangedMessage', "{0} {1}", dialogPaneToShow.pageNumberDisplayText, dialogPaneToShow.title));
+		if (dialogPaneToShow) {
+			status(`${dialogPaneToShow.pageNumberDisplayText} ${dialogPaneToShow.title}`);
+		}
 		this.setButtonsForPage(index);
 		this._wizard.setCurrentPage(index);
 		let currentPageValid = this._wizard.pages[this._wizard.currentPage].valid;
