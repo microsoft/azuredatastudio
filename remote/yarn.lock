@@ -68,10 +68,6 @@ angular2-grid@2.0.6:
   resolved "https://registry.yarnpkg.com/angular2-grid/-/angular2-grid-2.0.6.tgz#01fe225dc13b2822370b6c61f9a6913b3a26f989"
   integrity sha1-Af4iXcE7KCI3C2xh+aaROzom+Yk=
 
-"angular2-slickgrid@github:Microsoft/angular2-slickgrid#1.4.6":
-  version "1.4.6"
-  resolved "https://codeload.github.com/Microsoft/angular2-slickgrid/tar.gz/09579fdc90b1ec469578ec1040d1515585ce2a11"
-
 ansi-styles@^3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-3.2.1.tgz#41fbb20243e50b12be0f04b8dedbf07520ce841d"

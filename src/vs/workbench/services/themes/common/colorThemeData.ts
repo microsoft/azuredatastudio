@@ -6,7 +6,7 @@
 import { basename } from 'vs/base/common/path';
 import * as Json from 'vs/base/common/json';
 import { Color } from 'vs/base/common/color';
-import { ExtensionData, ITokenColorCustomizations, ITextMateThemingRule, IColorTheme, IColorMap, IThemeExtensionPoint, VS_LIGHT_THEME, VS_HC_THEME, IColorCustomizations, IExperimentalTokenStyleCustomizations, ITokenColorizationSetting } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { ExtensionData, ITokenColorCustomizations, ITextMateThemingRule, IWorkbenchColorTheme, IColorMap, IThemeExtensionPoint, VS_LIGHT_THEME, VS_HC_THEME, IColorCustomizations, IExperimentalTokenStyleCustomizations, ITokenColorizationSetting } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { convertSettings } from 'vs/workbench/services/themes/common/themeCompatibility';
 import * as nls from 'vs/nls';
 import * as types from 'vs/base/common/types';
@@ -23,6 +23,8 @@ import { TokenStyle, ProbeScope, TokenStylingRule, getTokenClassificationRegistr
 import { MatcherWithPriority, Matcher, createMatchers } from 'vs/workbench/services/themes/common/textMateScopeMatcher';
 import { IExtensionResourceLoaderService } from 'vs/workbench/services/extensionResourceLoader/common/extensionResourceLoader';
 import { CharCode } from 'vs/base/common/charCode';
+import { StorageScope, IStorageService } from 'vs/platform/storage/common/storage';
+import { ThemeConfiguration } from 'vs/workbench/services/themes/common/themeConfiguration';
 
 let colorRegistry = Registry.as<IColorRegistry>(ColorRegistryExtensions.ColorContribution);
 
@@ -42,7 +44,9 @@ const tokenGroupToScopesMap = {
 export type TokenStyleDefinition = TokenStylingRule | ProbeScope[] | TokenStyleValue;
 export type TokenStyleDefinitions = { [P in keyof TokenStyleData]?: TokenStyleDefinition | undefined };
 
-export class ColorThemeData implements IColorTheme {
+const PERSISTED_THEME_STORAGE_KEY = 'colorThemeData';
+
+export class ColorThemeData implements IWorkbenchColorTheme {
 
 	id: string;
 	label: string;
@@ -289,9 +293,11 @@ export class ColorThemeData implements IColorTheme {
 						const settings = tokenColors[i].settings;
 						if (score >= foregroundScore && settings.foreground) {
 							foreground = settings.foreground;
+							foregroundScore = score;
 						}
 						if (score >= fontStyleScore && types.isString(settings.fontStyle)) {
 							fontStyle = settings.fontStyle;
+							fontStyleScore = score;
 						}
 					}
 				}
@@ -307,6 +313,12 @@ export class ColorThemeData implements IColorTheme {
 
 	public defines(colorId: ColorIdentifier): boolean {
 		return this.customColorMap.hasOwnProperty(colorId) || this.colorMap.hasOwnProperty(colorId);
+	}
+
+	public setCustomizations(settings: ThemeConfiguration) {
+		this.setCustomColors(settings.colorCustomizations);
+		this.setCustomTokenColors(settings.tokenColorCustomizations);
+		this.setCustomTokenStyleRules(settings.tokenStylesCustomizations);
 	}
 
 	public setCustomColors(colors: IColorCustomizations) {
@@ -422,13 +434,13 @@ export class ColorThemeData implements IColorTheme {
 		this.customTokenScopeMatchers = undefined;
 	}
 
-	toStorageData() {
+	toStorage(storageService: IStorageService) {
 		let colorMapData: { [key: string]: string } = {};
 		for (let key in this.colorMap) {
 			colorMapData[key] = Color.Format.CSS.formatHexA(this.colorMap[key], true);
 		}
 		// no need to persist custom colors, they will be taken from the settings
-		return JSON.stringify({
+		const value = JSON.stringify({
 			id: this.id,
 			label: this.label,
 			settingsId: this.settingsId,
@@ -438,6 +450,7 @@ export class ColorThemeData implements IColorTheme {
 			colorMap: colorMapData,
 			watch: this.watch
 		});
+		storageService.store(PERSISTED_THEME_STORAGE_KEY, value, StorageScope.GLOBAL);
 	}
 
 	hasEqualData(other: ColorThemeData) {
@@ -474,7 +487,11 @@ export class ColorThemeData implements IColorTheme {
 		return themeData;
 	}
 
-	static fromStorageData(input: string): ColorThemeData | undefined {
+	static fromStorageData(storageService: IStorageService): ColorThemeData | undefined {
+		const input = storageService.get(PERSISTED_THEME_STORAGE_KEY, StorageScope.GLOBAL);
+		if (!input) {
+			return undefined;
+		}
 		try {
 			let data = JSON.parse(input);
 			let theme = new ColorThemeData('', '', '');
@@ -642,7 +659,7 @@ function nameMatcher(identifers: string[], scope: ProbeScope): number {
 	let lastScopeIndex = scope.length - 1;
 	let lastIdentifierIndex = findInIdents(scope[lastScopeIndex--], identifers.length);
 	if (lastIdentifierIndex >= 0) {
-		const score = (lastIdentifierIndex + 1) * 0x10000 + scope.length;
+		const score = (lastIdentifierIndex + 1) * 0x10000 + identifers[lastIdentifierIndex].length;
 		while (lastScopeIndex >= 0) {
 			lastIdentifierIndex = findInIdents(scope[lastScopeIndex--], lastIdentifierIndex);
 			if (lastIdentifierIndex === -1) {

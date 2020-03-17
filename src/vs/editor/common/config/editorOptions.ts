@@ -1338,7 +1338,7 @@ export class EditorFontLigatures extends BaseEditorOption<EditorOption.fontLigat
 						description: nls.localize('fontFeatureSettings', "Explicit font-feature-settings.")
 					}
 				],
-				description: nls.localize('fontLigaturesGeneral', "Configures font ligatures."),
+				description: nls.localize('fontLigaturesGeneral', "Configures font ligatures or font features."),
 				default: false
 			}
 		);

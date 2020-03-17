@@ -362,6 +362,11 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		return Promise.resolve(this.doOpenEditor(resource, options));
 	}
 
+	$trySetTrusted(uriComponent: UriComponents, isTrusted: boolean): Promise<boolean> {
+		let uri = URI.revive(uriComponent);
+		return this._notebookService.setTrusted(uri, isTrusted);
+	}
+
 	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean> {
 		let editor = this.getEditor(id);
 		if (!editor) {
@@ -468,7 +473,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				const model = this._untitledEditorService.create({ untitledResource: uri, mode: 'notebook', initialValue: options.initialContent });
 				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 			} else {
-				fileInput = this._editorService.createInput({ forceFile: true, resource: uri, mode: 'notebook' }) as FileEditorInput;
+				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: 'notebook' }) as FileEditorInput;
 			}
 		}
 		let input: NotebookInput;

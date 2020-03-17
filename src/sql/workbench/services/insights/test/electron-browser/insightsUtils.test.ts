@@ -11,97 +11,28 @@ import { resolveQueryFilePath } from 'sql/workbench/services/insights/common/ins
 import * as path from 'vs/base/common/path';
 
 import { Workspace, toWorkspaceFolder, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { ConfigurationResolverService } from 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
-import { TestContextService, TestFileService } from 'vs/workbench/test/browser/workbenchTestServices';
-import { IExtensionHostDebugParams, IDebugParams, ParsedArgs } from 'vs/platform/environment/common/environment';
+import { ConfigurationResolverService, BaseConfigurationResolverService } from 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
+import { TestFileService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestContextService } from 'vs/workbench/test/common/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
-import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
-import { IWindowConfiguration } from 'vs/platform/windows/common/windows';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
 import { IFileService } from 'vs/platform/files/common/files';
 import * as pfs from 'vs/base/node/pfs';
 import { getRandomTestPath } from 'vs/base/test/node/testUtils';
-import { IWorkbenchConstructionOptions } from 'vs/workbench/workbench.web.api';
+import { IProcessEnvironment } from 'vs/base/common/platform';
+import { NativeWorkbenchEnvironmentService } from 'vs/workbench/services/environment/electron-browser/environmentService';
+import { TestWindowConfiguration } from 'vs/workbench/test/electron-browser/workbenchTestServices';
 
-class TestEnvironmentService implements IWorkbenchEnvironmentService {
-	userDataSyncHome: URI;
-	keybindingsSyncPreviewResource: URI;
-	argvResource: URI;
-	userDataSyncLogResource: URI;
-	settingsSyncPreviewResource: URI;
-	webviewExternalEndpoint: string;
-	logFile: URI;
-	options?: IWorkbenchConstructionOptions;
-	galleryMachineIdResource?: URI;
-	webviewCspSource: string;
-	webviewCspRule: string;
-	localeResource: URI;
-	userRoamingDataHome: URI;
-	webviewEndpoint?: string;
-	webviewResourceRoot: string;
-	keyboardLayoutResource: URI;
-	machineSettingsResource: URI;
-	keybindingsResource: URI;
-	machineSettingsHome: URI;
-	machineSettingsPath: string;
-	extensionDevelopmentLocationURI?: URI[];
+class MockWorkbenchEnvironmentService extends NativeWorkbenchEnvironmentService {
 
-	constructor(private userEnv: { [key: string]: any }) {
-
+	constructor(public userEnv: IProcessEnvironment) {
+		super({ ...TestWindowConfiguration, userEnv }, TestWindowConfiguration.execPath);
 	}
+}
 
-	get configuration(): IWindowConfiguration {
-		return {
-			userEnv: this.userEnv
-		} as IWindowConfiguration;
-	}
+class TestConfigurationResolverService extends BaseConfigurationResolverService {
 
-	_serviceBrand: undefined;
-	args: ParsedArgs;
-	execPath: string;
-	cliPath: string;
-	appRoot: string;
-	userHome: string;
-	userDataPath: string;
-	appNameLong: string;
-	appQuality?: string;
-	appSettingsHome: URI;
-
-	settingsResource: URI;
-	appKeybindingsPath: string;
-	settingsSearchBuildId?: number;
-	settingsSearchUrl?: string;
-	globalStorageHome: string;
-	workspaceStorageHome: string;
-	backupHome: URI;
-	backupWorkspacesPath: string;
-	untitledWorkspacesHome: URI;
-	isExtensionDevelopment: boolean;
-	disableExtensions: boolean | string[];
-	builtinExtensionsPath: string;
-	extensionsPath: string;
-	extensionTestsLocationURI?: URI;
-	debugExtensionHost: IExtensionHostDebugParams;
-	debugSearch: IDebugParams;
-	logExtensionHostCommunication: boolean;
-	isBuilt: boolean;
-	wait: boolean;
-	status: boolean;
-	log?: string;
-	logsPath: string;
-	verbose: boolean;
-	skipGettingStarted: boolean;
-	skipReleaseNotes: boolean;
-	skipAddToRecentlyOpened: boolean;
-	mainIPCHandle: string;
-	sharedIPCHandle: string;
-	nodeCachedDataDir?: string;
-	installSourcePath: string;
-	disableUpdates: boolean;
-	disableCrashReporter: boolean;
-	driverHandle?: string;
-	driverVerbose: boolean;
 }
 
 suite('Insights Utils tests', function () {
@@ -121,7 +52,7 @@ suite('Insights Utils tests', function () {
 	test('resolveQueryFilePath resolves path correctly with fully qualified path', async () => {
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
-			new TestEnvironmentService({}),
+			new MockWorkbenchEnvironmentService({}),
 			undefined,
 			undefined,
 			new TestContextService(),
@@ -152,7 +83,7 @@ suite('Insights Utils tests', function () {
 			));
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
-			new TestEnvironmentService({}),
+			new MockWorkbenchEnvironmentService({}),
 			undefined,
 			undefined,
 			contextService,
@@ -183,7 +114,7 @@ suite('Insights Utils tests', function () {
 		);
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
-			new TestEnvironmentService({}),
+			new MockWorkbenchEnvironmentService({}),
 			undefined,
 			undefined,
 			contextService,
@@ -216,7 +147,7 @@ suite('Insights Utils tests', function () {
 				'TestWorkspace'));
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
-			new TestEnvironmentService({}),
+			new MockWorkbenchEnvironmentService({}),
 			undefined,
 			undefined,
 			contextService,
@@ -245,10 +176,12 @@ suite('Insights Utils tests', function () {
 		const contextService = new TestContextService(
 			new Workspace('TestWorkspace'));
 
+		const environmentService = new MockWorkbenchEnvironmentService({ TEST_PATH: queryFileDir });
+
 		// Create mock window service with env variable containing test folder for resolution
-		const configurationResolverService = new ConfigurationResolverService(
+		const configurationResolverService = new TestConfigurationResolverService(environmentService.userEnv,
 			undefined,
-			new TestEnvironmentService({ TEST_PATH: queryFileDir }),
+			environmentService,
 			undefined,
 			undefined,
 			undefined,
@@ -273,10 +206,12 @@ suite('Insights Utils tests', function () {
 		const contextService = new TestContextService(
 			new Workspace('TestWorkspace', [toWorkspaceFolder(URI.file(os.tmpdir()))]));
 
+		const environmentService = new MockWorkbenchEnvironmentService({ TEST_PATH: queryFileDir });
+
 		// Create mock window service with env variable containing test folder for resolution
-		const configurationResolverService = new ConfigurationResolverService(
+		const configurationResolverService = new TestConfigurationResolverService(environmentService.userEnv,
 			undefined,
-			new TestEnvironmentService({ TEST_PATH: queryFileDir }),
+			environmentService,
 			undefined,
 			undefined,
 			undefined,
@@ -301,7 +236,7 @@ suite('Insights Utils tests', function () {
 		const invalidPath = path.join('${INVALID}', 'test.sql');
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
-			new TestEnvironmentService({}),
+			new MockWorkbenchEnvironmentService({}),
 			undefined,
 			undefined,
 			undefined,
