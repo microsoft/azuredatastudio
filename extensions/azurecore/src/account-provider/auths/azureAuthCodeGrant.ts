@@ -31,7 +31,7 @@ import { SimpleTokenCache } from '../simpleTokenCache';
 const localize = nls.loadMessageBundle();
 
 export class AzureAuthCodeGrant extends AzureAuth {
-	private static readonly USER_FRIENDLY_NAME: string = localize('azure.azureAuthCodeGrantName', 'Azure Auth Code Grant');
+	private static readonly USER_FRIENDLY_NAME: string = localize('azure.azureAuthCodeGrantName', "Azure Auth Code Grant");
 	private server: SimpleWebServer;
 
 	constructor(metadata: AzureAccountProviderMetadata,
@@ -55,13 +55,12 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		try {
 			serverPort = await this.server.startup();
 		} catch (err) {
-			const msg = localize('azure.serverCouldNotStart', 'Server could not start. This could be a permissions error or an incompatibility on your system.');
+			const msg = localize('azure.serverCouldNotStart', 'Server could not start. This could be a permissions error or an incompatibility on your system. You can try enabling device code authentication from settings.');
 			await vscode.window.showErrorMessage(msg);
 			console.dir(err);
 			return { canceled: false } as azdata.PromptFailedResult;
 		}
 
-		await vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(nonce)}`));
 
 		// The login code to use
 		let loginUrl: string;
@@ -86,6 +85,8 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 		const authenticatedCode = await this.addServerListeners(this.server, nonce, loginUrl, authCompletePromise);
 
+		await vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(nonce)}`));
+
 		let tokenClaims: TokenClaims;
 		let accessToken: AccessToken;
 		let refreshToken: RefreshToken;
@@ -104,12 +105,11 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 		if (!accessToken) {
 			const msg = localize('azure.tokenFail', "Failure when retreiving tokens.");
-			authCompleteDeferred.reject(msg);
+			authCompleteDeferred.reject(new Error(msg));
 			throw Error('Failure when retreiving tokens');
 		}
 
 		const tenants = await this.getTenants(accessToken);
-
 
 		try {
 			await this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, accessToken, refreshToken);
@@ -117,9 +117,9 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			console.log(ex);
 			if (ex.msg) {
 				await vscode.window.showErrorMessage(ex.msg);
-				authCompleteDeferred.reject(ex.msg);
+				authCompleteDeferred.reject(ex);
 			} else {
-				authCompleteDeferred.reject('There was an issue when storing the cache.');
+				authCompleteDeferred.reject(new Error('There was an issue when storing the cache.'));
 			}
 
 			return { canceled: false } as azdata.PromptFailedResult;
@@ -144,7 +144,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 				fileContents = await fs.readFile(filePath);
 			} catch (ex) {
 				console.error(ex);
-				res.writeHead(200);
+				res.writeHead(400);
 				res.end();
 				return;
 			}
@@ -171,9 +171,9 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 			if (receivedNonce !== nonce) {
 				res.writeHead(400, { 'content-type': 'text/html' });
-				res.write(localize('azureAuth.nonceError', "Authentication failed due to a nonce mismatch, please close ADS and try again."));
+				res.write(localize('azureAuth.nonceError', "Authentication failed due to a nonce mismatch, please close Azure Data Studio and try again."));
 				res.end();
-				console.error('nonce no match');
+				console.error('nonce no match', receivedNonce, nonce);
 				return;
 			}
 			res.writeHead(302, { Location: loginUrl });
@@ -196,7 +196,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 				if (stateSplit[1] !== encodeURIComponent(nonce)) {
 					res.writeHead(400, { 'content-type': 'text/html' });
-					res.write(localize('azureAuth.nonceError', "Authentication failed due to a nonce mismatch, please close ADS and try again."));
+					res.write(localize('azureAuth.nonceError', "Authentication failed due to a nonce mismatch, please close Azure Data Studio and try again."));
 					res.end();
 					reject(new Error('Nonce mismatch'));
 					return;
@@ -206,9 +206,9 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 				authComplete.then(() => {
 					sendFile(res, path.join(mediaPath, 'landing.html'), 'text/html; charset=utf-8').catch(console.error);
-				}, (msg) => {
+				}, (ex: Error) => {
 					res.writeHead(400, { 'content-type': 'text/html' });
-					res.write(msg);
+					res.write(ex.message);
 					res.end();
 				});
 			});

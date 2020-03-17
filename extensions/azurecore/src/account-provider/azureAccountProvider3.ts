@@ -118,7 +118,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		}
 
 		if (this.authMappings.size === 0) {
-			const msg = localize('azure.NoAuthMethod', "No azure auth method selected");
+			const msg = localize('azure.NoAuthMethod', "No Azure auth method selected");
 			console.log('noAuthMethodSelected');
 			await vscode.window.showErrorMessage(msg);
 			return { canceled: false };

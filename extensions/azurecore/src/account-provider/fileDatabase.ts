@@ -73,7 +73,7 @@ export class FileDatabase {
 			fileContents = await fs.readFile(this.dbPath, { encoding: 'utf8' });
 			fileContents = await this.readHook(fileContents);
 		} catch (ex) {
-			console.log(`file db does not exist`);
+			console.log(`file db does not exist ${ex}`);
 			await this.createFile();
 			this.db = {};
 			this.isDirty = true;
@@ -83,7 +83,7 @@ export class FileDatabase {
 		try {
 			this.db = JSON.parse(fileContents);
 		} catch (ex) {
-			console.log('DB was corrupted, resetting it');
+			console.log(`DB was corrupted, resetting it ${ex}`);
 			await this.createFile();
 			this.db = {};
 		}
@@ -100,18 +100,24 @@ export class FileDatabase {
 	}
 
 	private async save(): Promise<void> {
-		if (this.isDirty === false) {
-			return;
+		try {
+			await this.waitForFileSave();
+			if (this.isDirty === false) {
+				return;
+			}
+
+			this.isSaving = true;
+			let contents = JSON.stringify(this.db);
+			contents = await this.writeHook(contents);
+
+			await fs.writeFile(this.dbPath, contents, { encoding: 'utf8' });
+
+			this.isDirty = false;
+		} catch (ex) {
+			console.log(`File saving is erroring! ${ex}`);
+		} finally {
+			this.isSaving = false;
 		}
-
-		this.isSaving = true;
-		let contents = JSON.stringify(this.db);
-		contents = await this.writeHook(contents);
-
-		await fs.writeFile(this.dbPath, contents, { encoding: 'utf8' });
-
-		this.isDirty = false;
-		this.isSaving = false;
 	}
 
 	private async waitForFileSave(): Promise<void> {

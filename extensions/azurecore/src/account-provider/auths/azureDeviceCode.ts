@@ -44,7 +44,7 @@ interface DeviceCodeLoginResult {
 
 export class AzureDeviceCode extends AzureAuth {
 
-	private static readonly USER_FRIENDLY_NAME: string = localize('azure.azureDeviceCodeAuth', 'Azure Device Code');
+	private static readonly USER_FRIENDLY_NAME: string = localize('azure.azureDeviceCodeAuth', "Azure Device Code");
 	private readonly pageTitle: string;
 	constructor(metadata: AzureAccountProviderMetadata,
 		tokenCache: SimpleTokenCache,
@@ -105,8 +105,9 @@ export class AzureDeviceCode extends AzureAuth {
 	}
 
 
-	private setupPolling(info: DeviceCodeLogin): Promise<DeviceCodeLoginResult | undefined> {
+	private setupPolling(info: DeviceCodeLogin): Promise<DeviceCodeLoginResult> {
 		const timeoutMessage = localize('azure.timeoutDeviceCode', 'Timed out when waiting for device code login.');
+		const fiveMinutes = 5 * 60 * 1000;
 
 		return new Promise<DeviceCodeLoginResult | undefined>((resolve, reject) => {
 			let timeout: NodeJS.Timer;
@@ -124,7 +125,7 @@ export class AzureDeviceCode extends AzureAuth {
 			timeout = setTimeout(() => {
 				clearInterval(timer);
 				reject(new Error(timeoutMessage));
-			}, 5 * 60 * 1000);
+			}, fiveMinutes);
 		});
 	}
 
