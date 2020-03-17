@@ -324,17 +324,14 @@ class WelcomePage extends Disposable {
 		});
 
 		previewLink.addEventListener('keydown', (e: KeyboardEvent) => {
-			if (e.keyCode === 13 || e.keyCode === 32) {
-				tooltip.classList.toggle('show');
-				previewModalHeader.focus();
-			}
-		});
-
-		previewLink.addEventListener('keydown', (e: KeyboardEvent) => {
 			if (e.keyCode === 27) {
 				if (tooltip.classList.contains('show')) {
 					tooltip.classList.remove('show');
 				}
+			}
+			else if (e.keyCode === 13 || e.keyCode === 32) {
+				tooltip.classList.toggle('show');
+				previewModalHeader.focus();
 			}
 		});
 
@@ -344,6 +341,14 @@ class WelcomePage extends Disposable {
 					tooltip.classList.remove('show');
 				}
 			}
+			else if (e.keyCode === 9) {
+				e.preventDefault();
+				if (e.target === previewModalBody) {
+					previewModalHeader.focus();
+				} else {
+					previewModalBody.focus();
+				}
+			}
 		});
 
 		window.addEventListener('click', (event) => {
@@ -351,17 +356,6 @@ class WelcomePage extends Disposable {
 			if (!target.matches('.tooltip')) {
 				if (tooltip.classList.contains('show')) {
 					tooltip.classList.remove('show');
-				}
-			}
-		});
-
-		tooltip.addEventListener('keydown', function (e: KeyboardEvent) {
-			if (e.keyCode === 9) {
-				e.preventDefault();
-				if (e.target === previewModalBody) {
-					previewModalHeader.focus();
-				} else {
-					previewModalBody.focus();
 				}
 			}
 		});
@@ -420,7 +414,7 @@ class WelcomePage extends Disposable {
 				e.preventDefault();
 				return;
 			}
-			if (e.keyCode === 38 || e.keyCode === 37) {
+			else if (e.keyCode === 38 || e.keyCode === 37) {
 				if (e.target === dropdownFirstElement) {
 					dropdownLastElement.focus();
 				} else {
@@ -443,6 +437,7 @@ class WelcomePage extends Disposable {
 		const modal = document.querySelector('#preview_modal') as HTMLElement;
 		const btn = document.querySelector('#tool_tip__container--mobile') as HTMLElement;
 		const span = document.querySelector('.close_icon') as HTMLElement;
+		const previewModalHeader = document.querySelector('.preview_modal__header') as HTMLElement;
 
 		btn.addEventListener('click', function () {
 			modal.classList.toggle('show');
@@ -452,20 +447,17 @@ class WelcomePage extends Disposable {
 			modal.classList.remove('show');
 		});
 
-		window.onclick = function (event) {
-			if (event.target === modal && modal.classList.contains('show')) {
+		window.addEventListener('click', (e: MouseEvent) => {
+			if (e.target === modal && modal.classList.contains('show')) {
 				modal.classList.remove('show');
 			}
-		};
+		});
 
 		btn.addEventListener('keydown', (e: KeyboardEvent) => {
 			if (e.keyCode === 13 || e.keyCode === 32) {
 				modal.classList.toggle('show');
+				previewModalHeader.focus();
 			}
-		});
-
-
-		btn.addEventListener('keydown', (e: KeyboardEvent) => {
 			if (e.keyCode === 27) {
 				if (modal.classList.contains('show')) {
 					modal.classList.remove('show');
