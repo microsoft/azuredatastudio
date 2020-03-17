@@ -31,6 +31,7 @@ jobs:
   - Compile
   steps:
   - template: linux/sql-product-build-linux.yml
+  timeoutInMinutes: 70
 
 - job: Windows
   condition: eq(variables['VSCODE_BUILD_WIN32'], 'true')
@@ -40,6 +41,7 @@ jobs:
   - Compile
   steps:
   - template: win32/sql-product-build-win32.yml
+  timeoutInMinutes: 70
 
 - job: Windows_Test
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
