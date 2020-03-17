@@ -113,10 +113,24 @@ export class LazilyResolvedWebviewEditorInput extends WebviewInput {
 		super(id, viewType, name, webview, webviewService);
 	}
 
+	#resolved = false;
+
 	@memoize
 	public async resolve() {
-		await this._webviewWorkbenchService.resolveWebview(this);
+		if (!this.#resolved) {
+			this.#resolved = true;
+			await this._webviewWorkbenchService.resolveWebview(this);
+		}
 		return super.resolve();
+	}
+
+	protected transfer(other: LazilyResolvedWebviewEditorInput): WebviewInput | undefined {
+		if (!super.transfer(other)) {
+			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+		}
+
+		other.#resolved = this.#resolved;
+		return other;
 	}
 }
 
