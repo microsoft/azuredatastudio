@@ -192,7 +192,7 @@
     "@types/node" "*"
     "@types/uglify-js" "^2"
 
-"@types/gulp@^4.0.5":
+"@types/gulp@^4.0.6":
   version "4.0.6"
   resolved "https://registry.yarnpkg.com/@types/gulp/-/gulp-4.0.6.tgz#68fe0e1f0ff3657cfca46fb564806b744a1bf899"
   integrity sha512-0E8/iV/7FKWyQWSmi7jnUvgXXgaw+pfAzEB06Xu+l0iXVJppLbpOye5z7E2klw5akXd+8kPtYuk65YBcZPM4ow==
