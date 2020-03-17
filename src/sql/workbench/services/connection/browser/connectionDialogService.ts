@@ -381,10 +381,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		if (model && !model.id) {
 			newProfile.generateNewId();
 		}
-		else {
-			//this shouldn't be here in the final version, this is for testing, connectionManagementService
-			newProfile.generateNewId();
-		}
 		// If connecting from a query editor set "save connection" to false
 		if (this._params && this._params.input && this._params.connectionType === ConnectionType.editor) {
 			newProfile.saveProfile = false;

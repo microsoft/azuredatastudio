@@ -454,6 +454,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let isEdit = false;
 
 		if (this.idConnectionCheck(connection.id)) {
+
+			//failed test command, try to delete existing command that has same id.
+			//this.deleteConnection(connection as ConnectionProfile);
+
 			//Command below set to false for now, will be set to true in final version.
 			isEdit = false;
 		}
@@ -1070,6 +1074,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this._logService.info(`Editing existing connection ${uri}`);
 
 		return new Promise<IConnectionResult>((resolve, reject) => {
+			let existingProfile = this.idConnectionCheck(connection.id);
+			this.disconnect(existingProfile);
+
 			//TODO: Need to disconnect the connection of the existing connection in active connections.
 			//Then fill in the connection profile that is active with information from new connection profile.
 		});
