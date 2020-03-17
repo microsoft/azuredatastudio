@@ -244,8 +244,7 @@
 	padding: 4px;
 }
 
-
-.ads_homepage .preview_link i{
+.ads_homepage .preview_link i {
 	margin-right: 4px;
 }
 
@@ -503,7 +502,6 @@
 	}
 }
 
-
 .ads_homepage .tile:not(.extension):not(.extension_pack) {
 	border: 1px solid;
 	border-radius: 4px;
@@ -515,7 +513,7 @@
 }
 
 .ads_homepage .extension_list {
-		grid-column: 1 / span 2;
+	grid-column: 1 / span 2;
 }
 
 @media only screen and (min-width: 1365px) {
@@ -656,7 +654,7 @@
 }
 
 @media only screen and (min-width: 1024px) {
-.ads_homepage .resources__container {
+	.ads_homepage .resources__container {
 		grid-column: 1 / span 7;
 	}
 }
@@ -688,7 +686,6 @@
 	.ads_homepage .getting_started__container {
 		grid-column: 9 / span 6;
 	}
-
 }
 
 .ads_homepage .header {

@@ -315,14 +315,12 @@ class WelcomePage extends Disposable {
 		const previewModalBody = document.querySelector('.preview_tooltip__body') as HTMLElement;
 		const previewModalHeader = document.querySelector('.preview_tooltip__header') as HTMLElement;
 
-
 		previewLink.addEventListener('keydown', (e: KeyboardEvent) => {
 			if (e.keyCode === 13 || e.keyCode === 32) {
 				tooltip.classList.toggle('show');
 				previewModalHeader.focus();
 			}
 		});
-
 
 		previewLink.addEventListener('keydown', (e: KeyboardEvent) => {
 			if (e.keyCode === 27) {
@@ -381,7 +379,6 @@ class WelcomePage extends Disposable {
 			}
 		});
 
-
 		const body = document.querySelector('body');
 
 		if (body.classList.contains('windows') || body.classList.contains('linux')) {
@@ -391,7 +388,6 @@ class WelcomePage extends Disposable {
 			const windowsLinuxOnly = document.querySelector('#dropdown_windows_linux-only');
 			windowsLinuxOnly.remove();
 		}
-
 
 		window.addEventListener('click', (event) => {
 			const target = event.target as HTMLTextAreaElement;
