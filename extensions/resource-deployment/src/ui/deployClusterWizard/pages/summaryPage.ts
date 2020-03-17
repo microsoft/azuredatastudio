@@ -342,6 +342,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 		};
 		const storageTable = this.view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 			title: localize('deployCluster.StorageSettings', "Storage settings"),
+			ariaLabel: localize('deployCluster.StorageSettings', "Storage settings"),
 			data: [
 				[
 					localize('deployCluster.ControllerText', "Controller"),
