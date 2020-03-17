@@ -34,6 +34,15 @@ describe('AccountProvider.SimpleTokenCache', function (): void {
 		tokenCache.saveCredential(tokenCacheKey, tokenCachePassword).should.be.rejected();
 	});
 
+	it('Separator limit', async function (): Promise<void> {
+		const tokenCacheKey = 'azureTokenCache-§testkey';
+		const tokenCachePassword = 'password';
+		const tokenCache = new SimpleTokenCache('testTokenService', os.tmpdir(), true, new CredentialsTestProvider());
+		await tokenCache.init();
+
+		tokenCache.saveCredential(tokenCacheKey, tokenCachePassword).should.be.rejected();
+	});
+
 	it('Can save and clear credentials', async function (): Promise<void> {
 		const tokenCacheKey = 'azureTokenCache-testkey';
 		const tokenCachePassword = 'azureTokenCache-testpassword';

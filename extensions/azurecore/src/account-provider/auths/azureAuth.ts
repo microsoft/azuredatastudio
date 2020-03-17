@@ -221,7 +221,7 @@ export abstract class AzureAuth {
 
 	public async clearCredentials(account: azdata.AccountKey): Promise<void> {
 		try {
-			this.deleteAccountCache(account);
+			return this.deleteAccountCache(account);
 		} catch (ex) {
 			const msg = localize('azure.cacheErrrorRemove', "Error when removing your account from the cache.");
 			console.error('Error when removing tokens.', ex);

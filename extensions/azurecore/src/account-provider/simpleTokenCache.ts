@@ -139,6 +139,11 @@ export class SimpleTokenCache {
 		if (key.length > 2500) { // Windows limitation
 			throw new Error('Key length is longer than 2500 chars');
 		}
+
+		if (id.includes(separator)) {
+			throw new Error('Separator included in ID');
+		}
+
 		try {
 			return await this.keytar.setPassword(this.serviceName, id, key);
 		} catch (ex) {
