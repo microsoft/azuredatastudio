@@ -37,6 +37,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ILogService } from 'vs/platform/log/common/log';
 import { values } from 'vs/base/common/collections';
+import { LIGHT } from 'vs/platform/theme/common/themeService';
 
 const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 	'properties-widget': PropertiesWidgetComponent,
@@ -220,7 +221,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	private updateTheme(theme: IColorTheme): void {
 		const el = <HTMLElement>this._ref.nativeElement;
 		const headerEl: HTMLElement = this.header.nativeElement;
-		let borderColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true);
+		let borderColor = theme.type === LIGHT ? '#DDDDDD' : '#8A8886';
 		let backgroundColor = theme.getColor(colors.editorBackground, true);
 		const foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
 		const border = theme.getColor(colors.contrastBorder, true);
@@ -248,8 +249,8 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			el.style.borderWidth = '1px';
 			el.style.borderStyle = 'solid';
 		} else if (borderColor) {
-			borderString = borderColor.toString();
-			el.style.border = '1px solid ' + borderColor.toString();
+			borderString = borderColor;
+			el.style.border = '1px solid ' + borderColor;
 		} else {
 			el.style.border = 'none';
 		}

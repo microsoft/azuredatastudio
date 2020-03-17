@@ -18,8 +18,9 @@ import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
+import { LIGHT } from 'vs/platform/theme/common/themeService';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
@@ -279,7 +280,13 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	}
 
 	private updateTheme(theme: IColorTheme): void {
-		const border = theme.getColor(SIDE_BAR_BACKGROUND);
+		let border;
+		const highContrastBorder = theme.getColor(contrastBorder, true);
+		if (highContrastBorder) {
+			border = highContrastBorder.toString();
+		} else {
+			border = theme.type === LIGHT ? '#DDDDDD' : '#8A8886';
+		}
 		this._container.nativeElement.style.borderBottom = '1px solid ' + border.toString();
 	}
 }

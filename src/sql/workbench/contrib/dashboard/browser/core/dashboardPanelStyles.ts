@@ -5,19 +5,27 @@
 
 import 'vs/css!./dashboardPanel';
 
-import { registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { registerThemingParticipant, ITheme, ICssStyleCollector, LIGHT, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 import {
 	TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_ACTIVE_BORDER, TAB_INACTIVE_BACKGROUND,
-	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, DASHBOARD_TAB_ACTIVE_BACKGROUND, SIDE_BAR_BACKGROUND
+	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER
 } from 'vs/workbench/common/theme';
-import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
-
+import { activeContrastBorder, contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 
 	// Title Active
 	const tabActiveBackground = theme.getColor(TAB_ACTIVE_BACKGROUND);
 	const tabActiveForeground = theme.getColor(TAB_ACTIVE_FOREGROUND);
-	const tabActiveBackgroundVertical = theme.getColor(DASHBOARD_TAB_ACTIVE_BACKGROUND);
+	let tabActiveBackgroundVertical;
+	if (theme.type === HIGH_CONTRAST) {
+		tabActiveBackgroundVertical = tabActiveBackground.toString();
+	} else {
+		tabActiveBackgroundVertical = theme.type === LIGHT ? '#e1f0fe' : '#444444';
+	}
+
+	if (theme.getColor(contrastBorder)) {
+		tabActiveBackgroundVertical = tabActiveBackground.toString();
+	}
 	if (tabActiveBackground || tabActiveForeground) {
 		collector.addRule(`
 			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab:hover .tabLabel,
@@ -46,7 +54,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 		`);
 	}
 
-	const activeTabBorderColor = theme.getColor(TAB_ACTIVE_BORDER);
+	const activeTabBorderColor = theme.type === HIGH_CONTRAST ? theme.getColor(activeContrastBorder) : theme.getColor(TAB_ACTIVE_BORDER);
 	if (activeTabBorderColor) {
 		collector.addRule(`
 			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header.active {
@@ -118,7 +126,13 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 		`);
 	}
 
-	const sideBorder = theme.getColor(SIDE_BAR_BACKGROUND);
+	let sideBorder;
+	const border = theme.getColor(contrastBorder, true);
+	if (border) {
+		sideBorder = border.toString();
+	} else {
+		sideBorder = theme.type === LIGHT ? '#DDDDDD' : '#8A8886';
+	}
 	if (divider) {
 		collector.addRule(`panel.dashboard-panel > .tabbedPanel.vertical > .title > .tabContainer {
 			border-right-width: 1px;
