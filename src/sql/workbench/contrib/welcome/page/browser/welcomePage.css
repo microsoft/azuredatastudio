@@ -240,6 +240,15 @@
 	cursor: default;
 }
 
+.ads_homepage .preview_link {
+	padding: 4px;
+}
+
+
+.ads_homepage .preview_link i{
+	margin-right: 4px;
+}
+
 .ads_homepage .preview_text {
 	display: flex;
 	justify-content: flex-end;
@@ -305,6 +314,10 @@
 	visibility: visible;
 }
 
+.ads_homepage #tool_tip__container--desktop .tool_tip__text.show {
+	visibility: visible;
+}
+
 .ads_homepage .tool_tip .tool_tip__text h3 {
 	margin-bottom: 10px;
 }
@@ -319,6 +332,10 @@
 	width: 100%;
 	height: 100%;
 	overflow: auto;
+}
+
+.ads_homepage .modal.show {
+	display: block;
 }
 
 .ads_homepage .modal_content {

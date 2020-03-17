@@ -305,6 +305,53 @@ class WelcomePage extends Disposable {
 			}
 		}));
 		this.createDropDown();
+		this.createPreviewToolTip();
+		this.createPreviewModal();
+	}
+
+	private createPreviewToolTip() {
+		const previewLink = document.querySelector('#preview_link--desktop');
+		const tooltip = document.querySelector('#tooltip__text--desktop');
+		const previewModalBody = document.querySelector('.preview_tooltip__body') as HTMLElement;
+		const previewModalHeader = document.querySelector('.preview_tooltip__header') as HTMLElement;
+
+
+		previewLink.addEventListener('keydown', (e: KeyboardEvent) => {
+			if (e.keyCode === 13 || e.keyCode === 32) {
+				tooltip.classList.toggle('show');
+				previewModalHeader.focus();
+			}
+		});
+
+
+		previewLink.addEventListener('keydown', (e: KeyboardEvent) => {
+			if (e.keyCode === 27) {
+				if (tooltip.classList.contains('show')) {
+					tooltip.classList.remove('show');
+				}
+			}
+		});
+
+		window.addEventListener('click', (event) => {
+			const target = event.target as HTMLTextAreaElement;
+			if (!target.matches('.tooltip')) {
+				if (tooltip.classList.contains('show')) {
+					tooltip.classList.remove('show');
+				}
+			}
+		});
+
+		tooltip.addEventListener('keydown', function (e: KeyboardEvent) {
+
+			if (e.keyCode === 9) {
+				e.preventDefault();
+				if (e.target === previewModalBody) {
+					previewModalHeader.focus();
+				} else {
+					previewModalBody.focus();
+				}
+			}
+		});
 	}
 
 
@@ -379,28 +426,65 @@ class WelcomePage extends Disposable {
 				}
 			}
 		});
+	}
 
+	private createPreviewModal() {
 		const modal = document.querySelector('#preview_modal') as HTMLElement;
 		const btn = document.querySelector('#tool_tip__container--mobile') as HTMLElement;
 		const span = document.querySelector('.close_icon') as HTMLElement;
 
 		btn.addEventListener('click', function () {
-			modal.style.display = 'block';
+			modal.classList.toggle('show');
 		});
 
 		span.addEventListener('click', function () {
-			modal.style.display = 'none';
+			modal.classList.remove('show');
 		});
 
 		window.onclick = function (event) {
-			if (event.target === modal) {
-				modal.style.display = 'none';
+			if (event.target === modal && modal.classList.contains('show')) {
+				modal.classList.remove('show');
 			}
 		};
+
+		btn.addEventListener('keydown', (e: KeyboardEvent) => {
+			if (e.keyCode === 13 || e.keyCode === 32) {
+				modal.classList.toggle('show');
+			}
+		});
+
+
+		btn.addEventListener('keydown', (e: KeyboardEvent) => {
+			if (e.keyCode === 27) {
+				if (modal.classList.contains('show')) {
+					modal.classList.remove('show');
+				}
+			}
+		});
+
+		window.addEventListener('keydown', (e: KeyboardEvent) => {
+			const target = e.target as HTMLTextAreaElement;
+			if (!target.matches('.modal') && e.keyCode === 27) {
+				if (modal.classList.contains('show')) {
+					modal.classList.remove('show');
+				}
+			}
+		});
+
+		modal.addEventListener('keydown', function (e: KeyboardEvent) {
+			const previewModalBody = document.querySelector('.preview_modal__body') as HTMLElement;
+			const previewModalHeader = document.querySelector('.preview_modal__header') as HTMLElement;
+
+			if (e.keyCode === 9) {
+				e.preventDefault();
+				if (e.target === previewModalBody) {
+					previewModalHeader.focus();
+				} else {
+					previewModalBody.focus();
+				}
+			}
+		});
 	}
-
-
-
 
 	private createListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService) {
 		return recents.map(recent => {
