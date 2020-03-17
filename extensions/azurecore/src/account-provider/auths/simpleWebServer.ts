@@ -93,7 +93,7 @@ export class SimpleWebServer {
 
 			if (time - this.lastUsed > 5 * 60 * 1000) {
 				console.log('Shutting off webserver...');
-				this.shutdown();
+				this.shutdown().catch(console.error);
 			}
 		}, 1000);
 	}

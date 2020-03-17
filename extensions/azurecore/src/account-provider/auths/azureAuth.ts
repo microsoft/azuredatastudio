@@ -149,7 +149,7 @@ export abstract class AzureAuth {
 			await this.refreshAccessToken(account.key, refreshToken);
 		} catch (ex) {
 			if (ex.message) {
-				vscode.window.showErrorMessage(ex.message);
+				await vscode.window.showErrorMessage(ex.message);
 			}
 			console.log(ex);
 		}

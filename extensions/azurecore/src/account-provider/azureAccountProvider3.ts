@@ -119,8 +119,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 		if (this.authMappings.size === 0) {
 			const msg = localize('azure.NoAuthMethod', "No azure auth method selected");
-			vscode.window.showErrorMessage(msg);
 			console.log('noAuthMethodSelected');
+			await vscode.window.showErrorMessage(msg);
 			return { canceled: false };
 		}
 
@@ -148,7 +148,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 	private async _clear(accountKey: azdata.AccountKey): Promise<void> {
 		await this.initCompletePromise;
-		this.getAuthMethod(undefined)?.clearCredentials(accountKey);
+		await this.getAuthMethod(undefined)?.clearCredentials(accountKey);
 	}
 
 	autoOAuthCancelled(): Thenable<void> {
