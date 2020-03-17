@@ -22,6 +22,24 @@ describe('AccountProvider.SimpleWebServer', function (): void {
 		should(port).be.any.String().and.not.be.undefined().and.not.be.null();
 	});
 
+	it('Double startup should fail', async function (): Promise<void> {
+		await server.startup();
+		server.startup().should.be.rejected();
+	});
+
+	it('404 on unknown requests', async function (): Promise<void> {
+		const status = 404;
+
+		const server = new SimpleWebServer();
+		const port = await server.startup();
+		try {
+			const result = await axios.get(`http://localhost:${port}/hello`);
+			should(result).be.undefined();
+		} catch (ex) {
+			should(ex.response.status).equal(status);
+		}
+	});
+
 	it('Responds to GET requests', async function (): Promise<void> {
 		const msg = 'Hello World';
 		const status = 200;
@@ -39,7 +57,7 @@ describe('AccountProvider.SimpleWebServer', function (): void {
 		should(response.data).equal(msg);
 	});
 
-	it('Server shuts off', async function(): Promise<void> {
+	it('Server shuts off', async function (): Promise<void> {
 		await server.startup();
 		server.shutdown().should.not.be.rejected();
 	});
