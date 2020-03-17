@@ -1038,6 +1038,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 */
 
 	private editExistingConnection(uri: string, connection: interfaces.IConnectionProfile): Promise<IConnectionResult> {
+		//const self = this;
+		this._logService.info(`Editing existing connection ${uri}`);
+
 		return new Promise<IConnectionResult>((resolve, reject) => {
 			//console.log('editExistingConnection promise fired.');
 		});
