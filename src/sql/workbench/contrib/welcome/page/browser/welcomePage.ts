@@ -356,7 +356,6 @@ class WelcomePage extends Disposable {
 		});
 
 		tooltip.addEventListener('keydown', function (e: KeyboardEvent) {
-
 			if (e.keyCode === 9) {
 				e.preventDefault();
 				if (e.target === previewModalBody) {
