@@ -26,6 +26,8 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { alert } from 'vs/base/browser/ui/aria/aria';
+import { localize } from 'vs/nls';
 
 export class WizardModal extends Modal {
 	private _dialogPanes = new Map<WizardPage, DialogPane>();
@@ -191,6 +193,8 @@ export class WizardModal extends Modal {
 				dialogPane.hide();
 			}
 		});
+
+		alert(localize('pageChangedMessage', "Step {0} of {1}, page title: {2}", index + 1, this._wizard.pages.length, pageToShow.title));
 		this.setButtonsForPage(index);
 		this._wizard.setCurrentPage(index);
 		let currentPageValid = this._wizard.pages[this._wizard.currentPage].valid;

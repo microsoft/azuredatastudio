@@ -29,7 +29,7 @@ export interface DialogComponentParams extends IBootstrapParams {
 		<div class="dialogContainer" *ngIf="_dialogPane && _dialogPane.displayPageTitle">
 			<div class="dialogModal-wizardHeader" *ngIf="_dialogPane && _dialogPane.displayPageTitle">
 				<h1 *ngIf="_dialogPane.pageNumber" class="wizardPageNumber">Step {{_dialogPane.pageNumber}}</h1>
-				<h1 class="wizardPageTitle" role="alert">{{_dialogPane.title}}</h1>
+				<h1 class="wizardPageTitle">{{_dialogPane.title}}</h1>
 				<div *ngIf="_dialogPane.description">{{_dialogPane.description}}</div>
 			</div>
 			<div style="flex: 1 1 auto; position: relative;">
