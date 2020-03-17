@@ -11,7 +11,7 @@ import { promises as fs } from 'fs';
 
 import 'mocha';
 
-import { FileDatabase } from '../../account-provider/fileDatabase';
+import { FileDatabase } from '../../../account-provider/utils/fileDatabase';
 
 let fileDatabase: FileDatabase;
 let fileName: string;

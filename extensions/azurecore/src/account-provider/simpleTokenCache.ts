@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as keytarType from 'keytar';
 import { join, parse } from 'path';
-import { FileDatabase } from './fileDatabase';
+import { FileDatabase } from './utils/fileDatabase';
 import * as crypto from 'crypto';
 import * as azdata from 'azdata';
 

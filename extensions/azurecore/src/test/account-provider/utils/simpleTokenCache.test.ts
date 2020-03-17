@@ -7,8 +7,8 @@ import * as should from 'should';
 import 'mocha';
 import * as os from 'os';
 
-import { SimpleTokenCache } from '../../account-provider/simpleTokenCache';
-import { CredentialsTestProvider } from '../stubs/credentialsTestProvider';
+import { SimpleTokenCache } from '../../../account-provider/simpleTokenCache';
+import { CredentialsTestProvider } from '../../stubs/credentialsTestProvider';
 
 // These tests don't work on Linux systems because gnome-keyring doesn't like running on headless machines.
 describe('AccountProvider.SimpleTokenCache', function (): void {

@@ -7,7 +7,7 @@ import * as should from 'should';
 import 'mocha';
 import axios from 'axios';
 
-import { SimpleWebServer } from '../../../account-provider/auths/simpleWebServer';
+import { SimpleWebServer } from '../../../account-provider/utils/simpleWebServer';
 
 let server: SimpleWebServer;
 

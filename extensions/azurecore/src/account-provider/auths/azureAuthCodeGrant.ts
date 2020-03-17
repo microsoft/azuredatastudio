@@ -26,7 +26,7 @@ import {
 	Deferred
 } from '../interfaces';
 
-import { SimpleWebServer } from './simpleWebServer';
+import { SimpleWebServer } from '../utils/simpleWebServer';
 import { SimpleTokenCache } from '../simpleTokenCache';
 const localize = nls.loadMessageBundle();
 

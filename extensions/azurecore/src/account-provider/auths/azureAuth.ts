@@ -20,7 +20,7 @@ import {
 } from '../interfaces';
 
 import { SimpleTokenCache } from '../simpleTokenCache';
-import { MemoryDatabase } from './memoryDatabase';
+import { MemoryDatabase } from '../utils/memoryDatabase';
 const localize = nls.loadMessageBundle();
 
 export interface AccountKey {

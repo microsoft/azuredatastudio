@@ -6,7 +6,7 @@
 import * as should from 'should';
 import 'mocha';
 
-import { MemoryDatabase } from '../../../account-provider/auths/memoryDatabase';
+import { MemoryDatabase } from '../../../account-provider/utils/memoryDatabase';
 
 let memoryDatabase: MemoryDatabase;
 
