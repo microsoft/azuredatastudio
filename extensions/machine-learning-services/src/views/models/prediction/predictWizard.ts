@@ -36,7 +36,7 @@ export class PredictWizard extends ModelViewBase {
 	/**
 	 * Opens a dialog to manage packages used by notebooks.
 	 */
-	public open(): void {
+	public async open(): Promise<void> {
 		this.modelSourcePage = new ModelSourcePage(this._apiWrapper, this, [ModelSourceType.RegisteredModels, ModelSourceType.Local, ModelSourceType.Azure]);
 		this.columnsSelectionPage = new ColumnsSelectionPage(this._apiWrapper, this);
 		this.wizardView = new WizardView(this._apiWrapper);
@@ -66,7 +66,7 @@ export class PredictWizard extends ModelViewBase {
 			return validated;
 		});
 
-		wizard.open();
+		await wizard.open();
 	}
 
 	private onLoading(): void {

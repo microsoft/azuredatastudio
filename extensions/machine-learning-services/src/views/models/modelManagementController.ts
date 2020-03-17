@@ -61,7 +61,7 @@ export class ModelManagementController extends ControllerBase {
 
 		// Open view
 		//
-		view.open();
+		await view.open();
 		await view.refresh();
 		return view;
 	}
@@ -82,7 +82,7 @@ export class ModelManagementController extends ControllerBase {
 
 		// Open view
 		//
-		view.open();
+		await view.open();
 		await view.refresh();
 		return view;
 	}

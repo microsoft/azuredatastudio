@@ -35,12 +35,11 @@ export class ColumnsSelectionPage extends ModelViewBase implements IPageView, ID
 		this.inputColumnsComponent = new InputColumnsComponent(this._apiWrapper, this);
 		this.inputColumnsComponent.registerComponent(modelBuilder);
 		this.inputColumnsComponent.addComponents(this._formBuilder);
-		this.refresh();
 
 		this.outputColumnsComponent = new OutputColumnsComponent(this._apiWrapper, this);
 		this.outputColumnsComponent.registerComponent(modelBuilder);
 		this.outputColumnsComponent.addComponents(this._formBuilder);
-		this.refresh();
+
 		this._form = this._formBuilder.component();
 		return this._form;
 	}
@@ -65,7 +64,6 @@ export class ColumnsSelectionPage extends ModelViewBase implements IPageView, ID
 	 * Refreshes the view
 	 */
 	public async refresh(): Promise<void> {
-		await this.load();
 		if (this._formBuilder) {
 			if (this.inputColumnsComponent) {
 				await this.inputColumnsComponent.refresh();
@@ -74,10 +72,6 @@ export class ColumnsSelectionPage extends ModelViewBase implements IPageView, ID
 				await this.outputColumnsComponent.refresh();
 			}
 		}
-	}
-
-	public async load(): Promise<void> {
-
 	}
 
 	public async onEnter(): Promise<void> {
