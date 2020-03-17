@@ -37,7 +37,7 @@ export default class MainController implements vscode.Disposable {
 		private _queryRunner: QueryRunner,
 		private _processService: ProcessService,
 		private _packageManager?: PackageManager,
-		private _serverConfigManager?: PackageManagementService,
+		private _packageManagementService?: PackageManagementService,
 		private _httpClient?: HttpClient
 	) {
 		this._outputChannel = this._apiWrapper.createOutputChannel(constants.extensionOutputChannel);
@@ -141,10 +141,10 @@ export default class MainController implements vscode.Disposable {
 			await modelManagementController.predictModel();
 		});
 		this._apiWrapper.registerTaskHandler(constants.mlOdbcDriverCommand, async () => {
-			await this.serverConfigManager.openOdbcDriverDocuments();
+			await this.packageManagementService.openOdbcDriverDocuments();
 		});
 		this._apiWrapper.registerTaskHandler(constants.mlsDocumentsCommand, async () => {
-			await this.serverConfigManager.openDocuments();
+			await this.packageManagementService.openDocuments();
 		});
 	}
 
@@ -153,7 +153,7 @@ export default class MainController implements vscode.Disposable {
 	 */
 	public getPackageManager(nbApis: nbExtensionApis.IExtensionApi): PackageManager {
 		if (!this._packageManager) {
-			this._packageManager = new PackageManager(this._outputChannel, this._rootPath, this._apiWrapper, this.serverConfigManager, this._processService, this._config, this.httpClient);
+			this._packageManager = new PackageManager(this._outputChannel, this._rootPath, this._apiWrapper, this.packageManagementService, this._processService, this._config, this.httpClient);
 			this._packageManager.init();
 			this._packageManager.packageManageProviders.forEach(provider => {
 				nbApis.registerPackageManager(provider.providerId, provider);
@@ -165,11 +165,11 @@ export default class MainController implements vscode.Disposable {
 	/**
 	 * Returns the server config manager instance
 	 */
-	public get serverConfigManager(): PackageManagementService {
-		if (!this._serverConfigManager) {
-			this._serverConfigManager = new PackageManagementService(this._apiWrapper, this._queryRunner);
+	public get packageManagementService(): PackageManagementService {
+		if (!this._packageManagementService) {
+			this._packageManagementService = new PackageManagementService(this._apiWrapper, this._queryRunner);
 		}
-		return this._serverConfigManager;
+		return this._packageManagementService;
 	}
 
 	/**
