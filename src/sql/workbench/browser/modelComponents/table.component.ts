@@ -147,9 +147,9 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				});
 			}));
 
-			this._table.grid.onKeyDown.subscribe((e: KeyboardEvent) => {
+			this._table.grid.onKeyDown.subscribe((e: DOMEvent) => {
 				if (this.moveFocusOutWithTab) {
-					let event = new StandardKeyboardEvent(e);
+					let event = new StandardKeyboardEvent(e as KeyboardEvent);
 					if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 						e.stopImmediatePropagation();
 						(<HTMLElement>(<HTMLElement>this._inputContainer.nativeElement).previousElementSibling).focus();
@@ -313,6 +313,15 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		this._table.registerPlugin(checkboxSelectColumn);
 		this._table.columns = this._tableColumns;
 		this._table.autosizeColumns();
+	}
+
+	public focus(): void {
+		if (this._table.grid.getDataLength() > 0) {
+			if (!this._table.grid.getActiveCell()) {
+				this._table.grid.setActiveCell(0, 0);
+			}
+			this._table.grid.getActiveCellNode().focus();
+		}
 	}
 
 	// CSS-bound properties

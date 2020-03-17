@@ -14,10 +14,11 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { parseArgs, OPTIONS } from 'vs/platform/environment/node/argv';
 import product from 'vs/platform/product/common/product';
-import { IWindowSettings, MenuBarVisibility, IWindowConfiguration, ReadyState, getTitleBarStyle, getMenuBarVisibility } from 'vs/platform/windows/common/windows';
+import { IWindowSettings, MenuBarVisibility, ReadyState, getTitleBarStyle, getMenuBarVisibility } from 'vs/platform/windows/common/windows';
 import { Disposable, toDisposable } from 'vs/base/common/lifecycle';
 import { isLinux, isMacintosh, isWindows } from 'vs/base/common/platform';
 import { ICodeWindow, IWindowState, WindowMode } from 'vs/platform/windows/electron-main/windows';
+import { INativeWindowConfiguration } from 'vs/platform/windows/node/window';
 import { IWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
 import { IWorkspacesMainService } from 'vs/platform/workspaces/electron-main/workspacesMainService';
 import { IBackupMainService } from 'vs/platform/backup/electron-main/backup';
@@ -27,12 +28,13 @@ import { resolveMarketplaceHeaders } from 'vs/platform/extensionManagement/commo
 import { IThemeMainService } from 'vs/platform/theme/electron-main/themeMainService';
 import { endsWith } from 'vs/base/common/strings';
 import { RunOnceScheduler } from 'vs/base/common/async';
-import { IFileService } from 'vs/platform/files/common/files';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IDialogMainService } from 'vs/platform/dialogs/electron-main/dialogs';
 import { mnemonicButtonLabel } from 'vs/base/common/labels';
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { ILifecycleMainService } from 'vs/platform/lifecycle/electron-main/lifecycleMainService';
+import { IStorageMainService } from 'vs/platform/storage/node/storageMainService';
+import { IFileService } from 'vs/platform/files/common/files';
 
 const RUN_TEXTMATE_IN_WORKER = false;
 
@@ -85,7 +87,7 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 
 	private readonly whenReadyCallbacks: { (window: ICodeWindow): void }[];
 
-	private pendingLoadConfig?: IWindowConfiguration;
+	private pendingLoadConfig?: INativeWindowConfiguration;
 
 	private marketplaceHeadersPromise: Promise<object>;
 
@@ -96,6 +98,7 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 		@ILogService private readonly logService: ILogService,
 		@IEnvironmentService private readonly environmentService: IEnvironmentService,
 		@IFileService private readonly fileService: IFileService,
+		@IStorageMainService private readonly storageService: IStorageMainService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IThemeMainService private readonly themeMainService: IThemeMainService,
 		@IWorkspacesMainService private readonly workspacesMainService: IWorkspacesMainService,
@@ -225,14 +228,18 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 		this.createTouchBar();
 
 		// Request handling
-		this.marketplaceHeadersPromise = resolveMarketplaceHeaders(product.version, this.environmentService, this.fileService);
+		const that = this;
+		this.marketplaceHeadersPromise = resolveMarketplaceHeaders(product.version, this.environmentService, this.fileService, {
+			get(key) { return that.storageService.get(key); },
+			store(key, value) { that.storageService.store(key, value); }
+		});
 
 		// Eventing
 		this.registerListeners();
 	}
 
-	private currentConfig: IWindowConfiguration | undefined;
-	get config(): IWindowConfiguration | undefined { return this.currentConfig; }
+	private currentConfig: INativeWindowConfiguration | undefined;
+	get config(): INativeWindowConfiguration | undefined { return this.currentConfig; }
 
 	private _id: number;
 	get id(): number { return this._id; }
@@ -391,6 +398,8 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 					this.setFullScreen(false);
 					this.setFullScreen(true);
 				}
+
+				this.sendWhenReady('vscode:displayChanged');
 			}, 100));
 
 			const displayChangedListener = () => simpleFullScreenScheduler.schedule();
@@ -552,7 +561,7 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 		}
 	}
 
-	load(config: IWindowConfiguration, isReload?: boolean, disableExtensions?: boolean): void {
+	load(config: INativeWindowConfiguration, isReload?: boolean, disableExtensions?: boolean): void {
 
 		// If this is the first time the window is loaded, we associate the paths
 		// directly with the window because we assume the loading will just work
@@ -612,7 +621,7 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 		this._onLoad.fire();
 	}
 
-	reload(configurationIn?: IWindowConfiguration, cli?: ParsedArgs): void {
+	reload(configurationIn?: INativeWindowConfiguration, cli?: ParsedArgs): void {
 
 		// If config is not provided, copy our current one
 		const configuration = configurationIn ? configurationIn : objects.mixin({}, this.currentConfig);
@@ -639,7 +648,7 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 		this.load(configuration, true, disableExtensions);
 	}
 
-	private getUrl(windowConfiguration: IWindowConfiguration): string {
+	private getUrl(windowConfiguration: INativeWindowConfiguration): string {
 
 		// Set window ID
 		windowConfiguration.windowId = this._win.id;

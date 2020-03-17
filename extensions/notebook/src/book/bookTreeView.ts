@@ -7,19 +7,20 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as constants from '../common/constants';
 import * as fsw from 'fs';
 import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem } from './bookTreeItem';
 import { BookModel } from './bookModel';
 import { Deferred } from '../common/promise';
+import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import { ApiWrapper } from '../common/apiWrapper';
 
 const Content = 'content';
 
 export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem> {
-
 	private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined> = new vscode.EventEmitter<BookTreeItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<BookTreeItem | undefined> = this._onDidChangeTreeData.event;
 	private _throttleTimer: any;
@@ -27,21 +28,22 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _extensionContext: vscode.ExtensionContext;
 	private prompter: IPrompter;
 	private _initializeDeferred: Deferred<void> = new Deferred<void>();
-	private _bookViewer: vscode.TreeView<BookTreeItem>;
 	private _openAsUntitled: boolean;
-	private _apiWrapper: ApiWrapper;
+	private _bookTrustManager: IBookTrustManager;
+
+	private _bookViewer: vscode.TreeView<BookTreeItem>;
 	public viewId: string;
 	public books: BookModel[];
 	public currentBook: BookModel;
 
-	constructor(apiWrapper: ApiWrapper, workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string) {
+	constructor(private _apiWrapper: ApiWrapper, workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string) {
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
 		this.books = [];
 		this.initialize(workspaceFolders).catch(e => console.error(e));
 		this.viewId = view;
 		this.prompter = new CodeAdapter();
-		this._apiWrapper = apiWrapper ? apiWrapper : new ApiWrapper();
+		this._bookTrustManager = new BookTrustManager(this.books, _apiWrapper);
 	}
 
 	private async initialize(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
@@ -58,6 +60,41 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	public get initialized(): Promise<void> {
 		return this._initializeDeferred.promise;
+	}
+
+	get _visitedNotebooks(): string[] {
+		return this._extensionContext.globalState.get(constants.visitedNotebooksMementoKey, []);
+	}
+
+	set _visitedNotebooks(value: string[]) {
+		this._extensionContext.globalState.update(constants.visitedNotebooksMementoKey, value);
+	}
+
+	trustBook(bookTreeItem?: BookTreeItem): void {
+		let bookPathToTrust = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath;
+
+		if (bookPathToTrust) {
+
+			let trustChanged = this._bookTrustManager.setBookAsTrusted(bookPathToTrust);
+
+			if (trustChanged) {
+
+				let notebookDocuments = this._apiWrapper.getNotebookDocuments();
+
+				if (notebookDocuments) {
+					// update trust state of opened items
+					notebookDocuments.forEach(document => {
+						let notebook = this.currentBook.getNotebook(document.uri.fsPath);
+						if (notebook && this._bookTrustManager.isNotebookTrustedByDefault(document.uri.fsPath)) {
+							document.setTrusted(true);
+						}
+					});
+				}
+				this._apiWrapper.showInfoMessage(loc.msgBookTrusted);
+			} else {
+				this._apiWrapper.showInfoMessage(loc.msgBookAlreadyTrusted);
+			}
+		}
 	}
 
 	async openBook(bookPath: string, urlToOpen?: string): Promise<void> {
@@ -157,6 +194,19 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			if (this._openAsUntitled) {
 				this.openNotebookAsUntitled(resource);
 			} else {
+				// let us keep a list of already visited notebooks so that we do not trust them again, potentially
+				// overriding user changes
+				let normalizedResource = path.normalize(resource);
+
+				if (this._visitedNotebooks.indexOf(normalizedResource) === -1
+					&& this._bookTrustManager.isNotebookTrustedByDefault(normalizedResource)) {
+					let openDocumentListenerUnsubscriber = azdata.nb.onDidOpenNotebookDocument((document: azdata.nb.NotebookDocument) => {
+						document.setTrusted(true);
+						this._visitedNotebooks = this._visitedNotebooks.concat([normalizedResource]);
+						openDocumentListenerUnsubscriber.dispose();
+					});
+				}
+
 				let doc = await vscode.workspace.openTextDocument(resource);
 				vscode.window.showTextDocument(doc);
 			}
@@ -377,6 +427,4 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			default: false
 		});
 	}
-
-
 }

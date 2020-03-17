@@ -9,7 +9,7 @@ import 'vs/css!./media/highlight';
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener, ViewChildren, QueryList } from '@angular/core';
 
 import { localize } from 'vs/nls';
-import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Emitter } from 'vs/base/common/event';
@@ -27,6 +27,7 @@ import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/ce
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IColorTheme } from 'vs/platform/theme/common/themeService';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';

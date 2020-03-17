@@ -5,7 +5,10 @@
 
 .vs .icon.table,
 .vs-dark .icon.table,
-.hc-black .icon.table {
+.hc-black .icon.table,
+.vs .codicon.table,
+.vs-dark .codicon.table,
+.hc-black .codicon.table {
 	background: url("Table.svg") center center no-repeat;
 }
 

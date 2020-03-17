@@ -6,15 +6,40 @@
 import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
 import { URI } from 'vs/base/common/uri';
 import { Event } from 'vs/base/common/event';
+import { IDisposable } from 'vs/base/common/lifecycle';
+import { IMatch } from 'vs/base/common/filters';
+import { IItemAccessor } from 'vs/base/common/fuzzyScorer';
+import { Schemas } from 'vs/base/common/network';
+
+export interface IQuickPickItemHighlights {
+	label?: IMatch[];
+	description?: IMatch[];
+	detail?: IMatch[];
+}
 
 export interface IQuickPickItem {
 	type?: 'item';
 	id?: string;
 	label: string;
+	ariaLabel?: string;
 	description?: string;
 	detail?: string;
+	/**
+	 * Allows to show a keybinding next to the item to indicate
+	 * how the item can be triggered outside of the picker using
+	 * keyboard shortcut.
+	 */
+	keybinding?: ResolvedKeybinding;
 	iconClasses?: string[];
+	italic?: boolean;
+	strikethrough?: boolean;
+	highlights?: IQuickPickItemHighlights;
 	buttons?: IQuickInputButton[];
+	/**
+	 * Wether to always show the buttons. By default buttons
+	 * are only visible when hovering over them with the mouse
+	 */
+	buttonsAlwaysVisible?: boolean;
 	picked?: boolean;
 	alwaysShow?: boolean;
 }
@@ -125,7 +150,10 @@ export interface IInputOptions {
 	validateInput?: (input: string) => Promise<string | null | undefined>;
 }
 
-export interface IQuickInput {
+export interface IQuickInput extends IDisposable {
+
+	readonly onDidHide: Event<void>;
+	readonly onDispose: Event<void>;
 
 	title: string | undefined;
 
@@ -146,21 +174,41 @@ export interface IQuickInput {
 	show(): void;
 
 	hide(): void;
+}
 
-	onDidHide: Event<void>;
+export interface IQuickPickAcceptEvent {
 
-	dispose(): void;
+	/**
+	 * Signals if the picker item is to be accepted
+	 * in the background while keeping the picker open.
+	 */
+	inBackground: boolean;
 }
 
 export interface IQuickPick<T extends IQuickPickItem> extends IQuickInput {
 
 	value: string;
 
+	/**
+	 * A method that allows to massage the value used
+	 * for filtering, e.g, to remove certain parts.
+	 */
+	filterValue: (value: string) => string;
+
+	ariaLabel: string;
+
 	placeholder: string | undefined;
 
 	readonly onDidChangeValue: Event<string>;
 
-	readonly onDidAccept: Event<void>;
+	readonly onDidAccept: Event<IQuickPickAcceptEvent>;
+
+	/**
+	 * If enabled, will fire the `onDidAccept` event when
+	 * pressing the arrow-right key with the idea of accepting
+	 * the selected item without closing the picker.
+	 */
+	canAcceptInBackground: boolean;
 
 	ok: boolean | 'default';
 
@@ -254,3 +302,28 @@ export interface IQuickPickItemButtonContext<T extends IQuickPickItem> extends I
 }
 
 export type QuickPickInput<T = IQuickPickItem> = T | IQuickPickSeparator;
+
+
+//region Fuzzy Scorer Support
+
+export type IQuickPickItemWithResource = IQuickPickItem & { resource: URI | undefined };
+
+export const quickPickItemScorerAccessor = new class implements IItemAccessor<IQuickPickItemWithResource> {
+	getItemLabel(entry: IQuickPickItemWithResource): string {
+		return entry.label;
+	}
+
+	getItemDescription(entry: IQuickPickItemWithResource): string | undefined {
+		return entry.description;
+	}
+
+	getItemPath(entry: IQuickPickItemWithResource): string | undefined {
+		if (entry.resource?.scheme === Schemas.file) {
+			return entry.resource.fsPath;
+		}
+
+		return entry.resource?.path;
+	}
+};
+
+//#endregion

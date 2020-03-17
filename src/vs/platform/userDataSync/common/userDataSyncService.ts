@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IUserDataSyncService, SyncStatus, IUserDataSyncStoreService, SyncSource, ISettingsSyncService, IUserDataSyncLogService, IUserDataSynchroniser, UserDataSyncStoreError, UserDataSyncErrorCode, UserDataSyncError } from 'vs/platform/userDataSync/common/userDataSync';
+import { IUserDataSyncService, SyncStatus, IUserDataSyncStoreService, SyncResource, IUserDataSyncLogService, IUserDataSynchroniser, UserDataSyncStoreError, UserDataSyncErrorCode, UserDataSyncError, resolveSyncResource, PREVIEW_QUERY } from 'vs/platform/userDataSync/common/userDataSync';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -15,6 +15,8 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { equals } from 'vs/base/common/arrays';
 import { localize } from 'vs/nls';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { URI } from 'vs/base/common/uri';
+import { SettingsSynchroniser } from 'vs/platform/userDataSync/common/settingsSync';
 
 type SyncErrorClassification = {
 	source: { classification: 'SystemMetaData', purpose: 'FeatureInsight', isMeasurement: true };
@@ -34,22 +36,23 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 	private _onDidChangeStatus: Emitter<SyncStatus> = this._register(new Emitter<SyncStatus>());
 	readonly onDidChangeStatus: Event<SyncStatus> = this._onDidChangeStatus.event;
 
-	readonly onDidChangeLocal: Event<SyncSource>;
+	readonly onDidChangeLocal: Event<SyncResource>;
 
-	private _conflictsSources: SyncSource[] = [];
-	get conflictsSources(): SyncSource[] { return this._conflictsSources; }
-	private _onDidChangeConflicts: Emitter<SyncSource[]> = this._register(new Emitter<SyncSource[]>());
-	readonly onDidChangeConflicts: Event<SyncSource[]> = this._onDidChangeConflicts.event;
+	private _conflictsSources: SyncResource[] = [];
+	get conflictsSources(): SyncResource[] { return this._conflictsSources; }
+	private _onDidChangeConflicts: Emitter<SyncResource[]> = this._register(new Emitter<SyncResource[]>());
+	readonly onDidChangeConflicts: Event<SyncResource[]> = this._onDidChangeConflicts.event;
 
-	private _syncErrors: [SyncSource, UserDataSyncError][] = [];
-	private _onSyncErrors: Emitter<[SyncSource, UserDataSyncError][]> = this._register(new Emitter<[SyncSource, UserDataSyncError][]>());
-	readonly onSyncErrors: Event<[SyncSource, UserDataSyncError][]> = this._onSyncErrors.event;
+	private _syncErrors: [SyncResource, UserDataSyncError][] = [];
+	private _onSyncErrors: Emitter<[SyncResource, UserDataSyncError][]> = this._register(new Emitter<[SyncResource, UserDataSyncError][]>());
+	readonly onSyncErrors: Event<[SyncResource, UserDataSyncError][]> = this._onSyncErrors.event;
 
 	private _lastSyncTime: number | undefined = undefined;
 	get lastSyncTime(): number | undefined { return this._lastSyncTime; }
 	private _onDidChangeLastSyncTime: Emitter<number> = this._register(new Emitter<number>());
 	readonly onDidChangeLastSyncTime: Event<number> = this._onDidChangeLastSyncTime.event;
 
+	private readonly settingsSynchroniser: SettingsSynchroniser;
 	private readonly keybindingsSynchroniser: KeybindingsSynchroniser;
 	private readonly extensionsSynchroniser: ExtensionsSynchroniser;
 	private readonly globalStateSynchroniser: GlobalStateSynchroniser;
@@ -57,12 +60,12 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 	constructor(
 		@IUserDataSyncStoreService private readonly userDataSyncStoreService: IUserDataSyncStoreService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@ISettingsSyncService private readonly settingsSynchroniser: ISettingsSyncService,
 		@IUserDataSyncLogService private readonly logService: IUserDataSyncLogService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IStorageService private readonly storageService: IStorageService,
 	) {
 		super();
+		this.settingsSynchroniser = this._register(this.instantiationService.createInstance(SettingsSynchroniser));
 		this.keybindingsSynchroniser = this._register(this.instantiationService.createInstance(KeybindingsSynchroniser));
 		this.globalStateSynchroniser = this._register(this.instantiationService.createInstance(GlobalStateSynchroniser));
 		this.extensionsSynchroniser = this._register(this.instantiationService.createInstance(ExtensionsSynchroniser));
@@ -74,7 +77,7 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 		}
 
 		this._lastSyncTime = this.storageService.getNumber(LAST_SYNC_TIME_KEY, StorageScope.GLOBAL, undefined);
-		this.onDidChangeLocal = Event.any(...this.synchronisers.map(s => Event.map(s.onDidChangeLocal, () => s.source)));
+		this.onDidChangeLocal = Event.any(...this.synchronisers.map(s => Event.map(s.onDidChangeLocal, () => s.resource)));
 	}
 
 	async pull(): Promise<void> {
@@ -83,7 +86,7 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 			try {
 				await synchroniser.pull();
 			} catch (e) {
-				this.handleSyncError(e, synchroniser.source);
+				this.handleSyncError(e, synchroniser.resource);
 			}
 		}
 		this.updateLastSyncTime();
@@ -95,7 +98,7 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 			try {
 				await synchroniser.push();
 			} catch (e) {
-				this.handleSyncError(e, synchroniser.source);
+				this.handleSyncError(e, synchroniser.resource);
 			}
 		}
 		this.updateLastSyncTime();
@@ -128,10 +131,10 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 
 			for (const synchroniser of this.synchronisers) {
 				try {
-					await synchroniser.sync(manifest && manifest.latest ? manifest.latest[synchroniser.resourceKey] : undefined);
+					await synchroniser.sync(manifest && manifest.latest ? manifest.latest[synchroniser.resource] : undefined);
 				} catch (e) {
-					this.handleSyncError(e, synchroniser.source);
-					this._syncErrors.push([synchroniser.source, UserDataSyncError.toUserDataSyncError(e)]);
+					this.handleSyncError(e, synchroniser.resource);
+					this._syncErrors.push([synchroniser.resource, UserDataSyncError.toUserDataSyncError(e)]);
 				}
 			}
 
@@ -170,17 +173,21 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 		}
 	}
 
-	async accept(source: SyncSource, content: string): Promise<void> {
+	async accept(source: SyncResource, content: string): Promise<void> {
 		await this.checkEnablement();
 		const synchroniser = this.getSynchroniser(source);
 		await synchroniser.accept(content);
 	}
 
-	async getRemoteContent(source: SyncSource, preview: boolean): Promise<string | null> {
-		await this.checkEnablement();
-		for (const synchroniser of this.synchronisers) {
-			if (synchroniser.source === source) {
-				return synchroniser.getRemoteContent(preview);
+	async resolveContent(resource: URI): Promise<string | null> {
+		const result = resolveSyncResource(resource);
+		if (result) {
+			const synchronizer = this.synchronisers.filter(s => s.resource === result.resource)[0];
+			if (synchronizer) {
+				if (PREVIEW_QUERY === resource.query) {
+					return result.remote ? synchronizer.getRemoteContentFromPreview() : null;
+				}
+				return result.remote ? synchronizer.getRemoteContent(result.ref, resource.fragment) : synchronizer.getLocalBackupContent(result.ref, resource.fragment);
 			}
 		}
 		return null;
@@ -211,7 +218,7 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 			try {
 				synchroniser.resetLocal();
 			} catch (e) {
-				this.logService.error(`${synchroniser.source}: ${toErrorMessage(e)}`);
+				this.logService.error(`${synchroniser.resource}: ${toErrorMessage(e)}`);
 				this.logService.error(e);
 			}
 		}
@@ -286,7 +293,7 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 		}
 	}
 
-	private handleSyncError(e: Error, source: SyncSource): void {
+	private handleSyncError(e: Error, source: SyncResource): void {
 		if (e instanceof UserDataSyncStoreError) {
 			switch (e.code) {
 				case UserDataSyncErrorCode.TooLarge:
@@ -298,17 +305,12 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 		this.logService.error(`${source}: ${toErrorMessage(e)}`);
 	}
 
-	private computeConflictsSources(): SyncSource[] {
-		return this.synchronisers.filter(s => s.status === SyncStatus.HasConflicts).map(s => s.source);
+	private computeConflictsSources(): SyncResource[] {
+		return this.synchronisers.filter(s => s.status === SyncStatus.HasConflicts).map(s => s.resource);
 	}
 
-	private getSynchroniser(source: SyncSource): IUserDataSynchroniser {
-		switch (source) {
-			case SyncSource.Settings: return this.settingsSynchroniser;
-			case SyncSource.Keybindings: return this.keybindingsSynchroniser;
-			case SyncSource.Extensions: return this.extensionsSynchroniser;
-			case SyncSource.GlobalState: return this.globalStateSynchroniser;
-		}
+	getSynchroniser(source: SyncResource): IUserDataSynchroniser {
+		return this.synchronisers.filter(s => s.resource === source)[0];
 	}
 
 	private async checkEnablement(): Promise<void> {

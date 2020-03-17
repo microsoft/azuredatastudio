@@ -49,17 +49,16 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { DiskFileSystemProvider } from 'vs/platform/files/electron-browser/diskFileSystemProvider';
 import { Schemas } from 'vs/base/common/network';
 import { IProductService } from 'vs/platform/product/common/productService';
-import { IUserDataSyncService, IUserDataSyncStoreService, registerConfiguration, IUserDataSyncLogService, IUserDataSyncUtilService, ISettingsSyncService, IUserDataSyncEnablementService } from 'vs/platform/userDataSync/common/userDataSync';
+import { IUserDataSyncService, IUserDataSyncStoreService, registerConfiguration, IUserDataSyncLogService, IUserDataSyncUtilService, IUserDataSyncEnablementService, IUserDataSyncBackupStoreService } from 'vs/platform/userDataSync/common/userDataSync';
 import { UserDataSyncService } from 'vs/platform/userDataSync/common/userDataSyncService';
 import { UserDataSyncStoreService } from 'vs/platform/userDataSync/common/userDataSyncStoreService';
-import { UserDataSyncChannel, UserDataSyncUtilServiceClient, SettingsSyncChannel, UserDataAutoSyncChannel } from 'vs/platform/userDataSync/common/userDataSyncIpc';
+import { UserDataSyncChannel, UserDataSyncUtilServiceClient, UserDataAutoSyncChannel, UserDataSyncStoreServiceChannel, UserDataSyncBackupStoreServiceChannel } from 'vs/platform/userDataSync/common/userDataSyncIpc';
 import { IElectronService } from 'vs/platform/electron/node/electron';
 import { LoggerService } from 'vs/platform/log/node/loggerService';
 import { UserDataSyncLogService } from 'vs/platform/userDataSync/common/userDataSyncLog';
 import { ICredentialsService } from 'vs/platform/credentials/common/credentials';
 import { KeytarCredentialsService } from 'vs/platform/credentials/node/credentialsService';
 import { UserDataAutoSyncService } from 'vs/platform/userDataSync/electron-browser/userDataAutoSyncService';
-import { SettingsSynchroniser } from 'vs/platform/userDataSync/common/settingsSync';
 import { NativeStorageService } from 'vs/platform/storage/node/storageService';
 import { GlobalStorageDatabaseChannelClient } from 'vs/platform/storage/node/storageIpc';
 import { IStorageService } from 'vs/platform/storage/common/storage';
@@ -67,6 +66,7 @@ import { GlobalExtensionEnablementService } from 'vs/platform/extensionManagemen
 import { UserDataSyncEnablementService } from 'vs/platform/userDataSync/common/userDataSyncEnablementService';
 import { IAuthenticationTokenService, AuthenticationTokenService } from 'vs/platform/authentication/common/authentication';
 import { AuthenticationTokenServiceChannel } from 'vs/platform/authentication/common/authenticationIpc';
+import { UserDataSyncBackupStoreService } from 'vs/platform/userDataSync/common/userDataSyncBackupStoreService';
 
 export interface ISharedProcessConfiguration {
 	readonly machineId: string;
@@ -194,8 +194,8 @@ async function main(server: Server, initData: ISharedProcessInitData, configurat
 		services.set(IUserDataSyncUtilService, new UserDataSyncUtilServiceClient(server.getChannel('userDataSyncUtil', client => client.ctx !== 'main')));
 		services.set(IGlobalExtensionEnablementService, new SyncDescriptor(GlobalExtensionEnablementService));
 		services.set(IUserDataSyncStoreService, new SyncDescriptor(UserDataSyncStoreService));
+		services.set(IUserDataSyncBackupStoreService, new SyncDescriptor(UserDataSyncBackupStoreService));
 		services.set(IUserDataSyncEnablementService, new SyncDescriptor(UserDataSyncEnablementService));
-		services.set(ISettingsSyncService, new SyncDescriptor(SettingsSynchroniser));
 		services.set(IUserDataSyncService, new SyncDescriptor(UserDataSyncService));
 		registerConfiguration();
 
@@ -219,9 +219,13 @@ async function main(server: Server, initData: ISharedProcessInitData, configurat
 			const authTokenChannel = new AuthenticationTokenServiceChannel(authTokenService);
 			server.registerChannel('authToken', authTokenChannel);
 
-			const settingsSyncService = accessor.get(ISettingsSyncService);
-			const settingsSyncChannel = new SettingsSyncChannel(settingsSyncService);
-			server.registerChannel('settingsSync', settingsSyncChannel);
+			const userDataSyncStoreService = accessor.get(IUserDataSyncStoreService);
+			const userDataSyncStoreServiceChannel = new UserDataSyncStoreServiceChannel(userDataSyncStoreService);
+			server.registerChannel('userDataSyncStoreService', userDataSyncStoreServiceChannel);
+
+			const userDataSyncBackupStoreService = accessor.get(IUserDataSyncBackupStoreService);
+			const userDataSyncBackupStoreServiceChannel = new UserDataSyncBackupStoreServiceChannel(userDataSyncBackupStoreService);
+			server.registerChannel('userDataSyncBackupStoreService', userDataSyncBackupStoreServiceChannel);
 
 			const userDataSyncService = accessor.get(IUserDataSyncService);
 			const userDataSyncChannel = new UserDataSyncChannel(userDataSyncService);
