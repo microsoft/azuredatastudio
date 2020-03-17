@@ -435,7 +435,7 @@ export abstract class AzureAuth {
 		}
 	}
 
-	protected createAccount(tokenClaims: TokenClaims, key: string, tenants: Tenant[]): AzureAccount {
+	public createAccount(tokenClaims: TokenClaims, key: string, tenants: Tenant[]): AzureAccount {
 		// Determine if this is a microsoft account
 		let accountIssuer = 'unknown';
 

@@ -8,7 +8,7 @@ import * as os from 'os';
 import 'mocha';
 
 import { PromptFailedResult, AccountKey } from 'azdata';
-import { AzureAuth, AccessToken, RefreshToken } from '../../../account-provider/auths/azureAuth';
+import { AzureAuth, AccessToken, RefreshToken, TokenClaims } from '../../../account-provider/auths/azureAuth';
 import { AzureAccount, AzureAuthType } from '../../../account-provider/interfaces';
 import providerSettings from '../../../account-provider/providerSettings';
 import { SimpleTokenCache } from '../../../account-provider/simpleTokenCache';
@@ -77,5 +77,18 @@ describe('AccountProvider.AzureAuth', function (): void {
 
 		should(JSON.stringify(result)).be.undefined();
 		should(JSON.stringify(result)).be.undefined();
+	});
+
+	it('Create an account object', async function (): Promise<void> {
+		const tokenClaims = {
+			idp: 'live.com',
+			name: 'TestAccount',
+		} as TokenClaims;
+
+		const account = baseAuth.createAccount(tokenClaims, 'someKey', undefined);
+
+		should(account.properties.azureAuthType).be.equal(AzureAuthType.AuthCodeGrant);
+		should(account.key.accountId).be.equal('someKey');
+		should(account.properties.isMsAccount).be.equal(true);
 	});
 });
