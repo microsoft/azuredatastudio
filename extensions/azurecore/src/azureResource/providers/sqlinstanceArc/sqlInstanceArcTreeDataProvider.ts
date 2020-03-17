@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionNodeType, TreeItem } from 'azdata';
+import { ExtensionNodeType, TreeItem, Account } from 'azdata';
 import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -28,7 +28,7 @@ export class SqlInstanceArcTreeDataProvider extends ResourceTreeDataProviderBase
 	}
 
 
-	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer): TreeItem {
+	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: Account): TreeItem {
 		return {
 			id: `sqlInstance_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: databaseServer.name,
@@ -51,7 +51,8 @@ export class SqlInstanceArcTreeDataProvider extends ResourceTreeDataProviderBase
 				groupId: '',
 				providerName: 'MSSQL',
 				saveProfile: false,
-				options: {}
+				options: {},
+				azureAccount: account.key.accountId
 			},
 			childProvider: 'MSSQL',
 			type: ExtensionNodeType.Server
