@@ -146,7 +146,7 @@ export abstract class AzureAuth {
 		}
 
 		try {
-			this.refreshAccessToken(account.key, refreshToken);
+			await this.refreshAccessToken(account.key, refreshToken);
 		} catch (ex) {
 			if (ex.message) {
 				vscode.window.showErrorMessage(ex.message);
@@ -366,7 +366,7 @@ export abstract class AzureAuth {
 			postData.resource = resource.endpoint;
 		}
 
-		const { accessToken, refreshToken } = await this.getToken(postData, tenant?.id, resource.id);
+		const { accessToken, refreshToken } = await this.getToken(postData, tenant?.id, resource?.id);
 
 		if (!accessToken || !refreshToken) {
 			console.log('Access or refresh token were undefined');

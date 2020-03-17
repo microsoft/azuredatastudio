@@ -86,7 +86,7 @@ export class AzureDeviceCode extends AzureAuth {
 				key: accessToken.key,
 			};
 
-			this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, accessToken, refreshToken);
+			await this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, accessToken, refreshToken);
 
 			const tenants = await this.getTenants(accessToken);
 			const account = this.createAccount(tokenClaims, accessToken.key, tenants);

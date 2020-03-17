@@ -112,7 +112,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 
 		try {
-			this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, accessToken, refreshToken);
+			await this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, accessToken, refreshToken);
 		} catch (ex) {
 			console.log(ex);
 			if (ex.msg) {
