@@ -56,6 +56,7 @@ export class AccountFeature implements StaticFeature {
 			const tenant = account.properties.tenants.find((t: { [key: string]: string }) => e.authority.includes(t.id));
 
 			let params: contracts.RequestSecurityTokenResponse = {
+				accountKey: JSON.stringify(account.key),
 				token: securityToken[tenant.id].token
 			};
 
