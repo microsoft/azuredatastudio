@@ -317,19 +317,23 @@ class WelcomePage extends Disposable {
 		const previewModalHeader = document.querySelector('.preview_tooltip__header') as HTMLElement;
 
 		previewLink.addEventListener('mouseover', () => {
+			tooltip.setAttribute('aria-hidden', 'true');
 			tooltip.classList.toggle('show');
 		});
 		previewLink.addEventListener('mouseout', () => {
+			tooltip.setAttribute('aria-hidden', 'false');
 			tooltip.classList.remove('show');
 		});
 
 		previewLink.addEventListener('keydown', (e: KeyboardEvent) => {
 			if (e.keyCode === 27) {
 				if (tooltip.classList.contains('show')) {
+					tooltip.setAttribute('aria-hidden', 'true');
 					tooltip.classList.remove('show');
 				}
 			}
 			else if (e.keyCode === 13 || e.keyCode === 32) {
+				tooltip.setAttribute('aria-hidden', 'false');
 				tooltip.classList.toggle('show');
 				previewModalHeader.focus();
 			}
@@ -338,6 +342,7 @@ class WelcomePage extends Disposable {
 		tooltip.addEventListener('keydown', (e: KeyboardEvent) => {
 			if (e.keyCode === 27) {
 				if (tooltip.classList.contains('show')) {
+					tooltip.setAttribute('aria-hidden', 'true');
 					tooltip.classList.remove('show');
 				}
 			}
@@ -456,10 +461,12 @@ class WelcomePage extends Disposable {
 		btn.addEventListener('keydown', (e: KeyboardEvent) => {
 			if (e.keyCode === 13 || e.keyCode === 32) {
 				modal.classList.toggle('show');
+				modal.setAttribute('aria-hidden', 'false');
 				previewModalHeader.focus();
 			}
 			if (e.keyCode === 27) {
 				if (modal.classList.contains('show')) {
+					modal.setAttribute('aria-hidden', 'true');
 					modal.classList.remove('show');
 				}
 			}
@@ -469,6 +476,7 @@ class WelcomePage extends Disposable {
 			const target = e.target as HTMLTextAreaElement;
 			if (!target.matches('.modal') && e.keyCode === 27) {
 				if (modal.classList.contains('show')) {
+					modal.setAttribute('aria-hidden', 'true');
 					modal.classList.remove('show');
 				}
 			}
