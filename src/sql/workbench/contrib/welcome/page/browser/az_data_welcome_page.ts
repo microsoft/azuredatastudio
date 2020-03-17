@@ -104,7 +104,7 @@ export default () => `
 				</div>
 			</div>
 			<div class="ads_homepage__section middle_section content row ads_grid">
-				<div class="col--lg--span-4 col--xl--start_1__span_7 col--sm--start_1__span_1 resources">
+				<div class="resources__container">
 					<h2>${escape(localize('welcomePage.resources', "Resources"))}</h2>
 					<div class="tabs">
 						<input class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
@@ -133,7 +133,7 @@ export default () => `
 						<label class="caption" for="showOnStartup">${escape(localize('welcomePage.showOnStartup', "Show welcome page on startup"))}</label>
 					</p>
 				</div>
-				<div class="col--xl--start_9__span_6 col--sm--start_1__span_1">
+				<div class="getting_started__container">
 					<div class="links">
 						<h2>${escape(localize('welcomePage.usefuLinks', "Useful Links"))}</h2>
 						<div class="link_header">
@@ -181,9 +181,9 @@ export default () => `
 					<h2>Extend your data studio</h2>
 					<a class="link--show_all flex" href="command:extensions.listView.focus">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon--arrow_right themed_icon--alt"></span></a>
 				</div>
-				<div class="row ads_grid grip_gap--50 lg--cols-2 xxl--cols-8">
+				<div class="row ads_grid grip_gap--50">
 					<div
-						class="ads_grid col--sm--start_1__span_2 row--xxl--start_1__span_4 col--xxl--start_1__span_4 lg--cols-2 tile no_hover extension_pack">
+						class="ads_grid tile no_hover extension_pack">
 						<div class="extension_pack__description">
 							<div class="extension_pack__header"></div>
 							<p class="extension_pack__body"></p>
@@ -198,7 +198,7 @@ export default () => `
 						</div>
 					</div>
 				</div>
-				<div class="extension_list col col--sm--start_1__span_2 col--xxl--start_5__span_4 row--xxl--start_1__span_4 flex flex--d_column">
+				<div class="extension_list flex flex--d_column">
 					<!-- Dynamically populated -->
 				</div>
 				<br /><br /><br />
