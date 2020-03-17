@@ -382,6 +382,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			newProfile.generateNewId();
 		}
 		else {
+			//this shouldn't be here in the final version, this is for testing, connectionManagementService
 			newProfile.generateNewId();
 		}
 		// If connecting from a query editor set "save connection" to false

@@ -430,9 +430,33 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this.connectWithOptions(connection, uri, options, callbacks);
 	}
 
+	/**
+	 * Method to try and retrieve a connection that has a specified ID
+	 * from list of active connections.
+	 */
+	public idConnectionCheck(id: string): ConnectionProfile {
+		const connections = this.getActiveConnections();
+		if (connections) {
+			for (let connection of connections) {
+				if (connection.id === id) {
+					return connection;
+				}
+			}
+		}
+
+		return undefined;
+	}
+
 	private async connectWithOptions(connection: interfaces.IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		connection.options['groupId'] = connection.groupId;
 		connection.options['databaseDisplayName'] = connection.databaseName;
+
+		let isEdit = false;
+
+		if (this.idConnectionCheck(connection.id)) {
+			//Command below set to false for now, will be set to true in final version.
+			isEdit = false;
+		}
 
 		if (!uri) {
 			uri = Utils.generateUri(connection);
@@ -463,54 +487,58 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (!tokenFillSuccess) {
 			throw new Error(nls.localize('connection.noAzureAccount', "Failed to get Azure account token for connection"));
 		}
-		//temporary call for testing.
-		this.editExistingConnection(uri, connection);
 
-		return this.createNewConnection(uri, connection).then(async connectionResult => {
-			if (connectionResult && connectionResult.connected) {
-				// The connected succeeded so add it to our active connections now, optionally adding it to the MRU based on
-				// the options.saveTheConnection setting
-				let connectionMgmtInfo = this._connectionStatusManager.findConnection(uri);
-				this.tryAddActiveConnection(connectionMgmtInfo, connection, options.saveTheConnection);
+		if (isEdit) {
+			return this.createNewConnection(uri, connection).then(async connectionResult => {
+				if (connectionResult && connectionResult.connected) {
+					// The connected succeeded so add it to our active connections now, optionally adding it to the MRU based on
+					// the options.saveTheConnection setting
+					let connectionMgmtInfo = this._connectionStatusManager.findConnection(uri);
+					this.tryAddActiveConnection(connectionMgmtInfo, connection, options.saveTheConnection);
 
-				if (callbacks.onConnectSuccess) {
-					callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
-				}
-				if (options.saveTheConnection) {
-					await this.saveToSettings(uri, connection).then(value => {
-						this._onAddConnectionProfile.fire(connection);
-						this.doActionsAfterConnectionComplete(value, options);
-					});
-				} else {
-					connection.saveProfile = false;
-					this.doActionsAfterConnectionComplete(uri, options);
-				}
-				if (connection.savePassword) {
-					return this._connectionStore.savePassword(connection).then(() => {
+					if (callbacks.onConnectSuccess) {
+						callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
+					}
+					if (options.saveTheConnection) {
+						await this.saveToSettings(uri, connection).then(value => {
+							this._onAddConnectionProfile.fire(connection);
+							this.doActionsAfterConnectionComplete(value, options);
+						});
+					} else {
+						connection.saveProfile = false;
+						this.doActionsAfterConnectionComplete(uri, options);
+					}
+					if (connection.savePassword) {
+						return this._connectionStore.savePassword(connection).then(() => {
+							return connectionResult;
+						});
+					} else {
 						return connectionResult;
+					}
+				} else if (connectionResult && connectionResult.errorMessage) {
+					return this.handleConnectionError(connection, uri, options, callbacks, connectionResult).catch(handleConnectionError => {
+						if (callbacks.onConnectReject) {
+							callbacks.onConnectReject(handleConnectionError);
+						}
+						throw handleConnectionError;
 					});
 				} else {
+					if (callbacks.onConnectReject) {
+						callbacks.onConnectReject(nls.localize('connectionNotAcceptedError', "Connection Not Accepted"));
+					}
 					return connectionResult;
 				}
-			} else if (connectionResult && connectionResult.errorMessage) {
-				return this.handleConnectionError(connection, uri, options, callbacks, connectionResult).catch(handleConnectionError => {
-					if (callbacks.onConnectReject) {
-						callbacks.onConnectReject(handleConnectionError);
-					}
-					throw handleConnectionError;
-				});
-			} else {
+			}).catch(err => {
 				if (callbacks.onConnectReject) {
-					callbacks.onConnectReject(nls.localize('connectionNotAcceptedError', "Connection Not Accepted"));
+					callbacks.onConnectReject(err);
 				}
-				return connectionResult;
-			}
-		}).catch(err => {
-			if (callbacks.onConnectReject) {
-				callbacks.onConnectReject(err);
-			}
-			throw err;
-		});
+				throw err;
+			});
+		}
+		else {
+			//WIP command, not finished.
+			return this.editExistingConnection(uri, connection);
+		}
 	}
 
 	private handleConnectionError(connection: interfaces.IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
@@ -1042,7 +1070,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this._logService.info(`Editing existing connection ${uri}`);
 
 		return new Promise<IConnectionResult>((resolve, reject) => {
-			//console.log('editExistingConnection promise fired.');
+			//TODO: Need to disconnect the connection of the existing connection in active connections.
+			//Then fill in the connection profile that is active with information from new connection profile.
 		});
 	}
 	// Connect an open URI to a connection profile
