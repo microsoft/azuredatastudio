@@ -215,7 +215,7 @@ export function getRegisteredModelsThreePartsName(config: Config) {
 	const dbName = doubleEscapeSingleBrackets(config.registeredModelDatabaseName);
 	const schema = doubleEscapeSingleBrackets(config.registeredModelTableSchemaName);
 	const tableName = doubleEscapeSingleBrackets(config.registeredModelTableName);
-	return `[${dbName}].${schema}.[${tableName}]`;
+	return `[${dbName}].[${schema}].[${tableName}]`;
 }
 
 /**
@@ -226,16 +226,6 @@ export function getRegisteredModelsTowPartsName(config: Config) {
 	const schema = doubleEscapeSingleBrackets(config.registeredModelTableSchemaName);
 	const tableName = doubleEscapeSingleBrackets(config.registeredModelTableName);
 	return `[${schema}].[${tableName}]`;
-}
-
-export function hexToBytes(hexContent: string): number[] {
-	let bytes = [];
-	if (hexContent) {
-		for (let c = 0; c < hexContent.length; c += 2) {
-			bytes.push(parseInt(hexContent.substr(c, 2), 16));
-		}
-	}
-	return bytes;
 }
 
 export async function writeFileFromHex(content: string): Promise<string> {

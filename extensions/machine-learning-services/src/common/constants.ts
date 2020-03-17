@@ -72,6 +72,8 @@ export const mlsExternalExecuteScriptTitle = localize('mls.externalExecuteScript
 export const mlsPythonLanguageTitle = localize('mls.pythonLanguageTitle', "Python");
 export const mlsRLanguageTitle = localize('mls.rLanguageTitle', "R");
 export const downloadError = localize('mls.downloadError', "Error while downloading");
+export function invalidModelIdError(modelUrl: string | undefined): string { return localize('mls.invalidModelIdError', "Invalid model id. model url: {0}", modelUrl || ''); }
+export function noArtifactError(modelUrl: string | undefined): string { return localize('mls.noArtifactError', "Model doesn't have any artifact. model url: {0}", modelUrl || ''); }
 export const downloadingProgress = localize('mls.downloadingProgress', "Downloading");
 export const pythonConfigError = localize('mls.pythonConfigError', "Python executable is not configured");
 export const rConfigError = localize('mls.rConfigError', "R executable is not configured");

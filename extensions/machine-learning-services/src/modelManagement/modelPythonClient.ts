@@ -16,34 +16,44 @@ import * as os from 'os';
 import { ModelParameters } from './interfaces';
 
 /**
- * Service to import model to database
+ * Python client for ONNX models
  */
-export class ModelImporter {
+export class ModelPythonClient {
 
 	/**
-	 *
+	 * Creates new instance
 	 */
 	constructor(private _outputChannel: vscode.OutputChannel, private _apiWrapper: ApiWrapper, private _processService: ProcessService, private _config: Config, private _packageManager: PackageManager) {
 	}
 
-	public async registerModel(connection: azdata.connection.ConnectionProfile, modelFolderPath: string): Promise<void> {
+	/**
+	 * Deploys models in the SQL database using mlflow
+	 * @param connection
+	 * @param modelPath
+	 */
+	public async deployModel(connection: azdata.connection.ConnectionProfile, modelPath: string): Promise<void> {
 		await this.installDependencies();
-		await this.executeDeployScripts(connection, modelFolderPath);
+		await this.executeDeployScripts(connection, modelPath);
 	}
 
 	/**
-	 * Installs dependencies for model importer
+	 * Installs dependencies for python client
 	 */
-	public async installDependencies(): Promise<void> {
+	private async installDependencies(): Promise<void> {
 		await utils.executeTasks(this._apiWrapper, constants.installDependenciesMsgTaskName, [
 			this._packageManager.installRequiredPythonPackages(this._config.modelsRequiredPythonPackages)], true);
 	}
 
-	public async loadModelParameters(modelFolderPath: string): Promise<ModelParameters> {
-		return await this.executeModelParametersScripts(modelFolderPath);
+	/**
+	 *
+	 * @param modelPath Loads model parameters
+	 */
+	public async loadModelParameters(modelPath: string): Promise<ModelParameters> {
+		await this.installDependencies();
+		return await this.executeModelParametersScripts(modelPath);
 	}
 
-	protected async executeModelParametersScripts(modelFolderPath: string): Promise<ModelParameters> {
+	private async executeModelParametersScripts(modelFolderPath: string): Promise<ModelParameters> {
 		modelFolderPath = utils.makeLinuxPath(modelFolderPath);
 
 		let scripts: string[] = [
@@ -85,7 +95,7 @@ export class ModelImporter {
 		return Object.assign({}, parametersJson);
 	}
 
-	protected async executeDeployScripts(connection: azdata.connection.ConnectionProfile, modelFolderPath: string): Promise<void> {
+	private async executeDeployScripts(connection: azdata.connection.ConnectionProfile, modelFolderPath: string): Promise<void> {
 		let home = utils.makeLinuxPath(os.homedir());
 		modelFolderPath = utils.makeLinuxPath(modelFolderPath);
 

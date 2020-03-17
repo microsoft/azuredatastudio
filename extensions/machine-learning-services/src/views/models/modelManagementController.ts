@@ -11,7 +11,7 @@ import { AzureModelRegistryService } from '../../modelManagement/azureModelRegis
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { RegisteredModel, WorkspaceModel, RegisteredModelDetails, ModelParameters } from '../../modelManagement/interfaces';
 import { PredictParameters, DatabaseTable, TableColumn } from '../../prediction/interfaces';
-import { RegisteredModelService } from '../../modelManagement/registeredModelService';
+import { DeployedModelService } from '../../modelManagement/deployedModelService';
 import { RegisteredModelsDialog } from './registerModels/registeredModelsDialog';
 import {
 	AzureResourceEventArgs, ListAzureModelsEventName, ListSubscriptionsEventName, ListModelsEventName, ListWorkspacesEventName,
@@ -39,7 +39,7 @@ export class ModelManagementController extends ControllerBase {
 		apiWrapper: ApiWrapper,
 		private _root: string,
 		private _amlService: AzureModelRegistryService,
-		private _registeredModelService: RegisteredModelService,
+		private _registeredModelService: DeployedModelService,
 		private _predictService: PredictService) {
 		super(apiWrapper);
 	}
@@ -201,8 +201,8 @@ export class ModelManagementController extends ControllerBase {
 		return await service.getWorkspaces(account, subscription, group);
 	}
 
-	private async getRegisteredModels(registeredModelService: RegisteredModelService): Promise<RegisteredModel[]> {
-		return registeredModelService.getRegisteredModels();
+	private async getRegisteredModels(registeredModelService: DeployedModelService): Promise<RegisteredModel[]> {
+		return registeredModelService.getDeployedModels();
 	}
 
 	private async getAzureModels(
@@ -217,9 +217,9 @@ export class ModelManagementController extends ControllerBase {
 		return await service.getModels(account, subscription, resourceGroup, workspace) || [];
 	}
 
-	private async registerLocalModel(service: RegisteredModelService, filePath: string, details: RegisteredModelDetails | undefined): Promise<void> {
+	private async registerLocalModel(service: DeployedModelService, filePath: string, details: RegisteredModelDetails | undefined): Promise<void> {
 		if (filePath) {
-			await service.registerLocalModel(filePath, details);
+			await service.deployLocalModel(filePath, details);
 		} else {
 			throw Error(constants.invalidModelToRegisterError);
 
@@ -228,7 +228,7 @@ export class ModelManagementController extends ControllerBase {
 
 	private async registerAzureModel(
 		azureService: AzureModelRegistryService,
-		service: RegisteredModelService,
+		service: DeployedModelService,
 		account: azdata.Account | undefined,
 		subscription: azureResource.AzureResourceSubscription | undefined,
 		resourceGroup: azureResource.AzureResource | undefined,
@@ -241,7 +241,7 @@ export class ModelManagementController extends ControllerBase {
 		const filePath = await azureService.downloadModel(account, subscription, resourceGroup, workspace, model);
 		if (filePath) {
 
-			await service.registerLocalModel(filePath, details);
+			await service.deployLocalModel(filePath, details);
 			await fs.promises.unlink(filePath);
 		} else {
 			throw Error(constants.invalidModelToRegisterError);
@@ -274,7 +274,7 @@ export class ModelManagementController extends ControllerBase {
 	}
 
 	private async downloadRegisteredModel(
-		registeredModelService: RegisteredModelService,
+		registeredModelService: DeployedModelService,
 		model: RegisteredModel | undefined): Promise<string> {
 		if (!model) {
 			throw Error(constants.invalidModelToPredictError);
@@ -283,7 +283,7 @@ export class ModelManagementController extends ControllerBase {
 	}
 
 	private async loadModelParameters(
-		registeredModelService: RegisteredModelService,
+		registeredModelService: DeployedModelService,
 		model: string | undefined): Promise<ModelParameters | undefined> {
 		if (!model) {
 			return undefined;
