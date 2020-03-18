@@ -11,7 +11,6 @@
 * VS Code merge
 * In the next release, GitHub releases will no longer contain the binary files to the latest version. Rather, they will contain links to the latest release. This will have no impact on users using the in-app update functionality.
 
-
 ## Version 1.15.1
 * Release date: February 19, 2020
 * Release status: General Availability
