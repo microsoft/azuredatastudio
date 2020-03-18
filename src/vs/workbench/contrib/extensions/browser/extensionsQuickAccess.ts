@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IQuickPickSeparator } from 'vs/platform/quickinput/common/quickInput';
-import { IPickerQuickAccessItem, PickerQuickAccessProvider } from 'vs/platform/quickinput/common/quickAccess';
+import { IPickerQuickAccessItem, PickerQuickAccessProvider } from 'vs/platform/quickinput/browser/pickerQuickAccess';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { localize } from 'vs/nls';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
@@ -12,6 +12,7 @@ import { VIEWLET_ID, IExtensionsViewPaneContainer } from 'vs/workbench/contrib/e
 import { IExtensionGalleryService, IExtensionManagementService, IGalleryExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ILogService } from 'vs/platform/log/common/log';
+import { DisposableStore } from 'vs/base/common/lifecycle';
 
 export class InstallExtensionQuickAccessProvider extends PickerQuickAccessProvider<IPickerQuickAccessItem> {
 
@@ -27,7 +28,7 @@ export class InstallExtensionQuickAccessProvider extends PickerQuickAccessProvid
 		super(InstallExtensionQuickAccessProvider.PREFIX);
 	}
 
-	protected getPicks(filter: string, token: CancellationToken): Array<IPickerQuickAccessItem | IQuickPickSeparator> | Promise<Array<IPickerQuickAccessItem | IQuickPickSeparator>> {
+	protected getPicks(filter: string, disposables: DisposableStore, token: CancellationToken): Array<IPickerQuickAccessItem | IQuickPickSeparator> | Promise<Array<IPickerQuickAccessItem | IQuickPickSeparator>> {
 
 		// Nothing typed
 		if (!filter) {

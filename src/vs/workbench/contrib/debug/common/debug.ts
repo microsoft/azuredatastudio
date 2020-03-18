@@ -199,6 +199,8 @@ export interface IDebugSession extends ITreeElement {
 
 	readonly onDidLoadedSource: Event<LoadedSourceEvent>;
 	readonly onDidCustomEvent: Event<DebugProtocol.Event>;
+	readonly onDidProgressStart: Event<DebugProtocol.ProgressStartEvent>;
+	readonly onDidProgressEnd: Event<DebugProtocol.ProgressEndEvent>;
 
 	// DAP request
 
@@ -301,6 +303,7 @@ export interface IScope extends IExpressionContainer {
 	readonly name: string;
 	readonly expensive: boolean;
 	readonly range?: IRange;
+	readonly hasChildren: boolean;
 }
 
 export interface IStackFrame extends ITreeElement {

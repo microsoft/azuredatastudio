@@ -5,13 +5,14 @@
 
 import { localize } from 'vs/nls';
 import { IQuickPickSeparator } from 'vs/platform/quickinput/common/quickInput';
-import { IPickerQuickAccessItem, PickerQuickAccessProvider, TriggerAction } from 'vs/platform/quickinput/common/quickAccess';
+import { IPickerQuickAccessItem, PickerQuickAccessProvider, TriggerAction } from 'vs/platform/quickinput/browser/pickerQuickAccess';
 import { matchesFuzzy } from 'vs/base/common/filters';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { ITaskService } from 'vs/workbench/contrib/tasks/common/taskService';
 import { CustomTask, ContributedTask } from 'vs/workbench/contrib/tasks/common/tasks';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStringDictionary } from 'vs/base/common/collections';
+import { DisposableStore } from 'vs/base/common/lifecycle';
 
 export class TasksQuickAccessProvider extends PickerQuickAccessProvider<IPickerQuickAccessItem> {
 
@@ -28,7 +29,7 @@ export class TasksQuickAccessProvider extends PickerQuickAccessProvider<IPickerQ
 		this.activationPromise = extensionService.activateByEvent('onCommand:workbench.action.tasks.runTask');
 	}
 
-	protected async getPicks(filter: string, token: CancellationToken): Promise<Array<IPickerQuickAccessItem | IQuickPickSeparator>> {
+	protected async getPicks(filter: string, disposables: DisposableStore, token: CancellationToken): Promise<Array<IPickerQuickAccessItem | IQuickPickSeparator>> {
 
 		// always await extensions
 		await this.activationPromise;
