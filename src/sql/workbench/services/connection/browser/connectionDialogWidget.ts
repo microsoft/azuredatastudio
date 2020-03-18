@@ -103,7 +103,17 @@ export class ConnectionDialogWidget extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(localize('connection', "Connection"), TelemetryKeys.Connection, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasSpinner: true, hasErrors: true });
+		super(
+			localize('connection', "Connection"),
+			TelemetryKeys.Connection,
+			telemetryService,
+			layoutService,
+			clipboardService,
+			themeService,
+			logService,
+			textResourcePropertiesService,
+			contextKeyService,
+			{ hasSpinner: true, spinnerTitle: localize('connecting', "Connecting"), hasErrors: true });
 	}
 
 	/**

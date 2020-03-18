@@ -340,8 +340,11 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			value: localize('deployCluster.LogsClaimSize', "Claim size for logs (GB)"),
 			width: 180
 		};
+
+		const storageTableTitle = localize('deployCluster.StorageSettings', "Storage settings");
 		const storageTable = this.view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
-			title: localize('deployCluster.StorageSettings', "Storage settings"),
+			title: storageTableTitle,
+			ariaLabel: storageTableTitle,
 			data: [
 				[
 					localize('deployCluster.ControllerText', "Controller"),
