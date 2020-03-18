@@ -330,7 +330,7 @@ class WelcomePage extends Disposable {
 				while (ul.firstChild) {
 					ul.removeChild(ul.firstChild);
 				}
-				this.createListEntries(workspacesToShow, fileService);
+				this.mapListEntries(workspacesToShow, fileService);
 			};
 			updateEntries();
 			this._register(this.labelService.onDidChangeFormatters(updateEntries));
@@ -543,24 +543,11 @@ class WelcomePage extends Disposable {
 		});
 	}
 
-
-	private async createListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService): Promise<HTMLElement[]> {
-		return recents.map(recent => {
-			let relativePath: string;
-			let fullPath: URI;
-			let windowOpenable: IWindowOpenable;
-			let mtime: Date;
-			if (isRecentFolder(recent)) {
-				windowOpenable = { folderUri: recent.folderUri };
-				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: true });
-				fullPath = recent.folderUri;
-			} else {
-				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
-				windowOpenable = { workspaceUri: recent.workspace.configPath };
-			}
-			return fileService.resolve(fullPath).then((value: any): HTMLElement => {
+	private async createListEntries(fileService: IFileService, fullPath: URI, windowOpenable: IWindowOpenable, relativePath: string): Promise<HTMLElement[]> {
+		return new Promise(() => {
+			fileService.resolve(fullPath).then((value: any): void | HTMLElement => {
 				let date = new Date(value.mtime);
-				mtime = date;
+				let mtime: Date = date;
 				const options = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
 				const lastOpened: string = mtime.toLocaleDateString(undefined, options);
 				const { name, parentPath } = splitName(relativePath);
@@ -596,6 +583,24 @@ class WelcomePage extends Disposable {
 				ul.appendChild(li);
 				return li;
 			});
+		});
+	}
+
+
+	private mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService) {
+		return recents.map(recent => {
+			let relativePath: string;
+			let fullPath: URI;
+			let windowOpenable: IWindowOpenable;
+			if (isRecentFolder(recent)) {
+				windowOpenable = { folderUri: recent.folderUri };
+				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: true });
+				fullPath = recent.folderUri;
+			} else {
+				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
+				windowOpenable = { workspaceUri: recent.workspace.configPath };
+			}
+			return this.createListEntries(fileService, fullPath, windowOpenable, relativePath);
 		});
 	}
 
