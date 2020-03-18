@@ -459,7 +459,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			//this.deleteConnection(connection as ConnectionProfile);
 
 			//Command below set to false for now, will be set to true in final version.
-			isEdit = false;
+			isEdit = true;
 		}
 
 		if (!uri) {
