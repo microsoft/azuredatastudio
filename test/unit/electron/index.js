@@ -142,7 +142,7 @@ app.on('ready', () => {
 
 	if (argv.tfs) {
 		new mocha.reporters.Spec(runner);
-		// TODO@deepak the mocha Junit reporter seems to cause a hang when running with Electron 6 inside docker container
+		// {{ SQL CARBON EDIT }} turn this back on
 		new MochaJUnitReporter(runner, {
 			reporterOptions: {
 				testsuitesTitle: `${argv.tfs} ${process.platform}`,
