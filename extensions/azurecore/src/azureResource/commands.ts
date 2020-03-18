@@ -76,7 +76,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 				const token = tokens[tenant.id].token;
 				const tokenType = tokens[tenant.id].tokenType;
 
-				result.resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType)));
+				result.resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType), account));
 			} catch (err) {
 				const error = new Error(localize('azure.accounts.getResourceGroups.queryError', "Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}",
 					account.displayInfo.displayName,
