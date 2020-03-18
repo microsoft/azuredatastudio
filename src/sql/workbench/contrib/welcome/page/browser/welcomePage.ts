@@ -186,9 +186,9 @@ const extensionPacks: ExtensionSuggestion[] = [
 ];
 
 const extensions: ExtensionSuggestion[] = [
-	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: `Write and execute PowerShell scripts using Azure Data Studio's rich query editor`, icon: 'https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png', link: 'command:azdata.extension.open?%7B%22id%22%3A%22microsoft.powershell%22%7D' },
-	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: `Virtualize data with SQL Server 2019 and create external tables using interactive wizards`, icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg', link: 'command:azdata.extension.open?%7B%22id%22%3A%22microsoft.datavirtualization%22%7D' },
-	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: `Connect, query, and manage Postgres databases with Azure Data Studio`, icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png', link: 'command:azdata.extension.open?%7B%22id%22%3A%22microsoft.azuredatastudio-postgresql%22%7D' },
+	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: `Write and execute PowerShell scripts using Azure Data Studio's rich query editor`, icon: 'https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png', link: `command:azdata.extension.open?{"id":"microsoft.powershell"}` },
+	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: `Virtualize data with SQL Server 2019 and create external tables using interactive wizards`, icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg', link: `command:azdata.extension.open?{"id":"microsoft.datavirtualization"}` },
+	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: `Connect, query, and manage Postgres databases with Azure Data Studio`, icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png', link: `command:azdata.extension.open?{"id":"microsoft.azuredatastudio-postgresql"}` },
 ];
 
 
@@ -330,7 +330,7 @@ class WelcomePage extends Disposable {
 				while (ul.firstChild) {
 					ul.removeChild(ul.firstChild);
 				}
-				this.createListEntries(workspacesToShow, fileService);
+				this.mapListEntries(workspacesToShow, fileService);
 			};
 			updateEntries();
 			this._register(this.labelService.onDidChangeFormatters(updateEntries));
@@ -543,12 +543,56 @@ class WelcomePage extends Disposable {
 		});
 	}
 
-	private async createListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService): Promise<any[]> {
+	private async createListEntries(fullPath: URI, relativePath: string, windowOpenable: IWindowOpenable, fileService): Promise<HTMLElement[]> {
+		return new Promise<HTMLElement[]>(() => {
+			fileService.resolve(fullPath).then((value: any): null | Promise<HTMLElement[]> => {
+				let mtime: Date;
+				let date = new Date(value.mtime);
+				mtime = date;
+				const options = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+				const lastOpened: string = mtime.toLocaleDateString(undefined, options);
+				const { name, parentPath } = splitName(relativePath);
+				const li = document.createElement('li');
+				const icon = document.createElement('i');
+				const a = document.createElement('a');
+				const span = document.createElement('span');
+				const ul = document.querySelector('.recent ul');
+
+				icon.title = relativePath;
+				a.innerText = name;
+				a.title = relativePath;
+				a.setAttribute('aria-label', localize('welcomePage.openFolderWithPath', "Open folder {0} with path {1}", name, parentPath));
+				a.href = 'javascript:void(0)';
+				a.addEventListener('click', e => {
+					this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {
+						id: 'openRecentFolder',
+						from: telemetryFrom
+					});
+					this.hostService.openWindow([windowOpenable], { forceNewWindow: e.ctrlKey || e.metaKey });
+					e.preventDefault();
+					e.stopPropagation();
+				});
+				icon.classList.add('themed_icon');
+				li.appendChild(icon);
+				li.appendChild(icon);
+				li.appendChild(a);
+				span.classList.add('path');
+				span.classList.add('detail');
+				span.innerText = lastOpened;
+				span.title = relativePath;
+				li.appendChild(span);
+				ul.appendChild(li);
+				return li;
+			});
+		});
+	}
+
+	private mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService) {
 		return recents.map(recent => {
 			let relativePath: string;
 			let fullPath: URI;
 			let windowOpenable: IWindowOpenable;
-			let mtime: Date;
+			// let mtime: Date;
 			if (isRecentFolder(recent)) {
 				windowOpenable = { folderUri: recent.folderUri };
 				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: true });
@@ -557,46 +601,7 @@ class WelcomePage extends Disposable {
 				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
 				windowOpenable = { workspaceUri: recent.workspace.configPath };
 			}
-			return new Promise<any[]>((c, e) => {
-				fileService.resolve(fullPath).then((value) => {
-					let date = new Date(value.mtime);
-					mtime = date;
-					const options = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-					const lastOpened: string = mtime.toLocaleDateString(undefined, options);
-					const { name, parentPath } = splitName(relativePath);
-					const li = document.createElement('li');
-					const icon = document.createElement('i');
-					const a = document.createElement('a');
-					const span = document.createElement('span');
-					const ul = document.querySelector('.recent ul');
-
-					icon.title = relativePath;
-					a.innerText = name;
-					a.title = relativePath;
-					a.setAttribute('aria-label', localize('welcomePage.openFolderWithPath', "Open folder {0} with path {1}", name, parentPath));
-					a.href = 'javascript:void(0)';
-					a.addEventListener('click', e => {
-						this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {
-							id: 'openRecentFolder',
-							from: telemetryFrom
-						});
-						this.hostService.openWindow([windowOpenable], { forceNewWindow: e.ctrlKey || e.metaKey });
-						e.preventDefault();
-						e.stopPropagation();
-					});
-					icon.classList.add('themed_icon');
-					li.appendChild(icon);
-					li.appendChild(icon);
-					li.appendChild(a);
-					span.classList.add('path');
-					span.classList.add('detail');
-					span.innerText = lastOpened;
-					span.title = relativePath;
-					li.appendChild(span);
-					ul.appendChild(li);
-					return li;
-				});
-			});
+			return this.createListEntries(fullPath, relativePath, windowOpenable, fileService);
 		});
 	}
 
