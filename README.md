@@ -18,6 +18,7 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 | [Linux RPM][linux-rpm]									|
 | [Linux DEB][linux-deb]									|
 
+
 Go to our [download page](https://aka.ms/azuredatastudio) for more specific instructions.
 
 ## Try out the latest insiders build from `master`:
