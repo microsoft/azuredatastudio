@@ -19,8 +19,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
-import { LIGHT } from 'vs/platform/theme/common/themeService';
+import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
@@ -280,13 +279,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	}
 
 	private updateTheme(theme: IColorTheme): void {
-		let border;
-		const highContrastBorder = theme.getColor(contrastBorder, true);
-		if (highContrastBorder) {
-			border = highContrastBorder.toString();
-		} else {
-			border = theme.type === LIGHT ? '#DDDDDD' : '#8A8886';
-		}
+		const border = theme.getColor(DASHBOARD_BORDER);
 		this._container.nativeElement.style.borderBottom = '1px solid ' + border.toString();
 	}
 }

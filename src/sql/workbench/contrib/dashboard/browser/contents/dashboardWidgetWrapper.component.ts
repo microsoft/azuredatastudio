@@ -37,7 +37,6 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ILogService } from 'vs/platform/log/common/log';
 import { values } from 'vs/base/common/collections';
-import { LIGHT } from 'vs/platform/theme/common/themeService';
 
 const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 	'properties-widget': PropertiesWidgetComponent,
@@ -221,7 +220,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	private updateTheme(theme: IColorTheme): void {
 		const el = <HTMLElement>this._ref.nativeElement;
 		const headerEl: HTMLElement = this.header.nativeElement;
-		let borderColor = theme.type === LIGHT ? '#DDDDDD' : '#8A8886';
+		let borderColor = theme.getColor(themeColors.DASHBOARD_BORDER);
 		let backgroundColor = theme.getColor(colors.editorBackground, true);
 		const foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
 		const border = theme.getColor(colors.contrastBorder, true);

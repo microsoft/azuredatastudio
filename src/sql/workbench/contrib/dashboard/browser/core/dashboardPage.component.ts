@@ -50,8 +50,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { NAV_SECTION } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardNavSection.contribution';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
-import { LIGHT } from 'vs/platform/theme/common/themeService';
+import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
 
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
@@ -547,13 +546,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	private updateTheme(theme: IColorTheme): void {
-		let border;
-		const highContrastBorder = theme.getColor(contrastBorder, true);
-		if (highContrastBorder) {
-			border = highContrastBorder.toString();
-		} else {
-			border = theme.type === LIGHT ? '#DDDDDD' : '#8A8886';
-		}
+		const border = theme.getColor(DASHBOARD_BORDER);
 		this.toolbarContainer.nativeElement.style.borderBottomColor = border.toString();
 	}
 }

@@ -5,27 +5,19 @@
 
 import 'vs/css!./dashboardPanel';
 
-import { registerThemingParticipant, ITheme, ICssStyleCollector, LIGHT, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
+import { registerThemingParticipant, ITheme, ICssStyleCollector, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 import {
 	TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_ACTIVE_BORDER, TAB_INACTIVE_BACKGROUND,
-	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER
+	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, DASHBOARD_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER
 } from 'vs/workbench/common/theme';
-import { activeContrastBorder, contrastBorder } from 'vs/platform/theme/common/colorRegistry';
+import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 
 	// Title Active
 	const tabActiveBackground = theme.getColor(TAB_ACTIVE_BACKGROUND);
 	const tabActiveForeground = theme.getColor(TAB_ACTIVE_FOREGROUND);
-	let tabActiveBackgroundVertical;
-	if (theme.type === HIGH_CONTRAST) {
-		tabActiveBackgroundVertical = tabActiveBackground.toString();
-	} else {
-		tabActiveBackgroundVertical = theme.type === LIGHT ? '#e1f0fe' : '#444444';
-	}
+	let tabActiveBackgroundVertical = theme.getColor(DASHBOARD_TAB_ACTIVE_BACKGROUND);
 
-	if (theme.getColor(contrastBorder)) {
-		tabActiveBackgroundVertical = tabActiveBackground.toString();
-	}
 	if (tabActiveBackground || tabActiveForeground) {
 		collector.addRule(`
 			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab:hover .tabLabel,
@@ -126,13 +118,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 		`);
 	}
 
-	let sideBorder;
-	const border = theme.getColor(contrastBorder, true);
-	if (border) {
-		sideBorder = border.toString();
-	} else {
-		sideBorder = theme.type === LIGHT ? '#DDDDDD' : '#8A8886';
-	}
+	const sideBorder = theme.getColor(DASHBOARD_BORDER);
 	if (divider) {
 		collector.addRule(`panel.dashboard-panel > .tabbedPanel.vertical > .title > .tabContainer {
 			border-right-width: 1px;
