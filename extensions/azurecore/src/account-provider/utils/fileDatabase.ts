@@ -10,18 +10,42 @@ const noOpHook: ReadWriteHook = async (contents): Promise<string> => {
 	return contents;
 };
 
+export class AlreadyInitializedError extends Error {
+
+}
+
 export class FileDatabase {
 	private db: { [key: string]: string };
 	private isDirty = false;
 	private isSaving = false;
+	private isInitialized = false;
 	private saveInterval: NodeJS.Timer;
 
 	constructor(
 		private readonly dbPath: string,
-		private readonly readHook: ReadWriteHook = noOpHook,
-		private readonly writeHook: ReadWriteHook = noOpHook
+		private readHook: ReadWriteHook = noOpHook,
+		private writeHook: ReadWriteHook = noOpHook
 	) {
 
+	}
+
+	/**
+	 * Sets a new read hook. Throws AlreadyInitializedError if the database has already started.
+	 * @param hook
+	 */
+	public setReadHook(hook: ReadWriteHook): void {
+		if (this.isInitialized) {
+			throw new AlreadyInitializedError();
+		}
+		this.readHook = hook;
+	}
+
+	/**
+	 * Sets a new write hook.
+	 * @param hook
+	 */
+	public setWriteHook(hook: ReadWriteHook): void {
+		this.writeHook = hook;
 	}
 
 	public async set(key: string, value: string): Promise<void> {
@@ -66,6 +90,7 @@ export class FileDatabase {
 
 
 	public async initialize(): Promise<void> {
+		this.isInitialized = true;
 		this.setupSaveTask();
 		let fileContents: string;
 		try {
@@ -99,7 +124,10 @@ export class FileDatabase {
 		await this.save();
 	}
 
-	private async save(): Promise<void> {
+	/**
+	 * This doesn't need to be called as a timer will automatically call it.
+	 */
+	public async save(): Promise<void> {
 		try {
 			await this.waitForFileSave();
 			if (this.isDirty === false) {
