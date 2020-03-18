@@ -1086,6 +1086,22 @@ declare module 'vscode' {
 
 	//#endregion
 
+	//#region Terminal link handlers https://github.com/microsoft/vscode/issues/91606
+
+	export namespace window {
+		export function registerTerminalLinkHandler(handler: TerminalLinkHandler): Disposable;
+	}
+
+	export interface TerminalLinkHandler {
+		/**
+		 * @return true when the link was handled (and should not be considered by
+		 * other providers including the default), false when the link was not handled.
+		 */
+		handleLink(terminal: Terminal, link: string): ProviderResult<boolean>;
+	}
+
+	//#endregion
+
 	//#region Joh -> exclusive document filters
 
 	export interface DocumentFilter {
@@ -1457,6 +1473,21 @@ declare module 'vscode' {
 		 * @return Thenable indicating that the webview editor has been resolved.
 		 */
 		resolveCustomTextEditor(document: TextDocument, webviewPanel: WebviewPanel): Thenable<void>;
+
+		/**
+		 * TODO: discuss this at api sync.
+		 *
+		 * Handle when the underlying resource for a custom editor is renamed.
+		 *
+		 * This allows the webview for the editor be preserved throughout the rename. If this method is not implemented,
+		 * VS Code will destory the previous custom editor and create a replacement one.
+		 *
+		 * @param newDocument New text document to use for the custom editor.
+		 * @param existingWebviewPanel Webview panel for the custom editor.
+		 *
+		 * @return Thenable indicating that the webview editor has been moved.
+		 */
+		moveCustomTextEditor?(newDocument: TextDocument, existingWebviewPanel: WebviewPanel): Thenable<void>;
 	}
 
 	namespace window {
@@ -1856,25 +1887,6 @@ declare module 'vscode' {
 		 * @returns A new uri
 		 */
 		export function joinPaths(base: Uri, ...pathFragments: string[]): Uri;
-	}
-
-	//#endregion
-
-	//#region https://github.com/microsoft/vscode/issues/92421
-
-	export enum ProgressLocation {
-		/**
-		 * Show progress for a view, as progress bar inside the view (when visible),
-		 * and as an overlay on the activity bar icon. Doesn't support cancellation or discrete progress.
-		 */
-		View = 25,
-	}
-
-	export interface ProgressOptions {
-		/**
-		 * The target view identifier for showing progress when using [ProgressLocation.View](#ProgressLocation.View).
-		 */
-		viewId?: string
 	}
 
 	//#endregion

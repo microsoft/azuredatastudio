@@ -8,7 +8,11 @@ import { AddressInfo } from 'net';
 
 export type WebHandler = (req: http.IncomingMessage, reqUrl: url.UrlWithParsedQuery, res: http.ServerResponse) => void;
 
+export class AlreadyRunningError extends Error { }
+
 export class SimpleWebServer {
+	private hasStarted: boolean;
+
 	private readonly pathMappings = new Map<string, WebHandler>();
 	private readonly server: http.Server;
 	private lastUsed: number;
@@ -26,7 +30,8 @@ export class SimpleWebServer {
 				return handler(req, reqUrl, res);
 			}
 
-			console.error('Unhandled request ', reqUrl);
+			res.writeHead(404);
+			res.end();
 		});
 	}
 
@@ -47,7 +52,11 @@ export class SimpleWebServer {
 		});
 	}
 
-	public startup(): Promise<string> {
+	public async startup(): Promise<string> {
+		if (this.hasStarted) {
+			throw new AlreadyRunningError();
+		}
+		this.hasStarted = true;
 		let portTimeout: NodeJS.Timer;
 		const portPromise = new Promise<string>((resolve, reject) => {
 			portTimeout = setTimeout(() => {
