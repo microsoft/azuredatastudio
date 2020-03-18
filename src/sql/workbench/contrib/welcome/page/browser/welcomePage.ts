@@ -543,7 +543,7 @@ class WelcomePage extends Disposable {
 		});
 	}
 
-	private async createListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService): Promise<HTMLElement[]> {
+	private async createListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService): Promise<any[]> {
 		return recents.map(recent => {
 			let relativePath: string;
 			let fullPath: URI;
@@ -557,43 +557,45 @@ class WelcomePage extends Disposable {
 				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
 				windowOpenable = { workspaceUri: recent.workspace.configPath };
 			}
-			return fileService.resolve(fullPath).then((value) => {
-				let date = new Date(value.mtime);
-				mtime = date;
-				const options = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-				const lastOpened: string = mtime.toLocaleDateString(undefined, options);
-				const { name, parentPath } = splitName(relativePath);
-				const li = document.createElement('li');
-				const icon = document.createElement('i');
-				const a = document.createElement('a');
-				const span = document.createElement('span');
-				const ul = document.querySelector('.recent ul');
+			return new Promise<any[]>((c, e) => {
+				fileService.resolve(fullPath).then((value) => {
+					let date = new Date(value.mtime);
+					mtime = date;
+					const options = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+					const lastOpened: string = mtime.toLocaleDateString(undefined, options);
+					const { name, parentPath } = splitName(relativePath);
+					const li = document.createElement('li');
+					const icon = document.createElement('i');
+					const a = document.createElement('a');
+					const span = document.createElement('span');
+					const ul = document.querySelector('.recent ul');
 
-				icon.title = relativePath;
-				a.innerText = name;
-				a.title = relativePath;
-				a.setAttribute('aria-label', localize('welcomePage.openFolderWithPath', "Open folder {0} with path {1}", name, parentPath));
-				a.href = 'javascript:void(0)';
-				a.addEventListener('click', e => {
-					this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {
-						id: 'openRecentFolder',
-						from: telemetryFrom
+					icon.title = relativePath;
+					a.innerText = name;
+					a.title = relativePath;
+					a.setAttribute('aria-label', localize('welcomePage.openFolderWithPath', "Open folder {0} with path {1}", name, parentPath));
+					a.href = 'javascript:void(0)';
+					a.addEventListener('click', e => {
+						this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {
+							id: 'openRecentFolder',
+							from: telemetryFrom
+						});
+						this.hostService.openWindow([windowOpenable], { forceNewWindow: e.ctrlKey || e.metaKey });
+						e.preventDefault();
+						e.stopPropagation();
 					});
-					this.hostService.openWindow([windowOpenable], { forceNewWindow: e.ctrlKey || e.metaKey });
-					e.preventDefault();
-					e.stopPropagation();
+					icon.classList.add('themed_icon');
+					li.appendChild(icon);
+					li.appendChild(icon);
+					li.appendChild(a);
+					span.classList.add('path');
+					span.classList.add('detail');
+					span.innerText = lastOpened;
+					span.title = relativePath;
+					li.appendChild(span);
+					ul.appendChild(li);
+					return li;
 				});
-				icon.classList.add('themed_icon');
-				li.appendChild(icon);
-				li.appendChild(icon);
-				li.appendChild(a);
-				span.classList.add('path');
-				span.classList.add('detail');
-				span.innerText = lastOpened;
-				span.title = relativePath;
-				li.appendChild(span);
-				ul.appendChild(li);
-				return li;
 			});
 		});
 	}
