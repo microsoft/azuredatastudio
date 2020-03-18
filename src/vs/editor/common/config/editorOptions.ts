@@ -136,6 +136,11 @@ export interface IEditorOptions {
 	 */
 	readOnly?: boolean;
 	/**
+	 * Rename matching regions on type.
+	 * Defaults to false.
+	 */
+	renameOnType?: boolean;
+	/**
 	 * Should the editor render validation decorations.
 	 * Defaults to editable.
 	 */
@@ -3382,6 +3387,7 @@ export const enum EditorOption {
 	quickSuggestions,
 	quickSuggestionsDelay,
 	readOnly,
+	renameOnType,
 	renderControlCharacters,
 	renderIndentGuides,
 	renderFinalNewline,
@@ -3797,6 +3803,10 @@ export const EditorOptions = {
 	)),
 	readOnly: register(new EditorBooleanOption(
 		EditorOption.readOnly, 'readOnly', false,
+	)),
+	renameOnType: register(new EditorBooleanOption(
+		EditorOption.renameOnType, 'renameOnType', false,
+		{ description: nls.localize('renameOnType', "Controls whether the editor auto renames on type.") }
 	)),
 	renderControlCharacters: register(new EditorBooleanOption(
 		EditorOption.renderControlCharacters, 'renderControlCharacters', false,
