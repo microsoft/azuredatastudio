@@ -3,7 +3,12 @@
 ## Version 1.16.0
 * Release date: March 18, 2020
 * Release status: General Availability
-TBA
+* Notebooks:
+	* Charting
+	* Creating Jupyter books
+* Postgres extension update - Users can now authenticate to Azure Postgres servers with their linked Azure account
+* Accessibility bugs
+* VS Code merge
 
 ## Version 1.15.1
 * Release date: February 19, 2020
