@@ -30,12 +30,6 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 	}
 
 	public onEnter() {
-		if (this.wizard.model.deploymentTarget === BdcDeploymentType.NewAKS) {
-			this.wizard.wizardObject.message = {
-				level: azdata.window.MessageLevel.Information,
-				text: localize('resourceDeployment.NewAKSBrowserWindowPrompt', "A browser window for signing into Azure will be opened during the SQL Server Big Data Cluster deployment.")
-			};
-		}
 		this.wizard.showCustomButtons();
 		this.formItems.forEach(item => {
 			this.form!.removeFormItem(item);
