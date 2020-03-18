@@ -6,11 +6,10 @@
 import * as azdata from 'azdata';
 import * as events from 'events';
 import * as nls from 'vscode-nls';
-import * as path from 'path';
 import * as vscode from 'vscode';
-import CredentialServiceTokenCache from './tokenCache';
+import { SimpleTokenCache } from './simpleTokenCache';
 import providerSettings from './providerSettings';
-import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider2';
+import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider';
 import { AzureAccountProviderMetadata, ProviderSettings } from './interfaces';
 import * as loc from '../localizedConstants';
 
@@ -19,7 +18,7 @@ let localize = nls.loadMessageBundle();
 export class AzureAccountProviderService implements vscode.Disposable {
 	// CONSTANTS ///////////////////////////////////////////////////////////////
 	private static CommandClearTokenCache = 'accounts.clearTokenCache';
-	private static ConfigurationSection = 'accounts.azure';
+	private static ConfigurationSection = 'accounts.azure.cloud';
 	private static CredentialNamespace = 'azureAccountProviderCredentials';
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////////
@@ -130,14 +129,12 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 		let self = this;
 
-		return new Promise((resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			try {
-				//let config = vscode.workspace.getConfiguration(AzureAccountProviderService.ConfigurationSection);
-
 				let tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
-				let tokenCachePath = path.join(this._userStoragePath, tokenCacheKey);
-				let tokenCache = new CredentialServiceTokenCache(self._credentialProvider, tokenCacheKey, tokenCachePath);
-				let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, tokenCache, this._context);
+				let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, false, this._credentialProvider);
+				await simpleTokenCache.init();
+				let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, simpleTokenCache, this._context);
 				self._accountProviders[provider.metadata.id] = accountProvider;
 				self._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
 				resolve();

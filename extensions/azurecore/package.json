@@ -33,12 +33,43 @@
       },
       {
         "type": "object",
-        "title": "Azure Account Configuration",
+        "title": "%config.azureAccountConfigurationSection%",
         "properties": {
-          "accounts.azure.enablePublicCloud": {
+          "accounts.azure.cloud.enablePublicCloud": {
             "type": "boolean",
             "default": true,
             "description": "%config.enablePublicCloudDescription%"
+          },
+          "accounts.azure.cloud.enableUsGovCloud": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.enableUsGovCloudDescription%"
+          },
+          "accounts.azure.cloud.enableGermanyCloud": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.enableGermanyCloudDescription%"
+          },
+          "accounts.azure.cloud.enableChinaCloud": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.enableChinaCloudDescription%"
+          }
+        }
+      },
+      {
+        "type": "object",
+        "title": "%config.azureAuthMethodConfigurationSection%",
+        "properties": {
+          "accounts.azure.auth.codeGrant": {
+            "type": "boolean",
+            "default": true,
+            "description": "%config.azureCodeGrantMethod%"
+          },
+          "accounts.azure.auth.deviceCode": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.azureDeviceCodeMethod%"
           }
         }
       },
@@ -199,12 +230,16 @@
     "@azure/arm-subscriptions": "^2.0.0",
     "adal-node": "^0.2.1",
     "axios": "^0.19.2",
+    "keytar": "^5.4.0",
+    "qs": "^6.9.1",
     "request": "2.88.0",
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
+    "@types/keytar": "^4.4.2",
     "@types/mocha": "^5.2.5",
     "@types/node": "^12.11.7",
+    "@types/qs": "^6.9.1",
     "@types/request": "^2.48.1",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
