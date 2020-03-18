@@ -34,7 +34,7 @@ export class AccountFeature implements StaticFeature {
 	constructor(private _client: SqlOpsDataClient) { }
 
 	fillClientCapabilities(capabilities: ClientCapabilities): void {
-		Utils.ensure(capabilities, 'telemetry')!.telemetry = true;
+		// this isn't explicitly necessary
 	}
 
 	initialize(): void {
