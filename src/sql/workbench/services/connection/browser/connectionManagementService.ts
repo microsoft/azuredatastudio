@@ -1070,15 +1070,40 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 */
 
 	private editExistingConnection(uri: string, connection: interfaces.IConnectionProfile): Promise<IConnectionResult> {
-		//const self = this;
+		const self = this;
 		this._logService.info(`Editing existing connection ${uri}`);
 
 		return new Promise<IConnectionResult>((resolve, reject) => {
 			let existingProfile = this.idConnectionCheck(connection.id);
-			this.disconnect(existingProfile);
+			//disconnect existingProfile with same id.
+			if (existingProfile) {
+				this.disconnect(existingProfile);
+			}
 
-			//TODO: Need to disconnect the connection of the existing connection in active connections.
-			//Then fill in the connection profile that is active with information from new connection profile.
+			//handle editing profile with new information.
+			let connectionInfo = this._connectionStatusManager.addConnection(connection, uri);
+			// Setup the handler for the connection complete notification to call
+			connectionInfo.connectHandler = ((connectResult, errorMessage, errorCode, callStack) => {
+				let connectionMngInfo = this._connectionStatusManager.findConnection(uri);
+				if (connectionMngInfo && connectionMngInfo.deleted) {
+					this._connectionStatusManager.deleteConnection(uri);
+					resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, callStack: undefined, errorHandled: true, connectionProfile: connection });
+				} else {
+					if (errorMessage) {
+						// Connection to the server failed
+						this._connectionStatusManager.deleteConnection(uri);
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
+					} else {
+						if (connectionMngInfo.serverInfo) {
+							connection.options.isCloud = connectionMngInfo.serverInfo.isCloud;
+						}
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
+					}
+				}
+			});
+
+			// send connection request
+			self.sendConnectRequest(connection, uri).catch((e) => this._logService.error(e));
 		});
 	}
 	// Connect an open URI to a connection profile
