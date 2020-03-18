@@ -9,7 +9,7 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 ## **Download the latest Azure Data Studio release**
 
 | Platform																|
---
+| ---------------------------------------	|
 | [Windows User Installer][win-user]			|
 | [Windows System Installer][win-system]	|
 | [Windows ZIP][win-zip]									|
