@@ -214,6 +214,49 @@ const extensionPackStrings: Strings = {
 	extensionNotFound: localize('welcomePage.extensionPackNotFound', "Support for {0} with id {1} could not be found."),
 };
 
+const tabKey = 9;
+const spaceKey = 32;
+const enterKey = 13;
+const escapeKey = 27;
+const upArrowKey = 38;
+const downArrowKey = 40;
+const leftArrowKey = 37;
+const rightArrowKey = 39;
+
+class KeyCodes {
+	static get tabKey() {
+		return tabKey;
+	}
+
+	static get spaceKey() {
+		return spaceKey;
+	}
+
+	static get enterKey() {
+		return enterKey;
+	}
+
+	static get escapeKey() {
+		return escapeKey;
+	}
+
+	static get upArrowKey() {
+		return upArrowKey;
+	}
+
+	static get downArrowKey() {
+		return downArrowKey;
+	}
+
+	static get leftArrowKey() {
+		return leftArrowKey;
+	}
+
+	static get rightArrowKey() {
+		return rightArrowKey;
+	}
+}
+
 
 const welcomeInputTypeId = 'workbench.editors.welcomePageInput';
 class WelcomePage extends Disposable {
@@ -315,10 +358,6 @@ class WelcomePage extends Disposable {
 		const tooltip = document.querySelector('#tooltip__text--desktop');
 		const previewModalBody = document.querySelector('.preview_tooltip__body') as HTMLElement;
 		const previewModalHeader = document.querySelector('.preview_tooltip__header') as HTMLElement;
-		const tabKeyCode = 9;
-		const spaceKeyCode = 32;
-		const enterKeyCode = 13;
-		const escapeKeyCode = 27;
 
 		previewLink.addEventListener('mouseover', () => {
 			tooltip.setAttribute('aria-hidden', 'true');
@@ -330,13 +369,13 @@ class WelcomePage extends Disposable {
 		});
 
 		previewLink.addEventListener('keydown', (e: KeyboardEvent) => {
-			if (e.keyCode === escapeKeyCode) {
+			if (e.keyCode === KeyCodes.escapeKey) {
 				if (tooltip.classList.contains('show')) {
 					tooltip.setAttribute('aria-hidden', 'true');
 					tooltip.classList.remove('show');
 				}
 			}
-			else if (e.keyCode === enterKeyCode || e.keyCode === spaceKeyCode) {
+			else if (e.keyCode === KeyCodes.enterKey || e.keyCode === KeyCodes.spaceKey) {
 				tooltip.setAttribute('aria-hidden', 'false');
 				tooltip.classList.toggle('show');
 				previewModalHeader.focus();
@@ -344,13 +383,13 @@ class WelcomePage extends Disposable {
 		});
 
 		tooltip.addEventListener('keydown', (e: KeyboardEvent) => {
-			if (e.keyCode === escapeKeyCode) {
+			if (e.keyCode === KeyCodes.escapeKey) {
 				if (tooltip.classList.contains('show')) {
 					tooltip.setAttribute('aria-hidden', 'true');
 					tooltip.classList.remove('show');
 				}
 			}
-			else if (e.keyCode === tabKeyCode) {
+			else if (e.keyCode === KeyCodes.tabKey) {
 				e.preventDefault();
 				if (e.target === previewModalBody) {
 					previewModalHeader.focus();
@@ -374,21 +413,13 @@ class WelcomePage extends Disposable {
 	private createDropDown() {
 		const dropdownBtn = document.querySelector('#dropdown_btn');
 		const dropdown = document.querySelector('#dropdown') as HTMLInputElement;
-		const upArrowKeyCode = 38;
-		const downArrowKeyCode = 40;
-		const leftArrowKeyCode = 37;
-		const rightArrowKeyCode = 39;
-		const tabKeyCode = 9;
-		const enterKeyCode = 13;
-		const spaceKeyCode = 32;
-		const escapeKeyCode = 27;
 
 		dropdownBtn.addEventListener('click', () => {
 			dropdown.classList.toggle('show');
 		});
 
 		dropdownBtn.addEventListener('keydown', (e: KeyboardEvent) => {
-			if (e.keyCode === enterKeyCode || e.keyCode === spaceKeyCode) {
+			if (e.keyCode === KeyCodes.enterKey || e.keyCode === KeyCodes.spaceKey) {
 				const dropdownFirstElement = document.querySelector('#dropdown').firstElementChild.children[0] as HTMLInputElement;
 				dropdown.classList.toggle('show');
 				dropdownFirstElement.focus();
@@ -396,7 +427,7 @@ class WelcomePage extends Disposable {
 		});
 
 		dropdown.addEventListener('keydown', (e: KeyboardEvent) => {
-			if (e.keyCode === escapeKeyCode) {
+			if (e.keyCode === KeyCodes.escapeKey) {
 				if (dropdown.classList.contains('show')) {
 					dropdown.classList.remove('show');
 					const currentSelection = document.querySelector('.move:focus') as HTMLInputElement;
@@ -427,11 +458,11 @@ class WelcomePage extends Disposable {
 		dropdown.addEventListener('keydown', function (e: KeyboardEvent) {
 			const dropdownLastElement = document.querySelector('#dropdown').lastElementChild.children[0] as HTMLInputElement;
 			const dropdownFirstElement = document.querySelector('#dropdown').firstElementChild.children[0] as HTMLInputElement;
-			if (e.keyCode === tabKeyCode) {
+			if (e.keyCode === KeyCodes.tabKey) {
 				e.preventDefault();
 				return;
 			}
-			else if (e.keyCode === upArrowKeyCode || e.keyCode === leftArrowKeyCode) {
+			else if (e.keyCode === KeyCodes.upArrowKey || e.keyCode === KeyCodes.leftArrowKey) {
 				if (e.target === dropdownFirstElement) {
 					dropdownLastElement.focus();
 				} else {
@@ -439,7 +470,7 @@ class WelcomePage extends Disposable {
 					movePrev.focus();
 				}
 			}
-			else if (e.keyCode === downArrowKeyCode || e.keyCode === rightArrowKeyCode) {
+			else if (e.keyCode === KeyCodes.downArrowKey || e.keyCode === KeyCodes.rightArrowKey) {
 				if (e.target === dropdownLastElement) {
 					dropdownFirstElement.focus();
 				} else {
@@ -455,10 +486,7 @@ class WelcomePage extends Disposable {
 		const btn = document.querySelector('#tool_tip__container--mobile') as HTMLElement;
 		const span = document.querySelector('.close_icon') as HTMLElement;
 		const previewModalHeader = document.querySelector('.preview_modal__header') as HTMLElement;
-		const tabKeyCode = 9;
-		const enterKeyCode = 13;
-		const spaceKeyCode = 32;
-		const escapeKeyCode = 27;
+
 
 
 		btn.addEventListener('click', function () {
@@ -476,12 +504,12 @@ class WelcomePage extends Disposable {
 		});
 
 		btn.addEventListener('keydown', (e: KeyboardEvent) => {
-			if (e.keyCode === enterKeyCode || e.keyCode === spaceKeyCode) {
+			if (e.keyCode === KeyCodes.enterKey || e.keyCode === KeyCodes.spaceKey) {
 				modal.classList.toggle('show');
 				modal.setAttribute('aria-hidden', 'false');
 				previewModalHeader.focus();
 			}
-			if (e.keyCode === escapeKeyCode) {
+			if (e.keyCode === KeyCodes.escapeKey) {
 				if (modal.classList.contains('show')) {
 					modal.setAttribute('aria-hidden', 'true');
 					modal.classList.remove('show');
@@ -491,7 +519,7 @@ class WelcomePage extends Disposable {
 
 		window.addEventListener('keydown', (e: KeyboardEvent) => {
 			const target = e.target as HTMLTextAreaElement;
-			if (!target.matches('.modal') && e.keyCode === escapeKeyCode) {
+			if (!target.matches('.modal') && e.keyCode === KeyCodes.escapeKey) {
 				if (modal.classList.contains('show')) {
 					modal.setAttribute('aria-hidden', 'true');
 					modal.classList.remove('show');
@@ -503,7 +531,7 @@ class WelcomePage extends Disposable {
 			const previewModalBody = document.querySelector('.preview_modal__body') as HTMLElement;
 			const previewModalHeader = document.querySelector('.preview_modal__header') as HTMLElement;
 
-			if (e.keyCode === tabKeyCode) {
+			if (e.keyCode === KeyCodes.tabKey) {
 				e.preventDefault();
 				if (e.target === previewModalBody) {
 					previewModalHeader.focus();
@@ -516,7 +544,6 @@ class WelcomePage extends Disposable {
 	}
 
 	private async createListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService): Promise<HTMLElement[]> {
-		// If you're returning a promise, mark the function as async and have the return as the signature of the function
 		return recents.map(recent => {
 			let relativePath: string;
 			let fullPath: URI;
