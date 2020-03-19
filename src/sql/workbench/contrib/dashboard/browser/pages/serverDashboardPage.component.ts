@@ -14,7 +14,6 @@ import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser
 import { IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
-import * as nls from 'vs/nls';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -25,10 +24,10 @@ import { IMenuService } from 'vs/platform/actions/common/actions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 export class ServerDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
-		name: nls.localize('serverPageName', "SERVER DASHBOARD"),
 		widget: {
 			'properties-widget': undefined
 		},
@@ -57,9 +56,10 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
 		@Inject(IMenuService) menuService: IMenuService,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
-		@Inject(IContextMenuService) contextMenuService: IContextMenuService
+		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
+		@Inject(IWorkbenchThemeService) themeService: IWorkbenchThemeService
 	) {
-		super(dashboardService, el, _cd, notificationService, angularEventingService, configurationService, logService, commandService, contextKeyService, menuService, keybindingService, contextMenuService);
+		super(dashboardService, el, _cd, notificationService, angularEventingService, configurationService, logService, commandService, contextKeyService, menuService, keybindingService, contextMenuService, themeService);
 
 		// special-case handling for MSSQL data provider
 		const connInfo = this.dashboardService.connectionManagementService.connectionInfo;

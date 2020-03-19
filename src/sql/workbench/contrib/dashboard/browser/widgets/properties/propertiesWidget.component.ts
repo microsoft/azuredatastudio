@@ -18,6 +18,8 @@ import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
+import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
@@ -69,13 +71,15 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 	@ViewChild('child', { read: ElementRef }) private _child: ElementRef;
 	@ViewChild('parent', { read: ElementRef }) private _parent: ElementRef;
+	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
-		@Inject(ILogService) private logService: ILogService
+		@Inject(ILogService) private logService: ILogService,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
 		super();
 		this.init();
@@ -85,6 +89,14 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		this._hasInit = true;
 		this._register(addDisposableListener(window, EventType.RESIZE, () => this.handleClipping()));
 		this._changeRef.detectChanges();
+
+		this._register(this.themeService.onDidColorThemeChange((event: IColorTheme) => {
+			this.updateTheme(event);
+		}));
+	}
+
+	ngAfterViewInit(): void {
+		this.updateTheme(this.themeService.getColorTheme());
 	}
 
 	public refresh(): void {
@@ -264,5 +276,10 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			val = defaultVal;
 		}
 		return val;
+	}
+
+	private updateTheme(theme: IColorTheme): void {
+		const border = theme.getColor(DASHBOARD_BORDER);
+		this._container.nativeElement.style.borderBottom = '1px solid ' + border.toString();
 	}
 }

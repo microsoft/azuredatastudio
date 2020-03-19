@@ -49,6 +49,8 @@ import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/br
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { NAV_SECTION } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardNavSection.contribution';
+import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
 
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
@@ -122,10 +124,15 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
 		@Inject(IMenuService) private menuService: IMenuService,
 		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
-		@Inject(IContextMenuService) private contextMenuService: IContextMenuService
+		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
 		super();
 		this._tabName = DashboardPage.tabName.bindTo(contextKeyService);
+	}
+
+	ngAfterViewInit(): void {
+		this.updateTheme(this.themeService.getColorTheme());
 	}
 
 	protected init() {
@@ -165,6 +172,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		const homeToolbarConfig = this.dashboardService.getSettings<Array<WidgetConfig>>([this.context, 'widgets'].join('.'))[0].widget['tasks-widget'];
 		this.tabToolbarActionsConfig.set(this.homeTabId, homeToolbarConfig);
 		this.createToolbar(this.toolbarContainer.nativeElement, this.homeTabId);
+
+		this._register(this.themeService.onDidColorThemeChange((event: IColorTheme) => {
+			this.updateTheme(event);
+		}));
 	}
 
 	private getExtensionContributedHomeToolbarContent(content: ITaskbarContent[]): void {
@@ -532,5 +543,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		const index = firstIndex(this.tabs, i => i.id === tab.identifier);
 		this.tabs.splice(index, 1);
 		this.angularEventingService.sendAngularEvent(this.dashboardService.getUnderlyingUri(), AngularEventType.CLOSE_TAB, { id: tab.identifier });
+	}
+
+	private updateTheme(theme: IColorTheme): void {
+		const border = theme.getColor(DASHBOARD_BORDER);
+		this.toolbarContainer.nativeElement.style.borderBottomColor = border.toString();
 	}
 }

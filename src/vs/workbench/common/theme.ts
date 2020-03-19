@@ -607,6 +607,21 @@ export const WINDOW_INACTIVE_BORDER = registerColor('window.inactiveBorder', {
 	hc: contrastBorder
 }, nls.localize('windowInactiveBorder', "The color used for the border of the window when it is inactive. Only supported in the desktop client when using the custom title bar."));
 
+// {{SQL CARBON EDIT}}
+// < --- Dashboard --- >
+
+export const DASHBOARD_TAB_ACTIVE_BACKGROUND = registerColor('dashboard.tabActiveBackground', {
+	dark: '#444444',
+	light: '#e1f0fe',
+	hc: TAB_ACTIVE_BACKGROUND
+}, nls.localize('dashboardTabActiveBackground', "Active tab background color for dashboard navigation"));
+
+export const DASHBOARD_BORDER = registerColor('dashboard.border', {
+	dark: '#8A8886',
+	light: '#DDDDDD',
+	hc: contrastBorder
+}, nls.localize('dashboardBorder', "Color for borders in dashboard"));
+
 /**
  * Base class for all themable workbench components.
  */
