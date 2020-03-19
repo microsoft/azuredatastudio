@@ -11,6 +11,7 @@ import { QueryRunner } from '../../common/queryRunner';
 import { ProcessService } from '../../common/processService';
 import { Config } from '../../configurations/config';
 import { HttpClient } from '../../common/httpClient';
+import { PackageManagementService } from '../../packageManagement/packageManagementService';
 
 export interface TestContext {
 
@@ -22,6 +23,7 @@ export interface TestContext {
 	op: azdata.BackgroundOperation;
 	getOpStatus: () => azdata.TaskStatus;
 	httpClient: TypeMoq.IMock<HttpClient>;
+	serverConfigManager: TypeMoq.IMock<PackageManagementService>;
 }
 
 export function createContext(): TestContext {
@@ -49,6 +51,7 @@ export function createContext(): TestContext {
 			id: '',
 			onCanceled: new vscode.EventEmitter<void>().event,
 		},
-		getOpStatus: () => { return opStatus; }
+		getOpStatus: () => { return opStatus; },
+		serverConfigManager: TypeMoq.Mock.ofType(PackageManagementService)
 	};
 }
