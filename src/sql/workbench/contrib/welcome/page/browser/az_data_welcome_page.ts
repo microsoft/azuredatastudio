@@ -15,8 +15,8 @@ export default () => `
 					<div class="tool_tip__container" id="tool_tip__container--desktop">
 						<a aria-describedby="tooltip__text--desktop" id="preview_link--desktop" class="preview_link" tabindex="0" name="preview"><p>Preview</p><i class="icon--info themed_icon"></i></a>
 						<span role="tooltip" id="tooltip__text--desktop" class="tool_tip__text" aria-hidden="true">
-							<h3 tabindex="0" class="preview_tooltip__header">This page is in preview</h3>
-							<p tabindex="0" class="preview_tooltip__body">Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development.</p>
+							<h3 tabindex="0" class="preview_tooltip__header">${escape(localize('welcomePage.previewHeader', "This page is in preview"))}</h3>
+							<p tabindex="0" class="preview_tooltip__body">${escape(localize('welcomePage.previewBody', "Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development."))}</p>
 						</span>
 					</div>
 					<div class="tool_tip__container" id="tool_tip__container--mobile">
@@ -26,8 +26,8 @@ export default () => `
 				<div id="preview_modal" class="modal" aria-modal="true" aria-hidden="true">
 					<div class="modal_content">
 						<span class="close_icon">x</span>
-						<h3 tabindex="0" class="preview_modal__header">This page is in preview</h3>
-						<p tabindex="0" class="preview_modal__body">Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development.</p>
+						<h3 tabindex="0" class="preview_modal__header">${escape(localize('welcomePage.previewHeader', "This page is in preview"))}</h3>
+						<p tabindex="0" class="preview_modal__body">${escape(localize('welcomePage.previewBody', "Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development."))}</p>
 					</div>
 				</div>
 				<div class="ads_homepage__section section header hero">
@@ -41,7 +41,7 @@ export default () => `
 										<div>
 											<button id="dropdown_btn" class="btn btn--primary dropdown" role="navigation" aria-haspopup="true" aria-controls="dropdown">
 												<div class="dropdown__text" style="pointer-events: none;">
-													<span>New</span><i class="icon--arrow_down"></i>
+													<span>${escape(localize('welcomePage.new', "New"))}</span><i class="icon--arrow_down"></i>
 												</div>
 											</button>
 											<nav role="navigation" class="dropdown_nav">
