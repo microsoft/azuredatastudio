@@ -618,7 +618,7 @@ class WelcomePage extends Disposable {
 				a.setAttribute('data-extension', extension.id);
 				a.href = 'javascript:void(0)';
 				a.addEventListener('click', e => {
-					this.installExtension(extension, extensionPackStrings);
+					this.installExtension(extension);
 					e.preventDefault();
 					e.stopPropagation();
 				});
@@ -667,14 +667,14 @@ class WelcomePage extends Disposable {
 		}
 	}
 
-	private installExtension(extensionSuggestion: ExtensionSuggestion, strings: Strings): void {
+	private installExtension(extensionSuggestion: ExtensionSuggestion): void {
 		/* __GDPR__FRAGMENT__
 			"WelcomePageInstall-1" : {
 				"from" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 				"extensionId": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 			}
 		*/
-		this.telemetryService.publicLog(strings.installEvent, {
+		this.telemetryService.publicLog(extensionPackStrings.installEvent, {
 			from: telemetryFrom,
 			extensionId: extensionSuggestion.id,
 		});
@@ -688,12 +688,12 @@ class WelcomePage extends Disposable {
 						"outcome": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 					}
 				*/
-				this.telemetryService.publicLog(strings.installedEvent, {
+				this.telemetryService.publicLog(extensionPackStrings.installedEvent, {
 					from: telemetryFrom,
 					extensionId: extensionSuggestion.id,
 					outcome: 'already_enabled',
 				});
-				this.notificationService.info(strings.alreadyInstalled.replace('{0}', extensionSuggestion.name));
+				this.notificationService.info(extensionPackStrings.alreadyInstalled.replace('{0}', extensionSuggestion.name));
 				return;
 			}
 			const foundAndInstalled = installedExtension ? Promise.resolve(installedExtension.local) : this.extensionGalleryService.query({ names: [extensionSuggestion.id], source: telemetryFrom }, CancellationToken.None)
@@ -713,13 +713,13 @@ class WelcomePage extends Disposable {
 
 			this.notificationService.prompt(
 				Severity.Info,
-				strings.reloadAfterInstall.replace('{0}', extensionSuggestion.name),
+				extensionPackStrings.reloadAfterInstall.replace('{0}', extensionSuggestion.name),
 				[{
 					label: localize('ok', "OK"),
 					run: () => {
 						const messageDelay = new TimeoutTimer();
 						messageDelay.cancelAndSet(() => {
-							this.notificationService.info(strings.installing.replace('{0}', extensionSuggestion.name));
+							this.notificationService.info(extensionPackStrings.installing.replace('{0}', extensionSuggestion.name));
 						}, 300);
 						const extensionsToDisable = extensions.filter(extension => isKeymapExtension(this.tipsService, extension) && extension.globallyEnabled).map(extension => extension.local);
 						extensionsToDisable.length ? this.extensionEnablementService.setEnablement(extensionsToDisable, EnablementState.DisabledGlobally) : Promise.resolve()
@@ -736,7 +736,7 @@ class WelcomePage extends Disposable {
 														"outcome": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 													}
 												*/
-												this.telemetryService.publicLog(strings.installedEvent, {
+												this.telemetryService.publicLog(extensionPackStrings.installedEvent, {
 													from: telemetryFrom,
 													extensionId: extensionSuggestion.id,
 													outcome: installedExtension ? 'enabled' : 'installed',
@@ -751,12 +751,12 @@ class WelcomePage extends Disposable {
 												"outcome": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 											}
 										*/
-										this.telemetryService.publicLog(strings.installedEvent, {
+										this.telemetryService.publicLog(extensionPackStrings.installedEvent, {
 											from: telemetryFrom,
 											extensionId: extensionSuggestion.id,
 											outcome: 'not_found',
 										});
-										this.notificationService.error(strings.extensionNotFound.replace('{0}', extensionSuggestion.name).replace('{1}', extensionSuggestion.id));
+										this.notificationService.error(extensionPackStrings.extensionNotFound.replace('{0}', extensionSuggestion.name).replace('{1}', extensionSuggestion.id));
 										return undefined;
 									}
 								});
@@ -768,7 +768,7 @@ class WelcomePage extends Disposable {
 										"outcome": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 									}
 								*/
-								this.telemetryService.publicLog(strings.installedEvent, {
+								this.telemetryService.publicLog(extensionPackStrings.installedEvent, {
 									from: telemetryFrom,
 									extensionId: extensionSuggestion.id,
 									outcome: isPromiseCanceledError(err) ? 'canceled' : 'error',
@@ -785,7 +785,7 @@ class WelcomePage extends Disposable {
 								"extensionId": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 							}
 						*/
-						this.telemetryService.publicLog(strings.detailsEvent, {
+						this.telemetryService.publicLog(extensionPackStrings.detailsEvent, {
 							from: telemetryFrom,
 							extensionId: extensionSuggestion.id,
 						});
@@ -803,7 +803,7 @@ class WelcomePage extends Disposable {
 					"outcome": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 				}
 			*/
-			this.telemetryService.publicLog(strings.installedEvent, {
+			this.telemetryService.publicLog(extensionPackStrings.installedEvent, {
 				from: telemetryFrom,
 				extensionId: extensionSuggestion.id,
 				outcome: isPromiseCanceledError(err) ? 'canceled' : 'error',
