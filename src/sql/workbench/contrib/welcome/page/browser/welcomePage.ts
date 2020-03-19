@@ -45,6 +45,8 @@ import { IRecentlyOpened, isRecentWorkspace, IRecentWorkspace, IRecentFolder, is
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
+import { KeyCode } from 'vs/base/common/keyCodes';
+
 
 
 const configurationKey = 'workbench.startupEditor';
@@ -157,7 +159,7 @@ const extensionPacks: ExtensionSuggestion[] = [
 	{
 		name: localize('welcomePage.adminPack', "SQL Admin Pack"),
 		title: localize('welcomePage.showAdminPack', "SQL Admin Pack"),
-		description: `Admin Pack for SQL Server is a collection of popular database administration extensions to help you manage SQL Server`,
+		description: localize('welcomePage.adminPackDescription', "Admin Pack for SQL Server is a collection of popular database administration extensions to help you manage SQL Server"),
 		id: 'microsoft.admin-pack',
 		extensionPackExtensions: [
 			{
@@ -186,9 +188,9 @@ const extensionPacks: ExtensionSuggestion[] = [
 ];
 
 const extensions: ExtensionSuggestion[] = [
-	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: `Write and execute PowerShell scripts using Azure Data Studio's rich query editor`, icon: 'https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png', link: `command:azdata.extension.open?{"id":"microsoft.powershell"}` },
-	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: `Virtualize data with SQL Server 2019 and create external tables using interactive wizards`, icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg', link: `command:azdata.extension.open?{"id":"microsoft.datavirtualization"}` },
-	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: `Connect, query, and manage Postgres databases with Azure Data Studio`, icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png', link: `command:azdata.extension.open?{"id":"microsoft.azuredatastudio-postgresql"}` },
+	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: localize('welcomePage.powershellDescription', "Write and execute PowerShell scripts using Azure Data Studio's rich query editor"), icon: 'https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png', link: `command:azdata.extension.open?{"id":"microsoft.powershell"}` },
+	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: localize('welcomePage.dataVirtualizationDescription', "Virtualize data with SQL Server 2019 and create external tables using interactive wizards"), icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg', link: `command:azdata.extension.open?{"id":"microsoft.datavirtualization"}` },
+	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: localize('welcomePage.PostgreSQLDescription', "Connect, query, and manage Postgres databases with Azure Data Studio"), icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png', link: `command:azdata.extension.open?{"id":"microsoft.azuredatastudio-postgresql"}` },
 ];
 
 
@@ -213,49 +215,6 @@ const extensionPackStrings: Strings = {
 	installing: localize('welcomePage.installingExtensionPack', "Installing additional support for {0}..."),
 	extensionNotFound: localize('welcomePage.extensionPackNotFound', "Support for {0} with id {1} could not be found."),
 };
-
-const tabKey = 9;
-const spaceKey = 32;
-const enterKey = 13;
-const escapeKey = 27;
-const upArrowKey = 38;
-const downArrowKey = 40;
-const leftArrowKey = 37;
-const rightArrowKey = 39;
-
-class KeyCodes {
-	static get tabKey() {
-		return tabKey;
-	}
-
-	static get spaceKey() {
-		return spaceKey;
-	}
-
-	static get enterKey() {
-		return enterKey;
-	}
-
-	static get escapeKey() {
-		return escapeKey;
-	}
-
-	static get upArrowKey() {
-		return upArrowKey;
-	}
-
-	static get downArrowKey() {
-		return downArrowKey;
-	}
-
-	static get leftArrowKey() {
-		return leftArrowKey;
-	}
-
-	static get rightArrowKey() {
-		return rightArrowKey;
-	}
-}
 
 
 const welcomeInputTypeId = 'workbench.editors.welcomePageInput';
@@ -335,8 +294,8 @@ class WelcomePage extends Disposable {
 			updateEntries();
 			this._register(this.labelService.onDidChangeFormatters(updateEntries));
 		}).then(undefined, onUnexpectedError);
-		this.addExtensionList(container, '.extension_list', extensions, extensionPackStrings);
-		this.addExtensionPack(container, '.extensionPack', extensionPacks, extensionPackStrings);
+		this.addExtensionList(container, '.extension_list');
+		this.addExtensionPack(container, '.extensionPack');
 		this.updateInstalledExtensions(container, installedExtensions);
 		this._register(this.instantiationService.invokeFunction(onExtensionChanged)(ids => {
 			for (const id of ids) {
@@ -369,13 +328,13 @@ class WelcomePage extends Disposable {
 		});
 
 		previewLink.addEventListener('keydown', (e: KeyboardEvent) => {
-			if (e.keyCode === KeyCodes.escapeKey) {
+			if (e.keyCode === KeyCode.Escape) {
 				if (tooltip.classList.contains('show')) {
 					tooltip.setAttribute('aria-hidden', 'true');
 					tooltip.classList.remove('show');
 				}
 			}
-			else if (e.keyCode === KeyCodes.enterKey || e.keyCode === KeyCodes.spaceKey) {
+			else if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Space) {
 				tooltip.setAttribute('aria-hidden', 'false');
 				tooltip.classList.toggle('show');
 				previewModalHeader.focus();
@@ -383,13 +342,13 @@ class WelcomePage extends Disposable {
 		});
 
 		tooltip.addEventListener('keydown', (e: KeyboardEvent) => {
-			if (e.keyCode === KeyCodes.escapeKey) {
+			if (e.keyCode === KeyCode.Escape) {
 				if (tooltip.classList.contains('show')) {
 					tooltip.setAttribute('aria-hidden', 'true');
 					tooltip.classList.remove('show');
 				}
 			}
-			else if (e.keyCode === KeyCodes.tabKey) {
+			else if (e.keyCode === KeyCode.Tab) {
 				e.preventDefault();
 				if (e.target === previewModalBody) {
 					previewModalHeader.focus();
@@ -419,7 +378,7 @@ class WelcomePage extends Disposable {
 		});
 
 		dropdownBtn.addEventListener('keydown', (e: KeyboardEvent) => {
-			if (e.keyCode === KeyCodes.enterKey || e.keyCode === KeyCodes.spaceKey) {
+			if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Space) {
 				const dropdownFirstElement = document.querySelector('#dropdown').firstElementChild.children[0] as HTMLInputElement;
 				dropdown.classList.toggle('show');
 				dropdownFirstElement.focus();
@@ -427,7 +386,7 @@ class WelcomePage extends Disposable {
 		});
 
 		dropdown.addEventListener('keydown', (e: KeyboardEvent) => {
-			if (e.keyCode === KeyCodes.escapeKey) {
+			if (e.keyCode === KeyCode.Escape) {
 				if (dropdown.classList.contains('show')) {
 					dropdown.classList.remove('show');
 					const currentSelection = document.querySelector('.move:focus') as HTMLInputElement;
@@ -458,11 +417,11 @@ class WelcomePage extends Disposable {
 		dropdown.addEventListener('keydown', function (e: KeyboardEvent) {
 			const dropdownLastElement = document.querySelector('#dropdown').lastElementChild.children[0] as HTMLInputElement;
 			const dropdownFirstElement = document.querySelector('#dropdown').firstElementChild.children[0] as HTMLInputElement;
-			if (e.keyCode === KeyCodes.tabKey) {
+			if (e.keyCode === KeyCode.Tab) {
 				e.preventDefault();
 				return;
 			}
-			else if (e.keyCode === KeyCodes.upArrowKey || e.keyCode === KeyCodes.leftArrowKey) {
+			else if (e.keyCode === KeyCode.UpArrow || e.keyCode === KeyCode.LeftArrow) {
 				if (e.target === dropdownFirstElement) {
 					dropdownLastElement.focus();
 				} else {
@@ -470,7 +429,7 @@ class WelcomePage extends Disposable {
 					movePrev.focus();
 				}
 			}
-			else if (e.keyCode === KeyCodes.downArrowKey || e.keyCode === KeyCodes.rightArrowKey) {
+			else if (e.keyCode === KeyCode.DownArrow || e.keyCode === KeyCode.RightArrow) {
 				if (e.target === dropdownLastElement) {
 					dropdownFirstElement.focus();
 				} else {
@@ -504,12 +463,12 @@ class WelcomePage extends Disposable {
 		});
 
 		btn.addEventListener('keydown', (e: KeyboardEvent) => {
-			if (e.keyCode === KeyCodes.enterKey || e.keyCode === KeyCodes.spaceKey) {
+			if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Space) {
 				modal.classList.toggle('show');
 				modal.setAttribute('aria-hidden', 'false');
 				previewModalHeader.focus();
 			}
-			if (e.keyCode === KeyCodes.escapeKey) {
+			if (e.keyCode === KeyCode.Escape) {
 				if (modal.classList.contains('show')) {
 					modal.setAttribute('aria-hidden', 'true');
 					modal.classList.remove('show');
@@ -519,7 +478,7 @@ class WelcomePage extends Disposable {
 
 		window.addEventListener('keydown', (e: KeyboardEvent) => {
 			const target = e.target as HTMLTextAreaElement;
-			if (!target.matches('.modal') && e.keyCode === KeyCodes.escapeKey) {
+			if (!target.matches('.modal') && e.keyCode === KeyCode.Escape) {
 				if (modal.classList.contains('show')) {
 					modal.setAttribute('aria-hidden', 'true');
 					modal.classList.remove('show');
@@ -531,7 +490,7 @@ class WelcomePage extends Disposable {
 			const previewModalBody = document.querySelector('.preview_modal__body') as HTMLElement;
 			const previewModalHeader = document.querySelector('.preview_modal__header') as HTMLElement;
 
-			if (e.keyCode === KeyCodes.tabKey) {
+			if (e.keyCode === KeyCode.Tab) {
 				e.preventDefault();
 				if (e.target === previewModalBody) {
 					previewModalHeader.focus();
@@ -605,10 +564,10 @@ class WelcomePage extends Disposable {
 	}
 
 
-	private addExtensionList(container: HTMLElement, listSelector: string, suggestions: ExtensionSuggestion[], strings: Strings) {
+	private addExtensionList(container: HTMLElement, listSelector: string) {
 		const list = container.querySelector(listSelector);
 		if (list) {
-			suggestions.forEach((extension, i) => {
+			extensions.forEach((extension, i) => {
 				const flexDivContainerClasses = ['flex', 'flex--a_center', 'extension__inner'];
 				const outerAnchorContainerElm = document.createElement('a');
 				const flexDivContainerElm = document.createElement('div');
@@ -642,10 +601,10 @@ class WelcomePage extends Disposable {
 		}
 	}
 
-	private addExtensionPack(container: HTMLElement, anchorSelector: string, suggestions: ExtensionSuggestion[], strings: Strings) {
+	private addExtensionPack(container: HTMLElement, anchorSelector: string) {
 		const btnContainer = container.querySelector(anchorSelector);
 		if (btnContainer) {
-			suggestions.forEach((extension, i) => {
+			extensionPacks.forEach((extension, i) => {
 				const a = document.createElement('a');
 				const classes = ['btn', 'btn--standard', 'a_self--end', 'flex', 'flex--a_center', 'flex--j_center'];
 				const btn = document.createElement('button');
@@ -659,7 +618,7 @@ class WelcomePage extends Disposable {
 				a.setAttribute('data-extension', extension.id);
 				a.href = 'javascript:void(0)';
 				a.addEventListener('click', e => {
-					this.installExtension(extension, strings);
+					this.installExtension(extension, extensionPackStrings);
 					e.preventDefault();
 					e.stopPropagation();
 				});
