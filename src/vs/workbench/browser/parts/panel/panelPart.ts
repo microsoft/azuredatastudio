@@ -144,9 +144,8 @@ export class PanelPart extends CompositePart<Panel> implements IPanelService {
 			getDefaultCompositeId: () => this.panelRegistry.getDefaultPanelId(),
 			hidePart: () => this.layoutService.setPanelHidden(true),
 			dndHandler: new CompositeDragAndDrop(this.viewDescriptorService, ViewContainerLocation.Panel,
-				(id: string, focus?: boolean) => (<unknown>this.openPanel(id, focus)) as Promise<IPaneComposite | undefined>, // {{SQL CARBON EDIT}} strict-null-check
-				(from: string, to: string) => this.compositeBar.move(from, to),
-				() => this.getPinnedPanels().map(p => p.id)
+				(id: string, focus?: boolean) => <unknown>this.openPanel(id, focus) as Promise<IPaneComposite | undefined>, // {{SQL CARBON EDIT}} strict-null-checks
+				(from: string, to: string, before?: boolean) => this.compositeBar.move(from, to, before)
 			),
 			compositeSize: 0,
 			overflowActionSize: 44,

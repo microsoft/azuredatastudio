@@ -2211,7 +2211,7 @@ declare module 'azdata' {
 		ResourceManagement = 0,
 		Sql = 1,
 		OssRdbms = 2,
-		Graph = 3
+		Graph = 4
 	}
 
 	export interface DidChangeAccountsParams {

@@ -38,6 +38,10 @@ const publicAzureSettings: ProviderSettings = {
 				endpoint: 'https://ossrdbms-aad.database.windows.net',
 				azureResourceId: AzureResource.OssRdbms
 			},
+			azureKeyVaultResource: {
+				id: 'https://vault.azure.net',
+				endpoint: 'https://vault.azure.net'
+			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
@@ -77,6 +81,10 @@ const usGovAzureSettings: ProviderSettings = {
 				endpoint: 'https://ossrdbms-aad.database.usgovcloudapi.net',
 				azureResourceId: AzureResource.OssRdbms
 			},
+			azureKeyVaultResource: {
+				id: 'https://vault.usgovcloudapi.net',
+				endpoint: 'https://vault.usgovcloudapi.net'
+			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
@@ -104,6 +112,10 @@ const germanyAzureSettings: ProviderSettings = {
 				id: 'https://management.core.cloudapi.de/',
 				endpoint: 'https://management.microsoftazure.de'
 			},
+			azureKeyVaultResource: {
+				id: 'https://vault.microsoftazure.de',
+				endpoint: 'https://vault.microsoftazure.de'
+			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/'
 		}
 	}
@@ -126,7 +138,12 @@ const chinaAzureSettings: ProviderSettings = {
 				id: 'https://management.core.chinacloudapi.cn/',
 				endpoint: 'https://managemement.chinacloudapi.net'
 			},
+			azureKeyVaultResource: {
+				id: 'https://vault.azure.cn',
+				endpoint: 'https://vault.azure.cn'
+			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/'
+
 		}
 	}
 };

@@ -107,7 +107,6 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		return this._prompt();
 	}
 
-
 	private async _prompt(): Promise<azdata.Account | azdata.PromptFailedResult> {
 		await this.initCompletePromise;
 		class Option implements vscode.QuickPickItem {

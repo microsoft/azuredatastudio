@@ -3,6 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.open-editors .monaco-list .monaco-list-row.dirty:not(:hover) > .monaco-action-bar .codicon-close::before {
-	content: "\ea71";
+.monaco-editor .on-type-rename-decoration {
+	background: rgba(255, 0, 0, 0.3);
+	border-left: 1px solid rgba(255, 0, 0, 0.3);
+	/* So border can be transparent */
+	background-clip: padding-box;
 }

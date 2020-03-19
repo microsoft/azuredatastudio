@@ -629,7 +629,7 @@ export class IssueReporter extends Disposable {
 
 	@debounce(300)
 	private searchDuplicates(title: string, body?: string): void {
-		const url = 'https://vscode-probot.westus.cloudapp.azure.com:7890/duplicate_candidates';
+		const url = 'https://ads-probot.westus.cloudapp.azure.com:7890/duplicate_candidates'; // {{SQL CARBON EDIT}} use our server
 		const init = {
 			method: 'POST',
 			body: JSON.stringify({
@@ -645,12 +645,11 @@ export class IssueReporter extends Disposable {
 			response.json().then(result => {
 				this.clearSearchResults();
 
-				// {{SQL CARBON EDIT}}
-				// if (result && result.candidates) {
-				// 	this.displaySearchResults(result.candidates);
-				// } else {
-				// 	throw new Error('Unexpected response, no candidates property');
-				// }
+				if (result && result.candidates) {
+					this.displaySearchResults(result.candidates);
+				} else {
+					throw new Error('Unexpected response, no candidates property');
+				}
 			}).catch((error) => {
 				this.logSearchError(error);
 			});
