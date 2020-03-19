@@ -33,9 +33,7 @@ export class AccountFeature implements StaticFeature {
 
 	constructor(private _client: SqlOpsDataClient) { }
 
-	fillClientCapabilities(capabilities: ClientCapabilities): void {
-		// this isn't explicitly necessary
-	}
+	fillClientCapabilities(capabilities: ClientCapabilities): void { }
 
 	initialize(): void {
 		this._client.onRequest(contracts.SecurityTokenRequest.type, async e => {
