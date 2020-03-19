@@ -31,7 +31,7 @@ export class ProjectsController {
 
 	public async openProject(projectFile: vscode.Uri) {
 		for (const proj of this.projects) {
-			if (proj.projectFile === projectFile.fsPath) {
+			if (proj.projectFilePath === projectFile.fsPath) {
 				vscode.window.showInformationMessage(`Project '${projectFile.fsPath}' is already opened.`);
 				return;
 			}

@@ -13,19 +13,20 @@ import { DataSource } from './dataSources/dataSources';
  * Class representing a Project, and providing functions for operating on it
  */
 export class Project {
-	public projectFile: string;
+	public projectFilePath: string;
 	public files: ProjectEntry[] = [];
 	public dataSources: DataSource[] = [];
+	private projFileContents: any = undefined;
 
 	constructor(projectFilePath: string) {
-		this.projectFile = projectFilePath;
+		this.projectFilePath = projectFilePath;
 	}
 
 	/**
 	 * Reads the project setting and contents from the file
 	 */
 	public async readProjFile() {
-		let projFileContents = await fs.readFile(this.projectFile);
+		let projFileText = await fs.readFile(this.projectFilePath);
 
 		const parser = new xml2js.Parser({
 			explicitArray: true,
@@ -33,10 +34,8 @@ export class Project {
 			explicitRoot: false
 		});
 
-		let result;
-
 		try {
-			result = await parser.parseStringPromise(projFileContents.toString());
+			this.projFileContents = await parser.parseStringPromise(projFileText.toString());
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(err);
@@ -45,7 +44,7 @@ export class Project {
 
 		// find all folders and files to include
 
-		for (const itemGroup of result['ItemGroup']) {
+		for (const itemGroup of this.projFileContents['ItemGroup']) {
 			if (itemGroup['Build'] !== undefined) {
 				for (const fileEntry of itemGroup['Build']) {
 					this.files.push(this.createProjectEntry(fileEntry.$['Include'], EntryType.File));
@@ -60,18 +59,95 @@ export class Project {
 		}
 	}
 
+	public async writeProjFile() {
+		try {
+			const thing = new xml2js.Builder({
+				explicitArray: true,
+				explicitCharkey: false,
+				explicitRoot: false
+			});
+
+			const projFileText = thing.buildObject(this.projFileContents);
+			await fs.writeFile(this.projectFilePath, projFileText);
+		}
+		catch (err) {
+			vscode.window.showErrorMessage(err);
+			return;
+		}
+	}
+
 	private createProjectEntry(relativePath: string, entryType: EntryType): ProjectEntry {
-		return new ProjectEntry(vscode.Uri.file(path.join(path.dirname(this.projectFile), relativePath)), entryType);
+		return new ProjectEntry(vscode.Uri.file(path.join(path.dirname(this.projectFilePath), relativePath)), relativePath, entryType);
 	}
 
 	public async addScriptItem(fileName: string, contents: string): Promise<ProjectEntry> {
-		await fs.writeFile(path.join(path.dirname(this.projectFile), fileName), contents);
+		await fs.writeFile(path.join(path.dirname(this.projectFilePath), fileName), contents);
 
 		const fileEntry = this.createProjectEntry(fileName, EntryType.File);
 		this.files.push(fileEntry);
 
+		await this.addToProjFile(fileEntry);
+
 		return fileEntry;
 	}
+
+	private async addToProjFile(fileEntry: ProjectEntry) {
+		let fileItemGroupNode;
+
+		// find any ItemGroup node that contains files; that's where we'll add
+		for (const itemGroup of this.projFileContents['ItemGroup']) {
+			if (itemGroup['Build']) {
+				fileItemGroupNode = itemGroup;
+				break;
+			}
+		}
+
+		if (!fileItemGroupNode) {
+			this.projFileContents['ItemGroup'] = [];
+			fileItemGroupNode = this.projFileContents['ItemGroup'];
+		}
+
+		if (!fileItemGroupNode['Build']) {
+			fileItemGroupNode['Build'] = [];
+		}
+
+		fileItemGroupNode['Build'].push(
+			{
+				$: {
+					'Include': fileEntry.relativePath
+				}
+			}
+		);
+
+		await this.serializeToProjFile(this.projFileContents);
+	}
+
+	private async serializeToProjFile(projFileContents: any) {
+		const builder = new xml2js.Builder();
+		const xml = builder.buildObject(projFileContents);
+
+		await fs.writeFile(this.projectFilePath, xml);
+	}
+
+	// 	private updateProjFile() {
+	// 		let toAdd: Set<string> = new Set<string>();
+
+	// 		for (const currentFile of this.files) {
+	// 			toAdd.add(currentFile.fsUri.fsPath);
+	// 		}
+
+	// 		this.projFileContents['ItemGroup'].find
+
+
+	// 		for (const itemGroup of this.projFileContents['ItemGroup']) {
+	// 			if (itemGroup['Build'] === undefined) {
+	// 				this.projFileContents['ItemGroup'];
+	// 			}
+	// 					if (itemGroup['Build'] !== undefined) {
+	// 				let found
+	// 			}
+	// 		}
+	// 	}
 }
 
 /**
@@ -82,10 +158,12 @@ export class ProjectEntry {
 	 * Absolute file system URI
 	 */
 	fsUri: vscode.Uri;
+	relativePath: string;
 	type: EntryType;
 
-	constructor(uri: vscode.Uri, type: EntryType) {
+	constructor(uri: vscode.Uri, relativePath: string, type: EntryType) {
 		this.fsUri = uri;
+		this.relativePath = relativePath;
 		this.type = type;
 	}
 
