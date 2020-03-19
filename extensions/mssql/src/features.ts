@@ -36,7 +36,7 @@ export class AccountFeature implements StaticFeature {
 	fillClientCapabilities(capabilities: ClientCapabilities): void { }
 
 	initialize(): void {
-		this._client.onRequest(contracts.SecurityTokenRequest.type, async e => {
+		this._client.onRequest(contracts.SecurityTokenRequest.type, async (e): Promise<contracts.RequestSecurityTokenResponse | undefined> => {
 			const accountList = await azdata.accounts.getAllAccounts();
 
 			if (accountList.length < 1) {
