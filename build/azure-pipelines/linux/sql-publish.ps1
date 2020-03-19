@@ -34,3 +34,11 @@ $RpmFilename = "$(Get-ChildItem -File -Name $artifactsDir\linux\rpm\x86_64\*.rpm
 $RpmPath = "$artifactsDir\linux\rpm\x86_64\$RpmFilename"
 
 node $sourcesDir\build\azure-pipelines\common\publish.js $Quality $PlatformRpm package $RpmFilename $Version true $RpmPath $CommitId
+
+$ServerZipName = "azuredatastudio-server-linux-x64.zip"
+$ServerZip = "$artifactsDir\linux\server\$ServerZipName"
+node $sourcesDir\build\azure-pipelines\common\publish.js $Quality "server-$PlatformLinux" archive $ServerZipName true $ServerZip $CommitId
+
+$ServerZipNameWeb = "azuredatastudio-server-linux-x64-web.zip"
+$ServerZipWeb = "$artifactsDir\linux\server\$ServerZipNameWeb"
+node $sourcesDir\build\azure-pipelines\common\publish.js $Quality "server-$PlatformLinux-web" archive $ServerZipNameWeb true $ServerZipWeb $CommitId
