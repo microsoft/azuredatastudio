@@ -99,7 +99,8 @@ export class DeployPlanPage extends DacFxConfigPage {
 			columns: this.getTableColumns(result.dataLossAlerts.size > 0),
 			width: 875,
 			height: 300,
-			ariaRole: 'alert'
+			ariaRole: 'alert',
+			moveFocusOutWithTab: true
 		});
 
 		if (result.dataLossAlerts.size > 0) {
