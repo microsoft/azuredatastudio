@@ -10,7 +10,7 @@
     "azdata": ">=1.13.0"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
-  "icon": "images/sqlserver.png",
+  "icon": "images/extension.png",
   "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
   "activationEvents": [
     "onCommand:schemaCompare.start"

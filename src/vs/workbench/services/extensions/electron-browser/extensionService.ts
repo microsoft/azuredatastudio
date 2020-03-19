@@ -671,7 +671,7 @@ registerSingleton(IExtensionService, ExtensionService);
 class RestartExtensionHostAction extends Action {
 
 	public static readonly ID = 'workbench.action.restartExtensionHost';
-	public static readonly LABEL = nls.localize('restartExtensionHost', "Developer: Restart Extension Host");
+	public static readonly LABEL = nls.localize('restartExtensionHost', "Restart Extension Host");
 
 	constructor(
 		id: string,
@@ -687,4 +687,4 @@ class RestartExtensionHostAction extends Action {
 }
 
 const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
-registry.registerWorkbenchAction(SyncActionDescriptor.create(RestartExtensionHostAction, RestartExtensionHostAction.ID, RestartExtensionHostAction.LABEL), 'Developer: Restart Extension Host');
+registry.registerWorkbenchAction(SyncActionDescriptor.create(RestartExtensionHostAction, RestartExtensionHostAction.ID, RestartExtensionHostAction.LABEL), 'Developer: Restart Extension Host', nls.localize('developer', "Developer"));

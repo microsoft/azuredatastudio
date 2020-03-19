@@ -14,7 +14,7 @@ import { QueryPlanTab } from 'sql/workbench/contrib/queryPlan/browser/queryPlan'
 import { TopOperationsTab } from 'sql/workbench/contrib/queryPlan/browser/topOperations';
 import { QueryModelViewTab } from 'sql/workbench/contrib/query/browser/modelViewTab/queryModelViewTab';
 import { MessagePanelState } from 'sql/workbench/common/editor/query/messagePanelState';
-import { GridPanelState } from 'sql/workbench/common/editor/query/gridPanelState';
+import { GridPanelState } from 'sql/workbench/common/editor/query/gridTableState';
 
 import * as nls from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
