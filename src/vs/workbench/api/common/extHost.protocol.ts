@@ -692,6 +692,7 @@ export interface MainThreadNotebookShape extends IDisposable {
 	$updateNotebookLanguages(viewType: string, resource: UriComponents, languages: string[]): Promise<void>;
 	$spliceNotebookCells(viewType: string, resource: UriComponents, splices: NotebookCellsSplice[], renderers: number[]): Promise<void>;
 	$spliceNotebookCellOutputs(viewType: string, resource: UriComponents, cellHandle: number, splices: NotebookCellOutputsSplice[], renderers: number[]): Promise<void>;
+	$postMessage(handle: number, value: any): Promise<boolean>;
 }
 
 export interface MainThreadUrlsShape extends IDisposable {
@@ -1531,6 +1532,7 @@ export interface ExtHostNotebookShape {
 	$updateActiveEditor(viewType: string, uri: UriComponents): Promise<void>;
 	$destoryNotebookDocument(viewType: string, uri: UriComponents): Promise<boolean>;
 	$acceptDisplayOrder(displayOrder: INotebookDisplayOrder): void;
+	$onDidReceiveMessage(uri: UriComponents, message: any): void;
 }
 
 export interface ExtHostStorageShape {
