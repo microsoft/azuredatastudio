@@ -92,24 +92,8 @@ const vscodeResources = [
 	'out-build/vs/code/electron-browser/sharedProcess/sharedProcess.js',
 	'out-build/vs/code/electron-browser/issue/issueReporter.js',
 	'out-build/vs/code/electron-browser/processExplorer/processExplorer.js',
-	'out-build/sql/workbench/electron-browser/splashscreen/*', // {{SQL CARBON EDIT}} STart
-	'out-build/sql/**/*.{svg,png,cur,html}',
-	'out-build/sql/base/browser/ui/table/media/*.{gif,png,svg}',
-	'out-build/sql/base/browser/ui/checkbox/media/*.{gif,png,svg}',
-	'out-build/sql/parts/admin/**/*.html',
-	'out-build/sql/parts/connection/connectionDialog/media/*.{gif,png,svg}',
-	'out-build/sql/parts/common/dblist/**/*.html',
-	'out-build/sql/workbench/parts/dashboard/**/*.html',
-	'out-build/sql/parts/disasterRecovery/**/*.html',
-	'out-build/sql/parts/common/modal/media/**',
-	'out-build/sql/workbench/parts/grid/media/**',
-	'out-build/sql/workbench/parts/grid/views/**/*.html',
-	'out-build/sql/parts/tasks/**/*.html',
-	'out-build/sql/parts/taskHistory/viewlet/media/**',
-	'out-build/sql/parts/jobManagement/common/media/*.svg',
-	'out-build/sql/media/objectTypes/*.svg',
-	'out-build/sql/media/icons/*.svg',
-	'out-build/sql/workbench/parts/notebook/media/**/*.svg',
+	'out-build/sql/workbench/electron-browser/splashscreen/*', // {{SQL CARBON EDIT}} Start
+	'out-build/sql/**/*.{svg,png,cur,html,gif}',
 	'out-build/sql/setup.js', // {{SQL CARBON EDIT}} end
 	'out-build/vs/platform/auth/common/auth.css',
 	'!**/test/**'

@@ -3,10 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// import * as path from 'vs/base/common/path';
+import * as path from 'vs/base/common/path';
 
 import { URI, UriComponents } from 'vs/base/common/uri';
-// import { win32 } from 'vs/base/node/processes';
+import { win32 } from 'vs/base/node/processes';
 import * as types from 'vs/workbench/api/common/extHostTypes';
 import { IExtHostWorkspace } from 'vs/workbench/api/common/extHostWorkspace';
 import type * as vscode from 'vscode';
@@ -139,7 +139,7 @@ export class ExtHostTask extends ExtHostTaskBase {
 	}
 
 	public async $resolveVariables(uriComponents: UriComponents, toResolve: { process?: { name: string; cwd?: string; path?: string }, variables: string[] }): Promise<{ process?: string, variables: { [key: string]: string; } }> {
-		/*const uri: URI = URI.revive(uriComponents);
+		const uri: URI = URI.revive(uriComponents);
 		const result = {
 			process: <unknown>undefined as string,
 			variables: Object.create(null)
@@ -175,8 +175,7 @@ export class ExtHostTask extends ExtHostTaskBase {
 				paths
 			);
 		}
-		return result;*/
-		return undefined;
+		return result;
 	}
 
 	public $getDefaultShellAndArgs(): Promise<{ shell: string, args: string[] | string | undefined }> {

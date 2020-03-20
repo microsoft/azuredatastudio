@@ -238,8 +238,7 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 		return this.dirty;
 	}
 
-	// {{SQL CARBON EDIT}}
-	// make property public
+	// {{SQL CARBON EDIT}}  make property public
 	public setDirty(dirty: boolean): void {
 		if (this.dirty === dirty) {
 			return;
