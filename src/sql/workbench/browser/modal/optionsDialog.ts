@@ -234,13 +234,13 @@ export class OptionsDialog extends Modal {
 		let firstOption: string;
 		let categoryMap = OptionsDialogHelper.groupOptionsByCategory(options);
 		for (let category in categoryMap) {
-			let serviceOptions: azdata.ServiceOption[] = categoryMap[category];
-			let bodyContainer = $('table.optionsDialog-table');
-			this.fillInOptions(bodyContainer, serviceOptions);
-
 			const title = append(this._optionGroupsContainer, $('h2.option-category-title'));
 			title.innerText = category;
 			this._categoryTitles.push(title);
+
+			let serviceOptions: azdata.ServiceOption[] = categoryMap[category];
+			let bodyContainer = $('table.optionsDialog-table');
+			this.fillInOptions(bodyContainer, serviceOptions);
 			append(this._optionGroupsContainer, bodyContainer);
 
 			if (!firstOption) {
@@ -251,7 +251,7 @@ export class OptionsDialog extends Modal {
 		this.show();
 		let firstOptionWidget = this._optionElements[firstOption].optionWidget;
 		this.registerStyling();
-		firstOptionWidget.focus();
+		setTimeout(() => firstOptionWidget.focus(), 1);
 	}
 
 	protected layout(height?: number): void {
