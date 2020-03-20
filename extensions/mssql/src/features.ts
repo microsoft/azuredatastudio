@@ -32,11 +32,11 @@ export class TelemetryFeature implements StaticFeature {
 export class DataCache {
 
 	millisecondsToLive: number;
-	getValueFunction: (parameter: any) => any;
+	getValueFunction: (...args: any[]) => any;
 	cache: any;
 	fetchDate: Date;
 
-	constructor(getValueFunction: (parameter: any) => any, secondsToLive: number) {
+	constructor(getValueFunction: (...args: any[]) => any, secondsToLive: number) {
 		this.millisecondsToLive = secondsToLive * 1000;
 		this.getValueFunction = getValueFunction;
 		this.cache = null;
@@ -47,10 +47,10 @@ export class DataCache {
 		return (this.fetchDate.getTime() + this.millisecondsToLive) < new Date().getTime();
 	}
 
-	public getData(parameter: any) {
+	public getData(...args: any[]) {
 		if (!this.cache || this.isCacheExpired()) {
 			console.log('expired - fetching new data');
-			let data = this.getValueFunction(parameter);
+			let data = this.getValueFunction(...args);
 			this.cache = data;
 			this.fetchDate = new Date();
 			return data;
