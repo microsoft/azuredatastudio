@@ -37,6 +37,8 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
@@ -317,6 +319,16 @@ export class EditDataEditor extends BaseEditor {
 		this._stopRefreshTableAction = this._instantiationService.createInstance(StopRefreshTableAction, this);
 		this._changeMaxRowsAction = this._instantiationService.createInstance(ChangeMaxRowsAction, this);
 		this._showQueryPaneAction = this._instantiationService.createInstance(ShowQueryPaneAction, this);
+
+		// Register keybind for showQueryPane
+		KeybindingsRegistry.registerCommandAndKeybindingRule({
+			id: 'editData.actions.showQueryPane',
+			weight: KeybindingWeight.WorkbenchContrib + 50,
+			handler: accessor => this.toggleQueryPane(),
+			when: queryContext.QueryEditorVisibleContext,
+			primary: KeyMod.CtrlCmd | KeyCode.US_QUOTE,
+			mac: { primary: KeyMod.WinCtrl | KeyCode.US_QUOTE }
+		});
 
 		// Create HTML Elements for the taskbar
 		let separator = Taskbar.createTaskbarSeparator();
