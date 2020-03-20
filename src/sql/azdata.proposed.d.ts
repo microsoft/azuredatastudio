@@ -125,13 +125,6 @@ declare module 'azdata' {
 		defaultValueOsOverrides?: DefaultValueOsOverride[];
 	}
 
-	/*
-	 * Add AKV
-	 */
-	export enum AzureResource {
-		AzureKeyVault = 3
-	}
-
 	export interface ModelBuilder {
 		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent>;
 		separator(): ComponentBuilder<SeparatorComponent>;
