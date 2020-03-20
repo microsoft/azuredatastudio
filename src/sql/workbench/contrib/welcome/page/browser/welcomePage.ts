@@ -40,12 +40,13 @@ import { areSameExtensions } from 'vs/platform/extensionManagement/common/extens
 import { ILabelService } from 'vs/platform/label/common/label';
 import { IFileService } from 'vs/platform/files/common/files';
 import { ExtensionType } from 'vs/platform/extensions/common/extensions';
-import { joinPath } from 'vs/base/common/resources';
 import { IRecentlyOpened, isRecentWorkspace, IRecentWorkspace, IRecentFolder, isRecentFolder, IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { joinPath } from 'vs/base/common/resources';
+
 
 
 
@@ -54,58 +55,57 @@ const oldConfigurationKey = 'workbench.welcome.enabled';
 const telemetryFrom = 'welcomePage';
 
 export class WelcomePageContribution implements IWorkbenchContribution {
-
 	constructor(
-		@IInstantiationService instantiationService: IInstantiationService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@IEditorService editorService: IEditorService,
-		@IBackupFileService backupFileService: IBackupFileService,
-		@IFileService fileService: IFileService,
-		@IWorkspaceContextService contextService: IWorkspaceContextService,
-		@ILifecycleService lifecycleService: ILifecycleService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IEditorService private readonly editorService: IEditorService,
+		@IBackupFileService private readonly backupFileService: IBackupFileService,
+		@IFileService private readonly fileService: IFileService,
+		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
+		@ILifecycleService private readonly lifecycleService: ILifecycleService,
 		@ICommandService private readonly commandService: ICommandService,
 	) {
-		const enabled = isWelcomePageEnabled(configurationService, contextService);
-		if (enabled && lifecycleService.startupKind !== StartupKind.ReloadedWindow) {
-			backupFileService.hasBackups().then(hasBackups => {
-				const activeEditor = editorService.activeEditor;
-				if (!activeEditor && !hasBackups) {
-					const openWithReadme = configurationService.getValue(configurationKey) === 'readme';
-					if (openWithReadme) {
-						return Promise.all(contextService.getWorkspace().folders.map(folder => {
-							const folderUri = folder.uri;
-							return fileService.resolve(folderUri)
-								.then(folder => {
-									const files = folder.children ? folder.children.map(child => child.name) : [];
-
-									const file = arrays.find(files.sort(), file => strings.startsWith(file.toLowerCase(), 'readme'));
-									if (file) {
-										return joinPath(folderUri, file);
-									}
-									return undefined;
-								}, onUnexpectedError);
-						})).then(arrays.coalesce)
-							.then<any>(readmes => {
-								if (!editorService.activeEditor) {
-									if (readmes.length) {
-										const isMarkDown = (readme: URI) => strings.endsWith(readme.path.toLowerCase(), '.md');
-										return Promise.all([
-											this.commandService.executeCommand('markdown.showPreview', null, readmes.filter(isMarkDown), { locked: true }),
-											editorService.openEditors(readmes.filter(readme => !isMarkDown(readme))
-												.map(readme => ({ resource: readme }))),
-										]);
-									} else {
-										return instantiationService.createInstance(WelcomePage).openEditor();
-									}
-								}
-								return undefined;
-							});
-					} else {
-						return instantiationService.createInstance(WelcomePage).openEditor();
+		this.enableWelcomePage().catch(onUnexpectedError);
+	}
+	private async enableWelcomePage(): Promise<void> {
+		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
+		if (enabled && this.lifecycleService.startupKind !== StartupKind.ReloadedWindow) {
+			const hasBackups: boolean = await this.backupFileService.hasBackups();
+			const activeEditor = this.editorService.activeEditor;
+			if (!activeEditor && !hasBackups) {
+				const openWithReadme = this.configurationService.getValue(configurationKey) === 'readme';
+				if (openWithReadme) {
+					let readmes = await Promise.all(this.contextService.getWorkspace().folders.map(async folder => {
+						const folderUri = folder.uri;
+						try {
+							const folder = await this.fileService.resolve(folderUri);
+							const files = folder.children ? folder.children.map(child => child.name) : [];
+							const file = arrays.find(files.sort(), file => strings.startsWith(file.toLowerCase(), 'readme'));
+							if (file) {
+								return joinPath(folderUri, file);
+							}
+						} catch (err) {
+							onUnexpectedError(err);
+						}
+						return undefined;
+					}));
+					arrays.coalesceInPlace(readmes);
+					if (!this.editorService.activeEditor) {
+						if (readmes.length) {
+							const isMarkDown = (readme: URI) => strings.endsWith(readme.path.toLowerCase(), '.md');
+							await Promise.all([
+								this.commandService.executeCommand('markdown.showPreview', null, readmes.filter(isMarkDown), { locked: true }),
+								this.editorService.openEditors(readmes.filter(readme => !isMarkDown(readme))
+									.map(readme => ({ resource: readme }))),
+							]);
+						} else {
+							await this.instantiationService.createInstance(WelcomePage).openEditor();
+						}
 					}
+				} else {
+					await this.instantiationService.createInstance(WelcomePage).openEditor();
 				}
-				return undefined;
-			}).then(undefined, onUnexpectedError);
+			}
 		}
 	}
 }
@@ -310,7 +310,6 @@ class WelcomePage extends Disposable {
 		this.createPreviewModal();
 	}
 
-
 	private createDesktopPreviewToolTip() {
 		const previewLink = document.querySelector('#preview_link--desktop');
 		const tooltip = document.querySelector('#tooltip__text--desktop');
@@ -502,51 +501,52 @@ class WelcomePage extends Disposable {
 	}
 
 	private async createListEntries(fileService: IFileService, fullPath: URI, windowOpenable: IWindowOpenable, relativePath: string): Promise<HTMLElement[]> {
-		return new Promise(() => {
-			fileService.resolve(fullPath).then((value: any): void | HTMLElement => {
-				let date = new Date(value.mtime);
-				let mtime: Date = date;
-				const options = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-				const lastOpened: string = mtime.toLocaleDateString(undefined, options);
-				const { name, parentPath } = splitName(relativePath);
-				const li = document.createElement('li');
-				const icon = document.createElement('i');
-				const a = document.createElement('a');
-				const span = document.createElement('span');
-				const ul = document.querySelector('.recent ul');
+		let li: HTMLElement[];
+		await fileService.resolve(fullPath).then((value: any): void | HTMLElement => {
+			let date = new Date(value.mtime);
+			let mtime: Date = date;
+			const options = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+			const lastOpened: string = mtime.toLocaleDateString(undefined, options);
+			const { name, parentPath } = splitName(relativePath);
+			const li = document.createElement('li');
+			const icon = document.createElement('i');
+			const a = document.createElement('a');
+			const span = document.createElement('span');
+			const ul = document.querySelector('.recent ul');
 
-				icon.title = relativePath;
-				a.innerText = name;
-				a.title = relativePath;
-				a.setAttribute('aria-label', localize('welcomePage.openFolderWithPath', "Open folder {0} with path {1}", name, parentPath));
-				a.href = 'javascript:void(0)';
-				a.addEventListener('click', e => {
-					this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {
-						id: 'openRecentFolder',
-						from: telemetryFrom
-					});
-					this.hostService.openWindow([windowOpenable], { forceNewWindow: e.ctrlKey || e.metaKey });
-					e.preventDefault();
-					e.stopPropagation();
+			icon.title = relativePath;
+			a.innerText = name;
+			a.title = relativePath;
+			a.setAttribute('aria-label', localize('welcomePage.openFolderWithPath', "Open folder {0} with path {1}", name, parentPath));
+			a.href = 'javascript:void(0)';
+			a.addEventListener('click', e => {
+				this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {
+					id: 'openRecentFolder',
+					from: telemetryFrom
 				});
-				icon.classList.add('themed_icon');
-				li.appendChild(icon);
-				li.appendChild(icon);
-				li.appendChild(a);
-				span.classList.add('path');
-				span.classList.add('detail');
-				span.innerText = lastOpened;
-				span.title = relativePath;
-				li.appendChild(span);
-				ul.appendChild(li);
-				return li;
+				this.hostService.openWindow([windowOpenable], { forceNewWindow: e.ctrlKey || e.metaKey });
+				e.preventDefault();
+				e.stopPropagation();
 			});
+			icon.classList.add('themed_icon');
+			li.appendChild(icon);
+			li.appendChild(icon);
+			li.appendChild(a);
+			span.classList.add('path');
+			span.classList.add('detail');
+			span.innerText = lastOpened;
+			span.title = relativePath;
+			li.appendChild(span);
+			ul.appendChild(li);
 		});
+		return li;
 	}
 
 
-	private mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService) {
-		return recents.map(recent => {
+	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService): Promise<HTMLElement[]> {
+		const result: HTMLElement[] = [];
+		for (let i = 0; i < recents.length; i++) {
+			const recent = recents[i];
 			let relativePath: string;
 			let fullPath: URI;
 			let windowOpenable: IWindowOpenable;
@@ -558,8 +558,10 @@ class WelcomePage extends Disposable {
 				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
 				windowOpenable = { workspaceUri: recent.workspace.configPath };
 			}
-			return this.createListEntries(fileService, fullPath, windowOpenable, relativePath);
-		});
+			const elements = await this.createListEntries(fileService, fullPath, windowOpenable, relativePath);
+			result.push(...elements);
+		}
+		return result;
 	}
 
 
