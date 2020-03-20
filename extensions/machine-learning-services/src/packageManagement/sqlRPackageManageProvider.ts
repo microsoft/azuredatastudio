@@ -7,13 +7,13 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nbExtensionApis from '../typings/notebookServices';
 
-import { QueryRunner } from '../common/queryRunner';
 import { ApiWrapper } from '../common/apiWrapper';
 import { ProcessService } from '../common/processService';
 import { Config } from '../configurations/config';
 import { SqlPackageManageProviderBase, ScriptMode } from './SqlPackageManageProviderBase';
 import { HttpClient } from '../common/httpClient';
 import * as constants from '../common/constants';
+import { PackageManagementService } from './packageManagementService';
 
 
 
@@ -30,7 +30,7 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 	constructor(
 		private _outputChannel: vscode.OutputChannel,
 		apiWrapper: ApiWrapper,
-		private _queryRunner: QueryRunner,
+		private _service: PackageManagementService,
 		private _processService: ProcessService,
 		private _config: Config,
 		private _httpClient: HttpClient) {
@@ -55,7 +55,7 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 	 * Returns list of packages
 	 */
 	protected async fetchPackages(): Promise<nbExtensionApis.IPackageDetails[]> {
-		return await this._queryRunner.getRPackages(await this.getCurrentConnection());
+		return await this._service.getRPackages(await this.getCurrentConnection());
 	}
 
 	/**
@@ -96,7 +96,7 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 			return false;
 		}
 		let connection = await this.getCurrentConnection();
-		if (connection && await this._queryRunner.isRInstalled(connection)) {
+		if (connection && await this._service.isRInstalled(connection)) {
 			return true;
 		}
 		return false;

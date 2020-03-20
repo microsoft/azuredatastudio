@@ -51,7 +51,7 @@ import { TunnelDto } from 'vs/workbench/api/common/extHostTunnelService';
 import { TunnelOptions } from 'vs/platform/remote/common/tunnel';
 import { Timeline, TimelineChangeEvent, TimelineOptions, TimelineProviderDescriptor, InternalTimelineOptions } from 'vs/workbench/contrib/timeline/common/timeline';
 import { revive } from 'vs/base/common/marshalling';
-import { INotebookMimeTypeSelector, IOutput, INotebookDisplayOrder } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { INotebookMimeTypeSelector, IOutput, INotebookDisplayOrder, NotebookCellMetadata, NotebookDocumentMetadata } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { CallHierarchyItem } from 'vs/workbench/contrib/callHierarchy/common/callHierarchy';
 import { Dto } from 'vs/base/common/types';
 
@@ -669,6 +669,7 @@ export interface ICellDto {
 	language: string;
 	cellKind: CellKind;
 	outputs: IOutput[];
+	metadata?: NotebookCellMetadata;
 }
 
 export type NotebookCellsSplice = [
@@ -690,8 +691,10 @@ export interface MainThreadNotebookShape extends IDisposable {
 	$unregisterNotebookRenderer(handle: number): Promise<void>;
 	$createNotebookDocument(handle: number, viewType: string, resource: UriComponents): Promise<void>;
 	$updateNotebookLanguages(viewType: string, resource: UriComponents, languages: string[]): Promise<void>;
+	$updateNotebookMetadata(viewType: string, resource: UriComponents, metadata: NotebookDocumentMetadata | undefined): Promise<void>;
 	$spliceNotebookCells(viewType: string, resource: UriComponents, splices: NotebookCellsSplice[], renderers: number[]): Promise<void>;
 	$spliceNotebookCellOutputs(viewType: string, resource: UriComponents, cellHandle: number, splices: NotebookCellOutputsSplice[], renderers: number[]): Promise<void>;
+	$postMessage(handle: number, value: any): Promise<boolean>;
 }
 
 export interface MainThreadUrlsShape extends IDisposable {
@@ -1531,6 +1534,7 @@ export interface ExtHostNotebookShape {
 	$updateActiveEditor(viewType: string, uri: UriComponents): Promise<void>;
 	$destoryNotebookDocument(viewType: string, uri: UriComponents): Promise<boolean>;
 	$acceptDisplayOrder(displayOrder: INotebookDisplayOrder): void;
+	$onDidReceiveMessage(uri: UriComponents, message: any): void;
 }
 
 export interface ExtHostStorageShape {

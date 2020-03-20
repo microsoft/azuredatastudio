@@ -96,7 +96,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		const resourceIdMap = new Map<azdata.AzureResource, string>([
 			[azdata.AzureResource.ResourceManagement, this.metadata.settings.armResource.id],
 			[azdata.AzureResource.Sql, this.metadata.settings.sqlResource.id],
-			[azdata.AzureResource.OssRdbms, this.metadata.settings.ossRdbmsResource.id]
+			[azdata.AzureResource.OssRdbms, this.metadata.settings.ossRdbmsResource.id],
+			[azdata.AzureResource.AzureKeyVault, this.metadata.settings.azureKeyVaultResource.id]
 		]);
 		const tenantRefreshPromises: Promise<{ tenantId: any, securityToken: AzureAccountSecurityToken }>[] = [];
 		const tokenCollection: AzureAccountSecurityTokenCollection = {};

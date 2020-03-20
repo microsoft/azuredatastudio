@@ -10,6 +10,10 @@ jobs:
     vmImage: 'Ubuntu-16.04'
   container: linux-x64
   steps:
+  - script: |
+      set -e
+      echo "##vso[build.addbuildtag]$(VSCODE_QUALITY)"
+    displayName: Add Quality Build Tag
   - template: sql-product-compile.yml
 
 - job: macOS
