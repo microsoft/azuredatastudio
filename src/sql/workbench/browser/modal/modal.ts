@@ -404,23 +404,8 @@ export abstract class Modal extends Disposable implements IThemable {
 	}
 
 	private restoreKeyboardFocus() {
-		if (!this._focusedElementBeforeOpen) {
-			return;
-		} else if (this._focusedElementBeforeOpen.offsetParent) { // when the element is visible, we can try to set focus to it directly.
+		if (this._focusedElementBeforeOpen && this._focusedElementBeforeOpen.offsetParent) { // when the element is visible, we can try to set focus to it directly.
 			this._focusedElementBeforeOpen.focus();
-		} else if (this._focusedElementBeforeOpen.tagName === 'A' && this._focusedElementBeforeOpen.classList.contains('action-label')) {
-			// workaround for the scenario where the original focus was on the action buttons in the viewlet header
-			// the buttons are hidden if the focus is not on the view, we need to first set the focus on the header to make the action buttons appear
-			// and then set the focus to the button.
-			let element = this._focusedElementBeforeOpen;
-			do {
-				element = element.parentElement;
-			} while (element && !element.classList.contains('pane-header'));
-
-			if (element) {
-				element.focus();
-				this._focusedElementBeforeOpen.focus();
-			}
 		}
 
 	}
