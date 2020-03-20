@@ -157,7 +157,7 @@ export abstract class AzureAuth {
 	}
 
 
-	public async getSecurityToken(account: azdata.Account, azureResource: azdata.AzureResource): Promise<TokenResponse> {
+	public async getSecurityToken(account: azdata.Account, azureResource: azdata.AzureResource): Promise<TokenResponse | undefined> {
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 		if (!resource) {
 			return undefined;

@@ -97,7 +97,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		return this._getSecurityToken(account, resource);
 	}
 
-	private async _getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<TokenResponse> {
+	private async _getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<TokenResponse | undefined> {
 		await this.initCompletePromise;
 		const azureAuth = this.getAuthMethod(undefined);
 		return azureAuth?.getSecurityToken(account, resource);
