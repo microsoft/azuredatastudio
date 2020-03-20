@@ -48,11 +48,10 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { joinPath } from 'vs/base/common/resources';
 
 
-
-
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
 const telemetryFrom = 'welcomePage';
+
 
 export class WelcomePageContribution implements IWorkbenchContribution {
 	constructor(
@@ -109,6 +108,7 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 		}
 	}
 }
+
 
 function isWelcomePageEnabled(configurationService: IConfigurationService, contextService: IWorkspaceContextService) {
 	const startupEditor = configurationService.inspect(configurationKey);
@@ -258,7 +258,7 @@ class WelcomePage extends Disposable {
 	public openEditor() {
 		return this.editorService.openEditor(this.editorInput, { pinned: false });
 	}
-	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>, fileService): void {
+	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>, fileService: IFileService): void {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
 		const showOnStartup = <HTMLInputElement>container.querySelector('#showOnStartup');
 		if (enabled) {
@@ -502,7 +502,7 @@ class WelcomePage extends Disposable {
 
 	private async createListEntries(fileService: IFileService, fullPath: URI, windowOpenable: IWindowOpenable, relativePath: string): Promise<HTMLElement[]> {
 		let li: HTMLElement[];
-		await fileService.resolve(fullPath).then((value: any): void | HTMLElement => {
+		fileService.resolve(fullPath).then((value: any): void | HTMLElement => {
 			let date = new Date(value.mtime);
 			let mtime: Date = date;
 			const options = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
@@ -543,7 +543,7 @@ class WelcomePage extends Disposable {
 	}
 
 
-	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService): Promise<HTMLElement[]> {
+	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService: IFileService): Promise<HTMLElement[]> {
 		const result: HTMLElement[] = [];
 		for (let i = 0; i < recents.length; i++) {
 			const recent = recents[i];
