@@ -323,6 +323,41 @@ suite('Notebook Find Model', function (): void {
 		assert.equal(notebookFindModel.findMatches.length, 0, 'Find failed to apply match whole word for //');
 	});
 
+	test('Should find results in the code cell on markdown edit', async function (): Promise<void> {
+		let markdownContent: nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Markdown,
+				source: ['SOP067 - INTERNAL - Install azdata CLI - release candidate', '==========================================================', 'Steps', '-----', '### Parameters'],
+				metadata: { language: 'python' },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'mssql',
+					language: 'sql'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		await initNotebookModel(markdownContent);
+
+		// Need to set rendered text content for 1st cell
+		setRenderedTextContent(0);
+
+		let notebookFindModel = new NotebookFindModel(model);
+		await notebookFindModel.find('SOP', false, false, max_find_count);
+
+		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed on markdown');
+
+		// fire the edit mode on cell
+		model.cells[0].isEditMode = true;
+		notebookFindModel = new NotebookFindModel(model);
+		await notebookFindModel.find('SOP', false, false, max_find_count);
+
+		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed on markdown edit');
+	});
+
 
 	async function initNotebookModel(contents: nb.INotebookContents): Promise<void> {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
