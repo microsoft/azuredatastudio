@@ -81,25 +81,6 @@ suite('Query Input Factory', () => {
 		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active editor connection exists');
 	});
 
-
-	test('untitled query editor input is connected if global connection exists (Editor)', async () => {
-		const instantiationService = workbenchInstantiationService();
-		const editorService = new MockEditorService(instantiationService);
-		const connectionManagementService = new MockConnectionManagementService();
-		instantiationService.stub(IObjectExplorerService, new MockObjectExplorerService());
-		instantiationService.stub(IConnectionManagementService, connectionManagementService);
-		instantiationService.stub(IEditorService, editorService);
-		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
-		const accessor = instantiationService.createInstance(ServiceAccessor);
-		const service = accessor.untitledTextEditorService;
-
-		const input = instantiationService.createInstance(UntitledTextEditorInput, service.create());
-		const response = queryEditorLanguageAssociation.convertInput(input);
-		assert(isThenable(response));
-		await response;
-		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active editor connection exists');
-	});
-
 	test('sync query editor input is not connected if no global connection exists', () => {
 		const instantiationService = workbenchInstantiationService();
 		const editorService = new MockEditorService();
