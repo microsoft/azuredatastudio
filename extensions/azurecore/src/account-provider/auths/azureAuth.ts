@@ -436,6 +436,14 @@ export abstract class AzureAuth {
 		}
 	}
 
+	public async deleteAllCache(): Promise<void> {
+		const results = await this.tokenCache.findCredentials('');
+
+		for (let { account } of results) {
+			await this.tokenCache.clearCredential(account);
+		}
+	}
+
 	public createAccount(tokenClaims: TokenClaims, key: string, tenants: Tenant[]): AzureAccount {
 		// Determine if this is a microsoft account
 		let accountIssuer = 'unknown';

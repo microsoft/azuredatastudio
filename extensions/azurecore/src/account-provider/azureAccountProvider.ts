@@ -42,7 +42,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	clearTokenCache(): Thenable<void> {
-		throw new Error('Method not implemented.');
+		return this.getAuthMethod().deleteAllCache();
 	}
 
 	private handleAuthMapping(metadata: AzureAccountProviderMetadata, tokenCache: SimpleTokenCache, context: vscode.ExtensionContext) {

@@ -122,7 +122,7 @@ export class SimpleTokenCache {
 			// Override how findCredentials works
 			keytar.getPasswords = async (service: string): Promise<MultipleAccountsResponse> => {
 				const [serviceName, accountPrefix] = service.split(separator);
-				if (!serviceName || !accountPrefix) {
+				if (serviceName === undefined || accountPrefix === undefined) {
 					throw new Error('Service did not have seperator: ' + service);
 				}
 
