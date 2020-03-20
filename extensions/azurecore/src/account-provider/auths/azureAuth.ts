@@ -169,19 +169,20 @@ export abstract class AzureAuth {
 			let cachedTokens = await this.getCachedToken(account.key, resource.id, tenant.id);
 			// Check expiration
 			if (cachedTokens) {
-				const expiresOn = Number(this.memdb.get(`${account.key.accountId}_${tenant.id}_${resource.id}`));
+				const expiresOn = Number(this.memdb.get(this.createMemdbString(account.key.accountId, tenant.id, resource.id)));
 				const currentTime = new Date().getTime() / 1000;
 
 				if (!Number.isNaN(expiresOn)) {
 					const remainingTime = expiresOn - currentTime;
-					// expired
-					if (remainingTime < 5 * 60) {
+					const fiveMinutes = 5 * 60;
+					// If the remaining time is less than five minutes, assume the token has expired. It's too close to expiration to be meaningful.
+					if (remainingTime < fiveMinutes) {
 						cachedTokens = undefined;
 					}
 				} else {
 					// No expiration date, assume expired.
 					cachedTokens = undefined;
-					console.log('Assuming expired token');
+					console.info('Assuming expired token due to no expiration date - this is expected on first launch.');
 				}
 
 			}
@@ -329,7 +330,7 @@ export abstract class AzureAuth {
 				key: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name,
 			};
 
-			this.memdb.set(`${accessToken.key}_${tenant}_${resourceId}`, tokenResponse.data.expires_on);
+			this.memdb.set(this.createMemdbString(accessToken.key, tenant, resourceId), tokenResponse.data.expires_on);
 
 			const refreshToken: RefreshToken = {
 				token: tokenResponse.data.refresh_token,
@@ -351,7 +352,7 @@ export abstract class AzureAuth {
 			const split = accessToken.split('.');
 			return JSON.parse(Buffer.from(split[1], 'base64').toString('binary'));
 		} catch (ex) {
-			throw new Error('Unable to read token claims');
+			throw new Error('Unable to read token claims: ' + JSON.stringify(ex));
 		}
 	}
 
@@ -426,6 +427,10 @@ export abstract class AzureAuth {
 			refreshToken
 		};
 
+	}
+
+	public createMemdbString(accountKey: string, tenantId: string, resourceId: string): string {
+		return `${accountKey}_${tenantId}_${resourceId}`;
 	}
 
 	public async deleteAccountCache(account: azdata.AccountKey): Promise<void> {

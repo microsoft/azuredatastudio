@@ -160,6 +160,6 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 	autoOAuthCancelled(): Thenable<void> {
 		this.authMappings.forEach(val => val.autoOAuthCancelled());
-		return undefined;
+		return Promise.resolve();
 	}
 }
