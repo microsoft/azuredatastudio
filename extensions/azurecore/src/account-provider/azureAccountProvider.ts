@@ -108,6 +108,9 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	private async _prompt(): Promise<azdata.Account | azdata.PromptFailedResult> {
+		const noAuthSelected = localize('azure.NoAuthMethod.Selected', "No Azure auth method selected. You must select what method of authentication you want to use.");
+		const noAuthAvailable = localize('azure.NoAuthMethod.Available', "No Azure auth method available. You must enable the auth methods in ADS configuration.");
+
 		await this.initCompletePromise;
 		class Option implements vscode.QuickPickItem {
 			public readonly label: string;
@@ -117,10 +120,9 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		}
 
 		if (this.authMappings.size === 0) {
-			const msg = localize('azure.NoAuthMethod', "No Azure auth method selected");
-			console.log('noAuthMethodSelected');
-			await vscode.window.showErrorMessage(msg);
-			return { canceled: false };
+			console.log('No auth method was enabled.');
+			await vscode.window.showErrorMessage(noAuthAvailable);
+			return { canceled: true };
 		}
 
 		if (this.authMappings.size === 1) {
@@ -133,6 +135,12 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		});
 
 		const pick = await vscode.window.showQuickPick(options, { canPickMany: false });
+
+		if (!pick) {
+			console.log('No auth method was selected.');
+			await vscode.window.showErrorMessage(noAuthSelected);
+			return { canceled: true };
+		}
 
 		return pick.azureAuth.login();
 	}

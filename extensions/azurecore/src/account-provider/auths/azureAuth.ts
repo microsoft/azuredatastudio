@@ -224,8 +224,8 @@ export abstract class AzureAuth {
 			return this.deleteAccountCache(account);
 		} catch (ex) {
 			const msg = localize('azure.cacheErrrorRemove', "Error when removing your account from the cache.");
+			vscode.window.showErrorMessage(msg);
 			console.error('Error when removing tokens.', ex);
-			throw new Error(msg);
 		}
 	}
 
