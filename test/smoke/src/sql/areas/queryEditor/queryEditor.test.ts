@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Application } from '../../../../automation';
+import { Application } from '../../../../../automation';
 import { promises as fs } from 'fs';
 import * as os from 'os';
 import * as path from 'path';

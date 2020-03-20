@@ -22,8 +22,7 @@ import {
 } from '../../automation';
 
 //{{SQL CARBON EDIT}}
-import { setup as runProfilerTests } from './sql/profiler/profiler.test';
-import { setup as runQueryEditorTests } from './sql/queryEditor/queryEditor.test';
+import { main as sqlMain } from './sql/main';
 
 //Original
 /*
@@ -330,6 +329,5 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	if (!opts.web) { setupDataMultirootTests(); }
 	if (!opts.web) { setupDataLocalizationTests(); }
 	if (!opts.web) { setupLaunchTests(); }*/
-	runProfilerTests(); // {{SQL CARBON EDIT}} add our tests
-	runQueryEditorTests(); // {{SQL CARBON EDIT}} add our tests
+	sqlMain();
 });
