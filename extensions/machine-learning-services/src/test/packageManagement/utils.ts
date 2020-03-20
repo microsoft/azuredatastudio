@@ -12,6 +12,7 @@ import { ProcessService } from '../../common/processService';
 import { Config } from '../../configurations/config';
 import { HttpClient } from '../../common/httpClient';
 import * as utils from '../utils';
+import { PackageManagementService } from '../../packageManagement/packageManagementService';
 
 export interface TestContext {
 
@@ -23,6 +24,7 @@ export interface TestContext {
 	op: azdata.BackgroundOperation;
 	getOpStatus: () => azdata.TaskStatus;
 	httpClient: TypeMoq.IMock<HttpClient>;
+	serverConfigManager: TypeMoq.IMock<PackageManagementService>;
 }
 
 export function createContext(): TestContext {
@@ -37,6 +39,7 @@ export function createContext(): TestContext {
 		config: TypeMoq.Mock.ofType(Config),
 		httpClient: TypeMoq.Mock.ofType(HttpClient),
 		op: context.op,
-		getOpStatus: context.getOpStatus
+		getOpStatus: context.getOpStatus,
+		serverConfigManager: TypeMoq.Mock.ofType(PackageManagementService)
 	};
 }

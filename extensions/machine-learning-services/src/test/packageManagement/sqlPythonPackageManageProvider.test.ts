@@ -40,7 +40,7 @@ describe('SQL Python Package Manager', () => {
 
 		let connection = new azdata.connection.ConnectionProfile();
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
-		testContext.queryRunner.setup(x => x.getPythonPackages(TypeMoq.It.isAny())).returns(() => Promise.resolve(packages));
+		testContext.serverConfigManager.setup(x => x.getPythonPackages(TypeMoq.It.isAny())).returns(() => Promise.resolve(packages));
 
 		let provider = createProvider(testContext);
 		let actual = await provider.listPackages();
@@ -72,7 +72,7 @@ describe('SQL Python Package Manager', () => {
 
 		let connection = new azdata.connection.ConnectionProfile();
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
-		testContext.queryRunner.setup(x => x.getPythonPackages(TypeMoq.It.isAny())).returns(() => Promise.resolve(packages));
+		testContext.serverConfigManager.setup(x => x.getPythonPackages(TypeMoq.It.isAny())).returns(() => Promise.resolve(packages));
 
 		let provider = createProvider(testContext);
 		let actual = await provider.listPackages();
@@ -95,7 +95,7 @@ describe('SQL Python Package Manager', () => {
 		let connection = new azdata.connection.ConnectionProfile();
 		let packages: nbExtensionApis.IPackageDetails[];
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
-		testContext.queryRunner.setup(x => x.getPythonPackages(TypeMoq.It.isAny())).returns(() => Promise.resolve(packages));
+		testContext.serverConfigManager.setup(x => x.getPythonPackages(TypeMoq.It.isAny())).returns(() => Promise.resolve(packages));
 
 		let provider = createProvider(testContext);
 		let actual = await provider.listPackages();
@@ -108,7 +108,7 @@ describe('SQL Python Package Manager', () => {
 
 		let connection = new azdata.connection.ConnectionProfile();
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
-		testContext.queryRunner.setup(x => x.getPythonPackages(TypeMoq.It.isAny())).returns(() => Promise.resolve([]));
+		testContext.serverConfigManager.setup(x => x.getPythonPackages(TypeMoq.It.isAny())).returns(() => Promise.resolve([]));
 
 		let provider = createProvider(testContext);
 		let actual = await provider.listPackages();
@@ -298,7 +298,7 @@ describe('SQL Python Package Manager', () => {
 
 		let connection = new azdata.connection.ConnectionProfile();
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
-		testContext.queryRunner.setup(x => x.isPythonInstalled(TypeMoq.It.isAny())).returns(() => Promise.resolve(false));
+		testContext.serverConfigManager.setup(x => x.isPythonInstalled(TypeMoq.It.isAny())).returns(() => Promise.resolve(false));
 
 		let provider = createProvider(testContext);
 		let actual = await provider.canUseProvider();
@@ -311,7 +311,7 @@ describe('SQL Python Package Manager', () => {
 
 		let connection = new azdata.connection.ConnectionProfile();
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
-		testContext.queryRunner.setup(x => x.isPythonInstalled(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
+		testContext.serverConfigManager.setup(x => x.isPythonInstalled(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 
 		let provider = createProvider(testContext);
 		let actual = await provider.canUseProvider();
@@ -390,7 +390,7 @@ describe('SQL Python Package Manager', () => {
 		return new SqlPythonPackageManageProvider(
 			testContext.outputChannel,
 			testContext.apiWrapper.object,
-			testContext.queryRunner.object,
+			testContext.serverConfigManager.object,
 			testContext.processService.object,
 			testContext.config.object,
 			testContext.httpClient.object);

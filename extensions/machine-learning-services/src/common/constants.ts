@@ -50,6 +50,9 @@ export function taskFailedError(taskName: string, err: string): string { return 
 export const installDependenciesMsgTaskName = localize('mls.installDependencies.msgTaskName', "Installing Machine Learning extension dependencies");
 export const noResultError = localize('mls.noResultError', "No Result returned");
 export const requiredPackagesNotInstalled = localize('mls.requiredPackagesNotInstalled', "The required dependencies are not installed");
+export const confirmEnableExternalScripts = localize('mls.confirmEnableExternalScripts', "External script is required for package management. Are you sure you want to enable that.");
+export const enableExternalScriptsError = localize('mls.enableExternalScriptsError', "Failed to enable External script.");
+export const externalScriptsIsRequiredError = localize('mls.externalScriptsIsRequiredError', "External script configuration is required for this action.");
 export function confirmInstallPythonPackages(packages: string): string {
 	return localize('mls.installDependencies.confirmInstallPythonPackages'
 		, "The following Python packages are required to install: {0}. Are you sure you want to install?", packages);
@@ -61,7 +64,6 @@ export const noConnectionError = localize('mls.packageManager.NoConnection', "No
 export const notebookExtensionNotLoaded = localize('mls.notebookExtensionNotLoaded', "Notebook extension is not loaded");
 export const mssqlExtensionNotLoaded = localize('mls.mssqlExtensionNotLoaded', "MSSQL extension is not loaded");
 export const mlsEnabledMessage = localize('mls.enabledMessage', "Machine Learning Services Enabled");
-export const mlsDisabledMessage = localize('mls.disabledMessage', "Machine Learning Services Disabled");
 export const mlsConfigUpdateFailed = localize('mls.configUpdateFailed', "Failed to modify Machine Learning Services configurations");
 export const mlsEnableButtonTitle = localize('mls.enableButtonTitle', "Enable");
 export const mlsDisableButtonTitle = localize('mls.disableButtonTitle', "Disable");
@@ -94,7 +96,7 @@ export const extLangLanguagePlatform = localize('extLang.languagePlatform', "Pla
 export const deleteTitle = localize('extLang.delete', "Delete");
 export const extLangInstallButtonText = localize('extLang.installButtonText', "Install");
 export const extLangCancelButtonText = localize('extLang.CancelButtonText', "Cancel");
-export const extLangDoneButtonText = localize('extLang.DoneButtonText', "Done");
+export const extLangDoneButtonText = localize('extLang.DoneButtonText', "Close");
 export const extLangOkButtonText = localize('extLang.OkButtonText', "OK");
 export const extLangSaveButtonText = localize('extLang.SaveButtonText', "Save");
 export const extLangLanguageName = localize('extLang.languageName', "Name");
@@ -141,9 +143,10 @@ export const columnSelectionPageTitle = localize('models.columnSelectionPageTitl
 export const modelDetailsPageTitle = localize('models.modelDetailsPageTitle', "Provide model details");
 export const modelLocalSourceTitle = localize('models.modelLocalSourceTitle', "Source file");
 export const currentModelsTitle = localize('models.currentModelsTitle', "Models");
-export const azureRegisterModel = localize('models.azureRegisterModel', "Register");
+export const azureRegisterModel = localize('models.azureRegisterModel', "Deploy");
 export const predictModel = localize('models.predictModel', "Predict");
-export const registerModelTitle = localize('models.RegisterWizard', "Register model");
+export const registerModelTitle = localize('models.RegisterWizard', "Deployed models");
+export const deployModelTitle = localize('models.deployModelTitle', "Deploy models");
 export const makePredictionTitle = localize('models.makePredictionTitle', "Make prediction");
 export const modelRegisteredSuccessfully = localize('models.modelRegisteredSuccessfully', "Model registered successfully");
 export const modelFailedToRegister = localize('models.modelFailedToRegistered', "Model failed to register");

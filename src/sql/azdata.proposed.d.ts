@@ -129,7 +129,8 @@ declare module 'azdata' {
 	 * Add OssRdbms for sqlops AzureResource.
 	 */
 	export enum AzureResource {
-		OssRdbms = 2
+		OssRdbms = 2,
+		AzureKeyVault = 3
 	}
 
 	export interface ModelBuilder {
