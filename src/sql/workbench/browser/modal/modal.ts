@@ -404,10 +404,9 @@ export abstract class Modal extends Disposable implements IThemable {
 	}
 
 	private restoreKeyboardFocus() {
-		if (this._focusedElementBeforeOpen && this._focusedElementBeforeOpen.offsetParent) { // when the element is visible, we can try to set focus to it directly.
+		if (this._focusedElementBeforeOpen) {
 			this._focusedElementBeforeOpen.focus();
 		}
-
 	}
 
 	/**
