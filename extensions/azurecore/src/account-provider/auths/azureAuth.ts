@@ -25,7 +25,7 @@ const localize = nls.loadMessageBundle();
 
 export interface AccountKey {
 	/**
-	 * Account Key
+	 * Account Key - uniquely identifies an account
 	 */
 	key: string
 }
@@ -229,7 +229,7 @@ export abstract class AzureAuth {
 		}
 	}
 
-	protected toBase64UrlEncoding(base64string: string) {
+	protected toBase64UrlEncoding(base64string: string): string {
 		return base64string.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_'); // Need to use base64url encoding
 	}
 
@@ -341,7 +341,8 @@ export abstract class AzureAuth {
 		} catch (err) {
 			console.dir(err);
 			const msg = localize('azure.noToken', "Retrieving the token failed.");
-			throw new Error(msg);
+			vscode.window.showErrorMessage(msg);
+			throw new Error(err);
 		}
 	}
 
