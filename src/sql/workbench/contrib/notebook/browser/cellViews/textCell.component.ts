@@ -25,7 +25,6 @@ import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/no
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/services/notebook/browser/outputs/sanitizer';
 import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
-import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { NotebookRange, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 
@@ -128,15 +127,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	get activeCellId(): string {
 		return this._activeCellId;
-	}
-	/**
-	 * Returns the code editor of makrdown cell in edit mode.
-	 */
-	getEditor(): BaseTextEditor | undefined {
-		if (this.markdowncodeCell.length > 0) {
-			return this.markdowncodeCell.first.getEditor();
-		}
-		return undefined;
 	}
 
 	private setLoading(isLoading: boolean): void {
