@@ -9,7 +9,7 @@ import * as os from 'os';
 import * as path from 'path';
 
 export function setup() {
-	describe('Query Editor Test Suite', () => {
+	describe('Query Editor', () => {
 
 		it('Can open and edit existing file', async function () {
 			const testFilePath = path.join(os.tmpdir(), 'QueryEditorSmokeTest.sql');
@@ -23,6 +23,13 @@ export function setup() {
 			finally {
 				await fs.unlink(testFilePath);
 			}
+		});
+
+		it('Can open and connect file', async function () {
+			const app = this.app as Application;
+			await app.workbench.queryEditors.openFile('www');
+			await app.workbench.queryEditor.commandBar.clickButton(3);
+			await app.workbench.connectionDialog.waitForConnectionDialog();
 		});
 	});
 }
