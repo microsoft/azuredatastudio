@@ -2274,7 +2274,7 @@ declare module 'azdata' {
 		 * @param resource The resource to get the token for
 		 * @return Promise to return a security token object
 		 */
-		getSecurityToken(account: Account, resource: AzureResource): Thenable<{}>;
+		getSecurityToken(account: Account, resource: AzureResource): Thenable<{} | undefined>;
 
 		/**
 		 * Prompts the user to enter account information.

@@ -93,7 +93,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 
-	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}> {
+	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<TokenResponse | undefined> {
 		return this._getSecurityToken(account, resource);
 	}
 
