@@ -324,10 +324,10 @@ export class EditDataEditor extends BaseEditor {
 		KeybindingsRegistry.registerCommandAndKeybindingRule({
 			id: 'editData.actions.showQueryPane',
 			weight: KeybindingWeight.WorkbenchContrib + 50,
-			handler: accessor => this.toggleQueryPane(),
+			handler: accessor => this._showQueryPaneAction.run(),
 			when: queryContext.QueryEditorVisibleContext,
-			primary: KeyMod.CtrlCmd | KeyCode.US_QUOTE,
-			mac: { primary: KeyMod.WinCtrl | KeyCode.US_QUOTE }
+			primary: KeyMod.CtrlCmd | KeyCode.KEY_2,
+			mac: { primary: KeyMod.WinCtrl | KeyCode.KEY_2 }
 		});
 
 		// Create HTML Elements for the taskbar
