@@ -60,7 +60,7 @@ export class ScriptAction extends Action {
 	public async run(element: TaskNode): Promise<boolean> {
 		if (element instanceof TaskNode) {
 			if (element.script && element.script !== '') {
-				this._queryEditorService.newSqlEditor(element.script);
+				this._queryEditorService.newSqlEditor({ initalContent: element.script });
 			}
 		}
 		return true;
