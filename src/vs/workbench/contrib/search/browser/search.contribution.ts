@@ -470,20 +470,21 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerContext, {
 
 
 class ShowAllSymbolsAction extends Action {
+
 	static readonly ID = 'workbench.action.showAllSymbols';
 	static readonly LABEL = nls.localize('showTriggerActions', "Go to Symbol in Workspace...");
 	static readonly ALL_SYMBOLS_PREFIX = '#';
 
 	constructor(
-		actionId: string, actionLabel: string,
+		actionId: string,
+		actionLabel: string,
 		@IQuickOpenService private readonly quickOpenService: IQuickOpenService,
-		@ICodeEditorService private readonly editorService: ICodeEditorService) {
+		@ICodeEditorService private readonly editorService: ICodeEditorService
+	) {
 		super(actionId, actionLabel);
-		this.enabled = !!this.quickOpenService;
 	}
 
-	run(context?: any): Promise<void> {
-
+	async run(): Promise<void> {
 		let prefix = ShowAllSymbolsAction.ALL_SYMBOLS_PREFIX;
 		let inputSelection: { start: number; end: number; } | undefined = undefined;
 		const editor = this.editorService.getFocusedCodeEditor();
@@ -494,8 +495,6 @@ class ShowAllSymbolsAction extends Action {
 		}
 
 		this.quickOpenService.show(prefix, { inputSelection });
-
-		return Promise.resolve(undefined);
 	}
 }
 
@@ -661,7 +660,7 @@ quickAccessRegistry.registerQuickAccessProvider({
 	ctor: AnythingQuickAccessProvider,
 	prefix: AnythingQuickAccessProvider.PREFIX,
 	placeholder: nls.localize('anythingQuickAccessPlaceholder', "Type '?' to get help on the actions you can take from here"),
-	contextKey: 'inFilesPicker',
+	contextKey: defaultQuickOpenContextKey,
 	helpEntries: [{ description: nls.localize('anythingQuickAccess', "Go to File"), needsEditor: false }]
 });
 
@@ -733,17 +732,6 @@ configurationRegistry.registerConfiguration({
 			type: 'boolean',
 			description: nls.localize('search.quickOpen.includeSymbols', "Whether to include results from a global symbol search in the file results for Quick Open."),
 			default: false
-		},
-		'search.quickOpen.workspaceSymbolsFilter': {
-			type: 'string',
-			enum: ['default', 'reduced', 'all'],
-			markdownEnumDescriptions: [
-				nls.localize('search.quickOpen.workspaceSymbolsFilter.default', "All symbols including local variables are included in the specific workspace symbols picker but excluded from the files picker when `#search.quickOpen.includeSymbols#` is enabled."),
-				nls.localize('search.quickOpen.workspaceSymbolsFilter.reduced', "Some symbols like local variables are excluded in all pickers."),
-				nls.localize('search.quickOpen.workspaceSymbolsFilter.all', "All symbols including local variables are included in all pickers.")
-			],
-			default: 'default',
-			description: nls.localize('search.quickOpen.workspaceSymbolsFilter', "Controls the filter to apply for the workspace symbols search in quick open. Depending on the setting, some symbols like local variables will be excluded to reduce the total number of results."),
 		},
 		'search.quickOpen.includeHistory': {
 			type: 'boolean',

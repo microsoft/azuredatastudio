@@ -40,6 +40,26 @@ declare module 'vscode' {
 		readonly removed: string[];
 	}
 
+	/**
+	* An [event](#Event) which fires when an [AuthenticationSession](#AuthenticationSession) is added, removed, or changed.
+	*/
+	export interface AuthenticationSessionsChangeEvent {
+		/**
+		 * The ids of the [AuthenticationSession](#AuthenticationSession)s that have been added.
+		*/
+		readonly added: string[];
+
+		/**
+		 * The ids of the [AuthenticationSession](#AuthenticationSession)s that have been removed.
+		 */
+		readonly removed: string[];
+
+		/**
+		 * The ids of the [AuthenticationSession](#AuthenticationSession)s that have been changed.
+		 */
+		readonly changed: string[];
+	}
+
 	export interface AuthenticationProvider {
 		/**
 		 * Used as an identifier for extensions trying to work with a particular
@@ -53,7 +73,7 @@ declare module 'vscode' {
 		 * An [event](#Event) which fires when the array of sessions has changed, or data
 		 * within a session has changed.
 		 */
-		readonly onDidChangeSessions: Event<void>;
+		readonly onDidChangeSessions: Event<AuthenticationSessionsChangeEvent>;
 
 		/**
 		 * Returns an array of current sessions.
@@ -99,7 +119,7 @@ declare module 'vscode' {
 		* within a session has changed for a provider. Fires with the ids of the providers
 		* that have had session data change.
 		*/
-		export const onDidChangeSessions: Event<string[]>;
+		export const onDidChangeSessions: Event<{ [providerId: string]: AuthenticationSessionsChangeEvent }>;
 	}
 
 	//#endregion
@@ -1874,12 +1894,9 @@ declare module 'vscode' {
 	export interface Timeline {
 		readonly paging?: {
 			/**
-			 * A set of provider-defined cursors specifing the range of timeline items returned.
+			 * A provider-defined cursor specifing the starting point of timeline items which are after the ones returned.
 			 */
-			readonly cursors: {
-				readonly before: string;
-				readonly after?: string
-			};
+			readonly cursor?: string
 
 			/**
 			 * A flag which indicates whether there are more items that weren't returned.
@@ -1895,19 +1912,15 @@ declare module 'vscode' {
 
 	export interface TimelineOptions {
 		/**
-		 * A provider-defined cursor specifing the range of timeline items that should be returned.
+		 * A provider-defined cursor specifing the starting point of the timeline items that should be returned.
 		 */
 		cursor?: string;
 
 		/**
-		 * A flag to specify whether the timeline items being requested should be before or after (default) the provided cursor.
+		 * An optional maximum number timeline items or the all timeline items newer (inclusive) than the timestamp or id that should be returned.
+		 * If `undefined` all timeline items should be returned.
 		 */
-		before?: boolean;
-
-		/**
-		 * The maximum number or the ending cursor of timeline items that should be returned.
-		 */
-		limit?: number | { cursor: string };
+		limit?: number | { timestamp: number; id?: string };
 	}
 
 	export interface TimelineProvider {

@@ -53,6 +53,7 @@ export class AnythingQuickAccessProvider extends PickerQuickAccessProvider<IAnyt
 	private static readonly TYPING_SEARCH_DELAY = 200; // this delay accommodates for the user typing a word and then stops typing to start searching
 
 	private readonly pickState = new class {
+
 		scorerCache: ScorerCache = Object.create(null);
 		fileQueryCache: FileQueryCacheState | undefined = undefined;
 
@@ -60,15 +61,20 @@ export class AnythingQuickAccessProvider extends PickerQuickAccessProvider<IAnyt
 		lastFilter: string | undefined = undefined;
 		lastRange: IRange | undefined = undefined;
 
+		isQuickNavigating: boolean | undefined = undefined;
+
 		constructor(private readonly provider: AnythingQuickAccessProvider) { }
 
-		reset(): void {
+		reset(isQuickNavigating: boolean): void {
 
 			// Caches
-			this.fileQueryCache = this.provider.createFileQueryCache();
-			this.scorerCache = Object.create(null);
+			if (!isQuickNavigating) {
+				this.fileQueryCache = this.provider.createFileQueryCache();
+				this.scorerCache = Object.create(null);
+			}
 
 			// Other
+			this.isQuickNavigating = isQuickNavigating;
 			this.lastOriginalFilter = undefined;
 			this.lastFilter = undefined;
 			this.lastRange = undefined;
@@ -102,7 +108,6 @@ export class AnythingQuickAccessProvider extends PickerQuickAccessProvider<IAnyt
 			openEditorPinned: !editorConfig.enablePreviewFromQuickOpen,
 			openSideBySideDirection: editorConfig.openSideBySideDirection,
 			includeSymbols: searchConfig.search.quickOpen.includeSymbols,
-			workspaceSymbolsFilter: searchConfig.search.quickOpen.workspaceSymbolsFilter,
 			includeHistory: searchConfig.search.quickOpen.includeHistory,
 			shortAutoSaveDelay: this.filesConfigurationService.getAutoSaveMode() === AutoSaveMode.AFTER_SHORT_DELAY
 		};
@@ -111,7 +116,7 @@ export class AnythingQuickAccessProvider extends PickerQuickAccessProvider<IAnyt
 	provide(picker: IQuickPick<IAnythingQuickPickItem>, token: CancellationToken): IDisposable {
 
 		// Reset the pick state for this run
-		this.pickState.reset();
+		this.pickState.reset(!!picker.quickNavigate);
 
 		// Start picker
 		return super.provide(picker, token);
@@ -152,11 +157,13 @@ export class AnythingQuickAccessProvider extends PickerQuickAccessProvider<IAnyt
 		return {
 
 			// Fast picks: editor history
-			picks: historyEditorPicks.length > 0 ?
-				[
-					{ type: 'separator', label: localize('recentlyOpenedSeparator', "recently opened") },
-					...historyEditorPicks
-				] : [],
+			picks:
+				(this.pickState.isQuickNavigating || historyEditorPicks.length === 0) ?
+					historyEditorPicks :
+					[
+						{ type: 'separator', label: localize('recentlyOpenedSeparator', "recently opened") },
+						...historyEditorPicks
+					],
 
 			// Slow picks: files and symbols
 			additionalPicks: (async (): Promise<Array<IAnythingQuickPickItem | IQuickPickSeparator>> => {
@@ -223,7 +230,7 @@ export class AnythingQuickAccessProvider extends PickerQuickAccessProvider<IAnyt
 
 	private readonly labelOnlyEditorHistoryPickAccessor = new QuickPickItemScorerAccessor({ skipDescription: true });
 
-	protected getEditorHistoryPicks(query: IPreparedQuery): Array<IAnythingQuickPickItem> {
+	private getEditorHistoryPicks(query: IPreparedQuery): Array<IAnythingQuickPickItem> {
 		const configuration = this.configuration;
 
 		// Just return all history entries if not searching
@@ -282,7 +289,7 @@ export class AnythingQuickAccessProvider extends PickerQuickAccessProvider<IAnyt
 		).load();
 	}
 
-	protected async getFilePicks(query: IPreparedQuery, excludes: ResourceMap<boolean>, token: CancellationToken): Promise<Array<IAnythingQuickPickItem>> {
+	private async getFilePicks(query: IPreparedQuery, excludes: ResourceMap<boolean>, token: CancellationToken): Promise<Array<IAnythingQuickPickItem>> {
 		if (!query.value) {
 			return [];
 		}
@@ -444,7 +451,7 @@ export class AnythingQuickAccessProvider extends PickerQuickAccessProvider<IAnyt
 
 	private symbolsQuickAccess = this._register(this.instantiationService.createInstance(SymbolsQuickAccessProvider));
 
-	protected async getSymbolPicks(query: IPreparedQuery, token: CancellationToken): Promise<Array<IAnythingQuickPickItem>> {
+	private async getSymbolPicks(query: IPreparedQuery, token: CancellationToken): Promise<Array<IAnythingQuickPickItem>> {
 		const configuration = this.configuration;
 		if (
 			!query.value ||						// we need a value for search for
@@ -457,7 +464,7 @@ export class AnythingQuickAccessProvider extends PickerQuickAccessProvider<IAnyt
 		// Delegate to the existing symbols quick access
 		// but skip local results and also do not sort
 		return this.symbolsQuickAccess.getSymbolPicks(query.value, {
-			skipLocal: configuration.workspaceSymbolsFilter !== 'all',
+			skipLocal: true,
 			skipSorting: true,
 			delay: AnythingQuickAccessProvider.TYPING_SEARCH_DELAY
 		}, token);
@@ -497,6 +504,10 @@ export class AnythingQuickAccessProvider extends PickerQuickAccessProvider<IAnyt
 			description,
 			iconClasses: getIconClasses(this.modelService, this.modeService, resource),
 			buttons: (() => {
+				if (this.pickState.isQuickNavigating) {
+					return undefined; // no actions when quick navigating
+				}
+
 				const openSideBySideDirection = configuration.openSideBySideDirection;
 				const buttons: IQuickInputButton[] = [];
 
