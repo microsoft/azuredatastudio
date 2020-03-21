@@ -49,8 +49,9 @@ import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/br
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { NAV_SECTION } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardNavSection.contribution';
-import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
+import { IColorTheme } from 'vs/platform/theme/common/themeService';
 
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);

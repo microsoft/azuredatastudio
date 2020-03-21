@@ -4,16 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { equals } from 'vs/base/common/arrays';
+import { CancellationToken } from 'vs/base/common/cancellation';
 import { memoize } from 'vs/base/common/decorators';
+import { Iterable } from 'vs/base/common/iterator';
 import { Lazy } from 'vs/base/common/lazy';
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
-import { values } from 'vs/base/common/map';
 import { isEqual } from 'vs/base/common/resources';
-import { EditorActivation, IEditorModel } from 'vs/platform/editor/common/editor';
+import { EditorActivation } from 'vs/platform/editor/common/editor';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { createDecorator, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { GroupIdentifier } from 'vs/workbench/common/editor';
-import { IWebviewService, WebviewContentOptions, WebviewEditorOverlay, WebviewExtensionDescription, WebviewIcons, WebviewOptions } from 'vs/workbench/contrib/webview/browser/webview';
+import { IWebviewService, WebviewContentOptions, WebviewExtensionDescription, WebviewIcons, WebviewOptions, WebviewOverlay } from 'vs/workbench/contrib/webview/browser/webview';
 import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { ACTIVE_GROUP_TYPE, IEditorService, SIDE_GROUP_TYPE } from 'vs/workbench/services/editor/common/editorService';
 import { WebviewInput } from './webviewEditorInput';
@@ -35,6 +36,7 @@ export function areWebviewInputOptionsEqual(a: WebviewInputOptions, b: WebviewIn
 	return a.enableCommandUris === b.enableCommandUris
 		&& a.enableFindWidget === b.enableFindWidget
 		&& a.allowScripts === b.allowScripts
+		&& a.allowMultipleAPIAcquire === b.allowMultipleAPIAcquire
 		&& a.retainContextWhenHidden === b.retainContextWhenHidden
 		&& a.tryRestoreScrollPosition === b.tryRestoreScrollPosition
 		&& equals(a.localResourceRoots, b.localResourceRoots, isEqual)
@@ -90,6 +92,7 @@ export interface WebviewResolver {
 
 	resolveWebview(
 		webview: WebviewInput,
+		cancellation: CancellationToken,
 	): Promise<void>;
 }
 
@@ -106,17 +109,31 @@ export class LazilyResolvedWebviewEditorInput extends WebviewInput {
 		id: string,
 		viewType: string,
 		name: string,
-		webview: Lazy<WebviewEditorOverlay>,
+		webview: Lazy<WebviewOverlay>,
 		@IWebviewService webviewService: IWebviewService,
 		@IWebviewWorkbenchService private readonly _webviewWorkbenchService: IWebviewWorkbenchService,
 	) {
 		super(id, viewType, name, webview, webviewService);
 	}
 
+	#resolved = false;
+
 	@memoize
-	public async resolve(): Promise<IEditorModel> {
-		await this._webviewWorkbenchService.resolveWebview(this);
+	public async resolve() {
+		if (!this.#resolved) {
+			this.#resolved = true;
+			await this._webviewWorkbenchService.resolveWebview(this);
+		}
 		return super.resolve();
+	}
+
+	protected transfer(other: LazilyResolvedWebviewEditorInput): WebviewInput | undefined {
+		if (!super.transfer(other)) {
+			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+		}
+
+		other.#resolved = this.#resolved;
+		return other;
 	}
 }
 
@@ -128,12 +145,12 @@ class RevivalPool {
 		this._awaitingRevival.push({ input, resolve });
 	}
 
-	public reviveFor(reviver: WebviewResolver) {
+	public reviveFor(reviver: WebviewResolver, cancellation: CancellationToken) {
 		const toRevive = this._awaitingRevival.filter(({ input }) => canRevive(reviver, input));
 		this._awaitingRevival = this._awaitingRevival.filter(({ input }) => !canRevive(reviver, input));
 
 		for (const { input, resolve } of toRevive) {
-			reviver.resolveWebview(input).then(resolve);
+			reviver.resolveWebview(input, cancellation).then(resolve);
 		}
 	}
 }
@@ -160,7 +177,7 @@ export class WebviewEditorService implements IWebviewWorkbenchService {
 		options: WebviewInputOptions,
 		extension: WebviewExtensionDescription | undefined,
 	): WebviewInput {
-		const webview = new Lazy(() => this.createWebiew(id, extension, options));
+		const webview = new Lazy(() => this.createWebviewElement(id, extension, options));
 		const webviewInput = this._instantiationService.createInstance(WebviewInput, id, viewType, title, webview);
 		this._editorService.openEditor(webviewInput, {
 			pinned: true,
@@ -203,7 +220,7 @@ export class WebviewEditorService implements IWebviewWorkbenchService {
 		group: number | undefined,
 	): WebviewInput {
 		const webview = new Lazy(() => {
-			const webview = this.createWebiew(id, extension, options);
+			const webview = this.createWebviewElement(id, extension, options);
 			webview.state = state;
 			return webview;
 		});
@@ -221,7 +238,7 @@ export class WebviewEditorService implements IWebviewWorkbenchService {
 		reviver: WebviewResolver
 	): IDisposable {
 		this._revivers.add(reviver);
-		this._revivalPool.reviveFor(reviver);
+		this._revivalPool.reviveFor(reviver, CancellationToken.None);
 
 		return toDisposable(() => {
 			this._revivers.delete(reviver);
@@ -231,7 +248,7 @@ export class WebviewEditorService implements IWebviewWorkbenchService {
 	public shouldPersist(
 		webview: WebviewInput
 	): boolean {
-		if (values(this._revivers).some(reviver => canRevive(reviver, webview))) {
+		if (Iterable.some(this._revivers.values(), reviver => canRevive(reviver, webview))) {
 			return true;
 		}
 
@@ -243,9 +260,9 @@ export class WebviewEditorService implements IWebviewWorkbenchService {
 	private async tryRevive(
 		webview: WebviewInput
 	): Promise<boolean> {
-		for (const reviver of values(this._revivers)) {
+		for (const reviver of this._revivers.values()) {
 			if (canRevive(reviver, webview)) {
-				await reviver.resolveWebview(webview);
+				await reviver.resolveWebview(webview, CancellationToken.None);
 				return true;
 			}
 		}
@@ -265,8 +282,12 @@ export class WebviewEditorService implements IWebviewWorkbenchService {
 		}
 	}
 
-	private createWebiew(id: string, extension: WebviewExtensionDescription | undefined, options: WebviewInputOptions) {
-		const webview = this._webviewService.createWebviewEditorOverlay(id, {
+	private createWebviewElement(
+		id: string,
+		extension: WebviewExtensionDescription | undefined,
+		options: WebviewInputOptions
+	) {
+		const webview = this._webviewService.createWebviewOverlay(id, {
 			enableFindWidget: options.enableFindWidget,
 			retainContextWhenHidden: options.retainContextWhenHidden
 		}, options);

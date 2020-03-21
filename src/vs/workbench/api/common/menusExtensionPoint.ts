@@ -56,6 +56,7 @@ namespace schema {
 			case 'comments/commentThread/context': return MenuId.CommentThreadActions;
 			case 'comments/comment/title': return MenuId.CommentTitle;
 			case 'comments/comment/context': return MenuId.CommentActions;
+			case 'notebook/cell/title': return MenuId.NotebookCellTitle;
 			case 'extension/context': return MenuId.ExtensionContext;
 			case 'dashboard/toolbar': return MenuId.DashboardToolbar;
 			case 'timeline/title': return MenuId.TimelineTitle;
@@ -215,6 +216,11 @@ namespace schema {
 			},
 			'comments/comment/context': {
 				description: localize('comment.actions', "The contributed comment context menu, rendered as buttons below the comment editor"),
+				type: 'array',
+				items: menuItem
+			},
+			'notebook/cell/title': {
+				description: localize('notebook.cell.title', "The contributed notebook cell title menu"),
 				type: 'array',
 				items: menuItem
 			},

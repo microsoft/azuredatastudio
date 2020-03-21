@@ -59,6 +59,7 @@
 		"./vs/workbench/services/credentials/**/*.ts", // 3087
 		"./vs/workbench/services/dialogs/**/*.ts", // 3087
 		"./vs/workbench/services/editor/**/*.ts", // 3087
+		"./vs/workbench/services/electron/**/*.ts", // 3087
 		"./vs/workbench/services/environment/**/*.ts", // 3087
 		"./vs/workbench/services/extensionManagement/**/*.ts", // 3087
 		"./vs/workbench/services/extensions/**/*.ts", // 3287
@@ -67,12 +68,14 @@
 		"./vs/workbench/services/host/**/*.ts", // 3087
 		"./vs/workbench/services/keybinding/**/*.ts",  // 3087
 		"./vs/workbench/services/label/**/*.ts",  // 3087
+		"./vs/workbench/services/lifecycle/**/*.ts", // 3087
 		"./vs/workbench/services/output/**/*.ts", // 3087
 		"./vs/workbench/services/path/**/*.ts", // 3087
 		"./vs/workbench/services/preferences/**/*.ts", // 3087
 		"./vs/workbench/services/progress/**/*.ts", // 3087
 		"./vs/workbench/services/remote/**/*.ts", // 3087
 		"./vs/workbench/services/search/**/*.ts", // 3087
+		"./vs/workbench/services/sharedProcess/**/*.ts", // 3087
 		"./vs/workbench/services/telemetry/**/*.ts", // 3087
 		"./vs/workbench/services/textfile/**/*.ts", // 3087
 		"./vs/workbench/services/textmodelResolver/**/*.ts", // 3087

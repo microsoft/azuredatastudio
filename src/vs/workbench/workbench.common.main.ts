@@ -27,7 +27,6 @@ import 'vs/workbench/browser/actions/workspaceActions';
 import 'vs/workbench/browser/actions/workspaceCommands';
 
 import 'vs/workbench/browser/parts/quickopen/quickOpenActions';
-import 'vs/workbench/browser/parts/quickinput/quickInputActions';
 
 //#endregion
 
@@ -43,9 +42,7 @@ import 'vs/workbench/api/browser/viewsExtensionPoint';
 
 //#region --- workbench parts
 
-import 'vs/workbench/browser/parts/quickinput/quickInput';
 import 'vs/workbench/browser/parts/quickopen/quickOpenController';
-import 'vs/workbench/browser/parts/titlebar/titlebarPart';
 import 'vs/workbench/browser/parts/editor/editorPart';
 import 'vs/workbench/browser/parts/activitybar/activitybarPart';
 import 'vs/workbench/browser/parts/panel/panelPart';
@@ -88,6 +85,7 @@ import 'vs/workbench/services/workingCopy/common/workingCopyService';
 import 'vs/workbench/services/workingCopy/common/workingCopyFileService';
 import 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
 import 'vs/workbench/services/views/browser/viewDescriptorService';
+import 'vs/workbench/services/quickinput/browser/quickInputService';
 
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
@@ -247,11 +245,17 @@ import 'vs/workbench/contrib/preferences/browser/preferences.contribution';
 import 'vs/workbench/contrib/preferences/browser/keybindingsEditorContribution';
 import 'vs/workbench/contrib/preferences/browser/preferencesSearch';
 
+// Notebook
+import 'vs/workbench/contrib/notebook/browser/notebook.contribution';
+
 // Logs
 import 'vs/workbench/contrib/logs/common/logs.contribution';
 
 // Quick Open Handlers
 import 'vs/workbench/contrib/quickopen/browser/quickopen.contribution';
+
+// Quick Access Providers
+import 'vs/workbench/contrib/quickaccess/browser/quickAccess.contribution';
 
 // Explorer
 import 'vs/workbench/contrib/files/browser/explorerViewlet';
@@ -465,5 +469,11 @@ import 'sql/workbench/contrib/restore/browser/restore.contribution';
 
 // Scripting
 import 'sql/workbench/contrib/scripting/browser/scripting.contribution';
+
+// Resource Deployment
+import 'sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution';
+
+// Extension
+import 'sql/workbench/contrib/extensions/browser/extensions.contribution';
 
 //#endregion

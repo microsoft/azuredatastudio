@@ -21,6 +21,7 @@ import { Emitter } from 'vs/base/common/event';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IThemable } from 'vs/base/common/styler';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
+import { localize } from 'vs/nls';
 
 export class DialogPane extends Disposable implements IThemable {
 	private _tabbedPanel: TabbedPanel;
@@ -45,6 +46,10 @@ export class DialogPane extends Disposable implements IThemable {
 		public description?: string,
 	) {
 		super();
+	}
+
+	public get pageNumberDisplayText(): string {
+		return localize('wizardPageNumberDisplayText', "Step {0}", this.pageNumber);
 	}
 
 	public createBody(container: HTMLElement): HTMLElement {

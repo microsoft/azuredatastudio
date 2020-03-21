@@ -49,12 +49,18 @@ jobs:
     #   name: Download Built-in Extensions
     - run: DISPLAY=:10 ./scripts/test.sh --tfs "Unit Tests" --coverage --runGlob "**/sql/**/*.test.js"
       name: Run Unit Tests (Electron)
-    # {{SQL CARBON EDIT}} Add coveralls
-    - name: Coveralls GitHub Action
+    - run: DISPLAY=:10 ./scripts/test-extensions-unit.sh
+      name: Run Extension Unit Tests (Electron)
+    # {{SQL CARBON EDIT}} Add coveralls. We merge first to get around issue where parallel builds weren't being combined correctly
+    - run: |
+        mkdir .build/coverage-combined
+        cat .build/coverage-single/lcov.info ./extensions/admin-tool-ext-win/coverage/lcov.info ./extensions/agent/coverage/lcov.info ./extensions/azurecore/coverage/lcov.info ./extensions/cms/coverage/lcov.info ./extensions/dacpac/coverage/lcov.info ./extensions/schema-compare/coverage/lcov.info ./extensions/notebook/coverage/lcov.info ./extensions/resource-deployment/coverage/lcov.info ./extensions/machine-learning-services/coverage/lcov.info > .build/coverage-combined/lcov.info
+      name: Merge coverage reports
+    - name: Upload Code Coverage
       uses: coverallsapp/github-action@v1.0.1
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: '.build/coverage-single/lcov.info'
+        path-to-lcov: '.build/coverage-combined/lcov.info'
 
     # Fails with cryptic error (e.g. https://github.com/microsoft/vscode/pull/90292/checks?check_run_id=433681926#step:13:9)
     # - run: DISPLAY=:10 yarn test-browser --browser chromium

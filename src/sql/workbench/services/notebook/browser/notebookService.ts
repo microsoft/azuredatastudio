@@ -19,7 +19,7 @@ import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { Range } from 'vs/editor/common/core/range';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 
-export const SERVICE_ID = 'notebookService';
+export const SERVICE_ID = 'sqlNotebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
 
 export const DEFAULT_NOTEBOOK_PROVIDER = 'builtin';
@@ -112,6 +112,13 @@ export interface INotebookService {
 	 * @param sectionId ID of the section to navigate to
 	 */
 	navigateTo(notebookUri: URI, sectionId: string): void;
+
+	/**
+	 * Sets the trusted mode for the sepcified notebook.
+	 * @param notebookUri URI of the notebook to navigate to
+	 * @param isTrusted True if notebook is to be set to trusted, false otherwise.
+	 */
+	setTrusted(notebookUri: URI, isTrusted: boolean): Promise<boolean>;
 }
 
 export interface INotebookProvider {

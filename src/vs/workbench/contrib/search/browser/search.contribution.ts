@@ -47,14 +47,17 @@ import { getWorkspaceSymbols } from 'vs/workbench/contrib/search/common/search';
 import { ISearchHistoryService, SearchHistoryService } from 'vs/workbench/contrib/search/common/searchHistoryService';
 import { FileMatchOrMatch, ISearchWorkbenchService, RenderableMatch, SearchWorkbenchService, FileMatch, Match, FolderMatch } from 'vs/workbench/contrib/search/common/searchModel';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { VIEWLET_ID, VIEW_ID, SearchSortOrder } from 'vs/workbench/services/search/common/search';
+import { VIEWLET_ID, VIEW_ID, SEARCH_EXCLUDE_CONFIG, SearchSortOrder } from 'vs/workbench/services/search/common/search';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { ExplorerViewPaneContainer } from 'vs/workbench/contrib/files/browser/explorerViewlet';
 import { assertType, assertIsDefined } from 'vs/base/common/types';
-import { SearchViewPaneContainer } from 'vs/workbench/contrib/search/browser/searchViewlet';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { SearchEditor } from 'vs/workbench/contrib/searchEditor/browser/searchEditor';
+import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { IQuickAccessRegistry, Extensions as QuickAccessExtensions } from 'vs/platform/quickinput/common/quickAccess';
+import { SymbolsQuickAccessProvider } from 'vs/workbench/contrib/search/browser/symbolsQuickAccess';
+import { AnythingQuickAccessProvider } from 'vs/workbench/contrib/search/browser/anythingQuickAccess';
 
 registerSingleton(ISearchWorkbenchService, SearchWorkbenchService, true);
 registerSingleton(ISearchHistoryService, SearchHistoryService, true);
@@ -72,10 +75,23 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	handler: accessor => {
 		const contextService = accessor.get(IContextKeyService).getContext(document.activeElement);
 		if (contextService.getValue(SearchEditorConstants.InSearchEditor.serialize())) {
-			(accessor.get(IEditorService).activeControl as SearchEditor).toggleQueryDetails();
+			(accessor.get(IEditorService).activeEditorPane as SearchEditor).toggleQueryDetails();
 		} else if (contextService.getValue(Constants.SearchViewFocusedKey.serialize())) {
 			const searchView = getSearchView(accessor.get(IViewsService));
 			assertIsDefined(searchView).toggleQueryDetails();
+		}
+	}
+});
+
+KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: 'workbench.action.searchEditor.deleteResultBlock',
+	weight: KeybindingWeight.WorkbenchContrib,
+	when: SearchEditorConstants.InSearchEditor,
+	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.Backspace,
+	handler: accessor => {
+		const contextService = accessor.get(IContextKeyService).getContext(document.activeElement);
+		if (contextService.getValue(SearchEditorConstants.InSearchEditor.serialize())) {
+			(accessor.get(IEditorService).activeEditorPane as SearchEditor).deleteResultBlock();
 		}
 	}
 });
@@ -486,7 +502,7 @@ class ShowAllSymbolsAction extends Action {
 const viewContainer = Registry.as<IViewContainersRegistry>(ViewExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
 	name: nls.localize('name', "Search"),
-	ctorDescriptor: new SyncDescriptor(SearchViewPaneContainer),
+	ctorDescriptor: new SyncDescriptor(ViewPaneContainer, [VIEWLET_ID, `${VIEWLET_ID}.state`, { mergeViewWithContainerWhenSingleView: true, donotShowContainerTitleWhenMergedWithContainer: true }]),
 	hideIfEmpty: true,
 	icon: 'codicon-search',
 	order: 1
@@ -638,6 +654,25 @@ Registry.as<IQuickOpenRegistry>(QuickOpenExtensions.Quickopen).registerQuickOpen
 	)
 );
 
+// Register Quick Access Handler
+const quickAccessRegistry = Registry.as<IQuickAccessRegistry>(QuickAccessExtensions.Quickaccess);
+
+quickAccessRegistry.registerQuickAccessProvider({
+	ctor: AnythingQuickAccessProvider,
+	prefix: AnythingQuickAccessProvider.PREFIX,
+	placeholder: nls.localize('anythingQuickAccessPlaceholder', "Type '?' to get help on the actions you can take from here"),
+	contextKey: 'inFilesPicker',
+	helpEntries: [{ description: nls.localize('anythingQuickAccess', "Go to File"), needsEditor: false }]
+});
+
+quickAccessRegistry.registerQuickAccessProvider({
+	ctor: SymbolsQuickAccessProvider,
+	prefix: SymbolsQuickAccessProvider.PREFIX,
+	placeholder: nls.localize('symbolsQuickAccessPlaceholder', "Type the name of a symbol to open."),
+	contextKey: 'inWorkspaceSymbolsPicker',
+	helpEntries: [{ description: nls.localize('symbolsQuickAccess', "Go to Symbol in Workspace"), needsEditor: false }]
+});
+
 // Configuration
 const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration);
 configurationRegistry.registerConfiguration({
@@ -646,9 +681,9 @@ configurationRegistry.registerConfiguration({
 	title: nls.localize('searchConfigurationTitle', "Search"),
 	type: 'object',
 	properties: {
-		'search.exclude': {
+		[SEARCH_EXCLUDE_CONFIG]: {
 			type: 'object',
-			markdownDescription: nls.localize('exclude', "Configure glob patterns for excluding files and folders in searches. Inherits all glob patterns from the `#files.exclude#` setting. Read more about glob patterns [here](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options)."),
+			markdownDescription: nls.localize('exclude', "Configure glob patterns for excluding files and folders in fulltext searches and quick open. Inherits all glob patterns from the `#files.exclude#` setting. Read more about glob patterns [here](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options)."),
 			default: { '**/node_modules': true, '**/bower_components': true, '**/*.code-search': true },
 			additionalProperties: {
 				anyOf: [
@@ -699,6 +734,17 @@ configurationRegistry.registerConfiguration({
 			description: nls.localize('search.quickOpen.includeSymbols', "Whether to include results from a global symbol search in the file results for Quick Open."),
 			default: false
 		},
+		'search.quickOpen.workspaceSymbolsFilter': {
+			type: 'string',
+			enum: ['default', 'reduced', 'all'],
+			markdownEnumDescriptions: [
+				nls.localize('search.quickOpen.workspaceSymbolsFilter.default', "All symbols including local variables are included in the specific workspace symbols picker but excluded from the files picker when `#search.quickOpen.includeSymbols#` is enabled."),
+				nls.localize('search.quickOpen.workspaceSymbolsFilter.reduced', "Some symbols like local variables are excluded in all pickers."),
+				nls.localize('search.quickOpen.workspaceSymbolsFilter.all', "All symbols including local variables are included in all pickers.")
+			],
+			default: 'default',
+			description: nls.localize('search.quickOpen.workspaceSymbolsFilter', "Controls the filter to apply for the workspace symbols search in quick open. Depending on the setting, some symbols like local variables will be excluded to reduce the total number of results."),
+		},
 		'search.quickOpen.includeHistory': {
 			type: 'boolean',
 			description: nls.localize('search.quickOpen.includeHistory', "Whether to include results from recently opened files in the file results for Quick Open."),
@@ -731,7 +777,7 @@ configurationRegistry.registerConfiguration({
 			type: 'string',
 			enum: ['auto', 'alwaysCollapse', 'alwaysExpand'],
 			enumDescriptions: [
-				'Files with less than 10 results are expanded. Others are collapsed.',
+				nls.localize('search.collapseResults.auto', "Files with less than 10 results are expanded. Others are collapsed."),
 				'',
 				''
 			],

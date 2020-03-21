@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/fileactions';
 import * as nls from 'vs/nls';
 import { isWindows, isWeb } from 'vs/base/common/platform';
 import * as extpath from 'vs/base/common/extpath';
@@ -100,7 +99,7 @@ export class NewFileAction extends Action {
 		}));
 	}
 
-	run(): Promise<any> {
+	run(): Promise<void> {
 		return this.commandService.executeCommand(NEW_FILE_COMMAND_ID);
 	}
 }
@@ -122,7 +121,7 @@ export class NewFolderAction extends Action {
 		}));
 	}
 
-	run(): Promise<any> {
+	run(): Promise<void> {
 		return this.commandService.executeCommand(NEW_FOLDER_COMMAND_ID);
 	}
 }
@@ -161,8 +160,8 @@ export class GlobalNewUntitledFileAction extends Action {
 		super(id, label);
 	}
 
-	run(): Promise<any> {
-		return this.editorService.openEditor({ options: { pinned: true } }); // untitled are always pinned
+	async run(): Promise<void> {
+		await this.editorService.openEditor({ options: { pinned: true } }); // untitled are always pinned
 	}
 }
 
@@ -457,7 +456,7 @@ export function incrementFileName(name: string, isFolder: boolean, incrementalNa
 
 	// folder.1=>folder.2
 	if (isFolder && name.match(/(\d+)$/)) {
-		return name.replace(/(\d+)$/, (match: string, ...groups: any[]) => {
+		return name.replace(/(\d+)$/, (match, ...groups) => {
 			let number = parseInt(groups[0]);
 			return number < maxNumber
 				? strings.pad(number + 1, groups[0].length)
@@ -467,7 +466,7 @@ export function incrementFileName(name: string, isFolder: boolean, incrementalNa
 
 	// 1.folder=>2.folder
 	if (isFolder && name.match(/^(\d+)/)) {
-		return name.replace(/^(\d+)(.*)$/, (match: string, ...groups: any[]) => {
+		return name.replace(/^(\d+)(.*)$/, (match, ...groups) => {
 			let number = parseInt(groups[0]);
 			return number < maxNumber
 				? strings.pad(number + 1, groups[0].length) + groups[1]
@@ -495,7 +494,7 @@ export class GlobalCompareResourcesAction extends Action {
 		super(id, label);
 	}
 
-	async run(): Promise<any> {
+	async run(): Promise<void> {
 		const activeInput = this.editorService.activeEditor;
 		const activeResource = activeInput ? activeInput.resource : undefined;
 		if (activeResource) {
@@ -541,7 +540,7 @@ export class ToggleAutoSaveAction extends Action {
 		super(id, label);
 	}
 
-	run(): Promise<any> {
+	run(): Promise<void> {
 		return this.filesConfigurationService.toggleAutoSave();
 	}
 }
@@ -564,7 +563,7 @@ export abstract class BaseSaveAllAction extends Action {
 		this.registerListeners();
 	}
 
-	protected abstract doRun(context: any): Promise<any>;
+	protected abstract doRun(context: unknown): Promise<void>;
 
 	private registerListeners(): void {
 
@@ -580,7 +579,7 @@ export abstract class BaseSaveAllAction extends Action {
 		}
 	}
 
-	async run(context?: any): Promise<void> {
+	async run(context?: unknown): Promise<void> {
 		try {
 			await this.doRun(context);
 		} catch (error) {
@@ -598,7 +597,7 @@ export class SaveAllAction extends BaseSaveAllAction {
 		return 'explorer-action codicon-save-all';
 	}
 
-	protected doRun(context: any): Promise<any> {
+	protected doRun(): Promise<void> {
 		return this.commandService.executeCommand(SAVE_ALL_COMMAND_ID);
 	}
 }
@@ -612,7 +611,7 @@ export class SaveAllInGroupAction extends BaseSaveAllAction {
 		return 'explorer-action codicon-save-all';
 	}
 
-	protected doRun(context: any): Promise<any> {
+	protected doRun(context: unknown): Promise<void> {
 		return this.commandService.executeCommand(SAVE_ALL_IN_GROUP_COMMAND_ID, {}, context);
 	}
 }
@@ -626,7 +625,7 @@ export class CloseGroupAction extends Action {
 		super(id, label, 'codicon-close-all');
 	}
 
-	run(context?: any): Promise<any> {
+	run(context?: unknown): Promise<void> {
 		return this.commandService.executeCommand(CLOSE_EDITORS_AND_GROUP_COMMAND_ID, {}, context);
 	}
 }
@@ -644,8 +643,8 @@ export class FocusFilesExplorer extends Action {
 		super(id, label);
 	}
 
-	run(): Promise<any> {
-		return this.viewletService.openViewlet(VIEWLET_ID, true);
+	async run(): Promise<void> {
+		await this.viewletService.openViewlet(VIEWLET_ID, true);
 	}
 }
 
@@ -664,15 +663,13 @@ export class ShowActiveFileInExplorer extends Action {
 		super(id, label);
 	}
 
-	async run(): Promise<any> {
+	async run(): Promise<void> {
 		const resource = toResource(this.editorService.activeEditor, { supportSideBySide: SideBySideEditor.MASTER });
 		if (resource) {
 			this.commandService.executeCommand(REVEAL_IN_EXPLORER_COMMAND_ID, resource);
 		} else {
 			this.notificationService.info(nls.localize('openFileToShow', "Open a file first to show it in the explorer"));
 		}
-
-		return true;
 	}
 }
 
@@ -693,7 +690,7 @@ export class CollapseExplorerView extends Action {
 		}));
 	}
 
-	async run(): Promise<any> {
+	async run(): Promise<void> {
 		const explorerViewlet = (await this.viewletService.openViewlet(VIEWLET_ID))?.getViewPaneContainer() as ExplorerViewPaneContainer;
 		const explorerView = explorerViewlet.getExplorerView();
 		if (explorerView) {
@@ -720,7 +717,7 @@ export class RefreshExplorerView extends Action {
 		}));
 	}
 
-	async run(): Promise<any> {
+	async run(): Promise<void> {
 		await this.viewletService.openViewlet(VIEWLET_ID);
 		this.explorerService.refresh();
 	}
@@ -742,7 +739,7 @@ export class ShowOpenedFileInNewWindow extends Action {
 		super(id, label);
 	}
 
-	async run(): Promise<any> {
+	async run(): Promise<void> {
 		const fileResource = toResource(this.editorService.activeEditor, { supportSideBySide: SideBySideEditor.MASTER });
 		if (fileResource) {
 			if (this.fileService.canHandleResource(fileResource)) {
@@ -753,23 +750,27 @@ export class ShowOpenedFileInNewWindow extends Action {
 		} else {
 			this.notificationService.info(nls.localize('openFileToShowInNewWindow.nofile', "Open a file first to open in new window"));
 		}
-
-		return true;
 	}
 }
 
-export function validateFileName(item: ExplorerItem, name: string): string | null {
+export function validateFileName(item: ExplorerItem, name: string): { content: string, severity: Severity } | null {
 	// Produce a well formed file name
 	name = getWellFormedFileName(name);
 
 	// Name not provided
 	if (!name || name.length === 0 || /^\s+$/.test(name)) {
-		return nls.localize('emptyFileNameError', "A file or folder name must be provided.");
+		return {
+			content: nls.localize('emptyFileNameError', "A file or folder name must be provided."),
+			severity: Severity.Error
+		};
 	}
 
 	// Relative paths only
 	if (name[0] === '/' || name[0] === '\\') {
-		return nls.localize('fileNameStartsWithSlashError', "A file or folder name cannot start with a slash.");
+		return {
+			content: nls.localize('fileNameStartsWithSlashError', "A file or folder name cannot start with a slash."),
+			severity: Severity.Error
+		};
 	}
 
 	const names = coalesce(name.split(/[\\/]/));
@@ -779,14 +780,27 @@ export function validateFileName(item: ExplorerItem, name: string): string | nul
 		// Do not allow to overwrite existing file
 		const child = parent?.getChild(name);
 		if (child && child !== item) {
-			return nls.localize('fileNameExistsError', "A file or folder **{0}** already exists at this location. Please choose a different name.", name);
+			return {
+				content: nls.localize('fileNameExistsError', "A file or folder **{0}** already exists at this location. Please choose a different name.", name),
+				severity: Severity.Error
+			};
 		}
 	}
 
 	// Invalid File name
 	const windowsBasenameValidity = item.resource.scheme === Schemas.file && isWindows;
 	if (names.some((folderName) => !extpath.isValidBasename(folderName, windowsBasenameValidity))) {
-		return nls.localize('invalidFileNameError', "The name **{0}** is not valid as a file or folder name. Please choose a different name.", trimLongName(name));
+		return {
+			content: nls.localize('invalidFileNameError', "The name **{0}** is not valid as a file or folder name. Please choose a different name.", trimLongName(name)),
+			severity: Severity.Error
+		};
+	}
+
+	if (names.some(name => /^\s|\s$/.test(name))) {
+		return {
+			content: nls.localize('fileNameWhitespaceWarning', "Leading or trailing whitespace detected in file or folder name."),
+			severity: Severity.Warning
+		};
 	}
 
 	return null;
@@ -808,7 +822,7 @@ export function getWellFormedFileName(filename: string): string {
 	// Trim tabs
 	filename = strings.trim(filename, '\t');
 
-	// Remove trailing dots, slashes, and spaces
+	// Remove trailing dots and slashes
 	filename = strings.rtrim(filename, '.');
 	filename = strings.rtrim(filename, '/');
 	filename = strings.rtrim(filename, '\\');
@@ -838,7 +852,7 @@ export class CompareWithClipboardAction extends Action {
 		this.enabled = true;
 	}
 
-	async run(): Promise<any> {
+	async run(): Promise<void> {
 		const resource = toResource(this.editorService.activeEditor, { supportSideBySide: SideBySideEditor.MASTER });
 		if (resource && (this.fileService.canHandleResource(resource) || resource.scheme === Schemas.untitled)) {
 			if (!this.registrationDisposal) {
@@ -849,13 +863,11 @@ export class CompareWithClipboardAction extends Action {
 			const name = resources.basename(resource);
 			const editorLabel = nls.localize('clipboardComparisonLabel', "Clipboard ↔ {0}", name);
 
-			return this.editorService.openEditor({ leftResource: resource.with({ scheme: CompareWithClipboardAction.SCHEME }), rightResource: resource, label: editorLabel }).finally(() => {
+			await this.editorService.openEditor({ leftResource: resource.with({ scheme: CompareWithClipboardAction.SCHEME }), rightResource: resource, label: editorLabel }).finally(() => {
 				dispose(this.registrationDisposal);
 				this.registrationDisposal = undefined;
 			});
 		}
-
-		return true;
 	}
 
 	dispose(): void {
@@ -880,7 +892,7 @@ class ClipboardContentProvider implements ITextModelContentProvider {
 	}
 }
 
-function onErrorWithRetry(notificationService: INotificationService, error: any, retry: () => Promise<any>): void {
+function onErrorWithRetry(notificationService: INotificationService, error: unknown, retry: () => Promise<unknown>): void {
 	notificationService.prompt(Severity.Error, toErrorMessage(error, false),
 		[{
 			label: nls.localize('retry', "Retry"),

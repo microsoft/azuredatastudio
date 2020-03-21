@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Emitter, Event } from 'vs/base/common/event';
-import { Disposable, IDisposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import * as platform from 'vs/base/common/platform';
 import * as errors from 'vs/base/common/errors';
 import { URI } from 'vs/base/common/uri';
@@ -207,11 +207,22 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 		};
 	}
 
+	private _getEOL(resource: URI | undefined, language: string): string {
+		if (resource) {
+			return this._resourcePropertiesService.getEOL(resource, language);
+		}
+		const eol = this._configurationService.getValue<string>('files.eol', { overrideIdentifier: language });
+		if (eol && eol !== 'auto') {
+			return eol;
+		}
+		return platform.OS === platform.OperatingSystem.Linux || platform.OS === platform.OperatingSystem.Macintosh ? '\n' : '\r\n';
+	}
+
 	public getCreationOptions(language: string, resource: URI | undefined, isForSimpleWidget: boolean): ITextModelCreationOptions {
 		let creationOptions = this._modelCreationOptionsByLanguageAndResource[language + resource];
 		if (!creationOptions) {
 			const editor = this._configurationService.getValue<IRawEditorConfig>('editor', { overrideIdentifier: language, resource });
-			const eol = this._resourcePropertiesService.getEOL(resource, language);
+			const eol = this._getEOL(resource, language);
 			creationOptions = ModelServiceImpl._readModelOptions({ editor, eol }, isForSimpleWidget);
 			this._modelCreationOptionsByLanguageAndResource[language + resource] = creationOptions;
 		}
@@ -455,15 +466,16 @@ class SemanticColoringFeature extends Disposable {
 
 	private _watchers: Record<string, ModelSemanticColoring>;
 	private _semanticStyling: SemanticStyling;
-	private _configurationService: IConfigurationService;
 
 	constructor(modelService: IModelService, themeService: IThemeService, configurationService: IConfigurationService, logService: ILogService) {
 		super();
-		this._configurationService = configurationService;
 		this._watchers = Object.create(null);
 		this._semanticStyling = this._register(new SemanticStyling(themeService, logService));
 
 		const isSemanticColoringEnabled = (model: ITextModel) => {
+			if (!themeService.getColorTheme().semanticHighlighting) {
+				return false;
+			}
 			const options = configurationService.getValue<IEditorSemanticHighlightingOptions>(SemanticColoringFeature.SETTING_ID, { overrideIdentifier: model.getLanguageIdentifier().language, resource: model.uri });
 			return options && options.enabled;
 		};
@@ -473,6 +485,20 @@ class SemanticColoringFeature extends Disposable {
 		const deregister = (model: ITextModel, modelSemanticColoring: ModelSemanticColoring) => {
 			modelSemanticColoring.dispose();
 			delete this._watchers[model.uri.toString()];
+		};
+		const handleSettingOrThemeChange = () => {
+			for (let model of modelService.getModels()) {
+				const curr = this._watchers[model.uri.toString()];
+				if (isSemanticColoringEnabled(model)) {
+					if (!curr) {
+						register(model);
+					}
+				} else {
+					if (curr) {
+						deregister(model, curr);
+					}
+				}
+			}
 		};
 		this._register(modelService.onModelAdded((model) => {
 			if (isSemanticColoringEnabled(model)) {
@@ -485,22 +511,12 @@ class SemanticColoringFeature extends Disposable {
 				deregister(model, curr);
 			}
 		}));
-		this._configurationService.onDidChangeConfiguration(e => {
+		this._register(configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration(SemanticColoringFeature.SETTING_ID)) {
-				for (let model of modelService.getModels()) {
-					const curr = this._watchers[model.uri.toString()];
-					if (isSemanticColoringEnabled(model)) {
-						if (!curr) {
-							register(model);
-						}
-					} else {
-						if (curr) {
-							deregister(model, curr);
-						}
-					}
-				}
+				handleSettingOrThemeChange();
 			}
-		});
+		}));
+		this._register(themeService.onDidColorThemeChange(handleSettingOrThemeChange));
 	}
 }
 
@@ -514,12 +530,9 @@ class SemanticStyling extends Disposable {
 	) {
 		super();
 		this._caches = new WeakMap<DocumentSemanticTokensProvider, SemanticColoringProviderStyling>();
-		if (this._themeService) {
-			// workaround for tests which use undefined... :/
-			this._register(this._themeService.onThemeChange(() => {
-				this._caches = new WeakMap<DocumentSemanticTokensProvider, SemanticColoringProviderStyling>();
-			}));
-		}
+		this._register(this._themeService.onDidColorThemeChange(() => {
+			this._caches = new WeakMap<DocumentSemanticTokensProvider, SemanticColoringProviderStyling>();
+		}));
 	}
 
 	public get(provider: DocumentSemanticTokensProvider): SemanticColoringProviderStyling {
@@ -651,7 +664,7 @@ class SemanticColoringProviderStyling {
 				modifierSet = modifierSet >> 1;
 			}
 
-			const tokenStyle = this._themeService.getTheme().getTokenStyleMetadata(tokenType, tokenModifiers);
+			const tokenStyle = this._themeService.getColorTheme().getTokenStyleMetadata(tokenType, tokenModifiers);
 			if (typeof tokenStyle === 'undefined') {
 				metadata = Constants.NO_STYLING;
 			} else {
@@ -724,6 +737,7 @@ class ModelSemanticColoring extends Disposable {
 	private readonly _fetchSemanticTokens: RunOnceScheduler;
 	private _currentResponse: SemanticTokensResponse | null;
 	private _currentRequestCancellationTokenSource: CancellationTokenSource | null;
+	private _providersChangeListeners: IDisposable[];
 
 	constructor(model: ITextModel, themeService: IThemeService, stylingProvider: SemanticStyling) {
 		super();
@@ -734,21 +748,34 @@ class ModelSemanticColoring extends Disposable {
 		this._fetchSemanticTokens = this._register(new RunOnceScheduler(() => this._fetchSemanticTokensNow(), 300));
 		this._currentResponse = null;
 		this._currentRequestCancellationTokenSource = null;
+		this._providersChangeListeners = [];
 
 		this._register(this._model.onDidChangeContent(e => {
 			if (!this._fetchSemanticTokens.isScheduled()) {
 				this._fetchSemanticTokens.schedule();
 			}
 		}));
-		this._register(DocumentSemanticTokensProviderRegistry.onDidChange(e => this._fetchSemanticTokens.schedule()));
-		if (themeService) {
-			// workaround for tests which use undefined... :/
-			this._register(themeService.onThemeChange(_ => {
-				// clear out existing tokens
-				this._setSemanticTokens(null, null, null, []);
-				this._fetchSemanticTokens.schedule();
-			}));
-		}
+		const bindChangeListeners = () => {
+			dispose(this._providersChangeListeners);
+			this._providersChangeListeners = [];
+			for (const provider of DocumentSemanticTokensProviderRegistry.all(model)) {
+				if (typeof provider.onDidChange === 'function') {
+					this._providersChangeListeners.push(provider.onDidChange(() => this._fetchSemanticTokens.schedule(0)));
+				}
+			}
+		};
+		bindChangeListeners();
+		this._register(DocumentSemanticTokensProviderRegistry.onDidChange(e => {
+			bindChangeListeners();
+			this._fetchSemanticTokens.schedule();
+		}));
+
+		this._register(themeService.onDidColorThemeChange(_ => {
+			// clear out existing tokens
+			this._setSemanticTokens(null, null, null, []);
+			this._fetchSemanticTokens.schedule();
+		}));
+
 		this._fetchSemanticTokens.schedule(0);
 	}
 

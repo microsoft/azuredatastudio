@@ -14,8 +14,9 @@ import * as Utils from 'sql/platform/connection/common/utils';
 import { DashboardPage } from 'sql/workbench/contrib/dashboard/browser/core/dashboardPage.component';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 
-import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
+import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { onUnexpectedError } from 'vs/base/common/errors';
 
 export const DASHBOARD_SELECTOR: string = 'dashboard-component';

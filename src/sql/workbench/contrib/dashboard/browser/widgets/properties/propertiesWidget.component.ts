@@ -18,8 +18,9 @@ import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
-import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
+import { IColorTheme } from 'vs/platform/theme/common/themeService';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;

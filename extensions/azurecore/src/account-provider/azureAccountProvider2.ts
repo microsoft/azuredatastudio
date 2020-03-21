@@ -44,6 +44,10 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	constructor(private metadata: AzureAccountProviderMetadata, private _tokenCache: TokenCache, private _context: vscode.ExtensionContext) {
 		this.commonAuthorityUrl = url.resolve(this.metadata.settings.host, AzureAccountProvider.AadCommonTenant);
 	}
+	// interface method
+	clearTokenCache(): Thenable<void> {
+		return this._tokenCache.clear();
+	}
 
 	// interface method
 	initialize(storedAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
@@ -92,7 +96,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		const resourceIdMap = new Map<azdata.AzureResource, string>([
 			[azdata.AzureResource.ResourceManagement, this.metadata.settings.armResource.id],
 			[azdata.AzureResource.Sql, this.metadata.settings.sqlResource.id],
-			[azdata.AzureResource.OssRdbms, this.metadata.settings.ossRdbmsResource.id]
+			[azdata.AzureResource.OssRdbms, this.metadata.settings.ossRdbmsResource.id],
+			[azdata.AzureResource.AzureKeyVault, this.metadata.settings.azureKeyVaultResource.id]
 		]);
 		const tenantRefreshPromises: Promise<{ tenantId: any, securityToken: AzureAccountSecurityToken }>[] = [];
 		const tokenCollection: AzureAccountSecurityTokenCollection = {};

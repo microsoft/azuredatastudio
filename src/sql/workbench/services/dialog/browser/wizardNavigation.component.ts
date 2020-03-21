@@ -47,7 +47,7 @@ export class WizardNavigation implements AfterViewInit {
 	}
 
 	ngAfterViewInit() {
-		this._themeService.onThemeChange(() => this.style());
+		this._themeService.onDidColorThemeChange(() => this.style());
 		this.style();
 		this._params.wizard.onPageChanged(() => this._changeRef.detectChanges());
 	}
@@ -75,7 +75,7 @@ export class WizardNavigation implements AfterViewInit {
 	}
 
 	private style(): void {
-		let theme = this._themeService.getTheme();
+		let theme = this._themeService.getColorTheme();
 		let navigationBackgroundColor = theme.getColor(SIDE_BAR_BACKGROUND);
 		if (theme.type === 'light') {
 			navigationBackgroundColor = navigationBackgroundColor.lighten(0.03);
