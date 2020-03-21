@@ -12,15 +12,15 @@ export default () => `
 		<div class="ads_homepage splash">
 			<div class="gradient">
 				<div class="preview_text tool_tip">
-					<div class="tool_tip__container" id="tool_tip__container--desktop">
-						<a aria-describedby="tooltip__text--desktop" id="preview_link--desktop" class="preview_link" tabindex="0" name="preview"><p>Preview</p><i class="icon--info themed_icon"></i></a>
-						<span role="tooltip" id="tooltip__text--desktop" class="tool_tip__text" aria-hidden="true">
+					<div class="tool_tip__container" id="tool_tip__container--wide">
+						<a aria-describedby="tooltip__text--wide" id="preview_link--wide" class="preview_link" tabindex="0" name="preview"><p>Preview</p><i class="icon--info themed_icon"></i></a>
+						<span role="tooltip" id="tooltip__text--wide" class="tool_tip__text" aria-hidden="true">
 							<h3 tabindex="0" class="preview_tooltip__header">${escape(localize('welcomePage.previewHeader', "This page is in preview"))}</h3>
 							<p tabindex="0" class="preview_tooltip__body">${escape(localize('welcomePage.previewBody', "Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development."))}</p>
 						</span>
 					</div>
-					<div class="tool_tip__container" id="tool_tip__container--mobile">
-						<a aria-haspopup="true" class="preview_link" tabindex="0" id="preview_link--mobile" name="previewMobile"><p>Preview</p><i class="icon--info themed_icon"></i></a>
+					<div class="tool_tip__container" id="tool_tip__container--narrow">
+						<a aria-haspopup="true" class="preview_link" tabindex="0" id="preview_link--narrow" name="previewNarrow"><p>Preview</p><i class="icon--info themed_icon"></i></a>
 					</div>
 				</div>
 				<div id="preview_modal" class="modal" aria-modal="true" aria-hidden="true">
@@ -161,14 +161,16 @@ export default () => `
 							<h2>Videos</h2>
 							<div class="flex flex--d_row">
 								<div class="videos_container__video">
-									<a href="https://www.youtube.com/watch?v=Orv7fptVoUA" class="video overview"><img src="../../../workbench/contrib/welcome/video_overview.png" />
+									<a href="https://www.youtube.com/watch?v=Orv7fptVoUA" class="video overview">
+									<img src="../../../../sql/workbench/contrib/welcome/video_overview.png" />
 										<h4>${escape(localize('welcomePage.videoDescriptionOverview',
 					"Overview of Azure Data Studio"))}</h4>
 									</a>
 
 								</div>
 								<div class="videos_container__video">
-									<a href="https://www.youtube.com/watch?v=Nt4kIHQ0IOc" class="video overview"><img src="../../../workbench/contrib/welcome/video_introduction.png" />
+									<a href="https://www.youtube.com/watch?v=Nt4kIHQ0IOc" class="video overview">
+									<img src="../../../../sql/workbench/contrib/welcome/video_introduction.png" />
 										<h4>${escape(localize('welcomePage.videoDescriptionIntroduction',
 						"Introduction to Azure Data Studio Notebooks | Data Exposed"))}</h4>
 									</a>
@@ -181,7 +183,7 @@ export default () => `
 			<div class="ads_homepage__section content extensions">
 				<div class="flex flex--j_between">
 					<h2>Extend your data studio</h2>
-					<a class="link--show_all flex" href="command:extensions.listView.focus">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon--arrow_right themed_icon--alt"></span></a>
+					<a class="link--show_all flex" href="command:extensions.listView.focus">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon--arrow_right"></span></a>
 				</div>
 				<div class="row ads_grid grip_gap--50">
 					<div
@@ -195,7 +197,7 @@ export default () => `
 							<div class="flex flex--j_end extension_pack__btn_container flex flex--j_between flex--a_center"">
 							<div class="extensionPack" href="#"></div>
 							<a class="a_self--end link--learn_more flex flex--a_center" href="command:azdata.extension.open?%7B%22id%22%3A%22microsoft.admin-pack%22%7D">${escape(localize('welcomePage.learnMore',
-							"Learn more "))}<span class="icon--arrow_right themed_icon--alt"></span></a>
+							"Learn more "))}<span class="icon--arrow_right"></span></a>
 						</div>
 					</div>
 				</div>

@@ -165,22 +165,22 @@ const extensionPacks: ExtensionSuggestion[] = [
 			{
 				name: 'SQL Server Agent',
 				link: 'https://docs.microsoft.com/sql/azure-data-studio/sql-server-agent-extension?view=sql-server-2017',
-				icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg'
+				icon: '../../../../../extensions/admin-pack/images/extension.png'
 			},
 			{
 				name: 'SQL Server Profiler',
 				link: 'https://docs.microsoft.com/sql/azure-data-studio/sql-server-profiler-extension?view=sql-server-2017',
-				icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg'
+				icon: '../../../../../extensions/admin-pack/images/extension.png'
 			},
 			{
 				name: 'SQL Server Import',
 				link: 'https://docs.microsoft.com/sql/azure-data-studio/sql-server-import-extension?view=sql-server-2017',
-				icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg'
+				icon: '../../../../../extensions/admin-pack/images/extension.png'
 			},
 			{
 				name: 'SQL Server Dacpac',
 				link: 'https://docs.microsoft.com/sql/azure-data-studio/sql-server-dacpac-extension?view=sql-server-2017',
-				icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg'
+				icon: '../../../../../extensions/admin-pack/images/extension.png'
 			}
 		],
 		isExtensionPack: true
@@ -189,7 +189,7 @@ const extensionPacks: ExtensionSuggestion[] = [
 
 const extensions: ExtensionSuggestion[] = [
 	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: localize('welcomePage.powershellDescription', "Write and execute PowerShell scripts using Azure Data Studio's rich query editor"), icon: 'https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png', link: `command:azdata.extension.open?{"id":"microsoft.powershell"}` },
-	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: localize('welcomePage.dataVirtualizationDescription', "Virtualize data with SQL Server 2019 and create external tables using interactive wizards"), icon: '../../../workbench/contrib/welcome/defaultExtensionIcon.svg', link: `command:azdata.extension.open?{"id":"microsoft.datavirtualization"}` },
+	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: localize('welcomePage.dataVirtualizationDescription', "Virtualize data with SQL Server 2019 and create external tables using interactive wizards"), icon: '../../../../../extensions/admin-pack/images/extension.png', link: `command:azdata.extension.open?{"id":"microsoft.datavirtualization"}` },
 	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: localize('welcomePage.PostgreSQLDescription', "Connect, query, and manage Postgres databases with Azure Data Studio"), icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png', link: `command:azdata.extension.open?{"id":"microsoft.azuredatastudio-postgresql"}` },
 ];
 
@@ -197,22 +197,20 @@ interface Strings {
 	installEvent: string;
 	installedEvent: string;
 	detailsEvent: string;
-
-	alreadyInstalled: string;
-	reloadAfterInstall: string;
-	installing: string;
-	extensionNotFound: string;
+	alreadyInstalled: (extensionName: any) => string;
+	reloadAfterInstall: (extensionName: any) => string;
+	installing: (extensionName: any) => string;
+	extensionNotFound: (extensionName: any, extensionId: any) => string;
 }
 
 const extensionPackStrings: Strings = {
 	installEvent: 'installExtension',
 	installedEvent: 'installedExtension',
 	detailsEvent: 'detailsExtension',
-
-	alreadyInstalled: localize('welcomePage.extensionPackAlreadyInstalled', "Support for {0} is already installed."),
-	reloadAfterInstall: localize('welcomePage.willReloadAfterInstallingExtensionPack', "The window will reload after installing additional support for {0}."),
-	installing: localize('welcomePage.installingExtensionPack', "Installing additional support for {0}..."),
-	extensionNotFound: localize('welcomePage.extensionPackNotFound', "Support for {0} with id {1} could not be found."),
+	alreadyInstalled: (extensionName: string) => { return localize('welcomePage.extensionPackAlreadyInstalled', "Support for {0} is already installed.", extensionName); },
+	reloadAfterInstall: (extensionName: string) => { return localize('welcomePage.willReloadAfterInstallingExtensionPack', "The window will reload after installing additional support for {0}.", extensionName); },
+	installing: (extensionName: string) => { return localize('welcomePage.installingExtensionPack', "Installing additional support for {0}...", extensionName); },
+	extensionNotFound: (extensionName: string, extensionId: string) => { return localize('welcomePage.extensionPackNotFound', "Support for {0} with id {1} could not be found.", extensionName, extensionId); },
 };
 
 
@@ -306,13 +304,13 @@ class WelcomePage extends Disposable {
 			}
 		}));
 		this.createDropDown();
-		this.createDesktopPreviewToolTip();
+		this.createWidePreviewToolTip();
 		this.createPreviewModal();
 	}
 
-	private createDesktopPreviewToolTip() {
-		const previewLink = document.querySelector('#preview_link--desktop');
-		const tooltip = document.querySelector('#tooltip__text--desktop');
+	private createWidePreviewToolTip() {
+		const previewLink = document.querySelector('#preview_link--wide');
+		const tooltip = document.querySelector('#tooltip__text--wide');
 		const previewModalBody = document.querySelector('.preview_tooltip__body') as HTMLElement;
 		const previewModalHeader = document.querySelector('.preview_tooltip__header') as HTMLElement;
 
@@ -440,7 +438,7 @@ class WelcomePage extends Disposable {
 
 	private createPreviewModal() {
 		const modal = document.querySelector('#preview_modal') as HTMLElement;
-		const btn = document.querySelector('#tool_tip__container--mobile') as HTMLElement;
+		const btn = document.querySelector('#tool_tip__container--narrow') as HTMLElement;
 		const span = document.querySelector('.close_icon') as HTMLElement;
 		const previewModalHeader = document.querySelector('.preview_modal__header') as HTMLElement;
 
@@ -693,7 +691,7 @@ class WelcomePage extends Disposable {
 					extensionId: extensionSuggestion.id,
 					outcome: 'already_enabled',
 				});
-				this.notificationService.info(extensionPackStrings.alreadyInstalled.replace('{0}', extensionSuggestion.name));
+				this.notificationService.info(extensionPackStrings.alreadyInstalled(extensionSuggestion.name));
 				return;
 			}
 			const foundAndInstalled = installedExtension ? Promise.resolve(installedExtension.local) : this.extensionGalleryService.query({ names: [extensionSuggestion.id], source: telemetryFrom }, CancellationToken.None)
@@ -713,13 +711,13 @@ class WelcomePage extends Disposable {
 
 			this.notificationService.prompt(
 				Severity.Info,
-				extensionPackStrings.reloadAfterInstall.replace('{0}', extensionSuggestion.name),
+				extensionPackStrings.reloadAfterInstall(extensionSuggestion.name),
 				[{
 					label: localize('ok', "OK"),
 					run: () => {
 						const messageDelay = new TimeoutTimer();
 						messageDelay.cancelAndSet(() => {
-							this.notificationService.info(extensionPackStrings.installing.replace('{0}', extensionSuggestion.name));
+							this.notificationService.info(extensionPackStrings.reloadAfterInstall(extensionSuggestion.name));
 						}, 300);
 						const extensionsToDisable = extensions.filter(extension => isKeymapExtension(this.tipsService, extension) && extension.globallyEnabled).map(extension => extension.local);
 						extensionsToDisable.length ? this.extensionEnablementService.setEnablement(extensionsToDisable, EnablementState.DisabledGlobally) : Promise.resolve()
@@ -756,7 +754,7 @@ class WelcomePage extends Disposable {
 											extensionId: extensionSuggestion.id,
 											outcome: 'not_found',
 										});
-										this.notificationService.error(extensionPackStrings.extensionNotFound.replace('{0}', extensionSuggestion.name).replace('{1}', extensionSuggestion.id));
+										this.notificationService.info(extensionPackStrings.extensionNotFound(extensionSuggestion.name, extensionSuggestion.id));
 										return undefined;
 									}
 								});
@@ -892,6 +890,7 @@ registerThemingParticipant((theme, collector) => {
 	const buttonPrimaryColor = theme.getColor(buttonPrimary);
 	if (buttonPrimaryColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--primary { color: ${buttonPrimaryColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .icon--arrow_down:before { color: ${buttonPrimaryColor};}`);
 	}
 	const buttonPrimaryTextColor = theme.getColor(buttonPrimaryText);
 	if (buttonPrimaryTextColor) {
@@ -932,6 +931,7 @@ registerThemingParticipant((theme, collector) => {
 	const buttonDropdownColor = theme.getColor(buttonDropdown);
 	if (buttonDropdownColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a { color: ${buttonDropdownColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .icon--arrow_down--dark:before { color: ${buttonDropdownColor};}`);
 	}
 	const buttonDropdownBoxShadowColor = theme.getColor(buttonDropdownBoxShadow);
 	if (buttonDropdownBoxShadowColor) {

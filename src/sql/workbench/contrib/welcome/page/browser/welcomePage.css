@@ -256,11 +256,11 @@
 	margin-right: 15px;
 }
 
-.ads_homepage #tool_tip__container--desktop {
+.ads_homepage #tool_tip__container--wide {
 	display: none;
 }
 
-.ads_homepage #tool_tip__container--mobile {
+.ads_homepage #tool_tip__container--narrow {
 	display: block;
 	bottom: 13px;
 	position: relative;
@@ -271,10 +271,10 @@
 	.ads_homepage .preview_text {
 		margin-right: 0;
 	}
-	.ads_homepage #tool_tip__container--desktop {
+	.ads_homepage #tool_tip__container--wide {
 		display: block;
 	}
-	.ads_homepage #tool_tip__container--mobile {
+	.ads_homepage #tool_tip__container--narrow {
 		display: none;
 	}
 }
@@ -308,11 +308,7 @@
 	border-style: solid;
 }
 
-/* .ads_homepage #tool_tip__container--desktop:hover .tool_tip__text {
-	visibility: visible;
-} */
-
-.ads_homepage #tool_tip__container--desktop .tool_tip__text.show {
+.ads_homepage #tool_tip__container--wide .tool_tip__text.show {
 	visibility: visible;
 }
 
@@ -386,30 +382,51 @@
 }
 
 .ads_homepage .icon--arrow_down {
+	position: relative;
+	height: 20px;
+	width: 18px;
+	display: inline-block;
+}
+
+.ads_homepage .icon--arrow_down:before {
+	position: absolute;
+	font: normal normal normal 16px/1 codicon;
+	text-decoration: none;
+	text-rendering: auto;
+	text-align: center;
+	-webkit-font-smoothing: antialiased;
 	display: inline-block;
 	width: 11px;
 	height: 6px;
-	margin-left: 6px;
-	padding-top: 3px;
-	background: url('../../arrowDown.svg');
-	background-size: 11px 6px;
-	background-repeat: no-repeat;
-	background-position: right center;
+	content: "\eab6";
+	transform: rotate(90deg);
+	top: -1px;
+	bottom: 5px;
+	margin: auto;
 }
 
 .ads_homepage .icon--arrow_right {
+	position: relative;
+	height: 16px;
+	width: 16px;
 	display: inline-block;
-	width: 16px;
-	height: 16px;
-	margin-left: 6px;
-	padding-top: 3px;
-	margin-top: 2px;
-	-webkit-mask: url('../../arrowRightIcon.svg') no-repeat;
-	-webkit-mask-size: 13px 16px;
-	mask: url('../../arrowRightIcon.svg') no-repeat;
-	mask-size: 13px 16px;
-	height: 16px;
-	width: 16px;
+}
+
+.ads_homepage .icon--arrow_right:before {
+	position: absolute;
+	font: normal normal normal 14px/1 codicon;
+	text-decoration: none;
+	text-rendering: auto;
+	text-align: center;
+	-webkit-font-smoothing: antialiased;
+	display: inline-block;
+	width: 11px;
+	height: 6px;
+	content: "\ea9c";
+	top: 1px;
+	bottom: 5px;
+	margin: auto;
+	left: 5px;
 }
 
 .ads_homepage .icon--link {
@@ -426,17 +443,28 @@
 }
 
 .ads_homepage .icon--arrow_down--dark {
-	display: block;
+	position: relative;
+	height: 20px;
+	width: 22px;
+	display: inline-block;
+}
+
+.ads_homepage .icon--arrow_down--dark:before {
+	position: absolute;
+	font: normal normal normal 14px/1 codicon;
+	text-decoration: none;
+	text-rendering: auto;
+	text-align: center;
+	-webkit-font-smoothing: antialiased;
+	display: inline-block;
 	width: 11px;
 	height: 6px;
-	margin-left: 6px;
-	padding-top: 3px;
-	-webkit-mask: url('../../arrowDown_dark.svg') no-repeat;
-	-webkit-mask-size: 13px 16px;
-	mask: url('../../arrowDown_dark.svg') no-repeat;
-	mask-size: 13px 16px;
-	height: 16px;
-	width: 16px;
+	content: "\eab6";
+	transform: rotate(90deg);
+	top: 5px;
+	bottom: 5px;
+	margin: auto;
+	left: 8px;
 }
 
 .ads_homepage .dropdown_navigation {
