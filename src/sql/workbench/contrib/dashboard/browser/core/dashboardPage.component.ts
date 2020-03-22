@@ -214,8 +214,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	private createToolbar(parentElement: HTMLElement, tabName: string): void {
 		// clear out toolbar
 		DOM.clearNode(parentElement);
-		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
-		this.toolbar = this._register(new Taskbar(taskbarContainer, { actionViewItemProvider: action => this.createActionItemProvider(action as Action) }));
+		this.toolbar = this._register(new Taskbar(parentElement, { actionViewItemProvider: action => this.createActionItemProvider(action as Action) }));
 
 		let content = [];
 		content = this.getToolbarContent(this.tabToolbarActionsConfig.get(tabName));
