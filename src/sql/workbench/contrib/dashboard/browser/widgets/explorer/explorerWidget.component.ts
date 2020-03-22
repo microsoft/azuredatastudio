@@ -27,6 +27,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { ObjectMetadataWrapper } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/objectMetadataWrapper';
+import { status } from 'vs/base/browser/ui/aria/aria';
 
 @Component({
 	selector: 'explorer-widget',
@@ -76,9 +77,18 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		};
 		this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
 		this._register(this._input.onDidChange(e => {
-			this._filterDelayer.trigger(() => {
+			this._filterDelayer.trigger(async () => {
 				this._treeFilter.filterString = e;
-				this._tree.refresh();
+				await this._tree.refresh();
+				// Get count of filtered items for aria announce (navigator only returns visible ones)
+				const navigator = this._tree.getNavigator();
+				let item = navigator.next();
+				let count = 0;
+				while (item) {
+					count++;
+					item = navigator.next();
+				}
+				status(nls.localize('ariaFilteredItems', "Filtered search list to {0} items", count));
 			});
 		}));
 		this._tree = new Tree(this._tableContainer.nativeElement, {
