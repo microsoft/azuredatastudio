@@ -46,6 +46,9 @@ import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { joinPath } from 'vs/base/common/resources';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+
+
 
 
 const configurationKey = 'workbench.startupEditor';
@@ -324,13 +327,15 @@ class WelcomePage extends Disposable {
 		});
 
 		previewLink.addEventListener('keydown', (e: KeyboardEvent) => {
-			if (e.keyCode === KeyCode.Escape) {
+			let event = new StandardKeyboardEvent(e);
+
+			if (event.equals(KeyCode.Escape)) {
 				if (tooltip.classList.contains('show')) {
 					tooltip.setAttribute('aria-hidden', 'true');
 					tooltip.classList.remove('show');
 				}
 			}
-			else if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Space) {
+			else if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 				tooltip.setAttribute('aria-hidden', 'false');
 				tooltip.classList.toggle('show');
 				previewModalHeader.focus();
@@ -338,13 +343,15 @@ class WelcomePage extends Disposable {
 		});
 
 		tooltip.addEventListener('keydown', (e: KeyboardEvent) => {
-			if (e.keyCode === KeyCode.Escape) {
+			let event = new StandardKeyboardEvent(e);
+
+			if (event.equals(KeyCode.Escape)) {
 				if (tooltip.classList.contains('show')) {
 					tooltip.setAttribute('aria-hidden', 'true');
 					tooltip.classList.remove('show');
 				}
 			}
-			else if (e.keyCode === KeyCode.Tab) {
+			else if (event.equals(KeyCode.Tab)) {
 				e.preventDefault();
 				if (e.target === previewModalBody) {
 					previewModalHeader.focus();
@@ -374,7 +381,8 @@ class WelcomePage extends Disposable {
 		});
 
 		dropdownBtn.addEventListener('keydown', (e: KeyboardEvent) => {
-			if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Space) {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 				const dropdownFirstElement = document.querySelector('#dropdown').firstElementChild.children[0] as HTMLInputElement;
 				dropdown.classList.toggle('show');
 				dropdownFirstElement.focus();
@@ -382,7 +390,8 @@ class WelcomePage extends Disposable {
 		});
 
 		dropdown.addEventListener('keydown', (e: KeyboardEvent) => {
-			if (e.keyCode === KeyCode.Escape) {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyCode.Escape)) {
 				if (dropdown.classList.contains('show')) {
 					dropdown.classList.remove('show');
 					const currentSelection = document.querySelector('.move:focus') as HTMLInputElement;
@@ -413,11 +422,12 @@ class WelcomePage extends Disposable {
 		dropdown.addEventListener('keydown', function (e: KeyboardEvent) {
 			const dropdownLastElement = document.querySelector('#dropdown').lastElementChild.children[0] as HTMLInputElement;
 			const dropdownFirstElement = document.querySelector('#dropdown').firstElementChild.children[0] as HTMLInputElement;
-			if (e.keyCode === KeyCode.Tab) {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyCode.Tab)) {
 				e.preventDefault();
 				return;
 			}
-			else if (e.keyCode === KeyCode.UpArrow || e.keyCode === KeyCode.LeftArrow) {
+			else if (event.equals(KeyCode.UpArrow) || event.equals(KeyCode.LeftArrow)) {
 				if (e.target === dropdownFirstElement) {
 					dropdownLastElement.focus();
 				} else {
@@ -425,7 +435,7 @@ class WelcomePage extends Disposable {
 					movePrev.focus();
 				}
 			}
-			else if (e.keyCode === KeyCode.DownArrow || e.keyCode === KeyCode.RightArrow) {
+			else if (event.equals(KeyCode.DownArrow) || event.equals(KeyCode.RightArrow)) {
 				if (e.target === dropdownLastElement) {
 					dropdownFirstElement.focus();
 				} else {
@@ -459,12 +469,14 @@ class WelcomePage extends Disposable {
 		});
 
 		btn.addEventListener('keydown', (e: KeyboardEvent) => {
-			if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Space) {
+			let event = new StandardKeyboardEvent(e);
+
+			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 				modal.classList.toggle('show');
 				modal.setAttribute('aria-hidden', 'false');
 				previewModalHeader.focus();
 			}
-			if (e.keyCode === KeyCode.Escape) {
+			if (event.equals(KeyCode.Escape)) {
 				if (modal.classList.contains('show')) {
 					modal.setAttribute('aria-hidden', 'true');
 					modal.classList.remove('show');
@@ -473,8 +485,9 @@ class WelcomePage extends Disposable {
 		});
 
 		window.addEventListener('keydown', (e: KeyboardEvent) => {
+			let event = new StandardKeyboardEvent(e);
 			const target = e.target as HTMLTextAreaElement;
-			if (!target.matches('.modal') && e.keyCode === KeyCode.Escape) {
+			if (!target.matches('.modal') && event.equals(KeyCode.Escape)) {
 				if (modal.classList.contains('show')) {
 					modal.setAttribute('aria-hidden', 'true');
 					modal.classList.remove('show');
@@ -485,8 +498,9 @@ class WelcomePage extends Disposable {
 		modal.addEventListener('keydown', function (e: KeyboardEvent) {
 			const previewModalBody = document.querySelector('.preview_modal__body') as HTMLElement;
 			const previewModalHeader = document.querySelector('.preview_modal__header') as HTMLElement;
+			let event = new StandardKeyboardEvent(e);
 
-			if (e.keyCode === KeyCode.Tab) {
+			if (event.equals(KeyCode.Tab)) {
 				e.preventDefault();
 				if (e.target === previewModalBody) {
 					previewModalHeader.focus();
