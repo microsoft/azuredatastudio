@@ -124,8 +124,9 @@ export default () => `
 								<p class="none detail">No recent folders</p>
 								<ul class="moreRecent--list">
 									<li class="moreRecent">
-										<a href="command:workbench.action.openRecent">${escape(localize('welcomePage.moreRecent', "Show more"))}</a>
-										<i class="icon--arrow_down--dark"></i>
+										<a href="command:workbench.action.openRecent">${escape(localize('welcomePage.moreRecent', "Show more"))}
+											<i class="icon--arrow_down--dark"></i>
+										</a>
 									</li>
 								</ul>
 							</div>
@@ -140,7 +141,7 @@ export default () => `
 						<h2>${escape(localize('welcomePage.usefuLinks', "Useful Links"))}</h2>
 						<div class="link_header">
 							<a class="link"
-								href="https://aka.ms/azuredatastudio">${escape(localize('welcomePage.gettingStarted',
+								href="https://aka.ms/get-started-azdata">${escape(localize('welcomePage.gettingStarted',
 	"Getting Started"))}<span class="icon--link themed_icon--alt"></a>
 						</div>
 						<p>
@@ -149,7 +150,7 @@ export default () => `
 						</p>
 						<div class="link_header">
 							<a class="link"
-								href="https://aka.ms/azuredatastudio">${escape(localize('welcomePage.documentation',
+								href="command:workbench.action.openDocumentationUrl">${escape(localize('welcomePage.documentation',
 			"Documentation"))}<span class="icon--link themed_icon--alt"</a></a>
 						</div>
 						<p>${escape(localize('welcomePage.documentationBody',

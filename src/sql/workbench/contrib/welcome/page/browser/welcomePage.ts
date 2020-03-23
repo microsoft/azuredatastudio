@@ -938,6 +938,7 @@ registerThemingParticipant((theme, collector) => {
 	if (buttonDropdownColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a { color: ${buttonDropdownColor};}`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .icon--arrow_down--dark:before { color: ${buttonDropdownColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .history .moreRecent--list li.moreRecent a { color: ${buttonDropdownColor};}`);
 	}
 	const buttonDropdownBoxShadowColor = theme.getColor(buttonDropdownBoxShadow);
 	if (buttonDropdownBoxShadowColor) {
