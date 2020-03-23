@@ -223,7 +223,7 @@ import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuratio
 			},
 			'workbench.view.alwaysShowHeaderActions': {
 				'type': 'boolean',
-				'default': false,
+				'default': true, // {{SQL CARBON EDIT}} - change the default value from false to true.
 				'description': nls.localize('viewVisibility', "Controls the visibility of view header actions. View header actions may either be always visible, or only visible when that view is focused or hovered over.")
 			},
 			'workbench.view.experimental.allowMovingToNewContainer': {
