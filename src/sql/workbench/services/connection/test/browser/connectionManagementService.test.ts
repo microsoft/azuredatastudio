@@ -829,7 +829,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 		let testToken = 'testToken';
 		accountManagementService.setup(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
-			azurePublicCloud: {
+			azure_publicCloud: {
 				token: testToken
 			}
 		}));
@@ -887,7 +887,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		let testToken = 'testToken';
 		let returnedTokens = {};
-		returnedTokens['azurePublicCloud'] = { token: 'badToken' };
+		returnedTokens['azure_publicCloud'] = { token: 'badToken' };
 		returnedTokens[azureTenantId] = { token: testToken };
 		accountManagementService.setup(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(returnedTokens));
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === 'AzureMFA'))).returns(profile => Promise.resolve({
