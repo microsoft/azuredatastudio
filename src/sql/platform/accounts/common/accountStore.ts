@@ -50,9 +50,9 @@ export default class AccountStore implements IAccountStore {
 	public removeAllAccounts(): Thenable<boolean> {
 		return this.doOperation(() => {
 			return this.readFromMemento()
-				.then(() => {
-					return this.removeAllAccountsList().accountRemoved;
-				});
+				.then(() => this.removeAllAccountsList())
+				.then(result => this.writeToMemento(result.updatedAccounts).then(() => result))
+				.then(result => result.accountRemoved);
 		});
 	}
 
