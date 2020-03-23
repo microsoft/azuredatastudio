@@ -125,14 +125,6 @@ declare module 'azdata' {
 		defaultValueOsOverrides?: DefaultValueOsOverride[];
 	}
 
-	/*
-	 * Add OssRdbms for sqlops AzureResource.
-	 */
-	export enum AzureResource {
-		OssRdbms = 2,
-		AzureKeyVault = 3
-	}
-
 	export interface ModelBuilder {
 		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent>;
 		tabbedPanel(): TabbedPanelComponentBuilder;

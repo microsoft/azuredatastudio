@@ -79,10 +79,10 @@ export function getCurrentGlobalConnection(objectExplorerService: IObjectExplore
 	if (activeInput) {
 		// dashboard Connection
 		if (activeInput instanceof DashboardInput && activeInput.uri) {
-			connection = connectionManagementService.getConnectionProfile(activeInput.uri.toString());
+			connection = connectionManagementService.getConnectionProfile(activeInput.uri);
 		} else if (activeInput.resource) {
 			// editor Connection
-			connection = connectionManagementService.getConnectionProfile(activeInput.resource.toString());
+			connection = connectionManagementService.getConnectionProfile(activeInput.resource.toString(true));
 		}
 	}
 
