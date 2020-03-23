@@ -37,6 +37,8 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IViewPaneOptions, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { attachModalDialogStyler, attachPanelStyler } from 'sql/workbench/common/styler';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
+import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
@@ -135,6 +137,8 @@ export class AccountDialog extends Modal {
 		@ILogService logService: ILogService,
 		@IViewDescriptorService private viewDescriptorService: IViewDescriptorService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
+		@IQuickInputService private _quickInputService: IQuickInputService,
+		@INotificationService private _notificationService: INotificationService,
 		@IOpenerService protected readonly openerService: IOpenerService,
 		@ITelemetryService private readonly vstelemetryService: ITelemetryService,
 	) {
@@ -199,8 +203,34 @@ export class AccountDialog extends Modal {
 		this._addAccountButton = new Button(buttonSection);
 		this._addAccountButton.label = localize('accountDialog.addConnection', "Add an account");
 
-		this._register(this._addAccountButton.onDidClick(() => {
-			(<IProviderViewUiComponent>values(this._providerViewsMap)[0]).addAccountAction.run();
+		this._register(this._addAccountButton.onDidClick(async () => {
+			const vals = values(this._providerViewsMap);
+
+			let pickedValue: string;
+			if (vals.length === 0) {
+				this._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
+				return;
+			}
+			if (vals.length > 1) {
+				const buttons: IQuickPickItem[] = vals.map(v => {
+					return { label: v.view.title } as IQuickPickItem;
+				});
+
+				const picked = await this._quickInputService.pick(buttons, { canPickMany: false });
+
+				pickedValue = picked?.label;
+			} else {
+				pickedValue = vals[0].view.title;
+			}
+
+			const v = vals.filter(v => v.view.title === pickedValue)?.[0];
+
+			if (!v) {
+				this._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
+				return;
+			}
+
+			v.addAccountAction.run();
 		}));
 
 		DOM.append(container, this._noaccountViewContainer);
