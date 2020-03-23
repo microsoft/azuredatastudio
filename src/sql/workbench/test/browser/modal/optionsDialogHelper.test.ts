@@ -36,8 +36,8 @@ suite('Advanced options helper tests', () => {
 			description: 'Declares the application workload type when connecting to a server',
 			groupName: 'Initialization',
 			categoryValues: [
-				{ displayName: 'ReadWrite', name: 'ReadWrite' },
-				{ displayName: 'ReadOnly', name: 'ReadOnly' }
+				{ displayName: 'ReadWrite', name: 'RW' },
+				{ displayName: 'ReadOnly', name: 'RO' }
 			],
 			defaultValue: null,
 			isRequired: false,
@@ -114,6 +114,9 @@ suite('Advanced options helper tests', () => {
 		assert.equal(possibleInputs[0].text, '');
 		assert.equal(possibleInputs[1].text, 'ReadWrite');
 		assert.equal(possibleInputs[2].text, 'ReadOnly');
+		assert.equal(possibleInputs[0].value, '');
+		assert.equal(possibleInputs[1].value, 'RW');
+		assert.equal(possibleInputs[2].value, 'RO');
 	});
 
 	test('create default and required category options should set the option value and possible inputs correctly', () => {

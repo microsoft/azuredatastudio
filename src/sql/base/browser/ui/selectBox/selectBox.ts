@@ -21,7 +21,7 @@ const $ = dom.$;
 
 
 export interface SelectOptionItemSQL extends ISelectOptionItem {
-	backendValue: string; // THIS IS REQUIRED, this is the value that will actually be returned on SelectBox#values()
+	value: string; // THIS IS REQUIRED, this is the value that will actually be returned on SelectBox#values()
 }
 
 export interface ISelectBoxStyles extends vsISelectBoxStyles {
@@ -68,7 +68,7 @@ export class SelectBox extends vsSelectBox {
 		let optionItems: SelectOptionItemSQL[];
 		if (options.length > 0 && typeof options[0] === 'string') {
 			optionItems = (options as string[]).map(o => {
-				return { text: o, backendValue: o } as SelectOptionItemSQL;
+				return { text: o, value: o } as SelectOptionItemSQL;
 			});
 		} else {
 			optionItems = options as SelectOptionItemSQL[];
@@ -77,7 +77,7 @@ export class SelectBox extends vsSelectBox {
 		super(optionItems, 0, contextViewProvider, undefined, selectBoxOptions);
 		this._optionsDictionary = new Map<string, number>();
 		for (let i = 0; i < options.length; i++) {
-			this._optionsDictionary.set(optionItems[i].backendValue, i);
+			this._optionsDictionary.set(optionItems[i].value, i);
 		}
 		const option = this._optionsDictionary.get(selectedOption);
 		if (option) {
@@ -87,7 +87,7 @@ export class SelectBox extends vsSelectBox {
 		this._dialogOptions = optionItems;
 		this._register(this.onDidSelect(newInput => {
 			const selected = optionItems[newInput.index];
-			this._selectedOption = selected.backendValue;
+			this._selectedOption = selected.value;
 		}));
 
 		this.enabledSelectBackground = this.selectBackground;
@@ -161,7 +161,7 @@ export class SelectBox extends vsSelectBox {
 	public select(index: number): void {
 		super.select(index);
 		if (this._dialogOptions !== undefined) {
-			this._selectedOption = this._dialogOptions[index]?.backendValue;
+			this._selectedOption = this._dialogOptions[index]?.value;
 		}
 	}
 
@@ -170,11 +170,11 @@ export class SelectBox extends vsSelectBox {
 		if (options.length > 0 && typeof options[0] !== 'string') {
 			selectOptions = options as SelectOptionItemSQL[];
 		} else {
-			selectOptions = (options as string[]).map(o => { return { text: o, backendValue: o } as SelectOptionItemSQL; });
+			selectOptions = (options as string[]).map(o => { return { text: o, value: o } as SelectOptionItemSQL; });
 		}
 		this._optionsDictionary = new Map<string, number>();
 		for (let i = 0; i < selectOptions.length; i++) {
-			this._optionsDictionary.set(selectOptions[i].backendValue, i);
+			this._optionsDictionary.set(selectOptions[i].value, i);
 		}
 		this._dialogOptions = selectOptions;
 		super.setOptions(selectOptions, selected);
@@ -185,7 +185,7 @@ export class SelectBox extends vsSelectBox {
 	}
 
 	public get values(): string[] {
-		return this._dialogOptions.map(s => s.backendValue);
+		return this._dialogOptions.map(s => s.value);
 	}
 
 	public enable(): void {
