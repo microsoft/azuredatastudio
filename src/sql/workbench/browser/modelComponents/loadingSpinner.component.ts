@@ -8,6 +8,9 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import * as nls from 'vs/nls';
 import { status } from 'vs/base/browser/ui/aria/aria';
 
+const DefaultLoadingMessage = nls.localize('loadingMessage', "Loading");
+const DefaultLoadingCompletedMessage = nls.localize('loadingCompletedMessage', "Loading completed");
+
 @Component({
 	selector: 'loading-spinner',
 	template: `
@@ -25,15 +28,12 @@ export default class LoadingSpinner implements OnChanges {
 		}
 	}
 
-	public readonly _defaultLoadingMessage = nls.localize('loadingMessage', "Loading");
-	public readonly _defaultLoadingCompletedMessage = nls.localize('loadingCompletedMessage', "Loading completed");
-
 	get _loadingMessage(): string {
-		return this.loadingMessage ? this.loadingMessage : this._defaultLoadingMessage;
+		return this.loadingMessage ? this.loadingMessage : DefaultLoadingMessage;
 	}
 
 	get _loadingCompletedMessage(): string {
-		return this.loadingCompletedMessage ? this.loadingCompletedMessage : this._defaultLoadingCompletedMessage;
+		return this.loadingCompletedMessage ? this.loadingCompletedMessage : DefaultLoadingCompletedMessage;
 	}
 
 	@Input()

@@ -27,7 +27,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { ObjectMetadataWrapper } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/objectMetadataWrapper';
-import { status } from 'vs/base/browser/ui/aria/aria';
+import { status, alert } from 'vs/base/browser/ui/aria/aria';
 
 @Component({
 	selector: 'explorer-widget',
@@ -132,7 +132,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 					}
 				},
 				error => {
-					(<HTMLElement>this._el.nativeElement).innerText = nls.localize('dashboard.explorer.objectError', "Unable to load objects");
+					this.showErrorMessage(nls.localize('dashboard.explorer.objectError', "Unable to load objects"));
 				}
 			)));
 		} else {
@@ -151,7 +151,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 					this.setLoadingStatus(false);
 				},
 				error => {
-					(<HTMLElement>this._el.nativeElement).innerText = nls.localize('dashboard.explorer.databaseError', "Unable to load databases");
+					this.showErrorMessage(nls.localize('dashboard.explorer.databaseError', "Unable to load databases"));
 				}
 			)));
 		}
@@ -167,11 +167,16 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		}
 	}
 
-	private setLoadingStatus(loading: boolean) {
+	private setLoadingStatus(loading: boolean): void {
 		this.loading = loading;
 
 		if (this._inited) {
 			this._cd.detectChanges();
 		}
+	}
+
+	private showErrorMessage(message: string): void {
+		(<HTMLElement>this._el.nativeElement).innerText = message;
+		alert(message);
 	}
 }
