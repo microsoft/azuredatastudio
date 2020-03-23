@@ -60,8 +60,5 @@ dashboard-page .editor-toolbar {
 	align-items: center;
 	border-bottom-width: 1px;
 	border-bottom-style: solid;
-}
-
-dashboard-page .editor-toolbar .monaco-action-bar {
-	padding: 5px 0;
+	padding: 3px 0;
 }
