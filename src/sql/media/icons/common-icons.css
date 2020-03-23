@@ -13,7 +13,7 @@
 }
 
 .vs .codicon.backup {
-	background: url("backup.svg") center center no-repeat;
+	background: url("backup.svg") no-repeat;
 }
 
 .vs-dark .codicon.backup,
