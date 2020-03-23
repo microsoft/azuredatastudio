@@ -140,7 +140,7 @@ export class AccountDialog extends Modal {
 		@IQuickInputService private _quickInputService: IQuickInputService,
 		@INotificationService private _notificationService: INotificationService,
 		@IOpenerService protected readonly openerService: IOpenerService,
-		@ITelemetryService private readonly vstelemetryService: ITelemetryService,
+		@ITelemetryService private readonly vstelemetryService: ITelemetryService
 	) {
 		super(
 			localize('linkedAccounts', "Linked accounts"),
