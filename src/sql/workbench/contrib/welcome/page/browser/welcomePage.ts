@@ -173,15 +173,15 @@ const extensionPacks: ExtensionSuggestion[] = [
 ];
 
 const extensionPackExtensions: ExtensionPackExtensions[] = [
-	{ name: 'SQL Server Agent', icon: '../../../../sql/workbench/contrib/welcome/media/defaultExtensionIcon.svg' },
-	{ name: 'SQL Server Profiler', icon: '../../../../sql/workbench/contrib/welcome/media/defaultExtensionIcon.svg' },
-	{ name: 'SQL Server Import', icon: '../../../../sql/workbench/contrib/welcome/media/defaultExtensionIcon.svg' },
-	{ name: 'SQL Server Dacpac', icon: '../../../../sql/workbench/contrib/welcome/media/defaultExtensionIcon.svg' }
+	{ name: 'SQL Server Agent', icon: require.toUrl('./../../media/defaultExtensionIcon.svg') },
+	{ name: 'SQL Server Profiler', icon: require.toUrl('./../../media/defaultExtensionIcon.svg') },
+	{ name: 'SQL Server Import', icon: require.toUrl('./../../media/defaultExtensionIcon.svg') },
+	{ name: 'SQL Server Dacpac', icon: require.toUrl('./../../media/defaultExtensionIcon.svg') }
 ];
 
 const extensions: ExtensionSuggestion[] = [
 	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: localize('welcomePage.powershellDescription', "Write and execute PowerShell scripts using Azure Data Studio's rich query editor"), icon: 'https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png', link: `command:azdata.extension.open?{"id":"microsoft.powershell"}` },
-	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: localize('welcomePage.dataVirtualizationDescription', "Virtualize data with SQL Server 2019 and create external tables using interactive wizards"), icon: '../../../../sql/workbench/contrib/welcome/media/defaultExtensionIcon.svg', link: `command:azdata.extension.open?{"id":"microsoft.datavirtualization"}` },
+	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: localize('welcomePage.dataVirtualizationDescription', "Virtualize data with SQL Server 2019 and create external tables using interactive wizards"), icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.datavirtualization"}` },
 	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: localize('welcomePage.PostgreSQLDescription', "Connect, query, and manage Postgres databases with Azure Data Studio"), icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png', link: `command:azdata.extension.open?{"id":"microsoft.azuredatastudio-postgresql"}` },
 ];
 
@@ -286,9 +286,18 @@ class WelcomePage extends Disposable {
 				}
 			}
 		}));
+		this.addVideoImageSource();
 		this.createDropDown();
 		this.createWidePreviewToolTip();
 		this.createPreviewModal();
+	}
+
+	private addVideoImageSource() {
+		const videoIntroduction = document.querySelector('#video--introduction') as HTMLImageElement;
+		const videoOverview = document.querySelector('#video--overview') as HTMLImageElement;
+
+		videoIntroduction.src = require.toUrl('./../../media/video_introduction.png');
+		videoOverview.src = require.toUrl('./../../media/video_overview.png');
 	}
 
 	private createWidePreviewToolTip() {
