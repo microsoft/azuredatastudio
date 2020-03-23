@@ -947,7 +947,7 @@
 .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) i, .ads_homepage .ads_homepage__section .pinned .list li i, .ads_homepage .icon--document {
 	-webkit-mask: url('../../media/icon_file_document.svg') no-repeat;
 	-webkit-mask-size: 13px 16px;
-	mask: url('../../icon_file_document.svg') no-repeat;
+	mask: url('../../media/icon_file_document.svg') no-repeat;
 	mask-size: 13px 16px;
 	height: 16px;
 	width: 16px;
