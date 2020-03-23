@@ -160,6 +160,7 @@ interface ExtensionSuggestion {
 interface ExtensionPackExtensions {
 	name: string;
 	icon: string;
+	link: string;
 }
 
 const extensionPacks: ExtensionSuggestion[] = [
@@ -173,10 +174,10 @@ const extensionPacks: ExtensionSuggestion[] = [
 ];
 
 const extensionPackExtensions: ExtensionPackExtensions[] = [
-	{ name: 'SQL Server Agent', icon: require.toUrl('./../../media/defaultExtensionIcon.svg') },
-	{ name: 'SQL Server Profiler', icon: require.toUrl('./../../media/defaultExtensionIcon.svg') },
-	{ name: 'SQL Server Import', icon: require.toUrl('./../../media/defaultExtensionIcon.svg') },
-	{ name: 'SQL Server Dacpac', icon: require.toUrl('./../../media/defaultExtensionIcon.svg') }
+	{ name: 'SQL Server Agent', icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.agent"}` },
+	{ name: 'SQL Server Profiler', icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.profiler"}` },
+	{ name: 'SQL Server Import', icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.import"}` },
+	{ name: 'SQL Server Dacpac', icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.dacpac"}` }
 ];
 
 const extensions: ExtensionSuggestion[] = [
@@ -646,6 +647,8 @@ class WelcomePage extends Disposable {
 
 					const outerContainerClasses = ['extension_pack__extension_container', 'flex', 'flex--j_center'];
 					const flexContainerClasses = ['flex', 'flex--a_center'];
+
+					anchorElem.href = j.link;
 
 					outerContainerElem.classList.add(...outerContainerClasses);
 					flexContainerElem.classList.add(...flexContainerClasses);
