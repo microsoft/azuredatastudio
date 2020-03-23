@@ -276,20 +276,6 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 		const app = new Application(this.defaultOptions);
 		await app!.start(opts.web ? false : undefined);
 		this.app = app;
-		//{{SQL CARBON EDIT}}
-		const testExtLoadedText = 'Test Extension Loaded';
-		const testSetupCompletedText = 'Test Setup Completed';
-		const allExtensionsLoadedText = 'All Extensions Loaded';
-		const setupTestCommand = 'Test: Setup Integration Test';
-		const waitForExtensionsCommand = 'Test: Wait For Extensions To Load';
-		await app.workbench.statusbar.waitForStatusbarText(testExtLoadedText, testExtLoadedText);
-		await app.workbench.quickopen.runCommand(setupTestCommand);
-		await app.workbench.statusbar.waitForStatusbarText(testSetupCompletedText, testSetupCompletedText);
-		await app!.reload();
-		await app.workbench.statusbar.waitForStatusbarText(testExtLoadedText, testExtLoadedText);
-		await app.workbench.quickopen.runCommand(waitForExtensionsCommand);
-		await app.workbench.statusbar.waitForStatusbarText(allExtensionsLoadedText, allExtensionsLoadedText);
-		//{{END}}
 	});
 
 	after(async function () {
@@ -317,6 +303,7 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 		});
 	}
 
+	sqlMain();
 	/*if (!opts.web) { setupDataMigrationTests(opts['stable-build'], testDataPath); }
 	if (!opts.web) { setupDataLossTests(); }
 	if (!opts.web) { setupDataPreferencesTests(); }
@@ -329,5 +316,4 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	if (!opts.web) { setupDataMultirootTests(); }
 	if (!opts.web) { setupDataLocalizationTests(); }
 	if (!opts.web) { setupLaunchTests(); }*/
-	sqlMain();
 });
