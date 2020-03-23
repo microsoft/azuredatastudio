@@ -162,7 +162,7 @@ export default () => `
 							<div class="flex flex--d_row">
 								<div class="videos_container__video">
 									<a href="https://www.youtube.com/watch?v=Orv7fptVoUA" class="video overview">
-									<img src="../../../../sql/workbench/contrib/welcome/video_overview.png" />
+									<img src="../../../../sql/workbench/contrib/welcome/media/video_overview.png" />
 										<h4>${escape(localize('welcomePage.videoDescriptionOverview',
 					"Overview of Azure Data Studio"))}</h4>
 									</a>
@@ -170,7 +170,7 @@ export default () => `
 								</div>
 								<div class="videos_container__video">
 									<a href="https://www.youtube.com/watch?v=Nt4kIHQ0IOc" class="video overview">
-									<img src="../../../../sql/workbench/contrib/welcome/video_introduction.png" />
+									<img src="../../../../sql/workbench/contrib/welcome/media/video_introduction.png" />
 										<h4>${escape(localize('welcomePage.videoDescriptionIntroduction',
 						"Introduction to Azure Data Studio Notebooks | Data Exposed"))}</h4>
 									</a>

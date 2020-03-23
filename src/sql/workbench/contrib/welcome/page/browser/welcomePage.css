@@ -375,9 +375,9 @@
 	width: 12px;
 	height: 12px;
 	margin-left: 6px;
-	-webkit-mask: url('../../info.svg') no-repeat;
+	-webkit-mask: url('../../media/info.svg') no-repeat;
 	-webkit-mask-size: 12px 12px;
-	mask: url('../../info.svg') no-repeat;
+	mask: url('../../media/info.svg') no-repeat;
 	mask-size: 12px 12px;
 }
 
@@ -434,9 +434,9 @@
 	width: 11px;
 	height: 11px;
 	margin-left: 4px;
-	-webkit-mask: url('../../link_icon.svg') no-repeat;
+	-webkit-mask: url('../../media/link_icon.svg') no-repeat;
 	-webkit-mask-size: 11px 11px;
-	mask: url('../../link_icon.svg') no-repeat;
+	mask: url('../../media/link_icon.svg') no-repeat;
 	mask-size: 11px 11px;
 	height: 11px;
 	width: 11px;
@@ -623,7 +623,7 @@
 .ads_homepage__section.hero {
 	background-size: 1128px 467px;
 	background-repeat: no-repeat;
-	background-image: url('../../homeBanner_icon.svg');
+	background-image: url('../../media/homeBanner_icon.svg');
 	background-repeat: no-repeat;
 	background-position: 5px 0;
 	background-size: cover;
@@ -633,7 +633,7 @@
 .vs-dark .ads_homepage__section.hero, .hc-black .ads_homepage__section.hero {
 	background-size: 1128px 467px;
 	background-repeat: no-repeat;
-	background-image: url('../../homeBanner_icon_dark.svg');
+	background-image: url('../../media/homeBanner_icon_dark.svg');
 	background-repeat: no-repeat;
 	background-position: 5px 0;
 	background-size: cover;
@@ -644,7 +644,7 @@
 	.ads_homepage__section.hero {
 		background-size: contain;
 		background-repeat: no-repeat;
-		background-image: url('../../homeBanner_icon.svg');
+		background-image: url('../../media/homeBanner_icon.svg');
 		background-position: 300px -54px;
 	}
 }
@@ -653,7 +653,7 @@
 	.ads_homepage__section.hero {
 		background-size: 597px;
 		background-repeat: no-repeat;
-		background-image: url('../../homeBanner_icon.svg');
+		background-image: url('../../media/homeBanner_icon.svg');
 		background-position: 94% -54px;
 	}
 }
@@ -662,7 +662,7 @@
 	.vs-dark .ads_homepage__section.hero, .hc-black .ads_homepage__section.hero {
 		background-size: contain;
 		background-repeat: no-repeat;
-		background-image: url('../../homeBanner_icon_dark.svg');
+		background-image: url('../../media/homeBanner_icon_dark.svg');
 		background-position: 300px 0px;
 	}
 }
@@ -671,7 +671,7 @@
 	.vs-dark .ads_homepage__section.hero, .hc-black .ads_homepage__section.hero {
 		background-size: 597px;
 		background-repeat: no-repeat;
-		background-image: url('../../homeBanner_icon_dark.svg');
+		background-image: url('../../media/homeBanner_icon_dark.svg');
 		background-position: 94% 0px;
 	}
 }
@@ -738,7 +738,7 @@
 .ads_homepage .header__top_nav .icon {
 	width: 92px;
 	height: 92px;
-	background-image: url('../../dataStudioIcon.svg');
+	background-image: url('../../media/dataStudioIcon.svg');
 	background-size: 92px;
 	margin-right: 20px;
 }
@@ -838,25 +838,25 @@
 }
 
 .ads_homepage .header__bottom_nav__tile .icon.connection {
-	background-image: url('../../createConnectionIcon.svg');
+	background-image: url('../../media/createConnectionIcon.svg');
 	background-size: contain;
 	background-repeat: no-repeat;
 }
 
 .ads_homepage .header__bottom_nav__tile .icon.query {
-	background-image: url('../../databaseIcon.svg');
+	background-image: url('../../media/databaseIcon.svg');
 	background-size: contain;
 	background-repeat: no-repeat;
 }
 
 .ads_homepage .header__bottom_nav__tile .icon.notebook {
-	background-image: url('../../notebookIcon.svg');
+	background-image: url('../../media/notebookIcon.svg');
 	background-size: contain;
 	background-repeat: no-repeat;
 }
 
 .ads_homepage .header__bottom_nav__tile .icon.server {
-	background-image: url('../../serverIcon.svg');
+	background-image: url('../../media/serverIcon.svg');
 	background-size: contain;
 	background-repeat: no-repeat;
 }
@@ -945,7 +945,7 @@
 }
 
 .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) i, .ads_homepage .ads_homepage__section .pinned .list li i, .ads_homepage .icon--document {
-	-webkit-mask: url('../../icon_file_document.svg') no-repeat;
+	-webkit-mask: url('../../media/icon_file_document.svg') no-repeat;
 	-webkit-mask-size: 13px 16px;
 	mask: url('../../icon_file_document.svg') no-repeat;
 	mask-size: 13px 16px;
@@ -954,27 +954,27 @@
 }
 
 .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) i[title$='.ipynb'], .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) i[title$='.ipynb'] {
-	-webkit-mask: url('../../icon_file_ipynb.svg') no-repeat;
+	-webkit-mask: url('../../media/icon_file_ipynb.svg') no-repeat;
 	-webkit-mask-size: 13px 16px;
-	mask: url('../../icon_file_ipynb.svg') no-repeat;
+	mask: url('../../media/icon_file_ipynb.svg') no-repeat;
 	mask-size: 13px 16px;
 	height: 16px;
 	width: 16px;
 }
 
 .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) i[title$='.sql'], .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) i[title$='.sql'] {
-	-webkit-mask: url('../../icon_file_sql.svg') no-repeat;
+	-webkit-mask: url('../../media/icon_file_sql.svg') no-repeat;
 	-webkit-mask-size: 13px 16px;
-	mask: url('../../icon_file_sql.svg') no-repeat;
+	mask: url('../../media/icon_file_sql.svg') no-repeat;
 	mask-size: 13px 16px;
 	height: 16px;
 	width: 16px;
 }
 
 .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent) i[title$='.csv'], .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent) a[title$='.csv'] {
-	-webkit-mask: url('../../icon_file_csv.svg') no-repeat;
+	-webkit-mask: url('../../media/icon_file_csv.svg') no-repeat;
 	-webkit-mask-size: 13px 16px;
-	mask: url('../../icon_file_csv.svg') no-repeat;
+	mask: url('../../media/icon_file_csv.svg') no-repeat;
 	mask-size: 13px 16px;
 	height: 16px;
 	width: 16px;
@@ -1071,7 +1071,7 @@
 }
 
 .ads_homepage .extension_pack__description {
-	background: url('../../extension_pack_img.png');
+	background: url('../../media/extension_pack_img.png');
 	background-size: cover;
 	background-position: center;
 	position: relative;
@@ -1199,7 +1199,7 @@
 .file-icons-enabled .show-file-icons .az_data_welcome_page-name-file-icon.file-icon::before {
 	/* {{SQL CARBON EDIT}} We use azdata welcome page */
 	content: ' ';
-	background-image: url('../../code-icon.svg');
+	background-image: url('../../media/code-icon.svg');
 }
 
 .monaco-workbench .part.editor>.content .welcomePage .mac-only, .monaco-workbench .part.editor>.content .welcomePage .windows-only, .monaco-workbench .part.editor>.content .welcomePage .linux-only {
