@@ -669,7 +669,7 @@ export interface ICellDto {
 	language: string;
 	cellKind: CellKind;
 	outputs: IOutput[];
-	metadata?: NotebookCellMetadata;
+	metadata: NotebookCellMetadata;
 }
 
 export type NotebookCellsSplice = [
