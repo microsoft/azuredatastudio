@@ -407,7 +407,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 				// (1) get ourselves an old node
 				do {
 					let decorationNode = this._decorations[oldDecorationsIds[oldDecorationIndex++]];
-					node = decorationNode ? decorationNode.node : undefined;
+					node = decorationNode?.node;
 				} while (!node && oldDecorationIndex < oldDecorationsLen);
 
 				// (2) remove the node from the tree (if it exists)
@@ -529,6 +529,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 	getIndexByRange(range: NotebookRange): number {
 		let index = this.findArray.findIndex(r => r.cell.cellGuid === range.cell.cellGuid && r.startColumn === range.startColumn && r.endColumn === range.endColumn && r.startLineNumber === range.startLineNumber && r.endLineNumber === range.endLineNumber && r.isMarkdownSourceCell === range.isMarkdownSourceCell);
 		this._findIndex = index > -1 ? index : this._findIndex;
+		// _findIndex is the 0 based index, return index + 1 for the actual count on UI
 		return this._findIndex + 1;
 	}
 

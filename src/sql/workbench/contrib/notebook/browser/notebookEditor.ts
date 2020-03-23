@@ -271,6 +271,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		}
 		if (this._findCountChangeListener === undefined && this._notebookModel) {
 			this._findCountChangeListener = this.notebookInput.notebookFindModel.onFindCountChange(() => this._updateFinderMatchState());
+			this.registerModelChanges();
 		}
 		if (e.isRevealed) {
 			if (this._findState.isRevealed) {
@@ -279,7 +280,6 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 				this._updateFinderMatchState();
 				// if find is closed and opened again, highlight the last position.
 				this._findDecorations.setStartPosition(this.getPosition());
-				this.registerModelChanges();
 			} else {
 				this._finder.getDomNode().style.visibility = 'hidden';
 				this._findDecorations.clearDecorations();
@@ -338,7 +338,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 			}
 		}
 		if (e.searchScope) {
-			this.notebookInput.notebookFindModel.find(this._findState.searchString, this._findState.matchCase, this._findState.wholeWord, NOTEBOOK_MAX_MATCHES).then(findRange => {
+			await this.notebookInput.notebookFindModel.find(this._findState.searchString, this._findState.matchCase, this._findState.wholeWord, NOTEBOOK_MAX_MATCHES).then(findRange => {
 				this._findDecorations.set(this.notebookFindModel.findMatches, this._currentMatch);
 				this._findState.changeMatchInfo(
 					this.notebookFindModel.getIndexByRange(this._currentMatch),
@@ -371,11 +371,11 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		};
 		this._notebookModel.cells.forEach(cell => {
 			this._register(cell.onCellModeChanged((state) => {
-				this._onFindStateChange(changeEvent).catch(e => { onUnexpectedError(e); });
+				this._onFindStateChange(changeEvent).catch(onUnexpectedError);
 			}));
 		});
 		this._register(this._notebookModel.contentChanged(e => {
-			this._onFindStateChange(changeEvent).catch(err => { onUnexpectedError(err); });
+			this._onFindStateChange(changeEvent).catch(onUnexpectedError);
 		}));
 	}
 
