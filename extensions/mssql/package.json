@@ -687,11 +687,11 @@
           "objectType": null,
           "categoryValues": [
             {
-              "displayName": "Disabled",
+              "displayName": "%mssql.disabled%",
               "name": "Disabled"
             },
             {
-              "displayName": "Enabled",
+              "displayName": "%mssql.enabled%",
               "name": "Enabled"
             }
           ],
