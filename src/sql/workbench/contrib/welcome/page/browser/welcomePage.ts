@@ -154,9 +154,13 @@ interface ExtensionSuggestion {
 	isExtensionPack?: boolean;
 	icon?: string;
 	link?: string;
-	extensionPackExtensions?: any[];
 }
 
+
+interface ExtensionPackExtensions {
+	name: string;
+	icon: string;
+}
 
 const extensionPacks: ExtensionSuggestion[] = [
 	{
@@ -164,35 +168,20 @@ const extensionPacks: ExtensionSuggestion[] = [
 		title: localize('welcomePage.showAdminPack', "SQL Admin Pack"),
 		description: localize('welcomePage.adminPackDescription', "Admin Pack for SQL Server is a collection of popular database administration extensions to help you manage SQL Server"),
 		id: 'microsoft.admin-pack',
-		extensionPackExtensions: [
-			{
-				name: 'SQL Server Agent',
-				link: 'https://docs.microsoft.com/sql/azure-data-studio/sql-server-agent-extension?view=sql-server-2017',
-				icon: '../../../../../extensions/admin-pack/images/extension.png'
-			},
-			{
-				name: 'SQL Server Profiler',
-				link: 'https://docs.microsoft.com/sql/azure-data-studio/sql-server-profiler-extension?view=sql-server-2017',
-				icon: '../../../../../extensions/admin-pack/images/extension.png'
-			},
-			{
-				name: 'SQL Server Import',
-				link: 'https://docs.microsoft.com/sql/azure-data-studio/sql-server-import-extension?view=sql-server-2017',
-				icon: '../../../../../extensions/admin-pack/images/extension.png'
-			},
-			{
-				name: 'SQL Server Dacpac',
-				link: 'https://docs.microsoft.com/sql/azure-data-studio/sql-server-dacpac-extension?view=sql-server-2017',
-				icon: '../../../../../extensions/admin-pack/images/extension.png'
-			}
-		],
 		isExtensionPack: true
 	},
 ];
 
+const extensionPackExtensions: ExtensionPackExtensions[] = [
+	{ name: 'SQL Server Agent', icon: '../../../../sql/workbench/contrib/welcome/defaultExtensionIcon.svg' },
+	{ name: 'SQL Server Profiler', icon: '../../defaultExtensionIcon.svg' },
+	{ name: 'SQL Server Import', icon: '../../../../sql/workbench/contrib/welcome/defaultExtensionIcon.svg' },
+	{ name: 'SQL Server Dacpac', icon: '../../../../sql/workbench/contrib/welcome/defaultExtensionIcon.svg' }
+];
+
 const extensions: ExtensionSuggestion[] = [
 	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: localize('welcomePage.powershellDescription', "Write and execute PowerShell scripts using Azure Data Studio's rich query editor"), icon: 'https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png', link: `command:azdata.extension.open?{"id":"microsoft.powershell"}` },
-	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: localize('welcomePage.dataVirtualizationDescription', "Virtualize data with SQL Server 2019 and create external tables using interactive wizards"), icon: '../../../../../extensions/admin-pack/images/extension.png', link: `command:azdata.extension.open?{"id":"microsoft.datavirtualization"}` },
+	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: localize('welcomePage.dataVirtualizationDescription', "Virtualize data with SQL Server 2019 and create external tables using interactive wizards"), icon: '../../../../sql/workbench/contrib/welcome/defaultExtensionIcon.svg', link: `command:azdata.extension.open?{"id":"microsoft.datavirtualization"}` },
 	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: localize('welcomePage.PostgreSQLDescription', "Connect, query, and manage Postgres databases with Azure Data Studio"), icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png', link: `command:azdata.extension.open?{"id":"microsoft.azuredatastudio-postgresql"}` },
 ];
 
@@ -200,10 +189,10 @@ interface Strings {
 	installEvent: string;
 	installedEvent: string;
 	detailsEvent: string;
-	alreadyInstalled: (extensionName: any) => string;
-	reloadAfterInstall: (extensionName: any) => string;
-	installing: (extensionName: any) => string;
-	extensionNotFound: (extensionName: any, extensionId: any) => string;
+	alreadyInstalled: (extensionName: string) => string;
+	reloadAfterInstall: (extensionName: string) => string;
+	installing: (extensionName: string) => string;
+	extensionNotFound: (extensionName: string, extensionId: string) => string;
 }
 
 const extensionPackStrings: Strings = {
@@ -624,7 +613,7 @@ class WelcomePage extends Disposable {
 				const header = document.querySelector('.extension_pack__header');
 
 				a.classList.add(...classes);
-				a.innerText = 'Install';
+				a.innerText = localize('welcomePage.install', "Install");
 				a.title = extension.title || (extension.isKeymap ? localize('welcomePage.installKeymap', "Install {0} keymap", extension.name) : localize('welcomePage.installExtensionPack', "Install additional support for {0}", extension.name));
 				a.classList.add('installExtension');
 				a.setAttribute('data-extension', extension.id);
@@ -635,7 +624,7 @@ class WelcomePage extends Disposable {
 					e.stopPropagation();
 				});
 				btnContainer.appendChild(a);
-				btn.innerText = 'Installed';
+				btn.innerText = localize('welcomePage.installed', "Installed");
 				btn.title = extension.isKeymap ? localize('welcomePage.installedKeymap', "{0} keymap is already installed", extension.name) : localize('welcomePage.installedExtensionPack', "{0} support is already installed", extension.name);
 				btn.classList.add('enabledExtension');
 				btn.classList.add(...classes);
@@ -647,7 +636,7 @@ class WelcomePage extends Disposable {
 				header.innerHTML = extension.name;
 
 				const extensionListContainer = document.querySelector('.extension_pack__extension_list');
-				extension.extensionPackExtensions.forEach((j) => {
+				extensionPackExtensions.forEach((j) => {
 					const outerContainerElem = document.createElement('div');
 					const flexContainerElem = document.createElement('div');
 					const iconContainerElem = document.createElement('img');
