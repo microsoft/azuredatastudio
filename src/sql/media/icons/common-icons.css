@@ -12,19 +12,16 @@
 	background-image: url('settings_inverse.svg');
 }
 
-.vs .codicon.backup {
-	background: url("backup.svg") no-repeat;
-}
-
+.vs .codicon.backup,
 .vs-dark .codicon.backup,
 .hc-black .codicon.backup {
-	background: url("backup.svg") no-repeat;
+	background: url("backup.svg") center center no-repeat;
 }
 
 .vs .codicon.restore,
 .vs-dark .codicon.restore,
 .hc-black .codicon.restore {
-	background: url("restore.svg") no-repeat;
+	background: url("restore.svg") center center no-repeat;
 }
 
 .vs .codicon.database {
@@ -203,19 +200,19 @@
 .vs .codicon.new-query,
 .vs-dark .codicon.new-query,
 .hc-black .codicon.new-query {
-	background: url("newquery.svg") no-repeat;
+	background: url("newquery.svg") center center no-repeat;
 }
 
 .vs .codicon.configure-dashboard,
 .hc-black .codicon.configure-dashboard,
 .vs-dark .codicon.configure-dashboard {
-	background: url('configuredashboard.svg') no-repeat;
+	background: url('configuredashboard.svg') center center no-repeat;
 }
 
 .vs .codicon.edit,
 .hc-black .codicon.edit,
 .vs-dark .codicon.edit {
-	background: url("edit.svg") no-repeat;
+	background: url("edit.svg") center center no-repeat;
 }
 
 .hc-black .codicon.pin,
