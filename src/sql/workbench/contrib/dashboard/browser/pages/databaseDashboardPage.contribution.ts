@@ -106,7 +106,7 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 		{
 			name: 'Search',
 			gridItemConfig: {
-				sizex: 1,
+				sizex: 3,
 				sizey: 2
 			},
 			widget: {

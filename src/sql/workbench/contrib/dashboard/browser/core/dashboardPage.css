@@ -60,5 +60,5 @@ dashboard-page .editor-toolbar {
 	align-items: center;
 	border-bottom-width: 1px;
 	border-bottom-style: solid;
-	height:26px;
+	padding: 3px 0;
 }
