@@ -5,12 +5,13 @@
 import * as nls from 'vscode-nls';
 import { SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import { ClientCapabilities, StaticFeature, RPCMessageType, ServerCapabilities } from 'vscode-languageclient';
-import { Disposable, window } from 'vscode';
+import { Disposable, window, QuickPickItem, QuickPickOptions } from 'vscode';
 import { Telemetry } from './telemetry';
 import * as contracts from './contracts';
 import * as azdata from 'azdata';
 import * as Utils from './utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+import { DataCache } from './util/dataCache';
 
 const localize = nls.loadMessageBundle();
 
@@ -29,51 +30,16 @@ export class TelemetryFeature implements StaticFeature {
 	}
 }
 
-export class DataCache {
-
-	millisecondsToLive: number;
-	getValueFunction: (...args: any[]) => any;
-	cache: any;
-	fetchDate: Date;
-
-	constructor(getValueFunction: (...args: any[]) => any, secondsToLive: number) {
-		this.millisecondsToLive = secondsToLive * 1000;
-		this.getValueFunction = getValueFunction;
-		this.cache = null;
-		this.fetchDate = new Date(0);
-	}
-
-	public isCacheExpired() {
-		return (this.fetchDate.getTime() + this.millisecondsToLive) < new Date().getTime();
-	}
-
-	public getData(...args: any[]) {
-		if (!this.cache || this.isCacheExpired()) {
-			console.log('expired - fetching new data');
-			let data = this.getValueFunction(...args);
-			this.cache = data;
-			this.fetchDate = new Date();
-			return data;
-		} else {
-			console.log('cache hit');
-			return this.cache;
-		}
-	}
-
-	public resetCache() {
-		this.fetchDate = new Date(0);
-	}
-}
-
 export class AccountFeature implements StaticFeature {
 
-	tokenCache: DataCache = new DataCache(this.getToken, 10);
+	tokenCache: DataCache;
 
 	constructor(private _client: SqlOpsDataClient) { }
 
 	fillClientCapabilities(capabilities: ClientCapabilities): void { }
 
 	initialize(): void {
+		this.tokenCache = new DataCache(this.getToken, 10);
 		this._client.onRequest(contracts.SecurityTokenRequest.type, async (request): Promise<contracts.RequestSecurityTokenResponse | undefined> => {
 			return this.tokenCache.getData(request);
 		});
@@ -81,17 +47,28 @@ export class AccountFeature implements StaticFeature {
 
 	protected async getToken(request: contracts.RequestSecurityTokenParams): Promise<contracts.RequestSecurityTokenResponse | undefined> {
 		const accountList = await azdata.accounts.getAllAccounts();
+		let account: azdata.Account;
+
 		if (accountList.length < 1) {
 			// TODO: Prompt user to add account
 			window.showErrorMessage(localize('mssql.missingLinkedAzureAccount', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query."));
 			return undefined;
 		} else if (accountList.length > 1) {
-			// TODO: Prompt user to select an account
-			window.showErrorMessage(localize('mssql.multipleLinkedAzureAccount', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, which is not supported if multiple linked Azure accounts are present. Make sure only one linked Azure account exists and retry the query."));
-			return undefined;
+			let options: QuickPickOptions = {
+				ignoreFocusOut: true,
+				placeHolder: localize('mssql.chooseLinkedAzureAccount', "Please select a linked Azure account:")
+			};
+			let items = accountList.map(a => new AccountFeature.AccountQuickPickItem(a));
+			let selectedItem = await window.showQuickPick(items, options);
+			if (!selectedItem) { // The user canceled the selection.
+				window.showErrorMessage(localize('mssql.canceledLinkedAzureAccountSelection', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted."));
+				return undefined;
+			}
+			account = selectedItem.account;
+		} else {
+			account = accountList[0];
 		}
 
-		let account = accountList[0];
 		const securityToken: { [key: string]: any } = await azdata.accounts.getSecurityToken(account, azdata.AzureResource.AzureKeyVault);
 		const tenant = account.properties.tenants.find((t: { [key: string]: string }) => request.authority.includes(t.id));
 		const unauthorizedMessage = localize('mssql.insufficientlyPrivelagedAzureAccount', "The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.", account.key.accountId);
@@ -112,6 +89,20 @@ export class AccountFeature implements StaticFeature {
 
 		return params;
 	}
+
+	static AccountQuickPickItem = class implements QuickPickItem {
+		account: azdata.Account;
+		label: string;
+		description?: string;
+		detail?: string;
+		picked?: boolean;
+		alwaysShow?: boolean;
+
+		constructor(account: azdata.Account) {
+			this.account = account;
+			this.label = account.key.accountId;
+		}
+	};
 }
 
 export class AgentServicesFeature extends SqlOpsFeature<undefined> {
