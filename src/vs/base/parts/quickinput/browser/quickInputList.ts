@@ -26,6 +26,7 @@ import { getIconClass } from 'vs/base/parts/quickinput/browser/quickInputUtils';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { IQuickInputOptions } from 'vs/base/parts/quickinput/browser/quickInput';
 import { IListOptions, List, IListStyles, IAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
+import { KeybindingLabel } from 'vs/base/browser/ui/keybindingLabel/keybindingLabel';
 
 const $ = dom.$;
 
@@ -79,6 +80,7 @@ interface IListElementTemplateData {
 	entry: HTMLDivElement;
 	checkbox: HTMLInputElement;
 	label: IconLabel;
+	keybinding: KeybindingLabel;
 	detail: HighlightedLabel;
 	separator: HTMLDivElement;
 	actionBar: ActionBar;
@@ -118,6 +120,10 @@ class ListElementRenderer implements IListRenderer<ListElement, IListElementTemp
 		// Label
 		data.label = new IconLabel(row1, { supportHighlights: true, supportDescriptionHighlights: true, supportCodicons: true });
 
+		// Keybinding
+		const keybindingContainer = dom.append(row1, $('.quick-input-list-entry-keybinding'));
+		data.keybinding = new KeybindingLabel(keybindingContainer, platform.OS);
+
 		// Detail
 		const detailContainer = dom.append(row2, $('.quick-input-list-label-meta'));
 		data.detail = new HighlightedLabel(detailContainer, true);
@@ -148,7 +154,11 @@ class ListElementRenderer implements IListRenderer<ListElement, IListElementTemp
 		options.descriptionMatches = descriptionHighlights || [];
 		options.extraClasses = element.item.iconClasses;
 		options.italic = element.item.italic;
+		options.strikethrough = element.item.strikethrough;
 		data.label.setLabel(element.saneLabel, element.saneDescription, options);
+
+		// Keybinding
+		data.keybinding.set(element.item.keybinding);
 
 		// Meta
 		data.detail.set(element.saneDetail, detailHighlights);
@@ -171,7 +181,11 @@ class ListElementRenderer implements IListRenderer<ListElement, IListElementTemp
 		const buttons = element.item.buttons;
 		if (buttons && buttons.length) {
 			data.actionBar.push(buttons.map((button, index) => {
-				const action = new Action(`id-${index}`, '', button.iconClass || (button.iconPath ? getIconClass(button.iconPath) : undefined), true, () => {
+				let cssClasses = button.iconClass || (button.iconPath ? getIconClass(button.iconPath) : undefined);
+				if (button.alwaysVisible) {
+					cssClasses = cssClasses ? `${cssClasses} always-visible` : 'always-visible';
+				}
+				const action = new Action(`id-${index}`, '', cssClasses, true, () => {
 					element.fireButtonTriggered({
 						button,
 						item: element.item
@@ -302,7 +316,7 @@ export class QuickInputList {
 
 	@memoize
 	get onDidChangeSelection() {
-		return Event.map(this.list.onDidChangeSelection, e => e.elements.map(e => e.item));
+		return Event.map(this.list.onDidChangeSelection, e => ({ items: e.elements.map(e => e.item), event: e.browserEvent }));
 	}
 
 	getAllVisibleChecked() {
@@ -402,6 +416,10 @@ export class QuickInputList {
 		this._onChangedVisibleCount.fire(this.elements.length);
 	}
 
+	getElementsCount(): number {
+		return this.inputElements.length;
+	}
+
 	getFocusedElements() {
 		return this.list.getFocusedElements()
 			.map(e => e.item);
@@ -484,10 +502,10 @@ export class QuickInputList {
 		this.list.layout();
 	}
 
-	filter(query: string) {
+	filter(query: string): boolean {
 		if (!(this.sortByLabel || this.matchOnLabel || this.matchOnDescription || this.matchOnDetail)) {
 			this.list.layout();
-			return;
+			return false;
 		}
 		query = query.trim();
 
@@ -545,6 +563,8 @@ export class QuickInputList {
 
 		this._onChangedAllVisibleChecked.fire(this.getAllVisibleChecked());
 		this._onChangedVisibleCount.fire(shownElements.length);
+
+		return true;
 	}
 
 	toggleCheckbox() {

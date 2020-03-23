@@ -23,12 +23,17 @@ export interface Tenant {
 	 * Identifier of the user in the tenant
 	 */
 	userId: string;
+
+	/**
+	 * The category the user has set their tenant to (e.g. Home Tenant)
+	 */
+	tenantCategory: string;
 }
 
 /**
  * Represents a resource exposed by an Azure Active Directory
  */
-interface Resource {
+export interface Resource {
 	/**
 	 * Identifier of the resource
 	 */
@@ -38,6 +43,11 @@ interface Resource {
 	 * Endpoint url used to access the resource
 	 */
 	endpoint: string;
+
+	/**
+	 * Resource ID for azdata
+	 */
+	azureResourceId?: azdata.AzureResource
 }
 
 /**
@@ -80,6 +90,11 @@ interface Settings {
 	ossRdbmsResource?: Resource;
 
 	/**
+	 * Information that describes the Azure Key Vault resource
+	 */
+	azureKeyVaultResource?: Resource;
+
+	/**
 	 * A list of tenant IDs to authenticate against. If defined, then these IDs will be used
 	 * instead of querying the tenants endpoint of the armResource
 	 */
@@ -96,6 +111,8 @@ interface Settings {
 	 * Redirect URI that is used to signify the end of the interactive aspect of sign it
 	 */
 	redirectUri?: string;
+
+	scopes?: string[]
 }
 
 /**
@@ -123,10 +140,20 @@ export interface AzureAccountProviderMetadata extends azdata.AccountProviderMeta
 	settings: Settings;
 }
 
+export enum AzureAuthType {
+	AuthCodeGrant = 0,
+	DeviceCode = 1
+}
+
 /**
  * Properties specific to an Azure account
  */
 interface AzureAccountProperties {
+	/**
+	 * Auth type of azure used to authenticate this account.
+	 */
+	azureAuthType?: AzureAuthType
+
 	providerSettings: AzureAccountProviderMetadata;
 	/**
 	 * Whether or not the account is a Microsoft account
@@ -137,6 +164,17 @@ interface AzureAccountProperties {
 	 * A list of tenants (aka directories) that the account belongs to
 	 */
 	tenants: Tenant[];
+
+	/**
+	 * A list of subscriptions the user belongs to
+	 */
+	subscriptions?: Subscription[];
+}
+
+export interface Subscription {
+	id: string,
+	tenantId: string,
+	displayName: string
 }
 
 /**
@@ -179,3 +217,8 @@ export interface AzureAccountSecurityToken {
  * an access token. The list of tenants correspond to the tenants in the account properties.
  */
 export type AzureAccountSecurityTokenCollection = { [tenantId: string]: AzureAccountSecurityToken };
+
+export interface Deferred<T> {
+	resolve: (result: T | Promise<T>) => void;
+	reject: (reason: any) => void;
+}

@@ -27,6 +27,7 @@ import { find, firstIndex } from 'vs/base/common/arrays';
 import { IThemable } from 'vs/base/common/styler';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { alert } from 'vs/base/browser/ui/aria/aria';
 
 export enum MessageLevel {
 	Error = 0,
@@ -63,6 +64,7 @@ export interface IModalOptions {
 	hasTitleIcon?: boolean;
 	hasErrors?: boolean;
 	hasSpinner?: boolean;
+	spinnerTitle?: string;
 }
 
 const defaultOptions: IModalOptions = {
@@ -245,6 +247,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalFooterSection = DOM.append(this._modalContent, DOM.$('.modal-footer'));
 			if (this._modalOptions.hasSpinner) {
 				this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.codicon.in-progress'));
+				this._spinnerElement.setAttribute('title', this._modalOptions.spinnerTitle);
 				DOM.hide(this._spinnerElement);
 			}
 			this._leftFooter = DOM.append(this._modalFooterSection, DOM.$('.left-footer'));
@@ -342,8 +345,6 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalBodySection.querySelectorAll(tabbableElementsQuerySelector) :
 			this._bodyContainer.querySelectorAll(tabbableElementsQuerySelector);
 
-		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
-
 		if (focusableElements && focusableElements.length > 0) {
 			(<HTMLElement>focusableElements[0]).focus();
 		}
@@ -353,6 +354,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Shows the modal and attaches key listeners
 	 */
 	protected show() {
+		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
 		this._modalShowingContext.get()!.push(this._staticKey);
 		DOM.append(this.layoutService.container, this._bodyContainer);
 		this.setInitialFocusedElement();
@@ -393,14 +395,18 @@ export abstract class Modal extends Disposable implements IThemable {
 	protected hide() {
 		this._modalShowingContext.get()!.pop();
 		this._bodyContainer.remove();
-		if (this._focusedElementBeforeOpen) {
-			this._focusedElementBeforeOpen.focus();
-		}
 		this._keydownListener.dispose();
 		this._resizeListener.dispose();
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ModalDialogClosed)
 			.withAdditionalProperties({ name: this._name })
 			.send();
+		this.restoreKeyboardFocus();
+	}
+
+	private restoreKeyboardFocus() {
+		if (this._focusedElementBeforeOpen) {
+			this._focusedElementBeforeOpen.focus();
+		}
 	}
 
 	/**
@@ -498,9 +504,11 @@ export abstract class Modal extends Disposable implements IThemable {
 				DOM.prepend(this._modalContent, (this._messageElement));
 			}
 		} else {
-			// Set the focus manually otherwise it'll escape the dialog to something behind it
-			this.setInitialFocusedElement();
 			DOM.removeNode(this._messageElement);
+			// Set the focus to first focus element if the focus is not within the dialog
+			if (!DOM.isAncestor(document.activeElement, this._bodyContainer)) {
+				this.setInitialFocusedElement();
+			}
 		}
 	}
 
@@ -511,6 +519,9 @@ export abstract class Modal extends Disposable implements IThemable {
 		if (this._modalOptions.hasSpinner) {
 			if (show) {
 				DOM.show(this._spinnerElement);
+				if (this._modalOptions.spinnerTitle) {
+					alert(this._modalOptions.spinnerTitle);
+				}
 			} else {
 				DOM.hide(this._spinnerElement);
 			}

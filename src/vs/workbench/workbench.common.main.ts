@@ -245,6 +245,9 @@ import 'vs/workbench/contrib/preferences/browser/preferences.contribution';
 import 'vs/workbench/contrib/preferences/browser/keybindingsEditorContribution';
 import 'vs/workbench/contrib/preferences/browser/preferencesSearch';
 
+// Notebook
+import 'vs/workbench/contrib/notebook/browser/notebook.contribution';
+
 // Logs
 import 'vs/workbench/contrib/logs/common/logs.contribution';
 
@@ -469,5 +472,8 @@ import 'sql/workbench/contrib/scripting/browser/scripting.contribution';
 
 // Resource Deployment
 import 'sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution';
+
+// Extension
+import 'sql/workbench/contrib/extensions/browser/extensions.contribution';
 
 //#endregion
