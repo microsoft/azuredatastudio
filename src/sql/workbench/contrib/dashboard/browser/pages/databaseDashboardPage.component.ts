@@ -68,5 +68,6 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 	ngOnInit() {
 		this.init();
 		this._breadcrumbService.setBreadcrumbs(BreadcrumbClass.DatabasePage);
+		super.ngAfterViewInit();
 	}
 }
