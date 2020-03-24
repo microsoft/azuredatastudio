@@ -73,7 +73,7 @@ export class Workbench {
 		// {{SQL CARBON EDIT}}
 		this.connectionDialog = new ConnectionDialog(code);
 		this.profiler = new Profiler(code, this.quickopen);
-		this.queryEditors = new QueryEditors(code, this.quickopen);
+		this.queryEditors = new QueryEditors(code);
 		// {{END}}
 	}
 }
