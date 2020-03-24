@@ -97,12 +97,14 @@ const formatStagedFiles = () => {
 	});
 };
 
-async function installService() {
-	let config = require('../extensions/mssql/config.json');
+async function installService(configPath) {
+	const absoluteConfigPath = require.resolve(configPath);
+	const config = require(absoluteConfigPath);
 	const p = await platform.getCurrent();
 	let runtime = p.runtimeId;
 	// fix path since it won't be correct
-	config.installDirectory = path.join(__dirname, '../extensions/mssql/src', config.installDirectory);
+	config.installDirectory = path.join(path.dirname(absoluteConfigPath), config.installDirectory);
+	console.log('install diectory', config.installDirectory);
 	let installer = new serviceDownloader(config);
 	installer.eventEmitter.onAny((event, ...values) => {
 		console.log(`ServiceDownloader Event : ${event}${values && values.length > 0 ? ` - ${values.join(' ')}` : ''}`);
@@ -126,30 +128,9 @@ async function installService() {
 	assert(stat);
 }
 
-gulp.task('install-sqltoolsservice', () => {
-	return installService();
-});
+gulp.task('install-sqltoolsservice', () => installService('../extensions/mssql/config.json'));
 
-gulp.task('install-ssmsmin', async () => {
-	const config = require('../extensions/admin-tool-ext-win/config.json');
-	const runtime = 'Windows_64'; // admin-tool-ext is a windows only extension, and we only ship a 64 bit version, so locking the binaries as such
-	// fix path since it won't be correct
-	config.installDirectory = path.join(__dirname, '..', 'extensions', 'admin-tool-ext-win', config.installDirectory);
-	let installer = new serviceDownloader(config);
-	installer.eventEmitter.onAny((event, ...values) => {
-		console.log(`ServiceDownloader Event : ${event}${values && values.length > 0 ? ` - ${values.join(' ')}` : ''}`);
-	});
-	const serviceInstallFolder = installer.getInstallDirectory(runtime);
-	const serviceCleanupFolder = path.join(serviceInstallFolder, '..');
-	console.log('Cleaning up the install folder: ' + serviceCleanupFolder);
-	try {
-		await utils.rimraf(serviceCleanupFolder)();
-	} catch (e) {
-		console.log('failed to delete the install folder error: ' + e);
-	}
-
-	return installer.installService(runtime);
-});
+gulp.task('install-ssmsmin', () => installService('../extensions/admin-tool-ext-win/config.json'));
 
 const root = path.dirname(__dirname);
 
