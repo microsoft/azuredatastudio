@@ -364,8 +364,8 @@ class ResourceLabelWidget extends IconLabel {
 	}
 
 	setResource(label: IResourceLabelProps, options: IResourceLabelOptions = Object.create(null)): void {
-		/*const resource = toResource(this.label); {{SQL CARBON EDIT}} we don't want to special case untitled files
-		const isMasterDetail = this.label?.resource && !URI.isUri(this.label.resource);
+		/*const resource = toResource(label); {{SQL CARBON EDIT}} we don't want to special case untitled files
+		const isMasterDetail = label?.resource && !URI.isUri(label.resource);
 
 		if (!isMasterDetail && resource?.scheme === Schemas.untitled) {
 			// Untitled labels are very dynamic because they may change
