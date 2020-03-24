@@ -3,17 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export class DataCache {
+export class DataCache<T> {
 
 	millisecondsToLive: number;
-	getValueFunction: (...args: any[]) => any;
-	cache: any;
+	getValueFunction: (...args: any[]) => T;
+	cache: T;
 	fetchDate: Date;
 
-	constructor(getValueFunction: (...args: any[]) => any, secondsToLive: number) {
+	constructor(getValueFunction: (...args: any[]) => T, secondsToLive: number) {
 		this.millisecondsToLive = secondsToLive * 1000;
 		this.getValueFunction = getValueFunction;
-		this.cache = null;
+		this.cache = undefined;
 		this.fetchDate = new Date(0);
 	}
 
@@ -21,7 +21,7 @@ export class DataCache {
 		return (this.fetchDate.getTime() + this.millisecondsToLive) < new Date().getTime();
 	}
 
-	public getData(...args: any[]) {
+	public getData(...args: any[]): T {
 		if (!this.cache || this.isCacheExpired()) {
 			console.log('expired - fetching new data');
 			let data = this.getValueFunction(...args);
