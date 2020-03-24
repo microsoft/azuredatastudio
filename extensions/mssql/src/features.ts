@@ -11,7 +11,7 @@ import * as contracts from './contracts';
 import * as azdata from 'azdata';
 import * as Utils from './utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
-import { DataCache } from './util/dataCache';
+import { DataItemCache } from './util/dataCache';
 
 const localize = nls.loadMessageBundle();
 
@@ -32,14 +32,15 @@ export class TelemetryFeature implements StaticFeature {
 
 export class AccountFeature implements StaticFeature {
 
-	tokenCache: DataCache;
+	tokenCache: DataItemCache<contracts.RequestSecurityTokenResponse | undefined>;
 
 	constructor(private _client: SqlOpsDataClient) { }
 
 	fillClientCapabilities(capabilities: ClientCapabilities): void { }
 
 	initialize(): void {
-		this.tokenCache = new DataCache(this.getToken, 10);
+		let timeToLiveInSeconds = 10;
+		this.tokenCache = new DataItemCache(this.getToken, timeToLiveInSeconds);
 		this._client.onRequest(contracts.SecurityTokenRequest.type, async (request): Promise<contracts.RequestSecurityTokenResponse | undefined> => {
 			return this.tokenCache.getData(request);
 		});

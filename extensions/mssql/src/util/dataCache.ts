@@ -3,17 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export class DataCache<T> {
+export class DataItemCache<T> {
 
 	millisecondsToLive: number;
-	getValueFunction: (...args: any[]) => T;
-	cache: T;
+	getValueFunction: (...args: any[]) => Promise<T>;
+	cachedItem: T;
 	fetchDate: Date;
 
-	constructor(getValueFunction: (...args: any[]) => T, secondsToLive: number) {
+	constructor(getValueFunction: (...args: any[]) => Promise<T>, secondsToLive: number) {
 		this.millisecondsToLive = secondsToLive * 1000;
 		this.getValueFunction = getValueFunction;
-		this.cache = undefined;
+		this.cachedItem = undefined;
 		this.fetchDate = new Date(0);
 	}
 
@@ -21,17 +21,14 @@ export class DataCache<T> {
 		return (this.fetchDate.getTime() + this.millisecondsToLive) < new Date().getTime();
 	}
 
-	public getData(...args: any[]): T {
-		if (!this.cache || this.isCacheExpired()) {
-			console.log('expired - fetching new data');
-			let data = this.getValueFunction(...args);
-			this.cache = data;
+	public async getData(...args: any[]): Promise<T> {
+		if (!this.cachedItem || this.isCacheExpired()) {
+			let data = await this.getValueFunction(...args);
+			this.cachedItem = data;
 			this.fetchDate = new Date();
 			return data;
-		} else {
-			console.log('cache hit');
-			return this.cache;
 		}
+		return this.cachedItem;
 	}
 
 	public resetCache(): void {
