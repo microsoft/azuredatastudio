@@ -3,7 +3,7 @@
 // This code is originally from https://github.com/DonJayamanne/bowerVSCode
 // License: https://github.com/DonJayamanne/bowerVSCode/blob/master/LICENSE
 
-import {window, StatusBarItem, StatusBarAlignment} from 'vscode';
+import { window, StatusBarItem, StatusBarAlignment } from 'vscode';
 
 export default class ProgressIndicator {
 
