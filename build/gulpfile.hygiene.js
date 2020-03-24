@@ -139,6 +139,7 @@ const copyrightFilter = [
 	// {{SQL CARBON EDIT}}
 	'!extensions/notebook/src/intellisense/text.ts',
 	'!extensions/mssql/src/hdfs/webhdfs.ts',
+	'!extensions/kusto/src/objectExplorerNodeProvider/webhdfs.ts',
 	'!src/sql/workbench/contrib/notebook/browser/outputs/tableRenderers.ts',
 	'!src/sql/workbench/contrib/notebook/common/models/url.ts',
 	'!src/sql/workbench/services/notebook/browser/outputs/renderMimeInterfaces.ts',
@@ -163,6 +164,7 @@ const copyrightFilter = [
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/notebook/src/prompts/**',
 	'!extensions/mssql/src/prompts/**',
+	'!extensions/kusto/src/prompts/**',
 	'!extensions/notebook/resources/jupyter_config/**',
 	'!extensions/query-history/images/**',
 	'!**/*.gif',
