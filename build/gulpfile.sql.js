@@ -18,6 +18,8 @@ const task = require('./lib/task');
 const glob = require('glob');
 const vsce = require('vsce');
 const mkdirp = require('mkdirp');
+const fs = require('fs').promises;
+const assert = require('assert');
 
 gulp.task('clean-mssql-extension', util.rimraf('extensions/mssql/node_modules'));
 gulp.task('clean-credentials-extension', util.rimraf('extensions/credentials/node_modules'));
@@ -96,25 +98,33 @@ const formatStagedFiles = () => {
 	});
 };
 
-function installService() {
+async function installService() {
 	let config = require('../extensions/mssql/config.json');
-	return platform.getCurrent().then(p => {
-		let runtime = p.runtimeId;
-		// fix path since it won't be correct
-		config.installDirectory = path.join(__dirname, '../extensions/mssql/src', config.installDirectory);
-		let installer = new serviceDownloader(config);
-		installer.eventEmitter.onAny((event, ...values) => {
-			console.log(`ServiceDownloader Event : ${event}${values && values.length > 0 ? ` - ${values.join(' ')}` : ''}`);
-		});
-		let serviceInstallFolder = installer.getInstallDirectory(runtime);
-		console.log('Cleaning up the install folder: ' + serviceInstallFolder);
-		return del(serviceInstallFolder + '/*').then(() => {
-			console.log('Installing the service. Install folder: ' + serviceInstallFolder);
-			return installer.installService(runtime);
-		}, delError => {
-			console.log('failed to delete the install folder error: ' + delError);
-		});
+	const p = await platform.getCurrent();
+	let runtime = p.runtimeId;
+	// fix path since it won't be correct
+	config.installDirectory = path.join(__dirname, '../extensions/mssql/src', config.installDirectory);
+	let installer = new serviceDownloader(config);
+	installer.eventEmitter.onAny((event, ...values) => {
+		console.log(`ServiceDownloader Event : ${event}${values && values.length > 0 ? ` - ${values.join(' ')}` : ''}`);
 	});
+	let serviceInstallFolder = installer.getInstallDirectory(runtime);
+	console.log('Cleaning up the install folder: ' + serviceInstallFolder);
+	try {
+		await util.rimraf(serviceInstallFolder)();
+	} catch (e) {
+		console.error('failed to delete the install folder error: ' + e);
+		throw e;
+	}
+	await installer.installService(runtime);
+	let stat;
+	try {
+		for (const file of config.executableFiles) {
+			stat = await fs.stat(path.join(serviceInstallFolder, file));
+		}
+	} catch (e) { }
+
+	assert(stat);
 }
 
 gulp.task('install-sqltoolsservice', () => {
