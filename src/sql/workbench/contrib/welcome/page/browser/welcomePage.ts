@@ -48,13 +48,9 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { joinPath } from 'vs/base/common/resources';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
-
-
-
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
 const telemetryFrom = 'welcomePage';
-
 
 export class WelcomePageContribution implements IWorkbenchContribution {
 	constructor(
@@ -111,7 +107,6 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 		}
 	}
 }
-
 
 function isWelcomePageEnabled(configurationService: IConfigurationService, contextService: IWorkspaceContextService) {
 	const startupEditor = configurationService.inspect(configurationKey);
@@ -186,7 +181,6 @@ const extensions: ExtensionSuggestion[] = [
 	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: localize('welcomePage.PostgreSQLDescription', "Connect, query, and manage Postgres databases with Azure Data Studio"), icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png', link: `command:azdata.extension.open?{"id":"microsoft.azuredatastudio-postgresql"}` },
 ];
 
-
 const extensionPackStrings = {
 	installEvent: 'installExtension',
 	installedEvent: 'installedExtension',
@@ -196,7 +190,6 @@ const extensionPackStrings = {
 	installing: (extensionName: string) => { return localize('welcomePage.installingExtensionPack', "Installing additional support for {0}...", extensionName); },
 	extensionNotFound: (extensionName: string, extensionId: string) => { return localize('welcomePage.extensionPackNotFound', "Support for {0} with id {1} could not be found.", extensionName, extensionId); },
 };
-
 
 const welcomeInputTypeId = 'workbench.editors.welcomePageInput';
 class WelcomePage extends Disposable {
@@ -294,18 +287,18 @@ class WelcomePage extends Disposable {
 	}
 
 	private addVideoImageSource() {
-		const videoIntroduction = document.querySelector('#video--introduction') as HTMLImageElement;
-		const videoOverview = document.querySelector('#video--overview') as HTMLImageElement;
+		const videoIntroduction = document.querySelector('#video_introduction') as HTMLImageElement;
+		const videoOverview = document.querySelector('#video_overview') as HTMLImageElement;
 
 		videoIntroduction.src = require.toUrl('./../../media/video_introduction.png');
 		videoOverview.src = require.toUrl('./../../media/video_overview.png');
 	}
 
 	private createWidePreviewToolTip() {
-		const previewLink = document.querySelector('#preview_link--wide');
-		const tooltip = document.querySelector('#tooltip__text--wide');
-		const previewModalBody = document.querySelector('.preview_tooltip__body') as HTMLElement;
-		const previewModalHeader = document.querySelector('.preview_tooltip__header') as HTMLElement;
+		const previewLink = document.querySelector('#preview_link_wide');
+		const tooltip = document.querySelector('#tooltip_text_wide');
+		const previewModalBody = document.querySelector('.preview_tooltip_body') as HTMLElement;
+		const previewModalHeader = document.querySelector('.preview_tooltip_header') as HTMLElement;
 
 		previewLink.addEventListener('mouseover', () => {
 			tooltip.setAttribute('aria-hidden', 'true');
@@ -361,7 +354,6 @@ class WelcomePage extends Disposable {
 		});
 	}
 
-
 	private createDropDown() {
 		const dropdownBtn = document.querySelector('#dropdown_btn');
 		const dropdown = document.querySelector('#dropdown') as HTMLInputElement;
@@ -393,10 +385,10 @@ class WelcomePage extends Disposable {
 		const body = document.querySelector('body');
 
 		if (body.classList.contains('windows') || body.classList.contains('linux')) {
-			const macOnly = document.querySelector('#dropdown_mac-only');
+			const macOnly = document.querySelector('#dropdown_mac_only');
 			macOnly.remove();
 		} else if (body.classList.contains('mac')) {
-			const windowsLinuxOnly = document.querySelector('#dropdown_windows_linux-only');
+			const windowsLinuxOnly = document.querySelector('#dropdown_windows_linux_only');
 			windowsLinuxOnly.remove();
 		}
 
@@ -438,9 +430,9 @@ class WelcomePage extends Disposable {
 
 	private createPreviewModal() {
 		const modal = document.querySelector('#preview_modal') as HTMLElement;
-		const btn = document.querySelector('#tool_tip__container--narrow') as HTMLElement;
+		const btn = document.querySelector('#tool_tip_container_narrow') as HTMLElement;
 		const span = document.querySelector('.close_icon') as HTMLElement;
-		const previewModalHeader = document.querySelector('.preview_modal__header') as HTMLElement;
+		const previewModalHeader = document.querySelector('.preview_modal_header') as HTMLElement;
 
 
 
@@ -486,8 +478,8 @@ class WelcomePage extends Disposable {
 		});
 
 		modal.addEventListener('keydown', function (e: KeyboardEvent) {
-			const previewModalBody = document.querySelector('.preview_modal__body') as HTMLElement;
-			const previewModalHeader = document.querySelector('.preview_modal__header') as HTMLElement;
+			const previewModalBody = document.querySelector('.preview_modal_body') as HTMLElement;
+			const previewModalHeader = document.querySelector('.preview_modal_header') as HTMLElement;
 			let event = new StandardKeyboardEvent(e);
 
 			if (event.equals(KeyCode.Tab)) {
@@ -543,7 +535,6 @@ class WelcomePage extends Disposable {
 		return result;
 	}
 
-
 	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService: IFileService): Promise<HTMLElement[]> {
 		const result: HTMLElement[] = [];
 		for (let i = 0; i < recents.length; i++) {
@@ -565,12 +556,11 @@ class WelcomePage extends Disposable {
 		return result;
 	}
 
-
 	private addExtensionList(container: HTMLElement, listSelector: string) {
 		const list = container.querySelector(listSelector);
 		if (list) {
 			extensions.forEach((extension, i) => {
-				const flexDivContainerClasses = ['flex', 'flex--a_center', 'extension__inner'];
+				const flexDivContainerClasses = ['flex', 'flex_a_center', 'extension_inner'];
 				const outerAnchorContainerElm = document.createElement('a');
 				const flexDivContainerElm = document.createElement('div');
 				const descriptionContainerElm = document.createElement('div');
@@ -608,10 +598,10 @@ class WelcomePage extends Disposable {
 		if (btnContainer) {
 			extensionPacks.forEach((extension, i) => {
 				const a = document.createElement('a');
-				const classes = ['btn', 'btn--standard', 'a_self--end', 'flex', 'flex--a_center', 'flex--j_center'];
+				const classes = ['btn', 'btn_standard', 'a_self_end', 'flex', 'flex_a_center', 'flex_j_center'];
 				const btn = document.createElement('button');
-				const description = document.querySelector('.extension_pack__body');
-				const header = document.querySelector('.extension_pack__header');
+				const description = document.querySelector('.extension_pack_body');
+				const header = document.querySelector('.extension_pack_header');
 
 				a.classList.add(...classes);
 				a.innerText = localize('welcomePage.install', "Install");
@@ -636,7 +626,7 @@ class WelcomePage extends Disposable {
 				description.innerHTML = extension.description;
 				header.innerHTML = extension.name;
 
-				const extensionListContainer = document.querySelector('.extension_pack__extension_list');
+				const extensionListContainer = document.querySelector('.extension_pack_extension_list');
 				extensionPackExtensions.forEach((j) => {
 					const outerContainerElem = document.createElement('div');
 					const flexContainerElem = document.createElement('div');
@@ -645,15 +635,15 @@ class WelcomePage extends Disposable {
 					const pElem = document.createElement('p');
 					const anchorElem = document.createElement('a');
 
-					const outerContainerClasses = ['extension_pack__extension_container', 'flex', 'flex--j_center'];
-					const flexContainerClasses = ['flex', 'flex--a_center'];
+					const outerContainerClasses = ['extension_pack_extension_container', 'flex', 'flex_j_center'];
+					const flexContainerClasses = ['flex', 'flex_a_center'];
 
 					anchorElem.href = j.link;
 
 					outerContainerElem.classList.add(...outerContainerClasses);
 					flexContainerElem.classList.add(...flexContainerClasses);
 					iconContainerElem.classList.add('icon');
-					pElem.classList.add('extension_pack__extension_list__header');
+					pElem.classList.add('extension_pack_extension_list_header');
 					descriptionContainerElem.classList.add('description');
 
 					outerContainerElem.appendChild(flexContainerElem);
@@ -857,7 +847,6 @@ export class WelcomeInputFactory implements IEditorInputFactory {
 }
 
 // theming
-
 export const buttonBackground = registerColor('welcomePage.buttonBackground', { dark: null, light: null, hc: null }, localize('welcomePage.buttonBackground', 'Background color for the buttons on the Welcome page.'));
 export const buttonHoverBackground = registerColor('welcomePage.buttonHoverBackground', { dark: null, light: null, hc: null }, localize('welcomePage.buttonHoverBackground', 'Hover background color for the buttons on the Welcome page.'));
 export const welcomePageBackground = registerColor('welcomePage.background', { light: null, dark: null, hc: null }, localize('welcomePage.background', 'Background color for the Welcome page.'));
@@ -871,14 +860,14 @@ registerThemingParticipant((theme, collector) => {
 	const tileColor = theme.getColor(tileBackground);
 	if (tileColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile:not(.extension):not(.extension_pack) { background-color: ${tileColor};  }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool_tip .tool_tip__text { background-color: ${tileColor};  }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool_tip .tool_tip_text { background-color: ${tileColor};  }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .modal_content { background-color: ${tileColor};  }`);
 	}
 	const tileBorderColor = theme.getColor(tileBorder);
 	if (tileBorderColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile:not(.extension):not(.extension_pack) { border-color: ${tileBorderColor}; }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool_tip .tool_tip__text:after { border-color: transparent transparent ${tileBorderColor}; transparent }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool_tip .tool_tip__text { border: 1px solid ${tileBorderColor};  }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool_tip .tool_tip_text:after { border-color: transparent transparent ${tileBorderColor}; transparent }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool_tip .tool_tip_text { border: 1px solid ${tileBorderColor};  }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .modal_content { border: 1px solid ${tileBorderColor};  }`);
 	}
 	const tileBoxShadowColor = theme.getColor(tileBoxShadow);
@@ -891,44 +880,44 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const buttonPrimarydBackgroundColor = theme.getColor(buttonPrimaryBackground);
 	if (buttonPrimarydBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--primary { background-color: ${buttonPrimarydBackgroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary { background-color: ${buttonPrimarydBackgroundColor};}`);
 	}
 	const buttonPrimaryColor = theme.getColor(buttonPrimary);
 	if (buttonPrimaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--primary { color: ${buttonPrimaryColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .icon--arrow_down:before { color: ${buttonPrimaryColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary { color: ${buttonPrimaryColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .icon_arrow_down:before { color: ${buttonPrimaryColor};}`);
 	}
 	const buttonPrimaryTextColor = theme.getColor(buttonPrimaryText);
 	if (buttonPrimaryTextColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown__text { color: ${buttonPrimaryTextColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown_text { color: ${buttonPrimaryTextColor};}`);
 	}
 	const buttonPrimaryBorderColor = theme.getColor(buttonPrimaryBorder);
 	if (buttonPrimaryBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--primary { border-color: ${buttonPrimaryBorderColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary { border-color: ${buttonPrimaryBorderColor};}`);
 	}
 	const buttonPrimaryBackgroundHoverColor = theme.getColor(buttonPrimaryBackgroundHover);
 	if (buttonPrimaryBackgroundHoverColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--primary:hover { background: ${buttonPrimaryBackgroundHoverColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary:hover { background: ${buttonPrimaryBackgroundHoverColor};}`);
 	}
 	const buttonPrimaryBackgroundActiveColor = theme.getColor(buttonPrimaryBackgroundActive);
 	if (buttonPrimaryBackgroundActiveColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--primary:active { background: ${buttonPrimaryBackgroundActiveColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary:active { background: ${buttonPrimaryBackgroundActiveColor};}`);
 	}
 	const buttonStandardBackgroundColor = theme.getColor(buttonStandardBackground);
 	if (buttonStandardBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--standard { background-color: ${buttonStandardBackgroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_standard { background-color: ${buttonStandardBackgroundColor};}`);
 	}
 	const buttonStandardBorderColor = theme.getColor(buttonStandardBorder);
 	if (buttonStandardBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--standard { border: 1px solid ${buttonStandardBorderColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_standard { border: 1px solid ${buttonStandardBorderColor};}`);
 	}
 	const buttonStandardColor = theme.getColor(buttonStandard);
 	if (buttonStandardColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--standard { color: ${buttonStandardColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_standard { color: ${buttonStandardColor};}`);
 	}
 	const buttonStandardHover = theme.getColor(buttonStandardHoverColor);
 	if (buttonStandardColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn--standard:hover { color: ${buttonStandardHover}; border: 1px solid ${buttonStandardHover};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_standard:hover { color: ${buttonStandardHover}; border: 1px solid ${buttonStandardHover};}`);
 	}
 	const buttonDropdownBackgroundColor = theme.getColor(buttonDropdownBackground);
 	if (buttonDropdownBackgroundColor) {
@@ -937,8 +926,8 @@ registerThemingParticipant((theme, collector) => {
 	const buttonDropdownColor = theme.getColor(buttonDropdown);
 	if (buttonDropdownColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a { color: ${buttonDropdownColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .icon--arrow_down--dark:before { color: ${buttonDropdownColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .history .moreRecent--list li.moreRecent a { color: ${buttonDropdownColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .icon_arrow_down_dark:before { color: ${buttonDropdownColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .history .moreRecent_list li.moreRecent a { color: ${buttonDropdownColor};}`);
 	}
 	const buttonDropdownBoxShadowColor = theme.getColor(buttonDropdownBoxShadow);
 	if (buttonDropdownBoxShadowColor) {
@@ -959,11 +948,11 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const listBorderColor = theme.getColor(listBorder);
 	if (listBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .history .list li:not(.moreRecent), .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .history .list__header__container, .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .pinned .list li:not(.moreRecent), .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .pinned .list__header__container { border-color: ${listBorderColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .history .list li:not(.moreRecent), .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .history .list_header_container, .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .pinned .list li:not(.moreRecent), .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .pinned .list_header_container { border-color: ${listBorderColor};}`);
 	}
 	const listLinkColor = theme.getColor(listLink);
 	if (listLinkColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage__section .history .list li a { color: ${listLinkColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .history .list li a { color: ${listLinkColor};}`);
 	}
 	const extensionPackBorderColor = theme.getColor(extensionPackBorder);
 	if (extensionPackBorderColor) {
@@ -971,20 +960,20 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const extensionPackBodyColor = theme.getColor(extensionPackBody);
 	if (extensionPackBodyColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack__body { color: ${extensionPackBodyColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack_body { color: ${extensionPackBodyColor};}`);
 	}
 	const extensionPackHeaderColor = theme.getColor(extensionPackHeader);
 	if (extensionPackHeaderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack__header { color: ${extensionPackHeaderColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack_header { color: ${extensionPackHeaderColor};}`);
 	}
 	const extensionPackHeaderTextShadow = theme.getColor(extensionPackHeaderShadow);
 	if (extensionPackHeaderTextShadow) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack__header { text-shadow: 0px 4px 4px ${extensionPackHeaderTextShadow};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack_header { text-shadow: 0px 4px 4px ${extensionPackHeaderTextShadow};}`);
 	}
 	const extensionPackGradientColorOne = theme.getColor(extensionPackGradientColorOneColor);
 	const extensionPackGradientColorTwo = theme.getColor(extensionPackGradientColorTwoColor);
 	if (extensionPackGradientColorOne && extensionPackGradientColorTwo) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack__description:before { background-image: linear-gradient(0.49deg, ${extensionPackGradientColorOne} 82.75%, ${extensionPackGradientColorTwo});}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack_description:before { background-image: linear-gradient(0.49deg, ${extensionPackGradientColorOne} 82.75%, ${extensionPackGradientColorTwo});}`);
 	}
 	const foregroundColor = theme.getColor(foreground);
 	if (foregroundColor) {
@@ -1073,7 +1062,7 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const themedIconAltColor = theme.getColor(themedAltIcon);
 	if (themedIconAltColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .themed_icon--alt { background-color: ${themedIconAltColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .themed_icon_alt { background-color: ${themedIconAltColor}; }`);
 	}
 	const gradientOneColor = theme.getColor(gradientOne);
 	const gradientTwoColor = theme.getColor(gradientTwo);
