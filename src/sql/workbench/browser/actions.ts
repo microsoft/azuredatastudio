@@ -18,6 +18,7 @@ import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry'
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export interface BaseActionContext {
 	object?: ObjectMetadata;
@@ -103,6 +104,11 @@ export class ClearSavedAccountsAction extends Task {
 	}
 
 	async runTask(accessor: ServicesAccessor): Promise<void> {
-		accessor.get(IAccountManagementService).removeAccounts();
+		const logService = accessor.get(ILogService);
+		try {
+			await accessor.get(IAccountManagementService).removeAccounts();
+		} catch (ex) {
+			logService.error(ex);
+		}
 	}
 }
