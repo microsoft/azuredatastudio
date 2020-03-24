@@ -17,7 +17,7 @@ export class DataCache<T> {
 		this.fetchDate = new Date(0);
 	}
 
-	public isCacheExpired() {
+	public isCacheExpired(): boolean {
 		return (this.fetchDate.getTime() + this.millisecondsToLive) < new Date().getTime();
 	}
 
@@ -34,7 +34,7 @@ export class DataCache<T> {
 		}
 	}
 
-	public resetCache() {
+	public resetCache(): void {
 		this.fetchDate = new Date(0);
 	}
 }
