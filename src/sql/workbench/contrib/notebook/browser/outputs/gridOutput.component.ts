@@ -90,7 +90,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		if (!this._table) {
 			let source = <IDataResource><any>this._bundleOptions.data[this.mimeType];
 			let state = new GridTableState(0, 0);
-			this._table = this.instantiationService.createInstance(DataResourceTable, source, this.cellModel, this.cellModel.notebookModel.notebookUri.toString(), state);
+			this._table = this.instantiationService.createInstance(DataResourceTable, source, this.cellModel, state);
 			let outputElement = <HTMLElement>this.output.nativeElement;
 			outputElement.appendChild(this._table.element);
 			this._register(attachTableStyler(this._table, this.themeService));
@@ -117,7 +117,6 @@ class DataResourceTable extends GridTableBase<any> {
 
 	constructor(source: IDataResource,
 		private cellModel: ICellModel,
-		public readonly documentUri: string,
 		state: GridTableState,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IInstantiationService protected instantiationService: IInstantiationService,
@@ -126,7 +125,7 @@ class DataResourceTable extends GridTableBase<any> {
 		@IConfigurationService configurationService: IConfigurationService
 	) {
 		super(state, createResultSet(source), contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
-		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.documentUri);
+		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel.notebookModel.notebookUri.toString());
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 	}
 
