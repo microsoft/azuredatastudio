@@ -9,7 +9,6 @@ const util = require('./lib/util');
 const tsfmt = require('typescript-formatter');
 const es = require('event-stream');
 const filter = require('gulp-filter');
-const del = require('del');
 const serviceDownloader = require('service-downloader').ServiceDownloadProvider;
 const platform = require('service-downloader/out/platform').PlatformInformation;
 const path = require('path');
@@ -131,7 +130,7 @@ gulp.task('install-sqltoolsservice', () => {
 	return installService();
 });
 
-gulp.task('install-ssmsmin', () => {
+gulp.task('install-ssmsmin', async () => {
 	const config = require('../extensions/admin-tool-ext-win/config.json');
 	const runtime = 'Windows_64'; // admin-tool-ext is a windows only extension, and we only ship a 64 bit version, so locking the binaries as such
 	// fix path since it won't be correct
@@ -143,12 +142,13 @@ gulp.task('install-ssmsmin', () => {
 	const serviceInstallFolder = installer.getInstallDirectory(runtime);
 	const serviceCleanupFolder = path.join(serviceInstallFolder, '..');
 	console.log('Cleaning up the install folder: ' + serviceCleanupFolder);
-	return del(serviceCleanupFolder + '/*').then(() => {
-		console.log('Installing the service. Install folder: ' + serviceInstallFolder);
-		return installer.installService(runtime);
-	}, delError => {
-		console.log('failed to delete the install folder error: ' + delError);
-	});
+	try {
+		await utils.rimraf(serviceCleanupFolder)();
+	} catch (e) {
+		console.log('failed to delete the install folder error: ' + e);
+	}
+
+	return installer.installService(runtime);
 });
 
 const root = path.dirname(__dirname);
