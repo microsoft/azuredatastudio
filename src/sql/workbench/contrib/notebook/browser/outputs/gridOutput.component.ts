@@ -90,7 +90,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		if (!this._table) {
 			let source = <IDataResource><any>this._bundleOptions.data[this.mimeType];
 			let state = new GridTableState(0, 0);
-			this._table = this.instantiationService.createInstance(DataResourceTable, source, this.cellModel.notebookModel.notebookUri.toString(), state);
+			this._table = this.instantiationService.createInstance(DataResourceTable, source, this.cellModel, this.cellModel.notebookModel.notebookUri.toString(), state);
 			let outputElement = <HTMLElement>this.output.nativeElement;
 			outputElement.appendChild(this._table.element);
 			this._register(attachTableStyler(this._table, this.themeService));
@@ -116,6 +116,7 @@ class DataResourceTable extends GridTableBase<any> {
 	private _chartContainer: HTMLElement;
 
 	constructor(source: IDataResource,
+		private cellModel: ICellModel,
 		public readonly documentUri: string,
 		state: GridTableState,
 		@IContextMenuService contextMenuService: IContextMenuService,
@@ -170,9 +171,11 @@ class DataResourceTable extends GridTableBase<any> {
 		if (this.tableContainer.style.display !== 'none') {
 			this.tableContainer.style.display = 'none';
 			this._chartContainer.style.display = 'inline-block';
+			this.cellModel.chartDisplayed = true;
 		} else {
 			this.tableContainer.style.display = 'inline-block';
 			this._chartContainer.style.display = 'none';
+			this.cellModel.chartDisplayed = false;
 		}
 	}
 

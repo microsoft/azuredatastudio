@@ -52,7 +52,7 @@ export class CellModel implements ICellModel {
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
-	private _metadata: { language?: string; tags?: string[]; cellGuid?: string; };
+	private _metadata: { language?: string; tags?: string[]; cellGuid?: string; chartDisplayed?: boolean; };
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
@@ -118,6 +118,15 @@ export class CellModel implements ICellModel {
 
 	public get isCollapsed() {
 		return this._isCollapsed;
+	}
+
+	public get chartDisplayed(): boolean {
+		return !!this._metadata.chartDisplayed;
+	}
+
+	public set chartDisplayed(value: boolean) {
+		this._metadata.chartDisplayed = value;
+		this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
 	}
 
 	public set isCollapsed(value: boolean) {

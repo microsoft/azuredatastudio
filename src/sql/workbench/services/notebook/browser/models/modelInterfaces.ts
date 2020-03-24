@@ -487,6 +487,7 @@ export interface ICellModel {
 	modelContentChangedEvent: IModelContentChangedEvent;
 	isEditMode: boolean;
 	readonly ariaLabel: string;
+	chartDisplayed: boolean;
 }
 
 export interface IModelFactory {
