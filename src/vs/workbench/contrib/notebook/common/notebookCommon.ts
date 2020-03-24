@@ -36,6 +36,17 @@ export const NOTEBOOK_DISPLAY_ORDER = [
 	'text/plain'
 ];
 
+export interface NotebookDocumentMetadata {
+	editable: boolean;
+	cellEditable?: boolean;
+	cellRunnable?: boolean;
+}
+
+export interface NotebookCellMetadata {
+	editable?: boolean;
+	runnable?: boolean;
+}
+
 export interface INotebookDisplayOrder {
 	defaultOrder: string[];
 	userOrder?: string[];
@@ -122,7 +133,9 @@ export interface ICell {
 	language: string;
 	cellKind: CellKind;
 	outputs: IOutput[];
+	metadata?: NotebookCellMetadata;
 	onDidChangeOutputs?: Event<NotebookCellOutputsSplice[]>;
+	onDidChangeMetadata: Event<NotebookCellMetadata | undefined>;
 	resolveTextBufferFactory(): PieceTreeTextBufferFactory;
 	// TODO@rebornix it should be later on replaced by moving textmodel resolution into CellTextModel
 	contentChange(): void;

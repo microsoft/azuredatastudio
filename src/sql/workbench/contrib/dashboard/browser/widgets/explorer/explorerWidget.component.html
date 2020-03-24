@@ -7,6 +7,8 @@
 <div class="explorer-widget" style="display: flex; flex-flow: column; position: absolute; height:100%; width:100%; padding: 10px; box-sizing: border-box">
 	<div #input style="width: 100%"></div>
 	<div style="flex: 1 1 auto; position: relative">
+		<loading-spinner [loading]="loading" [loadingMessage]="loadingMessage"
+			[loadingCompletedMessage]="loadingCompletedMessage"></loading-spinner>
 		<div #table style="position: absolute; height: 100%; width: 100%"></div>
 	</div>
 </div>

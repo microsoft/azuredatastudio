@@ -179,6 +179,11 @@ import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuratio
 				'description': nls.localize('workbench.quickOpen.preserveInput', "Controls whether the last typed input to Quick Open should be restored when opening it the next time."),
 				'default': false
 			},
+			'workbench.quickOpen.enableExperimentalNewVersion': {
+				'type': 'boolean',
+				'description': nls.localize('workbench.quickOpen.enableExperimentalNewVersion', "Will use the new quick open implementation for testing purposes."),
+				'default': true
+			},
 			'workbench.settings.openDefaultSettings': {
 				'type': 'boolean',
 				'description': nls.localize('openDefaultSettings', "Controls whether opening settings also opens an editor showing all default settings."),
@@ -218,7 +223,7 @@ import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuratio
 			},
 			'workbench.view.alwaysShowHeaderActions': {
 				'type': 'boolean',
-				'default': false,
+				'default': true, // {{SQL CARBON EDIT}} - change the default value from false to true.
 				'description': nls.localize('viewVisibility', "Controls the visibility of view header actions. View header actions may either be always visible, or only visible when that view is focused or hovered over.")
 			},
 			'workbench.view.experimental.allowMovingToNewContainer': {

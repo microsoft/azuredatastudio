@@ -49,6 +49,8 @@ export interface IKeyMods {
 	readonly alt: boolean;
 }
 
+export const NO_KEY_MODS: IKeyMods = { ctrlCmd: false, alt: false };
+
 export interface IQuickNavigateConfiguration {
 	keybindings: ResolvedKeybinding[];
 }
@@ -235,6 +237,14 @@ export interface IQuickPick<T extends IQuickPickItem> extends IQuickInput {
 
 	autoFocusOnList: boolean;
 
+	/**
+	 * If enabled, will try to select the second entry of the picks
+	 * once they appear instead of the first one. This is useful
+	 * e.g. when `quickNavigate` is enabled to be able to select
+	 * a previous entry by just releasing the quick nav keys.
+	 */
+	autoFocusSecondEntry: boolean;
+
 	quickNavigate: IQuickNavigateConfiguration | undefined;
 
 	activeItems: ReadonlyArray<T>;
@@ -254,6 +264,13 @@ export interface IQuickPick<T extends IQuickPickItem> extends IQuickInput {
 	inputHasFocus(): boolean;
 
 	focusOnInput(): void;
+
+	/**
+	 * Hides the input box from the picker UI. This is typically used
+	 * in combination with quick-navigation where no search UI should
+	 * be presented.
+	 */
+	hideInput: boolean;
 }
 
 export interface IInputBox extends IQuickInput {

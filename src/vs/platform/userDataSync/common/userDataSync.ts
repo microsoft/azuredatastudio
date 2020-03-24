@@ -18,7 +18,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IStringDictionary } from 'vs/base/common/collections';
 import { FormattingOptions } from 'vs/base/common/jsonFormatter';
 import { URI } from 'vs/base/common/uri';
-import { joinPath, dirname, basename, isEqualOrParent } from 'vs/base/common/resources';
+import { joinPath, isEqualOrParent } from 'vs/base/common/resources';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { distinct } from 'vs/base/common/arrays';
@@ -138,10 +138,11 @@ export function getUserDataSyncStore(productService: IProductService, configurat
 export const enum SyncResource {
 	Settings = 'settings',
 	Keybindings = 'keybindings',
+	Snippets = 'snippets',
 	Extensions = 'extensions',
 	GlobalState = 'globalState'
 }
-export const ALL_SYNC_RESOURCES: SyncResource[] = [SyncResource.Settings, SyncResource.Keybindings, SyncResource.Extensions, SyncResource.GlobalState];
+export const ALL_SYNC_RESOURCES: SyncResource[] = [SyncResource.Settings, SyncResource.Keybindings, SyncResource.Snippets, SyncResource.Extensions, SyncResource.GlobalState];
 
 export interface IUserDataManifest {
 	latest?: Record<SyncResource, string>
@@ -242,6 +243,11 @@ export const enum SyncStatus {
 	HasConflicts = 'hasConflicts',
 }
 
+export interface ISyncResourceHandle {
+	created: number;
+	uri: URI;
+}
+
 export type Conflict = { remote: URI, local: URI };
 
 export interface IUserDataSynchroniser {
@@ -262,11 +268,12 @@ export interface IUserDataSynchroniser {
 	hasLocalData(): Promise<boolean>;
 	resetLocal(): Promise<void>;
 
-	getConflictContent(conflictResource: URI): Promise<string | null>;
+	resolveContent(resource: URI): Promise<string | null>;
 	acceptConflict(conflictResource: URI, content: string): Promise<void>;
 
-	getRemoteContent(ref?: string, fragment?: string): Promise<string | null>;
-	getLocalBackupContent(ref?: string, fragment?: string): Promise<string | null>;
+	getRemoteSyncResourceHandles(): Promise<ISyncResourceHandle[]>;
+	getLocalSyncResourceHandles(): Promise<ISyncResourceHandle[]>;
+	getAssociatedResources(syncResourceHandle: ISyncResourceHandle): Promise<{ resource: URI, comparableResource?: URI }[]>;
 }
 
 //#endregion
@@ -314,6 +321,10 @@ export interface IUserDataSyncService {
 	isFirstTimeSyncWithMerge(): Promise<boolean>;
 	resolveContent(resource: URI): Promise<string | null>;
 	acceptConflict(conflictResource: URI, content: string): Promise<void>;
+
+	getLocalSyncResourceHandles(resource: SyncResource): Promise<ISyncResourceHandle[]>;
+	getRemoteSyncResourceHandles(resource: SyncResource): Promise<ISyncResourceHandle[]>;
+	getAssociatedResources(resource: SyncResource, syncResourceHandle: ISyncResourceHandle): Promise<{ resource: URI, comparableResource?: URI }[]>;
 }
 
 export const IUserDataAutoSyncService = createDecorator<IUserDataAutoSyncService>('IUserDataAutoSyncService');
@@ -346,25 +357,6 @@ export const USER_DATA_SYNC_SCHEME = 'vscode-userdata-sync';
 export const CONTEXT_SYNC_STATE = new RawContextKey<string>('syncStatus', SyncStatus.Uninitialized);
 export const CONTEXT_SYNC_ENABLEMENT = new RawContextKey<boolean>('syncEnabled', false);
 
-export function toRemoteBackupSyncResource(resource: SyncResource, ref?: string): URI {
-	return URI.from({ scheme: USER_DATA_SYNC_SCHEME, authority: 'remote-backup', path: `/${resource}/${ref ? ref : 'latest'}` });
-}
-export function toLocalBackupSyncResource(resource: SyncResource, ref?: string): URI {
-	return URI.from({ scheme: USER_DATA_SYNC_SCHEME, authority: 'local-backup', path: `/${resource}/${ref ? ref : 'latest'}` });
-}
-export function resolveBackupSyncResource(resource: URI): { remote: boolean, resource: SyncResource, path: string } | null {
-	if (resource.scheme === USER_DATA_SYNC_SCHEME
-		&& resource.authority === 'remote-backup' || resource.authority === 'local-backup') {
-		const resourceKey: SyncResource = basename(dirname(resource)) as SyncResource;
-		const path = resource.path.substring(resourceKey.length + 1);
-		if (resourceKey && path) {
-			const remote = resource.authority === 'remote-backup';
-			return { remote, resource: resourceKey, path };
-		}
-	}
-	return null;
-}
-
 export const PREVIEW_DIR_NAME = 'preview';
 export function getSyncResourceFromLocalPreview(localPreview: URI, environmentService: IEnvironmentService): SyncResource | undefined {
 	if (localPreview.scheme === USER_DATA_SYNC_SCHEME) {
@@ -372,11 +364,4 @@ export function getSyncResourceFromLocalPreview(localPreview: URI, environmentSe
 	}
 	localPreview = localPreview.with({ scheme: environmentService.userDataSyncHome.scheme });
 	return ALL_SYNC_RESOURCES.filter(syncResource => isEqualOrParent(localPreview, joinPath(environmentService.userDataSyncHome, syncResource, PREVIEW_DIR_NAME)))[0];
-}
-export function getSyncResourceFromRemotePreview(remotePreview: URI, environmentService: IEnvironmentService): SyncResource | undefined {
-	if (remotePreview.scheme !== USER_DATA_SYNC_SCHEME) {
-		return undefined;
-	}
-	remotePreview = remotePreview.with({ scheme: environmentService.userDataSyncHome.scheme });
-	return ALL_SYNC_RESOURCES.filter(syncResource => isEqualOrParent(remotePreview, joinPath(environmentService.userDataSyncHome, syncResource, PREVIEW_DIR_NAME)))[0];
 }
