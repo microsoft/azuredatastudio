@@ -14,6 +14,7 @@ import { WizardView } from '../../wizardView';
 import { ModelSourcePage } from '../modelSourcePage';
 import { ColumnsSelectionPage } from './columnsSelectionPage';
 import { RegisteredModel } from '../../../modelManagement/interfaces';
+import { ModelArtifact } from './modelArtifact';
 
 /**
  * Wizard to register a model
@@ -49,6 +50,12 @@ export class PredictWizard extends ModelViewBase {
 		wizard.doneButton.label = constants.predictModel;
 		wizard.generateScriptButton.hidden = true;
 		wizard.displayPageTitles = true;
+		wizard.doneButton.onClick(async () => {
+			await this.onClose();
+		});
+		wizard.cancelButton.onClick(async () => {
+			await this.onClose();
+		});
 		wizard.registerNavigationValidator(async (pageInfo: azdata.window.WizardPageChangeInfo) => {
 			let validated = this.wizardView ? await this.wizardView.validate(pageInfo) : false;
 			if (validated) {
@@ -96,27 +103,26 @@ export class PredictWizard extends ModelViewBase {
 		return this.modelSourcePage?.azureModelsComponent;
 	}
 
-	public async getModelFileName(): Promise<string> {
+	public async getModelFileName(): Promise<ModelArtifact | undefined> {
 		if (this.modelResources && this.localModelsComponent && this.modelResources.data === ModelSourceType.Local) {
-			return this.localModelsComponent.data;
+			return new ModelArtifact(this.localModelsComponent.data, false);
 		} else if (this.modelResources && this.azureModelsComponent && this.modelResources.data === ModelSourceType.Azure) {
 			return await this.azureModelsComponent.getDownloadedModel();
 		} else if (this.modelSourcePage && this.modelSourcePage.registeredModelsComponent) {
 			return await this.modelSourcePage.registeredModelsComponent.getDownloadedModel();
 		}
-		return '';
+		return undefined;
 	}
 
 	private async predict(): Promise<boolean> {
 		try {
-			let modelFilePath: string = '';
+			let modelFilePath: string | undefined;
 			let registeredModel: RegisteredModel | undefined = undefined;
-			if (this.modelResources && this.localModelsComponent && this.modelResources.data === ModelSourceType.Local) {
-				modelFilePath = this.localModelsComponent.data;
-			} else if (this.modelResources && this.azureModelsComponent && this.modelResources.data === ModelSourceType.Azure) {
-				modelFilePath = await this.azureModelsComponent.getDownloadedModel();
-			} else {
+			if (this.modelSourcePage && this.modelSourcePage.registeredModelsComponent) {
 				registeredModel = this.modelSourcePage?.registeredModelsComponent?.data;
+			} else {
+				const artifact = await this.getModelFileName();
+				modelFilePath = artifact?.filePath;
 			}
 
 			await this.generatePredictScript(registeredModel, modelFilePath, this.columnsSelectionPage?.data);
@@ -125,6 +131,14 @@ export class PredictWizard extends ModelViewBase {
 			this.showErrorMessage(`${constants.modelFailedToRegister} ${constants.getErrorMessage(error)}`);
 			return false;
 		}
+	}
+
+	private async onClose(): Promise<void> {
+		const artifact = await this.getModelFileName();
+		if (artifact) {
+			artifact.close();
+		}
+		await this.wizardView?.disposePages();
 	}
 
 	/**

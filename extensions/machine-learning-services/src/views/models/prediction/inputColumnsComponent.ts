@@ -25,8 +25,6 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 	private _tableNames: DatabaseTable[] = [];
 	private _modelParameters: ModelParameters | undefined;
 	private _dbTableComponent: azdata.FlexContainer | undefined;
-
-	//private componentLength = 200;
 	private tableMaxLength = this.componentMaxLength * 2 + 70;
 	/**
 	 * Creates a new view

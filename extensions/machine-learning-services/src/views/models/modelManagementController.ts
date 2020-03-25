@@ -75,9 +75,9 @@ export class ModelManagementController extends ControllerBase {
 
 		this.registerEvents(view);
 		view.on(LoadModelParametersEventName, async () => {
-			const modelFileName = await view.getModelFileName();
+			const modelArtifact = await view.getModelFileName();
 			await this.executeAction(view, LoadModelParametersEventName, this.loadModelParameters, this._registeredModelService,
-				modelFileName);
+				modelArtifact?.filePath);
 		});
 
 		// Open view

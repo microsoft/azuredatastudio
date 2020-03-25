@@ -121,7 +121,7 @@ export class DeployedModelService {
 		if (connection) {
 			const query = this.getUpdateModelQuery(connection.databaseName, model);
 			let result = await this._queryRunner.safeRunQuery(connection, query);
-			if (result && result.rows && result.rows.length > 0) {
+			if (result?.rows && result.rows.length > 0) {
 				const row = result.rows[0];
 				updatedModel = this.loadModelData(row);
 			}

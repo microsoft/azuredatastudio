@@ -10,6 +10,7 @@ import { ModelViewBase } from '../modelViewBase';
 import { ApiWrapper } from '../../../common/apiWrapper';
 import { RegisteredModel } from '../../../modelManagement/interfaces';
 import { IDataComponent } from '../../interfaces';
+import { ModelArtifact } from '../prediction/modelArtifact';
 
 /**
  * View to render registered models table
@@ -20,7 +21,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	private _modelBuilder: azdata.ModelBuilder | undefined;
 	private _selectedModel: any;
 	private _loader: azdata.LoadingComponent | undefined;
-	private _downloadedFile: string | undefined;
+	private _downloadedFile: ModelArtifact | undefined;
 	private _onModelSelectionChanged: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	public readonly onModelSelectionChanged: vscode.Event<void> = this._onModelSelectionChanged.event;
 
@@ -167,9 +168,9 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 				height: 15,
 				checked: false
 			}).component();
-			selectModelButton.onDidClick(() => {
+			selectModelButton.onDidClick(async () => {
 				this._selectedModel = model;
-				this.onModelSelected();
+				await this.onModelSelected();
 			});
 			return [model.artifactName, model.title, model.created, selectModelButton];
 		}
@@ -177,8 +178,11 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 		return [];
 	}
 
-	private onModelSelected(): void {
+	private async onModelSelected(): Promise<void> {
 		this._onModelSelectionChanged.fire();
+		if (this._downloadedFile) {
+			await this._downloadedFile.close();
+		}
 		this._downloadedFile = undefined;
 	}
 
@@ -189,11 +193,20 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 		return this._selectedModel;
 	}
 
-	public async getDownloadedModel(): Promise<string> {
+	public async getDownloadedModel(): Promise<ModelArtifact> {
 		if (!this._downloadedFile) {
-			this._downloadedFile = await this.downloadRegisteredModel(this.data);
+			this._downloadedFile = new ModelArtifact(await this.downloadRegisteredModel(this.data));
 		}
 		return this._downloadedFile;
+	}
+
+	/**
+	 * disposes the view
+	 */
+	public async disposeComponent(): Promise<void> {
+		if (this._downloadedFile) {
+			await this._downloadedFile.close();
+		}
 	}
 
 	/**

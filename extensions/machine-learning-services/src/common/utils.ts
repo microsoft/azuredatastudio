@@ -22,7 +22,17 @@ export async function execCommandOnTempFile<T>(content: string, command: (filePa
 		return result;
 	}
 	finally {
-		await fs.promises.unlink(tempFilePath);
+		await deleteFile(tempFilePath);
+	}
+}
+
+/**
+ * Deletes a file
+ * @param filePath file path
+ */
+export async function deleteFile(filePath: string) {
+	if (filePath) {
+		await fs.promises.unlink(filePath);
 	}
 }
 
@@ -228,6 +238,10 @@ export function getRegisteredModelsTowPartsName(config: Config) {
 	return `[${schema}].[${tableName}]`;
 }
 
+/**
+ * Write a file using a hex string
+ * @param content file content
+ */
 export async function writeFileFromHex(content: string): Promise<string> {
 	content = content.startsWith('0x') || content.startsWith('0X') ? content.substr(2) : content;
 	const tempFilePath = path.join(os.tmpdir(), `ads_ml_temp_${UUID.generateUuid()}`);
