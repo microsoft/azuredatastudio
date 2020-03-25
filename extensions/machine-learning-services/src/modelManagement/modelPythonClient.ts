@@ -13,33 +13,89 @@ import * as utils from '../common/utils';
 import { PackageManager } from '../packageManagement/packageManager';
 import * as constants from '../common/constants';
 import * as os from 'os';
+import { ModelParameters } from './interfaces';
 
 /**
- * Service to import model to database
+ * Python client for ONNX models
  */
-export class ModelImporter {
+export class ModelPythonClient {
 
 	/**
-	 *
+	 * Creates new instance
 	 */
 	constructor(private _outputChannel: vscode.OutputChannel, private _apiWrapper: ApiWrapper, private _processService: ProcessService, private _config: Config, private _packageManager: PackageManager) {
 	}
 
-	public async registerModel(connection: azdata.connection.ConnectionProfile, modelFolderPath: string): Promise<void> {
+	/**
+	 * Deploys models in the SQL database using mlflow
+	 * @param connection
+	 * @param modelPath
+	 */
+	public async deployModel(connection: azdata.connection.ConnectionProfile, modelPath: string): Promise<void> {
 		await this.installDependencies();
-		await this.executeScripts(connection, modelFolderPath);
+		await this.executeDeployScripts(connection, modelPath);
 	}
 
 	/**
-	 * Installs dependencies for model importer
+	 * Installs dependencies for python client
 	 */
-	public async installDependencies(): Promise<void> {
+	private async installDependencies(): Promise<void> {
 		await utils.executeTasks(this._apiWrapper, constants.installDependenciesMsgTaskName, [
 			this._packageManager.installRequiredPythonPackages(this._config.modelsRequiredPythonPackages)], true);
 	}
 
-	protected async executeScripts(connection: azdata.connection.ConnectionProfile, modelFolderPath: string): Promise<void> {
+	/**
+	 *
+	 * @param modelPath Loads model parameters
+	 */
+	public async loadModelParameters(modelPath: string): Promise<ModelParameters> {
+		await this.installDependencies();
+		return await this.executeModelParametersScripts(modelPath);
+	}
 
+	private async executeModelParametersScripts(modelFolderPath: string): Promise<ModelParameters> {
+		modelFolderPath = utils.makeLinuxPath(modelFolderPath);
+
+		let scripts: string[] = [
+			'import onnx',
+			'import json',
+			`onnx_model_path = '${modelFolderPath}'`,
+			`onnx_model = onnx.load_model(onnx_model_path)`,
+			`type_map = {
+				onnx.TensorProto.DataType.FLOAT: 'real',
+				onnx.TensorProto.DataType.UINT8: 'tinyint',
+				onnx.TensorProto.DataType.INT16: 'smallint',
+				onnx.TensorProto.DataType.INT32: 'int',
+				onnx.TensorProto.DataType.INT64: 'bigint',
+				onnx.TensorProto.DataType.STRING: 'varchar(MAX)',
+				onnx.TensorProto.DataType.DOUBLE: 'float'}`,
+			`parameters = {
+				"inputs": [],
+				"outputs": []
+			}`,
+			`def addParameters(list, paramType):
+			for id, p in enumerate(list):
+				p_type = ''
+
+				if p.type.tensor_type.elem_type in type_map:
+					p_type = type_map[p.type.tensor_type.elem_type]
+
+				parameters[paramType].append({
+					'name': p.name,
+					'type': p_type
+				})`,
+
+			'addParameters(onnx_model.graph.input, "inputs")',
+			'addParameters(onnx_model.graph.output, "outputs")',
+			'print(json.dumps(parameters))'
+		];
+		let pythonExecutable = this._config.pythonExecutable;
+		let output = await this._processService.execScripts(pythonExecutable, scripts, [], undefined);
+		let parametersJson = JSON.parse(output);
+		return Object.assign({}, parametersJson);
+	}
+
+	private async executeDeployScripts(connection: azdata.connection.ConnectionProfile, modelFolderPath: string): Promise<void> {
 		let home = utils.makeLinuxPath(os.homedir());
 		modelFolderPath = utils.makeLinuxPath(modelFolderPath);
 
