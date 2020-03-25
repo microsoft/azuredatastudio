@@ -9,25 +9,18 @@ import { ApiWrapper } from '../../../common/apiWrapper';
 import * as constants from '../../../common/constants';
 import { IDataComponent } from '../../interfaces';
 import { PredictColumn } from '../../../prediction/interfaces';
+import { ColumnsTable } from './columnsTable';
+import { ModelParameters } from '../../../modelManagement/interfaces';
 
 /**
  * View to render filters to pick an azure resource
  */
-const componentWidth = 60;
+
 export class OutputColumnsComponent extends ModelViewBase implements IDataComponent<PredictColumn[]> {
 
 	private _form: azdata.FormContainer | undefined;
-	private _flex: azdata.FlexContainer | undefined;
-	private _columnName: azdata.InputBoxComponent | undefined;
-	private _columnTypes: azdata.DropDownComponent | undefined;
-	private _dataTypes: string[] = [
-		'int',
-		'nvarchar(MAX)',
-		'varchar(MAX)',
-		'float',
-		'double',
-		'bit'
-	];
+	private _columns: ColumnsTable | undefined;
+	private _modelParameters: ModelParameters | undefined;
 
 	/**
 	 * Creates a new view
@@ -41,49 +34,29 @@ export class OutputColumnsComponent extends ModelViewBase implements IDataCompon
 	 * @param modelBuilder model builder
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
-		this._columnName = modelBuilder.inputBox().withProperties({
-			width: this.componentMaxLength - componentWidth - this.spaceBetweenComponentsLength
-		}).component();
-		this._columnTypes = modelBuilder.dropDown().withProperties({
-			width: componentWidth
-		}).component();
-
-		let flex = modelBuilder.flexContainer()
-			.withLayout({
-				width: this._columnName.width
-			}).withItems([
-				this._columnName]
-			).component();
-		this._flex = modelBuilder.flexContainer()
-			.withLayout({
-				flexFlow: 'row',
-				justifyContent: 'space-between',
-				width: this.componentMaxLength
-			}).withItems([
-				flex, this._columnTypes]
-			).component();
+		this._columns = new ColumnsTable(this._apiWrapper, modelBuilder, this, false);
 
 		this._form = modelBuilder.formContainer().withFormItems([{
 			title: constants.azureAccount,
-			component: this._flex
+			component: this._columns.component
 		}]).component();
 		return this._form;
 	}
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
-		if (this._flex) {
+		if (this._columns) {
 			formBuilder.addFormItems([{
 				title: constants.outputColumns,
-				component: this._flex
+				component: this._columns.component
 			}]);
 		}
 	}
 
 	public removeComponents(formBuilder: azdata.FormBuilder) {
-		if (this._flex) {
+		if (this._columns) {
 			formBuilder.removeFormItem({
 				title: constants.outputColumns,
-				component: this._flex
+				component: this._columns.component
 			});
 		}
 	}
@@ -99,9 +72,24 @@ export class OutputColumnsComponent extends ModelViewBase implements IDataCompon
 	 * loads data in the components
 	 */
 	public async loadData(): Promise<void> {
-		if (this._columnTypes) {
-			this._columnTypes.values = this._dataTypes;
-			this._columnTypes.value = this._dataTypes[0];
+		if (this._modelParameters) {
+			this._columns?.loadOutputs(this._modelParameters);
+		}
+	}
+
+	public set modelParameters(value: ModelParameters) {
+		this._modelParameters = value;
+	}
+
+	public async onLoading(): Promise<void> {
+		if (this._columns) {
+			await this._columns.onLoading();
+		}
+	}
+
+	public async onLoaded(): Promise<void> {
+		if (this._columns) {
+			await this._columns.onLoaded();
 		}
 	}
 
@@ -116,9 +104,6 @@ export class OutputColumnsComponent extends ModelViewBase implements IDataCompon
 	 * Returns selected data
 	 */
 	public get data(): PredictColumn[] | undefined {
-		return this._columnName && this._columnTypes ? [{
-			name: this._columnName.value || '',
-			dataType: <string>this._columnTypes.value || ''
-		}] : undefined;
+		return this._columns?.data;
 	}
 }

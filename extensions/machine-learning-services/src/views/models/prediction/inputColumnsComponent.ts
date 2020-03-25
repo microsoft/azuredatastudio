@@ -8,13 +8,14 @@ import { ModelViewBase } from '../modelViewBase';
 import { ApiWrapper } from '../../../common/apiWrapper';
 import * as constants from '../../../common/constants';
 import { IDataComponent } from '../../interfaces';
-import { ColumnsTable } from './columnsTable';
 import { PredictColumn, PredictInputParameters, DatabaseTable } from '../../../prediction/interfaces';
+import { ModelParameters } from '../../../modelManagement/interfaces';
+import { ColumnsTable } from './columnsTable';
 
 /**
  * View to render filters to pick an azure resource
  */
-export class ColumnsFilterComponent extends ModelViewBase implements IDataComponent<PredictInputParameters> {
+export class InputColumnsComponent extends ModelViewBase implements IDataComponent<PredictInputParameters> {
 
 	private _form: azdata.FormContainer | undefined;
 	private _databases: azdata.DropDownComponent | undefined;
@@ -22,7 +23,9 @@ export class ColumnsFilterComponent extends ModelViewBase implements IDataCompon
 	private _columns: ColumnsTable | undefined;
 	private _dbNames: string[] = [];
 	private _tableNames: DatabaseTable[] = [];
-
+	private _modelParameters: ModelParameters | undefined;
+	private _dbTableComponent: azdata.FlexContainer | undefined;
+	private tableMaxLength = this.componentMaxLength * 2 + 70;
 	/**
 	 * Creates a new view
 	 */
@@ -52,27 +55,47 @@ export class ColumnsFilterComponent extends ModelViewBase implements IDataCompon
 		});
 
 
-		this._form = modelBuilder.formContainer().withFormItems([{
-			title: constants.azureAccount,
+		const databaseForm = modelBuilder.formContainer().withFormItems([{
+			title: constants.columnDatabase,
 			component: this._databases
-		}, {
-			title: constants.azureSubscription,
+		}]).withLayout({
+			padding: '0px'
+		}).component();
+		const tableForm = modelBuilder.formContainer().withFormItems([{
+			title: constants.columnTable,
 			component: this._tables
+		}]).withLayout({
+			padding: '0px'
+		}).component();
+		this._dbTableComponent = modelBuilder.flexContainer().withItems([
+			databaseForm,
+			tableForm
+		], {
+			flex: '0 0 auto',
+			CSSStyles: {
+				'align-items': 'flex-start'
+			}
+		}).withLayout({
+			flexFlow: 'row',
+			justifyContent: 'space-between',
+			width: this.tableMaxLength
+		}).component();
+
+		this._form = modelBuilder.formContainer().withFormItems([{
+			title: '',
+			component: this._dbTableComponent
 		}, {
-			title: constants.azureGroup,
+			title: constants.inputColumns,
 			component: this._columns.component
 		}]).component();
 		return this._form;
 	}
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
-		if (this._databases && this._tables && this._columns) {
+		if (this._columns && this._dbTableComponent) {
 			formBuilder.addFormItems([{
-				title: constants.columnDatabase,
-				component: this._databases
-			}, {
-				title: constants.columnTable,
-				component: this._tables
+				title: '',
+				component: this._dbTableComponent
 			}, {
 				title: constants.inputColumns,
 				component: this._columns.component
@@ -81,17 +104,13 @@ export class ColumnsFilterComponent extends ModelViewBase implements IDataCompon
 	}
 
 	public removeComponents(formBuilder: azdata.FormBuilder) {
-		if (this._databases && this._tables && this._columns) {
+		if (this._columns && this._dbTableComponent) {
 			formBuilder.removeFormItem({
-				title: constants.azureAccount,
-				component: this._databases
+				title: '',
+				component: this._dbTableComponent
 			});
 			formBuilder.removeFormItem({
-				title: constants.azureSubscription,
-				component: this._tables
-			});
-			formBuilder.removeFormItem({
-				title: constants.azureGroup,
+				title: constants.inputColumns,
 				component: this._columns.component
 			});
 		}
@@ -125,6 +144,22 @@ export class ColumnsFilterComponent extends ModelViewBase implements IDataCompon
 		await this.onDatabaseSelected();
 	}
 
+	public set modelParameters(value: ModelParameters) {
+		this._modelParameters = value;
+	}
+
+	public async onLoading(): Promise<void> {
+		if (this._columns) {
+			await this._columns.onLoading();
+		}
+	}
+
+	public async onLoaded(): Promise<void> {
+		if (this._columns) {
+			await this._columns.onLoaded();
+		}
+	}
+
 	/**
 	 * refreshes the view
 	 */
@@ -146,7 +181,7 @@ export class ColumnsFilterComponent extends ModelViewBase implements IDataCompon
 	}
 
 	private async onTableSelected(): Promise<void> {
-		this._columns?.loadData(this.databaseTable);
+		this._columns?.loadInputs(this._modelParameters, this.databaseTable);
 	}
 
 	private get databaseName(): string | undefined {

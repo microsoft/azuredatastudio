@@ -120,4 +120,14 @@ export class ModelSourcePage extends ModelViewBase implements IPageView, IDataCo
 		}
 		return Promise.resolve(validated);
 	}
+
+	public async disposePage(): Promise<void> {
+		if (this.azureModelsComponent) {
+			await this.azureModelsComponent.disposeComponent();
+
+		}
+		if (this.registeredModelsComponent) {
+			await this.registeredModelsComponent.disposeComponent();
+		}
+	}
 }
