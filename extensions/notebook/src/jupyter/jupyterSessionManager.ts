@@ -351,6 +351,8 @@ export class JupyterSession implements nb.ISession {
 				}
 			}
 
+			allCode += `%set_env KQLMAGIC_LOAD_MODE=silent${EOL}`;
+
 			// Add and register Kqlmagic to the python kernel
 			allCode += `%reload_ext Kqlmagic`;
 
