@@ -298,7 +298,7 @@ export class PanelComponent extends Disposable {
 		const currentIndex = this.focusedTabHeaderIndex;
 		if (currentIndex !== -1) {
 			// Move to the previous tab, if we are at the first tab then move to the last tab.
-			this.focusOnTabHeader(currentIndex === 0 ? this._tabHeaders.length - 1 : this.focusedTabHeaderIndex - 1);
+			this.focusOnTabHeader(currentIndex === 0 ? this._tabHeaders.length - 1 : currentIndex - 1);
 		}
 	}
 
@@ -317,13 +317,8 @@ export class PanelComponent extends Disposable {
 	}
 
 	private get focusedTabHeaderIndex(): number {
-		const headers = this._tabHeaders.toArray();
-		let idx = -1;
-		for (let i = 0; i < headers.length; i++) {
-			if (headers[i].nativeElement === document.activeElement) {
-				idx = i;
-			}
-		}
-		return idx;
+		return this._tabHeaders.toArray().findIndex((header) => {
+			return header.nativeElement === document.activeElement;
+		});
 	}
 }
