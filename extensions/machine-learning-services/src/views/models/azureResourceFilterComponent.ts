@@ -190,18 +190,18 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 	}
 
 	private get workspace(): Workspace | undefined {
-		return this._azureWorkspaces ? this._azureWorkspaces.find(a => a.id === (<azdata.CategoryValue>this._workspaces.value).name) : undefined;
+		return this._azureWorkspaces && this._workspaces.value ? this._azureWorkspaces.find(a => a.id === (<azdata.CategoryValue>this._workspaces.value).name) : undefined;
 	}
 
 	private get account(): azdata.Account | undefined {
-		return this._azureAccounts ? this._azureAccounts.find(a => a.key.accountId === (<azdata.CategoryValue>this._accounts.value).name) : undefined;
+		return this._azureAccounts && this._accounts.value ? this._azureAccounts.find(a => a.key.accountId === (<azdata.CategoryValue>this._accounts.value).name) : undefined;
 	}
 
 	private get group(): azureResource.AzureResource | undefined {
-		return this._azureGroups ? this._azureGroups.find(a => a.id === (<azdata.CategoryValue>this._groups.value).name) : undefined;
+		return this._azureGroups && this._groups.value ? this._azureGroups.find(a => a.id === (<azdata.CategoryValue>this._groups.value).name) : undefined;
 	}
 
 	private get subscription(): azureResource.AzureResourceSubscription | undefined {
-		return this._azureSubscriptions ? this._azureSubscriptions.find(a => a.id === (<azdata.CategoryValue>this._subscriptions.value).name) : undefined;
+		return this._azureSubscriptions && this._subscriptions.value ? this._azureSubscriptions.find(a => a.id === (<azdata.CategoryValue>this._subscriptions.value).name) : undefined;
 	}
 }
