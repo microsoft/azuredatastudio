@@ -25,7 +25,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { append, $ } from 'vs/base/browser/dom';
+import { append, $, clearNode } from 'vs/base/browser/dom';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
@@ -233,6 +233,7 @@ export class OptionsDialog extends Modal {
 		this._optionValues = optionValues;
 		let firstOption: string;
 		let categoryMap = OptionsDialogHelper.groupOptionsByCategory(options);
+		clearNode(this._optionGroupsContainer);
 		for (let category in categoryMap) {
 			const title = append(this._optionGroupsContainer, $('h2.option-category-title'));
 			title.innerText = category;
