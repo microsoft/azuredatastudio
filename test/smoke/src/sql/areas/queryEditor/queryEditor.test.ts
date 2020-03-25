@@ -16,7 +16,7 @@ export function setup() {
 			await fs.writeFile(testFilePath, '');
 			try {
 				const app = this.app as Application;
-				await app.workbench.queryEditors.openFile(testFilePath);
+				await app.workbench.quickopen.openFile(testFilePath);
 				const fileBaseName = path.basename(testFilePath);
 				await app.workbench.editor.waitForTypeInEditor(fileBaseName, 'SELECT * FROM sys.tables');
 			}

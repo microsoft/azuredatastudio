@@ -53,6 +53,16 @@ export interface RegisteredModel extends RegisteredModelDetails {
 	artifactName: string;
 }
 
+export interface ModelParameter {
+	name: string;
+	type: string;
+}
+
+export interface ModelParameters {
+	inputs: ModelParameter[],
+	outputs: ModelParameter[]
+}
+
 /**
  * An interface representing registered model
  */

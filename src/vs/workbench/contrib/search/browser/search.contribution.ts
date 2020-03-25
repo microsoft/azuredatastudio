@@ -29,7 +29,7 @@ import { IListService, WorkbenchListFocusContextKey, WorkbenchObjectTree } from 
 import { IQuickOpenService } from 'vs/platform/quickOpen/common/quickOpen';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { defaultQuickOpenContextKey } from 'vs/workbench/browser/parts/quickopen/quickopen';
-import { Extensions as QuickOpenExtensions, IQuickOpenRegistry, QuickOpenHandlerDescriptor } from 'vs/workbench/browser/quickopen';
+import { Extensions as QuickOpenExtensions, IQuickOpenRegistry, QuickOpenHandlerDescriptor, ENABLE_EXPERIMENTAL_VERSION_CONFIG } from 'vs/workbench/browser/quickopen';
 import { Extensions as ActionExtensions, IWorkbenchActionRegistry } from 'vs/workbench/common/actions';
 import { Extensions as WorkbenchExtensions, IWorkbenchContribution, IWorkbenchContributionsRegistry } from 'vs/workbench/common/contributions';
 import { Extensions as ViewExtensions, IViewsRegistry, IViewContainersRegistry, ViewContainerLocation, IViewDescriptorService, IViewsService } from 'vs/workbench/common/views';
@@ -58,6 +58,9 @@ import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneCont
 import { IQuickAccessRegistry, Extensions as QuickAccessExtensions } from 'vs/platform/quickinput/common/quickAccess';
 import { SymbolsQuickAccessProvider } from 'vs/workbench/contrib/search/browser/symbolsQuickAccess';
 import { AnythingQuickAccessProvider } from 'vs/workbench/contrib/search/browser/anythingQuickAccess';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { AbstractGotoLineQuickAccessProvider } from 'vs/editor/contrib/quickAccess/gotoLineQuickAccess';
+import { GotoSymbolQuickAccessProvider } from 'vs/workbench/contrib/codeEditor/browser/quickaccess/gotoSymbolQuickAccess';
 
 registerSingleton(ISearchWorkbenchService, SearchWorkbenchService, true);
 registerSingleton(ISearchHistoryService, SearchHistoryService, true);
@@ -470,32 +473,37 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerContext, {
 
 
 class ShowAllSymbolsAction extends Action {
+
 	static readonly ID = 'workbench.action.showAllSymbols';
 	static readonly LABEL = nls.localize('showTriggerActions', "Go to Symbol in Workspace...");
 	static readonly ALL_SYMBOLS_PREFIX = '#';
 
 	constructor(
-		actionId: string, actionLabel: string,
+		actionId: string,
+		actionLabel: string,
 		@IQuickOpenService private readonly quickOpenService: IQuickOpenService,
-		@ICodeEditorService private readonly editorService: ICodeEditorService) {
+		@ICodeEditorService private readonly editorService: ICodeEditorService,
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IQuickInputService private readonly quickInputService: IQuickInputService
+	) {
 		super(actionId, actionLabel);
-		this.enabled = !!this.quickOpenService;
 	}
 
-	run(context?: any): Promise<void> {
+	async run(): Promise<void> {
+		if (this.configurationService.getValue(ENABLE_EXPERIMENTAL_VERSION_CONFIG) === true) {
+			this.quickInputService.quickAccess.show(ShowAllSymbolsAction.ALL_SYMBOLS_PREFIX);
+		} else {
+			let prefix = ShowAllSymbolsAction.ALL_SYMBOLS_PREFIX;
+			let inputSelection: { start: number; end: number; } | undefined = undefined;
+			const editor = this.editorService.getFocusedCodeEditor();
+			const word = editor && getSelectionSearchString(editor);
+			if (word) {
+				prefix = prefix + word;
+				inputSelection = { start: 1, end: word.length + 1 };
+			}
 
-		let prefix = ShowAllSymbolsAction.ALL_SYMBOLS_PREFIX;
-		let inputSelection: { start: number; end: number; } | undefined = undefined;
-		const editor = this.editorService.getFocusedCodeEditor();
-		const word = editor && getSelectionSearchString(editor);
-		if (word) {
-			prefix = prefix + word;
-			inputSelection = { start: 1, end: word.length + 1 };
+			this.quickOpenService.show(prefix, { inputSelection });
 		}
-
-		this.quickOpenService.show(prefix, { inputSelection });
-
-		return Promise.resolve(undefined);
 	}
 }
 
@@ -508,7 +516,7 @@ const viewContainer = Registry.as<IViewContainersRegistry>(ViewExtensions.ViewCo
 	order: 1
 }, ViewContainerLocation.Sidebar);
 
-const viewDescriptor = { id: VIEW_ID, name: nls.localize('search', "Search"), ctorDescriptor: new SyncDescriptor(SearchView), canToggleVisibility: false, canMoveView: true };
+const viewDescriptor = { id: VIEW_ID, containerIcon: 'codicon-search', name: nls.localize('search', "Search"), ctorDescriptor: new SyncDescriptor(SearchView), canToggleVisibility: false, canMoveView: true };
 
 // Register search default location to sidebar
 Registry.as<IViewsRegistry>(ViewExtensions.ViewsRegistry).registerViews([viewDescriptor], viewContainer);
@@ -660,8 +668,8 @@ const quickAccessRegistry = Registry.as<IQuickAccessRegistry>(QuickAccessExtensi
 quickAccessRegistry.registerQuickAccessProvider({
 	ctor: AnythingQuickAccessProvider,
 	prefix: AnythingQuickAccessProvider.PREFIX,
-	placeholder: nls.localize('anythingQuickAccessPlaceholder', "Type '?' to get help on the actions you can take from here"),
-	contextKey: 'inFilesPicker',
+	placeholder: nls.localize('anythingQuickAccessPlaceholder', "Search files by name (append {0} to go to line or {1} to go to symbol)", AbstractGotoLineQuickAccessProvider.PREFIX, GotoSymbolQuickAccessProvider.PREFIX),
+	contextKey: defaultQuickOpenContextKey,
 	helpEntries: [{ description: nls.localize('anythingQuickAccess', "Go to File"), needsEditor: false }]
 });
 
@@ -739,6 +747,16 @@ configurationRegistry.registerConfiguration({
 			description: nls.localize('search.quickOpen.includeHistory', "Whether to include results from recently opened files in the file results for Quick Open."),
 			default: true
 		},
+		'search.quickOpen.history.filterSortOrder': {
+			'type': 'string',
+			'enum': ['default', 'recency'],
+			'default': 'default',
+			'enumDescriptions': [
+				nls.localize('filterSortOrder.default', 'History entries are sorted by relevance based on the filter value used. More relevant entries appear first.'),
+				nls.localize('filterSortOrder.recency', 'History entries are sorted by recency. More recently opened entries appear first.')
+			],
+			'description': nls.localize('filterSortOrder', "Controls sorting order of editor history in quick open when filtering.")
+		},
 		'search.followSymlinks': {
 			type: 'boolean',
 			description: nls.localize('search.followSymlinks', "Controls whether to follow symlinks while searching."),
@@ -766,7 +784,7 @@ configurationRegistry.registerConfiguration({
 			type: 'string',
 			enum: ['auto', 'alwaysCollapse', 'alwaysExpand'],
 			enumDescriptions: [
-				'Files with less than 10 results are expanded. Others are collapsed.',
+				nls.localize('search.collapseResults.auto', "Files with less than 10 results are expanded. Others are collapsed."),
 				'',
 				''
 			],

@@ -55,6 +55,7 @@ export class DebugSession implements IDebugSession {
 	private readonly _onDidLoadedSource = new Emitter<LoadedSourceEvent>();
 	private readonly _onDidCustomEvent = new Emitter<DebugProtocol.Event>();
 	private readonly _onDidProgressStart = new Emitter<DebugProtocol.ProgressStartEvent>();
+	private readonly _onDidProgressUpdate = new Emitter<DebugProtocol.ProgressUpdateEvent>();
 	private readonly _onDidProgressEnd = new Emitter<DebugProtocol.ProgressEndEvent>();
 
 	private readonly _onDidChangeREPLElements = new Emitter<void>();
@@ -190,6 +191,10 @@ export class DebugSession implements IDebugSession {
 		return this._onDidProgressStart.event;
 	}
 
+	get onDidProgressUpdate(): Event<DebugProtocol.ProgressUpdateEvent> {
+		return this._onDidProgressUpdate.event;
+	}
+
 	get onDidProgressEnd(): Event<DebugProtocol.ProgressEndEvent> {
 		return this._onDidProgressEnd.event;
 	}
@@ -229,7 +234,7 @@ export class DebugSession implements IDebugSession {
 
 			this.initialized = true;
 			this._onDidChangeState.fire();
-			this.model.setExceptionBreakpoints(this.raw!.capabilities.exceptionBreakpointFilters || []);
+			this.model.setExceptionBreakpoints((this.raw && this.raw.capabilities.exceptionBreakpointFilters) || []);
 		} catch (err) {
 			this.initialized = true;
 			this._onDidChangeState.fire();
@@ -934,6 +939,9 @@ export class DebugSession implements IDebugSession {
 
 		this.rawListeners.push(this.raw.onDidProgressStart(event => {
 			this._onDidProgressStart.fire(event);
+		}));
+		this.rawListeners.push(this.raw.onDidProgressUpdate(event => {
+			this._onDidProgressUpdate.fire(event);
 		}));
 		this.rawListeners.push(this.raw.onDidProgressEnd(event => {
 			this._onDidProgressEnd.fire(event);

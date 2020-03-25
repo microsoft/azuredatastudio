@@ -9,6 +9,7 @@ import { ApiWrapper } from '../../common/apiWrapper';
 import { AzureResourceFilterComponent } from './azureResourceFilterComponent';
 import { AzureModelsTable } from './azureModelsTable';
 import { IDataComponent, AzureModelResource } from '../interfaces';
+import { ModelArtifact } from './prediction/modelArtifact';
 
 export class AzureModelsComponent extends ModelViewBase implements IDataComponent<AzureModelResource> {
 
@@ -17,6 +18,7 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 
 	private _loader: azdata.LoadingComponent | undefined;
 	private _form: azdata.FormContainer | undefined;
+	private _downloadedFile: ModelArtifact | undefined;
 
 	/**
 	 * Component to render a view to pick an azure model
@@ -37,8 +39,14 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 			.withProperties({
 				loading: true
 			}).component();
+		this.azureModelsTable.onModelSelectionChanged(async () => {
+			if (this._downloadedFile) {
+				await this._downloadedFile.close();
+			}
+			this._downloadedFile = undefined;
+		});
 
-		this.azureFilterComponent.onWorkspacesSelected(async () => {
+		this.azureFilterComponent.onWorkspacesSelectedChanged(async () => {
 			await this.onLoading();
 			await this.azureModelsTable?.loadData(this.azureFilterComponent?.data);
 			await this.onLoaded();
@@ -105,6 +113,22 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 		return Object.assign({}, this.azureFilterComponent?.data, {
 			model: this.azureModelsTable?.data
 		});
+	}
+
+	public async getDownloadedModel(): Promise<ModelArtifact> {
+		if (!this._downloadedFile) {
+			this._downloadedFile = new ModelArtifact(await this.downloadAzureModel(this.data));
+		}
+		return this._downloadedFile;
+	}
+
+	/**
+	 * disposes the view
+	 */
+	public async disposeComponent(): Promise<void> {
+		if (this._downloadedFile) {
+			await this._downloadedFile.close();
+		}
 	}
 
 	/**

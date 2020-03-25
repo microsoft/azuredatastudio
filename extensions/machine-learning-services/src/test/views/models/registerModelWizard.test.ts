@@ -20,7 +20,7 @@ describe('Register Model Wizard', () => {
 		let testContext = createContext();
 
 		let view = new RegisterModelWizard(testContext.apiWrapper.object, '');
-		view.open();
+		await view.open();
 		await view.refresh();
 		should.notEqual(view.wizardView, undefined);
 		should.notEqual(view.modelSourcePage, undefined);
@@ -30,7 +30,7 @@ describe('Register Model Wizard', () => {
 		let testContext = createContext();
 
 		let view = new RegisterModelWizard(testContext.apiWrapper.object, '');
-		view.open();
+		await view.open();
 		let accounts: azdata.Account[] = [
 			{
 				key: {
@@ -98,5 +98,7 @@ describe('Register Model Wizard', () => {
 			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListAzureModelsEventName), { data: models });
 		});
 		await view.refresh();
+		should.notEqual(view.azureModelsComponent?.data ,undefined);
+		should.notEqual(view.localModelsComponent?.data, undefined);
 	});
 });

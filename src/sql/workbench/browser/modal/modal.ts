@@ -345,8 +345,6 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalBodySection.querySelectorAll(tabbableElementsQuerySelector) :
 			this._bodyContainer.querySelectorAll(tabbableElementsQuerySelector);
 
-		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
-
 		if (focusableElements && focusableElements.length > 0) {
 			(<HTMLElement>focusableElements[0]).focus();
 		}
@@ -356,6 +354,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Shows the modal and attaches key listeners
 	 */
 	protected show() {
+		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
 		this._modalShowingContext.get()!.push(this._staticKey);
 		DOM.append(this.layoutService.container, this._bodyContainer);
 		this.setInitialFocusedElement();
@@ -396,14 +395,18 @@ export abstract class Modal extends Disposable implements IThemable {
 	protected hide() {
 		this._modalShowingContext.get()!.pop();
 		this._bodyContainer.remove();
-		if (this._focusedElementBeforeOpen) {
-			this._focusedElementBeforeOpen.focus();
-		}
 		this._keydownListener.dispose();
 		this._resizeListener.dispose();
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ModalDialogClosed)
 			.withAdditionalProperties({ name: this._name })
 			.send();
+		this.restoreKeyboardFocus();
+	}
+
+	private restoreKeyboardFocus() {
+		if (this._focusedElementBeforeOpen) {
+			this._focusedElementBeforeOpen.focus();
+		}
 	}
 
 	/**

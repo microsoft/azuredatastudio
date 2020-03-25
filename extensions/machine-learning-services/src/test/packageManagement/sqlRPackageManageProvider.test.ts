@@ -279,7 +279,7 @@ describe('SQL R Package Manager', () => {
 		let provider = createProvider(testContext);
 		let actual = await provider.getLocationTitle();
 
-		should.deepEqual(actual, constants.packageManagerNoConnection);
+		should.deepEqual(actual, constants.noConnectionError);
 	});
 
 	it('getLocationTitle Should return connection title string for valid connection', async function (): Promise<void> {
