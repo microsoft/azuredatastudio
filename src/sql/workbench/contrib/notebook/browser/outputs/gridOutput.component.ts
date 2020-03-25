@@ -37,6 +37,7 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { Table } from 'sql/base/browser/ui/table/table';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -129,7 +130,7 @@ class DataResourceTable extends GridTableBase<any> {
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 	}
 
-	get gridDataProvider(): IGridDataProvider {
+	public get gridDataProvider(): IGridDataProvider {
 		return this._gridDataProvider;
 	}
 
@@ -184,12 +185,12 @@ class DataResourceTable extends GridTableBase<any> {
 		}
 	}
 
-	public updateChartData(context: IGridActionContext): void {
-		let rowCount = context.table.getData().getLength();
-		let range = new Slick.Range(0, 0, rowCount - 1, context.table.columns.length - 1);
-		let columns = context.gridDataProvider.getColumnHeaders(range);
+	public updateChartData(table: Table<any>, gridDataProvider: IGridDataProvider): void {
+		let rowCount = table.getData().getLength();
+		let range = new Slick.Range(0, 0, rowCount - 1, table.columns.length - 1);
+		let columns = gridDataProvider.getColumnHeaders(range);
 
-		context.gridDataProvider.getRowData(0, rowCount).then(result => {
+		gridDataProvider.getRowData(0, rowCount).then(result => {
 			this._chart.setData(result.resultSubset.rows, columns);
 		});
 	}
@@ -420,7 +421,7 @@ export class NotebookChartAction extends ToggleableAction {
 		this.resourceTable.toggleChartVisibility();
 		this.toggle(!this.state.isOn);
 		if (this.state.isOn) {
-			this.resourceTable.updateChartData(context);
+			this.resourceTable.updateChartData(context.table, context.gridDataProvider);
 		}
 		return true;
 	}
