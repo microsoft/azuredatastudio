@@ -579,24 +579,32 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		};
 	}
 
-	private convertToHtmlTable(columns: IDbColumn[], d: QueryExecuteSubsetResult): string {
-		let htmlString = '<table>';
+	private convertToHtmlTable(columns: IDbColumn[], d: QueryExecuteSubsetResult): string[] {
+		// Adding 3 for <table>, column title rows, </table>
+		let htmlStringArr: string[] = new Array(d.resultSubset.rowCount + 3);
+		htmlStringArr[0] = '<table>';
 		if (columns.length > 0) {
-			htmlString += '<tr>';
+			let columnHeaders = '';
+			columnHeaders += '<tr>';
 			for (let column of columns) {
-				htmlString += '<th>' + escape(column.columnName) + '</th>';
+				columnHeaders += '<th>' + escape(column.columnName) + '</th>';
 			}
-			htmlString += '</tr>';
+			columnHeaders += '</tr>';
+			htmlStringArr[1] = columnHeaders;
 		}
+		let i = 2;
 		for (const row of d.resultSubset.rows) {
-			htmlString += '<tr>';
+			let rowData = '';
+			rowData += '<tr>';
 			for (let i = 0; i < columns.length; i++) {
-				htmlString += '<td>' + escape(row[i].displayValue) + '</td>';
+				rowData += '<td>' + escape(row[i].displayValue) + '</td>';
 			}
-			htmlString += '</tr>';
+			rowData += '</tr>';
+			htmlStringArr[i] = rowData;
+			i++;
 		}
-		htmlString += '</table>';
-		return htmlString;
+		htmlStringArr[htmlStringArr.length - 1] = '</table>';
+		return htmlStringArr;
 	}
 
 	private convertToDisplayMessage(msg: IResultMessage | string): nb.IIOPubMessage {
