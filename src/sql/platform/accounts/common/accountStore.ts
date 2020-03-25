@@ -47,14 +47,6 @@ export default class AccountStore implements IAccountStore {
 		});
 	}
 
-	public removeAllAccounts(): Thenable<boolean> {
-		return this.doOperation(() => {
-			return this.readFromMemento()
-				.then(() => this.removeAllAccountsList())
-				.then(result => this.writeToMemento(result.updatedAccounts).then(() => result))
-				.then(result => result.accountRemoved);
-		});
-	}
 
 	public remove(key: azdata.AccountKey): Thenable<boolean> {
 		return this.doOperation(() => {
@@ -147,15 +139,6 @@ export default class AccountStore implements IAccountStore {
 			accountRemoved: match >= 0,
 			changedAccount: undefined,
 			updatedAccounts: accounts
-		};
-	}
-	private removeAllAccountsList(): AccountListOperationResult {
-		return {
-			accountAdded: false,
-			accountModified: false,
-			accountRemoved: true,
-			changedAccount: undefined,
-			updatedAccounts: []
 		};
 	}
 

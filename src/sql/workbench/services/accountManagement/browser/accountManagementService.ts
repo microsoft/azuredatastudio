@@ -232,51 +232,47 @@ export class AccountManagementService implements IAccountManagementService {
 	 *                           removed, false otherwise.
 	 */
 	public removeAccount(accountKey: azdata.AccountKey): Thenable<boolean> {
-		let self = this;
 
 		// Step 1) Remove the account
 		// Step 2) Clear the sensitive data from the provider (regardless of whether the account was removed)
 		// Step 3) Update the account cache and fire an event
-		return this.doWithProvider(accountKey.providerId, provider => {
-			return this._accountStore.remove(accountKey)
-				.then(result => {
-					provider.provider.clear(accountKey);
-					return result;
-				})
-				.then(result => {
-					if (!result) {
-						return result;
-					}
+		return this.doWithProvider(accountKey.providerId, async provider => {
+			const result = await this._accountStore.remove(accountKey);
+			await provider.provider.clear(accountKey);
+			if (!result) {
+				return result;
+			}
 
-					let indexToRemove: number = firstIndex(provider.accounts, account => {
-						return account.key.accountId === accountKey.accountId;
-					});
+			let indexToRemove: number = firstIndex(provider.accounts, account => {
+				return account.key.accountId === accountKey.accountId;
+			});
 
-					if (indexToRemove >= 0) {
-						provider.accounts.splice(indexToRemove, 1);
-						self.fireAccountListUpdate(provider, false);
-					}
-					return result;
-				});
+			if (indexToRemove >= 0) {
+				provider.accounts.splice(indexToRemove, 1);
+				this.fireAccountListUpdate(provider, false);
+			}
+			return result;
 		});
 	}
 
 	/**
 	 * Removes all registered accounts
 	 */
-	public removeAccounts(): Thenable<boolean> {
-		const self = this;
-		return this.getAccounts().then((accounts) => {
-			return self._accountStore.removeAllAccounts().then((removeAllResult) => {
-				if (removeAllResult === true) {
-					for (const account of accounts) {
-						self.removeAccount(account.key);
-					}
-					return true;
-				}
-				return false;
-			});
-		});
+	public async removeAccounts(): Promise<boolean> {
+		const accounts = await this.getAccounts();
+		if (accounts.length === 0) {
+			return false;
+		}
+
+		let finalResult = true;
+		for (const account of accounts) {
+			const removeResult = await this.removeAccount(account.key);
+			if (removeResult === false) {
+				this.logService.info('Error when removing %s.', account.key);
+				finalResult = false;
+			}
+		}
+		return finalResult;
 	}
 
 	// UI METHODS //////////////////////////////////////////////////////////
