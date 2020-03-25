@@ -12,7 +12,6 @@ import { EditorDescriptor, IEditorRegistry, Extensions } from 'vs/workbench/brow
 import { Registry } from 'vs/platform/registry/common/platform';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
-//import { ContextKeyExpr, ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import * as editDataActions from 'sql/workbench/contrib/editData/browser/editDataActions';
 
@@ -36,13 +35,14 @@ const editDataResultsEditorDescriptor = new EditorDescriptor(
 Registry.as<IEditorRegistry>(Extensions.Editors)
 	.registerEditor(editDataResultsEditorDescriptor, [new SyncDescriptor(EditDataResultsInput)]);
 
+// Keybinding for toggling the query pane
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: editDataActions.ShowQueryPaneAction.ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: undefined,
-	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_3,
+	primary: KeyMod.CtrlCmd | KeyCode.US_QUOTE,
 	handler: accessor => {
-		const activeEditDataEditor = accessor.get(IEditorService);
+		const activeEditDataEditor = accessor.get(IEditorService).activeEditorPane;
 		if (activeEditDataEditor instanceof EditDataEditor) {
 			activeEditDataEditor.runShowQueryPane();
 		}
