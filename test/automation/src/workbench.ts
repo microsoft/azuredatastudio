@@ -56,8 +56,8 @@ export class Workbench {
 
 	constructor(code: Code, userDataPath: string) {
 		this.editors = new Editors(code);
-		this.quickopen = new QuickOpen(code, this.editors);
 		this.quickinput = new QuickInput(code);
+		this.quickopen = new QuickOpen(code, this.editors, this.quickinput);
 		this.explorer = new Explorer(code, this.editors);
 		this.activitybar = new ActivityBar(code);
 		this.search = new Search(code);
@@ -73,7 +73,7 @@ export class Workbench {
 		// {{SQL CARBON EDIT}}
 		this.connectionDialog = new ConnectionDialog(code);
 		this.profiler = new Profiler(code, this.quickopen);
-		this.queryEditors = new QueryEditors(code, this.quickopen);
+		this.queryEditors = new QueryEditors(code);
 		// {{END}}
 	}
 }

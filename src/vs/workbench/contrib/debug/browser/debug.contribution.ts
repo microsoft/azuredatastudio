@@ -96,6 +96,7 @@ const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewE
 		id: OpenDebugPanelAction.ID,
 		keybindings: openPanelKb
 	},
+	order: 3,
 	hideIfEmpty: true
 }, ViewContainerLocation.Panel);
 
