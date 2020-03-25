@@ -5,11 +5,16 @@
 
 import { EditDataEditor } from 'sql/workbench/contrib/editData/browser/editDataEditor';
 import { EditDataInput } from 'sql/workbench/browser/editData/editDataInput';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { EditDataResultsEditor } from 'sql/workbench/contrib/editData/browser/editDataResultsEditor';
 import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataResultsInput';
 import { EditorDescriptor, IEditorRegistry, Extensions } from 'vs/workbench/browser/editor';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
+import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
+//import { ContextKeyExpr, ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
+import * as editDataActions from 'sql/workbench/contrib/editData/browser/editDataActions';
 
 // Editor
 const editDataEditorDescriptor = new EditorDescriptor(
@@ -30,3 +35,16 @@ const editDataResultsEditorDescriptor = new EditorDescriptor(
 
 Registry.as<IEditorRegistry>(Extensions.Editors)
 	.registerEditor(editDataResultsEditorDescriptor, [new SyncDescriptor(EditDataResultsInput)]);
+
+KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: editDataActions.ShowQueryPaneAction.ID,
+	weight: KeybindingWeight.EditorContrib,
+	when: undefined,
+	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_3,
+	handler: accessor => (accessor, args) => {
+		const activeEditDataEditor = accessor.get(IEditorService);
+		if (activeEditDataEditor instanceof EditDataEditor) {
+			(activeEditDataEditor as EditDataEditor).runShowQueryPane();
+		}
+	}
+});

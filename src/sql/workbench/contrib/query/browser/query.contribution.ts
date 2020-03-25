@@ -24,7 +24,6 @@ import {
 	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction
 } from 'sql/workbench/contrib/query/browser/keyboardQueryActions';
 import * as gridActions from 'sql/workbench/contrib/editData/browser/gridActions';
-import * as editDataActions from 'sql/workbench/contrib/editData/browser/editDataActions';
 import * as gridCommands from 'sql/workbench/contrib/editData/browser/gridCommands';
 import * as Constants from 'sql/platform/query/common/constants';
 import { localize } from 'vs/nls';
@@ -307,16 +306,6 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	handler: gridCommands.goToNextQueryOutputTab
 });
 
-
-KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: editDataActions.ShowQueryPaneAction.ID,
-	weight: KeybindingWeight.EditorContrib,
-	when: QueryEditorVisibleCondition,
-	primary: KeyMod.CtrlCmd | KeyCode.KEY_3,
-	mac: { primary: KeyMod.WinCtrl | KeyCode.KEY_3 },
-	handler: accessor => {
-	},
-});
 
 
 // Intellisense and other configuration options
