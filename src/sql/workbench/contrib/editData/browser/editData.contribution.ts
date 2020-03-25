@@ -44,7 +44,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	handler: accessor => (accessor, args) => {
 		const activeEditDataEditor = accessor.get(IEditorService);
 		if (activeEditDataEditor instanceof EditDataEditor) {
-			(activeEditDataEditor as EditDataEditor).runShowQueryPane();
+			activeEditDataEditor.runShowQueryPane();
 		}
 	}
 });
