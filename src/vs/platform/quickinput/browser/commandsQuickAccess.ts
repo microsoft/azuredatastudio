@@ -5,8 +5,7 @@
 
 import { localize } from 'vs/nls';
 import { IQuickPickSeparator } from 'vs/platform/quickinput/common/quickInput';
-import { PickerQuickAccessProvider, IPickerQuickAccessItem } from 'vs/platform/quickinput/common/quickAccess';
-import { distinct } from 'vs/base/common/arrays';
+import { PickerQuickAccessProvider, IPickerQuickAccessItem, IPickerQuickAccessProviderOptions } from 'vs/platform/quickinput/browser/pickerQuickAccess';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { DisposableStore, Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { or, matchesPrefix, matchesWords, matchesContiguousSubString } from 'vs/base/common/filters';
@@ -22,15 +21,13 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
-import { isFirefox } from 'vs/base/browser/browser';
-import { timeout } from 'vs/base/common/async';
 
 export interface ICommandQuickPick extends IPickerQuickAccessItem {
 	commandId: string;
 	commandAlias: string | undefined;
 }
 
-export interface ICommandsQuickAccessOptions {
+export interface ICommandsQuickAccessOptions extends IPickerQuickAccessProviderOptions {
 	showAlias: boolean;
 }
 
@@ -40,19 +37,17 @@ export abstract class AbstractCommandsQuickAccessProvider extends PickerQuickAcc
 
 	private static WORD_FILTER = or(matchesPrefix, matchesWords, matchesContiguousSubString);
 
-	private readonly disposables = new DisposableStore();
-
-	private readonly commandsHistory = this.disposables.add(this.instantiationService.createInstance(CommandsHistory));
+	private readonly commandsHistory = this._register(this.instantiationService.createInstance(CommandsHistory));
 
 	constructor(
-		private options: ICommandsQuickAccessOptions,
+		protected options: ICommandsQuickAccessOptions,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IKeybindingService private readonly keybindingService: IKeybindingService,
 		@ICommandService private readonly commandService: ICommandService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@INotificationService private readonly notificationService: INotificationService
 	) {
-		super(AbstractCommandsQuickAccessProvider.PREFIX);
+		super(AbstractCommandsQuickAccessProvider.PREFIX, options);
 	}
 
 	protected async getPicks(filter: string, disposables: DisposableStore, token: CancellationToken): Promise<Array<ICommandQuickPick | IQuickPickSeparator>> {
@@ -60,12 +55,17 @@ export abstract class AbstractCommandsQuickAccessProvider extends PickerQuickAcc
 		// Ask subclass for all command picks
 		const allCommandPicks = await this.getCommandPicks(disposables, token);
 
+		if (token.isCancellationRequested) {
+			return [];
+		}
+
 		// Filter
 		const filteredCommandPicks: ICommandQuickPick[] = [];
 		for (const commandPick of allCommandPicks) {
 			const labelHighlights = withNullAsUndefined(AbstractCommandsQuickAccessProvider.WORD_FILTER(filter, commandPick.label));
 			const aliasHighlights = commandPick.commandAlias ? withNullAsUndefined(AbstractCommandsQuickAccessProvider.WORD_FILTER(filter, commandPick.commandAlias)) : undefined;
 
+			// Add if matching in label or alias
 			if (labelHighlights || aliasHighlights) {
 				commandPick.highlights = {
 					label: labelHighlights,
@@ -74,14 +74,16 @@ export abstract class AbstractCommandsQuickAccessProvider extends PickerQuickAcc
 
 				filteredCommandPicks.push(commandPick);
 			}
-		}
 
-		// Remove duplicates
-		const distinctCommandPicks = distinct(filteredCommandPicks, pick => `${pick.label}${pick.commandId}`);
+			// Also add if we have a 100% command ID match
+			else if (filter === commandPick.commandId) {
+				filteredCommandPicks.push(commandPick);
+			}
+		}
 
 		// Add description to commands that have duplicate labels
 		const mapLabelToCommand = new Map<string, ICommandQuickPick>();
-		for (const commandPick of distinctCommandPicks) {
+		for (const commandPick of filteredCommandPicks) {
 			const existingCommandForLabel = mapLabelToCommand.get(commandPick.label);
 			if (existingCommandForLabel) {
 				commandPick.description = commandPick.commandId;
@@ -92,7 +94,7 @@ export abstract class AbstractCommandsQuickAccessProvider extends PickerQuickAcc
 		}
 
 		// Sort by MRU order and fallback to name otherwise
-		distinctCommandPicks.sort((commandPickA, commandPickB) => {
+		filteredCommandPicks.sort((commandPickA, commandPickB) => {
 			const commandACounter = this.commandsHistory.peek(commandPickA.commandId);
 			const commandBCounter = this.commandsHistory.peek(commandPickB.commandId);
 
@@ -115,8 +117,8 @@ export abstract class AbstractCommandsQuickAccessProvider extends PickerQuickAcc
 		const commandPicks: Array<ICommandQuickPick | IQuickPickSeparator> = [];
 
 		let addSeparator = false;
-		for (let i = 0; i < distinctCommandPicks.length; i++) {
-			const commandPick = distinctCommandPicks[i];
+		for (let i = 0; i < filteredCommandPicks.length; i++) {
+			const commandPick = filteredCommandPicks[i];
 			const keybinding = this.keybindingService.lookupKeybinding(commandPick.commandId);
 			const ariaLabel = keybinding ?
 				localize('commandPickAriaLabelWithKeybinding', "{0}, {1}, commands picker", commandPick.label, keybinding.getAriaLabel()) :
@@ -138,19 +140,12 @@ export abstract class AbstractCommandsQuickAccessProvider extends PickerQuickAcc
 			commandPicks.push({
 				...commandPick,
 				ariaLabel,
-				detail: this.options.showAlias ? commandPick.commandAlias : undefined,
+				detail: this.options.showAlias && commandPick.commandAlias !== commandPick.label ? commandPick.commandAlias : undefined,
 				keybinding,
 				accept: async () => {
 
 					// Add to history
 					this.commandsHistory.push(commandPick.commandId);
-
-					if (!isFirefox) {
-						// Use a timeout to give the quick open widget a chance to close itself first
-						// Firefox: since the browser is quite picky for certain commands, we do not
-						// use a timeout (https://github.com/microsoft/vscode/issues/83288)
-						await timeout(50);
-					}
 
 					// Telementry
 					this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {
@@ -173,11 +168,10 @@ export abstract class AbstractCommandsQuickAccessProvider extends PickerQuickAcc
 		return commandPicks;
 	}
 
+	/**
+	 * Subclasses to provide the actual command entries.
+	 */
 	protected abstract getCommandPicks(disposables: DisposableStore, token: CancellationToken): Promise<Array<ICommandQuickPick>>;
-
-	dispose(): void {
-		this.disposables.dispose();
-	}
 }
 
 interface ISerializedCommandHistory {
@@ -194,7 +188,7 @@ interface ICommandsQuickAccessConfiguration {
 	};
 }
 
-class CommandsHistory extends Disposable {
+export class CommandsHistory extends Disposable {
 
 	static readonly DEFAULT_COMMANDS_HISTORY_LENGTH = 50;
 

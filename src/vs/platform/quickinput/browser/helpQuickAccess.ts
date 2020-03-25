@@ -36,7 +36,7 @@ export class HelpQuickAccessProvider implements IQuickAccessProvider {
 		// name of a provider (e.g. `?term` for terminals)
 		disposables.add(picker.onDidChangeValue(value => {
 			const providerDescriptor = this.registry.getQuickAccessProvider(value.substr(HelpQuickAccessProvider.PREFIX.length));
-			if (providerDescriptor && providerDescriptor.prefix !== HelpQuickAccessProvider.PREFIX) {
+			if (providerDescriptor && providerDescriptor.prefix && providerDescriptor.prefix !== HelpQuickAccessProvider.PREFIX) {
 				this.quickInputService.quickAccess.show(providerDescriptor.prefix);
 			}
 		}));
@@ -66,6 +66,10 @@ export class HelpQuickAccessProvider implements IQuickAccessProvider {
 		const editorProviders: IHelpQuickAccessPickItem[] = [];
 
 		for (const provider of this.registry.getQuickAccessProviders().sort((providerA, providerB) => providerA.prefix.localeCompare(providerB.prefix))) {
+			if (provider.prefix === HelpQuickAccessProvider.PREFIX) {
+				continue; // exclude help which is already active
+			}
+
 			for (const helpEntry of provider.helpEntries) {
 				const prefix = helpEntry.prefix || provider.prefix;
 				const label = prefix || '\u2026' /* ... */;

@@ -154,6 +154,7 @@ class ListElementRenderer implements IListRenderer<ListElement, IListElementTemp
 		options.descriptionMatches = descriptionHighlights || [];
 		options.extraClasses = element.item.iconClasses;
 		options.italic = element.item.italic;
+		options.strikethrough = element.item.strikethrough;
 		data.label.setLabel(element.saneLabel, element.saneDescription, options);
 
 		// Keybinding
@@ -180,7 +181,11 @@ class ListElementRenderer implements IListRenderer<ListElement, IListElementTemp
 		const buttons = element.item.buttons;
 		if (buttons && buttons.length) {
 			data.actionBar.push(buttons.map((button, index) => {
-				const action = new Action(`id-${index}`, '', button.iconClass || (button.iconPath ? getIconClass(button.iconPath) : undefined), true, () => {
+				let cssClasses = button.iconClass || (button.iconPath ? getIconClass(button.iconPath) : undefined);
+				if (button.alwaysVisible) {
+					cssClasses = cssClasses ? `${cssClasses} always-visible` : 'always-visible';
+				}
+				const action = new Action(`id-${index}`, '', cssClasses, true, () => {
 					element.fireButtonTriggered({
 						button,
 						item: element.item
@@ -193,12 +198,6 @@ class ListElementRenderer implements IListRenderer<ListElement, IListElementTemp
 			dom.addClass(data.entry, 'has-actions');
 		} else {
 			dom.removeClass(data.entry, 'has-actions');
-		}
-
-		if (element.item.buttonsAlwaysVisible) {
-			dom.addClass(data.entry, 'always-visible-actions');
-		} else {
-			dom.removeClass(data.entry, 'always-visible-actions');
 		}
 	}
 
@@ -221,6 +220,16 @@ class ListElementDelegate implements IListVirtualDelegate<ListElement> {
 	getTemplateId(element: ListElement): string {
 		return ListElementRenderer.ID;
 	}
+}
+
+export enum QuickInputListFocus {
+	First = 1,
+	Second,
+	Last,
+	Next,
+	Previous,
+	NextPage,
+	PreviousPage
 }
 
 export class QuickInputList {
@@ -308,6 +317,18 @@ export class QuickInputList {
 				this._onLeave.fire();
 			}
 		}));
+		this.disposables.push(this.list.onContextMenu(e => {
+			if (typeof e.index === 'number') {
+				e.browserEvent.preventDefault();
+
+				// we want to treat a context menu event as
+				// a gesture to open the item at the index
+				// since we do not have any context menu
+				// this enables for example macOS to Ctrl-
+				// click on an item to open it.
+				this.list.setSelection([e.index]);
+			}
+		}));
 	}
 
 	@memoize
@@ -317,7 +338,7 @@ export class QuickInputList {
 
 	@memoize
 	get onDidChangeSelection() {
-		return Event.map(this.list.onDidChangeSelection, e => e.elements.map(e => e.item));
+		return Event.map(this.list.onDidChangeSelection, e => ({ items: e.elements.map(e => e.item), event: e.browserEvent }));
 	}
 
 	getAllVisibleChecked() {
@@ -417,6 +438,10 @@ export class QuickInputList {
 		this._onChangedVisibleCount.fire(this.elements.length);
 	}
 
+	getElementsCount(): number {
+		return this.inputElements.length;
+	}
+
 	getFocusedElements() {
 		return this.list.getFocusedElements()
 			.map(e => e.item);
@@ -427,7 +452,10 @@ export class QuickInputList {
 			.filter(item => this.elementsToIndexes.has(item))
 			.map(item => this.elementsToIndexes.get(item)!));
 		if (items.length > 0) {
-			this.list.reveal(this.list.getFocus()[0]);
+			const focused = this.list.getFocus()[0];
+			if (typeof focused === 'number') {
+				this.list.reveal(focused);
+			}
 		}
 	}
 
@@ -468,22 +496,54 @@ export class QuickInputList {
 	}
 
 	set enabled(value: boolean) {
-		this.list.getHTMLElement().style.pointerEvents = value ? null : 'none';
+		this.list.getHTMLElement().style.pointerEvents = value ? '' : 'none';
 	}
 
-	focus(what: 'First' | 'Last' | 'Next' | 'Previous' | 'NextPage' | 'PreviousPage'): void {
+	focus(what: QuickInputListFocus): void {
 		if (!this.list.length) {
 			return;
 		}
 
-		if ((what === 'Next' || what === 'NextPage') && this.list.getFocus()[0] === this.list.length - 1) {
-			what = 'First';
+		if ((what === QuickInputListFocus.Next || what === QuickInputListFocus.NextPage) && this.list.getFocus()[0] === this.list.length - 1) {
+			what = QuickInputListFocus.First;
 		}
-		if ((what === 'Previous' || what === 'PreviousPage') && this.list.getFocus()[0] === 0) {
-			what = 'Last';
+
+		if ((what === QuickInputListFocus.Previous || what === QuickInputListFocus.PreviousPage) && this.list.getFocus()[0] === 0) {
+			what = QuickInputListFocus.Last;
 		}
-		this.list['focus' + what as 'focusFirst' | 'focusLast' | 'focusNext' | 'focusPrevious' | 'focusNextPage' | 'focusPreviousPage']();
-		this.list.reveal(this.list.getFocus()[0]);
+
+		if (what === QuickInputListFocus.Second && this.list.length < 2) {
+			what = QuickInputListFocus.First;
+		}
+
+		switch (what) {
+			case QuickInputListFocus.First:
+				this.list.focusFirst();
+				break;
+			case QuickInputListFocus.Second:
+				this.list.focusNth(1);
+				break;
+			case QuickInputListFocus.Last:
+				this.list.focusLast();
+				break;
+			case QuickInputListFocus.Next:
+				this.list.focusNext();
+				break;
+			case QuickInputListFocus.Previous:
+				this.list.focusPrevious();
+				break;
+			case QuickInputListFocus.NextPage:
+				this.list.focusNextPage();
+				break;
+			case QuickInputListFocus.PreviousPage:
+				this.list.focusPreviousPage();
+				break;
+		}
+
+		const focused = this.list.getFocus()[0];
+		if (typeof focused === 'number') {
+			this.list.reveal(focused);
+		}
 	}
 
 	clearFocus() {
@@ -499,10 +559,10 @@ export class QuickInputList {
 		this.list.layout();
 	}
 
-	filter(query: string) {
+	filter(query: string): boolean {
 		if (!(this.sortByLabel || this.matchOnLabel || this.matchOnDescription || this.matchOnDetail)) {
 			this.list.layout();
-			return;
+			return false;
 		}
 		query = query.trim();
 
@@ -560,6 +620,8 @@ export class QuickInputList {
 
 		this._onChangedAllVisibleChecked.fire(this.getAllVisibleChecked());
 		this._onChangedVisibleCount.fire(shownElements.length);
+
+		return true;
 	}
 
 	toggleCheckbox() {

@@ -30,7 +30,7 @@ export abstract class SqlPackageManageProviderBase {
 		if (connection) {
 			return `${connection.serverName} ${connection.databaseName ? connection.databaseName : ''}`;
 		}
-		return constants.packageManagerNoConnection;
+		return constants.noConnectionError;
 	}
 
 	protected async getCurrentConnection(): Promise<azdata.connection.ConnectionProfile> {

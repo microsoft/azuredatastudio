@@ -105,6 +105,7 @@ import { IListService } from 'vs/platform/list/browser/listService';
 import { win32, posix } from 'vs/base/common/path';
 import { TestWorkingCopyService, TestContextService, TestStorageService, TestTextResourcePropertiesService } from 'vs/workbench/test/common/workbenchTestServices';
 import { IViewsService, IView } from 'vs/workbench/common/views';
+import { IStorageKeysSyncRegistryService, StorageKeysSyncRegistryService } from 'vs/platform/userDataSync/common/storageKeys';
 
 export function createFileEditorInput(instantiationService: IInstantiationService, resource: URI): FileEditorInput {
 	return instantiationService.createInstance(FileEditorInput, resource, undefined, undefined);
@@ -141,6 +142,8 @@ export function workbenchInstantiationService(overrides?: { textFileService?: (i
 	instantiationService.stub(IHistoryService, new TestHistoryService());
 	instantiationService.stub(ITextResourcePropertiesService, new TestTextResourcePropertiesService(configService));
 	instantiationService.stub(IUndoRedoService, instantiationService.createInstance(UndoRedoService));
+	const themeService = new TestThemeService();
+	instantiationService.stub(IThemeService, themeService);
 	instantiationService.stub(IModelService, instantiationService.createInstance(ModelServiceImpl));
 	instantiationService.stub(IFileService, new TestFileService());
 	instantiationService.stub(IBackupFileService, new TestBackupFileService());
@@ -156,8 +159,6 @@ export function workbenchInstantiationService(overrides?: { textFileService?: (i
 	instantiationService.stub(ITextFileService, overrides?.textFileService ? overrides.textFileService(instantiationService) : <ITextFileService>instantiationService.createInstance(TestTextFileService));
 	instantiationService.stub(IHostService, <IHostService>instantiationService.createInstance(TestHostService));
 	instantiationService.stub(ITextModelService, <ITextModelService>instantiationService.createInstance(TextModelResolverService));
-	const themeService = new TestThemeService();
-	instantiationService.stub(IThemeService, themeService);
 	instantiationService.stub(ILogService, new NullLogService());
 	const editorGroupService = new TestEditorGroupsService([new TestEditorGroupView(0)]);
 	instantiationService.stub(IEditorGroupsService, editorGroupService);
@@ -168,6 +169,7 @@ export function workbenchInstantiationService(overrides?: { textFileService?: (i
 	instantiationService.stub(IViewletService, new TestViewletService());
 	instantiationService.stub(IListService, new TestListService());
 	instantiationService.stub(IQuickInputService, new QuickInputService(TestEnvironmentService, configService, instantiationService, keybindingService, contextKeyService, themeService, accessibilityService, layoutService));
+	instantiationService.stub(IStorageKeysSyncRegistryService, new StorageKeysSyncRegistryService());
 
 	return instantiationService;
 }

@@ -26,6 +26,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { status } from 'vs/base/browser/ui/aria/aria';
 
 export class WizardModal extends Modal {
 	private _dialogPanes = new Map<WizardPage, DialogPane>();
@@ -184,13 +185,20 @@ export class WizardModal extends Modal {
 		if (validate && !await this.validateNavigation(index)) {
 			return;
 		}
+
+		let dialogPaneToShow: DialogPane | undefined = undefined;
 		this._dialogPanes.forEach((dialogPane, page) => {
 			if (page === pageToShow) {
+				dialogPaneToShow = dialogPane;
 				dialogPane.show(focus);
 			} else {
 				dialogPane.hide();
 			}
 		});
+
+		if (dialogPaneToShow) {
+			status(`${dialogPaneToShow.pageNumberDisplayText} ${dialogPaneToShow.title}`);
+		}
 		this.setButtonsForPage(index);
 		this._wizard.setCurrentPage(index);
 		let currentPageValid = this._wizard.pages[this._wizard.currentPage].valid;

@@ -2,15 +2,17 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
+import * as nls from 'vscode-nls';
 import { SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import { ClientCapabilities, StaticFeature, RPCMessageType, ServerCapabilities } from 'vscode-languageclient';
-import { Disposable } from 'vscode';
+import { Disposable, window } from 'vscode';
 import { Telemetry } from './telemetry';
 import * as contracts from './contracts';
 import * as azdata from 'azdata';
 import * as Utils from './utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+
+const localize = nls.loadMessageBundle();
 
 export class TelemetryFeature implements StaticFeature {
 
@@ -23,6 +25,50 @@ export class TelemetryFeature implements StaticFeature {
 	initialize(): void {
 		this._client.onNotification(contracts.TelemetryNotification.type, e => {
 			Telemetry.sendTelemetryEvent(e.params.eventName, e.params.properties, e.params.measures);
+		});
+	}
+}
+
+export class AccountFeature implements StaticFeature {
+
+	constructor(private _client: SqlOpsDataClient) { }
+
+	fillClientCapabilities(capabilities: ClientCapabilities): void { }
+
+	initialize(): void {
+		this._client.onRequest(contracts.SecurityTokenRequest.type, async (e): Promise<contracts.RequestSecurityTokenResponse | undefined> => {
+			const accountList = await azdata.accounts.getAllAccounts();
+
+			if (accountList.length < 1) {
+				// TODO: Prompt user to add account
+				window.showErrorMessage(localize('mssql.missingLinkedAzureAccount', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query."));
+				return undefined;
+			} else if (accountList.length > 1) {
+				// TODO: Prompt user to select an account
+				window.showErrorMessage(localize('mssql.multipleLinkedAzureAccount', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, which is not supported if multiple linked Azure accounts are present. Make sure only one linked Azure account exists and retry the query."));
+				return undefined;
+			}
+
+			let account = accountList[0];
+			const securityToken: { [key: string]: any } = await azdata.accounts.getSecurityToken(account, azdata.AzureResource.AzureKeyVault);
+			const tenant = account.properties.tenants.find((t: { [key: string]: string }) => e.authority.includes(t.id));
+			const unauthorizedMessage = localize('mssql.insufficientlyPrivelagedAzureAccount', "The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.", account.key.accountId);
+			if (!tenant) {
+				window.showErrorMessage(unauthorizedMessage);
+				return undefined;
+			}
+			let tokenBundle = securityToken[tenant.id];
+			if (!tokenBundle) {
+				window.showErrorMessage(unauthorizedMessage);
+				return undefined;
+			}
+
+			let params: contracts.RequestSecurityTokenResponse = {
+				accountKey: JSON.stringify(account.key),
+				token: securityToken[tenant.id].token
+			};
+
+			return params;
 		});
 	}
 }

@@ -81,6 +81,8 @@ export interface ParsedArgs {
 	user?: string;
 	command?: string;
 	// {{SQL CARBON EDIT}} End
+	'sync'?: 'on' | 'off';
+
 	// chromium command line args: https://electronjs.org/docs/all#supported-chrome-command-line-switches
 	'no-proxy-server'?: boolean;
 	'proxy-server'?: string;
@@ -130,12 +132,11 @@ export interface IEnvironmentService extends IUserHomeProvider {
 	keybindingsResource: URI;
 	keyboardLayoutResource: URI;
 	argvResource: URI;
+	snippetsHome: URI;
 
 	// sync resources
 	userDataSyncLogResource: URI;
 	userDataSyncHome: URI;
-	settingsSyncPreviewResource: URI;
-	keybindingsSyncPreviewResource: URI;
 
 	machineSettingsResource: URI;
 
@@ -173,5 +174,5 @@ export interface IEnvironmentService extends IUserHomeProvider {
 	driverHandle?: string;
 	driverVerbose: boolean;
 
-	galleryMachineIdResource?: URI;
+	serviceMachineIdResource?: URI;
 }

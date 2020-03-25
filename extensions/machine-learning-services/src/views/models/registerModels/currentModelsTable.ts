@@ -4,11 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as constants from '../../../common/constants';
 import { ModelViewBase } from '../modelViewBase';
 import { ApiWrapper } from '../../../common/apiWrapper';
 import { RegisteredModel } from '../../../modelManagement/interfaces';
 import { IDataComponent } from '../../interfaces';
+import { ModelArtifact } from '../prediction/modelArtifact';
 
 /**
  * View to render registered models table
@@ -18,6 +20,10 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	private _table: azdata.DeclarativeTableComponent | undefined;
 	private _modelBuilder: azdata.ModelBuilder | undefined;
 	private _selectedModel: any;
+	private _loader: azdata.LoadingComponent | undefined;
+	private _downloadedFile: ModelArtifact | undefined;
+	private _onModelSelectionChanged: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
+	public readonly onModelSelectionChanged: vscode.Event<void> = this._onModelSelectionChanged.event;
 
 	/**
 	 * Creates new view
@@ -30,7 +36,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	 *
 	 * @param modelBuilder register the components
 	 */
-	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.DeclarativeTableComponent {
+	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		this._modelBuilder = modelBuilder;
 		this._table = modelBuilder.declarativeTable()
 			.withProperties<azdata.DeclarativeTableProperties>(
@@ -92,7 +98,12 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 					ariaLabel: constants.mlsConfigTitle
 				})
 			.component();
-		return this._table;
+		this._loader = modelBuilder.loadingComponent()
+			.withItem(this._table)
+			.withProperties({
+				loading: true
+			}).component();
+		return this._loader;
 	}
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
@@ -111,14 +122,15 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	/**
 	 * Returns the component
 	 */
-	public get component(): azdata.DeclarativeTableComponent | undefined {
-		return this._table;
+	public get component(): azdata.Component | undefined {
+		return this._loader;
 	}
 
 	/**
 	 * Loads the data in the component
 	 */
 	public async loadData(): Promise<void> {
+		await this.onLoading();
 		if (this._table) {
 			let models: RegisteredModel[] | undefined;
 
@@ -131,6 +143,20 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 
 			this._table.data = tableData;
 		}
+		this.onModelSelected();
+		await this.onLoaded();
+	}
+
+	public async onLoading(): Promise<void> {
+		if (this._loader) {
+			await this._loader.updateProperties({ loading: true });
+		}
+	}
+
+	public async onLoaded(): Promise<void> {
+		if (this._loader) {
+			await this._loader.updateProperties({ loading: false });
+		}
 	}
 
 	private createTableRow(model: RegisteredModel): any[] {
@@ -142,8 +168,9 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 				height: 15,
 				checked: false
 			}).component();
-			selectModelButton.onDidClick(() => {
+			selectModelButton.onDidClick(async () => {
 				this._selectedModel = model;
+				await this.onModelSelected();
 			});
 			return [model.artifactName, model.title, model.created, selectModelButton];
 		}
@@ -151,11 +178,35 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 		return [];
 	}
 
+	private async onModelSelected(): Promise<void> {
+		this._onModelSelectionChanged.fire();
+		if (this._downloadedFile) {
+			await this._downloadedFile.close();
+		}
+		this._downloadedFile = undefined;
+	}
+
 	/**
 	 * Returns selected data
 	 */
 	public get data(): RegisteredModel | undefined {
 		return this._selectedModel;
+	}
+
+	public async getDownloadedModel(): Promise<ModelArtifact> {
+		if (!this._downloadedFile) {
+			this._downloadedFile = new ModelArtifact(await this.downloadRegisteredModel(this.data));
+		}
+		return this._downloadedFile;
+	}
+
+	/**
+	 * disposes the view
+	 */
+	public async disposeComponent(): Promise<void> {
+		if (this._downloadedFile) {
+			await this._downloadedFile.close();
+		}
 	}
 
 	/**

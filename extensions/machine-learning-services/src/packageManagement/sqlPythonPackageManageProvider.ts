@@ -6,13 +6,13 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nbExtensionApis from '../typings/notebookServices';
-import { QueryRunner } from '../common/queryRunner';
 import { ApiWrapper } from '../common/apiWrapper';
 import { ProcessService } from '../common/processService';
 import { Config } from '../configurations/config';
 import { SqlPackageManageProviderBase, ScriptMode } from './SqlPackageManageProviderBase';
 import { HttpClient } from '../common/httpClient';
 import * as utils from '../common/utils';
+import { PackageManagementService } from './packageManagementService';
 
 /**
  * Manage Package Provider for python packages inside SQL server databases
@@ -26,7 +26,7 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 	constructor(
 		private _outputChannel: vscode.OutputChannel,
 		apiWrapper: ApiWrapper,
-		private _queryRunner: QueryRunner,
+		private _service: PackageManagementService,
 		private _processService: ProcessService,
 		private _config: Config,
 		private _httpClient: HttpClient) {
@@ -51,7 +51,7 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 	 * Returns list of packages
 	 */
 	protected async fetchPackages(): Promise<nbExtensionApis.IPackageDetails[]> {
-		return await this._queryRunner.getPythonPackages(await this.getCurrentConnection());
+		return await this._service.getPythonPackages(await this.getCurrentConnection());
 	}
 
 	/**
@@ -97,7 +97,7 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 			return false;
 		}
 		let connection = await this.getCurrentConnection();
-		if (connection && await this._queryRunner.isPythonInstalled(connection)) {
+		if (connection && await this._service.isPythonInstalled(connection)) {
 			return true;
 		}
 		return false;

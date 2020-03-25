@@ -10,7 +10,6 @@ import { IMenuService, MenuId, MenuItemAction, SubmenuItemAction } from 'vs/plat
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { timeout } from 'vs/base/common/async';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { DisposableStore, toDisposable, dispose } from 'vs/base/common/lifecycle';
 import { AbstractEditorCommandsQuickAccessProvider } from 'vs/editor/contrib/quickAccess/commandsQuickAccess';
@@ -21,6 +20,9 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { DefaultQuickAccessFilterValue } from 'vs/platform/quickinput/common/quickAccess';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IWorkbenchQuickOpenConfiguration } from 'vs/workbench/browser/quickopen';
 
 export class CommandsQuickAccessProvider extends AbstractEditorCommandsQuickAccessProvider {
 
@@ -33,20 +35,36 @@ export class CommandsQuickAccessProvider extends AbstractEditorCommandsQuickAcce
 		this.extensionService.whenInstalledExtensionsRegistered()
 	]);
 
-	get activeTextEditorControl(): IEditor | undefined { return this.editorService.activeTextEditorControl; }
+	protected get activeTextEditorControl(): IEditor | undefined { return this.editorService.activeTextEditorControl; }
+
+	get defaultFilterValue(): DefaultQuickAccessFilterValue | undefined {
+		if (this.configuration.preserveInput) {
+			return DefaultQuickAccessFilterValue.LAST;
+		}
+
+		return undefined;
+	}
 
 	constructor(
 		@IEditorService private readonly editorService: IEditorService,
 		@IMenuService private readonly menuService: IMenuService,
 		@IExtensionService private readonly extensionService: IExtensionService,
-		@IEnvironmentService environmentService: IEnvironmentService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@ICommandService commandService: ICommandService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@INotificationService notificationService: INotificationService
+		@INotificationService notificationService: INotificationService,
+		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		super({ showAlias: !Language.isDefaultVariant() }, instantiationService, keybindingService, commandService, telemetryService, notificationService);
+	}
+
+	private get configuration() {
+		const commandPaletteConfig = this.configurationService.getValue<IWorkbenchQuickOpenConfiguration>().workbench.commandPalette;
+
+		return {
+			preserveInput: commandPaletteConfig.preserveInput
+		};
 	}
 
 	protected async getCommandPicks(disposables: DisposableStore, token: CancellationToken): Promise<Array<ICommandQuickPick>> {
