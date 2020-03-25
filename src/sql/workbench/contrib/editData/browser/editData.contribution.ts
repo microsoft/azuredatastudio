@@ -41,7 +41,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	weight: KeybindingWeight.EditorContrib,
 	when: undefined,
 	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_3,
-	handler: accessor => (accessor, args) => {
+	handler: accessor => {
 		const activeEditDataEditor = accessor.get(IEditorService);
 		if (activeEditDataEditor instanceof EditDataEditor) {
 			activeEditDataEditor.runShowQueryPane();
