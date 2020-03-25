@@ -20,9 +20,6 @@ const mkdirp = require('mkdirp');
 const fs = require('fs').promises;
 const assert = require('assert');
 
-gulp.task('clean-mssql-extension', util.rimraf('extensions/mssql/node_modules'));
-gulp.task('clean-credentials-extension', util.rimraf('extensions/credentials/node_modules'));
-
 gulp.task('fmt', () => formatStagedFiles());
 const formatFiles = (some) => {
 	const formatting = es.map(function (file, cb) {
@@ -119,11 +116,11 @@ async function installService(configPath) {
 	}
 	await installer.installService(runtime);
 	let stat;
-	try {
-		for (const file of config.executableFiles) {
+	for (const file of config.executableFiles) {
+		try {
 			stat = await fs.stat(path.join(serviceInstallFolder, file));
-		}
-	} catch (e) { }
+		} catch (e) { }
+	}
 
 	assert(stat);
 }
