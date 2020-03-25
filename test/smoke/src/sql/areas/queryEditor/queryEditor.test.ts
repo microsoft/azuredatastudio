@@ -4,32 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Application } from '../../../../../automation';
-import { promises as fs } from 'fs';
-import * as os from 'os';
-import * as path from 'path';
 
 export function setup() {
 	describe('Query Editor', () => {
 
-		it('Can open and edit existing file', async function () {
-			const testFilePath = path.join(os.tmpdir(), 'QueryEditorSmokeTest.sql');
-			await fs.writeFile(testFilePath, '');
-			try {
-				const app = this.app as Application;
-				await app.workbench.quickopen.openFile(testFilePath);
-				const fileBaseName = path.basename(testFilePath);
-				await app.workbench.editor.waitForTypeInEditor(fileBaseName, 'SELECT * FROM sys.tables');
-			}
-			finally {
-				await fs.unlink(testFilePath);
-			}
-		});
-
-		it('Can open and connect file', async function () {
+		it('can open and connect file', async function () {
 			const app = this.app as Application;
-			await app.workbench.queryEditors.openFile('www');
+			await app.workbench.quickopen.openFile('test.sql');
 			await app.workbench.queryEditor.commandBar.clickButton(3);
 			await app.workbench.connectionDialog.waitForConnectionDialog();
+			await app.code.waitAndClick('.modal .modal-body select[aria-label="Connection type"]');
+			await app.code.waitAndClick('.context-view .monaco-list-row > *[aria-label="Sqlite"]');
+			await app.code.waitForSetValue('.modal .modal-body input[aria-label="File"', 'C:\\Users\\Anthony\\Documents\\chinook.db');
+			await app.code.waitAndClick('.modal .modal-footer a[aria-label="Connect"]');
+			await app.workbench.queryEditor.commandBar.waitForButton(3, 'Disconnect');
 		});
 	});
 }

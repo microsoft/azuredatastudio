@@ -24,4 +24,8 @@ export class CommandBar {
 	public async clickButton(index: number): Promise<void> {
 		await this.code.waitAndClick(CommandBar.COMMAND_BAR_BUTTON.replace('${INDEX}', '' + index));
 	}
+
+	public async waitForButton(index: number, label: string): Promise<void> {
+		await this.code.waitForTextContent(CommandBar.COMMAND_BAR_BUTTON.replace('${INDEX}', '' + index), label);
+	}
 }

@@ -35,6 +35,7 @@ import { NullLogService } from 'vs/platform/log/common/log';
 import { assign } from 'vs/base/common/objects';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 
 suite('SQL ConnectionManagementService tests', () => {
 
@@ -165,7 +166,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			new NullLogService(), // ILogService
 			undefined, // IStorageService
 			TestEnvironmentService,
-			undefined
+			getBasicExtensionService()
 		);
 		return connectionManagementService;
 	}
@@ -923,7 +924,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionStoreMock.setup(x => x.getConnectionProfileGroups(TypeMoq.It.isAny(), undefined)).returns(() => {
 			return [group1];
 		});
-		const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, connectionStatusManagerMock.object, undefined, undefined, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+		const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, connectionStatusManagerMock.object, undefined, undefined, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService());
 
 		// dupe connections have been seeded the numbers below already reflected the de-duped results
 
@@ -968,4 +969,10 @@ function createConnectionProfile(id: string): ConnectionProfile {
 
 function createConnectionGroup(id: string): ConnectionProfileGroup {
 	return new ConnectionProfileGroup(id, undefined, id, undefined, undefined);
+}
+
+function getBasicExtensionService(): IExtensionService {
+	return <any>{
+		activateByEvent: () => Promise.resolve()
+	};
 }

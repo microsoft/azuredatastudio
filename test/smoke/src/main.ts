@@ -69,8 +69,8 @@ const opts = minimist(args, {
 	}
 });
 
-const testRepoUrl = 'https://github.com/Microsoft/vscode-smoketest-express';
-const workspacePath = path.join(testDataPath, 'vscode-smoketest-express');
+const testRepoUrl = 'https://github.com/anthonydresser/azuredatastudio-smoke-test-repo.git';
+const workspacePath = path.join(testDataPath, 'azuredatastudio-smoke-test-repo');
 const extensionsPath = path.join(testDataPath, 'extensions-dir');
 mkdirp.sync(extensionsPath);
 
@@ -209,8 +209,8 @@ async function setupRepository(): Promise<void> {
 			cp.spawnSync('git', ['clean', '-xdf'], { cwd: workspacePath });
 		}
 
-		console.log('*** Running yarn...');
-		cp.execSync('yarn', { cwd: workspacePath, stdio: 'inherit' });
+		// console.log('*** Running yarn...');
+		// cp.execSync('yarn', { cwd: workspacePath, stdio: 'inherit' });
 	}
 }
 
