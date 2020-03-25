@@ -143,7 +143,7 @@ class DataResourceTable extends GridTableBase<any> {
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
-			this.instantiationService.createInstance(NotebookChartAction, this)
+			this.instantiationService.createInstance(NotebookChartAction, this, this.cellModel.chartDisplayed)
 		];
 	}
 
@@ -158,8 +158,14 @@ class DataResourceTable extends GridTableBase<any> {
 
 		if (!this._chartContainer) {
 			this._chartContainer = document.createElement('div');
-			this._chartContainer.style.display = 'none';
 			this._chartContainer.style.width = '100%';
+
+			if (this.cellModel.chartDisplayed) {
+				this.tableContainer.style.display = 'none';
+				this._chartContainer.style.display = 'inline-block';
+			} else {
+				this._chartContainer.style.display = 'none';
+			}
 
 			this.element.appendChild(this._chartContainer);
 			this._chart.render(this._chartContainer);
@@ -178,8 +184,14 @@ class DataResourceTable extends GridTableBase<any> {
 		}
 	}
 
-	public get chart(): ChartView {
-		return this._chart;
+	public updateChartData(context: IGridActionContext): void {
+		let rowCount = context.table.getData().getLength();
+		let range = new Slick.Range(0, 0, rowCount - 1, context.table.columns.length - 1);
+		let columns = context.gridDataProvider.getColumnHeaders(range);
+
+		context.gridDataProvider.getRowData(0, rowCount).then(result => {
+			this._chart.setData(result.resultSubset.rows, columns);
+		});
 	}
 }
 
@@ -394,13 +406,13 @@ export class NotebookChartAction extends ToggleableAction {
 	public static SHOWTABLE_LABEL = localize('notebook.showTable', "Show table");
 	public static SHOWTABLE_ICON = 'table';
 
-	constructor(private resourceTable: DataResourceTable) {
+	constructor(private resourceTable: DataResourceTable, chartDisplayed: boolean) {
 		super(NotebookChartAction.ID, {
 			toggleOnLabel: NotebookChartAction.SHOWTABLE_LABEL,
 			toggleOnClass: NotebookChartAction.SHOWTABLE_ICON,
 			toggleOffLabel: NotebookChartAction.SHOWCHART_LABEL,
 			toggleOffClass: NotebookChartAction.SHOWCHART_ICON,
-			isOn: false
+			isOn: chartDisplayed
 		});
 	}
 
@@ -408,13 +420,7 @@ export class NotebookChartAction extends ToggleableAction {
 		this.resourceTable.toggleChartVisibility();
 		this.toggle(!this.state.isOn);
 		if (this.state.isOn) {
-			let rowCount = context.table.getData().getLength();
-			let range = new Slick.Range(0, 0, rowCount - 1, context.table.columns.length - 1);
-			let columns = context.gridDataProvider.getColumnHeaders(range);
-
-			context.gridDataProvider.getRowData(0, rowCount).then(result => {
-				this.resourceTable.chart.setData(result.resultSubset.rows, columns);
-			});
+			this.resourceTable.updateChartData(context);
 		}
 		return true;
 	}
