@@ -97,7 +97,7 @@ const formatStagedFiles = () => {
 async function installService(configPath, runtimId) {
 	const absoluteConfigPath = require.resolve(configPath);
 	const config = require(absoluteConfigPath);
-	const runtime = runtimId || await platform.getCurrent().runtimeId;
+	const runtime = runtimId || (await platform.getCurrent()).runtimeId;
 	// fix path since it won't be correct
 	config.installDirectory = path.join(path.dirname(absoluteConfigPath), config.installDirectory);
 	console.log('install diectory', config.installDirectory);
