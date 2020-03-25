@@ -8,10 +8,6 @@ import { Color, RGBA } from 'vs/base/common/color';
 import * as nls from 'vs/nls';
 
 
-// ----- text colors
-
-export const textLinkActiveForeground = registerColor('textLink.activeForeground', { light: '#006AB1', dark: '#3794FF', hc: '#3794FF' }, nls.localize('textLinkActiveForeground', "Foreground color for links in text when clicked on and on mouse hover."));
-
 
 export const tileBoxShadowColor = new Color(new RGBA(0, 1, 4, 0.13));
 export const tileBoxShadowHoverColor = new Color(new RGBA(0, 3, 8, 0.14));
@@ -29,23 +25,13 @@ export const buttonStandardBorder = registerColor('buttonStandardBorder', { ligh
 export const buttonStandardBackground = registerColor('buttonStandardBackground', { light: '#FFF', dark: '#1B1A19', hc: '#1B1A19' }, nls.localize('buttonStandardBackground', "The background color for the standard button"));
 export const buttonStandard = registerColor('buttonStandard', { light: '#323130', dark: '#fff', hc: '#fff' }, nls.localize('buttonStandard', "The font color for primary button"));
 export const buttonStandardHoverColor = registerColor('buttonStandardHover', { light: '#0078D4', dark: '#3794ff', hc: '#3794ff' }, nls.localize('buttonStandardHover', "The hover color for standard buttons"));
-export const buttonStandardHoverBackground = registerColor('buttonStandardHoverBackground', { light: 'transparent', dark: 'transparent', hc: 'transparent' }, nls.localize('buttonStandardHover', "The hover color for standard buttons"));
-export const buttonPrimary = registerColor('buttonPrimary', { light: '#fff', dark: '#fff', hc: '#fff' }, nls.localize('buttonPrimaryColor', "The primary button color"));
-export const buttonPrimaryText = registerColor('buttonPrimaryText', { light: '#fff', dark: '#fff', hc: '#fff' }, nls.localize('buttonPrimaryText', "The primary button font color"));
 export const buttonPrimaryBackground = registerColor('buttonPrimaryBackground', { light: '#0078d4', dark: '#0078d4', hc: '#0078d4' }, nls.localize('buttonPrimaryBackground', "The primary button background"));
 export const buttonPrimaryBorder = registerColor('buttonPrimaryBorder', { light: '#0078d4', dark: '#0078d4', hc: '#0078d4' }, nls.localize('buttonPrimaryBorder', "The primary button border color"));
 export const buttonPrimaryBackgroundHover = registerColor('buttonPrimaryBackgroundHover', { light: '#106ebe', dark: '#106ebe', hc: '#106ebe' }, nls.localize('buttonPrimaryBackgroundHover', "The primary button background hover color"));
 export const buttonPrimaryBackgroundActive = registerColor('buttonPrimaryBackgroundActive', { light: '#005a9e', dark: '#005a9e', hc: '#005a9e' }, nls.localize('buttonPrimaryBackgroundActive', "The primary button background active color"));
-export const buttonDropdownBackground = registerColor('buttonDropdownBackground', { light: '#fff', dark: '#1b1a19', hc: '#000' }, nls.localize('buttonDropdownBackground', "The button dropdown background color"));
 export const buttonDropdownBoxShadow = registerColor('buttonDropdownBoxShadow', { light: dropdownBoxShadow, dark: dropdownBoxShadow, hc: dropdownBoxShadow }, nls.localize('buttonDropdownBoxShadow', "The button dropdown box shadow color"));
-export const buttonDropdown = registerColor('buttonDropdown', { light: '#000', dark: '#fff', hc: '#fff' }, nls.localize('buttonDropdown', "The button dropdown color"));
-export const buttonDropdownBorder = registerColor('buttonDropdownBorder', { light: 'transparent', dark: 'transparent', hc: '#2b56f2' }, nls.localize('buttonDropdownBorder', "The button dropdown border color"));
 export const buttonDropdownBackgroundHover = registerColor('buttonDropdownBackgroundHover', { light: '#3062d6', dark: '#3062d6', hc: '#3062d6' }, nls.localize('buttonDropdownBackgroundHover', "The button dropdown background hover color"));
-export const buttonDropdownHover = registerColor('buttonDropdownHover', { light: '#fff', dark: '#fff', hc: '#fff' }, nls.localize('buttonDropdownHover', "The button dropdown hover color"));
-export const extensionPackBorder = registerColor('extensionPackBorder', { light: '#8A8886', dark: '#8A8886', hc: '#2B56F2' }, nls.localize('extensionPackBorder', "The extension pack border color"));
 export const listLink = registerColor('listLink', { light: '#323130', dark: '#fff', hc: '#fff' }, nls.localize('listLink', "The list link color"));
-export const extensionPackHeader = registerColor('extensionPackHeader', { light: '#fff', dark: '#fff', hc: '#fff' }, nls.localize('extensionPackHeader', "The extensions pack header color"));
-export const extensionPackBody = registerColor('extensionPackBody', { light: '#fff', dark: '#fff', hc: '#fff' }, nls.localize('extensionPackBody', "The extension pack body color"));
 export const listBorder = registerColor('listBorder', { light: '#ccc', dark: '#ccc', hc: '#ccc' }, nls.localize('listBorder', "The list item border"));
 export const extensionPackHeaderShadow = registerColor('extensionPackHeaderShadow', { light: textShadow, dark: textShadow, hc: textShadow }, nls.localize('extensionPackHeaderShadow', "The extension pack header text shadowcolor"));
 export const extensionPackGradientColorOneColor = registerColor('extensionPackGradientColorOne', { light: extensionPackGradientOne, dark: extensionPackGradientOne, hc: extensionPackGradientOne }, nls.localize('extensionPackGradientColorOne', "The top color for the extension pack gradient"));
@@ -63,9 +49,7 @@ export const gradientTwo = registerColor('gradientTwo', { light: gradientTwoColo
 export const gradientBackground = registerColor('gradientBackground', { light: '#fff', dark: 'transparent', hc: 'transparent' }, nls.localize('gradientBackground', "The background color for the banner image gradient"));
 
 
-export const welcomePath = registerColor('welcomePath', { light: '#323130', dark: '#fff', hc: '#fff' }, nls.localize('welcomePath', "The color for welcome paths"));
 export const welcomeFont = registerColor('welcomeFontColor', { light: '#323130', dark: '#fff', hc: '#fff' }, nls.localize('welcomeFontColor', "The color for fonts"));
-export const moreRecent = registerColor('moreRecent', { light: '#000', dark: '#fff', hc: '#fff' }, nls.localize('moreRecent', "The color for more recent text"));
 export const entity = registerColor('entity', { light: '#000', dark: '#0078D4', hc: '#3AA0F3' }, nls.localize('entity', "The color for entity symbols"));
 export const disabledButton = registerColor('disabledButton', { light: '#A19F9D', dark: '#797775', hc: '#797775' }, nls.localize('disabledButton', "The color for a standard disabled button"));
 export const disabledButtonBackground = registerColor('disabledButtonBackground', { light: '#F3F2F1', dark: '#252423', hc: '#252423' }, nls.localize('disabledButtonBackground', "The background color for standard disabled button"));

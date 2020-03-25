@@ -29,8 +29,8 @@ import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lif
 import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { textLinkActiveForeground, tileBackground, buttonStandardBackground, buttonStandardBorder, buttonStandard, welcomeFont, welcomePath, moreRecent, entity, tileBorder, buttonStandardHoverColor, disabledButton, disabledButtonBackground, welcomeLink, buttonPrimaryBackground, buttonPrimary, buttonPrimaryBorder, buttonPrimaryBackgroundHover, buttonPrimaryBackgroundActive, buttonDropdownBackground, buttonDropdown, buttonDropdownBorder, buttonDropdownBackgroundHover, tileBoxShadow, tileBoxShadowHover, extensionPackBorder, welcomeLinkActive, gradientOne, gradientTwo, gradientBackground, welcomeLabel, welcomeLabelChecked, welcomeLabelBorder, buttonPrimaryText, extensionPackHeader, extensionPackHeaderShadow, extensionPackBody, buttonDropdownBoxShadow, listBorder, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, buttonDropdownHover, focusOutline, themedIcon, listLink, themedAltIcon } from 'sql/platform/theme/common/colorRegistry';
-import { registerColor, focusBorder, descriptionForeground, foreground, contrastBorder, activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
+import { tileBackground, buttonStandardBackground, buttonStandardBorder, buttonStandard, welcomeFont, entity, tileBorder, buttonStandardHoverColor, disabledButton, disabledButtonBackground, welcomeLink, buttonPrimaryBackground, buttonPrimaryBorder, buttonPrimaryBackgroundHover, buttonPrimaryBackgroundActive, buttonDropdownBackgroundHover, tileBoxShadow, tileBoxShadowHover, welcomeLinkActive, gradientOne, gradientTwo, gradientBackground, welcomeLabel, welcomeLabelChecked, welcomeLabelBorder, extensionPackHeaderShadow, buttonDropdownBoxShadow, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, focusOutline, themedIcon, listLink, themedAltIcon, listBorder } from 'sql/platform/theme/common/colorRegistry';
+import { registerColor, textLinkActiveForeground, focusBorder, descriptionForeground, foreground, contrastBorder, activeContrastBorder, buttonForeground, menuBorder, menuForeground, menuSelectionForeground, editorWidgetBorder, selectBackground } from 'vs/platform/theme/common/colorRegistry';
 import { getExtraColor } from 'vs/workbench/contrib/welcome/walkThrough/common/walkThroughUtils';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IEditorInputFactory, EditorInput } from 'vs/workbench/common/editor';
@@ -878,18 +878,14 @@ registerThemingParticipant((theme, collector) => {
 	if (tileBoxShadowHoverColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .tile:hover:not(.no_hover) { box-shadow: 0px 3px 8px ${tileBoxShadowHoverColor}; }`);
 	}
-	const buttonPrimarydBackgroundColor = theme.getColor(buttonPrimaryBackground);
-	if (buttonPrimarydBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary { background-color: ${buttonPrimarydBackgroundColor};}`);
+	const buttonPrimaryBackgroundColor = theme.getColor(buttonPrimaryBackground);
+	if (buttonPrimaryBackgroundColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary { background-color: ${buttonPrimaryBackgroundColor};}`);
 	}
-	const buttonPrimaryColor = theme.getColor(buttonPrimary);
-	if (buttonPrimaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary { color: ${buttonPrimaryColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .icon_arrow_down:before { color: ${buttonPrimaryColor};}`);
-	}
-	const buttonPrimaryTextColor = theme.getColor(buttonPrimaryText);
-	if (buttonPrimaryTextColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown_text { color: ${buttonPrimaryTextColor};}`);
+	const buttonForegroundColor = theme.getColor(buttonForeground);
+	if (buttonForegroundColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary { color: ${buttonForegroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .icon_arrow_down:before { color: ${buttonForegroundColor};}`);
 	}
 	const buttonPrimaryBorderColor = theme.getColor(buttonPrimaryBorder);
 	if (buttonPrimaryBorderColor) {
@@ -919,11 +915,11 @@ registerThemingParticipant((theme, collector) => {
 	if (buttonStandardColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_standard:hover { color: ${buttonStandardHover}; border: 1px solid ${buttonStandardHover};}`);
 	}
-	const buttonDropdownBackgroundColor = theme.getColor(buttonDropdownBackground);
+	const buttonDropdownBackgroundColor = theme.getColor(selectBackground);
 	if (buttonDropdownBackgroundColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content { background: ${buttonDropdownBackgroundColor};}`);
 	}
-	const buttonDropdownColor = theme.getColor(buttonDropdown);
+	const buttonDropdownColor = theme.getColor(menuForeground);
 	if (buttonDropdownColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a { color: ${buttonDropdownColor};}`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .icon_arrow_down_dark:before { color: ${buttonDropdownColor};}`);
@@ -933,7 +929,7 @@ registerThemingParticipant((theme, collector) => {
 	if (buttonDropdownBoxShadowColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content { box-shadow: 0px 4px 4px ${buttonDropdownBoxShadowColor};}`);
 	}
-	const buttonDropdownBorderColor = theme.getColor(buttonDropdownBorder);
+	const buttonDropdownBorderColor = theme.getColor(menuBorder);
 	if (buttonDropdownBorderColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a { border-color: ${buttonDropdownBorderColor};}`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage .dropdown-content { border-color: ${buttonDropdownBorderColor};}`);
@@ -942,29 +938,22 @@ registerThemingParticipant((theme, collector) => {
 	if (buttonDropdownBackgroundHoverColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a:hover, .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a:focus { background: ${buttonDropdownBackgroundHoverColor};}`);
 	}
-	const buttonDropdownHoverColor = theme.getColor(buttonDropdownHover);
+	const buttonDropdownHoverColor = theme.getColor(menuSelectionForeground);
 	if (buttonDropdownHoverColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a:hover, .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a:focus { color: ${buttonDropdownHoverColor};}`);
-	}
-	const listBorderColor = theme.getColor(listBorder);
-	if (listBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .history .list li:not(.moreRecent), .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .history .list_header_container, .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .pinned .list li:not(.moreRecent), .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .pinned .list_header_container { border-color: ${listBorderColor};}`);
 	}
 	const listLinkColor = theme.getColor(listLink);
 	if (listLinkColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .history .list li a { color: ${listLinkColor};}`);
 	}
-	const extensionPackBorderColor = theme.getColor(extensionPackBorder);
+	const extensionPackBorderColor = theme.getColor(editorWidgetBorder);
 	if (extensionPackBorderColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .tile.extension_pack { border-color: ${extensionPackBorderColor};}`);
 	}
-	const extensionPackBodyColor = theme.getColor(extensionPackBody);
-	if (extensionPackBodyColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack_body { color: ${extensionPackBodyColor};}`);
-	}
-	const extensionPackHeaderColor = theme.getColor(extensionPackHeader);
-	if (extensionPackHeaderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack_header { color: ${extensionPackHeaderColor};}`);
+	const extensionPackForeground = theme.getColor(buttonForeground);
+	if (extensionPackForeground) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack_body { color: ${extensionPackForeground};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack_header { color: ${extensionPackForeground};}`);
 	}
 	const extensionPackHeaderTextShadow = theme.getColor(extensionPackHeaderShadow);
 	if (extensionPackHeaderTextShadow) {
@@ -978,6 +967,10 @@ registerThemingParticipant((theme, collector) => {
 	const foregroundColor = theme.getColor(foreground);
 	if (foregroundColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .caption { color: ${foregroundColor}; }`);
+	}
+	const listBorderColor = theme.getColor(listBorder);
+	if (listBorderColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .history .list li:not(.moreRecent), .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .history .list_header_container, .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .pinned .list li:not(.moreRecent), .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .pinned .list_header_container { border-color: ${listBorderColor};}`);
 	}
 	const descriptionColor = theme.getColor(descriptionForeground);
 	if (descriptionColor) {
@@ -1003,17 +996,9 @@ registerThemingParticipant((theme, collector) => {
 	if (fontColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage h1, h2, h3, h4, h5, h6, h7, p { color: ${fontColor}; }`);
 	}
-	const moreRecentColor = theme.getColor(moreRecent);
-	if (moreRecentColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .moreRecent { color: ${moreRecentColor}; }`);
-	}
 	const entityColor = theme.getColor(entity);
 	if (entityColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .entity { color: ${entityColor}; }`);
-	}
-	const pathColor = theme.getColor(welcomePath);
-	if (pathColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .path { color: ${pathColor}; }`);
 	}
 	const link = theme.getColor(welcomeLink);
 	if (link) {
