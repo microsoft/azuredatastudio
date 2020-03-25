@@ -75,7 +75,7 @@
 		"tab.unfocusedInactiveForeground": "#888888",
 		"tab.unfocusedActiveForeground": "#212121",
 		"panel.background": "#ffffff",
-		"panel.border": "#c8c8c8",
+		"panel.border": "#888888",
 		"panelTitle.activeForeground": "#212121",
 		"panelTitle.inactiveForeground": "#757575",
 		"panelTitle.activeBorder": "#026dc8"
