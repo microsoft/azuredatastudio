@@ -28,7 +28,6 @@
 .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container {
 	justify-content: flex-start;
 	padding-left: 15px;
-	flex-wrap: wrap;
 }
 
 .taskbar-progress {
@@ -85,4 +84,30 @@
 
 .carbon-taskbar .codicon {
 	background-size: 11px;
+}
+
+.carbon-taskbar .overflow {
+	position:absolute;
+	right:0;
+	display:none;
+	z-index: 3;
+	padding-left: 0;
+	margin-top: 0;
+	margin-right: 5px;
+	box-shadow: 1px 1px 1px 1px rgba(0,0,0,.25);
+	background-color: white;
+}
+
+.carbon-taskbar .overflow li {
+	padding: 5px;
+}
+
+.carbon-taskbar .overflow a {
+	padding-left: 20px;
+}
+
+
+.overflow .taskbarSeparator {
+	height: 1px;
+	width: 85%;
 }

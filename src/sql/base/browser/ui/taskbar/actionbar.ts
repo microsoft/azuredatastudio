@@ -14,6 +14,7 @@ import * as lifecycle from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { debounce } from 'vs/base/common/decorators';
 
 const defaultOptions: IActionBarOptions = {
 	orientation: ActionsOrientation.HORIZONTAL,
@@ -39,6 +40,8 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 	// Elements
 	private _domNode: HTMLElement;
 	private _actionsList: HTMLElement;
+	private _overflow: HTMLElement;
+	private _moreItemElement: HTMLElement;
 
 	constructor(container: HTMLElement, options: IActionBarOptions = defaultOptions) {
 		super();
@@ -113,6 +116,10 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			}
 		}));
 
+		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
+			this.resizeToolbar();
+		}));
+
 		this._focusTracker = this._register(DOM.trackFocus(this._domNode));
 		this._focusTracker.onDidBlur(() => {
 			if (document.activeElement === this._domNode || !DOM.isAncestor(document.activeElement, this._domNode)) {
@@ -128,13 +135,60 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		this._actionsList = document.createElement('ul');
 		this._actionsList.className = 'actions-container';
 		this._actionsList.setAttribute('role', 'toolbar');
+		this._actionsList.id = 'actions-container';
 		if (this._options.ariaLabel) {
 			this._actionsList.setAttribute('aria-label', this._options.ariaLabel);
 		}
 
 		this._domNode.appendChild(this._actionsList);
 
+		this._overflow = document.createElement('ul');
+		this._overflow.id = 'overflow';
+		this._overflow.className = 'overflow';
+		this._domNode.appendChild(this._overflow);
 		container.appendChild(this._domNode);
+	}
+
+	@debounce(300)
+	private resizeToolbar() {
+		let width = document.getElementById('actions-container').offsetWidth;
+		let fullWidth = document.getElementById('actions-container').scrollWidth;
+
+		// hide stuff
+		if (width < fullWidth) {
+			if (!this._moreItemElement) {
+				this._moreItemElement = document.createElement('li');
+				this._moreItemElement.className = 'action-item';
+				this._moreItemElement.setAttribute('role', 'presentation');
+				this._moreItemElement.innerHTML = '•••';
+				this._moreItemElement.id = 'more';
+				this._moreItemElement.onclick = (this._domNode, ev => { this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block'; });
+				this._actionsList.appendChild(this._moreItemElement);
+			}
+			this._moreItemElement.style.display = 'block';
+			while (width < fullWidth) {
+				let index = this._actionsList.childNodes.length - 2;
+				if (index > -1) {
+					let item = this._actionsList.removeChild(this._actionsList.childNodes[index]);
+					this._overflow.insertBefore(item, this._overflow.firstChild);
+					fullWidth = document.getElementById('actions-container').scrollWidth;
+				} else {
+					break;
+				}
+			}
+		} else if (this._overflow.hasChildNodes()) {
+			while (width === fullWidth && this._overflow.hasChildNodes()) {
+				this._actionsList.insertBefore(this._overflow.removeChild(this._overflow.firstChild), this._actionsList.lastChild);
+				if (document.getElementById('actions-container').scrollWidth > document.getElementById('actions-container').offsetWidth) {
+					let index = this._actionsList.childNodes.length - 2;
+					let item = this._actionsList.removeChild(this._actionsList.childNodes[index]);
+					this._overflow.insertBefore(item, this._overflow.firstChild);
+					break;
+				} else if (!this._overflow.hasChildNodes()) {
+					this._moreItemElement.style.display = 'none';
+				}
+			}
+		}
 	}
 
 	public setAriaLabel(label: string): void {
@@ -193,7 +247,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		let index = types.isNumber(options.index) ? options.index : null;
 
 		if (index === null || index < 0 || index >= this._actionsList.children.length) {
-			this._actionsList.appendChild(element);
+			this._actionsList.insertBefore(element, this._actionsList.lastChild);
 		} else {
 			this._actionsList.insertBefore(element, this._actionsList.children[index++]);
 		}
