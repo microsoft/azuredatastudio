@@ -18,9 +18,9 @@ import { HttpClient } from '../common/httpClient';
 import { LanguageController } from '../views/externalLanguages/languageController';
 import { LanguageService } from '../externalLanguage/languageService';
 import { ModelManagementController } from '../views/models/modelManagementController';
-import { RegisteredModelService } from '../modelManagement/registeredModelService';
+import { DeployedModelService } from '../modelManagement/deployedModelService';
 import { AzureModelRegistryService } from '../modelManagement/azureModelRegistryService';
-import { ModelImporter } from '../modelManagement/modelImporter';
+import { ModelPythonClient } from '../modelManagement/modelPythonClient';
 import { PredictService } from '../prediction/predictService';
 
 /**
@@ -100,11 +100,11 @@ export default class MainController implements vscode.Disposable {
 		let mssqlService = await this.getLanguageExtensionService();
 		let languagesModel = new LanguageService(this._apiWrapper, mssqlService);
 		let languageController = new LanguageController(this._apiWrapper, this._rootPath, languagesModel);
-		let modelImporter = new ModelImporter(this._outputChannel, this._apiWrapper, this._processService, this._config, packageManager);
+		let modelImporter = new ModelPythonClient(this._outputChannel, this._apiWrapper, this._processService, this._config, packageManager);
 
 		// Model Management
 		//
-		let registeredModelService = new RegisteredModelService(this._apiWrapper, this._config, this._queryRunner, modelImporter);
+		let registeredModelService = new DeployedModelService(this._apiWrapper, this._config, this._queryRunner, modelImporter);
 		let azureModelsService = new AzureModelRegistryService(this._apiWrapper, this._config, this.httpClient, this._outputChannel);
 		let predictService = new PredictService(this._apiWrapper, this._queryRunner, this._config);
 		let modelManagementController = new ModelManagementController(this._apiWrapper, this._rootPath,

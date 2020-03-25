@@ -8,8 +8,8 @@ import * as azdata from 'azdata';
 import { azureResource } from '../../typings/azure-resource';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { ViewBase } from '../viewBase';
-import { RegisteredModel, WorkspaceModel, RegisteredModelDetails } from '../../modelManagement/interfaces';
-import { PredictParameters, DatabaseTable } from '../../prediction/interfaces';
+import { RegisteredModel, WorkspaceModel, RegisteredModelDetails, ModelParameters } from '../../modelManagement/interfaces';
+import { PredictParameters, DatabaseTable, TableColumn } from '../../prediction/interfaces';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { AzureWorkspaceResource, AzureModelResource } from '../interfaces';
 
@@ -47,9 +47,11 @@ export const ListWorkspacesEventName = 'listWorkspaces';
 export const RegisterLocalModelEventName = 'registerLocalModel';
 export const RegisterAzureModelEventName = 'registerAzureLocalModel';
 export const DownloadAzureModelEventName = 'downloadAzureLocalModel';
+export const DownloadRegisteredModelEventName = 'downloadRegisteredModel';
 export const PredictModelEventName = 'predictModel';
 export const RegisterModelEventName = 'registerModel';
 export const SourceModelSelectedEventName = 'sourceModelSelected';
+export const LoadModelParametersEventName = 'loadModelParameters';
 
 /**
  * Base class for all model management views
@@ -75,7 +77,9 @@ export abstract class ModelViewBase extends ViewBase {
 			ListTableNamesEventName,
 			ListColumnNamesEventName,
 			PredictModelEventName,
-			DownloadAzureModelEventName]);
+			DownloadAzureModelEventName,
+			DownloadRegisteredModelEventName,
+			LoadModelParametersEventName]);
 	}
 
 	/**
@@ -124,7 +128,7 @@ export abstract class ModelViewBase extends ViewBase {
 	/**
 	 * lists column names
 	 */
-	public async listColumnNames(table: DatabaseTable): Promise<string[]> {
+	public async listColumnNames(table: DatabaseTable): Promise<TableColumn[]> {
 		return await this.sendDataRequest(ListColumnNamesEventName, table);
 	}
 
@@ -152,11 +156,26 @@ export abstract class ModelViewBase extends ViewBase {
 	}
 
 	/**
+	 * downloads registered model
+	 * @param model model to download
+	 */
+	public async downloadRegisteredModel(model: RegisteredModel | undefined): Promise<string> {
+		return await this.sendDataRequest(DownloadRegisteredModelEventName, model);
+	}
+
+	/**
 	 * download azure model
 	 * @param args azure resource
 	 */
 	public async downloadAzureModel(resource: AzureModelResource | undefined): Promise<string> {
 		return await this.sendDataRequest(DownloadAzureModelEventName, resource);
+	}
+
+	/**
+	 * Loads model parameters
+	 */
+	public async loadModelParameters(): Promise<ModelParameters | undefined> {
+		return await this.sendDataRequest(LoadModelParametersEventName);
 	}
 
 	/**

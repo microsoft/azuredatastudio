@@ -18,6 +18,7 @@ export interface IPageView {
 	onLeave?: () => Promise<void>;
 	validate?: () => Promise<boolean>;
 	refresh: () => Promise<void>;
+	disposePage?: () => Promise<void>;
 	viewPanel: azdata.window.ModelViewPanel | undefined;
 	title: string;
 }
