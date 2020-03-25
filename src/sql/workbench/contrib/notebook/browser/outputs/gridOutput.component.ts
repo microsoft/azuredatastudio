@@ -37,7 +37,6 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
-import { Table } from 'sql/base/browser/ui/table/table';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -128,6 +127,9 @@ class DataResourceTable extends GridTableBase<any> {
 		super(state, createResultSet(source), contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel.notebookModel.notebookUri.toString());
 		this._chart = this.instantiationService.createInstance(ChartView, false);
+		if (this.cellModel.chartDisplayed) {
+			this.updateChartData(this.resultSet.rowCount, this.resultSet.columnInfo.length, this.gridDataProvider);
+		}
 	}
 
 	public get gridDataProvider(): IGridDataProvider {
@@ -185,12 +187,10 @@ class DataResourceTable extends GridTableBase<any> {
 		}
 	}
 
-	public updateChartData(table: Table<any>, gridDataProvider: IGridDataProvider): void {
-		let rowCount = table.getData().getLength();
-		let range = new Slick.Range(0, 0, rowCount - 1, table.columns.length - 1);
-		let columns = gridDataProvider.getColumnHeaders(range);
-
+	public updateChartData(rowCount: number, columnCount: number, gridDataProvider: IGridDataProvider): void {
 		gridDataProvider.getRowData(0, rowCount).then(result => {
+			let range = new Slick.Range(0, 0, rowCount - 1, columnCount - 1);
+			let columns = gridDataProvider.getColumnHeaders(range);
 			this._chart.setData(result.resultSubset.rows, columns);
 		});
 	}
@@ -421,7 +421,9 @@ export class NotebookChartAction extends ToggleableAction {
 		this.resourceTable.toggleChartVisibility();
 		this.toggle(!this.state.isOn);
 		if (this.state.isOn) {
-			this.resourceTable.updateChartData(context.table, context.gridDataProvider);
+			let rowCount = context.table.getData().getLength();
+			let columnCount = context.table.columns.length;
+			this.resourceTable.updateChartData(rowCount, columnCount, context.gridDataProvider);
 		}
 		return true;
 	}
