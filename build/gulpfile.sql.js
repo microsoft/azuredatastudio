@@ -94,11 +94,10 @@ const formatStagedFiles = () => {
 	});
 };
 
-async function installService(configPath) {
+async function installService(configPath, platform) {
 	const absoluteConfigPath = require.resolve(configPath);
 	const config = require(absoluteConfigPath);
-	const p = await platform.getCurrent();
-	let runtime = p.runtimeId;
+	const runtime = platform ?? await platform.getCurrent().runtimeId;
 	// fix path since it won't be correct
 	config.installDirectory = path.join(path.dirname(absoluteConfigPath), config.installDirectory);
 	console.log('install diectory', config.installDirectory);
@@ -127,7 +126,7 @@ async function installService(configPath) {
 
 gulp.task('install-sqltoolsservice', () => installService('../extensions/mssql/config.json'));
 
-gulp.task('install-ssmsmin', () => installService('../extensions/admin-tool-ext-win/config.json'));
+gulp.task('install-ssmsmin', () => installService('../extensions/admin-tool-ext-win/config.json', 'Windows_64')); // admin-tool-ext is a windows only extension, and we only ship a 64 bit version, so locking the binaries as such
 
 const root = path.dirname(__dirname);
 
