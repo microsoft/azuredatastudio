@@ -547,6 +547,11 @@ export interface IEditorOptions {
 	 */
 	renderLineHighlight?: 'none' | 'gutter' | 'line' | 'all';
 	/**
+	 * Control if the current line highlight should be rendered only the editor is focused.
+	 * Defaults to false.
+	 */
+	renderLineHighlightOnlyWhenFocus?: boolean;
+	/**
 	 * Inserting and deleting whitespace follows tab stops.
 	 */
 	useTabStops?: boolean;
@@ -3414,6 +3419,7 @@ export const enum EditorOption {
 	renderIndentGuides,
 	renderFinalNewline,
 	renderLineHighlight,
+	renderLineHighlightOnlyWhenFocus,
 	renderValidationDecorations,
 	renderWhitespace,
 	revealHorizontalRightPadding,
@@ -3855,6 +3861,10 @@ export const EditorOptions = {
 			],
 			description: nls.localize('renderLineHighlight', "Controls how the editor should render the current line highlight.")
 		}
+	)),
+	renderLineHighlightOnlyWhenFocus: register(new EditorBooleanOption(
+		EditorOption.renderLineHighlightOnlyWhenFocus, 'renderLineHighlightOnlyWhenFocus', false,
+		{ description: nls.localize('renderLineHighlightOnlyWhenFocus', "Controls if the editor should render the current line highlight only when the editor is focused") }
 	)),
 	renderValidationDecorations: register(new EditorStringEnumOption(
 		EditorOption.renderValidationDecorations, 'renderValidationDecorations',
