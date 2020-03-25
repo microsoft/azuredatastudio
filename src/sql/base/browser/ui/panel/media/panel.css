@@ -145,7 +145,7 @@ panel {
 
 .tabbedPanel .tab-group-header {
 	font-weight: bold;
-	margin: 15px 5px 0px 5px;
+	margin: 15px 5px 3px 5px;
 	line-height: 35px;
 	height: 35px;
 	border-style: solid;

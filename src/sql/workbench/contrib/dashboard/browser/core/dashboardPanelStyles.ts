@@ -27,12 +27,10 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 
 			panel.dashboard-panel > .tabbedPanel.vertical > .title .tabList .tab-header.active {
 				background-color: ${tabActiveBackgroundVertical};
-				outline-color: ${tabActiveBackgroundVertical};
 			}
 
 			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab-header.active {
 				background-color: ${tabActiveBackground};
-				outline-color: ${tabActiveBackground};
 			}
 
 			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab-header.active {
