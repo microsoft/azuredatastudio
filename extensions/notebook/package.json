@@ -251,23 +251,23 @@
         },
         {
           "command": "notebook.command.runactivecell",
-          "when": "notebookEditorVisible"
+          "when": "activeEditor == workbench.editor.notebookEditor"
         },
         {
           "command": "notebook.command.clearactivecellresult",
-          "when": "notebookEditorVisible"
+          "when": "activeEditor == workbench.editor.notebookEditor"
         },
         {
           "command": "notebook.command.runallcells",
-          "when": "notebookEditorVisible"
+          "when": "activeEditor == workbench.editor.notebookEditor"
         },
         {
           "command": "notebook.command.addcode",
-          "when": "notebookEditorVisible"
+          "when": "activeEditor == workbench.editor.notebookEditor"
         },
         {
           "command": "notebook.command.addtext",
-          "when": "notebookEditorVisible"
+          "when": "activeEditor == workbench.editor.notebookEditor"
         },
         {
           "command": "notebook.command.addcell",
