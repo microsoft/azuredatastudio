@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 import * as qs from 'qs';
 import * as url from 'url';
 
@@ -234,12 +234,16 @@ export abstract class AzureAuth {
 		return base64string.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_'); // Need to use base64url encoding
 	}
 
-	protected async makePostRequest(uri: string, postData: { [key: string]: string }) {
-		const config = {
+	protected async makePostRequest(uri: string, postData: { [key: string]: string }, validateStatus = false) {
+		const config: AxiosRequestConfig = {
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded'
-			}
+			},
 		};
+
+		if (validateStatus) {
+			config.validateStatus = () => true;
+		}
 
 		return axios.post(uri, qs.stringify(postData), config);
 	}
