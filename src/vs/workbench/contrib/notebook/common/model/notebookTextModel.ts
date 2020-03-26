@@ -7,7 +7,7 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { NotebookCellTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookCellTextModel';
-import { INotebookTextModel, NotebookCellOutputsSplice, NotebookCellsSplice } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { INotebookTextModel, NotebookCellOutputsSplice, NotebookCellsSplice, NotebookDocumentMetadata, NotebookCellMetadata } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 
 export class NotebookTextModel extends Disposable implements INotebookTextModel {
 	private readonly _onWillDispose: Emitter<void> = this._register(new Emitter<void>());
@@ -16,12 +16,15 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 	get onDidChangeCells(): Event<NotebookCellsSplice[]> { return this._onDidChangeCells.event; }
 	private _onDidChangeContent = new Emitter<void>();
 	onDidChangeContent: Event<void> = this._onDidChangeContent.event;
+	private _onDidChangeMetadata = new Emitter<NotebookDocumentMetadata>();
+	onDidChangeMetadata: Event<NotebookDocumentMetadata> = this._onDidChangeMetadata.event;
 	private _mapping: Map<number, NotebookCellTextModel> = new Map();
 	private _cellListeners: Map<number, IDisposable> = new Map();
 	cells: NotebookCellTextModel[];
-	activeCell: NotebookCellTextModel | undefined;
 	languages: string[] = [];
+	metadata: NotebookDocumentMetadata | undefined = { editable: true };
 	renderers = new Set<number>();
+	private _isUntitled: boolean | undefined = undefined;
 
 	constructor(
 		public handle: number,
@@ -34,6 +37,24 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 
 	updateLanguages(languages: string[]) {
 		this.languages = languages;
+
+		// TODO@rebornix metadata: default language for cell
+		if (this._isUntitled && languages.length && this.cells.length) {
+			this.cells[0].language = languages[0];
+		}
+	}
+
+	updateNotebookMetadata(metadata: NotebookDocumentMetadata) {
+		this.metadata = metadata;
+		this._onDidChangeMetadata.fire(this.metadata);
+	}
+
+	updateNotebookCellMetadata(handle: number, metadata: NotebookCellMetadata) {
+		const cell = this.cells.find(cell => cell.handle === handle);
+
+		if (cell) {
+			cell.metadata = metadata;
+		}
 	}
 
 	updateRenderers(renderers: number[]) {
@@ -42,11 +63,27 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 		});
 	}
 
-	updateActiveCell(handle: number) {
-		this.activeCell = this._mapping.get(handle);
+	insertTemplateCell(cell: NotebookCellTextModel) {
+		if (this.cells.length > 0 || this._isUntitled !== undefined) {
+			return;
+		}
+
+		this._isUntitled = true;
+		this.cells = [cell];
+
+		let dirtyStateListener = cell.onDidChangeContent(() => {
+			this._isUntitled = false;
+			this._onDidChangeContent.fire();
+		});
+
+		this._cellListeners.set(cell.handle, dirtyStateListener);
+		this._onDidChangeContent.fire();
+		return;
 	}
 
 	insertNewCell(index: number, cell: NotebookCellTextModel): void {
+		this._isUntitled = false;
+
 		this._mapping.set(cell.handle, cell);
 		this.cells.splice(index, 0, cell);
 		let dirtyStateListener = cell.onDidChangeContent(() => {
@@ -59,6 +96,8 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 	}
 
 	removeCell(index: number) {
+		this._isUntitled = false;
+
 		let cell = this.cells[index];
 		this._cellListeners.get(cell.handle)?.dispose();
 		this._cellListeners.delete(cell.handle);
@@ -69,10 +108,16 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 
 	// TODO@rebornix should this trigger content change event?
 	$spliceNotebookCells(splices: NotebookCellsSplice[]): void {
+		if (!splices.length) {
+			return;
+		}
+
+		this._isUntitled = false;
+
 		splices.reverse().forEach(splice => {
 			let cellDtos = splice[2];
 			let newCells = cellDtos.map(cell => {
-				let mainCell = new NotebookCellTextModel(URI.revive(cell.uri), cell.handle, cell.source, cell.language, cell.cellKind, cell.outputs || []);
+				let mainCell = new NotebookCellTextModel(URI.revive(cell.uri), cell.handle, cell.source, cell.language, cell.cellKind, cell.outputs || [], cell.metadata);
 				this._mapping.set(cell.handle, mainCell);
 				let dirtyStateListener = mainCell.onDidChangeContent(() => {
 					this._onDidChangeContent.fire();

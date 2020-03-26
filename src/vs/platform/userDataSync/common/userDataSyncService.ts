@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IUserDataSyncService, SyncStatus, IUserDataSyncStoreService, SyncResource, IUserDataSyncLogService, IUserDataSynchroniser, UserDataSyncStoreError, UserDataSyncErrorCode, UserDataSyncError, resolveBackupSyncResource, SyncResourceConflicts } from 'vs/platform/userDataSync/common/userDataSync';
+import { IUserDataSyncService, SyncStatus, IUserDataSyncStoreService, SyncResource, IUserDataSyncLogService, IUserDataSynchroniser, UserDataSyncStoreError, UserDataSyncErrorCode, UserDataSyncError, SyncResourceConflicts, ISyncResourceHandle } from 'vs/platform/userDataSync/common/userDataSync';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -18,6 +18,7 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { URI } from 'vs/base/common/uri';
 import { SettingsSynchroniser } from 'vs/platform/userDataSync/common/settingsSync';
 import { isEqual } from 'vs/base/common/resources';
+import { SnippetsSynchroniser } from 'vs/platform/userDataSync/common/snippetsSync';
 
 type SyncErrorClassification = {
 	source: { classification: 'SystemMetaData', purpose: 'FeatureInsight', isMeasurement: true };
@@ -55,6 +56,7 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 
 	private readonly settingsSynchroniser: SettingsSynchroniser;
 	private readonly keybindingsSynchroniser: KeybindingsSynchroniser;
+	private readonly snippetsSynchroniser: SnippetsSynchroniser;
 	private readonly extensionsSynchroniser: ExtensionsSynchroniser;
 	private readonly globalStateSynchroniser: GlobalStateSynchroniser;
 
@@ -68,9 +70,10 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 		super();
 		this.settingsSynchroniser = this._register(this.instantiationService.createInstance(SettingsSynchroniser));
 		this.keybindingsSynchroniser = this._register(this.instantiationService.createInstance(KeybindingsSynchroniser));
+		this.snippetsSynchroniser = this._register(this.instantiationService.createInstance(SnippetsSynchroniser));
 		this.globalStateSynchroniser = this._register(this.instantiationService.createInstance(GlobalStateSynchroniser));
 		this.extensionsSynchroniser = this._register(this.instantiationService.createInstance(ExtensionsSynchroniser));
-		this.synchronisers = [this.settingsSynchroniser, this.keybindingsSynchroniser, this.globalStateSynchroniser, this.extensionsSynchroniser];
+		this.synchronisers = [this.settingsSynchroniser, this.keybindingsSynchroniser, this.snippetsSynchroniser, this.globalStateSynchroniser, this.extensionsSynchroniser];
 		this.updateStatus();
 
 		if (this.userDataSyncStoreService.userDataSyncStore) {
@@ -185,23 +188,25 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 	}
 
 	async resolveContent(resource: URI): Promise<string | null> {
-		const result = resolveBackupSyncResource(resource);
-		if (result) {
-			const synchronizer = this.synchronisers.filter(s => s.resource === result.resource)[0];
-			if (synchronizer) {
-				const ref = result.path !== 'latest' ? result.path : undefined;
-				return result.remote ? synchronizer.getRemoteContent(ref, resource.fragment) : synchronizer.getLocalBackupContent(ref, resource.fragment);
-			}
-		}
-
-		for (const synchronizer of this.synchronisers) {
-			const content = await synchronizer.getConflictContent(resource);
-			if (content !== null) {
+		for (const synchroniser of this.synchronisers) {
+			const content = await synchroniser.resolveContent(resource);
+			if (content) {
 				return content;
 			}
 		}
-
 		return null;
+	}
+
+	getRemoteSyncResourceHandles(resource: SyncResource): Promise<ISyncResourceHandle[]> {
+		return this.getSynchroniser(resource).getRemoteSyncResourceHandles();
+	}
+
+	getLocalSyncResourceHandles(resource: SyncResource): Promise<ISyncResourceHandle[]> {
+		return this.getSynchroniser(resource).getLocalSyncResourceHandles();
+	}
+
+	getAssociatedResources(resource: SyncResource, syncResourceHandle: ISyncResourceHandle): Promise<{ resource: URI, comparableResource?: URI }[]> {
+		return this.getSynchroniser(resource).getAssociatedResources(syncResourceHandle);
 	}
 
 	async isFirstTimeSyncWithMerge(): Promise<boolean> {

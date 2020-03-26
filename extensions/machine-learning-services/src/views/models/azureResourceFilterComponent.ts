@@ -27,8 +27,8 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 	private _azureSubscriptions: azureResource.AzureResourceSubscription[] = [];
 	private _azureGroups: azureResource.AzureResource[] = [];
 	private _azureWorkspaces: Workspace[] = [];
-	private _onWorkspacesSelected: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
-	public readonly onWorkspacesSelected: vscode.Event<void> = this._onWorkspacesSelected.event;
+	private _onWorkspacesSelectedChanged: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
+	public readonly onWorkspacesSelectedChanged: vscode.Event<void> = this._onWorkspacesSelectedChanged.event;
 
 	/**
 	 * Creates a new view
@@ -59,7 +59,7 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 			await this.onGroupSelected();
 		});
 		this._workspaces.onValueChanged(async () => {
-			await this.onWorkspaceSelected();
+			await this.onWorkspaceSelectedChanged();
 		});
 
 		this._form = this._modelBuilder.formContainer().withFormItems([{
@@ -182,26 +182,26 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 			this._workspaces.values = values;
 			this._workspaces.value = values[0];
 		}
-		this.onWorkspaceSelected();
+		this.onWorkspaceSelectedChanged();
 	}
 
-	private onWorkspaceSelected(): void {
-		this._onWorkspacesSelected.fire();
+	private onWorkspaceSelectedChanged(): void {
+		this._onWorkspacesSelectedChanged.fire();
 	}
 
 	private get workspace(): Workspace | undefined {
-		return this._azureWorkspaces ? this._azureWorkspaces.find(a => a.id === (<azdata.CategoryValue>this._workspaces.value).name) : undefined;
+		return this._azureWorkspaces && this._workspaces.value ? this._azureWorkspaces.find(a => a.id === (<azdata.CategoryValue>this._workspaces.value).name) : undefined;
 	}
 
 	private get account(): azdata.Account | undefined {
-		return this._azureAccounts ? this._azureAccounts.find(a => a.key.accountId === (<azdata.CategoryValue>this._accounts.value).name) : undefined;
+		return this._azureAccounts && this._accounts.value ? this._azureAccounts.find(a => a.key.accountId === (<azdata.CategoryValue>this._accounts.value).name) : undefined;
 	}
 
 	private get group(): azureResource.AzureResource | undefined {
-		return this._azureGroups ? this._azureGroups.find(a => a.id === (<azdata.CategoryValue>this._groups.value).name) : undefined;
+		return this._azureGroups && this._groups.value ? this._azureGroups.find(a => a.id === (<azdata.CategoryValue>this._groups.value).name) : undefined;
 	}
 
 	private get subscription(): azureResource.AzureResourceSubscription | undefined {
-		return this._azureSubscriptions ? this._azureSubscriptions.find(a => a.id === (<azdata.CategoryValue>this._subscriptions.value).name) : undefined;
+		return this._azureSubscriptions && this._subscriptions.value ? this._azureSubscriptions.find(a => a.id === (<azdata.CategoryValue>this._subscriptions.value).name) : undefined;
 	}
 }

@@ -42,7 +42,7 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 			queryEditorInput = this.instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput);
 		} else if (activeEditor instanceof UntitledTextEditorInput) {
 			const content = (await activeEditor.resolve()).textEditorModel.getValue();
-			queryEditorInput = (this.queryEditorService.newSqlEditor(content) as any) as UntitledQueryEditorInput;
+			queryEditorInput = await this.queryEditorService.newSqlEditor({ open: false, initalContent: content }) as UntitledQueryEditorInput;
 		} else {
 			return undefined;
 		}

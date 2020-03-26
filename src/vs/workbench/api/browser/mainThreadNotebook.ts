@@ -8,10 +8,12 @@ import { MainContext, MainThreadNotebookShape, NotebookExtensionDescription, IEx
 import { Disposable } from 'vs/base/common/lifecycle';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { INotebookService, IMainNotebookController } from 'vs/workbench/contrib/notebook/browser/notebookService';
-import { INotebookTextModel, INotebookMimeTypeSelector, NOTEBOOK_DISPLAY_ORDER, NotebookCellsSplice, NotebookCellOutputsSplice, CellKind } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { INotebookTextModel, INotebookMimeTypeSelector, NOTEBOOK_DISPLAY_ORDER, NotebookCellsSplice, NotebookCellOutputsSplice, CellKind, NotebookDocumentMetadata, NotebookCellMetadata } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { NotebookCellTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookCellTextModel';
 import { NotebookTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookTextModel';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { INotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 
 export class MainThreadNotebookDocument extends Disposable {
 	private _textModel: NotebookTextModel;
@@ -54,7 +56,9 @@ export class MainThreadNotebooks extends Disposable implements MainThreadNoteboo
 	constructor(
 		extHostContext: IExtHostContext,
 		@INotebookService private _notebookService: INotebookService,
-		@IConfigurationService private readonly configurationService: IConfigurationService
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IEditorService private readonly editorService: IEditorService,
+
 	) {
 		super();
 		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostNotebook);
@@ -123,6 +127,22 @@ export class MainThreadNotebooks extends Disposable implements MainThreadNoteboo
 		}
 	}
 
+	async $updateNotebookMetadata(viewType: string, resource: UriComponents, metadata: NotebookDocumentMetadata): Promise<void> {
+		let controller = this._notebookProviders.get(viewType);
+
+		if (controller) {
+			controller.updateNotebookMetadata(resource, metadata);
+		}
+	}
+
+	async $updateNotebookCellMetadata(viewType: string, resource: UriComponents, handle: number, metadata: NotebookCellMetadata): Promise<void> {
+		let controller = this._notebookProviders.get(viewType);
+
+		if (controller) {
+			controller.updateNotebookCellMetadata(resource, handle, metadata);
+		}
+	}
+
 	async resolveNotebook(viewType: string, uri: URI): Promise<number | undefined> {
 		let handle = await this._proxy.$resolveNotebook(viewType, uri);
 		return handle;
@@ -140,6 +160,21 @@ export class MainThreadNotebooks extends Disposable implements MainThreadNoteboo
 
 	async executeNotebook(viewType: string, uri: URI): Promise<void> {
 		return this._proxy.$executeNotebook(viewType, uri, undefined);
+	}
+
+	async $postMessage(handle: number, value: any): Promise<boolean> {
+
+		const activeEditorPane = this.editorService.activeEditorPane as any | undefined;
+		if (activeEditorPane?.isNotebookEditor) {
+			const notebookEditor = (activeEditorPane as INotebookEditor);
+
+			if (notebookEditor.viewModel?.handle === handle) {
+				notebookEditor.postMessage(value);
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
 
@@ -164,6 +199,14 @@ export class MainThreadNotebookController implements IMainNotebookController {
 		let notebookHandle = await this._mainThreadNotebook.resolveNotebook(viewType, uri);
 		if (notebookHandle !== undefined) {
 			mainthreadNotebook = this._mapping.get(URI.from(uri).toString());
+			if (mainthreadNotebook && mainthreadNotebook.textModel.cells.length === 0) {
+				// it's empty, we should create an empty template one
+				const templateCell = await this._proxy.$createEmptyCell(this._viewType, uri, 0, mainthreadNotebook.textModel.languages.length ? mainthreadNotebook.textModel.languages[0] : '', CellKind.Code);
+				if (templateCell) {
+					let mainCell = new NotebookCellTextModel(URI.revive(templateCell.uri), templateCell.handle, templateCell.source, templateCell.language, templateCell.cellKind, templateCell.outputs, templateCell.metadata);
+					mainthreadNotebook.textModel.insertTemplateCell(mainCell);
+				}
+			}
 			return mainthreadNotebook?.textModel;
 		}
 
@@ -186,6 +229,10 @@ export class MainThreadNotebookController implements IMainNotebookController {
 		this._mainThreadNotebook.executeNotebook(viewType, uri);
 	}
 
+	onDidReceiveMessage(uri: UriComponents, message: any): void {
+		this._proxy.$onDidReceiveMessage(uri, message);
+	}
+
 	// Methods for ExtHost
 	async createNotebookDocument(handle: number, viewType: string, resource: UriComponents): Promise<void> {
 		let document = new MainThreadNotebookDocument(this._proxy, handle, viewType, URI.revive(resource));
@@ -197,20 +244,25 @@ export class MainThreadNotebookController implements IMainNotebookController {
 		document?.textModel.updateLanguages(languages);
 	}
 
+	updateNotebookMetadata(resource: UriComponents, metadata: NotebookDocumentMetadata) {
+		let document = this._mapping.get(URI.from(resource).toString());
+		document?.textModel.updateNotebookMetadata(metadata);
+	}
+
+	updateNotebookCellMetadata(resource: UriComponents, handle: number, metadata: NotebookCellMetadata) {
+		let document = this._mapping.get(URI.from(resource).toString());
+		document?.textModel.updateNotebookCellMetadata(handle, metadata);
+	}
+
 	updateNotebookRenderers(resource: UriComponents, renderers: number[]): void {
 		let document = this._mapping.get(URI.from(resource).toString());
 		document?.textModel.updateRenderers(renderers);
 	}
 
-	updateNotebookActiveCell(uri: URI, cellHandle: number): void {
-		let mainthreadNotebook = this._mapping.get(URI.from(uri).toString());
-		mainthreadNotebook?.textModel.updateActiveCell(cellHandle);
-	}
-
 	async createRawCell(uri: URI, index: number, language: string, type: CellKind): Promise<NotebookCellTextModel | undefined> {
 		let cell = await this._proxy.$createEmptyCell(this._viewType, uri, index, language, type);
 		if (cell) {
-			let mainCell = new NotebookCellTextModel(URI.revive(cell.uri), cell.handle, cell.source, cell.language, cell.cellKind, cell.outputs);
+			let mainCell = new NotebookCellTextModel(URI.revive(cell.uri), cell.handle, cell.source, cell.language, cell.cellKind, cell.outputs, cell.metadata);
 			return mainCell;
 		}
 
@@ -227,12 +279,8 @@ export class MainThreadNotebookController implements IMainNotebookController {
 		return false;
 	}
 
-	executeNotebookActiveCell(uri: URI): void {
-		let mainthreadNotebook = this._mapping.get(URI.from(uri).toString());
-
-		if (mainthreadNotebook && mainthreadNotebook.textModel.activeCell) {
-			this._proxy.$executeNotebook(this._viewType, uri, mainthreadNotebook.textModel.activeCell.handle);
-		}
+	async executeNotebookCell(uri: URI, handle: number): Promise<void> {
+		return this._proxy.$executeNotebook(this._viewType, uri, handle);
 	}
 
 	async destoryNotebookDocument(notebook: INotebookTextModel): Promise<void> {

@@ -11,6 +11,8 @@ import { QueryRunner } from '../../common/queryRunner';
 import { ProcessService } from '../../common/processService';
 import { Config } from '../../configurations/config';
 import { HttpClient } from '../../common/httpClient';
+import * as utils from '../utils';
+import { PackageManagementService } from '../../packageManagement/packageManagementService';
 
 export interface TestContext {
 
@@ -22,33 +24,22 @@ export interface TestContext {
 	op: azdata.BackgroundOperation;
 	getOpStatus: () => azdata.TaskStatus;
 	httpClient: TypeMoq.IMock<HttpClient>;
+	serverConfigManager: TypeMoq.IMock<PackageManagementService>;
 }
 
 export function createContext(): TestContext {
-	let opStatus: azdata.TaskStatus;
+	const context = utils.createContext();
 
 	return {
-		outputChannel: {
-			name: '',
-			append: () => { },
-			appendLine: () => { },
-			clear: () => { },
-			show: () => { },
-			hide: () => { },
-			dispose: () => { }
-		},
+
+		outputChannel: context.outputChannel,
 		processService: TypeMoq.Mock.ofType(ProcessService),
 		apiWrapper: TypeMoq.Mock.ofType(ApiWrapper),
 		queryRunner: TypeMoq.Mock.ofType(QueryRunner),
 		config: TypeMoq.Mock.ofType(Config),
 		httpClient: TypeMoq.Mock.ofType(HttpClient),
-		op: {
-			updateStatus: (status: azdata.TaskStatus) => {
-				opStatus = status;
-			},
-			id: '',
-			onCanceled: new vscode.EventEmitter<void>().event,
-		},
-		getOpStatus: () => { return opStatus; }
+		op: context.op,
+		getOpStatus: context.getOpStatus,
+		serverConfigManager: TypeMoq.Mock.ofType(PackageManagementService)
 	};
 }
