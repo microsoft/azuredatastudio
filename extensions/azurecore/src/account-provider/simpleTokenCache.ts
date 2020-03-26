@@ -8,7 +8,7 @@ import { FileDatabase } from './utils/fileDatabase';
 import * as crypto from 'crypto';
 import * as azdata from 'azdata';
 
-function getSystemKeytar(): Keytar | undefined {
+function getSystemKeytar(): Keytar | undefined | null {
 	try {
 		return require('keytar');
 	} catch (err) {
