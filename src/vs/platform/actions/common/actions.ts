@@ -114,6 +114,7 @@ export class MenuId {
 	static readonly CommentThreadActions = new MenuId('CommentThreadActions');
 	static readonly CommentTitle = new MenuId('CommentTitle');
 	static readonly CommentActions = new MenuId('CommentActions');
+	static readonly NotebookCellTitle = new MenuId('NotebookCellTitle');
 	static readonly BulkEditTitle = new MenuId('BulkEditTitle');
 	static readonly BulkEditContext = new MenuId('BulkEditContext');
 	static readonly ObjectExplorerItemContext = new MenuId('ObjectExplorerItemContext'); // {{SQL CARBON EDIT}}
@@ -124,6 +125,8 @@ export class MenuId {
 	static readonly TimelineItemContext = new MenuId('TimelineItemContext');
 	static readonly TimelineTitle = new MenuId('TimelineTitle');
 	static readonly TimelineTitleContext = new MenuId('TimelineTitleContext');
+	static readonly AccountsContext = new MenuId('AccountsContext');
+	static readonly WebMenuActions = new MenuId('MenubarWebMenu');
 
 	readonly id: number;
 	readonly _debugName: string;

@@ -4,22 +4,24 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IMouseWheelEvent } from 'vs/base/browser/mouseEvent';
-import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
-import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
-import { CellViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/notebookCellViewModel';
-import { OutputRenderer } from 'vs/workbench/contrib/notebook/browser/view/output/outputRenderer';
-import { IOutput, CellKind, IRenderOutput } from 'vs/workbench/contrib/notebook/common/notebookCommon';
-import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { NotebookViewModel, IModelDecorationsChangeAccessor } from 'vs/workbench/contrib/notebook/browser/viewModel/notebookViewModel';
-import { FindMatch } from 'vs/editor/common/model';
-import { Range } from 'vs/editor/common/core/range';
+import { ProgressBar } from 'vs/base/browser/ui/progressbar/progressbar';
 import { ToolBar } from 'vs/base/browser/ui/toolbar/toolbar';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
+import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
+import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
+import { Range } from 'vs/editor/common/core/range';
+import { FindMatch } from 'vs/editor/common/model';
+import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { OutputRenderer } from 'vs/workbench/contrib/notebook/browser/view/output/outputRenderer';
+import { IModelDecorationsChangeAccessor, NotebookViewModel, CellViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/notebookViewModel';
+import { CellKind, IOutput, IRenderOutput, NotebookCellMetadata, NotebookDocumentMetadata } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { NOTEBOOK_EDITABLE_CONTEXT_KEY } from 'vs/workbench/contrib/notebook/browser/constants';
 
 export const KEYBINDING_CONTEXT_NOTEBOOK_FIND_WIDGET_FOCUSED = new RawContextKey<boolean>('notebookFindWidgetFocused', false);
 
 export const NOTEBOOK_EDITOR_FOCUSED = new RawContextKey<boolean>('notebookEditorFocused', false);
+export const NOTEBOOK_EDITOR_EDITABLE = new RawContextKey<boolean>(NOTEBOOK_EDITABLE_CONTEXT_KEY, true);
 
 export interface NotebookLayoutInfo {
 	width: number;
@@ -27,14 +29,50 @@ export interface NotebookLayoutInfo {
 	fontInfo: BareFontInfo;
 }
 
+export interface NotebookLayoutChangeEvent {
+	width?: boolean;
+	height?: boolean;
+	fontInfo?: boolean;
+}
+
+export interface CodeCellLayoutInfo {
+	readonly fontInfo: BareFontInfo | null;
+	readonly editorHeight: number;
+	readonly editorWidth: number;
+	readonly totalHeight: number;
+	readonly outputTotalHeight: number;
+	readonly indicatorHeight: number;
+}
+
+export interface CodeCellLayoutChangeEvent {
+	editorHeight?: boolean;
+	outputHeight?: boolean;
+	totalHeight?: boolean;
+	outerWidth?: number;
+	font?: BareFontInfo;
+}
+
+export interface MarkdownCellLayoutInfo {
+	readonly fontInfo: BareFontInfo | null;
+	readonly editorWidth: number;
+}
+
+export interface MarkdownCellLayoutChangeEvent {
+	font?: BareFontInfo;
+	outerWidth?: number;
+}
+
 export interface ICellViewModel {
 	readonly id: string;
 	handle: number;
 	uri: URI;
 	cellKind: CellKind;
-	state: CellState;
+	editState: CellEditState;
+	runState: CellRunState;
 	focusMode: CellFocusMode;
 	getText(): string;
+	metadata: NotebookCellMetadata | undefined;
+	getEvaluatedMetadata(documentMetadata: NotebookDocumentMetadata | undefined): NotebookCellMetadata;
 }
 
 export interface INotebookEditor {
@@ -43,6 +81,8 @@ export interface INotebookEditor {
 	 * Notebook view model attached to the current editor
 	 */
 	viewModel: NotebookViewModel | undefined;
+
+	isNotebookEditor: boolean;
 
 	/**
 	 * Focus the notebook editor cell list
@@ -102,6 +142,11 @@ export interface INotebookEditor {
 	focusNotebookCell(cell: ICellViewModel, focusEditor: boolean): void;
 
 	/**
+	 * Execute the given notebook cell
+	 */
+	executeNotebookCell(cell: ICellViewModel): Promise<void>;
+
+	/**
 	 * Get current active cell
 	 */
 	getActiveCell(): ICellViewModel | undefined;
@@ -120,6 +165,11 @@ export interface INotebookEditor {
 	 * Remove the output from the webview layer
 	 */
 	removeInset(output: IOutput): void;
+
+	/**
+	 * Send message to the webview for outputs.
+	 */
+	postMessage(message: any): void;
 
 	/**
 	 * Trigger the editor to scroll from scroll event programmatically
@@ -195,13 +245,18 @@ export interface INotebookEditor {
 export interface CellRenderTemplate {
 	container: HTMLElement;
 	cellContainer: HTMLElement;
-	menuContainer?: HTMLElement;
+	editorContainer?: HTMLElement;
 	toolbar: ToolBar;
 	focusIndicator?: HTMLElement;
+	runToolbar?: ToolBar;
+	runButtonContainer?: HTMLElement;
+	executionOrderLabel?: HTMLElement;
 	editingContainer?: HTMLElement;
 	outputContainer?: HTMLElement;
 	editor?: CodeEditorWidget;
+	progressBar?: ProgressBar;
 	disposables: DisposableStore;
+	toJSON(): void;
 }
 
 export interface IOutputTransformContribution {
@@ -228,7 +283,12 @@ export enum CellRevealPosition {
 	Center
 }
 
-export enum CellState {
+export enum CellRunState {
+	Idle,
+	Running
+}
+
+export enum CellEditState {
 	/**
 	 * Default state.
 	 * For markdown cell, it's Markdown preview.

@@ -6,7 +6,7 @@
 export const INSERT_CODE_CELL_ABOVE_COMMAND_ID = 'workbench.notebook.code.insertCellAbove';
 export const INSERT_CODE_CELL_BELOW_COMMAND_ID = 'workbench.notebook.code.insertCellBelow';
 export const INSERT_MARKDOWN_CELL_ABOVE_COMMAND_ID = 'workbench.notebook.markdown.insertCellAbove';
-export const INSERT_MARKDOWN_CELL_BELOW_COMMAND_ID = 'workbench.notebook.markdown.insertCellAbove';
+export const INSERT_MARKDOWN_CELL_BELOW_COMMAND_ID = 'workbench.notebook.markdown.insertCellBelow';
 
 export const EDIT_CELL_COMMAND_ID = 'workbench.notebook.cell.edit';
 export const SAVE_CELL_COMMAND_ID = 'workbench.notebook.cell.save';
@@ -20,7 +20,16 @@ export const COPY_CELL_DOWN_COMMAND_ID = 'workbench.notebook.cell.copyDown';
 export const EXECUTE_CELL_COMMAND_ID = 'workbench.notebook.cell.execute';
 
 // Cell sizing related
-export const CELL_MARGIN = 32;
+export const CELL_MARGIN = 20;
+export const CELL_RUN_GUTTER = 32; // TODO should be dynamic based on execution order width, and runnable enablement
 export const EDITOR_TOP_PADDING = 8;
 export const EDITOR_BOTTOM_PADDING = 8;
 export const EDITOR_TOOLBAR_HEIGHT = 22;
+
+// Cell context keys
+export const NOTEBOOK_CELL_TYPE_CONTEXT_KEY = 'notebookCellType'; // code, markdown
+export const NOTEBOOK_CELL_EDITABLE_CONTEXT_KEY = 'notebookCellEditable'; // bool
+export const NOTEBOOK_CELL_MARKDOWN_EDIT_MODE_CONTEXT_KEY = 'notebookCellMarkdownEditMode'; // bool
+
+// Notebook context keys
+export const NOTEBOOK_EDITABLE_CONTEXT_KEY = 'notebookEditable';

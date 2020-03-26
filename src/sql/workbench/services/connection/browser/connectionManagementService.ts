@@ -831,9 +831,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			return true;
 		}
 		let azureResource = this.getAzureResourceForConnection(connection);
-		let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
+		let accounts = (await this._accountManagementService.getAccounts()).filter(a => a.key.providerId.startsWith('azure'));
 		if (accounts && accounts.length > 0) {
-			let accountName = (connection.authenticationType !== Constants.azureMFA) ? connection.azureAccount : connection.userName;
+			let accountName = (connection.authenticationType === Constants.azureMFA) ? connection.azureAccount : connection.userName;
 			let account = find(accounts, account => account.key.accountId === accountName);
 			if (account) {
 				if (account.isStale) {

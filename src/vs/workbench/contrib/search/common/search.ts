@@ -77,6 +77,9 @@ export interface IWorkbenchSearchConfigurationProperties extends ISearchConfigur
 	quickOpen: {
 		includeSymbols: boolean;
 		includeHistory: boolean;
+		history: {
+			filterSortOrder: 'default' | 'recency'
+		}
 	};
 }
 
@@ -102,8 +105,13 @@ export function getOutOfWorkspaceEditorResources(accessor: ServicesAccessor): UR
 // Supports patterns of <path><#|:|(><line><#|:|,><col?>
 const LINE_COLON_PATTERN = /\s?[#:\(](\d*)([#:,](\d*))?\)?\s*$/;
 
-export function extractRangeFromFilter(filter: string): { filter: string, range: IRange } | undefined {
-	if (!filter) {
+export interface IFilterAndRange {
+	filter: string;
+	range: IRange;
+}
+
+export function extractRangeFromFilter(filter: string, unless?: string[]): IFilterAndRange | undefined {
+	if (!filter || unless?.some(value => filter.indexOf(value) !== -1)) {
 		return undefined;
 	}
 
@@ -151,7 +159,7 @@ export function extractRangeFromFilter(filter: string): { filter: string, range:
 	if (patternMatch && range) {
 		return {
 			filter: filter.substr(0, patternMatch.index), // clear range suffix from search value
-			range: range
+			range
 		};
 	}
 

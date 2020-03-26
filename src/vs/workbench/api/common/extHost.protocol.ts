@@ -51,7 +51,7 @@ import { TunnelDto } from 'vs/workbench/api/common/extHostTunnelService';
 import { TunnelOptions } from 'vs/platform/remote/common/tunnel';
 import { Timeline, TimelineChangeEvent, TimelineOptions, TimelineProviderDescriptor, InternalTimelineOptions } from 'vs/workbench/contrib/timeline/common/timeline';
 import { revive } from 'vs/base/common/marshalling';
-import { INotebookMimeTypeSelector, IOutput, INotebookDisplayOrder } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { INotebookMimeTypeSelector, IOutput, INotebookDisplayOrder, NotebookCellMetadata, NotebookDocumentMetadata } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { CallHierarchyItem } from 'vs/workbench/contrib/callHierarchy/common/callHierarchy';
 import { Dto } from 'vs/base/common/types';
 
@@ -160,7 +160,7 @@ export interface MainThreadCommentsShape extends IDisposable {
 export interface MainThreadAuthenticationShape extends IDisposable {
 	$registerAuthenticationProvider(id: string, displayName: string): void;
 	$unregisterAuthenticationProvider(id: string): void;
-	$onDidChangeSessions(id: string): void;
+	$onDidChangeSessions(providerId: string, event: modes.AuthenticationSessionsChangeEvent): void;
 	$getSessionsPrompt(providerId: string, providerName: string, extensionId: string, extensionName: string): Promise<boolean>;
 	$loginPrompt(providerId: string, providerName: string, extensionId: string, extensionName: string): Promise<boolean>;
 }
@@ -626,6 +626,12 @@ export interface WebviewPanelViewStateData {
 	};
 }
 
+export interface CustomDocumentEditState {
+	readonly allEdits: readonly number[];
+	readonly currentIndex: number;
+	readonly saveIndex: number;
+}
+
 export interface ExtHostWebviewsShape {
 	$onMessage(handle: WebviewPanelHandle, message: any): void;
 	$onMissingCsp(handle: WebviewPanelHandle, extensionId: string): void;
@@ -638,9 +644,9 @@ export interface ExtHostWebviewsShape {
 	$createWebviewCustomEditorDocument(resource: UriComponents, viewType: string, cancellation: CancellationToken): Promise<{ editable: boolean }>;
 	$disposeWebviewCustomEditorDocument(resource: UriComponents, viewType: string): Promise<void>;
 
-	$undo(resource: UriComponents, viewType: string, editId: number): Promise<void>;
-	$redo(resource: UriComponents, viewType: string, editId: number): Promise<void>;
-	$revert(resource: UriComponents, viewType: string, changes: { undoneEdits: number[], redoneEdits: number[] }): Promise<void>;
+	$undo(resource: UriComponents, viewType: string, editId: number, state: CustomDocumentEditState): Promise<void>;
+	$redo(resource: UriComponents, viewType: string, editId: number, state: CustomDocumentEditState): Promise<void>;
+	$revert(resource: UriComponents, viewType: string, changes: { undoneEdits: number[], redoneEdits: number[] }, state: CustomDocumentEditState): Promise<void>;
 	$disposeEdits(resourceComponents: UriComponents, viewType: string, editIds: number[]): void;
 
 	$onSave(resource: UriComponents, viewType: string, cancellation: CancellationToken): Promise<void>;
@@ -669,6 +675,7 @@ export interface ICellDto {
 	language: string;
 	cellKind: CellKind;
 	outputs: IOutput[];
+	metadata?: NotebookCellMetadata;
 }
 
 export type NotebookCellsSplice = [
@@ -690,8 +697,11 @@ export interface MainThreadNotebookShape extends IDisposable {
 	$unregisterNotebookRenderer(handle: number): Promise<void>;
 	$createNotebookDocument(handle: number, viewType: string, resource: UriComponents): Promise<void>;
 	$updateNotebookLanguages(viewType: string, resource: UriComponents, languages: string[]): Promise<void>;
+	$updateNotebookMetadata(viewType: string, resource: UriComponents, metadata: NotebookDocumentMetadata): Promise<void>;
+	$updateNotebookCellMetadata(viewType: string, resource: UriComponents, handle: number, metadata: NotebookCellMetadata | undefined): Promise<void>;
 	$spliceNotebookCells(viewType: string, resource: UriComponents, splices: NotebookCellsSplice[], renderers: number[]): Promise<void>;
 	$spliceNotebookCellOutputs(viewType: string, resource: UriComponents, cellHandle: number, splices: NotebookCellOutputsSplice[], renderers: number[]): Promise<void>;
+	$postMessage(handle: number, value: any): Promise<boolean>;
 }
 
 export interface MainThreadUrlsShape extends IDisposable {
@@ -1531,6 +1541,7 @@ export interface ExtHostNotebookShape {
 	$updateActiveEditor(viewType: string, uri: UriComponents): Promise<void>;
 	$destoryNotebookDocument(viewType: string, uri: UriComponents): Promise<boolean>;
 	$acceptDisplayOrder(displayOrder: INotebookDisplayOrder): void;
+	$onDidReceiveMessage(uri: UriComponents, message: any): void;
 }
 
 export interface ExtHostStorageShape {

@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nbExtensionApis from '../typings/notebookServices';
 import { SqlPythonPackageManageProvider } from './sqlPythonPackageManageProvider';
-import { QueryRunner } from '../common/queryRunner';
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
 import { ApiWrapper } from '../common/apiWrapper';
@@ -17,6 +16,7 @@ import { isNullOrUndefined } from 'util';
 import { SqlRPackageManageProvider } from './sqlRPackageManageProvider';
 import { HttpClient } from '../common/httpClient';
 import { PackageConfigModel } from '../configurations/packageConfigModel';
+import { PackageManagementService } from './packageManagementService';
 
 export class PackageManager {
 
@@ -31,12 +31,12 @@ export class PackageManager {
 		private _outputChannel: vscode.OutputChannel,
 		private _rootFolder: string,
 		private _apiWrapper: ApiWrapper,
-		private _queryRunner: QueryRunner,
+		private _service: PackageManagementService,
 		private _processService: ProcessService,
 		private _config: Config,
 		private _httpClient: HttpClient) {
-		this._sqlPythonPackagePackageManager = new SqlPythonPackageManageProvider(this._outputChannel, this._apiWrapper, this._queryRunner, this._processService, this._config, this._httpClient);
-		this._sqlRPackageManager = new SqlRPackageManageProvider(this._outputChannel, this._apiWrapper, this._queryRunner, this._processService, this._config, this._httpClient);
+		this._sqlPythonPackagePackageManager = new SqlPythonPackageManageProvider(this._outputChannel, this._apiWrapper, this._service, this._processService, this._config, this._httpClient);
+		this._sqlRPackageManager = new SqlRPackageManageProvider(this._outputChannel, this._apiWrapper, this._service, this._processService, this._config, this._httpClient);
 	}
 
 	/**
@@ -67,11 +67,13 @@ export class PackageManager {
 	 */
 	public async managePackages(): Promise<void> {
 		try {
+			await this.enableExternalScript();
+
 			// Only execute the command if there's a valid connection with ml configuration enabled
 			//
 			let connection = await this.getCurrentConnection();
-			let isPythonInstalled = await this._queryRunner.isPythonInstalled(connection);
-			let isRInstalled = await this._queryRunner.isRInstalled(connection);
+			let isPythonInstalled = await this._service.isPythonInstalled(connection);
+			let isRInstalled = await this._service.isRInstalled(connection);
 			let defaultProvider: SqlRPackageManageProvider | SqlPythonPackageManageProvider | undefined;
 			if (connection && isPythonInstalled && this._sqlPythonPackagePackageManager.canUseProvider) {
 				defaultProvider = this._sqlPythonPackagePackageManager;
@@ -80,10 +82,10 @@ export class PackageManager {
 			}
 			if (connection && defaultProvider) {
 
+				await this.enableExternalScript();
 				// Install dependencies
 				//
 				if (!this.dependenciesInstalled) {
-					this._apiWrapper.showInfoMessage(constants.installingDependencies);
 					await this.installDependencies();
 					this.dependenciesInstalled = true;
 				}
@@ -99,7 +101,14 @@ export class PackageManager {
 				this._apiWrapper.showInfoMessage(constants.managePackageCommandError);
 			}
 		} catch (err) {
-			this._outputChannel.appendLine(err);
+			this._apiWrapper.showErrorMessage(err);
+		}
+	}
+
+	public async enableExternalScript(): Promise<void> {
+		let connection = await this.getCurrentConnection();
+		if (!await this._service.enableExternalScriptConfig(connection)) {
+			throw Error(constants.externalScriptsIsRequiredError);
 		}
 	}
 

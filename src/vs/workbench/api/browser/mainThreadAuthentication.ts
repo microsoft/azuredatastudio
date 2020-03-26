@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import * as modes from 'vs/editor/common/modes';
 import * as nls from 'vs/nls';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
@@ -12,13 +12,150 @@ import { ExtHostAuthenticationShape, ExtHostContext, IExtHostContext, MainContex
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import Severity from 'vs/base/common/severity';
+import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
+import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
-export class MainThreadAuthenticationProvider {
+interface AuthDependent {
+	providerId: string;
+	label: string;
+	scopes: string[];
+	scopeDescriptions?: string;
+}
+
+const BUILT_IN_AUTH_DEPENDENTS: AuthDependent[] = [
+	{
+		providerId: 'microsoft',
+		label: 'Settings sync',
+		scopes: ['https://management.core.windows.net/.default', 'offline_access'],
+		scopeDescriptions: 'Read user email'
+	}
+];
+
+export class MainThreadAuthenticationProvider extends Disposable {
+	private _sessionMenuItems = new Map<string, IDisposable[]>();
+	private _accounts = new Map<string, string[]>(); // Map account name to session ids
+	private _sessions = new Map<string, string>(); // Map account id to name
+
 	constructor(
 		private readonly _proxy: ExtHostAuthenticationShape,
 		public readonly id: string,
-		public readonly displayName: string
-	) { }
+		public readonly displayName: string,
+		public readonly dependents: AuthDependent[]
+	) {
+		super();
+
+		this.registerCommandsAndContextMenuItems();
+	}
+
+	private setPermissionsForAccount(quickInputService: IQuickInputService, doLogin?: boolean) {
+		const quickPick = quickInputService.createQuickPick();
+		quickPick.canSelectMany = true;
+		const items = this.dependents.map(dependent => {
+			return {
+				label: dependent.label,
+				description: dependent.scopeDescriptions,
+				picked: true,
+				scopes: dependent.scopes
+			};
+		});
+
+		quickPick.items = items;
+		// TODO read from storage and filter is not doLogin
+		quickPick.selectedItems = items;
+		quickPick.title = nls.localize('signInTo', "Sign in to {0}", this.displayName);
+		quickPick.placeholder = nls.localize('accountPermissions', "Choose what features and extensions to authorize to use this account");
+
+		quickPick.onDidAccept(() => {
+			const scopes = quickPick.selectedItems.reduce((previous, current) => previous.concat((current as any).scopes), []);
+			if (scopes.length && doLogin) {
+				this.login(scopes);
+			}
+
+			quickPick.dispose();
+		});
+
+		quickPick.onDidHide(() => {
+			quickPick.dispose();
+		});
+
+		quickPick.show();
+	}
+
+	private registerCommandsAndContextMenuItems(): void {
+		if (this.dependents.length) {
+			this._register(CommandsRegistry.registerCommand({
+				id: `signIn${this.id}`,
+				handler: (accessor, args) => {
+					this.setPermissionsForAccount(accessor.get(IQuickInputService), true);
+				},
+			}));
+
+			this._register(MenuRegistry.appendMenuItem(MenuId.AccountsContext, {
+				group: '2_providers',
+				command: {
+					id: `signIn${this.id}`,
+					title: nls.localize('addAccount', "Sign in to {0}", this.displayName)
+				},
+				order: 3
+			}));
+		}
+
+		this._proxy.$getSessions(this.id).then(sessions => {
+			sessions.forEach(session => this.registerSession(session));
+		});
+	}
+
+	private registerSession(session: modes.AuthenticationSession) {
+		this._sessions.set(session.id, session.accountName);
+
+		const existingSessionsForAccount = this._accounts.get(session.accountName);
+		if (existingSessionsForAccount) {
+			this._accounts.set(session.accountName, existingSessionsForAccount.concat(session.id));
+			return;
+		} else {
+			this._accounts.set(session.accountName, [session.id]);
+		}
+
+		const menuItem = MenuRegistry.appendMenuItem(MenuId.AccountsContext, {
+			group: '1_accounts',
+			command: {
+				id: `configureSessions${session.id}`,
+				title: session.accountName
+			},
+			order: 3
+		});
+
+		const manageCommand = CommandsRegistry.registerCommand({
+			id: `configureSessions${session.id}`,
+			handler: (accessor, args) => {
+				const quickInputService = accessor.get(IQuickInputService);
+
+				const quickPick = quickInputService.createQuickPick();
+				const items = [{ label: 'Sign Out' }];
+
+				quickPick.items = items;
+
+				quickPick.onDidAccept(e => {
+					const selected = quickPick.selectedItems[0];
+					if (selected.label === 'Sign Out') {
+						const sessionsForAccount = this._accounts.get(session.accountName);
+						sessionsForAccount?.forEach(sessionId => this.logout(sessionId));
+					}
+
+					quickPick.dispose();
+				});
+
+				quickPick.onDidHide(_ => {
+					quickPick.dispose();
+				});
+
+				quickPick.show();
+			},
+		});
+
+		this._sessionMenuItems.set(session.accountName, [menuItem, manageCommand]);
+	}
 
 	async getSessions(): Promise<ReadonlyArray<modes.AuthenticationSession>> {
 		return (await this._proxy.$getSessions(this.id)).map(session => {
@@ -28,6 +165,31 @@ export class MainThreadAuthenticationProvider {
 				getAccessToken: () => this._proxy.$getSessionAccessToken(this.id, session.id)
 			};
 		});
+	}
+
+	async updateSessionItems(event: modes.AuthenticationSessionsChangeEvent): Promise<void> {
+		const { added, removed } = event;
+		const session = await this._proxy.$getSessions(this.id);
+		const addedSessions = session.filter(session => added.some(id => id === session.id));
+
+		removed.forEach(sessionId => {
+			const accountName = this._sessions.get(sessionId);
+			if (accountName) {
+				let sessionsForAccount = this._accounts.get(accountName) || [];
+				const sessionIndex = sessionsForAccount.indexOf(sessionId);
+				sessionsForAccount.splice(sessionIndex);
+
+				if (!sessionsForAccount.length) {
+					const disposeables = this._sessionMenuItems.get(accountName);
+					if (disposeables) {
+						disposeables.forEach(disposeable => disposeable.dispose());
+						this._sessionMenuItems.delete(accountName);
+					}
+				}
+			}
+		});
+
+		addedSessions.forEach(session => this.registerSession(session));
 	}
 
 	login(scopes: string[]): Promise<modes.AuthenticationSession> {
@@ -40,8 +202,14 @@ export class MainThreadAuthenticationProvider {
 		});
 	}
 
-	logout(accountId: string): Promise<void> {
-		return this._proxy.$logout(this.id, accountId);
+	logout(sessionId: string): Promise<void> {
+		return this._proxy.$logout(this.id, sessionId);
+	}
+
+	dispose(): void {
+		super.dispose();
+		this._sessionMenuItems.forEach(item => item.forEach(d => d.dispose()));
+		this._sessionMenuItems.clear();
 	}
 }
 
@@ -59,8 +227,10 @@ export class MainThreadAuthentication extends Disposable implements MainThreadAu
 		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostAuthentication);
 	}
 
-	$registerAuthenticationProvider(id: string, displayName: string): void {
-		const provider = new MainThreadAuthenticationProvider(this._proxy, id, displayName);
+	async $registerAuthenticationProvider(id: string, displayName: string): Promise<void> {
+		const dependentBuiltIns = BUILT_IN_AUTH_DEPENDENTS.filter(dependency => dependency.providerId === id);
+
+		const provider = new MainThreadAuthenticationProvider(this._proxy, id, displayName, dependentBuiltIns);
 		this.authenticationService.registerAuthenticationProvider(id, provider);
 	}
 
@@ -68,8 +238,8 @@ export class MainThreadAuthentication extends Disposable implements MainThreadAu
 		this.authenticationService.unregisterAuthenticationProvider(id);
 	}
 
-	$onDidChangeSessions(id: string): void {
-		this.authenticationService.sessionsUpdate(id);
+	$onDidChangeSessions(id: string, event: modes.AuthenticationSessionsChangeEvent): void {
+		this.authenticationService.sessionsUpdate(id, event);
 	}
 
 	async $getSessionsPrompt(providerId: string, providerName: string, extensionId: string, extensionName: string): Promise<boolean> {

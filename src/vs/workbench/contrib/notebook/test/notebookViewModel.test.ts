@@ -13,6 +13,7 @@ import { withTestNotebook, TestCell } from 'vs/workbench/contrib/notebook/test/t
 import { IBulkEditService } from 'vs/editor/browser/services/bulkEditService';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { NotebookTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookTextModel';
+import { NotebookEventDispatcher } from 'vs/workbench/contrib/notebook/browser/viewModel/eventDispatcher';
 
 suite('NotebookViewModel', () => {
 	const instantiationService = new TestInstantiationService();
@@ -23,7 +24,8 @@ suite('NotebookViewModel', () => {
 	test('ctor', function () {
 		const notebook = new NotebookTextModel(0, 'notebook', URI.parse('test'));
 		const model = new NotebookEditorModel(notebook);
-		const viewModel = new NotebookViewModel('notebook', model, instantiationService, blukEditService, undoRedoService);
+		const eventDispatcher = new NotebookEventDispatcher();
+		const viewModel = new NotebookViewModel('notebook', model, eventDispatcher, instantiationService, blukEditService, undoRedoService);
 		assert.equal(viewModel.viewType, 'notebook');
 	});
 
@@ -33,10 +35,13 @@ suite('NotebookViewModel', () => {
 			blukEditService,
 			undoRedoService,
 			[
-				[['var a = 1;'], 'javascript', CellKind.Code, []],
-				[['var b = 2;'], 'javascript', CellKind.Code, []]
+				[['var a = 1;'], 'javascript', CellKind.Code, [], { editable: true }],
+				[['var b = 2;'], 'javascript', CellKind.Code, [], { editable: false }]
 			],
 			(editor, viewModel) => {
+				assert.equal(viewModel.viewCells[0].metadata?.editable, true);
+				assert.equal(viewModel.viewCells[1].metadata?.editable, false);
+
 				const cell = viewModel.insertCell(1, new TestCell(viewModel.viewType, 0, ['var c = 3;'], 'javascript', CellKind.Code, []), true);
 				assert.equal(viewModel.viewCells.length, 3);
 				assert.equal(viewModel.notebookDocument.cells.length, 3);
@@ -56,8 +61,8 @@ suite('NotebookViewModel', () => {
 			blukEditService,
 			undoRedoService,
 			[
-				[['var a = 1;'], 'javascript', CellKind.Code, []],
-				[['var b = 2;'], 'javascript', CellKind.Code, []]
+				[['var a = 1;'], 'javascript', CellKind.Code, [], { editable: true }],
+				[['var b = 2;'], 'javascript', CellKind.Code, [], { editable: true }]
 			],
 			(editor, viewModel) => {
 				const firstViewCell = viewModel.viewCells[0];
@@ -75,6 +80,83 @@ suite('NotebookViewModel', () => {
 				assert.equal(viewModel.viewCells.length, 3);
 				assert.equal(viewModel.notebookDocument.cells.length, 3);
 				assert.equal(viewModel.getViewCellIndex(cell2), 2);
+			}
+		);
+	});
+
+	test('metadata', function () {
+		withTestNotebook(
+			instantiationService,
+			blukEditService,
+			undoRedoService,
+			[
+				[['var a = 1;'], 'javascript', CellKind.Code, [], {}],
+				[['var b = 2;'], 'javascript', CellKind.Code, [], { editable: true, runnable: true }],
+				[['var c = 3;'], 'javascript', CellKind.Code, [], { editable: true, runnable: false }],
+				[['var d = 4;'], 'javascript', CellKind.Code, [], { editable: false, runnable: true }],
+				[['var e = 5;'], 'javascript', CellKind.Code, [], { editable: false, runnable: false }],
+			],
+			(editor, viewModel) => {
+				viewModel.notebookDocument.metadata = { editable: true, cellRunnable: true, cellEditable: true };
+
+				assert.deepEqual(viewModel.viewCells[0].getEvaluatedMetadata(viewModel.metadata), {
+					editable: true,
+					runnable: true
+				});
+
+				assert.deepEqual(viewModel.viewCells[1].getEvaluatedMetadata(viewModel.metadata), {
+					editable: true,
+					runnable: true
+				});
+
+				assert.deepEqual(viewModel.viewCells[2].getEvaluatedMetadata(viewModel.metadata), {
+					editable: true,
+					runnable: false
+				});
+
+				assert.deepEqual(viewModel.viewCells[3].getEvaluatedMetadata(viewModel.metadata), {
+					editable: false,
+					runnable: true
+				});
+
+				assert.deepEqual(viewModel.viewCells[4].getEvaluatedMetadata(viewModel.metadata), {
+					editable: false,
+					runnable: false
+				});
+
+				viewModel.notebookDocument.metadata = { editable: true, cellRunnable: false, cellEditable: true };
+
+				assert.deepEqual(viewModel.viewCells[0].getEvaluatedMetadata(viewModel.metadata), {
+					editable: true,
+					runnable: false
+				});
+
+				assert.deepEqual(viewModel.viewCells[1].getEvaluatedMetadata(viewModel.metadata), {
+					editable: true,
+					runnable: true
+				});
+
+				assert.deepEqual(viewModel.viewCells[2].getEvaluatedMetadata(viewModel.metadata), {
+					editable: true,
+					runnable: false
+				});
+
+				assert.deepEqual(viewModel.viewCells[3].getEvaluatedMetadata(viewModel.metadata), {
+					editable: false,
+					runnable: true
+				});
+
+				assert.deepEqual(viewModel.viewCells[4].getEvaluatedMetadata(viewModel.metadata), {
+					editable: false,
+					runnable: false
+				});
+
+				viewModel.notebookDocument.metadata = { editable: true, cellRunnable: false, cellEditable: false };
+
+				assert.deepEqual(viewModel.viewCells[0].getEvaluatedMetadata(viewModel.metadata), {
+					editable: false,
+					runnable: false
+				});
 			}
 		);
 	});
