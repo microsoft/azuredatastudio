@@ -594,8 +594,8 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		let i = 2;
 		for (const row of d.resultSubset.rows) {
 			let rowData = '<tr>';
-			for (let i = 0; i < columns.length; i++) {
-				rowData += `<td>${escape(row[i].displayValue)}</td>`;
+			for (let columnIndex = 0; columnIndex < columns.length; columnIndex++) {
+				rowData += `<td>${escape(row[columnIndex].displayValue)}</td>`;
 			}
 			rowData += '</tr>';
 			htmlStringArr[i] = rowData;
