@@ -416,16 +416,9 @@ export class ChartView extends Disposable implements IPanelView {
 
 	public set state(val: ChartState) {
 		this._state = val;
-		if (this.state.options) {
-			for (let key in this.state.options) {
-				if (this.state.options.hasOwnProperty(key) && this.optionMap[key]) {
-					this._options[key] = this.state.options[key];
-					this.optionMap[key].set(this.state.options[key]);
-				}
-			}
-		}
-		if (this.state.dataId) {
-			this.chart(this.state.dataId);
+		this.options = this._state.options;
+		if (this._state.dataId) {
+			this.chart(this._state.dataId);
 		}
 	}
 
@@ -435,5 +428,16 @@ export class ChartView extends Disposable implements IPanelView {
 
 	public get options(): IInsightOptions {
 		return this._options;
+	}
+
+	public set options(newOptions: IInsightOptions) {
+		if (newOptions) {
+			for (let key in newOptions) {
+				if (newOptions.hasOwnProperty(key) && this.optionMap[key]) {
+					this._options[key] = newOptions[key];
+					this.optionMap[key].set(newOptions[key]);
+				}
+			}
+		}
 	}
 }

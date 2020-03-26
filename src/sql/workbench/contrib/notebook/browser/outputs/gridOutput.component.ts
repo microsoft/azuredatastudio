@@ -128,9 +128,7 @@ class DataResourceTable extends GridTableBase<any> {
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel.notebookModel.notebookUri.toString());
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 		if (this.cellModel.chartDisplayOptions) {
-			// let chartState = this._chart.state;
-			// chartState.options = this.cellModel.chartDisplayOptions;
-			// this._chart.state = chartState;
+			this._chart.options = this.cellModel.chartDisplayOptions;
 			this.updateChartData(this.resultSet.rowCount, this.resultSet.columnInfo.length, this.gridDataProvider);
 		}
 	}
