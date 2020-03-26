@@ -849,7 +849,7 @@ suite('Cell Model', function (): void {
 
 		let createCellModePromise = () => {
 			return new Promise((resolve, reject) => {
-				setTimeout(() => reject(), 2000);
+				setTimeout((error) => reject(error), 2000);
 				model.onCellModeChanged(isEditMode => {
 					resolve(isEditMode);
 				});
