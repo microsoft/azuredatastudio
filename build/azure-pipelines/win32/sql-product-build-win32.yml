@@ -127,7 +127,7 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { $env:VSCODE_REMOTE_SERVER_PATH = "$(agent.builddirectory)\azuredatastudio-win32-x64" yarn smoketest --web --headless }
+      exec { $env:VSCODE_REMOTE_SERVER_PATH = "$(agent.builddirectory)\azuredatastudio-win32-x64"; yarn smoketest --web --headless }
     continueOnError: true
     displayName: Run smoke tests (Browser)
     condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
