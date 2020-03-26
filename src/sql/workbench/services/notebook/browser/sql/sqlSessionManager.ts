@@ -584,20 +584,18 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		let htmlStringArr: string[] = new Array(d.resultSubset.rowCount + 3);
 		htmlStringArr[0] = '<table>';
 		if (columns.length > 0) {
-			let columnHeaders = '';
-			columnHeaders += '<tr>';
+			let columnHeaders = '<tr>';
 			for (let column of columns) {
-				columnHeaders += '<th>' + escape(column.columnName) + '</th>';
+				columnHeaders += `<th>${escape(column.columnName)}</th>`;
 			}
 			columnHeaders += '</tr>';
 			htmlStringArr[1] = columnHeaders;
 		}
 		let i = 2;
 		for (const row of d.resultSubset.rows) {
-			let rowData = '';
-			rowData += '<tr>';
+			let rowData = '<tr>';
 			for (let i = 0; i < columns.length; i++) {
-				rowData += '<td>' + escape(row[i].displayValue) + '</td>';
+				rowData += `<td>${escape(row[i].displayValue)}</td>`;
 			}
 			rowData += '</tr>';
 			htmlStringArr[i] = rowData;
