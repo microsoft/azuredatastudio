@@ -7,7 +7,7 @@ import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } fro
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { localize } from 'vs/nls';
-import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions } from 'vs/workbench/common/editor';
+import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions, ActiveEditorContext } from 'vs/workbench/common/editor';
 
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
@@ -45,6 +45,7 @@ import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellVi
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { NotebookThemingContribution } from 'sql/workbench/contrib/notebook/browser/notebookThemingContribution';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { ToggleTabFocusModeAction } from 'vs/editor/contrib/toggleTabFocusMode/toggleTabFocusMode';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
 	.registerEditorInputFactory(FileNotebookInput.ID, FileNoteBookEditorInputFactory);
@@ -133,6 +134,25 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 	},
 	when: ItemContextKey.ItemType.isEqualTo('database'),
 	order: 1
+});
+
+const TOGGLE_TAB_FOCUS_COMMAND_ID = 'notebook.action.toggleTabFocusMode';
+const toggleTabFocusAction = new ToggleTabFocusModeAction();
+
+CommandsRegistry.registerCommand({
+	id: TOGGLE_TAB_FOCUS_COMMAND_ID,
+	handler: (accessor) => {
+		toggleTabFocusAction.runCommand(accessor, undefined);
+	}
+});
+
+
+MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
+	command: {
+		id: TOGGLE_TAB_FOCUS_COMMAND_ID,
+		title: toggleTabFocusAction.label,
+	},
+	when: ContextKeyExpr.and(ActiveEditorContext.isEqualTo(NotebookEditor.ID))
 });
 
 registerAction2(class extends Action2 {
