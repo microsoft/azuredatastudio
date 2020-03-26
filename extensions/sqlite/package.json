@@ -4,7 +4,7 @@
   "description": "%description%",
   "publisher": "microsoft",
   "version": "1.0.0",
-  "main": "out/index",
+  "main": "./out/index",
   "engines": {
     "vscode": "*"
   },

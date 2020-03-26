@@ -15,6 +15,6 @@ module.exports = withDefaults({
 		sqlite3: 'commonjs sqlite3'
 	},
 	entry: {
-		main: './src/index.ts'
+		index: './src/index.ts'
 	}
 });
