@@ -48,4 +48,6 @@ export interface INotebookFindModel {
 	findExpression: string;
 	/** Emit event when the find count changes */
 	onFindCountChange: Event<number>;
+	/** Get the find index when range is given*/
+	getIndexByRange(range: NotebookRange): number;
 }

@@ -109,6 +109,10 @@ export class CellModel implements ICellModel {
 		return this._onOutputsChanged.event;
 	}
 
+	public get onCellModeChanged(): Event<boolean> {
+		return this._onCellModeChanged.event;
+	}
+
 	public get isEditMode(): boolean {
 		return this._isEditMode;
 	}

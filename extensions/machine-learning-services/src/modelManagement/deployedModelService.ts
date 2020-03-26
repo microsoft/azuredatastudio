@@ -9,73 +9,85 @@ import { ApiWrapper } from '../common/apiWrapper';
 import * as utils from '../common/utils';
 import { Config } from '../configurations/config';
 import { QueryRunner } from '../common/queryRunner';
-import { RegisteredModel, RegisteredModelDetails } from './interfaces';
-import { ModelImporter } from './modelImporter';
+import { RegisteredModel, RegisteredModelDetails, ModelParameters } from './interfaces';
+import { ModelPythonClient } from './modelPythonClient';
 import * as constants from '../common/constants';
 
 /**
- * Service to registered models
+ * Service to deployed models
  */
-export class RegisteredModelService {
+export class DeployedModelService {
 
 	/**
-	 *
+	 * Creates new instance
 	 */
 	constructor(
 		private _apiWrapper: ApiWrapper,
 		private _config: Config,
 		private _queryRunner: QueryRunner,
-		private _modelImporter: ModelImporter) {
+		private _modelClient: ModelPythonClient) {
 	}
 
-	public async getRegisteredModels(): Promise<RegisteredModel[]> {
+	/**
+	 * Returns deployed models
+	 */
+	public async getDeployedModels(): Promise<RegisteredModel[]> {
 		let connection = await this.getCurrentConnection();
 		let list: RegisteredModel[] = [];
 		if (connection) {
 			let query = this.getConfigureQuery(connection.databaseName);
 			await this._queryRunner.safeRunQuery(connection, query);
-			query = this.registeredModelsQuery();
+			query = this.getDeployedModelsQuery();
 			let result = await this._queryRunner.safeRunQuery(connection, query);
 			if (result && result.rows && result.rows.length > 0) {
 				result.rows.forEach(row => {
 					list.push(this.loadModelData(row));
 				});
 			}
+		} else {
+			throw Error(constants.noConnectionError);
 		}
 		return list;
 	}
 
-	private loadModelData(row: azdata.DbCellValue[]): RegisteredModel {
-		return {
-			id: +row[0].displayValue,
-			artifactName: row[1].displayValue,
-			title: row[2].displayValue,
-			description: row[3].displayValue,
-			version: row[4].displayValue,
-			created: row[5].displayValue
-		};
-	}
-
-	public async updateModel(model: RegisteredModel): Promise<RegisteredModel | undefined> {
+	/**
+	 * Downloads model
+	 * @param model model object
+	 */
+	public async downloadModel(model: RegisteredModel): Promise<string> {
 		let connection = await this.getCurrentConnection();
-		let updatedModel: RegisteredModel | undefined = undefined;
 		if (connection) {
-			const query = this.getUpdateModelScript(connection.databaseName, model);
+			const query = this.getModelContentQuery(model);
 			let result = await this._queryRunner.safeRunQuery(connection, query);
 			if (result && result.rows && result.rows.length > 0) {
-				const row = result.rows[0];
-				updatedModel = this.loadModelData(row);
+				const content = result.rows[0][0].displayValue;
+				return await utils.writeFileFromHex(content);
+			} else {
+				throw Error(constants.invalidModelToSelectError);
 			}
+		} else {
+			throw Error(constants.noConnectionError);
 		}
-		return updatedModel;
 	}
 
-	public async registerLocalModel(filePath: string, details: RegisteredModelDetails | undefined) {
+	/**
+	 * Loads model parameters
+	 */
+	public async loadModelParameters(filePath: string): Promise<ModelParameters> {
+		return await this._modelClient.loadModelParameters(filePath);
+	}
+
+	/**
+	 * Deploys local model
+	 * @param filePath model file path
+	 * @param details model details
+	 */
+	public async deployLocalModel(filePath: string, details: RegisteredModelDetails | undefined) {
 		let connection = await this.getCurrentConnection();
 		if (connection) {
-			let currentModels = await this.getRegisteredModels();
-			await this._modelImporter.registerModel(connection, filePath);
-			let updatedModels = await this.getRegisteredModels();
+			let currentModels = await this.getDeployedModels();
+			await this._modelClient.deployModel(connection, filePath);
+			let updatedModels = await this.getDeployedModels();
 			if (details && updatedModels.length >= currentModels.length + 1) {
 				updatedModels.sort((a, b) => a.id && b.id ? a.id - b.id : 0);
 				const addedModel = updatedModels[updatedModels.length - 1];
@@ -92,16 +104,40 @@ export class RegisteredModelService {
 			}
 		}
 	}
+	private loadModelData(row: azdata.DbCellValue[]): RegisteredModel {
+		return {
+			id: +row[0].displayValue,
+			artifactName: row[1].displayValue,
+			title: row[2].displayValue,
+			description: row[3].displayValue,
+			version: row[4].displayValue,
+			created: row[5].displayValue
+		};
+	}
+
+	private async updateModel(model: RegisteredModel): Promise<RegisteredModel | undefined> {
+		let connection = await this.getCurrentConnection();
+		let updatedModel: RegisteredModel | undefined = undefined;
+		if (connection) {
+			const query = this.getUpdateModelQuery(connection.databaseName, model);
+			let result = await this._queryRunner.safeRunQuery(connection, query);
+			if (result?.rows && result.rows.length > 0) {
+				const row = result.rows[0];
+				updatedModel = this.loadModelData(row);
+			}
+		}
+		return updatedModel;
+	}
 
 	private async getCurrentConnection(): Promise<azdata.connection.ConnectionProfile> {
 		return await this._apiWrapper.getCurrentConnection();
 	}
 
-	private getConfigureQuery(currentDatabaseName: string): string {
-		return utils.getScriptWithDBChange(currentDatabaseName, this._config.registeredModelDatabaseName, this.configureTable());
+	public getConfigureQuery(currentDatabaseName: string): string {
+		return utils.getScriptWithDBChange(currentDatabaseName, this._config.registeredModelDatabaseName, this.getConfigureTableQuery());
 	}
 
-	private registeredModelsQuery(): string {
+	public getDeployedModelsQuery(): string {
 		return `
 		SELECT artifact_id, artifact_name, name, description, version, created
 		FROM ${utils.getRegisteredModelsThreePartsName(this._config)}
@@ -116,7 +152,7 @@ export class RegisteredModelService {
 	 * @param databaseName
 	 * @param tableName
 	 */
-	private configureTable(): string {
+	public getConfigureTableQuery(): string {
 		let databaseName = this._config.registeredModelDatabaseName;
 		let tableName = this._config.registeredModelTableName;
 		let schemaName = this._config.registeredModelTableSchemaName;
@@ -171,7 +207,7 @@ export class RegisteredModelService {
 		`;
 	}
 
-	private getUpdateModelScript(currentDatabaseName: string, model: RegisteredModel): string {
+	public getUpdateModelQuery(currentDatabaseName: string, model: RegisteredModel): string {
 		let updateScript = `
 		UPDATE ${utils.getRegisteredModelsTowPartsName(this._config)}
 		SET
@@ -183,6 +219,14 @@ export class RegisteredModelService {
 		return `
 		${utils.getScriptWithDBChange(currentDatabaseName, this._config.registeredModelDatabaseName, updateScript)}
 		SELECT artifact_id, artifact_name, name, description, version, created
+		FROM ${utils.getRegisteredModelsThreePartsName(this._config)}
+		WHERE artifact_id = ${model.id};
+		`;
+	}
+
+	public getModelContentQuery(model: RegisteredModel): string {
+		return `
+		SELECT artifact_content
 		FROM ${utils.getRegisteredModelsThreePartsName(this._config)}
 		WHERE artifact_id = ${model.id};
 		`;

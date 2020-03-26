@@ -55,18 +55,28 @@ export abstract class AbstractCommandsQuickAccessProvider extends PickerQuickAcc
 		// Ask subclass for all command picks
 		const allCommandPicks = await this.getCommandPicks(disposables, token);
 
+		if (token.isCancellationRequested) {
+			return [];
+		}
+
 		// Filter
 		const filteredCommandPicks: ICommandQuickPick[] = [];
 		for (const commandPick of allCommandPicks) {
 			const labelHighlights = withNullAsUndefined(AbstractCommandsQuickAccessProvider.WORD_FILTER(filter, commandPick.label));
 			const aliasHighlights = commandPick.commandAlias ? withNullAsUndefined(AbstractCommandsQuickAccessProvider.WORD_FILTER(filter, commandPick.commandAlias)) : undefined;
 
+			// Add if matching in label or alias
 			if (labelHighlights || aliasHighlights) {
 				commandPick.highlights = {
 					label: labelHighlights,
 					detail: this.options.showAlias ? aliasHighlights : undefined
 				};
 
+				filteredCommandPicks.push(commandPick);
+			}
+
+			// Also add if we have a 100% command ID match
+			else if (filter === commandPick.commandId) {
 				filteredCommandPicks.push(commandPick);
 			}
 		}
@@ -130,7 +140,7 @@ export abstract class AbstractCommandsQuickAccessProvider extends PickerQuickAcc
 			commandPicks.push({
 				...commandPick,
 				ariaLabel,
-				detail: this.options.showAlias ? commandPick.commandAlias : undefined,
+				detail: this.options.showAlias && commandPick.commandAlias !== commandPick.label ? commandPick.commandAlias : undefined,
 				keybinding,
 				accept: async () => {
 

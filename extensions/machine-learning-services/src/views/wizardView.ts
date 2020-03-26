@@ -68,7 +68,7 @@ export class WizardView extends MainViewBase {
 		this._pages = pages;
 		this._wizard.pages = pages.map(x => this.createWizardPage(x.title || '', x));
 		this._wizard.onPageChanged(async (info) => {
-			this.onWizardPageChanged(info);
+			await this.onWizardPageChanged(info);
 		});
 
 		return this._wizard;
@@ -85,17 +85,17 @@ export class WizardView extends MainViewBase {
 		return true;
 	}
 
-	private onWizardPageChanged(pageInfo: azdata.window.WizardPageChangeInfo) {
+	private async onWizardPageChanged(pageInfo: azdata.window.WizardPageChangeInfo) {
 		let idxLast = pageInfo.lastPage;
 		let lastPage = this._pages[idxLast];
 		if (lastPage && lastPage.onLeave) {
-			lastPage.onLeave();
+			await lastPage.onLeave();
 		}
 
 		let idx = pageInfo.newPage;
 		let page = this._pages[idx];
 		if (page && page.onEnter) {
-			page.onEnter();
+			await page.onEnter();
 		}
 	}
 
