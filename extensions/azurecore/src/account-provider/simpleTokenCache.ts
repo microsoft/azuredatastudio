@@ -119,18 +119,20 @@ export class SimpleTokenCache {
 		if (this.forceFileStorage === false) {
 			keytar = getSystemKeytar();
 
-			// Override how findCredentials works
-			keytar.getPasswords = async (service: string): Promise<MultipleAccountsResponse> => {
-				const [serviceName, accountPrefix] = service.split(separator);
-				if (serviceName === undefined || accountPrefix === undefined) {
-					throw new Error('Service did not have seperator: ' + service);
-				}
+			// Add new method to keytar
+			if (keytar) {
+				keytar.getPasswords = async (service: string): Promise<MultipleAccountsResponse> => {
+					const [serviceName, accountPrefix] = service.split(separator);
+					if (serviceName === undefined || accountPrefix === undefined) {
+						throw new Error('Service did not have seperator: ' + service);
+					}
 
-				const results = await keytar.findCredentials(serviceName);
-				return results.filter(({ account }) => {
-					return account.startsWith(accountPrefix);
-				});
-			};
+					const results = await keytar.findCredentials(serviceName);
+					return results.filter(({ account }) => {
+						return account.startsWith(accountPrefix);
+					});
+				};
+			}
 		}
 		if (!keytar) {
 			keytar = await getFileKeytar(join(this.userStoragePath, this.serviceName), this.credentialService);
