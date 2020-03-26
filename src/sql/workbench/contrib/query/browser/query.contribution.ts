@@ -306,8 +306,6 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	handler: gridCommands.goToNextQueryOutputTab
 });
 
-
-
 // Intellisense and other configuration options
 const registryProperties: { [path: string]: IConfigurationPropertySchema; } = {
 	'sql.saveAsCsv.includeHeaders': {
