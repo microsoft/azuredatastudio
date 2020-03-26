@@ -873,9 +873,10 @@ registerThemingParticipant((theme, collector) => {
 	if (tileBoxShadowColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .tile:not(.extension):not(.extension_pack) { box-shadow: 0px 1px 4px ${tileBoxShadowColor}; }`);
 	}
-	const buttonPrimaryBackgroundColor = getExtraColor(theme, buttonBackground, { dark: '#0078D4', extra_dark: '#0078D4', light: '#0078D4', hc: '#0078D4' });
+	const buttonPrimaryBackgroundColor = theme.getColor(buttonBackground);
 	if (buttonPrimaryBackgroundColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary { background-color: ${buttonPrimaryBackgroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary { border-color: ${buttonPrimaryBackgroundColor};}`);
 	}
 	const buttonForegroundColor = theme.getColor(buttonForeground);
 	if (buttonForegroundColor) {
