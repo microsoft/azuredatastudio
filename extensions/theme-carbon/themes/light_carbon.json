@@ -19,11 +19,14 @@
 		"button.hoverBackground": "#0078d7",
 
 		// TODO add support for these
-		// "button.secondaryBackground": "#c8c8c8",
-		// "button.secondaryHoverBackground": "#a6a6a6",
-		// "button.secondaryForeground": "#333333",
-		// "button.disabledBackground": "#eaeaea",
-		// "button.disabledForeground": "#888888",
+		"button.secondaryBackground": "#ffffff",
+		"button.secondaryHoverBackground": "#ffffff",
+		"button.secondaryForeground": "#323130",
+		"button.secondaryHoverForeground": "#0078D4",
+
+		"button.disabledBackground": "#F3F2F1",
+		"button.disabledForeground": "#A19F9D",
+
 
 		//Checkbox
 		"checkbox.disabled.foreground": "#888888",

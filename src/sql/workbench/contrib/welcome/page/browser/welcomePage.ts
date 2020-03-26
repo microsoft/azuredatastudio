@@ -31,7 +31,6 @@ import { splitName } from 'vs/base/common/labels';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { buttonSecondaryBackground, buttonSecondaryBorder, buttonSecondary, buttonSecondaryHoverColor, tileBorder, disabledButton, disabledButtonBackground, gradientOne, gradientTwo, gradientBackground, extensionPackHeaderShadow, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, tileBoxShadow, buttonDropdownBackgroundHover, hoverShadow } from 'sql/platform/theme/common/colorRegistry';
 import { registerColor, foreground, textLinkActiveForeground, focusBorder, descriptionForeground, activeContrastBorder, buttonBackground, buttonForeground, menuBorder, menuForeground, menuSelectionForeground, editorWidgetBorder, selectBackground, buttonHoverBackground, selectBorder, iconForeground, textLinkForeground, inputBackground } from 'vs/platform/theme/common/colorRegistry';
-import { getExtraColor } from 'vs/workbench/contrib/welcome/walkThrough/common/walkThroughUtils';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IEditorInputFactory, EditorInput } from 'vs/workbench/common/editor';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
