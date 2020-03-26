@@ -60,7 +60,7 @@ export function confirmInstallPythonPackages(packages: string): string {
 export const installDependenciesPackages = localize('mls.installDependencies.packages', "Installing required packages ...");
 export const installDependenciesPackagesAlreadyInstalled = localize('mls.installDependencies.packagesAlreadyInstalled', "Required packages are already installed.");
 export function installDependenciesGetPackagesError(err: string): string { return localize('mls.installDependencies.getPackagesError', "Failed to get installed python packages. Error: {0}", err); }
-export const packageManagerNoConnection = localize('mls.packageManager.NoConnection', "No connection selected");
+export const noConnectionError = localize('mls.packageManager.NoConnection', "No connection selected");
 export const notebookExtensionNotLoaded = localize('mls.notebookExtensionNotLoaded', "Notebook extension is not loaded");
 export const mssqlExtensionNotLoaded = localize('mls.mssqlExtensionNotLoaded', "MSSQL extension is not loaded");
 export const mlsEnabledMessage = localize('mls.enabledMessage', "Machine Learning Services Enabled");
@@ -74,6 +74,8 @@ export const mlsExternalExecuteScriptTitle = localize('mls.externalExecuteScript
 export const mlsPythonLanguageTitle = localize('mls.pythonLanguageTitle', "Python");
 export const mlsRLanguageTitle = localize('mls.rLanguageTitle', "R");
 export const downloadError = localize('mls.downloadError', "Error while downloading");
+export function invalidModelIdError(modelUrl: string | undefined): string { return localize('mls.invalidModelIdError', "Invalid model id. model url: {0}", modelUrl || ''); }
+export function noArtifactError(modelUrl: string | undefined): string { return localize('mls.noArtifactError', "Model doesn't have any artifact. model url: {0}", modelUrl || ''); }
 export const downloadingProgress = localize('mls.downloadingProgress', "Downloading");
 export const pythonConfigError = localize('mls.pythonConfigError', "Python executable is not configured");
 export const rConfigError = localize('mls.rConfigError', "R executable is not configured");
@@ -119,12 +121,15 @@ export const modelCreated = localize('models.created', "Date Created");
 export const modelVersion = localize('models.version', "Version");
 export const browseModels = localize('models.browseButton', "...");
 export const azureAccount = localize('models.azureAccount', "Azure account");
-export const columnDatabase = localize('predict.columnDatabase', "Database");
-export const columnTable = localize('predict.columnTable', "Table");
-export const inputColumns = localize('predict.inputColumns', "Input columns");
-export const outputColumns = localize('predict.outputColumns', "Output column");
-export const columnName = localize('predict.columnName', "Name");
-export const inputName = localize('predict.inputName', "Input Name");
+export const columnDatabase = localize('predict.columnDatabase', "Target database");
+export const columnTable = localize('predict.columnTable', "Target table");
+export const inputColumns = localize('predict.inputColumns', "Model input mapping");
+export const outputColumns = localize('predict.outputColumns', "Model output");
+export const columnName = localize('predict.columnName', "Target columns");
+export const dataTypeName = localize('predict.dataTypeName', "Type");
+export const displayName = localize('predict.displayName', "Display  name");
+export const inputName = localize('predict.inputName', "Required model input features");
+export const outputName = localize('predict.outputName', "Name");
 export const azureSubscription = localize('models.azureSubscription', "Azure subscription");
 export const azureGroup = localize('models.azureGroup', "Azure resource group");
 export const azureModelWorkspace = localize('models.azureModelWorkspace', "Azure ML workspace");
@@ -134,7 +139,7 @@ export const azureModelsTitle = localize('models.azureModelsTitle', "Azure model
 export const localModelsTitle = localize('models.localModelsTitle', "Local models");
 export const modelSourcesTitle = localize('models.modelSourcesTitle', "Source location");
 export const modelSourcePageTitle = localize('models.modelSourcePageTitle', "Enter model source details");
-export const columnSelectionPageTitle = localize('models.columnSelectionPageTitle', "Select input columns");
+export const columnSelectionPageTitle = localize('models.columnSelectionPageTitle', "Map predictions target data to model input");
 export const modelDetailsPageTitle = localize('models.modelDetailsPageTitle', "Provide model details");
 export const modelLocalSourceTitle = localize('models.modelLocalSourceTitle', "Source file");
 export const currentModelsTitle = localize('models.currentModelsTitle', "Models");
@@ -156,6 +161,8 @@ export const invalidModelToSelectError = localize('models.invalidModelToSelectEr
 export const modelNameRequiredError = localize('models.modelNameRequiredError', "Model name is required.");
 export const updateModelFailedError = localize('models.updateModelFailedError', "Failed to update the model");
 export const importModelFailedError = localize('models.importModelFailedError', "Failed to register the model");
+export const loadModelParameterFailedError = localize('models.loadModelParameterFailedError', "Failed to load model parameters'");
+export const unsupportedModelParameterType = localize('models.unsupportedModelParameterType', "unsupported");
 
 
 

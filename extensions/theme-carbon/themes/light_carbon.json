@@ -34,7 +34,7 @@
 		//Dropdown Control
 		"dropdown.background": "#ffffff",
 		"dropdown.foreground": "#4a4a4a",
-		"dropdown.border": "#c8c8c8",
+		"dropdown.border": "#888888",
 
 		//badge
 		"badge.background": "#777777",
@@ -42,7 +42,7 @@
 
 		//Input Control
 		"input.background": "#ffffff",
-		"input.border": "#c8c8c8",
+		"input.border": "#888888",
 		"input.disabled.background": "#dcdcdc",
 		"input.disabled.foreground": "#888888",
 		"inputOption.activeBorder": "#666666",
@@ -78,7 +78,7 @@
 		"tab.unfocusedInactiveForeground": "#888888",
 		"tab.unfocusedActiveForeground": "#212121",
 		"panel.background": "#ffffff",
-		"panel.border": "#c8c8c8",
+		"panel.border": "#888888",
 		"panelTitle.activeForeground": "#212121",
 		"panelTitle.inactiveForeground": "#757575",
 		"panelTitle.activeBorder": "#026dc8"

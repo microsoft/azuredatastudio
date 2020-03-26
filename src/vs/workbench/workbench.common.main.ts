@@ -282,7 +282,6 @@ import 'vs/workbench/contrib/scm/browser/scmViewlet';
 
 /* {{SQL CARBON EDIT}} // Debug
 import 'vs/workbench/contrib/debug/browser/debug.contribution';
-import 'vs/workbench/contrib/debug/browser/debugQuickOpen';
 import 'vs/workbench/contrib/debug/browser/debugEditorContribution';
 import 'vs/workbench/contrib/debug/browser/breakpointEditorContribution';
 import 'vs/workbench/contrib/debug/browser/callStackEditorContribution';
@@ -305,7 +304,6 @@ import 'vs/workbench/contrib/customEditor/browser/webviewEditor.contribution';
 
 // Extensions Management
 import 'vs/workbench/contrib/extensions/browser/extensions.contribution';
-import 'vs/workbench/contrib/extensions/browser/extensionsQuickOpen';
 import 'vs/workbench/contrib/extensions/browser/extensionsViewlet';
 
 // Output View
@@ -314,7 +312,6 @@ import 'vs/workbench/contrib/output/browser/outputView';
 
 // Terminal
 import 'vs/workbench/contrib/terminal/browser/terminal.contribution';
-import 'vs/workbench/contrib/terminal/browser/terminalQuickOpen';
 import 'vs/workbench/contrib/terminal/browser/terminalView';
 
 // Relauncher

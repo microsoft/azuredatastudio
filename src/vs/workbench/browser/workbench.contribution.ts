@@ -182,7 +182,7 @@ import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuratio
 			'workbench.quickOpen.enableExperimentalNewVersion': {
 				'type': 'boolean',
 				'description': nls.localize('workbench.quickOpen.enableExperimentalNewVersion', "Will use the new quick open implementation for testing purposes."),
-				'default': false
+				'default': true
 			},
 			'workbench.settings.openDefaultSettings': {
 				'type': 'boolean',
@@ -225,11 +225,6 @@ import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuratio
 				'type': 'boolean',
 				'default': true, // {{SQL CARBON EDIT}} - change the default value from false to true.
 				'description': nls.localize('viewVisibility', "Controls the visibility of view header actions. View header actions may either be always visible, or only visible when that view is focused or hovered over.")
-			},
-			'workbench.view.experimental.allowMovingToNewContainer': {
-				'type': 'boolean',
-				'default': true,
-				'description': nls.localize('movingViewContainer', "Controls whether specific views will have a context menu entry allowing them to be moved to a new container. Currently, this setting only affects the outline view and views contributed by extensions.")
 			},
 			'workbench.fontAliasing': {
 				'type': 'string',
