@@ -22,6 +22,7 @@ export type MultipleAccountsResponse = { account: string, password: string }[];
 const separator = '§';
 
 async function getFileKeytar(filePath: string, credentialService: azdata.CredentialProvider): Promise<Keytar | undefined> {
+	// Comment alias: amomidi, PR: 9743 March 26th 2020
 	// const fileName = parse(filePath).base;
 	// const iv = await credentialService.readCredential(`${fileName}-iv`);
 	// const key = await credentialService.readCredential(`${fileName}-key`);

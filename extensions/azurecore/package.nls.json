@@ -25,6 +25,6 @@
 	"config.azureAuthMethodConfigurationSection": "Azure Authentication Method",
 	"config.azureCodeGrantMethod": "Code Grant Method",
 	"config.azureDeviceCodeMethod": "Device Code Method",
-	"config.noSystemKeychain": "Disable system keychain integration. This is a temporary option and will be removed in future releases.",
+	"config.noSystemKeychain": "Disable system keychain integration",
 	"config.enableArcFeatures": "Should features related to Azure Arc be enabled (preview)"
 }
