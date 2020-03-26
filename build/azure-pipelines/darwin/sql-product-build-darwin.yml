@@ -126,7 +126,6 @@ steps:
       set -e
       VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-web-darwin" \
       yarn smoketest --web --headless
-    continueOnError: true
     displayName: Run smoke tests (Browser)
     condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
 

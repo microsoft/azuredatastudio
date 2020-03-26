@@ -120,6 +120,7 @@ steps:
       $ErrorActionPreference = "Stop"
       $APP_ROOT = "$(agent.builddirectory)\azuredatastudio-win32-x64"
       exec { yarn smoketest --build "$APP_ROOT" }
+    continueOnError: true
     displayName: Run smoke tests (Electron)
     condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
 
