@@ -25,6 +25,7 @@ import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvent
 import { firstIndex, find } from 'vs/base/common/arrays';
 import { HideInputTag } from 'sql/platform/notebooks/common/outputRegistry';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
+import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 
 let modelId = 0;
 
@@ -52,7 +53,7 @@ export class CellModel implements ICellModel {
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
-	private _metadata: { language?: string; tags?: string[]; cellGuid?: string; chartDisplayed?: boolean; };
+	private _metadata: { language?: string; tags?: string[]; cellGuid?: string; chartDisplayOptions?: IInsightOptions };
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
@@ -120,12 +121,12 @@ export class CellModel implements ICellModel {
 		return this._isCollapsed;
 	}
 
-	public get chartDisplayed(): boolean {
-		return !!this._metadata.chartDisplayed;
+	public get chartDisplayOptions(): IInsightOptions {
+		return this._metadata.chartDisplayOptions;
 	}
 
-	public set chartDisplayed(value: boolean) {
-		this._metadata.chartDisplayed = value;
+	public set chartDisplayOptions(value: IInsightOptions) {
+		this._metadata.chartDisplayOptions = value;
 		this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
 	}
 

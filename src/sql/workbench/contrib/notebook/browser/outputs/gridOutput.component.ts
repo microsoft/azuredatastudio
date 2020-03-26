@@ -127,7 +127,10 @@ class DataResourceTable extends GridTableBase<any> {
 		super(state, createResultSet(source), contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel.notebookModel.notebookUri.toString());
 		this._chart = this.instantiationService.createInstance(ChartView, false);
-		if (this.cellModel.chartDisplayed) {
+		if (this.cellModel.chartDisplayOptions) {
+			// let chartState = this._chart.state;
+			// chartState.options = this.cellModel.chartDisplayOptions;
+			// this._chart.state = chartState;
 			this.updateChartData(this.resultSet.rowCount, this.resultSet.columnInfo.length, this.gridDataProvider);
 		}
 	}
@@ -146,7 +149,7 @@ class DataResourceTable extends GridTableBase<any> {
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
-			this.instantiationService.createInstance(NotebookChartAction, this, this.cellModel.chartDisplayed)
+			this.instantiationService.createInstance(NotebookChartAction, this, this.cellModel.chartDisplayOptions !== undefined)
 		];
 	}
 
@@ -163,7 +166,7 @@ class DataResourceTable extends GridTableBase<any> {
 			this._chartContainer = document.createElement('div');
 			this._chartContainer.style.width = '100%';
 
-			if (this.cellModel.chartDisplayed) {
+			if (this.cellModel.chartDisplayOptions) {
 				this.tableContainer.style.display = 'none';
 				this._chartContainer.style.display = 'inline-block';
 			} else {
@@ -179,11 +182,11 @@ class DataResourceTable extends GridTableBase<any> {
 		if (this.tableContainer.style.display !== 'none') {
 			this.tableContainer.style.display = 'none';
 			this._chartContainer.style.display = 'inline-block';
-			this.cellModel.chartDisplayed = true;
+			this.cellModel.chartDisplayOptions = this._chart.options;
 		} else {
 			this.tableContainer.style.display = 'inline-block';
 			this._chartContainer.style.display = 'none';
-			this.cellModel.chartDisplayed = false;
+			this.cellModel.chartDisplayOptions = undefined;
 		}
 	}
 

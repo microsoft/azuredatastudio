@@ -22,6 +22,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
+import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -487,7 +488,7 @@ export interface ICellModel {
 	modelContentChangedEvent: IModelContentChangedEvent;
 	isEditMode: boolean;
 	readonly ariaLabel: string;
-	chartDisplayed: boolean;
+	chartDisplayOptions: IInsightOptions;
 }
 
 export interface IModelFactory {
