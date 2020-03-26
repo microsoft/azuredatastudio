@@ -238,7 +238,7 @@ export abstract class AzureAuth {
 		const config: AxiosRequestConfig = {
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded'
-			},
+			}
 		};
 
 		if (validateStatus) {
