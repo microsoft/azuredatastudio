@@ -185,10 +185,11 @@ class DataResourceTable extends GridTableBase<any> {
 			this._chartContainer.style.display = 'inline-block';
 			this.cellModel.chartDisplayOptions = this._chart.options;
 		} else {
-			this.tableContainer.style.display = 'inline-block';
 			this._chartContainer.style.display = 'none';
+			this.tableContainer.style.display = 'inline-block';
 			this.cellModel.chartDisplayOptions = undefined;
 		}
+		this.layout();
 	}
 
 	public updateChartData(rowCount: number, columnCount: number, gridDataProvider: IGridDataProvider): void {
