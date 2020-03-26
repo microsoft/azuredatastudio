@@ -163,7 +163,8 @@ export class OptionsDialog extends Modal {
 		for (let i = 0; i < options.length; i++) {
 			let option: azdata.ServiceOption = options[i];
 			let rowContainer = DialogHelper.appendRow(container, option.displayName, 'optionsDialog-label', 'optionsDialog-input');
-			OptionsDialogHelper.createOptionElement(option, rowContainer, this._optionValues, this._optionElements, this._contextViewService, (name) => this.onOptionLinkClicked(name));
+			const optionElement = OptionsDialogHelper.createOptionElement(option, rowContainer, this._optionValues, this._optionElements, this._contextViewService, (name) => this.onOptionLinkClicked(name));
+			this.disposableStore.add(optionElement.optionWidget);
 		}
 	}
 
@@ -175,12 +176,12 @@ export class OptionsDialog extends Modal {
 			switch (option.valueType) {
 				case ServiceOptionType.category:
 				case ServiceOptionType.boolean:
-					this._register(styler.attachSelectBoxStyler(<SelectBox>widget, this._themeService));
+					this.disposableStore.add(styler.attachSelectBoxStyler(<SelectBox>widget, this._themeService));
 					break;
 				case ServiceOptionType.string:
 				case ServiceOptionType.password:
 				case ServiceOptionType.number:
-					this._register(styler.attachInputBoxStyler(<InputBox>widget, this._themeService));
+					this.disposableStore.add(styler.attachInputBoxStyler(<InputBox>widget, this._themeService));
 			}
 		}
 	}
@@ -224,8 +225,8 @@ export class OptionsDialog extends Modal {
 	}
 
 	public close() {
-		this.dispose();
 		this.hide();
+		this._optionElements = {};
 		this._onCloseEvent.fire();
 	}
 
@@ -260,10 +261,6 @@ export class OptionsDialog extends Modal {
 
 	public dispose(): void {
 		super.dispose();
-		for (let optionName in this._optionElements) {
-			let widget: Widget = this._optionElements[optionName].optionWidget;
-			widget.dispose();
-			delete this._optionElements[optionName];
-		}
+		this._optionElements = {};
 	}
 }
