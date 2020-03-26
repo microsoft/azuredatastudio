@@ -46,6 +46,10 @@
 	margin-right: 5px;
 }
 
+.carbon-taskbar .action-item.more {
+	padding-right: 15px;
+}
+
 .carbon-taskbar .action-label {
 	background-repeat: no-repeat;
 	background-position: 0% 50%;

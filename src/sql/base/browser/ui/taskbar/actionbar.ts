@@ -117,7 +117,9 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		}));
 
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
-			this.resizeToolbar();
+			if (document.getElementById('actions-container')) {
+				this.resizeToolbar();
+			}
 		}));
 
 		this._focusTracker = this._register(DOM.trackFocus(this._domNode));
@@ -158,7 +160,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		if (width < fullWidth) {
 			if (!this._moreItemElement) {
 				this._moreItemElement = document.createElement('li');
-				this._moreItemElement.className = 'action-item';
+				this._moreItemElement.className = 'action-item more';
 				this._moreItemElement.setAttribute('role', 'presentation');
 				this._moreItemElement.innerHTML = '•••';
 				this._moreItemElement.id = 'more';
