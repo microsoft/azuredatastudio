@@ -3,12 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as keytarType from 'keytar';
-import { join, parse } from 'path';
+import { join } from 'path';
 import { FileDatabase } from './utils/fileDatabase';
-import * as crypto from 'crypto';
 import * as azdata from 'azdata';
 
-function getSystemKeytar(): Keytar | undefined {
+function getSystemKeytar(): Keytar | undefined | null {
 	try {
 		return require('keytar');
 	} catch (err) {
@@ -23,43 +22,45 @@ export type MultipleAccountsResponse = { account: string, password: string }[];
 const separator = '§';
 
 async function getFileKeytar(filePath: string, credentialService: azdata.CredentialProvider): Promise<Keytar | undefined> {
-	const fileName = parse(filePath).base;
-	const iv = await credentialService.readCredential(`${fileName}-iv`);
-	const key = await credentialService.readCredential(`${fileName}-key`);
-	let ivBuffer: Buffer;
-	let keyBuffer: Buffer;
-	if (!iv?.password || !key?.password) {
-		ivBuffer = crypto.randomBytes(16);
-		keyBuffer = crypto.randomBytes(32);
-		try {
-			await credentialService.saveCredential(`${fileName}-iv`, ivBuffer.toString('hex'));
-			await credentialService.saveCredential(`${fileName}-key`, keyBuffer.toString('hex'));
-		} catch (ex) {
-			console.log(ex);
-		}
-	} else {
-		ivBuffer = Buffer.from(iv.password, 'hex');
-		keyBuffer = Buffer.from(key.password, 'hex');
-	}
+	// Comment alias: amomidi, PR: 9743 March 26th 2020
+	// const fileName = parse(filePath).base;
+	// const iv = await credentialService.readCredential(`${fileName}-iv`);
+	// const key = await credentialService.readCredential(`${fileName}-key`);
+	// let ivBuffer: Buffer;
+	// let keyBuffer: Buffer;
+	// if (!iv?.password || !key?.password) {
+	// 	ivBuffer = crypto.randomBytes(16);
+	// 	keyBuffer = crypto.randomBytes(32);
+	// 	try {
+	// 		await credentialService.saveCredential(`${fileName}-iv`, ivBuffer.toString('hex'));
+	// 		await credentialService.saveCredential(`${fileName}-key`, keyBuffer.toString('hex'));
+	// 	} catch (ex) {
+	// 		console.log(ex);
+	// 	}
+	// } else {
+	// 	ivBuffer = Buffer.from(iv.password, 'hex');
+	// 	keyBuffer = Buffer.from(key.password, 'hex');
+	// }
 
-	const fileSaver = async (content: string): Promise<string> => {
-		const cipherIv = crypto.createCipheriv('aes-256-gcm', keyBuffer, ivBuffer);
-		return `${cipherIv.update(content, 'utf8', 'hex')}${cipherIv.final('hex')}%${cipherIv.getAuthTag().toString('hex')}`;
-	};
+	// const fileSaver = async (content: string): Promise<string> => {
+	// 	const cipherIv = crypto.createCipheriv('aes-256-gcm', keyBuffer, ivBuffer);
+	// 	return `${cipherIv.update(content, 'utf8', 'hex')}${cipherIv.final('hex')}%${cipherIv.getAuthTag().toString('hex')}`;
+	// };
 
-	const fileOpener = async (content: string): Promise<string> => {
-		const decipherIv = crypto.createDecipheriv('aes-256-gcm', keyBuffer, ivBuffer);
+	// const fileOpener = async (content: string): Promise<string> => {
+	// 	const decipherIv = crypto.createDecipheriv('aes-256-gcm', keyBuffer, ivBuffer);
 
-		const split = content.split('%');
-		if (split.length !== 2) {
-			throw new Error('File didn\'t contain the auth tag.');
-		}
-		decipherIv.setAuthTag(Buffer.from(split[1], 'hex'));
+	// 	const split = content.split('%');
+	// 	if (split.length !== 2) {
+	// 		throw new Error('File didn\'t contain the auth tag.');
+	// 	}
+	// 	decipherIv.setAuthTag(Buffer.from(split[1], 'hex'));
 
-		return `${decipherIv.update(split[0], 'hex', 'utf8')}${decipherIv.final('utf8')}`;
-	};
+	// 	return `${decipherIv.update(split[0], 'hex', 'utf8')}${decipherIv.final('utf8')}`;
+	// };
 
-	const db = new FileDatabase(filePath, fileOpener, fileSaver);
+	// const db = new FileDatabase(filePath, fileOpener, fileSaver);
+	const db = new FileDatabase(filePath);
 	await db.initialize();
 
 	const fileKeytar: Keytar = {
@@ -119,18 +120,20 @@ export class SimpleTokenCache {
 		if (this.forceFileStorage === false) {
 			keytar = getSystemKeytar();
 
-			// Override how findCredentials works
-			keytar.getPasswords = async (service: string): Promise<MultipleAccountsResponse> => {
-				const [serviceName, accountPrefix] = service.split(separator);
-				if (serviceName === undefined || accountPrefix === undefined) {
-					throw new Error('Service did not have seperator: ' + service);
-				}
+			// Add new method to keytar
+			if (keytar) {
+				keytar.getPasswords = async (service: string): Promise<MultipleAccountsResponse> => {
+					const [serviceName, accountPrefix] = service.split(separator);
+					if (serviceName === undefined || accountPrefix === undefined) {
+						throw new Error('Service did not have seperator: ' + service);
+					}
 
-				const results = await keytar.findCredentials(serviceName);
-				return results.filter(({ account }) => {
-					return account.startsWith(accountPrefix);
-				});
-			};
+					const results = await keytar.findCredentials(serviceName);
+					return results.filter(({ account }) => {
+						return account.startsWith(accountPrefix);
+					});
+				};
+			}
 		}
 		if (!keytar) {
 			keytar = await getFileKeytar(join(this.userStoragePath, this.serviceName), this.credentialService);

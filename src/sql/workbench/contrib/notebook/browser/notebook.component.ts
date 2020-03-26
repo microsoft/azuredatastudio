@@ -71,7 +71,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	@ViewChild('bookNav', { read: ElementRef }) private bookNav: ElementRef;
 
 	@ViewChildren(CodeCellComponent) private codeCells: QueryList<CodeCellComponent>;
-	@ViewChildren(TextCellComponent) private textCells: QueryList<ICellEditorProvider>;
+	@ViewChildren(TextCellComponent) private textCells: QueryList<TextCellComponent>;
 
 	private _model: NotebookModel;
 	protected _actionBar: Taskbar;
@@ -150,6 +150,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.codeCells.toArray().forEach(cell => editors.push(...cell.cellEditors));
 		}
 		if (this.textCells) {
+			this.textCells.toArray().forEach(cell => editors.push(...cell.cellEditors));
 			editors.push(...this.textCells.toArray());
 		}
 		return editors;
@@ -157,12 +158,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
 		if (newDecorationRange && newDecorationRange.cell && newDecorationRange.cell.cellType === 'markdown') {
-			let cell = this.cellEditors.filter(c => c.cellGuid() === newDecorationRange.cell.cellGuid)[0];
-			cell.deltaDecorations(newDecorationRange, undefined);
+			let cell = this.cellEditors.filter(c => c.cellGuid() === newDecorationRange.cell.cellGuid);
+			cell[cell.length - 1].deltaDecorations(newDecorationRange, undefined);
 		}
 		if (oldDecorationRange && oldDecorationRange.cell && oldDecorationRange.cell.cellType === 'markdown') {
-			let cell = this.cellEditors.filter(c => c.cellGuid() === oldDecorationRange.cell.cellGuid)[0];
-			cell.deltaDecorations(undefined, oldDecorationRange);
+			let cell = this.cellEditors.filter(c => c.cellGuid() === oldDecorationRange.cell.cellGuid);
+			cell[cell.length - 1].deltaDecorations(undefined, oldDecorationRange);
 		}
 	}
 
