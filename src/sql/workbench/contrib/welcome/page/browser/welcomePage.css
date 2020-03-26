@@ -155,11 +155,11 @@
 	cursor: pointer;
 }
 
-.ads_homepage .btn_standard:hover {
+.ads_homepage .btn_secondary:hover {
 	cursor: pointer;
 }
 
-.ads_homepage .btn_standard {
+.ads_homepage .btn_secondary {
 	line-height: 1.6em;
 }
 
@@ -1125,7 +1125,7 @@
 	background: transparent;
 }
 
-.ads_homepage .extension_pack .extension_pack_extensions .btn_standard {
+.ads_homepage .extension_pack .extension_pack_extensions .btn_secondary {
 	line-height: 1.25em;
 }
 

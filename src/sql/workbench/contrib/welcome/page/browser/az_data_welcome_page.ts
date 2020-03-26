@@ -54,11 +54,11 @@ export default () => `
 												</ul>
 											</nav>
 										</div>
-										<a class="windows_only linux_only btn btn_standard"
+										<a class="windows_only linux_only btn btn_secondary"
 											href="command:workbench.action.files.openFile">
 											${escape(localize('welcomePage.openFileLinuxPC', "Open file"))}
 										</a>
-										<a class="mac_only btn btn_standard" href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac', "Open file"))}</a>
+										<a class="mac_only btn btn_secondary" href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac', "Open file"))}</a>
 									</div>
 								</div>
 							</div>
