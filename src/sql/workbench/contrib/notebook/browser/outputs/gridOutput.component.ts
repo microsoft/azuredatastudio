@@ -131,6 +131,9 @@ class DataResourceTable extends GridTableBase<any> {
 			this._chart.options = this.cellModel.chartDisplayOptions;
 			this.updateChartData(this.resultSet.rowCount, this.resultSet.columnInfo.length, this.gridDataProvider);
 		}
+		this._chart.onOptionsChange(options => {
+			this.cellModel.chartDisplayOptions = options;
+		});
 	}
 
 	public get gridDataProvider(): IGridDataProvider {

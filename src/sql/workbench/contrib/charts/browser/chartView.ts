@@ -29,6 +29,7 @@ import * as nls from 'vs/nls';
 import { find } from 'vs/base/common/arrays';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { DbCellValue } from 'azdata';
+import { Event, Emitter } from 'vs/base/common/event';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -65,7 +66,6 @@ export class ChartView extends Disposable implements IPanelView {
 		type: ChartType.Bar
 	};
 
-
 	/** parent container */
 	private container: HTMLElement;
 	/** container for the options controls */
@@ -81,6 +81,9 @@ export class ChartView extends Disposable implements IPanelView {
 
 	private optionDisposables: IDisposable[] = [];
 	private optionMap: { [x: string]: { element: HTMLElement; set: (val) => void } } = {};
+
+	private readonly _onOptionsChange: Emitter<IInsightOptions> = this._register(new Emitter<IInsightOptions>());
+	public readonly onOptionsChange: Event<IInsightOptions> = this._onOptionsChange.event;
 
 	constructor(
 		private readonly _renderOptionsInline: boolean,
@@ -134,6 +137,7 @@ export class ChartView extends Disposable implements IPanelView {
 					} else {
 						self.verifyOptions();
 					}
+					self._onOptionsChange.fire(self._options);
 				}
 
 				return true;
