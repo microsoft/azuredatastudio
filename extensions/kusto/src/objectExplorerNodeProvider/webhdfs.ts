@@ -87,7 +87,7 @@ export class WebHDFS {
 	private toStatusMessage(statusCode: number): string {
 		let statusMessage: string = undefined;
 		switch (statusCode) {
-			case 400: statusMessage = localize('webhdfs.httpError400', "Bad Request");break;
+			case 400: statusMessage = localize('webhdfs.httpError400', "Bad Request"); break;
 			case 401: statusMessage = localize('webhdfs.httpError401', "Unauthorized"); break;
 			case 403: statusMessage = localize('webhdfs.httpError403', "Forbidden"); break;
 			case 404: statusMessage = localize('webhdfs.httpError404', "Not Found"); break;
@@ -649,7 +649,7 @@ export class WebHDFS {
 			src.unpipe(req);
 			req.end();
 		});
-		return <fs.WriteStream><any> req;
+		return <fs.WriteStream><any>req;
 	}
 
 	/**
