@@ -22,7 +22,7 @@ import {
 } from '../../automation';
 
 import { main as sqlMain } from './sql/main'; //{{SQL CARBON EDIT}}
-import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
+/*import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
 import { setup as setupDataLossTests } from './areas/workbench/data-loss.test';
 import { setup as setupDataPreferencesTests } from './areas/preferences/preferences.test';
 import { setup as setupDataSearchTests } from './areas/search/search.test';
@@ -33,7 +33,7 @@ import { setup as setupDataExtensionTests } from './areas/extensions/extensions.
 import { setup as setupTerminalTests } from './areas/terminal/terminal.test';
 import { setup as setupDataMultirootTests } from './areas/multiroot/multiroot.test';
 import { setup as setupDataLocalizationTests } from './areas/workbench/localization.test';
-import { setup as setupLaunchTests } from './areas/workbench/launch.test';
+import { setup as setupLaunchTests } from './areas/workbench/launch.test';*/
 
 if (!/^v10/.test(process.version) && !/^v12/.test(process.version)) {
 	console.error('Error: Smoketest must be run using Node 10/12. Currently running', process.version);
@@ -300,7 +300,7 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	}
 
 	sqlMain();
-	if (!opts.web) { setupDataMigrationTests(opts['stable-build'], testDataPath); }
+	/*if (!opts.web) { setupDataMigrationTests(opts['stable-build'], testDataPath); }
 	if (!opts.web) { setupDataLossTests(); }
 	if (!opts.web) { setupDataPreferencesTests(); }
 	setupDataSearchTests();
@@ -311,5 +311,5 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	setupTerminalTests();
 	if (!opts.web) { setupDataMultirootTests(); }
 	if (!opts.web) { setupDataLocalizationTests(); }
-	if (!opts.web) { setupLaunchTests(); }
+	if (!opts.web) { setupLaunchTests(); }*/
 });
