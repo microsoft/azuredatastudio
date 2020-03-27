@@ -21,9 +21,10 @@ import { AzureResourceServiceNames } from './constants';
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
 import { GetSubscriptionsResult, GetResourceGroupsResult } from '../azurecore';
 import { isArray } from 'util';
+import { AzureAccount, Tenant } from '../account-provider/interfaces';
 
 export function registerAzureResourceCommands(appContext: AppContext, tree: AzureResourceTreeProvider): void {
-  	appContext.apiWrapper.registerCommand('azure.resource.startterminal', async (node?: TreeNode) => {
+	appContext.apiWrapper.registerCommand('azure.resource.startterminal', async (node?: TreeNode) => {
 		try {
 			if (!node || !(node instanceof AzureResourceAccountTreeNode)) {
 				return;

@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import * as WS from 'ws';
 
 import { IAzureTerminalService } from '../interfaces';
@@ -153,30 +153,27 @@ class AzureTerminal implements vscode.Pseudoterminal {
 
 
 	private async createTerminalForCloudConsole(dimensions: vscode.TerminalDimensions): Promise<string> {
-		const terminalRequest = request({
-			uri: `${this.consoleUri}/terminals?rows=${dimensions.rows}&cols=${dimensions.columns}&shell=${this.shell}`,
-			method: 'POST',
+		const terminalResult = await axios.post(`${this.consoleUri}/terminals?rows=${dimensions.rows}&cols=${dimensions.columns}&shell=${this.shell}`, undefined, {
 			headers: {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json',
 				'Authorization': `Bearer ${this.token}`
-			},
-			json: true,
-			simple: false,
+			}
 		});
 
-		const terminalResult = await terminalRequest;
+		if (!terminalResult.data.socketUri) {
+			// didn't work
+		}
 
+		const terminalUri = terminalResult.data.socketUri;
 
-		const terminalUri = terminalResult.socketUri;
-
-		if (terminalResult.error) {
-			vscode.window.showErrorMessage(terminalResult.error.message);
+		if (terminalResult.data.error) {
+			vscode.window.showErrorMessage(terminalResult.data.error.message);
 		}
 
 		if (!terminalUri) {
 			console.log(terminalResult);
-			throw new Error(terminalResult);
+			throw new Error(terminalResult.data);
 		}
 
 		return terminalUri;
