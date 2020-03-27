@@ -44,8 +44,9 @@ const publicAzureSettings: ProviderSettings = {
 				azureResourceId: AzureResource.OssRdbms
 			},
 			azureKeyVaultResource: {
-				id: 'https://vault.azure.net',
-				endpoint: 'https://vault.azure.net'
+				id: 'vault',
+				endpoint: 'https://vault.azure.net',
+				azureResourceId: AzureResource.AzureKeyVault
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
@@ -87,8 +88,9 @@ const usGovAzureSettings: ProviderSettings = {
 				azureResourceId: AzureResource.OssRdbms
 			},
 			azureKeyVaultResource: {
-				id: 'https://vault.usgovcloudapi.net',
-				endpoint: 'https://vault.usgovcloudapi.net'
+				id: 'vault',
+				endpoint: 'https://vault.usgovcloudapi.net',
+				azureResourceId: AzureResource.AzureKeyVault
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
