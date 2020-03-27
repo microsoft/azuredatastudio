@@ -21,7 +21,7 @@ export interface IOptionElement {
 }
 
 export function createOptionElement(option: azdata.ServiceOption, rowContainer: HTMLElement, options: { [name: string]: any },
-	optionsMap: { [optionName: string]: IOptionElement }, contextViewService: IContextViewService, onFocus: (name) => void): void {
+	optionsMap: { [optionName: string]: IOptionElement }, contextViewService: IContextViewService, onFocus: (name) => void): IOptionElement {
 	let possibleInputs: string[] = [];
 	let optionValue = getOptionValueAndCategoryValues(option, options, possibleInputs);
 	let optionWidget: any;
@@ -63,8 +63,10 @@ export function createOptionElement(option: azdata.ServiceOption, rowContainer: 
 		}
 		inputElement = findElement(rowContainer, 'input');
 	}
-	optionsMap[option.name] = { optionWidget: optionWidget, option: option, optionValue: optionValue };
+	const optionElement = { optionWidget: optionWidget, option: option, optionValue: optionValue };
+	optionsMap[option.name] = optionElement;
 	inputElement.onfocus = () => onFocus(option.name);
+	return optionElement;
 }
 
 export function getOptionValueAndCategoryValues(option: azdata.ServiceOption, options: { [optionName: string]: any }, possibleInputs: string[]): any {

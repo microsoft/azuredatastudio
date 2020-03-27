@@ -140,7 +140,7 @@ export class AzureDeviceCode extends AzureAuth {
 				code: info.device_code
 			};
 
-			const postResult = await this.makePostRequest(uri, postData);
+			const postResult = await this.makePostRequest(uri, postData, true);
 
 			const result: DeviceCodeLoginResult = postResult.data;
 
