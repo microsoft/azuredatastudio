@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NodeType } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
-import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
+import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
+import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -13,7 +13,6 @@ import { Event, Emitter } from 'vs/base/common/event';
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -21,6 +20,8 @@ import { entries } from 'sql/base/common/collections';
 import { values } from 'vs/base/common/collections';
 import { startsWith } from 'vs/base/common/strings';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { IAction } from 'vs/base/common/actions';
+import { ITree } from 'vs/base/parts/tree/browser/tree';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -28,6 +29,25 @@ export const IObjectExplorerService = createDecorator<IObjectExplorerService>(SE
 
 export interface NodeExpandInfoWithProviderId extends azdata.ObjectExplorerExpandInfo {
 	providerId: string;
+}
+
+export interface IServerTreeView {
+	readonly tree: ITree;
+	readonly onSelectionOrFocusChange: Event<void>;
+	isObjectExplorerConnectionUri(uri: string): boolean;
+	deleteObjectExplorerNodeAndRefreshTree(profile: ConnectionProfile): Promise<void>;
+	getSelection(): Array<ConnectionProfile | TreeNode>;
+	isFocused(): boolean;
+	refreshElement(node: TreeNode): Promise<void>;
+	readonly treeActionProvider: { getActions: (tree: ITree, node: TreeNode | ConnectionProfile) => IAction[] }
+	isExpanded(node: TreeNode | ConnectionProfile): boolean;
+	reveal(node: TreeNode | ConnectionProfile): Promise<void>;
+	setExpandedState(node: TreeNode | ConnectionProfile, state: TreeItemCollapsibleState): Promise<void>;
+	setSelected(node: TreeNode | ConnectionProfile, selected: boolean, clearOtherSelections: boolean): Promise<void>;
+	refreshTree(): Promise<void>;
+	readonly activeConnectionsFilterAction: IAction;
+	renderBody(container: HTMLElement): Promise<void>;
+	layout(size: number);
 }
 
 export interface IObjectExplorerService {
@@ -62,11 +82,11 @@ export interface IObjectExplorerService {
 
 	updateObjectExplorerNodes(connectionProfile: IConnectionProfile): Promise<void>;
 
-	deleteObjectExplorerNode(connection: IConnectionProfile): Thenable<void>;
+	deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void>;
 
 	onUpdateObjectExplorerNodes: Event<ObjectExplorerNodeEventArgs>;
 
-	registerServerTreeView(view: ServerTreeView): void;
+	registerServerTreeView(view: IServerTreeView): void;
 
 	getSelectedProfileAndDatabase(): { profile: ConnectionProfile, databaseName: string };
 
@@ -74,7 +94,7 @@ export interface IObjectExplorerService {
 
 	onSelectionOrFocusChange: Event<void>;
 
-	getServerTreeView(): ServerTreeView;
+	getServerTreeView(): IServerTreeView;
 
 	findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames?: string[]): Thenable<azdata.NodeInfo[]>;
 
@@ -139,7 +159,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private _onUpdateObjectExplorerNodes: Emitter<ObjectExplorerNodeEventArgs>;
 
-	private _serverTreeView: ServerTreeView;
+	private _serverTreeView: IServerTreeView;
 
 	private _onSelectionOrFocusChange: Emitter<void>;
 
@@ -188,7 +208,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	public deleteObjectExplorerNode(connection: IConnectionProfile): Thenable<void> {
+	public deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void> {
 		let self = this;
 		let connectionUri = connection.id;
 		let nodeTree = this._activeObjectExplorerNodes[connectionUri];
@@ -285,7 +305,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						this._connectionManagementService.disconnect(connection).then(() => {
 							connection.isDisconnecting = false;
 						}).catch((e) => this.logService.error(e));
-					});
+					}).catch((e) => this.logService.error(e));
 				}
 			}
 		} else {
@@ -499,7 +519,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return Promise.resolve(undefined);
 	}
 
-	public closeSession(providerId: string, session: azdata.ObjectExplorerSession): Thenable<azdata.ObjectExplorerCloseSessionResponse> {
+	public closeSession(providerId: string, session: azdata.ObjectExplorerSession): Promise<azdata.ObjectExplorerCloseSessionResponse> {
 		// Complete any requests that are still open for the session
 		let sessionStatus = this._sessions[session.sessionId];
 		if (sessionStatus && sessionStatus.nodes) {
@@ -526,9 +546,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					});
 				}
 			}
-			return provider.closeSession({
+			return Promise.resolve(provider.closeSession({
 				sessionId: session ? session.sessionId : undefined
-			});
+			}));
 		}
 
 		return Promise.resolve(undefined);
@@ -547,7 +567,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._nodeProviders[nodeProvider.supportedProviderId] = nodeProviders;
 	}
 
-	public resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> {
+	public resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]> {
 		// Always refresh the node if it has an error, otherwise expand it normally
 		let needsRefresh = !!parentTree.errorStateMessage;
 		return this.expandOrRefreshTreeNode(session, parentTree, needsRefresh);
@@ -568,7 +588,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private expandOrRefreshTreeNode(
 		session: azdata.ObjectExplorerSession,
 		parentTree: TreeNode,
-		refresh: boolean = false): Thenable<TreeNode[]> {
+		refresh: boolean = false): Promise<TreeNode[]> {
 		return new Promise<TreeNode[]>((resolve, reject) => {
 			this.callExpandOrRefreshFromService(parentTree.getConnectionProfile().providerName, session, parentTree.nodePath, refresh).then(expandResult => {
 				let children: TreeNode[] = [];
@@ -614,7 +634,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return node;
 	}
 
-	public registerServerTreeView(view: ServerTreeView): void {
+	public registerServerTreeView(view: IServerTreeView): void {
 		if (this._serverTreeView) {
 			throw new Error('The object explorer server tree view is already registered');
 		}

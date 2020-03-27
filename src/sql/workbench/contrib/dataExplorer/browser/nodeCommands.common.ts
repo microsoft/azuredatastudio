@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IOEShimService } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerViewTreeShim';
+import { IOEShimService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim';
 import { ICustomViewDescriptor, TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IViewsRegistry, Extensions } from 'vs/workbench/common/views';

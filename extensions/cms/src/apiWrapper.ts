@@ -65,7 +65,7 @@ export class ApiWrapper {
 		return vscode.workspace.asRelativePath(uri);
 	}
 
-	public getWorkspaceFolders(): vscode.WorkspaceFolder[] {
+	public getWorkspaceFolders(): readonly vscode.WorkspaceFolder[] {
 		return vscode.workspace.workspaceFolders;
 	}
 
@@ -144,7 +144,7 @@ export class ApiWrapper {
 		return vscode.window.createStatusBarItem(alignment, priority);
 	}
 
-	public get workspaceFolders(): vscode.WorkspaceFolder[] {
+	public get workspaceFolders(): readonly vscode.WorkspaceFolder[] {
 		return vscode.workspace.workspaceFolders;
 	}
 

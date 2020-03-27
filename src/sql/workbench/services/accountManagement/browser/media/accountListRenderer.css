@@ -1,0 +1,31 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.list-row.account-picker-list {
+	display: flex;
+	align-items: flex-start;
+}
+
+.list-row.account-picker-list .label {
+	flex: 1 1 auto;
+	margin-left: 15px;
+	overflow: hidden;
+}
+
+.list-row.account-picker-list .label .contextual-display-name {
+	font-size: 15px;
+}
+
+.list-row.account-picker-list .label .display-name {
+	font-size: 13px;
+}
+
+.list-row.account-picker-list .label .content {
+	opacity: 0.7;
+}
+
+.account-logo {
+	background: no-repeat center center;
+}

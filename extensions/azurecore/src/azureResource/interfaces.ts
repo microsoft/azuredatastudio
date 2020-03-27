@@ -38,7 +38,7 @@ export interface IAzureResourceCacheService {
 }
 
 export interface IAzureResourceTenantService {
-	getTenantId(subscription: azureResource.AzureResourceSubscription): Promise<string>;
+	getTenantId(subscription: azureResource.AzureResourceSubscription, account: Account, credential: msRest.ServiceClientCredentials): Promise<string>;
 }
 
 export interface IAzureResourceNodeWithProviderId {
@@ -46,23 +46,6 @@ export interface IAzureResourceNodeWithProviderId {
 	resourceNode: azureResource.IAzureResourceNode;
 }
 
-export interface AzureSqlResource {
-	name: string;
-	loginName: string;
-}
-
-export interface IAzureResourceService<T extends AzureSqlResource> {
-	getResources(subscription: azureResource.AzureResourceSubscription, credential: msRest.ServiceClientCredentials): Promise<T[]>;
-}
-
-
-export interface AzureResourceDatabase extends AzureSqlResource {
-	serverName: string;
-	serverFullName: string;
-}
-
-export interface AzureResourceDatabaseServer extends AzureSqlResource {
-	id?: string;
-	fullName: string;
-	defaultDatabaseName: string;
+export interface IAzureResourceService<T extends azureResource.AzureResource> {
+	getResources(subscription: azureResource.AzureResourceSubscription, credential: msRest.ServiceClientCredentials, account: Account): Promise<T[]>;
 }

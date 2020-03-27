@@ -61,7 +61,7 @@ const NLS_SYMBOL_KIND_CACHE: { [type: number]: string } = {
 export class GotoSymbolAction extends QuickOpenAction {
 
 	static readonly ID = 'workbench.action.gotoSymbol';
-	static readonly LABEL = nls.localize('gotoSymbol', "Go to Symbol in File...");
+	static readonly LABEL = nls.localize('gotoSymbol', "Go to Symbol in Editor...");
 
 	constructor(actionId: string, actionLabel: string, @IQuickOpenService quickOpenService: IQuickOpenService) {
 		super(actionId, actionLabel, GOTO_SYMBOL_PREFIX, quickOpenService);
@@ -77,7 +77,7 @@ class OutlineModel extends QuickOpenModel {
 		const searchValuePos = searchValue.indexOf(SCOPE_PREFIX) === 0 ? 1 : 0;
 
 		// Check for match and update visibility and group label
-		this.entries.forEach((entry: SymbolEntry) => {
+		(<Array<SymbolEntry>>this.entries).forEach(entry => {
 
 			// Clear all state first
 			entry.setGroupLabel(undefined);
@@ -98,7 +98,7 @@ class OutlineModel extends QuickOpenModel {
 		});
 
 		// select comparator based on the presence of the colon-prefix
-		this.entries.sort(searchValuePos === 0
+		(<Array<SymbolEntry>>this.entries).sort(searchValuePos === 0
 			? SymbolEntry.compareByRank
 			: SymbolEntry.compareByKindAndRank
 		);
@@ -245,10 +245,10 @@ class SymbolEntry extends EditorQuickOpenEntryGroup {
 		// Apply selection and focus
 		else {
 			const range = Range.collapseToStart(this.revealRange);
-			const activeTextEditorWidget = this.editorService.activeTextEditorWidget;
-			if (activeTextEditorWidget) {
-				activeTextEditorWidget.setSelection(range);
-				activeTextEditorWidget.revealRangeInCenter(range, ScrollType.Smooth);
+			const activeTextEditorControl = this.editorService.activeTextEditorControl;
+			if (activeTextEditorControl) {
+				activeTextEditorControl.setSelection(range);
+				activeTextEditorControl.revealRangeInCenter(range, ScrollType.Smooth);
 			}
 		}
 
@@ -259,13 +259,13 @@ class SymbolEntry extends EditorQuickOpenEntryGroup {
 
 		// Select Outline Position
 		const range = Range.collapseToStart(this.revealRange);
-		const activeTextEditorWidget = this.editorService.activeTextEditorWidget;
-		if (activeTextEditorWidget) {
-			activeTextEditorWidget.revealRangeInCenter(range, ScrollType.Smooth);
+		const activeTextEditorControl = this.editorService.activeTextEditorControl;
+		if (activeTextEditorControl) {
+			activeTextEditorControl.revealRangeInCenter(range, ScrollType.Smooth);
 
 			// Decorate if possible
-			if (this.editorService.activeControl && types.isFunction(activeTextEditorWidget.changeDecorations)) {
-				this.handler.decorateOutline(this.range, range, activeTextEditorWidget, this.editorService.activeControl.group);
+			if (this.editorService.activeEditorPane && types.isFunction(activeTextEditorControl.changeDecorations)) {
+				this.handler.decorateOutline(this.range, range, activeTextEditorControl, this.editorService.activeEditorPane.group);
 			}
 		}
 
@@ -350,9 +350,9 @@ export class GotoSymbolHandler extends QuickOpenHandler {
 
 		// Remember view state to be able to restore on cancel
 		if (!this.lastKnownEditorViewState) {
-			const activeTextEditorWidget = this.editorService.activeTextEditorWidget;
-			if (activeTextEditorWidget) {
-				this.lastKnownEditorViewState = activeTextEditorWidget.saveViewState();
+			const activeTextEditorControl = this.editorService.activeTextEditorControl;
+			if (activeTextEditorControl) {
+				this.lastKnownEditorViewState = activeTextEditorControl.saveViewState();
 			}
 		}
 
@@ -387,9 +387,9 @@ export class GotoSymbolHandler extends QuickOpenHandler {
 	canRun(): boolean | string {
 		let canRun = false;
 
-		const activeTextEditorWidget = this.editorService.activeTextEditorWidget;
-		if (activeTextEditorWidget) {
-			let model = activeTextEditorWidget.getModel();
+		const activeTextEditorControl = this.editorService.activeTextEditorControl;
+		if (activeTextEditorControl) {
+			let model = activeTextEditorControl.getModel();
 			if (model && (<IDiffEditorModel>model).modified && (<IDiffEditorModel>model).original) {
 				model = (<IDiffEditorModel>model).modified; // Support for diff editor models
 			}
@@ -399,7 +399,7 @@ export class GotoSymbolHandler extends QuickOpenHandler {
 			}
 		}
 
-		return canRun ? true : activeTextEditorWidget !== null ? nls.localize('cannotRunGotoSymbolInFile', "No symbol information for the file") : nls.localize('cannotRunGotoSymbol', "Open a text file first to go to a symbol");
+		return canRun ? true : activeTextEditorControl !== null ? nls.localize('cannotRunGotoSymbolInFile', "No symbol information for the file") : nls.localize('cannotRunGotoSymbol', "Open a text file first to go to a symbol");
 	}
 
 	getAutoFocus(searchValue: string): IAutoFocus {
@@ -446,9 +446,9 @@ export class GotoSymbolHandler extends QuickOpenHandler {
 	}
 
 	private async doGetActiveOutline(): Promise<OutlineModel | null> {
-		const activeTextEditorWidget = this.editorService.activeTextEditorWidget;
-		if (activeTextEditorWidget) {
-			let model = activeTextEditorWidget.getModel();
+		const activeTextEditorControl = this.editorService.activeTextEditorControl;
+		if (activeTextEditorControl) {
+			let model = activeTextEditorControl.getModel();
 			if (model && (<IDiffEditorModel>model).modified && (<IDiffEditorModel>model).original) {
 				model = (<IDiffEditorModel>model).modified; // Support for diff editor models
 			}
@@ -512,9 +512,9 @@ export class GotoSymbolHandler extends QuickOpenHandler {
 	private clearDecorations(): void {
 		const rangeHighlightDecorationId = this.rangeHighlightDecorationId;
 		if (rangeHighlightDecorationId) {
-			this.editorService.visibleControls.forEach(editor => {
-				if (editor.group && editor.group.id === rangeHighlightDecorationId.groupId) {
-					const editorControl = <IEditor>editor.getControl();
+			this.editorService.visibleEditorPanes.forEach(editorPane => {
+				if (editorPane.group && editorPane.group.id === rangeHighlightDecorationId.groupId) {
+					const editorControl = <IEditor>editorPane.getControl();
 					editorControl.changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
 						changeAccessor.deltaDecorations([
 							rangeHighlightDecorationId.lineDecorationId,
@@ -538,9 +538,9 @@ export class GotoSymbolHandler extends QuickOpenHandler {
 
 		// Restore selection if canceled
 		if (canceled && this.lastKnownEditorViewState) {
-			const activeTextEditorWidget = this.editorService.activeTextEditorWidget;
-			if (activeTextEditorWidget) {
-				activeTextEditorWidget.restoreViewState(this.lastKnownEditorViewState);
+			const activeTextEditorControl = this.editorService.activeTextEditorControl;
+			if (activeTextEditorControl) {
+				activeTextEditorControl.restoreViewState(this.lastKnownEditorViewState);
 			}
 
 			this.lastKnownEditorViewState = null;

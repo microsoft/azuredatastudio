@@ -26,6 +26,7 @@ const configBase = {
 	'kernel_r_credentials': {
 		'url': ''
 	},
+	'livy_session_startup_timeout_seconds': 100,
 	'logging_config': {
 		'version': 1,
 		'formatters': {
@@ -349,6 +350,10 @@ export class JupyterSession implements nb.ISession {
 					allCode += `%set_env ${key}=${process.env[key]}${EOL}`;
 				}
 			}
+
+			// Add and register Kqlmagic to the python kernel
+			allCode += `%reload_ext Kqlmagic`;
+
 			let future = this.sessionImpl.kernel.requestExecute({
 				code: allCode,
 				silent: true,

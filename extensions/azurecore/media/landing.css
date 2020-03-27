@@ -1,0 +1,116 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+html {
+	height: 100%;
+}
+
+body {
+	box-sizing: border-box;
+	min-height: 100%;
+	margin: 0;
+	padding: 15px 30px;
+	display: flex;
+	flex-direction: column;
+	color: #007acc;
+	font-family: "Segoe UI","Helvetica Neue","Helvetica",Arial,sans-serif;
+	background-color: white;
+}
+
+.branding {
+	background-image: url("data:image/png;base64,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");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: left 50%;
+	padding-left: 36px;
+	font-size: 20px;
+	letter-spacing: -0.04rem;
+	font-weight: 400;
+	color: #007acc;
+	text-decoration: none;
+}
+
+.message-container {
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	margin: 0 30px;
+}
+
+.text {
+	text-align: center;
+}
+
+.message-image img {
+	max-width: 300px;
+	width: 100%
+}
+
+.message-large {
+	font-weight: 500;
+	font-size: 1.5rem;
+}
+
+.message-small {
+	font-weight: 300;
+	font-size: 1.1rem;
+	color: gray;
+}
+
+body.error .message {
+	display: none;
+}
+
+body.error .error-message {
+	display: block;
+}
+
+.error-message {
+	display: none;
+	font-weight: 300;
+	font-size: 1.3rem;
+}
+
+.error-text {
+	color: red;
+	font-size: 1rem;
+}
+
+@font-face {
+	font-family: 'Segoe UI';
+	src: url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/light/latest.eot"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/light/latest.eot?#iefix") format("embedded-opentype");
+	src: local("Segoe UI Light"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/light/latest.woff2") format("woff2"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/light/latest.woff") format("woff"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/light/latest.ttf") format("truetype"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/light/latest.svg#web") format("svg");
+	font-weight: 200
+}
+
+@font-face {
+	font-family: 'Segoe UI';
+	src: url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/semilight/latest.eot"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/semilight/latest.eot?#iefix") format("embedded-opentype");
+	src: local("Segoe UI Semilight"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/semilight/latest.woff2") format("woff2"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/semilight/latest.woff") format("woff"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/semilight/latest.ttf") format("truetype"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/semilight/latest.svg#web") format("svg");
+	font-weight: 300
+}
+
+@font-face {
+	font-family: 'Segoe UI';
+	src: url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.eot"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.eot?#iefix") format("embedded-opentype");
+	src: local("Segoe UI"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.woff2") format("woff"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.woff") format("woff"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.ttf") format("truetype"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.svg#web") format("svg");
+	font-weight: 400
+}
+
+@font-face {
+	font-family: 'Segoe UI';
+	src: url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/semibold/latest.eot"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/semibold/latest.eot?#iefix") format("embedded-opentype");
+	src: local("Segoe UI Semibold"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/semibold/latest.woff2") format("woff"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/semibold/latest.woff") format("woff"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/semibold/latest.ttf") format("truetype"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/semibold/latest.svg#web") format("svg");
+	font-weight: 600
+}
+
+@font-face {
+	font-family: 'Segoe UI';
+	src: url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/bold/latest.eot"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/bold/latest.eot?#iefix") format("embedded-opentype");
+	src: local("Segoe UI Bold"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/bold/latest.woff2") format("woff"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/bold/latest.woff") format("woff"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/bold/latest.ttf") format("truetype"),url("https://c.s-microsoft.com/static/fonts/segoe-ui/west-european/bold/latest.svg#web") format("svg");
+	font-weight: 700
+}

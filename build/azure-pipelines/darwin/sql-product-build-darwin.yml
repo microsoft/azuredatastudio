@@ -1,4 +1,10 @@
 steps:
+  - task: InstallAppleCertificate@2
+    displayName: 'Install developer certificate'
+    inputs:
+      certSecureFile: 'osx_signing_key.p12'
+    condition: eq(variables['signed'], true)
+
   - script: |
       mkdir -p .build
       echo -n $BUILD_SOURCEVERSION > .build/commit
@@ -109,9 +115,46 @@ steps:
 
   - script: |
       set -e
+      pushd ../azuredatastudio-darwin
+      ls
+
+      echo "Cleaning the application"
+      xattr -cr *.app
+      cd *.app
+      find . -name '._*' -print0 | xargs -0 rm -rf --
+      cd ..
+
+      echo "Signing the application with deep"
+      codesign --deep --force --timestamp --options runtime --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/darwin/entitlements.xml -s LPV3BJJYXS *.app
+
+      cd *.app
+      ls
+      echo "Signing specific components"
+      find . -type f -print0 | xargs -0 file | grep ':  *Mach-O' | sed 's/:  *Mach-O.*//' | while read -r file; do codesign --options runtime --timestamp --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/darwin/entitlements.xml -s LPV3BJJYXS --force "$file" || break; done
+
+      echo "Signing Electron again..."
+      codesign --force --timestamp --options runtime --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/darwin/entitlements.xml -s LPV3BJJYXS Contents/Frameworks/Electron\ Framework.framework
+      cd ..
+
+      echo "Signing the entire application one more time"
+      codesign --force --timestamp --options runtime --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/darwin/entitlements.xml -s LPV3BJJYXS *.app
+      popd
+    displayName: 'Manual codesign'
+    condition: and(succeeded(), eq(variables['signed'], true))
+
+  - script: |
+      set -e
       mkdir -p .build/darwin/archive
-      pushd ../azuredatastudio-darwin && zip -r -X -y $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip * && popd
+      pushd ../azuredatastudio-darwin
+      ditto -c -k --keepParent *.app $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
+      popd
     displayName: 'Archive'
+
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish SelfSigned'
+    inputs:
+      artifactName: darwin-selfsigned
+      targetPath: $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning'
@@ -124,13 +167,56 @@ steps:
         [
           {
             "keyCode": "CP-401337-Apple",
-            "operationSetCode": "MacAppDeveloperSign",
-            "parameters": [],
+            "operationCode": "MacAppDeveloperSign",
+            "parameters": {
+              "Hardening": "Enable"
+            },
             "toolName": "sign",
             "toolVersion": "1.0"
           }
         ]
-      SessionTimeout: 125
+      SessionTimeout: 90
+    condition: and(succeeded(), eq(variables['signed'], true))
+
+  - script: |
+      zip -d $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip "*.pkg"
+    displayName: Clean Archive
+    condition: and(succeeded(), eq(variables['signed'], true))
+
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish Signed'
+    inputs:
+      artifactName: darwin-signed
+      targetPath: $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
+    condition: and(succeeded(), eq(variables['signed'], true))
+
+  - task: EsrpCodeSigning@1
+    displayName: 'ESRP Notarization'
+    inputs:
+      ConnectedServiceName: 'Code Signing'
+      FolderPath: '$(Build.SourcesDirectory)/.build/darwin/archive'
+      Pattern: 'azuredatastudio-darwin.zip'
+      signConfigType: inlineSignParams
+      inlineOperation: |
+        [
+          {
+            "KeyCode": "CP-401337-Apple",
+            "OperationCode": "MacAppNotarize",
+            "Parameters": {
+              "BundleId": "com.microsoft.azuredatastudio-$(VSCODE_QUALITY)"
+            },
+            "ToolName": "sign",
+            "ToolVersion": "1.0"
+          }
+        ]
+      SessionTimeout: 120
+    condition: and(succeeded(), eq(variables['signed'], true))
+
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish Notarized'
+    inputs:
+      artifactName: darwin-notarized
+      targetPath: $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
     condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
@@ -146,14 +232,6 @@ steps:
     inputs:
       testResultsFiles: 'test-results.xml'
       searchFolder: '$(Build.SourcesDirectory)'
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-
-  - task: PublishTestResults@2
-    displayName: 'Publish Integration and Smoke Test Results'
-    inputs:
-      testResultsFiles: 'dawin-integration-tests-results.xml'
-      searchFolder: '$(Build.ArtifactStagingDirectory)\test-results'
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 

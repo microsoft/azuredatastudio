@@ -73,4 +73,60 @@ export class ApiWrapper {
 	public getConfiguration(section?: string, resource?: vscode.Uri | null): vscode.WorkspaceConfiguration {
 		return vscode.workspace.getConfiguration(section, resource);
 	}
+
+	public createTab(title: string): azdata.window.DialogTab {
+		return azdata.window.createTab(title);
+	}
+
+	public createModelViewDialog(title: string, dialogName?: string, isWide?: boolean): azdata.window.Dialog {
+		return azdata.window.createModelViewDialog(title, dialogName, isWide);
+	}
+
+	public createWizard(title: string): azdata.window.Wizard {
+		return azdata.window.createWizard(title);
+	}
+
+	public createWizardPage(title: string): azdata.window.WizardPage {
+		return azdata.window.createWizardPage(title);
+	}
+
+	public openDialog(dialog: azdata.window.Dialog): void {
+		return azdata.window.openDialog(dialog);
+	}
+
+	public getAllAccounts(): Thenable<azdata.Account[]> {
+		return azdata.accounts.getAllAccounts();
+	}
+
+	public getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{ [key: string]: any }> {
+		return azdata.accounts.getSecurityToken(account, resource);
+	}
+
+	public showQuickPick<T extends vscode.QuickPickItem>(items: T[] | Thenable<T[]>, options?: vscode.QuickPickOptions, token?: vscode.CancellationToken): Thenable<T | undefined> {
+		return vscode.window.showQuickPick(items, options, token);
+	}
+
+	public listDatabases(connectionId: string): Thenable<string[]> {
+		return azdata.connection.listDatabases(connectionId);
+	}
+
+	public openTextDocument(options?: { language?: string; content?: string; }): Thenable<vscode.TextDocument> {
+		return vscode.workspace.openTextDocument(options);
+	}
+
+	public connect(fileUri: string, connectionId: string): Thenable<void> {
+		return azdata.queryeditor.connect(fileUri, connectionId);
+	}
+
+	public runQuery(fileUri: string, options?: Map<string, string>, runCurrentQuery?: boolean): void {
+		azdata.queryeditor.runQuery(fileUri, options, runCurrentQuery);
+	}
+
+	public showTextDocument(uri: vscode.Uri, options?: vscode.TextDocumentShowOptions): Thenable<vscode.TextEditor> {
+		return vscode.window.showTextDocument(uri, options);
+	}
+
+	public createButton(label: string, position?: azdata.window.DialogButtonPosition): azdata.window.Button {
+		return azdata.window.createButton(label, position);
+	}
 }

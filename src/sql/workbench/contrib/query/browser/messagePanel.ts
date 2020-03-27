@@ -5,8 +5,8 @@
 
 import 'vs/css!./media/messagePanel';
 import { IMessagesActionContext, CopyMessagesAction, CopyAllMessagesAction } from './actions';
-import QueryRunner, { IQueryMessage } from 'sql/platform/query/common/queryRunner';
-import { IExpandableTree } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
+import QueryRunner, { IQueryMessage } from 'sql/workbench/services/query/common/queryRunner';
+import { IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 
 import { ISelectionData } from 'azdata';
 
@@ -16,11 +16,11 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
-import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
+import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { OpenMode, ClickBehavior, ICancelableEvent, IControllerOptions } from 'vs/base/parts/tree/browser/treeDefaults';
 import { WorkbenchTreeController } from 'vs/platform/list/browser/listService';
-import { isArray } from 'vs/base/common/types';
+import { isArray, isString } from 'vs/base/common/types';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
@@ -28,10 +28,15 @@ import { $, Dimension, createStyleSheet } from 'vs/base/browser/dom';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { resultsErrorColor } from 'sql/platform/theme/common/colors';
-import { MessagePanelState } from 'sql/workbench/contrib/query/common/messagePanelState';
+import { MessagePanelState } from 'sql/workbench/common/editor/query/messagePanelState';
 
-export interface IResultMessageIntern extends IQueryMessage {
+export interface IResultMessageIntern {
 	id?: string;
+	batchId?: number;
+	isError: boolean;
+	time?: string | Date;
+	message: string;
+	selection?: ISelectionData;
 }
 
 export interface IMessagePanelMessage {
@@ -97,8 +102,8 @@ export class MessagePanel extends Disposable {
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
 		this._register(attachListStyler(this.tree, this.themeService));
-		this._register(this.themeService.onThemeChange(this.applyStyles, this));
-		this.applyStyles(this.themeService.getTheme());
+		this._register(this.themeService.onDidColorThemeChange(this.applyStyles, this));
+		this.applyStyles(this.themeService.getColorTheme());
 		this.controller.onKeyDown = (tree, event) => {
 			if (event.ctrlKey && event.code === 'KeyC') {
 				let context: IMessagesActionContext = {
@@ -190,7 +195,7 @@ export class MessagePanel extends Disposable {
 		let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
 		if (this.state && this.state.scrollPosition) {
 			const previousScroll = this.state.scrollPosition;
-			this.tree.refresh(this.model).then(() => {
+			this.tree.refresh(this.model, false).then(() => {
 				// Restore the previous scroll position when switching between tabs
 				expandableTree.setScrollPosition(previousScroll);
 			});
@@ -205,7 +210,7 @@ export class MessagePanel extends Disposable {
 		}
 	}
 
-	private applyStyles(theme: ITheme): void {
+	private applyStyles(theme: IColorTheme): void {
 		const errorColor = theme.getColor(resultsErrorColor);
 		const content: string[] = [];
 		if (errorColor) {
@@ -290,13 +295,13 @@ class MessageDataSource implements IDataSource {
 
 class MessageRenderer implements IRenderer {
 
-	getHeight(tree: ITree, element: IQueryMessage): number {
+	getHeight(tree: ITree, element: IResultMessageIntern): number {
 		const lineHeight = 22;
 		let lines = element.message.split('\n').length;
 		return lineHeight * lines;
 	}
 
-	getTemplateId(tree: ITree, element: IQueryMessage): string {
+	getTemplateId(tree: ITree, element: IResultMessageIntern): string {
 		if (element instanceof Model) {
 			return TemplateIds.MODEL;
 		} else if (element.selection) {
@@ -333,13 +338,16 @@ class MessageRenderer implements IRenderer {
 		}
 	}
 
-	renderElement(tree: ITree, element: IQueryMessage, templateId: string, templateData: IMessageTemplate | IBatchTemplate): void {
+	renderElement(tree: ITree, element: IResultMessageIntern, templateId: string, templateData: IMessageTemplate | IBatchTemplate): void {
 		if (templateId === TemplateIds.MESSAGE || templateId === TemplateIds.ERROR) {
 			let data: IMessageTemplate = templateData;
 			data.message.innerText = element.message;
 		} else if (templateId === TemplateIds.BATCH) {
 			let data = templateData as IBatchTemplate;
-			data.timeStamp.innerText = element.time;
+			if (isString(element.time)) {
+				element.time = new Date(element.time!);
+			}
+			data.timeStamp.innerText = (element.time as Date).toLocaleTimeString();
 			data.message.innerText = element.message;
 		}
 	}
@@ -379,7 +387,7 @@ export class MessageController extends WorkbenchTreeController {
 		if (element.selection) {
 			let selection: ISelectionData = element.selection;
 			// this is a batch statement
-			let editor = this.workbenchEditorService.activeControl as QueryEditor;
+			let editor = this.workbenchEditorService.activeEditorPane as QueryEditor;
 			const codeEditor = <ICodeEditor>editor.getControl();
 			codeEditor.focus();
 			codeEditor.setSelection({ endColumn: selection.endColumn + 1, endLineNumber: selection.endLine + 1, startColumn: selection.startColumn + 1, startLineNumber: selection.startLine + 1 });

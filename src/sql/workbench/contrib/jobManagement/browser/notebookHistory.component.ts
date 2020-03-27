@@ -12,9 +12,9 @@ import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetecto
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AgentViewComponent } from 'sql/workbench/contrib/jobManagement/browser/agentView.component';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
-import { RunJobAction, StopJobAction, JobsRefreshAction, EditNotebookJobAction, OpenMaterializedNotebookAction, OpenTemplateNotebookAction, RenameNotebookMaterializedAction, PinNotebookMaterializedAction, UnpinNotebookMaterializedAction, DeleteMaterializedNotebookAction } from 'sql/platform/jobManagement/browser/jobActions';
-import { NotebookCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
+import { RunJobAction, StopJobAction, JobsRefreshAction, EditNotebookJobAction, OpenMaterializedNotebookAction, OpenTemplateNotebookAction, RenameNotebookMaterializedAction, PinNotebookMaterializedAction, UnpinNotebookMaterializedAction, DeleteMaterializedNotebookAction } from 'sql/workbench/contrib/jobManagement/browser/jobActions';
+import { NotebookCacheObject } from 'sql/workbench/services/jobManagement/common/jobManagementService';
+import { IJobManagementService } from 'sql/workbench/services/jobManagement/common/interfaces';
 import { JobStepsViewRow } from 'sql/workbench/contrib/jobManagement/browser/jobStepsViewTree';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IAction } from 'vs/base/common/actions';

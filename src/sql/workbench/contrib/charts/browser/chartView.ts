@@ -7,10 +7,9 @@ import 'vs/css!./media/chartView';
 
 import { IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { Insight } from './insight';
-import QueryRunner from 'sql/platform/query/common/queryRunner';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { ChartOptions, IChartOption, ControlType } from './chartOptions';
-import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/browser/insightRegistry';
-import { IInsightData } from './interfaces';
+import { Extensions, IInsightRegistry, IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as DOM from 'vs/base/browser/dom';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -21,13 +20,15 @@ import { attachSelectBoxStyler, attachInputBoxStyler } from 'vs/platform/theme/c
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { CreateInsightAction, CopyAction, SaveImageAction, IChartActionContext } from 'sql/workbench/contrib/charts/browser/actions';
-import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { CreateInsightAction, CopyAction, SaveImageAction, IChartActionContext, ConfigureChartAction } from 'sql/workbench/contrib/charts/browser/actions';
+import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
-import { ChartState, IInsightOptions, ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IInsightOptions, ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { ChartState } from 'sql/workbench/common/editor/query/chartState';
 import * as nls from 'vs/nls';
 import { find } from 'vs/base/common/arrays';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { DbCellValue } from 'azdata';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -56,6 +57,7 @@ export class ChartView extends Disposable implements IPanelView {
 	private _createInsightAction: CreateInsightAction;
 	private _copyAction: CopyAction;
 	private _saveAction: SaveImageAction;
+	private _configureChartAction: ConfigureChartAction;
 
 	private _state: ChartState;
 
@@ -67,7 +69,7 @@ export class ChartView extends Disposable implements IPanelView {
 	/** parent container */
 	private container: HTMLElement;
 	/** container for the options controls */
-	private optionsControl: HTMLElement;
+	public readonly optionsControl: HTMLElement;
 	/** container for type specific controls */
 	private typeControls: HTMLElement;
 	/** container for the insight */
@@ -81,6 +83,7 @@ export class ChartView extends Disposable implements IPanelView {
 	private optionMap: { [x: string]: { element: HTMLElement; set: (val) => void } } = {};
 
 	constructor(
+		private readonly _renderOptionsInline: boolean,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IThemeService private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -89,6 +92,7 @@ export class ChartView extends Disposable implements IPanelView {
 		super();
 		this.taskbarContainer = DOM.$('div.taskbar-container');
 		this.taskbar = new Taskbar(this.taskbarContainer);
+
 		this.optionsControl = DOM.$('div.options-container');
 		const generalControls = DOM.$('div.general-controls');
 		this.optionsControl.appendChild(generalControls);
@@ -99,7 +103,12 @@ export class ChartView extends Disposable implements IPanelView {
 		this._copyAction = this._instantiationService.createInstance(CopyAction);
 		this._saveAction = this._instantiationService.createInstance(SaveImageAction);
 
-		this.taskbar.setContent([{ action: this._createInsightAction }]);
+		if (this._renderOptionsInline) {
+			this.taskbar.setContent([{ action: this._createInsightAction }]);
+		} else {
+			this._configureChartAction = this._instantiationService.createInstance(ConfigureChartAction, this);
+			this.taskbar.setContent([{ action: this._createInsightAction }, { action: this._configureChartAction }]);
+		}
 
 		const self = this;
 		this.options = new Proxy(this.options, {
@@ -164,7 +173,9 @@ export class ChartView extends Disposable implements IPanelView {
 			this.container.appendChild(this.taskbarContainer);
 			this.container.appendChild(this.chartingContainer);
 			this.chartingContainer.appendChild(this.insightContainer);
-			this.chartingContainer.appendChild(this.optionsControl);
+			if (this._renderOptionsInline) {
+				this.chartingContainer.appendChild(this.optionsControl);
+			}
 			this.insight = new Insight(this.insightContainer, this.options, this._instantiationService);
 		}
 
@@ -198,6 +209,22 @@ export class ChartView extends Disposable implements IPanelView {
 		this.shouldGraph();
 	}
 
+	public setData(rows: DbCellValue[][], columns: string[]): void {
+		if (!rows) {
+			this._data = { columns: [], rows: [] };
+			this._notificationService.error(nls.localize('charting.failedToGetRows', "Failed to get rows for the dataset to chart."));
+		} else {
+			this._data = {
+				columns: columns,
+				rows: rows.map(r => r.map(c => c.displayValue))
+			};
+		}
+
+		if (this.insight) {
+			this.insight.data = this._data;
+		}
+	}
+
 	private shouldGraph() {
 		// Check if we have the necessary information
 		if (this._currentData && this._queryRunner) {
@@ -207,18 +234,9 @@ export class ChartView extends Disposable implements IPanelView {
 				let summary = batch.resultSetSummaries[this._currentData.resultId];
 				if (summary) {
 					this._queryRunner.getQueryRows(0, summary.rowCount, this._currentData.batchId, this._currentData.resultId).then(d => {
-						if (!d.resultSubset.rows) { // be defensive against this
-							this._data = { columns: [], rows: [] };
-							this._notificationService.error(nls.localize('charting.failedToGetRows', "Failed to get rows for the dataset to chart."));
-						} else {
-							this._data = {
-								columns: summary.columnInfo.map(c => c.columnName),
-								rows: d.resultSubset.rows.map(r => r.map(c => c.displayValue))
-							};
-						}
-						if (this.insight) {
-							this.insight.data = this._data;
-						}
+						let rows = d.resultSubset.rows;
+						let columns = summary.columnInfo.map(c => c.columnName);
+						this.setData(rows, columns);
 					});
 				}
 			}
@@ -267,16 +285,21 @@ export class ChartView extends Disposable implements IPanelView {
 	}
 
 	private updateActionbar() {
+		let actions: ITaskbarContent[];
 		if (this.insight && this.insight.isCopyable) {
 			this.taskbar.context = { insight: this.insight.insight, options: this.options };
-			this.taskbar.setContent([
+			actions = [
 				{ action: this._createInsightAction },
 				{ action: this._copyAction },
 				{ action: this._saveAction }
-			]);
+			];
 		} else {
-			this.taskbar.setContent([{ action: this._createInsightAction }]);
+			actions = [{ action: this._createInsightAction }];
 		}
+		if (!this._renderOptionsInline) {
+			actions.push({ action: this._configureChartAction });
+		}
+		this.taskbar.setContent(actions);
 	}
 
 	private createOption(option: IChartOption, container: HTMLElement) {
@@ -310,6 +333,7 @@ export class ChartView extends Disposable implements IPanelView {
 			case ControlType.combo:
 				//pass options into changeAltNames in order for SelectBox to show user-friendly names.
 				let dropdown = new SelectBox(option.displayableOptions || this.changeToAltNames(option.options), undefined, this._contextViewService);
+				dropdown.setAriaLabel(option.label);
 				dropdown.select(option.options.indexOf(value));
 				dropdown.render(optionInput);
 				dropdown.onDidSelect(e => {
@@ -329,6 +353,7 @@ export class ChartView extends Disposable implements IPanelView {
 				break;
 			case ControlType.input:
 				let input = new InputBox(optionInput, this._contextViewService);
+				input.setAriaLabel(option.label);
 				input.value = value || '';
 				input.onDidChange(e => {
 					if (this.options[option.configEntry] !== e) {
@@ -347,6 +372,7 @@ export class ChartView extends Disposable implements IPanelView {
 				break;
 			case ControlType.numberInput:
 				let numberInput = new InputBox(optionInput, this._contextViewService, { type: 'number' });
+				numberInput.setAriaLabel(option.label);
 				numberInput.value = value || '';
 				numberInput.onDidChange(e => {
 					if (this.options[option.configEntry] !== Number(e)) {
@@ -365,6 +391,7 @@ export class ChartView extends Disposable implements IPanelView {
 				break;
 			case ControlType.dateInput:
 				let dateInput = new InputBox(optionInput, this._contextViewService, { type: 'datetime-local' });
+				dateInput.setAriaLabel(option.label);
 				dateInput.value = value || '';
 				dateInput.onDidChange(e => {
 					if (this.options[option.configEntry] !== e) {

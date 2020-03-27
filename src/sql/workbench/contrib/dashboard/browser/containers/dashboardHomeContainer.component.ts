@@ -53,14 +53,14 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 		if (collapsedVal === 'collapsed') {
 			this._propertiesClass.collapsed = true;
 		}
-		this.angularEventingService.onAngularEvent(this.dashboardService.getUnderlyingUri(), event => {
+		this._register(this.angularEventingService.onAngularEvent(this.dashboardService.getUnderlyingUri())(event => {
 			if (event.event === AngularEventType.COLLAPSE_WIDGET && this._propertiesClass && event.payload === this._propertiesClass.guid) {
 				this._propertiesClass.collapsed = !this._propertiesClass.collapsed;
 				this._cd.detectChanges();
 				this._configurationService.updateValue(`dashboard.${this.properties.context}.properties`,
 					this._propertiesClass.collapsed ? 'collapsed' : true, ConfigurationTarget.USER);
 			}
-		});
+		}));
 	}
 
 	public layout() {

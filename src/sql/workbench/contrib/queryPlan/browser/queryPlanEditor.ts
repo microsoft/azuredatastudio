@@ -102,7 +102,7 @@ export class QueryPlanEditor extends BaseEditor {
 			planXml: input.planXml
 		};
 
-		let uniqueSelector = bootstrapAngular(this.instantiationService,
+		let uniqueSelector = this.instantiationService.invokeFunction(bootstrapAngular,
 			QueryPlanModule,
 			this.getContainer(),
 			QUERYPLAN_SELECTOR,

@@ -9,11 +9,11 @@ import {
 	ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
 import { FormLayout, FormItemLayout } from 'azdata';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { find } from 'vs/base/common/arrays';
+import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 
 export interface TitledFormItemLayout {
 	title: string;
@@ -45,10 +45,10 @@ class FormItem {
 			</div>
 			<div class="form-row" *ngIf="isFormComponent(item)" [style.height]="getRowHeight(item)">
 					<ng-container *ngIf="isHorizontal(item)">
-						<h2 *ngIf="hasItemTitle(item)" class="form-cell form-cell-title" [style.font-size]="getItemTitleFontSize(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
+						<div *ngIf="hasItemTitle(item)" class="form-cell form-cell-title" [style.font-size]="getItemTitleFontSize(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
 							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
 							<span class="codicon help form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
-						</h2>
+						</div>
 						<div class="form-cell">
 							<div class="form-component-container">
 								<div [style.width]="getComponentWidth(item)" [ngClass]="{'form-input-flex': !getComponentWidth(item)}">
@@ -65,10 +65,10 @@ class FormItem {
 						</div>
 					</ng-container>
 					<div class="form-vertical-container" *ngIf="isVertical(item)" [style.height]="getRowHeight(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
-						<h2 class="form-item-row" [style.font-size]="getItemTitleFontSize(item)">
+						<div class="form-item-row" [style.font-size]="getItemTitleFontSize(item)">
 							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
 							<span class="codicon help form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
-						</h2>
+						</div>
 						<div class="form-item-row" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
 							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
 							</model-component-wrapper>

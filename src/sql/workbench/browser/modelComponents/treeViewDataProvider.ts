@@ -3,10 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+// eslint-disable-next-line code-import-patterns
 import { ExtHostModelViewTreeViewsShape, SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
+// eslint-disable-next-line code-import-patterns
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IModelViewTreeViewDataProvider, ITreeComponentItem } from 'sql/workbench/common/views';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+// eslint-disable-next-line code-import-patterns
 import * as vsTreeView from 'vs/workbench/api/browser/mainThreadTreeViews';
 
 export class TreeViewDataProvider extends vsTreeView.TreeViewDataProvider implements IModelViewTreeViewDataProvider {

@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
+import * as errors from 'vs/base/common/errors';
 import * as vscode from 'vscode';
 import { SqlMainContext, ExtHostModelViewTreeViewsShape, MainThreadModelViewShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ITreeComponentItem } from 'sql/workbench/common/views';
@@ -14,6 +15,7 @@ import * as  vsTreeExt from 'vs/workbench/api/common/extHostTreeViews';
 import { Emitter } from 'vs/base/common/event';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { assign } from 'vs/base/common/objects';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape {
 	private _proxy: MainThreadModelViewShape;
@@ -21,7 +23,8 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 	private treeViews: Map<string, ExtHostTreeView<any>> = new Map<string, ExtHostTreeView<any>>();
 
 	constructor(
-		private _mainContext: IMainContext
+		private _mainContext: IMainContext,
+		private readonly logService: ILogService
 	) {
 		this._proxy = this._mainContext.getProxy(SqlMainContext.MainThreadModelView);
 	}
@@ -31,7 +34,7 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 			throw new Error('Options with treeDataProvider is mandatory');
 		}
 
-		const treeView = this.createExtHostTreeViewer(handle, componentId, options.treeDataProvider, extension);
+		const treeView = this.createExtHostTreeViewer(handle, componentId, options.treeDataProvider, extension, this.logService);
 		return {
 			dispose: () => {
 				this.treeViews.delete(componentId);
@@ -74,8 +77,8 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 	$setVisible(treeViewId: string, visible: boolean): void {
 	}
 
-	private createExtHostTreeViewer<T>(handle: number, id: string, dataProvider: azdata.TreeComponentDataProvider<T>, extension: IExtensionDescription): ExtHostTreeView<T> {
-		const treeView = new ExtHostTreeView<T>(handle, id, dataProvider, this._proxy, undefined, extension);
+	private createExtHostTreeViewer<T>(handle: number, id: string, dataProvider: azdata.TreeComponentDataProvider<T>, extension: IExtensionDescription, logService: ILogService): ExtHostTreeView<T> {
+		const treeView = new ExtHostTreeView<T>(handle, id, dataProvider, this._proxy, undefined, extension, logService);
 		this.treeViews.set(`${handle}-${id}`, treeView);
 		return treeView;
 	}
@@ -89,14 +92,15 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 	public readonly ChangeSelection: vscode.Event<vscode.TreeViewSelectionChangeEvent<T>> = this._onChangeSelection.event;
 	constructor(
 		private handle: number, private componentId: string, private componentDataProvider: azdata.TreeComponentDataProvider<T>,
-		private modelViewProxy: MainThreadModelViewShape, commands: CommandsConverter, extension: IExtensionDescription) {
-		super(componentId, { treeDataProvider: componentDataProvider }, undefined, commands, undefined, extension);
+		private modelViewProxy: MainThreadModelViewShape, commands: CommandsConverter, extension: IExtensionDescription,
+		private readonly _logService: ILogService) {
+		super(componentId, { treeDataProvider: componentDataProvider }, undefined, commands, _logService, extension);
 	}
 
 	onNodeCheckedChanged(parentHandle?: vsTreeExt.TreeItemHandle, checked?: boolean): void {
 		const parentElement = parentHandle ? this.getExtensionElement(parentHandle) : void 0;
 		if (parentHandle && !parentElement) {
-			console.error(`No tree item with id \'${parentHandle}\' found.`);
+			this._logService.error(`No tree item with id \'${parentHandle}\' found.`);
 		}
 
 		this._onNodeCheckedChanged.fire({ element: parentElement, checked: checked });
@@ -129,7 +133,7 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 		} else {
 			const handlesToRefresh = this.getHandlesToRefresh(elements);
 			if (handlesToRefresh.length) {
-				this.refreshHandles(handlesToRefresh);
+				this.refreshHandles(handlesToRefresh).catch(errors.onUnexpectedError);
 			}
 		}
 	}

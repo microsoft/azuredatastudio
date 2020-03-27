@@ -7,7 +7,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
-import { Task } from 'sql/platform/tasks/browser/tasksRegistry';
+import { Task } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 
 import { ObjectMetadata } from 'azdata';
 
@@ -17,6 +17,8 @@ import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation
 import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export interface BaseActionContext {
 	object?: ObjectMetadata;
@@ -71,7 +73,7 @@ export class InsightAction extends Action {
 
 export class ConfigureDashboardAction extends Task {
 	public static readonly ID = 'configureDashboard';
-	public static readonly LABEL = nls.localize('configureDashboard', "Learn How To Configure The Dashboard");
+	public static readonly LABEL = nls.localize('configureDashboardLearnMore', "Learn More");
 	public static readonly ICON = 'configure-dashboard';
 	private static readonly configHelpUri = 'https://aka.ms/sqldashboardconfig';
 
@@ -86,5 +88,27 @@ export class ConfigureDashboardAction extends Task {
 
 	async runTask(accessor: ServicesAccessor): Promise<void> {
 		accessor.get(IOpenerService).open(URI.parse(ConfigureDashboardAction.configHelpUri));
+	}
+}
+
+export class ClearSavedAccountsAction extends Task {
+	public static readonly ID = 'clearSavedAccounts';
+	public static readonly LABEL = nls.localize('clearSavedAccounts', "Clear all saved accounts");
+
+	constructor() {
+		super({
+			id: ClearSavedAccountsAction.ID,
+			title: ClearSavedAccountsAction.LABEL,
+			iconPath: undefined
+		});
+	}
+
+	async runTask(accessor: ServicesAccessor): Promise<void> {
+		const logService = accessor.get(ILogService);
+		try {
+			await accessor.get(IAccountManagementService).removeAccounts();
+		} catch (ex) {
+			logService.error(ex);
+		}
 	}
 }

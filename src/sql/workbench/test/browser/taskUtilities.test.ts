@@ -10,7 +10,7 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { TestEditorService } from 'vs/workbench/test/workbenchTestServices';
+import { TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { assign } from 'vs/base/common/objects';
 
 suite('TaskUtilities', function () {

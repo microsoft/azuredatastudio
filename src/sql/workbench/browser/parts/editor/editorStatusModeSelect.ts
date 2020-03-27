@@ -11,7 +11,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { localize } from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 
-import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
+import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -20,8 +20,8 @@ const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(La
  */
 export async function setMode(accessor: ServicesAccessor, modeSupport: IModeSupport, activeEditor: IEditorInput, language: string): Promise<void> {
 	const editorService = accessor.get(IEditorService);
-	const activeWidget = getCodeEditor(editorService.activeTextEditorWidget);
-	const activeControl = editorService.activeControl;
+	const activeWidget = getCodeEditor(editorService.activeTextEditorControl);
+	const activeControl = editorService.activeEditorPane;
 	const textModel = activeWidget.getModel();
 	const oldLanguage = textModel.getLanguageIdentifier().language;
 	if (language !== oldLanguage) {
@@ -41,7 +41,7 @@ export async function setMode(accessor: ServicesAccessor, modeSupport: IModeSupp
 		if (newInputCreator) { // if we know how to handle the new language, tranform the input and replace the editor (e.x notebook, sql, etc)
 			const newInput = newInputCreator.convertInput(input || activeEditor);
 			if (newInput) {  // the factory will return undefined if it doesn't know how to handle the input
-				await editorService.replaceEditors([{ editor: activeEditor, replacement: newInput }], activeControl.group);
+				await editorService.replaceEditors([{ editor: activeEditor, replacement: await newInput }], activeControl.group);
 			}
 		} else if (oldInputCreator) { // if we don't know handle to handle the new language but we know how to handle the current language, replace the editor with the reverted input (e.x sql -> text)
 			await editorService.replaceEditors([{ editor: activeEditor, replacement: input }], activeControl.group);

@@ -32,14 +32,3 @@
 .modelview-loadingComponent-content-loading {
 	display: none;
 }
-
-/* We want to make this on DOM but not visible so that screen reader can read the status message */
-
-.modelview-loading-component-status-message {
-	top: -1;
-	left: -1px;
-	width: 1px;
-	height: 1px;
-	position: absolute;
-	overflow: hidden;
-}

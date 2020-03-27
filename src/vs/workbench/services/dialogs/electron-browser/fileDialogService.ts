@@ -6,7 +6,7 @@
 import { SaveDialogOptions, OpenDialogOptions } from 'electron';
 import { INativeOpenDialogOptions } from 'vs/platform/dialogs/node/dialogs';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
-import { IPickAndOpenOptions, ISaveDialogOptions, IOpenDialogOptions, IFileDialogService, IDialogService, ConfirmResult } from 'vs/platform/dialogs/common/dialogs';
+import { IPickAndOpenOptions, ISaveDialogOptions, IOpenDialogOptions, IFileDialogService, IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IHistoryService } from 'vs/workbench/services/history/common/history';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
@@ -20,6 +20,8 @@ import { IElectronService } from 'vs/platform/electron/node/electron';
 import { AbstractFileDialogService } from 'vs/workbench/services/dialogs/browser/abstractFileDialogService';
 import { Schemas } from 'vs/base/common/network';
 import { IModeService } from 'vs/editor/common/services/modeService';
+import { IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
+import { ILabelService } from 'vs/platform/label/common/label';
 
 export class FileDialogService extends AbstractFileDialogService implements IFileDialogService {
 
@@ -36,9 +38,11 @@ export class FileDialogService extends AbstractFileDialogService implements IFil
 		@IOpenerService openerService: IOpenerService,
 		@IElectronService private readonly electronService: IElectronService,
 		@IDialogService dialogService: IDialogService,
-		@IModeService modeService: IModeService
+		@IModeService modeService: IModeService,
+		@IWorkspacesService workspacesService: IWorkspacesService,
+		@ILabelService labelService: ILabelService
 	) {
-		super(hostService, contextService, historyService, environmentService, instantiationService, configurationService, fileService, openerService, dialogService, modeService);
+		super(hostService, contextService, historyService, environmentService, instantiationService, configurationService, fileService, openerService, dialogService, modeService, workspacesService, labelService);
 	}
 
 	private toNativeOpenDialogOptions(options: IPickAndOpenOptions): INativeOpenDialogOptions {
@@ -185,16 +189,6 @@ export class FileDialogService extends AbstractFileDialogService implements IFil
 		// Include File schema unless the schema is web
 		// Don't allow untitled schema through.
 		return schema === Schemas.untitled ? [Schemas.file] : (schema !== Schemas.file ? [schema, Schemas.file] : [schema]);
-	}
-
-	async showSaveConfirm(fileNamesOrResources: (string | URI)[]): Promise<ConfirmResult> {
-		if (this.environmentService.isExtensionDevelopment) {
-			if (!this.environmentService.args['extension-development-confirm-save']) {
-				return ConfirmResult.DONT_SAVE; // no veto when we are in extension dev mode because we cannot assume we run interactive (e.g. tests)
-			}
-		}
-
-		return super.showSaveConfirm(fileNamesOrResources);
 	}
 }
 

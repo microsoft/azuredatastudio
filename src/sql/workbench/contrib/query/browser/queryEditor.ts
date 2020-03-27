@@ -31,7 +31,7 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileE
 import { URI } from 'vs/base/common/uri';
 import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
 
-import { QueryEditorInput, IQueryEditorStateChange } from 'sql/workbench/contrib/query/common/queryEditorInput';
+import { QueryEditorInput, IQueryEditorStateChange } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
@@ -105,7 +105,7 @@ export class QueryEditor extends BaseEditor {
 		this.queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
 
 		// Clear view state for deleted files
-		this._register(fileService.onFileChanges(e => this.onFilesChanged(e)));
+		this._register(fileService.onDidFilesChange(e => this.onFilesChanged(e)));
 	}
 
 	private onFilesChanged(e: FileChangesEvent): void {
@@ -317,7 +317,7 @@ export class QueryEditor extends BaseEditor {
 		this.inputDisposables.add(this.input.state.onChange(c => this.updateState(c)));
 		this.updateState({ connectingChange: true, connectedChange: true, executingChange: true, resultsVisibleChange: true, sqlCmdModeChanged: true });
 
-		const editorViewState = this.loadTextEditorViewState(this.input.getResource());
+		const editorViewState = this.loadTextEditorViewState(this.input.resource);
 
 		if (editorViewState && editorViewState.resultsHeight && this.splitview.length > 1) {
 			this.splitview.resizeView(1, editorViewState.resultsHeight);
@@ -331,7 +331,7 @@ export class QueryEditor extends BaseEditor {
 
 		// Otherwise we save the view state to restore it later
 		else if (!input.isDisposed()) {
-			this.saveTextEditorViewState(input.getResource());
+			this.saveTextEditorViewState(input.resource);
 		}
 	}
 
@@ -394,7 +394,7 @@ export class QueryEditor extends BaseEditor {
 			let visible = currentEditorIsVisible;
 			if (!currentEditorIsVisible) {
 				// Current editor is closing but still tracked as visible. Check if any other editor is visible
-				const candidates = [...this.editorService.visibleControls].filter(e => {
+				const candidates = [...this.editorService.visibleEditorPanes].filter(e => {
 					if (e && e.getId) {
 						return e.getId() === QueryEditor.ID;
 					}

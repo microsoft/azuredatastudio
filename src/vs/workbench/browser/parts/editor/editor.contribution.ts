@@ -13,7 +13,7 @@ import { EditorInput, IEditorInputFactory, SideBySideEditorInput, IEditorInputFa
 import { TextResourceEditor } from 'vs/workbench/browser/parts/editor/textResourceEditor';
 import { SideBySideEditor } from 'vs/workbench/browser/parts/editor/sideBySideEditor';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TextDiffEditor } from 'vs/workbench/browser/parts/editor/textDiffEditor';
@@ -36,13 +36,15 @@ import {
 	SplitEditorUpAction, SplitEditorDownAction, MoveEditorToLeftGroupAction, MoveEditorToRightGroupAction, MoveEditorToAboveGroupAction, MoveEditorToBelowGroupAction, CloseAllEditorGroupsAction,
 	JoinAllGroupsAction, FocusLeftGroup, FocusAboveGroup, FocusRightGroup, FocusBelowGroup, EditorLayoutSingleAction, EditorLayoutTwoColumnsAction, EditorLayoutThreeColumnsAction, EditorLayoutTwoByTwoGridAction,
 	EditorLayoutTwoRowsAction, EditorLayoutThreeRowsAction, EditorLayoutTwoColumnsBottomAction, EditorLayoutTwoRowsRightAction, NewEditorGroupLeftAction, NewEditorGroupRightAction,
-	NewEditorGroupAboveAction, NewEditorGroupBelowAction, SplitEditorOrthogonalAction, CloseEditorInAllGroupsAction, NavigateToLastEditLocationAction, ToggleGroupSizesAction, ShowAllEditorsByMostRecentlyUsedAction, QuickOpenPreviousRecentlyUsedEditorAction, OpenPreviousRecentlyUsedEditorInGroupAction, OpenNextRecentlyUsedEditorInGroupAction
+	NewEditorGroupAboveAction, NewEditorGroupBelowAction, SplitEditorOrthogonalAction, CloseEditorInAllGroupsAction, NavigateToLastEditLocationAction, ToggleGroupSizesAction, ShowAllEditorsByMostRecentlyUsedAction,
+	QuickOpenPreviousRecentlyUsedEditorAction, OpenPreviousRecentlyUsedEditorInGroupAction, OpenNextRecentlyUsedEditorInGroupAction, QuickOpenNextRecentlyUsedEditorAction as QuickOpenLeastRecentlyUsedEditorAction,
+	QuickOpenLeastRecentlyUsedEditorInGroupAction
 } from 'vs/workbench/browser/parts/editor/editorActions';
 import * as editorCommands from 'vs/workbench/browser/parts/editor/editorCommands';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { getQuickNavigateHandler, inQuickOpenContext } from 'vs/workbench/browser/parts/quickopen/quickopen';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
-import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyExpr, ContextKeyExpression } from 'vs/platform/contextkey/common/contextkey';
 import { isMacintosh } from 'vs/base/common/platform';
 import { AllEditorsByAppearancePicker, ActiveGroupEditorsByMostRecentlyUsedPicker, AllEditorsByMostRecentlyUsedPicker } from 'vs/workbench/browser/parts/editor/editorPicker';
 import { registerEditorContribution } from 'vs/editor/browser/editorExtensions';
@@ -55,6 +57,9 @@ import { withNullAsUndefined } from 'vs/base/common/types';
 import { IFilesConfigurationService } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
 import { EditorAutoSave } from 'vs/workbench/browser/parts/editor/editorAutoSave';
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';
+import { PLAINTEXT_MODE_ID } from 'vs/editor/common/modes/modesRegistry';
+import { IQuickAccessRegistry, Extensions as QuickAccessExtensions } from 'vs/platform/quickinput/common/quickAccess';
+import { ActiveGroupEditorsByMostRecentlyUsedQuickAccess, AllEditorsByAppearanceQuickAccess, AllEditorsByMostRecentlyUsedQuickAccess } from 'vs/workbench/browser/parts/editor/editorQuickAccess';
 
 // Register String Editor
 Registry.as<IEditorRegistry>(EditorExtensions.Editors).registerEditor(
@@ -105,8 +110,7 @@ Registry.as<IEditorRegistry>(EditorExtensions.Editors).registerEditor(
 );
 
 interface ISerializedUntitledTextEditorInput {
-	resource: string;
-	resourceJSON: object;
+	resourceJSON: UriComponents;
 	modeId: string | undefined;
 	encoding: string | undefined;
 }
@@ -130,15 +134,26 @@ class UntitledTextEditorInputFactory implements IEditorInputFactory {
 
 		const untitledTextEditorInput = <UntitledTextEditorInput>editorInput;
 
-		let resource = untitledTextEditorInput.getResource();
-		if (untitledTextEditorInput.hasAssociatedFilePath) {
+		let resource = untitledTextEditorInput.resource;
+		if (untitledTextEditorInput.model.hasAssociatedFilePath) {
 			resource = toLocalResource(resource, this.environmentService.configuration.remoteAuthority); // untitled with associated file path use the local schema
 		}
 
+		// Mode: only remember mode if it is either specific (not text)
+		// or if the mode was explicitly set by the user. We want to preserve
+		// this information across restarts and not set the mode unless
+		// this is the case.
+		let modeId: string | undefined;
+		const modeIdCandidate = untitledTextEditorInput.getMode();
+		if (modeIdCandidate !== PLAINTEXT_MODE_ID) {
+			modeId = modeIdCandidate;
+		} else if (untitledTextEditorInput.model.hasModeSetExplicitly) {
+			modeId = modeIdCandidate;
+		}
+
 		const serialized: ISerializedUntitledTextEditorInput = {
-			resource: resource.toString(), // Keep for backwards compatibility
 			resourceJSON: resource.toJSON(),
-			modeId: untitledTextEditorInput.getMode(),
+			modeId,
 			encoding: untitledTextEditorInput.getEncoding()
 		};
 
@@ -148,11 +163,11 @@ class UntitledTextEditorInputFactory implements IEditorInputFactory {
 	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): UntitledTextEditorInput {
 		return instantiationService.invokeFunction<UntitledTextEditorInput>(accessor => {
 			const deserialized: ISerializedUntitledTextEditorInput = JSON.parse(serializedEditorInput);
-			const resource = !!deserialized.resourceJSON ? URI.revive(<UriComponents>deserialized.resourceJSON) : URI.parse(deserialized.resource);
+			const resource = URI.revive(deserialized.resourceJSON);
 			const mode = deserialized.modeId;
 			const encoding = deserialized.encoding;
 
-			return accessor.get(IEditorService).createInput({ resource, mode, encoding, forceUntitled: true }) as UntitledTextEditorInput;
+			return accessor.get(IEditorService).createEditorInput({ resource, mode, encoding, forceUntitled: true }) as UntitledTextEditorInput;
 		});
 	}
 }
@@ -262,13 +277,13 @@ export class QuickOpenActionContributor extends ActionBarContributor {
 		super();
 	}
 
-	hasActions(context: any): boolean {
+	hasActions(context: unknown): boolean {
 		const entry = this.getEntry(context);
 
 		return !!entry;
 	}
 
-	getActions(context: any): ReadonlyArray<IAction> {
+	getActions(context: unknown): ReadonlyArray<IAction> {
 		const actions: Action[] = [];
 
 		const entry = this.getEntry(context);
@@ -348,6 +363,33 @@ Registry.as<IQuickOpenRegistry>(QuickOpenExtensions.Quickopen).registerQuickOpen
 	)
 );
 
+// Register Editor Quick Access
+const quickAccessRegistry = Registry.as<IQuickAccessRegistry>(QuickAccessExtensions.Quickaccess);
+
+quickAccessRegistry.registerQuickAccessProvider({
+	ctor: ActiveGroupEditorsByMostRecentlyUsedQuickAccess,
+	prefix: ActiveGroupEditorsByMostRecentlyUsedQuickAccess.PREFIX,
+	contextKey: editorPickerContextKey,
+	placeholder: nls.localize('editorQuickAccessPlaceholder', "Type the name of an editor to open it."),
+	helpEntries: [{ description: nls.localize('activeGroupEditorsByMostRecentlyUsedQuickAccess', "Show Editors in Active Group by Most Recently Used."), needsEditor: false }]
+});
+
+quickAccessRegistry.registerQuickAccessProvider({
+	ctor: AllEditorsByAppearanceQuickAccess,
+	prefix: AllEditorsByAppearanceQuickAccess.PREFIX,
+	contextKey: editorPickerContextKey,
+	placeholder: nls.localize('editorQuickAccessPlaceholder', "Type the name of an editor to open it."),
+	helpEntries: [{ description: nls.localize('allEditorsByAppearanceQuickAccess', "Show All Opened Editors By Appearance"), needsEditor: false }]
+});
+
+quickAccessRegistry.registerQuickAccessProvider({
+	ctor: AllEditorsByMostRecentlyUsedQuickAccess,
+	prefix: AllEditorsByMostRecentlyUsedQuickAccess.PREFIX,
+	contextKey: editorPickerContextKey,
+	placeholder: nls.localize('editorQuickAccessPlaceholder', "Type the name of an editor to open it."),
+	helpEntries: [{ description: nls.localize('allEditorsByMostRecentlyUsedQuickAccess', "Show All Opened Editors By Most Recently Used"), needsEditor: false }]
+});
+
 // Register Editor Actions
 const category = nls.localize('view', "View");
 registry.registerWorkbenchAction(SyncActionDescriptor.create(OpenNextEditor, OpenNextEditor.ID, OpenNextEditor.LABEL, { primary: KeyMod.CtrlCmd | KeyCode.PageDown, mac: { primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.RightArrow, secondary: [KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.US_CLOSE_SQUARE_BRACKET] } }), 'View: Open Next Editor', category);
@@ -426,10 +468,13 @@ registry.registerWorkbenchAction(SyncActionDescriptor.create(EditorLayoutTwoRows
 registry.registerWorkbenchAction(SyncActionDescriptor.create(EditorLayoutTwoColumnsBottomAction, EditorLayoutTwoColumnsBottomAction.ID, EditorLayoutTwoColumnsBottomAction.LABEL), 'View: Two Columns Bottom Editor Layout', category);
 
 // Register Quick Editor Actions including built in quick navigate support for some
-const quickOpenNextRecentlyUsedEditorInGroupKeybinding = { primary: KeyMod.CtrlCmd | KeyCode.Tab, mac: { primary: KeyMod.WinCtrl | KeyCode.Tab } };
-const quickOpenPreviousRecentlyUsedEditorInGroupKeybinding = { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.Tab, mac: { primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.Tab } };
+
 registry.registerWorkbenchAction(SyncActionDescriptor.create(QuickOpenPreviousRecentlyUsedEditorAction, QuickOpenPreviousRecentlyUsedEditorAction.ID, QuickOpenPreviousRecentlyUsedEditorAction.LABEL), 'View: Quick Open Previous Recently Used Editor', category);
-registry.registerWorkbenchAction(SyncActionDescriptor.create(QuickOpenPreviousRecentlyUsedEditorInGroupAction, QuickOpenPreviousRecentlyUsedEditorInGroupAction.ID, QuickOpenPreviousRecentlyUsedEditorInGroupAction.LABEL, quickOpenPreviousRecentlyUsedEditorInGroupKeybinding), 'View: Quick Open Previous Recently Used Editor in Group', category);
+registry.registerWorkbenchAction(SyncActionDescriptor.create(QuickOpenLeastRecentlyUsedEditorAction, QuickOpenLeastRecentlyUsedEditorAction.ID, QuickOpenLeastRecentlyUsedEditorAction.LABEL), 'View: Quick Open Least Recently Used Editor', category);
+
+registry.registerWorkbenchAction(SyncActionDescriptor.create(QuickOpenPreviousRecentlyUsedEditorInGroupAction, QuickOpenPreviousRecentlyUsedEditorInGroupAction.ID, QuickOpenPreviousRecentlyUsedEditorInGroupAction.LABEL, { primary: KeyMod.CtrlCmd | KeyCode.Tab, mac: { primary: KeyMod.WinCtrl | KeyCode.Tab } }), 'View: Quick Open Previous Recently Used Editor in Group', category);
+registry.registerWorkbenchAction(SyncActionDescriptor.create(QuickOpenLeastRecentlyUsedEditorInGroupAction, QuickOpenLeastRecentlyUsedEditorInGroupAction.ID, QuickOpenLeastRecentlyUsedEditorInGroupAction.LABEL, { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.Tab, mac: { primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.Tab } }), 'View: Quick Open Least Recently Used Editor in Group', category);
+
 registry.registerWorkbenchAction(SyncActionDescriptor.create(QuickOpenPreviousEditorFromHistoryAction, QuickOpenPreviousEditorFromHistoryAction.ID, QuickOpenPreviousEditorFromHistoryAction.LABEL), 'Quick Open Previous Editor from History');
 
 const quickOpenNavigateNextInEditorPickerId = 'workbench.action.quickOpenNavigateNextInEditorPicker';
@@ -438,8 +483,8 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	weight: KeybindingWeight.WorkbenchContrib + 50,
 	handler: getQuickNavigateHandler(quickOpenNavigateNextInEditorPickerId, true),
 	when: editorPickerContext,
-	primary: quickOpenNextRecentlyUsedEditorInGroupKeybinding.primary,
-	mac: quickOpenNextRecentlyUsedEditorInGroupKeybinding.mac
+	primary: KeyMod.CtrlCmd | KeyCode.Tab,
+	mac: { primary: KeyMod.WinCtrl | KeyCode.Tab }
 });
 
 const quickOpenNavigatePreviousInEditorPickerId = 'workbench.action.quickOpenNavigatePreviousInEditorPicker';
@@ -448,8 +493,8 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	weight: KeybindingWeight.WorkbenchContrib + 50,
 	handler: getQuickNavigateHandler(quickOpenNavigatePreviousInEditorPickerId, false),
 	when: editorPickerContext,
-	primary: quickOpenPreviousRecentlyUsedEditorInGroupKeybinding.primary,
-	mac: quickOpenPreviousRecentlyUsedEditorInGroupKeybinding.mac
+	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.Tab,
+	mac: { primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.Tab }
 });
 
 // Editor Commands
@@ -497,7 +542,7 @@ MenuRegistry.appendMenuItem(MenuId.EditorTitle, { command: { id: editorCommands.
 
 interface IEditorToolItem { id: string; title: string; icon?: { dark?: URI; light?: URI; } | ThemeIcon; }
 
-function appendEditorToolItem(primary: IEditorToolItem, when: ContextKeyExpr | undefined, order: number, alternative?: IEditorToolItem, precondition?: ContextKeyExpr | undefined): void {
+function appendEditorToolItem(primary: IEditorToolItem, when: ContextKeyExpression | undefined, order: number, alternative?: IEditorToolItem, precondition?: ContextKeyExpression | undefined): void {
 	const item: IMenuItem = {
 		command: {
 			id: primary.id,

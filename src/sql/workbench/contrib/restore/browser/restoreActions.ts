@@ -8,12 +8,12 @@ import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiati
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities';
-import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
+import { IRestoreDialogController } from 'sql/workbench/services/restore/common/restoreService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
-import { Task } from 'sql/platform/tasks/browser/tasksRegistry';
+import { Task } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';

@@ -5,7 +5,7 @@
 
 
 import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
-import { AzureResourceDatabaseServer } from '../../interfaces';
+import { azureResource } from '../../azure-resource';
 
 
 interface DbServerGraphData extends GraphData {
@@ -17,13 +17,13 @@ interface DbServerGraphData extends GraphData {
 
 const serversQuery = 'where type == "microsoft.dbforpostgresql/servers"';
 
-export class PostgresServerService extends ResourceServiceBase<DbServerGraphData, AzureResourceDatabaseServer> {
+export class PostgresServerService extends ResourceServiceBase<DbServerGraphData, azureResource.AzureResourceDatabaseServer> {
 
 	protected get query(): string {
 		return serversQuery;
 	}
 
-	protected convertResource(resource: DbServerGraphData): AzureResourceDatabaseServer {
+	protected convertResource(resource: DbServerGraphData): azureResource.AzureResourceDatabaseServer {
 		return {
 			id: resource.id,
 			name: resource.name,

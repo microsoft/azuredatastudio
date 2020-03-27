@@ -9,13 +9,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
 import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { coalesce, firstIndex } from 'vs/base/common/arrays';
-
-// {{SQL CARBON EDIT}}
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
-import { doHandleUpgrade } from 'sql/workbench/common/languageAssociation';
+import { coalesce } from 'vs/base/common/arrays';
+import { doHandleUpgrade } from 'sql/workbench/services/languageAssociation/common/doHandleUpgrade';
 
 const EditorOpenPositioning = {
 	LEFT: 'left',
@@ -51,8 +46,8 @@ export interface ISerializedEditorGroup {
 	preview?: number;
 }
 
-export function isSerializedEditorGroup(obj?: any): obj is ISerializedEditorGroup {
-	const group: ISerializedEditorGroup = obj;
+export function isSerializedEditorGroup(obj?: unknown): obj is ISerializedEditorGroup {
+	const group = obj as ISerializedEditorGroup;
 
 	return obj && typeof obj === 'object' && Array.isArray(group.editors) && Array.isArray(group.mru);
 }
@@ -63,32 +58,29 @@ export class EditorGroup extends Disposable {
 
 	//#region events
 
-	private readonly _onDidEditorActivate = this._register(new Emitter<EditorInput>());
-	readonly onDidEditorActivate = this._onDidEditorActivate.event;
+	private readonly _onDidActivateEditor = this._register(new Emitter<EditorInput>());
+	readonly onDidActivateEditor = this._onDidActivateEditor.event;
 
-	private readonly _onDidEditorOpen = this._register(new Emitter<EditorInput>());
-	readonly onDidEditorOpen = this._onDidEditorOpen.event;
+	private readonly _onDidOpenEditor = this._register(new Emitter<EditorInput>());
+	readonly onDidOpenEditor = this._onDidOpenEditor.event;
 
-	private readonly _onDidEditorClose = this._register(new Emitter<EditorCloseEvent>());
-	readonly onDidEditorClose = this._onDidEditorClose.event;
+	private readonly _onDidCloseEditor = this._register(new Emitter<EditorCloseEvent>());
+	readonly onDidCloseEditor = this._onDidCloseEditor.event;
 
-	private readonly _onDidEditorDispose = this._register(new Emitter<EditorInput>());
-	readonly onDidEditorDispose = this._onDidEditorDispose.event;
+	private readonly _onDidDisposeEditor = this._register(new Emitter<EditorInput>());
+	readonly onDidDisposeEditor = this._onDidDisposeEditor.event;
 
-	private readonly _onDidEditorBecomeDirty = this._register(new Emitter<EditorInput>());
-	readonly onDidEditorBecomeDirty = this._onDidEditorBecomeDirty.event;
+	private readonly _onDidChangeEditorDirty = this._register(new Emitter<EditorInput>());
+	readonly onDidChangeEditorDirty = this._onDidChangeEditorDirty.event;
 
-	private readonly _onDidEditorLabelChange = this._register(new Emitter<EditorInput>());
-	readonly onDidEditorLabelChange = this._onDidEditorLabelChange.event;
+	private readonly _onDidChangeEditorLabel = this._register(new Emitter<EditorInput>());
+	readonly onDidEditorLabelChange = this._onDidChangeEditorLabel.event;
 
-	private readonly _onDidEditorMove = this._register(new Emitter<EditorInput>());
-	readonly onDidEditorMove = this._onDidEditorMove.event;
+	private readonly _onDidMoveEditor = this._register(new Emitter<EditorInput>());
+	readonly onDidMoveEditor = this._onDidMoveEditor.event;
 
-	private readonly _onDidEditorPin = this._register(new Emitter<EditorInput>());
-	readonly onDidEditorPin = this._onDidEditorPin.event;
-
-	private readonly _onDidEditorUnpin = this._register(new Emitter<EditorInput>());
-	readonly onDidEditorUnpin = this._onDidEditorUnpin.event;
+	private readonly _onDidChangeEditorPinned = this._register(new Emitter<EditorInput>());
+	readonly onDidChangeEditorPinned = this._onDidChangeEditorPinned.event;
 
 	//#endregion
 
@@ -224,7 +216,7 @@ export class EditorGroup extends Disposable {
 			this.registerEditorListeners(newEditor);
 
 			// Event
-			this._onDidEditorOpen.fire(newEditor);
+			this._onDidOpenEditor.fire(newEditor);
 
 			// Handle active
 			if (makeActive) {
@@ -263,22 +255,22 @@ export class EditorGroup extends Disposable {
 		const onceDispose = Event.once(editor.onDispose);
 		listeners.add(onceDispose(() => {
 			if (this.indexOf(editor) >= 0) {
-				this._onDidEditorDispose.fire(editor);
+				this._onDidDisposeEditor.fire(editor);
 			}
 		}));
 
 		// Re-Emit dirty state changes
 		listeners.add(editor.onDidChangeDirty(() => {
-			this._onDidEditorBecomeDirty.fire(editor);
+			this._onDidChangeEditorDirty.fire(editor);
 		}));
 
 		// Re-Emit label changes
 		listeners.add(editor.onDidChangeLabel(() => {
-			this._onDidEditorLabelChange.fire(editor);
+			this._onDidChangeEditorLabel.fire(editor);
 		}));
 
 		// Clean up dispose listeners once the editor gets closed
-		listeners.add(this.onDidEditorClose(event => {
+		listeners.add(this.onDidCloseEditor(event => {
 			if (event.editor.matches(editor)) {
 				dispose(listeners);
 			}
@@ -294,7 +286,7 @@ export class EditorGroup extends Disposable {
 		this.splice(replaceIndex, false, replaceWith);
 
 		if (event) {
-			this._onDidEditorClose.fire(event);
+			this._onDidCloseEditor.fire(event);
 		}
 	}
 
@@ -302,7 +294,7 @@ export class EditorGroup extends Disposable {
 		const event = this.doCloseEditor(candidate, openNext, false);
 
 		if (event) {
-			this._onDidEditorClose.fire(event);
+			this._onDidCloseEditor.fire(event);
 
 			return event.editor;
 		}
@@ -403,7 +395,7 @@ export class EditorGroup extends Disposable {
 		this.editors.splice(toIndex, 0, editor);
 
 		// Event
-		this._onDidEditorMove.fire(editor);
+		this._onDidMoveEditor.fire(editor);
 
 		return editor;
 	}
@@ -432,7 +424,7 @@ export class EditorGroup extends Disposable {
 		this.mru.unshift(editor);
 
 		// Event
-		this._onDidEditorActivate.fire(editor);
+		this._onDidActivateEditor.fire(editor);
 	}
 
 	pin(candidate: EditorInput): EditorInput | undefined {
@@ -455,7 +447,7 @@ export class EditorGroup extends Disposable {
 		this.preview = null;
 
 		// Event
-		this._onDidEditorPin.fire(editor);
+		this._onDidChangeEditorPinned.fire(editor);
 	}
 
 	unpin(candidate: EditorInput): EditorInput | undefined {
@@ -479,7 +471,7 @@ export class EditorGroup extends Disposable {
 		this.preview = editor;
 
 		// Event
-		this._onDidEditorUnpin.fire(editor);
+		this._onDidChangeEditorPinned.fire(editor);
 
 		// Close old preview editor if any
 		if (oldPreview) {
@@ -624,14 +616,6 @@ export class EditorGroup extends Disposable {
 		this.editors.forEach(e => {
 			const factory = registry.getEditorInputFactory(e.getTypeId());
 			if (factory) {
-				// {{SQL CARBON EDIT}}
-				// don't serialize unmodified unitited files
-				if (e instanceof UntitledTextEditorInput && !e.isDirty()
-					&& !this.configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles')) {
-					return;
-				}
-				// {{SQL CARBON EDIT}} - End
-
 				const value = factory.serialize(e);
 				if (typeof value === 'string') {
 					serializedEditors.push({ id: e.getTypeId(), value });
@@ -689,26 +673,4 @@ export class EditorGroup extends Disposable {
 
 		return this._id;
 	}
-
-	// {{SQL CARBON EDIT}}
-	async removeNonExitingEditor(): Promise<void> {
-		let n = 0;
-		while (n < this.editors.length) {
-			let editor = this.editors[n];
-			if (editor instanceof QueryEditorInput && editor.matchInputInstanceType(FileEditorInput) && !editor.isDirty() && await editor.inputFileExists() === false && this.editors.length > 1) {
-				// remove from editors list so that they do not get restored
-				this.editors.splice(n, 1);
-				let index = firstIndex(this.mru, e => e.matches(editor));
-
-				// remove from MRU list otherwise later if we try to close them it leaves a sticky active editor with no data
-				this.mru.splice(index, 1);
-				this.active = this.isActive(editor) ? this.editors[0] : this.active;
-				editor.dispose();
-			}
-			else {
-				n++;
-			}
-		}
-	}
-	// {{SQL CARBON EDIT}}
 }

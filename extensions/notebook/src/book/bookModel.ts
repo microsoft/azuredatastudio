@@ -15,6 +15,7 @@ import * as fs from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, IJupyterBookSection } from '../contracts/content';
 import { isNullOrUndefined } from 'util';
+import { ApiWrapper } from '../common/apiWrapper';
 
 
 const fsPromises = fileServices.promises;
@@ -25,6 +26,9 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	private _tableOfContentPaths: string[] = [];
 	readonly providerId: string = 'BookNavigator';
 
+	private _errorMessage: string;
+	private apiWrapper: ApiWrapper = new ApiWrapper();
+
 	constructor(public bookPath: string, public openAsUntitled: boolean, private _extensionContext: vscode.ExtensionContext) {
 		this.bookPath = bookPath;
 		this.openAsUntitled = openAsUntitled;
@@ -33,12 +37,18 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	}
 
 	public async initializeContents(): Promise<void> {
+		this._tableOfContentPaths = [];
+		this._bookItems = [];
 		await this.getTableOfContentFiles(this.bookPath);
 		await this.readBooks();
 	}
 
-	public getAllBooks(): Map<string, BookTreeItem> {
+	public getAllNotebooks(): Map<string, BookTreeItem> {
 		return this._allNotebooks;
+	}
+
+	public getNotebook(uri: string): BookTreeItem | undefined {
+		return this._allNotebooks.get(uri);
 	}
 
 	public async getTableOfContentFiles(folderPath: string): Promise<void> {
@@ -51,25 +61,26 @@ export class BookModel implements azdata.nb.NavigationProvider {
 			maxDepth = undefined;
 		}
 
-		let p = path.join(folderPath, '**', '_data', 'toc.yml').replace(/\\/g, '/');
-		let tableOfContentPaths = await glob(p, { deep: maxDepth });
+		let p: string = path.join(folderPath, '**', '_data', 'toc.yml').replace(/\\/g, '/');
+		let tableOfContentPaths: string[] = await glob(p, { deep: maxDepth });
 		if (tableOfContentPaths.length > 0) {
 			this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
 			vscode.commands.executeCommand('setContext', 'bookOpened', true);
 		} else {
+			this._errorMessage = loc.missingTocError;
 			throw new Error(loc.missingTocError);
 		}
 	}
 
 	public async readBooks(): Promise<BookTreeItem[]> {
 		for (const contentPath of this._tableOfContentPaths) {
-			let root = path.dirname(path.dirname(contentPath));
+			let root: string = path.dirname(path.dirname(contentPath));
 			try {
 				let fileContents = await fsPromises.readFile(path.join(root, '_config.yml'), 'utf-8');
 				const config = yaml.safeLoad(fileContents.toString());
 				fileContents = await fsPromises.readFile(contentPath, 'utf-8');
-				const tableOfContents = yaml.safeLoad(fileContents.toString());
-				let book = new BookTreeItem({
+				const tableOfContents: any = yaml.safeLoad(fileContents.toString());
+				let book: BookTreeItem = new BookTreeItem({
 					title: config.title,
 					root: root,
 					tableOfContents: { sections: this.parseJupyterSections(tableOfContents) },
@@ -85,8 +96,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 				);
 				this._bookItems.push(book);
 			} catch (e) {
-				let error = e instanceof Error ? e.message : e;
-				vscode.window.showErrorMessage(error);
+				this._errorMessage = loc.readBookError(this.bookPath, e instanceof Error ? e.message : e);
+				this.apiWrapper.showErrorMessage(this._errorMessage);
 			}
 		}
 		return this._bookItems;
@@ -101,7 +112,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		for (let i = 0; i < sections.length; i++) {
 			if (sections[i].url) {
 				if (sections[i].external) {
-					let externalLink = new BookTreeItem({
+					let externalLink: BookTreeItem = new BookTreeItem({
 						title: sections[i].title,
 						root: root,
 						tableOfContents: tableOfContents,
@@ -143,15 +154,16 @@ export class BookModel implements azdata.nb.NavigationProvider {
 								this._allNotebooks.set(path.basename(pathToNotebook), notebook);
 								notebooks.push(notebook);
 							}
-						}
-						else {
-							if (!this._allNotebooks.get(pathToNotebook)) {
-								this._allNotebooks.set(pathToNotebook, notebook);
-								notebooks.push(notebook);
+						} else {
+							// convert to URI to avoid casing issue with drive letters when getting navigation links
+							let uriToNotebook: vscode.Uri = vscode.Uri.file(pathToNotebook);
+							if (!this._allNotebooks.get(uriToNotebook.fsPath)) {
+								this._allNotebooks.set(uriToNotebook.fsPath, notebook);
 							}
+							notebooks.push(notebook);
 						}
 					} else if (await fs.pathExists(pathToMarkdown)) {
-						let markdown = new BookTreeItem({
+						let markdown: BookTreeItem = new BookTreeItem({
 							title: sections[i].title,
 							root: root,
 							tableOfContents: tableOfContents,
@@ -167,8 +179,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 						);
 						notebooks.push(markdown);
 					} else {
-						let error = loc.missingFileError(sections[i].title);
-						vscode.window.showErrorMessage(error);
+						this._errorMessage = loc.missingFileError(sections[i].title);
+						this.apiWrapper.showErrorMessage(this._errorMessage);
 					}
 				}
 			} else {
@@ -184,19 +196,19 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	 */
 	private parseJupyterSections(section: any[]): IJupyterBookSection[] {
 		try {
-			return section.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.parseJupyterSections(val.sections)) : acc.concat(val), []);
-		} catch (error) {
-			let err: string = loc.invalidTocFileError(error);
+			return section.reduce((acc, val) => Array.isArray(val.sections) ?
+				acc.concat(val).concat(this.parseJupyterSections(val.sections)) : acc.concat(val), []);
+		} catch (e) {
+			this._errorMessage = loc.invalidTocFileError();
 			if (section.length > 0) {
-				err = loc.invalidTocError(section[0].title);
+				this._errorMessage = loc.invalidTocError(section[0].title);
 			}
-			vscode.window.showErrorMessage(err);
-			throw err;
+			throw this._errorMessage;
 		}
 
 	}
 
-	public get tableOfContentPaths() {
+	public get tableOfContentPaths(): string[] {
 		return this._tableOfContentPaths;
 	}
 
@@ -206,7 +218,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		if (notebook) {
 			result = {
 				hasNavigation: true,
-				previous: notebook.previousUri ? this.openAsUntitled ? this.getUntitledUri(notebook.previousUri) : vscode.Uri.file(notebook.previousUri) : undefined,
+				previous: notebook.previousUri ?
+					this.openAsUntitled ? this.getUntitledUri(notebook.previousUri) : vscode.Uri.file(notebook.previousUri) : undefined,
 				next: notebook.nextUri ? this.openAsUntitled ? this.getUntitledUri(notebook.nextUri) : vscode.Uri.file(notebook.nextUri) : undefined
 			};
 		} else {
@@ -222,4 +235,9 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	getUntitledUri(resource: string): vscode.Uri {
 		return vscode.Uri.parse(`untitled:${resource}`);
 	}
+
+	public get errorMessage(): string {
+		return this._errorMessage;
+	}
+
 }

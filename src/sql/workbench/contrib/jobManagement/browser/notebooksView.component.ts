@@ -13,11 +13,11 @@ import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/contrib/jobManagement/browser/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
-import { NotebookCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { NewNotebookJobAction, RunJobAction, EditNotebookJobAction, JobsRefreshAction, IJobActionInfo, DeleteNotebookAction, OpenLatestRunMaterializedNotebook } from 'sql/platform/jobManagement/browser/jobActions';
-import { JobManagementUtilities } from 'sql/platform/jobManagement/browser/jobManagementUtilities';
+import { NotebookCacheObject } from 'sql/workbench/services/jobManagement/common/jobManagementService';
+import { NewNotebookJobAction, RunJobAction, EditNotebookJobAction, JobsRefreshAction, IJobActionInfo, DeleteNotebookAction, OpenLatestRunMaterializedNotebook } from 'sql/workbench/contrib/jobManagement/browser/jobActions';
+import { JobManagementUtilities } from 'sql/workbench/services/jobManagement/browser/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
-import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
+import { IJobManagementService } from 'sql/workbench/services/jobManagement/common/interfaces';
 import { JobManagementView, JobActionContext } from 'sql/workbench/contrib/jobManagement/browser/jobManagementView';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -27,13 +27,15 @@ import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { escape } from 'sql/base/common/strings';
-import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { tableBackground, cellBackground, cellBorderColor } from 'sql/platform/theme/common/colors';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { find, fill } from 'vs/base/common/arrays';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { IColorTheme } from 'vs/platform/theme/common/themeService';
 
 
 export const NOTEBOOKSVIEW_SELECTOR: string = 'notebooksview-component';
@@ -407,14 +409,14 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 					break;
 				}
 			}
-			this.openLastNRun(targetNotebook, barId, 5);
+			this.openLastNRun(targetNotebook, barId, 5).catch(onUnexpectedError);
 			e.stopPropagation();
 		});
 
 		// cache the dataview for future use
 		this._notebookCacheObject.dataView = this.dataView;
 		this.filterValueMap['start'] = [[], this.dataView.getItems()];
-		this.loadJobHistories();
+		this.loadJobHistories().catch(onUnexpectedError);
 	}
 
 	private highlightErrorRows(e) {
@@ -582,7 +584,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		this.rowDetail.applyTemplateNewLineHeight(item, true);
 	}
 
-	private async loadJobHistories() {
+	private async loadJobHistories(): Promise<void> {
 		if (this.notebooks) {
 			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 			let separatedJobs = this.separateFailingJobs();
@@ -590,7 +592,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			// so they can be expanded quicker
 			let failing = separatedJobs[0];
 			let passing = separatedJobs[1];
-			Promise.all([this.curateJobHistory(failing, ownerUri), this.curateJobHistory(passing, ownerUri)]);
+			await Promise.all([this.curateJobHistory(failing, ownerUri), this.curateJobHistory(passing, ownerUri)]);
 		}
 	}
 

@@ -8,15 +8,16 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 
 ## **Download the latest Azure Data Studio release**
 
-Platform | Link
--- | --
-Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2113530
-Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2113628
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2113529
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2113528
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2113627
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=2113718
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=2113344
+| Platform																|
+| ---------------------------------------	|
+| [Windows User Installer][win-user]			|
+| [Windows System Installer][win-system]	|
+| [Windows ZIP][win-zip]									|
+| [macOS ZIP][osx-zip]										|
+| [Linux TAR.GZ][linux-zip]								|
+| [Linux RPM][linux-rpm]									|
+| [Linux DEB][linux-deb]									|
+
 
 Go to our [download page](https://aka.ms/azuredatastudio) for more specific instructions.
 
@@ -140,3 +141,11 @@ And of course, we'd like to thank the authors of all upstream dependencies.  Ple
 Copyright (c) Microsoft Corporation. All rights reserved.
 
 Licensed under the [Source EULA](LICENSE.txt).
+
+[win-user]: https://go.microsoft.com/fwlink/?linkid=2121609
+[win-system]: https://go.microsoft.com/fwlink/?linkid=2121612
+[win-zip]: https://go.microsoft.com/fwlink/?linkid=2121511
+[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2121611
+[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2121510
+[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2121613
+[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2121610

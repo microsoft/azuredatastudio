@@ -137,7 +137,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					self.wizard.registerDisposable(disposable);
 				},
 				onNewInputComponentCreated: (name: string, component: azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent): void => {
-					self.inputComponents[name] = component;
+					self.inputComponents[name] = { component: component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);

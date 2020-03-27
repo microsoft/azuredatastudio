@@ -19,7 +19,7 @@
 	"linuxIconName": "com.azuredatastudio.oss",
 	"licenseFileName": "LICENSE.txt",
 	"reportIssueUrl": "https://github.com/Microsoft/azuredatastudio/issues/new?labels=customer%20reported%20issue",
-	"requestFeatureUrl": "https://github.com/Microsoft/azuredatastudio/issues/new?labels=feature-request",
+	"requestFeatureUrl": "https://go.microsoft.com/fwlink/?linkid=2118021",
 	"privacyStatementUrl": "https://privacy.microsoft.com/en-us/privacystatement",
 	"telemetryOptOutUrl": "https://github.com/Microsoft/azuredatastudio/wiki/How-to-Disable-Telemetry-Reporting",
 	"urlProtocol": "azuredatastudio",
@@ -29,7 +29,7 @@
 	},
 	"sendASmile": {
 		"reportIssueUrl": "https://github.com/Microsoft/azuredatastudio/issues/new?labels=customer%20reported%20issue",
-		"requestFeatureUrl": "https://github.com/Microsoft/azuredatastudio/issues/new?labels=feature-request"
+		"requestFeatureUrl": "https://go.microsoft.com/fwlink/?linkid=2118115"
 	},
 	"gettingStartedUrl": "https://go.microsoft.com/fwlink/?linkid=862039",
 	"releaseNotesUrl": "https://go.microsoft.com/fwlink/?linkid=875578",

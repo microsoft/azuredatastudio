@@ -11,10 +11,18 @@ import { ColorId, FontStyle, LanguageId, MetadataConsts, StandardTokenType, Toke
 import { writeUInt32BE, readUInt32BE } from 'vs/base/common/buffer';
 import { CharCode } from 'vs/base/common/charCode';
 
-export function countEOL(text: string): [number, number, number] {
+export const enum StringEOL {
+	Unknown = 0,
+	Invalid = 3,
+	LF = 1,
+	CRLF = 2
+}
+
+export function countEOL(text: string): [number, number, number, StringEOL] {
 	let eolCount = 0;
 	let firstLineLength = 0;
 	let lastLineStart = 0;
+	let eol: StringEOL = StringEOL.Unknown;
 	for (let i = 0, len = text.length; i < len; i++) {
 		const chr = text.charCodeAt(i);
 
@@ -25,12 +33,16 @@ export function countEOL(text: string): [number, number, number] {
 			eolCount++;
 			if (i + 1 < len && text.charCodeAt(i + 1) === CharCode.LineFeed) {
 				// \r\n... case
+				eol |= StringEOL.CRLF;
 				i++; // skip \n
 			} else {
 				// \r... case
+				eol |= StringEOL.Invalid;
 			}
 			lastLineStart = i + 1;
 		} else if (chr === CharCode.LineFeed) {
+			// \n... case
+			eol |= StringEOL.LF;
 			if (eolCount === 0) {
 				firstLineLength = i;
 			}
@@ -41,7 +53,7 @@ export function countEOL(text: string): [number, number, number] {
 	if (eolCount === 0) {
 		firstLineLength = text.length;
 	}
-	return [eolCount, firstLineLength, text.length - lastLineStart];
+	return [eolCount, firstLineLength, text.length - lastLineStart, eol];
 }
 
 function getDefaultMetadata(topLevelLanguageId: LanguageId): number {
@@ -781,46 +793,63 @@ export class TokensStore2 {
 
 		let aIndex = 0;
 		let result: number[] = [], resultLen = 0;
+		let lastEndOffset = 0;
+
+		const emitToken = (endOffset: number, metadata: number) => {
+			if (endOffset === lastEndOffset) {
+				return;
+			}
+			lastEndOffset = endOffset;
+			result[resultLen++] = endOffset;
+			result[resultLen++] = metadata;
+		};
+
 		for (let bIndex = 0; bIndex < bLen; bIndex++) {
 			const bStartCharacter = bTokens.getStartCharacter(bIndex);
 			const bEndCharacter = bTokens.getEndCharacter(bIndex);
 			const bMetadata = bTokens.getMetadata(bIndex);
 
+			const bMask = (
+				((bMetadata & MetadataConsts.SEMANTIC_USE_ITALIC) ? MetadataConsts.ITALIC_MASK : 0)
+				| ((bMetadata & MetadataConsts.SEMANTIC_USE_BOLD) ? MetadataConsts.BOLD_MASK : 0)
+				| ((bMetadata & MetadataConsts.SEMANTIC_USE_UNDERLINE) ? MetadataConsts.UNDERLINE_MASK : 0)
+				| ((bMetadata & MetadataConsts.SEMANTIC_USE_FOREGROUND) ? MetadataConsts.FOREGROUND_MASK : 0)
+				| ((bMetadata & MetadataConsts.SEMANTIC_USE_BACKGROUND) ? MetadataConsts.BACKGROUND_MASK : 0)
+			) >>> 0;
+			const aMask = (~bMask) >>> 0;
+
 			// push any token from `a` that is before `b`
 			while (aIndex < aLen && aTokens.getEndOffset(aIndex) <= bStartCharacter) {
-				result[resultLen++] = aTokens.getEndOffset(aIndex);
-				result[resultLen++] = aTokens.getMetadata(aIndex);
+				emitToken(aTokens.getEndOffset(aIndex), aTokens.getMetadata(aIndex));
 				aIndex++;
 			}
 
 			// push the token from `a` if it intersects the token from `b`
 			if (aIndex < aLen && aTokens.getStartOffset(aIndex) < bStartCharacter) {
-				result[resultLen++] = bStartCharacter;
-				result[resultLen++] = aTokens.getMetadata(aIndex);
+				emitToken(bStartCharacter, aTokens.getMetadata(aIndex));
 			}
 
 			// skip any tokens from `a` that are contained inside `b`
-			while (aIndex < aLen && aTokens.getEndOffset(aIndex) <= bEndCharacter) {
+			while (aIndex < aLen && aTokens.getEndOffset(aIndex) < bEndCharacter) {
+				emitToken(aTokens.getEndOffset(aIndex), (aTokens.getMetadata(aIndex) & aMask) | (bMetadata & bMask));
 				aIndex++;
 			}
 
-			const aMetadata = aTokens.getMetadata(Math.min(Math.max(0, aIndex - 1), aLen - 1));
-			const languageId = TokenMetadata.getLanguageId(aMetadata);
-			const tokenType = TokenMetadata.getTokenType(aMetadata);
+			if (aIndex < aLen && aTokens.getEndOffset(aIndex) === bEndCharacter) {
+				// `a` ends exactly at the same spot as `b`!
+				emitToken(aTokens.getEndOffset(aIndex), (aTokens.getMetadata(aIndex) & aMask) | (bMetadata & bMask));
+				aIndex++;
+			} else {
+				const aMergeIndex = Math.min(Math.max(0, aIndex - 1), aLen - 1);
 
-			// push the token from `b`
-			result[resultLen++] = bEndCharacter;
-			result[resultLen++] = (
-				(bMetadata & MetadataConsts.LANG_TTYPE_CMPL)
-				| ((languageId << MetadataConsts.LANGUAGEID_OFFSET) >>> 0)
-				| ((tokenType << MetadataConsts.TOKEN_TYPE_OFFSET) >>> 0)
-			);
+				// push the token from `b`
+				emitToken(bEndCharacter, (aTokens.getMetadata(aMergeIndex) & aMask) | (bMetadata & bMask));
+			}
 		}
 
 		// push the remaining tokens from `a`
 		while (aIndex < aLen) {
-			result[resultLen++] = aTokens.getEndOffset(aIndex);
-			result[resultLen++] = aTokens.getMetadata(aIndex);
+			emitToken(aTokens.getEndOffset(aIndex), aTokens.getMetadata(aIndex));
 			aIndex++;
 		}
 
@@ -952,10 +981,35 @@ export class TokensStore {
 		this._len += insertCount;
 	}
 
-	public setTokens(topLevelLanguageId: LanguageId, lineIndex: number, lineTextLength: number, _tokens: Uint32Array | ArrayBuffer | null): void {
+	public setTokens(topLevelLanguageId: LanguageId, lineIndex: number, lineTextLength: number, _tokens: Uint32Array | ArrayBuffer | null, checkEquality: boolean): boolean {
 		const tokens = TokensStore._massageTokens(topLevelLanguageId, lineTextLength, _tokens);
 		this._ensureLine(lineIndex);
+		const oldTokens = this._lineTokens[lineIndex];
 		this._lineTokens[lineIndex] = tokens;
+
+		if (checkEquality) {
+			return !TokensStore._equals(oldTokens, tokens);
+		}
+		return false;
+	}
+
+	private static _equals(_a: Uint32Array | ArrayBuffer | null, _b: Uint32Array | ArrayBuffer | null) {
+		if (!_a || !_b) {
+			return !_a && !_b;
+		}
+
+		const a = toUint32Array(_a);
+		const b = toUint32Array(_b);
+
+		if (a.length !== b.length) {
+			return false;
+		}
+		for (let i = 0, len = a.length; i < len; i++) {
+			if (a[i] !== b[i]) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	//#region Editing

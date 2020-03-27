@@ -6,13 +6,12 @@
 import 'vs/css!./media/gridPanel';
 
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
-import QueryRunner, { QueryGridDataProvider } from 'sql/platform/query/common/queryRunner';
+import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { ScrollableSplitView, IView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
-import { SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
 import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, RestoreTableAction, ChartDataAction, VisualizerDataAction } from 'sql/workbench/contrib/query/browser/actions';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
@@ -42,11 +41,13 @@ import { IAction } from 'vs/base/common/actions';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { ILogService } from 'vs/platform/log/common/log';
 import { localize } from 'vs/nls';
-import { IGridDataProvider } from 'sql/platform/query/common/gridDataProvider';
+import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { GridPanelState, GridTableState } from 'sql/workbench/contrib/query/common/gridPanelState';
+import { GridPanelState, GridTableState } from 'sql/workbench/common/editor/query/gridTableState';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
+import { Progress } from 'vs/platform/progress/common/progress';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -335,6 +336,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	public id = generateUuid();
 	readonly element: HTMLElement = this.container;
+	protected tableContainer: HTMLElement;
 
 	private _state: GridTableState;
 
@@ -365,7 +367,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.state = state;
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
-		this.container.className = 'grid-panel';
 
 		this.columns = this.resultSet.columnInfo.map((c, i) => {
 			let isLinked = c.isXml || c.isJson;
@@ -434,11 +435,12 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			this.container.appendChild(actionBarContainer);
 		}
 
-		let tableContainer = document.createElement('div');
-		tableContainer.style.display = 'inline-block';
-		tableContainer.style.width = `calc(100% - ${ACTIONBAR_WIDTH}px)`;
+		this.tableContainer = document.createElement('div');
+		this.tableContainer.className = 'grid-panel';
+		this.tableContainer.style.display = 'inline-block';
+		this.tableContainer.style.width = `calc(100% - ${ACTIONBAR_WIDTH}px)`;
 
-		this.container.appendChild(tableContainer);
+		this.container.appendChild(this.tableContainer);
 
 		let collection = new VirtualizedCollection(
 			50,
@@ -462,7 +464,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			defaultColumnWidth: 120
 		};
 		this.dataProvider = new AsyncDataProvider(collection);
-		this.table = this._register(new Table(tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
+		this.table = this._register(new Table(this.tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setTableTitle(localize('resultsGrid', "Results grid"));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
@@ -580,8 +582,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				let content = value.displayValue;
 
 				const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
-				const model = await input.resolve();
-				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, model.textEditorModel, FormattingMode.Explicit, CancellationToken.None);
+				await input.load();
+				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
 				return this.editorService.openEditor(input);
 			});
 		}

@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as renderers from './renderers';
-import { IRenderMime } from '../models/renderMimeInterfaces';
-import { ReadonlyJSONObject } from '../../common/models/jsonext';
-import * as tableRenderers from 'sql/workbench/contrib/notebook/browser/outputs/tableRenderers';
 import { Deferred } from 'sql/base/common/promise';
+import { ReadonlyJSONObject } from 'sql/workbench/services/notebook/common/jsonext';
+import * as tableRenderers from 'sql/workbench/contrib/notebook/browser/outputs/tableRenderers';
+import type { IRenderMime } from 'sql/workbench/services/notebook/browser/outputs/renderMimeInterfaces';
 
 /**
  * A common base class for mime renderers.

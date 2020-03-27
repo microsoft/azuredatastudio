@@ -8,12 +8,13 @@ import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/ser
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 
 import * as TypeMoq from 'typemoq';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { TestTree } from 'sql/workbench/contrib/objectExplorer/test/browser/treeMock';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 
 suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
@@ -24,7 +25,17 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
 	setup(() => {
 		let instantiationService = new TestInstantiationService();
-		let mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict, {}, {}, new TestStorageService());
+		instantiationService.stub(IStorageService, new TestStorageService());
+		let mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict,
+			undefined, //connection store
+			undefined, // connectionstatusmanager
+			undefined, // connectiondialog service
+			instantiationService, // instantiation service
+			undefined, // editor service
+			undefined, // telemetryservice
+			undefined, // configuration service
+			new TestCapabilitiesService(), // capabilities service
+		);
 		mockConnectionManagementService.setup(x => x.getConnectionGroups()).returns(x => []);
 		mockConnectionManagementService.setup(x => x.hasRegisteredServers()).returns(() => true);
 		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, undefined, undefined, undefined, capabilitiesService);
@@ -90,7 +101,7 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 	});
 
 	test('The tree refreshes when new capabilities are registered', () => {
-		capabilitiesService.fireCapabilitiesRegistered(undefined);
+		capabilitiesService.fireCapabilitiesRegistered(undefined, undefined);
 		mockRefreshTreeMethod.verify(x => x(), TypeMoq.Times.once());
 	});
 });

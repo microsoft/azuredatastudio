@@ -117,14 +117,14 @@ export function generateUriWithPrefix(connection: IConnectionProfile, prefix: st
 
 export function findProfileInGroup(og: IConnectionProfile, groups: ConnectionProfileGroup[]): ConnectionProfile | undefined {
 	for (let group of groups) {
-		for (let conn of group.connections) {
+		for (let conn of group.connections!) {
 			if (conn.id === og.id) {
 				return conn;
 			}
 		}
 
 		if (group.hasChildren()) {
-			let potentialReturn = findProfileInGroup(og, group.children);
+			let potentialReturn = findProfileInGroup(og, group.children!);
 			if (potentialReturn) {
 				return potentialReturn;
 			}

@@ -18,7 +18,7 @@ import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/ba
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
-import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
+import { IBackupUiService } from 'sql/workbench/contrib/backup/common/backupUiService';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
 
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
@@ -30,9 +30,10 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import { ITheme } from 'vs/platform/theme/common/themeService';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+import { fileFiltersSet } from 'sql/workbench/services/restore/common/constants';
+import { IColorTheme } from 'vs/platform/theme/common/themeService';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -348,7 +349,7 @@ export class BackupComponent extends AngularDisposable {
 		this.mediaDescriptionBox.disable();
 
 		this.registerListeners();
-		this.updateTheme(this.themeService.getTheme());
+		this.updateTheme(this.themeService.getColorTheme());
 	}
 
 	ngAfterViewInit() {
@@ -551,7 +552,7 @@ export class BackupComponent extends AngularDisposable {
 	}
 
 	// Update theming that is specific to backup dialog
-	private updateTheme(theme: ITheme): void {
+	private updateTheme(theme: IColorTheme): void {
 		// set modal footer style
 		let footerHtmlElement: HTMLElement = <HTMLElement>this.modalFooterElement.nativeElement;
 		const backgroundColor = theme.getColor(SIDE_BAR_BACKGROUND);
@@ -654,7 +655,7 @@ export class BackupComponent extends AngularDisposable {
 	private onAddClick(): void {
 		this.fileBrowserDialogService.showDialog(this._uri,
 			this.defaultNewBackupFolder,
-			BackupConstants.fileFiltersSet,
+			fileFiltersSet,
 			FileValidationConstants.backup,
 			false,
 			(filepath => this.handlePathAdded(filepath)));

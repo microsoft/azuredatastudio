@@ -11,8 +11,8 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import * as types from 'vs/base/common/types';
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
-import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { startsWith } from 'vs/base/common/strings';
+import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 
 export interface IOptionElement {
 	optionWidget: any;
@@ -21,7 +21,7 @@ export interface IOptionElement {
 }
 
 export function createOptionElement(option: azdata.ServiceOption, rowContainer: HTMLElement, options: { [name: string]: any },
-	optionsMap: { [optionName: string]: IOptionElement }, contextViewService: IContextViewService, onFocus: (name) => void): void {
+	optionsMap: { [optionName: string]: IOptionElement }, contextViewService: IContextViewService, onFocus: (name) => void): IOptionElement {
 	let possibleInputs: string[] = [];
 	let optionValue = getOptionValueAndCategoryValues(option, options, possibleInputs);
 	let optionWidget: any;
@@ -63,13 +63,15 @@ export function createOptionElement(option: azdata.ServiceOption, rowContainer: 
 		}
 		inputElement = findElement(rowContainer, 'input');
 	}
-	optionsMap[option.name] = { optionWidget: optionWidget, option: option, optionValue: optionValue };
+	const optionElement = { optionWidget: optionWidget, option: option, optionValue: optionValue };
+	optionsMap[option.name] = optionElement;
 	inputElement.onfocus = () => onFocus(option.name);
+	return optionElement;
 }
 
 export function getOptionValueAndCategoryValues(option: azdata.ServiceOption, options: { [optionName: string]: any }, possibleInputs: string[]): any {
 	let optionValue = option.defaultValue;
-	if (options[option.name]) {
+	if (options[option.name] !== undefined) {
 		// if the value type is boolean, the option value can be either boolean or string
 		if (option.valueType === ServiceOptionType.boolean) {
 			if (options[option.name] === true || options[option.name] === trueInputValue) {

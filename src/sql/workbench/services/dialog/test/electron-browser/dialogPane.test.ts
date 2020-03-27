@@ -9,6 +9,7 @@ import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
 import { DialogComponentParams } from 'sql/workbench/services/dialog/browser/dialogContainer.component';
 import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
+import { workbenchInstantiationService } from 'vs/workbench/test/electron-browser/workbenchTestServices';
 
 
 interface BootstrapAngular {
@@ -41,7 +42,7 @@ suite('Dialog Pane Tests', () => {
 		});
 		dialog.content = modelViewId;
 		const themeService = new TestThemeService();
-		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, undefined, themeService, false);
+		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, workbenchInstantiationService(), themeService, undefined);
 		dialogPane.createBody(container);
 		assert.equal(bootstrapCalls, 1);
 	});
@@ -56,7 +57,7 @@ suite('Dialog Pane Tests', () => {
 		});
 		dialog.content = [new DialogTab('', modelViewId)];
 		const themeService = new TestThemeService();
-		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, undefined, themeService, false);
+		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, workbenchInstantiationService(), themeService, false);
 		dialogPane.createBody(container);
 		assert.equal(bootstrapCalls, 1);
 	});
@@ -73,7 +74,7 @@ suite('Dialog Pane Tests', () => {
 		let modelViewId2 = 'test_content_2';
 		dialog.content = [new DialogTab('tab1', modelViewId1), new DialogTab('tab2', modelViewId2)];
 		const themeService = new TestThemeService();
-		let dialogPane = new DialogPane(dialog.title, dialog.content, valid => dialog.notifyValidityChanged(valid), undefined, themeService, false);
+		let dialogPane = new DialogPane(dialog.title, dialog.content, valid => dialog.notifyValidityChanged(valid), workbenchInstantiationService(), themeService, false);
 		dialogPane.createBody(container);
 
 		let validityChanges: boolean[] = [];

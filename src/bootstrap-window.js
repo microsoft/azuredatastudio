@@ -31,7 +31,7 @@ exports.load = function (modulePaths, resultCallback, options) {
 
 	const args = parseURLQueryArgs();
 	/**
-	 * // configuration: IWindowConfiguration
+	 * // configuration: INativeWindowConfiguration
 	 * @type {{
 	 * zoomLevel?: number,
 	 * extensionDevelopmentPath?: string[],
@@ -111,6 +111,7 @@ exports.load = function (modulePaths, resultCallback, options) {
 		'@angular/platform-browser-dynamic',
 		'@angular/router',
 		'rxjs/Observable',
+		'rxjs/add/observable/fromPromise',
 		'rxjs/Subject',
 		'rxjs/Observer',
 		'slickgrid/lib/jquery.event.drag-2.3.0',
@@ -231,7 +232,7 @@ function onUnexpectedError(error, enableDeveloperTools) {
 
 	console.error('[uncaught exception]: ' + error);
 
-	if (error.stack) {
+	if (error && error.stack) {
 		console.error(error.stack);
 	}
 }

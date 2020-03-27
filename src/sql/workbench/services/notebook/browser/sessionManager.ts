@@ -5,8 +5,8 @@
 
 import { nb } from 'azdata';
 import { localize } from 'vs/nls';
-import { FutureInternal } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
 
 export const noKernel: string = localize('noKernel', "No Kernel");
 const runNotebookDisabled = localize('runNotebookDisabled', "Cannot run cells as no kernel has been configured");

@@ -10,10 +10,8 @@ import {
 } from '@angular/core';
 
 import * as azdata from 'azdata';
-import { ColumnSizingMode } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
@@ -27,11 +25,18 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+
+export enum ColumnSizingMode {
+	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
+	AutoFit = 1,	// columns will be ForceFit up to a certain number; currently 3.  At 4 or more the behavior will switch to NO force fit
+	DataFit = 2		// columns use sizing based on cell data, horiz scroll bar present if more cells than visible in view area
+}
 
 @Component({
 	selector: 'modelview-table',
 	template: `
-		<div #table style="height:100%;" [style.font-size]="fontSize" [style.width]="width" tabindex="-1"></div>
+		<div #table style="height:100%;" [style.font-size]="fontSize" [style.width]="width"></div>
 	`
 })
 export default class TableComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
@@ -142,9 +147,9 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				});
 			}));
 
-			this._table.grid.onKeyDown.subscribe((e: KeyboardEvent) => {
+			this._table.grid.onKeyDown.subscribe((e: DOMEvent) => {
 				if (this.moveFocusOutWithTab) {
-					let event = new StandardKeyboardEvent(e);
+					let event = new StandardKeyboardEvent(e as KeyboardEvent);
 					if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 						e.stopImmediatePropagation();
 						(<HTMLElement>(<HTMLElement>this._inputContainer.nativeElement).previousElementSibling).focus();
@@ -308,6 +313,15 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		this._table.registerPlugin(checkboxSelectColumn);
 		this._table.columns = this._tableColumns;
 		this._table.autosizeColumns();
+	}
+
+	public focus(): void {
+		if (this._table.grid.getDataLength() > 0) {
+			if (!this._table.grid.getActiveCell()) {
+				this._table.grid.setActiveCell(0, 0);
+			}
+			this._table.grid.getActiveCellNode().focus();
+		}
 	}
 
 	// CSS-bound properties

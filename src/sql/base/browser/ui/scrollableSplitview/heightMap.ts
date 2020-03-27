@@ -45,6 +45,7 @@ export class HeightMap {
 			viewItem = this.heightMap[i - 1];
 
 			if (!viewItem) {
+				// eslint-disable-next-line no-console
 				console.error('view item doesnt exist');
 				return undefined;
 			}
@@ -52,7 +53,7 @@ export class HeightMap {
 			totalSize = viewItem.top + viewItem.height;
 		}
 
-		let boundSplice = this.heightMap.splice.bind(this.heightMap, i, 0);
+		const startingIndex = i;
 
 		let itemsToInsert: IViewItem[] = [];
 
@@ -64,7 +65,7 @@ export class HeightMap {
 			sizeDiff += viewItem.height;
 		}
 
-		boundSplice.apply(this.heightMap, itemsToInsert);
+		this.heightMap.splice(startingIndex, 0, ...itemsToInsert);
 
 		for (j = i; j < this.heightMap.length; j++) {
 			viewItem = this.heightMap[j];
@@ -100,6 +101,7 @@ export class HeightMap {
 			viewItem = this.heightMap[i];
 
 			if (!viewItem) {
+				// eslint-disable-next-line no-console
 				console.error('view item doesnt exist');
 				return;
 			}

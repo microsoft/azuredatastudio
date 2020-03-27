@@ -3,36 +3,33 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Subject } from 'rxjs/Subject';
-import { Subscription } from 'rxjs/Subscription';
-
 import { IAngularEventingService, IAngularEvent, AngularEventType } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export class AngularEventingService implements IAngularEventingService {
 	public _serviceBrand: undefined;
-	private _angularMap = new Map<string, Subject<IAngularEvent>>();
+	private _angularMap = new Map<string, Emitter<IAngularEvent>>();
 
 	constructor(
 		@ILogService private readonly logService: ILogService
 	) { }
 
-	public onAngularEvent(uri: string, cb: (event: IAngularEvent) => void): Subscription {
-		let subject = this._angularMap.get(uri);
-		if (!subject) {
-			subject = new Subject<IAngularEvent>();
-			this._angularMap.set(uri, subject);
+	public onAngularEvent(uri: string): Event<IAngularEvent> {
+		let emitter = this._angularMap.get(uri);
+		if (!emitter) {
+			emitter = new Emitter<IAngularEvent>();
+			this._angularMap.set(uri, emitter);
 		}
-		let sub = subject.subscribe(cb);
-		return sub;
+		return emitter.event;
 	}
 
 	public sendAngularEvent(uri: string, event: AngularEventType, payload?: any): void {
-		const subject = this._angularMap.get(uri);
-		if (!subject) {
+		const emitter = this._angularMap.get(uri);
+		if (!emitter) {
 			this.logService.warn('Got request to send an event to a dashboard that has not started listening');
 		} else {
-			subject.next({ event, payload });
+			emitter.fire({ event, payload });
 		}
 	}
 }

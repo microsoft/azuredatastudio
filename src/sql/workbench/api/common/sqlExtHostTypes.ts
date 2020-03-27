@@ -41,6 +41,11 @@ export enum EditRowState {
 	dirtyUpdate = 3
 }
 
+export enum ExtensionNodeType {
+	Server = 'Server',
+	Database = 'Database'
+}
+
 export enum TaskStatus {
 	NotStarted = 0,
 	InProgress = 1,
@@ -168,7 +173,9 @@ export enum ModelComponentTypes {
 	Dom,
 	Hyperlink,
 	Image,
-	RadioCardGroup
+	RadioCardGroup,
+	TabbedPanel,
+	Separator
 }
 
 export enum ColumnSizingMode {
@@ -197,11 +204,6 @@ export enum StepCompletionAction {
 	QuitWithFailure = 2,
 	GoToNextStep = 3,
 	GoToStep = 4
-}
-
-export enum ExtensionNodeType {
-	Server = 'Server',
-	Database = 'Database'
 }
 
 export interface CheckBoxInfo {
@@ -393,7 +395,9 @@ export class TreeComponentItem extends vsExtTypes.TreeItem {
 export enum AzureResource {
 	ResourceManagement = 0,
 	Sql = 1,
-	OssRdbms = 2
+	OssRdbms = 2,
+	AzureKeyVault = 3,
+	Graph = 4
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {
@@ -825,3 +829,13 @@ export type QueryEventType =
 	| 'queryStop'
 	| 'executionPlan'
 	| 'visualize';
+
+export enum TabOrientation {
+	Vertical = 'vertical',
+	Horizontal = 'horizontal'
+}
+
+
+export interface TabbedPanelLayout {
+	orientation: TabOrientation;
+}

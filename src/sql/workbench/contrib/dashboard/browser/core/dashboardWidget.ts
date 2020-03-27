@@ -7,7 +7,8 @@ import { InjectionToken, OnDestroy } from '@angular/core';
 import { NgGridItemConfig } from 'angular2-grid';
 import { Action } from 'vs/base/common/actions';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IDashboardTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
+import { TabType } from 'sql/base/browser/ui/panel/tab.component';
+import { IDashboardTab } from 'sql/workbench/services/dashboard/browser/common/interfaces';
 
 export interface IDashboardWidget {
 	actions: Array<Action>;
@@ -41,8 +42,9 @@ export interface TabConfig extends IDashboardTab {
 	editable: boolean;
 	canClose: boolean;
 	actions?: Array<Action>;
-	iconClass?: string;
+	type?: TabType;
 }
+
 
 export type IUserFriendlyIcon = string | { light: string; dark: string; };
 

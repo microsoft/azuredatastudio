@@ -278,7 +278,7 @@ export class PerFolderServerInstance implements IServerInstance {
 						this._uri = url;
 						this._port = port;
 					}
-					this.notifyStarted(install, url.toString());
+					this.notifyStarted(install, url.toString(true));
 					this._isStarted = true;
 
 					this.updateListeners(handleStdout, handleStdErr, onErrorBeforeStartup, onExitBeforeStart);

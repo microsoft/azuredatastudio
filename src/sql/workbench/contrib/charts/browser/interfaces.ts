@@ -7,6 +7,7 @@ import { Dimension } from 'vs/base/browser/dom';
 import { mixin } from 'sql/base/common/objects';
 import * as types from 'vs/base/common/types';
 import { IInsightOptions, InsightType, ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 
 export interface IPointDataSet {
 	data: Array<{ x: number | string, y: number }>;
@@ -30,11 +31,6 @@ export function customMixin(destination: any, source: any, overwrite?: boolean):
 		destination = source;
 	}
 	return destination;
-}
-
-export interface IInsightData {
-	columns: Array<string>;
-	rows: Array<Array<string>>;
 }
 
 export interface IInsight {

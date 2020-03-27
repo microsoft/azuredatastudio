@@ -18,9 +18,10 @@ import * as DOM from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Emitter } from 'vs/base/common/event';
-import { attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IThemable } from 'vs/base/common/styler';
+import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
+import { localize } from 'vs/nls';
 
 export class DialogPane extends Disposable implements IThemable {
 	private _tabbedPanel: TabbedPanel;
@@ -45,6 +46,10 @@ export class DialogPane extends Disposable implements IThemable {
 		public description?: string,
 	) {
 		super();
+	}
+
+	public get pageNumberDisplayText(): string {
+		return localize('wizardPageNumberDisplayText', "Step {0}", this.pageNumber);
 	}
 
 	public createBody(container: HTMLElement): HTMLElement {
@@ -109,7 +114,7 @@ export class DialogPane extends Disposable implements IThemable {
 	 * Bootstrap angular for the dialog's model view controller with the given model view ID
 	 */
 	private initializeModelViewContainer(bodyContainer: HTMLElement, modelViewId: string, tab?: DialogTab) {
-		bootstrapAngular(this._instantiationService,
+		this._instantiationService.invokeFunction(bootstrapAngular,
 			DialogModule,
 			bodyContainer,
 			'dialog-modelview-container',

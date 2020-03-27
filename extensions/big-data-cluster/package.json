@@ -2,11 +2,11 @@
 	"name": "big-data-cluster",
 	"displayName": "%text.sqlServerBigDataClusters%",
 	"description": "%description%",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"publisher": "Microsoft",
 	"preview": true,
 	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
-	"icon": "images/sqlserver.png",
+	"icon": "images/extension.png",
 	"engines": {
 		"vscode": "*",
 		"azdata": "*"
@@ -15,6 +15,10 @@
     "onCommand:bigDataClusters.command.mount",
     "onCommand:bigDataClusters.command.refreshmount",
     "onCommand:bigDataClusters.command.deletemount",
+    "onCommand:bigDataClusters.command.addController",
+    "onCommand:bigDataClusters.command.deleteController",
+    "onCommand:bigDataClusters.command.manageController",
+    "onCommand:bigDataClusters.command.refreshController",
     "onView:sqlBigDataCluster"
 	],
 	"repository": {
@@ -108,10 +112,7 @@
 			{
 				"command": "bigDataClusters.command.addController",
 				"title": "%command.addController.title%",
-				"icon": {
-					"light": "resources/light/add.svg",
-					"dark": "resources/dark/add_inverse.svg"
-				}
+				"icon": "$(add)"
 			},
 			{
 				"command": "bigDataClusters.command.deleteController",
@@ -121,10 +122,7 @@
 			{
 				"command": "bigDataClusters.command.refreshController",
 				"title": "%command.refreshController.title%",
-				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh_inverse.svg"
-				}
+				"icon": "$(refresh)"
 			},
 			{
 				"command": "bigDataClusters.command.manageController",

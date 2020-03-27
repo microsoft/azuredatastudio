@@ -1,8 +1,8 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-import { JSONObject } from './jsonext';
 import { URI } from 'vs/base/common/uri';
+import { JSONObject } from 'sql/workbench/services/notebook/common/jsonext';
 
 /**
  * The namespace for URL-related functions.

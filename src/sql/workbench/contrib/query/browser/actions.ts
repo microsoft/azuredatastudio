@@ -9,20 +9,20 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IExtensionTipsService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
-import { SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { QueryEditor } from './queryEditor';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { isWindows } from 'vs/base/common/platform';
 import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
-import { IGridDataProvider } from 'sql/platform/query/common/gridDataProvider';
+import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import QueryRunner from 'sql/platform/query/common/queryRunner';
-import { GridTableState } from 'sql/workbench/contrib/query/common/gridPanelState';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
+import { GridTableState } from 'sql/workbench/common/editor/query/gridTableState';
 import * as Constants from 'sql/workbench/contrib/extensions/common/constants';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { getErrorMessage } from 'vs/base/common/errors';
+import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
@@ -78,6 +78,7 @@ export class SaveResultAction extends Action {
 	public async run(context: IGridActionContext): Promise<boolean> {
 		if (!context.gridDataProvider.canSerialize) {
 			this.notificationService.warn(localize('saveToFileNotSupported', "Save to file is not supported by the backing data source"));
+			return false;
 		}
 		try {
 			await context.gridDataProvider.serializeResults(this.format, mapForNumberColumn(context.selection));
@@ -220,7 +221,7 @@ export class ChartDataAction extends Action {
 		// show the visualizer extension recommendation notification
 		this.extensionTipsService.promptRecommendedExtensionsByScenario(Constants.visualizerExtensions);
 
-		const activeEditor = this.editorService.activeControl as QueryEditor;
+		const activeEditor = this.editorService.activeEditorPane as QueryEditor;
 		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
 		return Promise.resolve(true);
 	}

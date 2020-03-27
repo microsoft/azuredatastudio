@@ -2,11 +2,11 @@
 	"name": "query-history",
 	"displayName": "%queryHistory.displayName%",
 	"description": "%queryHistory.description%",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"publisher": "Microsoft",
 	"preview": true,
 	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
-	"icon": "images/sqlserver.png",
+	"icon": "images/extension.png",
 	"aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
 	"engines": {
 		"vscode": "^1.30.1",

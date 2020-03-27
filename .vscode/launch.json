@@ -16,8 +16,6 @@
 			"request": "attach",
 			"name": "Attach to Extension Host",
 			"port": 5870,
-			"timeout": 30000,
-			"restart": true,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			]
@@ -94,8 +92,11 @@
 			],
 			"webRoot": "${workspaceFolder}",
 			// Settings for js-debug:
+			"userDataDir": false,
 			"pauseForSourceMap": false,
-			"outFiles": ["${workspaceFolder}/out/**/*.js"],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
 		},
 		{
 			"type": "node",
@@ -197,7 +198,7 @@
 			"type": "node",
 			"request": "launch",
 			"name": "Run Unit Tests",
-			"program": "${workspaceFolder}/test/electron/index.js",
+			"program": "${workspaceFolder}/test/unit/electron/index.js",
 			"runtimeExecutable": "${workspaceFolder}/.build/electron/Azure Data Studio.app/Contents/MacOS/Electron",
 			"windows": {
 				"runtimeExecutable": "${workspaceFolder}/.build/electron/azuredatastudio.exe"

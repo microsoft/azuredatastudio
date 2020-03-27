@@ -13,10 +13,10 @@ import { azureResource } from '../../../../azureResource/azure-resource';
 import { ApiWrapper } from '../../../../apiWrapper';
 import { AzureResourceDatabaseTreeDataProvider } from '../../../../azureResource/providers/database/databaseTreeDataProvider';
 import { AzureResourceItemType } from '../../../../azureResource/constants';
-import { IAzureResourceService, AzureResourceDatabase } from '../../../../azureResource/interfaces';
+import { IAzureResourceService } from '../../../../azureResource/interfaces';
 
 // Mock services
-let mockDatabaseService: TypeMoq.IMock<IAzureResourceService<AzureResourceDatabase>>;
+let mockDatabaseService: TypeMoq.IMock<IAzureResourceService<azureResource.AzureResourceDatabase>>;
 let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 
@@ -62,15 +62,17 @@ mockTokens[mockTenantId] = {
 	tokenType: 'Bearer'
 };
 
-const mockDatabases: AzureResourceDatabase[] = [
+const mockDatabases: azureResource.AzureResourceDatabase[] = [
 	{
 		name: 'mock database 1',
+		id: 'mock-id-1',
 		serverName: 'mock database server 1',
 		serverFullName: 'mock database server full name 1',
 		loginName: 'mock login'
 	},
 	{
 		name: 'mock database 2',
+		id: 'mock-id-2',
 		serverName: 'mock database server 2',
 		serverFullName: 'mock database server full name 2',
 		loginName: 'mock login'
@@ -79,7 +81,7 @@ const mockDatabases: AzureResourceDatabase[] = [
 
 describe('AzureResourceDatabaseTreeDataProvider.info', function (): void {
 	beforeEach(() => {
-		mockDatabaseService = TypeMoq.Mock.ofType<IAzureResourceService<AzureResourceDatabase>>();
+		mockDatabaseService = TypeMoq.Mock.ofType<IAzureResourceService<azureResource.AzureResourceDatabase>>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 	});
@@ -97,12 +99,12 @@ describe('AzureResourceDatabaseTreeDataProvider.info', function (): void {
 
 describe('AzureResourceDatabaseTreeDataProvider.getChildren', function (): void {
 	beforeEach(() => {
-		mockDatabaseService = TypeMoq.Mock.ofType<IAzureResourceService<AzureResourceDatabase>>();
+		mockDatabaseService = TypeMoq.Mock.ofType<IAzureResourceService<azureResource.AzureResourceDatabase>>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 
 		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
-		mockDatabaseService.setup((o) => o.getResources(mockSubscription, TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabases));
+		mockDatabaseService.setup((o) => o.getResources(mockSubscription, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabases));
 		mockExtensionContext.setup((o) => o.asAbsolutePath(TypeMoq.It.isAnyString())).returns(() => TypeMoq.It.isAnyString());
 	});
 
@@ -119,7 +121,7 @@ describe('AzureResourceDatabaseTreeDataProvider.getChildren', function (): void 
 		should(child.subscription).undefined();
 		should(child.tenantId).undefined();
 		should(child.treeItem.id).equal('azure.resource.providers.database.treeDataProvider.databaseContainer');
-		should(child.treeItem.label).equal('SQL Databases');
+		should(child.treeItem.label).equal('SQL database');
 		should(child.treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);
 		should(child.treeItem.contextValue).equal('azure.resource.itemType.databaseContainer');
 	});

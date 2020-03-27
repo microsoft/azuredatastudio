@@ -9,7 +9,7 @@ import 'vs/css!./media/highlight';
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener, ViewChildren, QueryList } from '@angular/core';
 
 import { localize } from 'vs/nls';
-import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Emitter } from 'vs/base/common/event';
@@ -20,13 +20,13 @@ import { toDisposable } from 'vs/base/common/lifecycle';
 import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
-import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
-import { ISanitizer, defaultSanitizer } from 'sql/workbench/contrib/notebook/browser/outputs/sanitizer';
+import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
+import { ISanitizer, defaultSanitizer } from 'sql/workbench/services/notebook/browser/outputs/sanitizer';
 import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions';
-import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
-import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
+import { NotebookRange, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IColorTheme } from 'vs/platform/theme/common/themeService';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -68,6 +68,14 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._model.updateActiveCell(undefined);
 	}
 
+	@HostListener('document:keydown.meta.a', ['$event'])
+	onkeydown(e) {
+		// use preventDefault() to avoid invoking the editor's select all
+		// select the active .
+		e.preventDefault();
+		document.execCommand('selectAll');
+	}
+
 	private _content: string | string[];
 	private _lastTrustedMode: boolean;
 	private isEditMode: boolean;
@@ -97,6 +105,14 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}));
 	}
 
+	public get cellEditors(): ICellEditorProvider[] {
+		let editors: ICellEditorProvider[] = [];
+		if (this.markdowncodeCell) {
+			editors.push(...this.markdowncodeCell.toArray());
+		}
+		return editors;
+	}
+
 	//Gets sanitizer from ISanitizer interface
 	private get sanitizer(): ISanitizer {
 		if (this._sanitizer) {
@@ -111,15 +127,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	get activeCellId(): string {
 		return this._activeCellId;
-	}
-	/**
-	 * Returns the code editor of makrdown cell in edit mode.
-	 */
-	getEditor(): BaseTextEditor | undefined {
-		if (this.markdowncodeCell.length > 0) {
-			return this.markdowncodeCell.first.getEditor();
-		}
-		return undefined;
 	}
 
 	private setLoading(isLoading: boolean): void {
@@ -192,6 +199,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			this.setLoading(false);
 			let outputElement = <HTMLElement>this.output.nativeElement;
 			outputElement.innerHTML = this.markdownResult.element.innerHTML;
+			this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 		}
 	}
 
@@ -221,6 +229,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	public toggleEditMode(editMode?: boolean): void {
 		this.isEditMode = editMode !== undefined ? editMode : !this.isEditMode;
+		this.cellModel.isEditMode = this.isEditMode;
 		this.updateMoreActions();
 		this.updatePreview();
 		this._changeRef.detectChanges();
@@ -322,5 +331,18 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			return parent;
 		}
 		return children;
+	}
+
+	private getRenderedTextOutput(): string[] {
+		let textOutput: string[] = [];
+		let elements = this.getHtmlElements();
+		elements.forEach(element => {
+			if (element && element.innerText) {
+				textOutput.push(element.innerText);
+			} else {
+				textOutput.push('');
+			}
+		});
+		return textOutput;
 	}
 }

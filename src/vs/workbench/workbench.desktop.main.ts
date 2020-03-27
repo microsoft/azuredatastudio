@@ -19,7 +19,6 @@ import 'vs/workbench/workbench.common.main';
 
 
 //#region --- workbench (desktop main)
-import 'sql/setup'; // {{SQL CARBON EDIT}}
 
 import 'vs/workbench/electron-browser/desktop.contribution';
 import 'vs/workbench/electron-browser/desktop.main';
@@ -44,16 +43,16 @@ import 'vs/workbench/services/remote/electron-browser/remoteAgentServiceImpl';
 import 'vs/workbench/services/telemetry/electron-browser/telemetryService';
 import 'vs/workbench/services/configurationResolver/electron-browser/configurationResolverService';
 import 'vs/workbench/services/extensionManagement/node/extensionManagementService';
-import 'vs/workbench/services/accessibility/node/accessibilityService';
+import 'vs/workbench/services/accessibility/electron-browser/accessibilityService';
 import 'vs/workbench/services/remote/node/tunnelService';
 import 'vs/workbench/services/backup/node/backupFileService';
 import 'vs/workbench/services/url/electron-browser/urlService';
 import 'vs/workbench/services/workspaces/electron-browser/workspacesService';
 import 'vs/workbench/services/workspaces/electron-browser/workspaceEditingService';
+import 'vs/workbench/services/userDataSync/electron-browser/storageKeysSyncRegistryService';
 import 'vs/workbench/services/userDataSync/electron-browser/userDataSyncService';
-import 'vs/workbench/services/userDataSync/electron-browser/settingsSyncService';
 import 'vs/workbench/services/userDataSync/electron-browser/userDataAutoSyncService';
-import 'vs/workbench/services/userDataSync/electron-browser/userDataAuthTokenService';
+import 'vs/workbench/services/authentication/electron-browser/authenticationTokenService';
 import 'vs/workbench/services/authentication/browser/authenticationService';
 import 'vs/workbench/services/host/electron-browser/desktopHostService';
 import 'vs/workbench/services/request/electron-browser/requestService';
@@ -70,8 +69,11 @@ import 'vs/workbench/services/extensionResourceLoader/electron-browser/extension
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ICredentialsService } from 'vs/platform/credentials/common/credentials';
 import { KeytarCredentialsService } from 'vs/platform/credentials/node/credentialsService';
+import { TitlebarPart } from 'vs/workbench/electron-browser/parts/titlebar/titlebarPart';
+import { ITitleService } from 'vs/workbench/services/title/common/titleService';
 
 registerSingleton(ICredentialsService, KeytarCredentialsService, true);
+registerSingleton(ITitleService, TitlebarPart);
 
 //#endregion
 
@@ -80,8 +82,8 @@ import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';
 import { SqlOAuthService } from 'sql/platform/oAuth/electron-browser/sqlOAuthServiceImpl';
 import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/electron-browser/clipboardService';
-import { IQueryHistoryService } from 'sql/platform/queryHistory/common/queryHistoryService';
-import { QueryHistoryService } from 'sql/platform/queryHistory/common/queryHistoryServiceImpl';
+import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
+import { QueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryServiceImpl';
 
 registerSingleton(ISqlOAuthService, SqlOAuthService);
 registerSingleton(sqlIClipboardService, sqlClipboardService);

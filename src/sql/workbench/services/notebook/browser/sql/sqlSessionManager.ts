@@ -5,8 +5,7 @@
 
 import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage, ResultSetSummary } from 'azdata';
 import { localize } from 'vs/nls';
-import { FutureInternal, notebookConstants } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import QueryRunner from 'sql/platform/query/common/queryRunner';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
@@ -16,7 +15,6 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { escape } from 'sql/base/common/strings';
-import * as notebookUtils from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -28,6 +26,8 @@ import { getUriPrefix, uriPrefixes } from 'sql/platform/connection/common/utils'
 import { firstIndex } from 'vs/base/common/arrays';
 import { startsWith } from 'vs/base/common/strings';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
+import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
 
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;
@@ -312,7 +312,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			// Strip out the line
 			code = code.substring(firstLineEnd, code.length);
 			// Try and match to an external script magic. If we add more magics later, should handle transforms better
-			let magic = notebookUtils.tryMatchCellMagic(firstLine);
+			let magic = tryMatchCellMagic(firstLine);
 			if (magic) {
 				let executor = this._magicToExecutorMap.get(magic.toLowerCase());
 				if (executor) {
@@ -340,10 +340,12 @@ class SqlKernel extends Disposable implements nb.IKernel {
 				this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error);
 			});
 		}));
-		this._register(queryRunner.onMessage(message => {
+		this._register(queryRunner.onMessage(messages => {
 			// TODO handle showing a messages output (should be updated with all messages, only changing 1 output in total)
-			if (this._future && isUndefinedOrNull(message.selection)) {
-				this._future.handleMessage(message);
+			for (const message of messages) {
+				if (this._future && isUndefinedOrNull(message.selection)) {
+					this._future.handleMessage(message);
+				}
 			}
 		}));
 		this._register(queryRunner.onBatchEnd(batch => {
@@ -577,24 +579,30 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		};
 	}
 
-	private convertToHtmlTable(columns: IDbColumn[], d: QueryExecuteSubsetResult): string {
-		let htmlString = '<table>';
+	private convertToHtmlTable(columns: IDbColumn[], d: QueryExecuteSubsetResult): string[] {
+		// Adding 3 for <table>, column title rows, </table>
+		let htmlStringArr: string[] = new Array(d.resultSubset.rowCount + 3);
+		htmlStringArr[0] = '<table>';
 		if (columns.length > 0) {
-			htmlString += '<tr>';
+			let columnHeaders = '<tr>';
 			for (let column of columns) {
-				htmlString += '<th>' + escape(column.columnName) + '</th>';
+				columnHeaders += `<th>${escape(column.columnName)}</th>`;
 			}
-			htmlString += '</tr>';
+			columnHeaders += '</tr>';
+			htmlStringArr[1] = columnHeaders;
 		}
+		let i = 2;
 		for (const row of d.resultSubset.rows) {
-			htmlString += '<tr>';
-			for (let i = 0; i < columns.length; i++) {
-				htmlString += '<td>' + escape(row[i].displayValue) + '</td>';
+			let rowData = '<tr>';
+			for (let columnIndex = 0; columnIndex < columns.length; columnIndex++) {
+				rowData += `<td>${escape(row[columnIndex].displayValue)}</td>`;
 			}
-			htmlString += '</tr>';
+			rowData += '</tr>';
+			htmlStringArr[i] = rowData;
+			i++;
 		}
-		htmlString += '</table>';
-		return htmlString;
+		htmlStringArr[htmlStringArr.length - 1] = '</table>';
+		return htmlStringArr;
 	}
 
 	private convertToDisplayMessage(msg: IResultMessage | string): nb.IIOPubMessage {

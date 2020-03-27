@@ -10,7 +10,7 @@ import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
 
 import * as azdata from 'azdata';
 
-import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
+import { ITaskHandlerDescription } from 'sql/workbench/services/tasks/common/tasks';
 import { SqlMainContext, MainThreadTasksShape, ExtHostTasksShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 
 interface TaskHandler {

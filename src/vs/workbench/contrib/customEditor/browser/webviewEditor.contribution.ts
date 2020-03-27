@@ -17,7 +17,7 @@ import { CustomEditorInputFactory } from 'vs/workbench/contrib/customEditor/brow
 import { ICustomEditorService } from 'vs/workbench/contrib/customEditor/common/customEditor';
 import { WebviewEditor } from 'vs/workbench/contrib/webview/browser/webviewEditor';
 import './commands';
-import { CustomFileEditorInput } from './customEditorInput';
+import { CustomEditorInput } from './customEditorInput';
 import { CustomEditorContribution, customEditorsAssociationsKey, CustomEditorService } from './customEditors';
 
 registerSingleton(ICustomEditorService, CustomEditorService);
@@ -31,12 +31,14 @@ Registry.as<IEditorRegistry>(EditorExtensions.Editors).registerEditor(
 		WebviewEditor.ID,
 		'Webview Editor',
 	), [
-	new SyncDescriptor(CustomFileEditorInput)
+	new SyncDescriptor(CustomEditorInput)
 ]);
 
 Registry.as<IEditorInputFactoryRegistry>(EditorInputExtensions.EditorInputFactories).registerEditorInputFactory(
 	CustomEditorInputFactory.ID,
 	CustomEditorInputFactory);
+
+Registry.as<IEditorInputFactoryRegistry>(EditorInputExtensions.EditorInputFactories).registerCustomEditorInputFactory(CustomEditorInputFactory);
 
 Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 	.registerConfiguration({

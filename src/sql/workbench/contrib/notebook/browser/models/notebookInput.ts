@@ -9,29 +9,30 @@ import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
 import * as azdata from 'azdata';
 
-import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernelsForProvider } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
+import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernelsForProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER, IProviderInfo } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
-import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { Schemas } from 'vs/base/common/network';
-import { ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
+import { ITextFileSaveOptions, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { Deferred } from 'sql/base/common/promise';
 import { NotebookTextFileModel } from 'sql/workbench/contrib/notebook/browser/models/notebookTextFileModel';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
-import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorModel, IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
 import { NotebookFindModel } from 'sql/workbench/contrib/notebook/find/notebookFindModel';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -42,7 +43,7 @@ export class NotebookEditorModel extends EditorModel {
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
 	private _lastEditFullReplacement: boolean;
 	constructor(public readonly notebookUri: URI,
-		private textEditorModel: TextFileEditorModel | UntitledTextEditorModel | ResourceEditorModel,
+		private textEditorModel: ITextFileEditorModel | IUntitledTextEditorModel | ResourceEditorModel,
 		@INotebookService private notebookService: INotebookService,
 		@ITextResourcePropertiesService private textResourcePropertiesService: ITextResourcePropertiesService
 	) {
@@ -160,7 +161,8 @@ export class NotebookEditorModel extends EditorModel {
 	private sendNotebookSerializationStateChange(): void {
 		let notebookModel = this.getNotebookModel();
 		if (notebookModel) {
-			this.notebookService.serializeNotebookStateChange(this.notebookUri, NotebookChangeType.Saved);
+			this.notebookService.serializeNotebookStateChange(this.notebookUri, NotebookChangeType.Saved)
+				.catch(e => onUnexpectedError(e));
 		}
 	}
 
@@ -198,7 +200,7 @@ export abstract class NotebookInput extends EditorInput {
 	private _parentContainer: HTMLElement;
 	private readonly _layoutChanged: Emitter<void> = this._register(new Emitter<void>());
 	private _model: NotebookEditorModel;
-	private _untitledEditorModel: UntitledTextEditorModel;
+	private _untitledEditorModel: IUntitledTextEditorModel;
 	private _contentManager: IContentManager;
 	private _providersLoaded: Promise<void>;
 	private _dirtyListener: IDisposable;
@@ -209,7 +211,7 @@ export abstract class NotebookInput extends EditorInput {
 	private _notebookFindModel: NotebookFindModel;
 
 	constructor(private _title: string,
-		private resource: URI,
+		private _resource: URI,
 		private _textInput: TextInput,
 		@ITextModelService private textModelService: ITextModelService,
 		@IInstantiationService private instantiationService: IInstantiationService,
@@ -217,7 +219,6 @@ export abstract class NotebookInput extends EditorInput {
 		@IExtensionService private extensionService: IExtensionService
 	) {
 		super();
-		this.resource = resource;
 		this._standardKernels = [];
 		this._providersLoaded = this.assignProviders();
 		this._notebookEditorOpenedTimestamp = Date.now();
@@ -230,7 +231,7 @@ export abstract class NotebookInput extends EditorInput {
 		return this._textInput;
 	}
 
-	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<boolean> {
+	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<void> {
 		return this._textInput.revert(group, options);
 	}
 
@@ -283,12 +284,25 @@ export abstract class NotebookInput extends EditorInput {
 		return this._standardKernels;
 	}
 
-	save(groupId: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
-		return this.textInput.save(groupId, options);
+	async save(groupId: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+		this.updateModel();
+		let input = await this.textInput.save(groupId, options);
+		await this.setTrustForNewEditor(input);
+		return input;
 	}
 
-	saveAs(group: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
-		return this.textInput.saveAs(group, options);
+	async saveAs(group: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+		this.updateModel();
+		let input = await this.textInput.saveAs(group, options);
+		await this.setTrustForNewEditor(input);
+		return input;
+	}
+
+	private async setTrustForNewEditor(newInput: IEditorInput | undefined): Promise<void> {
+		let model = this._model.getNotebookModel();
+		if (model?.trustedMode && newInput?.resource !== this.resource) {
+			await this.notebookService.serializeNotebookStateChange(newInput.resource, NotebookChangeType.Saved, undefined, true);
+		}
 	}
 
 	public set standardKernels(value: IStandardKernelWithProvider[]) {
@@ -324,15 +338,15 @@ export abstract class NotebookInput extends EditorInput {
 
 	public abstract getTypeId(): string;
 
-	getResource(): URI {
-		return this.resource;
+	get resource(): URI {
+		return this._resource;
 	}
 
-	public get untitledEditorModel(): UntitledTextEditorModel {
+	public get untitledEditorModel(): IUntitledTextEditorModel {
 		return this._untitledEditorModel;
 	}
 
-	public set untitledEditorModel(value: UntitledTextEditorModel) {
+	public set untitledEditorModel(value: IUntitledTextEditorModel) {
 		this._untitledEditorModel = value;
 	}
 
@@ -346,7 +360,7 @@ export abstract class NotebookInput extends EditorInput {
 		if (this._model) {
 			return Promise.resolve(this._model);
 		} else {
-			let textOrUntitledEditorModel: TextFileEditorModel | UntitledTextEditorModel | ResourceEditorModel;
+			let textOrUntitledEditorModel: ITextFileEditorModel | IUntitledTextEditorModel | ResourceEditorModel;
 			if (this.resource.scheme === Schemas.untitled) {
 				if (this._untitledEditorModel) {
 					this._untitledEditorModel.textEditorModel.onBeforeAttached();

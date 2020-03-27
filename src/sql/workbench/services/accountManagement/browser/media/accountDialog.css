@@ -1,0 +1,95 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.no-account-view {
+	font-size: 12px;
+	padding: 15px;
+}
+
+.no-account-view .no-account-view-label {
+	padding-bottom: 15px;
+}
+
+.account-view .header {
+	position: relative;
+	line-height: 22px;
+	font-size: 11px;
+	font-weight: bold;
+	text-transform: uppercase;
+	padding-left: 20px;
+	padding-right: 12px;
+	overflow: hidden;
+	display: flex;
+}
+
+.account-view .header .title {
+	display: flex;
+	justify-content: flex-start;
+	flex: 1 1 auto;
+}
+
+.account-view .header .actions {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.account-view .header .actions .action-item .action-label {
+	width: 30px;
+	background-size: 16px;
+	background-position: center center;
+	background-repeat: no-repeat;
+	margin-right: 0;
+	height: 22px;
+}
+
+.account-view .header .count-badge-wrapper {
+	justify-content: flex-end;
+	/* hide the count badge as it is not providing much value and meanwhile not keyboard accessible*/
+	display: none;
+}
+
+.account-view .list-row {
+	padding: 12px;
+	line-height: 18px !important;
+}
+
+.account-view .list-row .codicon {
+	flex: 0 0 50px;
+	height: 50px;
+	width: 50px;
+	background-size: 50px;
+}
+
+.account-view .list-row .codicon .badge {
+	position: absolute;
+	top: 43px;
+	left: 43px;
+	overflow: hidden;
+	width: 22px;
+	height: 22px;
+}
+
+.account-view .list-row .codicon .badge .badge-content {
+	width: 22px;
+	height: 22px;
+	background-size: 22px;
+}
+
+.account-view .list-row .actions-container {
+	flex: 0 0 50px;
+}
+
+.account-view .list-row .actions-container .action-item .action-label {
+	width: 16px;
+	margin-left: 20px;
+	margin-right: 10px;
+	background-size: 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.account-view .list-row .actions-container .action-item .action-label.codicon.remove {
+	background-size: 14px !important;
+}

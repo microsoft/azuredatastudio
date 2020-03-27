@@ -22,10 +22,9 @@ import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/
 // import { ReleaseNotesManager } from './releaseNotesEditor';
 import { isWindows } from 'vs/base/common/platform';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { RawContextKey, IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { RawContextKey, IContextKey, IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
-import { FalseContext } from 'vs/platform/contextkey/common/contextkeys';
 import { ShowCurrentReleaseNotesActionId, CheckForVSCodeUpdateActionId } from 'vs/workbench/contrib/update/common/update';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
@@ -127,41 +126,41 @@ export class ProductContribution implements IWorkbenchContribution {
 		@IHostService hostService: IHostService,
 		@IProductService productService: IProductService
 	) {
-		if (!hostService.hasFocus) {
-			return;
-		}
+		hostService.hadLastFocus().then(hadLastFocus => {
+			if (!hadLastFocus) {
+				return;
+			}
 
-		const lastVersion = storageService.get(ProductContribution.KEY, StorageScope.GLOBAL, '');
-		const shouldShowReleaseNotes = configurationService.getValue<boolean>('update.showReleaseNotes');
+			const lastVersion = storageService.get(ProductContribution.KEY, StorageScope.GLOBAL, '');
+			const shouldShowReleaseNotes = configurationService.getValue<boolean>('update.showReleaseNotes');
 
-		// was there an update? if so, open release notes
-		const releaseNotesUrl = productService.releaseNotesUrl;
-		if (shouldShowReleaseNotes && !environmentService.args['skip-release-notes'] && releaseNotesUrl && lastVersion && productService.version !== lastVersion && productService.quality === 'stable') { // {{SQL CARBON EDIT}} Only show release notes for stable build
-			/* // {{SQL CARBON EDIT}} Prompt user to open release notes in browser until we can get ADS release notes from the web
-			showReleaseNotes(instantiationService, productService.version)
-				.then(undefined, () => {
-			*/
-			notificationService.prompt(
-				severity.Info,
-				nls.localize('read the release notes', "Welcome to {0} v{1}! Would you like to read the Release Notes?", productService.nameLong, productService.version),
-				[{
-					label: nls.localize('releaseNotes', "Release Notes"),
-					run: () => {
-						const uri = URI.parse(releaseNotesUrl);
-						openerService.open(uri);
-					}
-				}],
-				{ sticky: true }
-			);
-			// }); // {{SQL CARBON EDIT}}
-		}
+			// was there an update? if so, open release notes
+			const releaseNotesUrl = productService.releaseNotesUrl;
+			if (shouldShowReleaseNotes && !environmentService.args['skip-release-notes'] && releaseNotesUrl && lastVersion && productService.version !== lastVersion && productService.quality === 'stable') { // {{SQL CARBON EDIT}} Only show release notes for stable build) {
+				/*showReleaseNotes(instantiationService, productService.version) {{SQL CARBON EDIT}} Prompt user to open release notes in browser until we can get ADS release notes from the web
+					.then(undefined, () => {*/
+				notificationService.prompt(
+					severity.Info,
+					nls.localize('read the release notes', "Welcome to {0} v{1}! Would you like to read the Release Notes?", productService.nameLong, productService.version),
+					[{
+						label: nls.localize('releaseNotes', "Release Notes"),
+						run: () => {
+							const uri = URI.parse(releaseNotesUrl);
+							openerService.open(uri);
+						}
+					}],
+					{ sticky: true }
+				);
+			}/*);
+			}*/
 
-		// should we show the new license?
-		if (productService.licenseUrl && lastVersion && semver.satisfies(lastVersion, '<1.0.0') && semver.satisfies(productService.version, '>=1.0.0')) {
-			notificationService.info(nls.localize('licenseChanged', "Our license terms have changed, please click [here]({0}) to go through them.", productService.licenseUrl));
-		}
+			// should we show the new license?
+			if (productService.licenseUrl && lastVersion && semver.satisfies(lastVersion, '<1.0.0') && semver.satisfies(productService.version, '>=1.0.0')) {
+				notificationService.info(nls.localize('licenseChanged', "Our license terms have changed, please click [here]({0}) to go through them.", productService.licenseUrl));
+			}
 
-		storageService.store(ProductContribution.KEY, productService.version, StorageScope.GLOBAL);
+			storageService.store(ProductContribution.KEY, productService.version, StorageScope.GLOBAL);
+		});
 	}
 }
 
@@ -245,7 +244,7 @@ export class UpdateContribution extends Disposable implements IWorkbenchContribu
 		if (state.type === StateType.AvailableForDownload || state.type === StateType.Downloaded || state.type === StateType.Ready) {
 			badge = new NumberBadge(1, () => nls.localize('updateIsReady', "New {0} update available.", this.productService.nameLong)); // {{SQL CARBON EDIT}} change to namelong
 		} else if (state.type === StateType.CheckingForUpdates || state.type === StateType.Downloading || state.type === StateType.Updating) {
-			badge = new ProgressBadge(() => nls.localize('updateIsReady', "New {0} update available.", this.productService.nameLong)); // {{SQL CARBON EDIT}} change to namelong
+			badge = new ProgressBadge(() => nls.localize('checkingForUpdates', "Checking for Updates..."));
 			clazz = 'progress-badge';
 			priority = 1;
 		}
@@ -417,7 +416,7 @@ export class UpdateContribution extends Disposable implements IWorkbenchContribu
 			command: {
 				id: 'update.checking',
 				title: nls.localize('checkingForUpdates', "Checking for Updates..."),
-				precondition: FalseContext
+				precondition: ContextKeyExpr.false()
 			},
 			when: CONTEXT_UPDATE_STATE.isEqualTo(StateType.CheckingForUpdates)
 		});
@@ -438,7 +437,7 @@ export class UpdateContribution extends Disposable implements IWorkbenchContribu
 			command: {
 				id: 'update.downloading',
 				title: nls.localize('DownloadingUpdate', "Downloading Update..."),
-				precondition: FalseContext
+				precondition: ContextKeyExpr.false()
 			},
 			when: CONTEXT_UPDATE_STATE.isEqualTo(StateType.Downloading)
 		});
@@ -459,7 +458,7 @@ export class UpdateContribution extends Disposable implements IWorkbenchContribu
 			command: {
 				id: 'update.updating',
 				title: nls.localize('installingUpdate', "Installing Update..."),
-				precondition: FalseContext
+				precondition: ContextKeyExpr.false()
 			},
 			when: CONTEXT_UPDATE_STATE.isEqualTo(StateType.Updating)
 		});

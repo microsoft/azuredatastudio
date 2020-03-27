@@ -5,12 +5,12 @@
 
 import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import * as commands from 'sql/workbench/contrib/scripting/browser/scriptingActions';
-import { MssqlNodeContext } from 'sql/workbench/contrib/dataExplorer/browser/mssqlNodeContext';
+import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/mssqlNodeContext';
 import { localize } from 'vs/nls';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
-import { ConnectionContextKey } from 'sql/workbench/contrib/connection/common/connectionContextKey';
-import { NodeType } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
+import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
+import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
+import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTreeContext';

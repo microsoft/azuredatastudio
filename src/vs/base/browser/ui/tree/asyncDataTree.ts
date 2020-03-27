@@ -5,7 +5,7 @@
 
 import { ComposedTreeDelegate, IAbstractTreeOptions, IAbstractTreeOptionsUpdate } from 'vs/base/browser/ui/tree/abstractTree';
 import { ObjectTree, IObjectTreeOptions, CompressibleObjectTree, ICompressibleTreeRenderer, ICompressibleKeyboardNavigationLabelProvider, ICompressibleObjectTreeOptions } from 'vs/base/browser/ui/tree/objectTree';
-import { IListVirtualDelegate, IIdentityProvider, IListDragAndDrop, IListDragOverReaction } from 'vs/base/browser/ui/list/list';
+import { IListVirtualDelegate, IIdentityProvider, IListDragAndDrop, IListDragOverReaction, ListAriaRootRole } from 'vs/base/browser/ui/list/list';
 import { ITreeElement, ITreeNode, ITreeRenderer, ITreeEvent, ITreeMouseEvent, ITreeContextMenuEvent, ITreeSorter, ICollapseStateChangeEvent, IAsyncDataSource, ITreeDragAndDrop, TreeError, WeakMapper, ITreeFilter, TreeVisibility, TreeFilterResult } from 'vs/base/browser/ui/tree/tree';
 import { IDisposable, dispose, DisposableStore } from 'vs/base/common/lifecycle';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -128,14 +128,14 @@ class AsyncDataTreeRenderer<TInput, T, TFilterData, TTemplateData> implements IT
 	}
 }
 
-function asTreeEvent<TInput, T>(e: ITreeEvent<IAsyncDataTreeNode<TInput, T>>): ITreeEvent<T> {
+function asTreeEvent<TInput, T>(e: ITreeEvent<IAsyncDataTreeNode<TInput, T> | null>): ITreeEvent<T> {
 	return {
 		browserEvent: e.browserEvent,
-		elements: e.elements.map(e => e.element as T)
+		elements: e.elements.map(e => e!.element as T)
 	};
 }
 
-function asTreeMouseEvent<TInput, T>(e: ITreeMouseEvent<IAsyncDataTreeNode<TInput, T>>): ITreeMouseEvent<T> {
+function asTreeMouseEvent<TInput, T>(e: ITreeMouseEvent<IAsyncDataTreeNode<TInput, T> | null>): ITreeMouseEvent<T> {
 	return {
 		browserEvent: e.browserEvent,
 		element: e.element && e.element.element as T,
@@ -143,7 +143,7 @@ function asTreeMouseEvent<TInput, T>(e: ITreeMouseEvent<IAsyncDataTreeNode<TInpu
 	};
 }
 
-function asTreeContextMenuEvent<TInput, T>(e: ITreeContextMenuEvent<IAsyncDataTreeNode<TInput, T>>): ITreeContextMenuEvent<T> {
+function asTreeContextMenuEvent<TInput, T>(e: ITreeContextMenuEvent<IAsyncDataTreeNode<TInput, T> | null>): ITreeContextMenuEvent<T> {
 	return {
 		browserEvent: e.browserEvent,
 		element: e.element && e.element.element as T,
@@ -267,11 +267,12 @@ function asObjectTreeOptions<TInput, T, TFilterData>(options?: IAsyncDataTreeOpt
 			},
 			getRole: options.ariaProvider!.getRole ? (el) => {
 				return options.ariaProvider!.getRole!(el.element as T);
-			} : undefined,
+			} : () => 'treeitem',
 			isChecked: options.ariaProvider!.isChecked ? (e) => {
 				return options.ariaProvider?.isChecked!(e.element as T);
 			} : undefined
 		},
+		ariaRole: ListAriaRootRole.TREE,
 		additionalScrollHeight: options.additionalScrollHeight
 	};
 }
@@ -562,6 +563,10 @@ export class AsyncDataTree<TInput, T, TFilterData = void> implements IDisposable
 
 		const node = this.getDataNode(element);
 
+		if (this.tree.hasElement(node) && !this.tree.isCollapsible(node)) {
+			return false;
+		}
+
 		if (node.refreshPromise) {
 			await this.root.refreshPromise;
 			await Event.toPromise(this._onDidRender.event);
@@ -786,10 +791,14 @@ export class AsyncDataTree<TInput, T, TFilterData = void> implements IDisposable
 
 		this.refreshPromises.set(node, result);
 
-		return result.finally(() => this.refreshPromises.delete(node));
+		return result.finally(() => { this.refreshPromises.delete(node); });
 	}
 
-	private _onDidChangeCollapseState({ node, deep }: ICollapseStateChangeEvent<IAsyncDataTreeNode<TInput, T>, any>): void {
+	private _onDidChangeCollapseState({ node, deep }: ICollapseStateChangeEvent<IAsyncDataTreeNode<TInput, T> | null, any>): void {
+		if (node.element === null) {
+			return;
+		}
+
 		if (!node.collapsed && node.element.stale) {
 			if (deep) {
 				this.collapse(node.element.element as T);

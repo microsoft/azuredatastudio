@@ -6,9 +6,9 @@
 import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { DATA_TIER_WIZARD_COMMAND_ID, PROFILER_COMMAND_ID, IMPORT_COMMAND_ID, SCHEMA_COMPARE_COMMAND_ID, GENERATE_SCRIPTS_COMMAND_ID, PROPERTIES_COMMAND_ID } from 'sql/workbench/contrib/dataExplorer/browser/extensionActions';
 import { ContextKeyExpr, ContextKeyRegexExpr } from 'vs/platform/contextkey/common/contextkey';
-import { MssqlNodeContext } from 'sql/workbench/contrib/dataExplorer/browser/mssqlNodeContext';
+import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/mssqlNodeContext';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-import { NodeType } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
+import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { localize } from 'vs/nls';
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 

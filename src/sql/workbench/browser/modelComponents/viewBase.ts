@@ -9,14 +9,13 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import * as nls from 'vs/nls';
 
 import * as azdata from 'azdata';
-import { IModelStore, IComponentDescriptor, IComponent } from './interfaces';
-import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IModelView, IModelViewEventArgs } from 'sql/platform/model/browser/modelViewService';
+import { IModelView, IModelViewEventArgs, IComponentShape, IItemConfig } from 'sql/platform/model/browser/modelViewService';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/browser/modelComponentRegistry';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { ModelStore } from 'sql/workbench/browser/modelComponents/modelStore';
 import { Event, Emitter } from 'vs/base/common/event';
 import { assign } from 'vs/base/common/objects';
+import { IModelStore, IComponentDescriptor, IComponent, ModelComponentTypes } from 'sql/platform/dashboard/browser/interfaces';
 
 const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentContribution);
 

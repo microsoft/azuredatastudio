@@ -14,7 +14,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { TopOperationsState } from 'sql/workbench/contrib/queryPlan/common/topOperationsState';
+import { TopOperationsState } from 'sql/workbench/common/editor/query/topOperationsState';
 
 const topOperationColumns: Array<Slick.Column<any>> = [
 	{ name: localize('topOperations.operation', "Operation"), field: 'operation', sortable: true },

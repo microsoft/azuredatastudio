@@ -18,3 +18,22 @@ export interface IConnectionProfileStore {
 	id: string;
 }
 
+export enum ServiceOptionType {
+	string = 'string',
+	multistring = 'multistring',
+	password = 'password',
+	number = 'number',
+	category = 'category',
+	boolean = 'boolean',
+	object = 'object'
+}
+
+export enum ConnectionOptionSpecialType {
+	connectionName = 'connectionName',
+	serverName = 'serverName',
+	databaseName = 'databaseName',
+	authType = 'authType',
+	userName = 'userName',
+	password = 'password',
+	appName = 'appName'
+}

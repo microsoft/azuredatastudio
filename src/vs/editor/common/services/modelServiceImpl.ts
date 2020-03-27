@@ -3,18 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as nls from 'vs/nls';
 import { Emitter, Event } from 'vs/base/common/event';
-import { Disposable, IDisposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import * as platform from 'vs/base/common/platform';
 import * as errors from 'vs/base/common/errors';
 import { URI } from 'vs/base/common/uri';
-import { EDITOR_MODEL_DEFAULTS, IEditorSemanticHighlightingOptions } from 'vs/editor/common/config/editorOptions';
+import { EDITOR_MODEL_DEFAULTS } from 'vs/editor/common/config/editorOptions';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Range } from 'vs/editor/common/core/range';
-import { DefaultEndOfLine, EndOfLinePreference, EndOfLineSequence, IIdentifiedSingleEditOperation, ITextBuffer, ITextBufferFactory, ITextModel, ITextModelCreationOptions } from 'vs/editor/common/model';
+import { DefaultEndOfLine, EndOfLinePreference, EndOfLineSequence, IIdentifiedSingleEditOperation, ITextBuffer, ITextBufferFactory, ITextModel, ITextModelCreationOptions, IValidEditOperation } from 'vs/editor/common/model';
 import { TextModel, createTextBuffer } from 'vs/editor/common/model/textModel';
 import { IModelLanguageChangedEvent, IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
-import { LanguageIdentifier, DocumentSemanticTokensProviderRegistry, DocumentSemanticTokensProvider, SemanticTokensLegend, SemanticTokens, SemanticTokensEdits, TokenMetadata } from 'vs/editor/common/modes';
+import { LanguageIdentifier, DocumentSemanticTokensProviderRegistry, DocumentSemanticTokensProvider, SemanticTokensLegend, SemanticTokens, SemanticTokensEdits, TokenMetadata, FontStyle, MetadataConsts } from 'vs/editor/common/modes';
 import { PLAINTEXT_LANGUAGE_IDENTIFIER } from 'vs/editor/common/modes/modesRegistry';
 import { ILanguageSelection } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
@@ -25,10 +26,34 @@ import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { SparseEncodedTokens, MultilineTokens2 } from 'vs/editor/common/model/tokensStore';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ILogService, LogLevel } from 'vs/platform/log/common/log';
+import { IUndoRedoService, IUndoRedoElement, IPastFutureElements } from 'vs/platform/undoRedo/common/undoRedo';
+import { StringSHA1 } from 'vs/base/common/hash';
+import { SingleModelEditStackElement, MultiModelEditStackElement, EditStackElement } from 'vs/editor/common/model/editStack';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { Schemas } from 'vs/base/common/network';
+import Severity from 'vs/base/common/severity';
+
+export const MAINTAIN_UNDO_REDO_STACK = true;
+
+export interface IEditorSemanticHighlightingOptions {
+	enabled?: boolean;
+}
 
 function MODEL_ID(resource: URI): string {
 	return resource.toString();
 }
+
+function computeModelSha1(model: ITextModel): string {
+	// compute the sha1
+	const shaComputer = new StringSHA1();
+	const snapshot = model.createSnapshot();
+	let text: string | null;
+	while ((text = snapshot.read())) {
+		shaComputer.update(text);
+	}
+	return shaComputer.digest();
+}
+
 
 class ModelData implements IDisposable {
 	public readonly model: ITextModel;
@@ -93,12 +118,42 @@ interface IRawConfig {
 
 const DEFAULT_EOL = (platform.isLinux || platform.isMacintosh) ? DefaultEndOfLine.LF : DefaultEndOfLine.CRLF;
 
-export class ModelServiceImpl extends Disposable implements IModelService {
-	public _serviceBrand: undefined;
+interface EditStackPastFutureElements {
+	past: EditStackElement[];
+	future: EditStackElement[];
+}
 
-	private readonly _configurationService: IConfigurationService;
-	private readonly _configurationServiceSubscription: IDisposable;
-	private readonly _resourcePropertiesService: ITextResourcePropertiesService;
+function isEditStackPastFutureElements(undoElements: IPastFutureElements): undoElements is EditStackPastFutureElements {
+	return (isEditStackElements(undoElements.past) && isEditStackElements(undoElements.future));
+}
+
+function isEditStackElements(elements: IUndoRedoElement[]): elements is EditStackElement[] {
+	for (const element of elements) {
+		if (element instanceof SingleModelEditStackElement) {
+			continue;
+		}
+		if (element instanceof MultiModelEditStackElement) {
+			continue;
+		}
+		return false;
+	}
+	return true;
+}
+
+class DisposedModelInfo {
+	constructor(
+		public readonly uri: URI,
+		public readonly sha1: string,
+		public readonly versionId: number,
+		public readonly alternativeVersionId: number,
+	) { }
+}
+
+export class ModelServiceImpl extends Disposable implements IModelService {
+
+	private static _PROMPT_UNDO_REDO_SIZE_LIMIT = 10 * 1024 * 1024; // 10MB
+
+	public _serviceBrand: undefined;
 
 	private readonly _onModelAdded: Emitter<ITextModel> = this._register(new Emitter<ITextModel>());
 	public readonly onModelAdded: Event<ITextModel> = this._onModelAdded.event;
@@ -109,37 +164,37 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 	private readonly _onModelModeChanged: Emitter<{ model: ITextModel; oldModeId: string; }> = this._register(new Emitter<{ model: ITextModel; oldModeId: string; }>());
 	public readonly onModelModeChanged: Event<{ model: ITextModel; oldModeId: string; }> = this._onModelModeChanged.event;
 
-	private _modelCreationOptionsByLanguageAndResource: {
-		[languageAndResource: string]: ITextModelCreationOptions;
-	};
+	private _modelCreationOptionsByLanguageAndResource: { [languageAndResource: string]: ITextModelCreationOptions; };
 
 	/**
 	 * All the models known in the system.
 	 */
 	private readonly _models: { [modelId: string]: ModelData; };
+	private readonly _disposedModels: Map<string, DisposedModelInfo>;
 
 	constructor(
-		@IConfigurationService configurationService: IConfigurationService,
-		@ITextResourcePropertiesService resourcePropertiesService: ITextResourcePropertiesService,
-		@IThemeService themeService: IThemeService,
-		@ILogService logService: ILogService
+		@IConfigurationService private readonly _configurationService: IConfigurationService,
+		@ITextResourcePropertiesService private readonly _resourcePropertiesService: ITextResourcePropertiesService,
+		@IThemeService private readonly _themeService: IThemeService,
+		@ILogService private readonly _logService: ILogService,
+		@IUndoRedoService private readonly _undoRedoService: IUndoRedoService,
+		@IDialogService private readonly _dialogService: IDialogService,
 	) {
 		super();
-		this._configurationService = configurationService;
-		this._resourcePropertiesService = resourcePropertiesService;
-		this._models = {};
 		this._modelCreationOptionsByLanguageAndResource = Object.create(null);
+		this._models = {};
+		this._disposedModels = new Map<string, DisposedModelInfo>();
 
-		this._configurationServiceSubscription = this._configurationService.onDidChangeConfiguration(e => this._updateModelOptions());
+		this._register(this._configurationService.onDidChangeConfiguration(e => this._updateModelOptions()));
 		this._updateModelOptions();
 
-		this._register(new SemanticColoringFeature(this, themeService, configurationService, logService));
+		this._register(new SemanticColoringFeature(this, this._themeService, this._configurationService, this._logService));
 	}
 
 	private static _readModelOptions(config: IRawConfig, isForSimpleWidget: boolean): ITextModelCreationOptions {
 		let tabSize = EDITOR_MODEL_DEFAULTS.tabSize;
 		if (config.editor && typeof config.editor.tabSize !== 'undefined') {
-			let parsedTabSize = parseInt(config.editor.tabSize, 10);
+			const parsedTabSize = parseInt(config.editor.tabSize, 10);
 			if (!isNaN(parsedTabSize)) {
 				tabSize = parsedTabSize;
 			}
@@ -150,7 +205,7 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 
 		let indentSize = tabSize;
 		if (config.editor && typeof config.editor.indentSize !== 'undefined' && config.editor.indentSize !== 'tabSize') {
-			let parsedIndentSize = parseInt(config.editor.indentSize, 10);
+			const parsedIndentSize = parseInt(config.editor.indentSize, 10);
 			if (!isNaN(parsedIndentSize)) {
 				indentSize = parsedIndentSize;
 			}
@@ -199,11 +254,22 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 		};
 	}
 
+	private _getEOL(resource: URI | undefined, language: string): string {
+		if (resource) {
+			return this._resourcePropertiesService.getEOL(resource, language);
+		}
+		const eol = this._configurationService.getValue<string>('files.eol', { overrideIdentifier: language });
+		if (eol && eol !== 'auto') {
+			return eol;
+		}
+		return platform.OS === platform.OperatingSystem.Linux || platform.OS === platform.OperatingSystem.Macintosh ? '\n' : '\r\n';
+	}
+
 	public getCreationOptions(language: string, resource: URI | undefined, isForSimpleWidget: boolean): ITextModelCreationOptions {
 		let creationOptions = this._modelCreationOptionsByLanguageAndResource[language + resource];
 		if (!creationOptions) {
 			const editor = this._configurationService.getValue<IRawEditorConfig>('editor', { overrideIdentifier: language, resource });
-			const eol = this._resourcePropertiesService.getEOL(resource, language);
+			const eol = this._getEOL(resource, language);
 			creationOptions = ModelServiceImpl._readModelOptions({ editor, eol }, isForSimpleWidget);
 			this._modelCreationOptionsByLanguageAndResource[language + resource] = creationOptions;
 		}
@@ -211,14 +277,14 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 	}
 
 	private _updateModelOptions(): void {
-		let oldOptionsByLanguageAndResource = this._modelCreationOptionsByLanguageAndResource;
+		const oldOptionsByLanguageAndResource = this._modelCreationOptionsByLanguageAndResource;
 		this._modelCreationOptionsByLanguageAndResource = Object.create(null);
 
 		// Update options on all models
-		let keys = Object.keys(this._models);
+		const keys = Object.keys(this._models);
 		for (let i = 0, len = keys.length; i < len; i++) {
-			let modelId = keys[i];
-			let modelData = this._models[modelId];
+			const modelId = keys[i];
+			const modelData = this._models[modelId];
 			const language = modelData.model.getLanguageIdentifier().language;
 			const uri = modelData.model.uri;
 			const oldOptions = oldOptionsByLanguageAndResource[language + uri];
@@ -258,17 +324,30 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 		}
 	}
 
-	public dispose(): void {
-		this._configurationServiceSubscription.dispose();
-		super.dispose();
-	}
-
 	// --- begin IModelService
 
 	private _createModelData(value: string | ITextBufferFactory, languageIdentifier: LanguageIdentifier, resource: URI | undefined, isForSimpleWidget: boolean): ModelData {
 		// create & save the model
 		const options = this.getCreationOptions(languageIdentifier.language, resource, isForSimpleWidget);
-		const model: TextModel = new TextModel(value, options, languageIdentifier, resource);
+		const model: TextModel = new TextModel(value, options, languageIdentifier, resource, this._undoRedoService);
+		if (resource && this._disposedModels.has(MODEL_ID(resource))) {
+			const disposedModelData = this._disposedModels.get(MODEL_ID(resource))!;
+			this._disposedModels.delete(MODEL_ID(resource));
+			const elements = this._undoRedoService.getElements(resource);
+			if (computeModelSha1(model) === disposedModelData.sha1 && isEditStackPastFutureElements(elements)) {
+				for (const element of elements.past) {
+					element.setModel(model);
+				}
+				for (const element of elements.future) {
+					element.setModel(model);
+				}
+				this._undoRedoService.setElementsIsValid(resource, true);
+				model._overwriteVersionId(disposedModelData.versionId);
+				model._overwriteAlternativeVersionId(disposedModelData.alternativeVersionId);
+			} else {
+				this._undoRedoService.removeElements(resource);
+			}
+		}
 		const modelId = MODEL_ID(model.uri);
 
 		if (this._models[modelId]) {
@@ -301,7 +380,7 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 		model.pushEditOperations(
 			[],
 			ModelServiceImpl._computeEdits(model, textBuffer),
-			(inverseEditOperations: IIdentifiedSingleEditOperation[]) => []
+			(inverseEditOperations: IValidEditOperation[]) => []
 		);
 		model.pushStackElement();
 	}
@@ -341,7 +420,8 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 
 		const commonSuffix = this._commonSuffix(model, modelLineCount - commonPrefix, commonPrefix, textBuffer, textBufferLineCount - commonPrefix, commonPrefix);
 
-		let oldRange: Range, newRange: Range;
+		let oldRange: Range;
+		let newRange: Range;
 		if (commonSuffix > 0) {
 			oldRange = new Range(commonPrefix + 1, 1, modelLineCount - commonSuffix + 1, 1);
 			newRange = new Range(commonPrefix + 1, 1, textBufferLineCount - commonSuffix + 1, 1);
@@ -375,7 +455,7 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 		if (!languageSelection) {
 			return;
 		}
-		let modelData = this._models[MODEL_ID(model.uri)];
+		const modelData = this._models[MODEL_ID(model.uri)];
 		if (!modelData) {
 			return;
 		}
@@ -384,19 +464,69 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 
 	public destroyModel(resource: URI): void {
 		// We need to support that not all models get disposed through this service (i.e. model.dispose() should work!)
-		let modelData = this._models[MODEL_ID(resource)];
+		const modelData = this._models[MODEL_ID(resource)];
 		if (!modelData) {
 			return;
 		}
+		const model = modelData.model;
+		let maintainUndoRedoStack = false;
+		let heapSize = 0;
+		if (MAINTAIN_UNDO_REDO_STACK && (resource.scheme === Schemas.file || resource.scheme === Schemas.vscodeRemote)) {
+			const elements = this._undoRedoService.getElements(resource);
+			if ((elements.past.length > 0 || elements.future.length > 0) && isEditStackPastFutureElements(elements)) {
+				maintainUndoRedoStack = true;
+				for (const element of elements.past) {
+					heapSize += element.heapSize(resource);
+					element.setModel(resource); // remove reference from text buffer instance
+				}
+				for (const element of elements.future) {
+					heapSize += element.heapSize(resource);
+					element.setModel(resource); // remove reference from text buffer instance
+				}
+			} else {
+				maintainUndoRedoStack = false;
+			}
+		}
+
+		if (maintainUndoRedoStack) {
+			// We only invalidate the elements, but they remain in the undo-redo service.
+			this._undoRedoService.setElementsIsValid(resource, false);
+			this._disposedModels.set(MODEL_ID(resource), new DisposedModelInfo(resource, computeModelSha1(model), model.getVersionId(), model.getAlternativeVersionId()));
+		} else {
+			this._undoRedoService.removeElements(resource);
+		}
+
 		modelData.model.dispose();
+
+		// After disposing the model, prompt and ask if we should keep the undo-redo stack
+		if (maintainUndoRedoStack && heapSize > ModelServiceImpl._PROMPT_UNDO_REDO_SIZE_LIMIT) {
+			const mbSize = (heapSize / 1024 / 1024).toFixed(1);
+			this._dialogService.show(
+				Severity.Info,
+				nls.localize('undoRedoConfirm', "Keep the undo-redo stack for {0} in memory ({1} MB)?", (resource.scheme === Schemas.file ? resource.fsPath : resource.path), mbSize),
+				[
+					nls.localize('nok', "Discard"),
+					nls.localize('ok', "Keep"),
+				],
+				{
+					cancelId: 2
+				}
+			).then((result) => {
+				const discard = (result.choice === 2 || result.choice === 0);
+				if (discard) {
+					this._disposedModels.delete(MODEL_ID(resource));
+					this._undoRedoService.removeElements(resource);
+				}
+			});
+		}
 	}
 
 	public getModels(): ITextModel[] {
-		let ret: ITextModel[] = [];
+		const ret: ITextModel[] = [];
 
-		let keys = Object.keys(this._models);
+		const keys = Object.keys(this._models);
 		for (let i = 0, len = keys.length; i < len; i++) {
-			let modelId = keys[i];
+			const modelId = keys[i];
 			ret.push(this._models[modelId].model);
 		}
 
@@ -404,8 +534,8 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 	}
 
 	public getModel(resource: URI): ITextModel | null {
-		let modelId = MODEL_ID(resource);
-		let modelData = this._models[modelId];
+		const modelId = MODEL_ID(resource);
+		const modelData = this._models[modelId];
 		if (!modelData) {
 			return null;
 		}
@@ -415,8 +545,8 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 	// --- end IModelService
 
 	private _onWillDispose(model: ITextModel): void {
-		let modelId = MODEL_ID(model.uri);
-		let modelData = this._models[modelId];
+		const modelId = MODEL_ID(model.uri);
+		const modelData = this._models[modelId];
 
 		delete this._models[modelId];
 		modelData.dispose();
@@ -447,15 +577,16 @@ class SemanticColoringFeature extends Disposable {
 
 	private _watchers: Record<string, ModelSemanticColoring>;
 	private _semanticStyling: SemanticStyling;
-	private _configurationService: IConfigurationService;
 
 	constructor(modelService: IModelService, themeService: IThemeService, configurationService: IConfigurationService, logService: ILogService) {
 		super();
-		this._configurationService = configurationService;
 		this._watchers = Object.create(null);
 		this._semanticStyling = this._register(new SemanticStyling(themeService, logService));
 
 		const isSemanticColoringEnabled = (model: ITextModel) => {
+			if (!themeService.getColorTheme().semanticHighlighting) {
+				return false;
+			}
 			const options = configurationService.getValue<IEditorSemanticHighlightingOptions>(SemanticColoringFeature.SETTING_ID, { overrideIdentifier: model.getLanguageIdentifier().language, resource: model.uri });
 			return options && options.enabled;
 		};
@@ -465,6 +596,20 @@ class SemanticColoringFeature extends Disposable {
 		const deregister = (model: ITextModel, modelSemanticColoring: ModelSemanticColoring) => {
 			modelSemanticColoring.dispose();
 			delete this._watchers[model.uri.toString()];
+		};
+		const handleSettingOrThemeChange = () => {
+			for (let model of modelService.getModels()) {
+				const curr = this._watchers[model.uri.toString()];
+				if (isSemanticColoringEnabled(model)) {
+					if (!curr) {
+						register(model);
+					}
+				} else {
+					if (curr) {
+						deregister(model, curr);
+					}
+				}
+			}
 		};
 		this._register(modelService.onModelAdded((model) => {
 			if (isSemanticColoringEnabled(model)) {
@@ -477,22 +622,12 @@ class SemanticColoringFeature extends Disposable {
 				deregister(model, curr);
 			}
 		}));
-		this._configurationService.onDidChangeConfiguration(e => {
+		this._register(configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration(SemanticColoringFeature.SETTING_ID)) {
-				for (let model of modelService.getModels()) {
-					const curr = this._watchers[model.uri.toString()];
-					if (isSemanticColoringEnabled(model)) {
-						if (!curr) {
-							register(model);
-						}
-					} else {
-						if (curr) {
-							deregister(model, curr);
-						}
-					}
-				}
+				handleSettingOrThemeChange();
 			}
-		});
+		}));
+		this._register(themeService.onDidColorThemeChange(handleSettingOrThemeChange));
 	}
 }
 
@@ -506,12 +641,9 @@ class SemanticStyling extends Disposable {
 	) {
 		super();
 		this._caches = new WeakMap<DocumentSemanticTokensProvider, SemanticColoringProviderStyling>();
-		if (this._themeService) {
-			// workaround for tests which use undefined... :/
-			this._register(this._themeService.onThemeChange(() => {
-				this._caches = new WeakMap<DocumentSemanticTokensProvider, SemanticColoringProviderStyling>();
-			}));
-		}
+		this._register(this._themeService.onDidColorThemeChange(() => {
+			this._caches = new WeakMap<DocumentSemanticTokensProvider, SemanticColoringProviderStyling>();
+		}));
 	}
 
 	public get(provider: DocumentSemanticTokensProvider): SemanticColoringProviderStyling {
@@ -629,7 +761,7 @@ class SemanticColoringProviderStyling {
 
 	public getMetadata(tokenTypeIndex: number, tokenModifierSet: number): number {
 		const entry = this._hashTable.get(tokenTypeIndex, tokenModifierSet);
-		let metadata: number | undefined;
+		let metadata: number;
 		if (entry) {
 			metadata = entry.metadata;
 		} else {
@@ -643,9 +775,31 @@ class SemanticColoringProviderStyling {
 				modifierSet = modifierSet >> 1;
 			}
 
-			metadata = this._themeService.getTheme().getTokenStyleMetadata(tokenType, tokenModifiers);
-			if (typeof metadata === 'undefined') {
+			const tokenStyle = this._themeService.getColorTheme().getTokenStyleMetadata(tokenType, tokenModifiers);
+			if (typeof tokenStyle === 'undefined') {
 				metadata = Constants.NO_STYLING;
+			} else {
+				metadata = 0;
+				if (typeof tokenStyle.italic !== 'undefined') {
+					const italicBit = (tokenStyle.italic ? FontStyle.Italic : 0) << MetadataConsts.FONT_STYLE_OFFSET;
+					metadata |= italicBit | MetadataConsts.SEMANTIC_USE_ITALIC;
+				}
+				if (typeof tokenStyle.bold !== 'undefined') {
+					const boldBit = (tokenStyle.bold ? FontStyle.Bold : 0) << MetadataConsts.FONT_STYLE_OFFSET;
+					metadata |= boldBit | MetadataConsts.SEMANTIC_USE_BOLD;
+				}
+				if (typeof tokenStyle.underline !== 'undefined') {
+					const underlineBit = (tokenStyle.underline ? FontStyle.Underline : 0) << MetadataConsts.FONT_STYLE_OFFSET;
+					metadata |= underlineBit | MetadataConsts.SEMANTIC_USE_UNDERLINE;
+				}
+				if (tokenStyle.foreground) {
+					const foregroundBits = (tokenStyle.foreground) << MetadataConsts.FOREGROUND_OFFSET;
+					metadata |= foregroundBits | MetadataConsts.SEMANTIC_USE_FOREGROUND;
+				}
+				if (metadata === 0) {
+					// Nothing!
+					metadata = Constants.NO_STYLING;
+				}
 			}
 			this._hashTable.add(tokenTypeIndex, tokenModifierSet, metadata);
 		}
@@ -694,6 +848,7 @@ class ModelSemanticColoring extends Disposable {
 	private readonly _fetchSemanticTokens: RunOnceScheduler;
 	private _currentResponse: SemanticTokensResponse | null;
 	private _currentRequestCancellationTokenSource: CancellationTokenSource | null;
+	private _providersChangeListeners: IDisposable[];
 
 	constructor(model: ITextModel, themeService: IThemeService, stylingProvider: SemanticStyling) {
 		super();
@@ -704,21 +859,34 @@ class ModelSemanticColoring extends Disposable {
 		this._fetchSemanticTokens = this._register(new RunOnceScheduler(() => this._fetchSemanticTokensNow(), 300));
 		this._currentResponse = null;
 		this._currentRequestCancellationTokenSource = null;
+		this._providersChangeListeners = [];
 
 		this._register(this._model.onDidChangeContent(e => {
 			if (!this._fetchSemanticTokens.isScheduled()) {
 				this._fetchSemanticTokens.schedule();
 			}
 		}));
-		this._register(DocumentSemanticTokensProviderRegistry.onDidChange(e => this._fetchSemanticTokens.schedule()));
-		if (themeService) {
-			// workaround for tests which use undefined... :/
-			this._register(themeService.onThemeChange(_ => {
-				// clear out existing tokens
-				this._setSemanticTokens(null, null, null, []);
-				this._fetchSemanticTokens.schedule();
-			}));
-		}
+		const bindChangeListeners = () => {
+			dispose(this._providersChangeListeners);
+			this._providersChangeListeners = [];
+			for (const provider of DocumentSemanticTokensProviderRegistry.all(model)) {
+				if (typeof provider.onDidChange === 'function') {
+					this._providersChangeListeners.push(provider.onDidChange(() => this._fetchSemanticTokens.schedule(0)));
+				}
+			}
+		};
+		bindChangeListeners();
+		this._register(DocumentSemanticTokensProviderRegistry.onDidChange(e => {
+			bindChangeListeners();
+			this._fetchSemanticTokens.schedule();
+		}));
+
+		this._register(themeService.onDidColorThemeChange(_ => {
+			// clear out existing tokens
+			this._setSemanticTokens(null, null, null, []);
+			this._fetchSemanticTokens.schedule();
+		}));
+
 		this._fetchSemanticTokens.schedule(0);
 	}
 
@@ -763,10 +931,21 @@ class ModelSemanticColoring extends Disposable {
 			contentChangeListener.dispose();
 			this._setSemanticTokens(provider, res || null, styling, pendingChanges);
 		}, (err) => {
-			errors.onUnexpectedError(err);
+			if (!err || typeof err.message !== 'string' || err.message.indexOf('busy') === -1) {
+				errors.onUnexpectedError(err);
+			}
+
+			// Semantic tokens eats up all errors and considers errors to mean that the result is temporarily not available
+			// The API does not have a special error kind to express this...
 			this._currentRequestCancellationTokenSource = null;
 			contentChangeListener.dispose();
-			this._setSemanticTokens(provider, null, styling, pendingChanges);
+
+			if (pendingChanges.length > 0) {
+				// More changes occurred while the request was running
+				if (!this._fetchSemanticTokens.isScheduled()) {
+					this._fetchSemanticTokens.schedule();
+				}
+			}
 		});
 	}
 

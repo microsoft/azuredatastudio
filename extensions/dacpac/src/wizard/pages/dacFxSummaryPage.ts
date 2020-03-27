@@ -4,12 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
+import * as loc from '../../localizedConstants';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard, Operation } from '../dataTierApplicationWizard';
 import { BasePage } from '../api/basePage';
-
-const localize = nls.loadMessageBundle();
 
 export class DacFxSummaryPage extends BasePage {
 
@@ -32,7 +30,7 @@ export class DacFxSummaryPage extends BasePage {
 
 	async start(): Promise<boolean> {
 		this.table = this.view.modelBuilder.table().withProperties({
-			title: localize('dacfx.summaryTableTitle', "Summary of settings")
+			title: loc.summaryTableTitle
 		}).component();
 		this.loader = this.view.modelBuilder.loadingComponent().withItem(this.table).component();
 		this.form = this.view.modelBuilder.formContainer().withFormItems(
@@ -75,11 +73,11 @@ export class DacFxSummaryPage extends BasePage {
 
 	private populateTable() {
 		let data = [];
-		let targetServer = localize('dacfx.targetServerName', "Target Server");
-		let targetDatabase = localize('dacfx.targetDatabaseName', "Target Database");
-		let sourceServer = localize('dacfx.sourceServerName', "Source Server");
-		let sourceDatabase = localize('dacfx.sourceDatabaseName', "Source Database");
-		let fileLocation = localize('dacfx.fileLocation', "File Location");
+		let targetServer = loc.targetServer;
+		let targetDatabase = loc.targetDatabase;
+		let sourceServer = loc.sourceServer;
+		let sourceDatabase = loc.sourceDatabase;
+		let fileLocation = loc.fileLocation;
 
 		switch (this.instance.selectedOperation) {
 			case Operation.deploy: {
@@ -93,7 +91,7 @@ export class DacFxSummaryPage extends BasePage {
 				data = [
 					[sourceServer, this.model.serverName],
 					[sourceDatabase, this.model.database],
-					[localize('dacfxExtract.version', "Version"), this.model.version],
+					[loc.version, this.model.version],
 					[fileLocation, this.model.filePath]];
 				break;
 			}
@@ -124,11 +122,11 @@ export class DacFxSummaryPage extends BasePage {
 			data: data,
 			columns: [
 				{
-					value: localize('dacfx.settingColumn', "Setting"),
+					value: loc.setting,
 					cssClass: 'align-with-header'
 				},
 				{
-					value: localize('dacfx.valueColumn', "Value"),
+					value: loc.value,
 					cssClass: 'align-with-header'
 				}],
 			width: 700,

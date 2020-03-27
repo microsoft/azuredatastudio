@@ -6,10 +6,11 @@ import 'vs/css!./code';
 import 'vs/css!./outputArea';
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, forwardRef, ChangeDetectorRef } from '@angular/core';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import * as themeColors from 'vs/workbench/common/theme';
-import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { URI } from 'vs/base/common/uri';
+import { IColorTheme } from 'vs/platform/theme/common/themeService';
 
 export const OUTPUT_AREA_SELECTOR: string = 'output-area-component';
 

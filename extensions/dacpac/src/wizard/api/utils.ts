@@ -4,12 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 import * as os from 'os';
 import * as path from 'path';
-import * as nls from 'vscode-nls';
+import * as loc from '../../localizedConstants';
 const WINDOWS_INVALID_FILE_CHARS = /[\\/:\*\?"<>\|]/g;
 const UNIX_INVALID_FILE_CHARS = /[\\/]/g;
 const isWindows = os.platform() === 'win32';
 const WINDOWS_FORBIDDEN_NAMES = /^(con|prn|aux|clock\$|nul|lpt[0-9]|com[0-9])$/i;
-const localize = nls.loadMessageBundle();
 
 /**
  * Determines if a given character is a valid filename character
@@ -99,39 +98,42 @@ export function isValidBasename(name: string | null | undefined): boolean {
 export function isValidBasenameErrorMessage(name: string | null | undefined): string {
 	const invalidFileChars = isWindows ? WINDOWS_INVALID_FILE_CHARS : UNIX_INVALID_FILE_CHARS;
 	if (!name) {
-		return localize('dacfx.undefinedFileNameErrorMessage', "Undefined name");
+		return loc.undefinedFilenameErrorMessage;
 	}
 
 	if (isWindows && name[name.length - 1] === '.') {
-		return localize('dacfx.fileNameEndingInPeriodErrorMessage', "File name cannot end with a period"); // Windows: file cannot end with a "."
+		return loc.filenameEndingIsPeriodErrorMessage; // Windows: file cannot end with a "."
 	}
 
 	let basename = path.parse(name).name;
 	if (!basename || basename.length === 0 || /^\s+$/.test(basename)) {
-		return localize('dacfx.whitespaceFilenameErrorMessage', "File name cannot be whitespace"); // require a name that is not just whitespace
+		return loc.whitespaceFilenameErrorMessage; // require a name that is not just whitespace
 	}
 
 	invalidFileChars.lastIndex = 0;
 	if (invalidFileChars.test(basename)) {
-		return localize('dacfx.invalidFileCharsErrorMessage', "Invalid file characters"); // check for certain invalid file characters
+		return loc.invalidFileCharsErrorMessage; // check for certain invalid file characters
 	}
 
 	if (isWindows && WINDOWS_FORBIDDEN_NAMES.test(basename)) {
-		console.error('here');
-		return localize('dacfx.reservedWindowsFileNameErrorMessage', "This file name is reserved for use by Windows. Choose another name and try again"); // check for certain invalid file names
+		return loc.reservedWindowsFilenameErrorMessage; // check for certain invalid file names
 	}
 
 	if (basename === '.' || basename === '..') {
-		return localize('dacfx.reservedValueErrorMessage', "Reserved file name. Choose another name and try again"); // check for reserved values
+		return loc.reservedValueErrorMessage; // check for reserved values
 	}
 
 	if (isWindows && basename.length !== basename.trim().length) {
-		return localize('dacfx.trailingWhitespaceErrorMessage', "File name cannot end with a whitespace"); // Windows: file cannot end with a whitespace
+		return loc.trailingWhitespaceErrorMessage; // Windows: file cannot end with a whitespace
 	}
 
 	if (basename.length > 255) {
-		return localize('dacfx.tooLongFileNameErrorMessage', "File name is over 255 characters"); // most file systems do not allow files > 255 length
+		return loc.tooLongFilenameErrorMessage; // most file systems do not allow files > 255 length
 	}
 
 	return '';
+}
+
+export function generateDatabaseName(filePath: string): string {
+	return path.parse(filePath).name;
 }

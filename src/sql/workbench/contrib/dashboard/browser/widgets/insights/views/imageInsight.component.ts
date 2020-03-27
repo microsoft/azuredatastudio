@@ -6,8 +6,7 @@
 import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ViewChild, OnInit, ElementRef } from '@angular/core';
 
 import { mixin } from 'vs/base/common/objects';
-import { IInsightData } from 'sql/workbench/contrib/charts/browser/interfaces';
-import { IInsightsView } from 'sql/platform/dashboard/browser/insightRegistry';
+import { IInsightsView, IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 import { startsWith } from 'vs/base/common/strings';
 
 interface IConfig {

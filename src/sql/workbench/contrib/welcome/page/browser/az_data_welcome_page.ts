@@ -27,8 +27,9 @@ export default () => `
 				</div>
 				<div class="section deploy">
 					<h2 class="caption">${escape(localize('welcomePage.deploy', "Deploy"))}</h2>
+					<!--The resourceDeployment.new command can be removed if this option is removed from the welcome page-->
 					<ul>
-						<li><a href="command:azdata.resource.deploy">${escape(localize('welcomePage.newDeployment', "New Deployment…"))}</a></li>
+						<li><a href="command:resourceDeployment.new">${escape(localize('welcomePage.newDeployment', "New Deployment…"))}</a></li>
 					</ul>
 				</div>
 				<div class="section recent">
@@ -46,7 +47,7 @@ export default () => `
 						<li><a href="https://aka.ms/azuredatastudio">${escape(localize('welcomePage.productDocumentation', "Documentation"))}</a></li>
 						<li><a href="https://github.com/Microsoft/azuredatastudio/issues/new/choose">${escape(localize('welcomePage.reportIssue', "Report issue or feature request"))}</a></li>
 						<li><a href="https://github.com/Microsoft/azuredatastudio">${escape(localize('welcomePage.gitHubRepository', "GitHub repository"))}</a></li>
-						<li><a href="https://aka.ms/azdata-releasenotes">${escape(localize('welcomePage.releaseNotes', "Release notes"))}</a></li>
+						<li><a href="https://aka.ms/azuredatastudio-releasenotes">${escape(localize('welcomePage.releaseNotes', "Release notes"))}</a></li>
 					</ul>
 				</div>
 				<p class="showOnStartup"><input type="checkbox" id="showOnStartup" class="checkbox"> <label class="caption" for="showOnStartup">${escape(localize('welcomePage.showOnStartup', "Show welcome page on startup"))}</label></p>

@@ -98,7 +98,7 @@ suite('Dashboard Properties Widget Tests', () => {
 			}
 		};
 
-		let testComponent = new PropertiesWidgetComponent(dashboardService.object, new TestChangeDetectorRef(), undefined, widgetConfig, testLogService);
+		let testComponent = new PropertiesWidgetComponent(dashboardService.object, new TestChangeDetectorRef(), undefined, widgetConfig, testLogService, undefined);
 
 		return new Promise(resolve => {
 			// because config parsing is done async we need to put our asserts on the thread stack

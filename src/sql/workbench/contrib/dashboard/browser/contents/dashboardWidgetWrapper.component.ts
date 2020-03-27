@@ -11,7 +11,7 @@ import {
 	ElementRef, OnInit, ChangeDetectorRef, ReflectiveInjector, Injector, Type, ComponentRef
 } from '@angular/core';
 
-import { ComponentHostDirective } from 'sql/workbench/contrib/dashboard/browser/core/componentHost.directive';
+import { ComponentHostDirective } from 'sql/base/browser/componentHost.directive';
 import { WidgetConfig, WIDGET_CONFIG, IDashboardWidget } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/browser/insightRegistry';
 import { RefreshWidgetAction, ToggleMoreWidgetAction, DeleteWidgetAction, CollapseWidgetAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
@@ -26,7 +26,7 @@ import { WebviewWidget } from 'sql/workbench/contrib/dashboard/browser/widgets/w
 
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 
-import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
 import { Action, IAction } from 'vs/base/common/actions';
@@ -37,6 +37,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ILogService } from 'vs/platform/log/common/log';
 import { values } from 'vs/base/common/collections';
+import { IColorTheme } from 'vs/platform/theme/common/themeService';
 
 const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 	'properties-widget': PropertiesWidgetComponent,
@@ -161,7 +162,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		// If _config.name is not set, set it to _config.widget.name
 		if (!this._config.name) {
 			const widget = values(this._config.widget)[0];
-			if (widget.name) {
+			if (widget && widget.name) {
 				this._config.name = widget.name;
 			}
 		}
@@ -220,7 +221,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	private updateTheme(theme: IColorTheme): void {
 		const el = <HTMLElement>this._ref.nativeElement;
 		const headerEl: HTMLElement = this.header.nativeElement;
-		let borderColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true);
+		let borderColor = theme.getColor(themeColors.DASHBOARD_BORDER);
 		let backgroundColor = theme.getColor(colors.editorBackground, true);
 		const foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
 		const border = theme.getColor(colors.contrastBorder, true);
@@ -248,16 +249,10 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			el.style.borderWidth = '1px';
 			el.style.borderStyle = 'solid';
 		} else if (borderColor) {
-			borderString = borderColor.toString();
-			el.style.border = '3px solid ' + borderColor.toString();
+			borderString = borderColor;
+			el.style.border = '1px solid ' + borderColor;
 		} else {
 			el.style.border = 'none';
-		}
-
-		if (borderString) {
-			headerEl.style.backgroundColor = borderString;
-		} else {
-			headerEl.style.backgroundColor = '';
 		}
 
 		if (this._config.fontSize) {

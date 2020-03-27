@@ -232,3 +232,7 @@
 .hc-black .notebookEditor .hoverButton .addTextIcon {
 	background-image: url("./media/dark/add_text_inverse.svg");
 }
+
+.monaco-workbench.mac .notebookEditor .select-container {
+	padding-top: 2px;
+}

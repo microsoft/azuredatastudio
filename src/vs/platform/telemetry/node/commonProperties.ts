@@ -20,24 +20,12 @@ export async function resolveCommonProperties(
 	product?: string
 ): Promise<{ [name: string]: string | boolean | undefined; }> {
 	const result: { [name: string]: string | boolean | undefined; } = Object.create(null);
-	// {{SQL CARBON EDIT}} start
-	if (productObject.quality !== 'stable') {
-		// __GDPR__COMMON__ "common.machineId" : { "endPoint": "MacAddressHash", "classification": "EndUserPseudonymizedInformation", "purpose": "FeatureInsight" }
-		result['common.machineId'] = machineId;
-		// __GDPR__COMMON__ "sessionID" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-		result['sessionID'] = uuid.generateUuid() + Date.now();
-		// __GDPR__COMMON__ "commitHash" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
-		result['commitHash'] = commit;
-	} else {
-		// __GDPR__COMMON__ "common.machineId" : { "endPoint": "MacAddressHash", "classification": "EndUserPseudonymizedInformation", "purpose": "FeatureInsight" }
-		// result['common.machineId'] = machineId;
-		result['common.machineId'] = '';
-		// // __GDPR__COMMON__ "sessionID" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-		// result['sessionID'] = uuid.generateUuid() + Date.now();
-		result['sessionID'] = '';
-		// __GDPR__COMMON__ "commitHash" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-		result['commitHash'] = '';
-	} // {{SQL CARBON EDIT}} end
+	// __GDPR__COMMON__ "common.machineId" : { "endPoint": "MacAddressHash", "classification": "EndUserPseudonymizedInformation", "purpose": "FeatureInsight" }
+	result['common.machineId'] = machineId;
+	// __GDPR__COMMON__ "sessionID" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+	result['sessionID'] = uuid.generateUuid() + Date.now();
+	// __GDPR__COMMON__ "commitHash" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
+	result['commitHash'] = commit;
 	// __GDPR__COMMON__ "version" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 	result['version'] = version;
 	// __GDPR__COMMON__ "common.platformVersion" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }

@@ -6,7 +6,7 @@
 import { FileBrowserDataSource } from 'sql/workbench/services/fileBrowser/browser/fileBrowserDataSource';
 import { FileBrowserController } from 'sql/workbench/services/fileBrowser/browser/fileBrowserController';
 import { FileBrowserRenderer } from 'sql/workbench/services/fileBrowser/browser/fileBrowserRenderer';
-import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
+import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/interfaces';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
@@ -17,7 +17,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { IExpandableTree } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
+import { IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 
 /**
  * Implements tree view for file browser

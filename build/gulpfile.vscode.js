@@ -43,6 +43,7 @@ const nodeModules = [
 	'electron',
 	'original-fs',
 	'rxjs/Observable',
+	'rxjs/add/observable/fromPromise',
 	'rxjs/Subject',
 	'rxjs/Observer',
 	'slickgrid/lib/jquery.event.drag-2.3.0',
@@ -274,6 +275,9 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		}
 
 		let result = all
+			.pipe(fileLengthFilter)
+			.pipe(filelength)
+			.pipe(fileLengthFilter.restore)
 			.pipe(util.skipDirectories())
 			.pipe(util.fixWin32DirectoryPermissions())
 			.pipe(electron(_.extend({}, config, { platform, arch, ffmpegChromium: true })))
@@ -327,6 +331,29 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		return result.pipe(vfs.dest(destination));
 	};
 }
+
+const fileLengthFilter = filter([
+	'**',
+	'!extensions/import/*.docx',
+	'!extensions/admin-tool-ext-win/license/**'
+], {restore: true});
+
+const filelength = es.through(function (file) {
+
+	const fileName = path.basename(file.relative);
+	const fileDir = path.dirname(file.relative);
+	//check the filename is < 50 characters (basename gets the filename with extension).
+	if (fileName.length > 50) {
+		console.error(`File name '${fileName}' under ${fileDir} is too long. Rename file to have less than 50 characters.`);
+		throw new Error('File name exceeds acceptable length of 50 characters: ' + fileName);
+	}
+	if (file.relative.length > 150) {
+		console.error(`File path ${file.relative} exceeds acceptable file-length. Rename the path to have less than 150 characters.`);
+		throw new Error('File path exceeds acceptable path-length of 150 characters: ' + file.relative);
+	}
+
+	this.emit('data', file);
+});
 
 const buildRoot = path.dirname(root);
 

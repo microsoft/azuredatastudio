@@ -127,12 +127,17 @@ export namespace DiagnosticTag {
 
 export namespace Diagnostic {
 	export function from(value: vscode.Diagnostic): IMarkerData {
-		let code: string | { value: string; link: URI } | undefined = isString(value.code) || isNumber(value.code) ? String(value.code) : undefined;
-		if (value.code2) {
-			code = {
-				value: String(value.code2.value),
-				link: value.code2.link
-			};
+		let code: string | { value: string; target: URI } | undefined;
+
+		if (value.code) {
+			if (isString(value.code) || isNumber(value.code)) {
+				code = String(value.code);
+			} else {
+				code = {
+					value: String(value.code.value),
+					target: value.code.target,
+				};
+			}
 		}
 
 		return {
@@ -157,7 +162,7 @@ export namespace Diagnostic {
 }
 
 export namespace DiagnosticRelatedInformation {
-	export function from(value: types.DiagnosticRelatedInformation): IRelatedInformation {
+	export function from(value: vscode.DiagnosticRelatedInformation): IRelatedInformation {
 		return {
 			...Range.from(value.location.range),
 			message: value.message,
@@ -257,7 +262,7 @@ export namespace MarkdownString {
 		} else if (htmlContent.isMarkdownString(markup)) {
 			res = markup;
 		} else if (typeof markup === 'string') {
-			res = { value: <string>markup };
+			res = { value: markup };
 		} else {
 			res = { value: '' };
 		}
@@ -737,6 +742,20 @@ export namespace Hover {
 		return new types.Hover(info.contents.map(MarkdownString.to), Range.to(info.range));
 	}
 }
+
+export namespace EvaluatableExpression {
+	export function from(expression: vscode.EvaluatableExpression): modes.EvaluatableExpression {
+		return <modes.EvaluatableExpression>{
+			range: Range.from(expression.range),
+			expression: expression.expression
+		};
+	}
+
+	export function to(info: modes.EvaluatableExpression): types.EvaluatableExpression {
+		return new types.EvaluatableExpression(Range.to(info.range), info.expression);
+	}
+}
+
 export namespace DocumentHighlight {
 	export function from(documentHighlight: vscode.DocumentHighlight): modes.DocumentHighlight {
 		return {
@@ -816,6 +835,8 @@ export namespace CompletionItemKind {
 			case types.CompletionItemKind.Event: return modes.CompletionItemKind.Event;
 			case types.CompletionItemKind.Operator: return modes.CompletionItemKind.Operator;
 			case types.CompletionItemKind.TypeParameter: return modes.CompletionItemKind.TypeParameter;
+			case types.CompletionItemKind.Issue: return modes.CompletionItemKind.Issue;
+			case types.CompletionItemKind.User: return modes.CompletionItemKind.User;
 		}
 		return modes.CompletionItemKind.Property;
 	}
@@ -847,6 +868,8 @@ export namespace CompletionItemKind {
 			case modes.CompletionItemKind.Event: return types.CompletionItemKind.Event;
 			case modes.CompletionItemKind.Operator: return types.CompletionItemKind.Operator;
 			case modes.CompletionItemKind.TypeParameter: return types.CompletionItemKind.TypeParameter;
+			case modes.CompletionItemKind.User: return types.CompletionItemKind.User;
+			case modes.CompletionItemKind.Issue: return types.CompletionItemKind.Issue;
 		}
 		return types.CompletionItemKind.Property;
 	}
@@ -1074,7 +1097,11 @@ export namespace EndOfLine {
 }
 
 export namespace ProgressLocation {
-	export function from(loc: vscode.ProgressLocation): MainProgressLocation {
+	export function from(loc: vscode.ProgressLocation | { viewId: string }): MainProgressLocation | string {
+		if (typeof loc === 'object') {
+			return loc.viewId;
+		}
+
 		switch (loc) {
 			case types.ProgressLocation.SourceControl: return MainProgressLocation.Scm;
 			case types.ProgressLocation.Window: return MainProgressLocation.Window;

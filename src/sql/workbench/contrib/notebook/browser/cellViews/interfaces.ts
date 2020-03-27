@@ -5,9 +5,8 @@
 
 import { OnDestroy } from '@angular/core';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-import { ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
+import { ICellEditorProvider, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
-import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 
 export abstract class CellView extends AngularDisposable implements OnDestroy, ICellEditorProvider {
 	constructor() {

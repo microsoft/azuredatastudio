@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
-import { QueryStatus } from 'sql/platform/queryHistory/common/queryHistoryInfo';
+import { QueryStatus } from 'sql/workbench/services/queryHistory/common/queryHistoryInfo';
 import * as dom from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';

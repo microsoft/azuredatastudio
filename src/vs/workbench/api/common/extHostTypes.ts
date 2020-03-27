@@ -4,17 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { coalesce, equals } from 'vs/base/common/arrays';
+import { escapeCodicons } from 'vs/base/common/codicons';
 import { illegalArgument } from 'vs/base/common/errors';
+import { Emitter } from 'vs/base/common/event';
 import { IRelativePattern } from 'vs/base/common/glob';
 import { isMarkdownString } from 'vs/base/common/htmlContent';
-import { values } from 'vs/base/common/map';
 import { startsWith } from 'vs/base/common/strings';
 import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
-import type * as vscode from 'vscode';
 import { FileSystemProviderErrorCode, markAsFileSystemProviderError } from 'vs/platform/files/common/files';
 import { RemoteAuthorityResolverErrorCode } from 'vs/platform/remote/common/remoteAuthorityResolver';
-import { escapeCodicons } from 'vs/base/common/codicons';
+import type * as vscode from 'vscode';
+import { Cache } from './cache';
+import { assertIsDefined } from 'vs/base/common/types';
 
 function es5ClassCompat(target: Function): any {
 	///@ts-ignore
@@ -44,16 +46,16 @@ export class Disposable {
 		});
 	}
 
-	private _callOnDispose?: () => any;
+	#callOnDispose?: () => any;
 
 	constructor(callOnDispose: () => any) {
-		this._callOnDispose = callOnDispose;
+		this.#callOnDispose = callOnDispose;
 	}
 
 	dispose(): any {
-		if (typeof this._callOnDispose === 'function') {
-			this._callOnDispose();
-			this._callOnDispose = undefined;
+		if (typeof this.#callOnDispose === 'function') {
+			this.#callOnDispose();
+			this.#callOnDispose = undefined;
 		}
 	}
 }
@@ -576,14 +578,14 @@ export interface IFileOperation {
 	from?: URI;
 	to?: URI;
 	options?: IFileOperationOptions;
-	metadata?: vscode.WorkspaceEditMetadata;
+	metadata?: vscode.WorkspaceEditEntryMetadata;
 }
 
 export interface IFileTextEdit {
 	_type: 2;
 	uri: URI;
 	edit: TextEdit;
-	metadata?: vscode.WorkspaceEditMetadata;
+	metadata?: vscode.WorkspaceEditEntryMetadata;
 }
 
 @es5ClassCompat
@@ -591,27 +593,27 @@ export class WorkspaceEdit implements vscode.WorkspaceEdit {
 
 	private _edits = new Array<IFileOperation | IFileTextEdit>();
 
-	renameFile(from: vscode.Uri, to: vscode.Uri, options?: { overwrite?: boolean, ignoreIfExists?: boolean; }, metadata?: vscode.WorkspaceEditMetadata): void {
+	renameFile(from: vscode.Uri, to: vscode.Uri, options?: { overwrite?: boolean, ignoreIfExists?: boolean; }, metadata?: vscode.WorkspaceEditEntryMetadata): void {
 		this._edits.push({ _type: 1, from, to, options, metadata });
 	}
 
-	createFile(uri: vscode.Uri, options?: { overwrite?: boolean, ignoreIfExists?: boolean; }, metadata?: vscode.WorkspaceEditMetadata): void {
+	createFile(uri: vscode.Uri, options?: { overwrite?: boolean, ignoreIfExists?: boolean; }, metadata?: vscode.WorkspaceEditEntryMetadata): void {
 		this._edits.push({ _type: 1, from: undefined, to: uri, options, metadata });
 	}
 
-	deleteFile(uri: vscode.Uri, options?: { recursive?: boolean, ignoreIfNotExists?: boolean; }, metadata?: vscode.WorkspaceEditMetadata): void {
+	deleteFile(uri: vscode.Uri, options?: { recursive?: boolean, ignoreIfNotExists?: boolean; }, metadata?: vscode.WorkspaceEditEntryMetadata): void {
 		this._edits.push({ _type: 1, from: uri, to: undefined, options, metadata });
 	}
 
-	replace(uri: URI, range: Range, newText: string, metadata?: vscode.WorkspaceEditMetadata): void {
+	replace(uri: URI, range: Range, newText: string, metadata?: vscode.WorkspaceEditEntryMetadata): void {
 		this._edits.push({ _type: 2, uri, edit: new TextEdit(range, newText), metadata });
 	}
 
-	insert(resource: URI, position: Position, newText: string, metadata?: vscode.WorkspaceEditMetadata): void {
+	insert(resource: URI, position: Position, newText: string, metadata?: vscode.WorkspaceEditEntryMetadata): void {
 		this.replace(resource, new Range(position, position), newText, metadata);
 	}
 
-	delete(resource: URI, range: Range, metadata?: vscode.WorkspaceEditMetadata): void {
+	delete(resource: URI, range: Range, metadata?: vscode.WorkspaceEditEntryMetadata): void {
 		this.replace(resource, range, '', metadata);
 	}
 
@@ -661,7 +663,7 @@ export class WorkspaceEdit implements vscode.WorkspaceEdit {
 				textEdit[1].push(candidate.edit);
 			}
 		}
-		return values(textEdits);
+		return [...textEdits.values()];
 	}
 
 	allEntries(): ReadonlyArray<IFileTextEdit | IFileOperation> {
@@ -1349,7 +1351,9 @@ export enum CompletionItemKind {
 	Struct = 21,
 	Event = 22,
 	Operator = 23,
-	TypeParameter = 24
+	TypeParameter = 24,
+	User = 25,
+	Issue = 26
 }
 
 export enum CompletionItemTag {
@@ -1358,7 +1362,7 @@ export enum CompletionItemTag {
 
 export interface CompletionItemLabel {
 	name: string;
-	signature?: string;
+	parameters?: string;
 	qualifier?: string;
 	type?: string;
 }
@@ -2283,6 +2287,17 @@ export class DebugAdapterInlineImplementation implements vscode.DebugAdapterInli
 	}
 }
 
+@es5ClassCompat
+export class EvaluatableExpression implements vscode.EvaluatableExpression {
+	readonly range: vscode.Range;
+	readonly expression?: string;
+
+	constructor(range: vscode.Range, expression?: string) {
+		this.range = range;
+		this.expression = expression;
+	}
+}
+
 export enum LogLevel {
 	Trace = 1,
 	Debug = 2,
@@ -2323,8 +2338,12 @@ export class FileSystemError extends Error {
 		return new FileSystemError(messageOrUri, FileSystemProviderErrorCode.Unavailable, FileSystemError.Unavailable);
 	}
 
+	readonly code: string;
+
 	constructor(uriOrMessage?: string | URI, code: FileSystemProviderErrorCode = FileSystemProviderErrorCode.Unknown, terminator?: Function) {
 		super(URI.isUri(uriOrMessage) ? uriOrMessage.toString(true) : uriOrMessage);
+
+		this.code = terminator?.name ?? 'Unknown';
 
 		// mark the error as file system provider error so that
 		// we can extract the error code on the receiving side
@@ -2522,13 +2541,6 @@ export class Decoration {
 	bubble?: boolean;
 }
 
-export enum WebviewContentState {
-	Readonly = 1,
-	Unchanged = 2,
-	Dirty = 3,
-}
-
-
 //#region Theming
 
 @es5ClassCompat
@@ -2544,3 +2556,108 @@ export enum ColorThemeKind {
 }
 
 //#endregion Theming
+
+//#region Notebook
+
+export enum CellKind {
+	Markdown = 1,
+	Code = 2
+}
+
+export enum CellOutputKind {
+	Text = 1,
+	Error = 2,
+	Rich = 3
+}
+
+//#endregion
+
+//#region Timeline
+
+@es5ClassCompat
+export class TimelineItem implements vscode.TimelineItem {
+	constructor(public label: string, public timestamp: number) { }
+}
+
+//#endregion Timeline
+
+//#region Custom Editors
+
+interface EditState {
+	readonly allEdits: readonly number[];
+	readonly currentIndex: number;
+	readonly saveIndex: number;
+}
+
+export class CustomDocument<EditType = unknown> implements vscode.CustomDocument<EditType> {
+
+
+	readonly #edits = new Cache<EditType>('edits');
+
+	#editState: EditState;
+
+	readonly #viewType: string;
+	readonly #uri: vscode.Uri;
+
+	constructor(viewType: string, uri: vscode.Uri) {
+		this.#viewType = viewType;
+		this.#uri = uri;
+		this.#editState = {
+			allEdits: [],
+			currentIndex: 0,
+			saveIndex: 0
+		};
+	}
+
+	//#region Public API
+
+	public get viewType(): string { return this.#viewType; }
+
+	public get uri(): vscode.Uri { return this.#uri; }
+
+	#onDidDispose = new Emitter<void>();
+	public readonly onDidDispose = this.#onDidDispose.event;
+
+	get appliedEdits() {
+		return this.#editState.allEdits.slice(0, this.#editState.currentIndex + 1)
+			.map(id => this._getEdit(id));
+	}
+
+	get savedEdits() {
+		return this.#editState.allEdits.slice(0, this.#editState.saveIndex + 1)
+			.map(id => this._getEdit(id));
+	}
+
+	//#endregion
+
+	/** @internal */ _dispose(): void {
+		this.#onDidDispose.fire();
+		this.#onDidDispose.dispose();
+	}
+
+	/** @internal */ _updateEditState(state: EditState) {
+		this.#editState = state;
+	}
+
+	/** @internal*/ _getEdit(editId: number): EditType {
+		return assertIsDefined(this.#edits.get(editId, 0));
+	}
+
+	/** @internal*/ _disposeEdits(editIds: number[]) {
+		for (const editId of editIds) {
+			this.#edits.delete(editId);
+		}
+	}
+
+	/** @internal*/ _addEdit(edit: EditType): number {
+		const id = this.#edits.add([edit]);
+		this.#editState = {
+			allEdits: [...this.#editState.allEdits.slice(0, this.#editState.currentIndex), id],
+			currentIndex: this.#editState.currentIndex + 1,
+			saveIndex: this.#editState.saveIndex,
+		};
+		return id;
+	}
+}
+
+// #endregion

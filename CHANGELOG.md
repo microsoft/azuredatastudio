@@ -1,5 +1,31 @@
 # Change Log
 
+## Version 1.16.0
+* Release date: March 18, 2020
+* Release status: General Availability
+* Notebooks:
+	* Charting
+	* Creating Jupyter books
+* Postgres extension update - Users can now authenticate to Azure Postgres servers with their linked Azure account
+* Accessibility bugs
+* VS Code merge
+* In the next release, GitHub releases will no longer contain the binary files to the latest version. Rather, they will contain links to the latest release. This will have no impact on users using the in-app update functionality.
+
+## Version 1.15.1
+* Release date: February 19, 2020
+* Release status: General Availability
+* Resolved [#9145 Edit Data render the result grid incorrectly when using custom query](https://github.com/microsoft/azuredatastudio/issues/9145).
+* Resolved [#9149 Show Active Connections](https://github.com/microsoft/azuredatastudio/issues/9149).
+
+## Version 1.15.0
+* Release date: February 13, 2020
+* Release status: General Availability
+* New Azure Sign-in improvement - Added improved Azure Sign-in experience, including removal of copy/paste of device code to make a more seamless connected experience.
+* Find in Notebook support - Users can now use Ctrl+F inside of a notebook. Find in Notebook support searches line by line through both code and text cells.
+* VS Code merge from 1.38 to 1.42 - This release includes updates to VS Code from the 3 previous VS Code releases. Read their [release notes](https://code.visualstudio.com/updates/v1_42) to learn more.
+* Fix for the ["white/blank screen"](https://github.com/microsoft/azuredatastudio/issues/8775) issue reported by many users.
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/issues?q=is%3Aissue+label%3ABug+milestone%3A%22February+2020%22+is%3Aclosed).
+
 ## Version 1.14.1
 * Release date: December 26, 2019
 * Release status: General Availability

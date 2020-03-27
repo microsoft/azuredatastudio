@@ -33,7 +33,7 @@ import { badgeBackground, badgeForeground, contrastBorder, editorForeground } fr
 import { attachStylerCallback } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { IEditor, IEditorMemento } from 'vs/workbench/common/editor';
+import { IEditorPane, IEditorMemento } from 'vs/workbench/common/editor';
 import { attachSuggestEnabledInputBoxStyler, SuggestEnabledInput } from 'vs/workbench/contrib/codeEditor/browser/suggestEnabledInput/suggestEnabledInput';
 import { SettingsTarget, SettingsTargetsWidget } from 'vs/workbench/contrib/preferences/browser/preferencesWidgets';
 // {{SQL CARBON EDIT}}
@@ -49,6 +49,8 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { IPreferencesService, ISearchResult, ISettingsEditorModel, ISettingsEditorOptions, SettingsEditorOptions, SettingValueType } from 'vs/workbench/services/preferences/common/preferences';
 import { SettingsEditor2Input } from 'vs/workbench/services/preferences/common/preferencesEditorInput';
 import { Settings2EditorModel } from 'vs/workbench/services/preferences/common/preferencesModels';
+import { IEditorModel } from 'vs/platform/editor/common/editor';
+import { IStorageKeysSyncRegistryService } from 'vs/platform/userDataSync/common/storageKeys';
 
 function createGroupIterator(group: SettingsTreeGroupElement): Iterator<ITreeElement<SettingsTreeGroupChild>> {
 	const groupsIt = Iterator.fromArray(group.children);
@@ -69,6 +71,7 @@ interface IFocusEventFromScroll extends KeyboardEvent {
 	fromScroll: true;
 }
 
+const SETTINGS_AUTOSAVE_NOTIFIED_KEY = 'hasNotifiedOfSettingsAutosave';
 const SETTINGS_EDITOR_STATE_KEY = 'settingsEditorState';
 export class SettingsEditor2 extends BaseEditor {
 
@@ -79,7 +82,7 @@ export class SettingsEditor2 extends BaseEditor {
 	private static CONFIG_SCHEMA_UPDATE_DELAYER = 500;
 
 	private static readonly SUGGESTIONS: string[] = [
-		`@${MODIFIED_SETTING_TAG}`, '@tag:usesOnlineServices', `@${EXTENSION_SETTING_TAG}`
+		`@${MODIFIED_SETTING_TAG}`, '@tag:usesOnlineServices', '@tag:sync', `@${EXTENSION_SETTING_TAG}`
 	];
 
 	private static shouldSettingUpdateFast(type: SettingValueType | SettingValueType[]): boolean {
@@ -159,7 +162,8 @@ export class SettingsEditor2 extends BaseEditor {
 		@IStorageService private readonly storageService: IStorageService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IEditorGroupsService protected editorGroupService: IEditorGroupsService,
-		@IKeybindingService private readonly keybindingService: IKeybindingService
+		@IKeybindingService private readonly keybindingService: IKeybindingService,
+		@IStorageKeysSyncRegistryService storageKeysSyncRegistryService: IStorageKeysSyncRegistryService,
 	) {
 		super(SettingsEditor2.ID, telemetryService, themeService, storageService);
 		this.delayedFilterLogging = new Delayer<void>(1000);
@@ -185,6 +189,8 @@ export class SettingsEditor2 extends BaseEditor {
 				this.onConfigUpdate(e.affectedKeys);
 			}
 		}));
+
+		storageKeysSyncRegistryService.registerStorageKey({ key: SETTINGS_AUTOSAVE_NOTIFIED_KEY, version: 1 });
 	}
 
 	get minimumWidth(): number { return 375; }
@@ -353,6 +359,10 @@ export class SettingsEditor2 extends BaseEditor {
 		}
 	}
 
+	focusTOC(): void {
+		this.tocTree.domFocus();
+	}
+
 	showContextMenu(): void {
 		const activeElement = this.getActiveElementInSettingsTree();
 		if (!activeElement) {
@@ -456,7 +466,7 @@ export class SettingsEditor2 extends BaseEditor {
 
 		const actionBar = this._register(new ActionBar(this.controlsElement, {
 			animated: false,
-			actionViewItemProvider: (action: Action) => { return undefined; }
+			actionViewItemProvider: (_action) => { return undefined; }
 		}));
 
 		actionBar.push([clearInputAction], { label: false, icon: true });
@@ -500,15 +510,14 @@ export class SettingsEditor2 extends BaseEditor {
 		}
 	}
 
-	switchToSettingsFile(): Promise<IEditor | undefined> {
-		const query = parseQuery(this.searchWidget.getValue());
-		return this.openSettingsFile(query.query);
+	switchToSettingsFile(): Promise<IEditorPane | undefined> {
+		const query = parseQuery(this.searchWidget.getValue()).query;
+		return this.openSettingsFile({ query });
 	}
 
-	private async openSettingsFile(query?: string): Promise<IEditor | undefined> {
+	private async openSettingsFile(options?: ISettingsEditorOptions): Promise<IEditorPane | undefined> {
 		const currentSettingsTarget = this.settingsTargetsWidget.settingsTarget;
 
-		const options: ISettingsEditorOptions = { query };
 		if (currentSettingsTarget === ConfigurationTarget.USER_LOCAL) {
 			return this.preferencesService.openGlobalSettings(true, options);
 		} else if (currentSettingsTarget === ConfigurationTarget.USER_REMOTE) {
@@ -667,7 +676,7 @@ export class SettingsEditor2 extends BaseEditor {
 		this.settingRenderers = this.instantiationService.createInstance(SettingTreeRenderers);
 		this._register(this.settingRenderers.onDidChangeSetting(e => this.onDidChangeSetting(e.key, e.value, e.type)));
 		this._register(this.settingRenderers.onDidOpenSettings(settingKey => {
-			this.openSettingsFile(settingKey);
+			this.openSettingsFile({ editSetting: settingKey });
 		}));
 		this._register(this.settingRenderers.onDidClickSettingLink(settingName => this.onDidClickSetting(settingName)));
 		this._register(this.settingRenderers.onDidFocusSetting(element => {
@@ -708,8 +717,8 @@ export class SettingsEditor2 extends BaseEditor {
 	}
 
 	private notifyNoSaveNeeded() {
-		if (!this.storageService.getBoolean('hasNotifiedOfSettingsAutosave', StorageScope.GLOBAL, false)) {
-			this.storageService.store('hasNotifiedOfSettingsAutosave', true, StorageScope.GLOBAL);
+		if (!this.storageService.getBoolean(SETTINGS_AUTOSAVE_NOTIFIED_KEY, StorageScope.GLOBAL, false)) {
+			this.storageService.store(SETTINGS_AUTOSAVE_NOTIFIED_KEY, true, StorageScope.GLOBAL);
 			this.notificationService.info(localize('settingsNoSaveNeeded', "Your changes are automatically saved as you edit."));
 		}
 	}
@@ -890,8 +899,8 @@ export class SettingsEditor2 extends BaseEditor {
 	private render(token: CancellationToken): Promise<any> {
 		if (this.input) {
 			return this.input.resolve()
-				.then((model: Settings2EditorModel) => {
-					if (token.isCancellationRequested) {
+				.then((model: IEditorModel | null) => {
+					if (token.isCancellationRequested || !(model instanceof Settings2EditorModel)) {
 						return undefined;
 					}
 

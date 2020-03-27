@@ -33,12 +33,60 @@
       },
       {
         "type": "object",
-        "title": "Azure Account Configuration",
+        "title": "%config.azureAccountConfigurationSection%",
         "properties": {
-          "accounts.azure.enablePublicCloud": {
+          "accounts.azure.cloud.enablePublicCloud": {
             "type": "boolean",
             "default": true,
             "description": "%config.enablePublicCloudDescription%"
+          },
+          "accounts.azure.cloud.enableUsGovCloud": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.enableUsGovCloudDescription%"
+          },
+          "accounts.azure.cloud.enableGermanyCloud": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.enableGermanyCloudDescription%"
+          },
+          "accounts.azure.cloud.enableChinaCloud": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.enableChinaCloudDescription%"
+          }
+        }
+      },
+      {
+        "type": "object",
+        "title": "%config.azureAuthMethodConfigurationSection%",
+        "properties": {
+          "accounts.azure.auth.codeGrant": {
+            "type": "boolean",
+            "default": true,
+            "description": "%config.azureCodeGrantMethod%"
+          },
+          "accounts.azure.auth.deviceCode": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.azureDeviceCodeMethod%"
+          }
+        }
+      },
+      {
+        "type": "object",
+        "title": "Azure",
+        "properties": {
+          "azure.enableArcFeatures": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.enableArcFeatures%"
+          },
+          "azure.noSystemKeychain": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.noSystemKeychain%",
+            "when": "isLinux || isWeb"
           }
         }
       }
@@ -66,36 +114,34 @@
         "category": "Azure Accounts"
       },
       {
+        "command": "azure.accounts.getSubscriptions",
+        "title": "%azure.accounts.getSubscriptions.title%",
+        "category": "Azure Accounts"
+      },
+      {
+        "command": "azure.accounts.getResourceGroups",
+        "title": "%azure.accounts.getResourceGroups.title%",
+        "category": "Azure Accounts"
+      },
+      {
         "command": "azure.resource.signin",
         "title": "%azure.resource.signin.title%",
-        "icon": {
-          "dark": "resources/dark/add_inverse.svg",
-          "light": "resources/light/add.svg"
-        }
+        "icon": "$(add)"
       },
       {
         "command": "azure.resource.refreshall",
         "title": "%azure.resource.refreshall.title%",
-        "icon": {
-          "dark": "resources/dark/refresh_inverse.svg",
-          "light": "resources/light/refresh.svg"
-        }
+        "icon": "$(refresh)"
       },
       {
         "command": "azure.resource.refresh",
         "title": "%azure.resource.refresh.title%",
-        "icon": {
-          "dark": "resources/dark/refresh_inverse.svg",
-          "light": "resources/light/refresh.svg"
-        }
+        "icon": "$(refresh)"
       },
       {
         "command": "azure.resource.selectsubscriptions",
         "title": "%azure.resource.selectsubscriptions.title%",
-        "icon": {
-          "dark": "resources/dark/filter_inverse.svg",
-          "light": "resources/light/filter.svg"
-        }
+        "icon": "$(filter)"
       },
       {
         "command": "azure.resource.startterminal",
@@ -151,6 +197,14 @@
         {
           "command": "azure.resource.connectsqlserver",
           "when": "false"
+        },
+        {
+          "command": "azure.accounts.getSubscriptions",
+          "when": "false"
+        },
+        {
+          "command": "azure.accounts.getResourceGroups",
+          "when": "false"
         }
       ],
       "view/title": [
@@ -194,14 +248,18 @@
     "@azure/arm-resourcegraph": "^2.0.0",
     "@azure/arm-subscriptions": "1.0.0",
     "adal-node": "^0.2.1",
+    "axios": "^0.19.2",
+    "qs": "^6.9.1",
     "request": "2.88.0",
     "request-promise": "^4.2.5",
     "vscode-nls": "^4.0.0",
     "ws": "^7.2.0"
   },
   "devDependencies": {
+    "@types/keytar": "^4.4.2",
     "@types/mocha": "^5.2.5",
     "@types/node": "^12.11.7",
+    "@types/qs": "^6.9.1",
     "@types/request": "^2.48.1",
     "@types/request-promise": "^4.1.45",
     "@types/ws": "^6.0.4",
@@ -210,9 +268,9 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.4"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
   },
   "resolutions": {
-      "esprima": "^4.0.0"
+    "esprima": "^4.0.0"
   }
 }

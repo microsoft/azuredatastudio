@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { Subscription } from 'rxjs/Subscription';
+import { Event } from 'vs/base/common/event';
 
 const ANGULAREVENTING_SERVICE_ID = 'angularEventingService';
 export const IAngularEventingService = createDecorator<IAngularEventingService>(ANGULAREVENTING_SERVICE_ID);
@@ -33,9 +33,8 @@ export interface IAngularEventingService {
 	/**
 	 * Adds a listener for the dashboard to send events, should only be called once for each dashboard by the dashboard itself
 	 * @param uri Uri of the dashboard
-	 * @param cb Listening function
 	 */
-	onAngularEvent(uri: string, cb: (event: IAngularEvent) => void): Subscription;
+	onAngularEvent(uri: string): Event<IAngularEvent>;
 
 	/**
 	 * Send an event to the dashboard; no op if the dashboard has not started listening yet

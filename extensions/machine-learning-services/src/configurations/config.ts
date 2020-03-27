@@ -21,7 +21,6 @@ const defaultRExecutable = 'r';
 export class Config {
 
 	private _configValues: any;
-	private _mlsConfig: vscode.WorkspaceConfiguration | undefined;
 
 	constructor(private _root: string, private _apiWrapper: ApiWrapper) {
 	}
@@ -30,29 +29,29 @@ export class Config {
 	 * Loads the config values
 	 */
 	public async load(): Promise<void> {
-		const rawConfig = await fs.readFile(path.join(this._root, 'out', 'configurations', configFileName));
+		const rawConfig = await fs.readFile(path.join(this._root, configFileName));
 		this._configValues = JSON.parse(rawConfig.toString());
 	}
 
 	/**
 	 * Returns the config value of required python packages
 	 */
-	public get requiredPythonPackages(): PackageConfigModel[] {
-		return this._configValues.requiredPythonPackages;
+	public get requiredSqlPythonPackages(): PackageConfigModel[] {
+		return this._configValues.sqlPackageManagement.requiredPythonPackages;
 	}
 
 	/**
 	 * Returns the config value of required r packages
 	 */
-	public get requiredRPackages(): PackageConfigModel[] {
-		return this._configValues.requiredRPackages;
+	public get requiredSqlRPackages(): PackageConfigModel[] {
+		return this._configValues.sqlPackageManagement.requiredRPackages;
 	}
 
 	/**
 	 * Returns r packages repository
 	 */
 	public get rPackagesRepository(): string {
-		return this._configValues.rPackagesRepository;
+		return this._configValues.sqlPackageManagement.rPackagesRepository;
 	}
 
 	/**
@@ -63,6 +62,70 @@ export class Config {
 	}
 
 	/**
+	 * Returns true if python package management is enabled
+	 */
+	public get pythonEnabled(): boolean {
+		return this.config.get(constants.pythonEnabledConfigKey) || false;
+	}
+
+	/**
+	 * Returns true if r package management is enabled
+	 */
+	public get rEnabled(): boolean {
+		return this.config.get(constants.rEnabledConfigKey) || false;
+	}
+
+	/**
+	 * Returns registered models table name
+	 */
+	public get registeredModelTableName(): string {
+		return this._configValues.modelManagement.registeredModelsTableName;
+	}
+
+	/**
+	 * Returns registered models table schema name
+	 */
+	public get registeredModelTableSchemaName(): string {
+		return this._configValues.modelManagement.registeredModelsTableSchemaName;
+	}
+
+	/**
+	 * Returns registered models table name
+	 */
+	public get registeredModelDatabaseName(): string {
+		return this._configValues.modelManagement.registeredModelsDatabaseName;
+	}
+
+	/**
+	 * Returns Azure ML API
+	 */
+	public get amlModelManagementUrl(): string {
+		return this._configValues.modelManagement.amlModelManagementUrl;
+	}
+
+	/**
+	 * Returns Azure ML API
+	 */
+	public get amlExperienceUrl(): string {
+		return this._configValues.modelManagement.amlExperienceUrl;
+	}
+
+
+	/**
+	 * Returns Azure ML API Version
+	 */
+	public get amlApiVersion(): string {
+		return this._configValues.modelManagement.amlApiVersion;
+	}
+
+	/**
+	 * Returns model management python packages
+	 */
+	public get modelsRequiredPythonPackages(): PackageConfigModel[] {
+		return this._configValues.modelManagement.requiredPythonPackages;
+	}
+
+	/**
 	 * Returns r path from user settings
 	 */
 	public get rExecutable(): string {
@@ -70,9 +133,6 @@ export class Config {
 	}
 
 	private get config(): vscode.WorkspaceConfiguration {
-		if (!this._mlsConfig) {
-			this._mlsConfig = this._apiWrapper.getConfiguration(constants.mlsConfigKey);
-		}
-		return this._mlsConfig;
+		return this._apiWrapper.getConfiguration(constants.mlsConfigKey);
 	}
 }

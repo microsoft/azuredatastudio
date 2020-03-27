@@ -14,7 +14,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { Gesture, EventType } from 'vs/base/browser/touch';
 
 export interface IButtonOptions extends IButtonStyles {
-	title?: boolean;
+	title?: boolean | string;
 }
 
 export interface IButtonStyles {
@@ -151,10 +151,10 @@ export class Button extends Disposable {
 			DOM.addClass(this._element, 'monaco-text-button');
 		}
 		this._element.textContent = value;
-		//{{SQL CARBON EDIT}}
-		this._element.setAttribute('aria-label', value);
-		//{{END}}
-		if (this.options.title) {
+		this._element.setAttribute('aria-label', value); // {{SQL CARBON EDIT}}
+		if (typeof this.options.title === 'string') {
+			this._element.title = this.options.title;
+		} else if (this.options.title) {
 			this._element.title = value;
 		}
 	}

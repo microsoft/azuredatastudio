@@ -5,8 +5,8 @@
 
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
-import { ITaskService } from 'sql/platform/tasks/common/tasksService';
-import { TaskNode } from 'sql/platform/tasks/common/tasksNode';
+import { ITaskService } from 'sql/workbench/services/tasks/common/tasksService';
+import { TaskNode } from 'sql/workbench/services/tasks/common/tasksNode';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import Severity from 'vs/base/common/severity';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -60,7 +60,7 @@ export class ScriptAction extends Action {
 	public async run(element: TaskNode): Promise<boolean> {
 		if (element instanceof TaskNode) {
 			if (element.script && element.script !== '') {
-				this._queryEditorService.newSqlEditor(element.script);
+				this._queryEditorService.newSqlEditor({ initalContent: element.script });
 			}
 		}
 		return true;

@@ -48,10 +48,13 @@ steps:
 #   displayName: Download Built-in Extensions
 - powershell: |
     .\scripts\test.bat --tfs "Unit Tests"
-  displayName: Run Unit Tests
+  displayName: Run Unit Tests (Electron)
+# - powershell: | {{SQL CARBON EDIT}} disable for now @TODO @anthonydresser
+#     yarn test-browser --browser chromium
+#   displayName: Run Unit Tests (Browser)
 # - powershell: | {{SQL CARBON EDIT}} remove step
 #     .\scripts\test-integration.bat --tfs "Integration Tests"
-#   displayName: Run Integration Tests
+#   displayName: Run Integration Tests (Electron)
 - task: PublishTestResults@2
   displayName: Publish Tests Results
   inputs:

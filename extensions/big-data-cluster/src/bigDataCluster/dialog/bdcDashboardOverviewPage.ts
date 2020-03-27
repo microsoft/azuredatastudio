@@ -68,7 +68,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		this.propertiesErrorMessage = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ display: 'none', CSSStyles: { ...cssStyles.errorText } }).component();
 		rootContainer.addItem(this.propertiesErrorMessage, { flex: '0 0 auto' });
 
-		this.propertiesContainer = view.modelBuilder.divContainer().component();
+		this.propertiesContainer = view.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
 
 		// Row 1
 		const row1 = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', height: '30px', alignItems: 'center' }).component();
@@ -76,14 +76,20 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		// Cluster State
 		const clusterStateLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.clusterState }).component();
 		const clusterStateValue = view.modelBuilder.text().component();
-		this.clusterStateLoadingComponent = view.modelBuilder.loadingComponent().withItem(clusterStateValue).component();
+		this.clusterStateLoadingComponent = view.modelBuilder.loadingComponent()
+			.withItem(clusterStateValue)
+			.withProperties<azdata.LoadingComponentProperties>({ loadingCompletedText: loc.loadingClusterStateCompleted })
+			.component();
 		row1.addItem(clusterStateLabel, { CSSStyles: { 'width': `${clusterStateLabelColumnWidth}px`, 'min-width': `${clusterStateLabelColumnWidth}px`, 'user-select': 'none', 'font-weight': 'bold' } });
 		row1.addItem(this.clusterStateLoadingComponent, { CSSStyles: { 'width': `${clusterStateValueColumnWidth}px`, 'min-width': `${clusterStateValueColumnWidth}px` } });
 
 		// Health Status
 		const healthStatusLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.healthStatusWithColon }).component();
 		const healthStatusValue = view.modelBuilder.text().component();
-		this.clusterHealthStatusLoadingComponent = view.modelBuilder.loadingComponent().withItem(healthStatusValue).component();
+		this.clusterHealthStatusLoadingComponent = view.modelBuilder.loadingComponent()
+			.withItem(healthStatusValue)
+			.withProperties<azdata.LoadingComponentProperties>({ loadingCompletedText: loc.loadingHealthStatusCompleted })
+			.component();
 		row1.addItem(healthStatusLabel, { CSSStyles: { 'width': `${healthStatusColumnWidth}px`, 'min-width': `${healthStatusColumnWidth}px`, 'user-select': 'none', 'font-weight': 'bold' } });
 		row1.addItem(this.clusterHealthStatusLoadingComponent, { CSSStyles: { 'width': `${healthStatusColumnWidth}px`, 'min-width': `${healthStatusColumnWidth}px` } });
 
@@ -128,8 +134,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							isReadOnly: true,
 							width: 25,
 							headerCssStyles: {
-								'border': 'none',
-								'background-color': '#FFFFFF'
+								'border': 'none'
 							},
 							rowCssStyles: {
 								'border-top': 'solid 1px #ccc',
@@ -145,7 +150,6 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							width: 175,
 							headerCssStyles: {
 								'border': 'none',
-								'background-color': '#FFFFFF',
 								...cssStyles.tableHeader
 							},
 							rowCssStyles: {
@@ -162,7 +166,6 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							width: 150,
 							headerCssStyles: {
 								'border': 'none',
-								'background-color': '#FFFFFF',
 								...cssStyles.tableHeader
 							},
 							rowCssStyles: {
@@ -179,7 +182,6 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							width: 100,
 							headerCssStyles: {
 								'border': 'none',
-								'background-color': '#FFFFFF',
 								'text-align': 'left',
 								...cssStyles.tableHeader
 							},
@@ -198,7 +200,6 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							width: 150,
 							headerCssStyles: {
 								'border': 'none',
-								'background-color': '#FFFFFF'
 							},
 							rowCssStyles: {
 								'border-top': 'solid 1px #ccc',
@@ -256,7 +257,6 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							width: 200,
 							headerCssStyles: {
 								'border': 'none',
-								'background-color': '#FFFFFF',
 								...cssStyles.tableHeader
 							},
 							rowCssStyles: {
@@ -273,7 +273,6 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							width: 350,
 							headerCssStyles: {
 								'border': 'none',
-								'background-color': '#FFFFFF',
 								...cssStyles.tableHeader
 							},
 							rowCssStyles: {
@@ -293,7 +292,6 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							width: 50,
 							headerCssStyles: {
 								'border': 'none',
-								'background-color': '#FFFFFF'
 							},
 							rowCssStyles: {
 								'border-top': 'solid 1px #ccc',

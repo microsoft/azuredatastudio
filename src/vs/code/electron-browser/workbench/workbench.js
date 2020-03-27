@@ -19,6 +19,7 @@ process['lazyEnv'] = getLazyEnv();
 // we know for a fact that workbench.desktop.main will depend on
 // the related CSS and NLS counterparts.
 bootstrapWindow.load([
+	'sql/setup',
 	'vs/workbench/workbench.desktop.main',
 	'vs/nls!vs/workbench/workbench.desktop.main',
 	'vs/css!vs/workbench/workbench.desktop.main'

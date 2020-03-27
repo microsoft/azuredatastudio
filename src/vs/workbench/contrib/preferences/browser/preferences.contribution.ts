@@ -7,38 +7,38 @@ import { KeyChord, KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import 'vs/css!../browser/media/preferences';
-import { Command } from 'vs/editor/browser/editorExtensions';
 import { Context as SuggestContext } from 'vs/editor/contrib/suggest/suggest';
 import * as nls from 'vs/nls';
-import { MenuId, MenuRegistry, SyncActionDescriptor } from 'vs/platform/actions/common/actions';
+import { Action2, MenuId, MenuRegistry, registerAction2, SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { WorkbenchStateContext, IsMacNativeContext, RemoteNameContext } from 'vs/workbench/browser/contextkeys';
-import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { ILabelService } from 'vs/platform/label/common/label';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
+import { RemoteNameContext, WorkbenchStateContext } from 'vs/workbench/browser/contextkeys';
+import { IsMacNativeContext } from 'vs/platform/contextkey/common/contextkeys';
 import { EditorDescriptor, Extensions as EditorExtensions, IEditorRegistry } from 'vs/workbench/browser/editor';
 import { Extensions, IWorkbenchActionRegistry } from 'vs/workbench/common/actions';
 import { Extensions as WorkbenchExtensions, IWorkbenchContribution, IWorkbenchContributionsRegistry } from 'vs/workbench/common/contributions';
 import { EditorInput, Extensions as EditorInputExtensions, IEditorInputFactory, IEditorInputFactoryRegistry } from 'vs/workbench/common/editor';
 import { ResourceContextKey } from 'vs/workbench/common/resources';
+import { ExplorerFolderContext, ExplorerRootContext } from 'vs/workbench/contrib/files/common/files';
 import { KeybindingsEditor } from 'vs/workbench/contrib/preferences/browser/keybindingsEditor';
-import { ConfigureLanguageBasedSettingsAction, OpenDefaultKeybindingsFileAction, OpenFolderSettingsAction, OpenGlobalKeybindingsAction, OpenGlobalKeybindingsFileAction, OpenGlobalSettingsAction, OpenRawDefaultSettingsAction, OpenSettings2Action, OpenSettingsJsonAction, OpenWorkspaceSettingsAction, OPEN_FOLDER_SETTINGS_COMMAND, OPEN_FOLDER_SETTINGS_LABEL, OpenRemoteSettingsAction } from 'vs/workbench/contrib/preferences/browser/preferencesActions';
+import { ConfigureLanguageBasedSettingsAction, OpenDefaultKeybindingsFileAction, OpenFolderSettingsAction, OpenGlobalKeybindingsAction, OpenGlobalKeybindingsFileAction, OpenGlobalSettingsAction, OpenRawDefaultSettingsAction, OpenRemoteSettingsAction, OpenSettings2Action, OpenSettingsJsonAction, OpenWorkspaceSettingsAction, OPEN_FOLDER_SETTINGS_COMMAND, OPEN_FOLDER_SETTINGS_LABEL } from 'vs/workbench/contrib/preferences/browser/preferencesActions';
 import { PreferencesEditor } from 'vs/workbench/contrib/preferences/browser/preferencesEditor';
-import { CONTEXT_KEYBINDINGS_EDITOR, CONTEXT_KEYBINDINGS_SEARCH_FOCUS, CONTEXT_KEYBINDING_FOCUS, CONTEXT_SETTINGS_EDITOR, CONTEXT_SETTINGS_JSON_EDITOR, CONTEXT_SETTINGS_SEARCH_FOCUS, CONTEXT_TOC_ROW_FOCUS, IKeybindingsEditor, KEYBINDINGS_EDITOR_COMMAND_CLEAR_SEARCH_RESULTS, KEYBINDINGS_EDITOR_COMMAND_COPY, KEYBINDINGS_EDITOR_COMMAND_COPY_COMMAND, KEYBINDINGS_EDITOR_COMMAND_DEFINE, KEYBINDINGS_EDITOR_COMMAND_FOCUS_KEYBINDINGS, KEYBINDINGS_EDITOR_COMMAND_RECORD_SEARCH_KEYS, KEYBINDINGS_EDITOR_COMMAND_REMOVE, KEYBINDINGS_EDITOR_COMMAND_RESET, KEYBINDINGS_EDITOR_COMMAND_SEARCH, KEYBINDINGS_EDITOR_COMMAND_SHOW_SIMILAR, KEYBINDINGS_EDITOR_COMMAND_SORTBY_PRECEDENCE, KEYBINDINGS_EDITOR_SHOW_DEFAULT_KEYBINDINGS, KEYBINDINGS_EDITOR_SHOW_USER_KEYBINDINGS, MODIFIED_SETTING_TAG, SETTINGS_EDITOR_COMMAND_CLEAR_SEARCH_RESULTS, SETTINGS_EDITOR_COMMAND_EDIT_FOCUSED_SETTING, SETTINGS_EDITOR_COMMAND_FILTER_MODIFIED, SETTINGS_EDITOR_COMMAND_FILTER_ONLINE, SETTINGS_EDITOR_COMMAND_FOCUS_FILE, SETTINGS_EDITOR_COMMAND_FOCUS_NEXT_SETTING, SETTINGS_EDITOR_COMMAND_FOCUS_PREVIOUS_SETTING, SETTINGS_EDITOR_COMMAND_FOCUS_SETTINGS_FROM_SEARCH, SETTINGS_EDITOR_COMMAND_FOCUS_SETTINGS_LIST, SETTINGS_EDITOR_COMMAND_SEARCH, SETTINGS_EDITOR_COMMAND_SHOW_CONTEXT_MENU, SETTINGS_EDITOR_COMMAND_SWITCH_TO_JSON, SETTINGS_COMMAND_OPEN_SETTINGS, KEYBINDINGS_EDITOR_COMMAND_DEFINE_WHEN } from 'vs/workbench/contrib/preferences/common/preferences';
-import { PreferencesContribution } from 'vs/workbench/contrib/preferences/common/preferencesContribution';
 import { SettingsEditor2 } from 'vs/workbench/contrib/preferences/browser/settingsEditor2';
+import { CONTEXT_KEYBINDINGS_EDITOR, CONTEXT_KEYBINDINGS_SEARCH_FOCUS, CONTEXT_KEYBINDING_FOCUS, CONTEXT_SETTINGS_EDITOR, CONTEXT_SETTINGS_JSON_EDITOR, CONTEXT_SETTINGS_SEARCH_FOCUS, CONTEXT_TOC_ROW_FOCUS, KEYBINDINGS_EDITOR_COMMAND_CLEAR_SEARCH_RESULTS, KEYBINDINGS_EDITOR_COMMAND_COPY, KEYBINDINGS_EDITOR_COMMAND_COPY_COMMAND, KEYBINDINGS_EDITOR_COMMAND_DEFINE, KEYBINDINGS_EDITOR_COMMAND_DEFINE_WHEN, KEYBINDINGS_EDITOR_COMMAND_FOCUS_KEYBINDINGS, KEYBINDINGS_EDITOR_COMMAND_RECORD_SEARCH_KEYS, KEYBINDINGS_EDITOR_COMMAND_REMOVE, KEYBINDINGS_EDITOR_COMMAND_RESET, KEYBINDINGS_EDITOR_COMMAND_SEARCH, KEYBINDINGS_EDITOR_COMMAND_SHOW_SIMILAR, KEYBINDINGS_EDITOR_COMMAND_SORTBY_PRECEDENCE, KEYBINDINGS_EDITOR_SHOW_DEFAULT_KEYBINDINGS, KEYBINDINGS_EDITOR_SHOW_USER_KEYBINDINGS, MODIFIED_SETTING_TAG, SETTINGS_COMMAND_OPEN_SETTINGS, SETTINGS_EDITOR_COMMAND_CLEAR_SEARCH_RESULTS, SETTINGS_EDITOR_COMMAND_EDIT_FOCUSED_SETTING, SETTINGS_EDITOR_COMMAND_FILTER_MODIFIED, SETTINGS_EDITOR_COMMAND_FILTER_ONLINE, SETTINGS_EDITOR_COMMAND_FOCUS_FILE, SETTINGS_EDITOR_COMMAND_FOCUS_NEXT_SETTING, SETTINGS_EDITOR_COMMAND_FOCUS_PREVIOUS_SETTING, SETTINGS_EDITOR_COMMAND_FOCUS_SETTINGS_FROM_SEARCH, SETTINGS_EDITOR_COMMAND_FOCUS_SETTINGS_LIST, SETTINGS_EDITOR_COMMAND_SEARCH, SETTINGS_EDITOR_COMMAND_SHOW_CONTEXT_MENU, SETTINGS_EDITOR_COMMAND_SWITCH_TO_JSON, SETTINGS_EDITOR_COMMAND_FOCUS_TOC } from 'vs/workbench/contrib/preferences/common/preferences';
+import { PreferencesContribution } from 'vs/workbench/contrib/preferences/common/preferencesContribution';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IPreferencesService } from 'vs/workbench/services/preferences/common/preferences';
 import { DefaultPreferencesEditorInput, KeybindingsEditorInput, PreferencesEditorInput, SettingsEditor2Input } from 'vs/workbench/services/preferences/common/preferencesEditorInput';
-import { ExplorerRootContext, ExplorerFolderContext } from 'vs/workbench/contrib/files/common/files';
-import { ILabelService } from 'vs/platform/label/common/label';
-import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors).registerEditor(
 	EditorDescriptor.create(
@@ -197,7 +197,7 @@ class DefaultPreferencesEditorInputFactory implements IEditorInputFactory {
 	serialize(editorInput: EditorInput): string {
 		const input = <DefaultPreferencesEditorInput>editorInput;
 
-		const serialized: ISerializedDefaultPreferencesEditorInput = { resource: input.getResource().toString() };
+		const serialized: ISerializedDefaultPreferencesEditorInput = { resource: input.resource.toString() };
 
 		return JSON.stringify(serialized);
 	}
@@ -244,9 +244,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	when: ContextKeyExpr.and(CONTEXT_KEYBINDINGS_EDITOR, CONTEXT_KEYBINDING_FOCUS),
 	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_K),
 	handler: (accessor, args: any) => {
-		const control = accessor.get(IEditorService).activeControl as IKeybindingsEditor;
-		if (control && control instanceof KeybindingsEditor) {
-			control.defineKeybinding(control.activeKeybindingEntry!);
+		const editorPane = accessor.get(IEditorService).activeEditorPane;
+		if (editorPane instanceof KeybindingsEditor) {
+			editorPane.defineKeybinding(editorPane.activeKeybindingEntry!);
 		}
 	}
 });
@@ -257,9 +257,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	when: ContextKeyExpr.and(CONTEXT_KEYBINDINGS_EDITOR, CONTEXT_KEYBINDING_FOCUS),
 	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_E),
 	handler: (accessor, args: any) => {
-		const control = accessor.get(IEditorService).activeControl as IKeybindingsEditor;
-		if (control && control instanceof KeybindingsEditor && control.activeKeybindingEntry!.keybindingItem.keybinding) {
-			control.defineWhenExpression(control.activeKeybindingEntry!);
+		const editorPane = accessor.get(IEditorService).activeEditorPane;
+		if (editorPane instanceof KeybindingsEditor && editorPane.activeKeybindingEntry!.keybindingItem.keybinding) {
+			editorPane.defineWhenExpression(editorPane.activeKeybindingEntry!);
 		}
 	}
 });
@@ -273,9 +273,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.Backspace)
 	},
 	handler: (accessor, args: any) => {
-		const control = accessor.get(IEditorService).activeControl as IKeybindingsEditor;
-		if (control && control instanceof KeybindingsEditor) {
-			control.removeKeybinding(control.activeKeybindingEntry!);
+		const editorPane = accessor.get(IEditorService).activeEditorPane;
+		if (editorPane instanceof KeybindingsEditor) {
+			editorPane.removeKeybinding(editorPane.activeKeybindingEntry!);
 		}
 	}
 });
@@ -286,9 +286,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	when: ContextKeyExpr.and(CONTEXT_KEYBINDINGS_EDITOR, CONTEXT_KEYBINDING_FOCUS),
 	primary: 0,
 	handler: (accessor, args: any) => {
-		const control = accessor.get(IEditorService).activeControl as IKeybindingsEditor;
-		if (control && control instanceof KeybindingsEditor) {
-			control.resetKeybinding(control.activeKeybindingEntry!);
+		const editorPane = accessor.get(IEditorService).activeEditorPane;
+		if (editorPane instanceof KeybindingsEditor) {
+			editorPane.resetKeybinding(editorPane.activeKeybindingEntry!);
 		}
 	}
 });
@@ -299,9 +299,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	when: ContextKeyExpr.and(CONTEXT_KEYBINDINGS_EDITOR),
 	primary: KeyMod.CtrlCmd | KeyCode.KEY_F,
 	handler: (accessor, args: any) => {
-		const control = accessor.get(IEditorService).activeControl as IKeybindingsEditor;
-		if (control && control instanceof KeybindingsEditor) {
-			control.focusSearch();
+		const editorPane = accessor.get(IEditorService).activeEditorPane;
+		if (editorPane instanceof KeybindingsEditor) {
+			editorPane.focusSearch();
 		}
 	}
 });
@@ -313,9 +313,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	primary: KeyMod.Alt | KeyCode.KEY_K,
 	mac: { primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_K },
 	handler: (accessor, args: any) => {
-		const control = accessor.get(IEditorService).activeControl as IKeybindingsEditor;
-		if (control && control instanceof KeybindingsEditor) {
-			control.recordSearchKeys();
+		const editorPane = accessor.get(IEditorService).activeEditorPane;
+		if (editorPane instanceof KeybindingsEditor) {
+			editorPane.recordSearchKeys();
 		}
 	}
 });
@@ -327,9 +327,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	primary: KeyMod.Alt | KeyCode.KEY_P,
 	mac: { primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_P },
 	handler: (accessor, args: any) => {
-		const control = accessor.get(IEditorService).activeControl as IKeybindingsEditor;
-		if (control && control instanceof KeybindingsEditor) {
-			control.toggleSortByPrecedence();
+		const editorPane = accessor.get(IEditorService).activeEditorPane;
+		if (editorPane instanceof KeybindingsEditor) {
+			editorPane.toggleSortByPrecedence();
 		}
 	}
 });
@@ -340,9 +340,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	when: ContextKeyExpr.and(CONTEXT_KEYBINDINGS_EDITOR, CONTEXT_KEYBINDING_FOCUS),
 	primary: 0,
 	handler: (accessor, args: any) => {
-		const control = accessor.get(IEditorService).activeControl as IKeybindingsEditor;
-		if (control) {
-			control.showSimilarKeybindings(control.activeKeybindingEntry!);
+		const editorPane = accessor.get(IEditorService).activeEditorPane;
+		if (editorPane instanceof KeybindingsEditor) {
+			editorPane.showSimilarKeybindings(editorPane.activeKeybindingEntry!);
 		}
 	}
 });
@@ -353,9 +353,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	when: ContextKeyExpr.and(CONTEXT_KEYBINDINGS_EDITOR, CONTEXT_KEYBINDING_FOCUS),
 	primary: KeyMod.CtrlCmd | KeyCode.KEY_C,
 	handler: async (accessor, args: any) => {
-		const control = accessor.get(IEditorService).activeControl as IKeybindingsEditor;
-		if (control) {
-			await control.copyKeybinding(control.activeKeybindingEntry!);
+		const editorPane = accessor.get(IEditorService).activeEditorPane;
+		if (editorPane instanceof KeybindingsEditor) {
+			await editorPane.copyKeybinding(editorPane.activeKeybindingEntry!);
 		}
 	}
 });
@@ -366,9 +366,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	when: ContextKeyExpr.and(CONTEXT_KEYBINDINGS_EDITOR, CONTEXT_KEYBINDING_FOCUS),
 	primary: 0,
 	handler: async (accessor, args: any) => {
-		const control = accessor.get(IEditorService).activeControl as IKeybindingsEditor;
-		if (control) {
-			await control.copyKeybindingCommand(control.activeKeybindingEntry!);
+		const editorPane = accessor.get(IEditorService).activeEditorPane;
+		if (editorPane instanceof KeybindingsEditor) {
+			await editorPane.copyKeybindingCommand(editorPane.activeKeybindingEntry!);
 		}
 	}
 });
@@ -379,9 +379,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	when: ContextKeyExpr.and(CONTEXT_KEYBINDINGS_EDITOR, CONTEXT_KEYBINDINGS_SEARCH_FOCUS),
 	primary: KeyCode.DownArrow,
 	handler: (accessor, args: any) => {
-		const control = accessor.get(IEditorService).activeControl as IKeybindingsEditor;
-		if (control) {
-			control.focusKeybindings();
+		const editorPane = accessor.get(IEditorService).activeEditorPane;
+		if (editorPane instanceof KeybindingsEditor) {
+			editorPane.focusKeybindings();
 		}
 	}
 });
@@ -526,9 +526,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	when: ContextKeyExpr.and(CONTEXT_KEYBINDINGS_EDITOR, CONTEXT_KEYBINDINGS_SEARCH_FOCUS),
 	primary: KeyCode.Escape,
 	handler: (accessor, args: any) => {
-		const control = accessor.get(IEditorService).activeControl as IKeybindingsEditor;
-		if (control) {
-			control.clearSearchResults();
+		const editorPane = accessor.get(IEditorService).activeEditorPane;
+		if (editorPane instanceof KeybindingsEditor) {
+			editorPane.clearSearchResults();
 		}
 	}
 });
@@ -547,9 +547,9 @@ MenuRegistry.appendMenuItem(MenuId.EditorTitle, {
 });
 
 CommandsRegistry.registerCommand(KEYBINDINGS_EDITOR_SHOW_DEFAULT_KEYBINDINGS, serviceAccessor => {
-	const control = serviceAccessor.get(IEditorService).activeControl as IKeybindingsEditor;
-	if (control) {
-		control.search('@source:default');
+	const editorPane = serviceAccessor.get(IEditorService).activeEditorPane;
+	if (editorPane instanceof KeybindingsEditor) {
+		editorPane.search('@source:default');
 	}
 });
 MenuRegistry.appendMenuItem(MenuId.EditorTitle, {
@@ -562,9 +562,9 @@ MenuRegistry.appendMenuItem(MenuId.EditorTitle, {
 });
 
 CommandsRegistry.registerCommand(KEYBINDINGS_EDITOR_SHOW_USER_KEYBINDINGS, serviceAccessor => {
-	const control = serviceAccessor.get(IEditorService).activeControl as IKeybindingsEditor;
-	if (control) {
-		control.search('@source:user');
+	const editorPane = serviceAccessor.get(IEditorService).activeEditorPane;
+	if (editorPane instanceof KeybindingsEditor) {
+		editorPane.search('@source:user');
 	}
 });
 MenuRegistry.appendMenuItem(MenuId.EditorTitle, {
@@ -576,176 +576,254 @@ MenuRegistry.appendMenuItem(MenuId.EditorTitle, {
 	group: '1_keyboard_preferences_actions'
 });
 
-abstract class SettingsCommand extends Command {
-
-	protected getPreferencesEditor(accessor: ServicesAccessor): PreferencesEditor | SettingsEditor2 | null {
-		const activeControl = accessor.get(IEditorService).activeControl;
-		if (activeControl instanceof PreferencesEditor || activeControl instanceof SettingsEditor2) {
-			return activeControl;
-		}
-
-		return null;
+function getPreferencesEditor(accessor: ServicesAccessor): PreferencesEditor | SettingsEditor2 | null {
+	const activeEditorPane = accessor.get(IEditorService).activeEditorPane;
+	if (activeEditorPane instanceof PreferencesEditor || activeEditorPane instanceof SettingsEditor2) {
+		return activeEditorPane;
 	}
 
+	return null;
 }
-class StartSearchDefaultSettingsCommand extends SettingsCommand {
 
-	runCommand(accessor: ServicesAccessor, args: any): void {
-		const preferencesEditor = this.getPreferencesEditor(accessor);
+registerAction2(class extends Action2 {
+	constructor() {
+		super({
+			id: SETTINGS_EDITOR_COMMAND_SEARCH,
+			precondition: ContextKeyExpr.and(CONTEXT_SETTINGS_EDITOR),
+			keybinding: {
+				primary: KeyMod.CtrlCmd | KeyCode.KEY_F,
+				weight: KeybindingWeight.EditorContrib,
+				when: null
+			},
+			title: nls.localize('settings.focusSearch', "Focus settings search")
+		});
+	}
+
+	run(accessor: ServicesAccessor) {
+		const preferencesEditor = getPreferencesEditor(accessor);
 		if (preferencesEditor) {
 			preferencesEditor.focusSearch();
 		}
 	}
-}
-const startSearchCommand = new StartSearchDefaultSettingsCommand({
-	id: SETTINGS_EDITOR_COMMAND_SEARCH,
-	precondition: ContextKeyExpr.and(CONTEXT_SETTINGS_EDITOR),
-	kbOpts: { primary: KeyMod.CtrlCmd | KeyCode.KEY_F, weight: KeybindingWeight.EditorContrib }
 });
-startSearchCommand.register();
 
-class ClearSearchResultsCommand extends SettingsCommand {
+registerAction2(class extends Action2 {
+	constructor() {
+		super({
+			id: SETTINGS_EDITOR_COMMAND_CLEAR_SEARCH_RESULTS,
+			precondition: CONTEXT_SETTINGS_SEARCH_FOCUS,
+			keybinding: {
+				primary: KeyCode.Escape,
+				weight: KeybindingWeight.EditorContrib,
+				when: null
+			},
+			title: nls.localize('settings.clearResults', "Clear settings search results")
+		});
+	}
 
-	runCommand(accessor: ServicesAccessor, args: any): void {
-		const preferencesEditor = this.getPreferencesEditor(accessor);
+	run(accessor: ServicesAccessor) {
+		const preferencesEditor = getPreferencesEditor(accessor);
 		if (preferencesEditor) {
 			preferencesEditor.clearSearchResults();
 		}
 	}
-}
-const clearSearchResultsCommand = new ClearSearchResultsCommand({
-	id: SETTINGS_EDITOR_COMMAND_CLEAR_SEARCH_RESULTS,
-	precondition: CONTEXT_SETTINGS_SEARCH_FOCUS,
-	kbOpts: { primary: KeyCode.Escape, weight: KeybindingWeight.EditorContrib }
 });
-clearSearchResultsCommand.register();
 
-class FocusSettingsFileEditorCommand extends SettingsCommand {
+registerAction2(class extends Action2 {
+	constructor() {
+		super({
+			id: SETTINGS_EDITOR_COMMAND_FOCUS_FILE,
+			precondition: ContextKeyExpr.and(CONTEXT_SETTINGS_SEARCH_FOCUS, SuggestContext.Visible.toNegated()),
+			keybinding: {
+				primary: KeyCode.DownArrow,
+				weight: KeybindingWeight.EditorContrib,
+				when: null
+			},
+			title: nls.localize('settings.focusFile', "Focus settings file")
+		});
+	}
 
-	runCommand(accessor: ServicesAccessor, args: any): void {
-		const preferencesEditor = this.getPreferencesEditor(accessor);
+	run(accessor: ServicesAccessor, args: any): void {
+		const preferencesEditor = getPreferencesEditor(accessor);
 		if (preferencesEditor instanceof PreferencesEditor) {
 			preferencesEditor.focusSettingsFileEditor();
 		} else if (preferencesEditor) {
 			preferencesEditor.focusSettings();
 		}
 	}
-}
-const focusSettingsFileEditorCommand = new FocusSettingsFileEditorCommand({
-	id: SETTINGS_EDITOR_COMMAND_FOCUS_FILE,
-	precondition: ContextKeyExpr.and(CONTEXT_SETTINGS_SEARCH_FOCUS, SuggestContext.Visible.toNegated()),
-	kbOpts: { primary: KeyCode.DownArrow, weight: KeybindingWeight.EditorContrib }
 });
-focusSettingsFileEditorCommand.register();
 
-const focusSettingsFromSearchCommand = new FocusSettingsFileEditorCommand({
-	id: SETTINGS_EDITOR_COMMAND_FOCUS_SETTINGS_FROM_SEARCH,
-	precondition: ContextKeyExpr.and(CONTEXT_SETTINGS_SEARCH_FOCUS, SuggestContext.Visible.toNegated()),
-	kbOpts: { primary: KeyCode.DownArrow, weight: KeybindingWeight.WorkbenchContrib }
+registerAction2(class extends Action2 {
+	constructor() {
+		super({
+			id: SETTINGS_EDITOR_COMMAND_FOCUS_SETTINGS_FROM_SEARCH,
+			precondition: ContextKeyExpr.and(CONTEXT_SETTINGS_SEARCH_FOCUS, SuggestContext.Visible.toNegated()),
+			keybinding: {
+				primary: KeyCode.DownArrow,
+				weight: KeybindingWeight.WorkbenchContrib,
+				when: null
+			},
+			title: nls.localize('settings.focusFile', "Focus settings file")
+		});
+	}
+
+	run(accessor: ServicesAccessor, args: any): void {
+		const preferencesEditor = getPreferencesEditor(accessor);
+		if (preferencesEditor instanceof PreferencesEditor) {
+			preferencesEditor.focusSettingsFileEditor();
+		} else if (preferencesEditor) {
+			preferencesEditor.focusSettings();
+		}
+	}
 });
-focusSettingsFromSearchCommand.register();
 
-class FocusNextSearchResultCommand extends SettingsCommand {
+registerAction2(class extends Action2 {
+	constructor() {
+		super({
+			id: SETTINGS_EDITOR_COMMAND_FOCUS_NEXT_SETTING,
+			precondition: CONTEXT_SETTINGS_SEARCH_FOCUS,
+			keybinding: {
+				primary: KeyCode.Enter,
+				weight: KeybindingWeight.EditorContrib,
+				when: null
+			},
+			title: nls.localize('settings.focusNextSetting', "Focus next setting")
+		});
+	}
 
-	runCommand(accessor: ServicesAccessor, args: any): void {
-		const preferencesEditor = this.getPreferencesEditor(accessor);
+	run(accessor: ServicesAccessor): void {
+		const preferencesEditor = getPreferencesEditor(accessor);
 		if (preferencesEditor instanceof PreferencesEditor) {
 			preferencesEditor.focusNextResult();
 		}
 	}
-}
-const focusNextSearchResultCommand = new FocusNextSearchResultCommand({
-	id: SETTINGS_EDITOR_COMMAND_FOCUS_NEXT_SETTING,
-	precondition: CONTEXT_SETTINGS_SEARCH_FOCUS,
-	kbOpts: { primary: KeyCode.Enter, weight: KeybindingWeight.EditorContrib }
 });
-focusNextSearchResultCommand.register();
 
-class FocusPreviousSearchResultCommand extends SettingsCommand {
+registerAction2(class extends Action2 {
+	constructor() {
+		super({
+			id: SETTINGS_EDITOR_COMMAND_FOCUS_PREVIOUS_SETTING,
+			precondition: CONTEXT_SETTINGS_SEARCH_FOCUS,
+			keybinding: {
+				primary: KeyMod.Shift | KeyCode.Enter,
+				weight: KeybindingWeight.EditorContrib,
+				when: null
+			},
+			title: nls.localize('settings.focusPreviousSetting', "Focus previous setting")
+		});
+	}
 
-	runCommand(accessor: ServicesAccessor, args: any): void {
-		const preferencesEditor = this.getPreferencesEditor(accessor);
+	run(accessor: ServicesAccessor): void {
+		const preferencesEditor = getPreferencesEditor(accessor);
 		if (preferencesEditor instanceof PreferencesEditor) {
 			preferencesEditor.focusPreviousResult();
 		}
 	}
-}
-const focusPreviousSearchResultCommand = new FocusPreviousSearchResultCommand({
-	id: SETTINGS_EDITOR_COMMAND_FOCUS_PREVIOUS_SETTING,
-	precondition: CONTEXT_SETTINGS_SEARCH_FOCUS,
-	kbOpts: { primary: KeyMod.Shift | KeyCode.Enter, weight: KeybindingWeight.EditorContrib }
 });
-focusPreviousSearchResultCommand.register();
 
-class EditFocusedSettingCommand extends SettingsCommand {
+registerAction2(class extends Action2 {
+	constructor() {
+		super({
+			id: SETTINGS_EDITOR_COMMAND_EDIT_FOCUSED_SETTING,
+			precondition: CONTEXT_SETTINGS_SEARCH_FOCUS,
+			keybinding: {
+				primary: KeyMod.CtrlCmd | KeyCode.US_DOT,
+				weight: KeybindingWeight.EditorContrib,
+				when: null
+			},
+			title: nls.localize('settings.editFocusedSetting', "Edit focused setting")
+		});
+	}
 
-	runCommand(accessor: ServicesAccessor, args: any): void {
-		const preferencesEditor = this.getPreferencesEditor(accessor);
+	run(accessor: ServicesAccessor): void {
+		const preferencesEditor = getPreferencesEditor(accessor);
 		if (preferencesEditor instanceof PreferencesEditor) {
 			preferencesEditor.editFocusedPreference();
 		}
 	}
-}
-const editFocusedSettingCommand = new EditFocusedSettingCommand({
-	id: SETTINGS_EDITOR_COMMAND_EDIT_FOCUSED_SETTING,
-	precondition: CONTEXT_SETTINGS_SEARCH_FOCUS,
-	kbOpts: { primary: KeyMod.CtrlCmd | KeyCode.US_DOT, weight: KeybindingWeight.EditorContrib }
 });
-editFocusedSettingCommand.register();
 
-class FocusSettingsListCommand extends SettingsCommand {
+registerAction2(class extends Action2 {
+	constructor() {
+		super({
+			id: SETTINGS_EDITOR_COMMAND_FOCUS_SETTINGS_LIST,
+			precondition: ContextKeyExpr.and(CONTEXT_SETTINGS_EDITOR, CONTEXT_TOC_ROW_FOCUS),
+			keybinding: {
+				primary: KeyCode.Enter,
+				weight: KeybindingWeight.WorkbenchContrib,
+				when: null
+			},
+			title: nls.localize('settings.focusSettingsList', "Focus settings list")
+		});
+	}
 
-	runCommand(accessor: ServicesAccessor, args: any): void {
-		const preferencesEditor = this.getPreferencesEditor(accessor);
+	run(accessor: ServicesAccessor): void {
+		const preferencesEditor = getPreferencesEditor(accessor);
 		if (preferencesEditor instanceof SettingsEditor2) {
 			preferencesEditor.focusSettings();
 		}
 	}
-}
-
-const focusSettingsListCommand = new FocusSettingsListCommand({
-	id: SETTINGS_EDITOR_COMMAND_FOCUS_SETTINGS_LIST,
-	precondition: ContextKeyExpr.and(CONTEXT_SETTINGS_EDITOR, CONTEXT_TOC_ROW_FOCUS),
-	kbOpts: { primary: KeyCode.Enter, weight: KeybindingWeight.WorkbenchContrib }
 });
-focusSettingsListCommand.register();
 
-class ShowContextMenuCommand extends SettingsCommand {
-	runCommand(accessor: ServicesAccessor, args: any): void {
-		const preferencesEditor = this.getPreferencesEditor(accessor);
+registerAction2(class extends Action2 {
+	constructor() {
+		super({
+			id: SETTINGS_EDITOR_COMMAND_FOCUS_TOC,
+			precondition: CONTEXT_SETTINGS_EDITOR,
+			title: nls.localize('settings.focusSettingsTOC', "Focus settings TOC tree")
+		});
+	}
+
+	run(accessor: ServicesAccessor): void {
+		const preferencesEditor = getPreferencesEditor(accessor);
+		if (preferencesEditor instanceof SettingsEditor2) {
+			preferencesEditor.focusTOC();
+		}
+	}
+});
+
+registerAction2(class extends Action2 {
+	constructor() {
+		super({
+			id: SETTINGS_EDITOR_COMMAND_SHOW_CONTEXT_MENU,
+			precondition: ContextKeyExpr.and(CONTEXT_SETTINGS_EDITOR),
+			keybinding: {
+				primary: KeyMod.Shift | KeyCode.F9,
+				weight: KeybindingWeight.WorkbenchContrib,
+				when: null
+			},
+			title: nls.localize('settings.showContextMenu', "Show context menu")
+		});
+	}
+
+	run(accessor: ServicesAccessor): void {
+		const preferencesEditor = getPreferencesEditor(accessor);
 		if (preferencesEditor instanceof SettingsEditor2) {
 			preferencesEditor.showContextMenu();
 		}
 	}
-}
-
-const showContextMenuCommand = new ShowContextMenuCommand({
-	id: SETTINGS_EDITOR_COMMAND_SHOW_CONTEXT_MENU,
-	precondition: ContextKeyExpr.and(CONTEXT_SETTINGS_EDITOR),
-	kbOpts: { primary: KeyMod.Shift | KeyCode.F9, weight: KeybindingWeight.WorkbenchContrib }
 });
-showContextMenuCommand.register();
 
 CommandsRegistry.registerCommand(SETTINGS_EDITOR_COMMAND_SWITCH_TO_JSON, serviceAccessor => {
-	const control = serviceAccessor.get(IEditorService).activeControl as SettingsEditor2;
-	if (control instanceof SettingsEditor2) {
-		return control.switchToSettingsFile();
+	const editorPane = serviceAccessor.get(IEditorService).activeEditorPane;
+	if (editorPane instanceof SettingsEditor2) {
+		return editorPane.switchToSettingsFile();
 	}
 
 	return Promise.resolve(null);
 });
 
 CommandsRegistry.registerCommand(SETTINGS_EDITOR_COMMAND_FILTER_MODIFIED, serviceAccessor => {
-	const control = serviceAccessor.get(IEditorService).activeControl as SettingsEditor2;
-	if (control instanceof SettingsEditor2) {
-		control.focusSearch(`@${MODIFIED_SETTING_TAG}`);
+	const editorPane = serviceAccessor.get(IEditorService).activeEditorPane;
+	if (editorPane instanceof SettingsEditor2) {
+		editorPane.focusSearch(`@${MODIFIED_SETTING_TAG}`);
 	}
 });
 
 CommandsRegistry.registerCommand(SETTINGS_EDITOR_COMMAND_FILTER_ONLINE, serviceAccessor => {
-	const control = serviceAccessor.get(IEditorService).activeControl as SettingsEditor2;
-	if (control instanceof SettingsEditor2) {
-		control.focusSearch(`@tag:usesOnlineServices`);
+	const editorPane = serviceAccessor.get(IEditorService).activeEditorPane;
+	if (editorPane instanceof SettingsEditor2) {
+		editorPane.focusSearch(`@tag:usesOnlineServices`);
 	} else {
 		serviceAccessor.get(IPreferencesService).openSettings(false, '@tag:usesOnlineServices');
 	}

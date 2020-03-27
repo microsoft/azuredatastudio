@@ -66,11 +66,11 @@ const server = http.createServer((req, res) => {
 			// manifest
 			res.writeHead(200, { 'Content-Type': 'application/json' });
 			return res.end(JSON.stringify({
-				"name": "Code Web - OSS",
-				"short_name": "Code Web - OSS",
-				"start_url": "/",
-				"lang": "en-US",
-				"display": "standalone"
+				'name': 'Code Web - OSS',
+				'short_name': 'Code Web - OSS',
+				'start_url': '/',
+				'lang': 'en-US',
+				'display': 'standalone'
 			}));
 		}
 		if (/^\/static\//.test(pathname)) {
@@ -145,7 +145,7 @@ async function handleRoot(req, res) {
 	await Promise.all(extensionFolders.map(async extensionFolder => {
 		try {
 			const packageJSON = JSON.parse((await util.promisify(fs.readFile)(path.join(EXTENSIONS_ROOT, extensionFolder, 'package.json'))).toString());
-			if (packageJSON.main && packageJSON.name !== 'vscode-api-tests') {
+			if (packageJSON.main && packageJSON.name !== 'vscode-web-playground') {
 				return; // unsupported
 			}
 

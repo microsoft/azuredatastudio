@@ -5,7 +5,7 @@
 
 import { IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { ChartView } from './chartView';
-import QueryRunner from 'sql/platform/query/common/queryRunner';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -16,7 +16,7 @@ export class ChartTab implements IPanelTab {
 	public readonly view: ChartView;
 
 	constructor(@IInstantiationService instantiationService: IInstantiationService) {
-		this.view = instantiationService.createInstance(ChartView);
+		this.view = instantiationService.createInstance(ChartView, true);
 	}
 
 	public set queryRunner(runner: QueryRunner) {

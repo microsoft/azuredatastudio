@@ -8,8 +8,8 @@ import * as assert from 'assert';
 import { Emitter } from 'vs/base/common/event';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 
-import { AutoOAuthDialog } from 'sql/workbench/contrib/accounts/browser/autoOAuthDialog';
-import { AutoOAuthDialogController } from 'sql/workbench/contrib/accounts/browser/autoOAuthDialogController';
+import { AutoOAuthDialog } from 'sql/workbench/services/accountManagement/browser/autoOAuthDialog';
+import { AutoOAuthDialogController } from 'sql/workbench/services/accountManagement/browser/autoOAuthDialogController';
 import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
 import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/testErrorMessageService';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';

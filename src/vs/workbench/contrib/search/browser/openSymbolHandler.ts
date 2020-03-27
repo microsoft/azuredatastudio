@@ -15,7 +15,7 @@ import * as strings from 'vs/base/common/strings';
 import { Range } from 'vs/editor/common/core/range';
 import { IWorkbenchEditorConfiguration } from 'vs/workbench/common/editor';
 import { SymbolKinds, SymbolTag } from 'vs/editor/common/modes';
-import { IResourceInput } from 'vs/platform/editor/common/editor';
+import { IResourceEditorInput } from 'vs/platform/editor/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkspaceSymbolProvider, getWorkspaceSymbols, IWorkspaceSymbol } from 'vs/workbench/contrib/search/common/search';
@@ -90,7 +90,7 @@ class SymbolEntry extends EditorQuickOpenEntry {
 
 	run(mode: Mode, context: IEntryRunContext): boolean {
 
-		// resolve this type bearing if neccessary
+		// resolve this type bearing if necessary
 		if (!this.bearingResolve && typeof this.provider.resolveWorkspaceSymbol === 'function' && !this.bearing.location.range) {
 			this.bearingResolve = Promise.resolve(this.provider.resolveWorkspaceSymbol(this.bearing, CancellationToken.None)).then(result => {
 				this.bearing = result || this.bearing;
@@ -115,8 +115,8 @@ class SymbolEntry extends EditorQuickOpenEntry {
 		return mode === Mode.OPEN;
 	}
 
-	getInput(): IResourceInput {
-		const input: IResourceInput = {
+	getInput(): IResourceEditorInput {
+		const input: IResourceEditorInput = {
 			resource: this.bearing.location.uri,
 			options: {
 				pinned: !this.configurationService.getValue<IWorkbenchEditorConfiguration>().workbench.editor.enablePreviewFromQuickOpen,
