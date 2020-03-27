@@ -267,7 +267,7 @@ after(async function () {
 	await new Promise((c, e) => rimraf(testDataPath, { maxBusyTries: 10 }, err => err ? e(err) : c()));
 });
 
-describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
+describe(`Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	before(async function () {
 		const app = new Application(this.defaultOptions);
 		await app!.start(opts.web ? false : undefined);
