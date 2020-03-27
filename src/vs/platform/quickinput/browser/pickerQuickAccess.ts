@@ -8,7 +8,7 @@ import { CancellationToken, CancellationTokenSource } from 'vs/base/common/cance
 import { IQuickPickSeparator, IKeyMods, IQuickPickAcceptEvent } from 'vs/base/parts/quickinput/common/quickInput';
 import { IQuickAccessProvider } from 'vs/platform/quickinput/common/quickAccess';
 import { IDisposable, DisposableStore, Disposable, MutableDisposable } from 'vs/base/common/lifecycle';
-import { timeout } from 'vs/base/common/async';
+import { timeout, isThenable } from 'vs/base/common/async';
 
 export enum TriggerAction {
 
@@ -78,7 +78,7 @@ function isPicksWithActive<T>(obj: unknown): obj is PicksWithActive<T> {
 function isFastAndSlowPicks<T>(obj: unknown): obj is FastAndSlowPicks<T> {
 	const candidate = obj as FastAndSlowPicks<T>;
 
-	return !!candidate.picks && candidate.additionalPicks instanceof Promise;
+	return !!candidate.picks && isThenable(candidate.additionalPicks); // {{SQL CARBON EDIT}} workaround since we use zone promise
 }
 
 export abstract class PickerQuickAccessProvider<T extends IPickerQuickAccessItem> extends Disposable implements IQuickAccessProvider {
