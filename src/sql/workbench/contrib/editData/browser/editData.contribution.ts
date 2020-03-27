@@ -9,11 +9,13 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { EditDataResultsEditor } from 'sql/workbench/contrib/editData/browser/editDataResultsEditor';
 import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataResultsInput';
 import { EditorDescriptor, IEditorRegistry, Extensions } from 'vs/workbench/browser/editor';
+import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import * as editDataActions from 'sql/workbench/contrib/editData/browser/editDataActions';
+import * as nls from 'vs/nls';
 
 // Editor
 const editDataEditorDescriptor = new EditorDescriptor(
@@ -21,6 +23,20 @@ const editDataEditorDescriptor = new EditorDescriptor(
 	EditDataEditor.ID,
 	'EditData'
 );
+
+const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
+configurationRegistry.registerConfiguration({
+	'id': 'showEditDataSqlPaneOnStartup',
+	'title': nls.localize('showEditDataSqlPaneOnStartup', 'Show Edit Data SQL pane on startup'),
+	'type': 'object',
+	'properties': {
+		'editor.showEditDataSqlPaneOnStartup': {
+			'type': 'boolean',
+			'default': true,
+			'description': nls.localize('showEditDataSqlPaneOnStartup', 'Show Edit Data SQL pane on startup')
+		}
+	}
+});
 
 Registry.as<IEditorRegistry>(Extensions.Editors)
 	.registerEditor(editDataEditorDescriptor, [new SyncDescriptor(EditDataInput)]);
