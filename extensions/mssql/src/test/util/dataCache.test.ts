@@ -8,6 +8,7 @@ import 'mocha';
 import { should } from 'chai'; should();
 import * as TypeMoq from "typemoq";
 
+
 describe('DataItemCache', function (): void {
 
 	const testCacheItem = 'Test Cache Item';
