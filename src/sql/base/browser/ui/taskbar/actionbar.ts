@@ -249,10 +249,12 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		let index = types.isNumber(options.index) ? options.index : null;
 
 		if (index === null || index < 0 || index >= this._actionsList.children.length) {
-			this._actionsList.insertBefore(element, this._actionsList.lastChild);
+			this._actionsList.append(element);
 		} else {
 			this._actionsList.insertBefore(element, this._actionsList.children[index++]);
 		}
+
+		this.resizeToolbar();
 	}
 
 	/**
@@ -293,6 +295,8 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 
 			this._items.push(item);
 		});
+
+		this.resizeToolbar();
 	}
 
 	public pull(index: number): void {
