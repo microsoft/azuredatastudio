@@ -52,6 +52,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	}
 
 	private handleAuthMapping(metadata: AzureAccountProviderMetadata, tokenCache: SimpleTokenCache, context: vscode.ExtensionContext, uriEventHandler: vscode.EventEmitter<vscode.Uri>) {
+		this.authMappings.forEach(m => m.dispose());
 		this.authMappings.clear();
 		const configuration = vscode.workspace.getConfiguration(AzureAccountProvider.CONFIGURATION_SECTION);
 
