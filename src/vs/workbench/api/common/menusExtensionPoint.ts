@@ -58,6 +58,7 @@ namespace schema {
 			case 'comments/comment/context': return MenuId.CommentActions;
 			case 'notebook/cell/title': return MenuId.NotebookCellTitle;
 			case 'extension/context': return MenuId.ExtensionContext;
+			case 'dashboard/toolbar': return MenuId.DashboardToolbar;
 			case 'timeline/title': return MenuId.TimelineTitle;
 			case 'timeline/item/context': return MenuId.TimelineItemContext;
 		}
