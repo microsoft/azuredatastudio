@@ -1,0 +1,6 @@
+{
+  daysAfterClose: 45,
+  daysSinceLastUpdate: 3,
+  ignoredLabels: ['A11y_ADS_OctTestPass', 'A11y_ADS_Schema_Dacpac_Backup', 'A11y_AzureDataStudio', 'A11yExclusion', 'A11yMAS', 'A11yResolved: Will Not Fix', 'A11yTCS'],
+  perform: true
+}
