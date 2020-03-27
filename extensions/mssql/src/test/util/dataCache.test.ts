@@ -11,8 +11,8 @@ import * as TypeMoq from "typemoq";
 describe('DataItemCache', function (): void {
 
 	const testCacheItem = 'Test Cache Item';
-	const fetchFunction = () => Promise.resolve(testCacheItem)
-	let fetchFunctionMock: TypeMoq.IMock<() => Promise<string>>
+	const fetchFunction = () => Promise.resolve(testCacheItem);
+	let fetchFunctionMock: TypeMoq.IMock<() => Promise<string>>;
 	let dataItemCache: DataItemCache<String>;
 
 	beforeEach(function (): void {
@@ -66,5 +66,5 @@ describe('DataItemCache', function (): void {
 });
 
 const sleep = (seconds: number) => {
-	return new Promise(resolve => setTimeout(resolve, 1000 * seconds))
+	return new Promise(resolve => setTimeout(resolve, 1000 * seconds));
 }
