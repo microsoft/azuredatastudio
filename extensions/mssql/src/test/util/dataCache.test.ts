@@ -6,17 +6,19 @@
 import { DataItemCache } from '../../util/dataCache';
 import 'mocha';
 import { should } from 'chai'; should();
-import * as sinon from 'sinon';
+import * as TypeMoq from "typemoq";
 
 describe('DataItemCache', function (): void {
 
 	const testCacheItem = 'Test Cache Item';
-	let fetchFunction: sinon.SinonSpy;
+	const fetchFunction = () => Promise.resolve(testCacheItem)
+	let fetchFunctionMock: TypeMoq.IMock<() => Promise<string>>
 	let dataItemCache: DataItemCache<String>;
 
 	beforeEach(function (): void {
-		fetchFunction = sinon.spy(() => Promise.resolve(testCacheItem))
-		dataItemCache = new DataItemCache<string>(fetchFunction, 1);
+		fetchFunctionMock = TypeMoq.Mock.ofInstance(fetchFunction);
+		fetchFunctionMock.setup(fx => fx()).returns(() => Promise.resolve(testCacheItem));
+		dataItemCache = new DataItemCache<string>(fetchFunctionMock.object, 1);
 	});
 
 	it('Should be initialized empty', function (): void {
@@ -51,7 +53,7 @@ describe('DataItemCache', function (): void {
 		await dataItemCache.getData();
 		await dataItemCache.getData();
 
-		fetchFunction.calledOnce.should.be.true;
+		fetchFunctionMock.verify(fx => fx() ,TypeMoq.Times.once());
 	});
 
 	it('Should call fetch function twice for consecutive getValue() calls if TTL expires in between', async function (): Promise<void> {
@@ -59,7 +61,7 @@ describe('DataItemCache', function (): void {
 		await sleep(1.1);
 		await dataItemCache.getData();
 
-		fetchFunction.calledTwice.should.be.true;
+		fetchFunctionMock.verify(fx => fx(), TypeMoq.Times.exactly(2));
 	});
 });
 
