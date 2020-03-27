@@ -310,4 +310,8 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 		return this.getToken(postData);
 	}
+
+	public dispose() {
+		this.server?.shutdown().catch(console.error);
+	}
 }
