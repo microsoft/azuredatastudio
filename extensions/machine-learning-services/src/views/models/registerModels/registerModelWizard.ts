@@ -35,7 +35,7 @@ export class RegisterModelWizard extends ModelViewBase {
 	/**
 	 * Opens a dialog to manage packages used by notebooks.
 	 */
-	public open(): void {
+	public async open(): Promise<void> {
 		this.modelSourcePage = new ModelSourcePage(this._apiWrapper, this);
 		this.modelDetailsPage = new ModelDetailsPage(this._apiWrapper, this);
 		this.wizardView = new WizardView(this._apiWrapper);
@@ -63,7 +63,7 @@ export class RegisterModelWizard extends ModelViewBase {
 			return validated;
 		});
 
-		wizard.open();
+		await wizard.open();
 	}
 
 	public get modelResources(): ModelSourcesComponent | undefined {
