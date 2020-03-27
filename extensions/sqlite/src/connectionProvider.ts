@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as sqlite from 'sqlite3';
 import * as vscode from 'vscode';
+import * as path from 'path';
 
 export class ConnectionProvider implements azdata.ConnectionProvider {
 	public static readonly providerId = 'sqlite';
@@ -17,7 +18,10 @@ export class ConnectionProvider implements azdata.ConnectionProvider {
 
 	async connect(connectionUri: string, connectionInfo: azdata.ConnectionInfo): Promise<boolean> {
 		try {
-			const file = connectionInfo.options['file'] as string;
+			let file = connectionInfo.options['file'] as string;
+			if (!path.isAbsolute(file) && vscode.workspace.workspaceFolders?.length! > 0) {
+				file = path.join(vscode.workspace.workspaceFolders![0].uri.fsPath, file);
+			}
 			await vscode.workspace.fs.stat(vscode.Uri.file(file));
 			this.databases[connectionUri] = new sqlite.Database(file, (err) => {
 				if (this.connectionComplete) {
