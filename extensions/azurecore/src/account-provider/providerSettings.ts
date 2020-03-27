@@ -16,8 +16,13 @@ const publicAzureSettings: ProviderSettings = {
 		id: 'azure_publicCloud',
 		settings: {
 			host: 'https://login.microsoftonline.com/',
-			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
+			clientId: 'aebc6443-996d-45c2-90f0-388ff96faa56',
 			signInResourceId: 'https://management.core.windows.net/',
+			microsoftResource: {
+				id: 'marm',
+				endpoint: 'https://management.core.windows.net/',
+				azureResourceId: AzureResource.MicrosoftResourceManagement
+			},
 			graphResource: {
 				id: 'graph',
 				endpoint: 'https://graph.microsoft.com',

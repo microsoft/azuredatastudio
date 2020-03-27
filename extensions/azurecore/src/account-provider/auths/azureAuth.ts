@@ -119,8 +119,11 @@ export abstract class AzureAuth {
 		this.clientId = this.metadata.settings.clientId;
 
 		this.resources = [
-			this.metadata.settings.armResource, this.metadata.settings.sqlResource,
-			this.metadata.settings.graphResource, this.metadata.settings.ossRdbmsResource
+			this.metadata.settings.armResource,
+			this.metadata.settings.sqlResource,
+			this.metadata.settings.graphResource,
+			this.metadata.settings.ossRdbmsResource,
+			this.metadata.settings.microsoftResource
 		];
 
 		this.scopes = [...this.metadata.settings.scopes];
@@ -148,6 +151,7 @@ export abstract class AzureAuth {
 		try {
 			await this.refreshAccessToken(account.key, refreshToken);
 		} catch (ex) {
+			account.isStale = true;
 			if (ex.message) {
 				await vscode.window.showErrorMessage(ex.message);
 			}
@@ -158,6 +162,10 @@ export abstract class AzureAuth {
 
 
 	public async getSecurityToken(account: azdata.Account, azureResource: azdata.AzureResource): Promise<TokenResponse | undefined> {
+		if (account.isStale === true) {
+			return undefined;
+		}
+
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 		if (!resource) {
 			return undefined;
@@ -194,8 +202,13 @@ export abstract class AzureAuth {
 				if (!baseToken) {
 					return undefined;
 				}
+				try {
+					await this.refreshAccessToken(account.key, baseToken.refreshToken, tenant, resource);
+				} catch (ex) {
+					account.isStale = true;
+					return undefined;
+				}
 
-				await this.refreshAccessToken(account.key, baseToken.refreshToken, tenant, resource);
 				cachedTokens = await this.getCachedToken(account.key, resource.id, tenant.id);
 				if (!cachedTokens) {
 					return undefined;
@@ -344,7 +357,6 @@ export abstract class AzureAuth {
 			return { accessToken, refreshToken, tokenClaims };
 
 		} catch (err) {
-			console.dir(err);
 			const msg = localize('azure.noToken', "Retrieving the token failed.");
 			vscode.window.showErrorMessage(msg);
 			throw new Error(err);

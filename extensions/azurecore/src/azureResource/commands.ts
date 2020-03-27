@@ -33,7 +33,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			const accountNode = node as AzureResourceAccountTreeNode;
 			const azureAccount = accountNode.account as AzureAccount;
 
-			const tokens = await appContext.apiWrapper.getSecurityToken(azureAccount, azdata.AzureResource.ResourceManagement);
+			const tokens = await appContext.apiWrapper.getSecurityToken(azureAccount, azdata.AzureResource.MicrosoftResourceManagement);
 
 			const terminalService = appContext.getService<IAzureTerminalService>(AzureResourceServiceNames.terminalService);
 

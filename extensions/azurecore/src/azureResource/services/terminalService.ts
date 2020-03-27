@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import * as WS from 'ws';
 
 import { IAzureTerminalService } from '../interfaces';
@@ -20,50 +20,57 @@ export class AzureTerminalService implements IAzureTerminalService {
 	}
 
 	public async getOrCreateCloudConsole(account: AzureAccount, tenant: Tenant, tokens: { [key: string]: AzureAccountSecurityToken }): Promise<void> {
-		const metadata = account.properties.providerSettings;
-		const consoleRequestUri = this.getConsoleUri(metadata.settings.armResource.endpoint);
 		const token = tokens[tenant.id].token;
-
-		const provisionResult = await axios.post(consoleRequestUri,
-			{
-				properties: {
-					'osType': 'linux'
-				}
+		const settings: AxiosRequestConfig = {
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`
 			},
-			{
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${token}`
-				}
-			}
-		);
+			validateStatus: () => true
+		};
 
+		const metadata = account.properties.providerSettings;
+		const consoleRequestUri = this.getConsoleRequestUri(metadata.settings.armResource.endpoint);
+
+		const provisionResult = await axios.put(consoleRequestUri, {}, settings);
 
 		if (provisionResult.data?.properties?.provisioningState !== 'Succeeded') {
 			throw new Error(provisionResult.data);
 		}
-
 		const consoleUri = provisionResult.data.properties.uri;
-		return this.createTerminal(consoleUri, token, account.displayInfo.displayName);
+
+
+		const userSettingsUri = this.getConsoleUserSettingsUri(metadata.settings.armResource.endpoint);
+		const userSettingsResult = await axios.get(userSettingsUri, settings);
+
+		const preferredShell = userSettingsResult.data?.properties?.preferredShellType ?? 'bash';
+
+		return this.createTerminal(consoleUri, token, account.displayInfo.displayName, preferredShell);
 	}
 
 
-	private async createTerminal(provisionedUri: string, token: string, accountDisplayName: string): Promise<void> {
-		let shell = await vscode.window.showQuickPick(['Bash', 'PowerShell'], { canPickMany: false });
+	private async createTerminal(provisionedUri: string, token: string, accountDisplayName: string, preferredShell: string): Promise<void> {
+		class ShellType implements vscode.QuickPickItem {
+			constructor(public readonly label: string, public readonly value: string) {
+			}
+		}
+
+		const shells = [new ShellType('PowerShell', 'pwsh'), new ShellType('Bash', 'bash'),];
+		const idx = shells.findIndex(s => s.value === preferredShell);
+
+		const prefShell = shells.splice(idx, 1);
+		shells.unshift(prefShell[0]);
+
+		let shell = await vscode.window.showQuickPick(shells, { canPickMany: false });
 		if (!shell) {
 			vscode.window.showErrorMessage(localize('azure.shellTypeRequired', "You must pick a shell type"));
 			return;
 		}
 
-		const terminalName = localize('azure.cloudConsole', "Azure Cloud Shell") + ` ${shell} (${accountDisplayName})`;
+		const terminalName = localize('azure.cloudShell', "Azure Cloud Shell") + ` ${shell} (${accountDisplayName})`;
 
-		if (shell === 'PowerShell') {
-			shell = 'pwsh';
-		}
-		shell = shell.toLowerCase();
-
-		const azureTerminal = new AzureTerminal(provisionedUri, token, shell);
+		const azureTerminal = new AzureTerminal(provisionedUri, token, shell.value);
 		const terminal = vscode.window.createTerminal({
 			name: terminalName,
 			pty: azureTerminal
@@ -72,8 +79,12 @@ export class AzureTerminalService implements IAzureTerminalService {
 		terminal.show();
 	}
 
-	public getConsoleUri(armEndpoint: string): string {
+	public getConsoleRequestUri(armEndpoint: string): string {
 		return `${armEndpoint}/providers/Microsoft.Portal/consoles/default${this.apiVersion}`;
+	}
+
+	public getConsoleUserSettingsUri(armEndpoint: string): string {
+		return `${armEndpoint}/providers/Microsoft.Portal/userSettings/cloudconsole${this.apiVersion}`;
 	}
 }
 
@@ -82,15 +93,16 @@ class AzureTerminal implements vscode.Pseudoterminal {
 	public readonly onDidWrite: vscode.Event<string>;
 
 	private socket: WS;
+	private intervalTimer: NodeJS.Timer;
 	private terminalDimensions: vscode.TerminalDimensions;
 
-	constructor(private consoleUri: string, private token: string, private shell: string) {
+	constructor(private readonly consoleUri: string, private readonly token: string, private shell: string) {
 		this.writeEmitter = new vscode.EventEmitter<string>();
 		this.onDidWrite = this.writeEmitter.event;
 	}
 
 	handleInput(data: string): void {
-		this.socket.send(data);
+		this.socket?.send(data);
 	}
 
 	async open(initialDimensions: vscode.TerminalDimensions): Promise<void> {
@@ -105,6 +117,9 @@ class AzureTerminal implements vscode.Pseudoterminal {
 		this.socket.removeAllListeners('close');
 
 		this.socket.terminate();
+		if (this.intervalTimer) {
+			clearInterval(this.intervalTimer);
+		}
 	}
 
 	async setDimensions(dimensions: vscode.TerminalDimensions): Promise<void> {
@@ -116,20 +131,15 @@ class AzureTerminal implements vscode.Pseudoterminal {
 			if (dimensions) {
 				this.terminalDimensions = dimensions;
 			}
+
 			if (!this.terminalDimensions) {
-				vscode.window.showErrorMessage(localize('azure.terminalDimensionsError', "Terminal dimensions broken :("));
-				throw new Error('Terminal dimensions broken');
+				return;
 			}
 
-			if (this.socket) {
-				this.socket.removeAllListeners('open');
-				this.socket.removeAllListeners('message');
-				this.socket.removeAllListeners('close');
+			// Close the shell before this and restablish a new connection
+			this.close();
 
-				this.socket.terminate();
-			}
-
-			const terminalUri = await this.createTerminalForCloudConsole(this.terminalDimensions);
+			const terminalUri = await this.establishTerminal(this.terminalDimensions);
 			this.socket = new WS(terminalUri);
 
 			this.socket.on('message', (data: WS.Data) => {
@@ -137,13 +147,13 @@ class AzureTerminal implements vscode.Pseudoterminal {
 				this.writeEmitter.fire(data.toString());
 			});
 
-			// Reconnect if something bad happens
 			this.socket.on('close', () => {
-				this.resetTerminalSize(this.terminalDimensions).catch(e => console.error(e));
+				this.writeEmitter.fire(localize('azure.shellClosed', "Shell closed"));
+				this.close();
 			});
 
 			// Keep alives
-			setInterval(() => {
+			this.intervalTimer = setInterval(() => {
 				this.socket.ping();
 			}, 5000);
 		} catch (ex) {
@@ -152,7 +162,7 @@ class AzureTerminal implements vscode.Pseudoterminal {
 	}
 
 
-	private async createTerminalForCloudConsole(dimensions: vscode.TerminalDimensions): Promise<string> {
+	private async establishTerminal(dimensions: vscode.TerminalDimensions): Promise<string> {
 		const terminalResult = await axios.post(`${this.consoleUri}/terminals?rows=${dimensions.rows}&cols=${dimensions.columns}&shell=${this.shell}`, undefined, {
 			headers: {
 				'Accept': 'application/json',
@@ -161,11 +171,7 @@ class AzureTerminal implements vscode.Pseudoterminal {
 			}
 		});
 
-		if (!terminalResult.data.socketUri) {
-			// didn't work
-		}
-
-		const terminalUri = terminalResult.data.socketUri;
+		const terminalUri = terminalResult.data?.socketUri;
 
 		if (terminalResult.data.error) {
 			vscode.window.showErrorMessage(terminalResult.data.error.message);
