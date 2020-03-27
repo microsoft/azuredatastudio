@@ -1,5 +1,5 @@
 {
-	"extends": "../shared.tsconfig.json",
+	"extends": "../shared.sql.tsconfig.json",
 	"compilerOptions": {
 		"outDir": "./out",
 		"strict": false,
