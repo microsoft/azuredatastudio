@@ -59,7 +59,7 @@ export class AccountFeature implements StaticFeature {
 				ignoreFocusOut: true,
 				placeHolder: localize('mssql.chooseLinkedAzureAccount', "Please select a linked Azure account:")
 			};
-			let items = accountList.map(a => new this.AccountQuickPickItem(a));
+			let items = accountList.map(a => new AccountFeature.AccountQuickPickItem(a));
 			let selectedItem = await window.showQuickPick(items, options);
 			if (!selectedItem) { // The user canceled the selection.
 				window.showErrorMessage(localize('mssql.canceledLinkedAzureAccountSelection', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted."));
@@ -91,7 +91,7 @@ export class AccountFeature implements StaticFeature {
 		return params;
 	}
 
-	AccountQuickPickItem = class implements QuickPickItem {
+	static AccountQuickPickItem = class implements QuickPickItem {
 		account: azdata.Account;
 		label: string;
 		description?: string;
