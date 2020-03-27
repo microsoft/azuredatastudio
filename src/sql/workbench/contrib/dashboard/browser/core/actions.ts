@@ -26,7 +26,7 @@ export class EditDashboardAction extends Action {
 
 	constructor(
 		private editFn: () => void,
-		private context: any //this
+		private context: any
 	) {
 		super(EditDashboardAction.ID, EditDashboardAction.EDITLABEL, EditDashboardAction.ICON);
 	}
@@ -60,7 +60,7 @@ export class RefreshWidgetAction extends Action {
 
 	constructor(
 		private refreshFn: () => void,
-		private context: any // this
+		private context: any
 	) {
 		super(RefreshWidgetAction.ID, RefreshWidgetAction.LABEL, RefreshWidgetAction.ICON);
 	}
