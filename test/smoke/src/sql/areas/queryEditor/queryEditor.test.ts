@@ -14,7 +14,11 @@ export function setup() {
 			await app.workbench.queryEditor.commandBar.clickButton(3);
 			await app.workbench.connectionDialog.waitForConnectionDialog();
 			await app.code.waitAndClick('.modal .modal-body select[aria-label="Connection type"]');
-			await app.code.waitAndClick('.context-view .monaco-list-row > *[aria-label="Sqlite"]');
+			await app.code.dispatchKeybinding('down');
+			if (process.platform === 'darwin') {
+				await app.code.dispatchKeybinding('down');
+			}
+			await app.code.dispatchKeybinding('enter');
 			await app.code.waitForSetValue('.modal .modal-body input[aria-label="File"]', 'chinook.db');
 			await app.code.waitAndClick('.modal .modal-footer a[aria-label="Connect"]');
 			await app.workbench.queryEditor.commandBar.waitForButton(3, 'Disconnect');
