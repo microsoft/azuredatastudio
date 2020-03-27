@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import * as request from 'request-promise';
+import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 import * as WS from 'ws';
 
 import { IAzureTerminalService } from '../interfaces';
@@ -23,29 +23,28 @@ export class AzureTerminalService implements IAzureTerminalService {
 		const metadata = account.properties.providerSettings;
 		const consoleRequestUri = this.getConsoleUri(metadata.settings.armResource.endpoint);
 		const token = tokens[tenant.id].token;
-		const provisionRequest = request({
-			uri: consoleRequestUri,
-			method: 'PUT',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${token}`
-			},
-			json: true,
-			body: {
+
+		const provisionResult = await axios.post(consoleRequestUri,
+			{
 				properties: {
 					'osType': 'linux'
 				}
+			},
+			{
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				}
 			}
-		});
+		);
 
-		const provisionResult = await provisionRequest;
 
-		if (provisionResult?.properties?.provisioningState !== 'Succeeded') {
-			throw new Error(provisionResult);
+		if (provisionResult.data?.properties?.provisioningState !== 'Succeeded') {
+			throw new Error(provisionResult.data);
 		}
 
-		const consoleUri = provisionResult.properties.uri;
+		const consoleUri = provisionResult.data.properties.uri;
 		return this.createTerminal(consoleUri, token, account.displayInfo.displayName);
 	}
 

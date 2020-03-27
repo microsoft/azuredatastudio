@@ -251,7 +251,6 @@
     "axios": "^0.19.2",
     "qs": "^6.9.1",
     "request": "2.88.0",
-    "request-promise": "^4.2.5",
     "vscode-nls": "^4.0.0",
     "ws": "^7.2.0"
   },
@@ -261,7 +260,6 @@
     "@types/node": "^12.11.7",
     "@types/qs": "^6.9.1",
     "@types/request": "^2.48.1",
-    "@types/request-promise": "^4.1.45",
     "@types/ws": "^6.0.4",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
