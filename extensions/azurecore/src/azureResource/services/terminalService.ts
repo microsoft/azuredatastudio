@@ -66,7 +66,11 @@ export class AzureTerminalService implements IAzureTerminalService {
 		const prefShell = shells.splice(idx, 1);
 		shells.unshift(prefShell[0]);
 
-		let shell = await vscode.window.showQuickPick(shells, { canPickMany: false });
+		let shell = await vscode.window.showQuickPick(shells, {
+			canPickMany: false,
+			placeHolder: localize('azure.selectShellType', "Select Bash or PowerShell for Azure Cloud Shell")
+		});
+
 		if (!shell) {
 			vscode.window.showErrorMessage(localize('azure.shellTypeRequired', "You must pick a shell type"));
 			return;
@@ -132,12 +136,13 @@ class AzureTerminal implements vscode.Pseudoterminal {
 
 	private async resetTerminalSize(dimensions: vscode.TerminalDimensions): Promise<void> {
 		try {
-			if (dimensions) {
-				this.terminalDimensions = dimensions;
+
+			if (!this.terminalDimensions) { // first time
+				this.writeEmitter.fire(localize('azure.connectingShellTerminal', "Connecting terminal...\n"));
 			}
 
-			if (!this.terminalDimensions) {
-				return;
+			if (dimensions) {
+				this.terminalDimensions = dimensions;
 			}
 
 			// Close the shell before this and restablish a new connection
@@ -152,7 +157,7 @@ class AzureTerminal implements vscode.Pseudoterminal {
 			});
 
 			this.socket.on('close', () => {
-				this.writeEmitter.fire(localize('azure.shellClosed', "Shell closed"));
+				this.writeEmitter.fire(localize('azure.shellClosed', "Shell closed.\n"));
 				this.close();
 			});
 
