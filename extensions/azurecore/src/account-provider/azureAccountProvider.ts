@@ -29,7 +29,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	constructor(
 		metadata: AzureAccountProviderMetadata,
 		tokenCache: SimpleTokenCache,
-		context: vscode.ExtensionContext
+		context: vscode.ExtensionContext,
+		private readonly forceDeviceCode: boolean = false
 	) {
 		vscode.workspace.onDidChangeConfiguration((changeEvent) => {
 			const impact = changeEvent.affectsConfiguration(AzureAccountProvider.CONFIGURATION_SECTION);
@@ -52,10 +53,10 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		const codeGrantMethod: boolean = configuration.get('codeGrant');
 		const deviceCodeMethod: boolean = configuration.get('deviceCode');
 
-		if (codeGrantMethod === true) {
+		if (codeGrantMethod === true && !this.forceDeviceCode) {
 			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, tokenCache, context));
 		}
-		if (deviceCodeMethod === true) {
+		if (deviceCodeMethod === true || this.forceDeviceCode) {
 			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, tokenCache, context));
 		}
 	}
@@ -69,7 +70,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		if (authType) {
 			return this.authMappings.get(authType);
 		} else {
-			return this.authMappings.get(AzureAuthType.AuthCodeGrant);
+			return this.authMappings.values().next().value;
 		}
 	}
 
