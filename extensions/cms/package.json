@@ -625,7 +625,7 @@
         },
         {
           "command": "cms.resource.deleteRegisteredServer",
-          "when": "viewItem == cms.resource.itemType.databaseServer"
+          "when": "false"
         },
         {
           "command": "cms.resource.deleteServerGroup",
