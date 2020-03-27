@@ -28,6 +28,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private static CredentialNamespace = 'azureAccountProviderCredentials';
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////////
+	private _disposables: vscode.Disposable[] = [];
 	private _accountDisposals: { [accountProviderId: string]: vscode.Disposable };
 	private _accountProviders: { [accountProviderId: string]: azdata.AccountProvider };
 	private _credentialProvider: azdata.CredentialProvider;
@@ -44,7 +45,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		this._event = new events.EventEmitter();
 
 		this._uriEventHandler = new UriEventHandler();
-		vscode.window.registerUriHandler(this._uriEventHandler);
+		this._disposables.push(vscode.window.registerUriHandler(this._uriEventHandler));
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -75,7 +76,14 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			});
 	}
 
-	public dispose() { }
+	public dispose() {
+		while (this._disposables.length) {
+			const item = this._disposables.pop();
+			if (item) {
+				item.dispose();
+			}
+		}
+	}
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private onClearTokenCache(): Thenable<void> {
