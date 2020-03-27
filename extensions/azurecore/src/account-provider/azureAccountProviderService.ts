@@ -15,6 +15,12 @@ import * as loc from '../localizedConstants';
 
 let localize = nls.loadMessageBundle();
 
+class UriEventHandler extends vscode.EventEmitter<vscode.Uri> implements vscode.UriHandler {
+	public handleUri(uri: vscode.Uri) {
+		this.fire(uri);
+	}
+}
+
 export class AzureAccountProviderService implements vscode.Disposable {
 	// CONSTANTS ///////////////////////////////////////////////////////////////
 	private static CommandClearTokenCache = 'accounts.clearTokenCache';
@@ -28,6 +34,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private _configChangePromiseChain: Thenable<void>;
 	private _currentConfig: vscode.WorkspaceConfiguration;
 	private _event: events.EventEmitter;
+	private readonly _uriEventHandler: UriEventHandler;
 
 	constructor(private _context: vscode.ExtensionContext, private _userStoragePath: string) {
 		this._accountDisposals = {};
@@ -35,6 +42,9 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		this._configChangePromiseChain = Promise.resolve();
 		this._currentConfig = null;
 		this._event = new events.EventEmitter();
+
+		this._uriEventHandler = new UriEventHandler();
+		vscode.window.registerUriHandler(this._uriEventHandler);
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -131,7 +141,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			let tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
 			let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, noSystemKeychain, this._credentialProvider);
 			await simpleTokenCache.init();
-			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, simpleTokenCache, this._context);
+			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, simpleTokenCache, this._context, this._uriEventHandler);
 			this._accountProviders[provider.metadata.id] = accountProvider;
 			this._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
 		} catch (e) {

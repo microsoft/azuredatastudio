@@ -30,12 +30,6 @@ import { SimpleWebServer } from '../utils/simpleWebServer';
 import { SimpleTokenCache } from '../simpleTokenCache';
 const localize = nls.loadMessageBundle();
 
-class UriEventHandler extends vscode.EventEmitter<vscode.Uri> implements vscode.UriHandler {
-	public handleUri(uri: vscode.Uri) {
-		this.fire(uri);
-	}
-}
-
 function parseQuery(uri: vscode.Uri) {
 	return uri.query.split('&').reduce((prev: any, current) => {
 		const queryString = current.split('=');
@@ -52,14 +46,14 @@ interface AuthCodeResponse {
 export class AzureAuthCodeGrant extends AzureAuth {
 	private static readonly USER_FRIENDLY_NAME: string = localize('azure.azureAuthCodeGrantName', "Azure Auth Code Grant");
 	private server: SimpleWebServer;
-	private readonly _uriHandler: UriEventHandler;
 
-	constructor(metadata: AzureAccountProviderMetadata,
+	constructor(
+		metadata: AzureAccountProviderMetadata,
 		tokenCache: SimpleTokenCache,
-		context: vscode.ExtensionContext) {
-		super(metadata, tokenCache, context, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME);
-		this._uriHandler = new UriEventHandler();
-		vscode.window.registerUriHandler(this._uriHandler);
+		context: vscode.ExtensionContext,
+		uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
+	) {
+		super(metadata, tokenCache, context, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME);
 	}
 
 	public async autoOAuthCancelled(): Promise<void> {
@@ -146,7 +140,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 	public async handleCodeResponse(state: string): Promise<string> {
 		let uriEventListener: vscode.Disposable;
 		return new Promise((resolve: (value: any) => void, reject) => {
-			uriEventListener = this._uriHandler.event(async (uri: vscode.Uri) => {
+			uriEventListener = this.uriEventEmitter.event(async (uri: vscode.Uri) => {
 				try {
 					const query = parseQuery(uri);
 					const code = query.code;
