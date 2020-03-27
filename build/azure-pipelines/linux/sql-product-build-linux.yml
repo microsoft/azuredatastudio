@@ -134,7 +134,7 @@ steps:
 
   - script: |
       set -e
-      APP_ROOT="$(agent.builddirectory)\azuredatastudio-linux-x64"
+      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
       yarn smoketest --build "$APP_ROOT"
     continueOnError: true
     displayName: Run smoke tests (Electron)
@@ -142,7 +142,7 @@ steps:
 
   - script: |
       set -e
-      VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-web-linux-x64" \
+      VSCODE_REMOTE_SERVER_PATH=$(agent.builddirectory)/azuredatastudio-reh-web-linux-x64 \
       yarn smoketest --web --headless
     continueOnError: true
     displayName: Run smoke tests (Browser)

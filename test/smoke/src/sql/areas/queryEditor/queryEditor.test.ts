@@ -15,9 +15,6 @@ export function setup() {
 			await app.workbench.connectionDialog.waitForConnectionDialog();
 			await app.code.waitAndClick('.modal .modal-body select[aria-label="Connection type"]');
 			await app.code.dispatchKeybinding('down');
-			if (process.platform === 'darwin') {
-				await app.code.dispatchKeybinding('down');
-			}
 			await app.code.dispatchKeybinding('enter');
 			await app.code.waitForSetValue('.modal .modal-body input[aria-label="File"]', 'chinook.db');
 			await app.code.waitAndClick('.modal .modal-footer a[aria-label="Connect"]');
