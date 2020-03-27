@@ -14,7 +14,8 @@ const path = require('path');
 const externals = {
 	'node-fetch': 'commonjs node-fetch',
 	'bufferutil': 'commonjs bufferutil',
-	'utf-8-validate': 'commonjs utf-8-validate'
+	'utf-8-validate': 'commonjs utf-8-validate',
+	'keytar': 'commonjs keytar',
 };
 
 // conditionally add ws if we are going to be running in a node environment
@@ -32,7 +33,5 @@ module.exports = withDefaults({
 	entry: {
 		extension: './src/extension.ts'
 	},
-	externals: {
-		'keytar': 'commonjs keytar'
-	}
+	externals: externals
 });
