@@ -52,7 +52,7 @@
         "command": "mssqlCluster.task.newNotebook",
         "title": "%notebook.command.new%",
         "icon": {
-          "dark": "resources/dark/new_notebook_inverse.svg",
+          "dark": "resources/dark/new_notebook.svg",
           "light": "resources/light/new_notebook.svg"
         }
       },

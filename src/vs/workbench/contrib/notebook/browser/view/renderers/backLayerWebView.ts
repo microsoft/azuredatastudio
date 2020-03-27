@@ -14,9 +14,10 @@ import { INotebookService } from 'vs/workbench/contrib/notebook/browser/notebook
 import { IOutput } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { IWebviewService, WebviewElement } from 'vs/workbench/contrib/webview/browser/webview';
 import { WebviewResourceScheme } from 'vs/workbench/contrib/webview/common/resourceLoader';
-import { CellViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/notebookCellViewModel';
-import { CELL_MARGIN } from 'vs/workbench/contrib/notebook/browser/constants';
+import { CodeCellViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/codeCellViewModel';
+import { CELL_MARGIN, CELL_RUN_GUTTER } from 'vs/workbench/contrib/notebook/browser/constants';
 import { Emitter, Event } from 'vs/base/common/event';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
 
 export interface IDimentionMessage {
 	__vscode_notebook_message: boolean;
@@ -43,11 +44,13 @@ export interface ICreationRequestMessage {
 	id: string;
 	outputId: string;
 	top: number;
+	left: number;
 }
 
 export interface IContentWidgetTopRequest {
 	id: string;
 	top: number;
+	left: number;
 }
 
 export interface IViewScrollTopRequestMessage {
@@ -76,7 +79,7 @@ let version = 0;
 export class BackLayerWebView extends Disposable {
 	element: HTMLElement;
 	webview: WebviewElement;
-	insetMapping: Map<IOutput, { outputId: string, cell: CellViewModel, cacheOffset: number | undefined }> = new Map();
+	insetMapping: Map<IOutput, { outputId: string, cell: CodeCellViewModel, cacheOffset: number | undefined }> = new Map();
 	reversedInsetMapping: Map<string, IOutput> = new Map();
 	preloadsCache: Map<string, boolean> = new Map();
 	localResourceRootsCache: URI[] | undefined = undefined;
@@ -85,7 +88,13 @@ export class BackLayerWebView extends Disposable {
 	public readonly onMessage: Event<any> = this._onMessage.event;
 
 
-	constructor(public webviewService: IWebviewService, public notebookService: INotebookService, public notebookEditor: INotebookEditor, public environmentSerice: IEnvironmentService) {
+	constructor(
+		public notebookEditor: INotebookEditor,
+		@IWebviewService webviewService: IWebviewService,
+		@IOpenerService openerService: IOpenerService,
+		@IEnvironmentService private readonly environmentSerice: IEnvironmentService,
+		@INotebookService private readonly notebookService: INotebookService,
+	) {
 		super();
 		this.element = document.createElement('div');
 
@@ -194,6 +203,7 @@ export class BackLayerWebView extends Disposable {
 					let outputNode = document.createElement('div');
 					outputNode.style.position = 'absolute';
 					outputNode.style.top = event.data.top + 'px';
+					outputNode.style.left = event.data.left + 'px';
 
 					outputNode.id = outputId;
 					let content = event.data.content;
@@ -258,6 +268,10 @@ export class BackLayerWebView extends Disposable {
 		this.webview = this._createInset(webviewService, content);
 		this.webview.mountTo(this.element);
 
+		this._register(this.webview.onDidClickLink(link => {
+			openerService.open(link, { fromUserGesture: true });
+		}));
+
 		this._register(this.webview.onDidWheel(e => {
 			this.notebookEditor.triggerScroll(e);
 		}));
@@ -278,7 +292,7 @@ export class BackLayerWebView extends Disposable {
 					if (cell) {
 						let outputIndex = cell.outputs.indexOf(output);
 						cell.updateOutputHeight(outputIndex, outputHeight);
-						this.notebookEditor.layoutNotebookCell(cell, cell.getCellTotalHeight());
+						this.notebookEditor.layoutNotebookCell(cell, cell.layoutInfo.totalHeight);
 					}
 				} else if (data.type === 'scroll-ack') {
 					// const date = new Date();
@@ -305,12 +319,12 @@ export class BackLayerWebView extends Disposable {
 		return webview;
 	}
 
-	shouldUpdateInset(cell: CellViewModel, output: IOutput, cellTop: number) {
+	shouldUpdateInset(cell: CodeCellViewModel, output: IOutput, cellTop: number) {
 		let outputCache = this.insetMapping.get(output)!;
 		let outputIndex = cell.outputs.indexOf(output);
 
 		let outputOffsetInOutputContainer = cell.getOutputOffset(outputIndex);
-		let outputOffset = cellTop + cell.editorHeight + 16 /* editor padding */ + 8 + outputOffsetInOutputContainer;
+		let outputOffset = cellTop + cell.layoutInfo.editorHeight + 16 /* editor padding */ + 8 + outputOffsetInOutputContainer;
 
 		if (outputOffset === outputCache.cacheOffset) {
 			return false;
@@ -319,19 +333,20 @@ export class BackLayerWebView extends Disposable {
 		return true;
 	}
 
-	updateViewScrollTop(top: number, items: { cell: CellViewModel, output: IOutput, cellTop: number }[]) {
+	updateViewScrollTop(top: number, items: { cell: CodeCellViewModel, output: IOutput, cellTop: number }[]) {
 		let widgets: IContentWidgetTopRequest[] = items.map(item => {
 			let outputCache = this.insetMapping.get(item.output)!;
 			let id = outputCache.outputId;
 			let outputIndex = item.cell.outputs.indexOf(item.output);
 
 			let outputOffsetInOutputContainer = item.cell.getOutputOffset(outputIndex);
-			let outputOffset = item.cellTop + item.cell.editorHeight + 16 /* editor padding */ + 16 + outputOffsetInOutputContainer;
+			let outputOffset = item.cellTop + item.cell.layoutInfo.editorHeight + 16 /* editor padding */ + 16 + outputOffsetInOutputContainer;
 			outputCache.cacheOffset = outputOffset;
 
 			return {
 				id: id,
-				top: outputOffset
+				top: outputOffset,
+				left: CELL_RUN_GUTTER
 			};
 		});
 
@@ -345,7 +360,7 @@ export class BackLayerWebView extends Disposable {
 		this.webview.sendMessage(message);
 	}
 
-	createInset(cell: CellViewModel, output: IOutput, cellTop: number, offset: number, shadowContent: string, preloads: Set<number>) {
+	createInset(cell: CodeCellViewModel, output: IOutput, cellTop: number, offset: number, shadowContent: string, preloads: Set<number>) {
 		this.updateRendererPreloads(preloads);
 		let initialTop = cellTop + offset;
 		let outputId = UUID.generateUuid();
@@ -355,7 +370,8 @@ export class BackLayerWebView extends Disposable {
 			content: shadowContent,
 			id: cell.id,
 			outputId: outputId,
-			top: initialTop
+			top: initialTop,
+			left: CELL_RUN_GUTTER
 		};
 
 		this.webview.sendMessage(message);

@@ -3,21 +3,47 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import { ExtHostNotebookShape, IMainContext, MainThreadNotebookShape, MainContext, ICellDto, NotebookCellsSplice, NotebookCellOutputsSplice, CellKind, CellOutputKind } from 'vs/workbench/api/common/extHost.protocol';
-import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { Disposable as VSCodeDisposable } from './extHostTypes';
-import { URI, UriComponents } from 'vs/base/common/uri';
-import { DisposableStore, Disposable } from 'vs/base/common/lifecycle';
 import { readonly } from 'vs/base/common/errors';
 import { Emitter, Event } from 'vs/base/common/event';
-import { ExtHostDocumentsAndEditors } from 'vs/workbench/api/common/extHostDocumentsAndEditors';
-import { INotebookDisplayOrder, ITransformedDisplayOutputDto, IOrderedMimeType, IStreamOutput, IErrorOutput, mimeTypeSupportedByCore, IOutput, sortMimeTypes, diff, CellUri } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { Disposable, DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
 import { ISplice } from 'vs/base/common/sequence';
+import { URI, UriComponents } from 'vs/base/common/uri';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { CellKind, CellOutputKind, ExtHostNotebookShape, ICellDto, IMainContext, MainContext, MainThreadNotebookShape, NotebookCellOutputsSplice, NotebookCellsSplice } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostCommands } from 'vs/workbench/api/common/extHostCommands';
+import { ExtHostDocumentsAndEditors } from 'vs/workbench/api/common/extHostDocumentsAndEditors';
+import { CellUri, diff, IErrorOutput, INotebookDisplayOrder, IOrderedMimeType, IOutput, IStreamOutput, ITransformedDisplayOutputDto, mimeTypeSupportedByCore, sortMimeTypes } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import * as vscode from 'vscode';
+import { Disposable as VSCodeDisposable } from './extHostTypes';
 
-export class ExtHostCell implements vscode.NotebookCell {
+interface IObservable<T> {
+	proxy: T;
+	onDidChange: Event<void>;
+}
 
+function getObservable<T extends Object>(obj: T): IObservable<T> {
+	const onDidChange = new Emitter<void>();
+	const proxy = new Proxy(obj, {
+		set(target: T, p: PropertyKey, value: any, _receiver: any): boolean {
+			target[p as keyof T] = value;
+			onDidChange.fire();
+			return true;
+		}
+	});
+
+	return {
+		proxy,
+		onDidChange: onDidChange.event
+	};
+}
+
+const notebookDocumentMetadataDefaults: vscode.NotebookDocumentMetadata = {
+	editable: true,
+	cellEditable: true,
+	cellRunnable: true
+};
+
+export class ExtHostCell extends Disposable implements vscode.NotebookCell {
 	public source: string[];
 	private _outputs: any[];
 	private _onDidChangeOutputs = new Emitter<ISplice<vscode.CellOutput>[]>();
@@ -25,18 +51,32 @@ export class ExtHostCell implements vscode.NotebookCell {
 	private _textDocument: vscode.TextDocument | undefined;
 	private _initalVersion: number = -1;
 	private _outputMapping = new Set<vscode.CellOutput>();
+	private _metadata: vscode.NotebookCellMetadata;
+
+	private _metadataChangeListener: IDisposable;
 
 	constructor(
+		private viewType: string,
+		private documentUri: URI,
 		readonly handle: number,
 		readonly uri: URI,
 		private _content: string,
 		public cellKind: CellKind,
 		public language: string,
 		outputs: any[],
-		public metadata: vscode.NotebookCellMetadata | undefined,
+		_metadata: vscode.NotebookCellMetadata | undefined,
+		private _proxy: MainThreadNotebookShape
 	) {
+		super();
+
 		this.source = this._content.split(/\r|\n|\r\n/g);
 		this._outputs = outputs;
+
+		const observableMetadata = getObservable(_metadata || {} as any);
+		this._metadata = observableMetadata.proxy;
+		this._metadataChangeListener = this._register(observableMetadata.onDidChange(() => {
+			this.updateMetadata();
+		}));
 	}
 
 	get outputs() {
@@ -60,6 +100,25 @@ export class ExtHostCell implements vscode.NotebookCell {
 
 		this._outputs = newOutputs;
 		this._onDidChangeOutputs.fire(diffs);
+	}
+
+	get metadata() {
+		return this._metadata;
+	}
+
+	set metadata(newMetadata: vscode.NotebookCellMetadata | undefined) {
+		this._metadataChangeListener.dispose();
+		const observableMetadata = getObservable(newMetadata || {} as any); // TODO defaults
+		this._metadata = observableMetadata.proxy;
+		this._metadataChangeListener = this._register(observableMetadata.onDidChange(() => {
+			this.updateMetadata();
+		}));
+
+		this.updateMetadata();
+	}
+
+	private updateMetadata(): Promise<void> {
+		return this._proxy.$updateNotebookCellMetadata(this.viewType, this.documentUri, this.handle, this._metadata);
 	}
 
 	getContent(): string {
@@ -131,14 +190,14 @@ export class ExtHostNotebookDocument extends Disposable implements vscode.Notebo
 		this._proxy.$updateNotebookLanguages(this.viewType, this.uri, this._languages);
 	}
 
-	private _metadata: vscode.NotebookDocumentMetadata | undefined = undefined;
+	private _metadata: vscode.NotebookDocumentMetadata | undefined = notebookDocumentMetadataDefaults;
 
 	get metadata() {
 		return this._metadata;
 	}
 
 	set metadata(newMetadata: vscode.NotebookDocumentMetadata | undefined) {
-		this._metadata = newMetadata;
+		this._metadata = newMetadata || notebookDocumentMetadataDefaults;
 		this._proxy.$updateNotebookMetadata(this.viewType, this.uri, this._metadata);
 	}
 
@@ -201,6 +260,7 @@ export class ExtHostNotebookDocument extends Disposable implements vscode.Notebo
 					language: cell.language,
 					cellKind: cell.cellKind,
 					outputs: outputs,
+					metadata: cell.metadata,
 					isDirty: false
 				};
 			});
@@ -346,7 +406,7 @@ export class ExtHostNotebookEditor extends Disposable implements vscode.Notebook
 	onDidReceiveMessage: vscode.Event<any> = this._onDidReceiveMessage.event;
 
 	constructor(
-		viewType: string,
+		private readonly viewType: string,
 		readonly id: string,
 		public uri: URI,
 		private _proxy: MainThreadNotebookShape,
@@ -381,7 +441,7 @@ export class ExtHostNotebookEditor extends Disposable implements vscode.Notebook
 	createCell(content: string, language: string, type: CellKind, outputs: vscode.CellOutput[], metadata: vscode.NotebookCellMetadata | undefined): vscode.NotebookCell {
 		const handle = ExtHostNotebookEditor._cellhandlePool++;
 		const uri = CellUri.generate(this.document.uri, handle);
-		const cell = new ExtHostCell(handle, uri, content, type, language, outputs, metadata);
+		const cell = new ExtHostCell(this.viewType, this.uri, handle, uri, content, type, language, outputs, metadata, this._proxy);
 		return cell;
 	}
 
@@ -469,9 +529,8 @@ export class ExtHostNotebookController implements ExtHostNotebookShape, ExtHostN
 							}
 						}
 					}
-
-					return arg;
 				}
+				return arg;
 			}
 		});
 	}
@@ -580,7 +639,7 @@ export class ExtHostNotebookController implements ExtHostNotebookShape, ExtHostN
 			let editor = this._editors.get(URI.revive(uri).toString());
 			let document = this._documents.get(URI.revive(uri).toString());
 
-			let rawCell = editor?.editor.createCell('', language, type, [], undefined) as ExtHostCell;
+			let rawCell = editor?.editor.createCell('', language, type, [], { editable: true, runnable: true }) as ExtHostCell;
 			document?.insertCell(index, rawCell!);
 
 			let allDocuments = this._documentsAndEditors.allDocuments();

@@ -95,13 +95,17 @@ const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewE
 	focusCommand: {
 		id: OpenDebugPanelAction.ID,
 		keybindings: openPanelKb
-	}
+	},
+	order: 3,
+	hideIfEmpty: true
 }, ViewContainerLocation.Panel);
 
 Registry.as<IViewsRegistry>(ViewExtensions.ViewsRegistry).registerViews([{
 	id: REPL_VIEW_ID,
 	name: nls.localize({ comment: ['Debug is a noun in this context, not a verb.'], key: 'debugPanel' }, 'Debug Console'),
+	containerIcon: 'codicon-debug-console',
 	canToggleVisibility: false,
+	canMoveView: true,
 	ctorDescriptor: new SyncDescriptor(Repl),
 }], VIEW_CONTAINER);
 
@@ -180,6 +184,7 @@ registerDebugCommandPaletteItem(TOGGLE_INLINE_BREAKPOINT_ID, nls.localize('inlin
 Registry.as<IQuickAccessRegistry>(QuickAccessExtensions.Quickaccess).registerQuickAccessProvider({
 	ctor: StartDebugQuickAccessProvider,
 	prefix: StartDebugQuickAccessProvider.PREFIX,
+	contextKey: 'inLaunchConfigurationsPicker',
 	placeholder: nls.localize('startDebugPlaceholder', "Type the name of a launch configuration to run."),
 	helpEntries: [{ description: nls.localize('startDebugHelp', "Start Debug Configurations"), needsEditor: false }]
 });

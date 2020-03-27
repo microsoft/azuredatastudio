@@ -128,14 +128,14 @@ export abstract class ViewBase extends EventEmitterCollection {
 		if (connection) {
 			return `${connection.serverName} ${connection.databaseName ? connection.databaseName : ''}`;
 		}
-		return constants.packageManagerNoConnection;
+		return constants.noConnectionError;
 	}
 
 	public getServerTitle(): string {
 		if (this.connection) {
 			return this.connection.serverName;
 		}
-		return constants.packageManagerNoConnection;
+		return constants.noConnectionError;
 	}
 
 	private async getCurrentConnectionUrl(): Promise<string> {

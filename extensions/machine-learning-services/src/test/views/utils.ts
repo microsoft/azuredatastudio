@@ -63,6 +63,9 @@ export function createViewContext(): ViewTestContext {
 		onEnterKeyPressed: undefined!,
 		value: ''
 	});
+	let image: () => azdata.ImageComponent = () => Object.assign({}, componentBase, {
+
+	});
 	let dropdown: () => azdata.DropDownComponent = () => Object.assign({}, componentBase, {
 		onValueChanged: onClick.event,
 		value: {
@@ -124,6 +127,14 @@ export function createViewContext(): ViewTestContext {
 		withProperties: () => inputBoxBuilder,
 		withValidation: () => inputBoxBuilder
 	};
+	let imageBuilder: azdata.ComponentBuilder<azdata.ImageComponent> = {
+		component: () => {
+			let r = image();
+			return r;
+		},
+		withProperties: () => imageBuilder,
+		withValidation: () => imageBuilder
+	};
 	let dropdownBuilder: azdata.ComponentBuilder<azdata.DropDownComponent> = {
 		component: () => {
 			let r = dropdown();
@@ -156,7 +167,7 @@ export function createViewContext(): ViewTestContext {
 			editor: undefined!,
 			diffeditor: undefined!,
 			text: () => inputBoxBuilder,
-			image: undefined!,
+			image: () => imageBuilder,
 			button: () => buttonBuilder,
 			dropDown: () => dropdownBuilder,
 			tree: undefined!,
@@ -171,6 +182,7 @@ export function createViewContext(): ViewTestContext {
 			loadingComponent: () => loadingBuilder,
 			fileBrowserTree: undefined!,
 			hyperlink: undefined!,
+			tabbedPanel: undefined!,
 			separator: undefined!
 		}
 	};
@@ -181,7 +193,7 @@ export function createViewContext(): ViewTestContext {
 			try {
 				await handler(view);
 			} catch (err) {
-				console.log(err);
+				throw err;
 			}
 		},
 		onValidityChanged: undefined!,
@@ -242,7 +254,13 @@ export function createViewContext(): ViewTestContext {
 		enabled: true,
 		description: '',
 		onValidityChanged: onClick.event,
-		registerContent: () => { },
+		registerContent: async (handler) => {
+			try {
+				await handler(view);
+			} catch (err) {
+				throw err;
+			}
+		},
 		modelView: undefined!,
 		valid: true
 	};
