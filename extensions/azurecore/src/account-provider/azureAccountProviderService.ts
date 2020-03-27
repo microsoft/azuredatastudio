@@ -143,7 +143,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			await simpleTokenCache.init();
 
 			const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
-			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, simpleTokenCache, this._context, isSaw, this._uriEventHandler);
+			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, simpleTokenCache, this._context, this._uriEventHandler, isSaw);
 
 			this._accountProviders[provider.metadata.id] = accountProvider;
 			this._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
