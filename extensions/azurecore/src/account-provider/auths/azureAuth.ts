@@ -360,7 +360,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return { accessToken, refreshToken, tokenClaims };
 
 		} catch (err) {
-			const msg = localize('azure.noToken', "Retrieving the token failed.");
+			const msg = localize('azure.noToken', "Retrieving the azure token failed. Please sign in again.");
 			vscode.window.showErrorMessage(msg);
 			throw new Error(err);
 		}
