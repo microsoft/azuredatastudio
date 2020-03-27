@@ -1,0 +1,20 @@
+name: Locker
+on:
+  schedule:
+    - cron: 30 * * * *
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Actions
+        uses: actions/checkout@v2
+        with:
+          repository: 'JacksonKearl/vscode-triage-github-actions'
+          ref: v9
+      - name: Run Locker
+        uses: ./locker
+        with:
+          daysSinceClose: 300
+          daysSinceUpdate: 3
+          ignoredLabel: "*out-of-scope"
