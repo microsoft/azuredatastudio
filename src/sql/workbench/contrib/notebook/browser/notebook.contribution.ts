@@ -142,7 +142,7 @@ const toggleTabFocusAction = new ToggleTabFocusModeAction();
 CommandsRegistry.registerCommand({
 	id: TOGGLE_TAB_FOCUS_COMMAND_ID,
 	handler: (accessor) => {
-		toggleTabFocusAction.runCommand(accessor, undefined);
+		toggleTabFocusAction.run(accessor, undefined);
 	}
 });
 
