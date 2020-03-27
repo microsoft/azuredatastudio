@@ -226,9 +226,19 @@
           "group": "inline"
         },
         {
+          "command": "azure.resource.selectsubscriptions",
+          "when": "viewItem == azure.resource.itemType.account",
+          "group": "azurecore"
+        },
+        {
           "command": "azure.resource.refresh",
           "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer)$/",
           "group": "inline"
+        },
+        {
+          "command": "azure.resource.refresh",
+          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer)$/",
+          "group": "azurecore"
         },
         {
           "command": "azure.resource.connectsqlserver",
@@ -236,9 +246,19 @@
           "group": "inline"
         },
         {
+          "command": "azure.resource.connectsqlserver",
+          "when": "viewItem == azure.resource.itemType.databaseServer || viewItem == azure.resource.itemType.database || viewItem == azure.resource.itemType.sqlInstance",
+          "group": "azurecore"
+        },
+        {
           "command": "azure.resource.startterminal",
           "when": "viewItem == azure.resource.itemType.account",
           "group": "inline"
+        },
+        {
+          "command": "azure.resource.startterminal",
+          "when": "viewItem == azure.resource.itemType.account",
+          "group": "azurecore"
         }
       ]
     },
