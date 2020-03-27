@@ -31,7 +31,17 @@ export class AzureTerminalService implements IAzureTerminalService {
 		};
 
 		const metadata = account.properties.providerSettings;
+
+		const userSettingsUri = this.getConsoleUserSettingsUri(metadata.settings.armResource.endpoint);
+		const userSettingsResult = await axios.get(userSettingsUri, settings);
+
+		const preferredShell = userSettingsResult.data?.properties?.preferredShellType ?? 'bash';
+		const preferredLocation = userSettingsResult.data?.properties?.preferredLocation;
+
 		const consoleRequestUri = this.getConsoleRequestUri(metadata.settings.armResource.endpoint);
+		if (preferredLocation) {
+			settings.headers['x-ms-console-preferred-location'] = preferredLocation;
+		}
 
 		const provisionResult = await axios.put(consoleRequestUri, {}, settings);
 
@@ -39,12 +49,6 @@ export class AzureTerminalService implements IAzureTerminalService {
 			throw new Error(provisionResult.data);
 		}
 		const consoleUri = provisionResult.data.properties.uri;
-
-
-		const userSettingsUri = this.getConsoleUserSettingsUri(metadata.settings.armResource.endpoint);
-		const userSettingsResult = await axios.get(userSettingsUri, settings);
-
-		const preferredShell = userSettingsResult.data?.properties?.preferredShellType ?? 'bash';
 
 		return this.createTerminal(consoleUri, token, account.displayInfo.displayName, preferredShell);
 	}
