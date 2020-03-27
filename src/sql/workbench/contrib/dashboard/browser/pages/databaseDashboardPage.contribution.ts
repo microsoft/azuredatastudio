@@ -104,7 +104,7 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 			}
 		},
 		{
-			name: 'Search',
+			name: nls.localize('objectsWidgetTitle', "Search"),
 			gridItemConfig: {
 				sizex: 3,
 				sizey: 2

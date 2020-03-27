@@ -369,11 +369,11 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		const tabs = allTabs.filter(tab => !tab.group);
 		if (tabs.length > 0) {
 			this.addNewTab({
-				id: 'extensionGroupHeader',
+				id: 'generalTabGroupHeader',
 				provider: Constants.anyProviderName,
 				originalConfig: [],
 				publisher: undefined,
-				title: nls.localize('dashboard.extensionGroupHeader', "Extensions"),
+				title: nls.localize('dashboard.generalTabGroupHeader', "General"),
 				context: this.context,
 				type: 'group-header',
 				editable: false,

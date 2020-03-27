@@ -85,6 +85,16 @@ const defaultVal = [
 		}
 	},
 	{
+		name: nls.localize('databasesWidgetTitle', "Search"),
+		gridItemConfig: {
+			sizex: 1,
+			sizey: 2
+		},
+		widget: {
+			'explorer-widget': {}
+		}
+	},
+	{
 		widget: {
 			'backup-history-server-insight': null
 		}

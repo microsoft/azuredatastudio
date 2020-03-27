@@ -437,12 +437,6 @@
         }
       ]
     },
-    "dashboard.tabGroups": [
-      {
-        "id": "contents",
-        "title": "%contents-tab-group-title%"
-      }
-    ],
     "dashboard.tabs": [
       {
         "id": "mssql-big-data-cluster",
@@ -487,32 +481,6 @@
                 "modelview": {
                   "id": "books-widget"
                 }
-              }
-            }
-          ]
-        }
-      },
-      {
-        "id": "databases-tab",
-        "description": "%databases-tab-description%",
-        "provider": "MSSQL",
-        "title": "%databases-tab-title%",
-        "when": "dashboardContext == 'server'",
-        "group": "contents",
-        "icon": {
-          "light": "./resources/light/database.svg",
-          "dark": "./resources/dark/database_inverse.svg"
-        },
-        "container": {
-          "widgets-container": [
-            {
-              "name": "%explorer-widget-title%",
-              "gridItemConfig": {
-                "sizex": 3,
-                "sizey": 3
-              },
-              "widget": {
-                "explorer-widget": {}
               }
             }
           ]
