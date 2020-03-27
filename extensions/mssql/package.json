@@ -16,8 +16,7 @@
   ],
   "scripts": {
     "compile": "gulp compile-extension:mssql-client",
-    "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json",
-    "test": "mocha -r ts-node/register src/test/**/*.test.ts"
+    "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
   },
   "contributes": {
     "commands": [
@@ -1062,8 +1061,8 @@
     "@types/stream-meter": "^0.0.22",
     "@types/through2": "^2.0.34",
     "chai": "^4.2.0",
-    "mocha": "^7.0.2",
+    "mocha": "^7.1.1",
     "sinon": "^9.0.1",
-    "ts-node": "^8.8.1"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
   }
 }
