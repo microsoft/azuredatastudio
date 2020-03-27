@@ -25,7 +25,6 @@ import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvent
 import { firstIndex, find } from 'vs/base/common/arrays';
 import { HideInputTag } from 'sql/platform/notebooks/common/outputRegistry';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
-import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 
 let modelId = 0;
 
@@ -53,7 +52,7 @@ export class CellModel implements ICellModel {
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
-	private _metadata: { language?: string; tags?: string[]; cellGuid?: string; chartDisplayOptions?: IInsightOptions };
+	private _metadata: { language?: string; tags?: string[]; cellGuid?: string; };
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
@@ -123,15 +122,6 @@ export class CellModel implements ICellModel {
 
 	public get isCollapsed() {
 		return this._isCollapsed;
-	}
-
-	public get chartDisplayOptions(): IInsightOptions {
-		return this._metadata.chartDisplayOptions;
-	}
-
-	public set chartDisplayOptions(value: IInsightOptions) {
-		this._metadata.chartDisplayOptions = value;
-		this.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
 	}
 
 	public set isCollapsed(value: boolean) {
@@ -469,7 +459,7 @@ export class CellModel implements ICellModel {
 		}
 	}
 
-	private sendChangeToNotebook(change: NotebookChangeType): void {
+	public sendChangeToNotebook(change: NotebookChangeType): void {
 		if (this._options && this._options.notebook) {
 			this._options.notebook.onCellChange(this, change);
 		}

@@ -37,6 +37,8 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
+import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -49,6 +51,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 
 	private _initialized: boolean = false;
 	private _cellModel: ICellModel;
+	private _cellOutput: azdata.nb.ICellOutput;
 	private _bundleOptions: MimeModel.IOptions;
 	private _table: DataResourceTable;
 
@@ -79,6 +82,14 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		}
 	}
 
+	get cellOutput(): azdata.nb.ICellOutput {
+		return this._cellOutput;
+	}
+
+	@Input() set cellOutput(value: azdata.nb.ICellOutput) {
+		this._cellOutput = value;
+	}
+
 	ngOnInit() {
 		this.renderGrid();
 	}
@@ -90,7 +101,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		if (!this._table) {
 			let source = <IDataResource><any>this._bundleOptions.data[this.mimeType];
 			let state = new GridTableState(0, 0);
-			this._table = this.instantiationService.createInstance(DataResourceTable, source, this.cellModel, state);
+			this._table = this.instantiationService.createInstance(DataResourceTable, source, this.cellModel, this.cellOutput, state);
 			let outputElement = <HTMLElement>this.output.nativeElement;
 			outputElement.appendChild(this._table.element);
 			this._register(attachTableStyler(this._table, this.themeService));
@@ -117,6 +128,7 @@ class DataResourceTable extends GridTableBase<any> {
 
 	constructor(source: IDataResource,
 		private cellModel: ICellModel,
+		private cellOutput: azdata.nb.ICellOutput,
 		state: GridTableState,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IInstantiationService protected instantiationService: IInstantiationService,
@@ -127,12 +139,15 @@ class DataResourceTable extends GridTableBase<any> {
 		super(state, createResultSet(source), contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel.notebookModel.notebookUri.toString());
 		this._chart = this.instantiationService.createInstance(ChartView, false);
-		if (this.cellModel.chartDisplayOptions) {
-			this._chart.options = this.cellModel.chartDisplayOptions;
+
+		if (!this.cellOutput.metadata) {
+			this.cellOutput.metadata = {};
+		} else if (this.cellOutput.metadata.azdata_chartOptions) {
+			this._chart.options = this.cellOutput.metadata.azdata_chartOptions as IInsightOptions;
 			this.updateChartData(this.resultSet.rowCount, this.resultSet.columnInfo.length, this.gridDataProvider);
 		}
 		this._chart.onOptionsChange(options => {
-			this.cellModel.chartDisplayOptions = options;
+			this.setChartOptions(options);
 		});
 	}
 
@@ -150,7 +165,7 @@ class DataResourceTable extends GridTableBase<any> {
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
-			this.instantiationService.createInstance(NotebookChartAction, this, this.cellModel.chartDisplayOptions !== undefined)
+			this.instantiationService.createInstance(NotebookChartAction, this, this.cellOutput.metadata.azdata_chartOptions !== undefined)
 		];
 	}
 
@@ -167,7 +182,7 @@ class DataResourceTable extends GridTableBase<any> {
 			this._chartContainer = document.createElement('div');
 			this._chartContainer.style.width = '100%';
 
-			if (this.cellModel.chartDisplayOptions) {
+			if (this.cellOutput.metadata.azdata_chartOptions) {
 				this.tableContainer.style.display = 'none';
 				this._chartContainer.style.display = 'inline-block';
 			} else {
@@ -183,11 +198,11 @@ class DataResourceTable extends GridTableBase<any> {
 		if (this.tableContainer.style.display !== 'none') {
 			this.tableContainer.style.display = 'none';
 			this._chartContainer.style.display = 'inline-block';
-			this.cellModel.chartDisplayOptions = this._chart.options;
+			this.setChartOptions(this._chart.options);
 		} else {
 			this._chartContainer.style.display = 'none';
 			this.tableContainer.style.display = 'inline-block';
-			this.cellModel.chartDisplayOptions = undefined;
+			this.setChartOptions(undefined);
 		}
 		this.layout();
 	}
@@ -198,6 +213,11 @@ class DataResourceTable extends GridTableBase<any> {
 			let columns = gridDataProvider.getColumnHeaders(range);
 			this._chart.setData(result.resultSubset.rows, columns);
 		});
+	}
+
+	private setChartOptions(options: IInsightOptions | undefined) {
+		this.cellOutput.metadata.azdata_chartOptions = options;
+		this.cellModel.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
 	}
 }
 
