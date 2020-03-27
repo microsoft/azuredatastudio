@@ -131,7 +131,7 @@ export class CellModel implements ICellModel {
 
 	public set chartDisplayOptions(value: IInsightOptions) {
 		this._metadata.chartDisplayOptions = value;
-		this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
+		this.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
 	}
 
 	public set isCollapsed(value: boolean) {
