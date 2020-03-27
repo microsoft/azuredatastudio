@@ -204,7 +204,7 @@ export abstract class PickerQuickAccessProvider<T extends IPickerQuickAccessItem
 			}
 
 			// Fast Picks
-			else if (!(providedPicks instanceof Promise)) {
+			else if (!(isThenable(providedPicks))) { // {{SQL CARBON EDIT}} workaround since we use zone promise
 				applyPicks(providedPicks);
 			}
 
