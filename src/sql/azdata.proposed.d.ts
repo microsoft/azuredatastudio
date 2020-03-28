@@ -127,6 +127,7 @@ declare module 'azdata' {
 
 	export interface ModelBuilder {
 		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent>;
+		tabbedPanel(): TabbedPanelComponentBuilder;
 		separator(): ComponentBuilder<SeparatorComponent>;
 	}
 
@@ -198,6 +199,78 @@ declare module 'azdata' {
 	}
 
 	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIconProperties {
+	}
+
+	/**
+	 * Panel component with tabs
+	 */
+	export interface TabbedPanelComponent extends Container<TabbedPanelLayout, any> {
+		/**
+		 * An event triggered when the selected tab is changed.
+		 * The event argument is the id of the selected tab.
+		 */
+		onTabChanged: vscode.Event<string>;
+	}
+
+	/**
+	 * Defines the tab orientation of TabbedPanelComponent
+	 */
+	export enum TabOrientation {
+		Vertical = 'vertical',
+		Horizontal = 'horizontal'
+	}
+
+	/**
+	 * Layout of TabbedPanelComponent, can be used to initialize the component when using ModelBuilder
+	 */
+	export interface TabbedPanelLayout {
+		orientation: TabOrientation;
+	}
+
+	/**
+	 * Represents the tab of TabbedPanelComponent
+	 */
+	export interface Tab {
+		/**
+		 * Title of the tab
+		 */
+		title: string;
+
+		/**
+		 * Content component of the tab
+		 */
+		content: Component;
+
+		/**
+		 * Id of the tab
+		 */
+		id: string;
+	}
+
+	/**
+	 * Represents the tab group of TabbedPanelComponent
+	 */
+	export interface TabGroup {
+		/**
+		 * Title of the tab group
+		 */
+		title: string;
+
+		/**
+		 * children of the tab group
+		 */
+		tabs: Tab[];
+	}
+
+	/**
+	 * Builder for TabbedPannelComponent
+	 */
+	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, any, any> {
+		/**
+		 * Add the tabs to the component
+		 * @param tabs tabs/tab groups to be added
+		 */
+		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, any, any>;
 	}
 
 	export interface InputBoxProperties extends ComponentProperties {

@@ -47,7 +47,7 @@ export class AgentViewComponent {
 
 	public readonly panelOpt: IPanelOptions = {
 		showTabsWhenOne: true,
-		layout: NavigationBarLayout.vertical,
+		layout: NavigationBarLayout.horizontal,
 		showIcon: true
 	};
 
