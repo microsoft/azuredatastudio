@@ -24,11 +24,7 @@
 			process.stdout.write(`${event}${values && values.length > 0 ? ` - ${values.join(' ')}` : ''}`);
 		});
 		let serviceInstallFolder = installer.getInstallDirectory(runtime);
-		try {
-			await new Promise((rs, rj) => rimraf(serviceInstallFolder, (e) => e ? rj(e) : rs()));
-		} catch (e) {
-			throw e;
-		}
+		await new Promise((rs, rj) => rimraf(serviceInstallFolder, (e) => e ? rj(e) : rs()));
 		await installer.installService(runtime);
 		let stat;
 		for (const file of config.executableFiles) {
