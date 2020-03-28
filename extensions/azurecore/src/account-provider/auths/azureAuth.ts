@@ -91,7 +91,7 @@ export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-
 
 export type TokenRefreshResponse = { accessToken: AccessToken, refreshToken: RefreshToken, tokenClaims: TokenClaims };
 
-export abstract class AzureAuth {
+export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly memdb = new MemoryDatabase();
 
 	protected readonly WorkSchoolAccountType: string = 'work_school';
@@ -110,6 +110,7 @@ export abstract class AzureAuth {
 		protected readonly metadata: AzureAccountProviderMetadata,
 		protected readonly tokenCache: SimpleTokenCache,
 		protected readonly context: vscode.ExtensionContext,
+		protected readonly uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
 		protected readonly authType: AzureAuthType,
 		public readonly userFriendlyName: string
 	) {
@@ -119,8 +120,11 @@ export abstract class AzureAuth {
 		this.clientId = this.metadata.settings.clientId;
 
 		this.resources = [
-			this.metadata.settings.armResource, this.metadata.settings.sqlResource,
-			this.metadata.settings.graphResource, this.metadata.settings.ossRdbmsResource
+			this.metadata.settings.armResource,
+			this.metadata.settings.sqlResource,
+			this.metadata.settings.graphResource,
+			this.metadata.settings.ossRdbmsResource,
+			this.metadata.settings.azureKeyVaultResource
 		];
 
 		this.scopes = [...this.metadata.settings.scopes];
@@ -131,6 +135,7 @@ export abstract class AzureAuth {
 
 	public abstract async autoOAuthCancelled(): Promise<void>;
 
+	public dispose() { }
 
 	public async refreshAccess(account: azdata.Account): Promise<azdata.Account> {
 		const response = await this.getCachedToken(account.key);

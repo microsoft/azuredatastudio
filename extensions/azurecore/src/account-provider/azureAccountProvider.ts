@@ -20,7 +20,7 @@ import { AzureDeviceCode } from './auths/azureDeviceCode';
 
 const localize = nls.loadMessageBundle();
 
-export class AzureAccountProvider implements azdata.AccountProvider {
+export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disposable {
 	private static readonly CONFIGURATION_SECTION = 'accounts.azure.auth';
 	private readonly authMappings = new Map<AzureAuthType, AzureAuth>();
 	private initComplete: Deferred<void>;
@@ -30,23 +30,29 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		metadata: AzureAccountProviderMetadata,
 		tokenCache: SimpleTokenCache,
 		context: vscode.ExtensionContext,
+		uriEventHandler: vscode.EventEmitter<vscode.Uri>,
 		private readonly forceDeviceCode: boolean = false
 	) {
 		vscode.workspace.onDidChangeConfiguration((changeEvent) => {
 			const impact = changeEvent.affectsConfiguration(AzureAccountProvider.CONFIGURATION_SECTION);
 			if (impact === true) {
-				this.handleAuthMapping(metadata, tokenCache, context);
+				this.handleAuthMapping(metadata, tokenCache, context, uriEventHandler);
 			}
 		});
-		this.handleAuthMapping(metadata, tokenCache, context);
 
+		this.handleAuthMapping(metadata, tokenCache, context, uriEventHandler);
+	}
+
+	dispose() {
+		this.authMappings.forEach(x => x.dispose());
 	}
 
 	clearTokenCache(): Thenable<void> {
 		return this.getAuthMethod().deleteAllCache();
 	}
 
-	private handleAuthMapping(metadata: AzureAccountProviderMetadata, tokenCache: SimpleTokenCache, context: vscode.ExtensionContext) {
+	private handleAuthMapping(metadata: AzureAccountProviderMetadata, tokenCache: SimpleTokenCache, context: vscode.ExtensionContext, uriEventHandler: vscode.EventEmitter<vscode.Uri>) {
+		this.authMappings.forEach(m => m.dispose());
 		this.authMappings.clear();
 		const configuration = vscode.workspace.getConfiguration(AzureAccountProvider.CONFIGURATION_SECTION);
 
@@ -54,10 +60,10 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		const deviceCodeMethod: boolean = configuration.get('deviceCode');
 
 		if (codeGrantMethod === true && !this.forceDeviceCode) {
-			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, tokenCache, context));
+			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, tokenCache, context, uriEventHandler));
 		}
 		if (deviceCodeMethod === true || this.forceDeviceCode) {
-			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, tokenCache, context));
+			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, tokenCache, context, uriEventHandler));
 		}
 	}
 
