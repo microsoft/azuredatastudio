@@ -134,22 +134,6 @@ steps:
 
   - script: |
       set -e
-      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
-      yarn smoketest --build "$APP_ROOT"
-    continueOnError: true
-    displayName: Run smoke tests (Electron)
-    condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
-
-  - script: |
-      set -e
-      VSCODE_REMOTE_SERVER_PATH=$(agent.builddirectory)/azuredatastudio-reh-web-linux-x64 \
-      yarn smoketest --web --headless
-    continueOnError: true
-    displayName: Run smoke tests (Browser)
-    condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
-
-  - script: |
-      set -e
       yarn gulp vscode-linux-x64-build-deb
     displayName: Build Deb
 

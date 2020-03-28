@@ -115,23 +115,6 @@ steps:
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
     displayName: Run unstable tests
 
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      $APP_ROOT = "$(agent.builddirectory)\azuredatastudio-win32-x64"
-      exec { yarn smoketest --build "$APP_ROOT" }
-    continueOnError: true
-    displayName: Run smoke tests (Electron)
-    condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
-
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { $env:VSCODE_REMOTE_SERVER_PATH = "$(agent.builddirectory)\azuredatastudio-reh-web-win32-x64"; yarn smoketest --web --headless }
-    continueOnError: true
-    displayName: Run smoke tests (Browser)
-    condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
-
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'Sign out code'
     inputs:
