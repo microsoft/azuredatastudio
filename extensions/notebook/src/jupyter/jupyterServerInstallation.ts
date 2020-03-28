@@ -87,9 +87,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}, {
 			name: 'sparkmagic',
 			version: '0.12.9'
-		}, {
-			name: 'Kqlmagic',
-			version: '0.1.108'
 		}
 	];
 
@@ -100,6 +97,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}, {
 			name: 'powershell-kernel',
 			version: '0.1.3'
+		}, {
+			name: 'Kqlmagic',
+			version: '0.1.108'
 		}
 	];
 
