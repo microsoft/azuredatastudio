@@ -29,6 +29,7 @@ export interface IDriver {
 	click(windowId: number, selector: string, xoffset?: number | undefined, yoffset?: number | undefined): Promise<void>;
 	doubleClick(windowId: number, selector: string): Promise<void>;
 	setValue(windowId: number, selector: string, text: string): Promise<void>;
+	setSelectValue(windowId: number, selector: string, id: string): Promise<void>;
 	getTitle(windowId: number): Promise<string>;
 	isActiveElement(windowId: number, selector: string): Promise<boolean>;
 	getElements(windowId: number, selector: string, recursive?: boolean): Promise<IElement[]>;
@@ -46,6 +47,7 @@ export interface IWindowDriver {
 	click(selector: string, xoffset?: number | undefined, yoffset?: number | undefined): Promise<void>;
 	doubleClick(selector: string): Promise<void>;
 	setValue(selector: string, text: string): Promise<void>;
+	setSelectValue(selector: string, id: string): Promise<void>;
 	getTitle(): Promise<string>;
 	isActiveElement(selector: string): Promise<boolean>;
 	getElements(selector: string, recursive: boolean): Promise<IElement[]>;

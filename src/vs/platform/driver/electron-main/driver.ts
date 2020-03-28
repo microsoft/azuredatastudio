@@ -153,6 +153,11 @@ export class Driver implements IDriver, IWindowDriverRegistry {
 		await windowDriver.setValue(selector, text);
 	}
 
+	async setSelectValue(windowId: number, selector: string, text: string): Promise<void> {
+		const windowDriver = await this.getWindowDriver(windowId);
+		await windowDriver.setSelectValue(selector, text);
+	}
+
 	async getTitle(windowId: number): Promise<string> {
 		const windowDriver = await this.getWindowDriver(windowId);
 		return await windowDriver.getTitle();

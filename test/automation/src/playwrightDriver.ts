@@ -71,6 +71,7 @@ function buildDriver(browser: playwright.Browser, page: playwright.Page): IDrive
 			await timeout(100);
 		},
 		setValue: async (windowId, selector, text) => page.evaluate(`window.driver.setValue('${selector}', '${text}')`).then(undefined),
+		setSelectValue: async (windowId, selector, id) => page.evaluate(`window.driver.setSelectValue('${selector}', '${id}')`).then(undefined),
 		getTitle: (windowId) => page.evaluate(`window.driver.getTitle()`),
 		isActiveElement: (windowId, selector) => page.evaluate(`window.driver.isActiveElement('${selector}')`),
 		getElements: (windowId, selector, recursive) => page.evaluate(`window.driver.getElements('${selector}', ${recursive})`),
