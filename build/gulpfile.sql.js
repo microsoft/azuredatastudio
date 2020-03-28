@@ -94,40 +94,6 @@ const formatStagedFiles = () => {
 	});
 };
 
-async function installService(configPath, runtimId) {
-	const absoluteConfigPath = require.resolve(configPath);
-	const config = require(absoluteConfigPath);
-	const runtime = runtimId || (await platform.getCurrent()).runtimeId;
-	// fix path since it won't be correct
-	config.installDirectory = path.join(path.dirname(absoluteConfigPath), config.installDirectory);
-	console.log('install diectory', config.installDirectory);
-	let installer = new serviceDownloader(config);
-	installer.eventEmitter.onAny((event, ...values) => {
-		console.log(`ServiceDownloader Event : ${event}${values && values.length > 0 ? ` - ${values.join(' ')}` : ''}`);
-	});
-	let serviceInstallFolder = installer.getInstallDirectory(runtime);
-	console.log('Cleaning up the install folder: ' + serviceInstallFolder);
-	try {
-		await util.rimraf(serviceInstallFolder)();
-	} catch (e) {
-		console.error('failed to delete the install folder error: ' + e);
-		throw e;
-	}
-	await installer.installService(runtime);
-	let stat;
-	for (const file of config.executableFiles) {
-		try {
-			stat = await fs.stat(path.join(serviceInstallFolder, file));
-		} catch (e) { }
-	}
-
-	assert(stat);
-}
-
-gulp.task('install-sqltoolsservice', () => installService('../extensions/mssql/config.json'));
-
-gulp.task('install-ssmsmin', () => installService('../extensions/admin-tool-ext-win/config.json', 'Windows_64')); // admin-tool-ext is a windows only extension, and we only ship a 64 bit version, so locking the binaries as such
-
 const root = path.dirname(__dirname);
 
 gulp.task('package-external-extensions', task.series(
