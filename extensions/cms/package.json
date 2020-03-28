@@ -618,6 +618,31 @@
           "when": "viewItem == cms.resource.itemType.databaseServerContainer",
           "group": "navigation@10"
         }
+      ],"commandPalette": [
+        {
+          "command": "cms.resource.addRegisteredServer",
+          "when": "false"
+        },
+        {
+          "command": "cms.resource.deleteRegisteredServer",
+          "when": "false"
+        },
+        {
+          "command": "cms.resource.deleteServerGroup",
+          "when": "false"
+        },
+        {
+          "command": "cms.resource.addServerGroup",
+          "when": "false"
+        },
+        {
+          "command": "cms.resource.refresh",
+          "when": "false"
+        },
+        {
+          "command": "cms.resource.deleteCmsServer",
+          "when": "false"
+        }
       ]
     }
   },
