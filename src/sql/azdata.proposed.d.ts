@@ -287,5 +287,14 @@ declare module 'azdata' {
 		 */
 		export const onDidChangeActiveNotebookEditor: vscode.Event<NotebookEditor>;
 	}
+
+	export namespace window {
+		export interface ModelViewDashboard {
+			registerTabs(handler: (view: ModelView) => Thenable<(Tab | TabGroup)[]>): void;
+			open(): Thenable<void>;
+		}
+
+		export function createModelViewDashboard(title: string): ModelViewDashboard;
+	}
 }
 

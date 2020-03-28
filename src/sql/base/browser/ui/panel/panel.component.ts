@@ -55,13 +55,13 @@ let idPool = 0;
 					<div *ngIf="options.layout === NavigationBarLayout.vertical" class="action-container">
 						<button [attr.aria-expanded]="_tabExpanded" [title]="toggleTabPanelButtonAriaLabel" [attr.aria-label]="toggleTabPanelButtonAriaLabel" [ngClass]="toggleTabPanelButtonCssClass" tabindex="0" (click)="toggleTabPanel()"></button>
 					</div>
-					<div *ngIf="_tabExpanded" class="tabList" role="tablist" scrollable [horizontalScroll]="AutoScrollbarVisibility" [verticalScroll]="HiddenScrollbarVisibility" [scrollYToX]="true" (keydown)="onKey($event)">
+					<div [style.display]="_tabExpanded ? 'block': 'none'" [attr.aria-hidden]="_tabExpanded ? 'false': 'true'" class="tabList" role="tablist" scrollable [horizontalScroll]="AutoScrollbarVisibility" [verticalScroll]="HiddenScrollbarVisibility" [scrollYToX]="true" (keydown)="onKey($event)">
 						<div role="presentation" *ngFor="let tab of _tabs">
 							<ng-container *ngIf="tab.type!=='group-header'">
 								<tab-header role="presentation" [active]="_activeTab === tab" [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
 							</ng-container>
 							<ng-container *ngIf="tab.type==='group-header' && options.layout === NavigationBarLayout.vertical">
-								<div class="tab-group-header" *ngIf="_tabExpanded">
+								<div class="tab-group-header">
 									<span>{{tab.title}}</span>
 								</div>
 							</ng-container >

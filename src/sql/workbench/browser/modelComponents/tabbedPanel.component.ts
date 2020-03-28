@@ -93,4 +93,11 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 		}
 		return this._tabs;
 	}
+
+	onItemsUpdated(): void {
+		const firstTabIndex = this.tabs.findIndex(tab => tab.type === 'tab');
+		if (firstTabIndex >= 0) {
+			this._panel.selectTab(firstTabIndex);
+		}
+	}
 }
