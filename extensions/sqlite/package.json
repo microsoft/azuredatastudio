@@ -16,12 +16,11 @@
   "license": "ISC",
   "devDependencies": {
     "@types/azdata": "^1.15.1",
-    "@types/sqlite3": "^3.1.5",
     "@types/vscode": "^1.40.0",
     "azdata": "^1.0.0"
   },
   "dependencies": {
-    "sqlite3": "^4.1.0"
+    "vscode-sqlite3": "4.0.9"
   },
   "contributes": {
     "commands": [
