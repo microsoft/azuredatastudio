@@ -6,5 +6,5 @@
 (() => {
 	const cp = require('child_process');
 
-	cp.spawnSync('yarn rebuild sqlite3');
+	cp.spawnSync('npm rebuild sqlite3');
 })();
