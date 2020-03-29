@@ -20,7 +20,7 @@
 		let installer = new serviceDownloader(config);
 		installer.eventEmitter.onAny((event, ...values) => {
 			readline.cursorTo(process.stdout, 0);
-			process.stdout.clearLine(0);
+			readline.clearLine(process.stdout, 0);
 			process.stdout.write(`${event}${values && values.length > 0 ? ` - ${values.join(' ')}` : ''}`);
 		});
 		let serviceInstallFolder = installer.getInstallDirectory(runtime);
