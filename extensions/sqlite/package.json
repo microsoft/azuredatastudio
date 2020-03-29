@@ -11,11 +11,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "activationEvents": ["onConnect:sqlite"],
+  "activationEvents": [
+    "onConnect:sqlite"
+  ],
   "author": "anthonydresser",
   "license": "ISC",
   "devDependencies": {
     "@types/azdata": "^1.15.1",
+    "@types/node": "12.11.7",
     "@types/vscode": "^1.40.0",
     "azdata": "^1.0.0"
   },
