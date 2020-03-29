@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as sqlite from 'vscode-sqlite3';
+import * as sqlite from 'sqlite3';
 import * as vscode from 'vscode';
 import * as path from 'path';
 
