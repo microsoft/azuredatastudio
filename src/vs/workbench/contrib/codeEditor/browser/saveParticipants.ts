@@ -23,37 +23,12 @@ import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IProgressStep, IProgress, Progress } from 'vs/platform/progress/common/progress';
-import { IResolvedTextFileEditorModel, ITextFileService, ITextFileSaveParticipant } from 'vs/workbench/services/textfile/common/textfiles';
+import { ITextFileService, ITextFileSaveParticipant, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
 import { SaveReason } from 'vs/workbench/common/editor';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IWorkbenchContribution, Extensions as WorkbenchContributionsExtensions, IWorkbenchContributionsRegistry } from 'vs/workbench/common/contributions';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
-import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
-
-/*
- * An update participant that ensures any un-tracked changes are synced to the JSON file contents for a
- * Notebook before save occurs. While every effort is made to ensure model changes are notified and a listener
- * updates the backing model in-place, this is a backup mechanism to hard-update the file before save in case
- * some are missed.
- */
-class NotebookUpdateParticipant implements ITextFileSaveParticipant { // {{SQL CARBON EDIT}} add notebook participant
-
-	constructor(
-		@INotebookService private notebookService: INotebookService
-	) {
-		// Nothing
-	}
-
-	public participate(model: IResolvedTextFileEditorModel, env: { reason: SaveReason }): Promise<void> {
-		let uri = model.resource;
-		let notebookEditor = this.notebookService.findNotebookEditor(uri);
-		if (notebookEditor) {
-			notebookEditor.notebookParams.input.updateModel();
-		}
-		return Promise.resolve();
-	}
-}
 
 export class TrimWhitespaceParticipant implements ITextFileSaveParticipant {
 
@@ -64,7 +39,11 @@ export class TrimWhitespaceParticipant implements ITextFileSaveParticipant {
 		// Nothing
 	}
 
-	async participate(model: IResolvedTextFileEditorModel, env: { reason: SaveReason; }): Promise<void> {
+	async participate(model: ITextFileEditorModel, env: { reason: SaveReason; }): Promise<void> {
+		if (!model.textEditorModel) {
+			return;
+		}
+
 		if (this.configurationService.getValue('files.trimTrailingWhitespace', { overrideIdentifier: model.textEditorModel.getLanguageIdentifier().language, resource: model.resource })) {
 			this.doTrimTrailingWhitespace(model.textEditorModel, env.reason === SaveReason.AUTO);
 		}
@@ -126,7 +105,11 @@ export class FinalNewLineParticipant implements ITextFileSaveParticipant {
 		// Nothing
 	}
 
-	async participate(model: IResolvedTextFileEditorModel, _env: { reason: SaveReason; }): Promise<void> {
+	async participate(model: ITextFileEditorModel, _env: { reason: SaveReason; }): Promise<void> {
+		if (!model.textEditorModel) {
+			return;
+		}
+
 		if (this.configurationService.getValue('files.insertFinalNewline', { overrideIdentifier: model.textEditorModel.getLanguageIdentifier().language, resource: model.resource })) {
 			this.doInsertFinalNewLine(model.textEditorModel);
 		}
@@ -160,7 +143,11 @@ export class TrimFinalNewLinesParticipant implements ITextFileSaveParticipant {
 		// Nothing
 	}
 
-	async participate(model: IResolvedTextFileEditorModel, env: { reason: SaveReason; }): Promise<void> {
+	async participate(model: ITextFileEditorModel, env: { reason: SaveReason; }): Promise<void> {
+		if (!model.textEditorModel) {
+			return;
+		}
+
 		if (this.configurationService.getValue('files.trimFinalNewlines', { overrideIdentifier: model.textEditorModel.getLanguageIdentifier().language, resource: model.resource })) {
 			this.doTrimFinalNewLines(model.textEditorModel, env.reason === SaveReason.AUTO);
 		}
@@ -230,9 +217,13 @@ class FormatOnSaveParticipant implements ITextFileSaveParticipant {
 		// Nothing
 	}
 
-	async participate(editorModel: IResolvedTextFileEditorModel, env: { reason: SaveReason; }, progress: IProgress<IProgressStep>, token: CancellationToken): Promise<void> {
-		const model = editorModel.textEditorModel;
-		const overrides = { overrideIdentifier: model.getLanguageIdentifier().language, resource: model.uri };
+	async participate(model: ITextFileEditorModel, env: { reason: SaveReason; }, progress: IProgress<IProgressStep>, token: CancellationToken): Promise<void> {
+		if (!model.textEditorModel) {
+			return;
+		}
+
+		const textEditorModel = model.textEditorModel;
+		const overrides = { overrideIdentifier: textEditorModel.getLanguageIdentifier().language, resource: textEditorModel.uri };
 
 		if (env.reason === SaveReason.AUTO || !this.configurationService.getValue('editor.formatOnSave', overrides)) {
 			return undefined;
@@ -247,7 +238,7 @@ class FormatOnSaveParticipant implements ITextFileSaveParticipant {
 				)
 			});
 		});
-		const editorOrModel = findEditor(model, this.codeEditorService) || model;
+		const editorOrModel = findEditor(textEditorModel, this.codeEditorService) || textEditorModel;
 		await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, editorOrModel, FormattingMode.Silent, nestedProgress, token);
 	}
 }
@@ -259,13 +250,17 @@ class CodeActionOnSaveParticipant implements ITextFileSaveParticipant {
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 	) { }
 
-	async participate(editorModel: IResolvedTextFileEditorModel, env: { reason: SaveReason; }, progress: IProgress<IProgressStep>, token: CancellationToken): Promise<void> {
+	async participate(model: ITextFileEditorModel, env: { reason: SaveReason; }, progress: IProgress<IProgressStep>, token: CancellationToken): Promise<void> {
+		if (!model.textEditorModel) {
+			return;
+		}
+
 		if (env.reason === SaveReason.AUTO) {
 			return undefined;
 		}
-		const model = editorModel.textEditorModel;
+		const textEditorModel = model.textEditorModel;
 
-		const settingsOverrides = { overrideIdentifier: model.getLanguageIdentifier().language, resource: editorModel.resource };
+		const settingsOverrides = { overrideIdentifier: textEditorModel.getLanguageIdentifier().language, resource: model.resource };
 		const setting = this.configurationService.getValue<{ [kind: string]: boolean } | string[]>('editor.codeActionsOnSave', settingsOverrides);
 		if (!setting) {
 			return undefined;
@@ -304,7 +299,7 @@ class CodeActionOnSaveParticipant implements ITextFileSaveParticipant {
 				.map(x => new CodeActionKind(x));
 
 		progress.report({ message: localize('codeaction', "Quick Fixes") });
-		await this.applyOnSaveActions(model, codeActionsOnSave, excludedActions, progress, token);
+		await this.applyOnSaveActions(textEditorModel, codeActionsOnSave, excludedActions, progress, token);
 	}
 
 	private async applyOnSaveActions(model: ITextModel, codeActionsOnSave: readonly CodeActionKind[], excludes: readonly CodeActionKind[], progress: IProgress<IProgressStep>, token: CancellationToken): Promise<void> {
@@ -368,7 +363,6 @@ export class SaveParticipantsContribution extends Disposable implements IWorkben
 		this._register(this.textFileService.files.addSaveParticipant(this.instantiationService.createInstance(FormatOnSaveParticipant)));
 		this._register(this.textFileService.files.addSaveParticipant(this.instantiationService.createInstance(FinalNewLineParticipant)));
 		this._register(this.textFileService.files.addSaveParticipant(this.instantiationService.createInstance(TrimFinalNewLinesParticipant)));
-		this._register(this.textFileService.files.addSaveParticipant(this.instantiationService.createInstance(NotebookUpdateParticipant)));
 	}
 }
 
