@@ -17,9 +17,8 @@ import * as types from 'vs/base/common/types';
 export function registerNotebookThemes(overrideEditorThemeSetting: boolean, configurationService: IConfigurationService): IDisposable {
 	return registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 
-		let lightBoxShadow = '0px 4px 6px 0px rgba(0, 0, 0, 0.14)';
-		let darkBoxShadow = '0px 4px 6px 0px rgba(0, 0, 0, 1)';
-		let addBorderToInactiveCodeCells = true;
+		let lightCellBorder = '#0078D4';
+		let darkCellBorder = '#0078D4';
 
 		// Book Navigation Buttons
 		const buttonForegroundColor = theme.getColor(buttonForeground);
@@ -89,30 +88,42 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			`);
 		}
 
-		// Box shadow handling
+		// Cell active border handling
 		collector.addRule(`
 			.notebookEditor .notebook-cell.active {
-				box-shadow: ${lightBoxShadow};
+				border-width: 1px 3px;
+				border-style: solid;
+				border-color: ${darkCellBorder};
 			}
 
 			.vs-dark .notebookEditor .notebook-cell.active {
-				box-shadow: ${darkBoxShadow};
+				border-width: 1px 3px;
+				border-style: solid;
+				border-color: ${darkCellBorder};
 			}
 
 			.hc-black .notebookEditor .notebook-cell.active {
-				box-shadow: 0;
+				border-width: 1px 3px;
+				border-style: solid;
+				border-color: transparent;
 			}
 
 			.notebookEditor .notebook-cell:hover:not(.active) {
-				box-shadow: ${lightBoxShadow};
+				border-width: 1px 3px;
+				border-style: solid;
+				border-color: ${lightCellBorder};
 			}
 
 			.vs-dark .notebookEditor .notebook-cell:hover:not(.active) {
-				box-shadow: ${darkBoxShadow};
+				border-width: 1px 3px;
+				border-style: solid;
+				border-color: ${darkCellBorder};
 			}
 
 			.hc-black .notebookEditor .notebook-cell:hover:not(.active) {
-				box-shadow: 0;
+				border-width: 1px 3px;
+				border-style: solid;
+				border-color: transparent;
 			}
 		`);
 
@@ -152,7 +163,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 
 				// Margin background will be the same (may override some styles)
 				collector.addRule(`.notebook-cell:not(.active) code-component .monaco-editor .margin { background-color: ${codeBackground}; }`);
-				addBorderToInactiveCodeCells = false;
+				//addBorderToInactiveCodeCells = false;
 			}
 		}
 
@@ -162,14 +173,14 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			collector.addRule(`
 				.notebookEditor .notebook-cell {
 					border-color: transparent;
-					border-width: 1px;
+					border-width: 1px 3px;
 				}
 				.notebookEditor .notebook-cell.active {
-					border-width: 1px;
+					border-width: 1px 3px;
 				}
 				.notebookEditor .notebook-cell:hover {
 					border-color: ${inactiveBorder};
-					border-width: 1px;
+					border-width: 1px 3px;
 				}
 
 				.notebookEditor .hoverButtonsContainer .containerBackground {
@@ -181,27 +192,27 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			collector.addRule(`
 				.notebookEditor .notebook-cell.active code-component {
 					border-color: ${inactiveBorder};
-					border-width: 0px 0px 1px 0px;
+					border-width: 1px 0px 1px 0px;
 					border-style: solid;
 					border-radius: 0;
 				}
 			`);
 
-			if (addBorderToInactiveCodeCells) {
-				// Sets a border for the editor component if we don't have a custom line color for editor instead
-				collector.addRule(`
-					.notebookEditor .notebook-cell code-component {
-						border-color: ${inactiveBorder};
-						border-width: 1px;
-						border-style: solid;
-						border-radius: 3px 3px 3px 3px;
-					}
-					.notebookEditor .notebook-cell:hover code-component {
-						border-width: 0px 0px 1px 0px;
-						border-radius: 0px;
-					}
-				`);
-			}
+			// if (addBorderToInactiveCodeCells) {
+			// 	// Sets a border for the editor component if we don't have a custom line color for editor instead
+			// 	collector.addRule(`
+			// 		.notebookEditor .notebook-cell code-component {
+			// 			border-color: ${inactiveBorder};
+			// 			border-width: 1px;
+			// 			border-style: solid;
+			// 			border-radius: 3px 3px 3px 3px;
+			// 		}
+			// 		.notebookEditor .notebook-cell:hover code-component {
+			// 			border-width: 0px 0px 1px 0px;
+			// 			border-radius: 0px;
+			// 		}
+			// 	`);
+			// }
 		}
 
 		// Sidebar and cell outline toolbar color set only when active

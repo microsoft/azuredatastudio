@@ -8,10 +8,10 @@
 }
 
 .notebookEditor .notebook-cell {
-	margin: 1px 20px;
-	border-width: 1px;
+	border-color: transparent;
 	border-style: solid;
-	border-radius: 3px;
+	border-width: 1px 3px;
+	margin: 10px 20px;
 }
 
 .notebookEditor .notebook-info-label {

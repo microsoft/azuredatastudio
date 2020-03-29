@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./textCell';
+import 'vs/css!./markdownToolbar';
 import 'vs/css!./media/markdown';
 import 'vs/css!./media/highlight';
 
@@ -29,6 +30,7 @@ import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 
+export const TOOLBAR_SELECTOR: string = 'toolbar-component';
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
 
@@ -37,7 +39,11 @@ const USER_SELECT_CLASS = 'actionselect';
 	selector: TEXT_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./textCell.component.html'))
 })
+@Component({
+	selector: TOOLBAR_SELECTOR
+})
 export class TextCellComponent extends CellView implements OnInit, OnChanges {
+	//@ViewChild('markdowntoolbar', { read: ElementRef }) private markdownToolbar: ElementRef;
 	@ViewChild('preview', { read: ElementRef }) private output: ElementRef;
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChildren(CodeComponent) private markdowncodeCell: QueryList<CodeComponent>;
@@ -86,6 +92,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private readonly _onDidClickLink = this._register(new Emitter<URI>());
 	public readonly onDidClickLink = this._onDidClickLink.event;
 	private _cellToggleMoreActions: CellToggleMoreActions;
+	//private _cellToggleMarkdownToolbar: CellToggleMarkdownToolbar;
 	private _hover: boolean;
 	private markdownRenderer: NotebookMarkdownRenderer;
 	private markdownResult: IMarkdownRenderResult;
@@ -231,10 +238,17 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	public toggleEditMode(editMode?: boolean): void {
 		this.isEditMode = editMode !== undefined ? editMode : !this.isEditMode;
+		//this.updateEditorToolbar();
 		this.updateMoreActions();
 		this.updatePreview();
 		this._changeRef.detectChanges();
 	}
+
+	// private updateEditorToolbar(): void {
+	// 	if (this.isEditMode) {
+	// 		this.toggleMarkdownToolbar(true);
+	// 	}
+	// }
 
 	private updateMoreActions(): void {
 		if (!this.isEditMode && (this.isActive() || this._hover)) {
@@ -267,6 +281,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	protected isActive() {
 		return this.cellModel && this.cellModel.id === this.activeCellId;
 	}
+
+	// protected toggleMarkdownToolbar(isActive: boolean) {
+
+	// }
 
 	protected toggleMoreActionsButton(isActiveOrHovered: boolean) {
 		this._cellToggleMoreActions.toggleVisible(!isActiveOrHovered);

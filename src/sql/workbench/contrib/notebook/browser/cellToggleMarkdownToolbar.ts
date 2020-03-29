@@ -24,7 +24,7 @@ import { firstIndex } from 'vs/base/common/arrays';
 
 export const HIDDEN_CLASS = 'actionhidden';
 
-export class CellToggleMoreActions {
+export class CellToggleMarkdownToolbar {
 	private _actions: (Action | CellActionBase)[] = [];
 	private _moreActions: ActionBar;
 	private _moreActionsElement: HTMLElement;

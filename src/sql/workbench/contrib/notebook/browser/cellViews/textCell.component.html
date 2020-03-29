@@ -5,6 +5,18 @@
  *--------------------------------------------------------------------------------------------*/
 -->
 <div style="overflow: hidden; width: 100%; height: 100%; display: flex; flex-flow: column" (mouseover)="hover=true" (mouseleave)="hover=false">
+	<toolbar-component *ngIf="isEditMode" [cellModel]="cellModel" [model]="model" [activeCellId]="activeCellId">
+		<ul class="markdown-toolbar">
+			<li><a class="markdown-toolbar-bold" href="#"><span class="offscreen">bold</span></a></li>
+			<li><a class="markdown-toolbar-italic" href="#"><span class="offscreen">italic</span></a></li>
+			<li><a class="markdown-toolbar-code" href="#"><span class="offscreen">code</span></a></li>
+			<li><a class="markdown-toolbar-link" href="#"><span class="offscreen">link</span></a></li>
+			<li><a class="markdown-toolbar-list" href="#"><span class="offscreen">list</span></a></li>
+			<li><a class="markdown-toolbar-ordered-list" href="#"><span class="offscreen">ordered list</span></a></li>
+			<li><a class="markdown-toolbar-image" href="#"><span class="offscreen">image</span></a></li>
+			<li><a (click)="toggleEditMode()" class="markdown-toolbar-preview-toggle-off" href="#"><span class="offscreen">markdown preview toggle - off</span></a></li>
+		</ul>
+	</code-component>
 	<div class="notebook-text" style="flex: 0 0 auto;">
 		<code-component *ngIf="isEditMode" [cellModel]="cellModel" (onContentChanged)="handleContentChanged()" [model]="model" [activeCellId]="activeCellId">
 		</code-component>
