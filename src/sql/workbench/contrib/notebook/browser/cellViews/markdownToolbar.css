@@ -37,29 +37,29 @@ text-cell-component .markdown-toolbar li a {
 }
 
 text-cell-component li a.markdown-toolbar-bold {
-	background-image: url('media/light/toolbar-bold.svg');
+	background-image: url('media/toolbar-bold.svg');
 }
 text-cell-component li a.markdown-toolbar-italic {
-	background-image: url('media/light/toolbar-italic.svg');
+	background-image: url('media/toolbar-italic.svg');
 }
 text-cell-component li a.markdown-toolbar-code {
-	background-image: url('media/light/toolbar-code.svg');
+	background-image: url('media/toolbar-code.svg');
 }
 text-cell-component li a.markdown-toolbar-link {
-	background-image: url('media/light/toolbar-link.svg');
+	background-image: url('media/toolbar-link.svg');
 }
 text-cell-component li a.markdown-toolbar-list {
-	background-image: url('media/light/toolbar-list.svg');
+	background-image: url('media/toolbar-list.svg');
 }
 text-cell-component li a.markdown-toolbar-ordered-list {
-	background-image: url('media/light/toolbar-ordered-list.svg');
+	background-image: url('media/toolbar-ordered-list.svg');
 }
 text-cell-component li a.markdown-toolbar-image {
-	background-image: url('media/light/toolbar-image.svg');
+	background-image: url('media/toolbar-image.svg');
 }
 text-cell-component li a.markdown-toolbar-preview-toggle-off {
-	background-image: url('media/light/toolbar-preview-toggle-off.svg');
+	background-image: url('media/toolbar-preview-toggle-off.svg');
 }
 text-cell-component li a.markdown-toolbar-preview-toggle-on {
-	background-image: url('media/light/toolbar-preview-toggle-on.svg');
+	background-image: url('media/toolbar-preview-toggle-on.svg');
 }
