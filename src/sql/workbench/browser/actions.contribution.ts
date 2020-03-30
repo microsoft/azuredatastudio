@@ -11,6 +11,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 
 new Actions.ConfigureDashboardAction().registerTask();
+new Actions.ClearSavedAccountsAction().registerTask();
 
 Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConfiguration({
 	'id': 'previewFeatures',

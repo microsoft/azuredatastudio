@@ -3,10 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export interface PredictColumn {
-	name: string;
+export interface TableColumn {
+	columnName: string;
 	dataType?: string;
-	displayName?: string;
+}
+
+export interface PredictColumn extends TableColumn {
+	paramName?: string;
 }
 
 export interface DatabaseTable {

@@ -123,7 +123,6 @@ export class NotebookModelStub implements INotebookModel {
 }
 
 export class NotebookFindModelStub implements INotebookFindModel {
-
 	getFindCount(): number {
 		throw new Error('Method not implemented.');
 	}
@@ -158,6 +157,9 @@ export class NotebookFindModelStub implements INotebookFindModel {
 	findMatches: NotebookFindMatch[];
 	findExpression: string;
 	onFindCountChange: vsEvent.Event<number>;
+	getIndexByRange(range: NotebookRange): number {
+		throw new Error('Method not implemented.');
+	}
 }
 
 export class NotebookManagerStub implements INotebookManager {

@@ -162,7 +162,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		// If _config.name is not set, set it to _config.widget.name
 		if (!this._config.name) {
 			const widget = values(this._config.widget)[0];
-			if (widget.name) {
+			if (widget && widget.name) {
 				this._config.name = widget.name;
 			}
 		}
@@ -221,7 +221,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	private updateTheme(theme: IColorTheme): void {
 		const el = <HTMLElement>this._ref.nativeElement;
 		const headerEl: HTMLElement = this.header.nativeElement;
-		let borderColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true);
+		let borderColor = theme.getColor(themeColors.DASHBOARD_BORDER);
 		let backgroundColor = theme.getColor(colors.editorBackground, true);
 		const foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
 		const border = theme.getColor(colors.contrastBorder, true);
@@ -249,16 +249,10 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			el.style.borderWidth = '1px';
 			el.style.borderStyle = 'solid';
 		} else if (borderColor) {
-			borderString = borderColor.toString();
-			el.style.border = '3px solid ' + borderColor.toString();
+			borderString = borderColor;
+			el.style.border = '1px solid ' + borderColor;
 		} else {
 			el.style.border = 'none';
-		}
-
-		if (borderString) {
-			headerEl.style.backgroundColor = borderString;
-		} else {
-			headerEl.style.backgroundColor = '';
 		}
 
 		if (this._config.fontSize) {

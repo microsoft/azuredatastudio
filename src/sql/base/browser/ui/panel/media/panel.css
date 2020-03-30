@@ -59,7 +59,7 @@ panel {
 	display: flex;
 	padding-left: 5px;
 	padding-right: 5px;
-	min-width: 65px;
+	cursor: pointer;
 }
 
 .tabbedPanel.vertical .tabList .tab-header {
@@ -67,17 +67,16 @@ panel {
 	text-transform: none;
 	text-overflow: ellipsis;
 	overflow: hidden;
-	width: 65px;
+	width: auto;
 	height: 50px;
 	line-height: 45px;
 }
 
-.tabbedPanel .tabList .tab .tabLabel.codicon {
+.tabbedPanel .tabList .tab .tabIcon.codicon {
 	background-repeat: no-repeat;
-	background-position: center center;
-	background-size: 20px;
-	padding: 20px 25px;
-	line-height: 50px;
+	background-position: 2px center;
+	background-size: 16px;
+	padding: 2px 2px 2px 22px;
 }
 
 .tabbedPanel .tabList .actions-container {
@@ -117,24 +116,20 @@ panel {
 	height: 100%;
 }
 
-.tabbedPanel.vertical .tabList {
-	flex-direction: column;
-}
-
 .tabbedPanel > .tab-content {
 	flex: 1;
 	position: relative;
 }
 
-.tabbedPanel.vertical > .title > .tabList {
+.tabbedPanel.vertical > .title > .tabContainer > .monaco-scrollable-element > .tabList {
 	flex-flow: column;
 }
 
-.tabbedPanel.horizontal > .title > .tabList {
+.tabbedPanel.horizontal > .title > .tabContainer > .monaco-scrollable-element > .tabList {
 	flex-flow: row;
 }
 
-.tabbedPanel > .title > .monaco-scrollable-element {
+.tabbedPanel > .title > .tabContainer > .monaco-scrollable-element {
 	flex: 0 1 auto;
 	width: inherit;
 }
@@ -146,4 +141,48 @@ panel {
 .tabBody {
 	width: 100%;
 	height: 100%;
+}
+
+.tabbedPanel .tab-group-header {
+	font-weight: bold;
+	margin: 15px 5px 3px 5px;
+	line-height: 35px;
+	height: 35px;
+	border-style: solid;
+	border-width: 0 0 1px 0;
+	border-color: rgb(214, 214, 214);
+}
+
+.tabbedPanel .action-container {
+	display: flex;
+	flex-flow: row-reverse;
+}
+
+.tabbedPanel .tab-action {
+	width: 15px;
+	height: 15px;
+	padding: 0px;
+	border: 0px;
+	background-color: transparent;
+	background-position: 2px center;
+	background-repeat: no-repeat;
+	background-size: 11px 11px;
+}
+
+.vs .tabbedPanel .tab-action.collapse{
+	background-image: url("collapse.svg");
+}
+
+.vs-dark .tabbedPanel .tab-action.collapse,
+.hc-black .tabbedPanel .tab-action.collapse {
+	background-image: url("collapse_inverse.svg");
+}
+
+.vs .tabbedPanel .tab-action.expand {
+	background-image: url("expand.svg");
+}
+
+.vs-dark .tabbedPanel .tab-action.expand,
+.hc-black .tabbedPanel .tab-action.expand {
+	background-image: url("expand_inverse.svg");
 }

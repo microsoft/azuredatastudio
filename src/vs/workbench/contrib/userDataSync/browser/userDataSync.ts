@@ -52,7 +52,7 @@ import { fromNow } from 'vs/base/common/date';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
-import { timeout } from 'vs/base/common/async';
+import { distinct } from 'vs/base/common/arrays';
 
 const enum AuthStatus {
 	Initializing = 'Initializing',
@@ -98,19 +98,19 @@ const getActivityTitle = (label: string, userDataSyncService: IUserDataSyncServi
 const getIdentityTitle = (label: string, authenticationProviderId: string, account: AuthenticationSession | undefined, authenticationService: IAuthenticationService): string => {
 	return account ? `${label} (${authenticationService.getDisplayName(authenticationProviderId)}:${account.accountName})` : label;
 };
-const turnOnSyncCommand = { id: 'workbench.userData.actions.syncStart', title: localize('turn on sync with category', "Sync: Turn on Sync") };
-const signInCommand = { id: 'workbench.userData.actions.signin', title: localize('sign in', "Sync: Sign in to sync") };
-const stopSyncCommand = { id: 'workbench.userData.actions.stopSync', title(authenticationProviderId: string, account: AuthenticationSession | undefined, authenticationService: IAuthenticationService) { return getIdentityTitle(localize('stop sync', "Sync: Turn off Sync"), authenticationProviderId, account, authenticationService); } };
-const resolveSettingsConflictsCommand = { id: 'workbench.userData.actions.resolveSettingsConflicts', title: localize('showConflicts', "Sync: Show Settings Conflicts") };
-const resolveKeybindingsConflictsCommand = { id: 'workbench.userData.actions.resolveKeybindingsConflicts', title: localize('showKeybindingsConflicts', "Sync: Show Keybindings Conflicts") };
-const resolveSnippetsConflictsCommand = { id: 'workbench.userData.actions.resolveSnippetsConflicts', title: localize('showSnippetsConflicts', "Sync: Show User Snippets Conflicts") };
-const configureSyncCommand = { id: 'workbench.userData.actions.configureSync', title: localize('configure sync', "Sync: Configure") };
+const turnOnSyncCommand = { id: 'workbench.userData.actions.syncStart', title: localize('turn on sync with category', "Preferences Sync: Turn on...") };
+const signInCommand = { id: 'workbench.userData.actions.signin', title: localize('sign in', "Preferences Sync: Sign in to sync") };
+const stopSyncCommand = { id: 'workbench.userData.actions.stopSync', title(authenticationProviderId: string, account: AuthenticationSession | undefined, authenticationService: IAuthenticationService) { return getIdentityTitle(localize('stop sync', "Preferences Sync: Turn off"), authenticationProviderId, account, authenticationService); } };
+const resolveSettingsConflictsCommand = { id: 'workbench.userData.actions.resolveSettingsConflicts', title: localize('showConflicts', "Preferences Sync: Show Settings Conflicts") };
+const resolveKeybindingsConflictsCommand = { id: 'workbench.userData.actions.resolveKeybindingsConflicts', title: localize('showKeybindingsConflicts', "Preferences Sync: Show Keybindings Conflicts") };
+const resolveSnippetsConflictsCommand = { id: 'workbench.userData.actions.resolveSnippetsConflicts', title: localize('showSnippetsConflicts', "Preferences Sync: Show User Snippets Conflicts") };
+const configureSyncCommand = { id: 'workbench.userData.actions.configureSync', title: localize('configure sync', "Preferences Sync: Configure...") };
 const showSyncActivityCommand = {
 	id: 'workbench.userData.actions.showSyncActivity', title(userDataSyncService: IUserDataSyncService): string {
-		return getActivityTitle(localize('show sync log', "Sync: Show Log"), userDataSyncService);
+		return getActivityTitle(localize('show sync log', "Preferences Sync: Show Log"), userDataSyncService);
 	}
 };
-const showSyncSettingsCommand = { id: 'workbench.userData.actions.syncSettings', title: localize('sync settings', "Sync: Settings"), };
+const showSyncSettingsCommand = { id: 'workbench.userData.actions.syncSettings', title: localize('sync settings', "Preferences Sync: Show Settings"), };
 
 export class UserDataSyncWorkbenchContribution extends Disposable implements IWorkbenchContribution {
 
@@ -249,9 +249,10 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 	private async showSwitchAccountPicker(sessions: readonly AuthenticationSession[]): Promise<void> {
 		return new Promise((resolve, _) => {
 			const quickPick = this.quickInputService.createQuickPick<{ label: string, session: AuthenticationSession }>();
-			quickPick.title = localize('chooseAccountTitle', "Sync: Choose Account");
+			quickPick.title = localize('chooseAccountTitle', "Preferences Sync: Choose Account");
 			quickPick.placeholder = localize('chooseAccount', "Choose an account you would like to use for settings sync");
-			quickPick.items = sessions.map(session => {
+			const dedupedSessions = distinct(sessions, (session) => session.accountName);
+			quickPick.items = dedupedSessions.map(session => {
 				return {
 					label: session.accountName,
 					session: session
@@ -577,7 +578,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 		if (this.userDataSyncService.status !== SyncStatus.Uninitialized && this.userDataSyncEnablementService.isEnabled() && this.authenticationState.get() === AuthStatus.SignedOut) {
 			badge = new NumberBadge(1, () => localize('sign in to sync', "Sign in to Sync"));
 		} else if (this.userDataSyncService.conflicts.length) {
-			badge = new NumberBadge(this.userDataSyncService.conflicts.reduce((result, syncResourceConflict) => { return result + syncResourceConflict.conflicts.length; }, 0), () => localize('has conflicts', "Sync: Conflicts Detected"));
+			badge = new NumberBadge(this.userDataSyncService.conflicts.reduce((result, syncResourceConflict) => { return result + syncResourceConflict.conflicts.length; }, 0), () => localize('has conflicts', "Preferences Sync: Conflicts Detected"));
 		}
 
 		if (badge) {
@@ -603,12 +604,22 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 				case 0: this.openerService.open(URI.parse('https://aka.ms/vscode-settings-sync-help')); return;
 				case 2: return;
 			}
+		} else if (skipAccountPick) {
+			const result = await this.dialogService.confirm({
+				type: 'info',
+				message: localize('turn on sync confirmation', "Do you want to turn on preferences sync?"),
+				primaryButton: localize('turn on', "Turn On")
+			});
+			if (!result.confirmed) {
+				return;
+			}
 		}
+
 		return new Promise((c, e) => {
 			const disposables: DisposableStore = new DisposableStore();
 			const quickPick = this.quickInputService.createQuickPick<ConfigureSyncQuickPickItem>();
 			disposables.add(quickPick);
-			quickPick.title = localize('turn on title', "Sync: Turn On");
+			quickPick.title = localize('turn on title', "Preferences Sync: Turn On");
 			quickPick.ok = false;
 			quickPick.customButton = true;
 			if (this.authenticationState.get() === AuthStatus.SignedIn) {
@@ -695,7 +706,6 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 		}, {
 			id: SyncResource.GlobalState,
 			label: getSyncAreaLabel(SyncResource.GlobalState),
-			description: localize('ui state description', "only 'Display Language' for now")
 		}];
 	}
 
@@ -714,7 +724,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 			const disposables: DisposableStore = new DisposableStore();
 			const quickPick = this.quickInputService.createQuickPick<ConfigureSyncQuickPickItem>();
 			disposables.add(quickPick);
-			quickPick.title = localize('turn on sync', "Turn on Sync");
+			quickPick.title = localize('configure sync', "Preferences Sync: Configure...");
 			quickPick.placeholder = localize('configure sync placeholder', "Choose what to sync");
 			quickPick.canSelectMany = true;
 			quickPick.ignoreFocusOut = true;
@@ -889,7 +899,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 			group: '5_sync',
 			command: {
 				id: turnOnSyncCommand.id,
-				title: localize('global activity turn on sync', "Turn on Sync...")
+				title: localize('global activity turn on sync', "Turn on Preferences Sync...")
 			},
 			when: turnOnSyncWhenContext,
 			order: 1
@@ -902,7 +912,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 			group: '5_sync',
 			command: {
 				id: turnOnSyncCommand.id,
-				title: localize('global activity turn on sync', "Turn on Sync...")
+				title: localize('global activity turn on sync', "Turn on Preferences Sync...")
 			},
 			when: turnOnSyncWhenContext,
 		});
@@ -914,7 +924,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 			constructor() {
 				super({
 					id: signInCommand.id,
-					title: signInCommand.title,
+					title: localize('sign in 2', "Preferences Sync: Sign in to sync (1)"),
 					menu: {
 						group: '5_sync',
 						id: MenuId.GlobalActivity,
@@ -940,7 +950,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 			group: '5_sync',
 			command: {
 				id: resolveSettingsConflictsCommand.id,
-				title: localize('resolveConflicts_global', "Sync: Show Settings Conflicts (1)"),
+				title: localize('resolveConflicts_global', "Preferences Sync: Show Settings Conflicts (1)"),
 			},
 			when: resolveSettingsConflictsWhenContext,
 			order: 2
@@ -949,7 +959,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 			group: '5_sync',
 			command: {
 				id: resolveSettingsConflictsCommand.id,
-				title: localize('resolveConflicts_global', "Sync: Show Settings Conflicts (1)"),
+				title: localize('resolveConflicts_global', "Preferences Sync: Show Settings Conflicts (1)"),
 			},
 			when: resolveSettingsConflictsWhenContext,
 			order: 2
@@ -967,7 +977,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 			group: '5_sync',
 			command: {
 				id: resolveKeybindingsConflictsCommand.id,
-				title: localize('resolveKeybindingsConflicts_global', "Sync: Show Keybindings Conflicts (1)"),
+				title: localize('resolveKeybindingsConflicts_global', "Preferences Sync: Show Keybindings Conflicts (1)"),
 			},
 			when: resolveKeybindingsConflictsWhenContext,
 			order: 2
@@ -976,7 +986,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 			group: '5_sync',
 			command: {
 				id: resolveKeybindingsConflictsCommand.id,
-				title: localize('resolveKeybindingsConflicts_global', "Sync: Show Keybindings Conflicts (1)"),
+				title: localize('resolveKeybindingsConflicts_global', "Preferences Sync: Show Keybindings Conflicts (1)"),
 			},
 			when: resolveKeybindingsConflictsWhenContext,
 			order: 2
@@ -997,7 +1007,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 			group: '5_sync',
 			command: {
 				id: resolveSnippetsConflictsCommand.id,
-				title: localize('resolveSnippetsConflicts_global', "Sync: Show User Snippets Conflicts ({0})", conflicts?.length || 1),
+				title: localize('resolveSnippetsConflicts_global', "Preferences Sync: Show User Snippets Conflicts ({0})", conflicts?.length || 1),
 			},
 			when: resolveSnippetsConflictsWhenContext,
 			order: 2
@@ -1006,7 +1016,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 			group: '5_sync',
 			command: {
 				id: resolveSnippetsConflictsCommand.id,
-				title: localize('resolveSnippetsConflicts_global', "Sync: Show User Snippets Conflicts ({0})", conflicts?.length || 1),
+				title: localize('resolveSnippetsConflicts_global', "Preferences Sync: Show User Snippets Conflicts ({0})", conflicts?.length || 1),
 			},
 			when: resolveSnippetsConflictsWhenContext,
 			order: 2
@@ -1024,7 +1034,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 			constructor() {
 				super({
 					id: 'workbench.userData.actions.syncStatus',
-					title: localize('sync is on', "Sync is on"),
+					title: localize('sync is on', "Preferences sync is on"),
 					menu: [
 						{
 							id: MenuId.GlobalActivity,
@@ -1073,8 +1083,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 					quickPick.items = items;
 					disposables.add(quickPick.onDidAccept(() => {
 						if (quickPick.selectedItems[0] && quickPick.selectedItems[0].id) {
-							// Introduce timeout as workaround - #91661 #91740
-							timeout(0).then(() => commandService.executeCommand(quickPick.selectedItems[0].id!));
+							commandService.executeCommand(quickPick.selectedItems[0].id);
 						}
 						quickPick.hide();
 					}));
@@ -1263,8 +1272,8 @@ class AcceptChangesContribution extends Disposable implements IEditorContributio
 					const result = await this.dialogService.confirm({
 						type: 'info',
 						title: isRemote
-							? localize('Sync accept remote', "Sync: {0}", acceptRemoteLabel)
-							: localize('Sync accept local', "Sync: {0}", acceptLocalLabel),
+							? localize('Sync accept remote', "Preferences Sync: {0}", acceptRemoteLabel)
+							: localize('Sync accept local', "Preferences Sync: {0}", acceptLocalLabel),
 						message: isRemote
 							? localize('confirm replace and overwrite local', "Would you like to accept remote {0} and replace local {1}?", syncAreaLabel.toLowerCase(), syncAreaLabel.toLowerCase())
 							: localize('confirm replace and overwrite remote', "Would you like to accept local {0} and replace remote {1}?", syncAreaLabel.toLowerCase(), syncAreaLabel.toLowerCase()),

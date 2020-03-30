@@ -11,7 +11,7 @@ import * as model from 'vs/editor/common/model';
 import { Range } from 'vs/editor/common/core/range';
 import { ICell, NotebookCellMetadata, NotebookDocumentMetadata } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { CursorAtBoundary, CellFocusMode, CellEditState, CellRunState } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
-import { EDITOR_TOP_PADDING, EDITOR_TOOLBAR_HEIGHT } from 'vs/workbench/contrib/notebook/browser/constants';
+import { EDITOR_TOOLBAR_HEIGHT, EDITOR_TOP_MARGIN } from 'vs/workbench/contrib/notebook/browser/constants';
 import { SearchParams } from 'vs/editor/common/model/textModelSearch';
 
 export const NotebookCellMetadataDefaults = {
@@ -32,8 +32,10 @@ export abstract class BaseCellViewModel extends Disposable {
 	readonly onDidChangeEditorAttachState = this._onDidChangeEditorAttachState.event;
 	protected readonly _onDidChangeCursorSelection: Emitter<void> = this._register(new Emitter<void>());
 	public readonly onDidChangeCursorSelection: Event<void> = this._onDidChangeCursorSelection.event;
-	protected readonly _onDidChangeMetadata: Emitter<NotebookCellMetadata | undefined> = this._register(new Emitter<NotebookCellMetadata | undefined>());
-	public readonly onDidChangeMetadata: Event<NotebookCellMetadata | undefined> = this._onDidChangeMetadata.event;
+	protected readonly _onDidChangeMetadata: Emitter<void> = this._register(new Emitter<void>());
+	public readonly onDidChangeMetadata: Event<void> = this._onDidChangeMetadata.event;
+	protected readonly _onDidChangeLanguage: Emitter<string> = this._register(new Emitter<string>());
+	public readonly onDidChangeLanguage: Event<string> = this._onDidChangeLanguage.event;
 	get handle() {
 		return this.cell.handle;
 	}
@@ -100,8 +102,12 @@ export abstract class BaseCellViewModel extends Disposable {
 	constructor(readonly viewType: string, readonly notebookHandle: number, readonly cell: ICell, public id: string) {
 		super();
 
-		this._register(cell.onDidChangeMetadata((e) => {
-			this._onDidChangeMetadata.fire(e);
+		this._register(cell.onDidChangeLanguage((e) => {
+			this._onDidChangeLanguage.fire(e);
+		}));
+
+		this._register(cell.onDidChangeMetadata(() => {
+			this._onDidChangeMetadata.fire();
 		}));
 	}
 
@@ -253,7 +259,7 @@ export abstract class BaseCellViewModel extends Disposable {
 			return 0;
 		}
 
-		return this._textEditor.getTopForLineNumber(line) + EDITOR_TOP_PADDING + EDITOR_TOOLBAR_HEIGHT;
+		return this._textEditor.getTopForLineNumber(line) + EDITOR_TOP_MARGIN + EDITOR_TOOLBAR_HEIGHT;
 	}
 
 	cursorAtBoundary(): CursorAtBoundary {
