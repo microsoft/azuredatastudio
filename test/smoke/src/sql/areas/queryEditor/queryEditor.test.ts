@@ -10,7 +10,7 @@ export function setup() {
 
 		it('can open and connect file', async function () {
 			const app = this.app as Application;
-			await app.workbench.quickopen.openFile('test.sql');
+			await app.workbench.quickaccess.openFile('test.sql');
 			await app.workbench.queryEditor.commandBar.clickButton(3);
 			await app.workbench.connectionDialog.waitForConnectionDialog();
 			await app.code.waitForSetValue('.modal .modal-body select[aria-label="Connection type"]', 'Sqlite');
