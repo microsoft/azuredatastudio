@@ -9,8 +9,7 @@
     "vscode": "*"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "node ./build/postinstall.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "activationEvents": [
     "onConnect:sqlite"
