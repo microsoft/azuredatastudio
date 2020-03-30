@@ -128,9 +128,9 @@ export class NotebookFindDecorations implements IDisposable {
 
 	private removePrevDecorations(): void {
 		if (this._currentMatch && this._currentMatch.cell) {
-			let pevEditor = this._currentMatch.cell.cellType === 'markdown' ? undefined : this._editor.getCellEditor(this._currentMatch.cell.cellGuid);
-			if (pevEditor) {
-				pevEditor.getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
+			let prevEditor = this._currentMatch.cell.cellType === 'markdown' && !this._currentMatch.isMarkdownSourceCell ? undefined : this._editor.getCellEditor(this._currentMatch.cell.cellGuid);
+			if (prevEditor) {
+				prevEditor.getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
 					changeAccessor.removeDecoration(this._rangeHighlightDecorationId);
 					this._rangeHighlightDecorationId = null;
 				});
@@ -153,7 +153,7 @@ export class NotebookFindDecorations implements IDisposable {
 	}
 
 	public checkValidEditor(range: NotebookRange): boolean {
-		return range && range.cell && range.cell.cellType === 'code' && !!(this._editor.getCellEditor(range.cell.cellGuid));
+		return range && range.cell && !!(this._editor.getCellEditor(range.cell.cellGuid)) && (range.cell.cellType === 'code' || range.isMarkdownSourceCell);
 	}
 
 	public set(findMatches: NotebookFindMatch[], findScope: NotebookRange | null): void {

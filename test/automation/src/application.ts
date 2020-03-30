@@ -153,7 +153,7 @@ export class Application {
 		}
 
 		// wait a bit, since focus might be stolen off widgets
-		// as soon as they open (e.g. quick open)
+		// as soon as they open (e.g. quick access)
 		await new Promise(c => setTimeout(c, 1000));
 	}
 }

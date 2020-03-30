@@ -406,7 +406,8 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 			if (oldDecorationIndex < oldDecorationsLen) {
 				// (1) get ourselves an old node
 				do {
-					node = this._decorations[oldDecorationsIds[oldDecorationIndex++]].node;
+					let decorationNode = this._decorations[oldDecorationsIds[oldDecorationIndex++]];
+					node = decorationNode?.node;
 				} while (!node && oldDecorationIndex < oldDecorationsLen);
 
 				// (2) remove the node from the tree (if it exists)
@@ -522,11 +523,29 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 	}
 
 	public get findArray(): NotebookRange[] {
-		return this.findArray;
+		return this._findArray;
+	}
+
+	getIndexByRange(range: NotebookRange): number {
+		let index = this.findArray.findIndex(r => r.cell.cellGuid === range.cell.cellGuid && r.startColumn === range.startColumn && r.endColumn === range.endColumn && r.startLineNumber === range.startLineNumber && r.endLineNumber === range.endLineNumber && r.isMarkdownSourceCell === range.isMarkdownSourceCell);
+		this._findIndex = index > -1 ? index : this._findIndex;
+		// _findIndex is the 0 based index, return index + 1 for the actual count on UI
+		return this._findIndex + 1;
 	}
 
 	private searchFn(cell: ICellModel, exp: string, matchCase: boolean = false, wholeWord: boolean = false, maxMatches?: number): NotebookRange[] {
 		let findResults: NotebookRange[] = [];
+		if (cell.cellType === 'markdown' && cell.isEditMode && typeof cell.source !== 'string') {
+			let cellSource = cell.source;
+			for (let j = 0; j < cellSource.length; j++) {
+				let findStartResults = this.search(cellSource[j], exp, matchCase, wholeWord, maxMatches - findResults.length);
+				findStartResults.forEach(start => {
+					// lineNumber: j+1 since notebook editors aren't zero indexed.
+					let range = new NotebookRange(cell, j + 1, start, j + 1, start + exp.length, true);
+					findResults.push(range);
+				});
+			}
+		}
 		let cellVal = cell.cellType === 'markdown' ? cell.renderedOutputTextContent : cell.source;
 		if (cellVal) {
 			if (typeof cellVal === 'string') {
@@ -650,10 +669,10 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 
 }
 
-export class NotebookIntervalNode {
+export class NotebookIntervalNode extends IntervalNode {
 
 	constructor(public node: IntervalNode, public cell: ICellModel) {
-
+		super(node.id, node.start, node.end);
 	}
 }
 

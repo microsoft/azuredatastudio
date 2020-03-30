@@ -36,7 +36,7 @@ export enum ColumnSizingMode {
 @Component({
 	selector: 'modelview-table',
 	template: `
-		<div #table style="height:100%;" [style.font-size]="fontSize" [style.width]="width" tabindex="-1"></div>
+		<div #table style="height:100%;" [style.font-size]="fontSize" [style.width]="width"></div>
 	`
 })
 export default class TableComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {

@@ -182,6 +182,7 @@ export function createViewContext(): ViewTestContext {
 			loadingComponent: () => loadingBuilder,
 			fileBrowserTree: undefined!,
 			hyperlink: undefined!,
+			tabbedPanel: undefined!,
 			separator: undefined!
 		}
 	};
