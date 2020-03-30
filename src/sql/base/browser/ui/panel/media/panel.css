@@ -55,12 +55,12 @@ panel {
 	line-height: 35px;
 }
 
-.tabbedPanel.horizontal>.title .tabList .tab-header {
+.tabbedPanel.horizontal > .title .tabList .tab-header {
 	display: flex;
 	min-width: 80px;
 }
 
-.tabbedPanel.vertical>.title .tabList .tab-header {
+.tabbedPanel.vertical > .title .tabList .tab-header {
 	display: block;
 	min-width: 150px;
 }
@@ -112,15 +112,15 @@ panel {
 	position: relative;
 }
 
-.tabbedPanel.vertical>.title>.tabContainer .tabList {
+.tabbedPanel.vertical>.title > .tabContainer .tabList {
 	flex-flow: column;
 }
 
-.tabbedPanel.horizontal>.title>.tabContainer .tabList {
+.tabbedPanel.horizontal > .title > .tabContainer .tabList {
 	flex-flow: row;
 }
 
-.tabbedPanel>.title>.tabContainer>.monaco-scrollable-element {
+.tabbedPanel > .title > .tabContainer > .monaco-scrollable-element {
 	flex: 0 1 auto;
 	width: inherit;
 }
