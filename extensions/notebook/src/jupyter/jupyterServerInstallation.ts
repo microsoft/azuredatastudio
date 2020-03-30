@@ -628,7 +628,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let versionSpecifier = useMinVersion ? '>=' : '==';
 		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
 		let condaExe = this.getCondaExePath();
-		let cmd = `"${condaExe}" install -y --force-reinstall ${packagesStr}`;
+		let cmd = `"${condaExe}" install -y ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
 
