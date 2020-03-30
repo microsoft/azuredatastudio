@@ -43,7 +43,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 	private _overflow: HTMLElement;
 	private _moreItemElement: HTMLElement;
 
-	private _collapseOverflow: boolean = false;
+	private _collapseOverflow: boolean;
 
 	constructor(container: HTMLElement, options: IActionBarOptions = defaultOptions, collapseOverflow: boolean = false) {
 		super();
@@ -146,16 +146,18 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		if (this._options.ariaLabel) {
 			this._actionsList.setAttribute('aria-label', this._options.ariaLabel);
 		}
-		if (!this._collapseOverflow) {
-			this._actionsList.style.flexWrap = 'wrap';
-		}
 
 		this._domNode.appendChild(this._actionsList);
 
-		this._overflow = document.createElement('ul');
-		this._overflow.id = 'overflow';
-		this._overflow.className = 'overflow';
-		this._domNode.appendChild(this._overflow);
+		if (this._collapseOverflow) {
+			this._overflow = document.createElement('ul');
+			this._overflow.id = 'overflow';
+			this._overflow.className = 'overflow';
+			this._domNode.appendChild(this._overflow);
+		} else {
+			this._actionsList.style.flexWrap = 'wrap';
+		}
+
 		container.appendChild(this._domNode);
 	}
 
@@ -164,17 +166,32 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		let width = document.getElementById('actions-container').offsetWidth;
 		let fullWidth = document.getElementById('actions-container').scrollWidth;
 
-		// hide stuff
+		// collapse actions that are beyond the width of the toolbar
 		if (width < fullWidth) {
+			// create '•••' more element if it doesn't exist yet
 			if (!this._moreItemElement) {
 				this._moreItemElement = document.createElement('li');
 				this._moreItemElement.className = 'action-item more';
 				this._moreItemElement.setAttribute('role', 'presentation');
-				this._moreItemElement.innerHTML = '•••';
 				this._moreItemElement.id = 'more';
-				this._moreItemElement.onclick = (this._domNode, ev => { this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block'; });
+				const innerText: HTMLElement = document.createElement('a');
+				innerText.setAttribute('role', 'button');
+				innerText.innerHTML = '•••';
+				innerText.tabIndex = 0;
+				innerText.onclick = (this._domNode, ev => { this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block'; });
+				innerText.onkeydown = (this._domNode, ev => {
+					let event = new StandardKeyboardEvent(ev);
+					if (event.keyCode === KeyCode.Enter || event.keyCode === KeyCode.Space) {
+						this._focusedItem = undefined;
+						this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block';
+						event.preventDefault();
+						event.stopPropagation();
+					}
+				});
+				this._moreItemElement.appendChild(innerText);
 				this._actionsList.appendChild(this._moreItemElement);
 			}
+
 			this._moreItemElement.style.display = 'block';
 			while (width < fullWidth) {
 				let index = this._actionsList.childNodes.length - 2;
@@ -186,9 +203,11 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 					break;
 				}
 			}
-		} else if (this._overflow.hasChildNodes()) {
+		} else if (this._overflow.hasChildNodes()) { // uncollapse actions if there is space for it
 			while (width === fullWidth && this._overflow.hasChildNodes()) {
 				this._actionsList.insertBefore(this._overflow.removeChild(this._overflow.firstChild), this._actionsList.lastChild);
+
+				// if the action was too wide, collapse it again
 				if (document.getElementById('actions-container').scrollWidth > document.getElementById('actions-container').offsetWidth) {
 					let index = this._actionsList.childNodes.length - 2;
 					let item = this._actionsList.removeChild(this._actionsList.childNodes[index]);
@@ -257,7 +276,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		let index = types.isNumber(options.index) ? options.index : null;
 
 		if (index === null || index < 0 || index >= this._actionsList.children.length) {
-			this._actionsList.append(element);
+			this._actionsList.appendChild(element);
 		} else {
 			this._actionsList.insertBefore(element, this._actionsList.children[index++]);
 		}
