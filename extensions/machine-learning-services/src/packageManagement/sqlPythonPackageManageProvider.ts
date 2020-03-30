@@ -9,7 +9,7 @@ import * as nbExtensionApis from '../typings/notebookServices';
 import { ApiWrapper } from '../common/apiWrapper';
 import { ProcessService } from '../common/processService';
 import { Config } from '../configurations/config';
-import { SqlPackageManageProviderBase, ScriptMode } from './sqlPackageManageProviderBase';
+import { SqlPackageManageProviderBase, ScriptMode } from './packageManageProviderBase';
 import { HttpClient } from '../common/httpClient';
 import * as utils from '../common/utils';
 import { PackageManagementService } from './packageManagementService';
