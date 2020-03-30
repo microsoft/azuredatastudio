@@ -53,26 +53,10 @@ export abstract class BaseWindowDriver implements IWindowDriver {
 			return Promise.reject(new Error(`Element not found: ${selector}`));
 		}
 
-		const inputElement = element as HTMLInputElement;
+		const inputElement = element as HTMLInputElement | HTMLSelectElement;
 		inputElement.value = text;
 
-		const event = new Event('input', { bubbles: true, cancelable: true });
-		inputElement.dispatchEvent(event);
-	}
-
-	async setSelectValue(selector: string, id: string): Promise<void> {
-		const element = document.querySelector(selector);
-
-		if (!element) {
-			return Promise.reject(new Error(`Element not found: ${selector}`));
-		}
-
-		const inputElement = element as HTMLSelectElement;
-		inputElement.value = id;
-
-		console.log('seeting select value');
-
-		const event = new Event('change', { bubbles: true, cancelable: true });
+		const event = new Event(inputElement.tagName === 'INPUT' ? 'input' : 'change', { bubbles: true, cancelable: true });
 		inputElement.dispatchEvent(event);
 	}
 

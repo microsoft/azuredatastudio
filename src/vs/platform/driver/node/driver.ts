@@ -27,7 +27,6 @@ export class DriverChannel implements IServerChannel {
 			case 'click': return this.driver.click(arg[0], arg[1], arg[2], arg[3]);
 			case 'doubleClick': return this.driver.doubleClick(arg[0], arg[1]);
 			case 'setValue': return this.driver.setValue(arg[0], arg[1], arg[2]);
-			case 'setSelectValue': return this.driver.setSelectValue(arg[0], arg[1], arg[2]);
 			case 'getTitle': return this.driver.getTitle(arg[0]);
 			case 'isActiveElement': return this.driver.isActiveElement(arg[0], arg[1]);
 			case 'getElements': return this.driver.getElements(arg[0], arg[1], arg[2]);
@@ -77,10 +76,6 @@ export class DriverChannelClient implements IDriver {
 
 	setValue(windowId: number, selector: string, text: string): Promise<void> {
 		return this.channel.call('setValue', [windowId, selector, text]);
-	}
-
-	setSelectValue(windowId: number, selector: string, text: string): Promise<void> {
-		return this.channel.call('setSelectValue', [windowId, selector, text]);
 	}
 
 	getTitle(windowId: number): Promise<string> {
@@ -167,7 +162,6 @@ export class WindowDriverChannel implements IServerChannel {
 			case 'click': return this.driver.click(arg[0], arg[1], arg[2]);
 			case 'doubleClick': return this.driver.doubleClick(arg);
 			case 'setValue': return this.driver.setValue(arg[0], arg[1]);
-			case 'setSelectValue': return this.driver.setSelectValue(arg[0], arg[1]);
 			case 'getTitle': return this.driver.getTitle();
 			case 'isActiveElement': return this.driver.isActiveElement(arg);
 			case 'getElements': return this.driver.getElements(arg[0], arg[1]);
@@ -197,10 +191,6 @@ export class WindowDriverChannelClient implements IWindowDriver {
 
 	setValue(selector: string, text: string): Promise<void> {
 		return this.channel.call('setValue', [selector, text]);
-	}
-
-	setSelectValue(selector: string, id: string): Promise<void> {
-		return this.channel.call('setSelectValue', [selector, id]);
 	}
 
 	getTitle(): Promise<string> {

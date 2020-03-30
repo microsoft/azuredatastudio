@@ -303,11 +303,6 @@ export class Code {
 		await poll(() => this.driver.setValue(windowId, selector, value), () => true, `set value '${selector}'`);
 	}
 
-	async waitForSetSelectValue(selector: string, id: string): Promise<void> {
-		const windowId = await this.getActiveWindowId();
-		await poll(() => this.driver.setSelectValue(windowId, selector, id), () => true, `set select value '${selector}'`);
-	}
-
 	async waitForElements(selector: string, recursive: boolean, accept: (result: IElement[]) => boolean = result => result.length > 0): Promise<IElement[]> {
 		const windowId = await this.getActiveWindowId();
 		return await poll(() => this.driver.getElements(windowId, selector, recursive), accept, `get elements '${selector}'`);

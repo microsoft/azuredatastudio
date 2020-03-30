@@ -13,7 +13,7 @@ export function setup() {
 			await app.workbench.quickopen.openFile('test.sql');
 			await app.workbench.queryEditor.commandBar.clickButton(3);
 			await app.workbench.connectionDialog.waitForConnectionDialog();
-			await app.code.waitForSetSelectValue('.modal .modal-body select[aria-label="Connection type"]', 'Sqlite');
+			await app.code.waitForSetValue('.modal .modal-body select[aria-label="Connection type"]', 'Sqlite');
 			await app.code.waitForSetValue('.modal .modal-body input[aria-label="File"]', 'chinook.db');
 			await app.code.waitAndClick('.modal .modal-footer a[aria-label="Connect"]');
 			await app.workbench.queryEditor.commandBar.waitForButton(3, 'Disconnect');
