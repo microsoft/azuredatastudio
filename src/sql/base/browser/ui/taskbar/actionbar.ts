@@ -43,10 +43,13 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 	private _overflow: HTMLElement;
 	private _moreItemElement: HTMLElement;
 
-	constructor(container: HTMLElement, options: IActionBarOptions = defaultOptions) {
+	private _collapseOverflow: boolean = false;
+
+	constructor(container: HTMLElement, options: IActionBarOptions = defaultOptions, collapseOverflow: boolean = false) {
 		super();
 		this._options = options;
 		this._context = options.context;
+		this._collapseOverflow = collapseOverflow;
 
 		if (this._options.actionRunner) {
 			this._actionRunner = this._options.actionRunner;
@@ -116,11 +119,13 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			}
 		}));
 
-		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
-			if (document.getElementById('actions-container')) {
-				this.resizeToolbar();
-			}
-		}));
+		if (this._collapseOverflow) {
+			this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
+				if (document.getElementById('actions-container')) {
+					this.resizeToolbar();
+				}
+			}));
+		}
 
 		this._focusTracker = this._register(DOM.trackFocus(this._domNode));
 		this._focusTracker.onDidBlur(() => {
@@ -140,6 +145,9 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		this._actionsList.id = 'actions-container';
 		if (this._options.ariaLabel) {
 			this._actionsList.setAttribute('aria-label', this._options.ariaLabel);
+		}
+		if (!this._collapseOverflow) {
+			this._actionsList.style.flexWrap = 'wrap';
 		}
 
 		this._domNode.appendChild(this._actionsList);

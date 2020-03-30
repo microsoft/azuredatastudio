@@ -33,20 +33,24 @@ export class Taskbar {
 	private options: IToolBarOptions;
 	private actionBar: ActionBar;
 
-	constructor(container: HTMLElement, options: IToolBarOptions = { orientation: ActionsOrientation.HORIZONTAL }) {
+	constructor(container: HTMLElement, options: IToolBarOptions = { orientation: ActionsOrientation.HORIZONTAL }, collapseOverflow: boolean = false) {
 		this.options = options;
 
 		let element = document.createElement('div');
 		element.className = 'monaco-toolbar carbon-taskbar';
 		container.appendChild(element);
 
-		this.actionBar = new ActionBar(element, {
-			orientation: options.orientation,
-			ariaLabel: options.ariaLabel,
-			actionViewItemProvider: (action: IAction): IActionViewItem | undefined => {
-				return options.actionViewItemProvider ? options.actionViewItemProvider(action) : undefined;
-			}
-		});
+		this.actionBar = new ActionBar(
+			element,
+			{
+				orientation: options.orientation,
+				ariaLabel: options.ariaLabel,
+				actionViewItemProvider: (action: IAction): IActionViewItem | undefined => {
+					return options.actionViewItemProvider ? options.actionViewItemProvider(action) : undefined;
+				}
+			},
+			collapseOverflow
+		);
 	}
 
 	/**
