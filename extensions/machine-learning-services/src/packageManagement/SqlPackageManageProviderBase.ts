@@ -33,6 +33,16 @@ export abstract class SqlPackageManageProviderBase {
 		return constants.noConnectionError;
 	}
 
+	public async getLocations(): Promise<nbExtensionApis.IPackageLocation[]> {
+		//let connections = await this.getLocationTitle();
+		let connection = await this.getCurrentConnection();
+
+		let databases = await this._apiWrapper.listDatabases(connection.connectionId);
+		return databases.map(x => {
+			return { displayName: x, name: x };
+		});
+	}
+
 	protected async getCurrentConnection(): Promise<azdata.connection.ConnectionProfile> {
 		return await this._apiWrapper.getCurrentConnection();
 	}
@@ -42,16 +52,16 @@ export abstract class SqlPackageManageProviderBase {
 	 * @param packages Packages to install
 	 * @param useMinVersion minimum version
 	 */
-	public async installPackages(packages: nbExtensionApis.IPackageDetails[], useMinVersion: boolean): Promise<void> {
+	public async installPackages(packages: nbExtensionApis.IPackageDetails[], useMinVersion: boolean, databaseName: string): Promise<void> {
 
 		if (packages) {
-			await Promise.all(packages.map(x => this.installPackage(x, useMinVersion)));
+			await Promise.all(packages.map(x => this.installPackage(x, useMinVersion, databaseName)));
 		}
 		//TODO: use useMinVersion
 		console.log(useMinVersion);
 	}
 
-	private async installPackage(packageDetail: nbExtensionApis.IPackageDetails, useMinVersion: boolean): Promise<void> {
+	private async installPackage(packageDetail: nbExtensionApis.IPackageDetails, useMinVersion: boolean, databaseName: string): Promise<void> {
 		if (useMinVersion) {
 			let packageOverview = await this.getPackageOverview(packageDetail.name);
 			if (packageOverview && packageOverview.versions) {
@@ -60,16 +70,16 @@ export abstract class SqlPackageManageProviderBase {
 			}
 		}
 
-		await this.executeScripts(ScriptMode.Install, packageDetail);
+		await this.executeScripts(ScriptMode.Install, packageDetail, databaseName);
 	}
 
 	/**
 	 * Uninstalls given packages
 	 * @param packages Packages to uninstall
 	 */
-	public async uninstallPackages(packages: nbExtensionApis.IPackageDetails[]): Promise<void> {
+	public async uninstallPackages(packages: nbExtensionApis.IPackageDetails[], databaseName: string): Promise<void> {
 		if (packages) {
-			await Promise.all(packages.map(x => this.executeScripts(ScriptMode.Uninstall, x)));
+			await Promise.all(packages.map(x => this.executeScripts(ScriptMode.Uninstall, x, databaseName)));
 		}
 	}
 
@@ -88,8 +98,8 @@ export abstract class SqlPackageManageProviderBase {
 	/**
 	 * Returns list of packages
 	 */
-	public async listPackages(): Promise<nbExtensionApis.IPackageDetails[]> {
-		let packages = await this.fetchPackages();
+	public async listPackages(databaseName: string): Promise<nbExtensionApis.IPackageDetails[]> {
+		let packages = await this.fetchPackages(databaseName);
 		if (packages) {
 			packages = packages.sort((a, b) => this.comparePackages(a, b));
 		} else {
@@ -110,6 +120,6 @@ export abstract class SqlPackageManageProviderBase {
 	}
 
 	protected abstract fetchPackage(packageName: string): Promise<nbExtensionApis.IPackageOverview>;
-	protected abstract fetchPackages(): Promise<nbExtensionApis.IPackageDetails[]>;
-	protected abstract executeScripts(scriptMode: ScriptMode, packageDetails: nbExtensionApis.IPackageDetails): Promise<void>;
+	protected abstract fetchPackages(databaseName: string): Promise<nbExtensionApis.IPackageDetails[]>;
+	protected abstract executeScripts(scriptMode: ScriptMode, packageDetails: nbExtensionApis.IPackageDetails, databaseName: string): Promise<void>;
 }

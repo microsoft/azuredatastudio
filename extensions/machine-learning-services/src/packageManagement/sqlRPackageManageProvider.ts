@@ -10,7 +10,7 @@ import * as nbExtensionApis from '../typings/notebookServices';
 import { ApiWrapper } from '../common/apiWrapper';
 import { ProcessService } from '../common/processService';
 import { Config } from '../configurations/config';
-import { SqlPackageManageProviderBase, ScriptMode } from './SqlPackageManageProviderBase';
+import { SqlPackageManageProviderBase, ScriptMode } from './sqlPackageManageProviderBase';
 import { HttpClient } from '../common/httpClient';
 import * as constants from '../common/constants';
 import { PackageManagementService } from './packageManagementService';
@@ -54,8 +54,8 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 	/**
 	 * Returns list of packages
 	 */
-	protected async fetchPackages(): Promise<nbExtensionApis.IPackageDetails[]> {
-		return await this._service.getRPackages(await this.getCurrentConnection());
+	protected async fetchPackages(databaseName: string): Promise<nbExtensionApis.IPackageDetails[]> {
+		return await this._service.getRPackages(await this.getCurrentConnection(), databaseName);
 	}
 
 	/**
@@ -63,12 +63,12 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 	 * @param packageDetails Packages to install or uninstall
 	 * @param scriptMode can be 'install' or 'uninstall'
 	 */
-	protected async executeScripts(scriptMode: ScriptMode, packageDetails: nbExtensionApis.IPackageDetails): Promise<void> {
+	protected async executeScripts(scriptMode: ScriptMode, packageDetails: nbExtensionApis.IPackageDetails, databaseName: string): Promise<void> {
 		let connection = await this.getCurrentConnection();
 		let credentials = await this._apiWrapper.getCredentials(connection.connectionId);
 
 		if (connection) {
-			let database = connection.databaseName ? `, database="${connection.databaseName}"` : '';
+			let database = databaseName ? `, database="${databaseName}"` : '';
 			let connectionParts = `server="${connection.serverName}", uid="${connection.userName}", pwd="${credentials[azdata.ConnectionOptionSpecialType.password]}"${database}`;
 			let rCommandScript = scriptMode === ScriptMode.Install ? 'sql_install.packages' : 'sql_remove.packages';
 

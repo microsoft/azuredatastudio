@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
-import { IPackageManageProvider, IPackageDetails, IPackageOverview } from '../../types';
+import { IPackageManageProvider, IPackageDetails, IPackageOverview, IPackageLocation } from '../../types';
 
 export interface ManagePackageDialogOptions {
 	multiLocations: boolean;
@@ -23,6 +23,7 @@ export interface ProviderPackageType {
 export class ManagePackagesDialogModel {
 
 	private _currentProvider: string;
+	private _currentLocation: string;
 
 	/**
 	 * A set for locations
@@ -205,7 +206,7 @@ export class ManagePackagesDialogModel {
 	public async listPackages(): Promise<IPackageDetails[]> {
 		let provider = this.currentPackageManageProvider;
 		if (provider) {
-			return await provider.listPackages();
+			return await provider.listPackages(this._currentLocation);
 		} else {
 			throw new Error('Current Provider is not set');
 		}
@@ -223,13 +224,20 @@ export class ManagePackagesDialogModel {
 	}
 
 	/**
+	 * Changes the current location
+	 */
+	public changeLocation(location: string): void {
+		this._currentLocation = location;
+	}
+
+	/**
 	 * Installs given packages using current provider
 	 * @param packages Packages to install
 	 */
 	public async installPackages(packages: IPackageDetails[]): Promise<void> {
 		let provider = this.currentPackageManageProvider;
 		if (provider) {
-			await provider.installPackages(packages, false);
+			await provider.installPackages(packages, false, this._currentLocation);
 		} else {
 			throw new Error('Current Provider is not set');
 		}
@@ -238,10 +246,10 @@ export class ManagePackagesDialogModel {
 	/**
 	 * Returns the location title for current provider
 	 */
-	public async getLocationTitle(): Promise<string | undefined> {
+	public async getLocations(): Promise<IPackageLocation[] | undefined> {
 		let provider = this.currentPackageManageProvider;
 		if (provider) {
-			return await provider.getLocationTitle();
+			return await provider.getLocations();
 		}
 		return Promise.resolve(undefined);
 	}
@@ -253,7 +261,7 @@ export class ManagePackagesDialogModel {
 	public async uninstallPackages(packages: IPackageDetails[]): Promise<void> {
 		let provider = this.currentPackageManageProvider;
 		if (provider) {
-			await provider.uninstallPackages(packages);
+			await provider.uninstallPackages(packages, this._currentLocation);
 		} else {
 			throw new Error('Current Provider is not set');
 		}

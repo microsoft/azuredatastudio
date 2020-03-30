@@ -40,10 +40,10 @@ describe('SQL R Package Manager', () => {
 
 		let connection = new azdata.connection.ConnectionProfile();
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
-		testContext.serverConfigManager.setup(x => x.getRPackages(TypeMoq.It.isAny())).returns(() => Promise.resolve(packages));
+		testContext.serverConfigManager.setup(x => x.getRPackages(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(packages));
 
 		let provider = createProvider(testContext);
-		let actual = await provider.listPackages();
+		let actual = await provider.listPackages(connection.databaseName);
 		let expected = [
 			{
 				'name': 'a-name',
@@ -63,10 +63,10 @@ describe('SQL R Package Manager', () => {
 		let connection = new azdata.connection.ConnectionProfile();
 		let packages: nbExtensionApis.IPackageDetails[];
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
-		testContext.serverConfigManager.setup(x => x.getRPackages(TypeMoq.It.isAny())).returns(() => Promise.resolve(packages));
+		testContext.serverConfigManager.setup(x => x.getRPackages(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(packages));
 
 		let provider = createProvider(testContext);
-		let actual = await provider.listPackages();
+		let actual = await provider.listPackages(connection.databaseName);
 		let expected: nbExtensionApis.IPackageDetails[] = [];
 		should.deepEqual(actual, expected);
 	});
@@ -76,10 +76,10 @@ describe('SQL R Package Manager', () => {
 
 		let connection = new azdata.connection.ConnectionProfile();
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
-		testContext.serverConfigManager.setup(x => x.getRPackages(TypeMoq.It.isAny())).returns(() => Promise.resolve([]));
+		testContext.serverConfigManager.setup(x => x.getRPackages(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([]));
 
 		let provider = createProvider(testContext);
-		let actual = await provider.listPackages();
+		let actual = await provider.listPackages(connection.databaseName);
 		let expected: nbExtensionApis.IPackageDetails[] = [];
 		should.deepEqual(actual, expected);
 	});
@@ -118,7 +118,7 @@ describe('SQL R Package Manager', () => {
 		});
 
 		let provider = createProvider(testContext);
-		await provider.installPackages(packages, false);
+		await provider.installPackages(packages, false, connection.databaseName);
 
 		should.deepEqual(packagesUpdated, true);
 	});
@@ -157,7 +157,7 @@ describe('SQL R Package Manager', () => {
 		});
 
 		let provider = createProvider(testContext);
-		await provider.uninstallPackages(packages);
+		await provider.uninstallPackages(packages, connection.databaseName);
 
 		should.deepEqual(packagesUpdated, true);
 	});
@@ -179,7 +179,7 @@ describe('SQL R Package Manager', () => {
 
 
 		let provider = createProvider(testContext);
-		await provider.installPackages(packages, false);
+		await provider.installPackages(packages, false, connection.databaseName);
 
 		should.deepEqual(packagesUpdated, false);
 	});
@@ -201,7 +201,7 @@ describe('SQL R Package Manager', () => {
 
 
 		let provider = createProvider(testContext);
-		await provider.uninstallPackages(packages);
+		await provider.uninstallPackages(packages, connection.databaseName);
 
 		should.deepEqual(packagesUpdated, false);
 	});
