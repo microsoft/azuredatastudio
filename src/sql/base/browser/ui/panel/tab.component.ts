@@ -12,6 +12,8 @@ export abstract class TabChild extends AngularDisposable {
 	public abstract layout(): void;
 }
 
+export type TabType = 'tab' | 'group-header';
+
 @Component({
 	selector: 'tab',
 	template: `
@@ -29,6 +31,7 @@ export class TabComponent implements OnDestroy {
 	@Input() public iconClass?: string;
 	public _active = false;
 	@Input() public identifier!: string;
+	@Input() public type: TabType = 'tab';
 	@Input() private visibilityType: 'if' | 'visibility' = 'if';
 	private rendered = false;
 	private destroyed: boolean = false;

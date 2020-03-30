@@ -10,8 +10,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 
 
 import { IModelViewService } from 'sql/platform/modelComponents/browser/modelViewService';
-import { IItemConfig, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IModelView } from 'sql/platform/model/browser/modelViewService';
+import { IItemConfig, IComponentShape, IModelView } from 'sql/platform/model/browser/modelViewService';
 import { find } from 'vs/base/common/arrays';
 
 
