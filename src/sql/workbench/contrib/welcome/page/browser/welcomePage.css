@@ -394,9 +394,13 @@
 	height: 6px;
 	content: "\eab6";
 	transform: rotate(90deg);
-	top: -1px;
-	bottom: 5px;
+	bottom: 10px;
 	margin: auto;
+}
+
+.mac .ads_homepage .icon_arrow_down:before {
+	position: absolute;
+	bottom: 8px;
 }
 
 .ads_homepage .icon_arrow_right {
