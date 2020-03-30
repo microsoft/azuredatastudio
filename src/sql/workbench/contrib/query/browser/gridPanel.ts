@@ -319,7 +319,7 @@ export interface IDataSet {
 }
 
 export abstract class GridTableBase<T> extends Disposable implements IView {
-	protected table: Table<T>;
+	private table: Table<T>;
 	private actionBar: ActionBar;
 	private container = document.createElement('div');
 	private selectionModel = new CellSelectionModel();
