@@ -263,7 +263,7 @@ export class ChartView extends Disposable implements IPanelView {
 		DOM.clearNode(this.typeControls);
 
 		this.updateActionbar();
-		ChartOptions[this._options.type].map(o => {
+		this.getChartTypeOptions().map(o => {
 			this.createOption(o, this.typeControls);
 		});
 		if (this.insight) {
@@ -276,7 +276,7 @@ export class ChartView extends Disposable implements IPanelView {
 		this.updateActionbar();
 		for (let key in this.optionMap) {
 			if (this.optionMap.hasOwnProperty(key)) {
-				let option = find(ChartOptions[this._options.type], e => e.configEntry === key);
+				let option = find(this.getChartTypeOptions(), e => e.configEntry === key);
 				if (option && option.if) {
 					if (option.if(this._options)) {
 						DOM.show(this.optionMap[key].element);
@@ -286,6 +286,14 @@ export class ChartView extends Disposable implements IPanelView {
 				}
 			}
 		}
+	}
+
+	private getChartTypeOptions(): IChartOption[] {
+		let options = ChartOptions[this._options.type];
+		if (!options) {
+			throw new Error(nls.localize('charting.unsupportedType', "Chart type '{0}' is not supported.", this._options.type));
+		}
+		return options;
 	}
 
 	private updateActionbar() {
