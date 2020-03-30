@@ -155,6 +155,10 @@ class DataResourceTable extends GridTableBase<any> {
 		return this._gridDataProvider;
 	}
 
+	public get chartDisplayed(): boolean {
+		return this.cellOutput.metadata.azdata_chartOptions !== undefined;
+	}
+
 	protected getCurrentActions(): IAction[] {
 		return this.getContextActions();
 	}
@@ -165,7 +169,7 @@ class DataResourceTable extends GridTableBase<any> {
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
-			this.instantiationService.createInstance(NotebookChartAction, this, this.cellOutput.metadata.azdata_chartOptions !== undefined)
+			this.instantiationService.createInstance(NotebookChartAction, this)
 		];
 	}
 
@@ -432,13 +436,13 @@ export class NotebookChartAction extends ToggleableAction {
 	public static SHOWTABLE_LABEL = localize('notebook.showTable', "Show table");
 	public static SHOWTABLE_ICON = 'table';
 
-	constructor(private resourceTable: DataResourceTable, chartDisplayed: boolean) {
+	constructor(private resourceTable: DataResourceTable) {
 		super(NotebookChartAction.ID, {
 			toggleOnLabel: NotebookChartAction.SHOWTABLE_LABEL,
 			toggleOnClass: NotebookChartAction.SHOWTABLE_ICON,
 			toggleOffLabel: NotebookChartAction.SHOWCHART_LABEL,
 			toggleOffClass: NotebookChartAction.SHOWCHART_ICON,
-			isOn: chartDisplayed
+			isOn: resourceTable.chartDisplayed
 		});
 	}
 
