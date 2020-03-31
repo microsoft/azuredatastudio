@@ -32,7 +32,7 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef,) {
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
 		super(changeRef, el);
 	}
 
@@ -50,14 +50,16 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 			this._input = new Checkbox(this._inputContainer.nativeElement, inputOptions);
 
 			this._register(this._input);
-			this._register(this._input.onChange(e => {
+			this._register(this._input.onChange(async e => {
 				this.checked = this._input.checked;
+				await this.validate();
 				this.fireEvent({
 					eventType: ComponentEventType.onDidChange,
 					args: e
 				});
 			}));
 			this._register(attachCheckboxStyler(this._input, this.themeService));
+			this._validations.push(() => !this.required || this.checked);
 		}
 	}
 
@@ -93,6 +95,7 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 		if (this.required) {
 			this._input.required = this.required;
 		}
+		this.validate();
 	}
 
 	// CSS-bound properties
