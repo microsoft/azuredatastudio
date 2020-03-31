@@ -40,7 +40,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			const listOfTenants = azureAccount.properties.tenants.map(t => t.displayName);
 
 			if (listOfTenants.length === 0) {
-				window.showErrorMessage(localize('azure.mustPickTenant', "A tenant is required for this feature"));
+				window.showErrorMessage(localize('azure.noTenants', "A tenant is required for this feature. Your Azure subscription seems to have no tenants."));
 				return;
 			}
 
@@ -54,7 +54,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 				const pickedTenant = await window.showQuickPick(listOfTenants, { canPickMany: false });
 
 				if (!pickedTenant) {
-					window.showErrorMessage(localize('azure.mustPickTenant', "A tenant is required for this feature"));
+					window.showErrorMessage(localize('azure.mustPickTenant', "You must select a tenant for this feature to work."));
 					return;
 				}
 
