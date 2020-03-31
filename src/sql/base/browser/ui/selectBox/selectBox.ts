@@ -66,7 +66,7 @@ export class SelectBox extends vsSelectBox {
 
 	constructor(options: SelectOptionItemSQL[] | string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
 		let optionItems: SelectOptionItemSQL[];
-		if (typeof (options[0]) === 'string' && Array.isArray<string>(options)) {
+		if (Array.isArray<string>(options) && typeof (options[0]) === 'string') {
 			optionItems = (options).map(o => {
 				return { text: o, value: o } as SelectOptionItemSQL;
 			});
