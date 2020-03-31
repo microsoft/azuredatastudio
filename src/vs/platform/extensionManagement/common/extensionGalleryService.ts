@@ -13,7 +13,7 @@ import { IRequestService, asJson, asText } from 'vs/platform/request/common/requ
 import { IRequestOptions, IRequestContext, IHeaders } from 'vs/base/parts/request/common/request';
 import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { generateUuid, isUUID } from 'vs/base/common/uuid';
+import { generateUuid } from 'vs/base/common/uuid';
 import { values } from 'vs/base/common/map';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration'; // {{SQL CARBON EDIT}}
 import { CancellationToken } from 'vs/base/common/cancellation';
@@ -22,11 +22,11 @@ import { IExtensionManifest, ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/pl
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { joinPath } from 'vs/base/common/resources';
-import { VSBuffer } from 'vs/base/common/buffer';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
-import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { find } from 'vs/base/common/arrays';
+import { getServiceMachineId } from 'vs/platform/serviceMachineId/common/serviceMachineId';
+import { optional } from 'vs/platform/instantiation/common/instantiation';
 
 interface IRawGalleryExtensionFile {
 	assetType: string;
@@ -388,12 +388,12 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		@IConfigurationService private configurationService: IConfigurationService, // {{SQL CARBON EDIT}}
 		@IFileService private readonly fileService: IFileService,
 		@IProductService private readonly productService: IProductService,
-		@optional(IStorageService) private readonly storageService: IStorageService,
+		@optional(IStorageService) storageService: IStorageService,
 	) {
 		const config = productService.extensionsGallery;
 		this.extensionsGalleryUrl = config && config.serviceUrl;
 		this.extensionsControlUrl = config && config.controlUrl;
-		this.commonHeadersPromise = resolveMarketplaceHeaders(productService.version, this.environmentService, this.fileService, this.storageService);
+		this.commonHeadersPromise = resolveMarketplaceHeaders(productService.version, this.environmentService, this.fileService, storageService);
 	}
 
 	private api(path = ''): string {
@@ -926,43 +926,17 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	}
 }
 
-export async function resolveMarketplaceHeaders(version: string, environmentService: IEnvironmentService, fileService: IFileService, storageService?: IStorageService): Promise<{ [key: string]: string; }> {
+export async function resolveMarketplaceHeaders(version: string, environmentService: IEnvironmentService, fileService: IFileService, storageService: {
+	get: (key: string, scope: StorageScope) => string | undefined,
+	store: (key: string, value: string, scope: StorageScope) => void
+} | undefined): Promise<{ [key: string]: string; }> {
 	const headers: IHeaders = {
 		'X-Market-Client-Id': `VSCode ${version}`,
 		'User-Agent': `VSCode ${version}`
 	};
-	let uuid: string | null = null;
-	if (environmentService.galleryMachineIdResource) {
-		try {
-			const contents = await fileService.readFile(environmentService.galleryMachineIdResource);
-			const value = contents.value.toString();
-			uuid = isUUID(value) ? value : null;
-		} catch (e) {
-			uuid = null;
-		}
-
-		if (!uuid) {
-			uuid = generateUuid();
-			try {
-				await fileService.writeFile(environmentService.galleryMachineIdResource, VSBuffer.fromString(uuid));
-			} catch (error) {
-				//noop
-			}
-		}
-	}
-
-	if (storageService) {
-		uuid = storageService.get('marketplace.userid', StorageScope.GLOBAL) || null;
-		if (!uuid) {
-			uuid = generateUuid();
-			storageService.store('marketplace.userid', uuid, StorageScope.GLOBAL);
-		}
-	}
-
+	const uuid = await getServiceMachineId(environmentService, fileService, storageService);
 	if (uuid) {
 		headers['X-Market-User-Id'] = uuid;
 	}
-
 	return headers;
-
 }

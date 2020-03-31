@@ -9,10 +9,15 @@ export interface IDashboardTab {
 	provider: string | string[];
 	publisher: string;
 	description?: string;
-	container?: {
-		[key: string]: any;
-	};
+	container?: { [key: string]: any };
 	when?: string;
 	alwaysShow?: boolean;
 	isHomeTab?: boolean;
+	group?: string;
+	iconClass?: string;
+}
+
+export interface IDashboardTabGroup {
+	id: string;
+	title: string;
 }

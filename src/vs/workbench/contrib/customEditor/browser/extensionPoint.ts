@@ -24,9 +24,17 @@ interface IWebviewEditorsExtensionPoint {
 }
 
 const webviewEditorsContribution: IJSONSchema = {
-	description: nls.localize('contributes.webviewEditors', 'Contributes webview editors.'),
+	description: nls.localize('contributes.customEditors', 'Contributed custom editors.'),
 	type: 'array',
-	defaultSnippets: [{ body: [{ viewType: '', displayName: '' }] }],
+	defaultSnippets: [{
+		body: [{
+			[WebviewEditorContribution.viewType]: '$1',
+			[WebviewEditorContribution.displayName]: '$2',
+			[WebviewEditorContribution.selector]: [{
+				filenamePattern: '$3'
+			}],
+		}]
+	}],
 	items: {
 		type: 'object',
 		required: [
@@ -48,6 +56,11 @@ const webviewEditorsContribution: IJSONSchema = {
 				description: nls.localize('contributes.selector', 'Set of globs that the custom editor is enabled for.'),
 				items: {
 					type: 'object',
+					defaultSnippets: [{
+						body: {
+							filenamePattern: '$1',
+						}
+					}],
 					properties: {
 						filenamePattern: {
 							type: 'string',
@@ -64,7 +77,7 @@ const webviewEditorsContribution: IJSONSchema = {
 					CustomEditorPriority.option,
 					CustomEditorPriority.builtin,
 				],
-				enumDescriptions: [
+				markdownEnumDescriptions: [
 					nls.localize('contributes.priority.default', 'Editor is automatically used for a resource if no other default custom editors are registered for it.'),
 					nls.localize('contributes.priority.option', 'Editor is not automatically used but can be selected by a user.'),
 					nls.localize('contributes.priority.builtin', 'Editor automatically used if no other `default` or `builtin` editors are registered for the resource.'),
@@ -76,7 +89,7 @@ const webviewEditorsContribution: IJSONSchema = {
 };
 
 export const webviewEditorsExtensionPoint = ExtensionsRegistry.registerExtensionPoint<IWebviewEditorsExtensionPoint[]>({
-	extensionPoint: 'webviewEditors',
+	extensionPoint: 'customEditors',
 	deps: [languagesExtPoint],
 	jsonSchema: webviewEditorsContribution
 });

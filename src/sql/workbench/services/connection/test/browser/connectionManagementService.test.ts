@@ -28,12 +28,13 @@ import * as TypeMoq from 'typemoq';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
-import { TestStorageService, TestEnvironmentService, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestEnvironmentService, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { assign } from 'vs/base/common/objects';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
+import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 
 suite('SQL ConnectionManagementService tests', () => {
 
@@ -795,9 +796,10 @@ suite('SQL ConnectionManagementService tests', () => {
 		let azureConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
 		azureConnectionProfile.authenticationType = 'AzureMFA';
 		let username = 'testuser@microsoft.com';
-		azureConnectionProfile.userName = username;
+		azureConnectionProfile.azureAccount = username;
 		let servername = 'test-database.database.windows.net';
 		azureConnectionProfile.serverName = servername;
+		let providerId = 'azure_PublicCloud';
 
 		// Set up the account management service to return a token for the given user
 		accountManagementService.setup(x => x.getAccountsForProvider(TypeMoq.It.isAny())).returns(providerId => Promise.resolve<azdata.Account[]>([
@@ -811,9 +813,23 @@ suite('SQL ConnectionManagementService tests', () => {
 				properties: undefined
 			}
 		]));
+
+		accountManagementService.setup(x => x.getAccounts()).returns(() => {
+			return Promise.resolve<azdata.Account[]>([
+				{
+					key: {
+						accountId: username,
+						providerId: providerId
+					},
+					displayInfo: undefined,
+					isStale: false,
+					properties: undefined
+				}
+			]);
+		});
 		let testToken = 'testToken';
 		accountManagementService.setup(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
-			azurePublicCloud: {
+			azure_publicCloud: {
 				token: testToken
 			}
 		}));
@@ -826,7 +842,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		let profileWithCredentials = await connectionManagementService.addSavedPassword(azureConnectionProfile);
 
 		// Then the returned profile has the account token set
-		assert.equal(profileWithCredentials.userName, username);
+		assert.equal(profileWithCredentials.userName, azureConnectionProfile.userName);
 		assert.equal(profileWithCredentials.options['azureAccountToken'], testToken);
 	});
 
@@ -835,11 +851,12 @@ suite('SQL ConnectionManagementService tests', () => {
 		let azureConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
 		azureConnectionProfile.authenticationType = 'AzureMFA';
 		let username = 'testuser@microsoft.com';
-		azureConnectionProfile.userName = username;
+		azureConnectionProfile.azureAccount = username;
 		let servername = 'test-database.database.windows.net';
 		azureConnectionProfile.serverName = servername;
 		let azureTenantId = 'testTenant';
 		azureConnectionProfile.azureTenantId = azureTenantId;
+		let providerId = 'azure_PublicCloud';
 
 		// Set up the account management service to return a token for the given user
 		accountManagementService.setup(x => x.getAccountsForProvider(TypeMoq.It.isAny())).returns(providerId => Promise.resolve<azdata.Account[]>([
@@ -853,9 +870,24 @@ suite('SQL ConnectionManagementService tests', () => {
 				properties: undefined
 			}
 		]));
+
+		accountManagementService.setup(x => x.getAccounts()).returns(() => {
+			return Promise.resolve<azdata.Account[]>([
+				{
+					key: {
+						accountId: username,
+						providerId,
+					},
+					displayInfo: undefined,
+					isStale: false,
+					properties: undefined
+				}
+			]);
+		});
+
 		let testToken = 'testToken';
 		let returnedTokens = {};
-		returnedTokens['azurePublicCloud'] = { token: 'badToken' };
+		returnedTokens['azure_publicCloud'] = { token: 'badToken' };
 		returnedTokens[azureTenantId] = { token: testToken };
 		accountManagementService.setup(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(returnedTokens));
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === 'AzureMFA'))).returns(profile => Promise.resolve({
@@ -867,7 +899,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		let profileWithCredentials = await connectionManagementService.addSavedPassword(azureConnectionProfile);
 
 		// Then the returned profile has the account token set corresponding to the requested tenant
-		assert.equal(profileWithCredentials.userName, username);
+		assert.equal(profileWithCredentials.userName, azureConnectionProfile.userName);
 		assert.equal(profileWithCredentials.options['azureAccountToken'], testToken);
 	});
 

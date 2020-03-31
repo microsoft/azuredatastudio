@@ -32,8 +32,8 @@ import { MenuEntryActionViewItem } from 'vs/platform/actions/browser/menuEntryAc
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TogglePanelAction } from 'vs/workbench/browser/panel';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
-import { StartView } from 'vs/workbench/contrib/debug/browser/startView';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
+import { WelcomeView } from 'vs/workbench/contrib/debug/browser/welcomeView';
 
 export class DebugViewPaneContainer extends ViewPaneContainer {
 
@@ -92,7 +92,7 @@ export class DebugViewPaneContainer extends ViewPaneContainer {
 		if (this.startDebugActionViewItem) {
 			this.startDebugActionViewItem.focus();
 		} else {
-			this.focusView(StartView.ID);
+			this.focusView(WelcomeView.ID);
 		}
 	}
 
@@ -120,6 +120,7 @@ export class DebugViewPaneContainer extends ViewPaneContainer {
 		if (CONTEXT_DEBUG_UX.getValue(this.contextKeyService) === 'simple') {
 			return [];
 		}
+
 		if (!this.showInitialDebugActions) {
 
 			if (!this.debugToolBarMenu) {
@@ -185,7 +186,7 @@ export class DebugViewPaneContainer extends ViewPaneContainer {
 		}
 
 		if (state === State.Initializing) {
-			this.progressService.withProgress({ location: VIEWLET_ID }, _progress => {
+			this.progressService.withProgress({ location: VIEWLET_ID, }, _progress => {
 				return new Promise(resolve => this.progressResolve = resolve);
 			});
 		}

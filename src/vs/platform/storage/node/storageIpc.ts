@@ -9,10 +9,9 @@ import { IStorageChangeEvent, IStorageMainService } from 'vs/platform/storage/no
 import { IUpdateRequest, IStorageDatabase, IStorageItemsChangeEvent } from 'vs/base/parts/storage/common/storage';
 import { mapToSerializable, serializableToMap, values } from 'vs/base/common/map';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { generateUuid } from 'vs/base/common/uuid';
-import { instanceStorageKey, firstSessionDateStorageKey, lastSessionDateStorageKey, currentSessionDateStorageKey } from 'vs/platform/telemetry/common/telemetry';
+import { instanceStorageKey, firstSessionDateStorageKey, lastSessionDateStorageKey, currentSessionDateStorageKey, crashReporterIdStorageKey } from 'vs/platform/telemetry/common/telemetry';
 
 type Key = string;
 type Value = string;
@@ -24,33 +23,41 @@ interface ISerializableUpdateRequest {
 }
 
 interface ISerializableItemsChangeEvent {
-	items: Item[];
+	readonly changed?: Item[];
+	readonly deleted?: Key[];
 }
 
 export class GlobalStorageDatabaseChannel extends Disposable implements IServerChannel {
 
 	private static readonly STORAGE_CHANGE_DEBOUNCE_TIME = 100;
 
-	private readonly _onDidChangeItems: Emitter<ISerializableItemsChangeEvent> = this._register(new Emitter<ISerializableItemsChangeEvent>());
-	readonly onDidChangeItems: Event<ISerializableItemsChangeEvent> = this._onDidChangeItems.event;
+	private readonly _onDidChangeItems = this._register(new Emitter<ISerializableItemsChangeEvent>());
+	readonly onDidChangeItems = this._onDidChangeItems.event;
 
-	private whenReady: Promise<void>;
+	private readonly whenReady = this.init();
 
 	constructor(
 		private logService: ILogService,
 		private storageMainService: IStorageMainService
 	) {
 		super();
-
-		this.whenReady = this.init();
 	}
 
 	private async init(): Promise<void> {
 		try {
 			await this.storageMainService.initialize();
 		} catch (error) {
-			onUnexpectedError(error);
-			this.logService.error(error);
+			this.logService.error(`[storage] init(): Unable to init global storage due to ${error}`);
+		}
+
+		// This is unique to the application instance and thereby
+		// should be written from the main process once.
+		//
+		// THIS SHOULD NEVER BE SENT TO TELEMETRY.
+		//
+		const crashReporterId = this.storageMainService.get(crashReporterIdStorageKey, undefined);
+		if (crashReporterId === undefined) {
+			this.storageMainService.store(crashReporterIdStorageKey, generateUuid());
 		}
 
 		// Apply global telemetry values as part of the initialization
@@ -99,15 +106,18 @@ export class GlobalStorageDatabaseChannel extends Disposable implements IServerC
 	}
 
 	private serializeEvents(events: IStorageChangeEvent[]): ISerializableItemsChangeEvent {
-		const items = new Map<Key, Value>();
+		const changed = new Map<Key, Value>();
+		const deleted = new Set<Key>();
 		events.forEach(event => {
 			const existing = this.storageMainService.get(event.key);
 			if (typeof existing === 'string') {
-				items.set(event.key, existing);
+				changed.set(event.key, existing);
+			} else {
+				deleted.add(event.key);
 			}
 		});
 
-		return { items: mapToSerializable(items) };
+		return { changed: mapToSerializable(changed), deleted: values(deleted) };
 	}
 
 	listen(_: unknown, event: string): Event<any> {
@@ -154,8 +164,8 @@ export class GlobalStorageDatabaseChannelClient extends Disposable implements IS
 
 	_serviceBrand: undefined;
 
-	private readonly _onDidChangeItemsExternal: Emitter<IStorageItemsChangeEvent> = this._register(new Emitter<IStorageItemsChangeEvent>());
-	readonly onDidChangeItemsExternal: Event<IStorageItemsChangeEvent> = this._onDidChangeItemsExternal.event;
+	private readonly _onDidChangeItemsExternal = this._register(new Emitter<IStorageItemsChangeEvent>());
+	readonly onDidChangeItemsExternal = this._onDidChangeItemsExternal.event;
 
 	private onDidChangeItemsOnMainListener: IDisposable | undefined;
 
@@ -170,8 +180,11 @@ export class GlobalStorageDatabaseChannelClient extends Disposable implements IS
 	}
 
 	private onDidChangeItemsOnMain(e: ISerializableItemsChangeEvent): void {
-		if (Array.isArray(e.items)) {
-			this._onDidChangeItemsExternal.fire({ items: serializableToMap(e.items) });
+		if (Array.isArray(e.changed) || Array.isArray(e.deleted)) {
+			this._onDidChangeItemsExternal.fire({
+				changed: e.changed ? serializableToMap(e.changed) : undefined,
+				deleted: e.deleted ? new Set<string>(e.deleted) : undefined
+			});
 		}
 	}
 

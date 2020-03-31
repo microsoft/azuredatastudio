@@ -11,10 +11,18 @@ import { ColorId, FontStyle, LanguageId, MetadataConsts, StandardTokenType, Toke
 import { writeUInt32BE, readUInt32BE } from 'vs/base/common/buffer';
 import { CharCode } from 'vs/base/common/charCode';
 
-export function countEOL(text: string): [number, number, number] {
+export const enum StringEOL {
+	Unknown = 0,
+	Invalid = 3,
+	LF = 1,
+	CRLF = 2
+}
+
+export function countEOL(text: string): [number, number, number, StringEOL] {
 	let eolCount = 0;
 	let firstLineLength = 0;
 	let lastLineStart = 0;
+	let eol: StringEOL = StringEOL.Unknown;
 	for (let i = 0, len = text.length; i < len; i++) {
 		const chr = text.charCodeAt(i);
 
@@ -25,12 +33,16 @@ export function countEOL(text: string): [number, number, number] {
 			eolCount++;
 			if (i + 1 < len && text.charCodeAt(i + 1) === CharCode.LineFeed) {
 				// \r\n... case
+				eol |= StringEOL.CRLF;
 				i++; // skip \n
 			} else {
 				// \r... case
+				eol |= StringEOL.Invalid;
 			}
 			lastLineStart = i + 1;
 		} else if (chr === CharCode.LineFeed) {
+			// \n... case
+			eol |= StringEOL.LF;
 			if (eolCount === 0) {
 				firstLineLength = i;
 			}
@@ -41,7 +53,7 @@ export function countEOL(text: string): [number, number, number] {
 	if (eolCount === 0) {
 		firstLineLength = text.length;
 	}
-	return [eolCount, firstLineLength, text.length - lastLineStart];
+	return [eolCount, firstLineLength, text.length - lastLineStart, eol];
 }
 
 function getDefaultMetadata(topLevelLanguageId: LanguageId): number {
@@ -781,6 +793,17 @@ export class TokensStore2 {
 
 		let aIndex = 0;
 		let result: number[] = [], resultLen = 0;
+		let lastEndOffset = 0;
+
+		const emitToken = (endOffset: number, metadata: number) => {
+			if (endOffset === lastEndOffset) {
+				return;
+			}
+			lastEndOffset = endOffset;
+			result[resultLen++] = endOffset;
+			result[resultLen++] = metadata;
+		};
+
 		for (let bIndex = 0; bIndex < bLen; bIndex++) {
 			const bStartCharacter = bTokens.getStartCharacter(bIndex);
 			const bEndCharacter = bTokens.getEndCharacter(bIndex);
@@ -797,42 +820,36 @@ export class TokensStore2 {
 
 			// push any token from `a` that is before `b`
 			while (aIndex < aLen && aTokens.getEndOffset(aIndex) <= bStartCharacter) {
-				result[resultLen++] = aTokens.getEndOffset(aIndex);
-				result[resultLen++] = aTokens.getMetadata(aIndex);
+				emitToken(aTokens.getEndOffset(aIndex), aTokens.getMetadata(aIndex));
 				aIndex++;
 			}
 
 			// push the token from `a` if it intersects the token from `b`
 			if (aIndex < aLen && aTokens.getStartOffset(aIndex) < bStartCharacter) {
-				result[resultLen++] = bStartCharacter;
-				result[resultLen++] = aTokens.getMetadata(aIndex);
+				emitToken(bStartCharacter, aTokens.getMetadata(aIndex));
 			}
 
 			// skip any tokens from `a` that are contained inside `b`
 			while (aIndex < aLen && aTokens.getEndOffset(aIndex) < bEndCharacter) {
-				result[resultLen++] = aTokens.getEndOffset(aIndex);
-				result[resultLen++] = (aTokens.getMetadata(aIndex) & aMask) | (bMetadata & bMask);
+				emitToken(aTokens.getEndOffset(aIndex), (aTokens.getMetadata(aIndex) & aMask) | (bMetadata & bMask));
 				aIndex++;
 			}
 
 			if (aIndex < aLen && aTokens.getEndOffset(aIndex) === bEndCharacter) {
 				// `a` ends exactly at the same spot as `b`!
-				result[resultLen++] = aTokens.getEndOffset(aIndex);
-				result[resultLen++] = (aTokens.getMetadata(aIndex) & aMask) | (bMetadata & bMask);
+				emitToken(aTokens.getEndOffset(aIndex), (aTokens.getMetadata(aIndex) & aMask) | (bMetadata & bMask));
 				aIndex++;
 			} else {
 				const aMergeIndex = Math.min(Math.max(0, aIndex - 1), aLen - 1);
 
 				// push the token from `b`
-				result[resultLen++] = bEndCharacter;
-				result[resultLen++] = (aTokens.getMetadata(aMergeIndex) & aMask) | (bMetadata & bMask);
+				emitToken(bEndCharacter, (aTokens.getMetadata(aMergeIndex) & aMask) | (bMetadata & bMask));
 			}
 		}
 
 		// push the remaining tokens from `a`
 		while (aIndex < aLen) {
-			result[resultLen++] = aTokens.getEndOffset(aIndex);
-			result[resultLen++] = aTokens.getMetadata(aIndex);
+			emitToken(aTokens.getEndOffset(aIndex), aTokens.getMetadata(aIndex));
 			aIndex++;
 		}
 

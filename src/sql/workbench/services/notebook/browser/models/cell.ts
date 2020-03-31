@@ -37,6 +37,7 @@ export class CellModel implements ICellModel {
 	private _cellGuid: string;
 	private _future: FutureInternal;
 	private _outputs: nb.ICellOutput[] = [];
+	private _renderedOutputTextContent: string[] = [];
 	private _isEditMode: boolean;
 	private _onOutputsChanged = new Emitter<IOutputChangedEvent>();
 	private _onCellModeChanged = new Emitter<boolean>();
@@ -55,10 +56,6 @@ export class CellModel implements ICellModel {
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
-	private readonly _ariaLabel: string;
-
-	private readonly codeCellLabel = localize('codeCellLabel', "Code Cell");
-	private readonly textCellLabel = localize('textCellLabel', "Text Cell");
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -71,12 +68,6 @@ export class CellModel implements ICellModel {
 		} else {
 			this._cellType = CellTypes.Code;
 			this._source = '';
-		}
-
-		if (this._cellType === CellTypes.Code) {
-			this._ariaLabel = this.codeCellLabel;
-		} else {
-			this._ariaLabel = this.textCellLabel;
 		}
 
 		this._isEditMode = this._cellType !== CellTypes.Markdown;
@@ -95,16 +86,16 @@ export class CellModel implements ICellModel {
 		return other !== undefined && other.id === this.id;
 	}
 
-	public get ariaLabel(): string {
-		return this._ariaLabel;
-	}
-
 	public get onCollapseStateChanged(): Event<boolean> {
 		return this._onCollapseStateChanged.event;
 	}
 
 	public get onOutputsChanged(): Event<IOutputChangedEvent> {
 		return this._onOutputsChanged.event;
+	}
+
+	public get onCellModeChanged(): Event<boolean> {
+		return this._onCellModeChanged.event;
 	}
 
 	public get isEditMode(): boolean {
@@ -454,7 +445,7 @@ export class CellModel implements ICellModel {
 		}
 	}
 
-	private sendChangeToNotebook(change: NotebookChangeType): void {
+	public sendChangeToNotebook(change: NotebookChangeType): void {
 		if (this._options && this._options.notebook) {
 			this._options.notebook.onCellChange(this, change);
 		}
@@ -462,6 +453,14 @@ export class CellModel implements ICellModel {
 
 	public get outputs(): Array<nb.ICellOutput> {
 		return this._outputs;
+	}
+
+	public get renderedOutputTextContent(): string[] {
+		return this._renderedOutputTextContent;
+	}
+
+	public set renderedOutputTextContent(content: string[]) {
+		this._renderedOutputTextContent = content;
 	}
 
 	private handleReply(msg: nb.IShellMessage): void {

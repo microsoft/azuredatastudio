@@ -6,8 +6,10 @@
 -->
 <panel class="dashboard-panel" (onTabChange)="handleTabChange($event)" (onTabClose)="handleTabClose($event)"
 	[actions]="panelActions">
+	<div #toolbar [style.display]="showToolbar ? 'block': 'none'" class="editor-toolbar">
+	</div>
 	<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize"
-		[identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions">
+		[identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions" [type]="tab.type" [iconClass]="tab.iconClass">
 		<ng-template>
 			<dashboard-home-container *ngIf="tab.id === 'homeTab'; else not_home" [properties]="propertiesWidget"
 				[tab]="tab">

@@ -77,7 +77,7 @@ const defaultVal = [
 	{
 		name: 'Tasks',
 		widget: {
-			'tasks-widget': ['newQuery', 'mssqlCluster.task.newNotebook', { name: 'restore', when: '!mssql:iscloud && mssql:engineedition != 11' }, 'configureDashboard']
+			'tasks-widget': ['newQuery', 'mssqlCluster.task.newNotebook', { name: 'restore', when: '!mssql:iscloud && mssql:engineedition != 11' }]
 		},
 		gridItemConfig: {
 			sizex: 1,
@@ -85,7 +85,7 @@ const defaultVal = [
 		}
 	},
 	{
-		name: 'Search',
+		name: nls.localize('databasesWidgetTitle', "Search"),
 		gridItemConfig: {
 			sizex: 1,
 			sizey: 2

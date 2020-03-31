@@ -23,7 +23,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { TestStorageService, TestFileService, workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestFileService, workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
@@ -33,6 +33,7 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 
 suite('SQL QueryAction Tests', () => {
 

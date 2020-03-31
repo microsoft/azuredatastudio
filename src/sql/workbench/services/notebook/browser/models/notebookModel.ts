@@ -233,6 +233,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public set trustedMode(isTrusted: boolean) {
 		this._trustedMode = isTrusted;
+
 		if (this._cells) {
 			this._cells.forEach(c => {
 				c.trustedMode = this._trustedMode;
@@ -290,6 +291,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public async loadContents(isTrusted: boolean = false): Promise<void> {
 		try {
 			this._trustedMode = isTrusted;
+
 			let contents = null;
 
 			if (this._notebookOptions && this._notebookOptions.contentManager) {
@@ -987,6 +989,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			case NotebookChangeType.CellOutputUpdated:
 			case NotebookChangeType.CellSourceUpdated:
 			case NotebookChangeType.CellInputVisibilityChanged:
+			case NotebookChangeType.CellMetadataUpdated:
 				changeInfo.isDirty = true;
 				changeInfo.modelContentChangedEvent = cell.modelContentChangedEvent;
 				break;

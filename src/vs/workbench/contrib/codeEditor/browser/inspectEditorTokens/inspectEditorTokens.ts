@@ -26,7 +26,7 @@ import { findMatchingThemeRule } from 'vs/workbench/services/textMate/common/TMH
 import { ITextMateService, IGrammar, IToken, StackElement } from 'vs/workbench/services/textMate/common/textMateService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
-import { ColorThemeData, TokenStyleDefinitions, TokenStyleDefinition } from 'vs/workbench/services/themes/common/colorThemeData';
+import { ColorThemeData, TokenStyleDefinitions, TokenStyleDefinition, TextMateThemingRuleDefinitions } from 'vs/workbench/services/themes/common/colorThemeData';
 import { TokenStylingRule, TokenStyleData, TokenStyle } from 'vs/platform/theme/common/tokenClassificationRegistry';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
@@ -70,6 +70,12 @@ class InspectEditorTokensController extends Disposable implements IEditorContrib
 		this._register(this._editor.onDidChangeModel((e) => this.stop()));
 		this._register(this._editor.onDidChangeModelLanguage((e) => this.stop()));
 		this._register(this._editor.onKeyUp((e) => e.keyCode === KeyCode.Escape && this.stop()));
+		this._register(this._themeService.onDidColorThemeChange(_ => {
+			if (this._widget) {
+				this.stop();
+				this.launch();
+			}
+		}));
 	}
 
 	public dispose(): void {
@@ -260,6 +266,9 @@ class InspectEditorTokensWidget extends Disposable implements IContentWidget {
 	}
 
 	private _isSemanticColoringEnabled() {
+		if (!this._themeService.getColorTheme().semanticHighlighting) {
+			return false;
+		}
 		const options = this._configurationService.getValue<IEditorSemanticHighlightingOptions>('editor.semanticHighlighting', { overrideIdentifier: this._model.getLanguageIdentifier().language, resource: this._model.uri });
 		return options && options.enabled;
 	}
@@ -303,7 +312,7 @@ class InspectEditorTokensWidget extends Disposable implements IContentWidget {
 				const allDefValues = []; // remember the order
 				// first collect to detect when the same rule is used fro multiple properties
 				for (let property of properties) {
-					if (semanticTokenInfo.metadata[property]) {
+					if (semanticTokenInfo.metadata[property] !== undefined) {
 						const definition = semanticTokenInfo.definitions[property];
 						const defValue = this._renderTokenStyleDefinition(definition, property);
 						let properties = propertiesByDefValue[defValue];
@@ -488,6 +497,7 @@ class InspectEditorTokensWidget extends Disposable implements IContentWidget {
 
 	private _getSemanticTokenAtPosition(semanticTokens: SemanticTokensResult, pos: Position): ISemanticTokenInfo | null {
 		const tokenData = semanticTokens.tokens.data;
+		const defaultLanguage = this._model.getLanguageIdentifier().language;
 		let lastLine = 0;
 		let lastCharacter = 0;
 		const posLine = pos.lineNumber - 1, posCharacter = pos.column - 1; // to 0-based position
@@ -501,8 +511,8 @@ class InspectEditorTokensWidget extends Disposable implements IContentWidget {
 				const range = new Range(line + 1, character + 1, line + 1, character + 1 + len);
 				const definitions = {};
 				const colorMap = this._themeService.getColorTheme().tokenColorMap;
-				const theme = this._themeService.getTheme() as ColorThemeData;
-				const tokenStyle = theme.getTokenStyleMetadata(type, modifiers, true, definitions);
+				const theme = this._themeService.getColorTheme() as ColorThemeData;
+				const tokenStyle = theme.getTokenStyleMetadata(type, modifiers, defaultLanguage, true, definitions);
 
 				let metadata: IDecodedMetadata | undefined = undefined;
 				if (tokenStyle) {
@@ -528,18 +538,17 @@ class InspectEditorTokensWidget extends Disposable implements IContentWidget {
 		if (definition === undefined) {
 			return '';
 		}
-		const theme = this._themeService.getTheme() as ColorThemeData;
+		const theme = this._themeService.getColorTheme() as ColorThemeData;
 
-		const isTokenStylingRule = (d: any): d is TokenStylingRule => !!d.value;
 		if (Array.isArray(definition)) {
-			for (const d of definition) {
-				const matchingRule = findMatchingThemeRule(theme, d, false);
-				if (matchingRule) {
-					return `${escape(d.join(' '))}<br><code class="tiw-theme-selector">${matchingRule.rawSelector}\n${JSON.stringify(matchingRule.settings, null, '\t')}</code>`;
-				}
+			const scopesDefinition: TextMateThemingRuleDefinitions = {};
+			theme.resolveScopes(definition, scopesDefinition);
+			const matchingRule = scopesDefinition[property];
+			if (matchingRule && scopesDefinition.scope) {
+				return `${escape(scopesDefinition.scope.join(' '))}<br><code class="tiw-theme-selector">${matchingRule.scope}\n${JSON.stringify(matchingRule.settings, null, '\t')}</code>`;
 			}
 			return '';
-		} else if (isTokenStylingRule(definition)) {
+		} else if (TokenStylingRule.is(definition)) {
 			const scope = theme.getTokenStylingRuleScope(definition);
 			if (scope === 'setting') {
 				return `User settings: ${definition.selector.selectorString} - ${this._renderStyleProperty(definition.style, property)}`;
@@ -547,16 +556,9 @@ class InspectEditorTokensWidget extends Disposable implements IContentWidget {
 				return `Color theme: ${definition.selector.selectorString} - ${this._renderStyleProperty(definition.style, property)}`;
 			}
 			return '';
-		} else if (typeof definition === 'string') {
-			const [type, ...modifiers] = definition.split('.');
-			const definitions: TokenStyleDefinitions = {};
-			const m = theme.getTokenStyleMetadata(type, modifiers, true, definitions);
-			if (m && definitions.foreground) {
-				return this._renderTokenStyleDefinition(definitions[property], property);
-			}
-			return '';
 		} else {
-			return this._renderStyleProperty(definition, property);
+			const style = theme.resolveTokenStyleValue(definition);
+			return `Default: ${style ? this._renderStyleProperty(style, property) : ''}`;
 		}
 	}
 

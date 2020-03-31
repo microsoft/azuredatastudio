@@ -143,7 +143,7 @@ function configureCommandlineSwitchesSync(cliArgs) {
 		// override for the color profile to use
 		'force-color-profile'
 	];
-	
+
 	if (process.platform === 'linux') {
 		SUPPORTED_ELECTRON_SWITCHES.push('force-renderer-accessibility');
 	}
@@ -182,7 +182,7 @@ function configureCommandlineSwitchesSync(cliArgs) {
 		app.commandLine.appendSwitch('js-flags', jsFlags);
 	}
 
-	// TODO@Ben TODO@Deepak Electron 7 workaround for https://github.com/microsoft/vscode/issues/88873
+	// TODO@Deepak Electron 7 workaround for https://github.com/microsoft/vscode/issues/88873
 	app.commandLine.appendSwitch('disable-features', 'LayoutNG');
 
 	return argvConfig;
@@ -351,7 +351,7 @@ function setCurrentWorkingDirectory() {
 function registerListeners() {
 
 	/**
-	 * Mac: when someone drops a file to the not-yet running VSCode, the open-file event fires even before
+	 * macOS: when someone drops a file to the not-yet running VSCode, the open-file event fires even before
 	 * the app-ready event. We listen very early for open-file and remember this upon startup as path to open.
 	 *
 	 * @type {string[]}
@@ -363,7 +363,7 @@ function registerListeners() {
 	});
 
 	/**
-	 * React to open-url requests.
+	 * macOS: react to open-url requests.
 	 *
 	 * @type {string[]}
 	 */

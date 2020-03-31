@@ -13,7 +13,7 @@ import { IPosition, Position } from 'vs/editor/common/core/position';
 import { IRange, Range } from 'vs/editor/common/core/range';
 import { Selection } from 'vs/editor/common/core/selection';
 import * as editorCommon from 'vs/editor/common/editorCommon';
-import { IIdentifiedSingleEditOperation, IModelDecoration, IModelDeltaDecoration, ITextModel, ICursorStateComputer } from 'vs/editor/common/model';
+import { IIdentifiedSingleEditOperation, IModelDecoration, IModelDeltaDecoration, ITextModel, ICursorStateComputer, IWordAtPosition } from 'vs/editor/common/model';
 import { IModelContentChangedEvent, IModelDecorationsChangedEvent, IModelLanguageChangedEvent, IModelLanguageConfigurationChangedEvent, IModelOptionsChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import { OverviewRulerZone } from 'vs/editor/common/view/overviewZoneManager';
 import { IEditorWhitespace } from 'vs/editor/common/viewLayout/linesLayout';
@@ -333,6 +333,7 @@ export interface IOverviewRuler {
  */
 export interface IEditorAriaOptions {
 	activeDescendant: string | undefined;
+	role?: string;
 }
 
 /**
@@ -566,6 +567,11 @@ export interface ICodeEditor extends editorCommon.IEditor {
 	 * Returns the editor's configuration (without any validation or defaults).
 	 */
 	getRawOptions(): IEditorOptions;
+
+	/**
+	 * @internal
+	 */
+	getConfiguredWordAtPosition(position: Position): IWordAtPosition | null;
 
 	/**
 	 * Get value of the current model attached to this editor.
@@ -1006,6 +1012,16 @@ export function isDiffEditor(thing: any): thing is IDiffEditor {
 	} else {
 		return false;
 	}
+}
+
+/**
+ *@internal
+ */
+export function isCompositeEditor(thing: any): thing is editorCommon.ICompositeCodeEditor {
+	return thing
+		&& typeof thing === 'object'
+		&& typeof (<editorCommon.ICompositeCodeEditor>thing).onDidChangeActiveEditor === 'function';
+
 }
 
 /**

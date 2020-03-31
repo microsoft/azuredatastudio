@@ -8,7 +8,6 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ClearSingleRecentConnectionAction } from 'sql/workbench/services/connection/browser/connectionActions';
-import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
@@ -17,14 +16,13 @@ import { Event, Emitter } from 'vs/base/common/event';
 import mouse = require('vs/base/browser/mouseEvent');
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
-export class RecentConnectionActionsProvider extends ContributableActionProvider {
+export class RecentConnectionActionsProvider {
 	private _onRecentConnectionRemoved = new Emitter<void>();
 	public onRecentConnectionRemoved: Event<void> = this._onRecentConnectionRemoved.event;
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
-		super();
 	}
 
 	private getRecentConnectionActions(tree: ITree, element: any): IAction[] {

@@ -21,8 +21,12 @@ export const confirmReplace = localize('confirmReplace', "Folder already exists.
 export const openNotebookCommand = localize('openNotebookCommand', "Open Notebook");
 export const openMarkdownCommand = localize('openMarkdownCommand', "Open Markdown");
 export const openExternalLinkCommand = localize('openExternalLinkCommand', "Open External Link");
-
+export const msgBookTrusted = localize('msgBookTrusted', "Book is now trusted in the workspace.");
+export const msgBookAlreadyTrusted = localize('msgBookAlreadyTrusted', "Book is already trusted in this workspace.");
+export const msgBookUntrusted = localize('msgBookUntrusted', "Book is no longer trusted in this workspace");
+export const msgBookAlreadyUntrusted = localize('msgBookAlreadyUntrusted', "Book is already untrusted in this workspace.");
 export const missingTocError = localize('bookInitializeFailed', "Failed to find a toc.yml.");
+
 export function missingFileError(title: string): string { return localize('missingFileError', "Missing file : {0}", title); }
 export function invalidTocFileError(): string { return localize('InvalidError.tocFile', "Invalid toc file"); }
 export function invalidTocError(title: string): string { return localize('Invalid toc.yml', "Error: {0} has an incorrect toc.yml file", title); }
@@ -33,3 +37,4 @@ export function openNotebookError(resource: string, error: string): string { ret
 export function openMarkdownError(resource: string, error: string): string { return localize('openMarkdownError', "Open markdown {0} failed: {1}", resource, error); }
 export function openUntitledNotebookError(resource: string, error: string): string { return localize('openUntitledNotebookError', "Open untitled notebook {0} as untitled failed: {1}", resource, error); }
 export function openExternalLinkError(resource: string, error: string): string { return localize('openExternalLinkError', "Open link {0} failed: {1}", resource, error); }
+export function closeBookError(resource: string, error: string): string { return localize('closeBookError', "Close book {0} failed: {1}", resource, error); }

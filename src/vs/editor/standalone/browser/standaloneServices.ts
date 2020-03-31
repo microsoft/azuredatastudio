@@ -52,6 +52,8 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { BrowserClipboardService } from 'vs/platform/clipboard/browser/clipboardService';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
+import { StandaloneQuickInputServiceImpl } from 'vs/editor/standalone/browser/quickInput/standaloneQuickInputServiceImpl';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 export interface IEditorOverrideServices {
 	[index: string]: any;
@@ -154,7 +156,7 @@ export module StaticServices {
 
 	export const undoRedoService = define(IUndoRedoService, (o) => new UndoRedoService(dialogService.get(o), notificationService.get(o)));
 
-	export const modelService = define(IModelService, (o) => new ModelServiceImpl(configurationService.get(o), resourcePropertiesService.get(o), standaloneThemeService.get(o), logService.get(o), undoRedoService.get(o)));
+	export const modelService = define(IModelService, (o) => new ModelServiceImpl(configurationService.get(o), resourcePropertiesService.get(o), standaloneThemeService.get(o), logService.get(o), undoRedoService.get(o), dialogService.get(o)));
 
 	export const markerDecorationsService = define(IMarkerDecorationsService, (o) => new MarkerDecorationsService(modelService.get(o), markerService.get(o)));
 
@@ -206,7 +208,9 @@ export class DynamicStandaloneServices extends Disposable {
 
 		let keybindingService = ensure(IKeybindingService, () => this._register(new StandaloneKeybindingService(contextKeyService, commandService, telemetryService, notificationService, domElement)));
 
-		let layoutService = ensure(ILayoutService, () => new SimpleLayoutService(domElement));
+		let layoutService = ensure(ILayoutService, () => new SimpleLayoutService(StaticServices.codeEditorService.get(ICodeEditorService), domElement));
+
+		ensure(IQuickInputService, () => new StandaloneQuickInputServiceImpl(_instantiationService, StaticServices.codeEditorService.get(ICodeEditorService)));
 
 		let contextViewService = ensure(IContextViewService, () => this._register(new ContextViewService(layoutService)));
 

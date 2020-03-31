@@ -379,8 +379,9 @@ export class SchemaCompareDialog {
 		}
 		let flexRadioButtonsModel = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
-			.withItems([this.sourceDacpacRadioButton, this.sourceDatabaseRadioButton]
-			).component();
+			.withItems([this.sourceDacpacRadioButton, this.sourceDatabaseRadioButton])
+			.withProperties({ ariaRole: 'radiogroup' })
+			.component();
 
 		return {
 			component: flexRadioButtonsModel,
@@ -436,7 +437,9 @@ export class SchemaCompareDialog {
 		let flexRadioButtonsModel = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withItems([dacpacRadioButton, databaseRadioButton]
-			).component();
+			)
+			.withProperties({ ariaRole: 'radiogroup' })
+			.component();
 
 		return {
 			component: flexRadioButtonsModel,
