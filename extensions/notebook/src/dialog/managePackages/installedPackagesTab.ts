@@ -136,8 +136,8 @@ export class InstalledPackagesTab {
 					value: dropdownValues[0]
 				}).component();
 				this.dialog.changeLocation(dropdownValues[0].name);
-				locationDropDown.onValueChanged(args => {
-					this.dialog.changeLocation(args.selected);
+				locationDropDown.onValueChanged(() => {
+					this.dialog.changeLocation((<azdata.CategoryValue>locationDropDown.value).name);
 					this.dialog.resetPages()
 						.catch(err => {
 							this.dialog.showErrorMessage(utils.getErrorMessage(err));
