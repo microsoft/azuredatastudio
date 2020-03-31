@@ -54,8 +54,7 @@ export class BrowserClipboardService implements IClipboardService {
 	}
 
 	readFindText(): string {
-		// @ts-expect-error
-		return undefined;
+		return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 	}
 
 	writeFindText(text: string): void { }
