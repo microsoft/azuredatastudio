@@ -93,7 +93,6 @@ export class PackageManager {
 				// Execute the command
 				//
 				this._apiWrapper.executeCommand(constants.managePackagesCommand, {
-					multiLocations: false,
 					defaultLocation: defaultProvider.packageTarget.location,
 					defaultProviderId: defaultProvider.providerId
 				});
@@ -196,7 +195,7 @@ export class PackageManager {
 	}
 
 	private async installPipPackage(requirementFilePath: string): Promise<string> {
-		let cmd = `"${this.pythonExecutable}" -m pip install --force-reinstall -r "${requirementFilePath}"`;
+		let cmd = `"${this.pythonExecutable}" -m pip install -r "${requirementFilePath}"`;
 		return await this._processService.executeBufferedCommand(cmd, this._outputChannel);
 	}
 

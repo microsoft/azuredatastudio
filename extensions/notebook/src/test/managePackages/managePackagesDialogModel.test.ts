@@ -50,7 +50,6 @@ describe('Manage Packages', () => {
 		providers.set(provider.providerId, provider);
 
 		let options = {
-			multiLocations: true,
 			defaultLocation: 'invalid location'
 		};
 		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, options);
@@ -64,41 +63,10 @@ describe('Manage Packages', () => {
 		providers.set(provider.providerId, provider);
 
 		let options = {
-			multiLocations: true,
 			defaultProviderId: 'invalid provider'
 		};
 		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, options);
 		await should(model.init()).rejectedWith(`Invalid default provider id '${options.defaultProviderId}`);
-	});
-
-	/* Test disabled. Tracking issue: https://github.com/microsoft/azuredatastudio/issues/8877
-	it('Init should throw exception not given valid default location for single location mode', async function (): Promise<void> {
-		let testContext = createContext();
-		let provider = createProvider(testContext);
-		let providers = new Map<string, IPackageManageProvider>();
-		providers.set(provider.providerId, provider);
-
-		let options = {
-			multiLocations: false
-		};
-		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, options);
-		await should(model.init()).rejectedWith(`Default location not specified for single location mode`);
-	});
-	*/
-
-
-	it('Init should set default options given undefined', async function (): Promise<void> {
-		let testContext = createContext();
-		let provider = createProvider(testContext);
-		let providers = new Map<string, IPackageManageProvider>();
-		providers.set(provider.providerId, provider);
-
-		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, undefined);
-
-		await model.init();
-		should.equal(model.multiLocationMode, true);
-		should.equal(model.defaultLocation, provider.packageTarget.location);
-		should.equal(model.defaultProviderId, provider.providerId);
 	});
 
 	it('Init should set default provider Id given valid options', async function (): Promise<void> {
@@ -119,14 +87,12 @@ describe('Manage Packages', () => {
 		providers.set(testContext1.provider.providerId, createProvider(testContext1));
 		providers.set(testContext2.provider.providerId, createProvider(testContext2));
 		let options = {
-			multiLocations: false,
 			defaultLocation: testContext2.provider.packageTarget.location,
 			defaultProviderId: testContext2.provider.providerId
 		};
 		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, options);
 
 		await model.init();
-		should.equal(model.multiLocationMode, false);
 		should.equal(model.defaultLocation, testContext2.provider.packageTarget.location);
 		should.equal(model.defaultProviderId, testContext2.provider.providerId);
 	});
@@ -322,6 +288,49 @@ describe('Manage Packages', () => {
 		await should(model.uninstallPackages(packages)).resolved();
 		await should(model.getPackageOverview('p1')).resolved();
 		await should(model.getLocations()).resolvedWith([{displayName: 'location title 2', name: 'location2'}]);
+	});
+
+	it('listPackages should return packages for current location', async function (): Promise<void> {
+		let testContext = createContext();
+		testContext.provider.providerId = 'providerId1';
+		testContext.provider.packageTarget = {
+			location: 'location1',
+			packageType: 'package-type1'
+		};
+
+		let packages1 = [
+			{
+				name: 'p1',
+				version: '1.1.1.1'
+			},
+			{
+				name: 'p2',
+				version: '1.1.1.2'
+			}
+		];
+		let packages2 = [{
+			name: 'p3',
+			version: '1.1.1.3'
+		}];
+		testContext.provider.listPackages = (location) => {
+			if (location === 'location1') {
+			return Promise.resolve(packages1);
+			} else {
+				return Promise.resolve(packages2);
+			}
+
+		};
+
+		let providers = new Map<string, IPackageManageProvider>();
+		providers.set(testContext.provider.providerId, createProvider(testContext));
+
+		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, undefined);
+
+		await model.init();
+		model.changeProvider('providerId1');
+		model.changeLocation('location2');
+
+		await should(model.listPackages()).resolvedWith(packages2);
 	});
 
 	function createContext(): TestContext {
