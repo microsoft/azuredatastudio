@@ -663,6 +663,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				return NotebookChangeKind.ContentUpdated;
 			case NotebookChangeType.KernelChanged:
 			case NotebookChangeType.TrustChanged:
+			case NotebookChangeType.CellMetadataUpdated:
 				return NotebookChangeKind.MetadataUpdated;
 			case NotebookChangeType.Saved:
 				return NotebookChangeKind.Save;
