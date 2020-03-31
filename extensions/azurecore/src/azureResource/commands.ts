@@ -45,7 +45,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			}
 
 			let tenant: Tenant;
-			window.showInformationMessage(localize('azure.startingCloudShell', "Starting cloud shell…"));
+			window.setStatusBarMessage(localize('azure.startingCloudShell', "Starting cloud shell…"), 5000);
 
 			if (listOfTenants.length === 1) {
 				// Don't show quickpick for a single option
