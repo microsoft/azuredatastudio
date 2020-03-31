@@ -110,7 +110,7 @@ export async function launch(userDataDir: string, _workspacePath: string, extens
 	}
 	server = spawn(
 		serverLocation,
-		['--browser', 'none', '--driver', 'web', '--extensions-dir', `"${extensionsDir}"`],
+		['--browser', 'none', '--driver', 'web', '--extensions-dir', `${extensionsDir}`],
 		{ env }
 	);
 	server.stderr?.on('data', error => console.log(`Server stderr: ${error}`));
