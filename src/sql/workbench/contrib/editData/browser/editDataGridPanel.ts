@@ -291,6 +291,11 @@ export class EditDataGridPanel extends GridParentComponent {
 			return;
 		}
 
+		if (this.isNullRow(row)) {
+			self.addRow(row);
+			self.refreshGrid();
+		}
+
 		let cellSelectTasks: Promise<void> = this.submitCurrentCellChange(
 			(result: EditUpdateCellResult) => {
 				// Cell update was successful, update the flags
@@ -543,15 +548,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private submitCurrentCellChange(resultHandler, errorHandler): Promise<void> {
 		let self = this;
 		let updateCellPromise: Promise<void> = Promise.resolve();
-		let refreshGrid = false;
 		if (this.currentCell && this.currentCell.isEditable && this.currentEditCellValue !== undefined && !this.removingNewRow) {
-			if (this.isNullRow(this.currentCell.row)) {
-				refreshGrid = true;
-				// We've entered the "new row", so we need to add a row and jump to it
-				updateCellPromise = updateCellPromise.then(() => {
-					return self.addRow(this.currentCell.row);
-				});
-			}
 			// We're exiting a read/write cell after having changed the value, update the cell value in the service
 			updateCellPromise = updateCellPromise.then(() => {
 				// Use the mapped row ID if we're on that row
@@ -564,9 +561,6 @@ export class EditDataGridPanel extends GridParentComponent {
 				result => {
 					self.currentEditCellValue = undefined;
 					let refreshPromise: Thenable<void> = Promise.resolve();
-					if (refreshGrid) {
-						refreshPromise = self.refreshGrid();
-					}
 					return refreshPromise.then(() => {
 						return resultHandler(result);
 					});
