@@ -218,39 +218,35 @@ export class EditDataGridPanel extends GridParentComponent {
 			try {
 				// Setup a function for generating a promise to lookup result subsets
 				return self.dataService.getEditRows(offset, count).then(result => {
-					try {
-						let gridData = result.subset.map(r => {
-							let dataWithSchema = {};
-							// skip the first column since its a number column
-							for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
-								dataWithSchema[this.dataSet.columnDefinitions[i].field] = {
-									displayValue: r.cells[i - 1].displayValue,
-									ariaLabel: escape(r.cells[i - 1].displayValue),
-									isNull: r.cells[i - 1].isNull
-								};
-							}
-							return dataWithSchema;
-						});
-
-						// should add null row?
-						if (offset + count > this.dataSet.totalRows - 1) {
-							gridData.push(this.dataSet.columnDefinitions.reduce((p, c) => {
-								if (c.id !== 'rowNumber') {
-									p[c.field] = { displayValue: 'NULL', ariaLabel: 'NULL', isNull: true };
-								}
-								return p;
-							}, {}));
+					let gridData = result.subset.map(r => {
+						let dataWithSchema = {};
+						// skip the first column since its a number column
+						for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
+							dataWithSchema[this.dataSet.columnDefinitions[i].field] = {
+								displayValue: r.cells[i - 1].displayValue,
+								ariaLabel: escape(r.cells[i - 1].displayValue),
+								isNull: r.cells[i - 1].isNull
+							};
 						}
+						return dataWithSchema;
+					});
 
-						return gridData;
+					// should add null row?
+					if (offset + count > this.dataSet.totalRows - 1) {
+						gridData.push(this.dataSet.columnDefinitions.reduce((p, c) => {
+							if (c.id !== 'rowNumber') {
+								p[c.field] = { displayValue: 'NULL', ariaLabel: 'NULL', isNull: true };
+							}
+							return p;
+						}, {}));
 					}
-					catch {
-						throw new Error('Failed to load table data');
-					}
+
+					return gridData;
 				});
 			}
-			catch {
+			catch (e) {
 				//table data has failed to load, must reject promise to avoid overwriting table.
+				this.logService.error('Table failed to load data: ' + e);
 				return Promise.reject();
 			}
 		};
