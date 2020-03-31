@@ -96,7 +96,7 @@
 	display:none;
 	z-index: 3;
 	padding-left: 0;
-	margin-top: -5px;
+	margin-top: 0;
 	margin-right: 5px;
 	box-shadow: 1px 1px 1px 1px rgba(0,0,0,.25);
 }
@@ -108,7 +108,6 @@
 .carbon-taskbar .overflow a {
 	padding-left: 20px;
 }
-
 
 .overflow .taskbarSeparator {
 	height: 1px;
