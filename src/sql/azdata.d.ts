@@ -4679,6 +4679,9 @@ declare module 'azdata' {
 
 		export interface ICellOutput {
 			output_type: OutputTypeName;
+			metadata?: {
+				azdata_chartOptions?: any;
+			}
 		}
 
 		/**
