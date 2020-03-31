@@ -182,7 +182,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 				innerText.onkeydown = (this._domNode, ev => {
 					let event = new StandardKeyboardEvent(ev);
 					if (event.keyCode === KeyCode.Enter || event.keyCode === KeyCode.Space) {
-						this._focusedItem = undefined;
+						this._focusedItem = undefined; // so that the default actionbar click handler doesn't trigger the selected action-item
 						this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block';
 						event.preventDefault();
 						event.stopPropagation();
@@ -238,8 +238,24 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 				break;
 			}
 
-			if (elem.classList.contains('action-item')) {
+			if (elem.classList.contains('action-item') && i !== this._actionsList.children.length - 1) {
 				actionIndex++;
+			}
+		}
+
+		// move focus to overflow items if there are any
+		if (this._overflow) {
+			for (let i = 0; i < this._overflow.children.length; i++) {
+				let elem = this._overflow.children[i];
+
+				if (DOM.isAncestor(document.activeElement, elem)) {
+					this._focusedItem = actionIndex;
+					break;
+				}
+
+				if (elem.classList.contains('action-item')) {
+					actionIndex++;
+				}
 			}
 		}
 	}
