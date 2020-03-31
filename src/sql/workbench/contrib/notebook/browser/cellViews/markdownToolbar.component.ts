@@ -4,24 +4,26 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./markdownToolbar';
 import { Component } from '@angular/core';
-import * as nls from 'vs/nls';
+import { localize } from 'vs/nls';
 
-const ButtonBold = nls.localize('buttonBold', "Bold");
-const ButtonItalic = nls.localize('buttonItalic', "Italic");
-const ButtonCode = nls.localize('buttonCode', "Code");
-const ButtonLink = nls.localize('buttonLink', "Link");
-const ButtonList = nls.localize('buttonList', "List");
-const ButtonOrderedList = nls.localize('buttonOrderedList', "Ordered list");
-const ButtonImage = nls.localize('buttonImage', "Image");
-const ButtonPreview = nls.localize('buttonPreview', "Markdown preview toggle - off");
+const ButtonBold = localize('buttonBold', "Bold");
+const ButtonItalic = localize('buttonItalic', "Italic");
+const ButtonCode = localize('buttonCode', "Code");
+const ButtonHighlight = localize('buttonHighlight', "Highlight");
+const ButtonLink = localize('buttonLink', "Link");
+const ButtonList = localize('buttonList', "List");
+const ButtonOrderedList = localize('buttonOrderedList', "Ordered list");
+const ButtonImage = localize('buttonImage', "Image");
+const ButtonPreview = localize('buttonPreview', "Markdown preview toggle - off");
 
 @Component({
-	selector: 'toolbar-component',
+	selector: 'markdown-toolbar-component',
 	template: `
 		<ul class="markdown-toolbar">
 			<li><a class="markdown-toolbar-bold" href="#"><span class="offscreen">${ButtonBold}</span></a></li>
 			<li><a class="markdown-toolbar-italic" href="#"><span class="offscreen">${ButtonItalic}</span></a></li>
 			<li><a class="markdown-toolbar-code" href="#"><span class="offscreen">${ButtonCode}</span></a></li>
+			<li><a class="markdown-toolbar-code" href="#"><span class="offscreen">${ButtonHighlight}</span></a></li>
 			<li><a class="markdown-toolbar-link" href="#"><span class="offscreen">${ButtonLink}</span></a></li>
 			<li><a class="markdown-toolbar-list" href="#"><span class="offscreen">${ButtonList}</span></a></li>
 			<li><a class="markdown-toolbar-ordered-list" href="#"><span class="offscreen">${ButtonOrderedList}</span></a></li>
@@ -30,7 +32,6 @@ const ButtonPreview = nls.localize('buttonPreview', "Markdown preview toggle - o
 		</ul>
 	`
 })
-export default class MarkdownToolbar {
-
+export class MarkdownToolbar {
 
 }
