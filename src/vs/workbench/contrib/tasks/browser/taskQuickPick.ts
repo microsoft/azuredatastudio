@@ -194,6 +194,7 @@ export class TaskQuickPick extends Disposable {
 				picker.dispose();
 				return this.toTask(firstLevelTask);
 			} else {
+				picker.dispose();
 				return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 			}
 		} while (1);
