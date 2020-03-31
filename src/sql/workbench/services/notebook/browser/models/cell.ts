@@ -445,7 +445,7 @@ export class CellModel implements ICellModel {
 		}
 	}
 
-	private sendChangeToNotebook(change: NotebookChangeType): void {
+	public sendChangeToNotebook(change: NotebookChangeType): void {
 		if (this._options && this._options.notebook) {
 			this._options.notebook.onCellChange(this, change);
 		}
