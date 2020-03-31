@@ -13,6 +13,7 @@ import {
 import * as lifecycle from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
+import * as nls from 'vs/nls';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { debounce } from 'vs/base/common/decorators';
 
@@ -176,7 +177,10 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 				this._moreItemElement.id = 'more';
 				const innerText: HTMLElement = document.createElement('a');
 				innerText.setAttribute('role', 'button');
-				innerText.innerHTML = '•••';
+				innerText.innerHTML = '...';
+				innerText.style.fontWeight = 'bold';
+				innerText.style.fontSize = 'large';
+				innerText.title = nls.localize('toggleMore', "Toggle More");
 				innerText.tabIndex = 0;
 				innerText.onclick = (this._domNode, ev => { this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block'; });
 				innerText.onkeydown = (this._domNode, ev => {
@@ -203,7 +207,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 					break;
 				}
 			}
-		} else if (this._overflow.hasChildNodes()) { // uncollapse actions if there is space for it
+		} else if (this._overflow?.hasChildNodes()) { // uncollapse actions if there is space for it
 			while (width === fullWidth && this._overflow.hasChildNodes()) {
 				this._actionsList.insertBefore(this._overflow.removeChild(this._overflow.firstChild), this._actionsList.lastChild);
 
