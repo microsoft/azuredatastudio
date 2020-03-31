@@ -249,8 +249,7 @@ const externalExtensions = [
 // extensions that require a rebuild since they have native parts
 const rebuildExtensions = [
 	'big-data-cluster',
-	'mssql',
-	'sqlite'
+	'mssql'
 ];
 
 interface IBuiltInExtension {
