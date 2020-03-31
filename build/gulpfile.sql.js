@@ -5,20 +5,15 @@
 
 'use strict';
 const gulp = require('gulp');
-const util = require('./lib/util');
 const tsfmt = require('typescript-formatter');
 const es = require('event-stream');
 const filter = require('gulp-filter');
-const serviceDownloader = require('service-downloader').ServiceDownloadProvider;
-const platform = require('service-downloader/out/platform').PlatformInformation;
 const path = require('path');
 const ext = require('./lib/extensions');
 const task = require('./lib/task');
 const glob = require('glob');
 const vsce = require('vsce');
 const mkdirp = require('mkdirp');
-const fs = require('fs').promises;
-const assert = require('assert');
 
 gulp.task('fmt', () => formatStagedFiles());
 const formatFiles = (some) => {

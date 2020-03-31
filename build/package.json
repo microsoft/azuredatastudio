@@ -47,7 +47,6 @@
     "rollup": "^1.20.3",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "service-downloader": "0.2.1",
     "terser": "4.3.8",
     "typescript": "^3.9.0-dev.20200316",
     "vsce": "1.48.0",
