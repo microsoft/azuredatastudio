@@ -9,7 +9,7 @@ import { ApiWrapper } from './apiWrapper';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 
-const maxNumberOfRetries = 3;
+const maxNumberOfRetries = 2;
 
 const listPythonPackagesQuery = `
 Declare @tablevar table(name NVARCHAR(MAX), version NVARCHAR(MAX))

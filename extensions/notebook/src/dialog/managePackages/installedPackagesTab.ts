@@ -136,8 +136,8 @@ export class InstalledPackagesTab {
 					value: dropdownValues[0]
 				}).component();
 				this.dialog.changeLocation(dropdownValues[0].name);
-				locationDropDown.onValueChanged(() => {
-					this.dialog.changeLocation((<azdata.CategoryValue>locationDropDown.value).name);
+				locationDropDown.onValueChanged(args => {
+					this.dialog.changeLocation(args.selected);
 					this.dialog.resetPages()
 						.catch(err => {
 							this.dialog.showErrorMessage(utils.getErrorMessage(err));
@@ -152,7 +152,7 @@ export class InstalledPackagesTab {
 			this.formBuilder.insertFormItem({
 				component: this.locationComponent,
 				title: localize('managePackages.location', "Location")
-			}, 0);
+			}, 1);
 		}
 	}
 
