@@ -38,6 +38,8 @@ export interface ISelectBoxStyles extends vsISelectBoxStyles {
 	inputValidationErrorForeground?: Color;
 }
 
+export class SelectBoxEmptyError extends Error { }
+
 export class SelectBox extends vsSelectBox {
 	private _optionsDictionary: Map<string, number>;
 	private _dialogOptions: SelectOptionItemSQL[];
@@ -65,6 +67,10 @@ export class SelectBox extends vsSelectBox {
 	private element?: HTMLElement;
 
 	constructor(options: SelectOptionItemSQL[] | string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
+		if (options.length === 0) {
+			throw new SelectBoxEmptyError('Select box had no options.');
+		}
+
 		let optionItems: SelectOptionItemSQL[];
 		if (Array.isArray<string>(options) && typeof (options[0]) === 'string') {
 			optionItems = (options).map(o => {
