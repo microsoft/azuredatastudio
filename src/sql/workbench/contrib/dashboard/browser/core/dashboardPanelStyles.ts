@@ -7,7 +7,7 @@ import 'vs/css!./dashboardPanel';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 import {
 	TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_ACTIVE_BORDER, TAB_INACTIVE_BACKGROUND,
-	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, DASHBOARD_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER
+	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, DASHBOARD_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER, EDITOR_PANE_BACKGROUND
 } from 'vs/workbench/common/theme';
 import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 
@@ -116,11 +116,19 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	}
 
 	const sideBorder = theme.getColor(DASHBOARD_BORDER);
-	if (divider) {
+	if (sideBorder) {
 		collector.addRule(`panel.dashboard-panel > .tabbedPanel.vertical > .title > .tabContainer {
 			border-right-width: 1px;
 			border-right-style: solid;
 			border-right-color: ${sideBorder};
+		}`);
+	}
+
+	// toolbar overflow
+	const toolbarOverflowBackground = theme.getColor(EDITOR_PANE_BACKGROUND);
+	if (toolbarOverflowBackground) {
+		collector.addRule(`panel.dashboard-panel .carbon-taskbar .overflow {
+			background-color: ${toolbarOverflowBackground};
 		}`);
 	}
 });
