@@ -66,12 +66,12 @@ export class SelectBox extends vsSelectBox {
 
 	constructor(options: SelectOptionItemSQL[] | string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
 		let optionItems: SelectOptionItemSQL[];
-		if (Array.isArray<string>(options)) {
-			optionItems = (options as string[]).map(o => {
+		if (typeof (options[0]) === 'string' && Array.isArray<string>(options)) {
+			optionItems = (options).map(o => {
 				return { text: o, value: o } as SelectOptionItemSQL;
 			});
 		} else {
-			optionItems = options;
+			optionItems = options as SelectOptionItemSQL[];
 		}
 
 		super(optionItems, 0, contextViewProvider, undefined, selectBoxOptions);
