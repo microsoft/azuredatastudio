@@ -253,8 +253,8 @@ export class EditDataGridPanel extends GridParentComponent {
 					}
 				});
 			}
-			catch {
-				this.notificationService.error(nls.localize('tableDataError', 'Unable to load table data'));
+			catch (e) {
+				this.logService.error('Unable to load table data: ' + e);
 				return Promise.reject();
 			}
 		};
@@ -455,13 +455,13 @@ export class EditDataGridPanel extends GridParentComponent {
 					}
 
 
-					if (this.oldDataRows !== this.placeHolderDataSets[0].dataRows) {
+					if (this.placeHolderDataSets[0].dataRows && this.oldDataRows !== this.placeHolderDataSets[0].dataRows) {
 						this.detectChange();
 						this.oldDataRows = this.placeHolderDataSets[0].dataRows;
 					}
 				}
 				catch {
-					this.notificationService.error(nls.localize('refreshTableError', 'Unable to refresh table data'));
+					this.notificationService.error(nls.localize('refreshTableError', 'Unable to refresh table data, please close and reload table'));
 				}
 
 				if (this.firstRender) {
