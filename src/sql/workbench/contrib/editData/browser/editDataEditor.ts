@@ -6,6 +6,7 @@
 import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
+import 'vs/css!sql/base/browser/ui/panel/media/panel';
 
 import { EditorOptions, EditorInput, IEditorControl, IEditorPane } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
@@ -620,9 +621,9 @@ export class EditDataEditor extends BaseEditor {
 				this._sash.hide();
 			}
 			if (this.queryPaneEnabled()) {
-				DOM.toggleClass(this.getContainer(), 'sash-visible', true);
+				DOM.toggleClass(this._resultsEditorContainer, 'tabbedPanel', true);
 			} else {
-				DOM.toggleClass(this.getContainer(), 'sash-visible', false);
+				DOM.toggleClass(this._resultsEditorContainer, 'tabbedPanel', false);
 			}
 		}
 
@@ -676,10 +677,10 @@ export class EditDataEditor extends BaseEditor {
 	public toggleQueryPane(): void {
 		this.editDataInput.queryPaneEnabled = !this.queryPaneEnabled();
 		if (this.queryPaneEnabled()) {
-			DOM.toggleClass(this.getContainer(), 'sash-visible', true);
+			DOM.toggleClass(this._resultsEditorContainer, 'tabbedPanel', true);
 			this._showQueryEditor();
 		} else {
-			DOM.toggleClass(this.getContainer(), 'sash-visible', false);
+			DOM.toggleClass(this._resultsEditorContainer, 'tabbedPanel', false);
 			this._hideQueryEditor();
 		}
 		this._doLayout(false);
