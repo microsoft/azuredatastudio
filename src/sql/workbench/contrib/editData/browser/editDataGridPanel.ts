@@ -221,30 +221,36 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.loadDataFunction = (offset: number, count: number): Promise<{}[]> => {
 			try {
 				return self.dataService.getEditRows(offset, count).then(result => {
-					let gridData = result.subset.map(r => {
-						let dataWithSchema = {};
-						// skip the first column since its a number column
-						for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
-							dataWithSchema[this.dataSet.columnDefinitions[i].field] = {
-								displayValue: r.cells[i - 1].displayValue,
-								ariaLabel: escape(r.cells[i - 1].displayValue),
-								isNull: r.cells[i - 1].isNull
-							};
-						}
-						return dataWithSchema;
-					});
-
-					// should add null row?
-					if (offset + count > this.dataSet.totalRows - 1) {
-						gridData.push(this.dataSet.columnDefinitions.reduce((p, c) => {
-							if (c.id !== 'rowNumber') {
-								p[c.field] = { displayValue: 'NULL', ariaLabel: 'NULL', isNull: true };
+					try {
+						let gridData = result.subset.map(r => {
+							let dataWithSchema = {};
+							// skip the first column since its a number column
+							for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
+								dataWithSchema[this.dataSet.columnDefinitions[i].field] = {
+									displayValue: r.cells[i - 1].displayValue,
+									ariaLabel: escape(r.cells[i - 1].displayValue),
+									isNull: r.cells[i - 1].isNull
+								};
 							}
-							return p;
-						}, {}));
-					}
+							return dataWithSchema;
+						});
 
-					return gridData;
+						// should add null row?
+						if (offset + count > this.dataSet.totalRows - 1) {
+							gridData.push(this.dataSet.columnDefinitions.reduce((p, c) => {
+								if (c.id !== 'rowNumber') {
+									p[c.field] = { displayValue: 'NULL', ariaLabel: 'NULL', isNull: true };
+								}
+								return p;
+							}, {}));
+						}
+
+						return gridData;
+					}
+					catch (e) {
+						//throw exception so that grid will not be updated with corrupt data.
+						throw e;
+					}
 				});
 			}
 			catch {
