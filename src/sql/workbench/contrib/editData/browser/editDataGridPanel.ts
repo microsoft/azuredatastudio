@@ -461,7 +461,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					}
 				}
 				catch {
-					this.notificationService.error(nls.localize('refreshTableError', 'Unable to refresh table data, please close and reload table'));
+					this.notificationService.error(nls.localize('refreshTableError', 'Too many refreshes, edit session corrupt: Please close and reload table'));
 				}
 
 				if (this.firstRender) {
