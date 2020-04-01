@@ -103,7 +103,7 @@ export class SchemaCompareDialog {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
 				serverDisplayName: (this.sourceServerDropdown.value as ConnectionDropdownValue).displayName,
 				serverName: (this.sourceServerDropdown.value as ConnectionDropdownValue).name,
-				databaseName: (<azdata.CategoryValue>this.sourceDatabaseDropdown.value).name,
+				databaseName: this.sourceDatabaseDropdown.value.toString(),
 				ownerUri: ownerUri,
 				packageFilePath: '',
 				connectionDetails: undefined
@@ -127,7 +127,7 @@ export class SchemaCompareDialog {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
 				serverDisplayName: (this.targetServerDropdown.value as ConnectionDropdownValue).displayName,
 				serverName: (this.targetServerDropdown.value as ConnectionDropdownValue).name,
-				databaseName: (<azdata.CategoryValue>this.targetDatabaseDropdown.value).name,
+				databaseName: this.targetDatabaseDropdown.value.toString(),
 				ownerUri: ownerUri,
 				packageFilePath: '',
 				connectionDetails: undefined
@@ -204,7 +204,7 @@ export class SchemaCompareDialog {
 
 			this.sourceDatabaseComponent = await this.createSourceDatabaseDropdown(view);
 			if ((this.sourceServerDropdown.value as ConnectionDropdownValue)) {
-				await this.populateDatabaseDropdown((this.sourceServerDropdown.value as ConnectionDropdownValue).connection.connectionId, false);
+				await this.populateDatabaseDropdown((this.sourceServerDropdown.value as ConnectionDropdownValue).connection, false);
 			}
 
 			this.targetServerComponent = await this.createTargetServerDropdown(view);
@@ -212,7 +212,7 @@ export class SchemaCompareDialog {
 
 			this.targetDatabaseComponent = await this.createTargetDatabaseDropdown(view);
 			if ((this.targetServerDropdown.value as ConnectionDropdownValue)) {
-				await this.populateDatabaseDropdown((this.targetServerDropdown.value as ConnectionDropdownValue).connection.connectionId, true);
+				await this.populateDatabaseDropdown((this.targetServerDropdown.value as ConnectionDropdownValue).connection, true);
 			}
 
 			this.sourceDacpacComponent = await this.createFileBrowser(view, false, this.schemaCompareResult.sourceEndpointInfo);
@@ -477,7 +477,7 @@ export class SchemaCompareDialog {
 				});
 			}
 			else {
-				await this.populateDatabaseDropdown((this.sourceServerDropdown.value as ConnectionDropdownValue).connection.connectionId, false);
+				await this.populateDatabaseDropdown((this.sourceServerDropdown.value as ConnectionDropdownValue).connection, false);
 			}
 		});
 
@@ -503,7 +503,7 @@ export class SchemaCompareDialog {
 				});
 			}
 			else {
-				await this.populateDatabaseDropdown((this.targetServerDropdown.value as ConnectionDropdownValue).connection.connectionId, true);
+				await this.populateDatabaseDropdown((this.targetServerDropdown.value as ConnectionDropdownValue).connection, true);
 			}
 		});
 
@@ -627,11 +627,18 @@ export class SchemaCompareDialog {
 		return listValue.displayName === value || listValue === value;
 	}
 
-	protected async populateDatabaseDropdown(connectionId: string, isTarget: boolean): Promise<void> {
+	protected async populateDatabaseDropdown(connectionProfile: azdata.connection.ConnectionProfile, isTarget: boolean): Promise<void> {
 		let currentDropdown = isTarget ? this.targetDatabaseDropdown : this.sourceDatabaseDropdown;
 		currentDropdown.updateProperties({ values: [], value: null });
 
-		let values = await this.getDatabaseValues(connectionId, isTarget);
+		let values = [];
+		try {
+			values = await this.getDatabaseValues(connectionProfile.connectionId, isTarget);
+		} catch (e) {
+			// if the user doesn't have access to master, just set the database of the connection profile
+			values = [connectionProfile.databaseName];
+			console.warn(e);
+		}
 		if (values && values.length > 0) {
 			currentDropdown.updateProperties({
 				values: values,
@@ -640,7 +647,7 @@ export class SchemaCompareDialog {
 		}
 	}
 
-	protected async getDatabaseValues(connectionId: string, isTarget: boolean): Promise<{ displayName, name }[]> {
+	protected async getDatabaseValues(connectionId: string, isTarget: boolean): Promise<string[]> {
 		let endpointInfo = isTarget ? this.schemaCompareResult.targetEndpointInfo : this.schemaCompareResult.sourceEndpointInfo;
 
 		let idx = -1;
@@ -654,10 +661,7 @@ export class SchemaCompareDialog {
 				idx = count;
 			}
 
-			return {
-				displayName: db,
-				name: db
-			};
+			return db;
 		});
 
 		if (idx >= 0) {
