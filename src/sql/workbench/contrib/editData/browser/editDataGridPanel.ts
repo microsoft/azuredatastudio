@@ -248,7 +248,7 @@ export class EditDataGridPanel extends GridParentComponent {
 						return gridData;
 					}
 					catch (e) {
-						//throw exception so that grid will not be updated with corrupt data.
+						//throw exception so that grid will not be updated with bad data.
 						throw e;
 					}
 				});
