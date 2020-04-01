@@ -284,11 +284,11 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 		const setupTestCommand = 'Test: Setup Integration Test';
 		const waitForExtensionsCommand = 'Test: Wait For Extensions To Load';
 		await app.workbench.statusbar.waitForStatusbarText(testExtLoadedText, testExtLoadedText);
-		await app.workbench.quickopen.runCommand(setupTestCommand);
+		await app.workbench.quickaccess.runCommand(setupTestCommand);
 		await app.workbench.statusbar.waitForStatusbarText(testSetupCompletedText, testSetupCompletedText);
 		await app!.reload();
 		await app.workbench.statusbar.waitForStatusbarText(testExtLoadedText, testExtLoadedText);
-		await app.workbench.quickopen.runCommand(waitForExtensionsCommand);
+		await app.workbench.quickaccess.runCommand(waitForExtensionsCommand);
 		await app.workbench.statusbar.waitForStatusbarText(allExtensionsLoadedText, allExtensionsLoadedText);
 		//{{END}}
 	});

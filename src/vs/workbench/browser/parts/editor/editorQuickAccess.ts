@@ -62,7 +62,7 @@ export abstract class BaseEditorQuickAccessProvider extends PickerQuickAccessPro
 
 		// Filtering
 		const filteredEditorEntries = this.doGetEditorPickItems().filter(entry => {
-			if (!query.value) {
+			if (!query.normalized) {
 				return true;
 			}
 
@@ -79,7 +79,7 @@ export abstract class BaseEditorQuickAccessProvider extends PickerQuickAccessPro
 		});
 
 		// Sorting
-		if (query.value) {
+		if (query.normalized) {
 			const groups = this.editorGroupService.getGroups(GroupsOrder.GRID_APPEARANCE).map(group => group.id);
 			filteredEditorEntries.sort((entryA, entryB) => {
 				if (entryA.groupId !== entryB.groupId) {
@@ -127,10 +127,6 @@ export abstract class BaseEditorQuickAccessProvider extends PickerQuickAccessPro
 				iconClasses: getIconClasses(this.modelService, this.modeService, resource),
 				italic: !this.editorGroupService.getGroup(groupId)?.isPinned(editor),
 				buttons: (() => {
-					if (this.pickState.isQuickNavigating) {
-						return undefined; // no actions when quick navigating
-					}
-
 					return [
 						{
 							iconClass: isDirty ? 'dirty-editor codicon-circle-filled' : 'codicon-close',

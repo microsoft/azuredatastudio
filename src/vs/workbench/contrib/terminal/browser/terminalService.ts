@@ -111,7 +111,7 @@ export class TerminalService implements ITerminalService {
 		this._activeTabIndex = 0;
 		this._isShuttingDown = false;
 		this._findState = new FindReplaceState();
-		lifecycleService.onBeforeShutdown(async event => event.veto(await this._onBeforeShutdown()));
+		lifecycleService.onBeforeShutdown(async event => event.veto(this._onBeforeShutdown()));
 		lifecycleService.onShutdown(() => this._onShutdown());
 		if (this._terminalNativeService) {
 			this._terminalNativeService.onOpenFileRequest(e => this._onOpenFileRequest(e));
@@ -178,24 +178,28 @@ export class TerminalService implements ITerminalService {
 		this._extHostsReady[remoteAuthority] = { promise, resolve };
 	}
 
-	private async _onBeforeShutdown(): Promise<boolean> {
+	private _onBeforeShutdown(): boolean | Promise<boolean> {
 		if (this.terminalInstances.length === 0) {
 			// No terminal instances, don't veto
 			return false;
 		}
 
 		if (this.configHelper.config.confirmOnExit) {
-			// veto if configured to show confirmation and the user choosed not to exit
-			const veto = await this._showTerminalCloseConfirmation();
-			if (!veto) {
-				this._isShuttingDown = true;
-			}
-			return veto;
+			return this._onBeforeShutdownAsync();
 		}
 
 		this._isShuttingDown = true;
 
 		return false;
+	}
+
+	private async _onBeforeShutdownAsync(): Promise<boolean> {
+		// veto if configured to show confirmation and the user choosed not to exit
+		const veto = await this._showTerminalCloseConfirmation();
+		if (!veto) {
+			this._isShuttingDown = true;
+		}
+		return veto;
 	}
 
 	private _onShutdown(): void {
@@ -466,7 +470,7 @@ export class TerminalService implements ITerminalService {
 	public async showPanel(focus?: boolean): Promise<void> {
 		const pane = this._viewsService.getActiveViewWithId(TERMINAL_VIEW_ID) as TerminalViewPane;
 		if (!pane) {
-			await this._panelService.openPanel(TERMINAL_VIEW_ID, focus);
+			await this._viewsService.openView(TERMINAL_VIEW_ID, focus);
 		}
 		if (focus) {
 			// Do the focus call asynchronously as going through the

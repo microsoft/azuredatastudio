@@ -8,7 +8,7 @@ import * as glob from 'vs/base/common/glob';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { isWindows } from 'vs/base/common/platform';
 import { ISplice } from 'vs/base/common/sequence';
-import { URI } from 'vs/base/common/uri';
+import { URI, UriComponents } from 'vs/base/common/uri';
 import * as editorCommon from 'vs/editor/common/editorCommon';
 import { PieceTreeTextBufferFactory } from 'vs/editor/common/model/pieceTreeTextBuffer/pieceTreeTextBufferBuilder';
 import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
@@ -36,10 +36,18 @@ export const NOTEBOOK_DISPLAY_ORDER = [
 	'text/plain'
 ];
 
+export const notebookDocumentMetadataDefaults: NotebookDocumentMetadata = {
+	editable: true,
+	cellEditable: true,
+	cellRunnable: true,
+	hasExecutionOrder: true
+};
+
 export interface NotebookDocumentMetadata {
 	editable: boolean;
-	cellEditable?: boolean;
-	cellRunnable?: boolean;
+	cellEditable: boolean;
+	cellRunnable: boolean;
+	hasExecutionOrder: boolean;
 }
 
 export interface NotebookCellMetadata {
@@ -181,12 +189,67 @@ export type NotebookCellOutputsSplice = [
 	IOutput[]
 ];
 
+export interface IMainCellDto {
+	handle: number;
+	uri: UriComponents,
+	source: string[];
+	language: string;
+	cellKind: CellKind;
+	outputs: IOutput[];
+	metadata?: NotebookCellMetadata;
+}
+
+export type NotebookCellsSplice2 = [
+	number /* start */,
+	number /* delete count */,
+	IMainCellDto[]
+];
+
+export interface NotebookCellsChangedEvent {
+	readonly changes: NotebookCellsSplice2[];
+	readonly versionId: number;
+}
+
+export enum CellEditType {
+	Insert = 1,
+	Delete = 2
+}
+
+export interface ICellDto2 {
+	source: string[];
+	language: string;
+	cellKind: CellKind;
+	outputs: IOutput[];
+	metadata?: NotebookCellMetadata;
+}
+
+export interface ICellInsertEdit {
+	editType: CellEditType.Insert;
+	index: number;
+	cells: ICellDto2[];
+}
+
+export interface ICellDeleteEdit {
+	editType: CellEditType.Delete;
+	index: number;
+	count: number;
+}
+
+export type ICellEditOperation = ICellInsertEdit | ICellDeleteEdit;
+
+export interface INotebookEditData {
+	documentVersionId: number;
+	edits: ICellEditOperation[];
+	renderers: number[];
+}
+
 export namespace CellUri {
 
 	export const scheme = 'vscode-notebook';
 
 	export function generate(notebook: URI, handle: number): URI {
 		return notebook.with({
+			path: `${notebook.path}#cell-${handle}`,
 			query: JSON.stringify({ cell: handle, notebook: notebook.toString() }),
 			scheme,
 		});

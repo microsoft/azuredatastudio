@@ -9,12 +9,10 @@ import { timeout } from 'vs/base/common/async';
 import { mapToString, setToString } from 'vs/base/common/map';
 import { basename } from 'vs/base/common/path';
 import { copy, renameIgnoreError, unlink } from 'vs/base/node/pfs';
-import { fill } from 'vs/base/common/arrays';
 import { IStorageDatabase, IStorageItemsChangeEvent, IUpdateRequest } from 'vs/base/parts/storage/common/storage';
 
 interface IDatabaseConnection {
 	readonly db: Database;
-
 	readonly isInMemory: boolean;
 
 	isErroneous?: boolean;
@@ -22,7 +20,7 @@ interface IDatabaseConnection {
 }
 
 export interface ISQLiteStorageDatabaseOptions {
-	logging?: ISQLiteStorageDatabaseLoggingOptions;
+	readonly logging?: ISQLiteStorageDatabaseLoggingOptions;
 }
 
 export interface ISQLiteStorageDatabaseLoggingOptions {
@@ -45,7 +43,7 @@ export class SQLiteStorageDatabase implements IStorageDatabase {
 
 	private readonly whenConnected = this.connect(this.path);
 
-	constructor(private path: string, private options: ISQLiteStorageDatabaseOptions = Object.create(null)) { }
+	constructor(private readonly path: string, private readonly options: ISQLiteStorageDatabaseOptions = Object.create(null)) { }
 
 	async getItems(): Promise<Map<string, string>> {
 		const connection = await this.whenConnected;
@@ -98,7 +96,7 @@ export class SQLiteStorageDatabase implements IStorageDatabase {
 				});
 
 				keysValuesChunks.forEach(keysValuesChunk => {
-					this.prepare(connection, `INSERT INTO ItemTable VALUES ${fill(keysValuesChunk.length / 2, '(?,?)').join(',')}`, stmt => stmt.run(keysValuesChunk), () => {
+					this.prepare(connection, `INSERT INTO ItemTable VALUES ${new Array(keysValuesChunk.length / 2).fill('(?,?)').join(',')}`, stmt => stmt.run(keysValuesChunk), () => {
 						const keys: string[] = [];
 						let length = 0;
 						toInsert.forEach((value, key) => {
@@ -133,7 +131,7 @@ export class SQLiteStorageDatabase implements IStorageDatabase {
 				});
 
 				keysChunks.forEach(keysChunk => {
-					this.prepare(connection, `DELETE FROM ItemTable WHERE key IN (${fill(keysChunk.length, '?').join(',')})`, stmt => stmt.run(keysChunk), () => {
+					this.prepare(connection, `DELETE FROM ItemTable WHERE key IN (${new Array(keysChunk.length).fill('?').join(',')})`, stmt => stmt.run(keysChunk), () => {
 						const keys: string[] = [];
 						toDelete.forEach(key => {
 							keys.push(key);

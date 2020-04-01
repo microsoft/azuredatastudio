@@ -6,7 +6,7 @@
 import * as nls from 'vs/nls';
 import * as path from 'vs/base/common/path';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { ICodeEditor, isCodeEditor } from 'vs/editor/browser/editorBrowser';
 import { registerEditorContribution } from 'vs/editor/browser/editorExtensions';
 import { IEditorContribution } from 'vs/editor/common/editorCommon';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -14,6 +14,8 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
 import { ITextModel } from 'vs/editor/common/model';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IStorageKeysSyncRegistryService } from 'vs/platform/userDataSync/common/storageKeys';
 
 /**
  * Shows a message when semantic tokens are shown the first time.
@@ -22,23 +24,41 @@ export class SemanticTokensHelp extends Disposable implements IEditorContributio
 
 	public static readonly ID = 'editor.contrib.semanticHighlightHelp';
 
+	private static notificationShown = false;
+
 	constructor(
 		_editor: ICodeEditor,
 		@INotificationService _notificationService: INotificationService,
 		@IOpenerService _openerService: IOpenerService,
-		@IWorkbenchThemeService _themeService: IWorkbenchThemeService
+		@IWorkbenchThemeService _themeService: IWorkbenchThemeService,
+		@IEditorService _editorService: IEditorService,
+		@IStorageKeysSyncRegistryService storageKeysSyncRegistryService: IStorageKeysSyncRegistryService
 	) {
 		super();
+
+		// opt-in to syncing
+		const neverShowAgainId = 'editor.contrib.semanticTokensHelp';
+		storageKeysSyncRegistryService.registerStorageKey({ key: neverShowAgainId, version: 1 });
 
 		const toDispose = this._register(new DisposableStore());
 		const localToDispose = toDispose.add(new DisposableStore());
 		const installChangeTokenListener = (model: ITextModel) => {
 			localToDispose.add(model.onDidChangeTokens((e) => {
-				if (!e.semanticTokensApplied) {
+				if (SemanticTokensHelp.notificationShown) {
+					toDispose.dispose();
 					return;
 				}
 
-				toDispose.dispose(); // uninstall all listeners, makes sure the notification is only shown once per window
+				if (!e.semanticTokensApplied) {
+					return;
+				}
+				const activeEditorControl = _editorService.activeTextEditorControl;
+				if (!isCodeEditor(activeEditorControl) || activeEditorControl.getModel() !== model) {
+					return; // only show if model is in the active code editor
+				}
+
+				toDispose.dispose(); // uninstall all listeners, make sure the notification is only shown once per window
+				SemanticTokensHelp.notificationShown = true;
 
 				const message = nls.localize(
 					{
@@ -48,7 +68,7 @@ export class SemanticTokensHelp extends Disposable implements IEditorContributio
 							'Variable 1 will be a theme name.'
 						]
 					},
-					"Semantic highlighting has been applied to '{0}' as the theme '{1}' has semantic highlighting enabled.",
+					"Code coloring of '{0}' has been updated as the theme '{1}' has [semantic highlighting](https://go.microsoft.com/fwlink/?linkid=2122588) enabled.",
 					path.basename(model.uri.path), _themeService.getColorTheme().label
 				);
 
@@ -61,7 +81,7 @@ export class SemanticTokensHelp extends Disposable implements IEditorContributio
 							_openerService.open(URI.parse(url));
 						}
 					}
-				], { neverShowAgain: { id: 'editor.contrib.semanticTokensHelp' } });
+				], { neverShowAgain: { id: neverShowAgainId } });
 			}));
 		};
 
