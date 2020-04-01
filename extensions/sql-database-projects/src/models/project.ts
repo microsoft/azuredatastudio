@@ -8,6 +8,7 @@ import * as xml2js from 'xml2js';
 import * as path from 'path';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
+import { getErrorMessage } from '../common/utils';
 
 /**
  * Class representing a Project, and providing functions for operating on it
@@ -119,7 +120,13 @@ export class Project {
 			}
 		);
 
-		await this.serializeToProjFile(this.projFileContents);
+		try {
+			await this.serializeToProjFile(this.projFileContents);
+		}
+		catch (err) {
+			vscode.window.showErrorMessage(getErrorMessage(err));
+			return;
+		}
 	}
 
 	private async serializeToProjFile(projFileContents: any) {
