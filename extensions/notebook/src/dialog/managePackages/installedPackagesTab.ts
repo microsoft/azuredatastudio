@@ -111,7 +111,7 @@ export class InstalledPackagesTab {
 		});
 	}
 
-	public async resetLocations(): Promise<void> {
+	private async resetLocations(): Promise<void> {
 		if (this.view) {
 			if (this.locationComponent) {
 				this.formBuilder.removeFormItem({
@@ -119,41 +119,58 @@ export class InstalledPackagesTab {
 					title: localize('managePackages.location', "Location")
 				});
 			}
-			const locations = await this.dialog.model.getLocations();
-			if (locations && locations.length === 1) {
-				this.locationComponent = this.view.modelBuilder.text().withProperties({
-					value: locations[0].displayName
-				}).component();
-			} else if (locations) {
-				let dropdownValues = locations.map(x => {
-					return {
-						name: x.name,
-						displayName: x.displayName
-					};
-				});
-				let locationDropDown = this.view.modelBuilder.dropDown().withProperties({
-					values: dropdownValues,
-					value: dropdownValues[0]
-				}).component();
-				this.dialog.changeLocation(dropdownValues[0].name);
-				locationDropDown.onValueChanged(() => {
-					this.dialog.changeLocation((<azdata.CategoryValue>locationDropDown.value).name);
-					this.dialog.resetPages()
-						.catch(err => {
-							this.dialog.showErrorMessage(utils.getErrorMessage(err));
-						});
-				});
-				this.locationComponent = locationDropDown;
-			} else {
-				this.locationComponent = this.view.modelBuilder.text().withProperties({
-				}).component();
-			}
+
+			this.locationComponent = await InstalledPackagesTab.getLocationComponent(this.view, this.dialog);
 
 			this.formBuilder.insertFormItem({
 				component: this.locationComponent,
 				title: localize('managePackages.location', "Location")
 			}, 1);
 		}
+	}
+
+	/**
+	 * Creates a component for package locations
+	 * @param view Model view
+	 * @param dialog Manage package dialog
+	 */
+	public static async getLocationComponent(view: azdata.ModelView, dialog: ManagePackagesDialog): Promise<azdata.Component> {
+		const locations = await dialog.model.getLocations();
+		let component: azdata.Component;
+		if (locations && locations.length === 1) {
+			component = view.modelBuilder.text().withProperties({
+				value: locations[0].displayName
+			}).component();
+		} else if (locations) {
+			let dropdownValues = locations.map(x => {
+				return {
+					name: x.name,
+					displayName: x.displayName
+				};
+			});
+			let locationDropDown = view.modelBuilder.dropDown().withProperties({
+				values: dropdownValues,
+				value: dropdownValues[0]
+			}).component();
+
+			locationDropDown.onValueChanged(async () => {
+				dialog.changeLocation((<azdata.CategoryValue>locationDropDown.value).name);
+				try {
+					await dialog.resetPages();
+				}
+				catch (err) {
+					dialog.showErrorMessage(utils.getErrorMessage(err));
+				}
+			});
+			component = locationDropDown;
+		} else {
+			component = view.modelBuilder.text().withProperties({
+			}).component();
+		}
+		if (locations && locations.length > 0) {
+			dialog.changeLocation(locations[0].name);
+		}
+		return component;
 	}
 
 	public get tab(): azdata.window.DialogTab {
