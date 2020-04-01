@@ -225,6 +225,7 @@ declare module 'azdata' {
 	 */
 	export interface TabbedPanelLayout {
 		orientation: TabOrientation;
+		showIcon: boolean;
 	}
 
 	/**
@@ -245,6 +246,11 @@ declare module 'azdata' {
 		 * Id of the tab
 		 */
 		id: string;
+
+		/**
+		 * Icon of the tab
+		 */
+		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 	}
 
 	/**

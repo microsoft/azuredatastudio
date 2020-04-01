@@ -480,7 +480,8 @@ class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
 			});
 
 			const tabbedPanel = view.modelBuilder.tabbedPanel().withTabs(tabs).withLayout({
-				orientation: 'vertical'
+				orientation: 'vertical',
+				showIcon: true
 			}).component();
 			return view.initializeModel(tabbedPanel);
 		});
@@ -498,7 +499,8 @@ class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
 			return {
 				title: tab.title,
 				id: tab.id,
-				content: flexContainer
+				content: flexContainer,
+				icon: tab.icon
 			};
 		} else {
 			return tab;
