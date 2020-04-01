@@ -108,6 +108,7 @@ export class GridPanel extends Disposable {
 
 	public focus(): void {
 		// will need to add logic to save the focused grid and focus that
+		this.tables[0].focus();
 	}
 
 	public set queryRunner(runner: QueryRunner) {
@@ -350,6 +351,10 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	// this handles if the row count is small, like 4-5 rows
 	protected get maxSize(): number {
 		return ((this.resultSet.rowCount) * this.rowHeight) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
+	}
+
+	public focus(): void {
+		this.table.focus();
 	}
 
 	constructor(
