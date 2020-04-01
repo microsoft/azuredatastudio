@@ -87,8 +87,7 @@ export class CellModel extends Disposable implements ICellModel {
 		// if the fromJson() method was already called and _cellGuid was previously set, don't generate another UUID unnecessarily
 		this._cellGuid = this._cellGuid || generateUuid();
 		this.createUri();
-		let commandExecutionSettingValue: boolean = this._configurationService.getValue('notebook.allowCommandExecution');
-		this._isCommandExecutionSettingEnabled = commandExecutionSettingValue ? commandExecutionSettingValue : false;
+		this._isCommandExecutionSettingEnabled = this._configurationService.getValue('notebook.allowCommandExecution');
 
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('notebook.allowCommandExecution')) {
