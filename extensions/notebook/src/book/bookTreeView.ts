@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as constants from '../common/constants';
-import * as fsw from 'fs';
 import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem } from './bookTreeItem';
@@ -113,13 +112,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				await this.showPreviewFile(urlToOpen);
 			}
 			// add file watcher on toc file.
-			fsw.watch(path.join(bookPath, '_data', 'toc.yml'), async (event, filename) => {
-				if (event === 'change') {
+			fs.watchFile(path.join(bookPath, '_data', 'toc.yml'), async (curr, prev) => {
+				if (curr.mtime > prev.mtime) {
 					let index = this.books.findIndex(book => book.bookPath === bookPath);
-					await this.books[index].initializeContents().then(() => {
-						this._onDidChangeTreeData.fire(this.books[index].bookItems[0]);
-					});
-					this._onDidChangeTreeData.fire();
+					if (index > -1) {
+						await this.books[index].initializeContents().then(() => {
+							this._onDidChangeTreeData.fire();
+						});
+					}
 				}
 			});
 		} catch (e) {
@@ -144,7 +144,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		} finally {
 			// remove watch on toc file.
 			if (deletedBook) {
-				fsw.unwatchFile(path.join(deletedBook.bookPath, '_data', 'toc.yml'));
+				fs.unwatchFile(path.join(deletedBook.bookPath, '_data', 'toc.yml'));
 			}
 		}
 	}
