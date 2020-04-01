@@ -5,7 +5,6 @@
 
 import * as azdata from 'azdata';
 import { ApiWrapper } from '../common/apiWrapper';
-import * as constants from '../common/constants';
 import * as nbExtensionApis from '../typings/notebookServices';
 import * as utils from '../common/utils';
 
@@ -23,24 +22,17 @@ export abstract class SqlPackageManageProviderBase {
 	}
 
 	/**
-	 * Returns location title
+	 * Returns database names
 	 */
-	public async getLocationTitle(): Promise<string> {
+	public async getLocations(): Promise<nbExtensionApis.IPackageLocation[]> {
 		let connection = await this.getCurrentConnection();
 		if (connection) {
-			return `${connection.serverName} ${connection.databaseName ? connection.databaseName : ''}`;
+			let databases = await this._apiWrapper.listDatabases(connection.connectionId);
+			return databases.map(x => {
+				return { displayName: x, name: x };
+			});
 		}
-		return constants.noConnectionError;
-	}
-
-	public async getLocations(): Promise<nbExtensionApis.IPackageLocation[]> {
-		//let connections = await this.getLocationTitle();
-		let connection = await this.getCurrentConnection();
-
-		let databases = await this._apiWrapper.listDatabases(connection.connectionId);
-		return databases.map(x => {
-			return { displayName: x, name: x };
-		});
+		return [];
 	}
 
 	protected async getCurrentConnection(): Promise<azdata.connection.ConnectionProfile> {

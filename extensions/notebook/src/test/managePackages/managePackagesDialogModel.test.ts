@@ -69,6 +69,19 @@ describe('Manage Packages', () => {
 		await should(model.init()).rejectedWith(`Invalid default provider id '${options.defaultProviderId}`);
 	});
 
+	it('Init should set default options given undefined', async function (): Promise<void> {
+		let testContext = createContext();
+		let provider = createProvider(testContext);
+		let providers = new Map<string, IPackageManageProvider>();
+		providers.set(provider.providerId, provider);
+
+		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, undefined);
+
+		await model.init();
+		should.equal(model.defaultLocation, provider.packageTarget.location);
+		should.equal(model.defaultProviderId, provider.providerId);
+	});
+
 	it('Init should set default provider Id given valid options', async function (): Promise<void> {
 		let testContext1 = createContext();
 		testContext1.provider.providerId = 'providerId1';
