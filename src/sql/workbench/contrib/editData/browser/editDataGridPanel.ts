@@ -246,7 +246,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 			catch (e) {
 				//table data has failed to load, must reject promise to avoid overwriting table.
-				this.logService.error('Table failed to load data: ' + e);
+				this.notificationService.error(nls.localize('tableDataLoadError', 'Table data failed to load.'));
 				return Promise.reject();
 			}
 		};
