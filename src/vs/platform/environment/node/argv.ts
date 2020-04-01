@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as minimist from 'vscode-minimist';
+import * as minimist from 'minimist';
 import * as os from 'os';
 import { localize } from 'vs/nls';
 import { ParsedArgs } from 'vs/platform/environment/common/environment';
@@ -90,7 +90,7 @@ export const OPTIONS: OptionDescriptions<Required<ParsedArgs>> = {
 	'logExtensionHostCommunication': { type: 'boolean' },
 	'skip-getting-started': { type: 'boolean' },
 	'skip-release-notes': { type: 'boolean' },
-	'sticky-quickopen': { type: 'boolean' },
+	'sticky-quickinput': { type: 'boolean' },
 	'disable-restore-windows': { type: 'boolean' },
 	'disable-telemetry': { type: 'boolean' },
 	'disable-updates': { type: 'boolean' },
@@ -128,7 +128,7 @@ export const OPTIONS: OptionDescriptions<Required<ParsedArgs>> = {
 	'nolazy': { type: 'boolean' }, // node inspect
 	'force-device-scale-factor': { type: 'string' },
 	'force-renderer-accessibility': { type: 'boolean' },
-	'ignore-certificate-error': { type: 'boolean' },
+	'ignore-certificate-errors': { type: 'boolean' },
 	'allow-insecure-localhost': { type: 'boolean' },
 	'_urls': { type: 'string[]' },
 

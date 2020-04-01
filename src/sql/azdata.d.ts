@@ -2212,7 +2212,8 @@ declare module 'azdata' {
 		Sql = 1,
 		OssRdbms = 2,
 		AzureKeyVault = 3,
-		Graph = 4
+		Graph = 4,
+		MicrosoftResourceManagement = 5
 	}
 
 	export interface DidChangeAccountsParams {
@@ -4678,6 +4679,9 @@ declare module 'azdata' {
 
 		export interface ICellOutput {
 			output_type: OutputTypeName;
+			metadata?: {
+				azdata_chartOptions?: any;
+			}
 		}
 
 		/**
