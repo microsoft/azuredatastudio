@@ -193,7 +193,12 @@ configurationRegistry.registerConfiguration({
 			'type': 'boolean',
 			'default': true,
 			'description': localize('notebook.sqlStopOnError', "SQL kernel: stop Notebook execution when error occurs in a cell.")
-		}
+		},
+		'notebook.allowCommandExecution': {
+			'type': 'boolean',
+			'description': localize('notebook.allowCommandExecution', "Allow notebooks to execute Azure Data Studio Commands using the %%AZDATA_EXECUTE_COMMAND magic."),
+			'default': false
+		},
 	}
 });
 
