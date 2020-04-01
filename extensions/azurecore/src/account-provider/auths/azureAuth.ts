@@ -124,6 +124,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			this.metadata.settings.sqlResource,
 			this.metadata.settings.graphResource,
 			this.metadata.settings.ossRdbmsResource,
+			this.metadata.settings.microsoftResource,
 			this.metadata.settings.azureKeyVaultResource
 		];
 
@@ -153,6 +154,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		try {
 			await this.refreshAccessToken(account.key, refreshToken);
 		} catch (ex) {
+			account.isStale = true;
 			if (ex.message) {
 				await vscode.window.showErrorMessage(ex.message);
 			}
@@ -163,6 +165,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 
 	public async getSecurityToken(account: azdata.Account, azureResource: azdata.AzureResource): Promise<TokenResponse | undefined> {
+		if (account.isStale === true) {
+			return undefined;
+		}
+
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 		if (!resource) {
 			return undefined;
@@ -199,8 +205,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 				if (!baseToken) {
 					return undefined;
 				}
+				try {
+					await this.refreshAccessToken(account.key, baseToken.refreshToken, tenant, resource);
+				} catch (ex) {
+					account.isStale = true;
+					return undefined;
+				}
 
-				await this.refreshAccessToken(account.key, baseToken.refreshToken, tenant, resource);
 				cachedTokens = await this.getCachedToken(account.key, resource.id, tenant.id);
 				if (!cachedTokens) {
 					return undefined;
@@ -349,8 +360,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return { accessToken, refreshToken, tokenClaims };
 
 		} catch (err) {
-			console.dir(err);
-			const msg = localize('azure.noToken', "Retrieving the token failed.");
+			const msg = localize('azure.noToken', "Retrieving the Azure token failed. Please sign in again.");
 			vscode.window.showErrorMessage(msg);
 			throw new Error(err);
 		}
