@@ -228,6 +228,6 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 	}
 
 	private extensionIsIgnored(identifier: IExtensionIdentifier): boolean {
-		return this.configurationService.getValue<string[]>('sync.ignoredExtensions').some(id => areSameExtensions({ id }, identifier));
+		return (this.configurationService.getValue<string[]>('sync.ignoredExtensions') || []).some(id => areSameExtensions({ id }, identifier)); // {{SQL CARBON EDIT}} Temporary fix until VS Code fix is merged in
 	}
 }
