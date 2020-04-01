@@ -901,7 +901,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: '84256',
+	id: 'list.scrollLeft',
 	weight: KeybindingWeight.WorkbenchContrib,
 	when: WorkbenchListFocusContextKey,
 	handler: accessor => {
