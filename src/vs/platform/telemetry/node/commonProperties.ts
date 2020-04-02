@@ -39,12 +39,13 @@ export async function resolveCommonProperties(
 	// __GDPR__COMMON__ "common.product" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
 	result['common.product'] = productObject.nameShort || 'desktop'; // {{SQL CARBON EDIT}}
 	result['common.application.name'] = productObject.nameLong; // {{SQL CARBON EDIT}}
+	result['quality'] = productObject.quality || 'dev'; // {{SQL CARBON EDIT}} Add quality
 
-	// const msftInternal = verifyMicrosoftInternalDomain(msftInternalDomains || []); {{SQL CARBON EDIT}} remove msftinternal
-	// if (msftInternal) {
-	// 	// __GDPR__COMMON__ "common.msftInternal" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true }
-	// 	result['common.msftInternal'] = msftInternal;
-	// }
+	const msftInternal = verifyMicrosoftInternalDomain(msftInternalDomains || []);
+	if (msftInternal) {
+		// __GDPR__COMMON__ "common.msftInternal" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true }
+		result['common.msftInternal'] = msftInternal;
+	}
 
 	// dynamic properties which value differs on each call
 	let seq = 0;
@@ -84,11 +85,11 @@ export async function resolveCommonProperties(
 	return result;
 }
 
-/*function verifyMicrosoftInternalDomain(domainList: readonly string[]): boolean { {{SQL CARBON EDIT}} comment out for no unused
+function verifyMicrosoftInternalDomain(domainList: readonly string[]): boolean {
 	if (!process || !process.env || !process.env['USERDNSDOMAIN']) {
 		return false;
 	}
 
 	const domain = process.env['USERDNSDOMAIN']!.toLowerCase();
 	return domainList.some(msftDomain => domain === msftDomain);
-}*/
+}
