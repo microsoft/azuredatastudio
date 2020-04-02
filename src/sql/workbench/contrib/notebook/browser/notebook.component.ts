@@ -654,10 +654,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private getSectionElements(): NotebookSection[] {
 		let headers: NotebookSection[] = [];
 		let el: HTMLElement = this.container.nativeElement;
-		let headerElements = el.querySelectorAll('h1, h2, h3, h4, h5, h6');
+		let headerElements = el.querySelectorAll('h1, h2, h3, h4, h5, h6, a[name], a[id]');
 		for (let i = 0; i < headerElements.length; i++) {
 			let headerEl = headerElements[i] as HTMLElement;
-			if (headerEl['id']) {
+			if (headerEl['id'] || headerEl['name']) {
 				headers.push(new NotebookSection(headerEl));
 			}
 		}
@@ -685,7 +685,10 @@ class NotebookSection implements INotebookSection {
 	}
 
 	get relativeUri(): string {
-		return this.headerEl['id'];
+		if (this.headerEl['id']) {
+			return this.headerEl['id'];
+		}
+		return this.headerEl['name'];
 	}
 
 	get header(): string {
