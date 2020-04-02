@@ -355,6 +355,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	public focus(): void {
 		if (!this.table.activeCell) {
+			this.table.setActiveCell(0, 1);
 			this.selectionModel.setSelectedRanges([new Slick.Range(0, 1)]);
 		}
 		this.table.focus();
