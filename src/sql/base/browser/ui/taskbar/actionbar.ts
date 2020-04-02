@@ -44,13 +44,10 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 	private _overflow: HTMLElement;
 	private _moreItemElement: HTMLElement;
 
-	private _collapseOverflow: boolean;
-
-	constructor(container: HTMLElement, options: IActionBarOptions = defaultOptions, collapseOverflow: boolean = false) {
+	constructor(container: HTMLElement, options: IActionBarOptions = defaultOptions, private _collapseOverflow: boolean = false) {
 		super();
 		this._options = options;
 		this._context = options.context;
-		this._collapseOverflow = collapseOverflow;
 
 		if (this._options.actionRunner) {
 			this._actionRunner = this._options.actionRunner;
@@ -180,23 +177,23 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 				moreActionsElement.title = nls.localize('toggleMore', "Toggle More");
 				moreActionsElement.tabIndex = 0;
 				moreActionsElement.setAttribute('aria-haspopup', 'true');
-				moreActionsElement.onclick = (this._domNode, ev => { this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block'; });
-				moreActionsElement.onkeydown = (this._domNode, ev => {
+				this._register(DOM.addDisposableListener(this._domNode, DOM.EventType.CLICK, (e => { this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block'; })));
+				this._register(DOM.addDisposableListener(this._domNode, DOM.EventType.KEY_DOWN, (ev => {
 					let event = new StandardKeyboardEvent(ev);
 					if (event.keyCode === KeyCode.Enter || event.keyCode === KeyCode.Space) {
 						this._focusedItem = undefined; // so that the default actionbar click handler doesn't trigger the selected action-item
 						this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block';
-						event.preventDefault();
-						event.stopPropagation();
+						DOM.EventHelper.stop(event, true);
 					}
-				});
+				})));
+
 				this._moreItemElement.appendChild(moreActionsElement);
 				this._actionsList.appendChild(this._moreItemElement);
 			}
 
 			this._moreItemElement.style.display = 'block';
 			while (width < fullWidth) {
-				let index = this._actionsList.childNodes.length - 2;
+				let index = this._actionsList.childNodes.length - 2; // remove the last toolbar action before the more actions '...'
 				if (index > -1) {
 					let item = this._actionsList.removeChild(this._actionsList.childNodes[index]);
 					this._overflow.insertBefore(item, this._overflow.firstChild);
@@ -299,7 +296,9 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			this._actionsList.insertBefore(element, this._actionsList.children[index++]);
 		}
 
-		this.resizeToolbar();
+		if (this._collapseOverflow) {
+			this.resizeToolbar();
+		}
 	}
 
 	/**
@@ -341,7 +340,9 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			this._items.push(item);
 		});
 
-		this.resizeToolbar();
+		if (this._collapseOverflow) {
+			this.resizeToolbar();
+		}
 	}
 
 	public pull(index: number): void {
