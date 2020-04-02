@@ -332,6 +332,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
+	public async openNotebookFolder(): Promise<void> {
+		return;
+	}
+
 	private runThrottledAction(resource: string, action: () => void) {
 		const isResourceChange = resource !== this._resource;
 		if (isResourceChange) {

@@ -204,6 +204,15 @@
         }
       },
       {
+        "command": "notebook.command.openNotebookFolder",
+        "title": "%title.openNotebookFolder%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/open_notebook_inverse.svg",
+          "light": "resources/light/open_notebook.svg"
+        }
+      },
+      {
         "command": "notebook.command.closeBook",
         "title": "%title.closeJupyterBook%"
       },
@@ -375,6 +384,11 @@
       "view/title": [
         {
           "command": "notebook.command.openBook",
+          "when": "view == bookTreeView",
+          "group": "navigation"
+        },
+        {
+          "command": "notebook.command.openNotebookFolder",
           "when": "view == bookTreeView",
           "group": "navigation"
         },
