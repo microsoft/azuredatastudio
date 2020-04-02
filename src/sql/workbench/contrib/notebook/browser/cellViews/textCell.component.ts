@@ -11,7 +11,6 @@ import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetecto
 
 import { localize } from 'vs/nls';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { ToolbarActionService } from 'sql/workbench/contrib/notebook/browser/services/toolbarAction.service';
 import * as themeColors from 'vs/workbench/common/theme';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Emitter } from 'vs/base/common/event';
@@ -29,6 +28,7 @@ import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/ce
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
 import { NotebookRange, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { IToolbarActionService } from 'sql/workbench/services/notebook/common/interfaces';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -94,7 +94,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(ToolbarActionService) private toolbarActionService: ToolbarActionService,
+		@Inject(IToolbarActionService) private toolbarActionService: IToolbarActionService,
 	) {
 		super();
 		this.isEditMode = true;
