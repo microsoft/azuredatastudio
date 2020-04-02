@@ -35,7 +35,6 @@ import { Event } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
 import * as DOM from 'vs/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import * as nls from 'vs/nls';
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -55,6 +54,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	//main dataset to work on.
 	private dataSet: IGridDataSet;
 	private oldDataRows: VirtualizedCollection<any>;
+	private oldGridData: {}[];
 	private firstRender = true;
 	private firstLoad = true;
 	private enableEditing = true;
@@ -158,6 +158,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	handleStart(self: EditDataGridPanel, event: any): void {
 		self.dataSet = undefined;
 		self.oldDataRows = undefined;
+		self.oldGridData = undefined;
 		self.placeHolderDataSets = [];
 		self.renderedDataSets = self.placeHolderDataSets;
 
@@ -220,7 +221,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		// Setup a function for generating a promise to lookup result subsets
 		this.loadDataFunction = (offset: number, count: number): Promise<{}[]> => {
 			return self.dataService.getEditRows(offset, count).then(result => {
-				try {
+				if (this.dataSet) {
 					let gridData = result.subset.map(r => {
 						let dataWithSchema = {};
 						// skip the first column since its a number column
@@ -243,12 +244,14 @@ export class EditDataGridPanel extends GridParentComponent {
 							return p;
 						}, {}));
 					}
-
+					if (gridData && gridData !== this.oldGridData) {
+						this.oldGridData = gridData;
+					}
 					return gridData;
 				}
-				catch (e) {
-					this.logService.error('Unable to load table data: ' + e);
-					return Promise.reject();
+				else {
+					this.logService.error('Grid data is nonexistent, using last known good grid');
+					return this.oldGridData;
 				}
 			});
 		};
@@ -455,7 +458,8 @@ export class EditDataGridPanel extends GridParentComponent {
 					}
 				}
 				catch {
-					this.notificationService.error(nls.localize('refreshTableError', 'Too many refreshes, edit session corrupt: Please close and reload table'));
+					this.logService.error('dataSet is empty, refresh cancelled.');
+					reject();
 				}
 
 				if (this.firstRender) {
@@ -587,7 +591,10 @@ export class EditDataGridPanel extends GridParentComponent {
 	// Checks if input row is our NULL new row
 	private isNullRow(row: number): boolean {
 		// Null row is always at index (totalRows - 1)
-		return (row === this.dataSet.totalRows - 1);
+		if (this.dataSet) {
+			return (row === this.dataSet.totalRows - 1);
+		}
+		return false;
 	}
 
 	// Adds CSS classes to slickgrid cells to indicate a dirty state
