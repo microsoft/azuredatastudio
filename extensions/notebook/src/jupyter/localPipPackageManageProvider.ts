@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IPackageManageProvider, IPackageDetails, IPackageTarget, IPackageOverview } from '../types';
+import { IPackageManageProvider, IPackageDetails, IPackageTarget, IPackageOverview, IPackageLocation } from '../types';
 import { IJupyterServerInstallation } from './jupyterServerInstallation';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
@@ -38,7 +38,7 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 	/**
 	 * Returns list of packages
 	 */
-	public async listPackages(): Promise<IPackageDetails[]> {
+	public async listPackages(location?: string): Promise<IPackageDetails[]> {
 		return await this.jupyterInstallation.getInstalledPipPackages();
 	}
 
@@ -47,7 +47,7 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 	 * @param packages Packages to install
 	 * @param useMinVersion minimum version
 	 */
-	installPackages(packages: IPackageDetails[], useMinVersion: boolean): Promise<void> {
+	installPackages(packages: IPackageDetails[], useMinVersion: boolean, location?: string): Promise<void> {
 		return this.jupyterInstallation.installPipPackages(packages, useMinVersion);
 	}
 
@@ -55,7 +55,7 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 	 * Uninstalls given packages
 	 * @param packages Packages to uninstall
 	 */
-	uninstallPackages(packages: IPackageDetails[]): Promise<void> {
+	uninstallPackages(packages: IPackageDetails[], location?: string): Promise<void> {
 		return this.jupyterInstallation.uninstallPipPackages(packages);
 	}
 
@@ -69,8 +69,8 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 	/**
 	 * Returns location title
 	 */
-	getLocationTitle(): Promise<string> {
-		return Promise.resolve(constants.localhostTitle);
+	getLocations(): Promise<IPackageLocation[]> {
+		return Promise.resolve([{ displayName: constants.localhostTitle, name: constants.localhostName }]);
 	}
 
 	/**
