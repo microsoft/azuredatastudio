@@ -4,9 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 .tabbedPanel {
-	border-top-color: rgba(128, 128, 128, 0.35);
-	border-top-width: 1px;
-	border-top-style: solid;
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
@@ -18,15 +15,22 @@ panel {
 	width: 100%;
 }
 
-.tabbedPanel .composite.title {
+.tabbedPanel.horizontal>.title {
 	display: flex;
 	flex: 0 0 auto;
 	position: relative;
 }
 
+.tabbedPanel.vertical>.title {
+	flex: 0 0 auto;
+	flex-direction: column;
+	height: 100%;
+}
+
 .tabbedPanel .tabContainer {
 	flex: 1 1 auto;
 	overflow: hidden;
+	height: 100%;
 }
 
 .tabbedPanel .tabList {
@@ -45,31 +49,20 @@ panel {
 	margin: auto;
 }
 
-.tabbedPanel .tabList .tab .tabLabel {
-	font-size: 13px;
-	padding-bottom: 4px;
-	font-weight: 600;
-}
-
-.tabbedPanel.vertical .tabList .tab .tabLabel {
-	font-size: 11px;
-}
-
 .tabbedPanel .tabList .tab-header {
-	display: flex;
 	padding-left: 5px;
-	padding-right: 5px;
-	cursor: pointer;
+	padding-right: 10px;
+	line-height: 35px;
 }
 
-.tabbedPanel.vertical .tabList .tab-header {
+.tabbedPanel.horizontal > .title .tabList .tab-header {
+	display: flex;
+	min-width: 80px;
+}
+
+.tabbedPanel.vertical > .title .tabList .tab-header {
 	display: block;
-	text-transform: none;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	width: auto;
-	height: 50px;
-	line-height: 45px;
+	min-width: 150px;
 }
 
 .tabbedPanel .tabList .tab .tabIcon.codicon {
@@ -85,8 +78,6 @@ panel {
 
 .tabbedPanel .composite.title .title-actions .action-label {
 	display: block;
-	height: 35px;
-	line-height: 35px;
 	min-width: 28px;
 	background-size: 16px;
 	background-position: center center;
@@ -110,22 +101,22 @@ panel {
 	flex-direction: row;
 }
 
-.tabbedPanel.vertical > .title {
+.tabbedPanel.vertical>.title {
 	flex: 0 0 auto;
 	flex-direction: column;
 	height: 100%;
 }
 
-.tabbedPanel > .tab-content {
-	flex: 1;
+.tabbedPanel>.tab-content {
+	flex: 1 1 auto;
 	position: relative;
 }
 
-.tabbedPanel.vertical > .title > .tabContainer > .monaco-scrollable-element > .tabList {
+.tabbedPanel.vertical>.title > .tabContainer .tabList {
 	flex-flow: column;
 }
 
-.tabbedPanel.horizontal > .title > .tabContainer > .monaco-scrollable-element > .tabList {
+.tabbedPanel.horizontal > .title > .tabContainer .tabList {
 	flex-flow: row;
 }
 
@@ -169,7 +160,7 @@ panel {
 	background-size: 11px 11px;
 }
 
-.vs .tabbedPanel .tab-action.collapse{
+.vs .tabbedPanel .tab-action.collapse {
 	background-image: url("collapse.svg");
 }
 
