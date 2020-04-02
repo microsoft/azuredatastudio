@@ -17,8 +17,8 @@ import * as types from 'vs/base/common/types';
 export function registerNotebookThemes(overrideEditorThemeSetting: boolean, configurationService: IConfigurationService): IDisposable {
 	return registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 
-		let lightCellBorder = '#0078D4';
 		let darkCellBorder = '#0078D4';
+		let codeBackgroundColor = '#F5F5F5';
 
 		// Book Navigation Buttons
 		const buttonForegroundColor = theme.getColor(buttonForeground);
@@ -105,19 +105,19 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			.hc-black .notebookEditor .notebook-cell.active {
 				border-width: 1px 3px;
 				border-style: solid;
-				border-color: transparent;
+				border-color: ${darkCellBorder};
 			}
 
 			.notebookEditor .notebook-cell:hover:not(.active) {
 				border-width: 1px 3px;
 				border-style: solid;
-				border-color: ${lightCellBorder};
+				border-color: transparent;
 			}
 
 			.vs-dark .notebookEditor .notebook-cell:hover:not(.active) {
 				border-width: 1px 3px;
 				border-style: solid;
-				border-color: ${darkCellBorder};
+				border-color: transparent;
 			}
 
 			.hc-black .notebookEditor .notebook-cell:hover:not(.active) {
@@ -148,7 +148,9 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			}
 
 			// Override code editor background if color is defined
-			let codeBackground = inactiveBorder; // theme.getColor(EDITOR_GROUP_HEADER_TABS_BACKGROUND);
+			//let codeBackground = inactiveBorder; // theme.getColor(EDITOR_GROUP_HEADER_TABS_BACKGROUND);
+			let codeBackground = codeBackgroundColor; // theme.getColor(EDITOR_GROUP_HEADER_TABS_BACKGROUND);
+
 			if (codeBackground) {
 				// Main background
 				collector.addRule(`.notebook-cell:not(.active) code-component { background-color: ${codeBackground}; }`);

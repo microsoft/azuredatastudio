@@ -11,7 +11,8 @@
 	border-color: transparent;
 	border-style: solid;
 	border-width: 1px 3px;
-	margin: 10px 20px;
+	margin: 24px 20px;
+	position: relative;
 }
 
 .notebookEditor .notebook-info-label {

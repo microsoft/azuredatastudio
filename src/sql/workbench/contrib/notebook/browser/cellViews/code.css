@@ -10,11 +10,12 @@ code-component {
 }
 
 code-component .toolbar {
-	border-right-width: 1px;
+	background-color: #EEEEEE;
+	/* border-right: 1px solid #A19F9D; */
 	flex: 0 0 auto;
 	display: flex;
 	flex-flow:column;
-	width: 40px;
+	width: 52px;
 	min-height: 40px;
 	orientation: portrait
 }
@@ -29,9 +30,15 @@ code-component .toolbar .carbon-taskbar {
 	margin-top: 5px;
 }
 
-code-component .toolbarIconRun {
+.notebook-cell.active code-component .toolbarIconRun {
 	height: 20px;
 	background-image: url('./media/light/execute_cell.svg');
+	padding-bottom: 10px;
+}
+
+.notebook-cell:not(.active):hover code-component .toolbarIconRun {
+	height: 20px;
+	background-image: url('./media/light/execute_cell_grey.svg');
 	padding-bottom: 10px;
 }
 
@@ -58,7 +65,10 @@ code-component .toolbarIconStop {
 }
 
 code-component .editor {
-	padding: 5px 0px 5px 0px
+	padding: 14px 0px 5px 0px
+}
+code-component .editor .line-numbers {
+	color: #A19F9D;
 }
 
 /* overview ruler */
@@ -80,11 +90,12 @@ code-component .carbon-taskbar .codicon {
 }
 
 code-component .carbon-taskbar .codicon.hideIcon {
+	color: #999999;
 	width: 0px;
 	padding-left: 0px;
 	padding-top: 6px;
 	font-family: monospace;
-	font-size: 12px;
+	font-size: 14px;
 }
 
 code-component .carbon-taskbar .codicon.hideIcon.execCountTen {
@@ -95,9 +106,9 @@ code-component .carbon-taskbar .codicon.hideIcon.execCountHundred {
 	margin-left: -6px;
 }
 
-code-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container {
+/* code-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container {
 	padding-left: 10px
-}
+} */
 
 code-component .hide-component-button {
 	height: 16px;
@@ -106,7 +117,7 @@ code-component .hide-component-button {
 	border-width: 0px;
 	background-repeat: no-repeat;
 	background-position: center;
-	background-color: inherit;
+	background-color: #EEEEEE;
 }
 
 code-component .hide-component-button.icon-hide-cell {

@@ -5,11 +5,13 @@
 import 'vs/css!./textCell';
 import 'vs/css!./media/markdown';
 import 'vs/css!./media/highlight';
+import 'vs/css!./markdownToolbar';
 
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener, ViewChildren, QueryList } from '@angular/core';
 
 import { localize } from 'vs/nls';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+//import { ToolbarActionService } from 'sql/workbench/contrib/notebook/browser/services/toolbarAction.service';
 import * as themeColors from 'vs/workbench/common/theme';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Emitter } from 'vs/base/common/event';
@@ -30,7 +32,6 @@ import { IColorTheme } from 'vs/platform/theme/common/themeService';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
-
 
 @Component({
 	selector: TEXT_SELECTOR,
@@ -93,6 +94,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		//@Inject(ToolbarActionService) private toolbarActionService: ToolbarActionService,
 	) {
 		super();
 		this.isEditMode = true;
@@ -104,6 +106,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			}
 		}));
 	}
+
+	// public haleTest() {
+	// 	this.toolbarActionService.fireOnToolbarItemSelect('testing, 1,2,3');
+	// }
 
 	public get cellEditors(): ICellEditorProvider[] {
 		let editors: ICellEditorProvider[] = [];

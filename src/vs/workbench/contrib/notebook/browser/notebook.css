@@ -17,6 +17,10 @@
 	white-space: initial;
 }
 
+.scrollable {
+	margin-top: 5px;
+}
+
 /* .monaco-workbench .part.editor > .content .notebook-editor .cell-list-container .monaco-scrollable-element {
 	overflow: visible !important;
 } */
