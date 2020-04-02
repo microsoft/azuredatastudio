@@ -267,7 +267,6 @@
   "dependencies": {
     "@azure/arm-resourcegraph": "^2.0.0",
     "@azure/arm-subscriptions": "1.0.0",
-    "adal-node": "^0.2.1",
     "axios": "^0.19.2",
     "qs": "^6.9.1",
     "request": "2.88.0",
