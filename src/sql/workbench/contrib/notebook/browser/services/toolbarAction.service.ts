@@ -5,13 +5,13 @@
 
 import { Injectable } from '@angular/core';
 import { IToolbarActionService } from 'sql/workbench/services/notebook/common/interfaces';
-import { Event, EventEmitter } from 'vscode';
+import { Event, Emitter } from 'vs/base/common/event';
 
 @Injectable()
 export class ToolbarActionService implements IToolbarActionService {
 	_toolbarItem: undefined;
 
-	private _onToolbarItemSelect = new EventEmitter<string>();
+	private _onToolbarItemSelect = new Emitter<string>();
 	public onToolbarItemSelect: Event<string> = this._onToolbarItemSelect.event;
 
 	public fireOnToolbarItemSelect(toolbarItem: string): void {
