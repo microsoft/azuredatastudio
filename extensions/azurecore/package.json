@@ -269,7 +269,6 @@
     "@azure/arm-subscriptions": "1.0.0",
     "axios": "^0.19.2",
     "qs": "^6.9.1",
-    "request": "2.88.0",
     "vscode-nls": "^4.0.0",
     "ws": "^7.2.0"
   },
