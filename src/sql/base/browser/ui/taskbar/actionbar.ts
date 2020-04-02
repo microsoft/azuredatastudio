@@ -174,16 +174,14 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 				this._moreItemElement = document.createElement('li');
 				this._moreItemElement.className = 'action-item more';
 				this._moreItemElement.setAttribute('role', 'presentation');
-				this._moreItemElement.id = 'more';
-				const innerText: HTMLElement = document.createElement('a');
-				innerText.setAttribute('role', 'button');
-				innerText.innerHTML = '...';
-				innerText.style.fontWeight = 'bold';
-				innerText.style.fontSize = 'large';
-				innerText.title = nls.localize('toggleMore', "Toggle More");
-				innerText.tabIndex = 0;
-				innerText.onclick = (this._domNode, ev => { this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block'; });
-				innerText.onkeydown = (this._domNode, ev => {
+				const moreActionsElement: HTMLElement = document.createElement('a');
+				moreActionsElement.className = 'moreActionsElement action-label codicon toggle-more';
+				moreActionsElement.setAttribute('role', 'button');
+				moreActionsElement.title = nls.localize('toggleMore', "Toggle More");
+				moreActionsElement.tabIndex = 0;
+				moreActionsElement.setAttribute('aria-haspopup', 'true');
+				moreActionsElement.onclick = (this._domNode, ev => { this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block'; });
+				moreActionsElement.onkeydown = (this._domNode, ev => {
 					let event = new StandardKeyboardEvent(ev);
 					if (event.keyCode === KeyCode.Enter || event.keyCode === KeyCode.Space) {
 						this._focusedItem = undefined; // so that the default actionbar click handler doesn't trigger the selected action-item
@@ -192,7 +190,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 						event.stopPropagation();
 					}
 				});
-				this._moreItemElement.appendChild(innerText);
+				this._moreItemElement.appendChild(moreActionsElement);
 				this._actionsList.appendChild(this._moreItemElement);
 			}
 

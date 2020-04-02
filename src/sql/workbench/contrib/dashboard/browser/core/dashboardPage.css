@@ -49,11 +49,6 @@ dashboard-page .actions-container .action-item .action-label{
 	background-position: left;
 }
 
-dashboard-page .overflow .action-item .action-label{
-	background-size: 16px;
-	background-position: left;
-}
-
 dashboard-page .actions-container .taskbarSeparator {
 	height: 14px;
 	margin-right: 16px;

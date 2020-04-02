@@ -109,6 +109,16 @@
 	padding-left: 20px;
 }
 
+.carbon-taskbar .actions-container .action-item .action-label.moreActionsElement {
+	height: 18px;
+	margin-top: 3px;
+}
+
+.carbon-taskbar .overflow .action-item .action-label{
+	background-size: 16px;
+	background-position: left;
+}
+
 .overflow .taskbarSeparator {
 	height: 1px;
 	width: 85%;
