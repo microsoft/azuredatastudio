@@ -458,7 +458,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					}
 				}
 				catch {
-					this.logService.error('dataSet is empty, refresh cancelled.');
+					this.logService.error('data set is empty, refresh cancelled.');
 					reject();
 				}
 
