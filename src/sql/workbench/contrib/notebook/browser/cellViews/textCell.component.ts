@@ -94,7 +94,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IToolbarActionService) private toolbarActionService: IToolbarActionService,
+		@Inject(IToolbarActionService) private toolbarActionService: IToolbarActionService
 	) {
 		super();
 		this.isEditMode = true;
