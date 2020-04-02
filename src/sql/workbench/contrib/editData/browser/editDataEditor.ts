@@ -620,10 +620,12 @@ export class EditDataEditor extends BaseEditor {
 			} else {
 				this._sash.hide();
 			}
-			if (this.queryPaneEnabled()) {
-				DOM.toggleClass(this._resultsEditorContainer, 'tabbedPanel', true);
-			} else {
-				DOM.toggleClass(this._resultsEditorContainer, 'tabbedPanel', false);
+			if (this._resultsEditorContainer) {
+				if (this.queryPaneEnabled()) {
+					DOM.toggleClass(this._resultsEditorContainer, 'tabbedPanel', true);
+				} else {
+					DOM.toggleClass(this._resultsEditorContainer, 'tabbedPanel', false);
+				}
 			}
 		}
 
@@ -677,10 +679,14 @@ export class EditDataEditor extends BaseEditor {
 	public toggleQueryPane(): void {
 		this.editDataInput.queryPaneEnabled = !this.queryPaneEnabled();
 		if (this.queryPaneEnabled()) {
-			DOM.toggleClass(this._resultsEditorContainer, 'tabbedPanel', true);
+			if (this._resultsEditorContainer) {
+				DOM.toggleClass(this._resultsEditorContainer, 'tabbedPanel', true);
+			}
 			this._showQueryEditor();
 		} else {
-			DOM.toggleClass(this._resultsEditorContainer, 'tabbedPanel', false);
+			if (this._resultsEditorContainer) {
+				DOM.toggleClass(this._resultsEditorContainer, 'tabbedPanel', false);
+			}
 			this._hideQueryEditor();
 		}
 		this._doLayout(false);

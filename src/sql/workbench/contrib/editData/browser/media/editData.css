@@ -7,11 +7,6 @@
 	box-sizing: border-box;
 }
 
-.sash-visible .monaco-sash {
-	border-bottom-color:rgb(81,81,81);
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-}
 
 #workbench\.editor\.editDataEditor .monaco-toolbar .monaco-select-box {
 	margin-top: 4px;
