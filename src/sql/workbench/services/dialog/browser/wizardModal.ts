@@ -190,6 +190,7 @@ export class WizardModal extends Modal {
 		this._dialogPanes.forEach((dialogPane, page) => {
 			if (page === pageToShow) {
 				dialogPaneToShow = dialogPane;
+				dialogPane.layout(true);
 				dialogPane.show(focus);
 			} else {
 				dialogPane.hide();
