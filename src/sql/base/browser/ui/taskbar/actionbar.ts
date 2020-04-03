@@ -152,6 +152,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			this._overflow = document.createElement('ul');
 			this._overflow.id = 'overflow';
 			this._overflow.className = 'overflow';
+			this._overflow.setAttribute('role', 'menu');
 			this._domNode.appendChild(this._overflow);
 		} else {
 			this._actionsList.style.flexWrap = 'wrap';
@@ -189,7 +190,13 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 				let placeHolderItem = this._items.splice(this._actionsList.childNodes.length - 1, 1);
 				this._items.splice(this._actionsList.childNodes.length, 0, placeHolderItem[0]);
 
-				this._actionsList.insertBefore(this._overflow.removeChild(this._overflow.firstChild), this._actionsList.lastChild);
+				let item = this._overflow.removeChild(this._overflow.firstChild);
+				// change role back to button when it's in the toolbar
+				if ((<HTMLElement>item).className !== 'taskbarSeparator') {
+					(<HTMLElement>item.firstChild).setAttribute('role', 'button');
+				}
+				this._actionsList.insertBefore(item, this._actionsList.lastChild);
+
 				// if the action was too wide, collapse it again
 				if (document.getElementById('actions-container').scrollWidth > document.getElementById('actions-container').offsetWidth) {
 					// move placeholder in this._items
@@ -210,6 +217,11 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		let index = this._actionsList.childNodes.length - 2; // remove the last toolbar action before the more actions '...'
 		let item = this._actionsList.removeChild(this._actionsList.childNodes[index]);
 		this._overflow.insertBefore(item, this._overflow.firstChild);
+
+		// change role to menuItem when it's in the overflow
+		if ((<HTMLElement>this._overflow.firstChild).className !== 'taskbarSeparator') {
+			(<HTMLElement>this._overflow.firstChild.firstChild).setAttribute('role', 'menuItem');
+		}
 	}
 
 	private createMoreItemElement(): void {
