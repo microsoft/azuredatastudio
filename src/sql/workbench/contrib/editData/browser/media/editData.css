@@ -7,6 +7,15 @@
 	box-sizing: border-box;
 }
 
+.editDataContainer-horizontal .activeBorder{
+	border-top-color: rgba(128, 128, 128, 0.35);
+	border-top-width: 1px;
+	border-top-style: solid;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+}
+
 #workbench\.editor\.editDataEditor .monaco-toolbar .monaco-select-box {
 	margin-top: 4px;
 	margin-bottom: 4px;

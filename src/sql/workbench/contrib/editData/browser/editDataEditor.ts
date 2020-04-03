@@ -6,7 +6,6 @@
 import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
-import 'vs/css!sql/base/browser/ui/panel/media/panel';
 
 import { EditorOptions, EditorInput, IEditorControl, IEditorPane } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
@@ -622,9 +621,9 @@ export class EditDataEditor extends BaseEditor {
 			}
 			if (this._resultsEditorContainer) {
 				if (this.queryPaneEnabled()) {
-					DOM.toggleClass(this._resultsEditorContainer, 'tabbedPanel', true);
+					DOM.toggleClass(this._resultsEditorContainer, 'activeBorder', true);
 				} else {
-					DOM.toggleClass(this._resultsEditorContainer, 'tabbedPanel', false);
+					DOM.toggleClass(this._resultsEditorContainer, 'activeBorder', false);
 				}
 			}
 		}
@@ -680,12 +679,12 @@ export class EditDataEditor extends BaseEditor {
 		this.editDataInput.queryPaneEnabled = !this.queryPaneEnabled();
 		if (this.queryPaneEnabled()) {
 			if (this._resultsEditorContainer) {
-				DOM.toggleClass(this._resultsEditorContainer, 'tabbedPanel', true);
+				DOM.toggleClass(this._resultsEditorContainer, 'activeBorder', true);
 			}
 			this._showQueryEditor();
 		} else {
 			if (this._resultsEditorContainer) {
-				DOM.toggleClass(this._resultsEditorContainer, 'tabbedPanel', false);
+				DOM.toggleClass(this._resultsEditorContainer, 'activeBorder', false);
 			}
 			this._hideQueryEditor();
 		}
