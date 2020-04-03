@@ -12,24 +12,6 @@
 	flex-direction: column;
 }
 
-.vs-dark .tabbedPanel {
-	border-top-color: #444444;
-	border-top-width: 1px;
-	border-top-style: solid;
-	box-sizing: border-box;
-	display: flex;
-	flex-direction: column;
-}
-
-.hc-black .tabbedPanel {
-	border-top-color: #2b56f2;
-	border-top-width: 1px;
-	border-top-style: solid;
-	box-sizing: border-box;
-	display: flex;
-	flex-direction: column;
-}
-
 panel {
 	display: block;
 	height: 100%;

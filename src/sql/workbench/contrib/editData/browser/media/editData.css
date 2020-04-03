@@ -7,17 +7,6 @@
 	box-sizing: border-box;
 }
 
-.activePanelBorder{
-	border-top: 1px solid rgba(128, 128, 128, 0.35);
-}
-
-.vs-dark .activePanelBorder{
-	border-top: 1px solid #444444;
-}
-
-.hc-black .activePanelBorder{
-	border-top: 1px solid #2b56f2;
-}
 
 #workbench\.editor\.editDataEditor .monaco-toolbar .monaco-select-box {
 	margin-top: 4px;

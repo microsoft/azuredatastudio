@@ -11,8 +11,9 @@ import { EditorOptions, EditorInput, IEditorControl, IEditorPane } from 'vs/work
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { PANEL_BORDER } from 'vs/workbench/common/theme';
 
 import { EditDataInput } from 'sql/workbench/browser/editData/editDataInput';
 
@@ -292,9 +293,17 @@ export class EditDataEditor extends BaseEditor {
 			this._setSashDimension();
 
 			this._register(this._sash.onPositionChange(position => this._doLayout()));
+			this._register(this.themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 		}
 
 		this._sash.show();
+	}
+
+	//update sash theme
+	private updateTheme(theme: IColorTheme): void {
+		if (this._resultsEditorContainer && this._resultsEditorContainer.style.borderTopColor !== '') {
+			this._resultsEditorContainer.style.borderTopColor = theme.getColor(PANEL_BORDER).toString();
+		}
 	}
 
 	/**
@@ -621,9 +630,13 @@ export class EditDataEditor extends BaseEditor {
 			}
 			if (this._resultsEditorContainer) {
 				if (this.queryPaneEnabled()) {
-					DOM.toggleClass(this._resultsEditorContainer, 'activePanelBorder', true);
+					this._resultsEditorContainer.style.borderTopStyle = 'solid';
+					this._resultsEditorContainer.style.borderTopWidth = '1px';
+					this._resultsEditorContainer.style.borderTopColor = this.getColor(PANEL_BORDER);
 				} else {
-					DOM.toggleClass(this._resultsEditorContainer, 'activePanelBorder', false);
+					this._resultsEditorContainer.style.borderTopStyle = '';
+					this._resultsEditorContainer.style.borderTopWidth = '';
+					this._resultsEditorContainer.style.borderTopColor = '';
 				}
 			}
 		}
@@ -679,12 +692,16 @@ export class EditDataEditor extends BaseEditor {
 		this.editDataInput.queryPaneEnabled = !this.queryPaneEnabled();
 		if (this.queryPaneEnabled()) {
 			if (this._resultsEditorContainer) {
-				DOM.toggleClass(this._resultsEditorContainer, 'activePanelBorder', true);
+				this._resultsEditorContainer.style.borderTopStyle = 'solid';
+				this._resultsEditorContainer.style.borderTopWidth = '1px';
+				this._resultsEditorContainer.style.borderTopColor = this.getColor(PANEL_BORDER);
 			}
 			this._showQueryEditor();
 		} else {
 			if (this._resultsEditorContainer) {
-				DOM.toggleClass(this._resultsEditorContainer, 'activePanelBorder', false);
+				this._resultsEditorContainer.style.borderTopStyle = '';
+				this._resultsEditorContainer.style.borderTopWidth = '';
+				this._resultsEditorContainer.style.borderTopColor = '';
 			}
 			this._hideQueryEditor();
 		}
