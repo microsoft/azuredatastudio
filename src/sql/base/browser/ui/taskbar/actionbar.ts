@@ -43,6 +43,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 	private _actionsList: HTMLElement;
 	private _overflow: HTMLElement;
 	private _moreItemElement: HTMLElement;
+	private _moreActionsElement: HTMLElement;
 
 	constructor(container: HTMLElement, options: IActionBarOptions = defaultOptions, private _collapseOverflow: boolean = false) {
 		super();
@@ -168,33 +169,17 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		if (width < fullWidth) {
 			// create '•••' more element if it doesn't exist yet
 			if (!this._moreItemElement) {
-				this._moreItemElement = document.createElement('li');
-				this._moreItemElement.className = 'action-item more';
-				this._moreItemElement.setAttribute('role', 'presentation');
-				const moreActionsElement: HTMLElement = document.createElement('a');
-				moreActionsElement.className = 'moreActionsElement action-label codicon toggle-more';
-				moreActionsElement.setAttribute('role', 'button');
-				moreActionsElement.title = nls.localize('toggleMore', "Toggle More");
-				moreActionsElement.tabIndex = 0;
-				moreActionsElement.setAttribute('aria-haspopup', 'true');
-				this._register(DOM.addDisposableListener(this._domNode, DOM.EventType.CLICK, (e => { this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block'; })));
-				this._register(DOM.addDisposableListener(this._domNode, DOM.EventType.KEY_DOWN, (ev => {
-					let event = new StandardKeyboardEvent(ev);
-					if (event.keyCode === KeyCode.Enter || event.keyCode === KeyCode.Space) {
-						this._focusedItem = undefined; // so that the default actionbar click handler doesn't trigger the selected action-item
-						this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block';
-						DOM.EventHelper.stop(event, true);
-					}
-				})));
-
-				this._moreItemElement.appendChild(moreActionsElement);
-				this._actionsList.appendChild(this._moreItemElement);
+				this.createMoreItemElement();
 			}
 
 			this._moreItemElement.style.display = 'block';
 			while (width < fullWidth) {
 				let index = this._actionsList.childNodes.length - 2; // remove the last toolbar action before the more actions '...'
 				if (index > -1) {
+					// move placeholder in this._items
+					let placeHolderItem = this._items.splice(this._actionsList.childNodes.length - 1, 1);
+					this._items.splice(this._actionsList.childNodes.length - 2, 0, placeHolderItem[0]);
+
 					let item = this._actionsList.removeChild(this._actionsList.childNodes[index]);
 					this._overflow.insertBefore(item, this._overflow.firstChild);
 					fullWidth = document.getElementById('actions-container').scrollWidth;
@@ -204,10 +189,17 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			}
 		} else if (this._overflow?.hasChildNodes()) { // uncollapse actions if there is space for it
 			while (width === fullWidth && this._overflow.hasChildNodes()) {
-				this._actionsList.insertBefore(this._overflow.removeChild(this._overflow.firstChild), this._actionsList.lastChild);
+				// move placeholder in this._items
+				let placeHolderItem = this._items.splice(this._actionsList.childNodes.length - 1, 1);
+				this._items.splice(this._actionsList.childNodes.length, 0, placeHolderItem[0]);
 
+				this._actionsList.insertBefore(this._overflow.removeChild(this._overflow.firstChild), this._actionsList.lastChild);
 				// if the action was too wide, collapse it again
 				if (document.getElementById('actions-container').scrollWidth > document.getElementById('actions-container').offsetWidth) {
+					// move placeholder in this._items
+					let placeHolderItem = this._items.splice(this._actionsList.childNodes.length - 1, 1);
+					this._items.splice(this._actionsList.childNodes.length - 2, 0, placeHolderItem[0]);
+
 					let index = this._actionsList.childNodes.length - 2;
 					let item = this._actionsList.removeChild(this._actionsList.childNodes[index]);
 					this._overflow.insertBefore(item, this._overflow.firstChild);
@@ -217,6 +209,48 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 				}
 			}
 		}
+	}
+
+	private createMoreItemElement() {
+		this._moreItemElement = document.createElement('li');
+		this._moreItemElement.className = 'action-item more';
+		this._moreItemElement.setAttribute('role', 'presentation');
+		this._moreActionsElement = document.createElement('a');
+		this._moreActionsElement.className = 'moreActionsElement action-label codicon toggle-more';
+		this._moreActionsElement.setAttribute('role', 'button');
+		this._moreActionsElement.title = nls.localize('toggleMore', "Toggle More");
+		this._moreActionsElement.tabIndex = 0;
+		this._moreActionsElement.setAttribute('aria-haspopup', 'true');
+		this._register(DOM.addDisposableListener(this._moreActionsElement, DOM.EventType.CLICK, (e => { this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block'; })));
+		this._register(DOM.addDisposableListener(this._moreActionsElement, DOM.EventType.KEY_DOWN, (ev => {
+			let event = new StandardKeyboardEvent(ev);
+			if (event.keyCode === KeyCode.Enter || event.keyCode === KeyCode.Space) {
+				this._focusedItem = undefined; // so that the default actionbar click handler doesn't trigger the selected action-item
+				this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block';
+				DOM.EventHelper.stop(event, true);
+			}
+		})));
+
+		this._register(DOM.addDisposableListener(this._overflow, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+			let event = new StandardKeyboardEvent(e);
+
+			// Close overflow if Escape is pressed
+			if (event.equals(KeyCode.Escape)) {
+				this._overflow.style.display = 'none';
+				this._moreItemElement.focus();
+			} else if (event.equals(KeyCode.UpArrow)) {
+				this.focusPrevious();
+			} else if (event.equals(KeyCode.DownArrow)) {
+				this.focusNext();
+			}
+			DOM.EventHelper.stop(event, true);
+		}));
+
+		this._moreItemElement.appendChild(this._moreActionsElement);
+		this._actionsList.appendChild(this._moreItemElement);
+		let placeHolderItem = new ActionViewItem(this, undefined, undefined);
+		placeHolderItem.actionRunner = undefined;
+		this._items.push(undefined); // add place holder for more item element
 	}
 
 	public setAriaLabel(label: string): void {
@@ -385,9 +419,9 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		do {
 			this._focusedItem = (this._focusedItem + 1) % this._items.length;
 			item = this._items[this._focusedItem];
-		} while (this._focusedItem !== startIndex && !item.isEnabled());
+		} while (this._focusedItem !== startIndex && item && !item.isEnabled());
 
-		if (this._focusedItem === startIndex && !item.isEnabled()) {
+		if (this._focusedItem === startIndex && item && !item.isEnabled()) {
 			this._focusedItem = undefined;
 		}
 
@@ -410,9 +444,9 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			}
 
 			item = this._items[this._focusedItem];
-		} while (this._focusedItem !== startIndex && !item.isEnabled());
+		} while (this._focusedItem !== startIndex && item && !item.isEnabled());
 
-		if (this._focusedItem === startIndex && !item.isEnabled()) {
+		if (this._focusedItem === startIndex && item && !item.isEnabled()) {
 			this._focusedItem = undefined;
 		}
 
@@ -431,11 +465,15 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			let actionItem = <any>item;
 
 			if (i === this._focusedItem) {
-				if (types.isFunction(actionItem.focus)) {
+				// dummy placeholder
+				if (!actionItem) {
+					this._moreActionsElement.focus();
+				}
+				else if (types.isFunction(actionItem.focus)) {
 					actionItem.focus();
 				}
 			} else {
-				if (types.isFunction(actionItem.blur)) {
+				if (actionItem && types.isFunction(actionItem.blur)) {
 					actionItem.blur();
 				}
 			}
@@ -460,6 +498,9 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			(<HTMLElement>document.activeElement).blur(); // remove focus from focussed action
 		}
 
+		if (this._overflow) {
+			this._overflow.style.display = 'none';
+		}
 		//this.emit('cancel');
 	}
 
