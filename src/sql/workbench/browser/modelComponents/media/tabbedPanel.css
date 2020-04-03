@@ -8,6 +8,10 @@
 	height: 100%;
 }
 
+.tabbedpanel-component .tabbedPanel {
+	border-top-width: 0px;
+}
+
 .tabbedpanel-component .tabbedPanel .tabContainer {
 	border-style: solid;
 	border-color: rgb(237, 235, 233);
