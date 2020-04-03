@@ -15,5 +15,16 @@
 	"win32ShellNameShort": "Azure Data Studio - SAW",
 	"darwinBundleIdentifier": "com.azuredatastudio.oss.saw",
 	"quality": "saw",
-	"disabledFeatures": ["workbench.extensions.action.installVSIX"]
+	"disabledFeatures": ["workbench.extensions.action.installVSIX"],
+	"msftInternalDomains": [
+		"redmond.corp.microsoft.com",
+		"northamerica.corp.microsoft.com",
+		"fareast.corp.microsoft.com",
+		"ntdev.corp.microsoft.com",
+		"wingroup.corp.microsoft.com",
+		"southpacific.corp.microsoft.com",
+		"wingroup.windeploy.ntdev.microsoft.com",
+		"ddnet.microsoft.com",
+		"europe.corp.microsoft.com"
+	]
 }
