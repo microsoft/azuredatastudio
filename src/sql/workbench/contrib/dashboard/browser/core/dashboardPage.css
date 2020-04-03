@@ -68,15 +68,14 @@ dashboard-page .editor-toolbar {
 	background-size: 8px;
 }
 
-.vs-dark .dashboardEditor breadcrumb,
-.hc-black .dashboardEditor breadcrumb {
-	font-size: 13px;
-	color: #FFFFFF;
-}
-
 .dashboardEditor breadcrumb {
 	font-size: 13px;
 	color: #323130;
+}
+
+.vs-dark .dashboardEditor breadcrumb,
+.hc-black .dashboardEditor breadcrumb {
+	color: #FFFFFF;
 }
 
 .dashboardEditor breadcrumb .router-link {
