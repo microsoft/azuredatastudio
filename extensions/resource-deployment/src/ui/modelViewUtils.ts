@@ -105,9 +105,10 @@ export function createNumberInput(view: azdata.ModelView, info: { defaultValue?:
 	}).component();
 }
 
-export function createCheckbox(view: azdata.ModelView, info: { initialValue: boolean, label: string }): azdata.CheckBoxComponent {
+export function createCheckbox(view: azdata.ModelView, info: { initialValue: boolean, label: string, required?: boolean }): azdata.CheckBoxComponent {
 	return view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
 		checked: info.initialValue,
+		required: info.required,
 		label: info.label
 	}).component();
 }
@@ -119,6 +120,7 @@ export function createDropdown(view: azdata.ModelView, info: { defaultValue?: st
 		width: info.width,
 		editable: info.editable,
 		fireOnTextChange: true,
+		required: info.required,
 		ariaLabel: info.label
 	}).component();
 }
@@ -420,7 +422,7 @@ function processReadonlyTextField(context: FieldContext): void {
 }
 
 function processCheckboxField(context: FieldContext): void {
-	const checkbox = createCheckbox(context.view, { initialValue: context.fieldInfo.defaultValue! === 'true', label: context.fieldInfo.label });
+	const checkbox = createCheckbox(context.view, { initialValue: context.fieldInfo.defaultValue! === 'true', label: context.fieldInfo.label, required: context.fieldInfo.required });
 	context.components.push(checkbox);
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, checkbox);
 }

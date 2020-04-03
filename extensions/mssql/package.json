@@ -52,7 +52,7 @@
         "command": "mssqlCluster.task.newNotebook",
         "title": "%notebook.command.new%",
         "icon": {
-          "dark": "resources/dark/new_notebook_inverse.svg",
+          "dark": "resources/dark/new_notebook.svg",
           "light": "resources/light/new_notebook.svg"
         }
       },
@@ -485,6 +485,32 @@
             }
           ]
         }
+      },
+      {
+        "id": "mssql-databases",
+        "description": "%mssql.tabs.databases%",
+        "provider": "*",
+        "title": "%mssql.tabs.databases%",
+        "when": "dashboardContext == 'server'",
+        "group": "home",
+        "icon": {
+          "light": "resources/light/database.svg",
+          "dark": "resources/dark/database_inverse.svg"
+        },
+        "container": {
+          "widgets-container": [
+            {
+              "name": "%explorer-widget-title%",
+              "gridItemConfig": {
+                "sizex": 3,
+                "sizey": 3
+              },
+              "widget": {
+                "explorer-widget": {}
+              }
+            }
+          ]
+        }
       }
     ],
     "connectionProvider": {
@@ -687,11 +713,11 @@
           "objectType": null,
           "categoryValues": [
             {
-              "displayName": null,
+              "displayName": "%mssql.disabled%",
               "name": "Disabled"
             },
             {
-              "displayName": null,
+              "displayName": "%mssql.enabled%",
               "name": "Enabled"
             }
           ],
@@ -1052,10 +1078,16 @@
   },
   "devDependencies": {
     "@types/bytes": "^3.0.0",
+    "@types/chai": "^4.2.11",
     "@types/kerberos": "^1.1.0",
+    "@types/mocha": "^7.0.2",
     "@types/request": "^2.48.2",
     "@types/request-promise": "^4.1.44",
     "@types/stream-meter": "^0.0.22",
-    "@types/through2": "^2.0.34"
+    "@types/through2": "^2.0.34",
+    "chai": "^4.2.0",
+    "mocha": "^7.1.1",
+    "typemoq": "^2.1.0",
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
   }
 }

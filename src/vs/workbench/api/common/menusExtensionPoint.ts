@@ -38,6 +38,7 @@ namespace schema {
 			case 'debug/toolbar': return MenuId.DebugToolBar;
 			case 'debug/toolBar': return MenuId.DebugToolBar;
 			case 'menuBar/file': return MenuId.MenubarFileMenu;
+			case 'menuBar/webNavigation': return MenuId.MenubarWebNavigationMenu;
 			case 'scm/title': return MenuId.SCMTitle;
 			case 'scm/sourceControl': return MenuId.SCMSourceControl;
 			case 'scm/resourceState/context': return MenuId.SCMResourceContext;
@@ -58,6 +59,7 @@ namespace schema {
 			case 'comments/comment/context': return MenuId.CommentActions;
 			case 'notebook/cell/title': return MenuId.NotebookCellTitle;
 			case 'extension/context': return MenuId.ExtensionContext;
+			case 'dashboard/toolbar': return MenuId.DashboardToolbar;
 			case 'timeline/title': return MenuId.TimelineTitle;
 			case 'timeline/item/context': return MenuId.TimelineItemContext;
 		}
@@ -69,6 +71,7 @@ namespace schema {
 		switch (menuId) {
 			case MenuId.StatusBarWindowIndicatorMenu:
 			case MenuId.MenubarFileMenu:
+			case MenuId.MenubarWebNavigationMenu:
 				return true;
 		}
 		return false;

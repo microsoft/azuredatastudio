@@ -48,7 +48,7 @@ describe('AccountProvider.AzureAuth', function (): void {
 	beforeEach(async function (): Promise<void> {
 		const tokenCache = new SimpleTokenCache('testTokenService', os.tmpdir(), true, new CredentialsTestProvider());
 		await tokenCache.init();
-		baseAuth = new BasicAzureAuth(providerSettings[0].metadata, tokenCache, undefined, AzureAuthType.AuthCodeGrant, 'Auth Code Grant');
+		baseAuth = new BasicAzureAuth(providerSettings[0].metadata, tokenCache, undefined, undefined, AzureAuthType.AuthCodeGrant, 'Auth Code Grant');
 	});
 
 	it('Basic token set and get', async function (): Promise<void> {

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/dialogModal';
-import { Component, ViewChild, Inject, forwardRef, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, Inject, forwardRef, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { ModelViewContent } from 'sql/workbench/browser/modelComponents/modelViewContent.component';
 import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -50,6 +50,7 @@ export class DialogContainer implements AfterViewInit {
 	@ViewChild(ModelViewContent) private _modelViewContent: ModelViewContent;
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IBootstrapParams) private _params: DialogComponentParams) {
 		this.modelViewId = this._params.modelViewId;
 		this._params.onLayoutRequested(layoutParams => {
@@ -73,5 +74,6 @@ export class DialogContainer implements AfterViewInit {
 
 	public layout(): void {
 		this._modelViewContent.layout();
+		this._changeRef.detectChanges();
 	}
 }

@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 import * as qs from 'qs';
 import * as url from 'url';
 
@@ -91,7 +91,7 @@ export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-
 
 export type TokenRefreshResponse = { accessToken: AccessToken, refreshToken: RefreshToken, tokenClaims: TokenClaims };
 
-export abstract class AzureAuth {
+export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly memdb = new MemoryDatabase();
 
 	protected readonly WorkSchoolAccountType: string = 'work_school';
@@ -110,6 +110,7 @@ export abstract class AzureAuth {
 		protected readonly metadata: AzureAccountProviderMetadata,
 		protected readonly tokenCache: SimpleTokenCache,
 		protected readonly context: vscode.ExtensionContext,
+		protected readonly uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
 		protected readonly authType: AzureAuthType,
 		public readonly userFriendlyName: string
 	) {
@@ -119,8 +120,12 @@ export abstract class AzureAuth {
 		this.clientId = this.metadata.settings.clientId;
 
 		this.resources = [
-			this.metadata.settings.armResource, this.metadata.settings.sqlResource,
-			this.metadata.settings.graphResource, this.metadata.settings.ossRdbmsResource
+			this.metadata.settings.armResource,
+			this.metadata.settings.sqlResource,
+			this.metadata.settings.graphResource,
+			this.metadata.settings.ossRdbmsResource,
+			this.metadata.settings.microsoftResource,
+			this.metadata.settings.azureKeyVaultResource
 		];
 
 		this.scopes = [...this.metadata.settings.scopes];
@@ -131,33 +136,49 @@ export abstract class AzureAuth {
 
 	public abstract async autoOAuthCancelled(): Promise<void>;
 
+	public dispose() { }
 
-	public async refreshAccess(account: azdata.Account): Promise<azdata.Account> {
-		const response = await this.getCachedToken(account.key);
+	public async refreshAccess(oldAccount: azdata.Account): Promise<azdata.Account> {
+		const response = await this.getCachedToken(oldAccount.key);
 		if (!response) {
-			account.isStale = true;
-			return account;
+			oldAccount.isStale = true;
+			return oldAccount;
 		}
 
 		const refreshToken = response.refreshToken;
 		if (!refreshToken || !refreshToken.key) {
-			account.isStale = true;
-			return account;
+			oldAccount.isStale = true;
+			return oldAccount;
 		}
 
 		try {
-			await this.refreshAccessToken(account.key, refreshToken);
+			// Refresh the access token
+			const tokenResponse = await this.refreshAccessToken(oldAccount.key, refreshToken);
+			const tenants = await this.getTenants(tokenResponse.accessToken);
+
+			// Recreate account object
+			const newAccount = this.createAccount(tokenResponse.tokenClaims, tokenResponse.accessToken.key, tenants);
+
+			const subscriptions = await this.getSubscriptions(newAccount);
+			newAccount.properties.subscriptions = subscriptions;
+
+			return newAccount;
 		} catch (ex) {
+			oldAccount.isStale = true;
 			if (ex.message) {
 				await vscode.window.showErrorMessage(ex.message);
 			}
 			console.log(ex);
 		}
-		return account;
+		return oldAccount;
 	}
 
 
 	public async getSecurityToken(account: azdata.Account, azureResource: azdata.AzureResource): Promise<TokenResponse | undefined> {
+		if (account.isStale === true) {
+			return undefined;
+		}
+
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 		if (!resource) {
 			return undefined;
@@ -194,8 +215,13 @@ export abstract class AzureAuth {
 				if (!baseToken) {
 					return undefined;
 				}
+				try {
+					await this.refreshAccessToken(account.key, baseToken.refreshToken, tenant, resource);
+				} catch (ex) {
+					account.isStale = true;
+					return undefined;
+				}
 
-				await this.refreshAccessToken(account.key, baseToken.refreshToken, tenant, resource);
 				cachedTokens = await this.getCachedToken(account.key, resource.id, tenant.id);
 				if (!cachedTokens) {
 					return undefined;
@@ -234,12 +260,16 @@ export abstract class AzureAuth {
 		return base64string.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_'); // Need to use base64url encoding
 	}
 
-	protected async makePostRequest(uri: string, postData: { [key: string]: string }) {
-		const config = {
+	protected async makePostRequest(uri: string, postData: { [key: string]: string }, validateStatus = false) {
+		const config: AxiosRequestConfig = {
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded'
 			}
 		};
+
+		if (validateStatus) {
+			config.validateStatus = () => true;
+		}
 
 		return axios.post(uri, qs.stringify(postData), config);
 	}
@@ -340,8 +370,7 @@ export abstract class AzureAuth {
 			return { accessToken, refreshToken, tokenClaims };
 
 		} catch (err) {
-			console.dir(err);
-			const msg = localize('azure.noToken', "Retrieving the token failed.");
+			const msg = localize('azure.noToken', "Retrieving the Azure token failed. Please sign in again.");
 			vscode.window.showErrorMessage(msg);
 			throw new Error(err);
 		}
@@ -356,7 +385,7 @@ export abstract class AzureAuth {
 		}
 	}
 
-	private async refreshAccessToken(account: azdata.AccountKey, rt: RefreshToken, tenant?: Tenant, resource?: Resource): Promise<void> {
+	private async refreshAccessToken(account: azdata.AccountKey, rt: RefreshToken, tenant?: Tenant, resource?: Resource): Promise<TokenRefreshResponse> {
 		const postData: { [key: string]: string } = {
 			grant_type: 'refresh_token',
 			refresh_token: rt.token,
@@ -368,7 +397,10 @@ export abstract class AzureAuth {
 			postData.resource = resource.endpoint;
 		}
 
-		const { accessToken, refreshToken } = await this.getToken(postData, tenant?.id, resource?.id);
+		const getTokenResponse = await this.getToken(postData, tenant?.id, resource?.id);
+
+		const accessToken = getTokenResponse?.accessToken;
+		const refreshToken = getTokenResponse?.refreshToken;
 
 		if (!accessToken || !refreshToken) {
 			console.log('Access or refresh token were undefined');
@@ -376,7 +408,9 @@ export abstract class AzureAuth {
 			throw new Error(msg);
 		}
 
-		return this.setCachedToken(account, accessToken, refreshToken, resource?.id, tenant?.id);
+		await this.setCachedToken(account, accessToken, refreshToken, resource?.id, tenant?.id);
+
+		return getTokenResponse;
 	}
 
 

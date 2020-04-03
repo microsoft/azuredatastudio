@@ -487,7 +487,7 @@ export interface ICellModel {
 	readonly onCellModeChanged: Event<boolean>;
 	modelContentChangedEvent: IModelContentChangedEvent;
 	isEditMode: boolean;
-	readonly ariaLabel: string;
+	sendChangeToNotebook(change: NotebookChangeType): void;
 }
 
 export interface IModelFactory {

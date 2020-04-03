@@ -8,7 +8,7 @@ import { CancellationToken, CancellationTokenSource } from 'vs/base/common/cance
 import { IQuickPickSeparator, IKeyMods, IQuickPickAcceptEvent } from 'vs/base/parts/quickinput/common/quickInput';
 import { IQuickAccessProvider } from 'vs/platform/quickinput/common/quickAccess';
 import { IDisposable, DisposableStore, Disposable, MutableDisposable } from 'vs/base/common/lifecycle';
-import { timeout } from 'vs/base/common/async';
+import { timeout, isThenable } from 'vs/base/common/async';
 
 export enum TriggerAction {
 
@@ -78,7 +78,7 @@ function isPicksWithActive<T>(obj: unknown): obj is PicksWithActive<T> {
 function isFastAndSlowPicks<T>(obj: unknown): obj is FastAndSlowPicks<T> {
 	const candidate = obj as FastAndSlowPicks<T>;
 
-	return !!candidate.picks && candidate.additionalPicks instanceof Promise;
+	return !!candidate.picks && isThenable(candidate.additionalPicks); // {{SQL CARBON EDIT}} workaround since we use zone promise
 }
 
 export abstract class PickerQuickAccessProvider<T extends IPickerQuickAccessItem> extends Disposable implements IQuickAccessProvider {
@@ -115,15 +115,27 @@ export abstract class PickerQuickAccessProvider<T extends IPickerQuickAccessItem
 			const picksToken = picksCts.token;
 			const providedPicks = this.getPicks(picker.value.substr(this.prefix.length).trim(), picksDisposables, picksToken);
 
-			function applyPicks(picks: Picks<T>): void {
+			function applyPicks(picks: Picks<T>, skipEmpty?: boolean): boolean {
+				let items: ReadonlyArray<Pick<T>>;
+				let activeItem: T | undefined = undefined;
+
 				if (isPicksWithActive(picks)) {
-					picker.items = picks.items;
-					if (picks.active) {
-						picker.activeItems = [picks.active];
-					}
+					items = picks.items;
+					activeItem = picks.active;
 				} else {
-					picker.items = picks;
+					items = picks;
 				}
+
+				if (items.length === 0 && skipEmpty) {
+					return false;
+				}
+
+				picker.items = items;
+				if (activeItem) {
+					picker.activeItems = [activeItem];
+				}
+
+				return true;
 			}
 
 			// No Picks
@@ -133,8 +145,8 @@ export abstract class PickerQuickAccessProvider<T extends IPickerQuickAccessItem
 
 			// Fast and Slow Picks
 			else if (isFastAndSlowPicks(providedPicks)) {
-				let fastPicksHandlerDone = false;
-				let slowPicksHandlerDone = false;
+				let fastPicksApplied = false;
+				let slowPicksApplied = false;
 
 				await Promise.all([
 
@@ -143,17 +155,13 @@ export abstract class PickerQuickAccessProvider<T extends IPickerQuickAccessItem
 					// If the slow picks are faster, we reduce the flicker by
 					// only setting the items once.
 					(async () => {
-						try {
-							await timeout(PickerQuickAccessProvider.FAST_PICKS_RACE_DELAY);
-							if (picksToken.isCancellationRequested) {
-								return;
-							}
+						await timeout(PickerQuickAccessProvider.FAST_PICKS_RACE_DELAY);
+						if (picksToken.isCancellationRequested) {
+							return;
+						}
 
-							if (!slowPicksHandlerDone) {
-								applyPicks(providedPicks.picks);
-							}
-						} finally {
-							fastPicksHandlerDone = true;
+						if (!slowPicksApplied) {
+							fastPicksApplied = applyPicks(providedPicks.picks, true /* skip over empty to reduce flicker */);
 						}
 					})(),
 
@@ -186,7 +194,7 @@ export abstract class PickerQuickAccessProvider<T extends IPickerQuickAccessItem
 								additionalPicks = awaitedAdditionalPicks;
 							}
 
-							if (additionalPicks.length > 0 || !fastPicksHandlerDone) {
+							if (additionalPicks.length > 0 || !fastPicksApplied) {
 								applyPicks({
 									items: [...picks, ...additionalPicks],
 									active: activePick as T || additionalActivePick as T // {{SQL CARBON EDIT}} strict-null-checks
@@ -197,14 +205,14 @@ export abstract class PickerQuickAccessProvider<T extends IPickerQuickAccessItem
 								picker.busy = false;
 							}
 
-							slowPicksHandlerDone = true;
+							slowPicksApplied = true;
 						}
 					})()
 				]);
 			}
 
 			// Fast Picks
-			else if (!(providedPicks instanceof Promise)) {
+			else if (!(isThenable(providedPicks))) { // {{SQL CARBON EDIT}} workaround since we use zone promise
 				applyPicks(providedPicks);
 			}
 
