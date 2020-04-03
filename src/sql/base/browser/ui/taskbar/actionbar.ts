@@ -177,11 +177,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 				let index = this._actionsList.childNodes.length - 2; // remove the last toolbar action before the more actions '...'
 				if (index > -1) {
 					// move placeholder in this._items
-					let placeHolderItem = this._items.splice(this._actionsList.childNodes.length - 1, 1);
-					this._items.splice(this._actionsList.childNodes.length - 2, 0, placeHolderItem[0]);
-
-					let item = this._actionsList.removeChild(this._actionsList.childNodes[index]);
-					this._overflow.insertBefore(item, this._overflow.firstChild);
+					this.collapseItem();
 					fullWidth = document.getElementById('actions-container').scrollWidth;
 				} else {
 					break;
@@ -197,12 +193,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 				// if the action was too wide, collapse it again
 				if (document.getElementById('actions-container').scrollWidth > document.getElementById('actions-container').offsetWidth) {
 					// move placeholder in this._items
-					let placeHolderItem = this._items.splice(this._actionsList.childNodes.length - 1, 1);
-					this._items.splice(this._actionsList.childNodes.length - 2, 0, placeHolderItem[0]);
-
-					let index = this._actionsList.childNodes.length - 2;
-					let item = this._actionsList.removeChild(this._actionsList.childNodes[index]);
-					this._overflow.insertBefore(item, this._overflow.firstChild);
+					this.collapseItem();
 					break;
 				} else if (!this._overflow.hasChildNodes()) {
 					this._moreItemElement.style.display = 'none';
@@ -211,7 +202,17 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		}
 	}
 
-	private createMoreItemElement() {
+	private collapseItem(): void {
+		// move placeholder in this._items
+		let placeHolderItem = this._items.splice(this._actionsList.childNodes.length - 1, 1);
+		this._items.splice(this._actionsList.childNodes.length - 2, 0, placeHolderItem[0]);
+
+		let index = this._actionsList.childNodes.length - 2; // remove the last toolbar action before the more actions '...'
+		let item = this._actionsList.removeChild(this._actionsList.childNodes[index]);
+		this._overflow.insertBefore(item, this._overflow.firstChild);
+	}
+
+	private createMoreItemElement(): void {
 		this._moreItemElement = document.createElement('li');
 		this._moreItemElement.className = 'action-item more';
 		this._moreItemElement.setAttribute('role', 'presentation');
@@ -221,12 +222,12 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		this._moreActionsElement.title = nls.localize('toggleMore', "Toggle More");
 		this._moreActionsElement.tabIndex = 0;
 		this._moreActionsElement.setAttribute('aria-haspopup', 'true');
-		this._register(DOM.addDisposableListener(this._moreActionsElement, DOM.EventType.CLICK, (e => { this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block'; })));
+		this._register(DOM.addDisposableListener(this._moreActionsElement, DOM.EventType.CLICK, (e => { this.toggleOverflowDisplay(); })));
 		this._register(DOM.addDisposableListener(this._moreActionsElement, DOM.EventType.KEY_DOWN, (ev => {
 			let event = new StandardKeyboardEvent(ev);
 			if (event.keyCode === KeyCode.Enter || event.keyCode === KeyCode.Space) {
 				this._focusedItem = undefined; // so that the default actionbar click handler doesn't trigger the selected action-item
-				this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block';
+				this.toggleOverflowDisplay();
 				DOM.EventHelper.stop(event, true);
 			}
 		})));
@@ -236,8 +237,8 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 
 			// Close overflow if Escape is pressed
 			if (event.equals(KeyCode.Escape)) {
-				this._overflow.style.display = 'none';
-				this._moreItemElement.focus();
+				this.hideOverflowDisplay();
+				this._moreActionsElement.focus();
 			} else if (event.equals(KeyCode.UpArrow) && this._focusedItem !== this._actionsList.childNodes.length - 1) { // up arrow on first element in overflow should not move out from the overflow
 				this.focusPrevious();
 			} else if (event.equals(KeyCode.DownArrow) && this._focusedItem !== this._actionsList.childNodes.length + this._overflow.childNodes.length - 2) { // down arrow on last element shouldn't move out from overflow
@@ -245,7 +246,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			} else if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				this._moreActionsElement.focus();
 			} else if (event.equals(KeyCode.Tab)) {
-				this._overflow.style.display = 'none';
+				this.hideOverflowDisplay();
 				(<HTMLElement>this._actionsList.parentElement.nextElementSibling).focus();
 			}
 			DOM.EventHelper.stop(event, true);
@@ -256,6 +257,14 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		let placeHolderItem = new ActionViewItem(this, undefined, undefined);
 		placeHolderItem.actionRunner = undefined;
 		this._items.push(undefined); // add place holder for more item element
+	}
+
+	private hideOverflowDisplay(): void {
+		this._overflow.style.display = 'none';
+	}
+
+	private toggleOverflowDisplay(): void {
+		this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block';
 	}
 
 	public setAriaLabel(label: string): void {
@@ -504,7 +513,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		}
 
 		if (this._overflow) {
-			this._overflow.style.display = 'none';
+			this.hideOverflowDisplay();
 		}
 		//this.emit('cancel');
 	}
