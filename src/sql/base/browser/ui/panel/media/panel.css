@@ -4,6 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 .tabbedPanel {
+	border-top-color: rgba(128, 128, 128, 0.35);
+	border-top-width: 1px;
+	border-top-style: solid;
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
