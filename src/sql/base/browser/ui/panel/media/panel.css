@@ -144,9 +144,11 @@ panel {
 	border-color: rgb(214, 214, 214);
 }
 
-.tabbedPanel .action-container {
+.tabbedPanel .vertical-tab-action-container {
 	display: flex;
 	flex-flow: row-reverse;
+	height: 35px;
+	padding: 0px 5px;
 }
 
 .tabbedPanel .tab-action {
@@ -155,9 +157,10 @@ panel {
 	padding: 0px;
 	border: 0px;
 	background-color: transparent;
-	background-position: 2px center;
+	background-position: center;
 	background-repeat: no-repeat;
-	background-size: 11px 11px;
+	background-size: 9px 9px;
+	align-self: center;
 }
 
 .vs .tabbedPanel .tab-action.collapse {
