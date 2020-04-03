@@ -242,6 +242,11 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 				this.focusPrevious();
 			} else if (event.equals(KeyCode.DownArrow)) {
 				this.focusNext();
+			} else if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
+				this._moreActionsElement.focus();
+			} else if (event.equals(KeyCode.Tab)) {
+				this._overflow.style.display = 'none';
+				(<HTMLElement>this._actionsList.parentElement.nextElementSibling).focus();
 			}
 			DOM.EventHelper.stop(event, true);
 		}));
