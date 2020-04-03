@@ -238,9 +238,9 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			if (event.equals(KeyCode.Escape)) {
 				this._overflow.style.display = 'none';
 				this._moreItemElement.focus();
-			} else if (event.equals(KeyCode.UpArrow)) {
+			} else if (event.equals(KeyCode.UpArrow) && this._focusedItem !== this._actionsList.childNodes.length - 1) { // up arrow on first element in overflow should not move out from the overflow
 				this.focusPrevious();
-			} else if (event.equals(KeyCode.DownArrow)) {
+			} else if (event.equals(KeyCode.DownArrow) && this._focusedItem !== this._actionsList.childNodes.length + this._overflow.childNodes.length - 2) { // down arrow on last element shouldn't move out from overflow
 				this.focusNext();
 			} else if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				this._moreActionsElement.focus();
