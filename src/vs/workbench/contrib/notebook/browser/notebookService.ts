@@ -10,12 +10,12 @@ import { notebookProviderExtensionPoint, notebookRendererExtensionPoint } from '
 import { NotebookProviderInfo } from 'vs/workbench/contrib/notebook/common/notebookProvider';
 import { NotebookExtensionDescription } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter, Event } from 'vs/base/common/event';
-import { INotebookTextModel, ICell, INotebookMimeTypeSelector, INotebookRendererInfo, CellKind } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { INotebookTextModel, INotebookMimeTypeSelector, INotebookRendererInfo } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { NotebookOutputRendererInfo } from 'vs/workbench/contrib/notebook/common/notebookOutputRenderer';
 import { Iterable } from 'vs/base/common/iterator';
-import { NotebookCellTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookCellTextModel';
 import { NotebookTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookTextModel';
+import { CancellationToken, CancellationTokenSource } from 'vs/base/common/cancellation';
 
 function MODEL_ID(resource: URI): string {
 	return resource.toString();
@@ -25,11 +25,9 @@ export const INotebookService = createDecorator<INotebookService>('notebookServi
 
 export interface IMainNotebookController {
 	resolveNotebook(viewType: string, uri: URI): Promise<NotebookTextModel | undefined>;
-	executeNotebook(viewType: string, uri: URI): Promise<void>;
-	createRawCell(uri: URI, index: number, language: string, type: CellKind): Promise<NotebookCellTextModel | undefined>;
-	deleteCell(uri: URI, index: number): Promise<boolean>
+	executeNotebook(viewType: string, uri: URI, token: CancellationToken): Promise<void>;
 	onDidReceiveMessage(uri: URI, message: any): void;
-	executeNotebookCell(uri: URI, handle: number): Promise<void>;
+	executeNotebookCell(uri: URI, handle: number, token: CancellationToken): Promise<void>;
 	destoryNotebookDocument(notebook: INotebookTextModel): Promise<void>;
 	save(uri: URI): Promise<boolean>;
 }
@@ -45,12 +43,10 @@ export interface INotebookService {
 	getRendererInfo(handle: number): INotebookRendererInfo | undefined;
 	resolveNotebook(viewType: string, uri: URI): Promise<NotebookTextModel | undefined>;
 	executeNotebook(viewType: string, uri: URI): Promise<void>;
-	executeNotebookCell(viewType: string, uri: URI, handle: number): Promise<void>;
+	executeNotebookCell(viewType: string, uri: URI, handle: number, token: CancellationToken): Promise<void>;
 
 	getContributedNotebookProviders(resource: URI): readonly NotebookProviderInfo[];
 	getNotebookProviderResourceRoots(): URI[];
-	createNotebookCell(viewType: string, resource: URI, index: number, language: string, type: CellKind): Promise<ICell | undefined>;
-	deleteNotebookCell(viewType: string, resource: URI, index: number): Promise<boolean>;
 	destoryNotebookDocument(viewType: string, notebook: INotebookTextModel): void;
 	updateActiveNotebookDocument(viewType: string, resource: URI): void;
 	save(viewType: string, resource: URI): Promise<boolean>;
@@ -131,7 +127,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private readonly _models: { [modelId: string]: ModelData; };
 	private _onDidChangeActiveEditor = new Emitter<{ viewType: string, uri: URI }>();
 	onDidChangeActiveEditor: Event<{ viewType: string, uri: URI }> = this._onDidChangeActiveEditor.event;
-	private _resolvePool = new Map<string, () => void>();
+	private _resolvePool = new Map<string, (() => void)[]>();
 
 	constructor(
 		@IExtensionService private readonly extensionService: IExtensionService
@@ -180,16 +176,22 @@ export class NotebookService extends Disposable implements INotebookService {
 
 		let resolve: () => void;
 		const promise = new Promise<void>(r => { resolve = r; });
-		this._resolvePool.set(viewType, resolve!);
+		if (!this._resolvePool.has(viewType)) {
+			this._resolvePool.set(viewType, []);
+		}
+
+		let resolves = this._resolvePool.get(viewType)!;
+		resolves.push(resolve!);
+		this._resolvePool.set(viewType, resolves);
 		return promise;
 	}
 
 	registerNotebookController(viewType: string, extensionData: NotebookExtensionDescription, controller: IMainNotebookController) {
 		this._notebookProviders.set(viewType, { extensionData, controller });
 
-		let resolve = this._resolvePool.get(viewType);
-		if (resolve) {
-			resolve();
+		let resolves = this._resolvePool.get(viewType);
+		if (resolves) {
+			resolves.forEach(resolve => resolve());
 			this._resolvePool.delete(viewType);
 		}
 	}
@@ -241,40 +243,20 @@ export class NotebookService extends Disposable implements INotebookService {
 		return modelData.model;
 	}
 
-	async createNotebookCell(viewType: string, resource: URI, index: number, language: string, type: CellKind): Promise<NotebookCellTextModel | undefined> {
-		let provider = this._notebookProviders.get(viewType);
-
-		if (provider) {
-			return provider.controller.createRawCell(resource, index, language, type);
-		}
-
-		return undefined; // {{SQL CARBON EDIT}} strict-null-check
-	}
-
-	async deleteNotebookCell(viewType: string, resource: URI, index: number): Promise<boolean> {
-		let provider = this._notebookProviders.get(viewType);
-
-		if (provider) {
-			return provider.controller.deleteCell(resource, index);
-		}
-
-		return false;
-	}
-
 	async executeNotebook(viewType: string, uri: URI): Promise<void> {
 		let provider = this._notebookProviders.get(viewType);
 
 		if (provider) {
-			return provider.controller.executeNotebook(viewType, uri);
+			return provider.controller.executeNotebook(viewType, uri, new CancellationTokenSource().token); // Cancellation for notebooks - TODO
 		}
 
 		return;
 	}
 
-	async executeNotebookCell(viewType: string, uri: URI, handle: number): Promise<void> {
+	async executeNotebookCell(viewType: string, uri: URI, handle: number, token: CancellationToken): Promise<void> {
 		const provider = this._notebookProviders.get(viewType);
 		if (provider) {
-			await provider.controller.executeNotebookCell(uri, handle);
+			await provider.controller.executeNotebookCell(uri, handle, token);
 		}
 	}
 

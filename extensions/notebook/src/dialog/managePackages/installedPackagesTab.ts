@@ -20,11 +20,13 @@ export class InstalledPackagesTab {
 	private installedPkgTab: azdata.window.DialogTab;
 
 	private packageTypeDropdown: azdata.DropDownComponent;
-	private locationComponent: azdata.TextComponent;
+	private locationComponent: azdata.Component;
 	private installedPackageCount: azdata.TextComponent;
 	private installedPackagesTable: azdata.TableComponent;
 	private installedPackagesLoader: azdata.LoadingComponent;
 	private uninstallPackageButton: azdata.ButtonComponent;
+	private view: azdata.ModelView | undefined;
+	private formBuilder: azdata.FormBuilder;
 
 	constructor(private dialog: ManagePackagesDialog, private jupyterInstallation: JupyterServerInstallation) {
 		this.prompter = new CodeAdapter();
@@ -32,14 +34,7 @@ export class InstalledPackagesTab {
 		this.installedPkgTab = azdata.window.createTab(localize('managePackages.installedTabTitle', "Installed"));
 
 		this.installedPkgTab.registerContent(async view => {
-
-			// TODO: only supporting single location for now. We should add a drop down for multi locations mode
-			//
-			let locationTitle = await this.dialog.model.getLocationTitle();
-			this.locationComponent = view.modelBuilder.text().withProperties({
-				value: locationTitle
-			}).component();
-
+			this.view = view;
 			let dropdownValues = this.dialog.model.getPackageTypes().map(x => {
 				return {
 					name: x.providerId,
@@ -52,11 +47,17 @@ export class InstalledPackagesTab {
 				value: defaultPackageType
 			}).component();
 			this.dialog.changeProvider(defaultPackageType.providerId);
-			this.packageTypeDropdown.onValueChanged(() => {
-				this.dialog.resetPages((<azdata.CategoryValue>this.packageTypeDropdown.value).name)
-					.catch(err => {
-						this.dialog.showErrorMessage(utils.getErrorMessage(err));
-					});
+			this.packageTypeDropdown.onValueChanged(async () => {
+				this.dialog.changeProvider((<azdata.CategoryValue>this.packageTypeDropdown.value).name);
+				try {
+					await this.resetLocations();
+					await this.dialog.resetPages();
+				}
+				catch (err) {
+					this.dialog.showErrorMessage(utils.getErrorMessage(err));
+
+				}
+
 			});
 
 			this.installedPackageCount = view.modelBuilder.text().withProperties({
@@ -81,11 +82,8 @@ export class InstalledPackagesTab {
 				}).component();
 			this.uninstallPackageButton.onDidClick(() => this.doUninstallPackage());
 
-			let formModel = view.modelBuilder.formContainer()
+			this.formBuilder = view.modelBuilder.formContainer()
 				.withFormItems([{
-					component: this.locationComponent,
-					title: localize('managePackages.location', "Location")
-				}, {
 					component: this.packageTypeDropdown,
 					title: localize('managePackages.packageType', "Package Type")
 				}, {
@@ -97,10 +95,11 @@ export class InstalledPackagesTab {
 				}, {
 					component: this.uninstallPackageButton,
 					title: ''
-				}]).component();
+				}]);
+			await this.resetLocations();
 
 			this.installedPackagesLoader = view.modelBuilder.loadingComponent()
-				.withItem(formModel)
+				.withItem(this.formBuilder.component())
 				.withProperties({
 					loading: true
 				}).component();
@@ -110,6 +109,68 @@ export class InstalledPackagesTab {
 			await this.loadInstalledPackagesInfo();
 			this.packageTypeDropdown.focus();
 		});
+	}
+
+	private async resetLocations(): Promise<void> {
+		if (this.view) {
+			if (this.locationComponent) {
+				this.formBuilder.removeFormItem({
+					component: this.locationComponent,
+					title: localize('managePackages.location', "Location")
+				});
+			}
+
+			this.locationComponent = await InstalledPackagesTab.getLocationComponent(this.view, this.dialog);
+
+			this.formBuilder.insertFormItem({
+				component: this.locationComponent,
+				title: localize('managePackages.location', "Location")
+			}, 1);
+		}
+	}
+
+	/**
+	 * Creates a component for package locations
+	 * @param view Model view
+	 * @param dialog Manage package dialog
+	 */
+	public static async getLocationComponent(view: azdata.ModelView, dialog: ManagePackagesDialog): Promise<azdata.Component> {
+		const locations = await dialog.model.getLocations();
+		let component: azdata.Component;
+		if (locations && locations.length === 1) {
+			component = view.modelBuilder.text().withProperties({
+				value: locations[0].displayName
+			}).component();
+		} else if (locations) {
+			let dropdownValues = locations.map(x => {
+				return {
+					name: x.name,
+					displayName: x.displayName
+				};
+			});
+			let locationDropDown = view.modelBuilder.dropDown().withProperties({
+				values: dropdownValues,
+				value: dropdownValues[0]
+			}).component();
+
+			locationDropDown.onValueChanged(async () => {
+				dialog.changeLocation((<azdata.CategoryValue>locationDropDown.value).name);
+				try {
+					await dialog.resetPages();
+				}
+				catch (err) {
+					dialog.showErrorMessage(utils.getErrorMessage(err));
+				}
+			});
+			component = locationDropDown;
+		} else {
+			component = view.modelBuilder.text().withProperties({
+			}).component();
+		}
+		if (locations && locations.length > 0) {
+			dialog.changeLocation(locations[0].name);
+		}
+		return component;
 	}
 
 	public get tab(): azdata.window.DialogTab {

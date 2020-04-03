@@ -46,10 +46,13 @@ export class AzureDeviceCode extends AzureAuth {
 
 	private static readonly USER_FRIENDLY_NAME: string = localize('azure.azureDeviceCodeAuth', "Azure Device Code");
 	private readonly pageTitle: string;
-	constructor(metadata: AzureAccountProviderMetadata,
+	constructor(
+		metadata: AzureAccountProviderMetadata,
 		tokenCache: SimpleTokenCache,
-		context: vscode.ExtensionContext) {
-		super(metadata, tokenCache, context, AzureAuthType.AuthCodeGrant, AzureDeviceCode.USER_FRIENDLY_NAME);
+		context: vscode.ExtensionContext,
+		uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
+	) {
+		super(metadata, tokenCache, context, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureDeviceCode.USER_FRIENDLY_NAME);
 		this.pageTitle = localize('addAccount', "Add {0} account", this.metadata.displayName);
 
 	}

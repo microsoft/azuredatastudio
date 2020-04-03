@@ -15,6 +15,12 @@ import * as loc from '../localizedConstants';
 
 let localize = nls.loadMessageBundle();
 
+class UriEventHandler extends vscode.EventEmitter<vscode.Uri> implements vscode.UriHandler {
+	public handleUri(uri: vscode.Uri) {
+		this.fire(uri);
+	}
+}
+
 export class AzureAccountProviderService implements vscode.Disposable {
 	// CONSTANTS ///////////////////////////////////////////////////////////////
 	private static CommandClearTokenCache = 'accounts.clearTokenCache';
@@ -22,12 +28,14 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private static CredentialNamespace = 'azureAccountProviderCredentials';
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////////
+	private _disposables: vscode.Disposable[] = [];
 	private _accountDisposals: { [accountProviderId: string]: vscode.Disposable };
 	private _accountProviders: { [accountProviderId: string]: azdata.AccountProvider };
 	private _credentialProvider: azdata.CredentialProvider;
 	private _configChangePromiseChain: Thenable<void>;
 	private _currentConfig: vscode.WorkspaceConfiguration;
 	private _event: events.EventEmitter;
+	private readonly _uriEventHandler: UriEventHandler;
 
 	constructor(private _context: vscode.ExtensionContext, private _userStoragePath: string) {
 		this._accountDisposals = {};
@@ -35,6 +43,9 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		this._configChangePromiseChain = Promise.resolve();
 		this._currentConfig = null;
 		this._event = new events.EventEmitter();
+
+		this._uriEventHandler = new UriEventHandler();
+		this._disposables.push(vscode.window.registerUriHandler(this._uriEventHandler));
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -65,7 +76,14 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			});
 	}
 
-	public dispose() { }
+	public dispose() {
+		while (this._disposables.length) {
+			const item = this._disposables.pop();
+			if (item) {
+				item.dispose();
+			}
+		}
+	}
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private onClearTokenCache(): Thenable<void> {
@@ -133,7 +151,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			await simpleTokenCache.init();
 
 			const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
-			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, simpleTokenCache, this._context, isSaw);
+			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, simpleTokenCache, this._context, this._uriEventHandler, isSaw);
 
 			this._accountProviders[provider.metadata.id] = accountProvider;
 			this._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);

@@ -9,6 +9,7 @@ import { Account, DidChangeAccountsParams } from 'azdata';
 import { Event } from 'vscode';
 
 import { azureResource } from './azure-resource';
+import { AzureAccount, AzureAccountSecurityToken, Tenant } from '../account-provider/interfaces';
 
 export interface IAzureResourceAccountService {
 	getAccounts(): Promise<Account[]>;
@@ -22,6 +23,10 @@ export interface IAzureResourceSubscriptionService {
 export interface IAzureResourceSubscriptionFilterService {
 	getSelectedSubscriptions(account: Account): Promise<azureResource.AzureResourceSubscription[]>;
 	saveSelectedSubscriptions(account: Account, selectedSubscriptions: azureResource.AzureResourceSubscription[]): Promise<void>;
+}
+
+export interface IAzureTerminalService {
+	getOrCreateCloudConsole(account: AzureAccount, tenant: Tenant, tokens: { [key: string]: AzureAccountSecurityToken }): Promise<void>;
 }
 
 export interface IAzureResourceCacheService {

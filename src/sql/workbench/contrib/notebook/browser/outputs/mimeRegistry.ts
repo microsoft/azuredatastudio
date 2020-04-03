@@ -10,6 +10,7 @@ import { MimeModel } from 'sql/workbench/services/notebook/browser/outputs/mimem
 import * as types from 'vs/base/common/types';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { values } from 'vs/base/common/collections';
+import { nb } from 'azdata';
 
 export type FactoryIdentifier = string;
 
@@ -21,6 +22,7 @@ export interface IMimeComponent {
 	bundleOptions: MimeModel.IOptions;
 	mimeType: string;
 	cellModel?: ICellModel;
+	cellOutput?: nb.ICellOutput;
 	layout(): void;
 }
 
