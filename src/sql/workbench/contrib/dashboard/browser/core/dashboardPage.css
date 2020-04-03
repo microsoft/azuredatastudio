@@ -63,3 +63,23 @@ dashboard-page .editor-toolbar {
 	border-bottom-style: solid;
 	padding: 3px 0;
 }
+
+.dashboardEditor breadcrumb .chevron-right.codicon {
+	background-size: 8px;
+}
+
+.vs-dark .dashboardEditor breadcrumb,
+.hc-black .dashboardEditor breadcrumb {
+	font-size: 13px;
+	color: #FFFFFF;
+}
+
+.dashboardEditor breadcrumb {
+	font-size: 13px;
+	color: #323130;
+}
+
+.dashboardEditor breadcrumb .router-link {
+	color: #2170DE;;
+}
+
