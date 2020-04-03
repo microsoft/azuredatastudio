@@ -10,7 +10,7 @@
 .notebookEditor .notebook-cell {
 	border-color: transparent;
 	border-style: solid;
-	border-width: 1px 3px;
+	border-width: 1px 1px 1px 3px;
 	margin: 24px 20px;
 	position: relative;
 }

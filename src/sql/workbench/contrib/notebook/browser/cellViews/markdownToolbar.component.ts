@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 const ButtonBold = localize('buttonBold', "Bold");
 const ButtonItalic = localize('buttonItalic', "Italic");
 const ButtonCode = localize('buttonCode', "Code");
-const ButtonHighlight = localize('buttonHighlight', "Highlight");
+//const ButtonHighlight = localize('buttonHighlight', "Highlight");
 const ButtonLink = localize('buttonLink', "Link");
 const ButtonList = localize('buttonList', "List");
 const ButtonOrderedList = localize('buttonOrderedList', "Ordered list");
@@ -23,7 +23,6 @@ const ButtonPreview = localize('buttonPreview', "Markdown preview toggle - off")
 			<li><a class="markdown-toolbar-bold" role="button" href="#"><span class="offscreen">${ButtonBold}</span></a></li>
 			<li><a class="markdown-toolbar-italic" role="button" href="#"><span class="offscreen">${ButtonItalic}</span></a></li>
 			<li><a class="markdown-toolbar-code" role="button" href="#"><span class="offscreen">${ButtonCode}</span></a></li>
-			<li><a class="markdown-toolbar-code" role="button" href="#"><span class="offscreen">${ButtonHighlight}</span></a></li>
 			<li><a class="markdown-toolbar-link" role="button" href="#"><span class="offscreen">${ButtonLink}</span></a></li>
 			<li><a class="markdown-toolbar-list" role="button" href="#"><span class="offscreen">${ButtonList}</span></a></li>
 			<li><a class="markdown-toolbar-ordered-list" role="button" href="#"><span class="offscreen">${ButtonOrderedList}</span></a></li>

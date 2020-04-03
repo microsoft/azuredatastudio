@@ -91,37 +91,37 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		// Cell active border handling
 		collector.addRule(`
 			.notebookEditor .notebook-cell.active {
-				border-width: 1px 3px;
+				border-width: 1px 1px 1px 3px;
 				border-style: solid;
 				border-color: ${darkCellBorder};
 			}
 
 			.vs-dark .notebookEditor .notebook-cell.active {
-				border-width: 1px 3px;
+				border-width: 1px 1px 1px 3px;
 				border-style: solid;
 				border-color: ${darkCellBorder};
 			}
 
 			.hc-black .notebookEditor .notebook-cell.active {
-				border-width: 1px 3px;
+				border-width: 1px 1px 1px 3px;
 				border-style: solid;
 				border-color: ${darkCellBorder};
 			}
 
 			.notebookEditor .notebook-cell:hover:not(.active) {
-				border-width: 1px 3px;
+				border-width: 1px 1px 1px 3px;
 				border-style: solid;
 				border-color: transparent;
 			}
 
 			.vs-dark .notebookEditor .notebook-cell:hover:not(.active) {
-				border-width: 1px 3px;
+				border-width: 1px 1px 1px 3px;
 				border-style: solid;
 				border-color: transparent;
 			}
 
 			.hc-black .notebookEditor .notebook-cell:hover:not(.active) {
-				border-width: 1px 3px;
+				border-width: 1px 1px 1px 3px;
 				border-style: solid;
 				border-color: transparent;
 			}
@@ -175,14 +175,14 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			collector.addRule(`
 				.notebookEditor .notebook-cell {
 					border-color: transparent;
-					border-width: 1px 3px;
+					border-width: 1px 1px 1px 3px;
 				}
 				.notebookEditor .notebook-cell.active {
-					border-width: 1px 3px;
+					border-width: 1px 1px 1px 3px;
 				}
 				.notebookEditor .notebook-cell:hover {
 					border-color: ${inactiveBorder};
-					border-width: 1px 3px;
+					border-width: 1px 1px 1px 3px;
 				}
 
 				.notebookEditor .hoverButtonsContainer .containerBackground {

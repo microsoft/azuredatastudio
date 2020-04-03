@@ -28,7 +28,6 @@ import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/ce
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
 import { NotebookRange, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
-import { IToolbarActionService } from 'sql/workbench/services/notebook/common/interfaces';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -94,7 +93,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IToolbarActionService) private toolbarActionService: IToolbarActionService
 	) {
 		super();
 		this.isEditMode = true;
@@ -105,17 +103,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this.markdownResult.dispose();
 			}
 		}));
-	}
-	/** Todo:
-	 *
-	 * Move code from toggleEditMode() in this component,
-	 * and unselectActiveCell() in notebook.component
-	 * into the newly created service: toolbarAction.service.
-	 *
-	 * **/
-	public haleTest() {
-		let testValue: string = 'testing, 1,2,3';
-		this.toolbarActionService.fireOnToolbarItemSelect(testValue);
 	}
 
 	public get cellEditors(): ICellEditorProvider[] {

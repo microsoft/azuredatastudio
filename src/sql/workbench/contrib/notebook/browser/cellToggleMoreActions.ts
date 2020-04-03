@@ -49,8 +49,6 @@ export class CellToggleMoreActions {
 		);
 	}
 
-	// TODO: Move element reference so the cell gets a new menu, including insert, move, delete and the ellipses.
-	//
 	public onInit(elementRef: ElementRef, model: NotebookModel, cellModel: ICellModel) {
 		let context = new CellContext(model, cellModel);
 		this._moreActionsElement = <HTMLElement>elementRef.nativeElement;
