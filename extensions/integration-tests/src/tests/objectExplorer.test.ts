@@ -5,34 +5,31 @@
 
 import 'mocha';
 import * as azdata from 'azdata';
-import { isTestSetupCompleted } from '../testContext';
 import { getBdcServer, TestServerProfile, getAzureServer, getStandaloneServer } from '../testConfig';
 import { connectToServer, createDB, deleteDB, DefaultConnectTimeoutInMs, asyncTimeout } from '../utils';
 import * as assert from 'assert';
 import { stressify } from 'adstest';
 
-if (isTestSetupCompleted()) {
-	suite('Object Explorer integration suite', () => {
-		test.skip('BDC instance node label test', async function () {
-			return await (new ObjectExplorerTester()).bdcNodeLabelTest();
-		});
-		test('Standalone instance node label test', async function () {
-			return await (new ObjectExplorerTester()).standaloneNodeLabelTest();
-		});
-		test('Azure SQL DB instance node label test @UNSTABLE@', async function () {
-			return await (new ObjectExplorerTester()).sqlDbNodeLabelTest();
-		});
-		test.skip('BDC instance context menu test', async function () {
-			return await (new ObjectExplorerTester()).bdcContextMenuTest();
-		});
-		test('Azure SQL DB context menu test  @UNSTABLE@', async function () {
-			return await (new ObjectExplorerTester()).sqlDbContextMenuTest();
-		});
-		test('Standalone database context menu test', async function () {
-			return await (new ObjectExplorerTester()).standaloneContextMenuTest();
-		});
+suite('Object Explorer integration suite', () => {
+	test.skip('BDC instance node label test', async function () {
+		return await (new ObjectExplorerTester()).bdcNodeLabelTest();
 	});
-}
+	test('Standalone instance node label test', async function () {
+		return await (new ObjectExplorerTester()).standaloneNodeLabelTest();
+	});
+	test('Azure SQL DB instance node label test @UNSTABLE@', async function () {
+		return await (new ObjectExplorerTester()).sqlDbNodeLabelTest();
+	});
+	test.skip('BDC instance context menu test', async function () {
+		return await (new ObjectExplorerTester()).bdcContextMenuTest();
+	});
+	test('Azure SQL DB context menu test  @UNSTABLE@', async function () {
+		return await (new ObjectExplorerTester()).sqlDbContextMenuTest();
+	});
+	test('Standalone database context menu test', async function () {
+		return await (new ObjectExplorerTester()).standaloneContextMenuTest();
+	});
+});
 
 class ObjectExplorerTester {
 	private static ParallelCount = 1;
