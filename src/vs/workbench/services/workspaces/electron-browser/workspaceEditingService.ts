@@ -140,6 +140,8 @@ export class NativeWorkspaceEditingService extends AbstractWorkspaceEditingServi
 				return false;
 			}
 		}
+
+		return false;
 	}
 
 	async isValidTargetWorkspacePath(path: URI): Promise<boolean> {

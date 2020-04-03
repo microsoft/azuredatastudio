@@ -56,7 +56,7 @@ export function activate(context: vscode.ExtensionContext): any {
 			};
 			jsoncParser.visit(document.getText(), visitor);
 
-			return builder.build();
+			return new vscode.SemanticTokens(builder.build());
 		}
 	};
 

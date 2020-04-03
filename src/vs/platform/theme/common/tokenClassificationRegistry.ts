@@ -28,7 +28,7 @@ export const fontStylePattern = '^(\\s*(-?italic|-?bold|-?underline))*\\s*$';
 
 export interface TokenSelector {
 	match(type: string, modifiers: string[], language: string): number;
-	readonly id: string;
+	readonly selectorString: string;
 }
 
 export interface TokenTypeOrModifierContribution {
@@ -155,7 +155,7 @@ export namespace TokenStylingRule {
 	}
 	export function toJSONObject(rule: TokenStylingRule): any {
 		return {
-			_selector: rule.selector.id,
+			_selector: rule.selector.selectorString,
 			_style: TokenStyle.toJSONObject(rule.style)
 		};
 	}
@@ -164,7 +164,7 @@ export namespace TokenStylingRule {
 			return true;
 		}
 		return r1 !== undefined && r2 !== undefined
-			&& r1.selector && r2.selector && r1.selector.id === r2.selector.id
+			&& r1.selector && r2.selector && r1.selector.selectorString === r2.selector.selectorString
 			&& TokenStyle.equals(r1.style, r2.style);
 	}
 	export function is(r: any): r is TokenStylingRule {
@@ -203,11 +203,10 @@ export interface ITokenClassificationRegistry {
 	/**
 	 * Parses a token selector from a selector string.
 	 * @param selectorString selector string in the form (*|type)(.modifier)*
-	 * @param language language to which the selector applies or undefined if the selector is for all languafe
 	 * @returns the parsesd selector
 	 * @throws an error if the string is not a valid selector
 	 */
-	parseTokenSelector(selectorString: string, language?: string): TokenSelector;
+	parseTokenSelector(selectorString: string): TokenSelector;
 
 	/**
 	 * Register a TokenStyle default to the registry.
@@ -336,13 +335,13 @@ class TokenClassificationRegistry implements ITokenClassificationRegistry {
 		this.tokenStylingSchema.properties[`*.${id}`] = getStylingSchemeEntry(description, deprecationMessage);
 	}
 
-	public parseTokenSelector(selectorString: string, language?: string): TokenSelector {
-		const selector = parseClassifierString(selectorString, language);
+	public parseTokenSelector(selectorString: string): TokenSelector {
+		const selector = parseClassifierString(selectorString);
 
 		if (!selector.type) {
 			return {
 				match: () => -1,
-				id: '$invalid'
+				selectorString
 			};
 		}
 
@@ -353,7 +352,7 @@ class TokenClassificationRegistry implements ITokenClassificationRegistry {
 					if (selector.language !== language) {
 						return -1;
 					}
-					score += 10;
+					score += 100;
 				}
 				if (selector.type !== TOKEN_TYPE_WILDCARD) {
 					const hierarchy = this.getTypeHierarchy(type);
@@ -371,7 +370,7 @@ class TokenClassificationRegistry implements ITokenClassificationRegistry {
 				}
 				return score + selector.modifiers.length * 100;
 			},
-			id: `${[selector.type, ...selector.modifiers.sort()].join('.')}${selector.language !== undefined ? ':' + selector.language : ''}`
+			selectorString
 		};
 	}
 
@@ -380,8 +379,8 @@ class TokenClassificationRegistry implements ITokenClassificationRegistry {
 	}
 
 	public deregisterTokenStyleDefault(selector: TokenSelector): void {
-		const selectorString = selector.id;
-		this.tokenStylingDefaultRules = this.tokenStylingDefaultRules.filter(r => r.selector.id !== selectorString);
+		const selectorString = selector.selectorString;
+		this.tokenStylingDefaultRules = this.tokenStylingDefaultRules.filter(r => r.selector.selectorString !== selectorString);
 	}
 
 	public deregisterTokenType(id: string): void {
@@ -443,11 +442,9 @@ class TokenClassificationRegistry implements ITokenClassificationRegistry {
 const CHAR_LANGUAGE = TOKEN_CLASSIFIER_LANGUAGE_SEPARATOR.charCodeAt(0);
 const CHAR_MODIFIER = CLASSIFIER_MODIFIER_SEPARATOR.charCodeAt(0);
 
-export function parseClassifierString(s: string, defaultLanguage: string): { type: string, modifiers: string[], language: string; };
-export function parseClassifierString(s: string, defaultLanguage?: string): { type: string, modifiers: string[], language: string | undefined; };
-export function parseClassifierString(s: string, defaultLanguage: string | undefined): { type: string, modifiers: string[], language: string | undefined; } {
+export function parseClassifierString(s: string): { type: string, modifiers: string[], language: string | undefined; } {
 	let k = s.length;
-	let language: string | undefined = defaultLanguage;
+	let language: string | undefined = undefined;
 	const modifiers = [];
 
 	for (let i = k - 1; i >= 0; i--) {

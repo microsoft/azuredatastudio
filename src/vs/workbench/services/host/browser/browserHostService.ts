@@ -17,6 +17,7 @@ import { trackFocus } from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+import { mapToSerializable } from 'vs/base/common/map';
 
 /**
  * A workspace to open in the workbench can either be:
@@ -141,7 +142,7 @@ export class BrowserHostService extends Disposable implements IHostService {
 					const environment = new Map<string, string>();
 					environment.set('openFile', openable.fileUri.toString());
 
-					this.workspaceProvider.open(undefined, { payload: Array.from(environment.entries()) });
+					this.workspaceProvider.open(undefined, { payload: mapToSerializable(environment) });
 				}
 			}
 		}

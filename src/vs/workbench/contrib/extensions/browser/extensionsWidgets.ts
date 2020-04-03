@@ -6,7 +6,7 @@
 import 'vs/css!./media/extensionsWidgets';
 import { Disposable, toDisposable, DisposableStore, MutableDisposable } from 'vs/base/common/lifecycle';
 import { IExtension, IExtensionsWorkbenchService, IExtensionContainer } from 'vs/workbench/contrib/extensions/common/extensions';
-import { append, $, addClass, removeNode } from 'vs/base/browser/dom';
+import { append, $, addClass } from 'vs/base/browser/dom';
 import * as platform from 'vs/base/common/platform';
 import { localize } from 'vs/nls';
 import { IExtensionTipsService, IExtensionManagementServerService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
@@ -16,7 +16,6 @@ import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeServic
 import { EXTENSION_BADGE_REMOTE_BACKGROUND, EXTENSION_BADGE_REMOTE_FOREGROUND } from 'vs/workbench/common/theme';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { CountBadge } from 'vs/base/browser/ui/countBadge/countBadge';
 
 export abstract class ExtensionWidget extends Disposable implements IExtensionContainer {
 	private _extension: IExtension | null = null;
@@ -223,7 +222,7 @@ export class RecommendationWidget extends ExtensionWidget {
 		}
 		const extRecommendations = this.extensionTipsService.getAllRecommendationsWithReason();
 		if (extRecommendations[this.extension.identifier.id.toLowerCase()]) {
-			this.element = append(this.parent, $('div.extension-bookmark'));
+			this.element = append(this.parent, $('div.bookmark'));
 			const recommendation = append(this.element, $('.recommendation'));
 			append(recommendation, $('span.codicon.codicon-star'));
 			const applyBookmarkStyle = (theme: IColorTheme) => {
@@ -286,7 +285,7 @@ class RemoteBadge extends Disposable {
 		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService
 	) {
 		super();
-		this.element = $('div.extension-badge.extension-remote-badge');
+		this.element = $('div.extension-remote-badge');
 		this.render();
 	}
 
@@ -314,34 +313,5 @@ class RemoteBadge extends Disposable {
 			this._register(this.labelService.onDidChangeFormatters(() => updateTitle()));
 			updateTitle();
 		}
-	}
-}
-
-export class ExtensionPackCountWidget extends ExtensionWidget {
-
-	private element: HTMLElement | undefined;
-
-	constructor(
-		private readonly parent: HTMLElement,
-	) {
-		super();
-		this.render();
-		this._register(toDisposable(() => this.clear()));
-	}
-
-	private clear(): void {
-		if (this.element) {
-			removeNode(this.element);
-		}
-	}
-
-	render(): void {
-		this.clear();
-		if (!this.extension || !this.extension.extensionPack.length) {
-			return;
-		}
-		this.element = append(this.parent, $('.extension-badge.extension-pack-badge'));
-		const countBadge = new CountBadge(this.element);
-		countBadge.setCount(this.extension.extensionPack.length);
 	}
 }

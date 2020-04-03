@@ -28,7 +28,7 @@ export class PreviewManager implements vscode.CustomEditorProvider {
 	) { }
 
 	public async openCustomDocument(uri: vscode.Uri) {
-		return new vscode.CustomDocument(uri);
+		return new vscode.CustomDocument(PreviewManager.viewType, uri);
 	}
 
 	public async resolveCustomEditor(

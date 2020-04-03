@@ -3,24 +3,23 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
-import { Range } from 'vs/editor/common/core/range';
 import * as editorCommon from 'vs/editor/common/editorCommon';
 import * as model from 'vs/editor/common/model';
-import { SearchParams } from 'vs/editor/common/model/textModelSearch';
+import { Range } from 'vs/editor/common/core/range';
+import { ICell, NotebookCellMetadata, NotebookDocumentMetadata } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { CursorAtBoundary, CellFocusMode, CellEditState, CellRunState } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { EDITOR_TOOLBAR_HEIGHT, EDITOR_TOP_MARGIN } from 'vs/workbench/contrib/notebook/browser/constants';
-import { CellEditState, CellFocusMode, CellRunState, CursorAtBoundary, ICellViewModel } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
-import { CellKind, ICell, NotebookCellMetadata, NotebookDocumentMetadata } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { SearchParams } from 'vs/editor/common/model/textModelSearch';
 
 export const NotebookCellMetadataDefaults = {
 	editable: true,
 	runnable: true
 };
 
-export abstract class BaseCellViewModel extends Disposable implements ICellViewModel {
+export abstract class BaseCellViewModel extends Disposable {
 	protected readonly _onDidDispose = new Emitter<void>();
 	readonly onDidDispose = this._onDidDispose.event;
 	protected readonly _onDidChangeCellEditState = new Emitter<void>();
@@ -50,8 +49,6 @@ export abstract class BaseCellViewModel extends Disposable implements ICellViewM
 		return this.cell.metadata;
 	}
 
-	abstract cellKind: CellKind;
-
 	private _editState: CellEditState = CellEditState.Preview;
 
 	get editState(): CellEditState {
@@ -66,21 +63,20 @@ export abstract class BaseCellViewModel extends Disposable implements ICellViewM
 		this._editState = newState;
 		this._onDidChangeCellEditState.fire();
 	}
-
-	private _currentTokenSource: CancellationTokenSource | undefined;
-	public set currentTokenSource(v: CancellationTokenSource | undefined) {
-		this._currentTokenSource = v;
-		this._onDidChangeCellRunState.fire();
-	}
-
-	public get currentTokenSource(): CancellationTokenSource | undefined {
-		return this._currentTokenSource;
-	}
+	private _runState: CellRunState = CellRunState.Idle;
 
 	get runState(): CellRunState {
-		return this._currentTokenSource ? CellRunState.Running : CellRunState.Idle;
+		return this._runState;
 	}
 
+	set runState(newState: CellRunState) {
+		if (newState === this._runState) {
+			return;
+		}
+
+		this._runState = newState;
+		this._onDidChangeCellRunState.fire();
+	}
 	private _focusMode: CellFocusMode = CellFocusMode.Container;
 	get focusMode() {
 		return this._focusMode;

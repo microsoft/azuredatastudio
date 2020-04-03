@@ -457,57 +457,6 @@ class WizardImpl implements azdata.window.Wizard {
 	}
 }
 
-class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
-	constructor(
-		private _editor: ModelViewEditorImpl
-	) {
-	}
-	registerTabs(handler: (view: azdata.ModelView) => Thenable<(azdata.DashboardTab | azdata.DashboardTabGroup)[]>): void {
-		this._editor.registerContent(async (view) => {
-			const dashboardTabs = await handler(view);
-			const tabs: (azdata.TabGroup | azdata.Tab)[] = [];
-			dashboardTabs.forEach((item: azdata.DashboardTab | azdata.DashboardTabGroup) => {
-				if ('tabs' in item) {
-					tabs.push(<azdata.TabGroup>{
-						title: item.title,
-						tabs: item.tabs.map(tab => {
-							return this.createTab(tab, view);
-						})
-					});
-				} else {
-					tabs.push(this.createTab(item, view));
-				}
-			});
-
-			const tabbedPanel = view.modelBuilder.tabbedPanel().withTabs(tabs).withLayout({
-				orientation: 'vertical',
-				showIcon: true
-			}).component();
-			return view.initializeModel(tabbedPanel);
-		});
-	}
-
-	open(): Thenable<void> {
-		return this._editor.openEditor();
-	}
-
-	createTab(tab: azdata.DashboardTab, view: azdata.ModelView): azdata.Tab {
-		if (tab.toolbar) {
-			const flexContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			flexContainer.addItem(tab.toolbar, { flex: '0 0 auto' });
-			flexContainer.addItem(tab.content, { flex: '1 1 auto' });
-			return {
-				title: tab.title,
-				id: tab.id,
-				content: flexContainer,
-				icon: tab.icon
-			};
-		} else {
-			return tab;
-		}
-	}
-}
-
 export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	private static _currentHandle = 0;
 
@@ -611,11 +560,6 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		let editor = new ModelViewEditorImpl(this, this._extHostModelView, extension, this._proxy, title, options);
 		editor.handle = this.getHandle(editor);
 		return editor;
-	}
-
-	public createModelViewDashboard(title: string, extension: IExtensionDescription): azdata.window.ModelViewDashboard {
-		const editor = this.createModelViewEditor(title, extension, { supportsSave: false }) as ModelViewEditorImpl;
-		return new ModelViewDashboardImpl(editor);
 	}
 
 	public updateDialogContent(dialog: azdata.window.Dialog): void {

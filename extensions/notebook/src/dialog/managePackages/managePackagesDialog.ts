@@ -67,17 +67,14 @@ export class ManagePackagesDialog {
 	}
 
 	/**
-	 * Changes the current location
-	 * @param location location name
-	 */
-	public changeLocation(location: string): void {
-		this.model.changeLocation(location);
-	}
-
-	/**
 	 * Resets the tabs for given provider Id
+	 * @param providerId Package Management Provider Id
 	 */
-	public async resetPages(): Promise<void> {
+	public async resetPages(providerId: string): Promise<void> {
+
+		// Change the provider in the model
+		//
+		this.changeProvider(providerId);
 
 		// Load packages for given provider
 		//

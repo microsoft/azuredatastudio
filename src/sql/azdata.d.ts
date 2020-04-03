@@ -2212,8 +2212,7 @@ declare module 'azdata' {
 		Sql = 1,
 		OssRdbms = 2,
 		AzureKeyVault = 3,
-		Graph = 4,
-		MicrosoftResourceManagement = 5
+		Graph = 4
 	}
 
 	export interface DidChangeAccountsParams {

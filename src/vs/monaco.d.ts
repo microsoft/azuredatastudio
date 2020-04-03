@@ -3650,6 +3650,10 @@ declare namespace monaco.editor {
 		 */
 		insertMode?: 'insert' | 'replace';
 		/**
+		 * Show a highlight when suggestion replaces or keep text after the cursor. Defaults to false.
+		 */
+		insertHighlight?: boolean;
+		/**
 		 * Enable graceful matching. Defaults to true.
 		 */
 		filterGraceful?: boolean;

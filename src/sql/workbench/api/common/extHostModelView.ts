@@ -499,23 +499,22 @@ class TabbedPanelComponentBuilder extends ContainerBuilderImpl<azdata.TabbedPane
 		items.forEach(item => {
 			if (item && 'tabs' in item) {
 				item.tabs.forEach(tab => {
-					itemConfigs.push(this.toItemConfig(tab.content, tab.title, tab.id, item.title, tab.icon));
+					itemConfigs.push(this.toItemConfig(tab.content, tab.title, tab.id, item.title));
 				});
 			} else {
 				const tab = <azdata.Tab>item;
-				itemConfigs.push(this.toItemConfig(tab.content, tab.title, tab.id, undefined, tab.icon));
+				itemConfigs.push(this.toItemConfig(tab.content, tab.title, tab.id));
 			}
 		});
 		this._component.itemConfigs = itemConfigs;
 		return this;
 	}
 
-	toItemConfig(content: azdata.Component, title: string, id?: string, group?: string, icon?: string | URI | { light: string | URI; dark: string | URI }): InternalItemConfig {
+	toItemConfig(content: azdata.Component, title: string, id?: string, group?: string): InternalItemConfig {
 		return new InternalItemConfig(content as ComponentWrapper, {
 			title: title,
 			group: group,
-			id: id,
-			icon: icon
+			id: id
 		});
 	}
 }

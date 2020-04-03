@@ -109,7 +109,8 @@ export class ContributableViewsModel extends Disposable {
 		const added: IAddedViewDescriptorRef[] = [];
 		const removed: IViewDescriptorRef[] = [];
 
-		for (const { visibleIndex, viewDescriptor, state, visible, size } of viewDescriptors.map(({ id, visible, size }) => ({ ...this.find(id), visible, size }))) {
+		for (const { id, visible, size } of viewDescriptors) {
+			const { visibleIndex, viewDescriptor, state } = this.find(id);
 
 			if (!viewDescriptor.canToggleVisibility) {
 				throw new Error(`Can't toggle this view's visibility`);
@@ -337,14 +338,13 @@ export class PersistentContributableViewsModel extends ContributableViewsModel {
 		@IStorageKeysSyncRegistryService storageKeysSyncRegistryService: IStorageKeysSyncRegistryService
 	) {
 		const globalViewsStateStorageId = `${viewletStateStorageId}.hidden`;
-		storageKeysSyncRegistryService.registerStorageKey({ key: globalViewsStateStorageId, version: 1 });
 		const viewStates = PersistentContributableViewsModel.loadViewsStates(viewletStateStorageId, globalViewsStateStorageId, storageService);
 
 		super(container, viewDescriptorService, viewStates);
 
-		this.storageService = storageService;
 		this.workspaceViewsStateStorageId = viewletStateStorageId;
 		this.globalViewsStateStorageId = globalViewsStateStorageId;
+		this.storageService = storageService;
 
 		this._register(Event.any(
 			this.onDidAdd,
@@ -353,6 +353,7 @@ export class PersistentContributableViewsModel extends ContributableViewsModel {
 			Event.map(this.onDidChangeViewState, viewDescriptorRef => [viewDescriptorRef]))
 			(viewDescriptorRefs => this.saveViewsStates()));
 
+		storageKeysSyncRegistryService.registerStorageKey({ key: this.globalViewsStateStorageId, version: 1 });
 		this._globalViewsStatesValue = this.getStoredGlobalViewsStatesValue();
 		this._register(this.storageService.onDidChangeStorage(e => this.onDidStorageChange(e)));
 	}

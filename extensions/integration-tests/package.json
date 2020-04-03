@@ -9,8 +9,7 @@
     "azdata": "*"
   },
   "activationEvents": [
-		"onFileSystem:memfs",
-		"onDebug"
+    "*"
   ],
   "main": "./out/main",
   "extensionDependencies": [
@@ -18,8 +17,7 @@
     "Microsoft.import",
     "Microsoft.profiler",
     "Microsoft.mssql",
-    "Microsoft.notebook",
-    "Microsoft.azuredatastudio-postgresql"
+    "Microsoft.notebook"
   ],
   "contributes": {
     "configuration": {

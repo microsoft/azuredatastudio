@@ -10,13 +10,11 @@ import { TabOrientation, TabbedPanelLayout } from 'sql/workbench/api/common/sqlE
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import 'vs/css!./media/tabbedPanel';
-import { IUserFriendlyIcon, createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 
 export interface TabConfig {
 	title: string;
 	id?: string;
 	group: string;
-	icon?: IUserFriendlyIcon;
 }
 
 interface Tab {
@@ -24,7 +22,6 @@ interface Tab {
 	content?: IComponentDescriptor;
 	id?: string;
 	type: TabType;
-	iconClass?: string;
 }
 
 @Component({
@@ -59,7 +56,7 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 		this._panel.options = {
 			showTabsWhenOne: true,
 			layout: layout.orientation === TabOrientation.Horizontal ? NavigationBarLayout.horizontal : NavigationBarLayout.vertical,
-			showIcon: layout.showIcon
+			showIcon: false
 		};
 	}
 
@@ -89,19 +86,11 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 					title: item.config.title,
 					id: item.config.id,
 					content: item.descriptor,
-					iconClass: item.config.icon ? createIconCssClass(item.config.icon) : undefined,
 					type: 'tab'
 				});
 			}
 			this._itemIndexToProcess = this.items.length;
 		}
 		return this._tabs;
-	}
-
-	onItemsUpdated(): void {
-		const firstTabIndex = this.tabs.findIndex(tab => tab.type === 'tab');
-		if (firstTabIndex >= 0) {
-			this._panel.selectTab(firstTabIndex);
-		}
 	}
 }

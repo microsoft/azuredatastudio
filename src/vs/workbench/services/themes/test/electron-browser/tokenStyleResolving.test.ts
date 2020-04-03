@@ -398,11 +398,8 @@ suite('Themes - TokenStyleResolving', () => {
 
 	test('language - scope resolving', async () => {
 		const registry = getTokenClassificationRegistry();
+		registry.registerTokenStyleDefault(registry.parseTokenSelector('type:typescript'), { scopesToProbe: [['entity.name.type.ts']] });
 
-		const numberOfDefaultRules = registry.getTokenStylingDefaultRules().length;
-
-		registry.registerTokenStyleDefault(registry.parseTokenSelector('type', 'typescript1'), { scopesToProbe: [['entity.name.type.ts1']] });
-		registry.registerTokenStyleDefault(registry.parseTokenSelector('type:javascript1'), { scopesToProbe: [['entity.name.type.js1']] });
 
 		try {
 			const themeData = ColorThemeData.createLoadedEmptyTheme('test', 'test');
@@ -414,20 +411,17 @@ suite('Themes - TokenStyleResolving', () => {
 						settings: { foreground: '#aa0000' }
 					},
 					{
-						scope: 'entity.name.type.ts1',
+						scope: 'entity.name.type.ts',
 						settings: { foreground: '#bb0000' }
 					}
 				]
 			});
 
-			assertTokenStyles(themeData, { 'type': ts('#aa0000', undefined) }, 'javascript1');
-			assertTokenStyles(themeData, { 'type': ts('#bb0000', undefined) }, 'typescript1');
+			assertTokenStyles(themeData, { 'type': ts('#aa0000', undefined) }, 'javascript');
+			assertTokenStyles(themeData, { 'type': ts('#bb0000', undefined) }, 'typescript');
 
 		} finally {
-			registry.deregisterTokenStyleDefault(registry.parseTokenSelector('type', 'typescript1'));
-			registry.deregisterTokenStyleDefault(registry.parseTokenSelector('type:javascript1'));
-
-			assert.equal(registry.getTokenStylingDefaultRules().length, numberOfDefaultRules);
+			registry.deregisterTokenType('type/typescript');
 		}
 	});
 });

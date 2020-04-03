@@ -23,6 +23,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ProgressBar } from 'vs/base/browser/ui/progressbar/progressbar';
 import { Severity } from 'vs/platform/notification/common/notification';
 import { isNonEmptyArray } from 'vs/base/common/arrays';
+import { startsWith } from 'vs/base/common/strings';
 
 export class NotificationsListDelegate implements IListVirtualDelegate<INotificationViewItem> {
 
@@ -141,7 +142,7 @@ class NotificationMessageRenderer {
 			} else {
 				let title = node.title;
 
-				if (!title && node.href.startsWith('command:')) {
+				if (!title && startsWith(node.href, 'command:')) {
 					title = localize('executeCommand', "Click to execute command '{0}'", node.href.substr('command:'.length));
 				} else if (!title) {
 					title = node.href;

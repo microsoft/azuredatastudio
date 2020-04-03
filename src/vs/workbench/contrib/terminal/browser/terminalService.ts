@@ -178,28 +178,24 @@ export class TerminalService implements ITerminalService {
 		this._extHostsReady[remoteAuthority] = { promise, resolve };
 	}
 
-	private _onBeforeShutdown(): boolean | Promise<boolean> {
+	private async _onBeforeShutdown(): Promise<boolean> {
 		if (this.terminalInstances.length === 0) {
 			// No terminal instances, don't veto
 			return false;
 		}
 
 		if (this.configHelper.config.confirmOnExit) {
-			return this._onBeforeShutdownAsync();
+			// veto if configured to show confirmation and the user choosed not to exit
+			const veto = await this._showTerminalCloseConfirmation();
+			if (!veto) {
+				this._isShuttingDown = true;
+			}
+			return veto;
 		}
 
 		this._isShuttingDown = true;
 
 		return false;
-	}
-
-	private async _onBeforeShutdownAsync(): Promise<boolean> {
-		// veto if configured to show confirmation and the user choosed not to exit
-		const veto = await this._showTerminalCloseConfirmation();
-		if (!veto) {
-			this._isShuttingDown = true;
-		}
-		return veto;
 	}
 
 	private _onShutdown(): void {

@@ -70,6 +70,12 @@ class InspectEditorTokensController extends Disposable implements IEditorContrib
 		this._register(this._editor.onDidChangeModel((e) => this.stop()));
 		this._register(this._editor.onDidChangeModelLanguage((e) => this.stop()));
 		this._register(this._editor.onKeyUp((e) => e.keyCode === KeyCode.Escape && this.stop()));
+		this._register(this._themeService.onDidColorThemeChange(_ => {
+			if (this._widget) {
+				this.stop();
+				this.launch();
+			}
+		}));
 	}
 
 	public dispose(): void {
@@ -193,11 +199,12 @@ class InspectEditorTokensWidget extends Disposable implements IContentWidget {
 	private readonly _editor: IActiveCodeEditor;
 	private readonly _modeService: IModeService;
 	private readonly _themeService: IWorkbenchThemeService;
-	private readonly _textMateService: ITextMateService;
 	private readonly _notificationService: INotificationService;
 	private readonly _configurationService: IConfigurationService;
 	private readonly _model: ITextModel;
 	private readonly _domNode: HTMLElement;
+	private readonly _grammar: Promise<IGrammar | null>;
+	private readonly _semanticTokens: Promise<SemanticTokensResult | null>;
 	private readonly _currentRequestCancellationTokenSource: CancellationTokenSource;
 
 	constructor(
@@ -213,17 +220,16 @@ class InspectEditorTokensWidget extends Disposable implements IContentWidget {
 		this._editor = editor;
 		this._modeService = modeService;
 		this._themeService = themeService;
-		this._textMateService = textMateService;
 		this._notificationService = notificationService;
 		this._configurationService = configurationService;
 		this._model = this._editor.getModel();
 		this._domNode = document.createElement('div');
 		this._domNode.className = 'token-inspect-widget';
 		this._currentRequestCancellationTokenSource = new CancellationTokenSource();
+		this._grammar = textMateService.createGrammar(this._model.getLanguageIdentifier().language);
+		this._semanticTokens = this._computeSemanticTokens();
 		this._beginCompute(this._editor.getPosition());
 		this._register(this._editor.onDidChangeCursorPosition((e) => this._beginCompute(this._editor.getPosition())));
-		this._register(themeService.onDidColorThemeChange(_ => this._beginCompute(this._editor.getPosition())));
-		this._register(configurationService.onDidChangeConfiguration(e => e.affectsConfiguration('editor.semanticHighlighting.enabled') && this._beginCompute(this._editor.getPosition())));
 		this._editor.addContentWidget(this);
 	}
 
@@ -239,13 +245,10 @@ class InspectEditorTokensWidget extends Disposable implements IContentWidget {
 	}
 
 	private _beginCompute(position: Position): void {
-		const grammar = this._textMateService.createGrammar(this._model.getLanguageIdentifier().language);
-		const semanticTokens = this._computeSemanticTokens();
-
 		dom.clearNode(this._domNode);
 		this._domNode.appendChild(document.createTextNode(nls.localize('inspectTMScopesWidget.loading', "Loading...")));
 
-		Promise.all([grammar, semanticTokens]).then(([grammar, semanticTokens]) => {
+		Promise.all([this._grammar, this._semanticTokens]).then(([grammar, semanticTokens]) => {
 			if (this._isDisposed) {
 				return;
 			}
@@ -548,9 +551,9 @@ class InspectEditorTokensWidget extends Disposable implements IContentWidget {
 		} else if (TokenStylingRule.is(definition)) {
 			const scope = theme.getTokenStylingRuleScope(definition);
 			if (scope === 'setting') {
-				return `User settings: ${definition.selector.id} - ${this._renderStyleProperty(definition.style, property)}`;
+				return `User settings: ${definition.selector.selectorString} - ${this._renderStyleProperty(definition.style, property)}`;
 			} else if (scope === 'theme') {
-				return `Color theme: ${definition.selector.id} - ${this._renderStyleProperty(definition.style, property)}`;
+				return `Color theme: ${definition.selector.selectorString} - ${this._renderStyleProperty(definition.style, property)}`;
 			}
 			return '';
 		} else {

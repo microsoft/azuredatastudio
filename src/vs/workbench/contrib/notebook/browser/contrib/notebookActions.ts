@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
-import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
 import { localize } from 'vs/nls';
 import { Action2, IAction2Options, MenuId, MenuItemAction, MenuRegistry, registerAction2 } from 'vs/platform/actions/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -12,10 +11,12 @@ import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/commo
 import { InputFocusedContext, InputFocusedContextKey, IsDevelopmentContext } from 'vs/platform/contextkey/common/contextkeys';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
-import { CANCEL_CELL_COMMAND_ID, CANCEL_NOTEBOOK_COMMAND_ID, COPY_CELL_DOWN_COMMAND_ID, COPY_CELL_UP_COMMAND_ID, DELETE_CELL_COMMAND_ID, EDIT_CELL_COMMAND_ID, EXECUTE_ACTIVE_CELL_COMMAND_ID, EXECUTE_CELL_COMMAND_ID, EXECUTE_NOTEBOOK_COMMAND_ID, INSERT_CODE_CELL_ABOVE_COMMAND_ID, INSERT_CODE_CELL_BELOW_COMMAND_ID, INSERT_MARKDOWN_CELL_ABOVE_COMMAND_ID, INSERT_MARKDOWN_CELL_BELOW_COMMAND_ID, MOVE_CELL_DOWN_COMMAND_ID, MOVE_CELL_UP_COMMAND_ID, NOTEBOOK_CELL_EDITABLE_CONTEXT_KEY, NOTEBOOK_CELL_MARKDOWN_EDIT_MODE_CONTEXT_KEY, NOTEBOOK_CELL_TYPE_CONTEXT_KEY, NOTEBOOK_EDITABLE_CONTEXT_KEY, NOTEBOOK_EXECUTING_KEY, SAVE_CELL_COMMAND_ID } from 'vs/workbench/contrib/notebook/browser/constants';
-import { BaseCellRenderTemplate, CellEditState, CellRunState, ICellViewModel, INotebookEditor, KEYBINDING_CONTEXT_NOTEBOOK_FIND_WIDGET_FOCUSED, NOTEBOOK_EDITOR_EXECUTING_NOTEBOOK, NOTEBOOK_EDITOR_FOCUSED } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { COPY_CELL_DOWN_COMMAND_ID, COPY_CELL_UP_COMMAND_ID, DELETE_CELL_COMMAND_ID, EDIT_CELL_COMMAND_ID, EXECUTE_CELL_COMMAND_ID, INSERT_CODE_CELL_ABOVE_COMMAND_ID, INSERT_CODE_CELL_BELOW_COMMAND_ID, INSERT_MARKDOWN_CELL_ABOVE_COMMAND_ID, INSERT_MARKDOWN_CELL_BELOW_COMMAND_ID, MOVE_CELL_DOWN_COMMAND_ID, MOVE_CELL_UP_COMMAND_ID, SAVE_CELL_COMMAND_ID, NOTEBOOK_CELL_TYPE_CONTEXT_KEY, NOTEBOOK_EDITABLE_CONTEXT_KEY, NOTEBOOK_CELL_EDITABLE_CONTEXT_KEY, NOTEBOOK_CELL_MARKDOWN_EDIT_MODE_CONTEXT_KEY } from 'vs/workbench/contrib/notebook/browser/constants';
+import { CellRenderTemplate, CellEditState, ICellViewModel, INotebookEditor, KEYBINDING_CONTEXT_NOTEBOOK_FIND_WIDGET_FOCUSED, NOTEBOOK_EDITOR_FOCUSED, CellRunState } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { INotebookService } from 'vs/workbench/contrib/notebook/browser/notebookService';
 import { CellKind, NOTEBOOK_EDITOR_CURSOR_BOUNDARY } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
 
 const enum CellToolbarOrder {
 	MoveCellUp,
@@ -55,27 +56,6 @@ registerAction2(class extends Action2 {
 	}
 });
 
-registerAction2(class extends Action2 {
-	constructor() {
-		super({
-			id: CANCEL_CELL_COMMAND_ID,
-			title: localize('notebookActions.cancel', "Cancel Execution"),
-			icon: { id: 'codicon/stop' }
-		});
-	}
-
-	async run(accessor: ServicesAccessor, context?: INotebookCellActionContext): Promise<void> {
-		if (!context) {
-			context = getActiveCellContext(accessor);
-			if (!context) {
-				return;
-			}
-		}
-
-		return context.notebookEditor.cancelNotebookCellExecution(context.cell);
-	}
-});
-
 export class ExecuteCellAction extends MenuItemAction {
 	constructor(
 		@IContextKeyService contextKeyService: IContextKeyService,
@@ -93,25 +73,6 @@ export class ExecuteCellAction extends MenuItemAction {
 			commandService);
 	}
 }
-
-export class CancelCellAction extends MenuItemAction {
-	constructor(
-		@IContextKeyService contextKeyService: IContextKeyService,
-		@ICommandService commandService: ICommandService
-	) {
-		super(
-			{
-				id: CANCEL_CELL_COMMAND_ID,
-				title: localize('notebookActions.CancelCell', "Cancel Execution"),
-				icon: { id: 'codicon/stop' }
-			},
-			undefined,
-			{ shouldForwardArgs: true },
-			contextKeyService,
-			commandService);
-	}
-}
-
 
 registerAction2(class extends Action2 {
 	constructor() {
@@ -185,45 +146,34 @@ registerAction2(class extends Action2 {
 registerAction2(class extends Action2 {
 	constructor() {
 		super({
-			id: EXECUTE_NOTEBOOK_COMMAND_ID,
+			id: 'workbench.action.executeNotebook',
 			title: localize('notebookActions.executeNotebook', "Execute Notebook")
 		});
 	}
 
 	async run(accessor: ServicesAccessor): Promise<void> {
-		const editorService = accessor.get(IEditorService);
-		const editor = getActiveNotebookEditor(editorService);
-		if (!editor) {
+		let editorService = accessor.get(IEditorService);
+		let notebookService = accessor.get(INotebookService);
+
+		let resource = editorService.activeEditor?.resource;
+
+		if (!resource) {
 			return;
 		}
 
-		return editor.executeNotebook();
+		let notebookProviders = notebookService.getContributedNotebookProviders(resource!);
+
+		if (notebookProviders.length > 0) {
+			let viewType = notebookProviders[0].id;
+			notebookService.executeNotebook(viewType, resource);
+		}
 	}
 });
 
 registerAction2(class extends Action2 {
 	constructor() {
 		super({
-			id: CANCEL_NOTEBOOK_COMMAND_ID,
-			title: localize('notebookActions.cancelNotebook', "Cancel Notebook Execution")
-		});
-	}
-
-	async run(accessor: ServicesAccessor): Promise<void> {
-		const editorService = accessor.get(IEditorService);
-		const editor = getActiveNotebookEditor(editorService);
-		if (!editor) {
-			return;
-		}
-
-		return editor.cancelNotebookExecution();
-	}
-});
-
-registerAction2(class extends Action2 {
-	constructor() {
-		super({
-			id: EXECUTE_ACTIVE_CELL_COMMAND_ID,
+			id: 'workbench.action.executeNotebookCell',
 			title: localize('notebookActions.executeNotebookCell', "Execute Notebook Active Cell")
 		});
 	}
@@ -319,32 +269,21 @@ registerAction2(class extends Action2 {
 
 MenuRegistry.appendMenuItem(MenuId.EditorTitle, {
 	command: {
-		id: EXECUTE_NOTEBOOK_COMMAND_ID,
+		id: 'workbench.action.executeNotebook',
 		title: localize('notebookActions.menu.executeNotebook', "Execute Notebook (Run all cells)"),
-		icon: { id: 'codicon/run-all' }
+		icon: { id: 'codicon/debug-start' }
 	},
 	order: -1,
 	group: 'navigation',
-	when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, ContextKeyExpr.not(NOTEBOOK_EXECUTING_KEY))
-});
-
-MenuRegistry.appendMenuItem(MenuId.EditorTitle, {
-	command: {
-		id: CANCEL_NOTEBOOK_COMMAND_ID,
-		title: localize('notebookActions.menu.cancelNotebook', "Cancel Notebook Execution"),
-		icon: { id: 'codicon/stop' }
-	},
-	order: -1,
-	group: 'navigation',
-	when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_EXECUTING_NOTEBOOK)
+	when: NOTEBOOK_EDITOR_FOCUSED
 });
 
 
 MenuRegistry.appendMenuItem(MenuId.EditorTitle, {
 	command: {
-		id: EXECUTE_ACTIVE_CELL_COMMAND_ID,
+		id: 'workbench.action.executeNotebookCell',
 		title: localize('notebookActions.menu.execute', "Execute Notebook Cell"),
-		icon: { id: 'codicon/run' }
+		icon: { id: 'codicon/debug-continue' }
 	},
 	order: -1,
 	group: 'navigation',
@@ -450,7 +389,7 @@ async function changeActiveCellToKind(kind: CellKind, accessor: ServicesAccessor
 }
 
 export interface INotebookCellActionContext {
-	cellTemplate?: BaseCellRenderTemplate;
+	cellTemplate?: CellRenderTemplate;
 	cell: ICellViewModel;
 	notebookEditor: INotebookEditor;
 }
@@ -507,24 +446,6 @@ registerAction2(class extends InsertCellCommand {
 	}
 });
 
-export class InsertCodeCellAction extends MenuItemAction {
-	constructor(
-		@IContextKeyService contextKeyService: IContextKeyService,
-		@ICommandService commandService: ICommandService
-	) {
-		super(
-			{
-				id: INSERT_CODE_CELL_BELOW_COMMAND_ID,
-				title: localize('notebookActions.insertCodeCellBelow', "Insert Code Cell Below"),
-				// icon: { id: 'codicon/add' },
-			},
-			undefined,
-			{ shouldForwardArgs: true },
-			contextKeyService,
-			commandService);
-	}
-}
-
 registerAction2(class extends InsertCellCommand {
 	constructor() {
 		super(
@@ -559,23 +480,6 @@ registerAction2(class extends InsertCellCommand {
 			'above');
 	}
 });
-
-export class InsertMarkdownCellAction extends MenuItemAction {
-	constructor(
-		@IContextKeyService contextKeyService: IContextKeyService,
-		@ICommandService commandService: ICommandService
-	) {
-		super(
-			{
-				id: INSERT_MARKDOWN_CELL_BELOW_COMMAND_ID,
-				title: localize('notebookActions.insertMarkdownCellBelow', "Insert Markdown Cell Below")
-			},
-			undefined,
-			{ shouldForwardArgs: true },
-			contextKeyService,
-			commandService);
-	}
-}
 
 registerAction2(class extends InsertCellCommand {
 	constructor() {
@@ -666,7 +570,7 @@ registerAction2(class extends Action2 {
 					order: CellToolbarOrder.DeleteCell,
 					when: ContextKeyExpr.equals(NOTEBOOK_EDITABLE_CONTEXT_KEY, true)
 				},
-				icon: { id: 'codicon/trash' }
+				icon: { id: 'codicon/x' }
 			});
 	}
 

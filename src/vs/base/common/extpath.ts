@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { isWindows } from 'vs/base/common/platform';
-import { startsWithIgnoreCase, equalsIgnoreCase, rtrim } from 'vs/base/common/strings';
+import { startsWithIgnoreCase, equalsIgnoreCase, endsWith, rtrim } from 'vs/base/common/strings';
 import { CharCode } from 'vs/base/common/charCode';
 import { sep, posix, isAbsolute, join, normalize } from 'vs/base/common/path';
 
@@ -235,7 +235,7 @@ export function isWindowsDriveLetter(char0: number): boolean {
 export function sanitizeFilePath(candidate: string, cwd: string): string {
 
 	// Special case: allow to open a drive letter without trailing backslash
-	if (isWindows && candidate.endsWith(':')) {
+	if (isWindows && endsWith(candidate, ':')) {
 		candidate += sep;
 	}
 
@@ -252,7 +252,7 @@ export function sanitizeFilePath(candidate: string, cwd: string): string {
 		candidate = rtrim(candidate, sep);
 
 		// Special case: allow to open drive root ('C:\')
-		if (candidate.endsWith(':')) {
+		if (endsWith(candidate, ':')) {
 			candidate += sep;
 		}
 

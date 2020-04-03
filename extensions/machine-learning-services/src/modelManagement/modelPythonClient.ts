@@ -40,7 +40,7 @@ export class ModelPythonClient {
 	 * Installs dependencies for python client
 	 */
 	private async installDependencies(): Promise<void> {
-		await utils.executeTasks(this._apiWrapper, constants.installModelMngDependenciesMsgTaskName, [
+		await utils.executeTasks(this._apiWrapper, constants.installDependenciesMsgTaskName, [
 			this._packageManager.installRequiredPythonPackages(this._config.modelsRequiredPythonPackages)], true);
 	}
 

@@ -103,17 +103,17 @@ suite.skip('UserDataSyncService', () => { // {{SQL CARBON EDIT}} skip failing te
 		await testObject.pull();
 
 		assert.deepEqual(target.requests, [
-			/* first time sync */
+			// Manifest
 			{ type: 'GET', url: `${target.url}/v1/manifest`, headers: {} },
+			// Settings
 			{ type: 'GET', url: `${target.url}/v1/resource/settings/latest`, headers: {} },
+			// Keybindings
 			{ type: 'GET', url: `${target.url}/v1/resource/keybindings/latest`, headers: {} },
+			// Snippets
 			{ type: 'GET', url: `${target.url}/v1/resource/snippets/latest`, headers: {} },
-			{ type: 'GET', url: `${target.url}/v1/resource/extensions/latest`, headers: {} },
-			/* pull */
-			{ type: 'GET', url: `${target.url}/v1/resource/settings/latest`, headers: {} },
-			{ type: 'GET', url: `${target.url}/v1/resource/keybindings/latest`, headers: {} },
-			{ type: 'GET', url: `${target.url}/v1/resource/snippets/latest`, headers: {} },
+			// Global state
 			{ type: 'GET', url: `${target.url}/v1/resource/globalState/latest`, headers: {} },
+			// Extensions
 			{ type: 'GET', url: `${target.url}/v1/resource/extensions/latest`, headers: {} },
 		]);
 
@@ -143,14 +143,17 @@ suite.skip('UserDataSyncService', () => { // {{SQL CARBON EDIT}} skip failing te
 		await testObject.pull();
 
 		assert.deepEqual(target.requests, [
-			/* first time sync */
+			// Manifest
 			{ type: 'GET', url: `${target.url}/v1/manifest`, headers: {} },
+			// Settings
 			{ type: 'GET', url: `${target.url}/v1/resource/settings/latest`, headers: {} },
-			/* pull */
-			{ type: 'GET', url: `${target.url}/v1/resource/settings/latest`, headers: {} },
+			// Keybindings
 			{ type: 'GET', url: `${target.url}/v1/resource/keybindings/latest`, headers: {} },
+			// Snippets
 			{ type: 'GET', url: `${target.url}/v1/resource/snippets/latest`, headers: {} },
+			// Global state
 			{ type: 'GET', url: `${target.url}/v1/resource/globalState/latest`, headers: {} },
+			// Extensions
 			{ type: 'GET', url: `${target.url}/v1/resource/extensions/latest`, headers: {} },
 		]);
 
@@ -175,18 +178,18 @@ suite.skip('UserDataSyncService', () => { // {{SQL CARBON EDIT}} skip failing te
 		await testObject.sync();
 
 		assert.deepEqual(target.requests, [
-			/* first time sync */
+			// Manifest
 			{ type: 'GET', url: `${target.url}/v1/manifest`, headers: {} },
-			{ type: 'GET', url: `${target.url}/v1/resource/settings/latest`, headers: {} },
-			{ type: 'GET', url: `${target.url}/v1/resource/keybindings/latest`, headers: {} },
-			{ type: 'GET', url: `${target.url}/v1/resource/snippets/latest`, headers: {} },
-			{ type: 'GET', url: `${target.url}/v1/resource/extensions/latest`, headers: {} },
-			/* sync */
 			{ type: 'GET', url: `${target.url}/v1/manifest`, headers: {} },
+			// Settings
 			{ type: 'GET', url: `${target.url}/v1/resource/settings/latest`, headers: {} },
+			// Keybindings
 			{ type: 'GET', url: `${target.url}/v1/resource/keybindings/latest`, headers: {} },
+			// Snippets
 			{ type: 'GET', url: `${target.url}/v1/resource/snippets/latest`, headers: {} },
+			// Global state
 			{ type: 'GET', url: `${target.url}/v1/resource/globalState/latest`, headers: {} },
+			// Extensions
 			{ type: 'GET', url: `${target.url}/v1/resource/extensions/latest`, headers: {} },
 		]);
 
@@ -217,19 +220,21 @@ suite.skip('UserDataSyncService', () => { // {{SQL CARBON EDIT}} skip failing te
 		await testObject.sync();
 
 		assert.deepEqual(target.requests, [
-			/* first time sync */
+			// Manifest
 			{ type: 'GET', url: `${target.url}/v1/manifest`, headers: {} },
-			{ type: 'GET', url: `${target.url}/v1/resource/settings/latest`, headers: {} },
-
-			/* first time sync */
 			{ type: 'GET', url: `${target.url}/v1/manifest`, headers: {} },
+			// Settings
 			{ type: 'GET', url: `${target.url}/v1/resource/settings/latest`, headers: {} },
 			{ type: 'POST', url: `${target.url}/v1/resource/settings`, headers: { 'If-Match': '1' } },
+			// Keybindings
 			{ type: 'GET', url: `${target.url}/v1/resource/keybindings/latest`, headers: {} },
 			{ type: 'POST', url: `${target.url}/v1/resource/keybindings`, headers: { 'If-Match': '1' } },
+			// Snippets
 			{ type: 'GET', url: `${target.url}/v1/resource/snippets/latest`, headers: {} },
 			{ type: 'POST', url: `${target.url}/v1/resource/snippets`, headers: { 'If-Match': '1' } },
+			// Global state
 			{ type: 'GET', url: `${target.url}/v1/resource/globalState/latest`, headers: {} },
+			// Extensions
 			{ type: 'GET', url: `${target.url}/v1/resource/extensions/latest`, headers: {} },
 		]);
 

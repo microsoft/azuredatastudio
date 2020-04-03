@@ -15,7 +15,6 @@ import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { Event, Emitter } from 'vs/base/common/event';
 import { firstIndex } from 'vs/base/common/arrays';
 import { IStorageKeysSyncRegistryService } from 'vs/platform/userDataSync/common/storageKeys';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 class CounterSet<T> implements IReadableSet<T> {
 
@@ -220,8 +219,7 @@ export class ViewDescriptorService extends Disposable implements IViewDescriptor
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
 		@IStorageService private readonly storageService: IStorageService,
 		@IExtensionService private readonly extensionService: IExtensionService,
-		@ITelemetryService private readonly telemetryService: ITelemetryService,
-		@IStorageKeysSyncRegistryService storageKeysSyncRegistryService: IStorageKeysSyncRegistryService,
+		@IStorageKeysSyncRegistryService storageKeysSyncRegistryService: IStorageKeysSyncRegistryService
 	) {
 		super();
 
@@ -454,43 +452,6 @@ export class ViewDescriptorService extends Disposable implements IViewDescriptor
 
 		if (!skipCacheUpdate) {
 			this.saveViewPositionsToCache();
-
-			const containerToString = (container: ViewContainer): string => {
-				if (container.id.startsWith(ViewDescriptorService.COMMON_CONTAINER_ID_PREFIX)) {
-					return 'custom';
-				}
-
-				if (!container.extensionId) {
-					return container.id;
-				}
-
-				return 'extension';
-			};
-
-			// Log on cache update to avoid duplicate events in other windows
-			const viewCount = views.length;
-			const fromContainer = containerToString(from);
-			const toContainer = containerToString(to);
-			const fromLocation = oldLocation === ViewContainerLocation.Panel ? 'panel' : 'sidebar';
-			const toLocation = newLocation === ViewContainerLocation.Panel ? 'panel' : 'sidebar';
-
-			interface ViewDescriptorServiceMoveViewsEvent {
-				viewCount: number;
-				fromContainer: string;
-				toContainer: string;
-				fromLocation: string;
-				toLocation: string;
-			}
-
-			type ViewDescriptorServiceMoveViewsClassification = {
-				viewCount: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-				fromContainer: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-				toContainer: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-				fromLocation: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-				toLocation: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-			};
-
-			this.telemetryService.publicLog2<ViewDescriptorServiceMoveViewsEvent, ViewDescriptorServiceMoveViewsClassification>('viewDescriptorService.moveViews', { viewCount, fromContainer, toContainer, fromLocation, toLocation });
 		}
 	}
 

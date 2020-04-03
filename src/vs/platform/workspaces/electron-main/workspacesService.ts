@@ -9,7 +9,6 @@ import { URI } from 'vs/base/common/uri';
 import { IWorkspacesMainService } from 'vs/platform/workspaces/electron-main/workspacesMainService';
 import { IWindowsMainService } from 'vs/platform/windows/electron-main/windows';
 import { IWorkspacesHistoryMainService } from 'vs/platform/workspaces/electron-main/workspacesHistoryMainService';
-import { IBackupMainService } from 'vs/platform/backup/electron-main/backup';
 
 export class WorkspacesService implements AddFirstParameterToFunctions<IWorkspacesService, Promise<unknown> /* only methods, not events */, number /* window ID */> {
 
@@ -18,8 +17,7 @@ export class WorkspacesService implements AddFirstParameterToFunctions<IWorkspac
 	constructor(
 		@IWorkspacesMainService private readonly workspacesMainService: IWorkspacesMainService,
 		@IWindowsMainService private readonly windowsMainService: IWindowsMainService,
-		@IWorkspacesHistoryMainService private readonly workspacesHistoryMainService: IWorkspacesHistoryMainService,
-		@IBackupMainService private readonly backupMainService: IBackupMainService
+		@IWorkspacesHistoryMainService private readonly workspacesHistoryMainService: IWorkspacesHistoryMainService
 	) {
 	}
 
@@ -53,7 +51,12 @@ export class WorkspacesService implements AddFirstParameterToFunctions<IWorkspac
 	readonly onRecentlyOpenedChange = this.workspacesHistoryMainService.onRecentlyOpenedChange;
 
 	async getRecentlyOpened(windowId: number): Promise<IRecentlyOpened> {
-		return this.workspacesHistoryMainService.getRecentlyOpened(this.windowsMainService.getWindowById(windowId));
+		const window = this.windowsMainService.getWindowById(windowId);
+		if (window?.config) {
+			return this.workspacesHistoryMainService.getRecentlyOpened(window.config.workspace, window.config.folderUri, window.config.filesToOpenOrCreate);
+		}
+
+		return this.workspacesHistoryMainService.getRecentlyOpened();
 	}
 
 	async addRecentlyOpened(windowId: number, recents: IRecent[]): Promise<void> {
@@ -66,15 +69,6 @@ export class WorkspacesService implements AddFirstParameterToFunctions<IWorkspac
 
 	async clearRecentlyOpened(windowId: number): Promise<void> {
 		return this.workspacesHistoryMainService.clearRecentlyOpened();
-	}
-
-	//#endregion
-
-
-	//#region Dirty Workspaces
-
-	async getDirtyWorkspaces(): Promise<Array<IWorkspaceIdentifier | URI>> {
-		return this.backupMainService.getDirtyWorkspaces();
 	}
 
 	//#endregion

@@ -225,7 +225,6 @@ declare module 'azdata' {
 	 */
 	export interface TabbedPanelLayout {
 		orientation: TabOrientation;
-		showIcon: boolean;
 	}
 
 	/**
@@ -246,11 +245,6 @@ declare module 'azdata' {
 		 * Id of the tab
 		 */
 		id: string;
-
-		/**
-		 * Icon of the tab
-		 */
-		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 	}
 
 	/**
@@ -292,34 +286,6 @@ declare module 'azdata' {
 		 * An event that is emitted when the active Notebook editor is changed.
 		 */
 		export const onDidChangeActiveNotebookEditor: vscode.Event<NotebookEditor>;
-	}
-
-	export namespace window {
-		export interface ModelViewDashboard {
-			registerTabs(handler: (view: ModelView) => Thenable<(DashboardTab | DashboardTabGroup)[]>): void;
-			open(): Thenable<void>;
-		}
-
-		export function createModelViewDashboard(title: string): ModelViewDashboard;
-	}
-
-	export interface DashboardTab extends Tab {
-		/**
-		 * Toolbar of the tab, optional.
-		 */
-		toolbar?: ToolbarContainer;
-	}
-
-	export interface DashboardTabGroup {
-		/**
-		 * * Title of the tab group
-		 */
-		title: string;
-
-		/**
-		 * children of the tab group
-		 */
-		tabs: DashboardTab[];
 	}
 }
 

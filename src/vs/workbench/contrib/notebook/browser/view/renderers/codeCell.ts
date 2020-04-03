@@ -3,20 +3,20 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as nls from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
+import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { getResizesObserver } from 'vs/workbench/contrib/notebook/browser/view/renderers/sizeObserver';
+import { IOutput, ITransformedDisplayOutputDto, IRenderOutput, CellOutputKind } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { CellRenderTemplate, INotebookEditor, CellFocusMode } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { raceCancellation } from 'vs/base/common/async';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
-import { debounce } from 'vs/base/common/decorators';
-import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { IModeService } from 'vs/editor/common/services/modeService';
-import * as nls from 'vs/nls';
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
-import { EDITOR_BOTTOM_PADDING, EDITOR_TOP_PADDING } from 'vs/workbench/contrib/notebook/browser/constants';
-import { CellFocusMode, CodeCellRenderTemplate, INotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { INotebookService } from 'vs/workbench/contrib/notebook/browser/notebookService';
-import { getResizesObserver } from 'vs/workbench/contrib/notebook/browser/view/renderers/sizeObserver';
 import { CodeCellViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/codeCellViewModel';
-import { CellOutputKind, IOutput, IRenderOutput, ITransformedDisplayOutputDto } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { EDITOR_TOP_PADDING, EDITOR_BOTTOM_PADDING } from 'vs/workbench/contrib/notebook/browser/constants';
+import { IModeService } from 'vs/editor/common/services/modeService';
+import { debounce } from 'vs/base/common/decorators';
 
 interface IMimeTypeRenderer extends IQuickPickItem {
 	index: number;
@@ -28,7 +28,7 @@ export class CodeCell extends Disposable {
 	constructor(
 		private notebookEditor: INotebookEditor,
 		private viewCell: CodeCellViewModel,
-		private templateData: CodeCellRenderTemplate,
+		private templateData: CellRenderTemplate,
 		@INotebookService private notebookService: INotebookService,
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
 		@IModeService private readonly _modeService: IModeService
@@ -93,26 +93,24 @@ export class CodeCell extends Disposable {
 			templateData.editor?.getModel()?.setMode(mode.languageIdentifier);
 		}));
 
-		this._register(viewCell.onDidChangeLayout((e) => {
-			if (e.outerWidth === undefined) {
-				return;
-			}
+		let cellWidthResizeObserver = getResizesObserver(templateData.editorContainer!, {
+			width: width,
+			height: totalHeight
+		}, () => {
+			let newWidth = cellWidthResizeObserver.getWidth();
+			let realContentHeight = templateData.editor!.getContentHeight();
+			templateData.editor?.layout(
+				{
+					width: newWidth,
+					height: realContentHeight
+				}
+			);
 
-			const layoutInfo = templateData.editor!.getLayoutInfo();
-			const realContentHeight = templateData.editor!.getContentHeight();
+			viewCell.editorHeight = realContentHeight;
+		});
 
-			if (layoutInfo.width !== viewCell.layoutInfo.editorWidth) {
-				templateData.editor?.layout(
-					{
-						width: viewCell.layoutInfo.editorWidth,
-						height: realContentHeight
-					}
-				);
-
-				viewCell.editorHeight = realContentHeight;
-				this.relayoutCell();
-			}
-		}));
+		cellWidthResizeObserver.startObserving();
+		this._register(cellWidthResizeObserver);
 
 		this._register(templateData.editor!.onDidContentSizeChange((e) => {
 			if (e.contentHeightChanged) {
@@ -150,8 +148,6 @@ export class CodeCell extends Disposable {
 			if (!splices.length) {
 				return;
 			}
-
-			const previousOutputHeight = this.viewCell.layoutInfo.outputTotalHeight;
 
 			if (this.viewCell.outputs.length) {
 				this.templateData.outputContainer!.style.display = 'block';
@@ -201,13 +197,7 @@ export class CodeCell extends Disposable {
 
 			let editorHeight = templateData.editor!.getContentHeight();
 			viewCell.editorHeight = editorHeight;
-
-			if (previousOutputHeight === 0 || this.viewCell.outputs.length === 0) {
-				// first execution or removing all outputs
-				this.relayoutCell();
-			} else {
-				this.relayoutCellDebounced();
-			}
+			this.relayoutCellDebounced();
 		}));
 
 		if (viewCell.outputs.length > 0) {

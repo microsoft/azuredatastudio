@@ -7,7 +7,7 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { NotebookCellTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookCellTextModel';
-import { INotebookTextModel, NotebookCellOutputsSplice, NotebookCellsSplice, NotebookDocumentMetadata, NotebookCellMetadata, ICellEditOperation, CellEditType, CellUri, ICellInsertEdit, NotebookCellsChangedEvent, CellKind, IOutput, notebookDocumentMetadataDefaults } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { INotebookTextModel, NotebookCellOutputsSplice, NotebookCellsSplice, NotebookDocumentMetadata, NotebookCellMetadata, ICellEditOperation, CellEditType, CellUri, ICellInsertEdit, NotebookCellsChangedEvent, CellKind, IOutput } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 
 export class NotebookTextModel extends Disposable implements INotebookTextModel {
 	private static _cellhandlePool: number = 0;
@@ -26,7 +26,7 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 	private _cellListeners: Map<number, IDisposable> = new Map();
 	cells: NotebookCellTextModel[];
 	languages: string[] = [];
-	metadata: NotebookDocumentMetadata = notebookDocumentMetadataDefaults;
+	metadata: NotebookDocumentMetadata | undefined = { editable: true };
 	renderers = new Set<number>();
 	private _isUntitled: boolean | undefined = undefined;
 	private _versionId = 0;
@@ -116,9 +116,8 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 
 		this._isUntitled = true;
 		this.cells = [cell];
-		this._mapping.set(cell.handle, cell);
 
-		let dirtyStateListener = Event.any(cell.onDidChangeContent, cell.onDidChangeOutputs)(() => {
+		let dirtyStateListener = cell.onDidChangeContent(() => {
 			this._isUntitled = false;
 			this._onDidChangeContent.fire();
 		});
@@ -152,7 +151,7 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 
 		for (let i = 0; i < cells.length; i++) {
 			this._mapping.set(cells[i].handle, cells[i]);
-			let dirtyStateListener = Event.any(cells[i].onDidChangeContent, cells[i].onDidChangeOutputs)(() => {
+			let dirtyStateListener = cells[i].onDidChangeContent(() => {
 				this._onDidChangeContent.fire();
 			});
 

@@ -24,16 +24,9 @@ panel {
 	position: relative;
 }
 
-.tabbedPanel.vertical>.title {
-	flex: 0 0 auto;
-	flex-direction: column;
-	height: 100%;
-}
-
 .tabbedPanel .tabContainer {
 	flex: 1 1 auto;
 	overflow: hidden;
-	height: 100%;
 }
 
 .tabbedPanel .tabList {
@@ -52,34 +45,31 @@ panel {
 	margin: auto;
 }
 
-.tabbedPanel.horizontal .tabList .tab .tabLabel {
-	font-size: 12px;
-	font-weight: normal;
-}
-
-.tabbedPanel.vertical .tabList .tab .tabLabel {
-	font-size: 12px;
-	padding-bottom: 0px;
-	font-weight: normal;
-}
-
 .tabbedPanel .tabList .tab .tabLabel {
 	font-size: 13px;
 	padding-bottom: 4px;
 	font-weight: 600;
 }
 
+.tabbedPanel.vertical .tabList .tab .tabLabel {
+	font-size: 11px;
+}
+
 .tabbedPanel .tabList .tab-header {
 	display: flex;
 	padding-left: 5px;
 	padding-right: 5px;
-	min-width: 65px;
+	cursor: pointer;
 }
 
-.tabbedPanel.vertical > .title .tabList .tab-header {
+.tabbedPanel.vertical .tabList .tab-header {
 	display: block;
-	min-width: 150px;
-	line-height: 35px;
+	text-transform: none;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	width: auto;
+	height: 50px;
+	line-height: 45px;
 }
 
 .tabbedPanel .tabList .tab .tabIcon.codicon {
@@ -95,6 +85,8 @@ panel {
 
 .tabbedPanel .composite.title .title-actions .action-label {
 	display: block;
+	height: 35px;
+	line-height: 35px;
 	min-width: 28px;
 	background-size: 16px;
 	background-position: center center;
@@ -118,22 +110,22 @@ panel {
 	flex-direction: row;
 }
 
-.tabbedPanel.vertical>.title {
+.tabbedPanel.vertical > .title {
 	flex: 0 0 auto;
 	flex-direction: column;
 	height: 100%;
 }
 
-.tabbedPanel>.tab-content {
-	flex: 1 1 auto;
+.tabbedPanel > .tab-content {
+	flex: 1;
 	position: relative;
 }
 
-.tabbedPanel.vertical>.title > .tabContainer .tabList {
+.tabbedPanel.vertical > .title > .tabContainer > .monaco-scrollable-element > .tabList {
 	flex-flow: column;
 }
 
-.tabbedPanel.horizontal > .title > .tabContainer .tabList {
+.tabbedPanel.horizontal > .title > .tabContainer > .monaco-scrollable-element > .tabList {
 	flex-flow: row;
 }
 
@@ -161,11 +153,9 @@ panel {
 	border-color: rgb(214, 214, 214);
 }
 
-.tabbedPanel .vertical-tab-action-container {
+.tabbedPanel .action-container {
 	display: flex;
 	flex-flow: row-reverse;
-	height: 35px;
-	padding: 0px 5px;
 }
 
 .tabbedPanel .tab-action {
@@ -174,13 +164,12 @@ panel {
 	padding: 0px;
 	border: 0px;
 	background-color: transparent;
-	background-position: center;
+	background-position: 2px center;
 	background-repeat: no-repeat;
-	background-size: 9px 9px;
-	align-self: center;
+	background-size: 11px 11px;
 }
 
-.vs .tabbedPanel .tab-action.collapse {
+.vs .tabbedPanel .tab-action.collapse{
 	background-image: url("collapse.svg");
 }
 

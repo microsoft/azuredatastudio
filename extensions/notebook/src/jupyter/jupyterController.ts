@@ -207,6 +207,7 @@ export class JupyterController implements vscode.Disposable {
 		try {
 			if (!options) {
 				options = {
+					multiLocations: false,
 					defaultLocation: constants.localhostName,
 					defaultProviderId: LocalPipPackageManageProvider.ProviderId
 				};

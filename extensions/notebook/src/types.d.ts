@@ -66,14 +66,6 @@ export interface IPackageDetails {
 }
 
 /**
- * Package location
- */
-export interface IPackageLocation {
-	name: string;
-	displayName: string;
-}
-
-/**
  * Package target interface
  */
 export interface IPackageTarget {
@@ -107,22 +99,20 @@ export interface IPackageManageProvider {
 	/**
 	 * Returns list of installed packages
 	 */
-	listPackages(location?: string): Promise<IPackageDetails[]>;
+	listPackages(): Promise<IPackageDetails[]>;
 
 	/**
 	 * Installs give packages
 	 * @param package Packages to install
 	 * @param useMinVersion if true, minimal version will be used
-	 * @param location package location
 	 */
-	installPackages(package: IPackageDetails[], useMinVersion: boolean, location?: string): Promise<void>;
+	installPackages(package: IPackageDetails[], useMinVersion: boolean): Promise<void>;
 
 	/**
 	 * Uninstalls given packages
 	 * @param package package to uninstall
-	 * @param location package location
 	 */
-	uninstallPackages(package: IPackageDetails[], location?: string): Promise<void>;
+	uninstallPackages(package: IPackageDetails[]): Promise<void>;
 
 	/**
 	 * Returns true if the provider can be used in current context
@@ -132,7 +122,7 @@ export interface IPackageManageProvider {
 	/**
 	 * Returns location title
 	 */
-	getLocations(): Promise<IPackageLocation[]>;
+	getLocationTitle(): Promise<string>;
 
 	/**
 	 * Returns Package Overview

@@ -40,7 +40,6 @@ import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService
 import { IRemotePathService } from 'vs/workbench/services/path/common/remotePathService';
 import { IWorkingCopyFileService } from 'vs/workbench/services/workingCopy/common/workingCopyFileService';
 import { INativeWorkbenchEnvironmentService } from 'vs/workbench/services/environment/electron-browser/environmentService';
-import { ILogService } from 'vs/platform/log/common/log';
 
 export class NativeTextFileService extends AbstractTextFileService {
 
@@ -59,8 +58,7 @@ export class NativeTextFileService extends AbstractTextFileService {
 		@ITextModelService textModelService: ITextModelService,
 		@ICodeEditorService codeEditorService: ICodeEditorService,
 		@IRemotePathService remotePathService: IRemotePathService,
-		@IWorkingCopyFileService workingCopyFileService: IWorkingCopyFileService,
-		@ILogService private readonly logService: ILogService
+		@IWorkingCopyFileService workingCopyFileService: IWorkingCopyFileService
 	) {
 		super(fileService, untitledTextEditorService, lifecycleService, instantiationService, modelService, environmentService, dialogService, fileDialogService, textResourceConfigurationService, filesConfigurationService, textModelService, codeEditorService, remotePathService, workingCopyFileService);
 	}
@@ -300,16 +298,8 @@ export class NativeTextFileService extends AbstractTextFileService {
 			sudoCommand.push('--file-write', `"${source}"`, `"${target}"`);
 
 			sudoPrompt.exec(sudoCommand.join(' '), promptOptions, (error: string, stdout: string, stderr: string) => {
-				if (stdout) {
-					this.logService.trace(`[sudo-prompt] received stdout: ${stdout}`);
-				}
-
-				if (stderr) {
-					this.logService.trace(`[sudo-prompt] received stderr: ${stderr}`);
-				}
-
-				if (error) {
-					reject(error);
+				if (error || stderr) {
+					reject(error || stderr);
 				} else {
 					resolve(undefined);
 				}

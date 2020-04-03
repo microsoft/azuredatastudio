@@ -24,18 +24,17 @@ export interface IStringBuilder {
 }
 
 let _platformTextDecoder: TextDecoder | null;
-export function getPlatformTextDecoder(): TextDecoder {
+function getPlatformTextDecoder(): TextDecoder {
 	if (!_platformTextDecoder) {
 		_platformTextDecoder = new TextDecoder(platform.isLittleEndian() ? 'UTF-16LE' : 'UTF-16BE');
 	}
 	return _platformTextDecoder;
 }
 
-export const hasTextDecoder = (typeof TextDecoder !== 'undefined');
 export let createStringBuilder: (capacity: number) => IStringBuilder;
 export let decodeUTF16LE: (source: Uint8Array, offset: number, len: number) => string;
 
-if (hasTextDecoder) {
+if (typeof TextDecoder !== 'undefined') {
 	createStringBuilder = (capacity) => new StringBuilder(capacity);
 	decodeUTF16LE = standardDecodeUTF16LE;
 } else {

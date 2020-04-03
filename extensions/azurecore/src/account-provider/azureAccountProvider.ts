@@ -128,7 +128,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 		if (this.authMappings.size === 0) {
 			console.log('No auth method was enabled.');
-			vscode.window.showErrorMessage(noAuthAvailable);
+			await vscode.window.showErrorMessage(noAuthAvailable);
 			return { canceled: true };
 		}
 
@@ -145,7 +145,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 		if (!pick) {
 			console.log('No auth method was selected.');
-			vscode.window.showErrorMessage(noAuthSelected);
+			await vscode.window.showErrorMessage(noAuthSelected);
 			return { canceled: true };
 		}
 

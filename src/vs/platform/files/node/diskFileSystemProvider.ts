@@ -26,7 +26,6 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { ReadableStreamEvents, transform } from 'vs/base/common/stream';
 import { createReadStream } from 'vs/platform/files/common/io';
-import { insert } from 'vs/base/common/arrays';
 
 export interface IWatcherOptions {
 	pollingInterval?: number;
@@ -525,7 +524,7 @@ export class DiskFileSystemProvider extends Disposable implements
 
 		// Add to list of folders to watch recursively
 		const folderToWatch = { path: this.toFilePath(resource), excludes };
-		const remove = insert(this.recursiveFoldersToWatch, folderToWatch);
+		this.recursiveFoldersToWatch.push(folderToWatch);
 
 		// Trigger update
 		this.refreshRecursiveWatchers();
@@ -533,7 +532,7 @@ export class DiskFileSystemProvider extends Disposable implements
 		return toDisposable(() => {
 
 			// Remove from list of folders to watch recursively
-			remove();
+			this.recursiveFoldersToWatch.splice(this.recursiveFoldersToWatch.indexOf(folderToWatch), 1);
 
 			// Trigger update
 			this.refreshRecursiveWatchers();
@@ -544,8 +543,10 @@ export class DiskFileSystemProvider extends Disposable implements
 
 		// Buffer requests for recursive watching to decide on right watcher
 		// that supports potentially watching more than one folder at once
-		this.recursiveWatchRequestDelayer.trigger(async () => {
+		this.recursiveWatchRequestDelayer.trigger(() => {
 			this.doRefreshRecursiveWatchers();
+
+			return Promise.resolve();
 		});
 	}
 

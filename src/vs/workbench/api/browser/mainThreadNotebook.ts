@@ -13,7 +13,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { NotebookTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookTextModel';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { INotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
-import { CancellationToken } from 'vs/base/common/cancellation';
 
 export class MainThreadNotebookDocument extends Disposable {
 	private _textModel: NotebookTextModel;
@@ -164,8 +163,8 @@ export class MainThreadNotebooks extends Disposable implements MainThreadNoteboo
 		controller?.spliceNotebookCellOutputs(resource, cellHandle, splices, renderers);
 	}
 
-	async executeNotebook(viewType: string, uri: URI, token: CancellationToken): Promise<void> {
-		return this._proxy.$executeNotebook(viewType, uri, undefined, token);
+	async executeNotebook(viewType: string, uri: URI): Promise<void> {
+		return this._proxy.$executeNotebook(viewType, uri, undefined);
 	}
 
 	async $postMessage(handle: number, value: any): Promise<boolean> {
@@ -233,8 +232,8 @@ export class MainThreadNotebookController implements IMainNotebookController {
 		mainthreadNotebook?.textModel.$spliceNotebookCellOutputs(cellHandle, splices);
 	}
 
-	async executeNotebook(viewType: string, uri: URI, token: CancellationToken): Promise<void> {
-		this._mainThreadNotebook.executeNotebook(viewType, uri, token);
+	async executeNotebook(viewType: string, uri: URI): Promise<void> {
+		this._mainThreadNotebook.executeNotebook(viewType, uri);
 	}
 
 	onDidReceiveMessage(uri: UriComponents, message: any): void {
@@ -267,8 +266,8 @@ export class MainThreadNotebookController implements IMainNotebookController {
 		document?.textModel.updateRenderers(renderers);
 	}
 
-	async executeNotebookCell(uri: URI, handle: number, token: CancellationToken): Promise<void> {
-		return this._proxy.$executeNotebook(this._viewType, uri, handle, token);
+	async executeNotebookCell(uri: URI, handle: number): Promise<void> {
+		return this._proxy.$executeNotebook(this._viewType, uri, handle);
 	}
 
 	async destoryNotebookDocument(notebook: INotebookTextModel): Promise<void> {

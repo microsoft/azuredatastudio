@@ -332,7 +332,6 @@ export abstract class ContainerBase<T> extends ComponentBase {
 			}
 		}));
 		this._changeRef.detectChanges();
-		this.onItemsUpdated();
 		return;
 	}
 
@@ -344,7 +343,6 @@ export abstract class ContainerBase<T> extends ComponentBase {
 		if (index >= 0) {
 			this.items.splice(index, 1);
 			this._changeRef.detectChanges();
-			this.onItemsUpdated();
 			return true;
 		}
 		return false;
@@ -375,7 +373,4 @@ export abstract class ContainerBase<T> extends ComponentBase {
 	}
 
 	abstract setLayout(layout: any): void;
-
-	protected onItemsUpdated(): void {
-	}
 }

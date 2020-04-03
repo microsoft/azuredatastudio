@@ -36,8 +36,10 @@ const { compileBuildTask } = require('./gulpfile.compile');
 const { compileExtensionsBuildTask } = require('./gulpfile.extensions');
 
 const productionDependencies = deps.getProductionDependencies(path.dirname(__dirname));
+
 const baseModules = Object.keys(process.binding('natives')).filter(n => !/^_|\//.test(n));
-const nodeModules = [ // {{SQL CARBON EDIT}}
+// {{SQL CARBON EDIT}}
+const nodeModules = [
 	'electron',
 	'original-fs',
 	'rxjs/Observable',

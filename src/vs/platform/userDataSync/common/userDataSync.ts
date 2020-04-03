@@ -254,11 +254,6 @@ export interface ISyncResourceHandle {
 
 export type Conflict = { remote: URI, local: URI };
 
-export interface ISyncPreviewResult {
-	readonly hasLocalChanged: boolean;
-	readonly hasRemoteChanged: boolean;
-}
-
 export interface IUserDataSynchroniser {
 
 	readonly resource: SyncResource;
@@ -273,7 +268,6 @@ export interface IUserDataSynchroniser {
 	sync(ref?: string): Promise<void>;
 	stop(): Promise<void>;
 
-	getSyncPreview(): Promise<ISyncPreviewResult>
 	hasPreviouslySynced(): Promise<boolean>
 	hasLocalData(): Promise<boolean>;
 	resetLocal(): Promise<void>;

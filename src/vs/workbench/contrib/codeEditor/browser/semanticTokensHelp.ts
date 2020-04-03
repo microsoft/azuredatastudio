@@ -15,7 +15,6 @@ import { URI } from 'vs/base/common/uri';
 import { ITextModel } from 'vs/editor/common/model';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IStorageKeysSyncRegistryService } from 'vs/platform/userDataSync/common/storageKeys';
 
 /**
  * Shows a message when semantic tokens are shown the first time.
@@ -31,14 +30,9 @@ export class SemanticTokensHelp extends Disposable implements IEditorContributio
 		@INotificationService _notificationService: INotificationService,
 		@IOpenerService _openerService: IOpenerService,
 		@IWorkbenchThemeService _themeService: IWorkbenchThemeService,
-		@IEditorService _editorService: IEditorService,
-		@IStorageKeysSyncRegistryService storageKeysSyncRegistryService: IStorageKeysSyncRegistryService
+		@IEditorService _editorService: IEditorService
 	) {
 		super();
-
-		// opt-in to syncing
-		const neverShowAgainId = 'editor.contrib.semanticTokensHelp';
-		storageKeysSyncRegistryService.registerStorageKey({ key: neverShowAgainId, version: 1 });
 
 		const toDispose = this._register(new DisposableStore());
 		const localToDispose = toDispose.add(new DisposableStore());
@@ -81,7 +75,7 @@ export class SemanticTokensHelp extends Disposable implements IEditorContributio
 							_openerService.open(URI.parse(url));
 						}
 					}
-				], { neverShowAgain: { id: neverShowAgainId } });
+				], { neverShowAgain: { id: 'editor.contrib.semanticTokensHelp' } });
 			}));
 		};
 

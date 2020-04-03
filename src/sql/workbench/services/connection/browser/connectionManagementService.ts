@@ -50,7 +50,6 @@ import { find } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
 import { assign } from 'vs/base/common/objects';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -91,8 +90,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@ILogService private _logService: ILogService,
 		@IStorageService private _storageService: IStorageService,
-		@IEnvironmentService private _environmentService: IEnvironmentService,
-		@IExtensionService private readonly extensionService: IExtensionService
+		@IEnvironmentService private _environmentService: IEnvironmentService
 	) {
 		super();
 
@@ -820,8 +818,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let connectionInfo = assign({}, {
 			options: connection.options
 		});
-
-		await this.extensionService.activateByEvent(`onConnect:${connection.providerName}`);
 
 		return this._providers.get(connection.providerName).onReady.then((provider) => {
 			provider.connect(uri, connectionInfo);

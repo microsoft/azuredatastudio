@@ -7,6 +7,7 @@ Make sure you are on **Node v12.x**.
 ```bash
 # Install Dependencies and Compile
 yarn --cwd test/smoke
+yarn --cwd test/automation
 
 # Dev (Electron)
 yarn smoketest

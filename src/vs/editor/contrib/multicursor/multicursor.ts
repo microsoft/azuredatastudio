@@ -786,13 +786,11 @@ class SelectionHighlighterState {
 	public readonly searchText: string;
 	public readonly matchCase: boolean;
 	public readonly wordSeparators: string | null;
-	public readonly modelVersionId: number;
 
-	constructor(searchText: string, matchCase: boolean, wordSeparators: string | null, modelVersionId: number) {
+	constructor(searchText: string, matchCase: boolean, wordSeparators: string | null) {
 		this.searchText = searchText;
 		this.matchCase = matchCase;
 		this.wordSeparators = wordSeparators;
-		this.modelVersionId = modelVersionId;
 	}
 
 	/**
@@ -809,7 +807,6 @@ class SelectionHighlighterState {
 			a.searchText === b.searchText
 			&& a.matchCase === b.matchCase
 			&& a.wordSeparators === b.wordSeparators
-			&& a.modelVersionId === b.modelVersionId
 		);
 	}
 }
@@ -859,11 +856,6 @@ export class SelectionHighlighter extends Disposable implements IEditorContribut
 		}));
 		this._register(editor.onDidChangeModel((e) => {
 			this._setState(null);
-		}));
-		this._register(editor.onDidChangeModelContent((e) => {
-			if (this._isEnabled) {
-				this.updateSoon.schedule();
-			}
 		}));
 		this._register(CommonFindController.get(editor).getState().onFindReplaceStateChange((e) => {
 			this._update();
@@ -947,7 +939,7 @@ export class SelectionHighlighter extends Disposable implements IEditorContribut
 			}
 		}
 
-		return new SelectionHighlighterState(r.searchText, r.matchCase, r.wholeWord ? editor.getOption(EditorOption.wordSeparators) : null, editor.getModel().getVersionId());
+		return new SelectionHighlighterState(r.searchText, r.matchCase, r.wholeWord ? editor.getOption(EditorOption.wordSeparators) : null);
 	}
 
 	private _setState(state: SelectionHighlighterState | null): void {

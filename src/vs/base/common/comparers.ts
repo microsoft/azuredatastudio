@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as strings from 'vs/base/common/strings';
 import { sep } from 'vs/base/common/path';
 import { IdleValue } from 'vs/base/common/async';
 
@@ -132,8 +133,8 @@ export function compareAnything(one: string, other: string, lookFor: string): nu
 	}
 
 	// Sort suffix matches over non suffix matches
-	const elementASuffixMatch = elementAName.endsWith(lookFor);
-	const elementBSuffixMatch = elementBName.endsWith(lookFor);
+	const elementASuffixMatch = strings.endsWith(elementAName, lookFor);
+	const elementBSuffixMatch = strings.endsWith(elementBName, lookFor);
 	if (elementASuffixMatch !== elementBSuffixMatch) {
 		return elementASuffixMatch ? -1 : 1;
 	}
@@ -153,8 +154,8 @@ export function compareByPrefix(one: string, other: string, lookFor: string): nu
 	const elementBName = other.toLowerCase();
 
 	// Sort prefix matches over non prefix matches
-	const elementAPrefixMatch = elementAName.startsWith(lookFor);
-	const elementBPrefixMatch = elementBName.startsWith(lookFor);
+	const elementAPrefixMatch = strings.startsWith(elementAName, lookFor);
+	const elementBPrefixMatch = strings.startsWith(elementBName, lookFor);
 	if (elementAPrefixMatch !== elementBPrefixMatch) {
 		return elementAPrefixMatch ? -1 : 1;
 	}

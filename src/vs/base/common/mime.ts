@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { basename, posix, extname } from 'vs/base/common/path';
-import { startsWithUTF8BOM } from 'vs/base/common/strings';
+import { endsWith, startsWithUTF8BOM, startsWith } from 'vs/base/common/strings';
 import { coalesce } from 'vs/base/common/arrays';
 import { match } from 'vs/base/common/glob';
 import { URI } from 'vs/base/common/uri';
@@ -185,7 +185,7 @@ function guessMimeTypeByPath(path: string, filename: string, associations: IText
 		// Longest extension match
 		if (association.extension) {
 			if (!extensionMatch || association.extension.length > extensionMatch.extension!.length) {
-				if (filename.endsWith(association.extensionLowercase!)) {
+				if (endsWith(filename, association.extensionLowercase!)) {
 					extensionMatch = association;
 				}
 			}
@@ -259,11 +259,11 @@ export function suggestFilename(mode: string | undefined, prefix: string): strin
 		.map(assoc => assoc.extension);
 
 	const extensionsWithDotFirst = coalesce(extensions)
-		.filter(assoc => assoc.startsWith('.'));
+		.filter(assoc => startsWith(assoc, '.'));
 
 	if (extensionsWithDotFirst.length > 0) {
 		const candidateExtension = extensionsWithDotFirst[0];
-		if (prefix.endsWith(candidateExtension)) {
+		if (endsWith(prefix, candidateExtension)) {
 			// do not add the prefix if it already exists
 			// https://github.com/microsoft/vscode/issues/83603
 			return prefix;

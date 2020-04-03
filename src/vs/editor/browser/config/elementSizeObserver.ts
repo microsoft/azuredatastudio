@@ -3,34 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { IDimension } from 'vs/editor/common/editorCommon';
-
-interface ResizeObserver {
-	observe(target: Element): void;
-	unobserve(target: Element): void;
-	disconnect(): void;
-}
-
-interface ResizeObserverSize {
-	inlineSize: number;
-	blockSize: number;
-}
-
-interface ResizeObserverEntry {
-	readonly target: Element;
-	readonly contentRect: DOMRectReadOnly;
-	readonly borderBoxSize: ResizeObserverSize;
-	readonly contentBoxSize: ResizeObserverSize;
-}
-
-type ResizeObserverCallback = (entries: ReadonlyArray<ResizeObserverEntry>, observer: ResizeObserver) => void;
-
-declare const ResizeObserver: {
-	prototype: ResizeObserver;
-	new(callback: ResizeObserverCallback): ResizeObserver;
-};
-
+import * as dom from 'vs/base/browser/dom';
 
 export class ElementSizeObserver extends Disposable {
 
@@ -38,8 +13,8 @@ export class ElementSizeObserver extends Disposable {
 	private readonly changeCallback: () => void;
 	private width: number;
 	private height: number;
-	private resizeObserver: ResizeObserver | null;
-	private measureReferenceDomElementToken: number;
+	private mutationObserver: MutationObserver | null;
+	private windowSizeListener: IDisposable | null;
 
 	constructor(referenceDomElement: HTMLElement | null, dimension: IDimension | undefined, changeCallback: () => void) {
 		super();
@@ -47,8 +22,8 @@ export class ElementSizeObserver extends Disposable {
 		this.changeCallback = changeCallback;
 		this.width = -1;
 		this.height = -1;
-		this.resizeObserver = null;
-		this.measureReferenceDomElementToken = -1;
+		this.mutationObserver = null;
+		this.windowSizeListener = null;
 		this.measureReferenceDomElement(false, dimension);
 	}
 
@@ -66,38 +41,38 @@ export class ElementSizeObserver extends Disposable {
 	}
 
 	public startObserving(): void {
-		if (typeof ResizeObserver !== 'undefined') {
-			if (!this.resizeObserver && this.referenceDomElement) {
-				this.resizeObserver = new ResizeObserver((entries) => {
-					if (entries && entries[0] && entries[0].contentRect) {
-						this.observe({ width: entries[0].contentRect.width, height: entries[0].contentRect.height });
-					} else {
-						this.observe();
-					}
-				});
-				this.resizeObserver.observe(this.referenceDomElement);
-			}
-		} else {
-			if (this.measureReferenceDomElementToken === -1) {
-				// setInterval type defaults to NodeJS.Timeout instead of number, so specify it as a number
-				this.measureReferenceDomElementToken = <number><any>setInterval(() => this.observe(), 100);
-			}
+		if (!this.mutationObserver && this.referenceDomElement) {
+			this.mutationObserver = new MutationObserver(() => this._onDidMutate());
+			this.mutationObserver.observe(this.referenceDomElement, {
+				attributes: true,
+			});
+		}
+		if (!this.windowSizeListener) {
+			this.windowSizeListener = dom.addDisposableListener(window, 'resize', () => this._onDidResizeWindow());
 		}
 	}
 
 	public stopObserving(): void {
-		if (this.resizeObserver) {
-			this.resizeObserver.disconnect();
-			this.resizeObserver = null;
+		if (this.mutationObserver) {
+			this.mutationObserver.disconnect();
+			this.mutationObserver = null;
 		}
-		if (this.measureReferenceDomElementToken !== -1) {
-			clearInterval(this.measureReferenceDomElementToken);
-			this.measureReferenceDomElementToken = -1;
+		if (this.windowSizeListener) {
+			this.windowSizeListener.dispose();
+			this.windowSizeListener = null;
 		}
 	}
 
 	public observe(dimension?: IDimension): void {
 		this.measureReferenceDomElement(true, dimension);
+	}
+
+	private _onDidMutate(): void {
+		this.measureReferenceDomElement(true);
+	}
+
+	private _onDidResizeWindow(): void {
+		this.measureReferenceDomElement(true);
 	}
 
 	private measureReferenceDomElement(callChangeCallback: boolean, dimension?: IDimension): void {

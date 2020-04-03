@@ -59,7 +59,7 @@ describe('Query Runner', () => {
 		let queryProvider: azdata.QueryProvider;
 		testContext.apiWrapper.setup(x => x.getProvider<azdata.QueryProvider>(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => queryProvider);
 
-		let actual = await queryRunner.getPythonPackages(connection, connection.databaseName);
+		let actual = await queryRunner.getPythonPackages(connection);
 		should.deepEqual(actual, []);
 	});
 
@@ -70,7 +70,7 @@ describe('Query Runner', () => {
 		testContext.queryProvider.runQueryAndReturn = () => { return Promise.reject(); };
 		testContext.apiWrapper.setup(x => x.getProvider<azdata.QueryProvider>(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => testContext.queryProvider);
 
-		let actual = await queryRunner.getPythonPackages(connection, connection.databaseName);
+		let actual = await queryRunner.getPythonPackages(connection);
 		should.deepEqual(actual, []);
 	});
 
@@ -117,7 +117,7 @@ describe('Query Runner', () => {
 		testContext.queryProvider.runQueryAndReturn = () => { return Promise.resolve(result); };
 		testContext.apiWrapper.setup(x => x.getProvider<azdata.QueryProvider>(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => testContext.queryProvider);
 
-		let actual = await queryRunner.getPythonPackages(connection, connection.databaseName);
+		let actual = await queryRunner.getPythonPackages(connection);
 
 		should.deepEqual(actual, expected);
 	});
@@ -138,7 +138,7 @@ describe('Query Runner', () => {
 		testContext.queryProvider.runQueryAndReturn = () => { return Promise.resolve(result); };
 		testContext.apiWrapper.setup(x => x.getProvider<azdata.QueryProvider>(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => testContext.queryProvider);
 
-		let actual = await queryRunner.getPythonPackages(connection, connection.databaseName);
+		let actual = await queryRunner.getPythonPackages(connection);
 
 		should.deepEqual(actual, expected);
 	});

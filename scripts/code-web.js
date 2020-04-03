@@ -13,7 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');
 const opn = require('opn');
-const minimist = require('minimist');
+const minimist = require('vscode-minimist');
 
 const APP_ROOT = path.dirname(__dirname);
 const EXTENSIONS_ROOT = path.join(APP_ROOT, 'extensions');

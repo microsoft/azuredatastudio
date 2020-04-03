@@ -11,7 +11,7 @@ import * as pfs from 'vs/base/node/pfs';
 import { EnvironmentService } from 'vs/platform/environment/node/environmentService';
 import { parseArgs, OPTIONS } from 'vs/platform/environment/node/argv';
 import { WorkspacesMainService, IStoredWorkspace } from 'vs/platform/workspaces/electron-main/workspacesMainService';
-import { WORKSPACE_EXTENSION, IRawFileWorkspaceFolder, IWorkspaceFolderCreationData, IRawUriWorkspaceFolder, rewriteWorkspaceFileForNewLocation, IWorkspaceIdentifier, IStoredWorkspaceFolder } from 'vs/platform/workspaces/common/workspaces';
+import { WORKSPACE_EXTENSION, IRawFileWorkspaceFolder, IWorkspaceFolderCreationData, IRawUriWorkspaceFolder, rewriteWorkspaceFileForNewLocation, IWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { URI } from 'vs/base/common/uri';
 import { getRandomTestPath } from 'vs/base/test/node/testUtils';
@@ -56,7 +56,6 @@ export class TestDialogMainService implements IDialogMainService {
 }
 
 export class TestBackupMainService implements IBackupMainService {
-
 	_serviceBrand: undefined;
 
 	isHotExitEnabled(): boolean {
@@ -98,10 +97,6 @@ export class TestBackupMainService implements IBackupMainService {
 	unregisterEmptyWindowBackupSync(backupFolder: string): void {
 		throw new Error('Method not implemented.');
 	}
-
-	async getDirtyWorkspaces(): Promise<(IWorkspaceIdentifier | URI)[]> {
-		return [];
-	}
 }
 
 suite('WorkspacesMainService', () => {
@@ -114,27 +109,11 @@ suite('WorkspacesMainService', () => {
 		}
 	}
 
-	function createUntitledWorkspace(folders: string[], names?: string[]) {
+	function createWorkspace(folders: string[], names?: string[]) {
 		return service.createUntitledWorkspace(folders.map((folder, index) => ({ uri: URI.file(folder), name: names ? names[index] : undefined } as IWorkspaceFolderCreationData)));
 	}
 
-	function createWorkspace(workspaceConfigPath: string, folders: (string | URI)[], names?: string[]): void {
-
-		const ws: IStoredWorkspace = {
-			folders: []
-		};
-		for (let i = 0; i < folders.length; i++) {
-			const f = folders[i];
-			const s: IStoredWorkspaceFolder = f instanceof URI ? { uri: f.toString() } : { path: f };
-			if (names) {
-				s.name = names[i];
-			}
-			ws.folders.push(s);
-		}
-		fs.writeFileSync(workspaceConfigPath, JSON.stringify(ws));
-	}
-
-	function createUntitledWorkspaceSync(folders: string[], names?: string[]) {
+	function createWorkspaceSync(folders: string[], names?: string[]) {
 		return service.createUntitledWorkspaceSync(folders.map((folder, index) => ({ uri: URI.file(folder), name: names ? names[index] : undefined } as IWorkspaceFolderCreationData)));
 	}
 
@@ -170,7 +149,7 @@ suite('WorkspacesMainService', () => {
 	}
 
 	test('createWorkspace (folders)', async () => {
-		const workspace = await createUntitledWorkspace([process.cwd(), os.tmpdir()]);
+		const workspace = await createWorkspace([process.cwd(), os.tmpdir()]);
 		assert.ok(workspace);
 		assert.ok(fs.existsSync(workspace.configPath.fsPath));
 		assert.ok(service.isUntitledWorkspace(workspace));
@@ -184,7 +163,7 @@ suite('WorkspacesMainService', () => {
 	});
 
 	test('createWorkspace (folders with name)', async () => {
-		const workspace = await createUntitledWorkspace([process.cwd(), os.tmpdir()], ['currentworkingdirectory', 'tempdir']);
+		const workspace = await createWorkspace([process.cwd(), os.tmpdir()], ['currentworkingdirectory', 'tempdir']);
 		assert.ok(workspace);
 		assert.ok(fs.existsSync(workspace.configPath.fsPath));
 		assert.ok(service.isUntitledWorkspace(workspace));
@@ -216,7 +195,7 @@ suite('WorkspacesMainService', () => {
 	});
 
 	test('createWorkspaceSync (folders)', () => {
-		const workspace = createUntitledWorkspaceSync([process.cwd(), os.tmpdir()]);
+		const workspace = createWorkspaceSync([process.cwd(), os.tmpdir()]);
 		assert.ok(workspace);
 		assert.ok(fs.existsSync(workspace.configPath.fsPath));
 		assert.ok(service.isUntitledWorkspace(workspace));
@@ -231,7 +210,7 @@ suite('WorkspacesMainService', () => {
 	});
 
 	test('createWorkspaceSync (folders with names)', () => {
-		const workspace = createUntitledWorkspaceSync([process.cwd(), os.tmpdir()], ['currentworkingdirectory', 'tempdir']);
+		const workspace = createWorkspaceSync([process.cwd(), os.tmpdir()], ['currentworkingdirectory', 'tempdir']);
 		assert.ok(workspace);
 		assert.ok(fs.existsSync(workspace.configPath.fsPath));
 		assert.ok(service.isUntitledWorkspace(workspace));
@@ -264,7 +243,7 @@ suite('WorkspacesMainService', () => {
 	});
 
 	test('resolveWorkspaceSync', async () => {
-		const workspace = await createUntitledWorkspace([process.cwd(), os.tmpdir()]);
+		const workspace = await createWorkspace([process.cwd(), os.tmpdir()]);
 		assert.ok(service.resolveLocalWorkspaceSync(workspace.configPath));
 
 		// make it a valid workspace path
@@ -283,7 +262,7 @@ suite('WorkspacesMainService', () => {
 	});
 
 	test('resolveWorkspaceSync (support relative paths)', async () => {
-		const workspace = await createUntitledWorkspace([process.cwd(), os.tmpdir()]);
+		const workspace = await createWorkspace([process.cwd(), os.tmpdir()]);
 		fs.writeFileSync(workspace.configPath.fsPath, JSON.stringify({ folders: [{ path: './ticino-playground/lib' }] }));
 
 		const resolved = service.resolveLocalWorkspaceSync(workspace.configPath);
@@ -291,7 +270,7 @@ suite('WorkspacesMainService', () => {
 	});
 
 	test('resolveWorkspaceSync (support relative paths #2)', async () => {
-		const workspace = await createUntitledWorkspace([process.cwd(), os.tmpdir()]);
+		const workspace = await createWorkspace([process.cwd(), os.tmpdir()]);
 		fs.writeFileSync(workspace.configPath.fsPath, JSON.stringify({ folders: [{ path: './ticino-playground/lib/../other' }] }));
 
 		const resolved = service.resolveLocalWorkspaceSync(workspace.configPath);
@@ -299,7 +278,7 @@ suite('WorkspacesMainService', () => {
 	});
 
 	test('resolveWorkspaceSync (support relative paths #3)', async () => {
-		const workspace = await createUntitledWorkspace([process.cwd(), os.tmpdir()]);
+		const workspace = await createWorkspace([process.cwd(), os.tmpdir()]);
 		fs.writeFileSync(workspace.configPath.fsPath, JSON.stringify({ folders: [{ path: 'ticino-playground/lib' }] }));
 
 		const resolved = service.resolveLocalWorkspaceSync(workspace.configPath);
@@ -307,7 +286,7 @@ suite('WorkspacesMainService', () => {
 	});
 
 	test('resolveWorkspaceSync (support invalid JSON via fault tolerant parsing)', async () => {
-		const workspace = await createUntitledWorkspace([process.cwd(), os.tmpdir()]);
+		const workspace = await createWorkspace([process.cwd(), os.tmpdir()]);
 		fs.writeFileSync(workspace.configPath.fsPath, '{ "folders": [ { "path": "./ticino-playground/lib" } , ] }'); // trailing comma
 
 		const resolved = service.resolveLocalWorkspaceSync(workspace.configPath);
@@ -317,15 +296,14 @@ suite('WorkspacesMainService', () => {
 	test('rewriteWorkspaceFileForNewLocation', async () => {
 		const folder1 = process.cwd();  // absolute path because outside of tmpDir
 		const tmpDir = os.tmpdir();
-		const tmpInsideDir = path.join(tmpDir, 'inside');
+		const tmpInsideDir = path.join(os.tmpdir(), 'inside');
 
-		const firstConfigPath = path.join(tmpDir, 'myworkspace0.code-workspace');
-		createWorkspace(firstConfigPath, [folder1, 'inside', path.join('inside', 'somefolder')]);
-		const origContent = fs.readFileSync(firstConfigPath).toString();
+		const workspace = await createWorkspace([folder1, tmpInsideDir, path.join(tmpInsideDir, 'somefolder')]);
+		const origContent = fs.readFileSync(workspace.configPath.fsPath).toString();
 
-		let origConfigPath = URI.file(firstConfigPath);
+		let origConfigPath = workspace.configPath;
 		let workspaceConfigPath = URI.file(path.join(tmpDir, 'inside', 'myworkspace1.code-workspace'));
-		let newContent = rewriteWorkspaceFileForNewLocation(origContent, origConfigPath, false, workspaceConfigPath);
+		let newContent = rewriteWorkspaceFileForNewLocation(origContent, origConfigPath, workspaceConfigPath);
 		let ws = (JSON.parse(newContent) as IStoredWorkspace);
 		assert.equal(ws.folders.length, 3);
 		assertPathEquals((<IRawFileWorkspaceFolder>ws.folders[0]).path, folder1); // absolute path because outside of tmpdir
@@ -334,7 +312,7 @@ suite('WorkspacesMainService', () => {
 
 		origConfigPath = workspaceConfigPath;
 		workspaceConfigPath = URI.file(path.join(tmpDir, 'myworkspace2.code-workspace'));
-		newContent = rewriteWorkspaceFileForNewLocation(newContent, origConfigPath, false, workspaceConfigPath);
+		newContent = rewriteWorkspaceFileForNewLocation(newContent, origConfigPath, workspaceConfigPath);
 		ws = (JSON.parse(newContent) as IStoredWorkspace);
 		assert.equal(ws.folders.length, 3);
 		assertPathEquals((<IRawFileWorkspaceFolder>ws.folders[0]).path, folder1);
@@ -343,51 +321,51 @@ suite('WorkspacesMainService', () => {
 
 		origConfigPath = workspaceConfigPath;
 		workspaceConfigPath = URI.file(path.join(tmpDir, 'other', 'myworkspace2.code-workspace'));
-		newContent = rewriteWorkspaceFileForNewLocation(newContent, origConfigPath, false, workspaceConfigPath);
+		newContent = rewriteWorkspaceFileForNewLocation(newContent, origConfigPath, workspaceConfigPath);
 		ws = (JSON.parse(newContent) as IStoredWorkspace);
 		assert.equal(ws.folders.length, 3);
 		assertPathEquals((<IRawFileWorkspaceFolder>ws.folders[0]).path, folder1);
-		assertPathEquals((<IRawFileWorkspaceFolder>ws.folders[1]).path, isWindows ? '..\\inside' : '../inside');
-		assertPathEquals((<IRawFileWorkspaceFolder>ws.folders[2]).path, isWindows ? '..\\inside\\somefolder' : '../inside/somefolder');
+		assertPathEquals((<IRawFileWorkspaceFolder>ws.folders[1]).path, tmpInsideDir);
+		assertPathEquals((<IRawFileWorkspaceFolder>ws.folders[2]).path, path.join(tmpInsideDir, 'somefolder'));
 
 		origConfigPath = workspaceConfigPath;
 		workspaceConfigPath = URI.parse('foo://foo/bar/myworkspace2.code-workspace');
-		newContent = rewriteWorkspaceFileForNewLocation(newContent, origConfigPath, false, workspaceConfigPath);
+		newContent = rewriteWorkspaceFileForNewLocation(newContent, origConfigPath, workspaceConfigPath);
 		ws = (JSON.parse(newContent) as IStoredWorkspace);
 		assert.equal(ws.folders.length, 3);
 		assert.equal((<IRawUriWorkspaceFolder>ws.folders[0]).uri, URI.file(folder1).toString(true));
 		assert.equal((<IRawUriWorkspaceFolder>ws.folders[1]).uri, URI.file(tmpInsideDir).toString(true));
 		assert.equal((<IRawUriWorkspaceFolder>ws.folders[2]).uri, URI.file(path.join(tmpInsideDir, 'somefolder')).toString(true));
 
-		fs.unlinkSync(firstConfigPath);
+		service.deleteUntitledWorkspaceSync(workspace);
 	});
 
 	test('rewriteWorkspaceFileForNewLocation (preserves comments)', async () => {
-		const workspace = await createUntitledWorkspace([process.cwd(), os.tmpdir(), path.join(os.tmpdir(), 'somefolder')]);
+		const workspace = await createWorkspace([process.cwd(), os.tmpdir(), path.join(os.tmpdir(), 'somefolder')]);
 		const workspaceConfigPath = URI.file(path.join(os.tmpdir(), `myworkspace.${Date.now()}.${WORKSPACE_EXTENSION}`));
 
 		let origContent = fs.readFileSync(workspace.configPath.fsPath).toString();
 		origContent = `// this is a comment\n${origContent}`;
 
-		let newContent = rewriteWorkspaceFileForNewLocation(origContent, workspace.configPath, false, workspaceConfigPath);
+		let newContent = rewriteWorkspaceFileForNewLocation(origContent, workspace.configPath, workspaceConfigPath);
 		assert.equal(0, newContent.indexOf('// this is a comment'));
 		service.deleteUntitledWorkspaceSync(workspace);
 	});
 
 	test('rewriteWorkspaceFileForNewLocation (preserves forward slashes)', async () => {
-		const workspace = await createUntitledWorkspace([process.cwd(), os.tmpdir(), path.join(os.tmpdir(), 'somefolder')]);
+		const workspace = await createWorkspace([process.cwd(), os.tmpdir(), path.join(os.tmpdir(), 'somefolder')]);
 		const workspaceConfigPath = URI.file(path.join(os.tmpdir(), `myworkspace.${Date.now()}.${WORKSPACE_EXTENSION}`));
 
 		let origContent = fs.readFileSync(workspace.configPath.fsPath).toString();
 		origContent = origContent.replace(/[\\]/g, '/'); // convert backslash to slash
 
-		const newContent = rewriteWorkspaceFileForNewLocation(origContent, workspace.configPath, false, workspaceConfigPath);
+		const newContent = rewriteWorkspaceFileForNewLocation(origContent, workspace.configPath, workspaceConfigPath);
 		const ws = (JSON.parse(newContent) as IStoredWorkspace);
 		assert.ok(ws.folders.every(f => (<IRawFileWorkspaceFolder>f).path.indexOf('\\') < 0));
 		service.deleteUntitledWorkspaceSync(workspace);
 	});
 
-	test.skip('rewriteWorkspaceFileForNewLocation (unc paths)', async () => {
+	test('rewriteWorkspaceFileForNewLocation (unc paths)', async () => {
 		if (!isWindows) {
 			return Promise.resolve();
 		}
@@ -397,10 +375,10 @@ suite('WorkspacesMainService', () => {
 		const folder2Location = '\\\\server\\share2\\some\\path';
 		const folder3Location = path.join(os.tmpdir(), 'wsloc', 'inner', 'more');
 
-		const workspace = await createUntitledWorkspace([folder1Location, folder2Location, folder3Location]);
+		const workspace = await createWorkspace([folder1Location, folder2Location, folder3Location]);
 		const workspaceConfigPath = URI.file(path.join(workspaceLocation, `myworkspace.${Date.now()}.${WORKSPACE_EXTENSION}`));
 		let origContent = fs.readFileSync(workspace.configPath.fsPath).toString();
-		const newContent = rewriteWorkspaceFileForNewLocation(origContent, workspace.configPath, false, workspaceConfigPath);
+		const newContent = rewriteWorkspaceFileForNewLocation(origContent, workspace.configPath, workspaceConfigPath);
 		const ws = (JSON.parse(newContent) as IStoredWorkspace);
 		assertPathEquals((<IRawFileWorkspaceFolder>ws.folders[0]).path, folder1Location);
 		assertPathEquals((<IRawFileWorkspaceFolder>ws.folders[1]).path, folder2Location);
@@ -410,14 +388,14 @@ suite('WorkspacesMainService', () => {
 	});
 
 	test('deleteUntitledWorkspaceSync (untitled)', async () => {
-		const workspace = await createUntitledWorkspace([process.cwd(), os.tmpdir()]);
+		const workspace = await createWorkspace([process.cwd(), os.tmpdir()]);
 		assert.ok(fs.existsSync(workspace.configPath.fsPath));
 		service.deleteUntitledWorkspaceSync(workspace);
 		assert.ok(!fs.existsSync(workspace.configPath.fsPath));
 	});
 
 	test('deleteUntitledWorkspaceSync (saved)', async () => {
-		const workspace = await createUntitledWorkspace([process.cwd(), os.tmpdir()]);
+		const workspace = await createWorkspace([process.cwd(), os.tmpdir()]);
 		service.deleteUntitledWorkspaceSync(workspace);
 	});
 
@@ -427,14 +405,14 @@ suite('WorkspacesMainService', () => {
 		let untitled = service.getUntitledWorkspacesSync();
 		assert.equal(untitled.length, 0);
 
-		const untitledOne = await createUntitledWorkspace([process.cwd(), os.tmpdir()]);
+		const untitledOne = await createWorkspace([process.cwd(), os.tmpdir()]);
 		assert.ok(fs.existsSync(untitledOne.configPath.fsPath));
 
 		untitled = service.getUntitledWorkspacesSync();
 		assert.equal(1, untitled.length);
 		assert.equal(untitledOne.id, untitled[0].workspace.id);
 
-		const untitledTwo = await createUntitledWorkspace([os.tmpdir(), process.cwd()]);
+		const untitledTwo = await createWorkspace([os.tmpdir(), process.cwd()]);
 		assert.ok(fs.existsSync(untitledTwo.configPath.fsPath));
 		assert.ok(fs.existsSync(untitledOne.configPath.fsPath), `Unexpected workspaces count of 1 (expected 2): ${untitledOne.configPath.fsPath} does not exist anymore?`);
 		const untitledHome = dirname(dirname(untitledTwo.configPath));

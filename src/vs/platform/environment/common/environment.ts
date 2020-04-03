@@ -95,7 +95,7 @@ export interface ParsedArgs {
 	'nolazy'?: boolean;
 	'force-device-scale-factor'?: string;
 	'force-renderer-accessibility'?: boolean;
-	'ignore-certificate-errors'?: boolean;
+	'ignore-certificate-error'?: boolean;
 	'allow-insecure-localhost'?: boolean;
 }
 
@@ -154,7 +154,6 @@ export interface IEnvironmentService extends IUserHomeProvider {
 	extensionsPath?: string;
 	extensionDevelopmentLocationURI?: URI[];
 	extensionTestsLocationURI?: URI;
-	extensionEnabledProposedApi?: string[] | undefined;
 	logExtensionHostCommunication?: boolean;
 
 	debugExtensionHost: IExtensionHostDebugParams;

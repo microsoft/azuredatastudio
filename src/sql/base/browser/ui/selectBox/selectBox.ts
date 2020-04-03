@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/selectBox';
 
-import { SelectBox as vsSelectBox, ISelectBoxStyles as vsISelectBoxStyles, ISelectBoxOptions, ISelectOptionItem, ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
+import { SelectBox as vsSelectBox, ISelectBoxStyles as vsISelectBoxStyles, ISelectBoxOptions, ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
 import { Color } from 'vs/base/common/color';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import * as dom from 'vs/base/browser/dom';
@@ -65,18 +65,29 @@ export class SelectBox extends vsSelectBox {
 	private element?: HTMLElement;
 
 	constructor(options: SelectOptionItemSQL[] | string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
-		let optionItems: SelectOptionItemSQL[] = SelectBox.createOptions(options);
-		super(optionItems, 0, contextViewProvider, undefined, selectBoxOptions);
+		let optionItems: SelectOptionItemSQL[];
+		if (Array.isArray<string>(options)) {
+			optionItems = (options as string[]).map(o => {
+				return { text: o, value: o } as SelectOptionItemSQL;
+			});
+		} else {
+			optionItems = options;
+		}
 
-		this.populateOptionsDictionary(optionItems);
+		super(optionItems, 0, contextViewProvider, undefined, selectBoxOptions);
+		this._optionsDictionary = new Map<string, number>();
+		for (let i = 0; i < options.length; i++) {
+			this._optionsDictionary.set(optionItems[i].value, i);
+		}
 		const option = this._optionsDictionary.get(selectedOption);
 		if (option) {
 			super.select(option);
 		}
-
 		this._selectedOption = selectedOption;
-		this._register(this.onDidSelect(newSelect => {
-			this.onSelect(newSelect);
+		this._dialogOptions = optionItems;
+		this._register(this.onDidSelect(newInput => {
+			const selected = optionItems[newInput.index];
+			this._selectedOption = selected.value;
 		}));
 
 		this.enabledSelectBackground = this.selectBackground;
@@ -119,38 +130,6 @@ export class SelectBox extends vsSelectBox {
 		}
 	}
 
-	public onSelect(newInput: ISelectData) {
-		const selected = this._dialogOptions[newInput.index];
-		this._selectedOption = selected.value;
-	}
-
-	private static createOptions(options: SelectOptionItemSQL[] | string[] | ISelectOptionItem[]): SelectOptionItemSQL[] {
-		let selectOptions: SelectOptionItemSQL[];
-		if (Array.isArray<string>(options) && typeof (options[0]) === 'string') {
-			selectOptions = options.map(o => {
-				return { text: o, value: o } as SelectOptionItemSQL;
-			});
-		} else { // Handle both SelectOptionItemSql and ISelectOptionItem
-			const temp = (options as SelectOptionItemSQL[]);
-			selectOptions = temp.map(opt => {
-				if (opt.value === undefined) {
-					opt.value = opt.text;
-				}
-				return opt;
-			});
-		}
-
-		return selectOptions;
-	}
-
-	public populateOptionsDictionary(options: SelectOptionItemSQL[]) {
-		this._optionsDictionary = new Map<string, number>();
-		for (let i = 0; i < options.length; i++) {
-			this._optionsDictionary.set(options[i].value, i);
-		}
-		this._dialogOptions = options;
-	}
-
 	public style(styles: ISelectBoxStyles): void {
 		super.style(styles);
 		this.enabledSelectBackground = this.selectBackground;
@@ -186,10 +165,18 @@ export class SelectBox extends vsSelectBox {
 		}
 	}
 
-
-	public setOptions(options: string[] | SelectOptionItemSQL[] | ISelectOptionItem[], selected?: number): void {
-		let selectOptions: SelectOptionItemSQL[] = SelectBox.createOptions(options);
-		this.populateOptionsDictionary(selectOptions);
+	public setOptions(options: string[] | ISelectOptionItem[], selected?: number): void {
+		let selectOptions: SelectOptionItemSQL[];
+		if (options.length > 0 && typeof options[0] !== 'string') {
+			selectOptions = options as SelectOptionItemSQL[];
+		} else {
+			selectOptions = (options as string[]).map(o => { return { text: o, value: o } as SelectOptionItemSQL; });
+		}
+		this._optionsDictionary = new Map<string, number>();
+		for (let i = 0; i < selectOptions.length; i++) {
+			this._optionsDictionary.set(selectOptions[i].value, i);
+		}
+		this._dialogOptions = selectOptions;
 		super.setOptions(selectOptions, selected);
 	}
 

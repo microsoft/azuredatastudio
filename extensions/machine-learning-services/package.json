@@ -37,7 +37,7 @@
         },
         "machineLearningServices.enableR": {
           "type": "boolean",
-          "default": "false",
+          "default": "true",
           "description": "%mls.enableR.description%"
         },
         "machineLearningServices.pythonPath": {

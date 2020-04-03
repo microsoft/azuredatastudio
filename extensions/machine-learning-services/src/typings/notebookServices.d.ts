@@ -51,56 +51,13 @@ export interface IPackageOverview {
 	summary: string;
 }
 
-export interface IPackageLocation {
-	name: string;
-	displayName: string;
-}
-
-/**
- * Package manage provider interface
- */
 export interface IPackageManageProvider {
-	/**
-	 * Provider id
-	 */
 	providerId: string;
-
-	/**
-	 * package target
-	 */
 	packageTarget: IPackageTarget;
-
-	/**
-	 * Returns list of installed packages
-	 */
-	listPackages(location?: string): Promise<IPackageDetails[]>;
-
-	/**
-	 * Installs give packages
-	 * @param package Packages to install
-	 * @param useMinVersion if true, minimal version will be used
-	 */
-	installPackages(package: IPackageDetails[], useMinVersion: boolean, location?: string): Promise<void>;
-
-	/**
-	 * Uninstalls given packages
-	 * @param package package to uninstall
-	 */
-	uninstallPackages(package: IPackageDetails[], location?: string): Promise<void>;
-
-	/**
-	 * Returns true if the provider can be used in current context
-	 */
+	listPackages(): Promise<IPackageDetails[]>
+	installPackages(package: IPackageDetails[], useMinVersion: boolean): Promise<void>;
+	uninstallPackages(package: IPackageDetails[]): Promise<void>;
 	canUseProvider(): Promise<boolean>;
-
-	/**
-	 * Returns location title
-	 */
-	getLocations(): Promise<IPackageLocation[]>;
-
-	/**
-	 * Returns Package Overview
-	 * @param packageName package name
-	 */
-	getPackageOverview(packageName: string): Promise<IPackageOverview>;
+	getLocationTitle(): Promise<string>;
+	getPackageOverview(packageName: string): Promise<IPackageOverview>
 }

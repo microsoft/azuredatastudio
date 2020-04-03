@@ -53,10 +53,10 @@ export abstract class BaseWindowDriver implements IWindowDriver {
 			return Promise.reject(new Error(`Element not found: ${selector}`));
 		}
 
-		const inputElement = element as HTMLInputElement | HTMLSelectElement; // {{SQL CARBON EDIT}} handle select element
+		const inputElement = element as HTMLInputElement;
 		inputElement.value = text;
 
-		const event = new Event(inputElement.tagName === 'INPUT' ? 'input' : 'change', { bubbles: true, cancelable: true }); // {{SQL CARBON EDIT}} handle select element
+		const event = new Event('input', { bubbles: true, cancelable: true });
 		inputElement.dispatchEvent(event);
 	}
 

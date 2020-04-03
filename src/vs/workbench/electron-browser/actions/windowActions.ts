@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/actions';
-
 import { URI } from 'vs/base/common/uri';
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
@@ -159,12 +157,6 @@ export abstract class BaseSwitchWindow extends Action {
 		tooltip: nls.localize('close', "Close Window")
 	};
 
-	private readonly closeDirtyWindowAction: IQuickInputButton = {
-		iconClass: 'dirty-window codicon-circle-filled',
-		tooltip: nls.localize('close', "Close Window"),
-		alwaysVisible: true
-	};
-
 	constructor(
 		id: string,
 		label: string,
@@ -193,7 +185,7 @@ export abstract class BaseSwitchWindow extends Action {
 				label: win.title,
 				iconClasses: getIconClasses(this.modelService, this.modeService, resource, fileKind),
 				description: (currentWindowId === win.id) ? nls.localize('current', "Current Window") : undefined,
-				buttons: currentWindowId !== win.id ? win.dirty ? [this.closeDirtyWindowAction] : [this.closeWindowAction] : undefined
+				buttons: (!this.isQuickNavigate() && currentWindowId !== win.id) ? [this.closeWindowAction] : undefined
 			};
 		});
 		const autoFocusIndex = (picks.indexOf(picks.filter(pick => pick.payload === currentWindowId)[0]) + 1) % picks.length;

@@ -20,6 +20,5 @@ export enum AzureResourceServiceNames {
 	accountService = 'AzureResourceAccountService',
 	subscriptionService = 'AzureResourceSubscriptionService',
 	subscriptionFilterService = 'AzureResourceSubscriptionFilterService',
-	tenantService = 'AzureResourceTenantService',
-	terminalService = 'AzureTerminalService',
+	tenantService = 'AzureResourceTenantService'
 }
