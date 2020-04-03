@@ -15,7 +15,7 @@ export const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This s
 
 //  Book view-let constants
 export const allFiles = localize('allFiles', "All Files");
-export const labelPickFolder = localize('labelPickFolder', "Pick Folder");
+export const labelSelectFolder = localize('labelSelectFolder', "Select Folder");
 export const labelBookFolder = localize('labelBookFolder', "Select Book");
 export const confirmReplace = localize('confirmReplace', "Folder already exists. Are you sure you want to delete and replace this folder?");
 export const openNotebookCommand = localize('openNotebookCommand', "Open Notebook");

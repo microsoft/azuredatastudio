@@ -36,7 +36,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public books: BookModel[];
 	public currentBook: BookModel;
 
-	constructor(private _apiWrapper: ApiWrapper, workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string) {
+	constructor(
+		private _apiWrapper: ApiWrapper,
+		workspaceFolders: vscode.WorkspaceFolder[],
+		extensionContext: vscode.ExtensionContext,
+		openAsUntitled: boolean,
+		view: string) {
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
 		this.books = [];
@@ -271,7 +276,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				canSelectFiles: false,
 				canSelectMany: false,
 				canSelectFolders: true,
-				openLabel: loc.labelPickFolder
+				openLabel: loc.labelSelectFolder
 			});
 			if (uris && uris.length > 0) {
 				let pickedFolder = uris[0];
@@ -333,7 +338,20 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	public async openNotebookFolder(): Promise<void> {
-		return;
+		const allFilesFilter = loc.allFiles;
+		let filter: any = {};
+		filter[allFilesFilter] = '*';
+		let uris = await vscode.window.showOpenDialog({
+			filters: filter,
+			canSelectFiles: false,
+			canSelectMany: false,
+			canSelectFolders: true,
+			openLabel: loc.labelSelectFolder
+		});
+		if (uris && uris.length > 0) {
+			let folderPath = uris[0];
+			vscode.window.showInformationMessage('Selected folder: ' + folderPath.toString());
+		}
 	}
 
 	private runThrottledAction(resource: string, action: () => void) {
