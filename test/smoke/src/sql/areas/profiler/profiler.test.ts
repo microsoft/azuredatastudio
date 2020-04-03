@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Application, getStandaloneServer } from '../../../../automation';
+import { Application, getStandaloneServer } from '../../../../../automation';
 
 export function setup() {
 	describe('profiler test suite', () => {

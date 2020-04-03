@@ -485,6 +485,32 @@
             }
           ]
         }
+      },
+      {
+        "id": "mssql-databases",
+        "description": "%mssql.tabs.databases%",
+        "provider": "*",
+        "title": "%mssql.tabs.databases%",
+        "when": "dashboardContext == 'server'",
+        "group": "home",
+        "icon": {
+          "light": "resources/light/database.svg",
+          "dark": "resources/dark/database_inverse.svg"
+        },
+        "container": {
+          "widgets-container": [
+            {
+              "name": "%explorer-widget-title%",
+              "gridItemConfig": {
+                "sizex": 3,
+                "sizey": 3
+              },
+              "widget": {
+                "explorer-widget": {}
+              }
+            }
+          ]
+        }
       }
     ],
     "connectionProvider": {

@@ -5,9 +5,9 @@
 
 import 'mocha';
 import * as azdata from 'azdata';
-import { isTestSetupCompleted } from './testContext';
-import { getBdcServer, TestServerProfile, getAzureServer, getStandaloneServer } from './testConfig';
-import { connectToServer, createDB, deleteDB, DefaultConnectTimeoutInMs, asyncTimeout } from './utils';
+import { isTestSetupCompleted } from '../testContext';
+import { getBdcServer, TestServerProfile, getAzureServer, getStandaloneServer } from '../testConfig';
+import { connectToServer, createDB, deleteDB, DefaultConnectTimeoutInMs, asyncTimeout } from '../utils';
 import * as assert from 'assert';
 import { stressify } from 'adstest';
 
