@@ -11,7 +11,6 @@ import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataRes
 import { EditorDescriptor, IEditorRegistry, Extensions } from 'vs/workbench/browser/editor';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import * as editDataActions from 'sql/workbench/contrib/editData/browser/editDataActions';
@@ -32,7 +31,7 @@ configurationRegistry.registerConfiguration({
 	'properties': {
 		'editor.showEditDataSqlPaneOnStartup': {
 			'type': 'boolean',
-			'default': true,
+			'default': false,
 			'description': nls.localize('showEditDataSqlPaneOnStartup', 'Show Edit Data SQL pane on startup')
 		}
 	}
@@ -56,7 +55,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: editDataActions.ShowQueryPaneAction.ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: undefined,
-	primary: KeyMod.CtrlCmd | KeyCode.US_QUOTE,
+	primary: undefined,
 	handler: accessor => {
 		const activeEditDataEditor = accessor.get(IEditorService).activeEditorPane;
 		if (activeEditDataEditor instanceof EditDataEditor) {
