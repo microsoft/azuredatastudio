@@ -6901,10 +6901,11 @@ declare module 'vscode' {
 		 *
 		 * @param document Document to save.
 		 * @param targetResource Location to save to.
+		 * @param cancellation Token that signals the save is no longer required.
 		 *
 		 * @return Thenable signaling that saving has completed.
 		 */
-		saveAs(document: CustomDocument<EditType>, targetResource: Uri): Thenable<void>;
+		saveAs(document: CustomDocument<EditType>, targetResource: Uri, cancellation: CancellationToken): Thenable<void>;
 
 		/**
 		 * Signal that an edit has occurred inside a custom editor.
@@ -8009,10 +8010,14 @@ declare module 'vscode' {
 		export function registerWebviewPanelSerializer(viewType: string, serializer: WebviewPanelSerializer): Disposable;
 
 		/**
-		 * Register a new provider for a custom editor.
+		 * Register a provider for custom editors for the `viewType` contributed by the `customEditors` extension point.
 		 *
-		 * @param viewType Type of the custom editor provider. This should match the `viewType` from the
-		 *   `package.json` contributions.
+		 * When a custom editor is opened, VS Code fires an `onCustomEditor:viewType` activation event. Your extension
+		 * must register [`CustomEditorProvider`](#CustomEditorProvider) or [`CustomTextEditorProvider`](#CustomTextEditorProvider)
+		 * for `viewType` as part of activation.
+		 *
+		 * @param viewType Unique identifier for the custom editor provider. This should match the `viewType` from the
+		 *   `customEditors` contribution point.
 		 * @param provider Provider that resolves custom editors.
 		 * @param options Options for the provider.
 		 *
