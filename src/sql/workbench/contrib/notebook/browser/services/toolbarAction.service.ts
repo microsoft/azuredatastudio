@@ -9,7 +9,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 
 @Injectable()
 export class ToolbarActionService implements IToolbarActionService {
-	_toolbarItem: undefined;
+	_toolbarItem: string;
 
 	private _onToolbarItemSelect = new Emitter<string>();
 	public onToolbarItemSelect: Event<string> = this._onToolbarItemSelect.event;

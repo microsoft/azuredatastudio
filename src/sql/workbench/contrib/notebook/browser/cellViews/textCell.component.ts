@@ -106,9 +106,16 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			}
 		}));
 	}
-
+	/** Todo:
+	 *
+	 * Move code from toggleEditMode() in this component,
+	 * and unselectActiveCell() in notebook.component
+	 * into the newly created service: toolbarAction.service.
+	 *
+	 * **/
 	public haleTest() {
-		this.toolbarActionService.fireOnToolbarItemSelect('testing, 1,2,3');
+		let testValue: string = 'testing, 1,2,3';
+		this.toolbarActionService.fireOnToolbarItemSelect(testValue);
 	}
 
 	public get cellEditors(): ICellEditorProvider[] {
