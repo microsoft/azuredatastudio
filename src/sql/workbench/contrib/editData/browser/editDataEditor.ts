@@ -621,9 +621,9 @@ export class EditDataEditor extends BaseEditor {
 			}
 			if (this._resultsEditorContainer) {
 				if (this.queryPaneEnabled()) {
-					DOM.toggleClass(this._resultsEditorContainer, 'activeBorder', true);
+					DOM.toggleClass(this._resultsEditorContainer, 'activePanelBorder', true);
 				} else {
-					DOM.toggleClass(this._resultsEditorContainer, 'activeBorder', false);
+					DOM.toggleClass(this._resultsEditorContainer, 'activePanelBorder', false);
 				}
 			}
 		}
@@ -679,12 +679,12 @@ export class EditDataEditor extends BaseEditor {
 		this.editDataInput.queryPaneEnabled = !this.queryPaneEnabled();
 		if (this.queryPaneEnabled()) {
 			if (this._resultsEditorContainer) {
-				DOM.toggleClass(this._resultsEditorContainer, 'activeBorder', true);
+				DOM.toggleClass(this._resultsEditorContainer, 'activePanelBorder', true);
 			}
 			this._showQueryEditor();
 		} else {
 			if (this._resultsEditorContainer) {
-				DOM.toggleClass(this._resultsEditorContainer, 'activeBorder', false);
+				DOM.toggleClass(this._resultsEditorContainer, 'activePanelBorder', false);
 			}
 			this._hideQueryEditor();
 		}
