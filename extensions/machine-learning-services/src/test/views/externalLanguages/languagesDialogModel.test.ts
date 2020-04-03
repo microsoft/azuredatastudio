@@ -6,7 +6,7 @@
 import * as should from 'should';
 import 'mocha';
 import { createContext } from './utils';
-import * as mssql from '../../../../../mssql/src/mssql';
+import * as mssql from '../../../../../mssql';
 import { LanguageService } from '../../../externalLanguage/languageService';
 
 describe('External Languages Dialog Model', () => {
