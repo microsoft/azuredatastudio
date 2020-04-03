@@ -685,10 +685,7 @@ class NotebookSection implements INotebookSection {
 	}
 
 	get relativeUri(): string {
-		if (this.headerEl['id']) {
-			return this.headerEl['id'];
-		}
-		return this.headerEl['name'];
+		return this.headerEl['id'] || this.headerEl['name'];
 	}
 
 	get header(): string {
