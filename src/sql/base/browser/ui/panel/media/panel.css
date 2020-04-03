@@ -70,20 +70,16 @@ panel {
 }
 
 .tabbedPanel .tabList .tab-header {
-	padding-left: 5px;
-	padding-right: 10px;
-	line-height: 35px;
-}
-
-.tabbedPanel .tabList .tab-header {
 	display: flex;
 	padding-left: 5px;
 	padding-right: 5px;
+	min-width: 65px;
 }
 
 .tabbedPanel.vertical > .title .tabList .tab-header {
 	display: block;
 	min-width: 150px;
+	line-height: 35px;
 }
 
 .tabbedPanel .tabList .tab .tabIcon.codicon {
