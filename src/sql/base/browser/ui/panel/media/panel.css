@@ -18,7 +18,7 @@ panel {
 	width: 100%;
 }
 
-.tabbedPanel.horizontal>.title {
+.tabbedPanel .composite.title {
 	display: flex;
 	flex: 0 0 auto;
 	position: relative;
@@ -52,15 +52,33 @@ panel {
 	margin: auto;
 }
 
+.tabbedPanel.horizontal .tabList .tab .tabLabel {
+	font-size: 12px;
+	font-weight: normal;
+}
+
+.tabbedPanel.vertical .tabList .tab .tabLabel {
+	font-size: 12px;
+	padding-bottom: 0px;
+	font-weight: normal;
+}
+
+.tabbedPanel .tabList .tab .tabLabel {
+	font-size: 13px;
+	padding-bottom: 4px;
+	font-weight: 600;
+}
+
 .tabbedPanel .tabList .tab-header {
 	padding-left: 5px;
 	padding-right: 10px;
 	line-height: 35px;
 }
 
-.tabbedPanel.horizontal > .title .tabList .tab-header {
+.tabbedPanel .tabList .tab-header {
 	display: flex;
-	min-width: 80px;
+	padding-left: 5px;
+	padding-right: 5px;
 }
 
 .tabbedPanel.vertical > .title .tabList .tab-header {
