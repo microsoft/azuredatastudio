@@ -32,6 +32,9 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { assign } from 'vs/base/common/objects';
 import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { SessionManager } from 'sql/workbench/services/notebook/browser/sessionManager';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { uriPrefixes } from 'sql/platform/connection/common/utils';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -205,6 +208,45 @@ suite('notebook model', function (): void {
 		assert.deepEqual(model.cells[1].source, expectedNotebookContent.cells[1].source);
 	});
 
+	test('Should delete cells correctly', async function (): Promise<void> {
+		// Given a notebook with 2 cells
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initalize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		await model.loadContents();
+
+		// Count number of times onError event is fired
+		let errorCount = 0;
+		let notebookContentChange: NotebookContentChange;
+		model.onError(() => errorCount++);
+		model.contentChanged(c => notebookContentChange = c);
+
+		// Then I expect all cells to be in the model
+		assert.equal(model.cells.length, 2);
+
+		// Delete the first cell
+		model.deleteCell(model.cells[0]);
+		assert.equal(model.cells.length, 1);
+		assert.deepEqual(model.cells[0].source, expectedNotebookContent.cells[1].source);
+		assert.equal(notebookContentChange.changeType, NotebookChangeType.CellsModified);
+
+		// Delete the remaining cell
+		notebookContentChange = undefined;
+		model.deleteCell(model.cells[0]);
+		assert.equal(model.cells.length, 0);
+		assert.equal(errorCount, 0);
+		assert.equal(notebookContentChange.changeType, NotebookChangeType.CellsModified);
+
+		// Try deleting the cell again
+		notebookContentChange = undefined;
+		model.deleteCell(model.cells[0]);
+		assert.equal(errorCount, 1);
+		assert(isUndefinedOrNull(notebookContentChange));
+	});
+
 	test('Should load contents but then go to error state if client session startup fails', async function (): Promise<void> {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContentOneCell));
@@ -234,38 +276,10 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should not be in error state if client session initialization succeeds', async function (): Promise<void> {
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
-		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
-		defaultModelOptions.contentManager = mockContentManager.object;
-		let kernelChangedEmitter: Emitter<nb.IKernelChangedArgs> = new Emitter<nb.IKernelChangedArgs>();
-		let statusChangedEmitter: Emitter<nb.ISession> = new Emitter<nb.ISession>();
+		let model = await loadModelAndStartClientSession();
 
-		mockClientSession.setup(c => c.isInErrorState).returns(() => false);
-		mockClientSession.setup(c => c.isReady).returns(() => true);
-		mockClientSession.setup(c => c.kernelChanged).returns(() => kernelChangedEmitter.event);
-		mockClientSession.setup(c => c.statusChanged).returns(() => statusChangedEmitter.event);
-
-		queryConnectionService.setup(c => c.getActiveConnections(TypeMoq.It.isAny())).returns(() => null);
-
-		sessionReady.resolve();
-		let actualSession: IClientSession = undefined;
-
-		let options: INotebookModelOptions = assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
-			factory: mockModelFactory.object
-		});
-		let model = new NotebookModel(options, undefined, logService, undefined, undefined);
-		model.onClientSessionReady((session) => actualSession = session);
-		await model.requestModelLoad();
-
-		await model.startSession(notebookManagers[0]);
-
-		// Then I expect load to succeed
-		assert(!isUndefinedOrNull(model.clientSession));
-		// but on server load completion I expect error state to be set
-		// Note: do not expect serverLoad event to throw even if failed
-		await model.sessionLoadFinished;
 		assert.equal(model.inErrorState, false);
-		assert.deepEqual(actualSession, mockClientSession.object);
+		assert.equal(model.notebookManagers.length, 1);
 		assert.deepEqual(model.clientSession, mockClientSession.object);
 	});
 
@@ -301,4 +315,108 @@ suite('notebook model', function (): void {
 		assert(!isUndefinedOrNull(actualChanged));
 		assert.equal(actualChanged.changeType, NotebookChangeType.TrustChanged);
 	});
+
+	test('Should close active session when closed', async function () {
+		let model = await loadModelAndStartClientSession();
+		// After client session is started, ensure session is ready
+		assert(model.isSessionReady);
+
+		// After closing the notebook
+		await model.handleClosed();
+		// Ensure client session is cleaned up
+		assert(isUndefinedOrNull(model.clientSession));
+		// Ensure session is no longer ready
+		assert.equal(model.isSessionReady, false);
+	});
+
+	test('Should disconnect when connection profile created by notebook', async function () {
+		let model = await loadModelAndStartClientSession();
+		// Ensure notebook prefix is present in the connection URI
+		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
+		await changeContextWithConnectionProfile(model);
+
+		// After client session is started, ensure context isn't null/undefined
+		assert(!isUndefinedOrNull(model.context));
+
+		// After closing the notebook
+		await model.handleClosed();
+
+		// Ensure disconnect is called once
+		queryConnectionService.verify((c) => c.disconnect(TypeMoq.It.isAny()), TypeMoq.Times.once());
+	});
+
+	test('Should not disconnect when connection profile not created by notebook', async function () {
+		let model = await loadModelAndStartClientSession();
+		// Ensure notebook prefix isn't present in connection URI
+		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.default}some/path`);
+		await changeContextWithConnectionProfile(model);
+
+		// After client session is started, ensure context isn't null/undefined
+		assert(!isUndefinedOrNull(model.context));
+
+		// After closing the notebook
+		await model.handleClosed();
+
+		// Ensure disconnect is never called
+		queryConnectionService.verify((c) => c.disconnect(TypeMoq.It.isAny()), TypeMoq.Times.never());
+
+	});
+
+	async function loadModelAndStartClientSession(): Promise<NotebookModel> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentManager = mockContentManager.object;
+		let kernelChangedEmitter: Emitter<nb.IKernelChangedArgs> = new Emitter<nb.IKernelChangedArgs>();
+		let statusChangedEmitter: Emitter<nb.ISession> = new Emitter<nb.ISession>();
+
+		mockClientSession.setup(c => c.isInErrorState).returns(() => false);
+		mockClientSession.setup(c => c.isReady).returns(() => true);
+		mockClientSession.setup(c => c.kernelChanged).returns(() => kernelChangedEmitter.event);
+		mockClientSession.setup(c => c.statusChanged).returns(() => statusChangedEmitter.event);
+
+		queryConnectionService.setup(c => c.getActiveConnections(TypeMoq.It.isAny())).returns(() => null);
+
+		sessionReady.resolve();
+		let actualSession: IClientSession = undefined;
+
+		let options: INotebookModelOptions = assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
+			factory: mockModelFactory.object
+		});
+		let model = new NotebookModel(options, undefined, logService, undefined, undefined);
+		model.onClientSessionReady((session) => actualSession = session);
+		await model.requestModelLoad();
+
+		await model.startSession(notebookManagers[0]);
+
+		// Then I expect load to succeed
+		assert(!isUndefinedOrNull(model.clientSession));
+
+		assert.deepEqual(actualSession, mockClientSession.object);
+
+		// but on server load completion I expect error state to be set
+		// Note: do not expect serverLoad event to throw even if failed
+		await model.sessionLoadFinished;
+		return model;
+	}
+
+	async function changeContextWithConnectionProfile(model: NotebookModel) {
+		let connection = new ConnectionProfile(capabilitiesService.object, {
+			connectionName: 'newName',
+			savePassword: false,
+			groupFullName: 'testGroup',
+			serverName: 'testServerName',
+			databaseName: 'testDatabaseName',
+			authenticationType: 'integrated',
+			password: 'test',
+			userName: 'testUsername',
+			groupId: undefined,
+			providerName: mssqlProviderName,
+			options: {},
+			saveProfile: true,
+			id: 'testID'
+		});
+
+		await model.changeContext(connection.connectionName, connection);
+	}
 });
+
