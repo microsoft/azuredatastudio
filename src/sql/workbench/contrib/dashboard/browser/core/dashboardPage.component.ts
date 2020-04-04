@@ -240,7 +240,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		const contributedTasks = this.getContributedTasks(tabId);
 		content.push(...contributedTasks);
 
-		const refreshAction = new RefreshWidgetAction(this.refresh, this);
+		const refreshAction = new RefreshWidgetAction(() => {
+			this.refresh();
+		}, this);
 		content.push({ action: refreshAction });
 		return content;
 	}
