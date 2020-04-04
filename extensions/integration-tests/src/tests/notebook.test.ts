@@ -21,6 +21,7 @@ suite('Notebook integration test suite', function () {
 		assert(server && server.serverName, 'No server could be found');
 		await connectToServer(server, 6000);
 	});
+
 	teardown(async function () {
 		await (new NotebookTester()).cleanup(this.currentTest.title);
 	});

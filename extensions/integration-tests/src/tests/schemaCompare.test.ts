@@ -19,10 +19,10 @@ import { promisify } from 'util';
 let schemaCompareService: mssql.ISchemaCompareService;
 let dacfxService: mssql.IDacFxService;
 let schemaCompareTester: SchemaCompareTester;
-const dacpac1: string = path.join(__dirname, '..', 'testData', 'Database1.dacpac');
-const dacpac2: string = path.join(__dirname, '..', 'testData', 'Database2.dacpac');
-const includeExcludeSourceDacpac: string = path.join(__dirname, '..', 'testData', 'SchemaCompareIncludeExcludeSource.dacpac');
-const includeExcludeTargetDacpac: string = path.join(__dirname, '..', 'testData', 'SchemaCompareIncludeExcludeTarget.dacpac');
+const dacpac1: string = path.join(__dirname, '..', '..', 'testData', 'Database1.dacpac');
+const dacpac2: string = path.join(__dirname, '..', '..', 'testData', 'Database2.dacpac');
+const includeExcludeSourceDacpac: string = path.join(__dirname, '..', '..', 'testData', 'SchemaCompareIncludeExcludeSource.dacpac');
+const includeExcludeTargetDacpac: string = path.join(__dirname, '..', '..', 'testData', 'SchemaCompareIncludeExcludeTarget.dacpac');
 const SERVER_CONNECTION_TIMEOUT: number = 3000;
 const retryCount = 24; // 2 minutes
 const folderPath = path.join(os.tmpdir(), 'SchemaCompareTest');
