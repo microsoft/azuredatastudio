@@ -47,8 +47,6 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	private _treeDataSource = new ExplorerDataSource();
 	private _treeFilter = new ExplorerFilter();
 
-	private _inited = false;
-	public loading: boolean = false;
 	public loadingMessage: string;
 	public loadingCompletedMessage: string;
 
@@ -64,9 +62,9 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(IContextViewService) private readonly contextViewService: IContextViewService,
 		@Inject(IInstantiationService) private readonly instantiationService: IInstantiationService,
 		@Inject(ICapabilitiesService) private readonly capabilitiesService: ICapabilitiesService,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private readonly _cd: ChangeDetectorRef
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
 	) {
-		super();
+		super(changeRef);
 		this.loadingMessage = this._config.context === 'database' ? nls.localize('loadingObjects', "loading objects") : nls.localize('loadingDatabases', "loading databases");
 		this.loadingCompletedMessage = this._config.context === 'database' ? nls.localize('loadingObjectsCompleted', "loading objects completed.") : nls.localize('loadingDatabasesCompleted', "loading databases completed.");
 		this.init();
@@ -164,14 +162,6 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	public layout(): void {
 		if (this._inited) {
 			this._tree.layout(getContentHeight(this._tableContainer.nativeElement));
-		}
-	}
-
-	private setLoadingStatus(loading: boolean): void {
-		this.loading = loading;
-
-		if (this._inited) {
-			this._cd.detectChanges();
 		}
 	}
 

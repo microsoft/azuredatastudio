@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { InjectionToken, OnDestroy } from '@angular/core';
+import { InjectionToken, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { NgGridItemConfig } from 'angular2-grid';
 import { Action } from 'vs/base/common/actions';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -63,6 +63,12 @@ export interface TabSettingConfig {
 
 export abstract class DashboardWidget extends Disposable implements OnDestroy {
 	protected _config: WidgetConfig;
+	protected _loading: boolean;
+	protected _inited: boolean = false;
+
+	constructor(protected _changeRef: ChangeDetectorRef) {
+		super();
+	}
 
 	get actions(): Array<Action> {
 		return [];
@@ -70,5 +76,12 @@ export abstract class DashboardWidget extends Disposable implements OnDestroy {
 
 	ngOnDestroy() {
 		this.dispose();
+	}
+
+	protected setLoadingStatus(loading: boolean): void {
+		this._loading = loading;
+		if (this._inited) {
+			this._changeRef.detectChanges();
+		}
 	}
 }

@@ -68,7 +68,6 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	private _databaseInfo: DatabaseInfo;
 	public _clipped: boolean;
 	private properties: Array<DisplayProperty>;
-	private _hasInit = false;
 
 	@ViewChild('child', { read: ElementRef }) private _child: ElementRef;
 	@ViewChild('parent', { read: ElementRef }) private _parent: ElementRef;
@@ -76,18 +75,18 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
 		@Inject(ILogService) private logService: ILogService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
-		super();
+		super(changeRef);
 		this.init();
 	}
 
 	ngOnInit() {
-		this._hasInit = true;
+		this._inited = true;
 		this._register(addDisposableListener(window, EventType.RESIZE, () => this.handleClipping()));
 		this._changeRef.detectChanges();
 
@@ -110,7 +109,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			this._databaseInfo = data;
 			this._changeRef.detectChanges();
 			this.parseProperties();
-			if (this._hasInit) {
+			if (this._inited) {
 				this.handleClipping();
 			}
 		}, error => {
@@ -238,7 +237,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			this.properties.push(<DisplayProperty>assignProperty);
 		}
 
-		if (this._hasInit) {
+		if (this._inited) {
 			this._changeRef.detectChanges();
 		}
 	}
