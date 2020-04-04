@@ -58,9 +58,15 @@ panel {
 }
 
 .tabbedPanel.vertical .tabList .tab .tabLabel {
-	font-size: 12px;
+	font-size: 13px;
 	padding-bottom: 0px;
 	font-weight: normal;
+	color: #000000;
+}
+
+.vs-dark .tabbedPanel.vertical .tabList .tab .tabLabel,
+.vs-hc .tabbedPanel.vertical .tabList .tab .tabLabel {
+	color: #FFFFFF;
 }
 
 .tabbedPanel .tabList .tab .tabLabel {
@@ -80,6 +86,7 @@ panel {
 	display: block;
 	min-width: 150px;
 	line-height: 35px;
+	padding-left: 22px;
 }
 
 .tabbedPanel .tabList .tab .tabIcon.codicon {
@@ -152,13 +159,14 @@ panel {
 }
 
 .tabbedPanel .tab-group-header {
-	font-weight: bold;
-	margin: 15px 5px 3px 5px;
-	line-height: 35px;
+	font-weight: 600;
+	font-size: 14px;
+	margin: 15px 24px 3px 24px;
+	line-height: 20px;
 	height: 35px;
 	border-style: solid;
 	border-width: 0 0 1px 0;
-	border-color: rgb(214, 214, 214);
+	border-color: #dddddd;
 }
 
 .tabbedPanel .vertical-tab-action-container {
