@@ -255,18 +255,13 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			el.style.border = 'none';
 		}
 
-		headerEl.style.color = '#323130';
-		headerEl.style.lineHeight = '20px';
+		headerEl.className = 'header';
 
 		if (this._config.fontSize) {
 			headerEl.style.fontSize = this._config.fontSize;
-		} else {
-			headerEl.style.fontSize = '14px';
 		}
 		if (this._config.fontWeight) {
 			headerEl.style.fontWeight = this._config.fontWeight;
-		} else {
-			headerEl.style.fontWeight = '600';
 		}
 		if (this._config.padding) {
 			headerEl.style.padding = this._config.padding;
