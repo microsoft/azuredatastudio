@@ -14,7 +14,7 @@ import { URI } from 'vs/base/common/uri';
 import { NotebookManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
-import { IClientSession, INotebookModelOptions, NotebookContentChange, IClientSessionOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { IClientSession, INotebookModelOptions, NotebookContentChange, IClientSessionOptions, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ClientSession } from 'sql/workbench/services/notebook/browser/models/clientSession';
 import { CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { Deferred } from 'sql/base/common/promise';
@@ -208,6 +208,110 @@ suite('notebook model', function (): void {
 		assert.deepEqual(model.cells[1].source, expectedNotebookContent.cells[1].source);
 	});
 
+	test('Should handle multiple notebook managers', async function (): Promise<void> {
+		// Given a notebook with 2 cells
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		let defaultNotebookManager = new NotebookManagerStub();
+		defaultNotebookManager.providerId = 'SQL';
+
+		let jupyterNotebookManager = new NotebookManagerStub();
+		jupyterNotebookManager.providerId = 'jupyter';
+
+		// Setup 2 notebook managers
+		defaultModelOptions.notebookManagers = [defaultNotebookManager, jupyterNotebookManager];
+
+		// Change default notebook provider id to jupyter
+		defaultModelOptions.providerId = 'jupyter';
+
+		// When I initalize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		await model.loadContents();
+
+		// I expect the default provider to be jupyter
+		assert.equal(model.notebookManager.providerId, 'jupyter');
+
+		// Similarly, change default notebook provider id to SQL
+		defaultModelOptions.providerId = 'SQL';
+
+		// When I initalize the model
+		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		await model.loadContents();
+
+		// I expect the default provider to be SQL
+		assert.equal(model.notebookManager.providerId, 'SQL');
+
+		// Check that the getters return  the correct values
+		assert.equal(model.notebookManagers.length, 2);
+		assert(!isUndefinedOrNull(model.getNotebookManager('SQL')));
+		assert(!isUndefinedOrNull(model.getNotebookManager('jupyter')));
+		assert(isUndefinedOrNull(model.getNotebookManager('foo')));
+
+		// Check other properties to ensure that they're returning as expected
+		// No server manager was passed into the notebook manager stub, so expect hasServerManager to return false
+		assert.equal(model.hasServerManager, false);
+		assert.equal(model.notebookUri, defaultModelOptions.notebookUri);
+	});
+
+	test('Should set active cell correctly', async function (): Promise<void> {
+		// Given a notebook with 2 cells
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initalize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		await model.loadContents();
+
+		let activeCellChangeCount = 0;
+		let activeCellFromEvent: ICellModel = undefined;
+
+		model.onActiveCellChanged(c => {
+			activeCellChangeCount++;
+			activeCellFromEvent = c;
+		});
+
+		let notebookContentChange: NotebookContentChange;
+		model.contentChanged(c => notebookContentChange = c);
+
+		// Then I expect all cells to be in the model
+		assert.equal(model.cells.length, 2);
+
+		// Set the first cell as active
+		model.updateActiveCell(model.cells[0]);
+		assert.deepEqual(model.activeCell, model.cells[0]);
+		assert.deepEqual(model.activeCell, activeCellFromEvent);
+		assert.equal(activeCellChangeCount, 1);
+		assert(isUndefinedOrNull(notebookContentChange));
+
+
+		// Set the second cell as active
+		model.updateActiveCell(model.cells[1]);
+		assert.deepEqual(model.activeCell, model.cells[1]);
+		assert.deepEqual(model.activeCell, activeCellFromEvent);
+		assert.equal(activeCellChangeCount, 2);
+
+		// Delete the active cell
+		model.deleteCell(model.cells[1]);
+		assert(isUndefinedOrNull(model.activeCell));
+		assert.deepEqual(model.activeCell, activeCellFromEvent);
+		assert.equal(activeCellChangeCount, 3);
+
+		// Set the remaining cell as active
+		model.updateActiveCell(model.cells[0]);
+		assert.deepEqual(model.activeCell, activeCellFromEvent);
+		assert.equal(activeCellChangeCount, 4);
+
+		// Add new cell
+		let newCell = model.addCell(CellTypes.Code, 0);
+
+		// Ensure new cell is active cell
+		assert.deepEqual(model.activeCell, newCell);
+		assert.equal(activeCellChangeCount, 5);
+	});
+
 	test('Should delete cells correctly', async function (): Promise<void> {
 		// Given a notebook with 2 cells
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
@@ -227,24 +331,38 @@ suite('notebook model', function (): void {
 		// Then I expect all cells to be in the model
 		assert.equal(model.cells.length, 2);
 
+		assert.equal(model.findCellIndex(model.cells[0]), 0);
+		assert.equal(model.findCellIndex(model.cells[1]), 1);
 		// Delete the first cell
 		model.deleteCell(model.cells[0]);
 		assert.equal(model.cells.length, 1);
 		assert.deepEqual(model.cells[0].source, expectedNotebookContent.cells[1].source);
+		assert.equal(model.findCellIndex(model.cells[0]), 0);
 		assert.equal(notebookContentChange.changeType, NotebookChangeType.CellsModified);
+		assert.equal(notebookContentChange.isDirty, true);
+		assert.equal(model.activeCell, undefined);
 
 		// Delete the remaining cell
 		notebookContentChange = undefined;
 		model.deleteCell(model.cells[0]);
 		assert.equal(model.cells.length, 0);
+		assert.equal(model.findCellIndex(model.cells[0]), -1);
 		assert.equal(errorCount, 0);
 		assert.equal(notebookContentChange.changeType, NotebookChangeType.CellsModified);
+		assert.equal(model.activeCell, undefined);
 
 		// Try deleting the cell again
 		notebookContentChange = undefined;
 		model.deleteCell(model.cells[0]);
 		assert.equal(errorCount, 1);
 		assert(isUndefinedOrNull(notebookContentChange));
+
+		// Try deleting as notebook model is in error state
+		notebookContentChange = undefined;
+		model.deleteCell(model.cells[0]);
+		assert.equal(errorCount, 2);
+		assert(isUndefinedOrNull(notebookContentChange));
+
 	});
 
 	test('Should load contents but then go to error state if client session startup fails', async function (): Promise<void> {
