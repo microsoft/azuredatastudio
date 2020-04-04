@@ -6,7 +6,7 @@
 import 'vs/css!./dashboardPanel';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 import {
-	TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_ACTIVE_BORDER, TAB_INACTIVE_BACKGROUND,
+	TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_BORDER, TAB_INACTIVE_BACKGROUND,
 	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, DASHBOARD_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER
 } from 'vs/workbench/common/theme';
 import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
@@ -14,14 +14,12 @@ import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 	// Title Active
 	const tabActiveBackground = theme.getColor(TAB_ACTIVE_BACKGROUND);
-	const tabActiveForeground = theme.getColor(TAB_ACTIVE_FOREGROUND);
 	let tabActiveBackgroundVertical = theme.getColor(DASHBOARD_TAB_ACTIVE_BACKGROUND);
 
-	if (tabActiveBackground || tabActiveForeground) {
+	if (tabActiveBackground) {
 		collector.addRule(`
 			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab:hover .tabLabel,
 			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab .tabLabel.active {
-				color: ${tabActiveForeground};
 				border-bottom: 0px solid;
 			}
 
