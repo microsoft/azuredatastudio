@@ -46,6 +46,9 @@ import { IProductService } from 'vs/platform/product/common/productService';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { joinPath } from 'vs/base/common/resources';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+// import { initGuidedTour } from 'sql/workbench/contrib/welcome/overviewFeatureStep/overviewFeatureStep';
+import { WelcomeTour } from 'sql/workbench/contrib/welcome/welcomeTour/welcomeTour';
 
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
@@ -61,6 +64,9 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
 		@ILifecycleService private readonly lifecycleService: ILifecycleService,
 		@ICommandService private readonly commandService: ICommandService,
+		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
+
+
 	) {
 		this.enableWelcomePage().catch(onUnexpectedError);
 	}
@@ -107,6 +113,7 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 	}
 }
 
+
 function isWelcomePageEnabled(configurationService: IConfigurationService, contextService: IWorkspaceContextService) {
 	const startupEditor = configurationService.inspect(configurationKey);
 	if (!startupEditor.userValue && !startupEditor.workspaceValue) {
@@ -115,7 +122,15 @@ function isWelcomePageEnabled(configurationService: IConfigurationService, conte
 			return welcomeEnabled.value;
 		}
 	}
-	return startupEditor.value === 'welcomePage' || startupEditor.value === 'readme' || startupEditor.value === 'welcomePageInEmptyWorkbench' && contextService.getWorkbenchState() === WorkbenchState.EMPTY;
+	return startupEditor.value === 'welcomePage' || startupEditor.value === 'welcomePageWithTour' || startupEditor.value === 'readme' || startupEditor.value === 'welcomePageInEmptyWorkbench' && contextService.getWorkbenchState() === WorkbenchState.EMPTY;
+}
+
+function isGuidedTourEnabled(configurationService: IConfigurationService) {
+	const tourEnabled = configurationService.inspect(configurationKey);
+	if (tourEnabled.value === 'welcomePageWithTour') {
+		return tourEnabled.value;
+	}
+	return false;
 }
 
 export class WelcomePageAction extends Action {
@@ -211,6 +226,7 @@ class WelcomePage extends Disposable {
 		@IHostService private readonly hostService: IHostService,
 		@IFileService fileService: IFileService,
 		@IProductService private readonly productService: IProductService,
+		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService
 	) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
@@ -226,18 +242,64 @@ class WelcomePage extends Disposable {
 			name: localize('welcome.title', "Welcome"),
 			resource,
 			telemetryFrom,
-			onReady: (container: HTMLElement) => this.onReady(container, recentlyOpened, installedExtensions, fileService)
+			onReady: (container: HTMLElement) => this.onReady(container, recentlyOpened, installedExtensions, fileService, configurationService)
 		});
 	}
 	public openEditor() {
 		return this.editorService.openEditor(this.editorInput, { pinned: false });
 	}
-	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>, fileService: IFileService): void {
+	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>, fileService: IFileService, configurationService: IConfigurationService): void {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
 		const showOnStartup = <HTMLInputElement>container.querySelector('#showOnStartup');
+		const guidedTourEnabled = isGuidedTourEnabled(this.configurationService);
+
 		if (enabled) {
 			showOnStartup.setAttribute('checked', 'checked');
 		}
+
+		if (guidedTourEnabled) {
+			const adsHomepage = document.querySelector('.ads_homepage');
+			const guidedTourNotificationContainer = document.createElement('div');
+			const p = document.createElement('p');
+			const icon = document.createElement('div');
+			const startTourBtn = document.createElement('a');
+			const removeTourBtn = document.createElement('a');
+			const startBtnClasses = ['btn', 'btn_start'];
+			const removeBtnClasses = ['btn', 'btn_remove_tour', 'btn_secondary'];
+			guidedTourNotificationContainer.id = 'guidedTourBanner';
+			guidedTourNotificationContainer.classList.add('guided_tour_banner');
+			startTourBtn.id = 'start_tour_btn';
+			startTourBtn.classList.add(...startBtnClasses);
+			icon.classList.add('diamond_icon');
+			removeTourBtn.classList.add(...removeBtnClasses);
+			startTourBtn.innerText = 'Start tour';
+			removeTourBtn.innerText = `Don't ask again`;
+			p.innerText = 'Welcome! Would you like to take a quick tour of Azure Data Studio?';
+			guidedTourNotificationContainer.appendChild(icon);
+			guidedTourNotificationContainer.appendChild(p);
+			guidedTourNotificationContainer.appendChild(startTourBtn);
+			guidedTourNotificationContainer.appendChild(removeTourBtn);
+
+			startTourBtn.addEventListener('click', async (e: MouseEvent) => {
+
+				configurationService.updateValue(configurationKey, 'welcomePageWithTour', ConfigurationTarget.USER);
+				this.layoutService.setSideBarHidden(true);
+				const welcomeTour = this.instantiationService.createInstance(WelcomeTour);
+				welcomeTour.show();
+				// initGuidedTour(e);
+			});
+			removeTourBtn.addEventListener('click', (e: MouseEvent) => {
+				configurationService.updateValue(configurationKey, 'welcomePage', ConfigurationTarget.USER);
+				guidedTourNotificationContainer.classList.add('hide');
+				guidedTourNotificationContainer.classList.remove('show');
+			});
+
+			adsHomepage.prepend(guidedTourNotificationContainer);
+			setTimeout(function () {
+				guidedTourNotificationContainer.classList.add('show');
+			}, 3000);
+		}
+
 		showOnStartup.addEventListener('click', e => {
 			this.configurationService.updateValue(configurationKey, showOnStartup.checked ? 'welcomePage' : 'newUntitledFile', ConfigurationTarget.USER);
 		});
@@ -608,7 +670,7 @@ class WelcomePage extends Disposable {
 				a.classList.add('installExtension');
 				a.setAttribute('data-extension', extension.id);
 				a.href = 'javascript:void(0)';
-				a.addEventListener('click', e => {
+				a.addEventListener('click', (e: MouseEvent) => {
 					this.installExtension(extension);
 					e.preventDefault();
 					e.stopPropagation();
@@ -874,19 +936,19 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const buttonPrimaryBackgroundColor = theme.getColor(buttonBackground);
 	if (buttonPrimaryBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary { background-color: ${buttonPrimaryBackgroundColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary { border-color: ${buttonPrimaryBackgroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .btn_primary { background-color: ${buttonPrimaryBackgroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .btn_primary { border-color: ${buttonPrimaryBackgroundColor};}`);
 	}
 	const buttonForegroundColor = theme.getColor(buttonForeground);
 	if (buttonForegroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary { color: ${buttonForegroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content  .btn_primary { color: ${buttonForegroundColor};}`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .icon_arrow_down:before { color: ${buttonForegroundColor};}`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack_body { color: ${buttonForegroundColor};}`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack_header { color: ${buttonForegroundColor};}`);
 	}
 	const buttonHoverBackgroundColor = theme.getColor(buttonHoverBackground);
 	if (buttonHoverBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary:hover { background: ${buttonHoverBackgroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .btn_primary:hover { background: ${buttonHoverBackgroundColor};}`);
 	}
 	const buttonSecondaryBackgroundColor = theme.getColor(buttonSecondaryBackground);
 	if (buttonSecondaryBackgroundColor) {
