@@ -1231,3 +1231,90 @@
 .monaco-workbench .part.editor>.content .welcomePage .enabledExtension.installed {
 	display: inline;
 }
+
+.welcomePage {
+	position: relative;
+}
+
+.ads_homepage .guided_tour_banner .diamond_icon {
+	display: inline-block;
+	width: 24px;
+	height: 24px;
+	margin-left: 6px;
+	-webkit-mask: url('../../media/diamondIcon.svg') no-repeat;
+	-webkit-mask-size: 24px 24px;
+	mask: url('../../media/diamondIcon.svg') no-repeat;
+	mask-size: 24px 24px;
+	margin: 0 17px 0 20px;
+	background: #fff;
+}
+
+.ads_homepage .guided_tour_banner {
+	opacity: 0;
+	position: relative;
+	top: 0;
+	transform: translateY(-100%);
+	transition: transform 0.3s cubic-bezier(0.4, 0, 0.6, 1), opacity 0s 0.3s;
+	width: 100%;
+	-ms-flex-align: center;
+	align-items: center;
+	background: #007acc;
+	box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+	color: #212121;
+	display: -ms-flexbox;
+	display: flex;
+	overflow: hidden;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	height: 0;
+	overflow: hidden;
+	color: white;
+}
+
+.ads_homepage #guidedTourBanner.show {
+	opacity: 1;
+	height: 60px;
+	transform: translateY(0);
+	transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.3s, opacity 0s 0.3s, height 0s 0.3s;
+}
+
+.ads_homepage .guided_tour_banner p {
+	color: white;
+	font-size: 1.16em;
+	font-family: Segoe UI, Frutiger, Frutiger Linotype, Dejavu Sans, Helvetica Neue, Arial, sans-serif;
+	font-weight: normal;
+}
+
+.ads_homepage .guided_tour_banner .btn_start {
+	background: #ffec18 !important;
+	color: black !important;
+	line-height: 1.8em !important;
+	font-weight: 600 !important;
+	height: 26px !important;
+	font-weight: 600 !important;
+	border-color: #ffec18 !important;
+	margin: 0 20px !important;
+}
+
+.ads_homepage .guided_tour_banner .tour_btn_container {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+.ads_homepage .guided_tour_banner .tour_btn_container p {
+	font-size: 1.3em;
+	margin: 0;
+	margin-right: 15px;
+}
+
+.ads_homepage .guided_tour_banner .btn_remove_tour {
+	line-height: 1.8em !important;
+	border: 0 none !important;
+	width: auto !important;
+	padding: 0 10px !important;
+	height: 26px !important;
+	font-weight: 600 !important;
+	border-color: #fff !important;
+}
