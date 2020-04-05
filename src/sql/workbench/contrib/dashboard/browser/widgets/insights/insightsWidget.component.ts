@@ -217,12 +217,8 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 	public refresh(): void {
 		this._runQuery().then(
-			result => {
-				this._updateChild(result);
-			},
-			error => {
-				this.showError(error);
-			}
+			result => this._updateChild(result),
+			error => this.showError(error)
 		);
 	}
 
