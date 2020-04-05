@@ -50,7 +50,7 @@ interface IStorageResult {
 				<div *ngIf="autoRefreshStatus" style="font-style: italic; font-size: 80%; margin-left: 5px">{{autoRefreshStatus}}</div>
 				<div style="margin: 10px; width: calc(100% - 20px); height: calc(100% - 20px)">
 					<ng-template *ngIf="!_loading" component-host></ng-template>
-					<loading-spinner [loading]="_loading"></loading-spinner>
+					<loading-spinner [loading]="_loading" [loadingMessage]="_loadingMessage" [loadingCompletedMessage]="_loadingCompletedMessage"></loading-spinner>
 				</div>`,
 	styles: [':host { width: 100%; height: 100% }']
 })
@@ -79,7 +79,8 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 	) {
 		super(changeRef);
 		this.insightConfig = <IInsightsConfig>this._config.widget['insights-widget'];
-
+		this._loadingMessage = nls.localize('insightsWidgetLoadingMessage', "Loading {0}", this._config.name);
+		this._loadingCompletedMessage = nls.localize('insightsWidgetLoadingCompletedMessage', "Loading {0} completed", this._config.name);
 		this._verifyConfig();
 
 		this._parseConfig().then(() => {
@@ -89,7 +90,6 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 				const cancelablePromise = createCancelablePromise(() => {
 					return promise.then(
 						result => {
-							this.setLoadingStatus(false);
 							if (this._inited) {
 								this._updateChild(result);
 								this.setupInterval();
@@ -98,7 +98,6 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 							}
 						},
 						error => {
-							this.setLoadingStatus(false);
 							if (isPromiseCanceledError(error)) {
 								return;
 							}
@@ -200,7 +199,6 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 				const storedResult: IStorageResult = JSON.parse(storage);
 				const date = new Date(storedResult.date);
 				this.lastUpdated = nls.localize('insights.lastUpdated', "Last Updated: {0} {1}", date.toLocaleTimeString(), date.toLocaleDateString());
-				this.setLoadingStatus(false);
 				if (this._inited) {
 					this._updateChild(storedResult.results);
 					this.setupInterval();
@@ -218,14 +216,11 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 	}
 
 	public refresh(): void {
-		this.setLoadingStatus(true);
 		this._runQuery().then(
 			result => {
-				this.setLoadingStatus(false);
 				this._updateChild(result);
 			},
 			error => {
-				this.setLoadingStatus(false);
 				this.showError(error);
 			}
 		);
@@ -236,11 +231,14 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 	}
 
 	private _runQuery(): Promise<SimpleExecuteResult> {
+		this.setLoadingStatus(true);
 		return Promise.resolve(this.dashboardService.queryManagementService.runQueryAndReturn(this.insightConfig.query as string).then(
 			result => {
+				this.setLoadingStatus(false);
 				return this._storeResult(result);
 			},
 			error => {
+				this.setLoadingStatus(false);
 				throw error;
 			}
 		));

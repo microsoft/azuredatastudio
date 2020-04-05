@@ -82,6 +82,8 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
 		super(changeRef);
+		this._loadingMessage = nls.localize('loadingProperties', "Loading properties");
+		this._loadingCompletedMessage = nls.localize('loadingPropertiesCompleted', "Loading properties completed");
 		this.init();
 	}
 
@@ -105,6 +107,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 	private init(): void {
 		this._connection = this._bootstrap.connectionManagementService.connectionInfo;
+		this.setLoadingStatus(true);
 		this._register(subscriptionToDisposable(this._bootstrap.adminService.databaseInfo.subscribe(data => {
 			this._databaseInfo = data;
 			this._changeRef.detectChanges();
@@ -112,7 +115,9 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			if (this._inited) {
 				this.handleClipping();
 			}
+			this.setLoadingStatus(false);
 		}, error => {
+			this.setLoadingStatus(false);
 			(<HTMLElement>this._el.nativeElement).innerText = nls.localize('dashboard.properties.error', "Unable to load dashboard properties");
 		})));
 	}

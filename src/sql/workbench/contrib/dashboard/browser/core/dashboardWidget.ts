@@ -65,6 +65,8 @@ export abstract class DashboardWidget extends Disposable implements OnDestroy {
 	protected _config: WidgetConfig;
 	protected _loading: boolean;
 	protected _inited: boolean = false;
+	protected _loadingMessage: string;
+	protected _loadingCompletedMessage: string;
 
 	constructor(protected _changeRef: ChangeDetectorRef) {
 		super();

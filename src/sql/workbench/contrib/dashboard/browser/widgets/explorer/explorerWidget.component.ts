@@ -47,9 +47,6 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	private _treeDataSource = new ExplorerDataSource();
 	private _treeFilter = new ExplorerFilter();
 
-	public loadingMessage: string;
-	public loadingCompletedMessage: string;
-
 	@ViewChild('input') private _inputContainer: ElementRef;
 	@ViewChild('table') private _tableContainer: ElementRef;
 
@@ -65,8 +62,8 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
 	) {
 		super(changeRef);
-		this.loadingMessage = this._config.context === 'database' ? nls.localize('loadingObjects', "loading objects") : nls.localize('loadingDatabases', "loading databases");
-		this.loadingCompletedMessage = this._config.context === 'database' ? nls.localize('loadingObjectsCompleted', "loading objects completed.") : nls.localize('loadingDatabasesCompleted', "loading databases completed.");
+		this._loadingMessage = this._config.context === 'database' ? nls.localize('loadingObjects', "loading objects") : nls.localize('loadingDatabases', "loading databases");
+		this._loadingCompletedMessage = this._config.context === 'database' ? nls.localize('loadingObjectsCompleted', "loading objects completed.") : nls.localize('loadingDatabasesCompleted', "loading databases completed.");
 		this.init();
 	}
 
