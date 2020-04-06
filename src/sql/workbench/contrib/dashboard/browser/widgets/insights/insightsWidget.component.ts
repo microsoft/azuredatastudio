@@ -47,7 +47,7 @@ interface IStorageResult {
 	selector: 'insights-widget',
 	template: `
 				<div *ngIf="error" style="text-align: center; padding-top: 20px">{{error}}</div>
-				<div *ngIf="lastUpdated" class="insights-widget-last-updated">{{lastUpdated}}</div>
+				<div *ngIf="lastUpdated" class="insights-widget-last-updated subText">{{lastUpdated}}</div>
 				<div *ngIf="autoRefreshStatus" style="font-style: italic; font-size: 80%; margin-left: 5px">{{autoRefreshStatus}}</div>
 				<div style="margin: 10px; width: calc(100% - 20px); height: calc(100% - 20px)">
 					<ng-template component-host></ng-template>

@@ -11,10 +11,4 @@ dashboard-widget-wrapper .header {
 	font-weight: 600;
 	font-size: 14px;
 	line-height: 20px;
-	color: #323130;
-}
-
-.vs-dark dashboard-widget-wrapper .header,
-.vs-hc dashboard-widget-wrapper .header {
-	color: #FFFFFF;
 }

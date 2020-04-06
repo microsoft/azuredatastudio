@@ -61,12 +61,6 @@ panel {
 	font-size: 13px;
 	padding-bottom: 0px;
 	font-weight: normal;
-	color: #000000;
-}
-
-.vs-dark .tabbedPanel.vertical .tabList .tab .tabLabel,
-.vs-hc .tabbedPanel.vertical .tabList .tab .tabLabel {
-	color: #FFFFFF;
 }
 
 .tabbedPanel .tabList .tab .tabLabel {
@@ -166,7 +160,6 @@ panel {
 	height: 35px;
 	border-style: solid;
 	border-width: 0 0 1px 0;
-	border-color: #dddddd;
 }
 
 .tabbedPanel .vertical-tab-action-container {

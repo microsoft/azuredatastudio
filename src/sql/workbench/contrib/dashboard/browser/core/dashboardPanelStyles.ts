@@ -7,14 +7,14 @@ import 'vs/css!./dashboardPanel';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 import {
 	TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_BORDER, TAB_INACTIVE_BACKGROUND,
-	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, DASHBOARD_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER
+	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, VERTICAL_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER, WIDGETSUBTEXT, TABLABEL, TABGROUPHEADER, WIDGETTITLE
 } from 'vs/workbench/common/theme';
 import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 	// Title Active
 	const tabActiveBackground = theme.getColor(TAB_ACTIVE_BACKGROUND);
-	let tabActiveBackgroundVertical = theme.getColor(DASHBOARD_TAB_ACTIVE_BACKGROUND);
+	const tabActiveBackgroundVertical = theme.getColor(VERTICAL_TAB_ACTIVE_BACKGROUND);
 
 	if (tabActiveBackground) {
 		collector.addRule(`
@@ -62,6 +62,22 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 				background-color: ${tabInactiveBackground};
 			}
 		`);
+	}
+
+	// tab label
+	const tabLabelColor = theme.getColor(TABLABEL);
+	if (tabLabelColor) {
+		collector.addRule(`.tabbedPanel.vertical > .title .tabList .tabLabel {
+				color: ${tabLabelColor}
+		}`);
+	}
+
+	// tab group header
+	const tabGroupHeader = theme.getColor(TABGROUPHEADER);
+	if (tabGroupHeader) {
+		collector.addRule(`.tabbedPanel .tab-group-header {
+			border-color: ${tabGroupHeader};
+		}`);
 	}
 
 	// Panel title background
@@ -119,6 +135,22 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 			border-right-width: 1px;
 			border-right-style: solid;
 			border-right-color: ${sideBorder};
+		}`);
+	}
+
+	// widget title
+	const widgetTitle = theme.getColor(WIDGETTITLE);
+	if (widgetTitle) {
+		collector.addRule(`dashboard-widget-wrapper .header {
+			color: ${widgetTitle};
+		}`);
+	}
+
+	// widget subtext
+	const subText = theme.getColor(WIDGETSUBTEXT);
+	if (subText) {
+		collector.addRule(`.subText {
+			color: ${subText};
 		}`);
 	}
 });

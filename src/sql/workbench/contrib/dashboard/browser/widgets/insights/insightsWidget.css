@@ -6,10 +6,4 @@
 .insights-widget-last-updated {
 	font-size: 10px;
 	margin-left: 5px;
-	color: #484644;
-}
-
-.vs-dark .lastUpdated,
-.vs-hc .lastUpdated {
-	color: #8A8886;
 }
