@@ -208,8 +208,8 @@
         "title": "%title.openNotebookFolder%",
         "category": "%books-preview-category%",
         "icon": {
-          "dark": "resources/dark/open_notebook_inverse.svg",
-          "light": "resources/light/open_notebook.svg"
+          "dark": "resources/dark/open_folder_inverse.svg",
+          "light": "resources/light/open_folder.svg"
         }
       },
       {
@@ -388,13 +388,13 @@
           "group": "navigation"
         },
         {
-          "command": "notebook.command.openNotebookFolder",
-          "when": "view == bookTreeView",
-          "group": "navigation"
-        },
-        {
           "command": "notebook.command.createBook",
           "when": "view == bookTreeView"
+        },
+        {
+          "command": "notebook.command.openNotebookFolder",
+          "when": "view == notebookFolderView",
+          "group": "navigation"
         }
       ],
       "notebook/toolbar": [
@@ -514,6 +514,10 @@
         {
           "id": "unsavedBookTreeView",
           "name": "%title.UnsavedBooks%"
+        },
+        {
+          "id": "notebookFolderView",
+          "name": "%title.NotebookFolder%"
         }
       ]
     }
