@@ -226,6 +226,7 @@ declare module 'azdata' {
 	export interface TabbedPanelLayout {
 		orientation: TabOrientation;
 		showIcon: boolean;
+		showTabsWhenOne: boolean;
 	}
 
 	/**
@@ -300,7 +301,7 @@ declare module 'azdata' {
 			open(): Thenable<void>;
 		}
 
-		export function createModelViewDashboard(title: string): ModelViewDashboard;
+		export function createModelViewDashboard(title: string, options?: ModelViewDashboardOptions): ModelViewDashboard;
 	}
 
 	export interface DashboardTab extends Tab {
@@ -320,6 +321,18 @@ declare module 'azdata' {
 		 * children of the tab group
 		 */
 		tabs: DashboardTab[];
+	}
+
+	export interface ModelViewDashboardOptions {
+		/**
+		 * Whether to show the tab icon, default is true
+		 */
+		showIcon?: boolean;
+
+		/**
+		 * Whether to show the tab header when there is only one tab, default is false
+		 */
+		showTabsWhenOne?: boolean;
 	}
 }
 

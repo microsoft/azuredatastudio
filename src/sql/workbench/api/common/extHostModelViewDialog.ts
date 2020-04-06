@@ -459,7 +459,8 @@ class WizardImpl implements azdata.window.Wizard {
 
 class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
 	constructor(
-		private _editor: ModelViewEditorImpl
+		private _editor: ModelViewEditorImpl,
+		private _options?: azdata.ModelViewDashboardOptions
 	) {
 	}
 	registerTabs(handler: (view: azdata.ModelView) => Thenable<(azdata.DashboardTab | azdata.DashboardTabGroup)[]>): void {
@@ -481,7 +482,8 @@ class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
 
 			const tabbedPanel = view.modelBuilder.tabbedPanel().withTabs(tabs).withLayout({
 				orientation: 'vertical',
-				showIcon: true
+				showIcon: (this._options && this._options.showIcon) ?? true,
+				showTabsWhenOne: (this._options && this._options.showTabsWhenOne) ?? false
 			}).component();
 			return view.initializeModel(tabbedPanel);
 		});
@@ -613,9 +615,9 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return editor;
 	}
 
-	public createModelViewDashboard(title: string, extension: IExtensionDescription): azdata.window.ModelViewDashboard {
+	public createModelViewDashboard(title: string, options: azdata.ModelViewDashboardOptions | undefined, extension: IExtensionDescription): azdata.window.ModelViewDashboard {
 		const editor = this.createModelViewEditor(title, extension, { supportsSave: false }) as ModelViewEditorImpl;
-		return new ModelViewDashboardImpl(editor);
+		return new ModelViewDashboardImpl(editor, options);
 	}
 
 	public updateDialogContent(dialog: azdata.window.Dialog): void {
