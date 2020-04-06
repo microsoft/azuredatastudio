@@ -245,6 +245,43 @@ class WelcomePage extends Disposable {
 		if (prodName) {
 			prodName.innerHTML = this.productService.nameLong;
 		}
+
+		const welcomeContainerContainer = document.querySelector('.welcomePageContainer').parentElement as HTMLElement;
+		const adsHomepage = document.querySelector('.ads_homepage') as HTMLElement;
+		adsHomepage.classList.add('responsive-container');
+
+		const observer = new MutationObserver(parseMutations);
+		observer.observe(welcomeContainerContainer, {
+			attributes: true,
+			attributeFilter: ['style']
+		});
+
+		const defaultBreakpoints = { SM: 480, MD: 640, LG: 1024, XL: 1365 };
+		const startingWidth = parseInt(welcomeContainerContainer.style.width);
+		adsHomepage.classList.add('XS');
+		Object.keys(defaultBreakpoints).forEach(function (breakpoint) {
+			let minWidth = defaultBreakpoints[breakpoint];
+			if (startingWidth >= minWidth) {
+				adsHomepage.classList.add(breakpoint);
+			}
+			else {
+				adsHomepage.classList.remove(breakpoint);
+			}
+		});
+
+		function parseMutations() {
+			const width = parseInt(welcomeContainerContainer.style.width);
+			Object.keys(defaultBreakpoints).forEach(function (breakpoint) {
+				let minWidth = defaultBreakpoints[breakpoint];
+				if (width >= minWidth) {
+					adsHomepage.classList.add(breakpoint);
+				}
+				else {
+					adsHomepage.classList.remove(breakpoint);
+				}
+			});
+		}
+
 		recentlyOpened.then(async ({ workspaces }) => {
 			// Filter out the current workspace
 			workspaces = workspaces.filter(recent => !this.contextService.isCurrentWorkspace(isRecentWorkspace(recent) ? recent.workspace : recent.folderUri));
