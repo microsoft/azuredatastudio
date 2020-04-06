@@ -482,8 +482,8 @@ class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
 
 			const tabbedPanel = view.modelBuilder.tabbedPanel().withTabs(tabs).withLayout({
 				orientation: 'vertical',
-				showIcon: (this._options && this._options.showIcon) ?? true,
-				showTabsWhenOne: (this._options && this._options.showTabsWhenOne) ?? false
+				showIcon: this._options?.showIcon ?? true,
+				alwaysShowTabs: this._options?.alwaysShowTabs ?? false
 			}).component();
 			return view.initializeModel(tabbedPanel);
 		});

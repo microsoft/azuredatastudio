@@ -840,5 +840,5 @@ export enum TabOrientation {
 export interface TabbedPanelLayout {
 	orientation: TabOrientation;
 	showIcon: boolean;
-	showTabsWhenOne: boolean;
+	alwaysShowTabs: boolean;
 }

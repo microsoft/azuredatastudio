@@ -162,7 +162,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			});
 			this.propertiesWidget = properties ? properties[0] : undefined;
 			this._panel.options = {
-				showTabsWhenOne: true,
+				alwaysShowTabs: true,
 				layout: NavigationBarLayout.vertical,
 				showIcon: true
 			};

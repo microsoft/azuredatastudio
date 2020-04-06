@@ -224,9 +224,20 @@ declare module 'azdata' {
 	 * Layout of TabbedPanelComponent, can be used to initialize the component when using ModelBuilder
 	 */
 	export interface TabbedPanelLayout {
+		/**
+		 * Tab orientation
+		 */
 		orientation: TabOrientation;
+
+		/**
+		 * Whether to show the tab icon
+		 */
 		showIcon: boolean;
-		showTabsWhenOne: boolean;
+
+		/**
+		 * Whether to show the tab navigation pane even when there is only one tab
+		 */
+		alwaysShowTabs: boolean;
 	}
 
 	/**
@@ -330,9 +341,9 @@ declare module 'azdata' {
 		showIcon?: boolean;
 
 		/**
-		 * Whether to show the tab header when there is only one tab, default is false
+		 * Whether to show the tab navigation pane even when there is only one tab, default is false
 		 */
-		showTabsWhenOne?: boolean;
+		alwaysShowTabs?: boolean;
 	}
 }
 

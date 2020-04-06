@@ -57,7 +57,7 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 
 	setLayout(layout: TabbedPanelLayout): void {
 		this._panel.options = {
-			showTabsWhenOne: layout.showTabsWhenOne,
+			alwaysShowTabs: layout.alwaysShowTabs,
 			layout: layout.orientation === TabOrientation.Horizontal ? NavigationBarLayout.horizontal : NavigationBarLayout.vertical,
 			showIcon: layout.showIcon
 		};
