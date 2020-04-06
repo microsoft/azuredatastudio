@@ -4,17 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { ModelViewBase } from './modelViewBase';
+import { ModelViewBase, ModelViewData } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 import * as constants from '../../common/constants';
 import { IPageView, IDataComponent } from '../interfaces';
 import { ModelDetailsComponent } from './modelDetailsComponent';
-import { RegisteredModelDetails } from '../../modelManagement/interfaces';
 
 /**
  * View to pick model details
  */
-export class ModelDetailsPage extends ModelViewBase implements IPageView, IDataComponent<RegisteredModelDetails> {
+export class ModelDetailsPage extends ModelViewBase implements IPageView, IDataComponent<ModelViewData[]> {
 
 	private _form: azdata.FormContainer | undefined;
 	private _formBuilder: azdata.FormBuilder | undefined;
@@ -31,10 +30,11 @@ export class ModelDetailsPage extends ModelViewBase implements IPageView, IDataC
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 
 		this._formBuilder = modelBuilder.formContainer();
-		this.modelDetails = new ModelDetailsComponent(this._apiWrapper, this);
+		this.modelDetails = new ModelDetailsComponent(this._apiWrapper, modelBuilder, this);
 		this.modelDetails.registerComponent(modelBuilder);
-
 		this.modelDetails.addComponents(this._formBuilder);
+
+
 		this.refresh();
 		this._form = this._formBuilder.component();
 		return this._form;
@@ -43,7 +43,7 @@ export class ModelDetailsPage extends ModelViewBase implements IPageView, IDataC
 	/**
 	 * Returns selected data
 	 */
-	public get data(): RegisteredModelDetails | undefined {
+	public get data(): ModelViewData[] | undefined {
 		return this.modelDetails?.data;
 	}
 
@@ -58,6 +58,17 @@ export class ModelDetailsPage extends ModelViewBase implements IPageView, IDataC
 	 * Refreshes the view
 	 */
 	public async refresh(): Promise<void> {
+		if (this.modelDetails) {
+			await this.modelDetails.refresh();
+		}
+	}
+
+	public async onEnter(): Promise<void> {
+		await this.refresh();
+	}
+
+	public async onLeave(): Promise<void> {
+
 	}
 
 	/**
@@ -68,7 +79,7 @@ export class ModelDetailsPage extends ModelViewBase implements IPageView, IDataC
 	}
 
 	public validate(): Promise<boolean> {
-		if (this.data && this.data.title) {
+		if (this.data && this.data.length > 0 && !this.data.find(x => !x.modelDetails?.title)) {
 			return Promise.resolve(true);
 		} else {
 			this.showErrorMessage(constants.modelNameRequiredError);

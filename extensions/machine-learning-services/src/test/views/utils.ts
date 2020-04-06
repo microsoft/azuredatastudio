@@ -34,6 +34,9 @@ export function createViewContext(): ViewTestContext {
 	let radioButton: azdata.RadioButtonComponent = Object.assign({}, componentBase, {
 		onDidClick: onClick.event
 	});
+	let checkbox: azdata.CheckBoxComponent = Object.assign({}, componentBase, {
+		onChanged: onClick.event
+	});
 	let container = {
 		clearItems: () => { },
 		addItems: () => { },
@@ -57,6 +60,11 @@ export function createViewContext(): ViewTestContext {
 		component: () => radioButton,
 		withProperties: () => radioButtonBuilder,
 		withValidation: () => radioButtonBuilder
+	};
+	let checkBoxBuilder: azdata.ComponentBuilder<azdata.CheckBoxComponent> = {
+		component: () => checkbox,
+		withProperties: () => checkBoxBuilder,
+		withValidation: () => checkBoxBuilder
 	};
 	let inputBox: () => azdata.InputBoxComponent = () => Object.assign({}, componentBase, {
 		onTextChanged: undefined!,
@@ -161,7 +169,7 @@ export function createViewContext(): ViewTestContext {
 			dom: undefined!,
 			card: undefined!,
 			inputBox: () => inputBoxBuilder,
-			checkBox: undefined!,
+			checkBox: () => checkBoxBuilder!,
 			radioButton: () => radioButtonBuilder,
 			webView: undefined!,
 			editor: undefined!,

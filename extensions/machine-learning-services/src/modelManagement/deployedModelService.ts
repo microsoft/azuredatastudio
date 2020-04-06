@@ -86,22 +86,23 @@ export class DeployedModelService {
 		let connection = await this.getCurrentConnection();
 		if (connection) {
 			let currentModels = await this.getDeployedModels();
-			await this._modelClient.deployModel(connection, filePath);
-			let updatedModels = await this.getDeployedModels();
-			if (details && updatedModels.length >= currentModels.length + 1) {
-				updatedModels.sort((a, b) => a.id && b.id ? a.id - b.id : 0);
-				const addedModel = updatedModels[updatedModels.length - 1];
-				addedModel.title = details.title;
-				addedModel.description = details.description;
-				addedModel.version = details.version;
-				const updatedModel = await this.updateModel(addedModel);
-				if (!updatedModel) {
-					throw Error(constants.updateModelFailedError);
-				}
+			const content = await utils.readFileInHex(filePath);
+			const fileName = details?.fileName || utils.getFileName(filePath);
+			let modelToAdd: RegisteredModel = {
+				id: 0,
+				artifactName: fileName,
+				content: content,
+				title: details?.title || fileName,
+				description: details?.description,
+				version: details?.version
+			};
+			await this._queryRunner.safeRunQuery(connection, this.getInsertModelQuery(connection.databaseName, modelToAdd));
 
-			} else {
+			let updatedModels = await this.getDeployedModels();
+			if (updatedModels.length < currentModels.length + 1) {
 				throw Error(constants.importModelFailedError);
 			}
+
 		}
 	}
 	private loadModelData(row: azdata.DbCellValue[]): RegisteredModel {
@@ -113,20 +114,6 @@ export class DeployedModelService {
 			version: row[4].displayValue,
 			created: row[5].displayValue
 		};
-	}
-
-	private async updateModel(model: RegisteredModel): Promise<RegisteredModel | undefined> {
-		let connection = await this.getCurrentConnection();
-		let updatedModel: RegisteredModel | undefined = undefined;
-		if (connection) {
-			const query = this.getUpdateModelQuery(connection.databaseName, model);
-			let result = await this._queryRunner.safeRunQuery(connection, query);
-			if (result?.rows && result.rows.length > 0) {
-				const row = result.rows[0];
-				updatedModel = this.loadModelData(row);
-			}
-		}
-		return updatedModel;
 	}
 
 	private async getCurrentConnection(): Promise<azdata.connection.ConnectionProfile> {
@@ -190,7 +177,7 @@ export class DeployedModelService {
 		CREATE TABLE ${utils.getRegisteredModelsTowPartsName(this._config)}(
 			[artifact_id] [int] IDENTITY(1,1) NOT NULL,
 			[artifact_name] [varchar](256) NOT NULL,
-			[group_path] [varchar](256) NOT NULL,
+			[group_path] [varchar](256) NULL,
 			[artifact_content] [varbinary](max) NOT NULL,
 			[artifact_initial_size] [bigint] NULL,
 			[name] [varchar](256) NULL,
@@ -221,6 +208,27 @@ export class DeployedModelService {
 		SELECT artifact_id, artifact_name, name, description, version, created
 		FROM ${utils.getRegisteredModelsThreePartsName(this._config)}
 		WHERE artifact_id = ${model.id};
+		`;
+	}
+
+	public getInsertModelQuery(currentDatabaseName: string, model: RegisteredModel): string {
+		let updateScript = `
+		Insert into ${utils.getRegisteredModelsTowPartsName(this._config)}
+		(artifact_name, group_path, artifact_content, name, version, description)
+		values (
+			'${utils.doubleEscapeSingleQuotes(model.artifactName || '')}',
+			'ADS',
+			${utils.doubleEscapeSingleQuotes(model.content || '')},
+			'${utils.doubleEscapeSingleQuotes(model.title || '')}',
+			'${utils.doubleEscapeSingleQuotes(model.version || '')}',
+			'${utils.doubleEscapeSingleQuotes(model.description || '')}')
+		`;
+
+		return `
+		${utils.getScriptWithDBChange(currentDatabaseName, this._config.registeredModelDatabaseName, updateScript)}
+		SELECT artifact_id, artifact_name, name, description, version, created
+		FROM ${utils.getRegisteredModelsThreePartsName(this._config)}
+		WHERE artifact_id = SCOPE_IDENTITY();
 		`;
 	}
 

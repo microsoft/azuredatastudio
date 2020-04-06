@@ -9,7 +9,7 @@ import 'mocha';
 import { createContext } from './utils';
 import {
 	ListModelsEventName, ListAccountsEventName, ListSubscriptionsEventName, ListGroupsEventName, ListWorkspacesEventName,
-	ListAzureModelsEventName, ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, LoadModelParametersEventName, DownloadAzureModelEventName, DownloadRegisteredModelEventName
+	ListAzureModelsEventName, ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, LoadModelParametersEventName, DownloadAzureModelEventName, DownloadRegisteredModelEventName, ModelSourceType
 }
 	from '../../../views/models/modelViewBase';
 import { RegisteredModel, ModelParameters } from '../../../modelManagement/interfaces';
@@ -164,7 +164,11 @@ describe('Predict Wizard', () => {
 		view.on(DownloadRegisteredModelEventName, () => {
 			view.sendCallbackRequest(ViewBase.getCallbackEventName(DownloadRegisteredModelEventName), { data: 'path' });
 		});
+		if (view.modelBrowsePage) {
+			view.modelBrowsePage.modelSourceType = ModelSourceType.Azure;
+		}
 		await view.refresh();
+
 		should.notEqual(view.azureModelsComponent?.data, undefined);
 		should.notEqual(view.localModelsComponent?.data, undefined);
 

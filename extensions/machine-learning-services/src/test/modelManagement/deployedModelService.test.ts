@@ -248,9 +248,10 @@ describe('DeployedModelService', () => {
 			testContext.config.object,
 			testContext.queryRunner.object,
 			testContext.modelClient.object);
-		testContext.modelClient.setup(x => x.deployModel(connection, '')).returns(() => {
+
+		testContext.queryRunner.setup(x => x.safeRunQuery(TypeMoq.It.isAny(), TypeMoq.It.is(x => x.indexOf('Insert into') > 0))).returns(() => {
 			deployed = true;
-			return Promise.resolve();
+			return Promise.resolve(result);
 		});
 		testContext.queryRunner.setup(x => x.safeRunQuery(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
 			return deployed ? Promise.resolve(updatedResult) : Promise.resolve(result);
@@ -259,7 +260,15 @@ describe('DeployedModelService', () => {
 		testContext.config.setup(x => x.registeredModelDatabaseName).returns(() => 'db');
 		testContext.config.setup(x => x.registeredModelTableName).returns(() => 'table');
 		testContext.config.setup(x => x.registeredModelTableSchemaName).returns(() => 'dbo');
-		await should(service.deployLocalModel('', model)).resolved();
+		let tempFilePath: string = '';
+		try {
+			tempFilePath = path.join(os.tmpdir(), `ads_ml_temp_${UUID.generateUuid()}`);
+			await fs.promises.writeFile(tempFilePath, 'test');
+			await should(service.deployLocalModel(tempFilePath, model)).resolved();
+		}
+		finally {
+			await utils.deleteFile(tempFilePath);
+		}
 	});
 
 	it('getConfigureQuery should escape db name', async function (): Promise<void> {
@@ -306,7 +315,7 @@ describe('DeployedModelService', () => {
 		CREATE TABLE [dbo].[ta[[b]]le](
 			[artifact_id] [int] IDENTITY(1,1) NOT NULL,
 			[artifact_name] [varchar](256) NOT NULL,
-			[group_path] [varchar](256) NOT NULL,
+			[group_path] [varchar](256) NULL,
 			[artifact_content] [varbinary](max) NOT NULL,
 			[artifact_initial_size] [bigint] NULL,
 			[name] [varchar](256) NULL,
