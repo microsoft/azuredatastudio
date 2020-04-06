@@ -538,7 +538,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	isActive(): boolean {
-		return this.editorService.activeEditor.matches(this.notebookParams.input);
+		return this.editorService.activeEditor ? this.editorService.activeEditor.matches(this.notebookParams.input) : false;
 	}
 
 	isVisible(): boolean {
