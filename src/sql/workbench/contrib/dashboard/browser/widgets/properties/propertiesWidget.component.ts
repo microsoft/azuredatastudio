@@ -285,7 +285,9 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	}
 
 	private updateTheme(theme: IColorTheme): void {
-		if (!theme.getColor(contrastBorder)) {
+		if (theme.getColor(contrastBorder)) {
+			this._container.nativeElement.style.borderBottom = 'none';
+		} else {
 			const border = theme.getColor(DASHBOARD_BORDER);
 			this._container.nativeElement.style.borderBottom = '1px solid ' + border.toString();
 		}
