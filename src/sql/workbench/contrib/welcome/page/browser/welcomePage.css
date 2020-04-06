@@ -944,7 +944,7 @@
 	padding: 0 0 2px 11px
 }
 
-.ads_homepage .ads_homepage_section .pinned .list_header, .ads_homepage.XS:not(.SM) .ads_homepage_section .history .list_header {
+.ads_homepage.XS:not(.SM) .ads_homepage_section .pinned .list_header, .ads_homepage.XS:not(.SM) .ads_homepage_section .history .list_header {
 	padding: 0 0 2px 41px;
 	line-height: 1em
 }
