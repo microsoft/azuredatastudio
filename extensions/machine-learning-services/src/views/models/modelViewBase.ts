@@ -217,7 +217,6 @@ export abstract class ModelViewBase extends ViewBase {
 		return await this.sendDataRequest(ListGroupsEventName, args);
 	}
 
-
 	/**
 	 * Sets model source type
 	 */

@@ -194,23 +194,6 @@ export class DeployedModelService {
 		`;
 	}
 
-	public getUpdateModelQuery(currentDatabaseName: string, model: RegisteredModel): string {
-		let updateScript = `
-		UPDATE ${utils.getRegisteredModelsTowPartsName(this._config)}
-		SET
-		name = '${utils.doubleEscapeSingleQuotes(model.title || '')}',
-		version = '${utils.doubleEscapeSingleQuotes(model.version || '')}',
-		description = '${utils.doubleEscapeSingleQuotes(model.description || '')}'
-		WHERE artifact_id = ${model.id}`;
-
-		return `
-		${utils.getScriptWithDBChange(currentDatabaseName, this._config.registeredModelDatabaseName, updateScript)}
-		SELECT artifact_id, artifact_name, name, description, version, created
-		FROM ${utils.getRegisteredModelsThreePartsName(this._config)}
-		WHERE artifact_id = ${model.id};
-		`;
-	}
-
 	public getInsertModelQuery(currentDatabaseName: string, model: RegisteredModel): string {
 		let updateScript = `
 		Insert into ${utils.getRegisteredModelsTowPartsName(this._config)}

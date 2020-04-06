@@ -103,9 +103,6 @@ export class RegisterModelWizard extends ModelViewBase {
 	 * Refresh the pages
 	 */
 	public async refresh(): Promise<void> {
-		if (this.modelBrowsePage) {
-			this.modelBrowsePage.modelSourceType = this.modelSourceType;
-		}
 		await this.wizardView?.refresh();
 	}
 }

@@ -354,7 +354,7 @@ describe('DeployedModelService', () => {
 		should.deepEqual(expected, actual);
 	});
 
-	it('getUpdateModelQuery should escape db name', async function (): Promise<void> {
+	it('getInsertModelQuery should escape db name', async function (): Promise<void> {
 		const testContext = createContext();
 		const dbName = 'curre[n]tDb';
 		const model: RegisteredModel =
@@ -376,16 +376,17 @@ describe('DeployedModelService', () => {
 		testContext.config.setup(x => x.registeredModelTableName).returns(() => 'ta[b]le');
 		testContext.config.setup(x => x.registeredModelTableSchemaName).returns(() => 'dbo');
 		const expected = `
-		UPDATE [dbo].[ta[[b]]le]
-		SET
-		name = 'title1',
-		version = '1.1',
-		description = 'desc1'
-		WHERE artifact_id = 1`;
-		const actual = service.getUpdateModelQuery(dbName, model);
+		Insert into [dbo].[ta[[b]]le]
+		(artifact_name, group_path, artifact_content, name, version, description)
+		values (
+			'name1',
+			'ADS',
+			,
+			'title1',
+			'1.1',
+			'desc1')`;
+		const actual = service.getInsertModelQuery(dbName, model);
 		should.equal(actual.indexOf(expected) > 0, true);
-		//should.deepEqual(actual, expected);
-
 	});
 
 	it('getModelContentQuery should escape db name', async function (): Promise<void> {

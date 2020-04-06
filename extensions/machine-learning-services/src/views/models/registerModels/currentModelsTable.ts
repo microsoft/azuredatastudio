@@ -163,13 +163,16 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 		if (this._modelBuilder) {
 			let selectModelButton: azdata.Component;
 			let onSelectItem = (checked: boolean) => {
+				if (!this._multiSelect) {
+					this._selectedModel = [];
+				}
 				const foundItem = this._selectedModel.find(x => x === model);
 				if (checked && !foundItem) {
 					this._selectedModel.push(model);
 				} else if (foundItem) {
 					this._selectedModel = this._selectedModel.filter(x => x !== model);
 				}
-				this._onModelSelectionChanged.fire();
+				this.onModelSelected();
 			};
 			if (this._multiSelect) {
 				const checkbox = this._modelBuilder.checkBox().withProperties({

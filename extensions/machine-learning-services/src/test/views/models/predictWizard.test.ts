@@ -168,9 +168,21 @@ describe('Predict Wizard', () => {
 			view.modelBrowsePage.modelSourceType = ModelSourceType.Azure;
 		}
 		await view.refresh();
-
 		should.notEqual(view.azureModelsComponent?.data, undefined);
+
+		if (view.modelBrowsePage) {
+			view.modelBrowsePage.modelSourceType = ModelSourceType.RegisteredModels;
+		}
+		await view.refresh();
+		testContext.onClick.fire();
+
+		should.equal(view.modelSourcePage?.data, ModelSourceType.RegisteredModels);
 		should.notEqual(view.localModelsComponent?.data, undefined);
+		should.notEqual(view.modelBrowsePage?.registeredModelsComponent?.data, undefined);
+		if (view.modelBrowsePage?.registeredModelsComponent?.data) {
+			should.equal(view.modelBrowsePage.registeredModelsComponent.data.length, 1);
+		}
+
 
 		should.notEqual(await view.getModelFileName(), undefined);
 		await view.columnsSelectionPage?.onEnter();

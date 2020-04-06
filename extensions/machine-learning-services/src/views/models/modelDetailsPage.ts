@@ -33,8 +33,6 @@ export class ModelDetailsPage extends ModelViewBase implements IPageView, IDataC
 		this.modelDetails = new ModelDetailsComponent(this._apiWrapper, modelBuilder, this);
 		this.modelDetails.registerComponent(modelBuilder);
 		this.modelDetails.addComponents(this._formBuilder);
-
-
 		this.refresh();
 		this._form = this._formBuilder.component();
 		return this._form;
@@ -65,10 +63,6 @@ export class ModelDetailsPage extends ModelViewBase implements IPageView, IDataC
 
 	public async onEnter(): Promise<void> {
 		await this.refresh();
-	}
-
-	public async onLeave(): Promise<void> {
-
 	}
 
 	/**
