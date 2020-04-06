@@ -301,7 +301,7 @@ export class EditDataEditor extends BaseEditor {
 
 	//update sash theme
 	private updateTheme(theme: IColorTheme): void {
-		if (this._resultsEditorContainer && this._resultsEditorContainer.style.borderTopColor !== '') {
+		if (this._resultsEditorContainer) {
 			this._resultsEditorContainer.style.borderTopColor = theme.getColor(PANEL_BORDER).toString();
 		}
 	}
@@ -630,13 +630,12 @@ export class EditDataEditor extends BaseEditor {
 			}
 			if (this._resultsEditorContainer) {
 				if (this.queryPaneEnabled()) {
+					this._resultsEditorContainer.style.borderTopColor = this.getColor(PANEL_BORDER);
 					this._resultsEditorContainer.style.borderTopStyle = 'solid';
 					this._resultsEditorContainer.style.borderTopWidth = '1px';
-					this._resultsEditorContainer.style.borderTopColor = this.getColor(PANEL_BORDER);
 				} else {
 					this._resultsEditorContainer.style.borderTopStyle = '';
 					this._resultsEditorContainer.style.borderTopWidth = '';
-					this._resultsEditorContainer.style.borderTopColor = '';
 				}
 			}
 		}
@@ -692,16 +691,15 @@ export class EditDataEditor extends BaseEditor {
 		this.editDataInput.queryPaneEnabled = !this.queryPaneEnabled();
 		if (this.queryPaneEnabled()) {
 			if (this._resultsEditorContainer) {
+				this._resultsEditorContainer.style.borderTopColor = this.getColor(PANEL_BORDER);
 				this._resultsEditorContainer.style.borderTopStyle = 'solid';
 				this._resultsEditorContainer.style.borderTopWidth = '1px';
-				this._resultsEditorContainer.style.borderTopColor = this.getColor(PANEL_BORDER);
 			}
 			this._showQueryEditor();
 		} else {
 			if (this._resultsEditorContainer) {
 				this._resultsEditorContainer.style.borderTopStyle = '';
 				this._resultsEditorContainer.style.borderTopWidth = '';
-				this._resultsEditorContainer.style.borderTopColor = '';
 			}
 			this._hideQueryEditor();
 		}
