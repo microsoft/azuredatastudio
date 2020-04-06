@@ -393,7 +393,7 @@
         },
         {
           "command": "notebook.command.openNotebookFolder",
-          "when": "view == notebookFolderView",
+          "when": "view == bookTreeView",
           "group": "navigation"
         }
       ],
