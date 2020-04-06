@@ -563,21 +563,94 @@
                     // xterm and its addons are strictly browser-only components
                     "xterm",
                     "xterm-addon-*",
-                    "**/{vs,sql}/**"
+                    "vs/nls",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/**/{common,browser}/**",
+                    "**/{vs,sql}/platform/**/{common,browser}/**",
+                    "**/{vs,sql}/editor/**",
+                    "**/{vs,sql}/workbench/{common,browser}/**",
+                    "**/{vs,sql}/workbench/services/**/{common,browser}/**",
+                    "!path" // node modules (except path where we have our own impl)
                 ]
             },
             {
                 "target": "**/{vs,sql}/workbench/contrib/extensions/browser/**",
                 "restrictions": [
                     "semver-umd",
-                    "**/{vs,sql}/**"
+                    "vs/nls",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/**/{common,browser}/**",
+                    "**/{vs,sql}/platform/**/{common,browser}/**",
+                    "**/{vs,sql}/editor/**",
+                    "**/{vs,sql}/workbench/{common,browser}/**",
+                    "**/{vs,sql}/workbench/services/**/{common,browser}/**",
+                    "!path" // node modules (except path where we have our own impl)
                 ]
             },
             {
                 "target": "**/{vs,sql}/workbench/contrib/update/browser/update.ts",
                 "restrictions": [
                     "semver-umd",
-                    "**/{vs,sql}/**"
+                    "vs/nls",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/**/{common,browser}/**",
+                    "**/{vs,sql}/platform/**/{common,browser}/**",
+                    "**/{vs,sql}/editor/**",
+                    "**/{vs,sql}/workbench/{common,browser}/**",
+                    "**/{vs,sql}/workbench/services/**/{common,browser}/**",
+                    "!path" // node modules (except path where we have our own impl)
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/workbench/contrib/**/common/**",
+                "restrictions": [
+                    "vs/nls",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/**/common/**",
+                    "**/{vs,sql}/platform/**/common/**",
+                    "**/{vs,sql}/editor/**/common/**",
+                    "**/{vs,sql}/workbench/common/**",
+                    "**/{vs,sql}/workbench/services/**/common/**",
+                    "!path" // node modules (except path where we have our own impl)
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/workbench/contrib/**/browser/**",
+                "restrictions": [
+                    "vs/nls",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/**/{common,browser}/**",
+                    "**/{vs,sql}/platform/**/{common,browser}/**",
+                    "**/{vs,sql}/editor/**",
+                    "**/{vs,sql}/workbench/{common,browser}/**",
+                    "**/{vs,sql}/workbench/services/**/{common,browser}/**",
+                    "!path" // node modules (except path where we have our own impl)
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/workbench/contrib/**/node/**",
+                "restrictions": [
+                    "vs/nls",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/**/{common,node}/**",
+                    "**/{vs,sql}/platform/**/{common,node}/**",
+                    "**/{vs,sql}/editor/**/common/**",
+                    "**/{vs,sql}/workbench/{common,node}/**",
+                    "**/{vs,sql}/workbench/services/**/{common,node}/**",
+                    "!path" // node modules (except path where we have our own impl)
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/workbench/contrib/**/electron-browser/**",
+                "restrictions": [
+                    "vs/nls",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/**/{common,browser,worker,node,electron-browser}/**",
+                    "**/{vs,sql}/platform/**/{common,browser,node,electron-browser}/**",
+                    "**/{vs,sql}/editor/**",
+                    "**/{vs,sql}/workbench/{common,browser,node,electron-browser,api}/**",
+                    "**/{vs,sql}/workbench/services/**/{common,browser,node,electron-browser}/**",
+                    "!path" // node modules (except path where we have our own impl)
                 ]
             },
             {
