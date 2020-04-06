@@ -1,0 +1,32 @@
+{
+  "name": "arc",
+  "displayName": "Azure Arc",
+  "description": "%description%",
+  "version": "1.0.0",
+  "publisher": "Microsoft",
+  "preview": true,
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
+  "icon": "src/images/extension.png",
+  "engines": {
+    "vscode": "*",
+    "azdata": "*"
+  },
+  "activationEvents": [
+    "*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "main": "./out/extension",
+  "dependencies": {
+    "kerberos": "^1.1.3",
+    "request": "^2.88.0",
+    "vscode-nls": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/kerberos": "^1.1.0",
+    "@types/request": "^2.48.3",
+    "vscode": "^1.1.36"
+  }
+}
