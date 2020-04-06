@@ -231,7 +231,7 @@ suite('notebook model', function (): void {
 		await model.loadContents();
 
 		// I expect the default provider to be jupyter
-		assert.equal(model.notebookManager.providerId, 'jupyter');
+		assert.equal(model.notebookManager.providerId, 'jupyter', 'Notebook manager provider id incorrect');
 
 		// Similarly, change default notebook provider id to SQL
 		defaultModelOptions.providerId = 'SQL';
@@ -241,18 +241,18 @@ suite('notebook model', function (): void {
 		await model.loadContents();
 
 		// I expect the default provider to be SQL
-		assert.equal(model.notebookManager.providerId, 'SQL');
+		assert.equal(model.notebookManager.providerId, 'SQL', 'Notebook manager provider id incorrect after 2nd model load');
 
 		// Check that the getters return  the correct values
-		assert.equal(model.notebookManagers.length, 2);
-		assert(!isUndefinedOrNull(model.getNotebookManager('SQL')));
-		assert(!isUndefinedOrNull(model.getNotebookManager('jupyter')));
-		assert(isUndefinedOrNull(model.getNotebookManager('foo')));
+		assert.equal(model.notebookManagers.length, 2, 'There should be 2 notebook managers');
+		assert(!isUndefinedOrNull(model.getNotebookManager('SQL')), 'SQL notebook manager is not defined');
+		assert(!isUndefinedOrNull(model.getNotebookManager('jupyter')), 'Jupyter notebook manager is not defined');
+		assert(isUndefinedOrNull(model.getNotebookManager('foo')), 'foo notebook manager is incorrectly defined');
 
 		// Check other properties to ensure that they're returning as expected
 		// No server manager was passed into the notebook manager stub, so expect hasServerManager to return false
-		assert.equal(model.hasServerManager, false);
-		assert.equal(model.notebookUri, defaultModelOptions.notebookUri);
+		assert.equal(model.hasServerManager, false, 'Notebook model should not have a server manager');
+		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
 	});
 
 	test('Should set active cell correctly', async function (): Promise<void> {
@@ -277,39 +277,39 @@ suite('notebook model', function (): void {
 		model.contentChanged(c => notebookContentChange = c);
 
 		// Then I expect all cells to be in the model
-		assert.equal(model.cells.length, 2);
+		assert.equal(model.cells.length, 2, 'Cell count in notebook model is not correct');
 
 		// Set the first cell as active
 		model.updateActiveCell(model.cells[0]);
-		assert.deepEqual(model.activeCell, model.cells[0]);
-		assert.deepEqual(model.activeCell, activeCellFromEvent);
-		assert.equal(activeCellChangeCount, 1);
-		assert(isUndefinedOrNull(notebookContentChange));
+		assert.deepEqual(model.activeCell, model.cells[0], 'Active cell does not match the first cell');
+		assert.deepEqual(model.activeCell, activeCellFromEvent, 'Active cell returned from the event does not match');
+		assert.equal(activeCellChangeCount, 1, 'Active cell change count is incorrect');
+		assert(isUndefinedOrNull(notebookContentChange), 'Content change should be undefined');
 
 
 		// Set the second cell as active
 		model.updateActiveCell(model.cells[1]);
-		assert.deepEqual(model.activeCell, model.cells[1]);
-		assert.deepEqual(model.activeCell, activeCellFromEvent);
-		assert.equal(activeCellChangeCount, 2);
+		assert.deepEqual(model.activeCell, model.cells[1], 'Active cell does not match expected value');
+		assert.deepEqual(model.activeCell, activeCellFromEvent, 'Active cell returned from the event does not match (2nd)');
+		assert.equal(activeCellChangeCount, 2, 'Active cell change count is incorrect; should be 2');
 
 		// Delete the active cell
 		model.deleteCell(model.cells[1]);
-		assert(isUndefinedOrNull(model.activeCell));
-		assert.deepEqual(model.activeCell, activeCellFromEvent);
-		assert.equal(activeCellChangeCount, 3);
+		assert(isUndefinedOrNull(model.activeCell), 'Active cell should be undefined after active cell is deleted');
+		assert.deepEqual(model.activeCell, activeCellFromEvent, 'Active cell should match value from event');
+		assert.equal(activeCellChangeCount, 3, 'Active cell change count is incorrect; should be 3');
 
 		// Set the remaining cell as active
 		model.updateActiveCell(model.cells[0]);
-		assert.deepEqual(model.activeCell, activeCellFromEvent);
-		assert.equal(activeCellChangeCount, 4);
+		assert.deepEqual(model.activeCell, activeCellFromEvent, 'Active cell should match value from event');
+		assert.equal(activeCellChangeCount, 4, 'Active cell change count is incorrect; should be 4');
 
 		// Add new cell
 		let newCell = model.addCell(CellTypes.Code, 0);
 
 		// Ensure new cell is active cell
-		assert.deepEqual(model.activeCell, newCell);
-		assert.equal(activeCellChangeCount, 5);
+		assert.deepEqual(model.activeCell, newCell, 'Active cell does not match newly created cell');
+		assert.equal(activeCellChangeCount, 5, 'Active cell change count is incorrect; should be 5');
 	});
 
 	test('Should delete cells correctly', async function (): Promise<void> {
@@ -329,39 +329,39 @@ suite('notebook model', function (): void {
 		model.contentChanged(c => notebookContentChange = c);
 
 		// Then I expect all cells to be in the model
-		assert.equal(model.cells.length, 2);
+		assert.equal(model.cells.length, 2, 'Cell count in model is incorrect');
 
-		assert.equal(model.findCellIndex(model.cells[0]), 0);
-		assert.equal(model.findCellIndex(model.cells[1]), 1);
+		assert.equal(model.findCellIndex(model.cells[0]), 0, 'findCellIndex returned wrong cell info for first cell');
+		assert.equal(model.findCellIndex(model.cells[1]), 1, 'findCellIndex returned wrong cell info for second cell');
 		// Delete the first cell
 		model.deleteCell(model.cells[0]);
-		assert.equal(model.cells.length, 1);
-		assert.deepEqual(model.cells[0].source, expectedNotebookContent.cells[1].source);
-		assert.equal(model.findCellIndex(model.cells[0]), 0);
-		assert.equal(notebookContentChange.changeType, NotebookChangeType.CellsModified);
-		assert.equal(notebookContentChange.isDirty, true);
-		assert.equal(model.activeCell, undefined);
+		assert.equal(model.cells.length, 1, 'Cell model length should be 1 after cell deletion');
+		assert.deepEqual(model.cells[0].source, expectedNotebookContent.cells[1].source, 'Expected cell source is incorrect');
+		assert.equal(model.findCellIndex(model.cells[0]), 0, 'findCellIndex returned wrong cell info for only remaining cell');
+		assert.equal(notebookContentChange.changeType, NotebookChangeType.CellsModified, 'notebookContentChange changeType is incorrect');
+		assert.equal(notebookContentChange.isDirty, true, 'notebookContentChange should set dirty flag');
+		assert.equal(model.activeCell, undefined, 'active cell is not undefined');
 
 		// Delete the remaining cell
 		notebookContentChange = undefined;
 		model.deleteCell(model.cells[0]);
-		assert.equal(model.cells.length, 0);
-		assert.equal(model.findCellIndex(model.cells[0]), -1);
-		assert.equal(errorCount, 0);
-		assert.equal(notebookContentChange.changeType, NotebookChangeType.CellsModified);
-		assert.equal(model.activeCell, undefined);
+		assert.equal(model.cells.length, 0, 'There should be no cells tracked in the notebook model');
+		assert.equal(model.findCellIndex(model.cells[0]), -1, 'findCellIndex is incorrectly finding a deleted cell');
+		assert.equal(errorCount, 0, 'There should be no errors after deleting a cell that exists');
+		assert.equal(notebookContentChange.changeType, NotebookChangeType.CellsModified, 'notebookContentChange changeType should indicate CellsModified');
+		assert.equal(model.activeCell, undefined, 'Active cell should be undefined');
 
 		// Try deleting the cell again
 		notebookContentChange = undefined;
 		model.deleteCell(model.cells[0]);
-		assert.equal(errorCount, 1);
-		assert(isUndefinedOrNull(notebookContentChange));
+		assert.equal(errorCount, 1, 'The model should record an error after trying to delete a cell that does not exist');
+		assert(isUndefinedOrNull(notebookContentChange), 'There should be no content change after an error is recorded');
 
 		// Try deleting as notebook model is in error state
 		notebookContentChange = undefined;
 		model.deleteCell(model.cells[0]);
-		assert.equal(errorCount, 2);
-		assert(isUndefinedOrNull(notebookContentChange));
+		assert.equal(errorCount, 2, 'Error count should be 2 after trying to delete a cell that does not exist a second time');
+		assert(isUndefinedOrNull(notebookContentChange), 'There still should be no content change after an error is recorded');
 
 	});
 
@@ -442,9 +442,9 @@ suite('notebook model', function (): void {
 		// After closing the notebook
 		await model.handleClosed();
 		// Ensure client session is cleaned up
-		assert(isUndefinedOrNull(model.clientSession));
+		assert(isUndefinedOrNull(model.clientSession), 'clientSession is not cleaned up properly');
 		// Ensure session is no longer ready
-		assert.equal(model.isSessionReady, false);
+		assert.equal(model.isSessionReady, false, 'session is incorrectly showing as ready');
 	});
 
 	test('Should disconnect when connection profile created by notebook', async function () {
@@ -454,7 +454,7 @@ suite('notebook model', function (): void {
 		await changeContextWithConnectionProfile(model);
 
 		// After client session is started, ensure context isn't null/undefined
-		assert(!isUndefinedOrNull(model.context));
+		assert(!isUndefinedOrNull(model.context), 'context should exist after call to change context');
 
 		// After closing the notebook
 		await model.handleClosed();
@@ -470,7 +470,7 @@ suite('notebook model', function (): void {
 		await changeContextWithConnectionProfile(model);
 
 		// After client session is started, ensure context isn't null/undefined
-		assert(!isUndefinedOrNull(model.context));
+		assert(!isUndefinedOrNull(model.context), 'context should exist after call to change context');
 
 		// After closing the notebook
 		await model.handleClosed();
@@ -507,9 +507,9 @@ suite('notebook model', function (): void {
 		await model.startSession(notebookManagers[0]);
 
 		// Then I expect load to succeed
-		assert(!isUndefinedOrNull(model.clientSession));
+		assert(!isUndefinedOrNull(model.clientSession), 'clientSession should exist after session is started');
 
-		assert.deepEqual(actualSession, mockClientSession.object);
+		assert.deepEqual(actualSession, mockClientSession.object, 'session returned is not the expected object');
 
 		// but on server load completion I expect error state to be set
 		// Note: do not expect serverLoad event to throw even if failed
