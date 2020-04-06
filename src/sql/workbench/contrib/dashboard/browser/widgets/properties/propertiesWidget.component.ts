@@ -21,6 +21,7 @@ import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
@@ -284,7 +285,9 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	}
 
 	private updateTheme(theme: IColorTheme): void {
-		const border = theme.getColor(DASHBOARD_BORDER);
-		this._container.nativeElement.style.borderBottom = '1px solid ' + border.toString();
+		if (!theme.getColor(contrastBorder)) {
+			const border = theme.getColor(DASHBOARD_BORDER);
+			this._container.nativeElement.style.borderBottom = '1px solid ' + border.toString();
+		}
 	}
 }
