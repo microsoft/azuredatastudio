@@ -120,7 +120,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 
 		if (this._collapseOverflow) {
 			this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
-				if (document.getElementById('actions-container')) {
+				if (this._actionsList) {
 					this.resizeToolbar();
 				}
 			}));
@@ -163,8 +163,8 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 
 	@debounce(300)
 	private resizeToolbar() {
-		let width = document.getElementById('actions-container').offsetWidth;
-		let fullWidth = document.getElementById('actions-container').scrollWidth;
+		let width = this._actionsList.offsetWidth;
+		let fullWidth = this._actionsList.scrollWidth;
 
 		// collapse actions that are beyond the width of the toolbar
 		if (width < fullWidth) {
@@ -179,7 +179,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 				if (index > -1) {
 					// move placeholder in this._items
 					this.collapseItem();
-					fullWidth = document.getElementById('actions-container').scrollWidth;
+					fullWidth = this._actionsList.scrollWidth;
 				} else {
 					break;
 				}
@@ -198,7 +198,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 				this._actionsList.insertBefore(item, this._actionsList.lastChild);
 
 				// if the action was too wide, collapse it again
-				if (document.getElementById('actions-container').scrollWidth > document.getElementById('actions-container').offsetWidth) {
+				if (this._actionsList.scrollWidth > this._actionsList.offsetWidth) {
 					// move placeholder in this._items
 					this.collapseItem();
 					break;
@@ -266,8 +266,6 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 
 		this._moreItemElement.appendChild(this._moreActionsElement);
 		this._actionsList.appendChild(this._moreItemElement);
-		let placeHolderItem = new ActionViewItem(this, undefined, undefined);
-		placeHolderItem.actionRunner = undefined;
 		this._items.push(undefined); // add place holder for more item element
 	}
 
