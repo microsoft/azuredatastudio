@@ -38,6 +38,7 @@ import { MenuId } from 'vs/platform/actions/common/actions';
 import { ViewMenuActions } from 'vs/workbench/browser/parts/views/viewMenuActions';
 import { IPaneComposite } from 'vs/workbench/common/panecomposite';
 import { IStorageKeysSyncRegistryService } from 'vs/platform/userDataSync/common/storageKeys';
+import { Before2D } from 'vs/workbench/browser/dnd';
 
 interface ICachedPanel {
 	id: string;
@@ -147,8 +148,8 @@ export class PanelPart extends CompositePart<Panel> implements IPanelService {
 			getDefaultCompositeId: () => this.panelRegistry.getDefaultPanelId(),
 			hidePart: () => this.layoutService.setPanelHidden(true),
 			dndHandler: new CompositeDragAndDrop(this.viewDescriptorService, ViewContainerLocation.Panel,
-				(id: string, focus?: boolean) => <unknown>this.openPanel(id, focus) as Promise<IPaneComposite | undefined>, // {{SQL CARBON EDIT}} strict-null-checks
-				(from: string, to: string, before?: boolean) => this.compositeBar.move(from, to, before)
+				(id: string, focus?: boolean) => <unknown>this.openPanel(id, focus) as Promise<IPaneComposite | undefined>,  // {{SQL CARBON EDIT}} strict-null-checks
+				(from: string, to: string, before?: Before2D) => this.compositeBar.move(from, to, before?.horizontallyBefore)
 			),
 			compositeSize: 0,
 			overflowActionSize: 44,

@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.17.0",
-  "distro": "85d2285030788e77ec360ec5631ef9978d62bee4",
+  "distro": "032712182226916808ad5fea8edbdf657dc8d297",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -56,7 +56,7 @@
     "iconv-lite": "0.5.0",
     "jquery": "3.4.0",
     "jschardet": "2.1.1",
-    "keytar": "^4.11.0",
+    "keytar": "github:rmacfarlane/node-keytar#334424bd26414923782f144110f4beda19168d24",
     "minimist": "^1.2.5",
     "native-is-elevated": "0.4.1",
     "native-keymap": "2.1.1",
@@ -185,7 +185,7 @@
     "vinyl": "^2.0.0",
     "vinyl-fs": "^3.0.0",
     "vsce": "1.48.0",
-    "vscode-debugprotocol": "1.40.0-pre.1",
+    "vscode-debugprotocol": "^1.40.0",
     "vscode-nls-dev": "^3.3.1",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.3.8",
