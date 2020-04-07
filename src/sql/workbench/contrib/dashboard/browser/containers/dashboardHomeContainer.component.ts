@@ -21,6 +21,7 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 
 @Component({
 	selector: 'dashboard-home-container',
@@ -84,7 +85,11 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 
 	private updateTheme(theme: IColorTheme): void {
 		const border = theme.getColor(DASHBOARD_BORDER);
-		this._propertiesContainer.nativeElement.style.borderBottom = '1px solid ' + border.toString();
+		if (theme.getColor(contrastBorder)) {
+			this._propertiesContainer.nativeElement.style.borderBottom = 'none';
+		} else {
+			this._propertiesContainer.nativeElement.style.borderBottom = '1px solid ' + border.toString();
+		}
 	}
 
 	public refresh(): void {
