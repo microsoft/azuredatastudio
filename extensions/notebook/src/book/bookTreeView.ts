@@ -7,7 +7,6 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as constants from '../common/constants';
 import * as fsw from 'fs';
 import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
@@ -17,6 +16,7 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import { ApiWrapper } from '../common/apiWrapper';
+import { visitedNotebooksMementoKey, notebookFileExt } from '../common/constants';
 
 const Content = 'content';
 
@@ -68,11 +68,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	get _visitedNotebooks(): string[] {
-		return this._extensionContext.globalState.get(constants.visitedNotebooksMementoKey, []);
+		return this._extensionContext.globalState.get(visitedNotebooksMementoKey, []);
 	}
 
 	set _visitedNotebooks(value: string[]) {
-		this._extensionContext.globalState.update(constants.visitedNotebooksMementoKey, value);
+		this._extensionContext.globalState.update(visitedNotebooksMementoKey, value);
 	}
 
 	trustBook(bookTreeItem?: BookTreeItem): void {
@@ -184,7 +184,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			const urlPath = sectionToOpen ? sectionToOpen.url : bookRoot.tableOfContents.sections[0].url;
 			const sectionToOpenMarkdown: string = path.join(this.currentBook.bookPath, Content, urlPath.concat('.md'));
 			// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-			const sectionToOpenNotebook: string = path.posix.join(this.currentBook.bookPath, Content, urlPath.concat('.ipynb'));
+			const sectionToOpenNotebook: string = path.posix.join(this.currentBook.bookPath, Content, urlPath.concat(notebookFileExt));
 			if (await fs.pathExists(sectionToOpenMarkdown)) {
 				this.openMarkdown(sectionToOpenMarkdown);
 			}
@@ -350,8 +350,61 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		});
 		if (uris && uris.length > 0) {
 			let folderPath = uris[0];
-			vscode.window.showInformationMessage('Selected folder: ' + folderPath.toString());
+			let notebookFiles = await BookTreeViewProvider.getNotebooksInDirTree(folderPath?.fsPath);
+			this.buildTreeForFiles(notebookFiles);
 		}
+	}
+
+	public static async getNotebooksInDirTree(folderPath: string): Promise<string[]> {
+		if (!folderPath) {
+			return [];
+		}
+
+		let dirPromise = new Promise<string[]>((resolve, reject) => {
+			fs.readdir(folderPath, (err, dir) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(dir);
+				}
+			});
+		});
+		let directoryEntries = await dirPromise;
+
+		let filePromises: Promise<string[]>[] = directoryEntries.map(fileName => {
+			return new Promise((resolve, reject) => {
+				let filePath = path.join(folderPath, fileName);
+				fs.stat(filePath, (err, stats) => {
+					if (err) {
+						reject(err);
+					} else {
+						if (stats.isDirectory()) {
+							BookTreeViewProvider.getNotebooksInDirTree(filePath).then((childPaths) => {
+								resolve(childPaths);
+							}).catch(err => {
+								reject(err);
+							});
+						} else {
+							if (path.extname(filePath) === notebookFileExt) {
+								resolve([filePath]);
+							} else {
+								resolve([]);
+							}
+						}
+					}
+				});
+			});
+		});
+		let filesResult = await Promise.all(filePromises);
+
+		let allPaths = filesResult.reduce((previous, current) => {
+			return previous.concat(current);
+		});
+		return allPaths;
+	}
+
+	private buildTreeForFiles(notebookFiles: string[]): void {
+		vscode.window.showInformationMessage(`Detected these notebook files: ${notebookFiles?.join(', ')}`);
 	}
 
 	private runThrottledAction(resource: string, action: () => void) {
@@ -418,7 +471,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					return undefined;
 				}
 			}
-			else if (element.root.endsWith('.ipynb')) {
+			else if (element.root.endsWith(notebookFileExt)) {
 				let baseName: string = path.basename(element.root);
 				parentPath = element.root.replace(baseName, 'readme.md');
 			}
