@@ -40,8 +40,12 @@ export interface DialogDeploymentProvider extends DeploymentProviderBase {
 	dialog: DialogInfo;
 }
 
-export interface WizardDeploymentProvider extends DeploymentProviderBase {
-	wizard: WizardInfo;
+export interface BdcWizardDeploymentProvider extends DeploymentProviderBase {
+	bdcWizard: WizardInfo;
+}
+
+export interface NotebookWizardDeploymentProvider extends DeploymentProviderBase {
+	notebookWizard: NotebookWizardInfo;
 }
 
 export interface NotebookDeploymentProvider extends DeploymentProviderBase {
@@ -64,8 +68,12 @@ export function instanceOfDialogDeploymentProvider(obj: any): obj is DialogDeplo
 	return obj && 'dialog' in obj;
 }
 
-export function instanceOfWizardDeploymentProvider(obj: any): obj is WizardDeploymentProvider {
-	return obj && 'wizard' in obj;
+export function instanceOfWizardDeploymentProvider(obj: any): obj is BdcWizardDeploymentProvider {
+	return obj && 'bdcWizard' in obj;
+}
+
+export function instanceOfNotebookWizardDeploymentProvider(obj: any): obj is NotebookWizardDeploymentProvider {
+	return obj && 'notebookWizard' in obj;
 }
 
 export function instanceOfNotebookDeploymentProvider(obj: any): obj is NotebookDeploymentProvider {
@@ -89,13 +97,26 @@ export interface DeploymentProviderBase {
 	when: string;
 }
 
-export type DeploymentProvider = DialogDeploymentProvider | WizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider;
+export type DeploymentProvider = DialogDeploymentProvider | BdcWizardDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider;
 
 export interface WizardInfo {
 	notebook: string | NotebookInfo;
 	type: BdcDeploymentType;
 }
 
+export interface NotebookWizardInfo {
+	notebook: string | NotebookInfo;
+	taskName?: string;
+	type: ArcDeploymentType;
+	runNotebook?: boolean;
+	actionText?: string;
+	title: string;
+	pages: NotebookWizardPageInfo[];
+}
+
+export interface NotebookWizardPageInfo extends PageInfoBase {
+	description?: string;
+}
 export interface NotebookBasedDialogInfo extends DialogInfoBase {
 	notebook: string | NotebookInfo;
 	runNotebook?: boolean;
@@ -123,7 +144,10 @@ export interface DialogInfoBase {
 	actionText?: string;
 }
 
-export interface DialogTabInfo {
+export interface DialogTabInfo extends PageInfoBase {
+}
+
+export interface PageInfoBase {
 	title: string;
 	sections: SectionInfo[];
 	labelWidth?: string;
@@ -131,7 +155,8 @@ export interface DialogTabInfo {
 }
 
 export interface SectionInfo {
-	title: string;
+	title?: string;
+	description?: string;
 	fields?: FieldInfo[]; // Use this if the dialog is not wide. All fields will be displayed in one column, label will be placed on top of the input component.
 	rows?: RowInfo[]; // Use this for wide dialog or wizard. label will be placed to the left of the input component.
 	labelWidth?: string;
@@ -169,7 +194,7 @@ export interface FieldInfo {
 	fontStyle?: FontStyle;
 	labelFontWeight?: FontWeight;
 	links?: azdata.LinkArea[];
-	editable?: boolean; // for editable dropdown,
+	editable?: boolean; // for editable drop-down,
 	enabled?: boolean;
 }
 
@@ -204,7 +229,8 @@ export enum FieldType {
 	Options = 'options',
 	ReadonlyText = 'readonly_text',
 	Checkbox = 'checkbox',
-	AzureAccount = 'azure_account'
+	AzureAccount = 'azure_account',
+	KubeConfigPicker = 'kube_config_picker'
 }
 
 export interface NotebookInfo {
@@ -276,6 +302,10 @@ export const enum BdcDeploymentType {
 	NewAKS = 'new-aks',
 	ExistingAKS = 'existing-aks',
 	ExistingKubeAdm = 'existing-kubeadm'
+}
+
+export const enum ArcDeploymentType {
+	NewControlPlane = 'new-control-plane'
 }
 
 export interface Command {

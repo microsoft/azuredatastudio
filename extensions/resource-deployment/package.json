@@ -237,7 +237,7 @@
         ],
         "providers": [
           {
-            "wizard": {
+            "bdcWizard": {
               "type": "new-aks",
               "notebook": "%bdc-2019-aks-notebook%"
             },
@@ -257,7 +257,7 @@
             "when": "target=new-aks&&version=bdc2019"
           },
           {
-            "wizard": {
+            "bdcWizard": {
               "type": "existing-aks",
               "notebook": "%bdc-2019-existing-aks-notebook%"
             },
@@ -272,7 +272,7 @@
             "when": "target=existing-aks&&version=bdc2019"
           },
           {
-            "wizard": {
+            "bdcWizard": {
               "type": "existing-kubeadm",
               "notebook": "%bdc-2019-existing-kubeadm-notebook%"
             },
@@ -300,6 +300,161 @@
             },
             {
               "text": "%bdc-agreement-azdata-eula%",
+              "url": "https://aka.ms/eula-azdata-en"
+            }
+          ]
+        }
+      },
+      {
+        "name": "azure-arc",
+        "displayIndex": 4,
+        "displayName": "%resource-type-azure-arc-display-name%",
+        "description": "%resource-type-azure-arc-description%",
+        "platforms": "*",
+        "icon": {
+          "light": "./images/sql_bdc.svg",
+          "dark": "./images/sql_bdc_inverse.svg"
+        },
+        "options": [
+          {
+            "name": "target",
+            "displayName": "%arc-deployment-target%",
+            "values": [
+              {
+                "name": "new-control-plane",
+                "displayName": "%arc-deployment-new-control-plane%"
+              }
+            ]
+          }
+        ],
+        "providers": [
+          {
+            "notebookWizard": {
+              "notebook": "./notebooks/arc/deploy.sql.control.plane.ipynb",
+              "type": "new-arc-control-plane",
+              "actionText": "%deploy.action%",
+              "title": "%arc.control.plane.new.wizard.title%",
+              "name": "arc.control.plane.new.wizard",
+              "pages":[
+                {
+                  "title": "%arc.control.plane.cluster.environment.title%",
+                  "description": "%arc.control.plane.cluster.environment.description%",
+                  "sections": [
+                    {
+                      "fields": [
+                        {
+                          "type": "options",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_ARC_CLUSTER_ENVIRONMENT",
+                          "defaultValue": "azure-arc-aks-private-preview",
+                          "editable": true,
+                          "options": [
+                            "azure-arc-aks-private-preview",
+                            "azure-arc-kubeadm-private-preview"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "title": "%arc.control.plane.select.cluster.title%",
+                  "sections": [
+                    {
+                      "fields": [
+                        {
+                          "typeCommented": "kube_config_picker",
+                          "type": "text",
+                          "defaultValue": "~/.kube/config",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_ARC_CLUSTER_PROFILE"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "title": "%arc.control.plane.data.manager.create.title%",
+                  "sections": [
+                    {
+                      "title": "%arc.control.plane.project.details.title%",
+                      "description": "%arc.control.plane.project.details.description%",
+                      "fields": [
+                        {
+                          "type": "azure_account",
+                          "required": true,
+                          "includeLocation": false,
+                          "subscriptionVariableName": "AZDATA_NB_VAR_ARC_SUBSCRIPTION",
+                          "resourceGroupVariableName": "AZDATA_NB_VAR_ARC_RESOURCE_GROUP"
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%arc.control.plane.data.manager.details.title%",
+                      "description": "%arc.control.plane.data.manager.details.description%",
+                      "fields": [
+                        {
+                          "type": "text",
+                          "label": "%arc.control.plane.arc.data.manager.name%",
+                          "defaultValue": "arcControlPlane1",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_MANAGER_NAME"
+                        },
+                        {
+                          "type": "options",
+                          "label": "%arc.control.plane.arc.data.manager.location%",
+                          "defaultValue": "East US",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_MANAGER_LOCATION",
+                          "options":  ["East US", "East US 2", "Central US"]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "title": "%arc.control.plane.review.title%",
+                  "sections": [
+                    {
+                      "fields": [
+                        {
+                          "type": "review"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "requiredTools": [
+              {
+                "name": "kubectl",
+                "version": "1.13.0"
+              },
+              {
+                "name": "azure-cli"
+              },
+              {
+                "name": "azdata",
+                "version": "15.0.2100"
+              }
+            ],
+            "when": "target=new-control-plane"
+          }
+        ],
+        "agreement": {
+          "template": "%arc-agreement%",
+          "links": [
+            {
+              "text": "%arc-agreement-privacy-statement%",
+              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+            },
+            {
+              "text": "%arc-agreement-arc-eula%",
+              "url": "https://go.microsoft.com/fwlink/?LinkId=2002534"
+            },
+            {
+              "text": "%arc-agreement-azdata-eula%",
               "url": "https://aka.ms/eula-azdata-en"
             }
           ]

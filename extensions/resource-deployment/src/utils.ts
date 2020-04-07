@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { ITool, NoteBookEnvironmentVariablePrefix } from './interfaces';
 import * as path from 'path';
-import { ToolsInstallPath } from './ui/deployClusterWizard/constants';
+import { ToolsInstallPath } from './constants';
 
 export function getErrorMessage(error: any): string {
 	return (error instanceof Error)
