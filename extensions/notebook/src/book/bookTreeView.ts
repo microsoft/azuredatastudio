@@ -110,25 +110,24 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	async openBook(bookPath: string, urlToOpen?: string): Promise<void> {
 		try {
-			let books: BookModel[] = this.books.filter(book => book.bookPath === bookPath) || [];
+			let existingBook = this.books.find(book => book.bookPath === bookPath);
 			// Check if the book is already open in viewlet.
-			if (books.length > 0 && books[0].bookItems.length > 0) {
-				this.currentBook = books[0];
+			if (existingBook?.bookItems.length > 0) {
+				this.currentBook = existingBook;
 				await this.showPreviewFile(urlToOpen);
-			}
-			else {
+			} else {
 				await this.createAndAddBookModel(bookPath);
 				let bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
-				this.currentBook = this.books.filter(book => book.bookPath === bookPath)[0];
+				this.currentBook = this.books.find(book => book.bookPath === bookPath);
 				bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
 				await this.showPreviewFile(urlToOpen);
 			}
 			// add file watcher on toc file.
 			fsw.watch(path.join(bookPath, '_data', 'toc.yml'), async (event, filename) => {
 				if (event === 'change') {
-					let index = this.books.findIndex(book => book.bookPath === bookPath);
-					await this.books[index].initializeContents().then(() => {
-						this._onDidChangeTreeData.fire(this.books[index].bookItems[0]);
+					let changedBook = this.books.find(book => book.bookPath === bookPath);
+					await changedBook.initializeContents().then(() => {
+						this._onDidChangeTreeData.fire(changedBook.bookItems[0]);
 					});
 					this._onDidChangeTreeData.fire();
 				}
@@ -357,13 +356,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (uris && uris.length > 0) {
 			let folderPath = uris[0];
 			let bookCollection = await this.getNotebooksInTree(folderPath?.fsPath);
-			vscode.window.showInformationMessage(`Detected these notebooks: ${bookCollection?.notebookPaths?.join(', ')}`);
-			vscode.window.showInformationMessage(`Detected these books: ${bookCollection?.bookPaths?.join(', ')}`);
+			for (let i = 0; i < bookCollection.bookPaths.length; i++) {
+				await this.openBook(bookCollection.bookPaths[i]);
+			}
 		}
 	}
 
 	private async getNotebooksInTree(folderPath: string): Promise<BookTreeCollection> {
-
 		let bookFilter = path.join(folderPath, '**', '_data', 'toc.yml').replace(/\\/g, '/');
 		let bookPaths = await glob(bookFilter);
 		let tocTrimLength = '/_data/toc.yml'.length * -1;
