@@ -20,7 +20,6 @@ import { getRootPath, resolveCurrentDirectory, resolveFilePath } from 'sql/platf
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IFileDialogService, FileFilter } from 'vs/platform/dialogs/common/dialogs';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IFileService } from 'vs/platform/files/common/files';
 
 let prevSavePath: string;
 
