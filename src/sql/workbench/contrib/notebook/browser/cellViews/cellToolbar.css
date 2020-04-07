@@ -49,24 +49,24 @@ cell-toolbar-component .offscreen {
 }
 
 cell-toolbar-component li .cell-tool-close {
-	background-image: url('../../../../../media/icons/close-blue.svg');
+	background-image: url('sql/media/icons/close-blue.svg');
 }
 cell-toolbar-component li .cell-tool-edit {
-	background-image: url('../../../../../media/icons/edit.svg');
+	background-image: url('sql/media/icons/edit.svg');
 }
 cell-toolbar-component li .cell-tool-add {
-	background-image: url('../../../../../media/icons/new-blue.svg');
+	background-image: url('sql/media/icons/new-blue.svg');
 }
 cell-toolbar-component li .cell-tool-move-up {
-	background-image: url('../../../../../media/icons/down-arrow-blue.svg');
+	background-image: url('sql/media/icons/down-arrow-blue.svg');
 	transform: scale(-1);
 }
 cell-toolbar-component li .cell-tool-move-down {
-	background-image: url('../../../../../media/icons/down-arrow-blue.svg');
+	background-image: url('sql/media/icons/down-arrow-blue.svg');
 }
 cell-toolbar-component li .cell-tool-delete {
-	background-image: url('../../../../../media/icons/garbage-can-blue.svg');
+	background-image: url('sql/media/icons/garbage-can-blue.svg');
 }
 cell-toolbar-component li .cell-tool-more {
-	background-image: url('../../../../../media/icons/ellipsis-blue.svg');
+	background-image: url('sql/media/icons/ellipsis-blue.svg');
 }
