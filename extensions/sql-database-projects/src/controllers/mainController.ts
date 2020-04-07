@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
 import * as templateMap from '../templates/templateMap';
 import * as constants from '../common/constants';
 
@@ -14,8 +13,6 @@ import { ProjectsController } from './projectController';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 
 const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
-
-const localize = nls.loadMessageBundle();
 
 /**
  * The main controller class that initializes the extension
@@ -52,6 +49,7 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.newView', (node: BaseProjectTreeItem) => { this.projectsController.addItemPrompt(node, templateMap.view); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newStoredProcedure', (node: BaseProjectTreeItem) => { this.projectsController.addItemPrompt(node, templateMap.storedProcedure); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newItem', (node: BaseProjectTreeItem) => { this.projectsController.addItemPrompt(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newFolder', (node: BaseProjectTreeItem) => { this.projectsController.addFolderPrompt(node); });
 
 		// init view
 		this.extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(SQL_DATABASE_PROJECTS_VIEW_ID, this.dbProjectTreeViewProvider));

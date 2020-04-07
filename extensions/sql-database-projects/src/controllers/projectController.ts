@@ -88,31 +88,63 @@ export class ProjectsController {
 	}
 
 	public closeProject(treeNode: BaseProjectTreeItem) {
-		const project = this.getProjectFromTreeNode(treeNode);
+		const project = this.getProjectContextFromTreeNode(treeNode);
 		this.projects = this.projects.filter((e) => { return e !== project; });
 		this.refreshProjectsTree();
 	}
 
-	private getProjectFromTreeNode(treeNode: BaseProjectTreeItem): Project | undefined {
+	private getProjectContextFromTreeNode(treeNode: BaseProjectTreeItem): Project {
+		if (!treeNode) {
+			// TODO: prompt for which (currently-open) project when invoked via command pallet
+			throw new Error('TODO: prompt for which project when invoked via command pallet');
+		}
+
 		if (treeNode.root instanceof ProjectRootTreeItem) {
 			return (treeNode.root as ProjectRootTreeItem).project;
 		}
 		else {
-			return undefined;
+			throw new Error('"Add item" command invoked from unexpected location: ' + treeNode.uri.path);
 		}
 	}
 
+	private async promptForNewObjectName(itemType: templateMap.ProjectScriptType, _project: Project): Promise<string | undefined> {
+		// TODO: ask project for suggested name that doesn't conflict
+		const suggestedName = itemType.friendlyName.replace(new RegExp('\s', 'g'), '') + '1';
+
+		const itemObjectName = await vscode.window.showInputBox({
+			prompt: constants.newObjectNamePrompt(itemType.friendlyName),
+			value: suggestedName,
+		});
+
+		return itemObjectName;
+	}
+
+	private prependContextPath(treeNode: BaseProjectTreeItem, objectName: string): string {
+		if (treeNode instanceof FolderNode) {
+			return path.join(utils.trimUri(treeNode.root.uri, treeNode.uri), objectName);
+		}
+		else {
+			return objectName;
+		}
+	}
+
+	public async addFolderPrompt(treeNode: BaseProjectTreeItem) {
+		const project = this.getProjectContextFromTreeNode(treeNode);
+		const newFolderName = await this.promptForNewObjectName(new templateMap.ProjectScriptType(templateMap.folder, 'Folder', ''), project);
+
+		if (!newFolderName) {
+			return; // user cancelled
+		}
+
+		const relativeFolderPath = this.prependContextPath(treeNode, newFolderName);
+
+		await project.addFolderItem(relativeFolderPath);
+
+		this.refreshProjectsTree();
+	}
+
 	public async addItemPrompt(treeNode: BaseProjectTreeItem, itemTypeName?: string) {
-		if (!treeNode) {
-			// TODO: prompt for which (currently-open) project when invoked via command pallet
-			return;
-		}
-
-		const project = this.getProjectFromTreeNode(treeNode);
-
-		if (!project) {
-			throw new Error('"Add item" command invoked from unexpected location: ' + treeNode.uri.path);
-		}
+		const project = this.getProjectContextFromTreeNode(treeNode);
 
 		if (!itemTypeName) {
 			let itemFriendlyNames: string[] = [];
@@ -131,14 +163,7 @@ export class ProjectsController {
 		}
 
 		const itemType = templateMap.projectScriptTypeMap[itemTypeName.toLocaleLowerCase()];
-
-		// TODO: ask project for suggested name that doesn't conflict
-		const suggestedName = itemType.friendlyName.replace(new RegExp('\s', 'g'), '') + '1';
-
-		const itemObjectName = await vscode.window.showInputBox({
-			prompt: constants.newObjectNamePrompt(itemType.friendlyName),
-			value: suggestedName,
-		});
+		const itemObjectName = await this.promptForNewObjectName(itemType, project);
 
 		if (!itemObjectName) {
 			return; // user cancelled
@@ -147,12 +172,7 @@ export class ProjectsController {
 		// TODO: file already exists?
 
 		const newFileText = this.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName });
-
-		let relativeFilePath = itemObjectName + '.sql';
-
-		if (treeNode instanceof FolderNode) {
-			relativeFilePath = path.join(utils.trimUri(treeNode.root.uri, treeNode.uri), relativeFilePath);
-		}
+		const relativeFilePath = this.prependContextPath(treeNode, itemObjectName + '.sql');
 
 		const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
 

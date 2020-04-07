@@ -26,6 +26,7 @@ export const script: string = 'script';
 export const table: string = 'table';
 export const view: string = 'view';
 export const storedProcedure: string = 'storedProcedure';
+export const folder: string = 'folder';
 
 export const projectScriptTypes: ProjectScriptType[] = [
 	new ProjectScriptType(script, constants.scriptFriendlyName, newSqlScriptTemplate),

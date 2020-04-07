@@ -72,6 +72,17 @@ export class Project {
 		return new ProjectEntry(vscode.Uri.file(path.join(this.projectFolderPath, relativePath)), relativePath, entryType);
 	}
 
+	public async addFolderItem(relativeFolderPath: string): Promise<ProjectEntry> {
+		const absoluteFolderPath = path.join(this.projectFolderPath, relativeFolderPath);
+		await fs.mkdir(absoluteFolderPath, { recursive: true });
+
+		const folderEntry = this.createProjectEntry(relativeFolderPath, EntryType.Folder);
+		this.files.push(folderEntry);
+
+		await this.addToProjFile(folderEntry);
+		return folderEntry;
+	}
+
 	public async addScriptItem(relativeFilePath: string, contents: string): Promise<ProjectEntry> {
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
 		await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
@@ -85,30 +96,66 @@ export class Project {
 		return fileEntry;
 	}
 
-	private async addToProjFile(fileEntry: ProjectEntry) {
+	private addFileToProjFile(path: string) {
+		let fileItemGroupNode = undefined;
+
+		// find any ItemGroup node that contains files; that's where we'll add
+		for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName('ItemGroup').length; ig++) {
+			const itemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName('ItemGroup')[ig];
+
+			if (itemGroup.getElementsByTagName('Build').length > 0) {
+				fileItemGroupNode = itemGroup;
+				break;
+			}
+		}
+
+		// if none already exist, make a new ItemGroup for it
+		if (!fileItemGroupNode) {
+			fileItemGroupNode = this.projFileXmlDoc.createElement('ItemGroup');
+			this.projFileXmlDoc.documentElement.appendChild(fileItemGroupNode);
+		}
+
+		let newFileNode = this.projFileXmlDoc.createElement('Build');
+		newFileNode.setAttribute('Include', path);
+
+		fileItemGroupNode.appendChild(newFileNode);
+	}
+
+	private addFolderToProjFile(path: string) {
+		let fileItemGroupNode = undefined;
+
+		// find any ItemGroup node that contains files; that's where we'll add
+		for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName('ItemGroup').length; ig++) {
+			const itemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName('ItemGroup')[ig];
+
+			if (itemGroup.getElementsByTagName('Folder').length > 0) {
+				fileItemGroupNode = itemGroup;
+				break;
+			}
+		}
+
+		// if none already exist, make a new ItemGroup for it
+		if (!fileItemGroupNode) {
+			fileItemGroupNode = this.projFileXmlDoc.createElement('ItemGroup');
+			this.projFileXmlDoc.documentElement.appendChild(fileItemGroupNode);
+		}
+
+		let newFolderNode = this.projFileXmlDoc.createElement('Folder');
+		newFolderNode.setAttribute('Include', path);
+
+		fileItemGroupNode.appendChild(newFolderNode);
+	}
+
+
+	private async addToProjFile(entry: ProjectEntry) {
 		try {
-			let fileItemGroupNode = undefined;
-
-			// find any ItemGroup node that contains files; that's where we'll add
-			for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName('ItemGroup').length; ig++) {
-				const itemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName('ItemGroup')[ig];
-
-				if (itemGroup.getElementsByTagName('Build').length > 0) {
-					fileItemGroupNode = itemGroup;
+			switch (entry.type) {
+				case EntryType.File:
+					this.addFileToProjFile(entry.relativePath);
 					break;
-				}
+				case EntryType.Folder:
+					this.addFolderToProjFile(entry.relativePath);
 			}
-
-			// if none already exist, make a new ItemGroup for it
-			if (!fileItemGroupNode) {
-				fileItemGroupNode = this.projFileXmlDoc.createElement('ItemGroup');
-				this.projFileXmlDoc.documentElement.appendChild(fileItemGroupNode);
-			}
-
-			let newFileNode = this.projFileXmlDoc.createElement('Build');
-			newFileNode.setAttribute('Include', fileEntry.relativePath);
-
-			fileItemGroupNode.appendChild(newFileNode);
 
 			await this.serializeToProjFile(this.projFileXmlDoc);
 		}

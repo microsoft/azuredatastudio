@@ -66,6 +66,11 @@
         "command": "sqlDatabaseProjects.newItem",
         "title": "%sqlDatabaseProjects.newItem%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.newFolder",
+        "title": "%sqlDatabaseProjects.newFolder%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -100,6 +105,10 @@
         },
         {
           "command": "sqlDatabaseProjects.newItem",
+          "when": "view == sqlDatabaseProjectsView"
+        },
+        {
+          "command": "sqlDatabaseProjects.newFolder",
           "when": "view == sqlDatabaseProjectsView"
         }
       ]
