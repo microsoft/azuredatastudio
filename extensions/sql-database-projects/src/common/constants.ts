@@ -19,6 +19,7 @@ export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
 export const newDatabaseProjectName = localize('newDatabaseProjectName', "New database project name:");
 export const sqlDatabaseProject = localize('sqlDatabaseProject', "SQL database project");
+export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 
 // Error messages
 

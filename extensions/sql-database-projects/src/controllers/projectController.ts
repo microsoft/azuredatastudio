@@ -136,7 +136,7 @@ export class ProjectsController {
 		const suggestedName = itemType.friendlyName.replace(new RegExp('\s', 'g'), '') + '1';
 
 		const itemObjectName = await vscode.window.showInputBox({
-			prompt: `New ${itemType.friendlyName} name:`,
+			prompt: constants.newObjectNamePrompt(itemType.friendlyName),
 			value: suggestedName,
 		});
 
