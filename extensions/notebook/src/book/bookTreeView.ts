@@ -17,8 +17,14 @@ import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import { ApiWrapper } from '../common/apiWrapper';
 import { visitedNotebooksMementoKey, notebookFileExt } from '../common/constants';
+import * as glob from 'fast-glob';
 
 const Content = 'content';
+
+interface BookTreeCollection {
+	notebookPaths: string[];
+	bookPaths: string[];
+}
 
 export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined> = new vscode.EventEmitter<BookTreeItem | undefined>();
@@ -350,61 +356,23 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		});
 		if (uris && uris.length > 0) {
 			let folderPath = uris[0];
-			let notebookFiles = await BookTreeViewProvider.getNotebooksInDirTree(folderPath?.fsPath);
-			this.buildTreeForFiles(notebookFiles);
+			let bookCollection = await this.getNotebooksInTree(folderPath?.fsPath);
+			vscode.window.showInformationMessage(`Detected these notebooks: ${bookCollection?.notebookPaths?.join(', ')}`);
+			vscode.window.showInformationMessage(`Detected these books: ${bookCollection?.bookPaths?.join(', ')}`);
 		}
 	}
 
-	public static async getNotebooksInDirTree(folderPath: string): Promise<string[]> {
-		if (!folderPath) {
-			return [];
-		}
+	private async getNotebooksInTree(folderPath: string): Promise<BookTreeCollection> {
 
-		let dirPromise = new Promise<string[]>((resolve, reject) => {
-			fs.readdir(folderPath, (err, dir) => {
-				if (err) {
-					reject(err);
-				} else {
-					resolve(dir);
-				}
-			});
-		});
-		let directoryEntries = await dirPromise;
+		let bookFilter = path.join(folderPath, '**', '_data', 'toc.yml').replace(/\\/g, '/');
+		let bookPaths = await glob(bookFilter);
+		let tocTrimLength = '/_data/toc.yml'.length * -1;
+		bookPaths = bookPaths?.map(path => path.slice(0, tocTrimLength));
 
-		let filePromises: Promise<string[]>[] = directoryEntries.map(fileName => {
-			return new Promise((resolve, reject) => {
-				let filePath = path.join(folderPath, fileName);
-				fs.stat(filePath, (err, stats) => {
-					if (err) {
-						reject(err);
-					} else {
-						if (stats.isDirectory()) {
-							BookTreeViewProvider.getNotebooksInDirTree(filePath).then((childPaths) => {
-								resolve(childPaths);
-							}).catch(err => {
-								reject(err);
-							});
-						} else {
-							if (path.extname(filePath) === notebookFileExt) {
-								resolve([filePath]);
-							} else {
-								resolve([]);
-							}
-						}
-					}
-				});
-			});
-		});
-		let filesResult = await Promise.all(filePromises);
+		let notebookFilter = path.join(folderPath, '**', '*.ipynb').replace(/\\/g, '/');
+		let notebookPaths = await glob(notebookFilter, { ignore: bookPaths.map(path => path + '/**/*.ipynb') });
 
-		let allPaths = filesResult.reduce((previous, current) => {
-			return previous.concat(current);
-		});
-		return allPaths;
-	}
-
-	private buildTreeForFiles(notebookFiles: string[]): void {
-		vscode.window.showInformationMessage(`Detected these notebook files: ${notebookFiles?.join(', ')}`);
+		return { notebookPaths: notebookPaths ?? [], bookPaths: bookPaths ?? [] };
 	}
 
 	private runThrottledAction(resource: string, action: () => void) {
