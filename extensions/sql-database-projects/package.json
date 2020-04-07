@@ -107,10 +107,10 @@
   },
   "dependencies": {
     "vscode-nls": "^3.2.1",
-    "xml2js": "^0.4.23"
+    "xmldom": "^0.3.0"
   },
   "devDependencies": {
-    "@types/xml2js": "^0.4.5",
+    "@types/xmldom": "^0.1.29",
     "tslint": "^5.8.0",
     "typescript": "^2.6.1"
   }

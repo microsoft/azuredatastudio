@@ -82,7 +82,7 @@ export class ProjectsController {
 		}
 		catch { } // file doesn't already exist
 
-		fs.writeFile(newProjFilePath, newProjFileContents);
+		await fs.writeFile(newProjFilePath, newProjFileContents);
 		this.openProject(vscode.Uri.file(newProjFilePath));
 	}
 
@@ -102,10 +102,15 @@ export class ProjectsController {
 	}
 
 	public async addItemPrompt(treeNode: BaseProjectTreeItem, itemTypeName?: string) {
+		if (!treeNode) {
+			// TODO: prompt for which (currently-open) project when invoked via command pallet
+			return;
+		}
+
 		const project = this.getProjectFromTreeNode(treeNode);
 
 		if (!project) {
-			return;
+			throw new Error('"Add item" command invoked from unexpected location: ' + treeNode.uri.path);
 		}
 
 		if (!itemTypeName) {
@@ -124,7 +129,7 @@ export class ProjectsController {
 			}
 		}
 
-		const itemType = templateMap.projectScriptTypeMap[itemTypeName];
+		const itemType = templateMap.projectScriptTypeMap[itemTypeName.toLocaleLowerCase()];
 
 		// TODO: ask project for suggested name that doesn't conflict
 		const suggestedName = itemType.friendlyName.replace(new RegExp('\s', 'g'), '') + '1';

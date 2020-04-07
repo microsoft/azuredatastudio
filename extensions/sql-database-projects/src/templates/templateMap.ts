@@ -34,5 +34,10 @@ export const projectScriptTypes: ProjectScriptType[] = [
 export const projectScriptTypeMap: Record<string, ProjectScriptType> = {};
 
 for (const scriptType of projectScriptTypes) {
-	projectScriptTypeMap[scriptType.type] = scriptType;
+	if (Object.keys(projectScriptTypeMap).find(s => s === scriptType.type.toLocaleLowerCase() || s === scriptType.friendlyName.toLocaleLowerCase())) {
+		throw new Error(`Script type map already contains ${scriptType.type} or its friendlyName.`);
+	}
+
+	projectScriptTypeMap[scriptType.type.toLocaleLowerCase()] = scriptType;
+	projectScriptTypeMap[scriptType.friendlyName.toLocaleLowerCase()] = scriptType;
 }
