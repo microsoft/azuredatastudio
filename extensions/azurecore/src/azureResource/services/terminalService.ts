@@ -76,7 +76,7 @@ export class AzureTerminalService implements IAzureTerminalService {
 			return;
 		}
 
-		const terminalName = localize('azure.cloudShell', "Azure Cloud Shell (Preview)") + ` ${shell} (${accountDisplayName})`;
+		const terminalName = localize('azure.cloudShell', "Azure Cloud Shell (Preview)") + ` ${shell.label} (${accountDisplayName})`;
 
 		const azureTerminal = new AzureTerminal(provisionedUri, token, shell.value);
 		const terminal = vscode.window.createTerminal({
