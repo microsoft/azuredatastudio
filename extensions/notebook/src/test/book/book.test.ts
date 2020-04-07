@@ -394,6 +394,24 @@ describe('BookTreeViewProviderTests', function () {
 			should(bookTreeViewProvider.books.length).equal(0, 'Failed to remove the book on close');
 		});
 
+		it('should add book when bookPath contains special characters on openBook', async () => {
+			let rootFolderPath2 = path.join(os.tmpdir(), `BookTestData(1)_${uuid.v4()}`);
+			let dataFolderPath2 = path.join(rootFolderPath2, '_data');
+			let contentFolderPath2 = path.join(rootFolderPath2, 'content');
+			let configFile2 = path.join(rootFolderPath2, '_config.yml');
+			let tableOfContentsFile2 = path.join(dataFolderPath2, 'toc.yml');
+			let notebook2File2 = path.join(contentFolderPath2, 'notebook2.ipynb');
+			await fs.mkdir(rootFolderPath2);
+			await fs.mkdir(dataFolderPath2);
+			await fs.mkdir(contentFolderPath2);
+			await fs.writeFile(configFile2, 'title: Test Book');
+			await fs.writeFile(tableOfContentsFile2, '- title: Notebook1\n  url: /notebook1\n- title: Notebook2\n  url: /notebook2');
+			await fs.writeFile(notebook2File2, '');
+
+			await bookTreeViewProvider.openBook(rootFolderPath2);
+			should(bookTreeViewProvider.books.length).equal(1, 'Failed to initialize the book on open');
+		});
+
 		this.afterAll(async function (): Promise<void> {
 			if (await exists(rootFolderPath)) {
 				await promisify(rimraf)(rootFolderPath);
