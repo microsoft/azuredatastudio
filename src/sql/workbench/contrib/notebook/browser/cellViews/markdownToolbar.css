@@ -13,10 +13,15 @@ text-cell-component .markdown-toolbar {
 
 text-cell-component .markdown-toolbar li {
 	display: inline-block;
-	margin-right: 12px;
+	margin-right: 8px;
 	text-align: center;
 }
-
+text-cell-component .markdown-toolbar li:nth-child(1) {
+	margin-right: 0px;
+}
+text-cell-component .markdown-toolbar li:nth-child(2) {
+	margin-right: 4px;
+}
 text-cell-component .markdown-toolbar li:last-child {
 	float: right;
 	margin-right: 0;

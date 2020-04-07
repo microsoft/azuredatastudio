@@ -121,6 +121,9 @@
 .moreActions.actionhidden {
 	visibility: hidden
 }
+.moreActions .monaco-action-bar {
+	margin-left: -12px;
+}
 
 .notebookEditor .notebook-cellTable {
 	margin-left: 20px;

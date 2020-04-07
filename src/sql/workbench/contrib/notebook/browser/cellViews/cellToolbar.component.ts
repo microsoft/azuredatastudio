@@ -3,31 +3,24 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./cellToolbar';
+
 import { Component } from '@angular/core';
 import { localize } from 'vs/nls';
 
-const ButtonEdit = localize('buttonEdit', "Edit");
-const ButtonClose = localize('buttonClose', "Close");
-const ButtonAdd = localize('buttonAdd', "Add new cell");
-const ButtonMoveDown = localize('buttonMoveDown', "Move cell down");
-const ButtonMoveUp = localize('buttonMoveUp', "Move cell up");
-const ButtonDelete = localize('buttonDelete', "Delete cell");
+export const CELL_TOOLBAR_SELECTOR: string = 'cell-toolbar-component';
 
 @Component({
-	selector: 'cell-toolbar-component',
-	template: `
-		<ul class="cell-toolbar">
-			<li><a class="cell-tool-edit" role="button" href="#" (click)="toolbarToggleEditMode()"><span class="offscreen">${ButtonEdit}</span></a></li>
-			<li><a class="cell-tool-close" role="button" href="#" (click)="toolbarUnselectActiveCell()"><span class="offscreen">${ButtonClose}</span></a></li>
-			<li><a class="cell-tool-add" role="button" href="#"><span class="offscreen">${ButtonAdd}</span></a></li>
-			<li><a class="cell-tool-move-down" role="button" href="#"><span class="offscreen">${ButtonMoveDown}</span></a></li>
-			<li><a class="cell-tool-move-up" role="button" href="#"><span class="offscreen">${ButtonMoveUp}</span></a></li>
-			<li><a class="cell-tool-delete" role="button" href="#"><span class="offscreen">${ButtonDelete}</span></a></li>
-			<li><div #moreactions class="cell-tool-more"></div></li>
-		</ul>
-	`
+	selector: CELL_TOOLBAR_SELECTOR,
+	template: decodeURI(require.toUrl('./cellToolbar.component.html'))
 })
-export class CellToolbar {
-	ngOnInit() {
+export class CellToolbarComponent {
+	public buttonEdit = localize('buttonEdit', "Edit");
+	public buttonClose = localize('buttonClose', "Close");
+	public buttonAdd = localize('buttonAdd', "Add new cell");
+	public buttonMoveDown = localize('buttonMoveDown', "Move cell down");
+	public buttonMoveUp = localize('buttonMoveUp', "Move cell up");
+	public buttonDelete = localize('buttonDelete', "Delete cell");
+
+	constructor() {
 	}
 }

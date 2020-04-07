@@ -5,7 +5,6 @@
 import 'vs/css!./textCell';
 import 'vs/css!./media/markdown';
 import 'vs/css!./media/highlight';
-import 'vs/css!./markdownToolbar';
 
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener, ViewChildren, QueryList } from '@angular/core';
 
