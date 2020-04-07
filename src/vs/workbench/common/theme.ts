@@ -630,3 +630,9 @@ export const WIDGETSUBTEXT = registerColor('widget.subText', {
 	dark: '#8A8886',
 	hc: '#FFFFFF'
 }, nls.localize('widgetSubtext', "color for widget subtext"));
+
+export const PROPERTIESNAME = registerColor('widget.propertiesName', {
+	light: '#161616',
+	dark: '#8A8886',
+	hc: '#FFFFFF'
+}, nls.localize('widgetPropertiesName', "Color for properties widget names"));

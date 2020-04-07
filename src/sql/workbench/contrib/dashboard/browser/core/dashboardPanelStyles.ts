@@ -7,7 +7,7 @@ import 'vs/css!./dashboardPanel';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 import {
 	TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_BORDER, TAB_INACTIVE_BACKGROUND,
-	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, VERTICAL_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER, WIDGETSUBTEXT, TABLABEL, TABGROUPHEADER, WIDGETTITLE
+	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, VERTICAL_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER, WIDGETSUBTEXT, TABLABEL, TABGROUPHEADER, WIDGETTITLE, PROPERTIESNAME
 } from 'vs/workbench/common/theme';
 import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 
@@ -68,7 +68,11 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	const tabLabelColor = theme.getColor(TABLABEL);
 	if (tabLabelColor) {
 		collector.addRule(`.tabbedPanel.vertical > .title .tabList .tabLabel {
-				color: ${tabLabelColor}
+			color: ${tabLabelColor}
+		}`);
+
+		collector.addRule(`properties-widget .propertiesValue {
+			color: ${tabLabelColor}
 		}`);
 	}
 
@@ -151,6 +155,14 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	if (subText) {
 		collector.addRule(`.subText {
 			color: ${subText};
+		}`);
+	}
+
+	// properties name
+	const propertiesName = theme.getColor(PROPERTIESNAME);
+	if (propertiesName) {
+		collector.addRule(`properties-widget .propertiesName {
+			color: ${propertiesName}
 		}`);
 	}
 });

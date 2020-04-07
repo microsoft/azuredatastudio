@@ -9,8 +9,8 @@
 		<span #child style="white-space : nowrap; width: fit-content">
 			<ng-template ngFor let-item [ngForOf]="properties">
 				<span style="margin-left: 10px; display: inline-block;">
-					<div style="font-size: 11px;">{{item.displayName}}</div>
-					<div>{{item.value}}</div>
+					<div class="propertiesName" style="font-size: 11px;">{{item.displayName}}</div>
+					<div class="propertiesValue">{{item.value}}</div>
 				</span>
 			</ng-template>
 		</span>
