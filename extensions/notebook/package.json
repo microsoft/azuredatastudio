@@ -42,7 +42,7 @@
           "default": 5000,
           "description": "%notebook.maxTableRows.description%"
         },
-        "notebook.trustedBooks":{
+        "notebook.trustedBooks": {
           "type": "array",
           "default": [],
           "description": "%notebook.trustedBooks.description%",
@@ -510,7 +510,7 @@
     "@types/tar": "^4.0.3",
     "adm-zip": "^0.4.14",
     "error-ex": "^1.3.1",
-    "fast-glob": "^3.0.4",
+    "fast-glob": "^3.1.0",
     "figures": "^2.0.0",
     "fs-extra": "^5.0.0",
     "glob": "^7.1.1",
