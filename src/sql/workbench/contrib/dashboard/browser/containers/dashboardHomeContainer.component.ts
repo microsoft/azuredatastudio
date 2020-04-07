@@ -5,7 +5,7 @@
 
 import 'vs/css!./dashboardHomeContainer';
 
-import { Component, forwardRef, Input, ChangeDetectorRef, Inject, ViewChild, ContentChild } from '@angular/core';
+import { Component, forwardRef, Input, ChangeDetectorRef, Inject, ViewChild, ContentChild, ElementRef } from '@angular/core';
 
 import { DashboardWidgetContainer } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardWidgetContainer.component';
 import { WidgetConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
@@ -18,6 +18,9 @@ import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
+import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 @Component({
 	selector: 'dashboard-home-container',
@@ -25,9 +28,11 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 	template: `
 		<div class="fullsize" style="display: flex; flex-direction: column">
 			<div scrollable [horizontalScroll]="${ScrollbarVisibility.Hidden}" [verticalScroll]="${ScrollbarVisibility.Auto}">
-				<dashboard-widget-wrapper #propertiesClass *ngIf="properties" [collapsable]="true" [_config]="properties"
-					style="padding-left: 10px; padding-right: 10px; display: block; flex: 0" [style.height.px]="_propertiesClass?.collapsed ? '30' : '90'">
-				</dashboard-widget-wrapper>
+				<div #propertiesContainer style="padding-bottom: 5px">
+					<dashboard-widget-wrapper #propertiesClass *ngIf="properties" [collapsable]="true" [bottomCollapse]="true" [toggleMore]="false" [_config]="properties"
+						style="padding-left: 10px; padding-right: 10px; display: block; flex: 0;" [style.height.px]="_propertiesClass?.collapsed ? '30' : '90'">
+					</dashboard-widget-wrapper>
+				</div>
 				<widget-content style="flex: 1" [scrollContent]="false" [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
 				</widget-content>
 			</div>
@@ -37,18 +42,25 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 export class DashboardHomeContainer extends DashboardWidgetContainer {
 	@Input() private properties: WidgetConfig;
 	@ViewChild('propertiesClass') private _propertiesClass: DashboardWidgetWrapper;
+	@ViewChild('propertiesContainer') private _propertiesContainer: ElementRef;
 	@ContentChild(ScrollableDirective) private _scrollable: ScrollableDirective;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: DashboardServiceInterface,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
-		@Inject(IAngularEventingService) private angularEventingService: IAngularEventingService
+		@Inject(IAngularEventingService) private angularEventingService: IAngularEventingService,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
 		super(_cd);
 	}
 
 	ngAfterContentInit() {
+		this.updateTheme(this.themeService.getColorTheme());
+		this._register(this.themeService.onDidColorThemeChange((event: IColorTheme) => {
+			this.updateTheme(event);
+		}));
+
 		const collapsedVal = this.dashboardService.getSettings<string>(`${this.properties.context}.properties`);
 		if (collapsedVal === 'collapsed') {
 			this._propertiesClass.collapsed = true;
@@ -68,6 +80,11 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 		if (this._scrollable) {
 			this._scrollable.layout();
 		}
+	}
+
+	private updateTheme(theme: IColorTheme): void {
+		const border = theme.getColor(DASHBOARD_BORDER);
+		this._propertiesContainer.nativeElement.style.borderBottom = '1px solid ' + border.toString();
 	}
 
 	public refresh(): void {
