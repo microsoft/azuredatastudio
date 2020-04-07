@@ -15,7 +15,7 @@ const localize = nls.loadMessageBundle();
 
 
 const handleNeverUsed = async (): Promise<void> => {
-	const neverUsedString = localize('azure.coudTerminal.neverUsed', "It seems you have never used Azure Cloud Shell. Please visit https://shell.azure.com/ to get started.");
+	const neverUsedString = localize('azure.coudTerminal.neverUsed', "It seems you have never used Azure Cloud Shell. Please visit https://shell.azure.com/ to get started. Once that's setup you can use Azure Cloud Shell directly in Azure Data Studio.");
 	enum TerminalOption {
 		OPEN_SITE,
 		OK
@@ -65,7 +65,8 @@ export class AzureTerminalService implements IAzureTerminalService {
 		let userSettingsResult: AxiosResponse<any>;
 		try {
 			userSettingsResult = await axios.get(userSettingsUri, settings);
-		} catch  {
+		} catch (ex) {
+			console.log(ex, ex.response);
 			await handleNeverUsed();
 			return;
 		}
@@ -81,7 +82,8 @@ export class AzureTerminalService implements IAzureTerminalService {
 		let provisionResult: AxiosResponse<any>;
 		try {
 			provisionResult = await axios.put(consoleRequestUri, {}, settings);
-		} catch{
+		} catch (ex) {
+			console.log(ex, ex.response);
 			await handleNeverUsed();
 			return;
 		}
@@ -224,7 +226,8 @@ class AzureTerminal implements vscode.Pseudoterminal {
 					'Authorization': `Bearer ${this.token}`
 				}
 			});
-		} catch{
+		} catch (ex) {
+			console.log(ex, ex.response);
 			await handleNeverUsed();
 			return undefined;
 		}
