@@ -43,11 +43,13 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		`);
 	}
 
-	const activeTabBorderColor = theme.type === HIGH_CONTRAST ? theme.getColor(activeContrastBorder) : theme.getColor(TAB_ACTIVE_BORDER);
-	if (activeTabBorderColor) {
+	const highContrastActiveTabBorderColor = theme.getColor(activeContrastBorder);
+	if (highContrastActiveTabBorderColor) {
 		collector.addRule(`
 			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header.active {
-				box-shadow: ${activeTabBorderColor} 0 -1px inset;
+				outline: 1px solid;
+				outline-offset: -3px;
+				outline-color: ${highContrastActiveTabBorderColor};
 			}
 		`);
 	}
