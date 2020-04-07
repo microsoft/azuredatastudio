@@ -128,7 +128,7 @@ export class AccountManagementService implements IAccountManagementService {
 		};
 
 		return this.doWithProvider(providerId, async (provider) => {
-			const notificationHandler = this._notificationService?.notify(loginNotification);
+			const notificationHandler = this._notificationService.notify(loginNotification);
 			try {
 				let account = await provider.provider.prompt();
 				if (this.isCanceledResult(account)) {
@@ -146,7 +146,7 @@ export class AccountManagementService implements IAccountManagementService {
 
 				this.fireAccountListUpdate(provider, result.accountAdded);
 			} finally {
-				notificationHandler?.close();
+				notificationHandler.close();
 			}
 		});
 	}
