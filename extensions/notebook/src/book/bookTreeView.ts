@@ -108,19 +108,23 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async openBook(bookPath: string, urlToOpen?: string): Promise<void> {
+	async openBook(bookPath: string, urlToOpen?: string, showPreview?: boolean): Promise<void> {
 		try {
 			let existingBook = this.books.find(book => book.bookPath === bookPath);
 			// Check if the book is already open in viewlet.
 			if (existingBook?.bookItems.length > 0) {
 				this.currentBook = existingBook;
-				await this.showPreviewFile(urlToOpen);
+				if (showPreview) {
+					await this.showPreviewFile(urlToOpen);
+				}
 			} else {
 				await this.createAndAddBookModel(bookPath);
 				let bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
 				this.currentBook = this.books.find(book => book.bookPath === bookPath);
 				bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
-				await this.showPreviewFile(urlToOpen);
+				if (showPreview) {
+					await this.showPreviewFile(urlToOpen);
+				}
 			}
 			// add file watcher on toc file.
 			fsw.watch(path.join(bookPath, '_data', 'toc.yml'), async (event, filename) => {
@@ -338,7 +342,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		});
 		if (uris && uris.length > 0) {
 			let bookPath = uris[0];
-			await this.openBook(bookPath.fsPath);
+			await this.openBook(bookPath.fsPath, undefined, true);
 		}
 	}
 
@@ -357,7 +361,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			let folderPath = uris[0];
 			let bookCollection = await this.getNotebooksInTree(folderPath?.fsPath);
 			for (let i = 0; i < bookCollection.bookPaths.length; i++) {
-				await this.openBook(bookCollection.bookPaths[i]);
+				await this.openBook(bookCollection.bookPaths[i], undefined, false);
 			}
 		}
 	}
