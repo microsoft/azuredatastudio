@@ -7,10 +7,10 @@ import 'mocha';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as mssql from '../../../mssql';
-import * as utils from '../utils';
-import * as uuid from '../uuid';
+import * as utils from './utils';
+import * as uuid from './uuid';
 import assert = require('assert');
-import { getStandaloneServer, TestServerProfile } from '../testConfig';
+import { getStandaloneServer, TestServerProfile } from './testConfig';
 
 let cmsService: mssql.ICmsService;
 let server: TestServerProfile;

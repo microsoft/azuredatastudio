@@ -6,13 +6,13 @@
 import 'mocha';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as utils from '../utils';
+import * as utils from './utils';
 import * as mssql from '../../../mssql';
 import * as os from 'os';
 import * as fs from 'fs';
 const path = require('path');
 import * as assert from 'assert';
-import { getStandaloneServer } from '../testConfig';
+import { getStandaloneServer } from './testConfig';
 import { stressify } from 'adstest';
 import { promisify } from 'util';
 
