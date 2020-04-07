@@ -359,9 +359,9 @@ export class TimelinePane extends ViewPane {
 			}
 
 			if (this.isBodyVisible()) {
-				this.updateTimeline(timeline, e.reset ?? false);
+				this.updateTimeline(timeline, e.reset);
 			} else {
-				timeline.invalidate(e.reset ?? false);
+				timeline.invalidate(e.reset);
 			}
 		}
 	}
@@ -497,6 +497,7 @@ export class TimelinePane extends ViewPane {
 		// don't bother querying for more
 		if (
 			!reset &&
+			options?.cursor !== undefined &&
 			timeline !== undefined &&
 			(!timeline?.more || timeline.items.length > timeline.lastRenderedIndex + PageSize)
 		) {
@@ -821,6 +822,15 @@ export class TimelinePane extends ViewPane {
 		this.tree = <WorkbenchObjectTree<TreeElement, FuzzyScore>>this.instantiationService.createInstance(WorkbenchObjectTree, 'TimelinePane',
 			this.$tree, new TimelineListVirtualDelegate(), [this.treeRenderer], {
 			identityProvider: new TimelineIdentityProvider(),
+			accessibilityProvider: {
+				getAriaLabel(element: TreeElement): string {
+					if (isLoadMoreCommandItem(element)) {
+						return localize('timeline.loadMore', 'Load more');
+					}
+					return localize('timeline.aria.item', "{0}: {1}", element.relativeTime ?? '', element.label);
+				}
+			},
+			ariaLabel: this.title,
 			keyboardNavigationLabelProvider: new TimelineKeyboardNavigationLabelProvider(),
 			overrideStyles: {
 				listBackground: this.getBackgroundColor(),
@@ -952,6 +962,8 @@ export class TimelineElementTemplate implements IDisposable {
 	}
 
 	reset() {
+		this.icon.className = '';
+		this.icon.style.backgroundImage = '';
 		this.actionBar.clear();
 	}
 }
