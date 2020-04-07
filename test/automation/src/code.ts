@@ -121,7 +121,7 @@ export async function spawn(options: SpawnOptions): Promise<Code> {
 	let connectDriver: typeof connectElectronDriver;
 
 	if (options.web) {
-		await launch(options.userDataDir, options.workspacePath, options.codePath);
+		await launch(options.userDataDir, options.workspacePath, options.extensionsPath, options.codePath);
 		connectDriver = connectPlaywrightDriver.bind(connectPlaywrightDriver, options.browser);
 		return connect(connectDriver, child, '', handle, options.logger);
 	}
