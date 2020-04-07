@@ -106,7 +106,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		try {
 			let books: BookModel[] = this.books.filter(book => book.bookPath === bookPath) || [];
 			// Check if the book is already open in viewlet.
-			if (books.length > 0 && books[0].bookItems) {
+			if (books.length > 0 && books[0].bookItems.length > 0) {
 				this.currentBook = books[0];
 				await this.showPreviewFile(urlToOpen);
 			}

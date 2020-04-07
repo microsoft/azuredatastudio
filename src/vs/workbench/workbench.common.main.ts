@@ -435,7 +435,6 @@ import 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/tableInsi
 import 'sql/workbench/contrib/dashboard/browser/dashboard.contribution';
 import 'sql/workbench/contrib/dashboard/browser/widgets/insights/insightsWidget.contribution';
 import 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerWidget.contribution';
-import 'sql/workbench/contrib/dashboard/browser/widgets/tasks/tasksWidget.contribution';
 import 'sql/workbench/contrib/dashboard/browser/widgets/webview/webviewWidget.contribution';
 import 'sql/workbench/contrib/dashboard/browser/containers/dashboardWebviewContainer.contribution';
 import 'sql/workbench/contrib/dashboard/browser/containers/dashboardControlHostContainer.contribution';

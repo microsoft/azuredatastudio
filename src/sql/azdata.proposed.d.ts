@@ -224,8 +224,20 @@ declare module 'azdata' {
 	 * Layout of TabbedPanelComponent, can be used to initialize the component when using ModelBuilder
 	 */
 	export interface TabbedPanelLayout {
+		/**
+		 * Tab orientation
+		 */
 		orientation: TabOrientation;
+
+		/**
+		 * Whether to show the tab icon
+		 */
 		showIcon: boolean;
+
+		/**
+		 * Whether to show the tab navigation pane even when there is only one tab
+		 */
+		alwaysShowTabs: boolean;
 	}
 
 	/**
@@ -300,7 +312,7 @@ declare module 'azdata' {
 			open(): Thenable<void>;
 		}
 
-		export function createModelViewDashboard(title: string): ModelViewDashboard;
+		export function createModelViewDashboard(title: string, options?: ModelViewDashboardOptions): ModelViewDashboard;
 	}
 
 	export interface DashboardTab extends Tab {
@@ -320,6 +332,18 @@ declare module 'azdata' {
 		 * children of the tab group
 		 */
 		tabs: DashboardTab[];
+	}
+
+	export interface ModelViewDashboardOptions {
+		/**
+		 * Whether to show the tab icon, default is true
+		 */
+		showIcon?: boolean;
+
+		/**
+		 * Whether to show the tab navigation pane even when there is only one tab, default is false
+		 */
+		alwaysShowTabs?: boolean;
 	}
 }
 

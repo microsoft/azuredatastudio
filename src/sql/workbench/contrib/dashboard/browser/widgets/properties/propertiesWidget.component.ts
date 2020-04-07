@@ -21,6 +21,7 @@ import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
@@ -68,7 +69,6 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	private _databaseInfo: DatabaseInfo;
 	public _clipped: boolean;
 	private properties: Array<DisplayProperty>;
-	private _hasInit = false;
 
 	@ViewChild('child', { read: ElementRef }) private _child: ElementRef;
 	@ViewChild('parent', { read: ElementRef }) private _parent: ElementRef;
@@ -76,18 +76,20 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
 		@Inject(ILogService) private logService: ILogService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
-		super();
+		super(changeRef);
+		this._loadingMessage = nls.localize('loadingProperties', "Loading properties");
+		this._loadingCompletedMessage = nls.localize('loadingPropertiesCompleted', "Loading properties completed");
 		this.init();
 	}
 
 	ngOnInit() {
-		this._hasInit = true;
+		this._inited = true;
 		this._register(addDisposableListener(window, EventType.RESIZE, () => this.handleClipping()));
 		this._changeRef.detectChanges();
 
@@ -106,14 +108,17 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 	private init(): void {
 		this._connection = this._bootstrap.connectionManagementService.connectionInfo;
+		this.setLoadingStatus(true);
 		this._register(subscriptionToDisposable(this._bootstrap.adminService.databaseInfo.subscribe(data => {
 			this._databaseInfo = data;
 			this._changeRef.detectChanges();
 			this.parseProperties();
-			if (this._hasInit) {
+			if (this._inited) {
 				this.handleClipping();
 			}
+			this.setLoadingStatus(false);
 		}, error => {
+			this.setLoadingStatus(false);
 			(<HTMLElement>this._el.nativeElement).innerText = nls.localize('dashboard.properties.error', "Unable to load dashboard properties");
 		})));
 	}
@@ -238,7 +243,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			this.properties.push(<DisplayProperty>assignProperty);
 		}
 
-		if (this._hasInit) {
+		if (this._inited) {
 			this._changeRef.detectChanges();
 		}
 	}
@@ -280,7 +285,11 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	}
 
 	private updateTheme(theme: IColorTheme): void {
-		const border = theme.getColor(DASHBOARD_BORDER);
-		this._container.nativeElement.style.borderBottom = '1px solid ' + border.toString();
+		if (theme.getColor(contrastBorder)) {
+			this._container.nativeElement.style.borderBottom = 'none';
+		} else {
+			const border = theme.getColor(DASHBOARD_BORDER);
+			this._container.nativeElement.style.borderBottom = '1px solid ' + border.toString();
+		}
 	}
 }
