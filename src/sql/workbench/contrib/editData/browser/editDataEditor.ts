@@ -11,7 +11,7 @@ import { EditorOptions, EditorInput, IEditorControl, IEditorPane } from 'vs/work
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { PANEL_BORDER } from 'vs/workbench/common/theme';
 
@@ -280,6 +280,7 @@ export class EditDataEditor extends BaseEditor {
 		} else {
 			this._resultsEditorContainer = DOM.append(parentElement, input.results.container);
 		}
+		this.updateStyles();
 	}
 
 	/**
@@ -293,17 +294,17 @@ export class EditDataEditor extends BaseEditor {
 			this._setSashDimension();
 
 			this._register(this._sash.onPositionChange(position => this._doLayout()));
-			this._register(this.themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 		}
 
 		this._sash.show();
 	}
 
-	//update sash theme
-	private updateTheme(theme: IColorTheme): void {
+
+	updateStyles() {
 		if (this._resultsEditorContainer) {
-			this._resultsEditorContainer.style.borderTopColor = theme.getColor(PANEL_BORDER).toString();
+			this._resultsEditorContainer.style.borderTopColor = this.getColor(PANEL_BORDER);
 		}
+		super.updateStyles();
 	}
 
 	/**
@@ -630,7 +631,6 @@ export class EditDataEditor extends BaseEditor {
 			}
 			if (this._resultsEditorContainer) {
 				if (this.queryPaneEnabled()) {
-					this._resultsEditorContainer.style.borderTopColor = this.getColor(PANEL_BORDER);
 					this._resultsEditorContainer.style.borderTopStyle = 'solid';
 					this._resultsEditorContainer.style.borderTopWidth = '1px';
 				} else {
@@ -691,7 +691,6 @@ export class EditDataEditor extends BaseEditor {
 		this.editDataInput.queryPaneEnabled = !this.queryPaneEnabled();
 		if (this.queryPaneEnabled()) {
 			if (this._resultsEditorContainer) {
-				this._resultsEditorContainer.style.borderTopColor = this.getColor(PANEL_BORDER);
 				this._resultsEditorContainer.style.borderTopStyle = 'solid';
 				this._resultsEditorContainer.style.borderTopWidth = '1px';
 			}
