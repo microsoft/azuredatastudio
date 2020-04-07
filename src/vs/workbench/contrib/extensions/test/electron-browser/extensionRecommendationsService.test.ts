@@ -12,7 +12,7 @@ import * as uuid from 'vs/base/common/uuid';
 import { mkdirp, rimraf, RimRafMode } from 'vs/base/node/pfs';
 import {
 	IExtensionGalleryService, IGalleryExtensionAssets, IGalleryExtension, IExtensionManagementService,
-	DidInstallExtensionEvent, DidUninstallExtensionEvent, InstallExtensionEvent, IExtensionIdentifier
+	DidInstallExtensionEvent, DidUninstallExtensionEvent, InstallExtensionEvent, IExtensionIdentifier, IExtensionTipsService
 } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IWorkbenchExtensionEnablementService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
@@ -53,7 +53,8 @@ import { Schemas } from 'vs/base/common/network';
 import { DiskFileSystemProvider } from 'vs/platform/files/node/diskFileSystemProvider';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IProductService } from 'vs/platform/product/common/productService';
-import { NativeExtensionTipsService as ExtensionTipsService } from 'vs/workbench/contrib/extensions/electron-browser/extensionTipsService';
+import { NativeExtensionRecommendationsService as ExtensionRecommendationsService } from 'vs/workbench/contrib/extensions/electron-browser/extensionRecommendationsService';
+import { ExtensionTipsService } from 'vs/platform/extensionManagement/node/extensionTipsService';
 
 const mockExtensionGallery: IGalleryExtension[] = [
 	aGalleryExtension('MockExtension1', {
@@ -169,11 +170,11 @@ function aGalleryExtension(name: string, properties: any = {}, galleryExtensionP
 	return <IGalleryExtension>galleryExtension;
 }
 
-suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip suite
+suite.skip('ExtensionRecommendationsService Test', () => { // {{SQL CARBON EDIT}} skip suite
 	let workspaceService: IWorkspaceContextService;
 	let instantiationService: TestInstantiationService;
 	let testConfigurationService: TestConfigurationService;
-	let testObject: ExtensionTipsService;
+	let testObject: ExtensionRecommendationsService;
 	let parentResource: string;
 	let installEvent: Emitter<InstallExtensionEvent>,
 		didInstallEvent: Emitter<DidInstallExtensionEvent>,
@@ -202,6 +203,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		instantiationService.stub(IExtensionManagementService, 'onDidUninstallExtension', didUninstallEvent.event);
 		instantiationService.stub(IWorkbenchExtensionEnablementService, new TestExtensionEnablementService(instantiationService));
 		instantiationService.stub(ITelemetryService, NullTelemetryService);
+		instantiationService.stub(IExtensionTipsService, ExtensionTipsService);
 		instantiationService.stub(IURLService, URLService);
 		instantiationService.set(IProductService, {
 			...productService,
@@ -262,7 +264,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 	});
 
 	teardown(done => {
-		(<ExtensionTipsService>testObject).dispose();
+		(<ExtensionRecommendationsService>testObject).dispose();
 		if (parentResource) {
 			rimraf(parentResource, RimRafMode.MOVE).then(done, done);
 		} else {
@@ -296,7 +298,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 
 	function testNoPromptForValidRecommendations(recommendations: string[]) {
 		return setUpFolderWorkspace('myFolder', recommendations).then(() => {
-			testObject = instantiationService.createInstance(ExtensionTipsService);
+			testObject = instantiationService.createInstance(ExtensionRecommendationsService);
 			return testObject.loadWorkspaceConfigPromise.then(() => {
 				assert.equal(Object.keys(testObject.getAllRecommendationsWithReason()).length, recommendations.length);
 				assert.ok(!prompted);
@@ -306,7 +308,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 
 	function testNoPromptOrRecommendationsForValidRecommendations(recommendations: string[]) {
 		return setUpFolderWorkspace('myFolder', mockTestData.validRecommendedExtensions).then(() => {
-			testObject = instantiationService.createInstance(ExtensionTipsService);
+			testObject = instantiationService.createInstance(ExtensionRecommendationsService);
 			assert.ok(!prompted);
 
 			return testObject.getWorkspaceRecommendations().then(() => {
@@ -316,7 +318,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		});
 	}
 
-	test('ExtensionTipsService: No Prompt for valid workspace recommendations when galleryService is absent', () => {
+	test('ExtensionRecommendationsService: No Prompt for valid workspace recommendations when galleryService is absent', () => {
 		const galleryQuerySpy = sinon.spy();
 		instantiationService.stub(IExtensionGalleryService, { query: galleryQuerySpy, isEnabled: () => false });
 
@@ -324,18 +326,18 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 			.then(() => assert.ok(galleryQuerySpy.notCalled));
 	});
 
-	test('ExtensionTipsService: No Prompt for valid workspace recommendations during extension development', () => {
+	test('ExtensionRecommendationsService: No Prompt for valid workspace recommendations during extension development', () => {
 		instantiationService.stub(IEnvironmentService, { extensionDevelopmentLocationURI: [URI.file('/folder/file')] });
 		return testNoPromptOrRecommendationsForValidRecommendations(mockTestData.validRecommendedExtensions);
 	});
 
-	test('ExtensionTipsService: No workspace recommendations or prompts when extensions.json has empty array', () => {
+	test('ExtensionRecommendationsService: No workspace recommendations or prompts when extensions.json has empty array', () => {
 		return testNoPromptForValidRecommendations([]);
 	});
 
-	test('ExtensionTipsService: Prompt for valid workspace recommendations', () => {
+	test('ExtensionRecommendationsService: Prompt for valid workspace recommendations', () => {
 		return setUpFolderWorkspace('myFolder', mockTestData.recommendedExtensions).then(() => {
-			testObject = instantiationService.createInstance(ExtensionTipsService);
+			testObject = instantiationService.createInstance(ExtensionRecommendationsService);
 			return testObject.loadWorkspaceConfigPromise.then(() => {
 				const recommendations = Object.keys(testObject.getAllRecommendationsWithReason());
 
@@ -349,38 +351,37 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		});
 	});
 
-	test('ExtensionTipsService: No Prompt for valid workspace recommendations if they are already installed', () => {
+	test('ExtensionRecommendationsService: No Prompt for valid workspace recommendations if they are already installed', () => {
 		instantiationService.stubPromise(IExtensionManagementService, 'getInstalled', mockExtensionLocal);
 		return testNoPromptForValidRecommendations(mockTestData.validRecommendedExtensions);
 	});
 
-	test('ExtensionTipsService: No Prompt for valid workspace recommendations with casing mismatch if they are already installed', () => {
+	test('ExtensionRecommendationsService: No Prompt for valid workspace recommendations with casing mismatch if they are already installed', () => {
 		instantiationService.stubPromise(IExtensionManagementService, 'getInstalled', mockExtensionLocal);
 		return testNoPromptForValidRecommendations(mockTestData.validRecommendedExtensions.map(x => x.toUpperCase()));
 	});
 
-	test('ExtensionTipsService: No Prompt for valid workspace recommendations if ignoreRecommendations is set', () => {
+	test('ExtensionRecommendationsService: No Prompt for valid workspace recommendations if ignoreRecommendations is set', () => {
 		testConfigurationService.setUserConfiguration(ConfigurationKey, { ignoreRecommendations: true });
 		return testNoPromptForValidRecommendations(mockTestData.validRecommendedExtensions);
 	});
 
-	test('ExtensionTipsService: No Prompt for valid workspace recommendations if showRecommendationsOnlyOnDemand is set', () => {
+	test('ExtensionRecommendationsService: No Prompt for valid workspace recommendations if showRecommendationsOnlyOnDemand is set', () => {
 		testConfigurationService.setUserConfiguration(ConfigurationKey, { showRecommendationsOnlyOnDemand: true });
 		return setUpFolderWorkspace('myFolder', mockTestData.validRecommendedExtensions).then(() => {
-			testObject = instantiationService.createInstance(ExtensionTipsService);
+			testObject = instantiationService.createInstance(ExtensionRecommendationsService);
 			return testObject.loadWorkspaceConfigPromise.then(() => {
-				assert.equal(Object.keys(testObject.getAllRecommendationsWithReason()).length, 0);
 				assert.ok(!prompted);
 			});
 		});
 	});
 
-	test('ExtensionTipsService: No Prompt for valid workspace recommendations if ignoreRecommendations is set for current workspace', () => {
+	test('ExtensionRecommendationsService: No Prompt for valid workspace recommendations if ignoreRecommendations is set for current workspace', () => {
 		instantiationService.stub(IStorageService, <Partial<IStorageService>>{ get: (a: string, b: StorageScope, c?: string) => c, getBoolean: (a: string, b: StorageScope, c?: boolean) => a === 'extensionsAssistant/workspaceRecommendationsIgnore' || c });
 		return testNoPromptForValidRecommendations(mockTestData.validRecommendedExtensions);
 	});
 
-	test('ExtensionTipsService: No Recommendations of globally ignored recommendations', () => {
+	test('ExtensionRecommendationsService: No Recommendations of globally ignored recommendations', () => {
 		const storageGetterStub = (a: string, _: StorageScope, c?: string) => {
 			const storedRecommendations = '["ms-vscode.csharp", "ms-python.python", "ms-vscode.vscode-typescript-tslint-plugin"]';
 			const ignoredRecommendations = '["ms-vscode.csharp", "mockpublisher2.mockextension2"]'; // ignore a stored recommendation and a workspace recommendation.
@@ -395,7 +396,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		});
 
 		return setUpFolderWorkspace('myFolder', mockTestData.validRecommendedExtensions).then(() => {
-			testObject = instantiationService.createInstance(ExtensionTipsService);
+			testObject = instantiationService.createInstance(ExtensionRecommendationsService);
 			return testObject.loadWorkspaceConfigPromise.then(() => {
 				const recommendations = testObject.getAllRecommendationsWithReason();
 				assert.ok(!recommendations['ms-vscode.csharp']); // stored recommendation that has been globally ignored
@@ -406,7 +407,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		});
 	});
 
-	test('ExtensionTipsService: No Recommendations of workspace ignored recommendations', () => {
+	test('ExtensionRecommendationsService: No Recommendations of workspace ignored recommendations', () => {
 		const ignoredRecommendations = ['ms-vscode.csharp', 'mockpublisher2.mockextension2']; // ignore a stored recommendation and a workspace recommendation.
 		const storedRecommendations = '["ms-vscode.csharp", "ms-python.python"]';
 		instantiationService.stub(IStorageService, <Partial<IStorageService>>{
@@ -415,7 +416,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		});
 
 		return setUpFolderWorkspace('myFolder', mockTestData.validRecommendedExtensions, ignoredRecommendations).then(() => {
-			testObject = instantiationService.createInstance(ExtensionTipsService);
+			testObject = instantiationService.createInstance(ExtensionRecommendationsService);
 			return testObject.loadWorkspaceConfigPromise.then(() => {
 				const recommendations = testObject.getAllRecommendationsWithReason();
 				assert.ok(!recommendations['ms-vscode.csharp']); // stored recommendation that has been workspace ignored
@@ -426,7 +427,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		});
 	});
 
-	test('ExtensionTipsService: Able to retrieve collection of all ignored recommendations', () => {
+	test('ExtensionRecommendationsService: Able to retrieve collection of all ignored recommendations', () => {
 
 		const storageGetterStub = (a: string, _: StorageScope, c?: string) => {
 			const storedRecommendations = '["ms-vscode.csharp", "ms-python.python"]';
@@ -443,7 +444,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		});
 
 		return setUpFolderWorkspace('myFolder', mockTestData.validRecommendedExtensions, workspaceIgnoredRecommendations).then(() => {
-			testObject = instantiationService.createInstance(ExtensionTipsService);
+			testObject = instantiationService.createInstance(ExtensionRecommendationsService);
 			return testObject.loadWorkspaceConfigPromise.then(() => {
 				const recommendations = testObject.getAllRecommendationsWithReason();
 				assert.ok(recommendations['ms-python.python']);
@@ -454,7 +455,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		});
 	});
 
-	test('ExtensionTipsService: Able to dynamically ignore/unignore global recommendations', () => {
+	test('ExtensionRecommendationsService: Able to dynamically ignore/unignore global recommendations', () => {
 		const storageGetterStub = (a: string, _: StorageScope, c?: string) => {
 			const storedRecommendations = '["ms-vscode.csharp", "ms-python.python"]';
 			const globallyIgnoredRecommendations = '["mockpublisher2.mockextension2"]'; // ignore a workspace recommendation.
@@ -470,7 +471,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		});
 
 		return setUpFolderWorkspace('myFolder', mockTestData.validRecommendedExtensions).then(() => {
-			testObject = instantiationService.createInstance(ExtensionTipsService);
+			testObject = instantiationService.createInstance(ExtensionRecommendationsService);
 			return testObject.loadWorkspaceConfigPromise.then(() => {
 				const recommendations = testObject.getAllRecommendationsWithReason();
 				assert.ok(recommendations['ms-python.python']);
@@ -510,7 +511,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		});
 
 		await setUpFolderWorkspace('myFolder', []);
-		testObject = instantiationService.createInstance(ExtensionTipsService);
+		testObject = instantiationService.createInstance(ExtensionRecommendationsService);
 		testObject.onRecommendationChange(changeHandlerTarget);
 		testObject.toggleIgnoredRecommendation(ignoredExtensionId, true);
 		await testObject.loadWorkspaceConfigPromise;
@@ -520,12 +521,12 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		assert.ok(storageSetterTarget.calledWithExactly('extensionsAssistant/ignored_recommendations', `["ms-vscode.vscode","${ignoredExtensionId.toLowerCase()}"]`, StorageScope.GLOBAL));
 	});
 
-	test('ExtensionTipsService: Get file based recommendations from storage (old format)', () => {
+	test('ExtensionRecommendationsService: Get file based recommendations from storage (old format)', () => {
 		const storedRecommendations = '["ms-vscode.csharp", "ms-python.python", "ms-vscode.vscode-typescript-tslint-plugin"]';
 		instantiationService.stub(IStorageService, <Partial<IStorageService>>{ get: (a: string, b: StorageScope, c?: string) => a === 'extensionsAssistant/recommendations' ? storedRecommendations : c, getBoolean: (a: string, b: StorageScope, c: boolean) => c });
 
 		return setUpFolderWorkspace('myFolder', []).then(() => {
-			testObject = instantiationService.createInstance(ExtensionTipsService);
+			testObject = instantiationService.createInstance(ExtensionRecommendationsService);
 			return testObject.loadWorkspaceConfigPromise.then(() => {
 				const recommendations = testObject.getFileBasedRecommendations();
 				assert.equal(recommendations.length, 2);
@@ -536,7 +537,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		});
 	});
 
-	test('ExtensionTipsService: Get file based recommendations from storage (new format)', () => {
+	test('ExtensionRecommendationsService: Get file based recommendations from storage (new format)', () => {
 		const milliSecondsInADay = 1000 * 60 * 60 * 24;
 		const now = Date.now();
 		const tenDaysOld = 10 * milliSecondsInADay;
@@ -544,7 +545,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		instantiationService.stub(IStorageService, <Partial<IStorageService>>{ get: (a: string, b: StorageScope, c?: string) => a === 'extensionsAssistant/recommendations' ? storedRecommendations : c, getBoolean: (a: string, b: StorageScope, c: boolean) => c });
 
 		return setUpFolderWorkspace('myFolder', []).then(() => {
-			testObject = instantiationService.createInstance(ExtensionTipsService);
+			testObject = instantiationService.createInstance(ExtensionRecommendationsService);
 			return testObject.loadWorkspaceConfigPromise.then(() => {
 				const recommendations = testObject.getFileBasedRecommendations();
 				assert.equal(recommendations.length, 2);
