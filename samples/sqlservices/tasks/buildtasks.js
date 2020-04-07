@@ -83,7 +83,7 @@ gulp.task('compile:test', function (done) {
 });
 
 // COMPOSED GULP TASKS /////////////////////////////////////////////////////
-gulp.task("compile", gulp.series("compile:src", "compile:test"));
+gulp.task("compile", gulp.series("compile:src"));
 
 gulp.task("build", gulp.series("clean", "lint", "compile"));
 
