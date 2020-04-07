@@ -29,9 +29,10 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	private _errorMessage: string;
 	private apiWrapper: ApiWrapper = new ApiWrapper();
 
-	constructor(public bookPath: string, public openAsUntitled: boolean, private _extensionContext: vscode.ExtensionContext) {
-		this.bookPath = bookPath;
-		this.openAsUntitled = openAsUntitled;
+	constructor(
+		public readonly bookPath: string,
+		public readonly openAsUntitled: boolean,
+		private _extensionContext: vscode.ExtensionContext) {
 		this._bookItems = [];
 		this._extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(this));
 	}
