@@ -11,11 +11,12 @@ export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 
 @Component({
 	selector: MARKDOWN_TOOLBAR_SELECTOR,
-	template: decodeURI(require.toUrl('./markdownToolbar.component.html'))
+	templateUrl: decodeURI(require.toUrl('./markdownToolbar.component.html'))
 })
 export class MarkdownToolbarComponent {
 	public buttonBold = localize('buttonBold', "Bold");
 	public buttonItalic = localize('buttonItalic', "Italic");
+	public buttonHighlight = localize('buttonHighlight', "Highlight");
 	public buttonCode = localize('buttonCode', "Code");
 	public buttonLink = localize('buttonLink', "Link");
 	public buttonList = localize('buttonList', "List");

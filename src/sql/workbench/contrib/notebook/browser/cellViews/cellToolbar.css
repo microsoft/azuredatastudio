@@ -41,7 +41,7 @@ cell-toolbar-component li div {
 	width: 16px;
 }
 
-.offscreen {
+cell-toolbar-component .offscreen {
 	height: 1px;
 	text-indent: -999999px;
 	margin-top: -1px;

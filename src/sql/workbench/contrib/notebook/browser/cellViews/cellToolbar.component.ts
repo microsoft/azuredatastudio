@@ -11,7 +11,7 @@ export const CELL_TOOLBAR_SELECTOR: string = 'cell-toolbar-component';
 
 @Component({
 	selector: CELL_TOOLBAR_SELECTOR,
-	template: decodeURI(require.toUrl('./cellToolbar.component.html'))
+	templateUrl: decodeURI(require.toUrl('./cellToolbar.component.html'))
 })
 export class CellToolbarComponent {
 	public buttonEdit = localize('buttonEdit', "Edit");
