@@ -96,56 +96,42 @@ export class Project {
 		return fileEntry;
 	}
 
-	private addFileToProjFile(path: string) {
-		let fileItemGroupNode = undefined;
+	private findOrCreateItemGroup(containedTag?: string): any {
+		let outputItemGroup = undefined;
 
 		// find any ItemGroup node that contains files; that's where we'll add
-		for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName('ItemGroup').length; ig++) {
-			const itemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName('ItemGroup')[ig];
+		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName('ItemGroup').length; i++) {
+			const currentItemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName('ItemGroup')[i];
 
-			if (itemGroup.getElementsByTagName('Build').length > 0) {
-				fileItemGroupNode = itemGroup;
+			// if we're not hunting for a particular child type, or if we are and we find it, use the ItemGroup
+			if (!containedTag || currentItemGroup.getElementsByTagName(containedTag).length > 0) {
+				outputItemGroup = currentItemGroup;
 				break;
 			}
 		}
 
 		// if none already exist, make a new ItemGroup for it
-		if (!fileItemGroupNode) {
-			fileItemGroupNode = this.projFileXmlDoc.createElement('ItemGroup');
-			this.projFileXmlDoc.documentElement.appendChild(fileItemGroupNode);
+		if (!outputItemGroup) {
+			outputItemGroup = this.projFileXmlDoc.createElement('ItemGroup');
+			this.projFileXmlDoc.documentElement.appendChild(outputItemGroup);
 		}
 
-		let newFileNode = this.projFileXmlDoc.createElement('Build');
+		return outputItemGroup;
+	}
+
+	private addFileToProjFile(path: string) {
+		const newFileNode = this.projFileXmlDoc.createElement('Build');
 		newFileNode.setAttribute('Include', path);
 
-		fileItemGroupNode.appendChild(newFileNode);
+		this.findOrCreateItemGroup('Build').appendChild(newFileNode);
 	}
 
 	private addFolderToProjFile(path: string) {
-		let fileItemGroupNode = undefined;
-
-		// find any ItemGroup node that contains files; that's where we'll add
-		for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName('ItemGroup').length; ig++) {
-			const itemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName('ItemGroup')[ig];
-
-			if (itemGroup.getElementsByTagName('Folder').length > 0) {
-				fileItemGroupNode = itemGroup;
-				break;
-			}
-		}
-
-		// if none already exist, make a new ItemGroup for it
-		if (!fileItemGroupNode) {
-			fileItemGroupNode = this.projFileXmlDoc.createElement('ItemGroup');
-			this.projFileXmlDoc.documentElement.appendChild(fileItemGroupNode);
-		}
-
-		let newFolderNode = this.projFileXmlDoc.createElement('Folder');
+		const newFolderNode = this.projFileXmlDoc.createElement('Folder');
 		newFolderNode.setAttribute('Include', path);
 
-		fileItemGroupNode.appendChild(newFolderNode);
+		this.findOrCreateItemGroup('Folder').appendChild(newFolderNode);
 	}
-
 
 	private async addToProjFile(entry: ProjectEntry) {
 		try {
