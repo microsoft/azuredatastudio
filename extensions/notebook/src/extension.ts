@@ -25,7 +25,6 @@ const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample c
 const noNotebookVisible = localize('noNotebookVisible', "No notebook editor is active");
 const BOOKS_VIEWID = 'bookTreeView';
 const READONLY_BOOKS_VIEWID = 'unsavedBookTreeView';
-const NOTEBOOK_FOLDER_VIEWID = 'notebookFolderView';
 let controller: JupyterController;
 type ChooseCellType = { label: string, id: CellType };
 
@@ -42,8 +41,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.searchUntitledBook', () => untitledBookTreeViewProvider.searchJupyterBooks()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openBook', () => bookTreeViewProvider.openNewBook()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.closeBook', (book: any) => bookTreeViewProvider.closeBook(book)));
-
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openNotebookFolder', () => notebookFolderViewProvider.openNotebookFolder()));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openNotebookFolder', () => bookTreeViewProvider.openNotebookFolder()));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.createBook', async () => {
 		let untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${createBookPath}`);
@@ -129,8 +127,6 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	await bookTreeViewProvider.initialized;
 	const untitledBookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], extensionContext, true, READONLY_BOOKS_VIEWID);
 	await untitledBookTreeViewProvider.initialized;
-	const notebookFolderViewProvider = new BookTreeViewProvider(appContext.apiWrapper, workspaceFolders, extensionContext, false, NOTEBOOK_FOLDER_VIEWID);
-	await notebookFolderViewProvider.initialized;
 
 	return {
 		getJupyterController() {

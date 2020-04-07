@@ -514,10 +514,6 @@
         {
           "id": "unsavedBookTreeView",
           "name": "%title.UnsavedBooks%"
-        },
-        {
-          "id": "notebookFolderView",
-          "name": "%title.NotebookFolder%"
         }
       ]
     }
