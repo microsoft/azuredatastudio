@@ -11,14 +11,6 @@ import { CancellationTokenSource, CancellationToken } from 'vs/base/common/cance
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { once } from 'vs/base/common/functional';
 
-interface IInternalQuickAccessOptions extends IQuickAccessOptions {
-
-	/**
-	 * Internal option to not rewrite the filter value at all but use it as is.
-	 */
-	preserveFilterValue?: boolean;
-}
-
 export class QuickAccessController extends Disposable implements IQuickAccessController {
 
 	private readonly registry = Registry.as<IQuickAccessRegistry>(Extensions.Quickaccess);
@@ -39,7 +31,7 @@ export class QuickAccessController extends Disposable implements IQuickAccessCon
 		super();
 	}
 
-	show(value = '', options?: IInternalQuickAccessOptions): void {
+	show(value = '', options?: IQuickAccessOptions): void {
 
 		// Find provider for the value to show
 		const [provider, descriptor] = this.getOrInstantiateProvider(value);
@@ -51,7 +43,7 @@ export class QuickAccessController extends Disposable implements IQuickAccessCon
 
 			// Apply value only if it is more specific than the prefix
 			// from the provider and we are not instructed to preserve
-			if (value !== descriptor.prefix && !options?.preserveFilterValue) {
+			if (value !== descriptor.prefix && !options?.preserveValue) {
 				visibleQuickAccess.picker.value = value;
 			}
 
@@ -62,7 +54,7 @@ export class QuickAccessController extends Disposable implements IQuickAccessCon
 		}
 
 		// Rewrite the filter value based on certain rules unless disabled
-		if (descriptor && !options?.preserveFilterValue) {
+		if (descriptor && !options?.preserveValue) {
 			let newValue: string | undefined = undefined;
 
 			// If we have a visible provider with a value, take it's filter value but
@@ -98,9 +90,14 @@ export class QuickAccessController extends Disposable implements IQuickAccessCon
 		picker.placeholder = descriptor?.placeholder;
 		picker.quickNavigate = options?.quickNavigateConfiguration;
 		picker.hideInput = !!picker.quickNavigate && !visibleQuickAccess; // only hide input if there was no picker opened already
-		picker.itemActivation = options?.itemActivation || (options?.quickNavigateConfiguration ? ItemActivation.SECOND : ItemActivation.FIRST);
+		if (typeof options?.itemActivation === 'number' || options?.quickNavigateConfiguration) {
+			picker.itemActivation = options?.itemActivation ?? ItemActivation.SECOND /* quick nav is always second */;
+		}
 		picker.contextKey = descriptor?.contextKey;
 		picker.filterValue = (value: string) => value.substring(descriptor ? descriptor.prefix.length : 0);
+		if (descriptor?.placeholder) {
+			picker.ariaLabel = descriptor?.placeholder;
+		}
 
 		// Register listeners
 		const cancellationToken = this.registerPickerListeners(picker, provider, descriptor, value, disposables);
@@ -116,11 +113,11 @@ export class QuickAccessController extends Disposable implements IQuickAccessCon
 		picker.show();
 	}
 
-	private adjustValueSelection(picker: IQuickPick<IQuickPickItem>, descriptor?: IQuickAccessProviderDescriptor, options?: IInternalQuickAccessOptions): void {
+	private adjustValueSelection(picker: IQuickPick<IQuickPickItem>, descriptor?: IQuickAccessProviderDescriptor, options?: IQuickAccessOptions): void {
 		let valueSelection: [number, number];
 
 		// Preserve: just always put the cursor at the end
-		if (options?.preserveFilterValue) {
+		if (options?.preserveValue) {
 			valueSelection = [picker.value.length, picker.value.length];
 		}
 
@@ -147,7 +144,7 @@ export class QuickAccessController extends Disposable implements IQuickAccessCon
 		disposables.add(picker.onDidChangeValue(value => {
 			const [providerForValue] = this.getOrInstantiateProvider(value);
 			if (providerForValue !== provider) {
-				this.show(value, { preserveFilterValue: true } /* do not rewrite value from user typing! */);
+				this.show(value, { preserveValue: true } /* do not rewrite value from user typing! */);
 			} else {
 				visibleQuickAccess.value = value; // remember the value in our visible one
 			}

@@ -172,6 +172,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 			this._componentInstance = componentRef.instance;
 			this._componentInstance.mimeType = mimeType;
 			this._componentInstance.cellModel = this.cellModel;
+			this._componentInstance.cellOutput = this.cellOutput;
 			this._componentInstance.bundleOptions = options;
 			this._changeref.detectChanges();
 			let el = <HTMLElement>componentRef.location.nativeElement;

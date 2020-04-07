@@ -224,7 +224,20 @@ declare module 'azdata' {
 	 * Layout of TabbedPanelComponent, can be used to initialize the component when using ModelBuilder
 	 */
 	export interface TabbedPanelLayout {
+		/**
+		 * Tab orientation
+		 */
 		orientation: TabOrientation;
+
+		/**
+		 * Whether to show the tab icon
+		 */
+		showIcon: boolean;
+
+		/**
+		 * Whether to show the tab navigation pane even when there is only one tab
+		 */
+		alwaysShowTabs: boolean;
 	}
 
 	/**
@@ -245,6 +258,11 @@ declare module 'azdata' {
 		 * Id of the tab
 		 */
 		id: string;
+
+		/**
+		 * Icon of the tab
+		 */
+		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 	}
 
 	/**
@@ -286,6 +304,46 @@ declare module 'azdata' {
 		 * An event that is emitted when the active Notebook editor is changed.
 		 */
 		export const onDidChangeActiveNotebookEditor: vscode.Event<NotebookEditor>;
+	}
+
+	export namespace window {
+		export interface ModelViewDashboard {
+			registerTabs(handler: (view: ModelView) => Thenable<(DashboardTab | DashboardTabGroup)[]>): void;
+			open(): Thenable<void>;
+		}
+
+		export function createModelViewDashboard(title: string, options?: ModelViewDashboardOptions): ModelViewDashboard;
+	}
+
+	export interface DashboardTab extends Tab {
+		/**
+		 * Toolbar of the tab, optional.
+		 */
+		toolbar?: ToolbarContainer;
+	}
+
+	export interface DashboardTabGroup {
+		/**
+		 * * Title of the tab group
+		 */
+		title: string;
+
+		/**
+		 * children of the tab group
+		 */
+		tabs: DashboardTab[];
+	}
+
+	export interface ModelViewDashboardOptions {
+		/**
+		 * Whether to show the tab icon, default is true
+		 */
+		showIcon?: boolean;
+
+		/**
+		 * Whether to show the tab navigation pane even when there is only one tab, default is false
+		 */
+		alwaysShowTabs?: boolean;
 	}
 }
 

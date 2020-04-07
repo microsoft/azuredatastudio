@@ -12,7 +12,7 @@ import * as path from 'vs/base/common/path';
 import * as nls from 'vs/nls';
 
 import Severity from 'vs/base/common/severity';
-import { INotificationService } from 'vs/platform/notification/common/notification';
+import { INotificationService, INotification } from 'vs/platform/notification/common/notification';
 import { getBaseLabel } from 'vs/base/common/labels';
 import { ShowFileInFolderAction, OpenFileInFolderAction } from 'sql/workbench/common/workspaceActions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -323,6 +323,15 @@ export class ResultSerializer {
 	 */
 	private async doSave(filePath: string, format: string, sendRequest: () => Promise<SaveResultsResponse | undefined>): Promise<void> {
 
+		const saveNotification: INotification = {
+			severity: Severity.Info,
+			message: nls.localize('savingFile', "Saving file..."),
+			progress: {
+				infinite: true
+			}
+		};
+		const notificationHandle = this._notificationService.notify(saveNotification);
+
 		// send message to the sqlserverclient for converting results to the requested format and saving to filepath
 		try {
 			let result = await sendRequest();
@@ -343,6 +352,8 @@ export class ResultSerializer {
 				severity: Severity.Error,
 				message: msgSaveFailed + error
 			});
+		} finally {
+			notificationHandle.close();
 		}
 	}
 
