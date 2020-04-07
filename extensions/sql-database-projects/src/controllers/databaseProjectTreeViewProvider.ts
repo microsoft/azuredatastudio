@@ -39,6 +39,10 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		return element.children;
 	}
 
+	/**
+	 * Constructs a new set of root nodes from a list of Projects
+	 * @param projects List of Projects
+	 */
 	public load(projects: Project[]) {
 		let newRoots: BaseProjectTreeItem[] = [];
 

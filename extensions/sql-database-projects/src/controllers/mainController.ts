@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import * as templateMap from '../templates/templateMap';
+import * as constants from '../common/constants';
 
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { getErrorMessage } from '../common/utils';
@@ -64,7 +65,7 @@ export default class MainController implements vscode.Disposable {
 		try {
 			let filter: { [key: string]: string[] } = {};
 
-			filter[localize('sqlDatabaseProject', "SQL database project")] = ['sqlproj'];
+			filter[constants.sqlDatabaseProject] = ['sqlproj'];
 
 			let files: vscode.Uri[] | undefined = await vscode.window.showOpenDialog({ filters: filter });
 
@@ -79,17 +80,20 @@ export default class MainController implements vscode.Disposable {
 		}
 	}
 
+	/**
+	 * Creates a new SQL database project from a template, prompting the user for a name and location
+	 */
 	public async createNewProject(): Promise<void> {
 		try {
 			let newProjName = await vscode.window.showInputBox({
-				prompt: 'New database project name:',
+				prompt: constants.newDatabaseProjectName,
 				value: `DatabaseProject${this.projectsController.projects.length + 1}`
 				// TODO: Smarter way to suggest a name.  Easy if we prompt for location first, but that feels odd...
 			});
 
 			if (!newProjName || newProjName === '') {
 				// TODO: is this case considered an intentional cancellation (shouldn't warn) or an error case (should warn)?
-				vscode.window.showErrorMessage('Name is required to create a new database project name.');
+				vscode.window.showErrorMessage(constants.projectNameRequired);
 				return;
 			}
 
@@ -101,7 +105,7 @@ export default class MainController implements vscode.Disposable {
 			});
 
 			if (!selectionResult) {
-				vscode.window.showErrorMessage('Location is required to create a new database project.');
+				vscode.window.showErrorMessage(constants.projectLocationRequired);
 				return;
 			}
 

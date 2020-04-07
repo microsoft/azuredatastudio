@@ -33,7 +33,7 @@ export class ProjectsController {
 	public async openProject(projectFile: vscode.Uri) {
 		for (const proj of this.projects) {
 			if (proj.projectFilePath === projectFile.fsPath) {
-				vscode.window.showInformationMessage(`Project '${projectFile.fsPath}' is already opened.`);
+				vscode.window.showInformationMessage(constants.projectAlreadyOpened(projectFile.fsPath));
 				return;
 			}
 		}
@@ -79,7 +79,7 @@ export class ProjectsController {
 
 		try {
 			await fs.access(newProjFilePath);
-			throw new Error(`A project named ${newProjFileName} already exists in ${newProjUri.fsPath}.`);
+			throw new Error(constants.projectAlreadyExists(newProjFileName, newProjUri.fsPath));
 		}
 		catch { } // file doesn't already exist
 
