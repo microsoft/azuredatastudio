@@ -46,6 +46,7 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.open', async () => { this.openProjectFromFile(); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.close', (node: BaseProjectTreeItem) => { this.projectsController.closeProject(node); });
 
+		vscode.commands.registerCommand('sqlDatabaseProjects.newScript', (node: BaseProjectTreeItem) => { this.projectsController.addItemPrompt(node, templateMap.script); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newTable', (node: BaseProjectTreeItem) => { this.projectsController.addItemPrompt(node, templateMap.table); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newView', (node: BaseProjectTreeItem) => { this.projectsController.addItemPrompt(node, templateMap.view); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newStoredProcedure', (node: BaseProjectTreeItem) => { this.projectsController.addItemPrompt(node, templateMap.storedProcedure); });

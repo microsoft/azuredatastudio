@@ -5,6 +5,7 @@
 
 import * as constants from '../common/constants';
 
+import { newSqlScriptTemplate } from './newScriptTemplate';
 import { newSqlTableTemplate } from './newTableTemplate';
 import { newSqlViewTemplate } from './newViewTemplate';
 import { newSqlStoredProcedureTemplate } from './newStoredProcedureTemplate';
@@ -21,11 +22,13 @@ export class ProjectScriptType {
 	}
 }
 
+export const script: string = 'script';
 export const table: string = 'table';
 export const view: string = 'view';
 export const storedProcedure: string = 'storedProcedure';
 
 export const projectScriptTypes: ProjectScriptType[] = [
+	new ProjectScriptType(script, constants.scriptFriendlyName, newSqlScriptTemplate),
 	new ProjectScriptType(table, constants.tableFriendlyName, newSqlTableTemplate),
 	new ProjectScriptType(view, constants.viewFriendlyName, newSqlViewTemplate),
 	new ProjectScriptType(storedProcedure, constants.storedProcedureFriendlyName, newSqlStoredProcedureTemplate),

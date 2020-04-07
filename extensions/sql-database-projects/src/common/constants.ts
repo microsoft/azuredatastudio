@@ -30,6 +30,7 @@ export const invalidSqlConnectionString = localize('invalidSqlConnectionString',
 
 // Project script types
 
+export const scriptFriendlyName = localize('scriptFriendlyName', "Script");
 export const tableFriendlyName = localize('tableFriendlyName', "Table");
 export const viewFriendlyName = localize('viewFriendlyName', "View");
 export const storedProcedureFriendlyName = localize('storedProcedureFriendlyName', "Stored Procedure");

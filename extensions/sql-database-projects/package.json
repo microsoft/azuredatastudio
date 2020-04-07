@@ -43,6 +43,11 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
+        "command": "sqlDatabaseProjects.newScript",
+        "title": "%sqlDatabaseProjects.newScript%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
         "command": "sqlDatabaseProjects.newTable",
         "title": "%sqlDatabaseProjects.newTable%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -75,6 +80,10 @@
       "view/item/context": [
         {
           "command": "sqlDatabaseProjects.close",
+          "when": "view == sqlDatabaseProjectsView"
+        },
+        {
+          "command": "sqlDatabaseProjects.newScript",
           "when": "view == sqlDatabaseProjectsView"
         },
         {
