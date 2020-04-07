@@ -24,6 +24,7 @@ import { firstIndex } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
+import { INotificationService, Severity, INotification } from 'vs/platform/notification/common/notification';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -54,7 +55,8 @@ export class AccountManagementService implements IAccountManagementService {
 		@IStorageService private _storageService: IStorageService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IOpenerService private _openerService: IOpenerService,
-		@ILogService private readonly logService: ILogService
+		@ILogService private readonly _logService: ILogService,
+		@INotificationService private readonly _notificationService,
 	) {
 		// Create the account store
 		if (!this._mementoObj) {
@@ -117,24 +119,37 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @return Promise to return an account
 	 */
 	public addAccount(providerId: string): Thenable<void> {
-		let self = this;
+		const loginNotification: INotification = {
+			severity: Severity.Info,
+			message: localize('loggingIn', "Adding account..."),
+			progress: {
+				infinite: true
+			}
+		};
 
 		return this.doWithProvider(providerId, async (provider) => {
-			let account = await provider.provider.prompt();
-			if (self.isCanceledResult(account)) {
-				return;
-			}
+			const notificationHandler = this._notificationService.notify(loginNotification);
+			try {
+				let account = await provider.provider.prompt();
+				if (this.isCanceledResult(account)) {
+					return;
+				}
 
-			let result = await self._accountStore.addOrUpdate(account);
-			if (result.accountAdded) {
-				// Add the account to the list
-				provider.accounts.push(result.changedAccount);
-			}
-			if (result.accountModified) {
-				self.spliceModifiedAccount(provider, result.changedAccount);
-			}
+				let result = await this._accountStore.addOrUpdate(account);
+				if (result.accountAdded) {
+					// Add the account to the list
+					provider.accounts.push(result.changedAccount);
+				}
+				if (result.accountModified) {
+					this.spliceModifiedAccount(provider, result.changedAccount);
+				}
 
-			self.fireAccountListUpdate(provider, result.accountAdded);
+				this.fireAccountListUpdate(provider, result.accountAdded);
+			} catch (e) {
+				throw e;
+			} finally {
+				notificationHandler.close();
+			}
 		});
 	}
 
@@ -268,7 +283,7 @@ export class AccountManagementService implements IAccountManagementService {
 		for (const account of accounts) {
 			const removeResult = await this.removeAccount(account.key);
 			if (removeResult === false) {
-				this.logService.info('Error when removing %s.', account.key);
+				this._logService.info('Error when removing %s.', account.key);
 				finalResult = false;
 			}
 		}
@@ -324,7 +339,7 @@ export class AccountManagementService implements IAccountManagementService {
 		this.doWithProvider(providerId, provider => provider.provider.autoOAuthCancelled())
 			.then(	// Swallow errors
 				null,
-				err => { this.logService.warn(`Error when cancelling auto OAuth: ${err}`); }
+				err => { this._logService.warn(`Error when cancelling auto OAuth: ${err}`); }
 			)
 			.then(() => this.autoOAuthDialogController.closeAutoOAuthDialog());
 	}
