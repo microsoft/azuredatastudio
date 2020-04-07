@@ -8,7 +8,7 @@ import * as path from 'path';
 import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
 import * as templateMap from '../templates/templateMap';
-
+import * as utils from '../common/utils';
 
 import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
@@ -16,6 +16,7 @@ import { promises as fs } from 'fs';
 import { newSqlProjectTemplate } from '../templates/newSqlProjTemplate';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
+import { FolderNode } from '../models/tree/fileFolderTreeItem';
 
 /**
  * Controller for managing project lifecycle
@@ -145,7 +146,15 @@ export class ProjectsController {
 
 		// TODO: file already exists?
 
-		const newEntry = await project.addScriptItem(itemObjectName + '.sql', this.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName }));
+		const newFileText = this.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName });
+
+		let relativeFilePath = itemObjectName + '.sql';
+
+		if (treeNode instanceof FolderNode) {
+			relativeFilePath = path.join(utils.trimUri(treeNode.root.uri, treeNode.uri), relativeFilePath);
+		}
+
+		const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
 
 		vscode.commands.executeCommand('vscode.open', newEntry.fsUri);
 

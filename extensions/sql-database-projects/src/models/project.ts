@@ -17,6 +17,11 @@ export class Project {
 	public projectFilePath: string;
 	public files: ProjectEntry[] = [];
 	public dataSources: DataSource[] = [];
+
+	public get projectFolderPath() {
+		return path.dirname(this.projectFilePath);
+	}
+
 	private projFileXmlDoc: any = undefined;
 
 	constructor(projectFilePath: string) {
@@ -64,13 +69,15 @@ export class Project {
 	}
 
 	private createProjectEntry(relativePath: string, entryType: EntryType): ProjectEntry {
-		return new ProjectEntry(vscode.Uri.file(path.join(path.dirname(this.projectFilePath), relativePath)), relativePath, entryType);
+		return new ProjectEntry(vscode.Uri.file(path.join(this.projectFolderPath, relativePath)), relativePath, entryType);
 	}
 
-	public async addScriptItem(fileName: string, contents: string): Promise<ProjectEntry> {
-		await fs.writeFile(path.join(path.dirname(this.projectFilePath), fileName), contents);
+	public async addScriptItem(relativeFilePath: string, contents: string): Promise<ProjectEntry> {
+		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
+		await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
+		await fs.writeFile(absoluteFilePath, contents);
 
-		const fileEntry = this.createProjectEntry(fileName, EntryType.File);
+		const fileEntry = this.createProjectEntry(relativeFilePath, EntryType.File);
 		this.files.push(fileEntry);
 
 		await this.addToProjFile(fileEntry);
@@ -112,7 +119,7 @@ export class Project {
 	}
 
 	private async serializeToProjFile(projFileContents: any) {
-		const xml = new xmldom.XMLSerializer().serializeToString(projFileContents);
+		const xml = new xmldom.XMLSerializer().serializeToString(projFileContents); // TODO: how to get this to serialize with "pretty" formatting
 
 		await fs.writeFile(this.projectFilePath, xml);
 	}
