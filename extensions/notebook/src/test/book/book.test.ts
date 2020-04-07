@@ -352,4 +352,52 @@ describe('BookTreeViewProviderTests', function () {
 			}
 		});
 	});
+
+	describe('BookTreeViewProvider.Commands', function (): void {
+		let rootFolderPath: string;
+		let tableOfContentsFile: string;
+		let bookTreeViewProvider: BookTreeViewProvider;
+		let appContext: AppContext;
+
+		this.beforeAll(async () => {
+			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
+			let dataFolderPath = path.join(rootFolderPath, '_data');
+			let contentFolderPath = path.join(rootFolderPath, 'content');
+			let configFile = path.join(rootFolderPath, '_config.yml');
+			tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
+			let notebook2File = path.join(contentFolderPath, 'notebook2.ipynb');
+			await fs.mkdir(rootFolderPath);
+			await fs.mkdir(dataFolderPath);
+			await fs.mkdir(contentFolderPath);
+			await fs.writeFile(configFile, 'title: Test Book');
+			await fs.writeFile(tableOfContentsFile, '- title: Notebook1\n  url: /notebook1\n- title: Notebook2\n  url: /notebook2');
+			await fs.writeFile(notebook2File, '');
+
+			const mockExtensionContext = new MockExtensionContext();
+			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
+			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], mockExtensionContext, false, 'bookTreeView');
+			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
+			appContext = new AppContext(undefined, new ApiWrapper());
+		});
+
+		it('should add book and initialize book on openBook', async () => {
+			should(bookTreeViewProvider.books.length).equal(0, 'Invalid books on initialize.');
+			await bookTreeViewProvider.openBook(rootFolderPath);
+			should(bookTreeViewProvider.books.length).equal(1, 'Failed to initialize the book on open');
+		});
+
+		it('should remove book on closeBook', async () => {
+			await bookTreeViewProvider.openBook(rootFolderPath);
+			should(bookTreeViewProvider.books.length).equal(1, 'Failed to initialize the book on open');
+			await bookTreeViewProvider.closeBook(bookTreeViewProvider.books[0].bookItems[0]);
+			should(bookTreeViewProvider.books.length).equal(0, 'Failed to remove the book on close');
+		});
+
+		this.afterAll(async function (): Promise<void> {
+			if (await exists(rootFolderPath)) {
+				await promisify(rimraf)(rootFolderPath);
+			}
+		});
+	});
 });
