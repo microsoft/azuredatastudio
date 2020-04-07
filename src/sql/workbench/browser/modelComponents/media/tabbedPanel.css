@@ -8,25 +8,30 @@
 	height: 100%;
 }
 
+.tabbedpanel-component .tabbedPanel {
+	border-top-width: 0px;
+}
+
 .tabbedpanel-component .tabbedPanel .tabContainer {
 	border-style: solid;
 	border-color: rgb(237, 235, 233);
 	border-width: 0px;
 }
 
-.vs-dark .tabbedpanel-component .tabbedPanel .tabContainer, .hc-black .tabbedpanel-component .tabbedPanel .tabContainer {
-	border-color: rgba(128, 128, 128, 0.5);;
+.vs-dark .tabbedpanel-component .tabbedPanel .tabContainer,
+.hc-black .tabbedpanel-component .tabbedPanel .tabContainer {
+	border-color: rgba(128, 128, 128, 0.5);
 }
 
-.tabbedpanel-component .tabbedPanel.vertical .tabContainer {
+.tabbedpanel-component .tabbedPanel.vertical > .title .tabContainer {
 	border-right-width: 1px;
 }
 
-.tabbedpanel-component .tabbedPanel.horizontal .tabContainer {
+.tabbedpanel-component .tabbedPanel.horizontal > .title .tabContainer {
 	border-bottom-width: 1px;
 }
 
-.tabbedpanel-component .tabbedPanel .tab>.tabLabel.active {
+.tabbedpanel-component .tabbedPanel .tab > .tabLabel.active {
 	border-bottom: 0px solid;
 }
 
@@ -45,9 +50,10 @@
 }
 
 .tabbedpanel-component .tabList .tab-header.active {
-	background-color: rgb(237, 235, 233);
+	background-color: #E1F0FE;
 }
 
-.vs-dark .tabbedpanel-component .tabList .tab-header.active, .hc-black .tabbedpanel-component .tabList .tab-header.active {
+.vs-dark .tabbedpanel-component .tabList .tab-header.active,
+.hc-black .tabbedpanel-component .tabList .tab-header.active {
 	background-color: rgba(128, 128, 128, 0.5);
 }

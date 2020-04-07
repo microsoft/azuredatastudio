@@ -69,7 +69,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			serverPort = await this.server.startup();
 		} catch (err) {
 			const msg = localize('azure.serverCouldNotStart', 'Server could not start. This could be a permissions error or an incompatibility on your system. You can try enabling device code authentication from settings.');
-			await vscode.window.showErrorMessage(msg);
+			vscode.window.showErrorMessage(msg);
 			console.dir(err);
 			return undefined;
 		}
@@ -181,7 +181,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			refreshToken = rt;
 		} catch (ex) {
 			if (ex.msg) {
-				await vscode.window.showErrorMessage(ex.msg);
+				vscode.window.showErrorMessage(ex.msg);
 			}
 			console.log(ex);
 		}
@@ -199,7 +199,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		} catch (ex) {
 			console.log(ex);
 			if (ex.msg) {
-				await vscode.window.showErrorMessage(ex.msg);
+				vscode.window.showErrorMessage(ex.msg);
 				authCompleteDeferred.reject(ex);
 			} else {
 				authCompleteDeferred.reject(new Error('There was an issue when storing the cache.'));

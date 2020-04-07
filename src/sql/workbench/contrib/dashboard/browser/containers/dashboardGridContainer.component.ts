@@ -17,7 +17,6 @@ import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
 import { values } from 'vs/base/common/collections';
-import { fill } from 'vs/base/common/arrays';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 export interface GridCellConfig {
@@ -236,14 +235,16 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 					widget.rowspan = '1';
 				}
 			});
-			this.rows = this.createIndexes(this._contents.map(w => w.row));
-			this.cols = this.createIndexes(this._contents.map(w => w.col));
+			if (this._contents.length > 0) {
+				this.rows = this.createIndexes(this._contents.map(w => w.row));
+				this.cols = this.createIndexes(this._contents.map(w => w.col));
+			}
 		}
 	}
 
 	private createIndexes(indexes: number[]) {
 		const max = Math.max(...indexes) + 1;
-		return fill(max, 0).map((x, i) => i);
+		return new Array(max).fill(0).map((x, i) => i);
 	}
 
 	ngOnDestroy() {

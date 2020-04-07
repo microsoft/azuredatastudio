@@ -13,32 +13,23 @@ import { TextModel } from 'vs/editor/common/model/textModel';
 import { IRange } from 'vs/editor/common/core/range';
 import { IIdentifiedSingleEditOperation } from 'vs/editor/common/model';
 
-const ButtonBold = localize('buttonBold', "Bold");
-const ButtonItalic = localize('buttonItalic', "Italic");
-const ButtonCode = localize('buttonCode', "Code");
-//const ButtonHighlight = localize('buttonHighlight', "Highlight");
-const ButtonLink = localize('buttonLink', "Link");
-const ButtonList = localize('buttonList', "List");
-const ButtonOrderedList = localize('buttonOrderedList', "Ordered list");
-const ButtonImage = localize('buttonImage', "Image");
-const ButtonPreview = localize('buttonPreview', "Markdown preview toggle - off");
+export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 
 @Component({
-	selector: 'markdown-toolbar-component',
-	template: `
-		<ul class="markdown-toolbar">
-			<li><a class="markdown-toolbar-bold" role="button" href="#" (click)="changeSelection(0)"><span class="offscreen">${ButtonBold}</span></a></li>
-			<li><a class="markdown-toolbar-italic" role="button" href="#" (click)="changeSelection(1)"><span class="offscreen">${ButtonItalic}</span></a></li>
-			<li><a class="markdown-toolbar-code" role="button" href="#" (click)="changeSelection(2)"><span class="offscreen">${ButtonCode}</span></a></li>
-			<li><a class="markdown-toolbar-link" role="button" href="#" (click)="changeSelection(3)"><span class="offscreen">${ButtonLink}</span></a></li>
-			<li><a class="markdown-toolbar-list" role="button" href="#" (click)="changeSelection(4)"><span class="offscreen">${ButtonList}</span></a></li>
-			<li><a class="markdown-toolbar-ordered-list" role="button" href="#" (click)="changeSelection(5)"><span class="offscreen">${ButtonOrderedList}</span></a></li>
-			<li><a class="markdown-toolbar-image" role="button" href="#" (click)="changeSelection(6)"><span class="offscreen">${ButtonImage}</span></a></li>
-			<li><a (click)="toggleSplitView()" class="markdown-toolbar-preview-toggle-off" role="button" href="#"><span class="offscreen">${ButtonPreview}</span></a></li>
-		</ul>
-	`
+	selector: MARKDOWN_TOOLBAR_SELECTOR,
+	templateUrl: decodeURI(require.toUrl('./markdownToolbar.component.html'))
 })
-export class MarkdownToolbar {
+export class MarkdownToolbarComponent {
+	public buttonBold = localize('buttonBold', "Bold");
+	public buttonItalic = localize('buttonItalic', "Italic");
+	public buttonHighlight = localize('buttonHighlight', "Highlight");
+	public buttonCode = localize('buttonCode', "Code");
+	public buttonLink = localize('buttonLink', "Link");
+	public buttonList = localize('buttonList', "List");
+	public buttonOrderedList = localize('buttonOrderedList', "Ordered list");
+	public buttonImage = localize('buttonImage', "Image");
+	public buttonPreview = localize('buttonPreview', "Markdown preview toggle - off");
+
 	public get cellModel(): ICellModel {
 		return this._cellModel;
 	}

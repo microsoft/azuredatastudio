@@ -196,7 +196,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	public unselectActiveCell() {
-
 		this.model.updateActiveCell(undefined);
 		this.detectChanges();
 	}
@@ -655,10 +654,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private getSectionElements(): NotebookSection[] {
 		let headers: NotebookSection[] = [];
 		let el: HTMLElement = this.container.nativeElement;
-		let headerElements = el.querySelectorAll('h1, h2, h3, h4, h5, h6');
+		let headerElements = el.querySelectorAll('h1, h2, h3, h4, h5, h6, a[name], a[id]');
 		for (let i = 0; i < headerElements.length; i++) {
 			let headerEl = headerElements[i] as HTMLElement;
-			if (headerEl['id']) {
+			if (headerEl['id'] || headerEl['name']) {
 				headers.push(new NotebookSection(headerEl));
 			}
 		}
@@ -670,7 +669,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let section = find(this.getSectionElements(), s => s.relativeUri && s.relativeUri.toLowerCase() === id);
 		if (section) {
 			// Scroll this section to the top of the header instead of just bringing header into view.
-			let scrollTop = jQuery(section.headerEl).offset().top;
+			let scrollTop = section.headerEl.offsetTop;
 			(<HTMLElement>this.container.nativeElement).scrollTo({
 				top: scrollTop,
 				behavior: 'smooth'
@@ -686,7 +685,7 @@ class NotebookSection implements INotebookSection {
 	}
 
 	get relativeUri(): string {
-		return this.headerEl['id'];
+		return this.headerEl['id'] || this.headerEl['name'];
 	}
 
 	get header(): string {

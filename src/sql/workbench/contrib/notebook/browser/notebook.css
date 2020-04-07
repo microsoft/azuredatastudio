@@ -2,6 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+.notebookEditor .scrollable {
+	margin-top: 5px;
+}
+
 .notebookEditor .editor-toolbar {
 	border-bottom-width: 1px;
 	border-bottom-style: solid;
@@ -120,6 +124,9 @@
 
 .moreActions.actionhidden {
 	visibility: hidden
+}
+.moreActions .monaco-action-bar {
+	margin-left: -12px;
 }
 
 .notebookEditor .notebook-cellTable {

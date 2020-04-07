@@ -103,15 +103,15 @@ export class PackageManagementService {
 	 * Returns python packages installed in SQL server instance
 	 * @param connection SQL Connection
 	 */
-	public async getPythonPackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
-		return this._queryRunner.getPythonPackages(connection);
+	public async getPythonPackages(connection: azdata.connection.ConnectionProfile, databaseName: string): Promise<nbExtensionApis.IPackageDetails[]> {
+		return this._queryRunner.getPythonPackages(connection, databaseName);
 	}
 
 	/**
 	 * Returns python packages installed in SQL server instance
 	 * @param connection SQL Connection
 	 */
-	public async getRPackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
-		return this._queryRunner.getRPackages(connection);
+	public async getRPackages(connection: azdata.connection.ConnectionProfile, databaseName: string): Promise<nbExtensionApis.IPackageDetails[]> {
+		return this._queryRunner.getRPackages(connection, databaseName);
 	}
 }

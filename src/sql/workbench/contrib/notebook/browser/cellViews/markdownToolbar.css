@@ -10,18 +10,21 @@ text-cell-component .markdown-toolbar {
 	margin: 0;
 	padding: 6px 16px 1px;
 }
-
 text-cell-component .markdown-toolbar li {
 	display: inline-block;
-	margin-right: 12px;
+	margin-right: 8px;
 	text-align: center;
 }
-
+text-cell-component .markdown-toolbar li:nth-child(1) {
+	margin-right: 0px;
+}
+text-cell-component .markdown-toolbar li:nth-child(2) {
+	margin-right: 4px;
+}
 text-cell-component .markdown-toolbar li:last-child {
 	float: right;
 	margin-right: 0;
 }
-
 text-cell-component .markdown-toolbar li a {
 	background: 50% 50% no-repeat;
 	display: block;
@@ -29,7 +32,7 @@ text-cell-component .markdown-toolbar li a {
 	width: 20px;
 }
 
-.offscreen {
+text-cell-component .offscreen {
 	height: 1px;
 	text-indent: -999999px;
 	margin-top: -1px;
@@ -41,6 +44,9 @@ text-cell-component li a.markdown-toolbar-bold {
 }
 text-cell-component li a.markdown-toolbar-italic {
 	background-image: url('media/toolbar-italic.svg');
+}
+text-cell-component li a.markdown-toolbar-highlight {
+	background-image: url('media/toolbar-highlight.svg');
 }
 text-cell-component li a.markdown-toolbar-code {
 	background-image: url('media/toolbar-code.svg');
