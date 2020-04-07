@@ -145,8 +145,6 @@ export class AccountManagementService implements IAccountManagementService {
 				}
 
 				this.fireAccountListUpdate(provider, result.accountAdded);
-			} catch (e) {
-				throw e;
 			} finally {
 				notificationHandler.close();
 			}
