@@ -46,8 +46,8 @@ export class DashboardInput extends EditorInput {
 
 		// vscode has a comment that Mode's will eventually be removed (not sure the state of this comment)
 		// so this might be able to be undone when that happens
-		if (!model.getModel(this.getResource())) {
-			model.createModel('', modeService.create('dashboard'), this.getResource());
+		if (!model.getModel(this.resource)) {
+			model.createModel('', modeService.create('dashboard'), this.resource);
 		}
 		this._initializedPromise = _connectionService.connectIfNotConnected(_connectionProfile, 'dashboard').then(
 			u => {
@@ -72,7 +72,7 @@ export class DashboardInput extends EditorInput {
 		return DashboardInput.ID;
 	}
 
-	public getResource(): URI {
+	public get resource(): URI {
 		return URI.from({
 			scheme: 'dashboard',
 			path: 'dashboard'

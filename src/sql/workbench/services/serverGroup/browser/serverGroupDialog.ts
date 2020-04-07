@@ -25,22 +25,26 @@ import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { Color } from 'vs/base/common/color';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
+import { assertIsDefined, isUndefinedOrNull } from 'vs/base/common/types';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+
+interface IRenderedServerGroupDialog {
+	groupNameInputBox: InputBox;
+	groupDescriptionInputBox: InputBox;
+	serverGroupContainer: HTMLElement;
+	addServerButton: Button;
+	closeButton: Button;
+}
 
 export class ServerGroupDialog extends Modal {
-	private _addServerButton: Button;
-	private _closeButton: Button;
 	private _colorColorBoxesMap: Array<{ color: string, colorbox: Colorbox }> = [];
-	private _selectedColorOption: number;
-	private _groupNameInputBox: InputBox;
-	private _groupDescriptionInputBox: InputBox;
-	private _viewModel: ServerGroupViewModel;
+	private _selectedColorOption?: number;
+	private _viewModel?: ServerGroupViewModel;
 	private _skipGroupNameValidation: boolean = false;
-	private _serverGroupContainer: HTMLElement;
 
 	private _onAddServerGroup = new Emitter<void>();
 	public onAddServerGroup: Event<void> = this._onAddServerGroup.event;
@@ -51,8 +55,16 @@ export class ServerGroupDialog extends Modal {
 	private _onCloseEvent = new Emitter<void>();
 	public onCloseEvent: Event<void> = this._onCloseEvent.event;
 
+	// rendered elements
+	private isRendered = false;
+	private _groupNameInputBox?: InputBox;
+	private _groupDescriptionInputBox?: InputBox;
+	private _serverGroupContainer?: HTMLElement;
+	private _addServerButton?: Button;
+	private _closeButton?: Button;
+
 	constructor(
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
@@ -71,6 +83,7 @@ export class ServerGroupDialog extends Modal {
 		const cancelLabel = localize('serverGroup.cancel', "Cancel");
 		this._addServerButton = this.addFooterButton(okLabel, () => this.addGroup());
 		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel());
+		this.isRendered = true;
 		this.registerListeners();
 	}
 
@@ -139,31 +152,33 @@ export class ServerGroupDialog extends Modal {
 	}
 
 	private focusNext(): void {
-		if (this._groupNameInputBox.hasFocus()) {
-			this._groupDescriptionInputBox.focus();
-		} else if (this._groupDescriptionInputBox.hasFocus()) {
-			this._colorColorBoxesMap[this._selectedColorOption].colorbox.focus();
+		const renderedDialog = this.withRenderedDialog;
+		if (renderedDialog.groupNameInputBox.hasFocus()) {
+			renderedDialog.groupDescriptionInputBox.focus();
+		} else if (renderedDialog.groupDescriptionInputBox.hasFocus()) {
+			this._colorColorBoxesMap[this._selectedColorOption ?? 0].colorbox.focus();
 		} else if (this.isFocusOnColors()) {
-			this._addServerButton.enabled ? this._addServerButton.focus() : this._closeButton.focus();
-		} else if (document.activeElement === this._addServerButton.element) {
-			this._closeButton.focus();
+			renderedDialog.addServerButton.enabled ? renderedDialog.addServerButton.focus() : renderedDialog.closeButton.focus();
+		} else if (document.activeElement === renderedDialog.addServerButton.element) {
+			renderedDialog.closeButton.focus();
 		}
-		else if (document.activeElement === this._closeButton.element) {
-			this._groupNameInputBox.focus();
+		else if (document.activeElement === renderedDialog.closeButton.element) {
+			renderedDialog.groupNameInputBox.focus();
 		}
 	}
 
 	private focusPrevious(): void {
-		if (document.activeElement === this._closeButton.element) {
-			this._addServerButton.enabled ? this._addServerButton.focus() : this._colorColorBoxesMap[this._selectedColorOption].colorbox.focus();
-		} else if (document.activeElement === this._addServerButton.element) {
-			this._colorColorBoxesMap[this._selectedColorOption].colorbox.focus();
+		const renderedDialog = this.withRenderedDialog;
+		if (document.activeElement === renderedDialog.closeButton.element) {
+			renderedDialog.addServerButton.enabled ? renderedDialog.addServerButton.focus() : this._colorColorBoxesMap[this._selectedColorOption ?? 0].colorbox.focus();
+		} else if (document.activeElement === renderedDialog.addServerButton.element) {
+			this._colorColorBoxesMap[this._selectedColorOption ?? 0].colorbox.focus();
 		} else if (this.isFocusOnColors()) {
-			this._groupDescriptionInputBox.focus();
-		} else if (this._groupDescriptionInputBox.hasFocus()) {
-			this._groupNameInputBox.focus();
-		} else if (this._groupNameInputBox.hasFocus()) {
-			this._closeButton.focus();
+			renderedDialog.groupDescriptionInputBox.focus();
+		} else if (renderedDialog.groupDescriptionInputBox.hasFocus()) {
+			renderedDialog.groupNameInputBox.focus();
+		} else if (renderedDialog.groupNameInputBox.hasFocus()) {
+			renderedDialog.closeButton.focus();
 		}
 	}
 
@@ -196,32 +211,33 @@ export class ServerGroupDialog extends Modal {
 	}
 
 	private onSelectGroupColor(colorToSelect: string): void {
-		this._viewModel.groupColor = colorToSelect;
-		this._selectedColorOption = this._viewModel.colors.indexOf(colorToSelect);
+		this.withViewModel.groupColor = colorToSelect;
+		this._selectedColorOption = this.withViewModel.colors.indexOf(colorToSelect);
 		this.updateView();
 	}
 
 	private registerListeners(): void {
+		const renderedDialog = this.withRenderedDialog;
 		// Theme styler
-		this._register(attachInputBoxStyler(this._groupNameInputBox, this._themeService));
-		this._register(attachInputBoxStyler(this._groupDescriptionInputBox, this._themeService));
-		this._register(attachButtonStyler(this._addServerButton, this._themeService));
-		this._register(attachButtonStyler(this._closeButton, this._themeService));
+		this._register(attachInputBoxStyler(renderedDialog.groupNameInputBox, this._themeService));
+		this._register(attachInputBoxStyler(renderedDialog.groupDescriptionInputBox, this._themeService));
+		this._register(attachButtonStyler(renderedDialog.addServerButton, this._themeService));
+		this._register(attachButtonStyler(renderedDialog.closeButton, this._themeService));
 
 		// handler for name change events
-		this._register(this._groupNameInputBox.onDidChange(groupName => {
+		this._register(renderedDialog.groupNameInputBox.onDidChange(groupName => {
 			this.groupNameChanged(groupName);
 		}));
 
 		// handler for description change events
-		this._register(this._groupDescriptionInputBox.onDidChange(groupDescription => {
+		this._register(renderedDialog.groupDescriptionInputBox.onDidChange(groupDescription => {
 			this.groupDescriptionChanged(groupDescription);
 		}));
 	}
 
 	private fillGroupColors(container: HTMLElement): void {
-		for (let i = 0; i < this._viewModel.colors.length; i++) {
-			const color = this._viewModel.colors[i];
+		for (let i = 0; i < this.withViewModel.colors.length; i++) {
+			const color = this.withViewModel.colors[i];
 
 			const colorColorBox = new Colorbox(container, {
 				name: 'server-group-color',
@@ -245,31 +261,32 @@ export class ServerGroupDialog extends Modal {
 	}
 
 	private groupNameChanged(groupName: string) {
-		this._viewModel.groupName = groupName;
+		this.withViewModel.groupName = groupName;
 		this.updateView();
 	}
 
 	private groupDescriptionChanged(groupDescription: string) {
-		this._viewModel.groupDescription = groupDescription;
+		this.withViewModel.groupDescription = groupDescription;
 		this.updateView();
 	}
 
 	public get groupName(): string {
-		return this._groupNameInputBox.value;
+		return this.withRenderedDialog.groupNameInputBox.value;
 	}
 
 	public get groupDescription(): string {
-		return this._groupDescriptionInputBox.value;
+		return this.withRenderedDialog.groupDescriptionInputBox.value;
 	}
 
-	public get selectedColor(): string {
-		return this._colorColorBoxesMap[this._selectedColorOption].color;
+	public get selectedColor(): string | undefined {
+		return !isUndefinedOrNull(this._selectedColorOption) ? this._colorColorBoxesMap[this._selectedColorOption].color : undefined;
 	}
 
-	public get viewModel(): ServerGroupViewModel {
+	public get viewModel(): ServerGroupViewModel | undefined {
 		return this._viewModel;
 	}
-	public set viewModel(theViewModel: ServerGroupViewModel) {
+
+	public setViewModel(theViewModel: ServerGroupViewModel) {
 		this._viewModel = theViewModel;
 		if (this._serverGroupContainer) {
 			DOM.clearNode(this._serverGroupContainer);
@@ -278,7 +295,7 @@ export class ServerGroupDialog extends Modal {
 	}
 
 	public addGroup(): void {
-		if (this._addServerButton.enabled) {
+		if (this.withRenderedDialog.addServerButton.enabled) {
 			if (this.validateInputs()) {
 				this._onAddServerGroup.fire();
 			}
@@ -290,22 +307,24 @@ export class ServerGroupDialog extends Modal {
 	}
 
 	private validateInputs(): boolean {
-		let validate = this._groupNameInputBox.validate();
+		const renderedDialog = this.withRenderedDialog;
+		let validate = renderedDialog.groupNameInputBox.validate();
 		if (!validate) {
-			this._groupNameInputBox.focus();
+			renderedDialog.groupNameInputBox.focus();
 		}
 		return validate;
 	}
 
 	// initialize the view based on the current state of the view model
 	private initializeView(): void {
-		this.title = this._viewModel.getDialogTitle();
+		const renderedDialog = this.withRenderedDialog;
+		this.title = this.withViewModel.getDialogTitle();
 
 		this._skipGroupNameValidation = true;
-		this._groupNameInputBox.value = this._viewModel.groupName;
+		renderedDialog.groupNameInputBox.value = this.withViewModel.groupName;
 		this._skipGroupNameValidation = false;
 
-		this._groupDescriptionInputBox.value = this._viewModel.groupDescription;
+		renderedDialog.groupDescriptionInputBox.value = this.withViewModel.groupDescription ?? '';
 
 		this.updateView();
 	}
@@ -315,16 +334,19 @@ export class ServerGroupDialog extends Modal {
 		// check the color buttons and if their checked state does not match the view model state then correct it
 		for (let i = 0; i < this._colorColorBoxesMap.length; i++) {
 			let { colorbox: colorbox, color } = this._colorColorBoxesMap[i];
-			if ((this._viewModel.groupColor === color) && (colorbox.checked === false)) {
+			if ((this.withViewModel.groupColor === color) && (colorbox.checked === false)) {
 				colorbox.checked = true;
 				this._selectedColorOption = i;
-			} else if ((this._viewModel.groupColor !== color) && (colorbox.checked === true)) {
+			} else if ((this.withViewModel.groupColor !== color) && (colorbox.checked === true)) {
 				colorbox.checked = false;
 			}
 		}
-
 		// OK button state - enabled if there are pending changes that can be saved
-		this._addServerButton.enabled = this._viewModel.hasPendingChanges();
+		this.withRenderedDialog.addServerButton.enabled = this.withViewModel.hasPendingChanges();
+	}
+
+	private get withViewModel(): ServerGroupViewModel {
+		return assertIsDefined(this._viewModel);
 	}
 
 	/* Overwrite escape key behavior */
@@ -344,8 +366,23 @@ export class ServerGroupDialog extends Modal {
 
 	public close() {
 		this.hide();
-		this._groupNameInputBox.hideMessage();
+		this.withRenderedDialog.groupNameInputBox.hideMessage();
 		this._onCloseEvent.fire();
+	}
+
+	private get withRenderedDialog(): IRenderedServerGroupDialog {
+		if (this.isRendered) {
+			// we assume if we are rendered then all our rendered elements are defined
+			return {
+				groupNameInputBox: this._groupNameInputBox!,
+				groupDescriptionInputBox: this._groupDescriptionInputBox!,
+				serverGroupContainer: this._serverGroupContainer!,
+				addServerButton: this._addServerButton!,
+				closeButton: this._closeButton!
+			};
+		} else {
+			throw new Error('Server Group Dialog Not Rendered');
+		}
 	}
 
 	public open() {
@@ -353,6 +390,6 @@ export class ServerGroupDialog extends Modal {
 		this.hideError();
 		this.initializeView();
 		this.show();
-		this._groupNameInputBox.focus();
+		this.withRenderedDialog.groupNameInputBox.focus();
 	}
 }

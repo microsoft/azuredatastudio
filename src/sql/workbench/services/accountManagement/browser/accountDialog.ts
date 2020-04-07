@@ -32,13 +32,16 @@ import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 's
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IViewPaneOptions, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { attachModalDialogStyler, attachPanelStyler } from 'sql/workbench/common/styler';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
+import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 class AccountPanel extends ViewPane {
 	public index: number;
@@ -54,8 +57,9 @@ class AccountPanel extends ViewPane {
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IOpenerService openerService: IOpenerService,
+		@ITelemetryService telemetryService: ITelemetryService,
 	) {
-		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -121,7 +125,7 @@ export class AccountDialog extends Modal {
 	public get onCloseEvent(): Event<void> { return this._onCloseEmitter.event; }
 
 	constructor(
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
@@ -133,7 +137,10 @@ export class AccountDialog extends Modal {
 		@ILogService logService: ILogService,
 		@IViewDescriptorService private viewDescriptorService: IViewDescriptorService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
-		@IOpenerService protected readonly openerService: IOpenerService
+		@IQuickInputService private _quickInputService: IQuickInputService,
+		@INotificationService private _notificationService: INotificationService,
+		@IOpenerService protected readonly openerService: IOpenerService,
+		@ITelemetryService private readonly vstelemetryService: ITelemetryService
 	) {
 		super(
 			localize('linkedAccounts', "Linked accounts"),
@@ -196,8 +203,34 @@ export class AccountDialog extends Modal {
 		this._addAccountButton = new Button(buttonSection);
 		this._addAccountButton.label = localize('accountDialog.addConnection', "Add an account");
 
-		this._register(this._addAccountButton.onDidClick(() => {
-			(<IProviderViewUiComponent>values(this._providerViewsMap)[0]).addAccountAction.run();
+		this._register(this._addAccountButton.onDidClick(async () => {
+			const vals = values(this._providerViewsMap);
+
+			let pickedValue: string;
+			if (vals.length === 0) {
+				this._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
+				return;
+			}
+			if (vals.length > 1) {
+				const buttons: IQuickPickItem[] = vals.map(v => {
+					return { label: v.view.title } as IQuickPickItem;
+				});
+
+				const picked = await this._quickInputService.pick(buttons, { canPickMany: false });
+
+				pickedValue = picked?.label;
+			} else {
+				pickedValue = vals[0].view.title;
+			}
+
+			const v = vals.filter(v => v.view.title === pickedValue)?.[0];
+
+			if (!v) {
+				this._notificationService.error(localize('accountDialog.didNotPickAuthProvider', "You didn't select any authentication provider. Please try again."));
+				return;
+			}
+
+			v.addAccountAction.run();
 		}));
 
 		DOM.append(container, this._noaccountViewContainer);
@@ -295,8 +328,7 @@ export class AccountDialog extends Modal {
 		let providerView = new AccountPanel(
 			{
 				id: newProvider.addedProvider.id,
-				title: newProvider.addedProvider.displayName,
-				ariaHeaderLabel: newProvider.addedProvider.displayName
+				title: newProvider.addedProvider.displayName
 			},
 			this._keybindingService,
 			this._contextMenuService,
@@ -305,7 +337,8 @@ export class AccountDialog extends Modal {
 			this.contextKeyService,
 			this._instantiationService,
 			this.viewDescriptorService,
-			this.openerService
+			this.openerService,
+			this.vstelemetryService
 		);
 
 		attachPanelStyler(providerView, this._themeService);

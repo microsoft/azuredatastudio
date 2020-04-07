@@ -42,8 +42,7 @@ export interface IExtension {
 	readonly latestVersion: string;
 	readonly description: string;
 	readonly url?: string;
-	// {{SQL CARBON EDIT}}
-	readonly downloadPage?: string;
+	readonly downloadPage?: string; // {{SQL CARBON EDIT}}
 	readonly repository?: string;
 	readonly iconUrl: string;
 	readonly iconUrlFallback: string;
@@ -88,7 +87,7 @@ export interface IExtensionsWorkbenchService {
 	installVersion(extension: IExtension, version: string): Promise<IExtension>;
 	reinstall(extension: IExtension): Promise<IExtension>;
 	setEnablement(extensions: IExtension | IExtension[], enablementState: EnablementState): Promise<void>;
-	open(extension: IExtension, sideByside?: boolean): Promise<any>;
+	open(extension: IExtension, options?: { sideByside?: boolean, preserveFocus?: boolean, pinned?: boolean }): Promise<any>;
 	checkForUpdates(): Promise<void>;
 }
 
@@ -144,3 +143,5 @@ export class ExtensionContainers extends Disposable {
 		}
 	}
 }
+
+export const TOGGLE_IGNORE_EXTENSION_ACTION_ID = 'workbench.extensions.action.toggleIgnoreExtension';

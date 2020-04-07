@@ -19,7 +19,7 @@ export interface IAdminService {
 
 	registerProvider(providerId: string, provider: azdata.AdminServicesProvider): void;
 
-	getDefaultDatabaseInfo(connectionUri: string): Thenable<azdata.DatabaseInfo>;
+	getDefaultDatabaseInfo(connectionUri: string): Thenable<azdata.DatabaseInfo | undefined>;
 
 	getDatabaseInfo(connectionUri: string): Thenable<azdata.DatabaseInfo>;
 }
@@ -48,7 +48,7 @@ export class AdminService implements IAdminService {
 		}
 	}
 
-	public getDefaultDatabaseInfo(connectionUri: string): Thenable<azdata.DatabaseInfo> {
+	public getDefaultDatabaseInfo(connectionUri: string): Thenable<azdata.DatabaseInfo | undefined> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			let provider = this._providers[providerId];

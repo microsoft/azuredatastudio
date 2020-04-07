@@ -74,30 +74,34 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 			this._register(this._editableDropdown);
 			this._register(attachEditableDropdownStyler(this._editableDropdown, this.themeService));
-			this._register(this._editableDropdown.onValueChange(e => {
+			this._register(this._editableDropdown.onValueChange(async e => {
 				if (this.editable) {
 					this.setSelectedValue(this._editableDropdown.value);
+					await this.validate();
 					this.fireEvent({
 						eventType: ComponentEventType.onDidChange,
 						args: e
 					});
 				}
 			}));
+			this._validations.push(() => !this.required || !this.editable || !!this._editableDropdown.value);
 		}
 		if (this._dropDownContainer) {
 			this._selectBox = new SelectBox(this.getValues(), this.getSelectedValue(), this.contextViewService, this._dropDownContainer.nativeElement);
 			this._selectBox.render(this._dropDownContainer.nativeElement);
 			this._register(this._selectBox);
 			this._register(attachSelectBoxStyler(this._selectBox, this.themeService));
-			this._register(this._selectBox.onDidSelect(e => {
+			this._register(this._selectBox.onDidSelect(async e => {
 				if (!this.editable) {
 					this.setSelectedValue(this._selectBox.value);
+					await this.validate();
 					this.fireEvent({
 						eventType: ComponentEventType.onDidChange,
 						args: e
 					});
 				}
 			}));
+			this._validations.push(() => !this.required || this.editable || !!this._selectBox.value);
 		}
 	}
 
@@ -136,6 +140,10 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 				this._selectBox.disable();
 			}
 		}
+
+		this._selectBox.selectElem.required = this.required;
+		this._editableDropdown.inputElement.required = this.required;
+		this.validate();
 	}
 
 	private getValues(): string[] {
@@ -215,6 +223,14 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	private setValuesProperties(properties: azdata.DropDownProperties, values: string[] | azdata.CategoryValue[]): void {
 		properties.values = values;
+	}
+
+	public get required(): boolean {
+		return this.getPropertyOrDefault<azdata.DropDownProperties, boolean>((props) => props.required, false);
+	}
+
+	public set required(newValue: boolean) {
+		this.setPropertyFromUI<azdata.DropDownProperties, boolean>((props, value) => props.required = value, newValue);
 	}
 
 	public focus(): void {

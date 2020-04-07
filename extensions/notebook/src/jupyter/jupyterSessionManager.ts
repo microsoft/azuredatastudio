@@ -26,6 +26,7 @@ const configBase = {
 	'kernel_r_credentials': {
 		'url': ''
 	},
+	'livy_session_startup_timeout_seconds': 100,
 	'logging_config': {
 		'version': 1,
 		'formatters': {
@@ -349,6 +350,16 @@ export class JupyterSession implements nb.ISession {
 					allCode += `%set_env ${key}=${process.env[key]}${EOL}`;
 				}
 			}
+
+			// To set ADS context for Kqlmagic
+			allCode += `%set_env KQLMAGIC_NOTEBOOK_APP=AzureDataStudio${EOL}`;
+
+			// Enable silent mode for perf improvement of reload command.
+			allCode += `%set_env KQLMAGIC_LOAD_MODE=silent${EOL}`;
+
+			// Add and register Kqlmagic to the python kernel
+			allCode += `%reload_ext Kqlmagic`;
+
 			let future = this.sessionImpl.kernel.requestExecute({
 				code: allCode,
 				silent: true,

@@ -11,11 +11,11 @@ import * as strings from 'vs/base/common/strings';
 
 export class ServerGroupViewModel {
 	public groupName: string;
-	public groupDescription: string;
-	public groupColor: string;
+	public groupDescription?: string;
+	public groupColor?: string;
 	public colors: string[] = ['#515151', '#004760', '#771b00', '#700060', '#a17d01', '#006749', '#654502', '#3A0293'];
 
-	private _domainModel: IConnectionProfileGroup;
+	private _domainModel?: IConnectionProfileGroup;
 	private _editMode: boolean;
 	private readonly _addServerGroupTitle: string = localize('serverGroup.addServerGroup', "Add server group");
 	private readonly _editServerGroupTitle: string = localize('serverGroup.editServerGroup', "Edit server group");

@@ -29,6 +29,14 @@ declare module 'azdata' {
 		export function getConnection(uri: string): Thenable<ConnectionProfile>;
 	}
 
+	export namespace nb {
+		export interface NotebookDocument {
+			/**
+			 * Sets the trust mode for the notebook document.
+			 */
+			setTrusted(state: boolean);
+		}
+	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
 		| 'Float' | 'Image' | 'Int' | 'Money' | 'NChar' | 'NText' | 'NVarChar' | 'Real'
@@ -117,15 +125,10 @@ declare module 'azdata' {
 		defaultValueOsOverrides?: DefaultValueOsOverride[];
 	}
 
-	/*
-	 * Add OssRdbms for sqlops AzureResource.
-	 */
-	export enum AzureResource {
-		OssRdbms = 2
-	}
-
 	export interface ModelBuilder {
 		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent>;
+		tabbedPanel(): TabbedPanelComponentBuilder;
+		separator(): ComponentBuilder<SeparatorComponent>;
 	}
 
 	export interface RadioCard {
@@ -158,6 +161,9 @@ declare module 'azdata' {
 
 	export interface RadioCardGroupComponent extends Component, RadioCardGroupComponentProperties {
 		onSelectionChanged: vscode.Event<any>;
+	}
+
+	export interface SeparatorComponent extends Component {
 	}
 
 	export interface DeclarativeTableProperties extends ComponentProperties {
@@ -195,7 +201,125 @@ declare module 'azdata' {
 	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIconProperties {
 	}
 
+	/**
+	 * Panel component with tabs
+	 */
+	export interface TabbedPanelComponent extends Container<TabbedPanelLayout, any> {
+		/**
+		 * An event triggered when the selected tab is changed.
+		 * The event argument is the id of the selected tab.
+		 */
+		onTabChanged: vscode.Event<string>;
+	}
+
+	/**
+	 * Defines the tab orientation of TabbedPanelComponent
+	 */
+	export enum TabOrientation {
+		Vertical = 'vertical',
+		Horizontal = 'horizontal'
+	}
+
+	/**
+	 * Layout of TabbedPanelComponent, can be used to initialize the component when using ModelBuilder
+	 */
+	export interface TabbedPanelLayout {
+		orientation: TabOrientation;
+		showIcon: boolean;
+	}
+
+	/**
+	 * Represents the tab of TabbedPanelComponent
+	 */
+	export interface Tab {
+		/**
+		 * Title of the tab
+		 */
+		title: string;
+
+		/**
+		 * Content component of the tab
+		 */
+		content: Component;
+
+		/**
+		 * Id of the tab
+		 */
+		id: string;
+
+		/**
+		 * Icon of the tab
+		 */
+		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+	}
+
+	/**
+	 * Represents the tab group of TabbedPanelComponent
+	 */
+	export interface TabGroup {
+		/**
+		 * Title of the tab group
+		 */
+		title: string;
+
+		/**
+		 * children of the tab group
+		 */
+		tabs: Tab[];
+	}
+
+	/**
+	 * Builder for TabbedPannelComponent
+	 */
+	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, any, any> {
+		/**
+		 * Add the tabs to the component
+		 * @param tabs tabs/tab groups to be added
+		 */
+		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, any, any>;
+	}
+
 	export interface InputBoxProperties extends ComponentProperties {
 		validationErrorMessage?: string;
 	}
+
+	export interface CheckBoxProperties {
+		required?: boolean;
+	}
+
+	export namespace nb {
+		/**
+		 * An event that is emitted when the active Notebook editor is changed.
+		 */
+		export const onDidChangeActiveNotebookEditor: vscode.Event<NotebookEditor>;
+	}
+
+	export namespace window {
+		export interface ModelViewDashboard {
+			registerTabs(handler: (view: ModelView) => Thenable<(DashboardTab | DashboardTabGroup)[]>): void;
+			open(): Thenable<void>;
+		}
+
+		export function createModelViewDashboard(title: string): ModelViewDashboard;
+	}
+
+	export interface DashboardTab extends Tab {
+		/**
+		 * Toolbar of the tab, optional.
+		 */
+		toolbar?: ToolbarContainer;
+	}
+
+	export interface DashboardTabGroup {
+		/**
+		 * * Title of the tab group
+		 */
+		title: string;
+
+		/**
+		 * children of the tab group
+		 */
+		tabs: DashboardTab[];
+	}
 }
+

@@ -5,6 +5,7 @@
 
 import { EditorInput } from 'vs/workbench/common/editor';
 import { Emitter } from 'vs/base/common/event';
+import { URI } from 'vs/base/common/uri';
 
 /**
  * Input for the EditDataResultsEditor. This input helps with logic for the viewing and editing of
@@ -101,5 +102,9 @@ export class EditDataResultsInput extends EditorInput {
 
 	get uri(): string {
 		return unescape(this._uri);
+	}
+
+	get resource(): URI | undefined {
+		return undefined;
 	}
 }

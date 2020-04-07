@@ -127,8 +127,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	}
 
 	private mapMouseEvent(slickEvent: Slick.Event<any>, emitter: Emitter<ITableMouseEvent>) {
-		slickEvent.subscribe((e: JQuery.Event) => {
-			const originalEvent = e.originalEvent;
+		slickEvent.subscribe((e: Slick.EventData) => {
+			const originalEvent = (e as JQuery.Event).originalEvent;
 			const cell = this._grid.getCellFromEvent(originalEvent);
 			const anchor = originalEvent instanceof MouseEvent ? { x: originalEvent.x, y: originalEvent.y } : originalEvent.srcElement as HTMLElement;
 			emitter.fire({ anchor, cell });

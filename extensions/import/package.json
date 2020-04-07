@@ -2,7 +2,7 @@
 	"name": "import",
 	"displayName": "SQL Server Import",
 	"description": "SQL Server Import for Azure Data Studio supports importing CSV or JSON files into SQL Server.",
-	"version": "0.13.1",
+	"version": "0.15.0",
 	"publisher": "Microsoft",
 	"preview": true,
 	"engines": {
@@ -10,7 +10,7 @@
 		"azdata": "*"
 	},
 	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx",
-	"icon": "images/sqlserver.png",
+	"icon": "images/extension.png",
 	"aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
 	"activationEvents": [
     "onCommand:flatFileImport.start"
@@ -66,7 +66,7 @@
 	"dependencies": {
 		"dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.3.0",
 		"htmlparser2": "^3.10.1",
-		"service-downloader": "github:anthonydresser/service-downloader#0.1.7",
+		"service-downloader": "0.2.1",
 		"vscode-extension-telemetry": "0.0.18",
 		"vscode-nls": "^3.2.1"
 	},

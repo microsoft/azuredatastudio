@@ -39,8 +39,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { defaultInsertColor, defaultRemoveColor, diffBorder, diffInserted, diffInsertedOutline, diffRemoved, diffRemovedOutline, scrollbarShadow, scrollbarSliderBackground, scrollbarSliderHoverBackground, scrollbarSliderActiveBackground } from 'vs/platform/theme/common/colorRegistry';
-import { ITheme, IThemeService, getThemeTypeSelector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { reverseLineChanges } from 'sql/editor/browser/diffEditorHelper'; // {{SQL CARBON EDIT}}
+import { IColorTheme, IThemeService, getThemeTypeSelector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IDiffLinesChange, InlineDiffMargin } from 'vs/editor/browser/widget/inlineDiffMargin';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -49,6 +48,7 @@ import { EditorExtensionsRegistry, IDiffEditorContributionDescription } from 'vs
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IEditorProgressService, IProgressRunner } from 'vs/platform/progress/common/progress';
 import { ElementSizeObserver } from 'vs/editor/browser/config/elementSizeObserver';
+import { reverseLineChanges } from 'sql/editor/browser/diffEditorHelper';
 
 interface IEditorDiffDecorations {
 	decorations: IModelDeltaDecoration[];
@@ -73,7 +73,7 @@ interface IDiffEditorWidgetStyle {
 	// {{SQL CARBON EDIT}}
 	getEditorsDiffDecorations(lineChanges: editorCommon.ILineChange[], ignoreTrimWhitespace: boolean, renderIndicators: boolean, originalWhitespaces: IEditorWhitespace[], modifiedWhitespaces: IEditorWhitespace[], originalEditor: editorBrowser.ICodeEditor, modifiedEditor: editorBrowser.ICodeEditor, reverse?: boolean): IEditorsDiffDecorationsWithZones;
 	setEnableSplitViewResizing(enableSplitViewResizing: boolean): void;
-	applyColors(theme: ITheme): boolean;
+	applyColors(theme: IColorTheme): boolean;
 	layout(): number;
 	dispose(): void;
 }
@@ -86,7 +86,7 @@ class VisualEditorState {
 
 	constructor(
 		private _contextMenuService: IContextMenuService,
-		private _clipboardService: IClipboardService | null
+		private _clipboardService: IClipboardService
 	) {
 		this._zones = [];
 		this.inlineDiffMargins = [];
@@ -136,7 +136,7 @@ class VisualEditorState {
 				this._zones.push(zoneId);
 				this._zonesMap[String(zoneId)] = true;
 
-				if (newDecorations.zones[i].diff && viewZone.marginDomNode && this._clipboardService) {
+				if (newDecorations.zones[i].diff && viewZone.marginDomNode) {
 					viewZone.suppressMouseDown = false;
 					this.inlineDiffMargins.push(new InlineDiffMargin(zoneId, viewZone.marginDomNode, editor, newDecorations.zones[i].diff!, this._contextMenuService, this._clipboardService));
 				}
@@ -223,7 +223,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 	constructor(
 		domElement: HTMLElement,
 		options: IDiffEditorOptions,
-		clipboardService: IClipboardService | null,
+		@IClipboardService clipboardService: IClipboardService,
 		@IEditorWorkerService editorWorkerService: IEditorWorkerService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IInstantiationService instantiationService: IInstantiationService,
@@ -283,7 +283,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		this._updateDecorationsRunner = this._register(new RunOnceScheduler(() => this._updateDecorations(), 0));
 
 		this._containerDomElement = document.createElement('div');
-		this._containerDomElement.className = DiffEditorWidget._getClassName(this._themeService.getTheme(), this._renderSideBySide);
+		this._containerDomElement.className = DiffEditorWidget._getClassName(this._themeService.getColorTheme(), this._renderSideBySide);
 		this._containerDomElement.style.position = 'relative';
 		this._containerDomElement.style.height = '100%';
 		this._domElement.appendChild(this._containerDomElement);
@@ -373,11 +373,11 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 			this._setStrategy(new DiffEditorWidgetInline(this._createDataSource(), this._enableSplitViewResizing));
 		}
 
-		this._register(themeService.onThemeChange(t => {
+		this._register(themeService.onDidColorThemeChange(t => {
 			if (this._strategy && this._strategy.applyColors(t)) {
 				this._updateDecorationsRunner.schedule();
 			}
-			this._containerDomElement.className = DiffEditorWidget._getClassName(this._themeService.getTheme(), this._renderSideBySide);
+			this._containerDomElement.className = DiffEditorWidget._getClassName(this._themeService.getColorTheme(), this._renderSideBySide);
 		}));
 
 		const contributions: IDiffEditorContributionDescription[] = EditorExtensionsRegistry.getDiffEditorContributions();
@@ -436,7 +436,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		this._reviewPane.prev();
 	}
 
-	private static _getClassName(theme: ITheme, renderSideBySide: boolean): string {
+	private static _getClassName(theme: IColorTheme, renderSideBySide: boolean): string {
 		let result = 'monaco-diff-editor monaco-editor-background ';
 		if (renderSideBySide) {
 			result += 'side-by-side ';
@@ -679,7 +679,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 				this._setStrategy(new DiffEditorWidgetInline(this._createDataSource(), this._enableSplitViewResizing));
 			}
 			// Update class name
-			this._containerDomElement.className = DiffEditorWidget._getClassName(this._themeService.getTheme(), this._renderSideBySide);
+			this._containerDomElement.className = DiffEditorWidget._getClassName(this._themeService.getColorTheme(), this._renderSideBySide);
 		}
 	}
 
@@ -828,6 +828,10 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 
 	public revealRangeNearTop(range: IRange, scrollType: editorCommon.ScrollType = editorCommon.ScrollType.Smooth): void {
 		this.modifiedEditor.revealRangeNearTop(range, scrollType);
+	}
+
+	public revealRangeNearTopIfOutsideViewport(range: IRange, scrollType: editorCommon.ScrollType = editorCommon.ScrollType.Smooth): void {
+		this.modifiedEditor.revealRangeNearTopIfOutsideViewport(range, scrollType);
 	}
 
 	public revealRangeAtTop(range: IRange, scrollType: editorCommon.ScrollType = editorCommon.ScrollType.Smooth): void {
@@ -1174,7 +1178,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		}
 
 		this._strategy = newStrategy;
-		newStrategy.applyColors(this._themeService.getTheme());
+		newStrategy.applyColors(this._themeService.getColorTheme());
 
 		if (this._diffComputationResult) {
 			this._updateDecorations();
@@ -1298,7 +1302,7 @@ abstract class DiffEditorWidgetStyle extends Disposable implements IDiffEditorWi
 		this._removeColor = null;
 	}
 
-	public applyColors(theme: ITheme): boolean {
+	public applyColors(theme: IColorTheme): boolean {
 		let newInsertColor = (theme.getColor(diffInserted) || defaultInsertColor).transparent(2);
 		let newRemoveColor = (theme.getColor(diffRemoved) || defaultRemoveColor).transparent(2);
 		let hasChanges = !newInsertColor.equals(this._insertColor) || !newRemoveColor.equals(this._removeColor);

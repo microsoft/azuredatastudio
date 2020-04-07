@@ -8,8 +8,8 @@ import 'vs/css!./media/icons';
 
 import { ActionBar } from './actionbar';
 
-import { Action, IActionRunner, IAction } from 'vs/base/common/actions';
-import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IActionRunner, IAction } from 'vs/base/common/actions';
+import { ActionsOrientation, IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IToolBarOptions } from 'vs/base/browser/ui/toolbar/toolbar';
 
 /**
@@ -43,7 +43,7 @@ export class Taskbar {
 		this.actionBar = new ActionBar(element, {
 			orientation: options.orientation,
 			ariaLabel: options.ariaLabel,
-			actionViewItemProvider: (action: Action) => {
+			actionViewItemProvider: (action: IAction): IActionViewItem | undefined => {
 				return options.actionViewItemProvider ? options.actionViewItemProvider(action) : undefined;
 			}
 		});

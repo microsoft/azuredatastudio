@@ -3,32 +3,39 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as constants from '../constants';
 import * as azdata from 'azdata';
 import * as events from 'events';
 import * as nls from 'vscode-nls';
-import * as path from 'path';
 import * as vscode from 'vscode';
-import CredentialServiceTokenCache from './tokenCache';
+import { SimpleTokenCache } from './simpleTokenCache';
 import providerSettings from './providerSettings';
-import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider2';
+import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider';
 import { AzureAccountProviderMetadata, ProviderSettings } from './interfaces';
+import * as loc from '../localizedConstants';
 
 let localize = nls.loadMessageBundle();
+
+class UriEventHandler extends vscode.EventEmitter<vscode.Uri> implements vscode.UriHandler {
+	public handleUri(uri: vscode.Uri) {
+		this.fire(uri);
+	}
+}
 
 export class AzureAccountProviderService implements vscode.Disposable {
 	// CONSTANTS ///////////////////////////////////////////////////////////////
 	private static CommandClearTokenCache = 'accounts.clearTokenCache';
-	private static ConfigurationSection = 'accounts.azure';
+	private static ConfigurationSection = 'accounts.azure.cloud';
 	private static CredentialNamespace = 'azureAccountProviderCredentials';
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////////
+	private _disposables: vscode.Disposable[] = [];
 	private _accountDisposals: { [accountProviderId: string]: vscode.Disposable };
 	private _accountProviders: { [accountProviderId: string]: azdata.AccountProvider };
 	private _credentialProvider: azdata.CredentialProvider;
 	private _configChangePromiseChain: Thenable<void>;
 	private _currentConfig: vscode.WorkspaceConfiguration;
 	private _event: events.EventEmitter;
+	private readonly _uriEventHandler: UriEventHandler;
 
 	constructor(private _context: vscode.ExtensionContext, private _userStoragePath: string) {
 		this._accountDisposals = {};
@@ -36,6 +43,9 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		this._configChangePromiseChain = Promise.resolve();
 		this._currentConfig = null;
 		this._event = new events.EventEmitter();
+
+		this._uriEventHandler = new UriEventHandler();
+		this._disposables.push(vscode.window.registerUriHandler(this._uriEventHandler));
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -55,113 +65,108 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		// 2c) Perform an initial config change handling
 		return azdata.credentials.getProvider(AzureAccountProviderService.CredentialNamespace)
 			.then(credProvider => {
-				self._credentialProvider = credProvider;
+				this._credentialProvider = credProvider;
 
-				self._context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(self.onDidChangeConfiguration, self));
-				self.onDidChangeConfiguration();
+				this._context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(() => {
+					this._configChangePromiseChain = this.onDidChangeConfiguration();
+				}, this));
+
+				this._configChangePromiseChain = this.onDidChangeConfiguration();
 				return true;
 			});
 	}
 
-	public dispose() { }
+	public dispose() {
+		while (this._disposables.length) {
+			const item = this._disposables.pop();
+			if (item) {
+				item.dispose();
+			}
+		}
+	}
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private onClearTokenCache(): Thenable<void> {
 		// let self = this;
 
 		let promises: Thenable<void>[] = providerSettings.map(provider => {
-			// return self._accountProviders[provider.metadata.id].clearTokenCache();
-			return Promise.resolve();
+			return this._accountProviders[provider.metadata.id]?.clearTokenCache();
 		});
 
 		return Promise.all(promises)
 			.then(
 				() => {
 					let message = localize('clearTokenCacheSuccess', "Token cache successfully cleared");
-					vscode.window.showInformationMessage(`${constants.extensionName}: ${message}`);
+					vscode.window.showInformationMessage(`${loc.extensionName}: ${message}`);
 				},
 				err => {
 					let message = localize('clearTokenCacheFailure', "Failed to clear token cache");
-					vscode.window.showErrorMessage(`${constants.extensionName}: ${message}: ${err}`);
+					vscode.window.showErrorMessage(`${loc.extensionName}: ${message}: ${err}`);
 				});
 	}
 
-	private onDidChangeConfiguration(): void {
-		let self = this;
-
+	private async onDidChangeConfiguration(): Promise<void> {
 		// Add a new change processing onto the existing promise change
-		this._configChangePromiseChain = this._configChangePromiseChain.then(() => {
-			// Grab the stored config and the latest config
-			let newConfig = vscode.workspace.getConfiguration(AzureAccountProviderService.ConfigurationSection);
-			let oldConfig = self._currentConfig;
-			self._currentConfig = newConfig;
+		await this._configChangePromiseChain;
+		// Grab the stored config and the latest config
+		let newConfig = vscode.workspace.getConfiguration(AzureAccountProviderService.ConfigurationSection);
+		let oldConfig = this._currentConfig;
+		this._currentConfig = newConfig;
 
-			// Determine what providers need to be changed
-			let providerChanges: Thenable<void>[] = [];
-			for (let provider of providerSettings) {
-				// If the old config doesn't exist, then assume everything was disabled
-				// There will always be a new config value
-				let oldConfigValue = oldConfig
-					? oldConfig.get<boolean>(provider.configKey)
-					: false;
-				let newConfigValue = newConfig.get<boolean>(provider.configKey);
+		// Determine what providers need to be changed
+		let providerChanges: Promise<void>[] = [];
+		for (let provider of providerSettings) {
+			// If the old config doesn't exist, then assume everything was disabled
+			// There will always be a new config value
+			let oldConfigValue = oldConfig
+				? oldConfig.get<boolean>(provider.configKey)
+				: false;
+			let newConfigValue = newConfig.get<boolean>(provider.configKey);
 
-				// Case 1: Provider config has not changed - do nothing
-				if (oldConfigValue === newConfigValue) {
-					continue;
-				}
-
-				// Case 2: Provider was enabled and is now disabled - unregister provider
-				if (oldConfigValue && !newConfigValue) {
-					providerChanges.push(self.unregisterAccountProvider(provider));
-				}
-
-				// Case 3: Provider was disabled and is now enabled - register provider
-				if (!oldConfigValue && newConfigValue) {
-					providerChanges.push(self.registerAccountProvider(provider));
-				}
+			// Case 1: Provider config has not changed - do nothing
+			if (oldConfigValue === newConfigValue) {
+				continue;
 			}
 
-			// Process all the changes before continuing
-			return Promise.all(providerChanges);
-		}).then(null, () => { return Promise.resolve(); });
+			// Case 2: Provider was enabled and is now disabled - unregister provider
+			if (oldConfigValue && !newConfigValue) {
+				providerChanges.push(this.unregisterAccountProvider(provider));
+			}
+
+			// Case 3: Provider was disabled and is now enabled - register provider
+			if (!oldConfigValue && newConfigValue) {
+				providerChanges.push(this.registerAccountProvider(provider));
+			}
+		}
+
+		// Process all the changes before continuing
+		await Promise.all(providerChanges);
 	}
 
-	private registerAccountProvider(provider: ProviderSettings): Thenable<void> {
+	private async registerAccountProvider(provider: ProviderSettings): Promise<void> {
+		try {
+			const noSystemKeychain = vscode.workspace.getConfiguration('azure').get<boolean>('noSystemKeychain');
+			let tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
+			let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, noSystemKeychain, this._credentialProvider);
+			await simpleTokenCache.init();
 
-		let self = this;
+			const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
+			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, simpleTokenCache, this._context, this._uriEventHandler, isSaw);
 
-		return new Promise((resolve, reject) => {
-			try {
-				//let config = vscode.workspace.getConfiguration(AzureAccountProviderService.ConfigurationSection);
-
-				let tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
-				let tokenCachePath = path.join(this._userStoragePath, tokenCacheKey);
-				let tokenCache = new CredentialServiceTokenCache(self._credentialProvider, tokenCacheKey, tokenCachePath);
-				let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, tokenCache, this._context);
-				self._accountProviders[provider.metadata.id] = accountProvider;
-				self._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
-				resolve();
-			} catch (e) {
-				console.error(`Failed to register account provider: ${e}`);
-				reject(e);
-			}
-		});
+			this._accountProviders[provider.metadata.id] = accountProvider;
+			this._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
+		} catch (e) {
+			console.error(`Failed to register account provider: ${e}`);
+		}
 	}
 
-	private unregisterAccountProvider(provider: ProviderSettings): Thenable<void> {
-		let self = this;
-
-		return new Promise((resolve, reject) => {
-			try {
-				self._accountDisposals[provider.metadata.id].dispose();
-				delete self._accountProviders[provider.metadata.id];
-				delete self._accountDisposals[provider.metadata.id];
-				resolve();
-			} catch (e) {
-				console.error(`Failed to unregister account provider: ${e}`);
-				reject(e);
-			}
-		});
+	private async unregisterAccountProvider(provider: ProviderSettings): Promise<void> {
+		try {
+			this._accountDisposals[provider.metadata.id].dispose();
+			delete this._accountProviders[provider.metadata.id];
+			delete this._accountDisposals[provider.metadata.id];
+		} catch (e) {
+			console.error(`Failed to unregister account provider: ${e}`);
+		}
 	}
 }

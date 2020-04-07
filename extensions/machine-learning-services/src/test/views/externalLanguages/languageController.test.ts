@@ -7,8 +7,8 @@ import * as should from 'should';
 import 'mocha';
 import * as TypeMoq from 'typemoq';
 import { createContext } from './utils';
-import { LanguageController } from '../../../externalLanguage/languageController';
-import * as mssql from '../../../../../mssql/src/mssql';
+import { LanguageController } from '../../../views/externalLanguages/languageController';
+import * as mssql from '../../../../../mssql';
 
 describe('External Languages Controller', () => {
 	it('Should open dialog for manage languages successfully ', async function (): Promise<void> {

@@ -17,7 +17,7 @@ export class QueryPlanConverter implements ILanguageAssociation {
 	constructor(@IInstantiationService private instantiationService: IInstantiationService) { }
 
 	convertInput(activeEditor: IEditorInput): QueryPlanInput {
-		return this.instantiationService.createInstance(QueryPlanInput, activeEditor.getResource());
+		return this.instantiationService.createInstance(QueryPlanInput, activeEditor.resource);
 	}
 
 	createBase(activeEditor: QueryPlanInput): IEditorInput {
@@ -82,5 +82,9 @@ export class QueryPlanInput extends EditorInput {
 
 	public get uniqueSelector(): string {
 		return this._uniqueSelector;
+	}
+
+	get resource(): URI | undefined {
+		return undefined;
 	}
 }

@@ -2,11 +2,11 @@
   "name": "cms",
   "displayName": "%cms.displayName%",
   "description": "%cms.description%",
-  "version": "0.7.0",
+  "version": "0.9.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
-  "icon": "images/sqlserver.png",
+  "icon": "images/extension.png",
   "engines": {
     "vscode": "^1.25.0",
     "azdata": ">=1.8.0"
@@ -544,18 +544,12 @@
       {
         "command": "cms.resource.refresh",
         "title": "%cms.resource.refresh.title%",
-        "icon": {
-          "light": "resources/light/refresh.svg",
-          "dark": "resources/dark/refresh_inverse.svg"
-        }
+        "icon": "$(refresh)"
       },
       {
         "command": "cms.resource.registerCmsServer",
         "title": "%cms.resource.registerCmsServer.title%",
-        "icon": {
-          "light": "resources/light/add.svg",
-          "dark": "resources/dark/add_inverse.svg"
-        }
+        "icon": "$(add)"
       },
       {
         "command": "cms.resource.deleteCmsServer",
@@ -624,6 +618,31 @@
           "when": "viewItem == cms.resource.itemType.databaseServerContainer",
           "group": "navigation@10"
         }
+      ],"commandPalette": [
+        {
+          "command": "cms.resource.addRegisteredServer",
+          "when": "false"
+        },
+        {
+          "command": "cms.resource.deleteRegisteredServer",
+          "when": "false"
+        },
+        {
+          "command": "cms.resource.deleteServerGroup",
+          "when": "false"
+        },
+        {
+          "command": "cms.resource.addServerGroup",
+          "when": "false"
+        },
+        {
+          "command": "cms.resource.refresh",
+          "when": "false"
+        },
+        {
+          "command": "cms.resource.deleteCmsServer",
+          "when": "false"
+        }
       ]
     }
   },
@@ -638,7 +657,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "mocha": "^5.2.0",
     "should": "^13.2.1",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.4",
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5",
     "typemoq": "^2.1.0"
   },
   "resolutions": {

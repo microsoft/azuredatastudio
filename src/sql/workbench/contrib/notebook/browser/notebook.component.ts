@@ -6,7 +6,7 @@
 import { nb } from 'azdata';
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, ViewChildren, QueryList } from '@angular/core';
 
-import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
 import { INotificationService, INotification } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
@@ -54,6 +54,8 @@ import { find, firstIndex } from 'vs/base/common/arrays';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -69,7 +71,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	@ViewChild('bookNav', { read: ElementRef }) private bookNav: ElementRef;
 
 	@ViewChildren(CodeCellComponent) private codeCells: QueryList<CodeCellComponent>;
-	@ViewChildren(TextCellComponent) private textCells: QueryList<ICellEditorProvider>;
+	@ViewChildren(TextCellComponent) private textCells: QueryList<TextCellComponent>;
 
 	private _model: NotebookModel;
 	protected _actionBar: Taskbar;
@@ -102,7 +104,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
-		@Inject(ITelemetryService) private telemetryService: ITelemetryService
+		@Inject(ITelemetryService) private telemetryService: ITelemetryService,
+		@Inject(ICommandService) private commandService: ICommandService
 	) {
 		super();
 		this.updateProfile();
@@ -147,6 +150,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.codeCells.toArray().forEach(cell => editors.push(...cell.cellEditors));
 		}
 		if (this.textCells) {
+			this.textCells.toArray().forEach(cell => editors.push(...cell.cellEditors));
 			editors.push(...this.textCells.toArray());
 		}
 		return editors;
@@ -154,12 +158,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
 		if (newDecorationRange && newDecorationRange.cell && newDecorationRange.cell.cellType === 'markdown') {
-			let cell = this.cellEditors.filter(c => c.cellGuid() === newDecorationRange.cell.cellGuid)[0];
-			cell.deltaDecorations(newDecorationRange, undefined);
+			let cell = this.cellEditors.filter(c => c.cellGuid() === newDecorationRange.cell.cellGuid);
+			cell[cell.length - 1].deltaDecorations(newDecorationRange, undefined);
 		}
 		if (oldDecorationRange && oldDecorationRange.cell && oldDecorationRange.cell.cellType === 'markdown') {
-			let cell = this.cellEditors.filter(c => c.cellGuid() === oldDecorationRange.cell.cellGuid)[0];
-			cell.deltaDecorations(undefined, oldDecorationRange);
+			let cell = this.cellEditors.filter(c => c.cellGuid() === oldDecorationRange.cell.cellGuid);
+			cell[cell.length - 1].deltaDecorations(undefined, oldDecorationRange);
 		}
 	}
 
@@ -226,10 +230,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private setScrollPosition(): void {
 		if (this._notebookParams && this._notebookParams.input) {
-			this._notebookParams.input.layoutChanged(() => {
+			this._register(this._notebookParams.input.layoutChanged(() => {
 				let containerElement = <HTMLElement>this.container.nativeElement;
 				containerElement.scrollTop = this._scrollTop;
-			});
+			}));
 		}
 	}
 
@@ -258,9 +262,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					});
 					this.notificationService.error(errorWithAction);
 
-					let editors = this.editorService.visibleControls;
+					let editors = this.editorService.visibleEditorPanes;
 					for (let editor of editors) {
-						if (editor && editor.input.getResource() === this._notebookParams.input.notebookUri) {
+						if (editor && editor.input.resource === this._notebookParams.input.notebookUri) {
 							await editor.group.closeEditor(this._notebookParams.input as NotebookInput, { preserveFocus: true }); // sketchy
 							break;
 						}
@@ -437,6 +441,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._navProvider = this.notebookService.getNavigationProvider(this._notebookParams.notebookUri);
 
 		if (this.contextKeyService.getContextKeyValue('bookOpened') && this._navProvider) {
+			// If there's a book opened but the current notebook isn't part of the book, this is a no-op
+			this.commandService.executeCommand('notebook.command.revealInBooksViewlet', this._notebookParams.notebookUri, false);
 			this._navProvider.getNavigation(this._notebookParams.notebookUri).then(result => {
 				this.navigationResult = result;
 				this.addButton(localize('previousButtonLabel', "< Previous"),
@@ -648,10 +654,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private getSectionElements(): NotebookSection[] {
 		let headers: NotebookSection[] = [];
 		let el: HTMLElement = this.container.nativeElement;
-		let headerElements = el.querySelectorAll('h1, h2, h3, h4, h5, h6');
+		let headerElements = el.querySelectorAll('h1, h2, h3, h4, h5, h6, a[name], a[id]');
 		for (let i = 0; i < headerElements.length; i++) {
 			let headerEl = headerElements[i] as HTMLElement;
-			if (headerEl['id']) {
+			if (headerEl['id'] || headerEl['name']) {
 				headers.push(new NotebookSection(headerEl));
 			}
 		}
@@ -663,7 +669,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let section = find(this.getSectionElements(), s => s.relativeUri && s.relativeUri.toLowerCase() === id);
 		if (section) {
 			// Scroll this section to the top of the header instead of just bringing header into view.
-			let scrollTop = jQuery(section.headerEl).offset().top;
+			let scrollTop = section.headerEl.offsetTop;
 			(<HTMLElement>this.container.nativeElement).scrollTo({
 				top: scrollTop,
 				behavior: 'smooth'
@@ -679,7 +685,7 @@ class NotebookSection implements INotebookSection {
 	}
 
 	get relativeUri(): string {
-		return this.headerEl['id'];
+		return this.headerEl['id'] || this.headerEl['name'];
 	}
 
 	get header(): string {

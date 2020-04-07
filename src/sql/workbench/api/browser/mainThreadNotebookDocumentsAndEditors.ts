@@ -31,8 +31,8 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
 import { localize } from 'vs/nls';
 import { IFileService } from 'vs/platform/files/common/files';
-import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/common/models/untitledNotebookInput';
-import { FileNotebookInput } from 'sql/workbench/contrib/notebook/common/models/fileNotebookInput';
+import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
+import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/fileNotebookInput';
 import { find } from 'vs/base/common/arrays';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
@@ -362,6 +362,11 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		return Promise.resolve(this.doOpenEditor(resource, options));
 	}
 
+	$trySetTrusted(uriComponent: UriComponents, isTrusted: boolean): Promise<boolean> {
+		let uri = URI.revive(uriComponent);
+		return this._notebookService.setTrusted(uri, isTrusted);
+	}
+
 	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean> {
 		let editor = this.getEditor(id);
 		if (!editor) {
@@ -468,7 +473,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				const model = this._untitledEditorService.create({ untitledResource: uri, mode: 'notebook', initialValue: options.initialContent });
 				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 			} else {
-				fileInput = this._editorService.createInput({ forceFile: true, resource: uri, mode: 'notebook' }) as FileEditorInput;
+				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: 'notebook' }) as FileEditorInput;
 			}
 		}
 		let input: NotebookInput;
@@ -658,6 +663,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				return NotebookChangeKind.ContentUpdated;
 			case NotebookChangeType.KernelChanged:
 			case NotebookChangeType.TrustChanged:
+			case NotebookChangeType.CellMetadataUpdated:
 				return NotebookChangeKind.MetadataUpdated;
 			case NotebookChangeType.Saved:
 				return NotebookChangeKind.Save;

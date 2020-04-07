@@ -104,7 +104,7 @@ describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function ():
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 
 		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
-		mockDatabaseServerService.setup((o) => o.getResources(mockSubscription, TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabaseServers));
+		mockDatabaseServerService.setup((o) => o.getResources(mockSubscription, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabaseServers));
 		mockExtensionContext.setup((o) => o.asAbsolutePath(TypeMoq.It.isAnyString())).returns(() => TypeMoq.It.isAnyString());
 	});
 
@@ -121,7 +121,7 @@ describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function ():
 		should(child.subscription).undefined();
 		should(child.tenantId).undefined();
 		should(child.treeItem.id).equal('azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainer');
-		should(child.treeItem.label).equal('SQL Servers');
+		should(child.treeItem.label).equal('SQL server');
 		should(child.treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);
 		should(child.treeItem.contextValue).equal('azure.resource.itemType.databaseServerContainer');
 	});

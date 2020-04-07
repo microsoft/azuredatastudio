@@ -130,9 +130,9 @@ class Extension implements IExtension {
 	}
 
 	// {{SQL CARBON EDIT}}
-	get downloadPage(): string {
+	get downloadPage(): string | undefined {
 		if (!this.productService.extensionsGallery) {
-			return null;
+			return undefined;
 		}
 
 		return this.gallery && this.gallery.assets && this.gallery.assets.downloadPage && this.gallery.assets.downloadPage.uri;
@@ -651,8 +651,8 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		return text.substr(0, 350);
 	}
 
-	open(extension: IExtension, sideByside: boolean = false): Promise<any> {
-		return Promise.resolve(this.editorService.openEditor(this.instantiationService.createInstance(ExtensionsInput, extension), undefined, sideByside ? SIDE_GROUP : ACTIVE_GROUP));
+	open(extension: IExtension, { sideByside, preserveFocus, pinned }: { sideByside?: boolean, preserveFocus?: boolean, pinned?: boolean } = { sideByside: false, preserveFocus: false, pinned: false }): Promise<any> {
+		return Promise.resolve(this.editorService.openEditor(this.instantiationService.createInstance(ExtensionsInput, extension), { preserveFocus, pinned }, sideByside ? SIDE_GROUP : ACTIVE_GROUP));
 	}
 
 	private getPrimaryExtension(extensions: IExtension[]): IExtension {
@@ -846,7 +846,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 				if (extension.publisherDisplayName === 'Microsoft') {
 					await this.downloadOrBrowse(extension);
 				} else {
-					return Promise.resolve(null);
+					return Promise.reject(new Error('Extension Not Allowed'));
 				}
 			}
 			await this.downloadOrBrowse(extension);
@@ -856,11 +856,11 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 
 	// {{SQL CARBON EDIT}}
 	private downloadOrBrowse(ext: IExtension): Promise<any> {
-		if (ext.gallery.assets.downloadPage && ext.gallery.assets.downloadPage.uri) {
-			this.openerService.open(URI.parse(ext.gallery.assets.downloadPage.uri));
+		if (ext.gallery!.assets.downloadPage && ext.gallery!.assets.downloadPage.uri) {
+			this.openerService.open(URI.parse(ext.gallery!.assets.downloadPage.uri));
 			return Promise.resolve(undefined);
 		} else {
-			return this.extensionService.installFromGallery(ext.gallery);
+			return this.extensionService.installFromGallery(ext.gallery!);
 		}
 	}
 	// {{SQL CARBON EDIT}} - End

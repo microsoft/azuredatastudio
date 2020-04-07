@@ -36,6 +36,9 @@
 
 	"title.showLogFile": "Show Log File",
 
+	"mssql.disabled": "Disabled",
+	"mssql.enabled": "Enabled",
+
 	"mssql.configuration.title": "MSSQL configuration",
 	"mssql.query.displayBitAsNumber": "Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'",
 	"mssql.query.maxXmlCharsToStore": "Number of XML characters to store after running a query",
@@ -91,8 +94,14 @@
 	"mssql.connectionOptions.connectTimeout.description": "The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error",
 	"mssql.connectionOptions.currentLanguage.displayName": "Current language",
 	"mssql.connectionOptions.currentLanguage.description": "The SQL Server language record name",
-	"mssql.connectionOptions.columnEncryptionSetting.displayName": "Column encryption",
-	"mssql.connectionOptions.columnEncryptionSetting.description": "Default column encryption setting for all the commands on the connection",
+	"mssql.connectionOptions.columnEncryptionSetting.displayName": "Always Encrypted",
+	"mssql.connectionOptions.columnEncryptionSetting.description": "Enables or disables Always Encrypted for the connection",
+	"mssql.connectionOptions.enclaveAttestationProtocol.displayName": "Attestation Protocol",
+	"mssql.connectionOptions.enclaveAttestationProtocol.description": "Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves",
+	"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS": "Azure Attestation",
+	"mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS": "Host Guardian Service",
+	"mssql.connectionOptions.enclaveAttestationUrl.displayName": "Enclave Attestation URL",
+	"mssql.connectionOptions.enclaveAttestationUrl.description": "Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with secure enclaves",
 	"mssql.connectionOptions.encrypt.displayName": "Encrypt",
 	"mssql.connectionOptions.encrypt.description": "When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed",
 	"mssql.connectionOptions.persistSecurityInfo.displayName": "Persist security info",
@@ -131,5 +140,8 @@
 	"mssql.connectionOptions.packetSize.displayName": "Packet size",
 	"mssql.connectionOptions.packetSize.description": "Size in bytes of the network packets used to communicate with an instance of SQL Server",
 	"mssql.connectionOptions.typeSystemVersion.displayName": "Type system version",
-	"mssql.connectionOptions.typeSystemVersion.description": "Indicates which server type system then provider will expose through the DataReader"
+	"mssql.connectionOptions.typeSystemVersion.description": "Indicates which server type system the provider will expose through the DataReader",
+
+	"mssql.tabs.databases": "Databases",
+	"explorer-widget-title": "Search"
 }

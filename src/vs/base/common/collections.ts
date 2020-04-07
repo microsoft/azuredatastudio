@@ -20,7 +20,7 @@ const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 /**
  * Returns an array which contains all values that reside
- * in the given set.
+ * in the given dictionary.
  */
 export function values<T>(from: IStringDictionary<T> | INumberDictionary<T>): T[] {
 	const result: T[] = [];
@@ -52,7 +52,7 @@ export function first<T>(from: IStringDictionary<T> | INumberDictionary<T>): T |
 }
 
 /**
- * Iterates over each entry in the provided set. The iterator allows
+ * Iterates over each entry in the provided dictionary. The iterator allows
  * to remove elements and will stop when the callback returns {{false}}.
  */
 export function forEach<T>(from: IStringDictionary<T>, callback: (entry: { key: string; value: T; }, remove: () => void) => any): void; // {{SQL CARBON EDIT}} @anthonydresser add hard typings
@@ -97,11 +97,6 @@ export function fromMap<T>(original: Map<string, T>): IStringDictionary<T> {
 	return result;
 }
 
-export function mapValues<V>(map: Map<any, V>): V[] {
-	const result: V[] = [];
-	map.forEach(v => result.push(v));
-	return result;
-}
 
 export class SetMap<K, V> {
 

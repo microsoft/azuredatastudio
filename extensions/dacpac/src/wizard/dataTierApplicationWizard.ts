@@ -84,6 +84,7 @@ export class DataTierApplicationWizard {
 	public selectedOperation: Operation;
 
 	constructor() {
+		this.wizard = azdata.window.createWizard(loc.wizardTitle);
 	}
 
 	public async start(p: any, ...args: any[]) {
@@ -107,8 +108,16 @@ export class DataTierApplicationWizard {
 		}
 
 		this.model.serverId = this.connection.connectionId;
+		this.setPages();
 
-		this.wizard = azdata.window.createWizard(loc.wizardTitle);
+		this.wizard.generateScriptButton.hidden = true;
+		this.wizard.generateScriptButton.onClick(async () => await this.generateDeployScript());
+		this.wizard.doneButton.onClick(async () => await this.executeOperation());
+
+		this.wizard.open();
+	}
+
+	public setPages(): void {
 		let selectOperationWizardPage = azdata.window.createWizardPage(loc.selectOperationPageName);
 		let deployConfigWizardPage = azdata.window.createWizardPage(loc.deployConfigPageName);
 		let deployPlanWizardPage = azdata.window.createWizardPage(loc.deployPlanPageName);
@@ -186,11 +195,6 @@ export class DataTierApplicationWizard {
 		});
 
 		this.wizard.pages = [selectOperationWizardPage, deployConfigWizardPage, deployPlanWizardPage, summaryWizardPage];
-		this.wizard.generateScriptButton.hidden = true;
-		this.wizard.generateScriptButton.onClick(async () => await this.generateDeployScript());
-		this.wizard.doneButton.onClick(async () => await this.executeOperation());
-
-		this.wizard.open();
 	}
 
 	public registerNavigationValidator(validator: (pageChangeInfo: azdata.window.WizardPageChangeInfo) => boolean) {

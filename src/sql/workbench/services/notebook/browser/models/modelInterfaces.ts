@@ -468,6 +468,7 @@ export interface ICellModel {
 	executionCount: number | undefined;
 	readonly future: FutureInternal;
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
+	renderedOutputTextContent?: string[];
 	readonly onOutputsChanged: Event<IOutputChangedEvent>;
 	readonly onExecutionStateChange: Event<CellExecutionState>;
 	readonly executionState: CellExecutionState;
@@ -483,9 +484,10 @@ export interface ICellModel {
 	readonly onLoaded: Event<string>;
 	isCollapsed: boolean;
 	readonly onCollapseStateChanged: Event<boolean>;
+	readonly onCellModeChanged: Event<boolean>;
 	modelContentChangedEvent: IModelContentChangedEvent;
 	isEditMode: boolean;
-	readonly ariaLabel: string;
+	sendChangeToNotebook(change: NotebookChangeType): void;
 }
 
 export interface IModelFactory {

@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+/* eslint-disable @typescript-eslint/no-floating-promises */
+
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
 import { deepClone, assign } from 'vs/base/common/objects';
@@ -163,6 +165,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
+	separator(): azdata.ComponentBuilder<azdata.SeparatorComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.SeparatorComponent> = this.getComponentBuilder(new SeparatorWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	dropDown(): azdata.ComponentBuilder<azdata.DropDownComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.DropDownComponent> = this.getComponentBuilder(new DropDownWrapper(this._proxy, this._handle, id), id);
@@ -236,6 +245,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 	radioCardGroup(): azdata.ComponentBuilder<azdata.RadioCardGroupComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.RadioCardGroupComponent> = this.getComponentBuilder(new RadioCardGroupComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	tabbedPanel(): azdata.TabbedPanelComponentBuilder {
+		let id = this.getNextComponentId();
+		let builder = new TabbedPanelComponentBuilder(new TabbedPanelComponentWrapper(this._proxy, this._handle, id));
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -474,6 +490,33 @@ class ToolbarContainerBuilder extends GenericContainerBuilder<azdata.ToolbarCont
 	addToolbarItem(toolbarComponent: azdata.ToolbarComponent): void {
 		let itemImpl = this.convertToItemConfig(toolbarComponent);
 		this._component.addItem(toolbarComponent.component as ComponentWrapper, itemImpl.config);
+	}
+}
+
+class TabbedPanelComponentBuilder extends ContainerBuilderImpl<azdata.TabbedPanelComponent, azdata.TabbedPanelLayout, any> implements azdata.TabbedPanelComponentBuilder {
+	withTabs(items: (azdata.Tab | azdata.TabGroup)[]): azdata.ContainerBuilder<azdata.TabbedPanelComponent, azdata.TabbedPanelLayout, any> {
+		const itemConfigs = [];
+		items.forEach(item => {
+			if (item && 'tabs' in item) {
+				item.tabs.forEach(tab => {
+					itemConfigs.push(this.toItemConfig(tab.content, tab.title, tab.id, item.title, tab.icon));
+				});
+			} else {
+				const tab = <azdata.Tab>item;
+				itemConfigs.push(this.toItemConfig(tab.content, tab.title, tab.id, undefined, tab.icon));
+			}
+		});
+		this._component.itemConfigs = itemConfigs;
+		return this;
+	}
+
+	toItemConfig(content: azdata.Component, title: string, id?: string, group?: string, icon?: string | URI | { light: string | URI; dark: string | URI }): InternalItemConfig {
+		return new InternalItemConfig(content as ComponentWrapper, {
+			title: title,
+			group: group,
+			id: id,
+			icon: icon
+		});
 	}
 }
 
@@ -1534,6 +1577,12 @@ class FileBrowserTreeComponentWrapper extends ComponentWrapper implements azdata
 	}
 }
 
+class SeparatorWrapper extends ComponentWrapper implements azdata.SeparatorComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.Separator, id);
+	}
+}
+
 class DivContainerWrapper extends ComponentWrapper implements azdata.DivContainer {
 	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
 		super(proxy, handle, type, id);
@@ -1668,6 +1717,19 @@ class RadioCardGroupComponentWrapper extends ComponentWrapper implements azdata.
 	}
 
 	public get onSelectionChanged(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+}
+
+class TabbedPanelComponentWrapper extends ComponentWrapper implements azdata.TabbedPanelComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.TabbedPanel, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<string>());
+	}
+
+	public get onTabChanged(): vscode.Event<string> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}

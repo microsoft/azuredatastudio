@@ -1,5 +1,5 @@
 {
-  "name": "machineLearningServices",
+  "name": "machine-learning-services",
   "displayName": "%displayName%",
   "description": "%description%",
   "version": "1.0.0",
@@ -14,7 +14,7 @@
     "onDashboardOpen"
   ],
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
-  "icon": "images/ML_ExtensionIcon.png",
+  "icon": "images/extensionIcon.png",
   "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
   "main": "./out/main",
   "repository": {
@@ -37,7 +37,7 @@
         },
         "machineLearningServices.enableR": {
           "type": "boolean",
-          "default": "true",
+          "default": "false",
           "description": "%mls.enableR.description%"
         },
         "machineLearningServices.pythonPath": {
@@ -56,6 +56,26 @@
       {
         "command": "mls.command.managePackages",
         "title": "%mls.command.managePackages%"
+      },
+      {
+        "command": "mls.command.predictModel",
+        "title": "%mls.command.predictModel%",
+        "icon": {
+          "light": "./images/makePredictions.svg",
+          "dark": "./images/makePredictions.svg"
+        }
+      },
+      {
+        "command": "mls.command.manageModels",
+        "title": "%mls.command.manageModels%"
+      },
+      {
+        "command": "mls.command.registerModel",
+        "title": "%mls.command.registerModel%",
+        "icon": {
+          "light": "./images/registerModel.svg",
+          "dark": "./images/registerModel.svg"
+        }
       },
       {
         "command": "mls.command.manageLanguages",
@@ -80,27 +100,28 @@
         "description": "%description%",
         "provider": "MSSQL",
         "title": "%displayName%",
-        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
+        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && dashboardContext == 'server'",
         "container": {
           "grid-container": [
             {
-              "name": "%title.configurations%",
-              "row": 0,
-              "col": 0,
-              "widget": {
-                "modelview": {
-                  "id": "ml.tasks"
-                }
-              }
-            },
-            {
               "name": "%title.tasks%",
               "row": 0,
-              "col": 1,
+              "col": 0,
               "widget": {
                 "tasks-widget": [
                   "mls.command.managePackages",
                   "mls.command.manageLanguages",
+                  "mls.command.manageModels",
+                  "mls.command.predictModel"
+                ]
+              }
+            },
+            {
+              "name": "%title.documents%",
+              "row": 0,
+              "col": 1,
+              "widget": {
+                "tasks-widget": [
                   "mls.command.odbcdriver",
                   "mls.command.mlsdocs"
                 ]
@@ -114,7 +135,9 @@
   "dependencies": {
     "request": "^2.88.0",
     "vscode-nls": "^4.0.0",
-    "vscode-languageclient": "^5.3.0-next.1"
+    "vscode-languageclient": "^5.3.0-next.1",
+    "@azure/arm-machinelearningservices": "^3.0.0",
+    "polly-js": "^1.6.3"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",
@@ -125,9 +148,9 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.4"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
   },
   "resolutions": {
-      "esprima": "^4.0.0"
+    "esprima": "^4.0.0"
   }
 }

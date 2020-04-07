@@ -155,12 +155,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 	}
 
 	private handleOnRestore(isScriptOnly: boolean = false): void {
-		let restoreOption = this.setRestoreOption();
-		if (isScriptOnly) {
-			restoreOption.taskExecutionMode = TaskExecutionMode.script;
-		} else {
-			restoreOption.taskExecutionMode = TaskExecutionMode.executeAndScript;
-		}
+		let restoreOption = this.setRestoreOption(isScriptOnly ? TaskExecutionMode.script : TaskExecutionMode.executeAndScript);
 
 		this._restoreService.restore(this._ownerUri, restoreOption).then(result => {
 			const self = this;
@@ -192,7 +187,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 
 	private handleMssqlOnValidateFile(overwriteTargetDatabase: boolean = false): void {
 		let restoreDialog = this._restoreDialogs[this._currentProvider] as RestoreDialog;
-		this._restoreService.getRestorePlan(this._ownerUri, this.setRestoreOption(overwriteTargetDatabase)).then(restorePlanResponse => {
+		this._restoreService.getRestorePlan(this._ownerUri, this.setRestoreOption(TaskExecutionMode.execute, overwriteTargetDatabase)).then(restorePlanResponse => {
 			this._sessionId = restorePlanResponse.sessionId;
 
 			if (restorePlanResponse.errorMessage) {
@@ -237,12 +232,12 @@ export class RestoreDialogController implements IRestoreDialogController {
 		});
 	}
 
-	private setRestoreOption(overwriteTargetDatabase: boolean = false): azdata.RestoreInfo {
+	private setRestoreOption(taskExecutionMode: TaskExecutionMode, overwriteTargetDatabase: boolean = false): azdata.RestoreInfo {
 		let restoreInfo = undefined;
 
 		let providerId: string = this.getCurrentProviderId();
 		if (providerId === ConnectionConstants.mssqlProviderName) {
-			restoreInfo = new MssqlRestoreInfo();
+			restoreInfo = new MssqlRestoreInfo(taskExecutionMode);
 
 			if (this._sessionId) {
 				restoreInfo.sessionId = this._sessionId;
@@ -287,7 +282,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 	}
 
 	private handleOnCancel(): void {
-		let restoreInfo = new MssqlRestoreInfo();
+		let restoreInfo = new MssqlRestoreInfo(TaskExecutionMode.execute);
 		restoreInfo.sessionId = this._sessionId;
 		this._restoreService.cancelRestorePlan(this._ownerUri, restoreInfo).then(() => {
 			this._connectionService.disconnect(this._ownerUri);

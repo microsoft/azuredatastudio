@@ -2,14 +2,14 @@
     "name": "whoisactive",
     "displayName": "whoisactive",
     "description": "sp_whoisactive for Azure Data Studio",
-    "version": "0.1.3",
+    "version": "0.2.0",
     "publisher": "Microsoft",
     "preview": true,
     "engines": {
         "vscode": "^1.26.0",
         "azdata": "^1.11.0"
     },
-    "icon": "images/sqlserver.png",
+    "icon": "images/extension.png",
     "license": "SEE LICENSE IN LICENSE.txt",
     "repository": "https://github.com/Microsoft/azuredatastudio",
     "categories": [

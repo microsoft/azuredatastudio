@@ -36,7 +36,6 @@ import { SplitView, Orientation, Sizing } from 'vs/base/browser/ui/splitview/spl
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
 import { TaskRegistry } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
@@ -46,6 +45,8 @@ import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/vie
 import { attachPanelStyler, attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -70,8 +71,9 @@ class InsightTableView<T> extends ViewPane {
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IOpenerService openerService: IOpenerService,
 		@IThemeService themeService: IThemeService,
+		@ITelemetryService telemetryService: ITelemetryService,
 	) {
-		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, opener, themeService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -169,7 +171,7 @@ export class InsightsDialogView extends Modal {
 		private _model: IInsightsDialogModel,
 		@IThemeService themeService: IThemeService,
 		@IClipboardService clipboardService: IClipboardService,
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+		@ILayoutService layoutService: ILayoutService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
@@ -220,12 +222,12 @@ export class InsightsDialogView extends Modal {
 
 		this._topTableData = new TableDataView();
 		this._bottomTableData = new TableDataView();
-		let topTableView = this._instantiationService.createInstance(InsightTableView, this._topColumns, this._topTableData, { forceFitColumns: true }, { id: 'insights.top', title: itemsHeaderTitle, ariaHeaderLabel: itemsHeaderTitle }) as InsightTableView<ListResource>;
+		let topTableView = this._instantiationService.createInstance(InsightTableView, this._topColumns, this._topTableData, { forceFitColumns: true }, { id: 'insights.top', title: itemsHeaderTitle }) as InsightTableView<ListResource>;
 		topTableView.render();
 		attachPanelStyler(topTableView, this._themeService);
 		this._topTable = topTableView.table;
 		this._topTable.setSelectionModel(new RowSelectionModel<ListResource>());
-		let bottomTableView = this._instantiationService.createInstance(InsightTableView, this._bottomColumns, this._bottomTableData, { forceFitColumns: true }, { id: 'insights.bottom', title: itemsDetailHeaderTitle, ariaHeaderLabel: itemsDetailHeaderTitle }) as InsightTableView<ListResource>;
+		let bottomTableView = this._instantiationService.createInstance(InsightTableView, this._bottomColumns, this._bottomTableData, { forceFitColumns: true }, { id: 'insights.bottom', title: itemsDetailHeaderTitle }) as InsightTableView<ListResource>;
 		bottomTableView.render();
 		attachPanelStyler(bottomTableView, this._themeService);
 		this._bottomTable = bottomTableView.table;

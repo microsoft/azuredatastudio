@@ -6,13 +6,13 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nbExtensionApis from '../typings/notebookServices';
-import { QueryRunner } from '../common/queryRunner';
 import { ApiWrapper } from '../common/apiWrapper';
 import { ProcessService } from '../common/processService';
 import { Config } from '../configurations/config';
-import { SqlPackageManageProviderBase, ScriptMode } from './SqlPackageManageProviderBase';
+import { SqlPackageManageProviderBase, ScriptMode } from './packageManageProviderBase';
 import { HttpClient } from '../common/httpClient';
 import * as utils from '../common/utils';
+import { PackageManagementService } from './packageManagementService';
 
 /**
  * Manage Package Provider for python packages inside SQL server databases
@@ -26,7 +26,7 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 	constructor(
 		private _outputChannel: vscode.OutputChannel,
 		apiWrapper: ApiWrapper,
-		private _queryRunner: QueryRunner,
+		private _service: PackageManagementService,
 		private _processService: ProcessService,
 		private _config: Config,
 		private _httpClient: HttpClient) {
@@ -50,8 +50,8 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 	/**
 	 * Returns list of packages
 	 */
-	protected async fetchPackages(): Promise<nbExtensionApis.IPackageDetails[]> {
-		return await this._queryRunner.getPythonPackages(await this.getCurrentConnection());
+	protected async fetchPackages(databaseName: string): Promise<nbExtensionApis.IPackageDetails[]> {
+		return await this._service.getPythonPackages(await this.getCurrentConnection(), databaseName);
 	}
 
 	/**
@@ -59,14 +59,14 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 	 * @param packageDetails Packages to install or uninstall
 	 * @param scriptMode can be 'install' or 'uninstall'
 	 */
-	protected async executeScripts(scriptMode: ScriptMode, packageDetails: nbExtensionApis.IPackageDetails): Promise<void> {
+	protected async executeScripts(scriptMode: ScriptMode, packageDetails: nbExtensionApis.IPackageDetails, databaseName: string): Promise<void> {
 		let connection = await this.getCurrentConnection();
 		let credentials = await this._apiWrapper.getCredentials(connection.connectionId);
 
 		if (connection) {
 			let port = '1433';
 			let server = connection.serverName;
-			let database = connection.databaseName ? `, database="${connection.databaseName}"` : '';
+			let database = databaseName ? `, database="${databaseName}"` : '';
 			let index = connection.serverName.indexOf(',');
 			if (index > 0) {
 				port = connection.serverName.substring(index + 1);
@@ -97,7 +97,7 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 			return false;
 		}
 		let connection = await this.getCurrentConnection();
-		if (connection && await this._queryRunner.isPythonInstalled(connection)) {
+		if (connection && await this._service.isPythonInstalled(connection)) {
 			return true;
 		}
 		return false;

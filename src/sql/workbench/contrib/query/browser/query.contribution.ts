@@ -23,7 +23,7 @@ import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
 	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction
 } from 'sql/workbench/contrib/query/browser/keyboardQueryActions';
-import * as gridActions from 'sql/workbench/contrib/editData/common/gridActions';
+import * as gridActions from 'sql/workbench/contrib/editData/browser/gridActions';
 import * as gridCommands from 'sql/workbench/contrib/editData/browser/gridCommands';
 import * as Constants from 'sql/platform/query/common/constants';
 import { localize } from 'vs/nls';
@@ -34,7 +34,7 @@ import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, Quer
 import { SqlFlavorStatusbarItem, ChangeFlavorAction } from 'sql/workbench/contrib/query/browser/flavorStatus';
 import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions } from 'vs/workbench/common/editor';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
-import { FileQueryEditorInputFactory, UntitledQueryEditorInputFactory, QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/common/queryInputFactory';
+import { FileQueryEditorInputFactory, UntitledQueryEditorInputFactory, QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/browser/queryInputFactory';
 import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/contrib/query/browser/queryActions';

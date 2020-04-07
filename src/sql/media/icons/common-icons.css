@@ -3,22 +3,25 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.vs .codicon.backup {
+.vs .codicon.settings {
+	background-image: url('settings.svg');
+}
+
+.vs-dark .codicon.settings,
+.hc-black .codicon.settings {
+	background-image: url('settings_inverse.svg');
+}
+
+.vs .codicon.backup,
+.vs-dark .codicon.backup,
+.hc-black .codicon.backup {
 	background: url("backup.svg") center center no-repeat;
 }
 
-.vs-dark .codicon.backup,
-.hc-black .codicon.backup {
-	background: url("backup_inverse.svg") center center no-repeat;
-}
-
-.vs .codicon.restore {
-	background: url("restore.svg") center center no-repeat;
-}
-
+.vs .codicon.restore,
 .vs-dark .codicon.restore,
 .hc-black .codicon.restore {
-	background: url("restore_inverse.svg") center center no-repeat;
+	background: url("restore.svg") center center no-repeat;
 }
 
 .vs .codicon.database {
@@ -170,13 +173,10 @@
 	background: url("status_warning.svg") center center no-repeat;
 }
 
-.vs .codicon.refresh {
-	background-image: url('refresh.svg');
-}
-
+.vs .codicon.refresh,
 .vs-dark .codicon.refresh,
-.hc-black .codicon.refresh  {
-	background-image: url('refresh_inverse.svg');
+.hc-black .codicon.refresh {
+	background: url("refresh.svg") no-repeat;
 }
 
 .hc-black .codicon.toggle-more,
@@ -197,31 +197,22 @@
 	background: url('new.svg') center center no-repeat;
 }
 
-.hc-black .codicon.new-query,
-.vs-dark .codicon.new-query {
-	background: url('newquery_inverse.svg') center center no-repeat;
+.vs .codicon.new-query,
+.vs-dark .codicon.new-query,
+.hc-black .codicon.new-query {
+	background: url("newquery.svg") center center no-repeat;
 }
 
-.vs .codicon.new-query {
-	background: url('newquery.svg') center center no-repeat;
-}
-
+.vs .codicon.configure-dashboard,
 .hc-black .codicon.configure-dashboard,
 .vs-dark .codicon.configure-dashboard {
-	background: url('configdashboard_inverse.svg') center center no-repeat;
+	background: url('configuredashboard.svg') center center no-repeat;
 }
 
-.vs .codicon.configure-dashboard {
-	background: url('configdashboard.svg') center center no-repeat;
-}
-
+.vs .codicon.edit,
 .hc-black .codicon.edit,
 .vs-dark .codicon.edit {
-	background: url('edit_inverse.svg') center center no-repeat;
-}
-
-.vs .codicon.edit {
-	background: url('edit.svg') center center no-repeat;
+	background: url("edit.svg") center center no-repeat;
 }
 
 .hc-black .codicon.pin,

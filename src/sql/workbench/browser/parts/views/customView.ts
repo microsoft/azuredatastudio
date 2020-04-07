@@ -27,7 +27,7 @@ import { URI } from 'vs/base/common/uri';
 import { dirname, basename } from 'vs/base/common/resources';
 import { LIGHT, FileThemeIcon, FolderThemeIcon, registerThemingParticipant, IThemeService } from 'vs/platform/theme/common/themeService';
 import { FileKind } from 'vs/platform/files/common/files';
-import { WorkbenchAsyncDataTree, TreeResourceNavigator } from 'vs/platform/list/browser/listService';
+import { WorkbenchAsyncDataTree, ResourceNavigator } from 'vs/platform/list/browser/listService';
 import { localize } from 'vs/nls';
 import { timeout } from 'vs/base/common/async';
 import { editorFindMatchHighlight, editorFindMatchHighlightBorder, textLinkForeground, textCodeBlockBackground, focusBorder } from 'vs/platform/theme/common/colorRegistry';
@@ -50,8 +50,9 @@ import { NodeContextKey } from 'sql/workbench/browser/parts/views/nodeContext';
 import { UserCancelledConnectionError } from 'sql/base/common/errors';
 import { firstIndex } from 'vs/base/common/arrays';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
-export class CustomTreeViewPanel extends ViewPane {
+export class CustomTreeViewPane extends ViewPane {
 
 	private treeView: ITreeView;
 
@@ -65,15 +66,17 @@ export class CustomTreeViewPanel extends ViewPane {
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IOpenerService protected openerService: IOpenerService,
-		@IThemeService protected themeService: IThemeService
+		@IThemeService protected themeService: IThemeService,
+		@ITelemetryService telemetryService: ITelemetryService,
 	) {
-		super({ ...(options as IViewPaneOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService);
+		super({ ...(options as IViewPaneOptions) }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
 		const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).getView(options.id));
 		this.treeView = treeView as ITreeView;
 		this._register(this.treeView.onDidChangeActions(() => this.updateActions(), this));
 		this._register(this.treeView.onDidChangeTitle((newTitle) => this.updateTitle(newTitle)));
 		this._register(toDisposable(() => this.treeView.setVisibility(false)));
 		this._register(this.onDidChangeBodyVisibility(() => this.updateTreeVisibility()));
+		this._register(this.treeView.onDidChangeWelcomeState(() => this._onDidChangeViewWelcomeState.fire()));
 		this.updateTreeVisibility();
 	}
 
@@ -88,16 +91,12 @@ export class CustomTreeViewPanel extends ViewPane {
 		}
 	}
 
+	shouldShowWelcome(): boolean {
+		return (this.treeView.dataProvider === undefined) && (this.treeView.message === undefined);
+	}
+
 	layoutBody(height: number, width: number): void {
 		this.treeView.layout(height, width);
-	}
-
-	getActions(): IAction[] {
-		return [...this.treeView.getPrimaryActions()];
-	}
-
-	getSecondaryActions(): IAction[] {
-		return [...this.treeView.getSecondaryActions()];
 	}
 
 	getActionViewItem(action: IAction): IActionViewItem | undefined {
@@ -207,6 +206,9 @@ export class CustomTreeView extends Disposable implements ITreeView {
 	private readonly _onDidChangeActions: Emitter<void> = this._register(new Emitter<void>());
 	readonly onDidChangeActions: Event<void> = this._onDidChangeActions.event;
 
+	private readonly _onDidChangeWelcomeState: Emitter<void> = this._register(new Emitter<void>());
+	readonly onDidChangeWelcomeState: Event<void> = this._onDidChangeWelcomeState.event;
+
 	private readonly _onDidChangeTitle: Emitter<string> = this._register(new Emitter<string>());
 	readonly onDidChangeTitle: Event<string> = this._onDidChangeTitle.event;
 
@@ -230,10 +232,10 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		this.menus = this._register(instantiationService.createInstance(TitleMenus, this.id));
 		this._register(this.menus.onDidChangeTitle(() => this._onDidChangeActions.fire()));
 		this._register(this.themeService.onDidFileIconThemeChange(() => this.doRefresh([this.root]) /** soft refresh **/));
-		this._register(this.themeService.onThemeChange(() => this.doRefresh([this.root]) /** soft refresh **/));
+		this._register(this.themeService.onDidColorThemeChange(() => this.doRefresh([this.root]) /** soft refresh **/));
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('explorer.decorations')) {
-				this.doRefresh([this.root]); /** soft refresh **/
+				this.doRefresh([this.root]).catch(onUnexpectedError); /** soft refresh **/
 			}
 		}));
 		this.markdownRenderer = instantiationService.createInstance(MarkdownRenderer);
@@ -270,11 +272,13 @@ export class CustomTreeView extends Disposable implements ITreeView {
 				}
 			};
 			this.updateMessage();
-			this.refresh();
+			this.refresh().catch(onUnexpectedError);
 		} else {
 			this._dataProvider = null;
 			this.updateMessage();
 		}
+
+		this._onDidChangeWelcomeState.fire();
 	}
 
 	private _message: string | undefined;
@@ -285,6 +289,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 	set message(message: string | undefined) {
 		this._message = message;
 		this.updateMessage();
+		this._onDidChangeWelcomeState.fire();
 	}
 
 	get title(): string {
@@ -359,7 +364,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 			}
 
 			if (this.isVisible && this.elementsToRefresh.length) {
-				this.doRefresh(this.elementsToRefresh);
+				this.doRefresh(this.elementsToRefresh).catch(onUnexpectedError);
 				this.elementsToRefresh = [];
 			}
 		}
@@ -446,7 +451,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		}));
 		this.tree.setInput(this.root).then(() => this.updateContentAreas());
 
-		const customTreeNavigator = new TreeResourceNavigator(this.tree);
+		const customTreeNavigator = ResourceNavigator.createTreeResourceNavigator(this.tree, { openOnFocus: false, openOnSelection: false });
 		this._register(customTreeNavigator);
 		this._register(customTreeNavigator.onDidOpenResource(e => {
 			if (!e.browserEvent) {
@@ -698,26 +703,28 @@ class TreeDataSource implements IAsyncDataSource<ITreeItem, ITreeItem> {
 		return this.treeView.dataProvider && node.collapsibleState !== TreeItemCollapsibleState.None;
 	}
 
-	getChildren(node: ITreeItem): Promise<any[]> {
+	async getChildren(node: ITreeItem): Promise<any[]> {
 		if (node.childProvider) {
-			return this.withProgress(this.objectExplorerService.getChildren(node, this.id)).catch(e => {
+			try {
+				return await this.withProgress(this.objectExplorerService.getChildren(node, this.id));
+			} catch (err) {
 				// if some error is caused we assume something tangently happened
 				// i.e the user could retry if they wanted.
 				// So in order to enable this we need to tell the tree to refresh this node so it will ask us for the data again
 				setTimeout(() => {
 					this.treeView.collapse(node);
-					if (e instanceof UserCancelledConnectionError) {
+					if (err instanceof UserCancelledConnectionError) {
 						return;
 					}
 					this.treeView.refresh([node]);
 				});
 				return [];
-			});
+			}
 		}
 		if (this.treeView.dataProvider) {
-			return this.withProgress(this.treeView.dataProvider.getChildren(node));
+			return await this.withProgress(this.treeView.dataProvider.getChildren(node));
 		}
-		return Promise.resolve([]);
+		return [];
 	}
 }
 
@@ -805,7 +812,7 @@ class TreeRenderer extends Disposable implements ITreeRenderer<ITreeItem, FuzzyS
 		const treeItemLabel: ITreeItemLabel | undefined = node.label ? node.label : resource ? { label: basename(resource) } : undefined;
 		const description = isString(node.description) ? node.description : resource && node.description === true ? this.labelService.getUriLabel(dirname(resource), { relative: true }) : undefined;
 		const label = treeItemLabel ? treeItemLabel.label : undefined;
-		const icon = this.themeService.getTheme().type === LIGHT ? node.icon : node.iconDark;
+		const icon = this.themeService.getColorTheme().type === LIGHT ? node.icon : node.iconDark;
 		const iconUrl = icon ? URI.revive(icon) : null;
 		const title = node.tooltip ? node.tooltip : resource ? undefined : label;
 		const sqlIcon = node.sqlIcon;
@@ -888,7 +895,7 @@ class Aligner extends Disposable {
 	}
 
 	private hasIcon(node: ITreeItem): boolean {
-		const icon = this.themeService.getTheme().type === LIGHT ? node.icon : node.iconDark;
+		const icon = this.themeService.getColorTheme().type === LIGHT ? node.icon : node.iconDark;
 		if (icon) {
 			return true;
 		}
