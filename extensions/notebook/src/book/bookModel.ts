@@ -32,6 +32,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	constructor(
 		public readonly bookPath: string,
 		public readonly openAsUntitled: boolean,
+		public readonly isNotebook: boolean,
 		private _extensionContext: vscode.ExtensionContext) {
 		this._bookItems = [];
 		this._extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(this));
@@ -40,8 +41,13 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	public async initializeContents(): Promise<void> {
 		this._tableOfContentPaths = [];
 		this._bookItems = [];
-		await this.getTableOfContentFiles(this.bookPath);
-		await this.readBooks();
+		this._allNotebooks = new Map<string, BookTreeItem>();
+		if (this.isNotebook) {
+			this.readNotebook();
+		} else {
+			await this.loadTableOfContentFiles(this.bookPath);
+			await this.readBooks();
+		}
 	}
 
 	public getAllNotebooks(): Map<string, BookTreeItem> {
@@ -52,7 +58,11 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		return this._allNotebooks.get(uri);
 	}
 
-	public async getTableOfContentFiles(folderPath: string): Promise<void> {
+	public async loadTableOfContentFiles(folderPath: string): Promise<void> {
+		if (this.isNotebook) {
+			return;
+		}
+
 		let notebookConfig = vscode.workspace.getConfiguration(notebookConfigKey);
 		let maxDepth = notebookConfig[maxBookSearchDepth];
 		// Use default value if user enters an invalid value
@@ -73,7 +83,44 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		}
 	}
 
+	public readNotebook(): BookTreeItem {
+		if (!this.isNotebook) {
+			return undefined;
+		}
+
+		let notebookItem = new BookTreeItem({
+			title: path.basename(this.bookPath),
+			contentPath: this.bookPath,
+			rootPath: path.dirname(this.bookPath),
+			tableOfContents: { sections: undefined },
+			page: { sections: undefined },
+			type: BookTreeItemType.Notebook,
+			treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
+			isUntitled: this.openAsUntitled,
+		},
+			{
+				light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
+				dark: this._extensionContext.asAbsolutePath('resources/dark/notebook_inverse.svg')
+			}
+		);
+		this._bookItems.push(notebookItem);
+		if (this.openAsUntitled && !this._allNotebooks.get(path.basename(notebookItem.root))) {
+			this._allNotebooks.set(path.basename(notebookItem.root), notebookItem);
+		} else {
+			// convert to URI to avoid casing issue with drive letters when getting navigation links
+			let uriToNotebook: vscode.Uri = vscode.Uri.file(notebookItem.root);
+			if (!this._allNotebooks.get(uriToNotebook.fsPath)) {
+				this._allNotebooks.set(uriToNotebook.fsPath, notebookItem);
+			}
+		}
+		return notebookItem;
+	}
+
 	public async readBooks(): Promise<BookTreeItem[]> {
+		if (this.isNotebook) {
+			return undefined;
+		}
+
 		for (const contentPath of this._tableOfContentPaths) {
 			let root: string = path.dirname(path.dirname(contentPath));
 			try {
@@ -83,9 +130,10 @@ export class BookModel implements azdata.nb.NavigationProvider {
 				const tableOfContents: any = yaml.safeLoad(fileContents.toString());
 				let book: BookTreeItem = new BookTreeItem({
 					title: config.title,
-					root: root,
+					contentPath: contentPath,
+					rootPath: root,
 					tableOfContents: { sections: this.parseJupyterSections(tableOfContents) },
-					page: tableOfContents,
+					page: tableOfContents as IJupyterBookSection,
 					type: BookTreeItemType.Book,
 					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
 					isUntitled: this.openAsUntitled,
@@ -109,13 +157,18 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	}
 
 	public async getSections(tableOfContents: IJupyterBookToc, sections: IJupyterBookSection[], root: string): Promise<BookTreeItem[]> {
+		if (this.isNotebook) {
+			return [];
+		}
+
 		let notebooks: BookTreeItem[] = [];
 		for (let i = 0; i < sections.length; i++) {
 			if (sections[i].url) {
 				if (sections[i].external) {
 					let externalLink: BookTreeItem = new BookTreeItem({
 						title: sections[i].title,
-						root: root,
+						contentPath: undefined,
+						rootPath: root,
 						tableOfContents: tableOfContents,
 						page: sections[i],
 						type: BookTreeItemType.ExternalLink,
@@ -137,7 +190,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 					if (await fs.pathExists(pathToNotebook)) {
 						let notebook = new BookTreeItem({
 							title: sections[i].title,
-							root: root,
+							contentPath: pathToNotebook,
+							rootPath: root,
 							tableOfContents: tableOfContents,
 							page: sections[i],
 							type: BookTreeItemType.Notebook,
@@ -166,7 +220,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 					} else if (await fs.pathExists(pathToMarkdown)) {
 						let markdown: BookTreeItem = new BookTreeItem({
 							title: sections[i].title,
-							root: root,
+							contentPath: pathToMarkdown,
+							rootPath: root,
 							tableOfContents: tableOfContents,
 							page: sections[i],
 							type: BookTreeItemType.Markdown,
