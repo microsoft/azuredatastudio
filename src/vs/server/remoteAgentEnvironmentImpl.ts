@@ -28,6 +28,7 @@ import { ProcessItem } from 'vs/base/common/processes';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ILog, Translations } from 'vs/workbench/services/extensions/common/extensionPoints';
 import { ITelemetryAppender } from 'vs/platform/telemetry/common/telemetryUtils';
+import { IBuiltInExtension } from 'vs/platform/product/common/productService';
 
 let _SystemExtensionsRoot: string | null = null;
 function getSystemExtensionsRoot(): string {
@@ -360,11 +361,6 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 		let finalBuiltinExtensions: Promise<IExtensionDescription[]> = builtinExtensions;
 
 		if (devMode) {
-			interface IBuiltInExtension {
-				name: string;
-				version: string;
-				repo: string;
-			}
 
 			class ExtraBuiltInExtensionResolver implements IExtensionResolver {
 				constructor(private builtInExtensions: IBuiltInExtension[]) { }
@@ -375,9 +371,7 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 				}
 			}
 
-			const builtInExtensionsFilePath = normalize(join(getPathFromAmdModule(require, ''), '..', 'build', 'builtInExtensions.json'));
-			const builtInExtensions = pfs.readFile(builtInExtensionsFilePath, 'utf8')
-				.then<IBuiltInExtension[]>(raw => JSON.parse(raw));
+			const builtInExtensions = Promise.resolve(product.builtInExtensions || []);
 
 			const input = new ExtensionScannerInput(version, commit, language, devMode, getExtraDevSystemExtensionsRoot(), true, false, {});
 			const extraBuiltinExtensions = builtInExtensions
