@@ -127,15 +127,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				}
 			}
 			// add file watcher on toc file.
-			fsw.watch(path.join(bookPath, '_data', 'toc.yml'), async (event, filename) => {
-				if (event === 'change') {
-					let changedBook = this.books.find(book => book.bookPath === bookPath);
-					await changedBook.initializeContents().then(() => {
-						this._onDidChangeTreeData.fire(changedBook.bookItems[0]);
-					});
-					this._onDidChangeTreeData.fire();
-				}
-			});
+			if (!isNotebook) {
+				fsw.watch(path.join(bookPath, '_data', 'toc.yml'), async (event, filename) => {
+					if (event === 'change') {
+						let changedBook = this.books.find(book => book.bookPath === bookPath);
+						await changedBook.initializeContents().then(() => {
+							this._onDidChangeTreeData.fire(changedBook.bookItems[0]);
+						});
+						this._onDidChangeTreeData.fire();
+					}
+				});
+			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
 		}
@@ -157,7 +159,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			vscode.window.showErrorMessage(loc.closeBookError(book.root, e instanceof Error ? e.message : e));
 		} finally {
 			// remove watch on toc file.
-			if (deletedBook) {
+			if (deletedBook && !deletedBook.isNotebook) {
 				fsw.unwatchFile(path.join(deletedBook.bookPath, '_data', 'toc.yml'));
 			}
 		}
