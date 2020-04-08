@@ -41,5 +41,5 @@
 	"title.closeJupyterBook": "Close Jupyter Book",
 	"title.revealInBooksViewlet": "Reveal in Books",
 	"title.createJupyterBook": "Create Book (Preview)",
-	"title.openNotebookFolder": "Open Notebook Folder"
+	"title.openNotebookFolder": "Open Notebooks in Folder"
 }
