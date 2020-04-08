@@ -4,14 +4,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<ul class="markdown-toolbar">
-	<li><a class="markdown-toolbar-bold" role="button" href="#" (click)="changeSelection(0)><span class="offscreen">{{buttonBold}}</span></a></li>
-	<li><a class="markdown-toolbar-italic" role="button" href="#" (click)="changeSelection(1)><span class="offscreen">{{buttonItalic}}</span></a></li>
-	<li><a class="markdown-toolbar-highlight" role="button" href="#"><span class="offscreen">{{buttonHighlight}}</span></a></li>
-	<li><a class="markdown-toolbar-code" role="button" href="#" (click)="changeSelection(2)><span class="offscreen">{{buttonCode}}</span></a></li>
-	<li><a class="markdown-toolbar-link" role="button" href="#" (click)="changeSelection(3)><span class="offscreen">{{buttonLink}}</span></a></li>
-	<li><a class="markdown-toolbar-list" role="button" href="#" (click)="changeSelection(4)><span class="offscreen">{{buttonList}}</span></a></li>
-	<li><a class="markdown-toolbar-ordered-list" role="button" href="#" (click)="changeSelection(5)><span class="offscreen">{{buttonOrderedList}}</span></a></li>
-	<li><a class="markdown-toolbar-image" role="button" href="#"><span class="offscreen" (click)="changeSelection(6)>{{buttonImage}}</span></a></li>
-	<li><a (click)="toggleSplitView()" class="markdown-toolbar-preview-toggle-off" role="button" href="#"><span class="offscreen">{{buttonPreview}}</span></a></li>
+<ul #mdtoolbar class="markdown-toolbar">
+	<!--<li><a (click)="toggleSplitView()" class="markdown-toolbar-preview-toggle-off" role="button" href="#"><span class="offscreen">{{buttonPreview}}</span></a></li> -->
 </ul>
