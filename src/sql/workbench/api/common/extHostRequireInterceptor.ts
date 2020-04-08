@@ -20,7 +20,7 @@ export class AzdataNodeModuleFactory implements INodeModuleFactory {
 
 	constructor(
 		private readonly _apiFactory: IAzdataExtensionApiFactory,
-		private readonly _extensionPaths: TernarySearchTree<IExtensionDescription>,
+		private readonly _extensionPaths: TernarySearchTree<string, IExtensionDescription>,
 		private readonly _logService: ILogService
 	) {
 	}
