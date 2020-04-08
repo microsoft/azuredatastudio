@@ -1,0 +1,24 @@
+{
+  "name": "auto-merge",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "repository": "git@github.com:aaomidi/AutoLabel.git",
+  "author": "Amir Omidi <amir@aaomidi.com>",
+  "license": "MIT",
+  "scripts": {
+    "package": "ncc build src/index.ts -o dist",
+    "lint": "eslint src/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^12.11.1",
+    "@zeit/ncc": "^0.21.1",
+    "eslint": "^6.8.0",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@actions/core": "^1.1.3",
+    "@actions/github": "^1.1.0",
+    "@octokit/rest": "^16.33.1",
+    "actions-toolkit": "^3.0.1"
+  }
+}

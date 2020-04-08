@@ -10,8 +10,9 @@ import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { IJobStepsViewRow } from 'sql/workbench/services/jobManagement/common/interfaces';
 
-export class JobStepsViewRow {
+export class JobStepsViewRow implements IJobStepsViewRow {
 	public stepId: string;
 	public stepName: string;
 	public message: string;

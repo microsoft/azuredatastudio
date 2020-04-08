@@ -24,9 +24,16 @@ panel {
 	position: relative;
 }
 
+.tabbedPanel.vertical>.title {
+	flex: 0 0 auto;
+	flex-direction: column;
+	height: 100%;
+}
+
 .tabbedPanel .tabContainer {
 	flex: 1 1 auto;
 	overflow: hidden;
+	height: 100%;
 }
 
 .tabbedPanel .tabList {
@@ -45,14 +52,21 @@ panel {
 	margin: auto;
 }
 
+.tabbedPanel.horizontal .tabList .tab .tabLabel {
+	font-size: 12px;
+	font-weight: normal;
+}
+
+.tabbedPanel.vertical .tabList .tab .tabLabel {
+	font-size: 12px;
+	padding-bottom: 0px;
+	font-weight: normal;
+}
+
 .tabbedPanel .tabList .tab .tabLabel {
 	font-size: 13px;
 	padding-bottom: 4px;
 	font-weight: 600;
-}
-
-.tabbedPanel.vertical .tabList .tab .tabLabel {
-	font-size: 11px;
 }
 
 .tabbedPanel .tabList .tab-header {
@@ -62,22 +76,17 @@ panel {
 	min-width: 65px;
 }
 
-.tabbedPanel.vertical .tabList .tab-header {
+.tabbedPanel.vertical > .title .tabList .tab-header {
 	display: block;
-	text-transform: none;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	width: 65px;
-	height: 50px;
-	line-height: 45px;
+	min-width: 150px;
+	line-height: 35px;
 }
 
-.tabbedPanel .tabList .tab .tabLabel.codicon {
+.tabbedPanel .tabList .tab .tabIcon.codicon {
 	background-repeat: no-repeat;
-	background-position: center center;
-	background-size: 20px;
-	padding: 20px 25px;
-	line-height: 50px;
+	background-position: 2px center;
+	background-size: 16px;
+	padding: 2px 2px 2px 22px;
 }
 
 .tabbedPanel .tabList .actions-container {
@@ -86,8 +95,6 @@ panel {
 
 .tabbedPanel .composite.title .title-actions .action-label {
 	display: block;
-	height: 35px;
-	line-height: 35px;
 	min-width: 28px;
 	background-size: 16px;
 	background-position: center center;
@@ -111,30 +118,26 @@ panel {
 	flex-direction: row;
 }
 
-.tabbedPanel.vertical > .title {
+.tabbedPanel.vertical>.title {
 	flex: 0 0 auto;
 	flex-direction: column;
 	height: 100%;
 }
 
-.tabbedPanel.vertical .tabList {
-	flex-direction: column;
-}
-
-.tabbedPanel > .tab-content {
-	flex: 1;
+.tabbedPanel>.tab-content {
+	flex: 1 1 auto;
 	position: relative;
 }
 
-.tabbedPanel.vertical > .title > .tabList {
+.tabbedPanel.vertical>.title > .tabContainer .tabList {
 	flex-flow: column;
 }
 
-.tabbedPanel.horizontal > .title > .tabList {
+.tabbedPanel.horizontal > .title > .tabContainer .tabList {
 	flex-flow: row;
 }
 
-.tabbedPanel > .title > .monaco-scrollable-element {
+.tabbedPanel > .title > .tabContainer > .monaco-scrollable-element {
 	flex: 0 1 auto;
 	width: inherit;
 }
@@ -146,4 +149,51 @@ panel {
 .tabBody {
 	width: 100%;
 	height: 100%;
+}
+
+.tabbedPanel .tab-group-header {
+	font-weight: bold;
+	margin: 15px 5px 3px 5px;
+	line-height: 35px;
+	height: 35px;
+	border-style: solid;
+	border-width: 0 0 1px 0;
+	border-color: rgb(214, 214, 214);
+}
+
+.tabbedPanel .vertical-tab-action-container {
+	display: flex;
+	flex-flow: row-reverse;
+	height: 35px;
+	padding: 0px 5px;
+}
+
+.tabbedPanel .tab-action {
+	width: 15px;
+	height: 15px;
+	padding: 0px;
+	border: 0px;
+	background-color: transparent;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 9px 9px;
+	align-self: center;
+}
+
+.vs .tabbedPanel .tab-action.collapse {
+	background-image: url("collapse.svg");
+}
+
+.vs-dark .tabbedPanel .tab-action.collapse,
+.hc-black .tabbedPanel .tab-action.collapse {
+	background-image: url("collapse_inverse.svg");
+}
+
+.vs .tabbedPanel .tab-action.expand {
+	background-image: url("expand.svg");
+}
+
+.vs-dark .tabbedPanel .tab-action.expand,
+.hc-black .tabbedPanel .tab-action.expand {
+	background-image: url("expand_inverse.svg");
 }

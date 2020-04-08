@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as constants from '../../common/constants';
 import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
@@ -18,6 +19,8 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 	private _table: azdata.DeclarativeTableComponent;
 	private _selectedModelId: any;
 	private _models: WorkspaceModel[] | undefined;
+	private _onModelSelectionChanged: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
+	public readonly onModelSelectionChanged: vscode.Event<void> = this._onModelSelectionChanged.event;
 
 	/**
 	 * Creates a view to render azure models in a table
@@ -36,9 +39,22 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 			.withProperties<azdata.DeclarativeTableProperties>(
 				{
 					columns: [
-						{ // Id
-							displayName: constants.modeIld,
-							ariaLabel: constants.modeIld,
+						{ // Name
+							displayName: constants.modelName,
+							ariaLabel: constants.modelName,
+							valueType: azdata.DeclarativeDataType.string,
+							isReadOnly: true,
+							width: 150,
+							headerCssStyles: {
+								...constants.cssStyles.tableHeader
+							},
+							rowCssStyles: {
+								...constants.cssStyles.tableRow
+							},
+						},
+						{ // Created
+							displayName: constants.modelCreated,
+							ariaLabel: constants.modelCreated,
 							valueType: azdata.DeclarativeDataType.string,
 							isReadOnly: true,
 							width: 100,
@@ -49,12 +65,12 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 								...constants.cssStyles.tableRow
 							},
 						},
-						{ // Name
-							displayName: constants.modelName,
-							ariaLabel: constants.modelName,
+						{ // Version
+							displayName: constants.modelVersion,
+							ariaLabel: constants.modelVersion,
 							valueType: azdata.DeclarativeDataType.string,
 							isReadOnly: true,
-							width: 150,
+							width: 100,
 							headerCssStyles: {
 								...constants.cssStyles.tableHeader
 							},
@@ -102,6 +118,7 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 
 			this._table.data = tableData;
 		}
+		this._onModelSelectionChanged.fire();
 	}
 
 	private createTableRow(model: WorkspaceModel): any[] {
@@ -115,8 +132,9 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 			}).component();
 			selectModelButton.onDidClick(() => {
 				this._selectedModelId = model.id;
+				this._onModelSelectionChanged.fire();
 			});
-			return [model.id, model.name, selectModelButton];
+			return [model.name, model.createdTime, model.frameworkVersion, selectModelButton];
 		}
 
 		return [];

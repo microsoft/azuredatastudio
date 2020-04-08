@@ -83,7 +83,7 @@ export class ExtHostObjectExplorerNode implements azdata.objectexplorer.ObjectEx
 		let parentPathEndIndex: number = this.nodePath.lastIndexOf(nodePathName) - 1;
 		if (parentPathEndIndex < 0) {
 			// At root node
-			Promise.resolve(undefined);
+			return Promise.resolve(undefined);
 		}
 		return this._proxy.$getNode(this.connectionId, this.nodePath.slice(0, parentPathEndIndex)).then(
 			nodeInfo => nodeInfo ? new ExtHostObjectExplorerNode(nodeInfo, this.connectionId, this._proxy) : undefined);

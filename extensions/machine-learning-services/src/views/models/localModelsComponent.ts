@@ -4,17 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
+
 import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 import * as constants from '../../common/constants';
-import { IPageView, IDataComponent } from '../interfaces';
+import { IDataComponent } from '../interfaces';
 
 /**
  * View to pick local models file
  */
-export class LocalModelsComponent extends ModelViewBase implements IPageView, IDataComponent<string> {
+export class LocalModelsComponent extends ModelViewBase implements IDataComponent<string> {
 
 	private _form: azdata.FormContainer | undefined;
+	private _flex: azdata.FlexContainer | undefined;
 	private _localPath: azdata.InputBoxComponent | undefined;
 	private _localBrowse: azdata.ButtonComponent | undefined;
 
@@ -42,25 +45,52 @@ export class LocalModelsComponent extends ModelViewBase implements IPageView, ID
 			}
 		}).component();
 		this._localBrowse.onDidClick(async () => {
-			const filePath = await this.getLocalFilePath();
+
+			let options: vscode.OpenDialogOptions = {
+				canSelectFiles: true,
+				canSelectFolders: false,
+				canSelectMany: false,
+				filters: { 'ONNX File': ['onnx'] }
+			};
+
+			const filePaths = await this.getLocalPaths(options);
 			if (this._localPath) {
-				this._localPath.value = filePath;
+				this._localPath.value = filePaths && filePaths.length > 0 ? filePaths[0] : '';
 			}
 		});
 
-		let flexFilePathModel = modelBuilder.flexContainer()
+		this._flex = modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'row',
-				justifyContent: 'space-between'
+				justifyContent: 'space-between',
+				width: this.componentMaxLength
 			}).withItems([
 				this._localPath, this._localBrowse]
 			).component();
 
 		this._form = modelBuilder.formContainer().withFormItems([{
 			title: '',
-			component: flexFilePathModel
+			component: this._flex
 		}]).component();
 		return this._form;
+	}
+
+	public addComponents(formBuilder: azdata.FormBuilder) {
+		if (this._flex) {
+			formBuilder.addFormItem({
+				title: '',
+				component: this._flex
+			});
+		}
+	}
+
+	public removeComponents(formBuilder: azdata.FormBuilder) {
+		if (this._flex) {
+			formBuilder.removeFormItem({
+				title: '',
+				component: this._flex
+			});
+		}
 	}
 
 	/**

@@ -142,9 +142,6 @@ describe('Main Controller', () => {
 		let controller = createController(testContext);
 		await controller.activate();
 
-		should.deepEqual(controller.config.requiredPythonPackages, [
-			{ name: 'pymssql', version: '2.1.4' },
-			{ name: 'sqlmlutils', version: '' }
-		]);
+		should.notEqual(controller.config.requiredSqlPythonPackages.find(x => x.name ==='sqlmlutils'), undefined);
 	});
 });

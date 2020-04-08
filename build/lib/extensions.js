@@ -4,6 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.packageRebuildExtensionsStream = exports.cleanRebuildExtensions = exports.packageExternalExtensionsStream = exports.packageMarketplaceExtensionsStream = exports.packageLocalExtensionsStream = exports.fromMarketplace = void 0;
 const es = require("event-stream");
 const fs = require("fs");
 const glob = require("glob");
@@ -27,7 +28,6 @@ const util = require('./util');
 const root = path.dirname(path.dirname(__dirname));
 const commit = util.getVersion(root);
 const sourceMappingURLBase = `https://ticino.blob.core.windows.net/sourcemaps/${commit}`;
-const product = require('../../product.json');
 function fromLocal(extensionPath) {
     const webpackFilename = path.join(extensionPath, 'extension.webpack.config.js');
     const input = fs.existsSync(webpackFilename)
@@ -182,12 +182,12 @@ function fromMarketplace(extensionName, version, metadata) {
 exports.fromMarketplace = fromMarketplace;
 const excludedExtensions = [
     'vscode-api-tests',
+    'vscode-web-playground',
     'vscode-colorize-tests',
     'vscode-test-resolver',
     'ms-vscode.node-debug',
     'ms-vscode.node-debug2',
     'integration-tests',
-    'ms.vscode.js-debug-nightly'
 ];
 // {{SQL CARBON EDIT}}
 const externalExtensions = [
@@ -213,8 +213,7 @@ const rebuildExtensions = [
     'big-data-cluster',
     'mssql'
 ];
-const builtInExtensions = require('../builtInExtensions.json')
-    .filter(({ forQualities }) => { var _a; return !product.quality || ((_a = forQualities === null || forQualities === void 0 ? void 0 : forQualities.includes) === null || _a === void 0 ? void 0 : _a.call(forQualities, product.quality)) !== false; });
+const builtInExtensions = JSON.parse(fs.readFileSync(path.join(__dirname, '../../product.json'), 'utf8')).builtInExtensions;
 function packageLocalExtensionsStream() {
     const localExtensionDescriptions = glob.sync('extensions/*/package.json')
         .map(manifestPath => {

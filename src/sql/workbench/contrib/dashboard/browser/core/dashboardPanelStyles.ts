@@ -4,19 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./dashboardPanel';
-
-import { registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import {
-	TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_ACTIVE_BORDER, TAB_INACTIVE_BACKGROUND,
-	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER
+	TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_INACTIVE_BACKGROUND,
+	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, DASHBOARD_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER
 } from 'vs/workbench/common/theme';
 import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 
-registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
-
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 	// Title Active
 	const tabActiveBackground = theme.getColor(TAB_ACTIVE_BACKGROUND);
 	const tabActiveForeground = theme.getColor(TAB_ACTIVE_FOREGROUND);
+	let tabActiveBackgroundVertical = theme.getColor(DASHBOARD_TAB_ACTIVE_BACKGROUND);
+
 	if (tabActiveBackground || tabActiveForeground) {
 		collector.addRule(`
 			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab:hover .tabLabel,
@@ -25,9 +25,12 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 				border-bottom: 0px solid;
 			}
 
-			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header.active {
+			panel.dashboard-panel > .tabbedPanel.vertical > .title .tabList .tab-header.active {
+				background-color: ${tabActiveBackgroundVertical};
+			}
+
+			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab-header.active {
 				background-color: ${tabActiveBackground};
-				outline-color: ${tabActiveBackground};
 			}
 
 			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab-header.active {
@@ -40,11 +43,13 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 		`);
 	}
 
-	const activeTabBorderColor = theme.getColor(TAB_ACTIVE_BORDER);
-	if (activeTabBorderColor) {
+	const highContrastActiveTabBorderColor = theme.getColor(activeContrastBorder);
+	if (highContrastActiveTabBorderColor) {
 		collector.addRule(`
 			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header.active {
-				box-shadow: ${activeTabBorderColor} 0 -1px inset;
+				outline: 1px solid;
+				outline-offset: -3px;
+				outline-color: ${highContrastActiveTabBorderColor};
 			}
 		`);
 	}
@@ -54,11 +59,10 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const tabInactiveForeground = theme.getColor(TAB_INACTIVE_FOREGROUND);
 	if (tabInactiveBackground || tabInactiveForeground) {
 		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab .tabLabel {
+			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab .tabLabel {
 				color: ${tabInactiveForeground};
 			}
-
-			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header {
+			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab-header {
 				background-color: ${tabInactiveBackground};
 			}
 		`);
@@ -68,7 +72,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const panelTitleBackground = theme.getColor(EDITOR_GROUP_HEADER_TABS_BACKGROUND);
 	if (panelTitleBackground) {
 		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title {
+			panel.dashboard-panel > .tabbedPanel.horizontal > .title {
 				background-color: ${panelTitleBackground};
 			}
 		`);
@@ -78,7 +82,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const tabBorder = theme.getColor(TAB_BORDER);
 	if (tabBorder) {
 		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header {
+			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab-header {
 				border-right-color: ${tabBorder};
 				border-bottom-color: ${tabBorder};
 			}
@@ -89,7 +93,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const outline = theme.getColor(activeContrastBorder);
 	if (outline) {
 		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title {
+			panel.dashboard-panel > .tabbedPanel.horizontal > .title {
 				border-bottom-color: ${tabBorder};
 				border-bottom-width: 1px;
 				border-bottom-style: solid;
@@ -106,10 +110,19 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const divider = theme.getColor(EDITOR_GROUP_BORDER);
 	if (divider) {
 		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header {
+			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab-header {
 				border-right-width: 1px;
 				border-right-style: solid;
 			}
 		`);
+	}
+
+	const sideBorder = theme.getColor(DASHBOARD_BORDER);
+	if (divider) {
+		collector.addRule(`panel.dashboard-panel > .tabbedPanel.vertical > .title > .tabContainer {
+			border-right-width: 1px;
+			border-right-style: solid;
+			border-right-color: ${sideBorder};
+		}`);
 	}
 });

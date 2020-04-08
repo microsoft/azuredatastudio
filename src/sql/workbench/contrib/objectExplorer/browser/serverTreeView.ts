@@ -37,6 +37,7 @@ import { isHidden } from 'sql/base/browser/dom';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { startsWith } from 'vs/base/common/strings';
 import { SERVER_GROUP_CONFIG } from 'sql/workbench/services/serverGroup/common/interfaces';
+import { horizontalScrollingKey } from 'vs/platform/list/browser/listService';
 
 /**
  * ServerTreeview implements the dynamic tree view.
@@ -69,9 +70,9 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		this._onSelectionOrFocusChange = new Emitter();
 		this._actionProvider = this._instantiationService.createInstance(ServerTreeActionProvider);
-		capabilitiesService.onCapabilitiesRegistered(() => {
+		capabilitiesService.onCapabilitiesRegistered(async () => {
 			if (this._connectionManagementService.hasRegisteredServers()) {
-				this.refreshTree();
+				await this.refreshTree();
 				this._treeSelectionHandler.onTreeActionStateChange(false);
 			}
 		});
@@ -114,7 +115,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		CommandsRegistry.registerCommand({
 			id: 'registeredServers.clearSearchServerResult',
 			handler: (accessor: ServicesAccessor, ...args: any[]) => {
-				this.refreshTree();
+				this.refreshTree().catch(errors.onUnexpectedError);
 			}
 		});
 	}
@@ -140,7 +141,9 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				this._connectionManagementService.showConnectionDialog();
 			}));
 		}
-		this._tree = this._register(TreeCreationUtils.createRegisteredServersTree(container, this._instantiationService));
+
+		const horizontalScrollEnabled: boolean = this._configurationService.getValue(horizontalScrollingKey) || false;
+		this._tree = this._register(TreeCreationUtils.createRegisteredServersTree(container, this._instantiationService, horizontalScrollEnabled));
 		//this._tree.setInput(undefined);
 		this._register(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
 		this._register(this._tree.onDidBlur(() => this._onSelectionOrFocusChange.fire()));
@@ -151,14 +154,14 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 
 		// Refresh Tree when these events are emitted
 		this._register(this._connectionManagementService.onAddConnectionProfile((newProfile: IConnectionProfile) => {
-			this.handleAddConnectionProfile(newProfile);
+			this.handleAddConnectionProfile(newProfile).catch(errors.onUnexpectedError);
 		}));
 		this._register(this._connectionManagementService.onDeleteConnectionProfile(() => {
-			this.refreshTree();
+			this.refreshTree().catch(errors.onUnexpectedError);
 		}));
 		this._register(this._connectionManagementService.onDisconnect((connectionParams) => {
 			if (this.isObjectExplorerConnectionUri(connectionParams.connectionUri)) {
-				this.deleteObjectExplorerNodeAndRefreshTree(connectionParams.connectionProfile);
+				this.deleteObjectExplorerNodeAndRefreshTree(connectionParams.connectionProfile).catch(errors.onUnexpectedError);
 			}
 		}));
 

@@ -25,12 +25,12 @@ import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { Color } from 'vs/base/common/color';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { assertIsDefined, isUndefinedOrNull } from 'vs/base/common/types';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 interface IRenderedServerGroupDialog {
 	groupNameInputBox: InputBox;
@@ -64,7 +64,7 @@ export class ServerGroupDialog extends Modal {
 	private _closeButton?: Button;
 
 	constructor(
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,

@@ -34,7 +34,8 @@ const all = [
 	'src/**/*',
 	'test/**/*',
 	'!test/**/out/**',
-	'!**/node_modules/**'
+	'!**/node_modules/**',
+	'!build/actions/**/dist/*' // {{ SQL CARBON EDIT }}
 ];
 
 const indentationFilter = [
@@ -95,6 +96,7 @@ const indentationFilter = [
 	'!**/*.dockerfile',
 	'!extensions/markdown-language-features/media/*.js',
 	// {{SQL CARBON EDIT}}
+	'!build/actions/**/dist/*',
 	'!**/*.{xlf,docx,sql,vsix,bacpac,ipynb}',
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
@@ -127,7 +129,6 @@ const copyrightFilter = [
 	'!**/*.disabled',
 	'!**/*.code-workspace',
 	'!**/*.js.map',
-	'!**/promise-polyfill/polyfill.js',
 	'!build/**/*.init',
 	'!resources/linux/snap/snapcraft.yaml',
 	'!resources/linux/snap/electron-launch',
@@ -201,7 +202,7 @@ const tsHygieneFilter = [
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts', // {{SQL CARBON EDIT}},
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts', // {{SQL CARBON EDIT}},
 	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts', // {{SQL CARBON EDIT}} skip this because we have no plans on touching this and its not ours
-	'!src/vs/workbench/contrib/extensions/browser/extensionTipsService.ts' // {{SQL CARBON EDIT}} skip this because known issue
+	'!src/vs/workbench/contrib/extensions/browser/extensionRecommendationsService.ts' // {{SQL CARBON EDIT}} skip this because known issue
 ];
 
 const copyrightHeaderLines = [
