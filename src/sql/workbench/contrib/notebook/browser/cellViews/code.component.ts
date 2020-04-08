@@ -36,7 +36,7 @@ import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser/simpleProgressIndicator';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
-import { IColorTheme, registerThemingParticipant, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { IColorTheme, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { codeEditorLineNumber, codeEditorToolbarIcon } from 'sql/platform/theme/common/colorRegistry';
 
 export const CODE_SELECTOR: string = 'code-component';
@@ -382,7 +382,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	}
 }
 
-registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+registerThemingParticipant((theme, collector) => {
 	const codeEditorLineNumberColor = theme.getColor(codeEditorLineNumber);
 	if (codeEditorLineNumberColor) {
 		collector.addRule(`code-component .editor .line-numbers { color: ${codeEditorLineNumberColor};}`);
@@ -390,10 +390,10 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	const codeEditorToolbarIconColor = theme.getColor(codeEditorToolbarIcon);
 	if (codeEditorToolbarIconColor) {
 		collector.addRule(
-			`
-			code-component .carbon-taskbar .codicon.hideIcon { color: ${codeEditorToolbarIconColor};
-			code-component .toolbar { border-color: ${codeEditorToolbarIconColor};}
-			`
+			`code-component .carbon-taskbar .codicon.hideIcon { color: ${codeEditorToolbarIconColor};}`
+		);
+		collector.addRule(
+			`code-component .toolbar { border-color: ${codeEditorToolbarIconColor};}`
 		);
 	}
 });
