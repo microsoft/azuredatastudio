@@ -12,6 +12,7 @@ import { IIdentifiedSingleEditOperation } from 'vs/editor/common/model';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
+import { Selection } from 'vs/editor/common/core/selection';
 
 
 
@@ -54,6 +55,7 @@ export class MarkdownTextTransformer {
 			let selections = editorControl.getSelections();
 			// TODO: Support replacement for multiple selections
 			let selection = selections[0];
+			let nothingSelected = this.editorHasNoSelection(selection);
 			let startRange: IRange = {
 				startColumn: selection.startColumn,
 				endColumn: selection.startColumn,
@@ -93,7 +95,7 @@ export class MarkdownTextTransformer {
 						editorModel.pushEditOperations(selections, operations, null);
 					}
 				}
-				this.setEndSelection(endRange, type, editorControl);
+				this.setEndSelection(endRange, type, editorControl, nothingSelected);
 			}
 		}
 	}
@@ -165,7 +167,10 @@ export class MarkdownTextTransformer {
 
 	// Get offset from the end column for editor selection
 	// For example, when inserting a link, we want to have the cursor be present in between the brackets
-	private getColumnOffsetForSelection(type: MarkdownButtonType): number {
+	private getColumnOffsetForSelection(type: MarkdownButtonType, nothingSelected: boolean): number {
+		if (nothingSelected) {
+			return 0;
+		}
 		switch (type) {
 			case MarkdownButtonType.LINK:
 				return 2;
@@ -194,12 +199,16 @@ export class MarkdownTextTransformer {
 		return undefined;
 	}
 
+	private editorHasNoSelection(selection: Selection): boolean {
+		return !selection || (selection.startLineNumber === selection.endLineNumber && selection.startColumn === selection.endColumn);
+	}
+
 	// Set selection (which also controls the cursor) for a given button type
-	private setEndSelection(range: IRange, type: MarkdownButtonType, editorControl: CodeEditorWidget) {
-		if (!range || !type || !editorControl) {
+	private setEndSelection(range: IRange, type: MarkdownButtonType, editorControl: CodeEditorWidget, noSelection: boolean) {
+		if (!range || !editorControl) {
 			return;
 		}
-		let offset = this.getColumnOffsetForSelection(type);
+		let offset = this.getColumnOffsetForSelection(type, noSelection);
 		if (offset > -1) {
 			let newRange: IRange = {
 				startColumn: range.startColumn + offset,
