@@ -97,6 +97,8 @@ export class MarkdownTextTransformer {
 				}
 				this.setEndSelection(endRange, type, editorControl, nothingSelected);
 			}
+			// Always give focus back to the editor after pressing the button
+			editorControl.focus();
 		}
 	}
 
@@ -181,11 +183,11 @@ export class MarkdownTextTransformer {
 		}
 	}
 
-	private getEditorControl(): CodeEditorWidget {
+	private getEditorControl(): CodeEditorWidget | undefined {
 		if (!this._notebookEditor) {
 			this._notebookEditor = this._notebookService.findNotebookEditor(this._cellModel.notebookModel.notebookUri);
 		}
-		if (this._notebookEditor && this._notebookEditor.cellEditors && this._notebookEditor.cellEditors.length > 0) {
+		if (this._notebookEditor?.cellEditors?.length > 0) {
 			// Find cell editor provider via cell guid
 			let cellEditorProvider = this._notebookEditor.cellEditors.find(e => e.cellGuid() === this._cellModel.cellGuid);
 			if (cellEditorProvider) {
@@ -203,23 +205,27 @@ export class MarkdownTextTransformer {
 		return !selection || (selection.startLineNumber === selection.endLineNumber && selection.startColumn === selection.endColumn);
 	}
 
-	// Set selection (which also controls the cursor) for a given button type
-	private setEndSelection(range: IRange, type: MarkdownButtonType, editorControl: CodeEditorWidget, noSelection: boolean) {
-		if (!range || !editorControl) {
+	/**
+	 * Sets the end selection state after the transform has occurred
+	 * @param endRange range for end text that was inserted
+	 * @param type MarkdownButtonType
+	 * @param editorControl code editor widget
+	 * @param noSelection controls whether there was no previous selection in the editor
+	 */
+	private setEndSelection(endRange: IRange, type: MarkdownButtonType, editorControl: CodeEditorWidget, noSelection: boolean): void {
+		if (!endRange || !editorControl) {
 			return;
 		}
 		let offset = this.getColumnOffsetForSelection(type, noSelection);
 		if (offset > -1) {
 			let newRange: IRange = {
-				startColumn: range.startColumn + offset,
-				endColumn: range.endColumn + offset,
-				startLineNumber: range.startLineNumber,
-				endLineNumber: range.endLineNumber
+				startColumn: endRange.startColumn + offset,
+				endColumn: endRange.endColumn + offset,
+				startLineNumber: endRange.startLineNumber,
+				endLineNumber: endRange.endLineNumber
 			};
 			editorControl.setSelection(newRange);
 		}
-		// Always give focus back to the editor after pressing the button
-		editorControl.focus();
 	}
 }
 

@@ -29,15 +29,7 @@ export class MarkdownToolbarComponent {
 	public buttonImage = localize('buttonImage', "Image");
 	public buttonPreview = localize('buttonPreview', "Markdown preview toggle - off");
 
-	public get cellModel(): ICellModel {
-		return this._cellModel;
-	}
-
-	@Input() public set cellModel(value: ICellModel) {
-		this._cellModel = value;
-	}
-
-	private _cellModel: ICellModel;
+	@Input() public cellModel: ICellModel;
 	private _actionBar: Taskbar;
 
 	constructor(
@@ -49,14 +41,14 @@ export class MarkdownToolbarComponent {
 	}
 
 	private initActionBar() {
-		let boldButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.boldText', '', 'markdown-toolbar-bold', this.buttonBold, this._cellModel, MarkdownButtonType.BOLD);
-		let italicButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.italicText', '', 'markdown-toolbar-italic', this.buttonItalic, this._cellModel, MarkdownButtonType.ITALIC);
-		let highlightButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.highlightText', '', 'markdown-toolbar-highlight', this.buttonHighlight, this._cellModel, MarkdownButtonType.HIGHLIGHT);
-		let codeButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.codeText', '', 'markdown-toolbar-code', this.buttonCode, this._cellModel, MarkdownButtonType.CODE);
-		let linkButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.linkText', '', 'markdown-toolbar-link', this.buttonLink, this._cellModel, MarkdownButtonType.LINK);
-		let listButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.listText', '', 'markdown-toolbar-list', this.buttonList, this._cellModel, MarkdownButtonType.UNORDERED_LIST);
-		let orderedListButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.orderedText', '', 'markdown-toolbar-ordered-list', this.buttonOrderedList, this._cellModel, MarkdownButtonType.ORDERED_LIST);
-		let imageButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.imageText', '', 'markdown-toolbar-image', this.buttonImage, this._cellModel, MarkdownButtonType.IMAGE);
+		let boldButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.boldText', '', 'markdown-toolbar-bold', this.buttonBold, this.cellModel, MarkdownButtonType.BOLD);
+		let italicButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.italicText', '', 'markdown-toolbar-italic', this.buttonItalic, this.cellModel, MarkdownButtonType.ITALIC);
+		let highlightButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.highlightText', '', 'markdown-toolbar-highlight', this.buttonHighlight, this.cellModel, MarkdownButtonType.HIGHLIGHT);
+		let codeButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.codeText', '', 'markdown-toolbar-code', this.buttonCode, this.cellModel, MarkdownButtonType.CODE);
+		let linkButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.linkText', '', 'markdown-toolbar-link', this.buttonLink, this.cellModel, MarkdownButtonType.LINK);
+		let listButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.listText', '', 'markdown-toolbar-list', this.buttonList, this.cellModel, MarkdownButtonType.UNORDERED_LIST);
+		let orderedListButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.orderedText', '', 'markdown-toolbar-ordered-list', this.buttonOrderedList, this.cellModel, MarkdownButtonType.ORDERED_LIST);
+		let imageButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.imageText', '', 'markdown-toolbar-image', this.buttonImage, this.cellModel, MarkdownButtonType.IMAGE);
 
 		let taskbar = <HTMLElement>this.mdtoolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar);
