@@ -4,3 +4,9 @@ tsconfig.json
 extension.webpack.config.js
 yarn.lock
 .vscode
+node_modules
+!node_modules/kerberos/package.json
+!node_modules/kerberos/LICENSE
+!node_modules/kerberos/lib
+!node_modules/kerberos/index.js
+!node_modules/kerberos/build/Release/kerberos.node
