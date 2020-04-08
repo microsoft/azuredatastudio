@@ -48,7 +48,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	// to make the scroll experience smoother
 	private windowSize = 200;
 
-
 	// FIELDS
 	// All datasets
 	private gridDataProvider: AsyncDataProvider<any>;
