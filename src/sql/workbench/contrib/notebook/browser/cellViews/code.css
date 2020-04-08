@@ -10,8 +10,6 @@ code-component {
 }
 
 code-component .toolbar {
-	/* background-color: #EEEEEE; */
-	border-right: 1px solid #A19F9D;
 	flex: 0 0 auto;
 	display: flex;
 	flex-flow:column;
@@ -67,9 +65,6 @@ code-component .toolbarIconStop {
 code-component .editor {
 	padding: 14px 0px 5px 0px
 }
-code-component .editor .line-numbers {
-	color: #A19F9D;
-}
 
 /* overview ruler */
 code-component .monaco-editor .decorationsOverviewRuler {
@@ -90,7 +85,6 @@ code-component .carbon-taskbar .codicon {
 }
 
 code-component .carbon-taskbar .codicon.hideIcon {
-	color: #999999;
 	width: 0px;
 	padding-left: 0px;
 	padding-top: 6px;
