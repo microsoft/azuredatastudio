@@ -147,7 +147,7 @@ export class BookTreeItem extends vscode.TreeItem {
 			return `${this._uri}`;
 		}
 		else {
-			return this.book.rootPath;
+			return this.book.type === BookTreeItemType.Book ? this.book.rootPath : this.book.contentPath;
 		}
 	}
 
