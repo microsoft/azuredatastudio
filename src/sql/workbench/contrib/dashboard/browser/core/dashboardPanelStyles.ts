@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./dashboardPanel';
-import { registerThemingParticipant, IColorTheme, ICssStyleCollector, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
+import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import {
-	TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_ACTIVE_BORDER, TAB_INACTIVE_BACKGROUND,
+	TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_INACTIVE_BACKGROUND,
 	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, DASHBOARD_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER, EDITOR_PANE_BACKGROUND
 } from 'vs/workbench/common/theme';
 import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
@@ -43,11 +43,13 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		`);
 	}
 
-	const activeTabBorderColor = theme.type === HIGH_CONTRAST ? theme.getColor(activeContrastBorder) : theme.getColor(TAB_ACTIVE_BORDER);
-	if (activeTabBorderColor) {
+	const highContrastActiveTabBorderColor = theme.getColor(activeContrastBorder);
+	if (highContrastActiveTabBorderColor) {
 		collector.addRule(`
 			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header.active {
-				box-shadow: ${activeTabBorderColor} 0 -1px inset;
+				outline: 1px solid;
+				outline-offset: -3px;
+				outline-color: ${highContrastActiveTabBorderColor};
 			}
 		`);
 	}
