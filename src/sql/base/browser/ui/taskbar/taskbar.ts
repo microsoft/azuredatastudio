@@ -11,6 +11,7 @@ import { ActionBar } from './actionbar';
 import { IActionRunner, IAction } from 'vs/base/common/actions';
 import { ActionsOrientation, IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IToolBarOptions } from 'vs/base/browser/ui/toolbar/toolbar';
+import { CollapsibleActionBar } from 'sql/base/browser/ui/taskbar/collapsibleActionbar';
 
 /**
  * A wrapper for the different types of content a QueryTaskbar can display
@@ -40,17 +41,29 @@ export class Taskbar {
 		element.className = 'monaco-toolbar carbon-taskbar';
 		container.appendChild(element);
 
-		this.actionBar = new ActionBar(
-			element,
-			{
-				orientation: options.orientation,
-				ariaLabel: options.ariaLabel,
-				actionViewItemProvider: (action: IAction): IActionViewItem | undefined => {
-					return options.actionViewItemProvider ? options.actionViewItemProvider(action) : undefined;
+		if (collapseOverflow) {
+			this.actionBar = new CollapsibleActionBar(
+				element,
+				{
+					orientation: options.orientation,
+					ariaLabel: options.ariaLabel,
+					actionViewItemProvider: (action: IAction): IActionViewItem | undefined => {
+						return options.actionViewItemProvider ? options.actionViewItemProvider(action) : undefined;
+					}
 				}
-			},
-			collapseOverflow
-		);
+			);
+		} else {
+			this.actionBar = new ActionBar(
+				element,
+				{
+					orientation: options.orientation,
+					ariaLabel: options.ariaLabel,
+					actionViewItemProvider: (action: IAction): IActionViewItem | undefined => {
+						return options.actionViewItemProvider ? options.actionViewItemProvider(action) : undefined;
+					}
+				}
+			);
+		}
 	}
 
 	/**

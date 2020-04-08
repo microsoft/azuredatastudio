@@ -1,0 +1,294 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { IAction } from 'vs/base/common/actions';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import {
+	IActionBarOptions, ActionsOrientation, IActionViewItem,
+	IActionOptions
+} from 'vs/base/browser/ui/actionbar/actionbar';
+import * as DOM from 'vs/base/browser/dom';
+import * as types from 'vs/base/common/types';
+import * as nls from 'vs/nls';
+import { debounce } from 'vs/base/common/decorators';
+import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
+
+const defaultOptions: IActionBarOptions = {
+	orientation: ActionsOrientation.HORIZONTAL,
+	context: null
+};
+
+export class CollapsibleActionBar extends ActionBar {
+	// Elements
+	private _overflow: HTMLElement;
+	private _moreItemElement: HTMLElement;
+	private _moreActionsElement: HTMLElement;
+
+	constructor(container: HTMLElement, options: IActionBarOptions = defaultOptions) {
+		super(container, options);
+
+		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
+			if (this._actionsList) {
+				this.resizeToolbar();
+			}
+		}));
+
+		this._overflow = document.createElement('ul');
+		this._overflow.id = 'overflow';
+		this._overflow.className = 'overflow';
+		this._overflow.setAttribute('role', 'menu');
+		this._domNode.appendChild(this._overflow);
+
+		this._actionsList.style.flexWrap = 'nowrap';
+
+		container.appendChild(this._domNode);
+	}
+
+	@debounce(300)
+	private resizeToolbar() {
+		let width = this._actionsList.offsetWidth;
+		let fullWidth = this._actionsList.scrollWidth;
+
+		// collapse actions that are beyond the width of the toolbar
+		if (width < fullWidth) {
+			// create '•••' more element if it doesn't exist yet
+			if (!this._moreItemElement) {
+				this.createMoreItemElement();
+			}
+
+			this._moreItemElement.style.display = 'block';
+			while (width < fullWidth) {
+				let index = this._actionsList.childNodes.length - 2; // remove the last toolbar action before the more actions '...'
+				if (index > -1) {
+					// move placeholder in this._items
+					this.collapseItem();
+					fullWidth = this._actionsList.scrollWidth;
+				} else {
+					break;
+				}
+			}
+		} else if (this._overflow?.hasChildNodes()) { // uncollapse actions if there is space for it
+			while (width === fullWidth && this._overflow.hasChildNodes()) {
+				// move placeholder in this._items
+				let placeHolderItem = this._items.splice(this._actionsList.childNodes.length - 1, 1);
+				this._items.splice(this._actionsList.childNodes.length, 0, placeHolderItem[0]);
+
+				let item = this._overflow.removeChild(this._overflow.firstChild);
+				// change role back to button when it's in the toolbar
+				if ((<HTMLElement>item).className !== 'taskbarSeparator') {
+					(<HTMLElement>item.firstChild).setAttribute('role', 'button');
+				}
+				this._actionsList.insertBefore(item, this._actionsList.lastChild);
+
+				// if the action was too wide, collapse it again
+				if (this._actionsList.scrollWidth > this._actionsList.offsetWidth) {
+					// move placeholder in this._items
+					this.collapseItem();
+					break;
+				} else if (!this._overflow.hasChildNodes()) {
+					this._moreItemElement.style.display = 'none';
+				}
+			}
+		}
+	}
+
+	private collapseItem(): void {
+		// move placeholder in this._items
+		let placeHolderItem = this._items.splice(this._actionsList.childNodes.length - 1, 1);
+		this._items.splice(this._actionsList.childNodes.length - 2, 0, placeHolderItem[0]);
+
+		let index = this._actionsList.childNodes.length - 2; // remove the last toolbar action before the more actions '...'
+		let item = this._actionsList.removeChild(this._actionsList.childNodes[index]);
+		this._overflow.insertBefore(item, this._overflow.firstChild);
+
+		// change role to menuItem when it's in the overflow
+		if ((<HTMLElement>this._overflow.firstChild).className !== 'taskbarSeparator') {
+			(<HTMLElement>this._overflow.firstChild.firstChild).setAttribute('role', 'menuItem');
+		}
+	}
+
+	private createMoreItemElement(): void {
+		this._moreItemElement = document.createElement('li');
+		this._moreItemElement.className = 'action-item more';
+		this._moreItemElement.setAttribute('role', 'presentation');
+		this._moreActionsElement = document.createElement('a');
+		this._moreActionsElement.className = 'moreActionsElement action-label codicon toggle-more';
+		this._moreActionsElement.setAttribute('role', 'button');
+		this._moreActionsElement.title = nls.localize('toggleMore', "Toggle More");
+		this._moreActionsElement.tabIndex = 0;
+		this._moreActionsElement.setAttribute('aria-haspopup', 'true');
+		this._register(DOM.addDisposableListener(this._moreActionsElement, DOM.EventType.CLICK, (e => { this.toggleOverflowDisplay(); })));
+		this._register(DOM.addDisposableListener(this._moreActionsElement, DOM.EventType.KEY_DOWN, (ev => {
+			let event = new StandardKeyboardEvent(ev);
+			if (event.keyCode === KeyCode.Enter || event.keyCode === KeyCode.Space) {
+				this._focusedItem = undefined; // so that the default actionbar click handler doesn't trigger the selected action-item
+				this.toggleOverflowDisplay();
+				DOM.EventHelper.stop(event, true);
+			}
+		})));
+
+		this._register(DOM.addDisposableListener(this._overflow, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+			let event = new StandardKeyboardEvent(e);
+
+			// Close overflow if Escape is pressed
+			if (event.equals(KeyCode.Escape)) {
+				this.hideOverflowDisplay();
+				this._moreActionsElement.focus();
+			} else if (event.equals(KeyCode.UpArrow) && this._focusedItem !== this._actionsList.childNodes.length - 1) { // up arrow on first element in overflow should not move out from the overflow
+				this.focusPrevious();
+			} else if (event.equals(KeyCode.DownArrow) && this._focusedItem !== this._actionsList.childNodes.length + this._overflow.childNodes.length - 2) { // down arrow on last element shouldn't move out from overflow
+				this.focusNext();
+			} else if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
+				this._moreActionsElement.focus();
+			} else if (event.equals(KeyCode.Tab)) {
+				this.hideOverflowDisplay();
+			}
+			DOM.EventHelper.stop(event, true);
+		}));
+
+		this._moreItemElement.appendChild(this._moreActionsElement);
+		this._actionsList.appendChild(this._moreItemElement);
+		this._items.push(undefined); // add place holder for more item element
+	}
+
+	private hideOverflowDisplay(): void {
+		this._overflow.style.display = 'none';
+	}
+
+	private toggleOverflowDisplay(): void {
+		this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block';
+	}
+
+	protected updateFocusedItem(): void {
+		let actionIndex = 0;
+		for (let i = 0; i < this._actionsList.children.length; i++) {
+			let elem = this._actionsList.children[i];
+
+			if (DOM.isAncestor(document.activeElement, elem)) {
+				this._focusedItem = actionIndex;
+				break;
+			}
+
+			if (elem.classList.contains('action-item') && i !== this._actionsList.children.length - 1) {
+				actionIndex++;
+			}
+		}
+
+		// move focus to overflow items if there are any
+		if (this._overflow) {
+			for (let i = 0; i < this._overflow.children.length; i++) {
+				let elem = this._overflow.children[i];
+
+				if (DOM.isAncestor(document.activeElement, elem)) {
+					this._focusedItem = actionIndex;
+					break;
+				}
+
+				if (elem.classList.contains('action-item')) {
+					actionIndex++;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Push an HTML Element onto the action bar UI in the position specified by options.
+	 * Pushes to the last position if no options are provided.
+	 */
+	public pushElement(element: HTMLElement, options: IActionOptions = {}): void {
+		super.pushElement(element, options);
+		this.resizeToolbar();
+	}
+
+	/**
+	 * Push an action onto the action bar UI in the position specified by options.
+	 * Pushes to the last position if no options are provided.
+	 */
+	public pushAction(arg: IAction | IAction[], options: IActionOptions = {}): void {
+		super.pushAction(arg, options);
+		this.resizeToolbar();
+	}
+
+	protected focusNext(): void {
+		if (typeof this._focusedItem === 'undefined') {
+			this._focusedItem = this._items.length - 1;
+		}
+
+		let startIndex = this._focusedItem;
+		let item: IActionViewItem;
+
+		do {
+			this._focusedItem = (this._focusedItem + 1) % this._items.length;
+			item = this._items[this._focusedItem];
+		} while (this._focusedItem !== startIndex && item && !item.isEnabled());
+
+		if (this._focusedItem === startIndex && item && !item.isEnabled()) {
+			this._focusedItem = undefined;
+		}
+
+		this.updateFocus();
+	}
+
+	protected focusPrevious(): void {
+		if (typeof this._focusedItem === 'undefined') {
+			this._focusedItem = 0;
+		}
+
+		let startIndex = this._focusedItem;
+		let item: IActionViewItem;
+
+		do {
+			this._focusedItem = this._focusedItem - 1;
+
+			if (this._focusedItem < 0) {
+				this._focusedItem = this._items.length - 1;
+			}
+
+			item = this._items[this._focusedItem];
+		} while (this._focusedItem !== startIndex && item && !item.isEnabled());
+
+		if (this._focusedItem === startIndex && item && !item.isEnabled()) {
+			this._focusedItem = undefined;
+		}
+
+		this.updateFocus();
+	}
+
+	protected updateFocus(): void {
+		if (typeof this._focusedItem === 'undefined') {
+			this._domNode.focus();
+			return;
+		}
+
+		for (let i = 0; i < this._items.length; i++) {
+			let item = this._items[i];
+
+			let actionItem = <any>item;
+
+			if (i === this._focusedItem) {
+				// dummy placeholder
+				if (!actionItem) {
+					this._moreActionsElement.focus();
+				}
+				else if (types.isFunction(actionItem.focus)) {
+					actionItem.focus();
+				}
+			} else {
+				if (actionItem && types.isFunction(actionItem.blur)) {
+					actionItem.blur();
+				}
+			}
+		}
+	}
+
+	protected cancel(): void {
+		super.cancel();
+
+		if (this._overflow) {
+			this.hideOverflowDisplay();
+		}
+	}
+}
