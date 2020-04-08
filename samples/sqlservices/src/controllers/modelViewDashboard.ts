@@ -36,13 +36,13 @@ export async function openModelViewDashboard(context: vscode.ExtensionContext): 
 		};
 
 		// Tab with nested tabbed Panel
-		const textComponent2 = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'text 2' }).component();
+		const addTabButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: 'Add a tab' }).component();
 		const textComponent3 = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'text 3' }).component();
 
 		const tabbedPanel = view.modelBuilder.tabbedPanel().withTabs([
 			{
 				title: 'Tab1',
-				content: textComponent2,
+				content: addTabButton,
 				id: 'tab1',
 				icon: {
 					light: context.asAbsolutePath('images/user.svg'),
@@ -68,6 +68,34 @@ export async function openModelViewDashboard(context: vscode.ExtensionContext): 
 			title: 'Settings',
 			icon: context.asAbsolutePath('images/default.svg')
 		};
+
+
+		const textComponent4 = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'text 4' }).component();
+		const tab3: azdata.DashboardTab = {
+			title: 'Tab3',
+			content: textComponent4,
+			icon: {
+				light: context.asAbsolutePath('images/group.svg'),
+				dark: context.asAbsolutePath('images/group_inverse.svg')
+			},
+			id: 'tab3'
+		};
+
+		addTabButton.onDidClick(() => {
+			tabbedPanel.updateTabs(
+				[
+					{
+						title: 'Tab1',
+						content: addTabButton,
+						id: 'tab1',
+						icon: {
+							light: context.asAbsolutePath('images/user.svg'),
+							dark: context.asAbsolutePath('images/user_inverse.svg')
+						}
+					}, tab3
+				]
+			);
+		});
 		return [
 			tab1,
 			{
@@ -78,5 +106,6 @@ export async function openModelViewDashboard(context: vscode.ExtensionContext): 
 			}
 		];
 	});
-	dashboard.open();
+	await dashboard.open();
 }
+
