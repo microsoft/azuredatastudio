@@ -47,6 +47,9 @@ export function createViewContext(): ViewTestContext {
 	});
 	let flex: azdata.FlexContainer = Object.assign({}, componentBase, container, {
 	});
+	let div: azdata.DivContainer = Object.assign({}, componentBase, container, {
+		onDidClick: onClick.event
+	});
 
 	let buttonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent> = {
 		component: () => button,
@@ -118,6 +121,13 @@ export function createViewContext(): ViewTestContext {
 		withItems: () => flexBuilder,
 		withLayout: () => flexBuilder
 	});
+	let divBuilder: azdata.DivBuilder = Object.assign({}, {
+		component: () => div,
+		withProperties: () => divBuilder,
+		withValidation: () => divBuilder,
+		withItems: () => divBuilder,
+		withLayout: () => divBuilder
+	});
 
 	let inputBoxBuilder: azdata.ComponentBuilder<azdata.InputBoxComponent> = {
 		component: () => {
@@ -155,7 +165,7 @@ export function createViewContext(): ViewTestContext {
 		modelBuilder: {
 			radioCardGroup: undefined!,
 			navContainer: undefined!,
-			divContainer: undefined!,
+			divContainer: () => divBuilder,
 			flexContainer: () => flexBuilder,
 			splitViewContainer: undefined!,
 			dom: undefined!,
@@ -270,6 +280,13 @@ export function createViewContext(): ViewTestContext {
 	apiWrapper.setup(x => x.createWizardPage(TypeMoq.It.isAny())).returns(() => wizardPage);
 	apiWrapper.setup(x => x.createModelViewDialog(TypeMoq.It.isAny())).returns(() => dialog);
 	apiWrapper.setup(x => x.openDialog(TypeMoq.It.isAny())).returns(() => { });
+	apiWrapper.setup(x => x.registerWidget(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async (id, handler) => {
+		if (id) {
+			return await handler(view);
+		} else {
+			Promise.reject();
+		}
+	});
 
 	return {
 		apiWrapper: apiWrapper,
