@@ -97,9 +97,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}, {
 			name: 'powershell-kernel',
 			version: '0.1.3'
-		}, {
-			name: 'Kqlmagic',
-			version: '0.1.109'
 		}
 	];
 
