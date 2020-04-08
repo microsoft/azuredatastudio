@@ -11,7 +11,7 @@ import { ActionBar } from './actionbar';
 import { IActionRunner, IAction } from 'vs/base/common/actions';
 import { ActionsOrientation, IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IToolBarOptions } from 'vs/base/browser/ui/toolbar/toolbar';
-import { CollapsibleActionBar } from 'sql/base/browser/ui/taskbar/collapsibleActionbar';
+import { OverflowActionBar } from 'sql/base/browser/ui/taskbar/overflowActionbar';
 
 /**
  * A wrapper for the different types of content a QueryTaskbar can display
@@ -42,7 +42,7 @@ export class Taskbar {
 		container.appendChild(element);
 
 		if (collapseOverflow) {
-			this.actionBar = new CollapsibleActionBar(
+			this.actionBar = new OverflowActionBar(
 				element,
 				{
 					orientation: options.orientation,

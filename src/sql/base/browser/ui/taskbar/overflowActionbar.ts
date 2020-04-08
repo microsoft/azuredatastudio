@@ -21,7 +21,10 @@ const defaultOptions: IActionBarOptions = {
 	context: null
 };
 
-export class CollapsibleActionBar extends ActionBar {
+/**
+ * Extends Actionbar so that it overflows when the window is resized to be smaller than the actionbar instead of wrapping
+ */
+export class OverflowActionBar extends ActionBar {
 	// Elements
 	private _overflow: HTMLElement;
 	private _moreItemElement: HTMLElement;
