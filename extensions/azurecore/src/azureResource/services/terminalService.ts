@@ -37,7 +37,7 @@ const handleNeverUsed = async (): Promise<void> => {
 	const option = await vscode.window.showInformationMessage<TerminalMessageItem>(neverUsedString, openAzureShellButton, okButton);
 
 	if (option.action === TerminalOption.OPEN_SITE) {
-		vscode.env.openExternal(vscode.Uri.parse('https://shell.azure.com'));
+		vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/AA83f8f'));
 	}
 };
 
