@@ -82,7 +82,6 @@ const pageComponents = [ServerDashboardPage, DatabaseDashboardPage];
 /* Widget Components */
 import { PropertiesWidgetComponent } from 'sql/workbench/contrib/dashboard/browser/widgets/properties/propertiesWidget.component';
 import { ExplorerWidget } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerWidget.component';
-import { TasksWidget } from 'sql/workbench/contrib/dashboard/browser/widgets/tasks/tasksWidget.component';
 import { InsightsWidget } from 'sql/workbench/contrib/dashboard/browser/widgets/insights/insightsWidget.component';
 import { WebviewWidget } from 'sql/workbench/contrib/dashboard/browser/widgets/webview/webviewWidget.component';
 import { JobStepsViewComponent } from 'sql/workbench/contrib/jobManagement/browser/jobStepsView.component';
@@ -93,7 +92,6 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 const widgetComponents = [
 	PropertiesWidgetComponent,
 	ExplorerWidget,
-	TasksWidget,
 	InsightsWidget,
 	WebviewWidget
 ];

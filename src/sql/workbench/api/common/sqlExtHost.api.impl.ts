@@ -418,8 +418,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				createWizard(title: string): azdata.window.Wizard {
 					return extHostModelViewDialog.createWizard(title);
 				},
-				createModelViewDashboard(title: string): azdata.window.ModelViewDashboard {
-					return extHostModelViewDialog.createModelViewDashboard(title, extension);
+				createModelViewDashboard(title: string, options?: azdata.ModelViewDashboardOptions): azdata.window.ModelViewDashboard {
+					return extHostModelViewDialog.createModelViewDashboard(title, options, extension);
 				},
 				MessageLevel: sqlExtHostTypes.MessageLevel
 			};
