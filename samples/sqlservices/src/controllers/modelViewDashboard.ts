@@ -36,7 +36,7 @@ export async function openModelViewDashboard(context: vscode.ExtensionContext): 
 		};
 
 		// Tab with nested tabbed Panel
-		const textComponent2 = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'text 2' }).component();
+		const addTabButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: 'Add a tab' }).component();
 		const textComponent3 = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'text 3' }).component();
 
 		const nestedTab1 = {
@@ -86,5 +86,6 @@ export async function openModelViewDashboard(context: vscode.ExtensionContext): 
 			securityTabGroup
 		];
 	});
-	dashboard.open();
+	await dashboard.open();
 }
+

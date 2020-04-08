@@ -210,6 +210,12 @@ declare module 'azdata' {
 		 * The event argument is the id of the selected tab.
 		 */
 		onTabChanged: vscode.Event<string>;
+
+		/**
+		 * update the tabs.
+		 * @param tabs new tabs
+		 */
+		updateTabs(tabs: (Tab | TabGroup)[]): void;
 	}
 
 	/**
