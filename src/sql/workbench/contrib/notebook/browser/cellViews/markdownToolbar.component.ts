@@ -9,6 +9,8 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { TransformMarkdownAction, MarkdownButtonType } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { toolbarBackground, toolbarForeground } from 'sql/platform/theme/common/colorRegistry';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 
@@ -65,3 +67,14 @@ export class MarkdownToolbarComponent {
 		]);
 	}
 }
+
+registerThemingParticipant((theme, collector) => {
+	const toolbarBackgroundColor = theme.getColor(toolbarBackground);
+	if (toolbarBackgroundColor) {
+		collector.addRule(`markdown-toolbar-component { background: ${toolbarBackgroundColor};}`);
+	}
+	const toolbarForegroundColor = theme.getColor(toolbarForeground);
+	if (toolbarForegroundColor) {
+		collector.addRule(`.markdown-toolbar li a { background-color: ${toolbarForegroundColor};}`);
+	}
+});

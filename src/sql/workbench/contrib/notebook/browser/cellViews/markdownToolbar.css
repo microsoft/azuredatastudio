@@ -2,8 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-text-cell-component .markdown-toolbar {
-	background-color: #F5F5F5;
+.markdown-toolbar {
 	border-bottom: 1px solid rgba(204, 204, 204, 0.8);
 	display: block;
 	list-style: none;
@@ -13,62 +12,93 @@ text-cell-component .markdown-toolbar {
 text-cell-component .monaco-action-bar .action-item .icon, .monaco-action-bar .action-item .codicon {
 	background-size: auto;
 }
-text-cell-component .markdown-toolbar li {
+.markdown-toolbar li {
 	display: inline-block;
 	margin-right: 8px;
-	text-align: center;
 }
-text-cell-component .markdown-toolbar li:nth-child(1) {
+.markdown-toolbar li:nth-child(1) {
 	margin-right: 0px;
 }
-text-cell-component .markdown-toolbar li:nth-child(2) {
+.markdown-toolbar li:nth-child(2) {
 	margin-right: 4px;
 }
-text-cell-component .markdown-toolbar li:last-child {
+.markdown-toolbar li:last-child {
 	float: right;
 	margin-right: 0;
 }
-text-cell-component .markdown-toolbar li a {
-	background: 50% 50% no-repeat;
-	display: block;
+.markdown-toolbar li a {
+	display: inline-block;
 	height: 20px;
 	width: 20px;
+	-webkit-mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-position: center;
+	mask-repeat: no-repeat;
+}
+.markdown-toolbar li a.markdown-toolbar-bold {
+	-webkit-mask-image: url('media/toolbar-bold.svg');
+	-webkit-mask-size: 50% 100%;
+	mask-image: url('media/toolbar-bold.svg');
+	mask-size: 50% 100%;
+}
+.markdown-toolbar li a.markdown-toolbar-italic {
+	-webkit-mask-image: url('media/toolbar-italic.svg');
+	mask-image: url('media/toolbar-italic.svg');
+	-webkit-mask-size: 60% 100%;
+	mask-size: 60% 100%;
+}
+.markdown-toolbar li a.markdown-toolbar-highlight {
+	-webkit-mask-image: url('media/toolbar-highlight.svg');
+	-webkit-mask-size: 65% 100%;
+	mask-image: url('media/toolbar-highlight.svg');
+	mask-size: 65% 100%;
+}
+.markdown-toolbar li a.markdown-toolbar-code {
+	-webkit-mask-image: url('media/toolbar-code.svg');
+	-webkit-mask-size: 88% 100%;
+	mask-image: url('media/toolbar-code.svg');
+	mask-size: 88% 100%;
+}
+.markdown-toolbar li a.markdown-toolbar-link {
+	-webkit-mask-image: url('media/toolbar-link.svg');
+	-webkit-mask-size: 80% 100%;
+	mask-image: url('media/toolbar-link.svg');
+	mask-size: 80% 100%;
+}
+.markdown-toolbar li a.markdown-toolbar-list {
+	-webkit-mask-image: url('media/toolbar-list.svg');
+	-webkit-mask-size: 80% 100%;
+	mask-image: url('media/toolbar-list.svg');
+	mask-size: 80% 100%;
+}
+.markdown-toolbar li a.markdown-toolbar-ordered-list {
+	-webkit-mask-image: url('media/toolbar-ordered-list.svg');
+	-webkit-mask-size: 86% 100%;
+	mask-image: url('media/toolbar-ordered-list.svg');
+	mask-size: 86% 100%;
+}
+.markdown-toolbar li a.markdown-toolbar-image {
+	-webkit-mask-image: url('media/toolbar-image.svg');
+	-webkit-mask-size: 86% 100%;
+	mask-image: url('media/toolbar-image.svg');
+	mask-size: 86% 100%;
+}
+.markdown-toolbar li a.markdown-toolbar-preview-toggle-on {
+	-webkit-mask-image: url('media/toolbar-preview-toggle-on.svg');
+	-webkit-mask-size: 75% 100%;
+	mask-image: url('media/toolbar-preview-toggle-on.svg');
+	mask-size: 75% 100%;
+}
+.markdown-toolbar li a.markdown-toolbar-preview-toggle-off {
+	-webkit-mask-image: url('media/toolbar-preview-toggle-off.svg');
+	-webkit-mask-size: 75% 100%;
+	mask-image: url('media/toolbar-preview-toggle-off.svg');
+	mask-size: 75% 100%;
 }
 
 text-cell-component .offscreen {
 	height: 1px;
-	text-indent: -999999px;
 	margin-top: -1px;
 	position: absolute;
-}
-
-text-cell-component li a.markdown-toolbar-bold {
-	background-image: url('media/toolbar-bold.svg');
-}
-text-cell-component li a.markdown-toolbar-italic {
-	background-image: url('media/toolbar-italic.svg');
-}
-text-cell-component li a.markdown-toolbar-highlight {
-	background-image: url('media/toolbar-highlight.svg');
-}
-text-cell-component li a.markdown-toolbar-code {
-	background-image: url('media/toolbar-code.svg');
-}
-text-cell-component li a.markdown-toolbar-link {
-	background-image: url('media/toolbar-link.svg');
-}
-text-cell-component li a.markdown-toolbar-list {
-	background-image: url('media/toolbar-list.svg');
-}
-text-cell-component li a.markdown-toolbar-ordered-list {
-	background-image: url('media/toolbar-ordered-list.svg');
-}
-text-cell-component li a.markdown-toolbar-image {
-	background-image: url('media/toolbar-image.svg');
-}
-text-cell-component li a.markdown-toolbar-preview-toggle-off {
-	background-image: url('media/toolbar-preview-toggle-off.svg');
-}
-text-cell-component li a.markdown-toolbar-preview-toggle-on {
-	background-image: url('media/toolbar-preview-toggle-on.svg');
+	text-indent: -999999px;
 }

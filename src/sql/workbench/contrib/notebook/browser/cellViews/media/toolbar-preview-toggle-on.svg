@@ -1,6 +1,5 @@
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 <title>markdown preview toggle - on</title>
-<rect x="16" y="24" width="13" height="1" transform="rotate(-90 16 24)" fill="#161616"/>
-<rect x="9" y="10.4609" width="14" height="1" fill="#161616"/>
-<rect x="8.5" y="8.5" width="15" height="15" stroke="#161616"/>
+<path d="M15 1V14H0V1H15ZM1 2V4H14V2H1ZM14 13V5H1V13H14Z" fill="black"/>
+<path d="M8 5H7V13H8V5Z" fill="black"/>
 </svg>
