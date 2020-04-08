@@ -10,7 +10,7 @@ import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { TransformMarkdownAction, MarkdownButtonType } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { toolbarBackground, toolbarForeground } from 'sql/platform/theme/common/colorRegistry';
+import { toolbarBackground, toolbarForeground, toolbarBottomBorder } from 'sql/platform/theme/common/colorRegistry';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 
@@ -76,5 +76,9 @@ registerThemingParticipant((theme, collector) => {
 	const toolbarForegroundColor = theme.getColor(toolbarForeground);
 	if (toolbarForegroundColor) {
 		collector.addRule(`.markdown-toolbar li a { background-color: ${toolbarForegroundColor};}`);
+	}
+	const toolbarBottomBorderColor = theme.getColor(toolbarBottomBorder);
+	if (toolbarBottomBorderColor) {
+		collector.addRule(`.markdown-toolbar { border-bottom-color: ${toolbarBottomBorderColor};}`);
 	}
 });

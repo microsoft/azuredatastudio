@@ -3,14 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 .markdown-toolbar {
-	border-bottom: 1px solid rgba(204, 204, 204, 0.8);
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
 	display: block;
 	list-style: none;
 	margin: 0;
-	padding: 3px 4px 3px;
-}
-text-cell-component .monaco-action-bar .action-item .icon, .monaco-action-bar .action-item .codicon {
-	background-size: auto;
+`padding: 6px 16px 1px;
 }
 .markdown-toolbar li {
 	display: inline-block;
@@ -35,6 +33,14 @@ text-cell-component .monaco-action-bar .action-item .icon, .monaco-action-bar .a
 	mask-position: center;
 	mask-repeat: no-repeat;
 }
+
+.markdown-toolbar .carbon-taskbar li a.action-label {
+	padding: 0;
+}
+.markdown-toolbar .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container {
+	padding: 0;
+}
+
 .markdown-toolbar li a.markdown-toolbar-bold {
 	-webkit-mask-image: url('media/toolbar-bold.svg');
 	-webkit-mask-size: 50% 100%;
