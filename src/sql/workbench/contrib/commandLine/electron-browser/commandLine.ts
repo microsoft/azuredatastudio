@@ -10,7 +10,7 @@ import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectio
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { IEnvironmentService, ParsedArgs } from 'vs/platform/environment/common/environment';
+import { ParsedArgs } from 'vs/platform/environment/node/argv';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -29,6 +29,8 @@ import { IURLService, IURLHandler } from 'vs/platform/url/common/url';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { find } from 'vs/base/common/arrays';
+import { INativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 const connectAuthority = 'connect';
 
@@ -48,7 +50,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	constructor(
 		@ICapabilitiesService private readonly _capabilitiesService: ICapabilitiesService,
 		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
-		@IEnvironmentService environmentService: IEnvironmentService,
+		@IEnvironmentService environmentService: INativeEnvironmentService,
 		@IEditorService private readonly _editorService: IEditorService,
 		@ICommandService private readonly _commandService: ICommandService,
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
