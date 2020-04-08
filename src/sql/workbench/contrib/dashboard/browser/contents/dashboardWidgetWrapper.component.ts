@@ -57,6 +57,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 
 	private _collapseAction: CollapseWidgetAction;
 	private _collapsed = false;
+	private _showTitle = true;
 
 	public get collapsed(): boolean {
 		return this._collapsed;
@@ -72,6 +73,14 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		if (!val) {
 			this.loadWidget();
 		}
+	}
+
+	public get showTitle(): boolean {
+		return this._showTitle;
+	}
+
+	public set showTitle(val: boolean) {
+		this._showTitle = val;
 	}
 
 	@memoize

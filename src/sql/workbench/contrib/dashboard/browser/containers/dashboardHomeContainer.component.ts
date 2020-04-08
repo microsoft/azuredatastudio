@@ -29,7 +29,7 @@ import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 	template: `
 		<div class="fullsize" style="display: flex; flex-direction: column">
 			<div scrollable [horizontalScroll]="${ScrollbarVisibility.Hidden}" [verticalScroll]="${ScrollbarVisibility.Auto}">
-				<div #propertiesContainer style="padding-bottom: 5px">
+				<div #propertiesContainer>
 					<dashboard-widget-wrapper #propertiesClass *ngIf="properties" [collapsable]="true" [bottomCollapse]="true" [toggleMore]="false" [_config]="properties"
 						style="padding-left: 10px; padding-right: 10px; display: block; flex: 0;" [style.height.px]="_propertiesClass?.collapsed ? '30' : '90'">
 					</dashboard-widget-wrapper>
@@ -65,10 +65,14 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 		const collapsedVal = this.dashboardService.getSettings<string>(`${this.properties.context}.properties`);
 		if (collapsedVal === 'collapsed') {
 			this._propertiesClass.collapsed = true;
+			this._propertiesClass.showTitle = true;
+		} else {
+			this._propertiesClass.showTitle = false;
 		}
 		this._register(this.angularEventingService.onAngularEvent(this.dashboardService.getUnderlyingUri())(event => {
 			if (event.event === AngularEventType.COLLAPSE_WIDGET && this._propertiesClass && event.payload === this._propertiesClass.guid) {
 				this._propertiesClass.collapsed = !this._propertiesClass.collapsed;
+				this._propertiesClass.showTitle = !this._propertiesClass.showTitle;
 				this._cd.detectChanges();
 				this._configurationService.updateValue(`dashboard.${this.properties.context}.properties`,
 					this._propertiesClass.collapsed ? 'collapsed' : true, ConfigurationTarget.USER);
