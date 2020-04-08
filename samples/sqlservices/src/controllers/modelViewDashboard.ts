@@ -27,55 +27,63 @@ export async function openModelViewDashboard(context: vscode.ExtensionContext): 
 		}).component();
 
 		const textComponent1 = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'text 1' }).component();
-		const tab1: azdata.DashboardTab = {
+		const homeTab: azdata.DashboardTab = {
 			id: 'home',
 			toolbar: toolbar,
 			content: textComponent1,
 			title: 'Home',
-			icon: context.asAbsolutePath('images/home.svg')
+			icon: context.asAbsolutePath('images/home.svg') // icon can be the path of a svg file
 		};
 
 		// Tab with nested tabbed Panel
 		const textComponent2 = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'text 2' }).component();
 		const textComponent3 = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'text 3' }).component();
 
-		const tabbedPanel = view.modelBuilder.tabbedPanel().withTabs([
-			{
-				title: 'Tab1',
-				content: textComponent2,
-				id: 'tab1',
-				icon: {
-					light: context.asAbsolutePath('images/user.svg'),
-					dark: context.asAbsolutePath('images/user_inverse.svg')
-				}
-			}, {
-				title: 'Tab2',
-				content: textComponent3,
-				icon: {
-					light: context.asAbsolutePath('images/group.svg'),
-					dark: context.asAbsolutePath('images/group_inverse.svg')
-				},
-				id: 'tab2'
+		const nestedTab1 = {
+			title: 'Tab1',
+			content: textComponent2,
+			id: 'tab1',
+			icon: {
+				light: context.asAbsolutePath('images/user.svg'),
+				dark: context.asAbsolutePath('images/user_inverse.svg') // icon can also be theme aware
 			}
+		};
+
+		const nestedTab2 = {
+			title: 'Tab2',
+			content: textComponent3,
+			icon: {
+				light: context.asAbsolutePath('images/group.svg'),
+				dark: context.asAbsolutePath('images/group_inverse.svg')
+			},
+			id: 'tab2'
+		};
+
+		const tabbedPanel = view.modelBuilder.tabbedPanel().withTabs([
+			nestedTab1, nestedTab2
 		]).withLayout({
 			orientation: azdata.TabOrientation.Horizontal,
 			showIcon: true
 		}).component();
 
-		const tab2: azdata.DashboardTab = {
+		const settingsTab: azdata.DashboardTab = {
 			id: 'settings',
 			content: tabbedPanel,
 			title: 'Settings',
 			icon: context.asAbsolutePath('images/default.svg')
 		};
+
+		// You can also add a tab group
+		const securityTabGroup: azdata.DashboardTabGroup = {
+			title: 'Security',
+			tabs: [
+				settingsTab
+			]
+		};
+
 		return [
-			tab1,
-			{
-				title: 'Security',
-				tabs: [
-					tab2
-				]
-			}
+			homeTab,
+			securityTabGroup
 		];
 	});
 	dashboard.open();
