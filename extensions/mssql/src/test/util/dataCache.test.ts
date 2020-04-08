@@ -6,7 +6,7 @@
 import { DataItemCache } from '../../util/dataCache';
 import 'mocha';
 import { should } from 'chai'; should();
-import * as TypeMoq from "typemoq";
+import * as TypeMoq from 'typemoq';
 
 describe('DataItemCache', function (): void {
 

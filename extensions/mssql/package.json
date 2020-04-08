@@ -1088,6 +1088,6 @@
     "chai": "^4.2.0",
     "mocha": "^7.1.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.6"
   }
 }
