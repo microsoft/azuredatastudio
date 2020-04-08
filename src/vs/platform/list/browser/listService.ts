@@ -5,8 +5,8 @@
 
 import { createStyleSheet } from 'vs/base/browser/dom';
 import { IListMouseEvent, IListTouchEvent, IListRenderer, IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
-import { IPagedRenderer, PagedList } from 'vs/base/browser/ui/list/listPaging';
-import { DefaultStyleController, IListOptions, IMultipleSelectionController, IOpenController, isSelectionRangeChangeEvent, isSelectionSingleChangeEvent, List } from 'vs/base/browser/ui/list/listWidget';
+import { IPagedRenderer, PagedList, IPagedListOptions } from 'vs/base/browser/ui/list/listPaging';
+import { DefaultStyleController, IListOptions, IMultipleSelectionController, IOpenController, isSelectionRangeChangeEvent, isSelectionSingleChangeEvent, List, IAccessibilityProvider, IListOptionsUpdate } from 'vs/base/browser/ui/list/listWidget';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Disposable, dispose, IDisposable, toDisposable, DisposableStore, combinedDisposable } from 'vs/base/common/lifecycle';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
@@ -25,11 +25,11 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { attachListStyler, computeStyles, defaultListStyles, IColorMapping } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { InputFocusedContextKey } from 'vs/platform/contextkey/common/contextkeys';
-import { ObjectTree, IObjectTreeOptions, ICompressibleTreeRenderer, CompressibleObjectTree, ICompressibleObjectTreeOptions } from 'vs/base/browser/ui/tree/objectTree';
+import { ObjectTree, IObjectTreeOptions, ICompressibleTreeRenderer, CompressibleObjectTree, ICompressibleObjectTreeOptions, ICompressibleObjectTreeOptionsUpdate } from 'vs/base/browser/ui/tree/objectTree';
 import { ITreeRenderer, IAsyncDataSource, IDataSource } from 'vs/base/browser/ui/tree/tree';
-import { AsyncDataTree, IAsyncDataTreeOptions, CompressibleAsyncDataTree, ITreeCompressionDelegate, ICompressibleAsyncDataTreeOptions } from 'vs/base/browser/ui/tree/asyncDataTree';
+import { AsyncDataTree, IAsyncDataTreeOptions, CompressibleAsyncDataTree, ITreeCompressionDelegate, ICompressibleAsyncDataTreeOptions, IAsyncDataTreeOptionsUpdate } from 'vs/base/browser/ui/tree/asyncDataTree';
 import { DataTree, IDataTreeOptions } from 'vs/base/browser/ui/tree/dataTree';
-import { IKeyboardNavigationEventFilter, IAbstractTreeOptions, RenderIndentGuides } from 'vs/base/browser/ui/tree/abstractTree';
+import { IKeyboardNavigationEventFilter, IAbstractTreeOptions, RenderIndentGuides, IAbstractTreeOptionsUpdate } from 'vs/base/browser/ui/tree/abstractTree';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 export type ListWidget = List<any> | PagedList<any> | ITree | ObjectTree<any, any> | DataTree<any, any, any> | AsyncDataTree<any, any, any>;
@@ -235,8 +235,12 @@ function toWorkbenchListOptions<T>(options: IListOptions<T>, configurationServic
 	return [result, disposables];
 }
 
-export interface IWorkbenchListOptions<T> extends IListOptions<T> {
+export interface IWorkbenchListOptionsUpdate extends IListOptionsUpdate {
 	readonly overrideStyles?: IColorMapping;
+}
+
+export interface IWorkbenchListOptions<T> extends IWorkbenchListOptionsUpdate, IListOptions<T> {
+	readonly accessibilityProvider: IAccessibilityProvider<T>;
 }
 
 export class WorkbenchList<T> extends List<T> {
@@ -316,7 +320,7 @@ export class WorkbenchList<T> extends List<T> {
 		this.registerListeners();
 	}
 
-	updateOptions(options: IWorkbenchListOptions<T>): void {
+	updateOptions(options: IWorkbenchListOptionsUpdate): void {
 		super.updateOptions(options);
 
 		if (options.overrideStyles) {
@@ -352,6 +356,10 @@ export class WorkbenchList<T> extends List<T> {
 	}
 }
 
+export interface IWorkbenchPagedListOptions<T> extends IWorkbenchListOptionsUpdate, IPagedListOptions<T> {
+	readonly accessibilityProvider: IAccessibilityProvider<T>;
+}
+
 export class WorkbenchPagedList<T> extends PagedList<T> {
 
 	readonly contextKeyService: IContextKeyService;
@@ -366,7 +374,7 @@ export class WorkbenchPagedList<T> extends PagedList<T> {
 		container: HTMLElement,
 		delegate: IListVirtualDelegate<number>,
 		renderers: IPagedRenderer<T, any>[],
-		options: IWorkbenchListOptions<T>,
+		options: IWorkbenchPagedListOptions<T>,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IListService listService: IListService,
 		@IThemeService themeService: IThemeService,
@@ -772,6 +780,7 @@ function createKeyboardNavigationEventFilter(container: HTMLElement, keybindingS
 }
 
 export interface IWorkbenchObjectTreeOptions<T, TFilterData> extends IObjectTreeOptions<T, TFilterData> {
+	readonly accessibilityProvider: IAccessibilityProvider<T>;
 	readonly overrideStyles?: IColorMapping;
 }
 
@@ -802,8 +811,12 @@ export class WorkbenchObjectTree<T extends NonNullable<any>, TFilterData = void>
 	}
 }
 
-export interface IWorkbenchCompressibleObjectTreeOptions<T, TFilterData> extends ICompressibleObjectTreeOptions<T, TFilterData> {
+export interface IWorkbenchCompressibleObjectTreeOptionsUpdate extends ICompressibleObjectTreeOptionsUpdate {
 	readonly overrideStyles?: IColorMapping;
+}
+
+export interface IWorkbenchCompressibleObjectTreeOptions<T, TFilterData> extends IWorkbenchCompressibleObjectTreeOptionsUpdate, ICompressibleObjectTreeOptions<T, TFilterData> {
+	readonly accessibilityProvider: IAccessibilityProvider<T>;
 }
 
 export class WorkbenchCompressibleObjectTree<T extends NonNullable<any>, TFilterData = void> extends CompressibleObjectTree<T, TFilterData> {
@@ -832,7 +845,7 @@ export class WorkbenchCompressibleObjectTree<T extends NonNullable<any>, TFilter
 		this.disposables.add(this.internals);
 	}
 
-	updateOptions(options: IWorkbenchAsyncDataTreeOptions<T, TFilterData> = {}): void {
+	updateOptions(options: IWorkbenchCompressibleObjectTreeOptionsUpdate = {}): void {
 		super.updateOptions(options);
 
 		if (options.overrideStyles) {
@@ -841,8 +854,12 @@ export class WorkbenchCompressibleObjectTree<T extends NonNullable<any>, TFilter
 	}
 }
 
-export interface IWorkbenchDataTreeOptions<T, TFilterData> extends IDataTreeOptions<T, TFilterData> {
+export interface IWorkbenchDataTreeOptionsUpdate extends IAbstractTreeOptionsUpdate {
 	readonly overrideStyles?: IColorMapping;
+}
+
+export interface IWorkbenchDataTreeOptions<T, TFilterData> extends IWorkbenchDataTreeOptionsUpdate, IDataTreeOptions<T, TFilterData> {
+	readonly accessibilityProvider: IAccessibilityProvider<T>;
 }
 
 export class WorkbenchDataTree<TInput, T, TFilterData = void> extends DataTree<TInput, T, TFilterData> {
@@ -872,7 +889,7 @@ export class WorkbenchDataTree<TInput, T, TFilterData = void> extends DataTree<T
 		this.disposables.add(this.internals);
 	}
 
-	updateOptions(options: IWorkbenchAsyncDataTreeOptions<T, TFilterData> = {}): void {
+	updateOptions(options: IWorkbenchDataTreeOptionsUpdate = {}): void {
 		super.updateOptions(options);
 
 		if (options.overrideStyles) {
@@ -881,8 +898,12 @@ export class WorkbenchDataTree<TInput, T, TFilterData = void> extends DataTree<T
 	}
 }
 
-export interface IWorkbenchAsyncDataTreeOptions<T, TFilterData> extends IAsyncDataTreeOptions<T, TFilterData> {
+export interface IWorkbenchAsyncDataTreeOptionsUpdate extends IAsyncDataTreeOptionsUpdate {
 	readonly overrideStyles?: IColorMapping;
+}
+
+export interface IWorkbenchAsyncDataTreeOptions<T, TFilterData> extends IWorkbenchAsyncDataTreeOptionsUpdate, IAsyncDataTreeOptions<T, TFilterData> {
+	readonly accessibilityProvider: IAccessibilityProvider<T>;
 }
 
 export class WorkbenchAsyncDataTree<TInput, T, TFilterData = void> extends AsyncDataTree<TInput, T, TFilterData> {
@@ -912,7 +933,7 @@ export class WorkbenchAsyncDataTree<TInput, T, TFilterData = void> extends Async
 		this.disposables.add(this.internals);
 	}
 
-	updateOptions(options: IWorkbenchAsyncDataTreeOptions<T, TFilterData> = {}): void {
+	updateOptions(options: IWorkbenchAsyncDataTreeOptionsUpdate = {}): void {
 		super.updateOptions(options);
 
 		if (options.overrideStyles) {
@@ -922,6 +943,7 @@ export class WorkbenchAsyncDataTree<TInput, T, TFilterData = void> extends Async
 }
 
 export interface IWorkbenchCompressibleAsyncDataTreeOptions<T, TFilterData> extends ICompressibleAsyncDataTreeOptions<T, TFilterData> {
+	readonly accessibilityProvider: IAccessibilityProvider<T>;
 	readonly overrideStyles?: IColorMapping;
 }
 
