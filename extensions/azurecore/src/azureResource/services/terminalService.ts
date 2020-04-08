@@ -15,7 +15,7 @@ const localize = nls.loadMessageBundle();
 
 
 const handleNeverUsed = async (): Promise<void> => {
-	const neverUsedString = localize('azure.coudTerminal.neverUsed', "It seems you have never used Azure Cloud Shell. Please visit https://shell.azure.com/ to get started. Once that's setup you can use Azure Cloud Shell directly in Azure Data Studio.");
+	const neverUsedString = localize('azure.coudTerminal.neverUsed', "If you have not launched Azure Cloud Shell from this account before, please visit https://shell.azure.com/ to get started. Once you are set up, you can use AzureCloud Shell directly in Azure Data Studio.");
 	enum TerminalOption {
 		OPEN_SITE,
 		OK
