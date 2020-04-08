@@ -12,7 +12,7 @@ import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { IClientSession, INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { NullLogService } from 'vs/platform/log/common/log';
-import { NotebookFindModel } from 'sql/workbench/contrib/notebook/find/notebookFindModel';
+import { NotebookFindModel } from 'sql/workbench/contrib/notebook/browser/find/notebookFindModel';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { Deferred } from 'sql/base/common/promise';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';

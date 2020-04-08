@@ -8,7 +8,7 @@ import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/brow
 import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as types from 'vs/base/common/types';
-import { NotebookFindMatch, NotebookFindDecorations } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
+import { NotebookFindMatch, NotebookFindDecorations } from 'sql/workbench/contrib/notebook/browser/find/notebookFindDecorations';
 import * as model from 'vs/editor/common/model';
 import { ModelDecorationOptions, DidChangeDecorationsEmitter, createTextBuffer } from 'vs/editor/common/model/textModel';
 import { IModelDecorationsChangedEvent } from 'vs/editor/common/model/textModelEvents';
