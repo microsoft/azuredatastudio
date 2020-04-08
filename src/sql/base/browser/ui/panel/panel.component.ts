@@ -28,7 +28,7 @@ export interface IPanelOptions {
 	/**
 	 * Whether or not to show the tabs if there is only one tab present
 	 */
-	showTabsWhenOne?: boolean;
+	alwaysShowTabs?: boolean;
 	layout?: NavigationBarLayout;
 	showIcon?: boolean;
 }
@@ -39,7 +39,7 @@ export enum NavigationBarLayout {
 }
 
 const defaultOptions: IPanelOptions = {
-	showTabsWhenOne: true,
+	alwaysShowTabs: true,
 	layout: NavigationBarLayout.horizontal,
 	showIcon: false
 };
@@ -50,7 +50,7 @@ let idPool = 0;
 	selector: 'panel',
 	template: `
 		<div class="tabbedPanel fullsize" [ngClass]="options.layout === NavigationBarLayout.vertical ? 'vertical' : 'horizontal'">
-			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title">
+			<div *ngIf="!options.alwaysShowTabs ? _tabs.length !== 1 : true" class="composite title">
 				<div class="tabContainer">
 					<div *ngIf="options.layout === NavigationBarLayout.vertical" class="vertical-tab-action-container">
 						<button [attr.aria-expanded]="_tabExpanded" [title]="toggleTabPanelButtonAriaLabel" [attr.aria-label]="toggleTabPanelButtonAriaLabel" [ngClass]="toggleTabPanelButtonCssClass" tabindex="0" (click)="toggleTabPanel()"></button>

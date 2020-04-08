@@ -4,7 +4,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<div #parent style="position: absolute; height: 100%; width: 100%;">
+<loading-spinner [loading]="_loading" [loadingMessage]="_loadingMessage"
+	[loadingCompletedMessage]="_loadingCompletedMessage"></loading-spinner>
+<div #parent style="position: absolute; height: 100%; width: 100%;" [style.display]="_loading ? 'none':'block'">
 	<div #container [style.margin-right.px]="_clipped ? 30 : 0" [style.width]="_clipped ? 94 + '%' : '100%'" style="overflow: hidden; padding-bottom: 10px">
 		<span #child style="white-space : nowrap; width: fit-content">
 			<ng-template ngFor let-item [ngForOf]="properties">
