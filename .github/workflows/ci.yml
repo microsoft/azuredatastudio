@@ -2,16 +2,13 @@ name: CI
 
 on:
   push:
-    branches-ignore:
-      - '**'
-  # push:
-  #   branches:
-  #     - master
-  #     - release/*
-  # pull_request:
-  #   branches:
-  #     - master
-  #     - release/*
+    branches:
+      - master
+      - release/*
+  pull_request:
+    branches:
+      - master
+      - release/*
 
 jobs:
   linux:
