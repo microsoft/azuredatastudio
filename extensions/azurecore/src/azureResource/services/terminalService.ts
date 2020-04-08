@@ -157,11 +157,7 @@ class AzureTerminal implements vscode.Pseudoterminal {
 	}
 
 	async open(initialDimensions: vscode.TerminalDimensions): Promise<void> {
-		if (!initialDimensions) {
-			return;
-		}
-		this.terminalDimensions = initialDimensions;
-		return this.resetTerminalSize();
+		this.setDimensions(initialDimensions);
 	}
 
 	close(): void {
