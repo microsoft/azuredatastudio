@@ -7,7 +7,10 @@
 	display: block;
 	list-style: none;
 	margin: 0;
-	padding: 6px 16px 1px;
+	padding: 3px 4px 3px;
+}
+text-cell-component .monaco-action-bar .action-item .icon, .monaco-action-bar .action-item .codicon {
+	background-size: auto;
 }
 .markdown-toolbar li {
 	display: inline-block;
