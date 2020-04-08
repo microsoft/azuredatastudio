@@ -9,6 +9,7 @@ import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
 import * as templateMap from '../templates/templateMap';
 import * as utils from '../common/utils';
+import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 
 import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
@@ -52,6 +53,7 @@ export class ProjectsController {
 		catch (err) {
 			if (err instanceof dataSources.NoDataSourcesFileError) {
 				// TODO: prompt to create new datasources.json; for now, swallow
+				console.log(`No ${constants.dataSourcesFileName} file found.`);
 			}
 			else {
 				throw err;
@@ -64,7 +66,7 @@ export class ProjectsController {
 	public async createNewProject(newProjName: string, newProjUri: vscode.Uri) {
 		const macroDict: Record<string, string> = {
 			'PROJECT_NAME': newProjName,
-			'PROJECT_GUID': '00000000-0000-0000-0000-000000000000'//Guid.create().toString() // TODO: extension building problems when using this library?
+			'PROJECT_GUID': UUID.generateUuid().toUpperCase()
 		};
 
 		let newProjFileContents = this.macroExpansion(newSqlProjectTemplate, macroDict);
