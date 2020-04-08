@@ -50,6 +50,15 @@ export type ExtensionRecommendationsNotificationClassification = {
 	extensionId: { classification: 'PublicNonPersonalData', purpose: 'FeatureInsight' };
 };
 
+/*type FileExtensionSuggestionClassification = {
+	userReaction: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
+	fileExtension: { classification: 'PublicNonPersonalData', purpose: 'FeatureInsight' };
+};*/
+
+type ExtensionWorkspaceRecommendationsNotificationClassification = {
+	userReaction: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
+};
+
 export const milliSecondsInADay = 1000 * 60 * 60 * 24;
 export const choiceNever = localize('neverShowAgain', "Don't Show Again");
 // const searchMarketplace = localize('searchMarketplace', "Search Marketplace");
@@ -411,12 +420,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 					[{
 						label: localize('installAll', "Install All"),
 						run: () => {
-							/* __GDPR__
-							"extensionWorkspaceRecommendations:popup" : {
-								"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-							}
-							*/
-							this.telemetryService.publicLog('extensionWorkspaceRecommendations:popup', { userReaction: 'install' });
+							this.telemetryService.publicLog2<{ userReaction: string }, ExtensionWorkspaceRecommendationsNotificationClassification>('extensionWorkspaceRecommendations:popup', { userReaction: 'install' });
 
 							const installAllAction = this.instantiationService.createInstance(InstallWorkspaceRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction.ID, localize('installAll', "Install All"), recommendations);
 							installAllAction.run();
@@ -427,12 +431,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 					}, {
 						label: localize('showRecommendations', "Show Recommendations"),
 						run: () => {
-							/* __GDPR__
-								"extensionWorkspaceRecommendations:popup" : {
-									"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-								}
-							*/
-							this.telemetryService.publicLog('extensionWorkspaceRecommendations:popup', { userReaction: 'show' });
+							this.telemetryService.publicLog2<{ userReaction: string }, ExtensionWorkspaceRecommendationsNotificationClassification>('extensionWorkspaceRecommendations:popup', { userReaction: 'show' });
 
 							const showAction = this.instantiationService.createInstance(ShowRecommendedExtensionsAction, ShowRecommendedExtensionsAction.ID, localize('showRecommendations', "Show Recommendations"));
 							showAction.run();
@@ -444,12 +443,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 						label: choiceNever,
 						isSecondary: true,
 						run: () => {
-							/* __GDPR__
-								"extensionWorkspaceRecommendations:popup" : {
-									"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-								}
-							*/
-							this.telemetryService.publicLog('extensionWorkspaceRecommendations:popup', { userReaction: 'neverShowAgain' });
+							this.telemetryService.publicLog2<{ userReaction: string }, ExtensionWorkspaceRecommendationsNotificationClassification>('extensionWorkspaceRecommendations:popup', { userReaction: 'neverShowAgain' });
 							this.storageService.store(storageKey, true, StorageScope.WORKSPACE);
 
 							c(undefined);
@@ -458,13 +452,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 					{
 						sticky: true,
 						onCancel: () => {
-							/* __GDPR__
-								"extensionWorkspaceRecommendations:popup" : {
-									"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-								}
-							*/
-							this.telemetryService.publicLog('extensionWorkspaceRecommendations:popup', { userReaction: 'cancelled' });
-
+							this.telemetryService.publicLog2<{ userReaction: string }, ExtensionWorkspaceRecommendationsNotificationClassification>('extensionWorkspaceRecommendations:popup', { userReaction: 'cancelled' });
 							c(undefined);
 						}
 					}
@@ -644,23 +632,23 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 		if (!entry) {
 			return false;
 		}
-		const name = entry.name;
-		let message = localize('reallyRecommended2', "The '{0}' extension is recommended for this file type.", name);
+		const extensionId = entry.name;
+		let message = localize('reallyRecommended2', "The '{0}' extension is recommended for this file type.", extensionId);
 		if (entry.isExtensionPack) {
-			message = localize('reallyRecommendedExtensionPack', "The '{0}' extension pack is recommended for this file type.", name);
+			message = localize('reallyRecommendedExtensionPack', "The '{0}' extension pack is recommended for this file type.", extensionId);
 		}
 
 		this.notificationService.prompt(Severity.Info, message,
 			[{
 				label: localize('install', 'Install'),
 				run: () => {
-					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'install', extensionId: name });
+					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'install', extensionId });
 					this.instantiationService.createInstance(InstallRecommendedExtensionAction, id).run();
 				}
 			}, {
 				label: localize('showRecommendations', "Show Recommendations"),
 				run: () => {
-					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'show', extensionId: name });
+					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'show', extensionId });
 
 					const recommendationsAction = this.instantiationService.createInstance(ShowRecommendedExtensionsAction, ShowRecommendedExtensionsAction.ID, localize('showRecommendations', "Show Recommendations"));
 					recommendationsAction.run();
@@ -671,7 +659,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 				isSecondary: true,
 				run: () => {
 					this.addToImportantRecommendationsIgnore(id);
-					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'neverShowAgain', extensionId: name });
+					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'neverShowAgain', extensionId });
 					this.notificationService.prompt(
 						Severity.Info,
 						localize('ignoreExtensionRecommendations', "Do you want to ignore all extension recommendations?"),
@@ -688,7 +676,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 			{
 				sticky: true,
 				onCancel: () => {
-					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'cancelled', extensionId: name });
+					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'cancelled', extensionId });
 				}
 			}
 			}, {
@@ -771,19 +759,31 @@ return true;
 			[{
 				label: searchMarketplace,
 				run: () => {
-					*//* __GDPR__
-"fileExtensionSuggestion:popup" : {
-"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-"fileExtension": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
-}
-*//*
-				this.telemetryService.publicLog('fileExtensionSuggestion:popup', { userReaction: 'ok', fileExtension: fileExtension });
-				this.viewletService.openViewlet('workbench.view.extensions', true)
-					.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
-					.then(viewlet => {
-						viewlet.search(`ext:${fileExtension}`);
-						viewlet.focus();
-					});
+					this.telemetryService.publicLog2<{ userReaction: string, fileExtension: string }, FileExtensionSuggestionClassification>('fileExtensionSuggestion:popup', { userReaction: 'ok', fileExtension });
+					this.viewletService.openViewlet('workbench.view.extensions', true)
+						.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
+						.then(viewlet => {
+							viewlet.search(`ext:${fileExtension}`);
+							viewlet.focus();
+						});
+				}
+			}, {
+				label: localize('dontShowAgainExtension', "Don't Show Again for '.{0}' files", fileExtension),
+				run: () => {
+					fileExtensionSuggestionIgnoreList.push(fileExtension);
+					this.storageService.store(
+						'extensionsAssistant/fileExtensionsSuggestionIgnore',
+						JSON.stringify(fileExtensionSuggestionIgnoreList),
+						StorageScope.GLOBAL
+					);
+					this.telemetryService.publicLog2<{ userReaction: string, fileExtension: string }, FileExtensionSuggestionClassification>('fileExtensionSuggestion:popup', { userReaction: 'neverShowAgain', fileExtension });
+				}
+			}],
+			{
+				sticky: true,
+				onCancel: () => {
+					this.telemetryService.publicLog2<{ userReaction: string, fileExtension: string }, FileExtensionSuggestionClassification>('fileExtensionSuggestion:popup', { userReaction: 'cancelled', fileExtension });
+				}
 			}
 			}, {
 			label: localize('dontShowAgainExtension', "Don't Show Again for '.{0}' files", fileExtension),
