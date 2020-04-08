@@ -31,7 +31,7 @@ import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 			<div scrollable [horizontalScroll]="${ScrollbarVisibility.Hidden}" [verticalScroll]="${ScrollbarVisibility.Auto}">
 				<div #propertiesContainer>
 					<dashboard-widget-wrapper #propertiesClass *ngIf="properties" [collapsable]="true" [bottomCollapse]="true" [toggleMore]="false" [_config]="properties"
-						style="padding-left: 10px; padding-right: 10px; display: block; flex: 0;" [style.height.px]="_propertiesClass?.collapsed ? '30' : '90'">
+						class="properties" [style.height.px]="_propertiesClass?.collapsed ? '30' : '90'">
 					</dashboard-widget-wrapper>
 				</div>
 				<widget-content style="flex: 1" [scrollContent]="false" [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
