@@ -10,7 +10,7 @@ import { IRemoteAgentEnvironmentDTO, IGetEnvironmentDataArguments } from 'vs/wor
 import * as nls from 'vs/nls';
 import * as pfs from 'vs/base/node/pfs';
 import { Schemas } from 'vs/base/common/network';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { INativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
 import product from 'vs/platform/product/common/product';
 import { ExtensionScanner, ExtensionScannerInput, IExtensionResolver, IExtensionReference } from 'vs/workbench/services/extensions/node/extensionPoints';
 import { IServerChannel } from 'vs/base/parts/ipc/common/ipc';
@@ -51,7 +51,7 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 
 	constructor(
 		private readonly _connectionToken: string,
-		private readonly environmentService: IEnvironmentService,
+		private readonly environmentService: INativeEnvironmentService,
 		private readonly logService: ILogService,
 		private readonly telemetryService: ITelemetryService,
 		private readonly telemetryAppender: ITelemetryAppender | null
@@ -262,7 +262,7 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 				extensionsPath: URI.file(this.environmentService.extensionsPath!),
 				extensionHostLogsPath: URI.file(join(this.environmentService.logsPath, `exthost${RemoteAgentEnvironmentChannel._namePool++}`)),
 				globalStorageHome: URI.file(this.environmentService.globalStorageHome),
-				userHome: URI.file(this.environmentService.userHome),
+				userHome: this.environmentService.userHome,
 				extensions,
 				os: platform.OS
 			};
