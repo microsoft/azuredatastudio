@@ -10,7 +10,7 @@ code-component {
 }
 
 code-component .toolbar {
-	background-color: #EEEEEE;
+	/* background-color: #EEEEEE; */
 	border-right: 1px solid #A19F9D;
 	flex: 0 0 auto;
 	display: flex;

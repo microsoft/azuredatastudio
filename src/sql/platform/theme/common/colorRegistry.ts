@@ -41,4 +41,7 @@ export const gradientOne = registerColor('gradientOne', { light: '#f0f0f0', dark
 export const gradientTwo = registerColor('gradientTwo', { light: gradientTwoColorOne, dark: gradientTwoColorTwo, hc: gradientTwoColorTwo }, nls.localize('gradientTwo', "The bottom color for the banner image gradient"));
 export const gradientBackground = registerColor('gradientBackground', { light: '#fff', dark: 'transparent', hc: 'transparent' }, nls.localize('gradientBackground', "The background color for the banner image gradient"));
 
-
+// - Notebook Colors
+export const toolbarBackground = registerColor('toolbarBackground', { light: '#F5F5F5', dark: '#333333', hc: '#000000' }, nls.localize('toolbarBackground', "Markdown toolbar background"));
+export const toolbarForeground = registerColor('toolbarForeground', { light: '#323130', dark: '#FFFFFe', hc: '#FFFFFe' }, nls.localize('toolbarForeground', "Markdown toolbar icons"));
+export const cellBorder = registerColor('cellBorder', { light: '#0078D4', dark: '#0078D4', hc: '#E86E58' }, nls.localize('cellBorder', "Active cell border"));
