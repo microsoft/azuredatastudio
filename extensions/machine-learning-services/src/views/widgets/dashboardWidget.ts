@@ -37,7 +37,7 @@ export class DashboardWidget {
 			}).component();
 			const header = this.createHeader(view);
 			const tasksContainer = this.createTasks(view);
-			const linksContainer = this.createLinks(view);
+			const footerContainer = this.createFooter(view);
 			container.addItem(header, {
 				CSSStyles: {
 					'background-image': `url(file://${this.asAbsolutePath('images/background.svg')})`,
@@ -54,7 +54,7 @@ export class DashboardWidget {
 					'height': '150px',
 				}
 			});
-			container.addItem(linksContainer, {
+			container.addItem(footerContainer, {
 				CSSStyles: {
 					'width': `${maxWidth}px`,
 					'height': '500px',
@@ -108,7 +108,123 @@ export class DashboardWidget {
 		return header;
 	}
 
+	private createFooter(view: azdata.ModelView): azdata.Component {
+		const footerContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'row',
+			width: maxWidth,
+			height: '500px',
+			justifyContent: 'flex-start'
+		}).component();
+		const linksContainer = this.createLinks(view);
+		const videoLinksContainer = this.createVideoLinks(view);
+		footerContainer.addItem(linksContainer);
+		footerContainer.addItem(videoLinksContainer, {
+			CSSStyles: {
+				'padding-left': '50px',
+			}
+		});
+
+		return footerContainer;
+	}
+
+	private createVideoLinks(view: azdata.ModelView): azdata.Component {
+		const maxWidth = 400;
+		const linksContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column',
+			width: maxWidth,
+			height: '500px',
+			justifyContent: 'flex-start'
+		}).component();
+		const titleComponent = view.modelBuilder.text().withProperties({
+			value: constants.dashboardVideoLinksTitle,
+			CSSStyles: {
+				'font-size': '18px',
+				'font-weight': 'bold',
+				'margin': '0px'
+			}
+		}).component();
+		const videosContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'row',
+			width: maxWidth,
+			height: '500px',
+		}).component();
+		const video1Container = this.createVideoLink(view, {
+			iconPath: { light: 'images/video1.svg', dark: 'images/video1.svg' },
+			description: 'Visualize data using SandDance',
+			link: 'https://www.youtube.com/watch?v=e305wTAoLZs'
+		});
+		videosContainer.addItem(video1Container);
+		const video2Container = this.createVideoLink(view, {
+			iconPath: { light: 'images/video2.svg', dark: 'images/video2.svg' },
+			description: 'How to make the best out of Microsoft Azure'
+		});
+		videosContainer.addItem(video2Container);
+
+		linksContainer.addItems([titleComponent], {
+			CSSStyles: {
+				'padding': '0px',
+				'padding-right': '5px',
+				'padding-top': '10px',
+				'height': '10px',
+				'margin': '0px'
+			}
+		});
+		linksContainer.addItems([videosContainer], {
+			CSSStyles: {
+				'padding': '0px',
+				'padding-right': '5px',
+				'padding-top': '10px',
+				'height': '10px',
+				'margin': '0px'
+			}
+		});
+		return linksContainer;
+	}
+
+	private createVideoLink(view: azdata.ModelView, linkMetaData: IActionMetadata): azdata.Component {
+		const maxWidth = 200;
+		const videosContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column',
+			width: maxWidth,
+			height: '200px',
+			justifyContent: 'flex-start'
+		}).component();
+		const video1Container = view.modelBuilder.divContainer().withProperties({
+			clickable: true,
+			width: maxWidth,
+			height: '100px'
+		}).component();
+		const descriptionComponent = view.modelBuilder.text().withProperties({
+			value: linkMetaData.description,
+			width: '200px',
+			height: '50px',
+			CSSStyles: {
+				//'color': '#605E5C',
+				'font-size': '12px',
+				'margin': '0px'
+			}
+		}).component();
+		video1Container.onDidClick(async () => {
+			if (linkMetaData.link) {
+				await this._apiWrapper.openExternal(vscode.Uri.parse(linkMetaData.link));
+			}
+		});
+		videosContainer.addItem(video1Container, {
+			CSSStyles: {
+				'background-image': `url(file://${this.asAbsolutePath(<string>linkMetaData.iconPath?.light || '')})`,
+				'background-repeat': 'no-repeat',
+				'background-position': 'top',
+				'width': `150px`,
+				'height': '110px',
+				'background-size': `150px 120px`
+			}
+		});
+		videosContainer.addItem(descriptionComponent);
+		return videosContainer;
+	}
+
 	private createLinks(view: azdata.ModelView): azdata.Component {
+		const maxWidth = 400;
 		const linksContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: maxWidth,
@@ -117,7 +233,7 @@ export class DashboardWidget {
 		const titleComponent = view.modelBuilder.text().withProperties({
 			value: constants.dashboardLinksTitle,
 			CSSStyles: {
-				'font-size': '15px',
+				'font-size': '18px',
 				//'color': '#323130',
 				'font-weight': 'bold',
 				'margin': '0px'
@@ -155,7 +271,8 @@ export class DashboardWidget {
 	}
 
 	private createLink(view: azdata.ModelView, linkMetaData: IActionMetadata): azdata.Component {
-		const maxHeight = 50;
+		const maxHeight = 80;
+		const maxWidth = 400;
 		const labelsContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: maxWidth,
@@ -164,7 +281,7 @@ export class DashboardWidget {
 		}).component();
 		const descriptionComponent = view.modelBuilder.text().withProperties({
 			value: linkMetaData.description,
-			width: '600px',
+			width: maxWidth,
 			CSSStyles: {
 				//'color': '#605E5C',
 				'font-size': '12px',
@@ -173,7 +290,7 @@ export class DashboardWidget {
 		}).component();
 		const linkContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
-			width: 300,
+			width: maxWidth,
 			justifyContent: 'flex-start'
 		}).component();
 		const linkComponent = view.modelBuilder.hyperlink().withProperties({
@@ -181,7 +298,7 @@ export class DashboardWidget {
 			url: linkMetaData.link,
 			CSSStyles: {
 				'color': '#3794ff',
-				'font-size': '12px',
+				'font-size': '14px',
 				'margin': '0px'
 			}
 		}).component();

@@ -119,7 +119,7 @@
               "row": 0,
               "col": 1,
               "rowspan": 3,
-              "colspan": 3,
+              "colspan": 4,
               "widget": {
                 "modelview": {
                   "id":"mls.dashboard"

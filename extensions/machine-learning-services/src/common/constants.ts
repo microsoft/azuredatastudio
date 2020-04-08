@@ -170,13 +170,12 @@ export const unsupportedModelParameterType = localize('models.unsupportedModelPa
 export const dashboardTitle = localize('dashboardTitle', "SQL ML");
 export const dashboardDesc = localize('dashboardDesc', "Machine learning for SQL databases");
 export const dashboardLinksTitle = localize('dashboardLinksTitle', "Useful links");
+export const dashboardVideoLinksTitle = localize('dashboardVideoLinksTitle', "Video tutorials");
 export const learnMoreTitle = localize('learnMoreTitle', "Learn more");
 export const mlsInstallMlsDocTitle = localize('mlsInstallMlsDocTitle', "Install SQL Server Machine Learning Services");
 export const mlsInstallMlsDocDesc = localize('mlsInstallMlsDocDesc', "This document guides you in the installation of SQL Server Machine Learning Services. Python and R scripts can be executed in-database using Machine Learning Services.");
 export const mlsInstallOdbcDocTitle = localize('mlsInstallObdcDocTitle', "Install the Microsoft ODBC driver for SQL Server");
 export const mlsInstallOdbcDocDesc = localize('mlsInstallOdbcDocDesc', "This document explains how to install the Microsoft ODBC Driver for SQL Server.");
-
-
 
 // Links
 //
