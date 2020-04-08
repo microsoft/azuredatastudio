@@ -45,6 +45,11 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
+export type ExtensionRecommendationsNotificationClassification = {
+	userReaction: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
+	extensionId: { classification: 'PublicNonPersonalData', purpose: 'FeatureInsight' };
+};
+
 export const milliSecondsInADay = 1000 * 60 * 60 * 24;
 export const choiceNever = localize('neverShowAgain', "Don't Show Again");
 // const searchMarketplace = localize('searchMarketplace', "Search Marketplace");
@@ -649,14 +654,42 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 			[{
 				label: localize('install', 'Install'),
 				run: () => {
-					*//* __GDPR__
-"extensionRecommendations:popup" : {
-"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-"extensionId": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
-}
-*//*
-				this.telemetryService.publicLog('extensionRecommendations:popup', { userReaction: 'install', extensionId: name });
-				this.instantiationService.createInstance(InstallRecommendedExtensionAction, id).run();
+					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'install', extensionId: name });
+					this.instantiationService.createInstance(InstallRecommendedExtensionAction, id).run();
+				}
+			}, {
+				label: localize('showRecommendations', "Show Recommendations"),
+				run: () => {
+					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'show', extensionId: name });
+
+					const recommendationsAction = this.instantiationService.createInstance(ShowRecommendedExtensionsAction, ShowRecommendedExtensionsAction.ID, localize('showRecommendations', "Show Recommendations"));
+					recommendationsAction.run();
+					recommendationsAction.dispose();
+				}
+			}, {
+				label: choiceNever,
+				isSecondary: true,
+				run: () => {
+					this.addToImportantRecommendationsIgnore(id);
+					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'neverShowAgain', extensionId: name });
+					this.notificationService.prompt(
+						Severity.Info,
+						localize('ignoreExtensionRecommendations', "Do you want to ignore all extension recommendations?"),
+						[{
+							label: localize('ignoreAll', "Yes, Ignore All"),
+							run: () => this.setIgnoreRecommendationsConfig(true)
+						}, {
+							label: localize('no', "No"),
+							run: () => this.setIgnoreRecommendationsConfig(false)
+						}]
+					);
+				}
+			}],
+			{
+				sticky: true,
+				onCancel: () => {
+					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'cancelled', extensionId: name });
+				}
 			}
 			}, {
 			label: localize('showRecommendations', "Show Recommendations"),
