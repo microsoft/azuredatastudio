@@ -607,32 +607,32 @@ export const DASHBOARD_BORDER = registerColor('dashboard.border', {
 	hc: contrastBorder
 }, nls.localize('dashboardBorder', "Color for borders in dashboard"));
 
-export const TABLABEL = registerColor('tab.tabLabel', {
+export const TAB_LABEL = registerColor('tab.tabLabel', {
 	light: '#000000',
 	dark: 'FFFFFF',
 	hc: 'FFFFFF'
 }, nls.localize('tabLabel', "Color of tab label"));
 
-export const TABGROUPHEADER = registerColor('tab.tabGroupHeader', {
+export const TAB_GROUP_HEADER = registerColor('tab.tabGroupHeader', {
 	light: '#dddddd',
 	dark: '#dddddd',
 	hc: '#FFFFFF'
 }, nls.localize('tabGroupHeader', "Color of tab group header"));
 
-export const WIDGETTITLE = registerColor('widget.title', {
+export const DASHBOARD_WIDGET_TITLE = registerColor('dashboardWidget.title', {
 	light: '#323130',
 	dark: '#FFFFFF',
 	hc: '#FFFFFF'
-}, nls.localize('widgetTitle', 'Color of widget title'));
+}, nls.localize('dashboardWidget', 'Color of dashboard widget title'));
 
-export const WIDGETSUBTEXT = registerColor('widget.subText', {
+export const DASHBOARD_WIDGET_SUBTEXT = registerColor('dashboardWidget.subText', {
 	light: '#484644',
 	dark: '#8A8886',
 	hc: '#FFFFFF'
-}, nls.localize('widgetSubtext', "color for widget subtext"));
+}, nls.localize('dashboardWidgetSubtext', "Color for dashboard widget subtext"));
 
-export const PROPERTIESNAME = registerColor('widget.propertiesName', {
+export const DASHBOARD_PROPERTIES_NAME = registerColor('dashboardWidget.propertiesName', {
 	light: '#161616',
 	dark: '#8A8886',
 	hc: '#FFFFFF'
-}, nls.localize('widgetPropertiesName', "Color for properties widget names"));
+}, nls.localize('dashboardWidgetPropertiesName', "Color for dashboard properties widget names"));

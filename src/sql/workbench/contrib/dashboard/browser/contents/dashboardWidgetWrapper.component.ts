@@ -272,8 +272,6 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			el.style.border = 'none';
 		}
 
-		headerEl.className = 'header';
-
 		if (this._config.fontSize) {
 			headerEl.style.fontSize = this._config.fontSize;
 		}

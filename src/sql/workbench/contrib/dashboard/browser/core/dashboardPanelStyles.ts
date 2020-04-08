@@ -7,7 +7,7 @@ import 'vs/css!./dashboardPanel';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import {
 	TAB_ACTIVE_BACKGROUND, TAB_INACTIVE_BACKGROUND,
-	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, VERTICAL_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER, WIDGETSUBTEXT, TABLABEL, TABGROUPHEADER, WIDGETTITLE, PROPERTIESNAME
+	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, VERTICAL_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER, DASHBOARD_WIDGET_SUBTEXT, TAB_LABEL, TAB_GROUP_HEADER, DASHBOARD_WIDGET_TITLE, DASHBOARD_PROPERTIES_NAME
 } from 'vs/workbench/common/theme';
 import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 
@@ -67,7 +67,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	}
 
 	// tab label
-	const tabLabelColor = theme.getColor(TABLABEL);
+	const tabLabelColor = theme.getColor(TAB_LABEL);
 	if (tabLabelColor) {
 		collector.addRule(`.tabbedPanel.vertical > .title .tabList .tabLabel {
 			color: ${tabLabelColor}
@@ -79,7 +79,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	}
 
 	// tab group header
-	const tabGroupHeader = theme.getColor(TABGROUPHEADER);
+	const tabGroupHeader = theme.getColor(TAB_GROUP_HEADER);
 	if (tabGroupHeader) {
 		collector.addRule(`.tabbedPanel .tab-group-header {
 			border-color: ${tabGroupHeader};
@@ -145,7 +145,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	}
 
 	// widget title
-	const widgetTitle = theme.getColor(WIDGETTITLE);
+	const widgetTitle = theme.getColor(DASHBOARD_WIDGET_TITLE);
 	if (widgetTitle) {
 		collector.addRule(`dashboard-widget-wrapper .header {
 			color: ${widgetTitle};
@@ -153,7 +153,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	}
 
 	// widget subtext
-	const subText = theme.getColor(WIDGETSUBTEXT);
+	const subText = theme.getColor(DASHBOARD_WIDGET_SUBTEXT);
 	if (subText) {
 		collector.addRule(`.subText {
 			color: ${subText};
@@ -161,7 +161,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	}
 
 	// properties name
-	const propertiesName = theme.getColor(PROPERTIESNAME);
+	const propertiesName = theme.getColor(DASHBOARD_PROPERTIES_NAME);
 	if (propertiesName) {
 		collector.addRule(`properties-widget .propertiesName {
 			color: ${propertiesName}
