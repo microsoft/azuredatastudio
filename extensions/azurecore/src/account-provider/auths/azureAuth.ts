@@ -138,34 +138,45 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	public dispose() { }
 
-	public async refreshAccess(account: azdata.Account): Promise<azdata.Account> {
-		const response = await this.getCachedToken(account.key);
+	public async refreshAccess(oldAccount: azdata.Account): Promise<azdata.Account> {
+		const response = await this.getCachedToken(oldAccount.key);
 		if (!response) {
-			account.isStale = true;
-			return account;
+			oldAccount.isStale = true;
+			return oldAccount;
 		}
 
 		const refreshToken = response.refreshToken;
 		if (!refreshToken || !refreshToken.key) {
-			account.isStale = true;
-			return account;
+			oldAccount.isStale = true;
+			return oldAccount;
 		}
 
 		try {
-			await this.refreshAccessToken(account.key, refreshToken);
+			// Refresh the access token
+			const tokenResponse = await this.refreshAccessToken(oldAccount.key, refreshToken);
+			const tenants = await this.getTenants(tokenResponse.accessToken);
+
+			// Recreate account object
+			const newAccount = this.createAccount(tokenResponse.tokenClaims, tokenResponse.accessToken.key, tenants);
+
+			const subscriptions = await this.getSubscriptions(newAccount);
+			newAccount.properties.subscriptions = subscriptions;
+
+			return newAccount;
 		} catch (ex) {
-			account.isStale = true;
+			oldAccount.isStale = true;
 			if (ex.message) {
 				await vscode.window.showErrorMessage(ex.message);
 			}
 			console.log(ex);
 		}
-		return account;
+		return oldAccount;
 	}
 
 
 	public async getSecurityToken(account: azdata.Account, azureResource: azdata.AzureResource): Promise<TokenResponse | undefined> {
 		if (account.isStale === true) {
+			console.log('Account was stale, no tokens being fetched');
 			return undefined;
 		}
 
@@ -173,6 +184,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		if (!resource) {
 			return undefined;
 		}
+
 		const azureAccount = account as AzureAccount;
 		const response: TokenResponse = {};
 
@@ -203,17 +215,21 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 				const baseToken = await this.getCachedToken(account.key);
 				if (!baseToken) {
+					account.isStale = true;
+					console.log('Base token was empty, account is stale.');
 					return undefined;
 				}
 				try {
 					await this.refreshAccessToken(account.key, baseToken.refreshToken, tenant, resource);
 				} catch (ex) {
+					console.log(ex);
 					account.isStale = true;
 					return undefined;
 				}
 
 				cachedTokens = await this.getCachedToken(account.key, resource.id, tenant.id);
 				if (!cachedTokens) {
+					console.log('Refresh access tokens didn not set cache');
 					return undefined;
 				}
 			}
@@ -316,6 +332,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 		const allSubs: Subscription[] = [];
 		const tokens = await this.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
+		if (!tokens) {
+			console.log('There were no resource management tokens to retrieve subscriptions from. Account is stale.');
+			account.isStale = true;
+		}
 
 		for (const tenant of account.properties.tenants) {
 			const token = tokens[tenant.id];
@@ -375,7 +395,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
-	private async refreshAccessToken(account: azdata.AccountKey, rt: RefreshToken, tenant?: Tenant, resource?: Resource): Promise<void> {
+	private async refreshAccessToken(account: azdata.AccountKey, rt: RefreshToken, tenant?: Tenant, resource?: Resource): Promise<TokenRefreshResponse> {
 		const postData: { [key: string]: string } = {
 			grant_type: 'refresh_token',
 			refresh_token: rt.token,
@@ -387,7 +407,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 			postData.resource = resource.endpoint;
 		}
 
-		const { accessToken, refreshToken } = await this.getToken(postData, tenant?.id, resource?.id);
+		const getTokenResponse = await this.getToken(postData, tenant?.id, resource?.id);
+
+		const accessToken = getTokenResponse?.accessToken;
+		const refreshToken = getTokenResponse?.refreshToken;
 
 		if (!accessToken || !refreshToken) {
 			console.log('Access or refresh token were undefined');
@@ -395,7 +418,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 			throw new Error(msg);
 		}
 
-		return this.setCachedToken(account, accessToken, refreshToken, resource?.id, tenant?.id);
+		await this.setCachedToken(account, accessToken, refreshToken, resource?.id, tenant?.id);
+
+		return getTokenResponse;
 	}
 
 

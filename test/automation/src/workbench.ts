@@ -24,6 +24,7 @@ import { Terminal } from './terminal';
 import { ConnectionDialog } from './sql/connectionDialog';
 import { Profiler } from './sql/profiler';
 import { QueryEditors } from './sql/queryEditors';
+import { QueryEditor } from './sql/queryEditor';
 // {{END}}
 
 export interface Commands {
@@ -52,6 +53,7 @@ export class Workbench {
 	readonly connectionDialog: ConnectionDialog;
 	readonly profiler: Profiler;
 	readonly queryEditors: QueryEditors;
+	readonly queryEditor: QueryEditor;
 	// {{END}}
 
 	constructor(code: Code, userDataPath: string) {
@@ -74,6 +76,7 @@ export class Workbench {
 		this.connectionDialog = new ConnectionDialog(code);
 		this.profiler = new Profiler(code, this.quickaccess);
 		this.queryEditors = new QueryEditors(code);
+		this.queryEditor = new QueryEditor(code);
 		// {{END}}
 	}
 }

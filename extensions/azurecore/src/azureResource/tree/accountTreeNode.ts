@@ -79,6 +79,16 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 			if (subscriptions.length === 0) {
 				return [AzureResourceMessageTreeNode.create(AzureResourceAccountTreeNode.noSubscriptionsLabel, this)];
 			} else {
+				// Filter out everything that we can't authenticate to.
+				subscriptions = subscriptions.filter(s => {
+					const token = tokens[s.id];
+					if (!token) {
+						console.info(`Account does not have permissions to view subscription ${JSON.stringify(s)}.`);
+						return false;
+					}
+					return true;
+				});
+
 				let subTreeNodes = await Promise.all(subscriptions.map(async (subscription) => {
 					const token = tokens[subscription.id];
 					const tenantId = await this._tenantService.getTenantId(subscription, this.account, new TokenCredentials(token.token, token.tokenType));
