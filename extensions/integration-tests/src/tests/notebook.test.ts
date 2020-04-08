@@ -7,102 +7,100 @@ import 'mocha';
 import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { isTestSetupCompleted } from '../testContext';
-import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySparkKernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent, notebookContentForCellLanguageTest, sqlKernelSpec, pythonKernelSpec, pySparkKernelSpec, CellTypes } from '../notebook.util';
-import { getConfigValue, EnvironmentVariable_PYTHON_PATH, TestServerProfile, getStandaloneServer } from '../testConfig';
-import { connectToServer, sleep, testServerProfileToIConnectionProfile } from '../utils';
+import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySparkKernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent, notebookContentForCellLanguageTest, sqlKernelSpec, pythonKernelSpec, pySparkKernelSpec, CellTypes } from './notebook.util';
+import { getConfigValue, EnvironmentVariable_PYTHON_PATH, TestServerProfile, getStandaloneServer } from './testConfig';
+import { connectToServer, sleep, testServerProfileToIConnectionProfile } from './utils';
 import * as fs from 'fs';
 import { stressify } from 'adstest';
 import { isNullOrUndefined, promisify } from 'util';
 
-if (isTestSetupCompleted()) {
-	suite('Notebook integration test suite', function () {
-		setup(async function () {
-			console.log(`Start "${this.currentTest.title}"`);
-			let server = await getStandaloneServer();
-			assert(server && server.serverName, 'No server could be found');
-			await connectToServer(server, 6000);
-		});
-		teardown(async function () {
-			await (new NotebookTester()).cleanup(this.currentTest.title);
-		});
-
-		test('Sql NB test @UNSTABLE@', async function () {
-			await (new NotebookTester()).sqlNbTest(this.test.title);
-		});
-
-		test('Sql NB multiple cells test @UNSTABLE@', async function () {
-			await (new NotebookTester()).sqlNbMultipleCellsTest(this.test.title);
-		});
-
-		test('Sql NB run cells above and below test', async function () {
-			await (new NotebookTester()).sqlNbRunCellsAboveBelowTest(this.test.title);
-		});
-
-		test('Clear cell output - SQL notebook', async function () {
-			await (new NotebookTester()).sqlNbClearOutputs(this.test.title);
-		});
-
-		test('Clear all outputs - SQL notebook ', async function () {
-			await (new NotebookTester()).sqlNbClearAllOutputs(this.test.title);
-		});
-
-		test('sql language test', async function () {
-			await (new NotebookTester()).sqlLanguageTest(this.test.title);
-		});
-
-		// TODO: Need to make this test more reliable.
-		test('should not be dirty after saving notebook test @UNSTABLE@', async function () {
-			await (new NotebookTester().shouldNotBeDirtyAfterSavingNotebookTest(this.test.title));
-		});
-
-		if (process.env['RUN_PYTHON3_TEST'] === '1') {
-			test('Python3 notebook test', async function () {
-				await (new NotebookTester()).python3NbTest(this.test.title);
-			});
-
-			test('Clear all outputs - Python3 notebook ', async function () {
-				await (new NotebookTester()).python3ClearAllOutputs(this.test.title);
-			});
-
-			test('python language test', async function () {
-				await (new NotebookTester()).pythonLanguageTest(this.test.title);
-			});
-
-			test('Change kernel different provider SQL to Python to SQL', async function () {
-				await (new NotebookTester()).sqlNbChangeKernelDifferentProviderTest(this.test.title);
-			});
-
-			test('Change kernel different provider Python to SQL to Python', async function () {
-				await (new NotebookTester()).pythonChangeKernelDifferentProviderTest(this.test.title);
-			});
-
-			test('Change kernel same provider Python to PySpark to Python', async function () {
-				await (new NotebookTester()).pythonChangeKernelSameProviderTest(this.test.title);
-			});
-		}
-
-		if (process.env['RUN_PYSPARK_TEST'] === '1') {
-			test('PySpark notebook test', async function () {
-				await (new NotebookTester()).pySparkNbTest(this.test.title);
-			});
-		}
-
-		/* After https://github.com/microsoft/azuredatastudio/issues/5598 is fixed, enable these tests.
-		test('scala language test', async function () {
-			await (new NotebookTester()).scalaLanguageTest(this.test.title);
-		});
-
-		test('empty language test', async function () {
-			await (new NotebookTester()).emptyLanguageTest(this.test.title);
-		});
-
-		test('cplusplus language test', async function () {
-			await (new NotebookTester()).cplusplusLanguageTest(this.test.title);
-		});
-		*/
+suite('Notebook integration test suite', function () {
+	setup(async function () {
+		console.log(`Start "${this.currentTest.title}"`);
+		let server = await getStandaloneServer();
+		assert(server && server.serverName, 'No server could be found');
+		await connectToServer(server, 6000);
 	});
-}
+
+	teardown(async function () {
+		await (new NotebookTester()).cleanup(this.currentTest.title);
+	});
+
+	test('Sql NB test @UNSTABLE@', async function () {
+		await (new NotebookTester()).sqlNbTest(this.test.title);
+	});
+
+	test('Sql NB multiple cells test @UNSTABLE@', async function () {
+		await (new NotebookTester()).sqlNbMultipleCellsTest(this.test.title);
+	});
+
+	test('Sql NB run cells above and below test', async function () {
+		await (new NotebookTester()).sqlNbRunCellsAboveBelowTest(this.test.title);
+	});
+
+	test('Clear cell output - SQL notebook', async function () {
+		await (new NotebookTester()).sqlNbClearOutputs(this.test.title);
+	});
+
+	test('Clear all outputs - SQL notebook ', async function () {
+		await (new NotebookTester()).sqlNbClearAllOutputs(this.test.title);
+	});
+
+	test('sql language test', async function () {
+		await (new NotebookTester()).sqlLanguageTest(this.test.title);
+	});
+
+	// TODO: Need to make this test more reliable.
+	test('should not be dirty after saving notebook test @UNSTABLE@', async function () {
+		await (new NotebookTester().shouldNotBeDirtyAfterSavingNotebookTest(this.test.title));
+	});
+
+	if (process.env['RUN_PYTHON3_TEST'] === '1') {
+		test('Python3 notebook test', async function () {
+			await (new NotebookTester()).python3NbTest(this.test.title);
+		});
+
+		test('Clear all outputs - Python3 notebook ', async function () {
+			await (new NotebookTester()).python3ClearAllOutputs(this.test.title);
+		});
+
+		test('python language test', async function () {
+			await (new NotebookTester()).pythonLanguageTest(this.test.title);
+		});
+
+		test('Change kernel different provider SQL to Python to SQL', async function () {
+			await (new NotebookTester()).sqlNbChangeKernelDifferentProviderTest(this.test.title);
+		});
+
+		test('Change kernel different provider Python to SQL to Python', async function () {
+			await (new NotebookTester()).pythonChangeKernelDifferentProviderTest(this.test.title);
+		});
+
+		test('Change kernel same provider Python to PySpark to Python', async function () {
+			await (new NotebookTester()).pythonChangeKernelSameProviderTest(this.test.title);
+		});
+	}
+
+	if (process.env['RUN_PYSPARK_TEST'] === '1') {
+		test('PySpark notebook test', async function () {
+			await (new NotebookTester()).pySparkNbTest(this.test.title);
+		});
+	}
+
+	/* After https://github.com/microsoft/azuredatastudio/issues/5598 is fixed, enable these tests.
+	test('scala language test', async function () {
+		await (new NotebookTester()).scalaLanguageTest(this.test.title);
+	});
+
+	test('empty language test', async function () {
+		await (new NotebookTester()).emptyLanguageTest(this.test.title);
+	});
+
+	test('cplusplus language test', async function () {
+		await (new NotebookTester()).cplusplusLanguageTest(this.test.title);
+	});
+	*/
+});
 
 class NotebookTester {
 	private static ParallelCount = 1;
