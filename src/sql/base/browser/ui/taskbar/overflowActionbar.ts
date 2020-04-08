@@ -5,7 +5,7 @@
 
 import { IAction } from 'vs/base/common/actions';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { KeyCode } from 'vs/base/common/keyCodes';
 import {
 	IActionBarOptions, ActionsOrientation, IActionViewItem,
 	IActionOptions
@@ -144,10 +144,6 @@ export class OverflowActionBar extends ActionBar {
 				this.focusPrevious();
 			} else if (event.equals(KeyCode.DownArrow) && this._focusedItem !== this._actionsList.childNodes.length + this._overflow.childNodes.length - 2) { // down arrow on last element shouldn't move out from overflow
 				this.focusNext();
-			} else if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
-				this._moreActionsElement.focus();
-			} else if (event.equals(KeyCode.Tab)) {
-				this.hideOverflowDisplay();
 			}
 			DOM.EventHelper.stop(event, true);
 		}));
@@ -159,10 +155,12 @@ export class OverflowActionBar extends ActionBar {
 
 	private hideOverflowDisplay(): void {
 		this._overflow.style.display = 'none';
+		this._focusedItem = this._actionsList.childElementCount - 1;
 	}
 
 	private toggleOverflowDisplay(): void {
 		this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block';
+		this._focusedItem = this._actionsList.childElementCount - 1;
 	}
 
 	protected updateFocusedItem(): void {
@@ -293,5 +291,10 @@ export class OverflowActionBar extends ActionBar {
 		if (this._overflow) {
 			this.hideOverflowDisplay();
 		}
+	}
+
+	public run(action: IAction, context?: any): Promise<any> {
+		this.hideOverflowDisplay();
+		return this._actionRunner.run(action, context);
 	}
 }
