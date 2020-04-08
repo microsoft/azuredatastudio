@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-import { forEach } from 'vs/base/common/collections';
+import { forEach, groupBy } from 'vs/base/common/collections';
 import { Disposable } from 'vs/base/common/lifecycle';
 // import { match } from 'vs/base/common/glob';
 import * as json from 'vs/base/common/json';
@@ -15,7 +15,7 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 // {{SQL CARBON EDIT}}
-import { ShowRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
+import { ShowRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction, InstallRecommendedExtensionAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
 import { ShowRecommendedExtensionsByScenarioAction, InstallRecommendedExtensionsByScenarioAction } from 'sql/workbench/contrib/extensions/browser/extensionsActions';
 import * as Constants from 'sql/workbench/contrib/extensions/common/constants';
 // {{SQL CARBON EDIT}} - End
@@ -60,7 +60,7 @@ type ExtensionWorkspaceRecommendationsNotificationClassification = {
 };
 
 export const milliSecondsInADay = 1000 * 60 * 60 * 24;
-export const choiceNever = localize('neverShowAgain', "Don't Show Again");
+const choiceNever = localize('neverShowAgain', "Don't Show Again");
 // const searchMarketplace = localize('searchMarketplace', "Search Marketplace");
 // const processedFileExtensions: string[] = [];
 
@@ -395,13 +395,9 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 	 */
 	private promptWorkspaceRecommendations(): void {
 		const storageKey = 'extensionsAssistant/workspaceRecommendationsIgnore';
-		const config = this.configurationService.getValue<IExtensionsConfiguration>(ConfigurationKey);
 		const filteredRecs = this.allWorkspaceRecommendedExtensions.filter(rec => this.isExtensionAllowedToBeRecommended(rec.extensionId));
 
-		if (filteredRecs.length === 0
-			|| config.ignoreRecommendations
-			|| config.showRecommendationsOnlyOnDemand
-			|| this.storageService.getBoolean(storageKey, StorageScope.WORKSPACE, false)) {
+		if (filteredRecs.length === 0 || this.hasToIgnoreWorkspaceRecommendationNotifications()) {
 			return;
 		}
 
@@ -638,61 +634,8 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 			message = localize('reallyRecommendedExtensionPack', "The '{0}' extension pack is recommended for this file type.", extensionName);
 		}
 
-		this.notificationService.prompt(Severity.Info, message,
-			[{
-				label: localize('install', 'Install'),
-				run: () => {
-					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'install', extensionId });
-					this.instantiationService.createInstance(InstallRecommendedExtensionAction, extensionId).run();
-				}
-			}, {
-				label: localize('showRecommendations', "Show Recommendations"),
-				run: () => {
-					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'show', extensionId });
-
-					const recommendationsAction = this.instantiationService.createInstance(ShowRecommendedExtensionsAction, ShowRecommendedExtensionsAction.ID, localize('showRecommendations', "Show Recommendations"));
-					recommendationsAction.run();
-					recommendationsAction.dispose();
-				}
-			}, {
-				label: choiceNever,
-				isSecondary: true,
-				run: () => {
-					this.addToImportantRecommendationsIgnore(extensionId);
-					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'neverShowAgain', extensionId });
-					this.notificationService.prompt(
-						Severity.Info,
-						localize('ignoreExtensionRecommendations', "Do you want to ignore all extension recommendations?"),
-						[{
-							label: localize('ignoreAll', "Yes, Ignore All"),
-							run: () => this.setIgnoreRecommendationsConfig(true)
-						}, {
-							label: localize('no', "No"),
-							run: () => this.setIgnoreRecommendationsConfig(false)
-						}]
-					);
-				}
-			}],
-			{
-				sticky: true,
-				onCancel: () => {
-					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'cancelled', extensionId });
-				}
-			}
-			}, {
-			label: localize('showRecommendations', "Show Recommendations"),
-			run: () => {
-				*//* __GDPR__
-"extensionRecommendations:popup" : {
-"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-"extensionId": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
-}
-*//*
-		this.telemetryService.publicLog('extensionRecommendations:popup', { userReaction: 'show', extensionId: name });
-
-		const recommendationsAction = this.instantiationService.createInstance(ShowRecommendedExtensionsAction, ShowRecommendedExtensionsAction.ID, localize('showRecommendations', "Show Recommendations"));
-		recommendationsAction.run();
-		recommendationsAction.dispose();
+		this.promptExtensionInstallNotification(extensionId, message);
+		return true;
 	}
 	}, {
 	label: choiceNever,
@@ -700,11 +643,11 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 	run: () => {
 		this.addToImportantRecommendationsIgnore(id);
 		*//* __GDPR__
-		"extensionRecommendations:popup" : {
-			"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-			"extensionId": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
-		}
-	*//*
+	"extensionRecommendations:popup" : {
+		"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+		"extensionId": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
+	}
+*//*
 	this.telemetryService.publicLog('extensionRecommendations:popup', { userReaction: 'neverShowAgain', extensionId: name });
 	this.notificationService.prompt(
 		Severity.Info,
@@ -800,23 +743,68 @@ return true;
 "fileExtension": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
 }
 *//*
-		this.telemetryService.publicLog('fileExtensionSuggestion:popup', { userReaction: 'neverShowAgain', fileExtension: fileExtension });
-	}
-	}],
-	{
-	sticky: true,
-	onCancel: () => {
-		*//* __GDPR__
-		"fileExtensionSuggestion:popup" : {
-			"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-			"fileExtension": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
+			this.telemetryService.publicLog('fileExtensionSuggestion:popup', { userReaction: 'neverShowAgain', fileExtension: fileExtension });
 		}
-	*//*
+		}],
+		{
+		sticky: true,
+		onCancel: () => {
+			*//* __GDPR__
+	"fileExtensionSuggestion:popup" : {
+		"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+		"fileExtension": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
+	}
+*//*
 	this.telemetryService.publicLog('fileExtensionSuggestion:popup', { userReaction: 'cancelled', fileExtension: fileExtension });
 }
 }
 );
 }*/
+
+	protected promptExtensionInstallNotification(extensionId: string, message: string): void {
+		this.notificationService.prompt(Severity.Info, message,
+			[{
+				label: localize('install', 'Install'),
+				run: () => {
+					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'install', extensionId });
+					this.instantiationService.createInstance(InstallRecommendedExtensionAction, extensionId).run();
+				}
+			}, {
+				label: localize('showRecommendations', "Show Recommendations"),
+				run: () => {
+					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'show', extensionId });
+
+					const recommendationsAction = this.instantiationService.createInstance(ShowRecommendedExtensionsAction, ShowRecommendedExtensionsAction.ID, localize('showRecommendations', "Show Recommendations"));
+					recommendationsAction.run();
+					recommendationsAction.dispose();
+				}
+			}, {
+				label: choiceNever,
+				isSecondary: true,
+				run: () => {
+					this.addToImportantRecommendationsIgnore(extensionId);
+					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'neverShowAgain', extensionId });
+					this.notificationService.prompt(
+						Severity.Info,
+						localize('ignoreExtensionRecommendations', "Do you want to ignore all extension recommendations?"),
+						[{
+							label: localize('ignoreAll', "Yes, Ignore All"),
+							run: () => this.setIgnoreRecommendationsConfig(true)
+						}, {
+							label: localize('no', "No"),
+							run: () => this.setIgnoreRecommendationsConfig(false)
+						}]
+					);
+				}
+			}],
+			{
+				sticky: true,
+				onCancel: () => {
+					this.telemetryService.publicLog2<{ userReaction: string, extensionId: string }, ExtensionRecommendationsNotificationClassification>('extensionRecommendations:popup', { userReaction: 'cancelled', extensionId });
+				}
+			}
+		);
+	}
 
 	protected filterIgnoredOrNotAllowed(recommendationsToSuggest: string[]): string[] {
 		const importantRecommendationsIgnoreList = <string[]>JSON.parse(this.storageService.get('extensionsAssistant/importantRecommendationsIgnore', StorageScope.GLOBAL, '[]'));
@@ -831,17 +819,15 @@ return true;
 		});
 	}
 
-	protected filterInstalled(recommendationsToSuggest: string[], installed: ILocalExtension[], onAlreadyInstalled?: (id: string) => void): string[] {
+	/*private filterInstalled(recommendationsToSuggest: string[], installed: ILocalExtension[]): string[] {
 		const installedExtensionsIds = installed.reduce((result, i) => { result.add(i.identifier.id.toLowerCase()); return result; }, new Set<string>());
-		return recommendationsToSuggest.filter(id => {
-			if (installedExtensionsIds.has(id.toLowerCase())) {
-				if (onAlreadyInstalled) {
-					onAlreadyInstalled(id);
-				}
-				return false;
-			}
-			return true;
-		});
+		return recommendationsToSuggest.filter(id => !installedExtensionsIds.has(id.toLowerCase()));
+	}*/
+
+	protected groupByInstalled(recommendationsToSuggest: string[], local: ILocalExtension[]): { installed: string[], uninstalled: string[] } {
+		const installedExtensionsIds = local.reduce((result, i) => { result.add(i.identifier.id.toLowerCase()); return result; }, new Set<string>());
+		const result = groupBy(recommendationsToSuggest, id => installedExtensionsIds.has(id.toLowerCase()) ? 'installed' : 'uninstalled');
+		return result as { installed: string[], uninstalled: string[] };
 	}
 
 	protected addToImportantRecommendationsIgnore(id: string) {
@@ -988,10 +974,19 @@ return true;
 		if (!scenarioType) {
 			return Promise.reject(new Error(localize('scenarioTypeUndefined', 'The scenario type for extension recommendations must be provided.')));
 		}
-
 		return Promise.resolve((this.productService.recommendedExtensionsByScenario[scenarioType] || [])
 			.filter(extensionId => this.isExtensionAllowedToBeRecommended(extensionId))
 			.map(extensionId => (<IExtensionRecommendation>{ extensionId, sources: ['application'] })));
 	}
 	// {{SQL CARBON EDIT}} - End
+
+	protected hasToIgnoreRecommendationNotifications(): boolean {
+		const config = this.configurationService.getValue<IExtensionsConfiguration>(ConfigurationKey);
+		return config.ignoreRecommendations || config.showRecommendationsOnlyOnDemand;
+	}
+
+	private hasToIgnoreWorkspaceRecommendationNotifications(): boolean {
+		return this.hasToIgnoreRecommendationNotifications() || this.storageService.getBoolean('extensionsAssistant/workspaceRecommendationsIgnore', StorageScope.WORKSPACE, false);
+	}
+
 }
