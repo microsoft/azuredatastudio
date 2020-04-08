@@ -106,6 +106,7 @@ export class OverflowActionBar extends ActionBar {
 		let index = this._actionsList.childNodes.length - 2; // remove the last toolbar action before the more actions '...'
 		let item = this._actionsList.removeChild(this._actionsList.childNodes[index]);
 		this._overflow.insertBefore(item, this._overflow.firstChild);
+		this._register(DOM.addDisposableListener(item, DOM.EventType.CLICK, (e => { this.hideOverflowDisplay(); })));
 
 		// change role to menuItem when it's in the overflow
 		if ((<HTMLElement>this._overflow.firstChild).className !== 'taskbarSeparator') {
