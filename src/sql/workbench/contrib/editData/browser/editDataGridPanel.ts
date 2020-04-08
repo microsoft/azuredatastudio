@@ -48,9 +48,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	// to make the scroll experience smoother
 	private windowSize = 200;
 
-	// Height and width used by the container to allow table to be displayed.
-	private tableHeight = '447px';
-	private tableWidth = '632px';
 
 	// FIELDS
 	// All datasets
@@ -105,9 +102,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.nativeElement = document.createElement('div');
 		this.nativeElement.className = 'editDataGridPanel';
 		this.nativeElement.classList.add('slickgridContainer');
-		// Assign measurements to prevent override
-		this.nativeElement.style.height = this.tableHeight;
-		this.nativeElement.style.width = this.tableWidth;
 		this.dataService = dataService;
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
 		onRestoreViewState(() => this.restoreViewState());

@@ -630,18 +630,24 @@ export class EditDataEditor extends BaseEditor {
 				this._sash.hide();
 			}
 			if (this._resultsEditorContainer) {
-				if (this.queryPaneEnabled()) {
-					this._resultsEditorContainer.style.borderTopStyle = 'solid';
-					this._resultsEditorContainer.style.borderTopWidth = '1px';
-				} else {
-					this._resultsEditorContainer.style.borderTopStyle = '';
-					this._resultsEditorContainer.style.borderTopWidth = '';
-				}
+				this.sashVisibilityUpdate();
 			}
 		}
 
 		this._updateTaskbar(newInput);
 		return this._setNewInput(newInput, options);
+	}
+
+	private sashVisibilityUpdate(): boolean {
+		if (this.queryPaneEnabled()) {
+			this._resultsEditorContainer.style.borderTopStyle = 'solid';
+			this._resultsEditorContainer.style.borderTopWidth = '1px';
+			return true;
+		} else {
+			this._resultsEditorContainer.style.borderTopStyle = '';
+			this._resultsEditorContainer.style.borderTopWidth = '';
+			return false;
+		}
 	}
 
 	private _updateQueryEditorVisible(currentEditorIsVisible: boolean): void {
@@ -689,17 +695,10 @@ export class EditDataEditor extends BaseEditor {
 
 	public toggleQueryPane(): void {
 		this.editDataInput.queryPaneEnabled = !this.queryPaneEnabled();
-		if (this.queryPaneEnabled()) {
-			if (this._resultsEditorContainer) {
-				this._resultsEditorContainer.style.borderTopStyle = 'solid';
-				this._resultsEditorContainer.style.borderTopWidth = '1px';
-			}
+		if (this.sashVisibilityUpdate) {
 			this._showQueryEditor();
-		} else {
-			if (this._resultsEditorContainer) {
-				this._resultsEditorContainer.style.borderTopStyle = '';
-				this._resultsEditorContainer.style.borderTopWidth = '';
-			}
+		}
+		else {
 			this._hideQueryEditor();
 		}
 		this._doLayout(false);
