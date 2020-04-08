@@ -87,9 +87,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}, {
 			name: 'sparkmagic',
 			version: '0.12.9'
-		}, {
-			name: 'Kqlmagic',
-			version: '0.1.109'
 		}
 	];
 

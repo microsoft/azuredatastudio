@@ -32,7 +32,7 @@ import { tableBackground, cellBackground, cellBorderColor } from 'sql/platform/t
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
-import { find, fill } from 'vs/base/common/arrays';
+import { find } from 'vs/base/common/arrays';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { onUnexpectedError } from 'vs/base/common/errors';
 
@@ -672,7 +672,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		// if the durations are all 0 secs, show minimal chart
 		// instead of nothing
 		if (zeroDurationJobCount === jobHistories.length) {
-			return fill(jobHistories.length, '5px');
+			return new Array(jobHistories.length).fill('5px');
 		} else {
 			return chartHeights;
 		}

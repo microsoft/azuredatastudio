@@ -61,7 +61,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 			maxDepth = undefined;
 		}
 
-		let p: string = path.join(folderPath, '**', '_data', 'toc.yml').replace(/\\/g, '/');
+		let p: string = path.posix.join(glob.escapePath(folderPath.replace(/\\/g, '/')), '**', '_data', 'toc.yml');
 		let tableOfContentPaths: string[] = await glob(p, { deep: maxDepth });
 		if (tableOfContentPaths.length > 0) {
 			this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);

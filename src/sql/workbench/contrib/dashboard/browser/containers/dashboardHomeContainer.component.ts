@@ -69,4 +69,9 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 			this._scrollable.layout();
 		}
 	}
+
+	public refresh(): void {
+		super.refresh();
+		this._propertiesClass.refresh();
+	}
 }

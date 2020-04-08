@@ -93,7 +93,6 @@ export class PackageManager {
 				// Execute the command
 				//
 				this._apiWrapper.executeCommand(constants.managePackagesCommand, {
-					multiLocations: false,
 					defaultLocation: defaultProvider.packageTarget.location,
 					defaultProviderId: defaultProvider.providerId
 				});
@@ -116,7 +115,7 @@ export class PackageManager {
 	 * Installs dependencies for the extension
 	 */
 	public async installDependencies(): Promise<void> {
-		await utils.executeTasks(this._apiWrapper, constants.installDependenciesMsgTaskName, [
+		await utils.executeTasks(this._apiWrapper, constants.installPackageMngDependenciesMsgTaskName, [
 			this.installRequiredPythonPackages(this._config.requiredSqlPythonPackages),
 			this.installRequiredRPackages()], true);
 	}
@@ -130,7 +129,7 @@ export class PackageManager {
 		}
 
 		await utils.createFolder(utils.getRPackagesFolderPath(this._rootFolder));
-		await Promise.all(this._config.requiredSqlPythonPackages.map(x => this.installRPackage(x)));
+		await Promise.all(this._config.requiredSqlRPackages.map(x => this.installRPackage(x)));
 	}
 
 	/**
@@ -151,7 +150,8 @@ export class PackageManager {
 		let fileContent = '';
 		requiredPackages.forEach(packageDetails => {
 			let hasVersion = ('version' in packageDetails) && !isNullOrUndefined(packageDetails['version']) && packageDetails['version'].length > 0;
-			if (!installedPackages.find(x => x.name === packageDetails['name'] && (!hasVersion || packageDetails['version'] === x.version))) {
+			if (!installedPackages.find(x => x.name === packageDetails['name']
+				&& (!hasVersion || utils.comparePackageVersions(packageDetails['version'] || '', x.version) <= 0))) {
 				let packageNameDetail = hasVersion ? `${packageDetails.name}==${packageDetails.version}` : `${packageDetails.name}`;
 				fileContent = `${fileContent}${packageNameDetail}\n`;
 			}
@@ -177,7 +177,7 @@ export class PackageManager {
 	private async getInstalledPipPackages(): Promise<nbExtensionApis.IPackageDetails[]> {
 		try {
 			let cmd = `"${this.pythonExecutable}" -m pip list --format=json`;
-			let packagesInfo = await this._processService.executeBufferedCommand(cmd, this._outputChannel);
+			let packagesInfo = await this._processService.executeBufferedCommand(cmd, undefined);
 			let packagesResult: nbExtensionApis.IPackageDetails[] = [];
 			if (packagesInfo) {
 				packagesResult = <nbExtensionApis.IPackageDetails[]>JSON.parse(packagesInfo);
