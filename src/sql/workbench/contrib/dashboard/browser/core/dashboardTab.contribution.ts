@@ -32,6 +32,11 @@ export interface IDashboardTabContrib {
 	icon?: IUserFriendlyIcon;
 }
 
+export interface IDashboardTabGroupContrib {
+	id: string;
+	title: string;
+}
+
 const tabSchema: IJSONSchema = {
 	type: 'object',
 	properties: {
@@ -180,6 +185,61 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 	}
 });
 
+const tabGroupSchema: IJSONSchema = {
+	type: 'object',
+	properties: {
+		id: {
+			type: 'string',
+			description: localize('azdata.extension.contributes.dashboard.tabGroup.id', "Unique identifier for this tab group.")
+		},
+		title: {
+			type: 'string',
+			description: localize('azdata.extension.contributes.dashboard.tabGroup.title', "Title of the tab group.")
+		}
+	}
+};
+
+const tabGroupContributionSchema: IJSONSchema = {
+	description: localize('azdata.extension.contributes.tabGroups', "Contributes a single or multiple tab groups for users to add to their dashboard."),
+	oneOf: [
+		tabGroupSchema,
+		{
+			type: 'array',
+			items: tabGroupSchema
+		}
+	]
+};
+
+ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabContrib[]>({ extensionPoint: 'dashboard.tabGroups', jsonSchema: tabGroupContributionSchema }).setHandler(extensions => {
+
+	function handleTabGroup(tabgroup: IDashboardTabGroupContrib, extension: IExtensionPointUser<any>) {
+		let { id, title } = tabgroup;
+
+		if (!id) {
+			extension.collector.error(localize('dashboardTabGroup.contribution.noIdError', "No id specified for tab group."));
+			return;
+		}
+
+		if (!title) {
+			extension.collector.error(localize('dashboardTabGroup.contribution.noTitleError', "No title specified for tab group."));
+			return;
+		}
+		registerTabGroup({ id, title });
+	}
+
+	for (const extension of extensions) {
+		const { value } = extension;
+		if (Array.isArray<IDashboardTabGroupContrib>(value)) {
+			for (const command of value) {
+				handleTabGroup(command, extension);
+			}
+		} else {
+			handleTabGroup(value, extension);
+		}
+	}
+});
+
+// Pre-defined tab groups
 const TabGroups: IDashboardTabGroup[] = [
 	{
 		id: 'administration',
