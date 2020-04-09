@@ -1061,7 +1061,6 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			TimelineItem: extHostTypes.TimelineItem,
 			CellKind: extHostTypes.CellKind,
 			CellOutputKind: extHostTypes.CellOutputKind,
-			CustomDocument: extHostTypes.CustomDocument,
 		};
 	};
 }
