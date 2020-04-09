@@ -46,7 +46,7 @@ export class OverflowActionBar extends ActionBar {
 		this._domNode.appendChild(this._overflow);
 
 		this._register(DOM.addDisposableListener(this._overflow, DOM.EventType.FOCUS_OUT, e => {
-			if (this._overflow && !DOM.isAncestor(e.relatedTarget as HTMLElement, this._overflow)) {
+			if (this._overflow && !DOM.isAncestor(e.relatedTarget as HTMLElement, this._overflow) && e.relatedTarget !== this._moreActionsElement) {
 				this.hideOverflowDisplay();
 			}
 		}));
@@ -71,7 +71,6 @@ export class OverflowActionBar extends ActionBar {
 			while (width < fullWidth) {
 				let index = this._actionsList.childNodes.length - 2; // remove the last toolbar action before the more actions '...'
 				if (index > -1) {
-					// move placeholder in this._items
 					this.collapseItem();
 					fullWidth = this._actionsList.scrollWidth;
 				} else {
@@ -139,12 +138,6 @@ export class OverflowActionBar extends ActionBar {
 			}
 		})));
 
-		this._register(DOM.addDisposableListener(this._moreItemElement, DOM.EventType.FOCUS_OUT, e => {
-			if (this._overflow && !DOM.isAncestor(e.relatedTarget as HTMLElement, this._overflow)) {
-				this.hideOverflowDisplay();
-			}
-		}));
-
 		this._register(DOM.addDisposableListener(this._overflow, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			let event = new StandardKeyboardEvent(e);
 
@@ -184,19 +177,16 @@ export class OverflowActionBar extends ActionBar {
 	}
 
 	private moreElementOnClick(event: MouseEvent | StandardKeyboardEvent): void {
-		this.toggleOverflowDisplay();
-		this._focusedItem = this._actionsList.childElementCount;
-		this.updateFocus();
+		this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block';
+		if (this._overflow.style.display === 'block') {
+			this._focusedItem = this._actionsList.childElementCount;
+			this.updateFocus();
+		}
 		DOM.EventHelper.stop(event, true);
 	}
 
 	private hideOverflowDisplay(): void {
 		this._overflow.style.display = 'none';
-		this._focusedItem = this._actionsList.childElementCount - 1;
-	}
-
-	private toggleOverflowDisplay(): void {
-		this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block';
 		this._focusedItem = this._actionsList.childElementCount - 1;
 	}
 
