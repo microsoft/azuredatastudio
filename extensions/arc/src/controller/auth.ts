@@ -5,7 +5,10 @@
 
 import * as request from 'request';
 import * as vscode from 'vscode';
-import { Authentication } from './generated/api';
+
+interface Authentication {
+	applyToRequest(requestOptions: request.Options): Promise<void> | void;
+}
 
 class SslAuth implements Authentication {
 	constructor() { }
@@ -31,6 +34,7 @@ export class KerberosAuth extends SslAuth implements Authentication {
 		requestOptions.auth = undefined;
 	}
 }
+
 export class BasicAuth extends SslAuth implements Authentication {
 	constructor(public username: string, public password: string) {
 		super();
@@ -45,7 +49,9 @@ export class BasicAuth extends SslAuth implements Authentication {
 }
 
 export class OAuthWithSsl extends SslAuth implements Authentication {
-	public accessToken: string = '';
+	constructor(public accessToken: string) {
+		super();
+	}
 
 	applyToRequest(requestOptions: request.Options): void {
 		super.applyToRequest(requestOptions);
