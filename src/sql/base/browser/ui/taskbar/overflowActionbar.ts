@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import 'sql/base/browser/ui/taskbar/overflowActionbarStyles';
 
 import { IAction } from 'vs/base/common/actions';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -15,8 +16,6 @@ import * as types from 'vs/base/common/types';
 import * as nls from 'vs/nls';
 import { debounce } from 'vs/base/common/decorators';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
-
-import 'sql/base/browser/ui/taskbar/overflowActionbarStyles';
 
 const defaultOptions: IActionBarOptions = {
 	orientation: ActionsOrientation.HORIZONTAL,

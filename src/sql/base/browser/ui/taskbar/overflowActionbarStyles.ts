@@ -3,7 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+// eslint-disable-next-line code-import-patterns
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+// eslint-disable-next-line code-import-patterns
 import { EDITOR_PANE_BACKGROUND, DASHBOARD_BORDER, TOOLBAR_OVERFLOW_SHADOW } from 'vs/workbench/common/theme';
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
