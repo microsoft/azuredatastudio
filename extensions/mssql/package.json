@@ -494,10 +494,7 @@
         "title": "%mssql.tabs.databases%",
         "when": "dashboardContext == 'server'",
         "group": "home",
-        "icon": {
-          "light": "resources/light/database.svg",
-          "dark": "resources/dark/database_inverse.svg"
-        },
+        "icon": "resources/database.svg",
         "container": {
           "widgets-container": [
             {
