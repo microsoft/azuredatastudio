@@ -27,7 +27,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 
 export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
-		name: nls.localize('databasePageName', "DATABASE DASHBOARD"),
+		name: nls.localize('databasePageName', "Database Properties"),
 		widget: {
 			'properties-widget': undefined
 		},

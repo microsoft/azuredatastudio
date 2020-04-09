@@ -29,7 +29,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 
 export class ServerDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
-		name: nls.localize('serverPageName', "SERVER DASHBOARD"),
+		name: nls.localize('serverPageName', "Server Properties"),
 		widget: {
 			'properties-widget': undefined
 		},
