@@ -48,7 +48,7 @@ describe('DataItemCache', function (): void {
 		dataItemCache.isCacheExpired().should.be.true;
 	});
 
-	it('Should call fetch function once for consecutive getValue() calls prior to expiration', async function (): Promise<void> {
+	it.skip('Should call fetch function once for consecutive getValue() calls prior to expiration', async function (): Promise<void> {
 		await dataItemCache.getData();
 		await dataItemCache.getData();
 		await dataItemCache.getData();
