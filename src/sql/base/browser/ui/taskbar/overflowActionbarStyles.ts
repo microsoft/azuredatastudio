@@ -7,6 +7,8 @@
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 // eslint-disable-next-line code-import-patterns
 import { EDITOR_PANE_BACKGROUND, DASHBOARD_BORDER, TOOLBAR_OVERFLOW_SHADOW } from 'vs/workbench/common/theme';
+// eslint-disable-next-line code-import-patterns
+import { focusBorder } from 'vs/platform/theme/common/colorRegistry';
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 	const overflowBackground = theme.getColor(EDITOR_PANE_BACKGROUND);
@@ -27,6 +29,15 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	if (border) {
 		collector.addRule(`.carbon-taskbar .overflow {
 			border: 1px solid ${border};
+		}`);
+	}
+
+	const activeOutline = theme.getColor(focusBorder);
+	if (activeOutline) {
+		collector.addRule(`.carbon-taskbar .overflow li.focused {
+			outline: 1px solid;
+			outline-offset: -3px;
+			outline-color: ${activeOutline}
 		}`);
 	}
 });
