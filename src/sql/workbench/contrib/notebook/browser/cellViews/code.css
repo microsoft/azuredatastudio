@@ -31,42 +31,23 @@ code-component .toolbar .carbon-taskbar {
 	margin-top: 5px;
 }
 
-.notebook-cell.active code-component .toolbarIconRun {
+code-component .toolbar .codicon {
 	height: 20px;
-	background-image: url('./media/light/execute_cell.svg');
 	padding-bottom: 10px;
 }
 
 .notebook-cell:not(.active):hover code-component .toolbarIconRun {
-	height: 20px;
-	background-image: url('./media/light/execute_cell_grey.svg');
-	padding-bottom: 10px;
+	background-image: url('./media/execute_cell_grey.svg');
 }
-
-.vs-dark code-component .toolbarIconRun,
-.hc-black code-component .toolbarIconRun {
-	background-image: url('./media/dark/execute_cell_inverse.svg');
+.vs-dark .notebook-cell:not(.active):hover code-component .toolbarIconRun {
+	background-image: url('./media/execute_cell_dark.svg');
 }
-
-code-component .toolbarIconRunError {
-	height: 20px;
-	background-image: url('./media/light/execute_cell_error.svg');
-	padding-bottom: 10px;
-}
-
-code-component .toolbarIconStop {
-	height: 20px;
-	background-image: url('./media/light/stop_cell_solidanimation.svg');
-	padding-bottom: 10px;
-}
-
-.vs-dark code-component .toolbarIconStop,
-.hc-black code-component .toolbarIconStop {
-	background-image: url('./media/dark/stop_cell_solidanimation_inverse.svg');
+.hc-black .notebook-cell:not(.active):hover code-component .toolbarIconRun {
+	background-image: url('./media/execute_cell_hc.svg');
 }
 
 code-component .editor {
-	padding: 14px 0px 5px 0px
+	margin: 14px 0px 5px 0px
 }
 
 code-cell-component code-component .monaco-editor .margin-view-overlays .line-numbers {
@@ -74,6 +55,13 @@ code-cell-component code-component .monaco-editor .margin-view-overlays .line-nu
 }
 code-cell-component code-component .monaco-scrollable-element.editor-scrollable.vs {
 	left: 40px!important;
+}
+
+code-cell-component .monaco-editor .margin,
+code-cell-component code-component .monaco-editor,
+code-cell-component code-component .monaco-editor-background,
+code-cell-component code-component .monaco-editor .inputarea.ime-input {
+	background-color: transparent;
 }
 
 /* overview ruler */
@@ -118,22 +106,4 @@ code-component .hide-component-button {
 	background-repeat: no-repeat;
 	background-position: center;
 	background-color: transparent;
-}
-
-code-component .hide-component-button.icon-hide-cell {
-	background-image: url("./media/light/chevron_up.svg");
-}
-
-code-component .hide-component-button.icon-show-cell {
-	background-image: url("./media/light/chevron_down.svg");
-}
-
-.vs-dark code-component .hide-component-button.icon-hide-cell,
-.hc-black code-component .hide-component-button.icon-hide-cell {
-	background-image: url("./media/dark/chevron_up_inverse.svg");
-}
-
-.vs-dark code-component .hide-component-button.icon-show-cell,
-.hc-black code-component .hide-component-button.icon-show-cell {
-	background-image: url("./media/dark/chevron_down_inverse.svg");
 }

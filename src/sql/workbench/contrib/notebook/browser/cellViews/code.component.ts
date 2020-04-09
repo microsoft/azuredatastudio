@@ -385,27 +385,25 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 registerThemingParticipant((theme, collector) => {
 	const codeEditorLineNumberColor = theme.getColor(codeEditorLineNumber);
 	if (codeEditorLineNumberColor) {
-		collector.addRule(`code-component .editor .line-numbers { color: ${codeEditorLineNumberColor};}`);
+		collector.addRule(`code-cell-component code-component .editor .line-numbers { color: ${codeEditorLineNumberColor};}`);
 	}
 	const codeEditorToolbarIconColor = theme.getColor(codeEditorToolbarIcon);
 	if (codeEditorToolbarIconColor) {
 		collector.addRule(
-			`code-component .carbon-taskbar .codicon.hideIcon { color: ${codeEditorToolbarIconColor};}`
-		);
-		collector.addRule(
-			`code-component .toolbar { border-color: ${codeEditorToolbarIconColor};}`
+			`code-cell-component code-component .carbon-taskbar .codicon.hideIcon { color: ${codeEditorToolbarIconColor};}`
 		);
 	}
 	const codeEditorBackgroundColor = theme.getColor(codeEditorBackground);
 	if (codeEditorBackgroundColor) {
-		collector.addRule(`code-component .editor { background-color: ${codeEditorBackgroundColor};}`);
+		collector.addRule(`code-cell-component code-component { background-color: ${codeEditorBackgroundColor}; }`);
 	}
+
 	const codeEditorSidebarBackgroundColor = theme.getColor(codeEditorSidebarBackground);
 	if (codeEditorSidebarBackgroundColor) {
-		collector.addRule(`code-component .toolbar { background-color: ${codeEditorSidebarBackgroundColor};}`);
+		collector.addRule(`.notebook-cell.active code-cell-component code-component .toolbar { background-color: ${codeEditorSidebarBackgroundColor};}`);
 	}
 	const codeEditorSidebarBorderColor = theme.getColor(codeEditorSidebarBorder);
 	if (codeEditorSidebarBorderColor) {
-		collector.addRule(`code-component .toolbar { border-right-color: ${codeEditorSidebarBorderColor};}`);
+		collector.addRule(`.notebook-cell.active code-cell-component code-component .toolbar { border-right-color: ${codeEditorSidebarBorderColor}!important;}`);
 	}
 });

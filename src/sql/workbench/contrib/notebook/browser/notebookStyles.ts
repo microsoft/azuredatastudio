@@ -5,7 +5,7 @@
 import 'vs/css!./notebook';
 
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
-import { SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
+import { SIDE_BAR_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
 import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, editorBackground, lighten } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
 import { cellBorder } from 'sql/platform/theme/common/colorRegistry';
@@ -84,7 +84,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		}
 
 		const inactiveBorder = theme.getColor(SIDE_BAR_BACKGROUND);
-		const sidebarColor = theme.getColor(SIDE_BAR_SECTION_HEADER_BACKGROUND);
 		const notebookLineHighlight = theme.getColor(EDITOR_GROUP_HEADER_TABS_BACKGROUND);
 		// Code editor style overrides - only applied if user chooses this as preferred option
 		if (overrideEditorThemeSetting) {
@@ -101,25 +100,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				// We need to clear out the border because we do not want to show it for notebooks
 				// Override values only for the children of code-component so regular editors aren't affected
 				collector.addRule(`code-component .monaco-editor .view-overlays .current-line { border: 0px; }`);
-			}
-
-			// Override code editor background if color is defined
-			let codeBackground = inactiveBorder; // theme.getColor(EDITOR_GROUP_HEADER_TABS_BACKGROUND);
-
-			if (codeBackground) {
-				// Main background
-				collector.addRule(`.notebook-cell:not(.active) code-component { background-color: ${codeBackground}; }`);
-				collector.addRule(`
-					.notebook-cell:not(.active) code-component .monaco-editor,
-					.notebook-cell:not(.active) code-component .monaco-editor-background,
-					.notebook-cell:not(.active) code-component .monaco-editor .inputarea.ime-input,
-					.notebook-cell.active .hide-component-button:hover
-					{
-						background-color: ${codeBackground};
-					}`);
-
-				// Margin background will be the same (may override some styles)
-				collector.addRule(`.notebook-cell:not(.active) code-component .monaco-editor .margin { background-color: ${codeBackground}; }`);
 			}
 		}
 
@@ -143,12 +123,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			`);
 		}
 
-		// Sidebar and cell outline toolbar color set only when active
-		collector.addRule(`
-			.notebook-cell.active code-component .toolbar {
-				background-color: ${sidebarColor};
-			}
-		`);
 		// Styling with Outline color (e.g. high contrast theme)
 		const outline = theme.getColor(activeContrastBorder);
 		const hcOutline = theme.getColor(contrastBorder);
@@ -212,8 +186,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			}
 			`);
 		}
-
-
 		let blockQuoteBackground = theme.getColor(textBlockQuoteBackground);
 		let blockQuoteBorder = theme.getColor(textBlockQuoteBorder);
 		if (preformatForeground) {

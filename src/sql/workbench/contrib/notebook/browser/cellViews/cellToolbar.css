@@ -47,26 +47,3 @@ cell-toolbar-component .offscreen {
 	margin-top: -1px;
 	position: absolute;
 }
-
-cell-toolbar-component li .cell-tool-close {
-	background-image: url('sql/media/icons/close-blue.svg');
-}
-cell-toolbar-component li .cell-tool-edit {
-	background-image: url('sql/media/icons/edit.svg');
-}
-cell-toolbar-component li .cell-tool-add {
-	background-image: url('sql/media/icons/new-blue.svg');
-}
-cell-toolbar-component li .cell-tool-move-up {
-	background-image: url('sql/media/icons/down-arrow-blue.svg');
-	transform: scale(-1);
-}
-cell-toolbar-component li .cell-tool-move-down {
-	background-image: url('sql/media/icons/down-arrow-blue.svg');
-}
-cell-toolbar-component li .cell-tool-delete {
-	background-image: url('sql/media/icons/garbage-can-blue.svg');
-}
-cell-toolbar-component li .cell-tool-more {
-	background-image: url('sql/media/icons/ellipsis-blue.svg');
-}
