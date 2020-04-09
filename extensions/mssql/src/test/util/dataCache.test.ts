@@ -8,7 +8,7 @@ import 'mocha';
 import { should } from 'chai'; should();
 import * as TypeMoq from 'typemoq';
 
-describe('DataItemCache', function (): void {
+describe.skip('DataItemCache', function (): void {
 
 	const testCacheItem = 'Test Cache Item';
 	const fetchFunction = () => Promise.resolve(testCacheItem);
