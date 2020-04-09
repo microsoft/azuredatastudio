@@ -17,6 +17,7 @@ import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/workbench
 import { values } from 'vs/base/common/collections';
 import { IUserFriendlyIcon } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { isValidIcon, createCSSRuleForIcon } from 'sql/workbench/contrib/dashboard/browser/dashboardIconUtil';
+import { IDashboardTabGroup } from 'sql/workbench/services/dashboard/browser/common/interfaces';
 
 export interface IDashboardTabContrib {
 	id: string;
@@ -29,11 +30,6 @@ export interface IDashboardTabContrib {
 	isHomeTab?: boolean;
 	group?: string;
 	icon?: IUserFriendlyIcon;
-}
-
-export interface IDashboardTabGroupContrib {
-	id: string;
-	title: string;
 }
 
 const tabSchema: IJSONSchema = {
@@ -184,56 +180,26 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 	}
 });
 
-const tabGroupSchema: IJSONSchema = {
-	type: 'object',
-	properties: {
-		id: {
-			type: 'string',
-			description: localize('azdata.extension.contributes.dashboard.tabGroup.id', "Unique identifier for this tab group.")
-		},
-		title: {
-			type: 'string',
-			description: localize('azdata.extension.contributes.dashboard.tabGroup.title', "Title of the tab group.")
-		}
+const TabGroups: IDashboardTabGroup[] = [
+	{
+		id: 'administration',
+		title: localize('administrationTabGroup', "Administration")
+	}, {
+		id: 'monitoring',
+		title: localize('monitoringTabGroup', "Monitoring")
+	}, {
+		id: 'performance',
+		title: localize('performanceTabGroup', "Performance")
+	}, {
+		id: 'security',
+		title: localize('securityTabGroup', "Security")
+	}, {
+		id: 'troubleshooting',
+		title: localize('troubleshootingTabGroup', "Troubleshooting")
+	}, {
+		id: 'settings',
+		title: localize('settingsTabGroup', "Settings")
 	}
-};
+];
 
-const tabGroupContributionSchema: IJSONSchema = {
-	description: localize('azdata.extension.contributes.tabGroups', "Contributes a single or multiple tab groups for users to add to their dashboard."),
-	oneOf: [
-		tabGroupSchema,
-		{
-			type: 'array',
-			items: tabGroupSchema
-		}
-	]
-};
-
-ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabContrib[]>({ extensionPoint: 'dashboard.tabGroups', jsonSchema: tabGroupContributionSchema }).setHandler(extensions => {
-
-	function handleTabGroup(tabgroup: IDashboardTabGroupContrib, extension: IExtensionPointUser<any>) {
-		let { id, title } = tabgroup;
-
-		if (!id) {
-			extension.collector.error(localize('dashboardTabGroup.contribution.noIdError', "No id specified for tab group."));
-			return;
-		}
-
-		if (!title) {
-			extension.collector.error(localize('dashboardTabGroup.contribution.noTitleError', "No title specified for tab group."));
-			return;
-		}
-		registerTabGroup({ id, title });
-	}
-
-	for (const extension of extensions) {
-		const { value } = extension;
-		if (Array.isArray<IDashboardTabGroupContrib>(value)) {
-			for (const command of value) {
-				handleTabGroup(command, extension);
-			}
-		} else {
-			handleTabGroup(value, extension);
-		}
-	}
-});
+TabGroups.forEach(tabGroup => registerTabGroup(tabGroup));
