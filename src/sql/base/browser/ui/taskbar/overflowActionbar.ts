@@ -307,7 +307,7 @@ export class OverflowActionBar extends ActionBar {
 			let actionItem = <any>item;
 
 			if (i === this._focusedItem) {
-				// dummy placeholder
+				// placeholder for location of moreActionsElement
 				if (!actionItem) {
 					this._moreActionsElement.focus();
 				}
