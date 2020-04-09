@@ -37,18 +37,18 @@ export class BookTreeItem extends vscode.TreeItem {
 	constructor(public book: BookTreeItemFormat, icons: any) {
 		super(book.title, book.treeItemCollapsibleState);
 
+		if (book.page && book.page.sections && book.page.sections.length > 0) {
+			this.contextValue = 'section';
+		} else if (book.isUntitled) {
+			this.contextValue = 'unsavedBook';
+		} else {
+			this.contextValue = 'savedBook';
+		}
+
 		if (book.type === BookTreeItemType.Book) {
 			this.collapsibleState = book.treeItemCollapsibleState;
 			this._sections = book.page;
-			if (book.isUntitled) {
-				this.contextValue = 'unsavedBook';
-			} else {
-				this.contextValue = 'savedBook';
-			}
 		} else {
-			if (book.page && book.page.sections && book.page.sections.length > 0) {
-				this.contextValue = 'section';
-			}
 			this.setPageVariables();
 			this.setCommand();
 		}
@@ -122,7 +122,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		return this._uri;
 	}
 
-	public get root(): string {
+	public get rootPath(): string {
 		return this.book.rootPath;
 	}
 
