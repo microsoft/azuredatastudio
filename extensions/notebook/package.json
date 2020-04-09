@@ -217,6 +217,10 @@
         "title": "%title.closeJupyterBook%"
       },
       {
+        "command": "notebook.command.closeNotebook",
+        "title": "%title.closeJupyterNotebook%"
+      },
+      {
         "command": "notebook.command.createBook",
         "title": "%title.createJupyterBook%",
         "category": "%books-preview-category%",
@@ -327,6 +331,10 @@
           "when": "false"
         },
         {
+          "command": "notebook.command.closeNotebook",
+          "when": "false"
+        },
+        {
           "command": "notebook.command.revealInBooksViewlet",
           "when": "false"
         }
@@ -379,6 +387,10 @@
         {
           "command": "notebook.command.closeBook",
           "when": "view == bookTreeView && viewItem == savedBook"
+        },
+        {
+          "command": "notebook.command.closeNotebook",
+          "when": "view == bookTreeView && viewItem == savedNotebook"
         }
       ],
       "view/title": [

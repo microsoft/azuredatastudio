@@ -36,19 +36,24 @@ export class BookTreeItem extends vscode.TreeItem {
 
 	constructor(public book: BookTreeItemFormat, icons: any) {
 		super(book.title, book.treeItemCollapsibleState);
-
-		if (book.page && book.page.sections && book.page.sections.length > 0) {
-			this.contextValue = 'section';
-		} else if (book.isUntitled) {
-			this.contextValue = 'unsavedBook';
-		} else {
-			this.contextValue = 'savedBook';
-		}
-
 		if (book.type === BookTreeItemType.Book) {
 			this.collapsibleState = book.treeItemCollapsibleState;
 			this._sections = book.page;
+			if (book.isUntitled) {
+				this.contextValue = 'unsavedBook';
+			} else {
+				this.contextValue = 'savedBook';
+			}
 		} else {
+			if (book.page && book.page.sections && book.page.sections.length > 0) {
+				this.contextValue = 'section';
+			} else if (book.type === BookTreeItemType.Notebook && !book.tableOfContents.sections) {
+				if (book.isUntitled) {
+					this.contextValue = 'unsavedNotebook';
+				} else {
+					this.contextValue = 'savedNotebook';
+				}
+			}
 			this.setPageVariables();
 			this.setCommand();
 		}
