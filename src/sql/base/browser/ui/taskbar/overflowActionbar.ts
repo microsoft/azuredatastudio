@@ -5,7 +5,7 @@
 
 import { IAction } from 'vs/base/common/actions';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyCode } from 'vs/base/common/keyCodes';
+import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import {
 	IActionBarOptions, ActionsOrientation, IActionViewItem,
 	IActionOptions
@@ -45,6 +45,11 @@ export class OverflowActionBar extends ActionBar {
 		this._overflow.setAttribute('role', 'menu');
 		this._domNode.appendChild(this._overflow);
 
+		this._register(DOM.addDisposableListener(this._overflow, DOM.EventType.FOCUS_OUT, e => {
+			if (this._overflow && !DOM.isAncestor(e.relatedTarget as HTMLElement, this._overflow)) {
+				this.hideOverflowDisplay();
+			}
+		}));
 		this._actionsList.style.flexWrap = 'nowrap';
 
 		container.appendChild(this._domNode);
@@ -134,6 +139,12 @@ export class OverflowActionBar extends ActionBar {
 			}
 		})));
 
+		this._register(DOM.addDisposableListener(this._moreItemElement, DOM.EventType.FOCUS_OUT, e => {
+			if (this._overflow && !DOM.isAncestor(e.relatedTarget as HTMLElement, this._overflow)) {
+				this.hideOverflowDisplay();
+			}
+		}));
+
 		this._register(DOM.addDisposableListener(this._overflow, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			let event = new StandardKeyboardEvent(e);
 
@@ -141,10 +152,28 @@ export class OverflowActionBar extends ActionBar {
 			if (event.equals(KeyCode.Escape)) {
 				this.hideOverflowDisplay();
 				this._moreActionsElement.focus();
-			} else if (event.equals(KeyCode.UpArrow) && this._focusedItem !== this._actionsList.childNodes.length - 1) { // up arrow on first element in overflow should not move out from the overflow
-				this.focusPrevious();
-			} else if (event.equals(KeyCode.DownArrow) && this._focusedItem !== this._actionsList.childNodes.length + this._overflow.childNodes.length - 2) { // down arrow on last element shouldn't move out from overflow
-				this.focusNext();
+			} else if (event.equals(KeyCode.UpArrow)) {
+				// up arrow on first element in overflow should move focus to the bottom of the overflow
+				if (this._focusedItem === this._actionsList.childElementCount - 1 || this._focusedItem === this._actionsList.childElementCount) {
+					this._focusedItem = this._actionsList.childElementCount + this._overflow.childElementCount - 2;
+					this.updateFocus();
+				} else {
+					this.focusPrevious();
+				}
+			} else if (event.equals(KeyCode.DownArrow)) {
+				// down arrow on last element should move focus to the first element of the overflow
+				if (this._focusedItem === this._actionsList.childNodes.length + this._overflow.childNodes.length - 2) {
+					this._focusedItem = this._actionsList.childElementCount;
+					this.updateFocus();
+				} else {
+					this.focusNext();
+				}
+			} else if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
+				this.hideOverflowDisplay();
+				this._focusedItem = this._actionsList.childElementCount - 1;
+				this.updateFocus();
+			} else if (event.equals(KeyCode.Tab)) {
+				this.hideOverflowDisplay();
 			}
 			DOM.EventHelper.stop(event, true);
 		}));
