@@ -129,13 +129,13 @@ export class OverflowActionBar extends ActionBar {
 		this._moreActionsElement.title = nls.localize('toggleMore', "Toggle More");
 		this._moreActionsElement.tabIndex = 0;
 		this._moreActionsElement.setAttribute('aria-haspopup', 'true');
-		this._register(DOM.addDisposableListener(this._moreActionsElement, DOM.EventType.CLICK, (e => { this.toggleOverflowDisplay(); })));
-		this._register(DOM.addDisposableListener(this._moreActionsElement, DOM.EventType.KEY_DOWN, (ev => {
+		this._register(DOM.addDisposableListener(this._moreActionsElement, DOM.EventType.CLICK, (e => {
+			this.moreElementOnClick(e);
+		})));
+		this._register(DOM.addDisposableListener(this._moreActionsElement, DOM.EventType.KEY_UP, (ev => {
 			let event = new StandardKeyboardEvent(ev);
 			if (event.keyCode === KeyCode.Enter || event.keyCode === KeyCode.Space) {
-				this._focusedItem = undefined; // so that the default actionbar click handler doesn't trigger the selected action-item
-				this.toggleOverflowDisplay();
-				DOM.EventHelper.stop(event, true);
+				this.moreElementOnClick(event);
 			}
 		})));
 
@@ -154,7 +154,7 @@ export class OverflowActionBar extends ActionBar {
 				this._moreActionsElement.focus();
 			} else if (event.equals(KeyCode.UpArrow)) {
 				// up arrow on first element in overflow should move focus to the bottom of the overflow
-				if (this._focusedItem === this._actionsList.childElementCount - 1 || this._focusedItem === this._actionsList.childElementCount) {
+				if (this._focusedItem === this._actionsList.childElementCount) {
 					this._focusedItem = this._actionsList.childElementCount + this._overflow.childElementCount - 2;
 					this.updateFocus();
 				} else {
@@ -181,6 +181,13 @@ export class OverflowActionBar extends ActionBar {
 		this._moreItemElement.appendChild(this._moreActionsElement);
 		this._actionsList.appendChild(this._moreItemElement);
 		this._items.push(undefined); // add place holder for more item element
+	}
+
+	private moreElementOnClick(event: MouseEvent | StandardKeyboardEvent): void {
+		this.toggleOverflowDisplay();
+		this._focusedItem = this._actionsList.childElementCount;
+		this.updateFocus();
+		DOM.EventHelper.stop(event, true);
 	}
 
 	private hideOverflowDisplay(): void {
