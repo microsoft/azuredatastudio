@@ -3,15 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-dashboard-home-tab {
-	height: 100%;
-	width: 100%;
-	display: block;
-}
-
-dashboard-home-container .properties {
-	padding-left: 10px;
-	padding-right: 10px;
-	display: block;
-	flex: 0;
+.insights-widget-last-updated {
+	font-size: 10px;
+	margin-left: 5px;
 }
