@@ -57,7 +57,7 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 
 	setLayout(layout: TabbedPanelLayout): void {
 		this._panel.options = {
-			showTabsWhenOne: true,
+			alwaysShowTabs: layout.alwaysShowTabs,
 			layout: layout.orientation === TabOrientation.Horizontal ? NavigationBarLayout.horizontal : NavigationBarLayout.vertical,
 			showIcon: layout.showIcon
 		};
@@ -99,7 +99,12 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 	}
 
 	onItemsUpdated(): void {
-		const firstTabIndex = this.tabs.findIndex(tab => tab.type === 'tab');
+		if (this.items.length === 0) {
+			this._itemIndexToProcess = 0;
+			this._tabs = [];
+		}
+
+		const firstTabIndex = this._tabs.findIndex(tab => tab.type === 'tab');
 		if (firstTabIndex >= 0) {
 			this._panel.selectTab(firstTabIndex);
 		}

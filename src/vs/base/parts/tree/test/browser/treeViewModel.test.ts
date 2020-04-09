@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { ArrayIterator } from 'vs/base/common/iterator';
+import { ArrayNavigator } from 'vs/base/common/navigator';
 import { HeightMap, IViewItem } from 'vs/base/parts/tree/browser/treeViewModel';
 
 function makeItem(id: any, height: any): any {
@@ -139,7 +139,7 @@ suite('TreeView - HeightMap', () => {
 	});
 
 	test('onRemoveItems at beginning', () => {
-		rangeMap.onRemoveItems(new ArrayIterator(['a', 'b']));
+		rangeMap.onRemoveItems(new ArrayNavigator(['a', 'b']));
 
 		assert.equal(rangeMap.itemAt(0), 'c');
 		assert.equal(rangeMap.itemAt(24), 'c');
@@ -149,7 +149,7 @@ suite('TreeView - HeightMap', () => {
 	});
 
 	test('onRemoveItems in middle', () => {
-		rangeMap.onRemoveItems(new ArrayIterator(['c']));
+		rangeMap.onRemoveItems(new ArrayNavigator(['c']));
 
 		assert.equal(rangeMap.itemAt(0), 'a');
 		assert.equal(rangeMap.itemAt(2), 'a');
@@ -161,7 +161,7 @@ suite('TreeView - HeightMap', () => {
 	});
 
 	test('onRemoveItems at end', () => {
-		rangeMap.onRemoveItems(new ArrayIterator(['c', 'd']));
+		rangeMap.onRemoveItems(new ArrayNavigator(['c', 'd']));
 
 		assert.equal(rangeMap.itemAt(0), 'a');
 		assert.equal(rangeMap.itemAt(2), 'a');

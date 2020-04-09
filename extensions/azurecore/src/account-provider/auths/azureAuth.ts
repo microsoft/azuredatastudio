@@ -176,6 +176,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	public async getSecurityToken(account: azdata.Account, azureResource: azdata.AzureResource): Promise<TokenResponse | undefined> {
 		if (account.isStale === true) {
+			console.log('Account was stale, no tokens being fetched');
 			return undefined;
 		}
 
@@ -183,6 +184,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		if (!resource) {
 			return undefined;
 		}
+
 		const azureAccount = account as AzureAccount;
 		const response: TokenResponse = {};
 
@@ -213,17 +215,23 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 				const baseToken = await this.getCachedToken(account.key);
 				if (!baseToken) {
+					account.isStale = true;
+					console.log('Base token was empty, account is stale.');
 					return undefined;
 				}
+
 				try {
 					await this.refreshAccessToken(account.key, baseToken.refreshToken, tenant, resource);
 				} catch (ex) {
-					account.isStale = true;
-					return undefined;
+					console.log(`Could not refresh access token for ${JSON.stringify(tenant)} - silently removing the tenant from the user's account.`);
+					azureAccount.properties.tenants = azureAccount.properties.tenants.filter(t => t.id !== tenant.id);
+					console.log(ex, ex?.data, ex?.response);
+					continue;
 				}
 
 				cachedTokens = await this.getCachedToken(account.key, resource.id, tenant.id);
 				if (!cachedTokens) {
+					console.log('Refresh access tokens didn not set cache');
 					return undefined;
 				}
 			}
@@ -237,9 +245,12 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		if (azureAccount.properties.subscriptions) {
 			azureAccount.properties.subscriptions.forEach(subscription => {
-				response[subscription.id] = {
-					...response[subscription.tenantId]
-				};
+				// Make sure that tenant has information populated.
+				if (response[subscription.tenantId]) {
+					response[subscription.id] = {
+						...response[subscription.tenantId]
+					};
+				}
 			});
 		}
 
@@ -326,6 +337,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 		const allSubs: Subscription[] = [];
 		const tokens = await this.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
+		if (!tokens) {
+			console.log('There were no resource management tokens to retrieve subscriptions from. Account is stale.');
+			account.isStale = true;
+		}
 
 		for (const tenant of account.properties.tenants) {
 			const token = tokens[tenant.id];

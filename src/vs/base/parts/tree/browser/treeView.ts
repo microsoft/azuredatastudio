@@ -14,7 +14,7 @@ import * as Mouse from 'vs/base/browser/mouseEvent';
 import * as Keyboard from 'vs/base/browser/keyboardEvent';
 import * as Model from 'vs/base/parts/tree/browser/treeModel';
 import * as dnd from './treeDnd';
-import { ArrayIterator, MappedIterator } from 'vs/base/common/iterator';
+import { ArrayNavigator } from 'vs/base/common/navigator';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { HeightMap, IViewItem } from 'vs/base/parts/tree/browser/treeViewModel';
@@ -24,6 +24,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { DataTransfers, StaticDND, IDragAndDropData } from 'vs/base/browser/dnd';
 import { DefaultTreestyler } from './treeDefaults';
 import { Delayer, timeout } from 'vs/base/common/async';
+import { MappedNavigator } from 'sql/base/common/navigator';
 
 export interface IRow {
 	element: HTMLElement | null;
@@ -829,7 +830,7 @@ export class TreeView extends HeightMap {
 	private onClearingInput(e: Model.IInputEvent): void {
 		let item = <Model.Item>e.item;
 		if (item) {
-			this.onRemoveItems(new MappedIterator(item.getNavigator(), item => item && item.id));
+			this.onRemoveItems(new MappedNavigator(item.getNavigator(), item => item && item.id));
 			this.onRowsChanged();
 		}
 	}
@@ -925,20 +926,20 @@ export class TreeView extends HeightMap {
 				for (const diffChange of diff) {
 
 					if (diffChange.originalLength > 0) {
-						this.onRemoveItems(new ArrayIterator(previousChildrenIds, diffChange.originalStart, diffChange.originalStart + diffChange.originalLength));
+						this.onRemoveItems(new ArrayNavigator(previousChildrenIds, diffChange.originalStart, diffChange.originalStart + diffChange.originalLength));
 					}
 
 					if (diffChange.modifiedLength > 0) {
 						let beforeItem: Model.Item | null = afterModelItems[diffChange.modifiedStart - 1] || item;
 						beforeItem = beforeItem.getDepth() > 0 ? beforeItem : null;
 
-						this.onInsertItems(new ArrayIterator(afterModelItems, diffChange.modifiedStart, diffChange.modifiedStart + diffChange.modifiedLength), beforeItem ? beforeItem.id : null);
+						this.onInsertItems(new ArrayNavigator(afterModelItems, diffChange.modifiedStart, diffChange.modifiedStart + diffChange.modifiedLength), beforeItem ? beforeItem.id : null);
 					}
 				}
 
 			} else if (skipDiff || diff.length) {
-				this.onRemoveItems(new ArrayIterator(previousChildrenIds));
-				this.onInsertItems(new ArrayIterator(afterModelItems), item.getDepth() > 0 ? item.id : null);
+				this.onRemoveItems(new ArrayNavigator(previousChildrenIds));
+				this.onInsertItems(new ArrayNavigator(afterModelItems), item.getDepth() > 0 ? item.id : null);
 			}
 
 			if (skipDiff || diff.length) {
@@ -985,7 +986,7 @@ export class TreeView extends HeightMap {
 		let viewItem = this.items[item.id];
 		if (viewItem) {
 			viewItem.expanded = false;
-			this.onRemoveItems(new MappedIterator(item.getNavigator(), item => item && item.id));
+			this.onRemoveItems(new MappedNavigator(item.getNavigator(), item => item && item.id));
 			this.onRowsChanged();
 		}
 	}
