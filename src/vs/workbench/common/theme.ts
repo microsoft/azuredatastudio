@@ -595,14 +595,44 @@ export const WINDOW_INACTIVE_BORDER = registerColor('window.inactiveBorder', {
 // {{SQL CARBON EDIT}}
 // < --- Dashboard --- >
 
-export const DASHBOARD_TAB_ACTIVE_BACKGROUND = registerColor('dashboard.tabActiveBackground', {
+export const VERTICAL_TAB_ACTIVE_BACKGROUND = registerColor('tab.verticalTabActiveBackground', {
 	dark: '#444444',
 	light: '#e1f0fe',
 	hc: TAB_ACTIVE_BACKGROUND
-}, nls.localize('dashboardTabActiveBackground', "Active tab background color for dashboard navigation"));
+}, nls.localize('verticalTabActiveBackground', "Active tab background color for vertical tabs"));
 
 export const DASHBOARD_BORDER = registerColor('dashboard.border', {
 	dark: '#8A8886',
 	light: '#DDDDDD',
 	hc: contrastBorder
 }, nls.localize('dashboardBorder', "Color for borders in dashboard"));
+
+export const TAB_LABEL = registerColor('tab.tabLabel', {
+	light: '#000000',
+	dark: 'FFFFFF',
+	hc: 'FFFFFF'
+}, nls.localize('tabLabel', "Color of tab label"));
+
+export const TAB_GROUP_HEADER = registerColor('tab.tabGroupHeader', {
+	light: '#dddddd',
+	dark: '#dddddd',
+	hc: '#FFFFFF'
+}, nls.localize('tabGroupHeader', "Color of tab group header"));
+
+export const DASHBOARD_WIDGET_TITLE = registerColor('dashboardWidget.title', {
+	light: '#323130',
+	dark: '#FFFFFF',
+	hc: '#FFFFFF'
+}, nls.localize('dashboardWidget', 'Color of dashboard widget title'));
+
+export const DASHBOARD_WIDGET_SUBTEXT = registerColor('dashboardWidget.subText', {
+	light: '#484644',
+	dark: '#8A8886',
+	hc: '#FFFFFF'
+}, nls.localize('dashboardWidgetSubtext', "Color for dashboard widget subtext"));
+
+export const DASHBOARD_PROPERTIES_NAME = registerColor('dashboardWidget.propertiesName', {
+	light: '#161616',
+	dark: '#8A8886',
+	hc: '#FFFFFF'
+}, nls.localize('dashboardWidgetPropertiesName', "Color for dashboard properties widget names"));
