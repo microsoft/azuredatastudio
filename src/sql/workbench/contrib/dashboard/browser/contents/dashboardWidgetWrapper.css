@@ -19,6 +19,9 @@ dashboard-widget-wrapper .widgetHeader {
 	display: flex;
 	flex: 0 0;
 	padding: 3px 0 3px 0;
+	font-weight: 600;
+	font-size: 14px;
+	line-height: 20px;
 }
 
 dashboard-widget-wrapper .icon {
