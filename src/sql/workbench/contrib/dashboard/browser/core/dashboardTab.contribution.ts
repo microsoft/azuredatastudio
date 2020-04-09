@@ -239,8 +239,10 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 	}
 });
 
-// Pre-defined tab groups
-const TabGroups: IDashboardTabGroup[] = [
+/**
+ * Predefined tab groups
+ */
+const PredefinedTabGroups: IDashboardTabGroup[] = [
 	{
 		id: 'administration',
 		title: localize('administrationTabGroup', "Administration")
@@ -262,4 +264,4 @@ const TabGroups: IDashboardTabGroup[] = [
 	}
 ];
 
-TabGroups.forEach(tabGroup => registerTabGroup(tabGroup));
+PredefinedTabGroups.forEach(tabGroup => registerTabGroup(tabGroup));
