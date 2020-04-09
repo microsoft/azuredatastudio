@@ -52,6 +52,6 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		}
 
 		this.roots = newRoots;
-		this._onDidChangeTreeData.fire();
+		this._onDidChangeTreeData.fire(undefined);
 	}
 }

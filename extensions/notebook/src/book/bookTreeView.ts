@@ -119,7 +119,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					await this.books[index].initializeContents().then(() => {
 						this._onDidChangeTreeData.fire(this.books[index].bookItems[0]);
 					});
-					this._onDidChangeTreeData.fire();
+					this._onDidChangeTreeData.fire(undefined);
 				}
 			});
 		} catch (e) {
@@ -137,7 +137,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				if (this.currentBook === deletedBook) {
 					this.currentBook = this.books.length > 0 ? this.books[this.books.length - 1] : undefined;
 				}
-				this._onDidChangeTreeData.fire();
+				this._onDidChangeTreeData.fire(undefined);
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.closeBookError(book.root, e instanceof Error ? e.message : e));
@@ -296,7 +296,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					if (untitledBookIndex > -1) {
 						this.books.splice(untitledBookIndex, 1);
 						this.currentBook = undefined;
-						this._onDidChangeTreeData.fire();
+						this._onDidChangeTreeData.fire(undefined);
 						vscode.commands.executeCommand('bookTreeView.openBook', destinationUri.fsPath, false, undefined);
 					}
 				}

@@ -111,7 +111,7 @@ describe('Add Edit External Languages Tab', () => {
 			});
 		});
 
-		testContext.onClick.fire();
+		testContext.onClick.fire(undefined);
 		parent.onUpdatedLanguage(languageUpdateModel);
 		await promise;
 		should.equal(updateCalled, true);

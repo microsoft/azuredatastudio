@@ -88,7 +88,7 @@ describe('Azure Models Component', () => {
 			parent.sendCallbackRequest(ViewBase.getCallbackEventName(ListAzureModelsEventName), { data: models });
 		});
 		await view.refresh();
-		testContext.onClick.fire();
+		testContext.onClick.fire(undefined);
 		should.notEqual(view.data, undefined);
 		should.deepEqual(view.data?.account, accounts[0]);
 		should.deepEqual(view.data?.subscription, subscriptions[0]);
