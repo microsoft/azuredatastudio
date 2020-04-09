@@ -730,7 +730,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	private getKernelSpecFromDisplayName(displayName: string): nb.IKernelSpec {
-		displayName = this.sanitizeDisplayName(displayName);
 		let kernel: nb.IKernelSpec = find(this.specs.kernels, k => k.display_name.toLowerCase() === displayName.toLowerCase());
 		if (!kernel) {
 			return undefined; // undefined is handled gracefully in the session to default to the default kernel
@@ -742,7 +741,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private sanitizeSavedKernelInfo() {
 		if (this._savedKernelInfo) {
-			let displayName = this.sanitizeDisplayName(this._savedKernelInfo.display_name);
+			let displayName = this._savedKernelInfo.display_name;
 
 			if (this._savedKernelInfo.display_name !== displayName) {
 				this._savedKernelInfo.display_name = displayName;
@@ -823,21 +822,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	/**
-	 * Sanitizes display name to remove IP address in order to fairly compare kernels
-	 * In some notebooks, display name is in the format <kernel> (<ip address>)
-	 * example: PySpark (25.23.32.4)
-	 * @param displayName Display Name for the kernel
-	 */
-	public sanitizeDisplayName(displayName: string): string {
-		let name = displayName;
-		if (name) {
-			let index = name.indexOf('(');
-			name = (index > -1) ? name.substr(0, index - 1).trim() : name;
-		}
-		return name;
-	}
-
 	private async updateKernelInfo(kernel: nb.IKernel): Promise<void> {
 		if (kernel) {
 			try {
@@ -892,6 +876,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (alwaysReturnId || (!this._oldKernel || this._oldKernel.name !== standardKernel.name)) {
 				return providerId;
 			}
+		} else {
+			return 'jupyter';
 		}
 		return undefined;
 	}

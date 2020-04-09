@@ -21,7 +21,8 @@ export class PythonPathLookup {
 			this.condaLocations = [
 				'/opt/*conda*/bin/python3',
 				'/usr/share/*conda*/bin/python3',
-				`${userFolder}/*conda*/bin/python3`
+				`${userFolder}/*conda*/bin/python3`,
+				`${userFolder}/opt/*conda*/bin/python3`
 			];
 		} else {
 			let userFolder = process.env['USERPROFILE'].replace(/\\/g, '/').replace('C:', '');

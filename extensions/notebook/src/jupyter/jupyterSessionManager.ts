@@ -108,6 +108,10 @@ export class JupyterSessionManager implements nb.SessionManager {
 			// TODO add more info to kernels
 			return kernel;
 		});
+
+		//For now, need to remove PySpark3, as it's been deprecated
+		kernels = kernels.filter(k => k.name !== 'pyspark3kernel');
+
 		let allKernels: nb.IAllKernels = {
 			defaultKernel: specs.default,
 			kernels: kernels
