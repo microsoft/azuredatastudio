@@ -32,6 +32,7 @@
         "description": "Manage and troubleshoot SQL Agent jobs",
         "provider": "MSSQL",
         "title": "SQL Agent",
+        "group": "administration",
         "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11 && dashboardContext == 'server'",
         "container": {
           "controlhost-container": {

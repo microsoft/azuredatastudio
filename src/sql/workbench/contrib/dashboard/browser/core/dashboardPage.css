@@ -28,18 +28,8 @@ dashboard-page .home-tab-icon {
 	background-image: url("media/home.svg");
 }
 
-.vs-dark dashboard-page .home-tab-icon,
-.hc-black dashboard-page .home-tab-icon {
-	background-image: url("media/home_inverse.svg");
-}
-
 dashboard-page .default-tab-icon {
 	background-image: url("media/default.svg");
-}
-
-.vs-dark dashboard-page .default-tab-icon,
-.hc-black dashboard-page .default-tab-icon {
-	background-image: url("media/default_inverse.svg");
 }
 
 dashboard-page .actions-container .action-item .action-label{
