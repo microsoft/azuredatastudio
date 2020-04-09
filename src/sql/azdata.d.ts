@@ -4637,6 +4637,7 @@ declare module 'azdata' {
 			kernelspec: IKernelInfo;
 			language_info?: ILanguageInfo;
 			tags?: string[];
+			[key: string]: any;
 		}
 
 		export interface IKernelInfo {

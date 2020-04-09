@@ -480,6 +480,24 @@ suite('notebook model', function (): void {
 
 	});
 
+	test('Should not delete custom metadata', async function (): Promise<void> {
+		expectedNotebookContent.metadata['custom-string'] = 'some_string';
+		expectedNotebookContent.metadata['custom-object'] = { prop1: 'value1', prop2: 'value2' };
+
+		// Given a notebook
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentManager = mockContentManager.object;
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		await model.loadContents();
+
+		let output = model.toJSON();
+		assert(output.metadata['custom-string'] === 'some_string', 'Custom metadata was not preserved');
+		assert(output.metadata['custom-object']['prop1'] === 'value1', 'Custom metadata for object was not preserved');
+		assert(output.metadata['custom-object']['prop2'] === 'value2', 'Custom metadata for object was not preserved');
+	});
+
 	async function loadModelAndStartClientSession(): Promise<NotebookModel> {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));

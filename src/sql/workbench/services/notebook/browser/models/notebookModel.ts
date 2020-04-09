@@ -63,6 +63,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _cells: ICellModel[];
 	private _defaultLanguageInfo: nb.ILanguageInfo;
 	private _tags: string[];
+	private _existingMetadata = {};
 	private _language: string;
 	private _onErrorEmitter = new Emitter<INotification>();
 	private _savedKernelInfo: nb.IKernelInfo;
@@ -303,6 +304,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (contents) {
 				this._defaultLanguageInfo = contents.metadata && contents.metadata.language_info;
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
+				if (contents.metadata) {
+					Object.keys(contents.metadata).forEach(key => {
+						let expectedKeys = ['kernelspec', 'language_info', 'tags'];
+						// If custom metadata is defined, add to the _existingMetadata object
+						if (expectedKeys.indexOf(key) < 0) {
+							this._existingMetadata[key] = contents.metadata[key];
+						}
+					});
+				}
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => {
 						let cellModel = factory.createCell(c, { notebook: this, isTrusted: isTrusted });
@@ -971,6 +981,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		metadata.kernelspec = this._savedKernelInfo;
 		metadata.language_info = this.languageInfo;
 		metadata.tags = this._tags;
+		Object.keys(this._existingMetadata).forEach(key => {
+			metadata[key] = this._existingMetadata[key];
+		});
 		return {
 			metadata,
 			nbformat_minor: this._nbformatMinor,
