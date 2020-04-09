@@ -7,7 +7,7 @@ import 'vs/css!./dashboardPanel';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import {
 	TAB_ACTIVE_BACKGROUND, TAB_INACTIVE_BACKGROUND,
-	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, VERTICAL_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER, EDITOR_PANE_BACKGROUND, DASHBOARD_WIDGET_SUBTEXT, TAB_LABEL, TAB_GROUP_HEADER, DASHBOARD_WIDGET_TITLE, DASHBOARD_PROPERTIES_NAME
+	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, VERTICAL_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER, DASHBOARD_WIDGET_SUBTEXT, TAB_LABEL, TAB_GROUP_HEADER, DASHBOARD_WIDGET_TITLE, DASHBOARD_PROPERTIES_NAME
 } from 'vs/workbench/common/theme';
 import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 
@@ -144,13 +144,6 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		}`);
 	}
 
-	// toolbar overflow
-	const toolbarOverflowBackground = theme.getColor(EDITOR_PANE_BACKGROUND);
-	if (toolbarOverflowBackground) {
-		collector.addRule(`panel.dashboard-panel .carbon-taskbar .overflow {
-			background-color: ${toolbarOverflowBackground};
-		}`);
-	}
 	// widget title
 	const widgetTitle = theme.getColor(DASHBOARD_WIDGET_TITLE);
 	if (widgetTitle) {

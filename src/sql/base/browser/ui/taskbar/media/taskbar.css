@@ -99,7 +99,14 @@
 	padding-left: 0;
 	margin-top: 6px;
 	margin-right: 5px;
-	box-shadow: 0 3.2px 7.2px 0 rgba(0,0,0,.132), 0 0.6px 1.8px 0 rgba(0,0,0,.108);
+}
+
+.vs-dark .carbon-taskbar .overflow {
+	box-sizing: border-box;
+}
+
+.hc-black .carbon-taskbar .overflow {
+	box-shadow: none;
 }
 
 .carbon-taskbar .overflow li {
