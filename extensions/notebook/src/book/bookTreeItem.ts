@@ -56,12 +56,12 @@ export class BookTreeItem extends vscode.TreeItem {
 	}
 
 	private setPageVariables() {
-		this.collapsibleState = this.book.page.sections && this.book.page.expand_sections ?
+		this.collapsibleState = (this.book.page.sections || this.book.page.subsections) && this.book.page.expand_sections ?
 			vscode.TreeItemCollapsibleState.Expanded :
-			this.book.page.sections ?
+			this.book.page.sections || this.book.page.subsections ?
 				vscode.TreeItemCollapsibleState.Collapsed :
 				vscode.TreeItemCollapsibleState.None;
-		this._sections = this.book.page.sections;
+		this._sections = this.book.page.sections || this.book.page.subsections;
 		this._uri = this.book.page.url;
 
 		if (this.book.tableOfContents.sections) {

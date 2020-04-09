@@ -133,7 +133,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 					contentPath: contentPath,
 					rootPath: root,
 					tableOfContents: { sections: this.parseJupyterSections(tableOfContents) },
-					page: tableOfContents as IJupyterBookSection,
+					page: tableOfContents,
 					type: BookTreeItemType.Book,
 					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
 					isUntitled: this.openAsUntitled,
@@ -157,10 +157,6 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	}
 
 	public async getSections(tableOfContents: IJupyterBookToc, sections: IJupyterBookSection[], root: string): Promise<BookTreeItem[]> {
-		if (this.isNotebook) {
-			return [];
-		}
-
 		let notebooks: BookTreeItem[] = [];
 		for (let i = 0; i < sections.length; i++) {
 			if (sections[i].url) {

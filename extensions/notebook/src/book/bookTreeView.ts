@@ -423,9 +423,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	getChildren(element?: BookTreeItem): Thenable<BookTreeItem[]> {
 		if (element) {
-			if (this.currentBook.isNotebook) {
-				return Promise.resolve(this.currentBook.bookItems);
-			} else if (element.sections) {
+			if (element.sections) {
 				return Promise.resolve(this.currentBook.getSections(element.tableOfContents, element.sections, element.root).then(sections => { return sections; }));
 			} else {
 				return Promise.resolve([]);

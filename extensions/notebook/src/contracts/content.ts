@@ -86,6 +86,7 @@ export interface IJupyterBookSection {
 	 * Contains a list of more entries that make up the chapter's/section's sub-sections
 	 */
 	sections?: IJupyterBookSection[];
+	subsections?: IJupyterBookSection[];
 	/**
 	 * If the section shouldn't have a number in the sidebar
 	 */
