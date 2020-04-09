@@ -10,12 +10,15 @@ code-component {
 }
 
 code-component .toolbar {
-	flex: 0 0 auto;
+	border-right-style: solid;
+	border-right-width: 1px;
+	box-sizing: border-box;
 	display: flex;
+	flex: 0 0 auto;
 	flex-flow:column;
-	width: 52px;
 	min-height: 40px;
-	orientation: portrait
+	orientation: portrait;
+	width: 52px;
 }
 
 code-component .toolbar.markdown {
@@ -64,6 +67,13 @@ code-component .toolbarIconStop {
 
 code-component .editor {
 	padding: 14px 0px 5px 0px
+}
+
+code-cell-component code-component .monaco-editor .margin-view-overlays .line-numbers {
+	left: 0!important;
+}
+code-cell-component code-component .monaco-scrollable-element.editor-scrollable.vs {
+	left: 40px!important;
 }
 
 /* overview ruler */

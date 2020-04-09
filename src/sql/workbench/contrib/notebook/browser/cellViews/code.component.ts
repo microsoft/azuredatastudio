@@ -37,7 +37,7 @@ import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
 import { IColorTheme, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { codeEditorLineNumber, codeEditorToolbarIcon } from 'sql/platform/theme/common/colorRegistry';
+import { codeEditorLineNumber, codeEditorToolbarIcon, codeEditorBackground, codeEditorSidebarBackground, codeEditorSidebarBorder } from 'sql/platform/theme/common/colorRegistry';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -395,5 +395,17 @@ registerThemingParticipant((theme, collector) => {
 		collector.addRule(
 			`code-component .toolbar { border-color: ${codeEditorToolbarIconColor};}`
 		);
+	}
+	const codeEditorBackgroundColor = theme.getColor(codeEditorBackground);
+	if (codeEditorBackgroundColor) {
+		collector.addRule(`code-component .editor { background-color: ${codeEditorBackgroundColor};}`);
+	}
+	const codeEditorSidebarBackgroundColor = theme.getColor(codeEditorSidebarBackground);
+	if (codeEditorSidebarBackgroundColor) {
+		collector.addRule(`code-component .toolbar { background-color: ${codeEditorSidebarBackgroundColor};}`);
+	}
+	const codeEditorSidebarBorderColor = theme.getColor(codeEditorSidebarBorder);
+	if (codeEditorSidebarBorderColor) {
+		collector.addRule(`code-component .toolbar { border-right-color: ${codeEditorSidebarBorderColor};}`);
 	}
 });

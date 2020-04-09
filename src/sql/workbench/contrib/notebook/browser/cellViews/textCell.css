@@ -17,6 +17,10 @@ text-cell-component .notebook-preview {
 	user-select: text;
 }
 
+text-cell-component code-component .monaco-scrollable-element.editor-scrollable.vs {
+	left: 16px!important;
+}
+
 .vs .notebook-preview .rangeHighlight {
 	background-color: rgba(255, 255, 0, 0.2)
 }
