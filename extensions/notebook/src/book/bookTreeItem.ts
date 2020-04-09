@@ -21,7 +21,7 @@ export interface BookTreeItemFormat {
 	contentPath: string;
 	rootPath: string;
 	tableOfContents: IJupyterBookToc;
-	page: IJupyterBookSection;
+	page: any;
 	type: BookTreeItemType;
 	treeItemCollapsibleState: number;
 	isUntitled: boolean;
@@ -39,7 +39,7 @@ export class BookTreeItem extends vscode.TreeItem {
 
 		if (book.type === BookTreeItemType.Book) {
 			this.collapsibleState = book.treeItemCollapsibleState;
-			this._sections = book.page.sections;
+			this._sections = book.page;
 			if (book.isUntitled) {
 				this.contextValue = 'unsavedBook';
 			} else {
