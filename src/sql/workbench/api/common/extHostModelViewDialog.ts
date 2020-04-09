@@ -458,34 +458,34 @@ class WizardImpl implements azdata.window.Wizard {
 }
 
 class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
+	private _tabbedPanel: azdata.TabbedPanelComponent;
+	private _view: azdata.ModelView;
+
 	constructor(
 		private _editor: ModelViewEditorImpl,
 		private _options?: azdata.ModelViewDashboardOptions
 	) {
 	}
+
+	updateTabs(tabs: (azdata.DashboardTab | azdata.DashboardTabGroup)[]): void {
+		if (this._tabbedPanel === undefined || this._view === undefined) {
+			throw new Error(nls.localize('dashboardNotInitialized', "Tabs are not initialized"));
+		}
+
+		this._tabbedPanel.updateTabs(this.createTabs(tabs, this._view));
+	}
+
 	registerTabs(handler: (view: azdata.ModelView) => Thenable<(azdata.DashboardTab | azdata.DashboardTabGroup)[]>): void {
 		this._editor.registerContent(async (view) => {
+			this._view = view;
 			const dashboardTabs = await handler(view);
-			const tabs: (azdata.TabGroup | azdata.Tab)[] = [];
-			dashboardTabs.forEach((item: azdata.DashboardTab | azdata.DashboardTabGroup) => {
-				if ('tabs' in item) {
-					tabs.push(<azdata.TabGroup>{
-						title: item.title,
-						tabs: item.tabs.map(tab => {
-							return this.createTab(tab, view);
-						})
-					});
-				} else {
-					tabs.push(this.createTab(item, view));
-				}
-			});
-
-			const tabbedPanel = view.modelBuilder.tabbedPanel().withTabs(tabs).withLayout({
+			const tabs = this.createTabs(dashboardTabs, view);
+			this._tabbedPanel = view.modelBuilder.tabbedPanel().withTabs(tabs).withLayout({
 				orientation: 'vertical',
 				showIcon: this._options?.showIcon ?? true,
 				alwaysShowTabs: this._options?.alwaysShowTabs ?? false
 			}).component();
-			return view.initializeModel(tabbedPanel);
+			return view.initializeModel(this._tabbedPanel);
 		});
 	}
 
@@ -507,6 +507,23 @@ class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
 		} else {
 			return tab;
 		}
+	}
+
+	createTabs(dashboardTabs: (azdata.DashboardTab | azdata.DashboardTabGroup)[], view: azdata.ModelView): (azdata.TabGroup | azdata.Tab)[] {
+		const tabs: (azdata.TabGroup | azdata.Tab)[] = [];
+		dashboardTabs.forEach((item: azdata.DashboardTab | azdata.DashboardTabGroup) => {
+			if ('tabs' in item) {
+				tabs.push(<azdata.TabGroup>{
+					title: item.title,
+					tabs: item.tabs.map(tab => {
+						return this.createTab(tab, view);
+					})
+				});
+			} else {
+				tabs.push(this.createTab(item, view));
+			}
+		});
+		return tabs;
 	}
 }
 

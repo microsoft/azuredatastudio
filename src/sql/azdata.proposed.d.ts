@@ -316,6 +316,7 @@ declare module 'azdata' {
 		export interface ModelViewDashboard {
 			registerTabs(handler: (view: ModelView) => Thenable<(DashboardTab | DashboardTabGroup)[]>): void;
 			open(): Thenable<void>;
+			updateTabs(tabs: (DashboardTab | DashboardTabGroup)[]): void;
 		}
 
 		export function createModelViewDashboard(title: string, options?: ModelViewDashboardOptions): ModelViewDashboard;
