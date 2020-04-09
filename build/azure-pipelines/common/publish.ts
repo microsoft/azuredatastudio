@@ -49,11 +49,12 @@ function getConfig(quality: string): Promise<Config> {
 		query: `SELECT TOP 1 * FROM c WHERE c.id = @quality`,
 		parameters: [
 			{ name: '@quality', value: quality }
-		]
+		],
+
 	};
 
 	return new Promise<Config>((c, e) => {
-		client.queryDocuments(collection, query).toArray((err, results) => {
+		client.queryDocuments(collection, query, { enableCrossPartitionQuery: true }).toArray((err, results) => {
 			if (err && err.code !== 409) { return e(err); }
 
 			c(!results || results.length === 0 ? createDefaultConfig(quality) : results[0] as any as Config);
