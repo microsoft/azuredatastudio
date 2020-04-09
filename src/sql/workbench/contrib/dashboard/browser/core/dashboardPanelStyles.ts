@@ -6,22 +6,20 @@
 import 'vs/css!./dashboardPanel';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import {
-	TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_INACTIVE_BACKGROUND,
-	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, DASHBOARD_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER, EDITOR_PANE_BACKGROUND
+	TAB_ACTIVE_BACKGROUND, TAB_INACTIVE_BACKGROUND,
+	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, VERTICAL_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER, EDITOR_PANE_BACKGROUND, DASHBOARD_WIDGET_SUBTEXT, TAB_LABEL, TAB_GROUP_HEADER, DASHBOARD_WIDGET_TITLE, DASHBOARD_PROPERTIES_NAME
 } from 'vs/workbench/common/theme';
 import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 	// Title Active
 	const tabActiveBackground = theme.getColor(TAB_ACTIVE_BACKGROUND);
-	const tabActiveForeground = theme.getColor(TAB_ACTIVE_FOREGROUND);
-	let tabActiveBackgroundVertical = theme.getColor(DASHBOARD_TAB_ACTIVE_BACKGROUND);
+	const tabActiveBackgroundVertical = theme.getColor(VERTICAL_TAB_ACTIVE_BACKGROUND);
 
-	if (tabActiveBackground || tabActiveForeground) {
+	if (tabActiveBackground) {
 		collector.addRule(`
 			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab:hover .tabLabel,
 			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab .tabLabel.active {
-				color: ${tabActiveForeground};
 				border-bottom: 0px solid;
 			}
 
@@ -66,6 +64,26 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 				background-color: ${tabInactiveBackground};
 			}
 		`);
+	}
+
+	// tab label
+	const tabLabelColor = theme.getColor(TAB_LABEL);
+	if (tabLabelColor) {
+		collector.addRule(`.tabbedPanel.vertical > .title .tabList .tabLabel {
+			color: ${tabLabelColor}
+		}`);
+
+		collector.addRule(`properties-widget .propertiesValue {
+			color: ${tabLabelColor}
+		}`);
+	}
+
+	// tab group header
+	const tabGroupHeader = theme.getColor(TAB_GROUP_HEADER);
+	if (tabGroupHeader) {
+		collector.addRule(`.tabbedPanel .tab-group-header {
+			border-color: ${tabGroupHeader};
+		}`);
 	}
 
 	// Panel title background
@@ -131,6 +149,29 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	if (toolbarOverflowBackground) {
 		collector.addRule(`panel.dashboard-panel .carbon-taskbar .overflow {
 			background-color: ${toolbarOverflowBackground};
+		}`);
+	}
+	// widget title
+	const widgetTitle = theme.getColor(DASHBOARD_WIDGET_TITLE);
+	if (widgetTitle) {
+		collector.addRule(`dashboard-widget-wrapper .header {
+			color: ${widgetTitle};
+		}`);
+	}
+
+	// widget subtext
+	const subText = theme.getColor(DASHBOARD_WIDGET_SUBTEXT);
+	if (subText) {
+		collector.addRule(`.subText {
+			color: ${subText};
+		}`);
+	}
+
+	// properties name
+	const propertiesName = theme.getColor(DASHBOARD_PROPERTIES_NAME);
+	if (propertiesName) {
+		collector.addRule(`properties-widget .propertiesName {
+			color: ${propertiesName}
 		}`);
 	}
 });

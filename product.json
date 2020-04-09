@@ -60,28 +60,16 @@
 		]
 	},
 	"extensionAllowedProposedApi": [
-		"ms-vscode.references-view",
-		"ms-vsliveshare.vsliveshare",
-		"ms-vsliveshare.cloudenv",
-		"ms-vsliveshare.cloudenv-explorer",
-		"GitHub.vscode-pull-request-github",
-		"GitHub.vscode-pull-request-github-insiders",
-		"Microsoft.vscode-nmake-tools",
-		"ms-vscode-remote.remote-containers",
-		"ms-vscode-remote.remote-containers-nightly",
-		"ms-vscode-remote.remote-ssh",
-		"ms-vscode-remote.remote-ssh-nightly",
-		"ms-vscode-remote.remote-ssh-edit",
-		"ms-vscode-remote.remote-ssh-edit-nightly",
-		"ms-vscode-remote.remote-ssh-explorer",
-		"ms-vscode-remote.remote-ssh-explorer-nightly",
-		"ms-vscode-remote.remote-wsl",
-		"ms-vscode-remote.remote-wsl-nightly",
-		"ms-vscode-remote.vscode-remote-extensionpack",
-		"ms-vscode-remote.vscode-remote-extensionpack-nightly",
-		"ms-azuretools.vscode-docker"
+		"ms-vscode.references-view"
 	],
 	"extensionsGallery": {
 		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"
-	}
+	},
+	"builtInExtensions": [
+		{
+			"name": "Microsoft.sqlservernotebook",
+			"version": "0.3.5",
+			"repo": "https://github.com/Microsoft/azuredatastudio"
+		}
+	]
 }

@@ -536,12 +536,10 @@ export class CellModel implements ICellModel {
 							let host = hostAndIp.host ? hostAndIp.host : model.context.serverName;
 							let port = hostAndIp.port ? ':' + hostAndIp.port : defaultPort;
 							let html = result.data['text/html'];
-							// CTP 3.1 and earlier Spark link
-							html = this.rewriteUrlUsingRegex(/(https?:\/\/master.*\/proxy)(.*)/g, html, host, port, yarnUi);
-							// CTP 3.2 and later spark link
-							html = this.rewriteUrlUsingRegex(/(https?:\/\/sparkhead.*\/proxy)(.*)/g, html, host, port, yarnUi);
+							// BDC Spark UI Link
+							html = notebookUtils.rewriteUrlUsingRegex(/(https?:\/\/sparkhead.*\/proxy)(.*)/g, html, host, port, yarnUi);
 							// Driver link
-							html = this.rewriteUrlUsingRegex(/(https?:\/\/storage.*\/containerlogs)(.*)/g, html, host, port, driverLog);
+							html = notebookUtils.rewriteUrlUsingRegex(/(https?:\/\/storage.*\/containerlogs)(.*)/g, html, host, port, driverLog);
 							(<nb.IDisplayResult>output).data['text/html'] = html;
 						}
 					}
@@ -550,19 +548,6 @@ export class CellModel implements ICellModel {
 			catch (e) { }
 		}
 		return output;
-	}
-
-	private rewriteUrlUsingRegex(regex: RegExp, html: string, host: string, port: string, target: string): string {
-		return html.replace(regex, function (a, b, c) {
-			let ret = '';
-			if (b !== '') {
-				ret = 'https://' + host + port + target;
-			}
-			if (c !== '') {
-				ret = ret + c;
-			}
-			return ret;
-		});
 	}
 
 	public setStdInHandler(handler: nb.MessageHandler<nb.IStdinMessage>): void {

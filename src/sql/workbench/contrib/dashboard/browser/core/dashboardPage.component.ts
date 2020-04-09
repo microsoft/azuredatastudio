@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./dashboardPage';
-import 'vs/css!sql/media/icons/common-icons';
 import 'sql/workbench/contrib/dashboard/browser/core/dashboardPanelStyles';
 
 import { Component, Inject, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
