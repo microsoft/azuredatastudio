@@ -49,5 +49,34 @@
 	"bdc-agreement-azdata-eula": "azdata License Terms",
 	"bdc-agreement-bdc-eula": "SQL Server License Terms",
 	"deployment.configuration.title": "Deployment configuration",
-	"azdata-install-location-description": "Location of the azdata package used for the install command"
+	"azdata-install-location-description": "Location of the azdata package used for the install command",
+
+
+
+	"resource-type-azure-arc-display-name": "Azure Arc",
+	"resource-type-azure-arc-description": "Azure Arc allows you to deploy Arc control plane and managed database instances running on Kubernetes",
+
+	"arc-deployment-type": "Deployment Type",
+	"arc-deployment-new-control-plane-existing-cluster": "New control plane on existing cluster",
+
+
+
+	"arc.control.plane.new.wizard.title": "Create Azure Arc data controller",
+	"arc.control.plane.cluster.environment.title": "What is your target existing Kubernetes cluster environment?",
+	"arc.cluster.environment": "Cluster Environment",
+	"arc.control.plane.select.cluster.title": "Select from installed existing Kubernetes clusters",
+	"arc.control.plane.kube.config.file.path": "Kube config file path",
+	"arc.control.plane.cluster.context": "Cluster context",
+	"arc.control.plane.data.controller.create.title": "Provide details to create Azure Arc data controller and register it with Azure",
+	"arc.control.plane.project.details.title": "Project details",
+	"arc.control.plane.project.details.description": "Select the subscription tto manage deployed resources and costs. Use resource groups like folders to organize and manage all your resources.",
+	"arc.control.plane.data.controller.details.title": "Azure Arc data controller details",
+	"arc.control.plane.data.controller.details.description": "Provide and Azure region and a name for your Azure Arc data controller. This name will be used to identify your Arc location for remote management and monitoring.",
+	"arc.control.plane.arc.data.controller.name": "Azure Arc data controller name",
+	"arc.control.plane.arc.data.controller.location": "Region",
+	"arc.agreement": "I accept {0} and {1}.",
+	"microsoft.agreement.privacy.statement":"Microsoft Privacy Statement",
+	"arc.agreement.azdata.eula":"azdata license terms",
+	"deploy.action":"Deploy"
+
 }

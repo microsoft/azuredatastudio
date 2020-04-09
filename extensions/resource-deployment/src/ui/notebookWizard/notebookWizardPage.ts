@@ -23,14 +23,16 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 	}
 
 	constructor(wizard: NotebookWizard, private _pageIndex: number) {
-		super(wizard.wizardInfo.pages[_pageIndex].title, wizard.wizardInfo.pages[_pageIndex].description || wizard.wizardInfo.pages[_pageIndex].title, wizard);
+		// eslint-disable-next-line code-no-unexternalized-strings
+		super(wizard.wizardInfo.pages[_pageIndex].title, wizard.wizardInfo.pages[_pageIndex].description || "", wizard);
 	}
 
 	public initialize(): void {
 		const self = this;
 		initializeWizardPage({
 			container: this.wizard.wizardObject,
-			sections: this.pageInfo.sections,
+			wizardInfo: this.wizard.wizardInfo,
+			pageInfo: this.pageInfo,
 			page: this.pageObject,
 			onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 				self.wizard.registerDisposable(disposable);

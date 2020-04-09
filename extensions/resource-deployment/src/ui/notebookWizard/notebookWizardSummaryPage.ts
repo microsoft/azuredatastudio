@@ -5,8 +5,8 @@
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 
-import { FieldType, FontWeight, LabelPosition, SectionInfo } from '../../interfaces';
-import { createSection } from '../modelViewUtils';
+import { SubFieldInfo, FieldType, FontWeight, LabelPosition, SectionInfo } from '../../interfaces';
+import { createSection, DefaultInputComponentWidth, DefaultLabelComponentWidth } from '../modelViewUtils';
 import { WizardPageBase } from '../wizardPageBase';
 import { NotebookWizard } from './notebookWizard';
 
@@ -18,7 +18,7 @@ export class NotebookWizardSummaryPage extends WizardPageBase<NotebookWizard> {
 	private view!: azdata.ModelView;
 
 	constructor(wizard: NotebookWizard) {
-		super(localize('notebookWizard.summaryPageTitle', "Summary"), localize('notebookWizard.summaryPageDescription', "Review your configuration"), wizard);
+		super(localize('notebookWizard.summaryPageTitle', "Review your configuration"), localize('notebookWizard.summaryPageDescription', ""), wizard);
 	}
 
 	public initialize(): void {
@@ -38,29 +38,32 @@ export class NotebookWizardSummaryPage extends WizardPageBase<NotebookWizard> {
 			this.form!.removeFormItem(item);
 		});
 		this.formItems = [];
+
+		const inputWidth = this.wizard.wizardInfo.inputWidth || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.inputWidth) || DefaultInputComponentWidth;
+		const labelWidth = this.wizard.wizardInfo.labelWidth || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.labelWidth) || DefaultLabelComponentWidth;
+		const labelPosition = this.wizard.wizardInfo.labelPosition || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.labelPosition) || LabelPosition.Left;
+
 		this.wizard.wizardInfo.pages.forEach(pageInfo => {
 			const summarySectionInfo: SectionInfo = {
-				labelPosition: LabelPosition.Left,
-				labelWidth: '150px',
-				inputWidth: '200px',
-				title: pageInfo.title,
-				rows: [{ fields: [] }]
+				labelPosition: labelPosition,
+				labelWidth: labelWidth,
+				inputWidth: inputWidth,
+				title: '',
+				rows: []
 			};
 			pageInfo.sections.forEach(sectionInfo => {
 				sectionInfo.fields!.forEach(fieldInfo => {
 					if (fieldInfo.variableName) {
-						summarySectionInfo!.rows![0]!.fields.push(
-							{
-								type: FieldType.ReadonlyText,
-								label: fieldInfo.label,
-								defaultValue: this.wizard.model.getStringValue(fieldInfo.variableName),
-								labelFontWeight: FontWeight.Bold
-							}
-						);
+						this.addSummaryForVariable(summarySectionInfo, fieldInfo);
+					}
+					if (fieldInfo.subFields) {
+						fieldInfo.subFields.forEach(subFieldInfo => {
+							this.addSummaryForVariable(summarySectionInfo, subFieldInfo);
+						});
 					}
 				});
 			});
-			if (summarySectionInfo!.rows![0]!.fields!.length > 0) {
+			if (summarySectionInfo!.rows!.length > 0) {
 				const formComponent: azdata.FormComponent = {
 					title: pageInfo.title,
 					component: createSection({
@@ -77,5 +80,16 @@ export class NotebookWizardSummaryPage extends WizardPageBase<NotebookWizard> {
 		});
 		this.form.addFormItems(this.formItems);
 
+	}
+
+	private addSummaryForVariable(summarySectionInfo: SectionInfo, fieldInfo: SubFieldInfo) {
+		summarySectionInfo!.rows!.push({
+			fields: [{
+				type: FieldType.ReadonlyText,
+				label: fieldInfo.label,
+				defaultValue: this.wizard.model.getStringValue(fieldInfo.variableName!),
+				labelFontWeight: FontWeight.Bold
+			}]
+		});
 	}
 }

@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
@@ -104,14 +105,18 @@ export interface WizardInfo {
 	type: BdcDeploymentType;
 }
 
-export interface NotebookWizardInfo {
+export interface NotebookWizardInfo extends SharedFieldAttributes, WizardInfoBase {
 	notebook: string | NotebookInfo;
+}
+
+export interface WizardInfoBase extends SharedFieldAttributes {
 	taskName?: string;
 	type: ArcDeploymentType;
 	runNotebook?: boolean;
 	actionText?: string;
 	title: string;
 	pages: NotebookWizardPageInfo[];
+	summaryPage: NotebookWizardPageInfo;
 }
 
 export interface NotebookWizardPageInfo extends PageInfoBase {
@@ -147,21 +152,20 @@ export interface DialogInfoBase {
 export interface DialogTabInfo extends PageInfoBase {
 }
 
-export interface PageInfoBase {
+export interface PageInfoBase extends SharedFieldAttributes {
 	title: string;
 	sections: SectionInfo[];
-	labelWidth?: string;
-	inputWidth?: string;
 }
 
-export interface SectionInfo {
-	title?: string;
-	description?: string;
-	fields?: FieldInfo[]; // Use this if the dialog is not wide. All fields will be displayed in one column, label will be placed on top of the input component.
-	rows?: RowInfo[]; // Use this for wide dialog or wizard. label will be placed to the left of the input component.
+export interface SharedFieldAttributes {
 	labelWidth?: string;
 	inputWidth?: string;
 	labelPosition?: LabelPosition; // Default value is top
+}
+export interface SectionInfo extends SharedFieldAttributes {
+	title?: string;
+	fields?: FieldInfo[]; // Use this if the dialog is not wide. All fields will be displayed in one column, label will be placed on top of the input component.
+	rows?: RowInfo[]; // Use this for wide dialog or wizard. label will be placed to the left of the input component.
 	collapsible?: boolean;
 	collapsed?: boolean;
 	spaceBetweenFields?: string;
@@ -171,9 +175,13 @@ export interface RowInfo {
 	fields: FieldInfo[];
 }
 
-export interface FieldInfo {
+export interface SubFieldInfo {
 	label: string;
 	variableName?: string;
+}
+
+export interface FieldInfo extends SubFieldInfo, SharedFieldAttributes {
+	subFields?: SubFieldInfo[];
 	type: FieldType;
 	defaultValue?: string;
 	confirmationRequired?: boolean;
@@ -187,10 +195,7 @@ export interface FieldInfo {
 	options?: string[] | azdata.CategoryValue[];
 	placeHolder?: string;
 	userName?: string; // needed for sql server's password complexity requirement check, password can not include the login name.
-	labelWidth?: string;
-	inputWidth?: string;
 	description?: string;
-	labelPosition?: LabelPosition; // overwrite the labelPosition of SectionInfo.
 	fontStyle?: FontStyle;
 	labelFontWeight?: FontWeight;
 	links?: azdata.LinkArea[];
@@ -198,14 +203,18 @@ export interface FieldInfo {
 	enabled?: boolean;
 }
 
-export interface AzureAccountFieldInfo extends FieldInfo {
+export interface AzureAccountFieldInfo extends AzureLocationsFieldInfo {
 	subscriptionVariableName?: string;
 	resourceGroupVariableName?: string;
+}
+
+export interface AzureLocationsFieldInfo extends FieldInfo {
 	locationVariableName?: string;
 	locations?: string[]
 }
 
 export const enum LabelPosition {
+
 	Top = 'top',
 	Left = 'left'
 }
@@ -230,7 +239,9 @@ export enum FieldType {
 	ReadonlyText = 'readonly_text',
 	Checkbox = 'checkbox',
 	AzureAccount = 'azure_account',
-	KubeConfigPicker = 'kube_config_picker'
+	AzureLocations = 'azure_locations',
+	FilePicker = 'file_picker',
+	KubeConfigClusterPicker = 'kube_config_cluster_picker'
 }
 
 export interface NotebookInfo {

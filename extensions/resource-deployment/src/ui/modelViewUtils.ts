@@ -2,18 +2,29 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 import * as azdata from 'azdata';
+import { EOL } from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DialogInfoBase, FieldType, FieldInfo, SectionInfo, LabelPosition, FontWeight, FontStyle, AzureAccountFieldInfo } from '../interfaces';
-import { Model } from './model';
-import { getDateTimeString } from '../utils';
-import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
-import * as azurecore from '../../../azurecore/src/azurecore';
-import * as loc from '../localizedConstants';
-import { EOL } from 'os';
 
+import * as azurecore from '../../../azurecore/src/azurecore';
+import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
+import {
+	AzureAccountFieldInfo,
+	AzureLocationsFieldInfo,
+	DialogInfoBase,
+	FieldInfo,
+	FieldType,
+	FontStyle,
+	FontWeight,
+	LabelPosition,
+	PageInfoBase,
+	SectionInfo,
+} from '../interfaces';
+import * as loc from '../localizedConstants';
+import { getDateTimeString } from '../utils';
+import { WizardInfoBase } from './../interfaces';
+import { Model } from './model';
 const localize = nls.loadMessageBundle();
 
 export type Validator = () => { valid: boolean, message: string };
@@ -41,7 +52,8 @@ export interface DialogContext extends CreateContext {
 }
 
 export interface WizardPageContext extends CreateContext {
-	sections: SectionInfo[];
+	wizardInfo: WizardInfoBase;
+	pageInfo: PageInfoBase;
 	page: azdata.window.WizardPage;
 	container: azdata.window.Wizard;
 }
@@ -55,6 +67,10 @@ interface FieldContext extends CreateContext {
 	fieldInfo: FieldInfo;
 	components: azdata.Component[];
 	view: azdata.ModelView;
+}
+
+interface AzureLocationsFieldContext extends FieldContext {
+	fieldInfo: AzureLocationsFieldInfo;
 }
 
 interface AzureAccountFieldContext extends FieldContext {
@@ -133,6 +149,7 @@ export function initializeDialog(dialogContext: DialogContext): void {
 			const sections = tabInfo.sections.map(sectionInfo => {
 				sectionInfo.inputWidth = sectionInfo.inputWidth || tabInfo.inputWidth || DefaultInputComponentWidth;
 				sectionInfo.labelWidth = sectionInfo.labelWidth || tabInfo.labelWidth || DefaultLabelComponentWidth;
+				sectionInfo.labelPosition = sectionInfo.labelPosition || tabInfo.labelPosition;
 				return createSection({
 					sectionInfo: sectionInfo,
 					view: view,
@@ -161,9 +178,10 @@ export function initializeDialog(dialogContext: DialogContext): void {
 
 export function initializeWizardPage(context: WizardPageContext): void {
 	context.page.registerContent((view: azdata.ModelView) => {
-		const sections = context.sections.map(sectionInfo => {
-			sectionInfo.inputWidth = sectionInfo.inputWidth || DefaultInputComponentWidth;
-			sectionInfo.labelWidth = sectionInfo.labelWidth || DefaultLabelComponentWidth;
+		const sections = context.pageInfo.sections.map(sectionInfo => {
+			sectionInfo.inputWidth = sectionInfo.inputWidth || context.pageInfo.inputWidth || context.wizardInfo.inputWidth || DefaultInputComponentWidth;
+			sectionInfo.labelWidth = sectionInfo.labelWidth || context.pageInfo.labelWidth || context.wizardInfo.labelWidth || DefaultLabelComponentWidth;
+			sectionInfo.labelPosition = sectionInfo.labelPosition || context.pageInfo.labelPosition || context.wizardInfo.labelPosition;
 			return createSection({
 				view: view,
 				container: context.container,
@@ -274,6 +292,9 @@ function processField(context: FieldContext): void {
 			break;
 		case FieldType.AzureAccount:
 			processAzureAccountField(context);
+			break;
+		case FieldType.AzureLocations:
+			processAzureLocationsField(context);
 			break;
 		default:
 			throw new Error(localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", context.fieldInfo.type));
@@ -428,16 +449,25 @@ function processCheckboxField(context: FieldContext): void {
 }
 
 /**
+ * An Azure Locations field consists of a dropdown field for azure locations
+ * @param context The context to use to create the field
+ */
+function processAzureLocationsField(context: AzureLocationsFieldContext): void {
+	createAzureLocationDropdown(context);
+}
+
+/**
  * An Azure Account field consists of 3 separate dropdown fields - Account, Subscription and Resource Group
  * @param context The context to use to create the field
  */
 function processAzureAccountField(context: AzureAccountFieldContext): void {
+	context.fieldInfo.subFields = [];
 	const accountValueToAccountMap = new Map<string, azdata.Account>();
 	const subscriptionValueToSubscriptionMap = new Map<string, azureResource.AzureResourceSubscription>();
 	const accountDropdown = createAzureAccountDropdown(context);
 	const subscriptionDropdown = createAzureSubscriptionDropdown(context, subscriptionValueToSubscriptionMap);
 	const resourceGroupDropdown = createAzureResourceGroupsDropdown(context, accountDropdown, accountValueToAccountMap, subscriptionDropdown, subscriptionValueToSubscriptionMap);
-	const locationDropdown = createAzureLocationDropdown(context);
+	const locationDropdown = context.fieldInfo.locations && createAzureLocationDropdown(context);
 	accountDropdown.onValueChanged(selectedItem => {
 		const selectedAccount = accountValueToAccountMap.get(selectedItem.selected)!;
 		handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
@@ -489,6 +519,10 @@ function createAzureSubscriptionDropdown(
 		required: context.fieldInfo.required,
 		label: loc.subscription
 	});
+	context.fieldInfo.subFields!.push({
+		label: label.value!,
+		variableName: context.fieldInfo.subscriptionVariableName
+	});
 	context.onNewInputComponentCreated(context.fieldInfo.subscriptionVariableName!, subscriptionDropdown, (inputValue: string) => {
 		return subscriptionValueToSubscriptionMap.get(inputValue)?.id || inputValue;
 	});
@@ -502,18 +536,20 @@ function handleSelectedAccountChanged(
 	subscriptionDropdown: azdata.DropDownComponent,
 	subscriptionValueToSubscriptionMap: Map<string, azureResource.AzureResourceSubscription>,
 	resourceGroupDropdown: azdata.DropDownComponent,
-	locationDropdown: azdata.DropDownComponent
+	locationDropdown?: azdata.DropDownComponent
 ): void {
 	subscriptionValueToSubscriptionMap.clear();
 	subscriptionDropdown.values = [];
 	handleSelectedSubscriptionChanged(context, selectedAccount, undefined, resourceGroupDropdown);
-	if (selectedAccount) {
-		if (locationDropdown.values && locationDropdown.values.length === 0) {
-			locationDropdown.values = context.fieldInfo.locations;
+	if (locationDropdown) {
+		if (selectedAccount) {
+			if (locationDropdown.values && locationDropdown.values.length === 0) {
+				locationDropdown.values = context.fieldInfo.locations;
+			}
+		} else {
+			locationDropdown.values = [];
+			return;
 		}
-	} else {
-		locationDropdown.values = [];
-		return;
 	}
 	vscode.commands.executeCommand<azurecore.GetSubscriptionsResult>('azure.accounts.getSubscriptions', selectedAccount, true /*ignoreErrors*/).then(response => {
 		if (!response) {
@@ -553,6 +589,10 @@ function createAzureResourceGroupsDropdown(
 		editable: false,
 		required: context.fieldInfo.required,
 		label: loc.resourceGroup
+	});
+	context.fieldInfo.subFields!.push({
+		label: label.value!,
+		variableName: context.fieldInfo.resourceGroupVariableName
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.resourceGroupVariableName!, resourceGroupDropdown);
 	addLabelInputPairToContainer(context.view, context.components, label, resourceGroupDropdown, context.fieldInfo.labelPosition);
@@ -594,9 +634,9 @@ const knownAzureLocationNameMappings = new Map<string, string>([
 	['Central US', 'centralus']
 ]);
 
-function createAzureLocationDropdown(context: AzureAccountFieldContext): azdata.DropDownComponent {
+function createAzureLocationDropdown(context: AzureLocationsFieldContext): azdata.DropDownComponent {
 	const label = createLabel(context.view, {
-		text: loc.location,
+		text: context.fieldInfo.label || loc.location,
 		required: context.fieldInfo.required,
 		width: context.fieldInfo.labelWidth,
 		fontWeight: context.fieldInfo.labelFontWeight
@@ -608,6 +648,11 @@ function createAzureLocationDropdown(context: AzureAccountFieldContext): azdata.
 		label: loc.location,
 		values: context.fieldInfo.locations
 	});
+	context.fieldInfo.subFields = context.fieldInfo.subFields || [];
+	context.fieldInfo.subFields!.push({
+		label: label.value!,
+		variableName: context.fieldInfo.locationVariableName
+	});
 	context.onNewInputComponentCreated(context.fieldInfo.locationVariableName!, locationDropdown, (inputValue: string) => {
 		return knownAzureLocationNameMappings.get(inputValue) || inputValue;
 	});
@@ -618,12 +663,12 @@ function createAzureLocationDropdown(context: AzureAccountFieldContext): azdata.
 export function isValidSQLPassword(password: string, userName: string = 'sa'): boolean {
 	// Validate SQL Server password
 	const containsUserName = password && userName !== undefined && password.toUpperCase().includes(userName.toUpperCase());
-	// Instead of using one RegEx, I am seperating it to make it more readable.
+	// Instead of using one RegEx, I am separating it to make it more readable.
 	const hasUpperCase = /[A-Z]/.test(password) ? 1 : 0;
 	const hasLowerCase = /[a-z]/.test(password) ? 1 : 0;
 	const hasNumbers = /\d/.test(password) ? 1 : 0;
-	const hasNonalphas = /\W/.test(password) ? 1 : 0;
-	return !containsUserName && password.length >= 8 && password.length <= 128 && (hasUpperCase + hasLowerCase + hasNumbers + hasNonalphas >= 3);
+	const hasNonAlphas = /\W/.test(password) ? 1 : 0;
+	return !containsUserName && password.length >= 8 && password.length <= 128 && (hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas >= 3);
 }
 
 export function removeValidationMessage(container: azdata.window.Dialog | azdata.window.Wizard, message: string): void {

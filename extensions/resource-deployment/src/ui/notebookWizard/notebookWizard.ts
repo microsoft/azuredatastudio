@@ -42,7 +42,8 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardMod
 	protected initialize(): void {
 		this.setPages(this.getPages());
 		this.wizardObject.generateScriptButton.hidden = true;
-		this.wizardObject.doneButton.label = localize('deployCluster.ScriptToNotebook', "Script to Notebook");
+		this.wizardInfo.actionText = this.wizardInfo.actionText || localize('deployCluster.ScriptToNotebook', "Script to Notebook");
+		this.wizardObject.doneButton.label = this.wizardInfo.actionText;
 	}
 
 	protected onCancel(): void {

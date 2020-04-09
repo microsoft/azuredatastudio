@@ -317,12 +317,12 @@
         },
         "options": [
           {
-            "name": "target",
-            "displayName": "%arc-deployment-target%",
+            "name": "arcDeploymentType",
+            "displayName": "%arc-deployment-type%",
             "values": [
               {
                 "name": "new-control-plane",
-                "displayName": "%arc-deployment-new-control-plane%"
+                "displayName": "%arc-deployment-new-control-plane-existing-cluster%"
               }
             ]
           }
@@ -330,20 +330,21 @@
         "providers": [
           {
             "notebookWizard": {
-              "notebook": "./notebooks/arc/deploy.sql.control.plane.ipynb",
+              "notebook": "./notebooks/arc/deploy.arc.control.plane.ipynb",
               "type": "new-arc-control-plane",
               "actionText": "%deploy.action%",
               "title": "%arc.control.plane.new.wizard.title%",
               "name": "arc.control.plane.new.wizard",
+              "labelPosition": "left",
               "pages":[
                 {
                   "title": "%arc.control.plane.cluster.environment.title%",
-                  "description": "%arc.control.plane.cluster.environment.description%",
                   "sections": [
                     {
                       "fields": [
                         {
                           "type": "options",
+                          "label": "%arc.cluster.environment%",
                           "required": true,
                           "variableName": "AZDATA_NB_VAR_ARC_CLUSTER_ENVIRONMENT",
                           "defaultValue": "azure-arc-aks-private-preview",
@@ -363,62 +364,71 @@
                     {
                       "fields": [
                         {
-                          "typeCommented": "kube_config_picker",
                           "type": "text",
+                          "label": "%arc.control.plane.kube.config.file.path%",
                           "defaultValue": "~/.kube/config",
                           "required": true,
-                          "variableName": "AZDATA_NB_VAR_ARC_CLUSTER_PROFILE"
+                          "variableName": "AZDATA_NB_VAR_ARC_KUBE_CONFIG"
+                        },
+                        {
+                          "type": "options",
+                          "label": "%arc.control.plane.cluster.context%",
+                          "defaultValue": "arvran-aks-cluster",
+                          "editable": true,
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_ARC_CLUSTER_CONTEXT",
+                          "options": [
+                            "arvran-ask-cluster",
+                            "docker-desktop"
+                          ]
                         }
                       ]
                     }
                   ]
                 },
                 {
-                  "title": "%arc.control.plane.data.manager.create.title%",
+                  "title": "%arc.control.plane.data.controller.create.title%",
                   "sections": [
                     {
                       "title": "%arc.control.plane.project.details.title%",
-                      "description": "%arc.control.plane.project.details.description%",
                       "fields": [
+                        {
+                          "type": "readonly_text",
+                          "label": "%arc.control.plane.project.details.description%",
+                          "labelWidth": 600
+                        },
                         {
                           "type": "azure_account",
                           "required": true,
-                          "includeLocation": false,
                           "subscriptionVariableName": "AZDATA_NB_VAR_ARC_SUBSCRIPTION",
                           "resourceGroupVariableName": "AZDATA_NB_VAR_ARC_RESOURCE_GROUP"
                         }
                       ]
                     },
                     {
-                      "title": "%arc.control.plane.data.manager.details.title%",
-                      "description": "%arc.control.plane.data.manager.details.description%",
+                      "title": "%arc.control.plane.data.controller.details.title%",
                       "fields": [
                         {
-                          "type": "text",
-                          "label": "%arc.control.plane.arc.data.manager.name%",
-                          "defaultValue": "arcControlPlane1",
-                          "required": true,
-                          "variableName": "AZDATA_NB_VAR_ARC_DATA_MANAGER_NAME"
+                          "type": "readonly_text",
+                          "label": "%arc.control.plane.data.controller.details.description%",
+                          "labelWidth":600
                         },
                         {
-                          "type": "options",
-                          "label": "%arc.control.plane.arc.data.manager.location%",
+                          "type": "text",
+                          "label": "%arc.control.plane.arc.data.controller.name%",
+                          "defaultValue": "arcControlPlane1",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAME"
+                        },
+                        {
+                          "type": "azure_locations",
+                          "label": "%arc.control.plane.arc.data.controller.location%",
                           "defaultValue": "East US",
                           "required": true,
-                          "variableName": "AZDATA_NB_VAR_ARC_DATA_MANAGER_LOCATION",
-                          "options":  ["East US", "East US 2", "Central US"]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "title": "%arc.control.plane.review.title%",
-                  "sections": [
-                    {
-                      "fields": [
-                        {
-                          "type": "review"
+                          "locationVariableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_LOCATION",
+                          "locations":  ["East US", "East US 2", "Central US"],
+                          "labelWidth": 225,
+                          "inputWidth": 375
                         }
                       ]
                     }
@@ -428,33 +438,22 @@
             },
             "requiredTools": [
               {
-                "name": "kubectl",
-                "version": "1.13.0"
-              },
-              {
-                "name": "azure-cli"
-              },
-              {
                 "name": "azdata",
                 "version": "15.0.2100"
               }
             ],
-            "when": "target=new-control-plane"
+            "when": "arcDeploymentType=new-control-plane"
           }
         ],
         "agreement": {
-          "template": "%arc-agreement%",
+          "template": "%arc.agreement%",
           "links": [
             {
-              "text": "%arc-agreement-privacy-statement%",
+              "text": "%microsoft.agreement.privacy.statement%",
               "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
             },
             {
-              "text": "%arc-agreement-arc-eula%",
-              "url": "https://go.microsoft.com/fwlink/?LinkId=2002534"
-            },
-            {
-              "text": "%arc-agreement-azdata-eula%",
+              "text": "%arc.agreement.azdata.eula%",
               "url": "https://aka.ms/eula-azdata-en"
             }
           ]
