@@ -12,6 +12,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { localize } from 'vs/nls';
 import { ExtensionRecommendationReason } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
+import { IStorageKeysSyncRegistryService } from 'vs/platform/userDataSync/common/storageKeys';
 
 export class StaticRecommendations extends ExtensionRecommendations {
 
@@ -26,8 +27,9 @@ export class StaticRecommendations extends ExtensionRecommendations {
 		@INotificationService notificationService: INotificationService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IStorageService storageService: IStorageService,
+		@IStorageKeysSyncRegistryService storageKeysSyncRegistryService: IStorageKeysSyncRegistryService
 	) {
-		super(isExtensionAllowedToBeRecommended, instantiationService, configurationService, notificationService, telemetryService, storageService);
+		super(isExtensionAllowedToBeRecommended, instantiationService, configurationService, notificationService, telemetryService, storageService, storageKeysSyncRegistryService);
 
 		this._recommendations = productService.recommendedExtensions.map(r => ({ extensionId: r, reason: { reasonId: ExtensionRecommendationReason.Application, reasonText: localize('defaultRecommendations', "This extension is recommended by Azure Data Studio.") }, source: 'application' }));
 	}

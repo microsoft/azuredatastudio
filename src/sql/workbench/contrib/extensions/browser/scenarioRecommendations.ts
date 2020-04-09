@@ -18,6 +18,7 @@ import { visualizerExtensions } from 'sql/workbench/contrib/extensions/common/co
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { InstallRecommendedExtensionsByScenarioAction, ShowRecommendedExtensionsByScenarioAction } from 'sql/workbench/contrib/extensions/browser/extensionsActions';
+import { IStorageKeysSyncRegistryService } from 'vs/platform/userDataSync/common/storageKeys';
 
 const choiceNever = localize('neverShowAgain', "Don't Show Again");
 
@@ -35,9 +36,10 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IStorageService storageService: IStorageService,
 		@IExtensionManagementService private readonly extensionManagementService: IExtensionManagementService,
-		@IAdsTelemetryService private readonly adsTelemetryService: IAdsTelemetryService
+		@IAdsTelemetryService private readonly adsTelemetryService: IAdsTelemetryService,
+		@IStorageKeysSyncRegistryService storageKeysSyncRegistryService: IStorageKeysSyncRegistryService
 	) {
-		super(isExtensionAllowedToBeRecommended, instantiationService, configurationService, notificationService, telemetryService, storageService);
+		super(isExtensionAllowedToBeRecommended, instantiationService, configurationService, notificationService, telemetryService, storageService, storageKeysSyncRegistryService);
 
 		// this._recommendations = productService.recommendedExtensionsByScenario.map(r => ({ extensionId: r, reason: { reasonId: ExtensionRecommendationReason.Application, reasonText: localize('defaultRecommendations', "This extension is recommended by Azure Data Studio.") }, source: 'application' }));
 	}

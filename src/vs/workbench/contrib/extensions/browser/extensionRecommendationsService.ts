@@ -26,11 +26,14 @@ import { ExtensionRecommendation } from 'vs/workbench/contrib/extensions/browser
 import { ExtensionsPolicyKey, ExtensionsPolicy } from 'vs/platform/extensions/common/extensions';
 import { StaticRecommendations } from 'sql/workbench/contrib/extensions/browser/staticRecommendations';
 import { ScenarioRecommendations } from 'sql/workbench/contrib/extensions/browser/scenarioRecommendations';
+import { IStorageKeysSyncRegistryService } from 'vs/platform/userDataSync/common/storageKeys';
 
 type IgnoreRecommendationClassification = {
 	recommendationReason: { classification: 'SystemMetaData', purpose: 'FeatureInsight', isMeasurement: true };
 	extensionId: { classification: 'PublicNonPersonalData', purpose: 'FeatureInsight' };
 };
+
+const ignoredRecommendationsStorageKey = 'extensionsAssistant/ignored_recommendations';
 
 export class ExtensionRecommendationsService extends Disposable implements IExtensionRecommendationsService {
 
@@ -58,6 +61,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 	constructor(
 		@IInstantiationService instantiationService: IInstantiationService,
 		@ILifecycleService lifecycleService: ILifecycleService,
+		@IStorageKeysSyncRegistryService storageKeysSyncRegistryService: IStorageKeysSyncRegistryService,
 		@IExtensionGalleryService private readonly galleryService: IExtensionGalleryService,
 		@IStorageService private readonly storageService: IStorageService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
@@ -66,6 +70,8 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 		@IExtensionManagementService private readonly extensionManagementService: IExtensionManagementService,
 	) {
 		super();
+
+		storageKeysSyncRegistryService.registerStorageKey({ key: ignoredRecommendationsStorageKey, version: 1 });
 
 		const isExtensionAllowedToBeRecommended = (extensionId: string) => this.isExtensionAllowedToBeRecommended(extensionId);
 		this.workspaceRecommendations = instantiationService.createInstance(WorkspaceRecommendations, isExtensionAllowedToBeRecommended);
@@ -228,7 +234,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 	}
 
 	private onDidStorageChange(e: IWorkspaceStorageChangeEvent): void {
-		if (e.key === 'extensionsAssistant/ignored_recommendations' && e.scope === StorageScope.GLOBAL
+		if (e.key === ignoredRecommendationsStorageKey && e.scope === StorageScope.GLOBAL
 			&& this.ignoredRecommendationsValue !== this.getStoredIgnoredRecommendationsValue() /* This checks if current window changed the value or not */) {
 			this._ignoredRecommendationsValue = undefined;
 			this.globallyIgnoredRecommendations = this.getCachedIgnoredRecommendations();
@@ -271,11 +277,11 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 	// {{SQL CARBON EDIT}} - End
 
 	private getStoredIgnoredRecommendationsValue(): string {
-		return this.storageService.get('extensionsAssistant/ignored_recommendations', StorageScope.GLOBAL, '[]');
+		return this.storageService.get(ignoredRecommendationsStorageKey, StorageScope.GLOBAL, '[]');
 	}
 
 	private setStoredIgnoredRecommendationsValue(value: string): void {
-		this.storageService.store('extensionsAssistant/ignored_recommendations', value, StorageScope.GLOBAL);
+		this.storageService.store(ignoredRecommendationsStorageKey, value, StorageScope.GLOBAL);
 	}
 
 }
