@@ -352,6 +352,7 @@ export abstract class ContainerBase<T> extends ComponentBase {
 
 	public clearContainer(): void {
 		this.items = [];
+		this.onItemsUpdated();
 		this._changeRef.detectChanges();
 	}
 
