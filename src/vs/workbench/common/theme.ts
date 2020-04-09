@@ -6,7 +6,7 @@
 import * as nls from 'vs/nls';
 import { registerColor, editorBackground, contrastBorder, transparent, editorWidgetBackground, textLinkForeground, lighten, darken, focusBorder, activeContrastBorder, editorWidgetForeground, editorErrorForeground, editorWarningForeground, editorInfoForeground } from 'vs/platform/theme/common/colorRegistry';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
-import { Color } from 'vs/base/common/color';
+import { Color, RGBA } from 'vs/base/common/color';
 
 // < --- Workbench (not customizable) --- >
 
@@ -636,3 +636,9 @@ export const DASHBOARD_PROPERTIES_NAME = registerColor('dashboardWidget.properti
 	dark: '#8A8886',
 	hc: '#FFFFFF'
 }, nls.localize('dashboardWidgetPropertiesName', "Color for dashboard properties widget names"));
+
+export const TOOLBAR_OVERFLOW_SHADOW = registerColor('toolbar.overflowShadow', {
+	light: new Color(new RGBA(0, 0, 0, .132)),
+	dark: new Color(new RGBA(0, 0, 0, 0.25)),
+	hc: null
+}, nls.localize('toolbarOverflowShadow', "Toolbar overflow shadow color"));
