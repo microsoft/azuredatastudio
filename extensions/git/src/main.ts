@@ -23,6 +23,7 @@ import { GitExtensionImpl } from './api/extension';
 // import * as fs from 'fs';
 import { createIPCServer, IIPCServer } from './ipc/ipcServer';
 import { GitTimelineProvider } from './timelineProvider';
+import { registerAPICommands } from './api/api1';
 
 const deactivateTasks: { (): Promise<any>; }[] = [];
 
@@ -142,7 +143,7 @@ async function createModel(context: ExtensionContext, outputChannel: OutputChann
 // 	}
 // }
 
-export async function activate(context: ExtensionContext): Promise<GitExtension> {
+export async function _activate(context: ExtensionContext): Promise<GitExtension> {
 	const disposables: Disposable[] = [];
 	context.subscriptions.push(new Disposable(() => Disposable.from(...disposables).dispose()));
 
@@ -185,38 +186,44 @@ export async function activate(context: ExtensionContext): Promise<GitExtension>
 	}
 }
 
-// {{SQL CARBON EDIT}} - Rename info to _info to prevent error due to unused variable
-async function checkGitVersion(_info: IGit): Promise<void> {
+export async function activate(context: ExtensionContext): Promise<GitExtension> {
+	const result = await _activate(context);
+	context.subscriptions.push(registerAPICommands(result));
+	return result;
+}
 
+async function checkGitVersion(_info: IGit): Promise<void> {
 	// {{SQL CARBON EDIT}}
 	// remove Git version check for azuredatastudio
-
 	return;
 
-	// const config = workspace.getConfiguration('git');
-	// const shouldIgnore = config.get<boolean>('ignoreLegacyWarning') === true;
+	/*const config = workspace.getConfiguration('git');
+	const shouldIgnore = config.get<boolean>('ignoreLegacyWarning') === true;
 
-	// if (shouldIgnore) {
-	// 	return;
-	// }
 
-	// if (!/^[01]/.test(info.version)) {
-	// 	return;
-	// }
+	const config = workspace.getConfiguration('git');
+	const shouldIgnore = config.get<boolean>('ignoreLegacyWarning') === true;
 
-	// const update = localize('updateGit', "Update Git");
-	// const neverShowAgain = localize('neverShowAgain', "Don't Show Again");
+	if (shouldIgnore) {
+		return;
+	}
 
-	// const choice = await window.showWarningMessage(
-	// 	localize('git20', "You seem to have git {0} installed. Code works best with git >= 2", info.version),
-	// 	update,
-	// 	neverShowAgain
-	// );
+	if (!/^[01]/.test(info.version)) {
+		return;
+	}
 
-	// if (choice === update) {
-	// 	commands.executeCommand('vscode.open', Uri.parse('https://git-scm.com/'));
-	// } else if (choice === neverShowAgain) {
-	// 	await config.update('ignoreLegacyWarning', true, true);
-	// }
-	// {{SQL CARBON EDIT}} - End
+	const update = localize('updateGit', "Update Git");
+	const neverShowAgain = localize('neverShowAgain', "Don't Show Again");
+
+	const choice = await window.showWarningMessage(
+		localize('git20', "You seem to have git {0} installed. Code works best with git >= 2", info.version),
+		update,
+		neverShowAgain
+	);
+
+	if (choice === update) {
+		commands.executeCommand('vscode.open', Uri.parse('https://git-scm.com/'));
+	} else if (choice === neverShowAgain) {
+		await config.update('ignoreLegacyWarning', true, true);
+	}*/
 }
