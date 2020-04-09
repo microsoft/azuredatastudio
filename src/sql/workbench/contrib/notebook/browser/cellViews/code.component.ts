@@ -36,8 +36,7 @@ import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser/simpleProgressIndicator';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
-import { IColorTheme, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { codeEditorLineNumber, codeEditorToolbarIcon, codeEditorBackground, codeEditorSidebarBackground, codeEditorSidebarBorder } from 'sql/platform/theme/common/colorRegistry';
+import { IColorTheme } from 'vs/platform/theme/common/themeService';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -381,29 +380,3 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._editor.setHeightToScrollHeight(false, isCollapsed);
 	}
 }
-
-registerThemingParticipant((theme, collector) => {
-	const codeEditorLineNumberColor = theme.getColor(codeEditorLineNumber);
-	if (codeEditorLineNumberColor) {
-		collector.addRule(`code-cell-component code-component .editor .line-numbers { color: ${codeEditorLineNumberColor};}`);
-	}
-	const codeEditorToolbarIconColor = theme.getColor(codeEditorToolbarIcon);
-	if (codeEditorToolbarIconColor) {
-		collector.addRule(
-			`code-cell-component code-component .carbon-taskbar .codicon.hideIcon { color: ${codeEditorToolbarIconColor};}`
-		);
-	}
-	const codeEditorBackgroundColor = theme.getColor(codeEditorBackground);
-	if (codeEditorBackgroundColor) {
-		collector.addRule(`code-cell-component code-component { background-color: ${codeEditorBackgroundColor}; }`);
-	}
-
-	const codeEditorSidebarBackgroundColor = theme.getColor(codeEditorSidebarBackground);
-	if (codeEditorSidebarBackgroundColor) {
-		collector.addRule(`.notebook-cell.active code-cell-component code-component .toolbar { background-color: ${codeEditorSidebarBackgroundColor};}`);
-	}
-	const codeEditorSidebarBorderColor = theme.getColor(codeEditorSidebarBorder);
-	if (codeEditorSidebarBorderColor) {
-		collector.addRule(`.notebook-cell.active code-cell-component code-component .toolbar { border-right-color: ${codeEditorSidebarBorderColor}!important;}`);
-	}
-});

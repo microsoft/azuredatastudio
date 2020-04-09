@@ -8,7 +8,7 @@ import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/
 import { SIDE_BAR_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
 import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, editorBackground, lighten } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
-import { cellBorder } from 'sql/platform/theme/common/colorRegistry';
+import { cellBorder, markdownEditorBackground, markdownEditorSplitBorder, codeEditorBackground, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorSidebarBackground, codeEditorSidebarBorder } from 'sql/platform/theme/common/colorRegistry';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
@@ -17,12 +17,6 @@ import * as types from 'vs/base/common/types';
 
 export function registerNotebookThemes(overrideEditorThemeSetting: boolean, configurationService: IConfigurationService): IDisposable {
 	return registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
-
-		// Cell border - managed by theme.
-		const cellBorderColor = theme.getColor(cellBorder);
-		if (cellBorderColor) {
-			collector.addRule(`.notebookEditor .notebook-cell.active { border-color: ${cellBorderColor};}`);
-		}
 
 		// Book Navigation Buttons
 		const buttonForegroundColor = theme.getColor(buttonForeground);
@@ -116,9 +110,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			collector.addRule(`
 				.notebookEditor .notebook-cell.active code-component {
 					border-color: ${inactiveBorder};
-					border-width: 1px 0px 1px 0px;
-					border-style: solid;
-					border-radius: 0;
 				}
 			`);
 		}
@@ -214,5 +205,44 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		.grid-panel .monaco-table, .message-tree {
 			${getBareResultsGridInfoStyles(rawOptions)}
 		}`);
+
+
+		// Cell border
+		const cellBorderColor = theme.getColor(cellBorder);
+		if (cellBorderColor) {
+			collector.addRule(`.notebookEditor .notebook-cell.active { border-color: ${cellBorderColor};}`);
+		}
+		// Markdwon editor colors
+		const markdownEditorBackgroundColor = theme.getColor(markdownEditorBackground);
+		if (markdownEditorBackgroundColor) {
+			collector.addRule(`text-cell-component code-component { background-color: ${markdownEditorBackgroundColor}; }`);
+		}
+		const markdownEditorSplitBorderColor = theme.getColor(markdownEditorSplitBorder);
+		if (markdownEditorSplitBorderColor) {
+			collector.addRule(`.notebookEditor .notebook-cell.active text-cell-component code-component { border-bottom-color: ${markdownEditorSplitBorderColor}; }`);
+		}
+		// Code editor colors
+		const codeEditorBackgroundColor = theme.getColor(codeEditorBackground);
+		if (codeEditorBackgroundColor) {
+			collector.addRule(`code-cell-component code-component { background-color: ${codeEditorBackgroundColor}; }`);
+		}
+		const codeEditorLineNumberColor = theme.getColor(codeEditorLineNumber);
+		if (codeEditorLineNumberColor) {
+			collector.addRule(`code-cell-component code-component .editor .line-numbers { color: ${codeEditorLineNumberColor};}`);
+		}
+		const codeEditorToolbarIconColor = theme.getColor(codeEditorToolbarIcon);
+		if (codeEditorToolbarIconColor) {
+			collector.addRule(
+				`code-cell-component code-component .carbon-taskbar .codicon.hideIcon { color: ${codeEditorToolbarIconColor};}`
+			);
+		}
+		const codeEditorSidebarBackgroundColor = theme.getColor(codeEditorSidebarBackground);
+		if (codeEditorSidebarBackgroundColor) {
+			collector.addRule(`.notebook-cell.active code-cell-component code-component .toolbar { background-color: ${codeEditorSidebarBackgroundColor};}`);
+		}
+		const codeEditorSidebarBorderColor = theme.getColor(codeEditorSidebarBorder);
+		if (codeEditorSidebarBorderColor) {
+			collector.addRule(`.notebook-cell.active code-cell-component code-component .toolbar { border-right-color: ${codeEditorSidebarBorderColor}!important;}`);
+		}
 	});
 }

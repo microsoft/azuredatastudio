@@ -49,6 +49,8 @@ export const toolbarBottomBorder = registerColor('toolbarBottomBorder', { light:
 export const cellBorder = registerColor('cellBorder', { light: '#0078D4', dark: '#0078D4', hc: '#E86E58' }, nls.localize('cellBorder', "Active cell border"));
 // Notebook: Markdown cell
 export const markdownEditorBackground = registerColor('markdownEditorBackground', { light: '#FFFFFe', dark: '#1B1A19', hc: '#000000' }, nls.localize('markdownEditorBackground', "Markdown editor background"));
+export const markdownEditorSplitBorder = registerColor('markdownEditorSplitBorder', { light: '#E6E6E6', dark: '#323130', hc: '#872412' }, nls.localize('markdownEditorSplitBorder', "Markdown editor border between editor and preview"));
+
 // Notebook: Code cell
 export const codeEditorBackground = registerColor('codeEditorBackground', { light: '#F5F5F5', dark: '#333333', hc: '#000000' }, nls.localize('codeEditorBackground', "Code editor background"));
 export const codeEditorLineNumber = registerColor('codeEditorLineNumber', { light: '#A19F9D', dark: '#A19F9D', hc: '#FFFFFe' }, nls.localize('codeEditorLineNumber', "Code editor line numbers"));
