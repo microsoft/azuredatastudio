@@ -36,7 +36,7 @@ export default () => `
 							<div class="flex">
 								<div class="icon"></div>
 								<div class="title">
-									<h1 class="caption"></h1>
+									<h1 class="caption">${escape(localize('welcomePage.caption', "Azure Data Studio"))}</h1>
 									<div class="flex btn_container">
 										<div>
 											<button id="dropdown_btn" class="btn btn_primary dropdown" role="navigation" aria-haspopup="true" aria-controls="dropdown">
@@ -183,7 +183,7 @@ export default () => `
 			</div>
 			<div class="ads_homepage_section content extensions">
 				<div class="flex flex_j_between">
-					<h2>Extend your data studio</h2>
+					<h2>${escape(localize('welcomePage.addExtensions', "Add extensions to Azure Data Studio"))}</h2>
 					<a class="link_show_all flex" href="command:extensions.listView.focus">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon_arrow_right"></span></a>
 				</div>
 				<div class="row ads_grid grip_gap_50">
