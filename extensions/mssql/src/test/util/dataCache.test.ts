@@ -8,7 +8,7 @@ import 'mocha';
 import { should } from 'chai'; should();
 import * as TypeMoq from 'typemoq';
 
-describe.skip('DataItemCache', function (): void {
+describe('DataItemCache', function (): void {
 
 	const testCacheItem = 'Test Cache Item';
 	const fetchFunction = () => Promise.resolve(testCacheItem);
@@ -25,23 +25,23 @@ describe.skip('DataItemCache', function (): void {
 		dataItemCache.should.have.property('cachedItem').and.be.undefined;
 	});
 
-	it('Should be initialized as expired', function (): void {
+	it.skip('Should be initialized as expired', function (): void {
 		dataItemCache.isCacheExpired().should.be.true;
 	});
 
-	it('Should not be expired immediately after first data fetch', async function (): Promise<void> {
+	it.skip('Should not be expired immediately after first data fetch', async function (): Promise<void> {
 		await dataItemCache.getData();
 
 		dataItemCache.isCacheExpired().should.be.false;
 	});
 
-	it('Should return expected cached item from getValue()', async function (): Promise<void> {
+	it.skip('Should return expected cached item from getValue()', async function (): Promise<void> {
 		let actualValue = await dataItemCache.getData();
 
 		actualValue.should.equal(testCacheItem);
 	});
 
-	it('Should be expired after data is fetched and TTL passes', async function (): Promise<void> {
+	it.skip('Should be expired after data is fetched and TTL passes', async function (): Promise<void> {
 		await dataItemCache.getData();
 		await sleep(1.1);
 
@@ -67,4 +67,4 @@ describe.skip('DataItemCache', function (): void {
 
 const sleep = (seconds: number) => {
 	return new Promise(resolve => setTimeout(resolve, 1000 * seconds));
-}
+};
