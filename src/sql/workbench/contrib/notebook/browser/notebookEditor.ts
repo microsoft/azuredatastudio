@@ -367,7 +367,8 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 			searchScope: true,
 			matchesPosition: false,
 			matchesCount: false,
-			currentMatch: false
+			currentMatch: false,
+			loop: true
 		};
 		this._notebookModel.cells.forEach(cell => {
 			this._register(cell.onCellModeChanged((state) => {
@@ -447,7 +448,8 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 			searchScope: false,
 			matchesPosition: false,
 			matchesCount: false,
-			currentMatch: false
+			currentMatch: false,
+			loop: true
 		};
 		this._onFindStateChange(changeEvent).catch(e => { onUnexpectedError(e); });
 	}

@@ -502,7 +502,8 @@ export class ProfilerEditor extends BaseEditor {
 					seedSearchStringFromSelection: (controller.getState().searchString.length === 0),
 					shouldFocus: FindStartFocusAction.FocusFindInput,
 					shouldAnimate: true,
-					updateSearchScope: false
+					updateSearchScope: false,
+					loop: true
 				});
 			}
 		} else {
