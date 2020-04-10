@@ -25,30 +25,30 @@ describe('DataItemCache', function (): void {
 		dataItemCache.should.have.property('cachedItem').and.be.undefined;
 	});
 
-	it.skip('Should be initialized as expired', function (): void {
+	it('Should be initialized as expired', function (): void {
 		dataItemCache.isCacheExpired().should.be.true;
 	});
 
-	it.skip('Should not be expired immediately after first data fetch', async function (): Promise<void> {
+	it('Should not be expired immediately after first data fetch', async function (): Promise<void> {
 		await dataItemCache.getData();
 
 		dataItemCache.isCacheExpired().should.be.false;
 	});
 
-	it.skip('Should return expected cached item from getValue()', async function (): Promise<void> {
+	it('Should return expected cached item from getValue()', async function (): Promise<void> {
 		let actualValue = await dataItemCache.getData();
 
 		actualValue.should.equal(testCacheItem);
 	});
 
-	it.skip('Should be expired after data is fetched and TTL passes', async function (): Promise<void> {
+	it('Should be expired after data is fetched and TTL passes', async function (): Promise<void> {
 		await dataItemCache.getData();
 		await sleep(1.1);
 
 		dataItemCache.isCacheExpired().should.be.true;
 	});
 
-	it.skip('Should call fetch function once for consecutive getValue() calls prior to expiration', async function (): Promise<void> {
+	it('Should call fetch function once for consecutive getValue() calls prior to expiration', async function (): Promise<void> {
 		await dataItemCache.getData();
 		await dataItemCache.getData();
 		await dataItemCache.getData();
@@ -56,7 +56,7 @@ describe('DataItemCache', function (): void {
 		fetchFunctionMock.verify(fx => fx() ,TypeMoq.Times.once());
 	});
 
-	it.skip('Should call fetch function twice for consecutive getValue() calls if TTL expires in between', async function (): Promise<void> {
+	it('Should call fetch function twice for consecutive getValue() calls if TTL expires in between', async function (): Promise<void> {
 		await dataItemCache.getData();
 		await sleep(1.1);
 		await dataItemCache.getData();
