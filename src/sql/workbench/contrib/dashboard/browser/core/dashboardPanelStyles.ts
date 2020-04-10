@@ -136,7 +136,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	}
 
 	const sideBorder = theme.getColor(DASHBOARD_BORDER);
-	if (divider) {
+	if (sideBorder) {
 		collector.addRule(`panel.dashboard-panel > .tabbedPanel.vertical > .title > .tabContainer {
 			border-right-width: 1px;
 			border-right-style: solid;
