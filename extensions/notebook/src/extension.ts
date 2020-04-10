@@ -30,7 +30,7 @@ type ChooseCellType = { label: string, id: CellType };
 
 export async function activate(extensionContext: vscode.ExtensionContext): Promise<IExtensionApi> {
 	const createBookPath: string = path.posix.join(extensionContext.extensionPath, 'resources', 'notebooks', 'JupyterBooksCreate.ipynb');
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openBook', (bookPath: string, openAsUntitled: boolean, urlToOpen?: string) => openAsUntitled ? untitledBookTreeViewProvider.openBook(bookPath, urlToOpen) : bookTreeViewProvider.openBook(bookPath, urlToOpen)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openBook', (bookPath: string, openAsUntitled: boolean, urlToOpen?: string) => openAsUntitled ? untitledBookTreeViewProvider.openBook(bookPath, urlToOpen, true) : bookTreeViewProvider.openBook(bookPath, urlToOpen, true)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openNotebook', (resource) => bookTreeViewProvider.openNotebook(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openUntitledNotebook', (resource) => untitledBookTreeViewProvider.openNotebookAsUntitled(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openMarkdown', (resource) => bookTreeViewProvider.openMarkdown(resource)));
