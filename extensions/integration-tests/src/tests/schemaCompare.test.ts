@@ -6,58 +6,55 @@
 import 'mocha';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as utils from '../utils';
+import * as utils from './utils';
 import * as mssql from '../../../mssql';
 import * as os from 'os';
 import * as fs from 'fs';
 const path = require('path');
-import { isTestSetupCompleted } from '../testContext';
 import * as assert from 'assert';
-import { getStandaloneServer } from '../testConfig';
+import { getStandaloneServer } from './testConfig';
 import { stressify } from 'adstest';
 import { promisify } from 'util';
 
 let schemaCompareService: mssql.ISchemaCompareService;
 let dacfxService: mssql.IDacFxService;
 let schemaCompareTester: SchemaCompareTester;
-const dacpac1: string = path.join(__dirname, '..','testData', 'Database1.dacpac');
-const dacpac2: string = path.join(__dirname, '..', 'testData', 'Database2.dacpac');
-const includeExcludeSourceDacpac: string = path.join(__dirname, '..', 'testData', 'SchemaCompareIncludeExcludeSource.dacpac');
-const includeExcludeTargetDacpac: string = path.join(__dirname, '..', 'testData', 'SchemaCompareIncludeExcludeTarget.dacpac');
+const dacpac1: string = path.join(__dirname, '..', '..', 'testData', 'Database1.dacpac');
+const dacpac2: string = path.join(__dirname, '..', '..', 'testData', 'Database2.dacpac');
+const includeExcludeSourceDacpac: string = path.join(__dirname, '..', '..', 'testData', 'SchemaCompareIncludeExcludeSource.dacpac');
+const includeExcludeTargetDacpac: string = path.join(__dirname, '..', '..', 'testData', 'SchemaCompareIncludeExcludeTarget.dacpac');
 const SERVER_CONNECTION_TIMEOUT: number = 3000;
 const retryCount = 24; // 2 minutes
 const folderPath = path.join(os.tmpdir(), 'SchemaCompareTest');
 
-if (isTestSetupCompleted()) {
-	suite('Schema compare integration test suite', () => {
-		suiteSetup(async function () {
-			let attempts: number = 20;
-			while (attempts > 0) {
-				schemaCompareService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).schemaCompare;
-				if (schemaCompareService) {
-					break;
-				}
-				attempts--;
-				await utils.sleep(1000); // To ensure the providers are registered.
+suite('Schema compare integration test suite', () => {
+	suiteSetup(async function () {
+		let attempts: number = 20;
+		while (attempts > 0) {
+			schemaCompareService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).schemaCompare;
+			if (schemaCompareService) {
+				break;
 			}
-			dacfxService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).dacFx;
-			schemaCompareTester = new SchemaCompareTester();
-			console.log(`Start schema compare tests`);
-		});
-		test('Schema compare dacpac to dacpac comparison and scmp', async function () {
-			await schemaCompareTester.SchemaCompareDacpacToDacpac();
-		});
-		test('Schema compare database to database comparison, script generation, and scmp', async function () {
-			await schemaCompareTester.SchemaCompareDatabaseToDatabase();
-		});
-		test('Schema compare dacpac to database comparison, script generation, and scmp', async function () {
-			await schemaCompareTester.SchemaCompareDacpacToDatabase();
-		});
-		test('Schema compare dacpac to dacpac comparison with include exclude', async function () {
-			await schemaCompareTester.SchemaCompareIncludeExcludeDacpacToDacpac();
-		});
+			attempts--;
+			await utils.sleep(1000); // To ensure the providers are registered.
+		}
+		dacfxService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).dacFx;
+		schemaCompareTester = new SchemaCompareTester();
+		console.log(`Start schema compare tests`);
 	});
-}
+	test('Schema compare dacpac to dacpac comparison and scmp', async function () {
+		await schemaCompareTester.SchemaCompareDacpacToDacpac();
+	});
+	test('Schema compare database to database comparison, script generation, and scmp', async function () {
+		await schemaCompareTester.SchemaCompareDatabaseToDatabase();
+	});
+	test('Schema compare dacpac to database comparison, script generation, and scmp', async function () {
+		await schemaCompareTester.SchemaCompareDacpacToDatabase();
+	});
+	test('Schema compare dacpac to dacpac comparison with include exclude', async function () {
+		await schemaCompareTester.SchemaCompareIncludeExcludeDacpacToDacpac();
+	});
+});
 
 class SchemaCompareTester {
 	private static ParallelCount = 1;
