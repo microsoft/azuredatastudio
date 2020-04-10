@@ -87,11 +87,13 @@ export class EditDataEditor extends BaseEditor {
 		}
 
 		if (_editorService) {
-			_editorService.overrideOpenEditor((editor, options, group) => {
-				if (this.isVisible() && (editor !== this.input || group !== this.group)) {
-					this.saveEditorViewState();
+			_editorService.overrideOpenEditor({
+				open: (editor, options, group) => {
+					if (this.isVisible() && (editor !== this.input || group !== this.group)) {
+						this.saveEditorViewState();
+					}
+					return {};
 				}
-				return {};
 			});
 		}
 	}
