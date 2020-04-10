@@ -18,6 +18,7 @@ import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import { ApiWrapper } from '../common/apiWrapper';
 import * as glob from 'fast-glob';
+import { isNullOrUndefined } from 'util';
 
 const Content = 'content';
 
@@ -118,7 +119,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 			// add file watcher on toc file.
 			if (!isNotebook) {
-				fsw.watch(path.join(bookPath, '_data', 'toc.yml'), async (event, filename) => {
+				fsw.watch(path.join(this.currentBook.bookPath, '_data', 'toc.yml'), async (event, filename) => {
 					if (event === 'change') {
 						let changedBook = this.books.find(book => book.bookPath === bookPath);
 						await changedBook.initializeContents().then(() => {
@@ -364,13 +365,22 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	private async getNotebooksInTree(folderPath: string): Promise<{ notebookPaths: string[]; bookPaths: string[]; }> {
+		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
+		let maxDepth = notebookConfig[constants.maxBookSearchDepth];
+		// Use default value if user enters an invalid value
+		if (isNullOrUndefined(maxDepth) || maxDepth < 0) {
+			maxDepth = 5;
+		} else if (maxDepth === 0) { // No limit of search depth if user enters 0
+			maxDepth = undefined;
+		}
+
 		let bookFilter = path.join(folderPath, '**', '_data', 'toc.yml').replace(/\\/g, '/');
-		let bookPaths = await glob(bookFilter);
+		let bookPaths = await glob(bookFilter, { deep: maxDepth });
 		let tocTrimLength = '/_data/toc.yml'.length * -1;
 		bookPaths = bookPaths?.map(path => path.slice(0, tocTrimLength));
 
 		let notebookFilter = path.join(folderPath, '**', '*.ipynb').replace(/\\/g, '/');
-		let notebookPaths = await glob(notebookFilter, { ignore: bookPaths.map(path => path + '/**/*.ipynb') });
+		let notebookPaths = await glob(notebookFilter, { ignore: bookPaths.map(path => path + '/**/*.ipynb'), deep: maxDepth });
 
 		return { notebookPaths: notebookPaths ?? [], bookPaths: bookPaths ?? [] };
 	}

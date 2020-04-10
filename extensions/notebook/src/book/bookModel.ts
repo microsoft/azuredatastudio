@@ -6,15 +6,12 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as yaml from 'js-yaml';
-import * as glob from 'fast-glob';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
-import { maxBookSearchDepth, notebookConfigKey } from '../common/constants';
 import * as path from 'path';
 import * as fileServices from 'fs';
 import * as fs from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, IJupyterBookSection } from '../contracts/content';
-import { isNullOrUndefined } from 'util';
 import { ApiWrapper } from '../common/apiWrapper';
 
 
@@ -23,7 +20,7 @@ const fsPromises = fileServices.promises;
 export class BookModel implements azdata.nb.NavigationProvider {
 	private _bookItems: BookTreeItem[];
 	private _allNotebooks = new Map<string, BookTreeItem>();
-	private _tableOfContentPaths: string[] = [];
+	private _tableOfContentsPath: string;
 	readonly providerId: string = 'BookNavigator';
 
 	private _errorMessage: string;
@@ -39,7 +36,6 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	}
 
 	public async initializeContents(): Promise<void> {
-		this._tableOfContentPaths = [];
 		this._bookItems = [];
 		this._allNotebooks = new Map<string, BookTreeItem>();
 		if (this.isNotebook) {
@@ -63,19 +59,9 @@ export class BookModel implements azdata.nb.NavigationProvider {
 			return;
 		}
 
-		let notebookConfig = vscode.workspace.getConfiguration(notebookConfigKey);
-		let maxDepth = notebookConfig[maxBookSearchDepth];
-		// Use default value if user enters an invalid value
-		if (isNullOrUndefined(maxDepth) || maxDepth < 0) {
-			maxDepth = 5;
-		} else if (maxDepth === 0) { // No limit of search depth if user enters 0
-			maxDepth = undefined;
-		}
-
-		let p: string = path.posix.join(glob.escapePath(folderPath.replace(/\\/g, '/')), '**', '_data', 'toc.yml');
-		let tableOfContentPaths: string[] = await glob(p, { deep: maxDepth });
-		if (tableOfContentPaths.length > 0) {
-			this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
+		let tableOfContentsPath: string = path.posix.join(folderPath, '_data', 'toc.yml');
+		if (await fs.pathExists(tableOfContentsPath)) {
+			this._tableOfContentsPath = tableOfContentsPath;
 			vscode.commands.executeCommand('setContext', 'bookOpened', true);
 		} else {
 			this._errorMessage = loc.missingTocError;
@@ -121,16 +107,16 @@ export class BookModel implements azdata.nb.NavigationProvider {
 			return undefined;
 		}
 
-		for (const contentPath of this._tableOfContentPaths) {
-			let root: string = path.dirname(path.dirname(contentPath));
+		if (this._tableOfContentsPath) {
+			let root: string = path.dirname(path.dirname(this._tableOfContentsPath));
 			try {
 				let fileContents = await fsPromises.readFile(path.join(root, '_config.yml'), 'utf-8');
 				const config = yaml.safeLoad(fileContents.toString());
-				fileContents = await fsPromises.readFile(contentPath, 'utf-8');
+				fileContents = await fsPromises.readFile(this._tableOfContentsPath, 'utf-8');
 				const tableOfContents: any = yaml.safeLoad(fileContents.toString());
 				let book: BookTreeItem = new BookTreeItem({
 					title: config.title,
-					contentPath: contentPath,
+					contentPath: this._tableOfContentsPath,
 					root: root,
 					tableOfContents: { sections: this.parseJupyterSections(tableOfContents) },
 					page: tableOfContents,
@@ -260,8 +246,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 
 	}
 
-	public get tableOfContentPaths(): string[] {
-		return this._tableOfContentPaths;
+	public get tableOfContentsPath(): string {
+		return this._tableOfContentsPath;
 	}
 
 	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {

@@ -236,9 +236,8 @@ describe('BookTreeViewProviderTests', function () {
 
 		it('should ignore toc.yml files not in _data folder', async () => {
 			await bookTreeViewProvider.currentBook.loadTableOfContentFiles(rootFolderPath);
-			for (let p of bookTreeViewProvider.currentBook.tableOfContentPaths) {
-				should(p.toLocaleLowerCase()).equal(tableOfContentsFile.replace(/\\/g, '/').toLocaleLowerCase());
-			}
+			let path = bookTreeViewProvider.currentBook.tableOfContentsPath;
+			should(path.toLocaleLowerCase()).equal(tableOfContentsFile.replace(/\\/g, '/').toLocaleLowerCase());
 		});
 
 		this.afterAll(async function (): Promise<void> {

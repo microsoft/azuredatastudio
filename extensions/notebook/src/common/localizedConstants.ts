@@ -25,7 +25,7 @@ export const msgBookTrusted = localize('msgBookTrusted', "Book is now trusted in
 export const msgBookAlreadyTrusted = localize('msgBookAlreadyTrusted', "Book is already trusted in this workspace.");
 export const msgBookUntrusted = localize('msgBookUntrusted', "Book is no longer trusted in this workspace");
 export const msgBookAlreadyUntrusted = localize('msgBookAlreadyUntrusted', "Book is already untrusted in this workspace.");
-export const missingTocError = localize('bookInitializeFailed', "Failed to find a toc.yml.");
+export const missingTocError = localize('bookInitializeFailed', "Failed to find a Table of Contents file in the specified book.");
 
 export function missingFileError(title: string): string { return localize('missingFileError', "Missing file : {0}", title); }
 export function invalidTocFileError(): string { return localize('InvalidError.tocFile', "Invalid toc file"); }
