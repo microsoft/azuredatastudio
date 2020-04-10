@@ -13,3 +13,5 @@ docker save azuredatastudio-server | gzip > $REPO/.build/docker/azuredatastudio-
 # create docker web
 docker build -t azuredatastudio-server-web -f $REPO/build/azure-pipelines/docker/Dockerfile $ROOT/$SERVER_BUILD_NAME_WEB
 docker save azuredatastudio-server-web | gzip > $REPO/.build/docker/azuredatastudio-server-docker-web.tar.gz
+
+node build/azure-pipelines/common/copyArtifacts.js
