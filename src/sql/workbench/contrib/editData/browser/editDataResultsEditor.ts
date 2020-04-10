@@ -24,7 +24,6 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 export class EditDataResultsEditor extends BaseEditor {
 
 	public static ID: string = 'workbench.editor.editDataResultsEditor';
-	public static AngularSelectorString: string = 'slickgrid-container.slickgridContainer';
 	protected _input: EditDataResultsInput;
 	protected _rawOptions: BareResultsGridInfo;
 
