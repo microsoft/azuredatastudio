@@ -69,6 +69,7 @@ import { OpenSearchEditorAction, createEditorFromSearchResult } from 'vs/workben
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
+import { ICommandService } from 'vs/platform/commands/common/commands'; // {{ SQL CARBON EDIT }}
 
 const $ = dom.$;
 
@@ -179,6 +180,7 @@ export class SearchView extends ViewPane {
 		@IStorageService storageService: IStorageService,
 		@IOpenerService openerService: IOpenerService,
 		@ITelemetryService telemetryService: ITelemetryService,
+		@ICommandService private readonly commandService: ICommandService // {{ SQL CARBON EDIT }}
 	) {
 
 		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
@@ -1169,7 +1171,13 @@ export class SearchView extends ViewPane {
 			if (this.searchConfig.collapseResults === 'none') {
 				this.treeSelectionChangeListener = this._register(this.tree.onDidChangeSelection((e) => {
 					if (this.tree.getSelection().length) {
-						this.open(this.tree.getSelection()[0] as Match, true, false, false);
+						let element = this.tree.getSelection()[0] as Match;
+						const resource = element instanceof Match ? element.parent().resource : (<FileMatch>element).resource;
+						if (resource.fsPath.endsWith('.md')) {
+							this.commandService.executeCommand('markdown.showPreview', resource);
+						} else {
+							this.open(this.tree.getSelection()[0] as Match, true, false, false);
+						}
 					}
 				}));
 			}
