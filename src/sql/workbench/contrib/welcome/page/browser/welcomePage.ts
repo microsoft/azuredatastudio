@@ -42,6 +42,7 @@ import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { IRecentlyOpened, isRecentWorkspace, IRecentWorkspace, IRecentFolder, isRecentFolder, IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
+import { IProductService } from 'vs/platform/product/common/productService';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { joinPath } from 'vs/base/common/resources';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -209,6 +210,7 @@ class WelcomePage extends Disposable {
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IHostService private readonly hostService: IHostService,
 		@IFileService fileService: IFileService,
+		@IProductService private readonly productService: IProductService,
 	) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
@@ -239,6 +241,10 @@ class WelcomePage extends Disposable {
 		showOnStartup.addEventListener('click', e => {
 			this.configurationService.updateValue(configurationKey, showOnStartup.checked ? 'welcomePage' : 'newUntitledFile', ConfigurationTarget.USER);
 		});
+		const prodName = container.querySelector('.welcomePage .title .caption') as HTMLElement;
+		if (prodName) {
+			prodName.innerHTML = this.productService.nameLong;
+		}
 		recentlyOpened.then(async ({ workspaces }) => {
 			// Filter out the current workspace
 			workspaces = workspaces.filter(recent => !this.contextService.isCurrentWorkspace(isRecentWorkspace(recent) ? recent.workspace : recent.folderUri));

@@ -36,7 +36,7 @@ export default () => `
 							<div class="flex">
 								<div class="icon"></div>
 								<div class="title">
-									<h1 class="caption">${escape(localize('welcomePage.caption', "Azure Data Studio"))}</h1>
+									<h1 class="caption"></h1>
 									<div class="flex btn_container">
 										<div>
 											<button id="dropdown_btn" class="btn btn_primary dropdown" role="navigation" aria-haspopup="true" aria-controls="dropdown">
