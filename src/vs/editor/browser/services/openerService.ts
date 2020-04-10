@@ -116,7 +116,9 @@ export class OpenerService implements IOpenerService {
 		// Default opener: maito, http(s), command, and catch-all-editors
 		this._openers.push({
 			open: async (target: URI | string, options?: OpenOptions) => {
-				if (options?.openExternal || matchesScheme(target, Schemas.mailto) || matchesScheme(target, Schemas.http) || matchesScheme(target, Schemas.https)) {
+				// {{SQL CARBON EDIT}} - Begin
+				if (options?.openExternal || matchesScheme(target, Schemas.mailto) || matchesScheme(target, Schemas.http) || matchesScheme(target, Schemas.https) || matchesScheme(target, Schemas.onenote)) {
+					// {{SQL CARBON EDIT}} - End
 					// open externally
 					await this._doOpenExternal(target, options);
 					return true;
