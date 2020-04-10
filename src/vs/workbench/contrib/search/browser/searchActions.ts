@@ -160,7 +160,7 @@ export interface IFindInFilesArgs {
 	isRegex?: boolean;
 	isCaseSensitive?: boolean;
 	matchWholeWord?: boolean;
-	showOnlyFileWithoutCollapsedResults?: boolean;
+	showOnlyFileWithoutCollapsedResults?: boolean; // {{ SQL CARBON EDIT }}
 }
 export const FindInFilesCommand: ICommandHandler = (accessor, args: IFindInFilesArgs = {}) => {
 

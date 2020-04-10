@@ -151,6 +151,7 @@ export class SearchView extends ViewPane {
 	private pauseSearching = false;
 
 	private treeAccessibilityProvider: SearchAccessibilityProvider;
+	private treeSelectionChangeListener: IDisposable; // {{ SQL CARBON EDIT }}
 
 	constructor(
 		options: IViewPaneOptions,
@@ -377,6 +378,12 @@ export class SearchView extends ViewPane {
 				this.updateActions();
 				this.updatedActionsWhileHidden = false;
 			}
+			// {{ SQL CARBON EDIT }}
+			// reset to default values
+			this.searchConfig.collapseResults = 'alwaysExpand';
+			if (this.treeSelectionChangeListener) {
+				this.treeSelectionChangeListener.dispose();
+			}
 		}
 
 		// Enable highlights if there are searchresults
@@ -561,6 +568,8 @@ export class SearchView extends ViewPane {
 			const collapsed = nodeExists ? undefined :
 				(collapseResults === 'alwaysCollapse' || (fileMatch.matches().length > 10 && collapseResults !== 'alwaysExpand'));
 
+			// {{ SQL CARBON EDIT }}
+			// if serach is launced from books viewlet, do not show collapsible tree
 			if (collapseResults === 'none') {
 				return <ITreeElement<RenderableMatch>>{ element: fileMatch, undefined, collapsed, collapsible: false };
 			}
@@ -1154,10 +1163,11 @@ export class SearchView extends ViewPane {
 				this.searchWidget.replaceInput.setValue('');
 			}
 		}
+		// {{ SQL CARBON EDIT }}
 		if (typeof args.showOnlyFileWithoutCollapsedResults === 'boolean') {
 			this.searchConfig.collapseResults = args.showOnlyFileWithoutCollapsedResults ? 'none' : 'alwaysExpand';
 			if (this.searchConfig.collapseResults === 'none') {
-				this._register(this.tree.onDidChangeSelection((e) => {
+				this.treeSelectionChangeListener = this._register(this.tree.onDidChangeSelection((e) => {
 					if (this.tree.getSelection().length) {
 						this.open(this.tree.getSelection()[0] as Match, true, false, false);
 					}
