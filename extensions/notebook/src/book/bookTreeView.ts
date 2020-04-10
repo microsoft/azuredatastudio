@@ -82,7 +82,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	trustBook(bookTreeItem?: BookTreeItem): void {
-		let bookPathToTrust = bookTreeItem ? bookTreeItem.rootPath : this.currentBook?.bookPath;
+		let bookPathToTrust = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath;
 
 		if (bookPathToTrust) {
 
@@ -147,7 +147,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		// remove book from the saved books
 		let deletedBook: BookModel;
 		try {
-			let targetPath = book.book.type === BookTreeItemType.Book ? book.rootPath : book.book.contentPath;
+			let targetPath = book.book.type === BookTreeItemType.Book ? book.root : book.book.contentPath;
 			let targetBook = this.books.find(b => b.bookPath.replace(/\\/g, '/') === targetPath);
 			let index: number = this.books.indexOf(targetBook);
 			if (index > -1) {
@@ -158,7 +158,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				this._onDidChangeTreeData.fire();
 			}
 		} catch (e) {
-			vscode.window.showErrorMessage(loc.closeBookError(book.rootPath, e instanceof Error ? e.message : e));
+			vscode.window.showErrorMessage(loc.closeBookError(book.root, e instanceof Error ? e.message : e));
 		} finally {
 			// remove watch on toc file.
 			if (deletedBook && !deletedBook.isNotebook) {
@@ -426,7 +426,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	getChildren(element?: BookTreeItem): Thenable<BookTreeItem[]> {
 		if (element) {
 			if (element.sections) {
-				return Promise.resolve(this.currentBook.getSections(element.tableOfContents, element.sections, element.rootPath).then(sections => { return sections; }));
+				return Promise.resolve(this.currentBook.getSections(element.tableOfContents, element.sections, element.root).then(sections => { return sections; }));
 			} else {
 				return Promise.resolve([]);
 			}
@@ -443,15 +443,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
 		if (element) {
 			let parentPath;
-			if (element.rootPath.endsWith('.md')) {
+			if (element.root.endsWith('.md')) {
 				parentPath = path.join(this.currentBook.bookPath, Content, 'readme.md');
-				if (parentPath === element.rootPath) {
+				if (parentPath === element.root) {
 					return undefined;
 				}
 			}
-			else if (element.rootPath.endsWith(notebookFileExt)) {
-				let baseName: string = path.basename(element.rootPath);
-				parentPath = element.rootPath.replace(baseName, 'readme.md');
+			else if (element.root.endsWith(notebookFileExt)) {
+				let baseName: string = path.basename(element.root);
+				parentPath = element.root.replace(baseName, 'readme.md');
 			}
 			else {
 				return undefined;

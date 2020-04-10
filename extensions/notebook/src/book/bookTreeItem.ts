@@ -19,7 +19,7 @@ export enum BookTreeItemType {
 export interface BookTreeItemFormat {
 	title: string;
 	contentPath: string;
-	rootPath: string;
+	root: string;
 	tableOfContents: IJupyterBookToc;
 	page: any;
 	type: BookTreeItemType;
@@ -36,6 +36,7 @@ export class BookTreeItem extends vscode.TreeItem {
 
 	constructor(public book: BookTreeItemFormat, icons: any) {
 		super(book.title, book.treeItemCollapsibleState);
+
 		if (book.type === BookTreeItemType.Book) {
 			this.collapsibleState = book.treeItemCollapsibleState;
 			this._sections = book.page;
@@ -92,7 +93,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		while (i > -1) {
 			if (this.book.tableOfContents.sections[i].url) {
 				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-				let pathToNotebook = path.posix.join(this.book.rootPath, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
+				let pathToNotebook = path.posix.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
 				// eslint-disable-next-line no-sync
 				if (fs.existsSync(pathToNotebook)) {
 					this._previousUri = pathToNotebook;
@@ -108,7 +109,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		while (i < this.book.tableOfContents.sections.length) {
 			if (this.book.tableOfContents.sections[i].url) {
 				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-				let pathToNotebook = path.posix.join(this.book.rootPath, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
+				let pathToNotebook = path.posix.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
 				// eslint-disable-next-line no-sync
 				if (fs.existsSync(pathToNotebook)) {
 					this._nextUri = pathToNotebook;
@@ -127,8 +128,8 @@ export class BookTreeItem extends vscode.TreeItem {
 		return this._uri;
 	}
 
-	public get rootPath(): string {
-		return this.book.rootPath;
+	public get root(): string {
+		return this.book.root;
 	}
 
 	public get tableOfContents(): IJupyterBookToc {
@@ -152,7 +153,7 @@ export class BookTreeItem extends vscode.TreeItem {
 			return `${this._uri}`;
 		}
 		else {
-			return this.book.type === BookTreeItemType.Book ? this.book.rootPath : this.book.contentPath;
+			return this.book.type === BookTreeItemType.Book ? this.book.root : this.book.contentPath;
 		}
 	}
 

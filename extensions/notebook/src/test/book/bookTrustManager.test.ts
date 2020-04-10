@@ -54,7 +54,7 @@ describe('BookTrustManagerTests', function () {
 			// Mock Book Data
 			let bookTreeItemFormat1: BookTreeItemFormat = {
 				contentPath: undefined,
-				rootPath: '/temp/SubFolder/',
+				root: '/temp/SubFolder/',
 				tableOfContents: {
 					sections: [
 						{
@@ -74,7 +74,7 @@ describe('BookTrustManagerTests', function () {
 
 			let bookTreeItemFormat2: BookTreeItemFormat = {
 				contentPath: undefined,
-				rootPath: '/temp/SubFolder2/',
+				root: '/temp/SubFolder2/',
 				tableOfContents: {
 					sections: [
 						{
@@ -91,7 +91,7 @@ describe('BookTrustManagerTests', function () {
 
 			let bookTreeItemFormat3: BookTreeItemFormat = {
 				contentPath: undefined,
-				rootPath: '/temp2/SubFolder3/',
+				root: '/temp2/SubFolder3/',
 				tableOfContents: {
 					sections: [
 						{
@@ -210,7 +210,7 @@ describe('BookTrustManagerTests', function () {
 			apiWrapperMock.setup(api => api.getConfiguration(TypeMoq.It.isValue(constants.notebookConfigKey))).returns(() => workspaceConfigurtionMock.object);
 			let bookTreeItemFormat1: BookTreeItemFormat = {
 				contentPath: undefined,
-				rootPath: '/temp/SubFolder/',
+				root: '/temp/SubFolder/',
 				tableOfContents: {
 					sections: [
 						{
@@ -230,7 +230,7 @@ describe('BookTrustManagerTests', function () {
 
 			let bookTreeItemFormat2: BookTreeItemFormat = {
 				contentPath: undefined,
-				rootPath: '/temp/SubFolder2/',
+				root: '/temp/SubFolder2/',
 				tableOfContents: {
 					sections: [
 						{

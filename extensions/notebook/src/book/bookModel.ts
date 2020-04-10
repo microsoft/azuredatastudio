@@ -91,7 +91,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		let notebookItem = new BookTreeItem({
 			title: path.basename(this.bookPath),
 			contentPath: this.bookPath,
-			rootPath: path.dirname(this.bookPath),
+			root: path.dirname(this.bookPath),
 			tableOfContents: { sections: undefined },
 			page: { sections: undefined },
 			type: BookTreeItemType.Notebook,
@@ -104,11 +104,11 @@ export class BookModel implements azdata.nb.NavigationProvider {
 			}
 		);
 		this._bookItems.push(notebookItem);
-		if (this.openAsUntitled && !this._allNotebooks.get(path.basename(notebookItem.rootPath))) {
-			this._allNotebooks.set(path.basename(notebookItem.rootPath), notebookItem);
+		if (this.openAsUntitled && !this._allNotebooks.get(path.basename(notebookItem.root))) {
+			this._allNotebooks.set(path.basename(notebookItem.root), notebookItem);
 		} else {
 			// convert to URI to avoid casing issue with drive letters when getting navigation links
-			let uriToNotebook: vscode.Uri = vscode.Uri.file(notebookItem.rootPath);
+			let uriToNotebook: vscode.Uri = vscode.Uri.file(notebookItem.root);
 			if (!this._allNotebooks.get(uriToNotebook.fsPath)) {
 				this._allNotebooks.set(uriToNotebook.fsPath, notebookItem);
 			}
@@ -131,7 +131,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 				let book: BookTreeItem = new BookTreeItem({
 					title: config.title,
 					contentPath: contentPath,
-					rootPath: root,
+					root: root,
 					tableOfContents: { sections: this.parseJupyterSections(tableOfContents) },
 					page: tableOfContents,
 					type: BookTreeItemType.Book,
@@ -164,7 +164,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 					let externalLink: BookTreeItem = new BookTreeItem({
 						title: sections[i].title,
 						contentPath: undefined,
-						rootPath: root,
+						root: root,
 						tableOfContents: tableOfContents,
 						page: sections[i],
 						type: BookTreeItemType.ExternalLink,
@@ -187,7 +187,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 						let notebook = new BookTreeItem({
 							title: sections[i].title,
 							contentPath: pathToNotebook,
-							rootPath: root,
+							root: root,
 							tableOfContents: tableOfContents,
 							page: sections[i],
 							type: BookTreeItemType.Notebook,
@@ -217,7 +217,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 						let markdown: BookTreeItem = new BookTreeItem({
 							title: sections[i].title,
 							contentPath: pathToMarkdown,
-							rootPath: root,
+							root: root,
 							tableOfContents: tableOfContents,
 							page: sections[i],
 							type: BookTreeItemType.Markdown,
