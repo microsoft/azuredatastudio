@@ -12,6 +12,10 @@ import { CommandContext, BuiltInCommands } from './constants';
  * this API from our code
  */
 export class ApiWrapper {
+	public getWorkspaceFolders(): vscode.WorkspaceFolder[] {
+		return [].concat(vscode.workspace.workspaceFolders || []);
+	}
+
 	public createOutputChannel(name: string): vscode.OutputChannel {
 		return vscode.window.createOutputChannel(name);
 	}
@@ -61,6 +65,10 @@ export class ApiWrapper {
 		return vscode.commands.executeCommand(BuiltInCommands.SetContext, key, value);
 	}
 
+	public getNotebookDocuments() {
+		return azdata.nb.notebookDocuments;
+	}
+
 	/**
 	 * Get the configuration for a extensionName
 	 * @param extensionName The string name of the extension to get the configuration for
@@ -82,5 +90,9 @@ export class ApiWrapper {
 
 	public parseUri(uri: string): vscode.Uri {
 		return vscode.Uri.parse(uri);
+	}
+
+	public createTreeView<T>(viewId: string, options: vscode.TreeViewOptions<T>): vscode.TreeView<T> {
+		return vscode.window.createTreeView(viewId, options);
 	}
 }

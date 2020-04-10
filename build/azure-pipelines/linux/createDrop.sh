@@ -38,13 +38,4 @@ SERVER_TARBALL_PATH_WEB="$REPO/.build/linux/server/$SERVER_TARBALL_FILENAME_WEB"
 rm -rf $ROOT/azuredatastudio-server-*.tar.*
 (cd $ROOT && mv $LEGACY_SERVER_BUILD_NAME_WEB $SERVER_BUILD_NAME_WEB && tar --owner=0 --group=0 -czf $SERVER_TARBALL_PATH_WEB $SERVER_BUILD_NAME_WEB)
 
-# create docker
-mkdir -p $REPO/.build/docker
-docker build -t azuredatastudio-server -f $REPO/build/azure-pipelines/docker/Dockerfile $ROOT/$SERVER_BUILD_NAME
-docker save azuredatastudio-server | gzip > $REPO/.build/docker/azuredatastudio-server-docker.tar.gz
-
-# create docker web
-docker build -t azuredatastudio-server-web -f $REPO/build/azure-pipelines/docker/Dockerfile $ROOT/$SERVER_BUILD_NAME_WEB
-docker save azuredatastudio-server-web | gzip > $REPO/.build/docker/azuredatastudio-server-docker-web.tar.gz
-
 node build/azure-pipelines/common/copyArtifacts.js

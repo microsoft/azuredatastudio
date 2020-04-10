@@ -7,14 +7,12 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as TypeMoq from 'typemoq';
 import { ApiWrapper } from '../../../common/apiWrapper';
-import * as mssql from '../../../../../mssql/src/mssql';
 import { createViewContext } from '../utils';
 import { ModelViewBase } from '../../../views/models/modelViewBase';
 
 export interface TestContext {
 	apiWrapper: TypeMoq.IMock<ApiWrapper>;
 	view: azdata.ModelView;
-	languageExtensionService: mssql.ILanguageExtensionService;
 	onClick: vscode.EventEmitter<any>;
 }
 
@@ -34,16 +32,10 @@ export class ParentDialog extends ModelViewBase {
 export function createContext(): TestContext {
 
 	let viewTestContext = createViewContext();
-	let languageExtensionService: mssql.ILanguageExtensionService = {
-		listLanguages: () => { return Promise.resolve([]); },
-		deleteLanguage: () => { return Promise.resolve(); },
-		updateLanguage: () => { return Promise.resolve(); }
-	};
 
 	return {
 		apiWrapper: viewTestContext.apiWrapper,
 		view: viewTestContext.view,
-		languageExtensionService: languageExtensionService,
 		onClick: viewTestContext.onClick
 	};
 }

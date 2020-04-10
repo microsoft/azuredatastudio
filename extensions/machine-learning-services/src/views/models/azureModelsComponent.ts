@@ -8,16 +8,17 @@ import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { AzureResourceFilterComponent } from './azureResourceFilterComponent';
 import { AzureModelsTable } from './azureModelsTable';
-import * as constants from '../../common/constants';
-import { IPageView, IDataComponent, AzureModelResource } from '../interfaces';
+import { IDataComponent, AzureModelResource } from '../interfaces';
+import { ModelArtifact } from './prediction/modelArtifact';
 
-export class AzureModelsComponent extends ModelViewBase implements IPageView, IDataComponent<AzureModelResource> {
+export class AzureModelsComponent extends ModelViewBase implements IDataComponent<AzureModelResource> {
 
 	public azureModelsTable: AzureModelsTable | undefined;
 	public azureFilterComponent: AzureResourceFilterComponent | undefined;
 
 	private _loader: azdata.LoadingComponent | undefined;
 	private _form: azdata.FormContainer | undefined;
+	private _downloadedFile: ModelArtifact | undefined;
 
 	/**
 	 * Component to render a view to pick an azure model
@@ -38,21 +39,48 @@ export class AzureModelsComponent extends ModelViewBase implements IPageView, ID
 			.withProperties({
 				loading: true
 			}).component();
+		this.azureModelsTable.onModelSelectionChanged(async () => {
+			if (this._downloadedFile) {
+				await this._downloadedFile.close();
+			}
+			this._downloadedFile = undefined;
+		});
 
-		this.azureFilterComponent.onWorkspacesSelected(async () => {
+		this.azureFilterComponent.onWorkspacesSelectedChanged(async () => {
 			await this.onLoading();
 			await this.azureModelsTable?.loadData(this.azureFilterComponent?.data);
 			await this.onLoaded();
 		});
 
 		this._form = modelBuilder.formContainer().withFormItems([{
-			title: constants.azureModelFilter,
+			title: '',
 			component: this.azureFilterComponent.component
 		}, {
-			title: constants.azureModels,
+			title: '',
 			component: this._loader
 		}]).component();
 		return this._form;
+	}
+
+	public addComponents(formBuilder: azdata.FormBuilder) {
+		if (this.azureFilterComponent && this._loader) {
+			this.azureFilterComponent.addComponents(formBuilder);
+
+			formBuilder.addFormItems([{
+				title: '',
+				component: this._loader
+			}]);
+		}
+	}
+
+	public removeComponents(formBuilder: azdata.FormBuilder) {
+		if (this.azureFilterComponent && this._loader) {
+			this.azureFilterComponent.removeComponents(formBuilder);
+			formBuilder.removeFormItem({
+				title: '',
+				component: this._loader
+			});
+		}
 	}
 
 	private async onLoading(): Promise<void> {
@@ -87,17 +115,26 @@ export class AzureModelsComponent extends ModelViewBase implements IPageView, ID
 		});
 	}
 
+	public async getDownloadedModel(): Promise<ModelArtifact> {
+		if (!this._downloadedFile) {
+			this._downloadedFile = new ModelArtifact(await this.downloadAzureModel(this.data));
+		}
+		return this._downloadedFile;
+	}
+
+	/**
+	 * disposes the view
+	 */
+	public async disposeComponent(): Promise<void> {
+		if (this._downloadedFile) {
+			await this._downloadedFile.close();
+		}
+	}
+
 	/**
 	 * Refreshes the view
 	 */
 	public async refresh(): Promise<void> {
 		await this.loadData();
-	}
-
-	/**
-	 * Returns the title of the page
-	 */
-	public get title(): string {
-		return constants.azureModelsTitle;
 	}
 }

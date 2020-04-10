@@ -52,7 +52,9 @@ export class DeployPlanPage extends DacFxConfigPage {
 	}
 
 	async start(): Promise<boolean> {
-		this.table = this.view.modelBuilder.table().component();
+		this.table = this.view.modelBuilder.table().withProperties({
+			ariaLabel: loc.deployPlanTableTitle
+		}).component();
 		this.loader = this.view.modelBuilder.loadingComponent().withItem(this.table).component();
 		this.dataLossComponentGroup = await this.createDataLossComponents();
 		this.noDataLossTextComponent = await this.createNoDataLossText();
@@ -96,8 +98,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 			data: this.getColumnData(result),
 			columns: this.getTableColumns(result.dataLossAlerts.size > 0),
 			width: 875,
-			height: 300,
-			ariaRole: 'alert'
+			height: 300
 		});
 
 		if (result.dataLossAlerts.size > 0) {

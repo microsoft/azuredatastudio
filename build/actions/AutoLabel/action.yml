@@ -1,0 +1,9 @@
+name: 'Auto Labeler'
+description: 'Automatically add a label to a PR'
+author: 'aaomidi'
+inputs: 
+  token:
+    description: 'The GITHUB_TOKEN secret'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'

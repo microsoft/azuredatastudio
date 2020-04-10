@@ -77,21 +77,11 @@ const defaultVal = [
 	{
 		name: 'Tasks',
 		widget: {
-			'tasks-widget': ['newQuery', 'mssqlCluster.task.newNotebook', { name: 'restore', when: '!mssql:iscloud && mssql:engineedition != 11' }, 'configureDashboard']
+			'tasks-widget': ['newQuery', 'mssqlCluster.task.newNotebook', { name: 'restore', when: '!mssql:iscloud && mssql:engineedition != 11' }]
 		},
 		gridItemConfig: {
 			sizex: 1,
 			sizey: 1
-		}
-	},
-	{
-		name: 'Search',
-		gridItemConfig: {
-			sizex: 1,
-			sizey: 2
-		},
-		widget: {
-			'explorer-widget': {}
 		}
 	},
 	{

@@ -3,12 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs';
 import * as constants from '../common/constants';
 import { promisify } from 'util';
+import { ApiWrapper } from './apiWrapper';
+import { Config } from '../configurations/config';
 
 export async function execCommandOnTempFile<T>(content: string, command: (filePath: string) => Promise<T>): Promise<T> {
 	let tempFilePath: string = '';
@@ -19,8 +22,23 @@ export async function execCommandOnTempFile<T>(content: string, command: (filePa
 		return result;
 	}
 	finally {
-		await fs.promises.unlink(tempFilePath);
+		await deleteFile(tempFilePath);
 	}
+}
+
+/**
+ * Deletes a file
+ * @param filePath file path
+ */
+export async function deleteFile(filePath: string) {
+	if (filePath) {
+		await fs.promises.unlink(filePath);
+	}
+}
+
+export async function readFileInHex(filePath: string): Promise<string> {
+	let buffer = await fs.promises.readFile(filePath);
+	return `0X${buffer.toString('hex')}`;
 }
 
 export async function exists(path: string): Promise<boolean> {
@@ -100,4 +118,133 @@ export function sortPackageVersions(versions: string[], ascending: boolean = tru
 
 export function isWindows(): boolean {
 	return process.platform === 'win32';
+}
+
+/**
+ * Escapes all single-quotes (') by prefixing them with another single quote ('')
+ * ' => ''
+ * @param value The string to escape
+ */
+export function doubleEscapeSingleQuotes(value: string | undefined): string {
+	return value ? value.replace(/'/g, '\'\'') : '';
+}
+
+/**
+ * Escapes all single-bracket ([]) by replacing them with another bracket quote ([[]])
+ * ' => ''
+ * @param value The string to escape
+ */
+export function doubleEscapeSingleBrackets(value: string | undefined): string {
+	return value ? value.replace(/\[/g, '[[').replace(/\]/g, ']]') : '';
+}
+
+/**
+ * Installs dependencies for the extension
+ */
+export async function executeTasks<T>(apiWrapper: ApiWrapper, taskName: string, dependencies: PromiseLike<T>[], parallel: boolean): Promise<T[]> {
+	return new Promise<T[]>((resolve, reject) => {
+		let msgTaskName = taskName;
+		apiWrapper.startBackgroundOperation({
+			displayName: msgTaskName,
+			description: msgTaskName,
+			isCancelable: false,
+			operation: async op => {
+				try {
+					let result: T[] = [];
+					// Install required packages
+					//
+					if (parallel) {
+						result = await Promise.all(dependencies);
+					} else {
+						for (let index = 0; index < dependencies.length; index++) {
+							result.push(await dependencies[index]);
+						}
+					}
+					op.updateStatus(azdata.TaskStatus.Succeeded);
+					resolve(result);
+				} catch (error) {
+					let errorMsg = constants.taskFailedError(taskName, error ? error.message : '');
+					op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
+					reject(errorMsg);
+				}
+			}
+		});
+	});
+}
+
+export async function promptConfirm(message: string, apiWrapper: ApiWrapper): Promise<boolean> {
+	let choices: { [id: string]: boolean } = {};
+	choices[constants.msgYes] = true;
+	choices[constants.msgNo] = false;
+
+	let options = {
+		placeHolder: message
+	};
+
+	let result = await apiWrapper.showQuickPick(Object.keys(choices).map(c => {
+		return {
+			label: c
+		};
+	}), options);
+	if (result === undefined) {
+		throw Error('invalid selection');
+	}
+
+	return choices[result.label] || false;
+}
+
+export function makeLinuxPath(filePath: string): string {
+	const parts = filePath.split('\\');
+	return parts.join('/');
+}
+
+/**
+ *
+ * @param currentDb Wraps the given script with database switch scripts
+ * @param databaseName
+ * @param script
+ */
+export function getScriptWithDBChange(currentDb: string, databaseName: string, script: string): string {
+	if (!currentDb) {
+		currentDb = 'master';
+	}
+	let escapedDbName = doubleEscapeSingleBrackets(databaseName);
+	let escapedCurrentDbName = doubleEscapeSingleBrackets(currentDb);
+	return `
+	USE [${escapedDbName}]
+	${script}
+	USE [${escapedCurrentDbName}]
+	`;
+}
+
+/**
+ * Returns full name of model registration table
+ * @param config config
+ */
+export function getRegisteredModelsThreePartsName(config: Config) {
+	const dbName = doubleEscapeSingleBrackets(config.registeredModelDatabaseName);
+	const schema = doubleEscapeSingleBrackets(config.registeredModelTableSchemaName);
+	const tableName = doubleEscapeSingleBrackets(config.registeredModelTableName);
+	return `[${dbName}].[${schema}].[${tableName}]`;
+}
+
+/**
+ * Returns full name of model registration table
+ * @param config config object
+ */
+export function getRegisteredModelsTowPartsName(config: Config) {
+	const schema = doubleEscapeSingleBrackets(config.registeredModelTableSchemaName);
+	const tableName = doubleEscapeSingleBrackets(config.registeredModelTableName);
+	return `[${schema}].[${tableName}]`;
+}
+
+/**
+ * Write a file using a hex string
+ * @param content file content
+ */
+export async function writeFileFromHex(content: string): Promise<string> {
+	content = content.startsWith('0x') || content.startsWith('0X') ? content.substr(2) : content;
+	const tempFilePath = path.join(os.tmpdir(), `ads_ml_temp_${UUID.generateUuid()}`);
+	await fs.promises.writeFile(tempFilePath, Buffer.from(content, 'hex'));
+	return tempFilePath;
 }

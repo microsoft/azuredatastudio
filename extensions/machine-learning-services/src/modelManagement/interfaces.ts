@@ -48,9 +48,29 @@ export type WorkspacesModelsResponse = ListWorkspaceModelsResult & {
 /**
  * An interface representing registered model
  */
-export interface RegisteredModel {
-	id: number,
-	name: string
+export interface RegisteredModel extends RegisteredModelDetails {
+	id: number;
+	artifactName: string;
+}
+
+export interface ModelParameter {
+	name: string;
+	type: string;
+}
+
+export interface ModelParameters {
+	inputs: ModelParameter[],
+	outputs: ModelParameter[]
+}
+
+/**
+ * An interface representing registered model
+ */
+export interface RegisteredModelDetails {
+	title: string;
+	created?: string;
+	version?: string;
+	description?: string;
 }
 
 /**

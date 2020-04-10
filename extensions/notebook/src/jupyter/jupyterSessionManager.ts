@@ -350,6 +350,7 @@ export class JupyterSession implements nb.ISession {
 					allCode += `%set_env ${key}=${process.env[key]}${EOL}`;
 				}
 			}
+
 			let future = this.sessionImpl.kernel.requestExecute({
 				code: allCode,
 				silent: true,

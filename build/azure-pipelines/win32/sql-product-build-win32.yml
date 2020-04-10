@@ -93,12 +93,6 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { yarn gulp "install-sqltoolsservice" }
-    displayName: Install sqltoolsservice
-
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
       exec { yarn gulp "package-rebuild-extensions" }
       exec { yarn gulp "vscode-win32-x64-min-ci" }
       exec { yarn gulp "vscode-reh-win32-x64-min-ci" }
@@ -110,7 +104,7 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { .\scripts\test-unstable.bat --build --coverage --reporter mocha-junit-reporter }
+      exec { .\scripts\test-unstable.bat --build --tfs }
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
     displayName: Run unstable tests

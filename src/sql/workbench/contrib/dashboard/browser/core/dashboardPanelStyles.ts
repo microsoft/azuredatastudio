@@ -4,30 +4,31 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./dashboardPanel';
-
-import { registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import {
-	TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_ACTIVE_BORDER, TAB_INACTIVE_BACKGROUND,
-	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER
+	TAB_ACTIVE_BACKGROUND, TAB_INACTIVE_BACKGROUND,
+	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, VERTICAL_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER, DASHBOARD_WIDGET_SUBTEXT, TAB_LABEL, TAB_GROUP_HEADER, DASHBOARD_WIDGET_TITLE, DASHBOARD_PROPERTIES_NAME
 } from 'vs/workbench/common/theme';
 import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 
-registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
-
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 	// Title Active
 	const tabActiveBackground = theme.getColor(TAB_ACTIVE_BACKGROUND);
-	const tabActiveForeground = theme.getColor(TAB_ACTIVE_FOREGROUND);
-	if (tabActiveBackground || tabActiveForeground) {
+	const tabActiveBackgroundVertical = theme.getColor(VERTICAL_TAB_ACTIVE_BACKGROUND);
+
+	if (tabActiveBackground) {
 		collector.addRule(`
 			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab:hover .tabLabel,
 			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab .tabLabel.active {
-				color: ${tabActiveForeground};
 				border-bottom: 0px solid;
 			}
 
-			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header.active {
+			panel.dashboard-panel > .tabbedPanel.vertical > .title .tabList .tab-header.active {
+				background-color: ${tabActiveBackgroundVertical};
+			}
+
+			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab-header.active {
 				background-color: ${tabActiveBackground};
-				outline-color: ${tabActiveBackground};
 			}
 
 			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab-header.active {
@@ -40,11 +41,13 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 		`);
 	}
 
-	const activeTabBorderColor = theme.getColor(TAB_ACTIVE_BORDER);
-	if (activeTabBorderColor) {
+	const highContrastActiveTabBorderColor = theme.getColor(activeContrastBorder);
+	if (highContrastActiveTabBorderColor) {
 		collector.addRule(`
 			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header.active {
-				box-shadow: ${activeTabBorderColor} 0 -1px inset;
+				outline: 1px solid;
+				outline-offset: -3px;
+				outline-color: ${highContrastActiveTabBorderColor};
 			}
 		`);
 	}
@@ -54,21 +57,40 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const tabInactiveForeground = theme.getColor(TAB_INACTIVE_FOREGROUND);
 	if (tabInactiveBackground || tabInactiveForeground) {
 		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab .tabLabel {
+			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab .tabLabel {
 				color: ${tabInactiveForeground};
 			}
-
-			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header {
+			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab-header {
 				background-color: ${tabInactiveBackground};
 			}
 		`);
+	}
+
+	// tab label
+	const tabLabelColor = theme.getColor(TAB_LABEL);
+	if (tabLabelColor) {
+		collector.addRule(`.tabbedPanel.vertical > .title .tabList .tabLabel {
+			color: ${tabLabelColor}
+		}`);
+
+		collector.addRule(`properties-widget .propertiesValue {
+			color: ${tabLabelColor}
+		}`);
+	}
+
+	// tab group header
+	const tabGroupHeader = theme.getColor(TAB_GROUP_HEADER);
+	if (tabGroupHeader) {
+		collector.addRule(`.tabbedPanel .tab-group-header {
+			border-color: ${tabGroupHeader};
+		}`);
 	}
 
 	// Panel title background
 	const panelTitleBackground = theme.getColor(EDITOR_GROUP_HEADER_TABS_BACKGROUND);
 	if (panelTitleBackground) {
 		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title {
+			panel.dashboard-panel > .tabbedPanel.horizontal > .title {
 				background-color: ${panelTitleBackground};
 			}
 		`);
@@ -78,7 +100,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const tabBorder = theme.getColor(TAB_BORDER);
 	if (tabBorder) {
 		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header {
+			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab-header {
 				border-right-color: ${tabBorder};
 				border-bottom-color: ${tabBorder};
 			}
@@ -89,7 +111,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const outline = theme.getColor(activeContrastBorder);
 	if (outline) {
 		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title {
+			panel.dashboard-panel > .tabbedPanel.horizontal > .title {
 				border-bottom-color: ${tabBorder};
 				border-bottom-width: 1px;
 				border-bottom-style: solid;
@@ -106,10 +128,43 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const divider = theme.getColor(EDITOR_GROUP_BORDER);
 	if (divider) {
 		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header {
+			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab-header {
 				border-right-width: 1px;
 				border-right-style: solid;
 			}
 		`);
+	}
+
+	const sideBorder = theme.getColor(DASHBOARD_BORDER);
+	if (sideBorder) {
+		collector.addRule(`panel.dashboard-panel > .tabbedPanel.vertical > .title > .tabContainer {
+			border-right-width: 1px;
+			border-right-style: solid;
+			border-right-color: ${sideBorder};
+		}`);
+	}
+
+	// widget title
+	const widgetTitle = theme.getColor(DASHBOARD_WIDGET_TITLE);
+	if (widgetTitle) {
+		collector.addRule(`dashboard-widget-wrapper .header {
+			color: ${widgetTitle};
+		}`);
+	}
+
+	// widget subtext
+	const subText = theme.getColor(DASHBOARD_WIDGET_SUBTEXT);
+	if (subText) {
+		collector.addRule(`.subText {
+			color: ${subText};
+		}`);
+	}
+
+	// properties name
+	const propertiesName = theme.getColor(DASHBOARD_PROPERTIES_NAME);
+	if (propertiesName) {
+		collector.addRule(`properties-widget .propertiesName {
+			color: ${propertiesName}
+		}`);
 	}
 });

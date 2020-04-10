@@ -8,8 +8,9 @@ import * as path from 'path';
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import { ExecOptions } from 'child_process';
-import * as decompress from 'decompress';
 import * as request from 'request';
+import * as zip from 'adm-zip';
+import * as tar from 'tar';
 
 import { ApiWrapper } from '../common/apiWrapper';
 import * as constants from '../common/constants';
@@ -229,8 +230,15 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 								return reject(err);
 							}
 						}
-						decompress(pythonPackagePathLocal, installPath).then(files => {
-							//Delete zip/tar file
+						if (utils.getOSPlatform() === utils.Platform.Windows) {
+							try {
+								let zippedFile = new zip(pythonPackagePathLocal);
+								zippedFile.extractAllTo(installPath);
+							} catch (err) {
+								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
+								reject(err);
+							}
+							// Delete zip file
 							fs.unlink(pythonPackagePathLocal, (err) => {
 								if (err) {
 									backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
@@ -241,10 +249,23 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 							outputChannel.appendLine(msgPythonDownloadComplete);
 							backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
 							resolve();
-						}).catch(err => {
-							backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
-							reject(err);
-						});
+						} else {
+							tar.extract({ file: pythonPackagePathLocal, cwd: installPath }).then(() => {
+								// Delete tar file
+								fs.unlink(pythonPackagePathLocal, (err) => {
+									if (err) {
+										backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
+										reject(err);
+									}
+								});
+								outputChannel.appendLine(msgPythonDownloadComplete);
+								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
+								resolve();
+							}).catch(err => {
+								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
+								reject(err);
+							});
+						}
 					})
 					.on('error', (downloadError) => {
 						backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadError);
@@ -564,9 +585,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		let versionSpecifier = useMinVersion ? '>=' : '==';
 		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
-		// Force reinstall in case some dependencies are split across multiple locations
-		let cmdOptions = this._usingExistingPython ? '--user --force-reinstall' : '--force-reinstall';
-		let cmd = `"${this.pythonExecutable}" -m pip install ${cmdOptions} ${packagesStr} --extra-index-url https://prose-python-packages.azurewebsites.net`;
+		let cmd = `"${this.pythonExecutable}" -m pip install --user ${packagesStr} --extra-index-url https://prose-python-packages.azurewebsites.net`;
 		return this.executeStreamedCommand(cmd);
 	}
 
@@ -606,7 +625,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let versionSpecifier = useMinVersion ? '>=' : '==';
 		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
 		let condaExe = this.getCondaExePath();
-		let cmd = `"${condaExe}" install -y --force-reinstall ${packagesStr}`;
+		let cmd = `"${condaExe}" install -y ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
 

@@ -36,22 +36,22 @@ export class Config {
 	/**
 	 * Returns the config value of required python packages
 	 */
-	public get requiredPythonPackages(): PackageConfigModel[] {
-		return this._configValues.requiredPythonPackages;
+	public get requiredSqlPythonPackages(): PackageConfigModel[] {
+		return this._configValues.sqlPackageManagement.requiredPythonPackages;
 	}
 
 	/**
 	 * Returns the config value of required r packages
 	 */
-	public get requiredRPackages(): PackageConfigModel[] {
-		return this._configValues.requiredRPackages;
+	public get requiredSqlRPackages(): PackageConfigModel[] {
+		return this._configValues.sqlPackageManagement.requiredRPackages;
 	}
 
 	/**
 	 * Returns r packages repository
 	 */
 	public get rPackagesRepository(): string {
-		return this._configValues.rPackagesRepository;
+		return this._configValues.sqlPackageManagement.rPackagesRepository;
 	}
 
 	/**
@@ -79,28 +79,35 @@ export class Config {
 	 * Returns registered models table name
 	 */
 	public get registeredModelTableName(): string {
-		return this._configValues.registeredModelsTableName;
+		return this._configValues.modelManagement.registeredModelsTableName;
+	}
+
+	/**
+	 * Returns registered models table schema name
+	 */
+	public get registeredModelTableSchemaName(): string {
+		return this._configValues.modelManagement.registeredModelsTableSchemaName;
 	}
 
 	/**
 	 * Returns registered models table name
 	 */
 	public get registeredModelDatabaseName(): string {
-		return this._configValues.registeredModelsDatabaseName;
+		return this._configValues.modelManagement.registeredModelsDatabaseName;
 	}
 
 	/**
 	 * Returns Azure ML API
 	 */
 	public get amlModelManagementUrl(): string {
-		return this._configValues.amlModelManagementUrl;
+		return this._configValues.modelManagement.amlModelManagementUrl;
 	}
 
 	/**
 	 * Returns Azure ML API
 	 */
 	public get amlExperienceUrl(): string {
-		return this._configValues.amlExperienceUrl;
+		return this._configValues.modelManagement.amlExperienceUrl;
 	}
 
 
@@ -108,7 +115,14 @@ export class Config {
 	 * Returns Azure ML API Version
 	 */
 	public get amlApiVersion(): string {
-		return this._configValues.amlApiVersion;
+		return this._configValues.modelManagement.amlApiVersion;
+	}
+
+	/**
+	 * Returns model management python packages
+	 */
+	public get modelsRequiredPythonPackages(): PackageConfigModel[] {
+		return this._configValues.modelManagement.requiredPythonPackages;
 	}
 
 	/**

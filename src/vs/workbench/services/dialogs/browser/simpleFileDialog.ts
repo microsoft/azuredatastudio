@@ -54,9 +54,9 @@ export namespace SaveLocalFileCommand {
 	export function handler(): ICommandHandler {
 		return accessor => {
 			const editorService = accessor.get(IEditorService);
-			const activeControl = editorService.activeControl;
-			if (activeControl) {
-				return editorService.save({ groupId: activeControl.group.id, editor: activeControl.input }, { saveAs: true, availableFileSystems: [Schemas.file], reason: SaveReason.EXPLICIT });
+			const activeEditorPane = editorService.activeEditorPane;
+			if (activeEditorPane) {
+				return editorService.save({ groupId: activeEditorPane.group.id, editor: activeEditorPane.input }, { saveAs: true, availableFileSystems: [Schemas.file], reason: SaveReason.EXPLICIT });
 			}
 
 			return Promise.resolve(undefined);
@@ -235,7 +235,7 @@ export class SimpleFileDialog {
 		if (this.scheme !== Schemas.file) {
 			return this.remotePathService.userHome;
 		}
-		return URI.from({ scheme: this.scheme, path: this.environmentService.userHome });
+		return this.environmentService.userHome!;
 	}
 
 	private async pickResource(isSave: boolean = false): Promise<URI | undefined> {
@@ -297,6 +297,8 @@ export class SimpleFileDialog {
 
 			function doResolve(dialog: SimpleFileDialog, uri: URI | undefined) {
 				if (uri) {
+					uri = resources.addTrailingPathSeparator(uri, dialog.separator); // Ensures that c: is c:/ since this comes from user input and can be incorrect.
+					// To be consistent, we should never have a trailing path separator on directories (or anything else). Will not remove from c:/.
 					uri = resources.removeTrailingPathSeparator(uri);
 				}
 				resolve(uri);

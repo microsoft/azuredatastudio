@@ -52,6 +52,10 @@ export class SelectBoxNative extends Disposable implements ISelectBoxDelegate {
 			}));
 		});
 
+		this._register(dom.addStandardDisposableListener(this.selectElement, 'click', (e) => {
+			dom.EventHelper.stop(e, true);
+		}));
+
 		this._register(dom.addStandardDisposableListener(this.selectElement, 'change', (e) => {
 			this.selectElement.title = e.target.value;
 			this._onDidSelect.fire({

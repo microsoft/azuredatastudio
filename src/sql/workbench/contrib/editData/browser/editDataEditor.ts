@@ -7,12 +7,13 @@ import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 
-import { EditorOptions, EditorInput, IEditorControl, IEditor } from 'vs/workbench/common/editor';
+import { EditorOptions, EditorInput, IEditorControl, IEditorPane } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { PANEL_BORDER } from 'vs/workbench/common/theme';
 
 import { EditDataInput } from 'sql/workbench/browser/editData/editDataInput';
 
@@ -36,6 +37,7 @@ import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataRes
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
@@ -278,6 +280,7 @@ export class EditDataEditor extends BaseEditor {
 		} else {
 			this._resultsEditorContainer = DOM.append(parentElement, input.results.container);
 		}
+		this.updateStyles();
 	}
 
 	/**
@@ -294,6 +297,14 @@ export class EditDataEditor extends BaseEditor {
 		}
 
 		this._sash.show();
+	}
+
+
+	updateStyles() {
+		if (this._resultsEditorContainer) {
+			this._resultsEditorContainer.style.borderTopColor = this.getColor(PANEL_BORDER);
+		}
+		super.updateStyles();
 	}
 
 	/**
@@ -521,7 +532,7 @@ export class EditDataEditor extends BaseEditor {
 					this._createEditor(<UntitledTextEditorInput>newInput.sql, this._sqlEditorContainer)
 				]);
 			};
-			onEditorsCreated = (result: IEditor[]) => {
+			onEditorsCreated = (result: IEditorPane[]) => {
 				return Promise.all([
 					this._onResultsEditorCreated(<EditDataResultsEditor>result[0], newInput.results, options),
 					this._onSqlEditorCreated(<TextResourceEditor>result[1], newInput.sql, options)
@@ -581,12 +592,12 @@ export class EditDataEditor extends BaseEditor {
 		this._createResultsEditorContainer();
 
 		this._createEditor(<EditDataResultsInput>input.results, this._resultsEditorContainer)
-			.then(result => {
-				this._onResultsEditorCreated(<EditDataResultsEditor>result, input.results, this.options);
+			.then(async result => {
+				await this._onResultsEditorCreated(<EditDataResultsEditor>result, input.results, this._options);
 				this.resultsEditorVisibility = true;
 				this.hideQueryResultsView = false;
 				this._doLayout(true);
-			});
+			}).catch(onUnexpectedError);
 	}
 
 	/**
@@ -618,10 +629,24 @@ export class EditDataEditor extends BaseEditor {
 			} else {
 				this._sash.hide();
 			}
+			this.updateSashVisibility();
 		}
 
 		this._updateTaskbar(newInput);
 		return this._setNewInput(newInput, options);
+	}
+
+	private updateSashVisibility(): void {
+		// change the visibility of the sash.
+		if (this._resultsEditorContainer) {
+			if (this.queryPaneEnabled()) {
+				this._resultsEditorContainer.style.borderTopStyle = 'solid';
+				this._resultsEditorContainer.style.borderTopWidth = '1px';
+			} else {
+				this._resultsEditorContainer.style.borderTopStyle = '';
+				this._resultsEditorContainer.style.borderTopWidth = '';
+			}
+		}
 	}
 
 	private _updateQueryEditorVisible(currentEditorIsVisible: boolean): void {
@@ -629,7 +654,7 @@ export class EditDataEditor extends BaseEditor {
 			let visible = currentEditorIsVisible;
 			if (!currentEditorIsVisible) {
 				// Current editor is closing but still tracked as visible. Check if any other editor is visible
-				const candidates = [...this._editorService.visibleControls].filter(e => {
+				const candidates = [...this._editorService.visibleEditorPanes].filter(e => {
 					if (e && e.getId) {
 						return e.getId() === EditDataEditor.ID;
 					}
@@ -669,9 +694,11 @@ export class EditDataEditor extends BaseEditor {
 
 	public toggleQueryPane(): void {
 		this.editDataInput.queryPaneEnabled = !this.queryPaneEnabled();
+		this.updateSashVisibility();
 		if (this.queryPaneEnabled()) {
 			this._showQueryEditor();
-		} else {
+		}
+		else {
 			this._hideQueryEditor();
 		}
 		this._doLayout(false);
