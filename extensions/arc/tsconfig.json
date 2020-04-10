@@ -7,17 +7,9 @@
 			"es6",
 			"es2015.promise"
 		],
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
-		"moduleResolution": "node",
-		"declaration": false,
-		"typeRoots": [
-			"./node_modules/@types"
-		],
-		"strict": false,
-		"noUnusedParameters": false
+		"strict": false
 	},
-	"exclude": [
-		"node_modules"
+	"include": [
+		"src/**/*"
 	]
 }

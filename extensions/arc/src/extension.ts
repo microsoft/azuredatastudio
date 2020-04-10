@@ -72,15 +72,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 			{
 				title: 'Settings',
 				tabs: [
-					getComputeStorageTab(context, view),
-					getConnectionStringsTab(context, view),
-					getBackupTab(context, view),
-					getPropertiesTab(context, view)
+					getComputeStorageTab(view),
+					getConnectionStringsTab(view),
+					getBackupTab(view),
+					getPropertiesTab(view)
 				]
 			}, {
 				title: 'Security',
 				tabs: [
-					getNetworkingTab(context, view)
+					getNetworkingTab(view)
 				]
 			}
 		];
@@ -336,7 +336,7 @@ async function getOverviewTab(view: azdata.ModelView, service: DuskyObjectModels
 	};
 }
 
-function getComputeStorageTab(context: vscode.ExtensionContext, view: azdata.ModelView): azdata.DashboardTab {
+function getComputeStorageTab(view: azdata.ModelView): azdata.DashboardTab {
 	const computeStorage: azdata.FlexContainer = view.modelBuilder.flexContainer().withItems([
 		view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Compute + storage' }).component()
 	]).component();
@@ -349,7 +349,7 @@ function getComputeStorageTab(context: vscode.ExtensionContext, view: azdata.Mod
 	};
 }
 
-function getConnectionStringsTab(context: vscode.ExtensionContext, view: azdata.ModelView): azdata.DashboardTab {
+function getConnectionStringsTab(view: azdata.ModelView): azdata.DashboardTab {
 	const connectionStrings: azdata.FlexContainer = view.modelBuilder.flexContainer().withItems([
 		view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Connection strings' }).component()
 	]).component();
@@ -362,7 +362,7 @@ function getConnectionStringsTab(context: vscode.ExtensionContext, view: azdata.
 	};
 }
 
-function getBackupTab(context: vscode.ExtensionContext, view: azdata.ModelView): azdata.DashboardTab {
+function getBackupTab(view: azdata.ModelView): azdata.DashboardTab {
 	const backup: azdata.FlexContainer = view.modelBuilder.flexContainer().withItems([
 		view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Backup' }).component()
 	]).component();
@@ -375,7 +375,7 @@ function getBackupTab(context: vscode.ExtensionContext, view: azdata.ModelView):
 	};
 }
 
-function getPropertiesTab(context: vscode.ExtensionContext, view: azdata.ModelView): azdata.DashboardTab {
+function getPropertiesTab(view: azdata.ModelView): azdata.DashboardTab {
 	const properties: azdata.FlexContainer = view.modelBuilder.flexContainer().withItems([
 		view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Properties' }).component()
 	]).component();
@@ -388,7 +388,7 @@ function getPropertiesTab(context: vscode.ExtensionContext, view: azdata.ModelVi
 	};
 }
 
-function getNetworkingTab(context: vscode.ExtensionContext, view: azdata.ModelView): azdata.DashboardTab {
+function getNetworkingTab(view: azdata.ModelView): azdata.DashboardTab {
 	const networking: azdata.FlexContainer = view.modelBuilder.flexContainer().withItems([
 		view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Networking' }).component()
 	]).component();
