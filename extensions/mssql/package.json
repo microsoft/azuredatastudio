@@ -444,6 +444,7 @@
         "description": "%tab.bigDataClusterDescription%",
         "provider": "MSSQL",
         "title": "%title.bigDataCluster%",
+        "group": "monitoring",
         "when": "connectionProvider == 'MSSQL' && mssql:iscluster && dashboardContext == 'server'",
         "container": {
           "grid-container": [
@@ -494,10 +495,7 @@
         "title": "%mssql.tabs.databases%",
         "when": "dashboardContext == 'server'",
         "group": "home",
-        "icon": {
-          "light": "resources/light/database.svg",
-          "dark": "resources/dark/database_inverse.svg"
-        },
+        "icon": "resources/database.svg",
         "container": {
           "widgets-container": [
             {
