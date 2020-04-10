@@ -342,7 +342,7 @@ export interface ISearchConfigurationProperties {
 	usePCRE2: boolean;
 	actionsPosition: 'auto' | 'right';
 	maintainFileSearchCache: boolean;
-	collapseResults: 'auto' | 'alwaysCollapse' | 'alwaysExpand';
+	collapseResults: 'auto' | 'alwaysCollapse' | 'alwaysExpand' | 'none';
 	searchOnType: boolean;
 	searchOnTypeDebouncePeriod: number;
 	searchEditor: { doubleClickBehaviour: 'selectWord' | 'goToLocation' | 'openLocationToSide' };

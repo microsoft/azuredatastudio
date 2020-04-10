@@ -561,6 +561,10 @@ export class SearchView extends ViewPane {
 			const collapsed = nodeExists ? undefined :
 				(collapseResults === 'alwaysCollapse' || (fileMatch.matches().length > 10 && collapseResults !== 'alwaysExpand'));
 
+			if (collapseResults === 'none') {
+				return <ITreeElement<RenderableMatch>>{ element: fileMatch, undefined, collapsed, collapsible: false };
+			}
+
 			return <ITreeElement<RenderableMatch>>{ element: fileMatch, children, collapsed };
 		});
 	}
@@ -1148,6 +1152,16 @@ export class SearchView extends ViewPane {
 		} else {
 			if (this.searchWidget.replaceInput.getValue() !== '') {
 				this.searchWidget.replaceInput.setValue('');
+			}
+		}
+		if (typeof args.showOnlyFileWithoutCollapsedResults === 'boolean') {
+			this.searchConfig.collapseResults = args.showOnlyFileWithoutCollapsedResults ? 'none' : 'alwaysExpand';
+			if (this.searchConfig.collapseResults === 'none') {
+				this._register(this.tree.onDidChangeSelection((e) => {
+					if (this.tree.getSelection().length) {
+						this.open(this.tree.getSelection()[0] as Match, true, false, false);
+					}
+				}));
 			}
 		}
 		if (typeof args.triggerSearch === 'boolean' && args.triggerSearch) {

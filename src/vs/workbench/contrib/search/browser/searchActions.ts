@@ -160,6 +160,7 @@ export interface IFindInFilesArgs {
 	isRegex?: boolean;
 	isCaseSensitive?: boolean;
 	matchWholeWord?: boolean;
+	showOnlyFileWithoutCollapsedResults?: boolean;
 }
 export const FindInFilesCommand: ICommandHandler = (accessor, args: IFindInFilesArgs = {}) => {
 
