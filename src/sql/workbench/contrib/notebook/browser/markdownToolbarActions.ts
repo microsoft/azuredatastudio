@@ -164,7 +164,6 @@ export class MarkdownTextTransformer {
 			case MarkdownButtonType.CODE:
 				return '\n```';
 			case MarkdownButtonType.LINK:
-				return ']()';
 			case MarkdownButtonType.IMAGE:
 				return ']()';
 			case MarkdownButtonType.HIGHLIGHT:
@@ -299,7 +298,7 @@ export class MarkdownTextTransformer {
 	 * @param editorModel TextModel
 	 */
 	private everyLineMatchesBeginString(selection: Selection, type: MarkdownButtonType, editorModel: TextModel): boolean {
-		if (this.getMarkdownLineType(type) === MarkdownLineType.BEGIN_AND_END_LINES) {
+		if (this.getMarkdownLineType(type) !== MarkdownLineType.EVERY_LINE) {
 			return false;
 		}
 		for (let selectionLine = selection.startLineNumber; selectionLine <= selection.endLineNumber; selectionLine++) {
