@@ -382,9 +382,7 @@ export class SearchView extends ViewPane {
 			// reset to default values
 			if (this.searchConfig.collapseResults === 'none') {
 				this.searchConfig.collapseResults = 'alwaysExpand';
-				if (this.treeSelectionChangeListener) {
-					this.treeSelectionChangeListener.dispose();
-				}
+				this.treeSelectionChangeListener.dispose();
 			}
 		}
 
