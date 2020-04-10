@@ -74,7 +74,6 @@ export function getBareResultsGridInfoStyles(info: BareResultsGridInfo): string 
 export class QueryResultsEditor extends BaseEditor {
 
 	public static ID: string = 'workbench.editor.queryResultsEditor';
-	public static AngularSelectorString: string = 'slickgrid-container.slickgridContainer';
 	protected _rawOptions: BareResultsGridInfo;
 
 	private resultsView: QueryResultsView;
