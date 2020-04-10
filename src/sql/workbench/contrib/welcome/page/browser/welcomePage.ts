@@ -255,7 +255,6 @@ class WelcomePage extends Disposable {
 			attributes: true,
 			attributeFilter: ['style']
 		});
-
 		const defaultBreakpoints = { SM: 480, MD: 640, LG: 1024, XL: 1365 };
 		const startingWidth = parseInt(welcomeContainerContainer.style.width);
 		adsHomepage.classList.add('XS');

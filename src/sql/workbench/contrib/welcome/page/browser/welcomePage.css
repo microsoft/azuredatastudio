@@ -39,6 +39,7 @@
 
 .ads_homepage h1 {
 	font-size: 3em;
+	line-height: 1em;
 	font-weight: 400
 }
 
@@ -144,7 +145,8 @@
 }
 
 .ads_homepage.XS:not(.SM) .btn_container div {
-	width: 100%
+	width: 100%;
+	width: 100%;
 }
 
 .ads_homepage.XS:not(.SM) .btn {
