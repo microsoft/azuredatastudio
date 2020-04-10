@@ -104,7 +104,6 @@ export class MarkdownTextTransformer {
 								operations.push({ range: this.transformRangeByLineOffset(startRange, i), text: beginInsertedCode });
 							}
 							operations.push({ range: endRange, text: endInsertedCode });
-							// operations = operations.reverse();
 							editorModel.pushEditOperations(selections, operations, null);
 						}
 					}
