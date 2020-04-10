@@ -70,32 +70,50 @@ export class MarkdownTextTransformer {
 
 			// endInsertedCode can be an empty string (e.g. for unordered list), so no need to check for that as well
 			if (beginInsertedCode) {
-				// If selection end is on same line as beginning, need to add offset for number of characters inserted
-				// Otherwise, if you're bolding "Sample Phrase", without the offset, the text model will have
-				// "**Sample Phra**se"
-				let offset = selection.startLineNumber === selection.endLineNumber ? beginInsertedCode.length : 0;
 				let endRange: IRange = {
-					startColumn: selection.endColumn + offset,
-					endColumn: selection.endColumn + offset,
+					startColumn: selection.endColumn,
+					endColumn: selection.endColumn,
 					startLineNumber: selection.endLineNumber,
 					endLineNumber: selection.endLineNumber
 				};
 				let editorModel = editorControl.getModel() as TextModel;
+				let isUndo = false;
 				if (editorModel) {
 					let markdownLineType = this.getMarkdownLineType(type);
-					// If the markdown we're inserting only needs to be added to the begin and end lines, add those edit operations directly
-					if (markdownLineType === MarkdownLineType.BEGIN_AND_END_LINES) {
-						editorModel.pushEditOperations(selections, [{ range: startRange, text: beginInsertedCode }, { range: endRange, text: endInsertedCode }], null);
-					} else { // Otherwise, add an operation per line (plus the operation at the last column + line)
-						let operations: IIdentifiedSingleEditOperation[] = [];
-						for (let i = 0; i < selection.endLineNumber - selection.startLineNumber + 1; i++) {
-							operations.push({ range: this.transformRangeByLineOffset(startRange, i), text: beginInsertedCode });
+					isUndo = this.isUndoOperation(selection, type, markdownLineType, editorModel);
+					if (isUndo) {
+						if (markdownLineType === MarkdownLineType.BEGIN_AND_END_LINES) {
+							startRange = this.getIRangeWithOffsets(startRange, -1 * beginInsertedCode.length, 0, 0, 0);
+							endRange = this.getIRangeWithOffsets(endRange, 0, 0, endInsertedCode.length, 0);
+							editorModel.pushEditOperations(selections, [{ range: endRange, text: '' }, { range: startRange, text: '' }], null);
+						} else {
+							let operations: IIdentifiedSingleEditOperation[] = [];
+							startRange = this.getIRangeWithOffsets(startRange, 0, 0, beginInsertedCode.length, 0);
+							for (let i = 0; i < selection.endLineNumber - selection.startLineNumber + 1; i++) {
+								operations.push({ range: this.transformRangeByLineOffset(startRange, i), text: '' });
+							}
+							editorModel.pushEditOperations(selections, operations, null);
 						}
-						operations.push({ range: endRange, text: endInsertedCode });
-						editorModel.pushEditOperations(selections, operations, null);
+					} else {
+						// If the markdown we're inserting only needs to be added to the begin and end lines, add those edit operations directly
+						if (markdownLineType === MarkdownLineType.BEGIN_AND_END_LINES) {
+							editorModel.pushEditOperations(selections, [{ range: startRange, text: beginInsertedCode }, { range: endRange, text: endInsertedCode }], null);
+						} else { // Otherwise, add an operation per line (plus the operation at the last column + line)
+							let operations: IIdentifiedSingleEditOperation[] = [];
+							for (let i = 0; i < selection.endLineNumber - selection.startLineNumber + 1; i++) {
+								operations.push({ range: this.transformRangeByLineOffset(startRange, i), text: beginInsertedCode });
+							}
+							operations.push({ range: endRange, text: endInsertedCode });
+							editorModel.pushEditOperations(selections, operations, null);
+						}
 					}
 				}
-				this.setEndSelection(endRange, type, editorControl, nothingSelected);
+
+				// If selection end is on same line as beginning, need to add offset for number of characters inserted
+				// Otherwise, the selection will not be correct after the transformation
+				let offset = selection.startLineNumber === selection.endLineNumber ? beginInsertedCode.length : 0;
+				endRange = this.getIRangeWithOffsets(endRange, offset, 0, offset, 0);
+				this.setEndSelection(endRange, type, editorControl, nothingSelected, isUndo);
 			}
 			// Always give focus back to the editor after pressing the button
 			editorControl.focus();
@@ -128,7 +146,7 @@ export class MarkdownTextTransformer {
 			case MarkdownButtonType.ORDERED_LIST:
 				return '1. ';
 			case MarkdownButtonType.IMAGE:
-				return '![ALT TEXT](';
+				return '![';
 			case MarkdownButtonType.HIGHLIGHT:
 				return '<mark>';
 			default:
@@ -145,9 +163,8 @@ export class MarkdownTextTransformer {
 			case MarkdownButtonType.CODE:
 				return '\n```';
 			case MarkdownButtonType.LINK:
-				return ']()';
 			case MarkdownButtonType.IMAGE:
-				return ')';
+				return ']()';
 			case MarkdownButtonType.HIGHLIGHT:
 				return '</mark>';
 			case MarkdownButtonType.UNORDERED_LIST:
@@ -177,7 +194,7 @@ export class MarkdownTextTransformer {
 			case MarkdownButtonType.LINK:
 				return 2;
 			case MarkdownButtonType.IMAGE:
-				return 0;
+				return 2;
 			// -1 is considered as having no explicit offset, so do not do anything with selection
 			default: return -1;
 		}
@@ -212,20 +229,100 @@ export class MarkdownTextTransformer {
 	 * @param editorControl code editor widget
 	 * @param noSelection controls whether there was no previous selection in the editor
 	 */
-	private setEndSelection(endRange: IRange, type: MarkdownButtonType, editorControl: CodeEditorWidget, noSelection: boolean): void {
-		if (!endRange || !editorControl) {
+	private setEndSelection(endRange: IRange, type: MarkdownButtonType, editorControl: CodeEditorWidget, noSelection: boolean, isUndo: boolean): void {
+		if (!endRange || !editorControl || isUndo) {
 			return;
 		}
 		let offset = this.getColumnOffsetForSelection(type, noSelection);
 		if (offset > -1) {
 			let newRange: IRange = {
 				startColumn: endRange.startColumn + offset,
-				endColumn: endRange.endColumn + offset,
 				startLineNumber: endRange.startLineNumber,
+				endColumn: endRange.startColumn + offset,
 				endLineNumber: endRange.endLineNumber
 			};
 			editorControl.setSelection(newRange);
+		} else {
+			if (this.getMarkdownLineType(type) === MarkdownLineType.BEGIN_AND_END_LINES) {
+				let currentSelection = editorControl.getSelection();
+				editorControl.setSelection({
+					startColumn: currentSelection.startColumn + this.getStartTextToInsert(type).length,
+					startLineNumber: currentSelection.startLineNumber,
+					endColumn: currentSelection.endColumn - this.getEndTextToInsert(type).length,
+					endLineNumber: currentSelection.endLineNumber
+				});
+			}
 		}
+	}
+
+	/**
+	 * Determine if user wants to perform an undo operation
+	 * @param selection current user selection
+	 * @param type markdown button type
+	 * @param lineType markdown line type
+	 * @param editorModel text model for the cell
+	 */
+	private isUndoOperation(selection: Selection, type: MarkdownButtonType, lineType: MarkdownLineType, editorModel: TextModel): boolean {
+		if (lineType === MarkdownLineType.BEGIN_AND_END_LINES) {
+			let selectedText = this.getExtendedSelectedText(selection, type, lineType, editorModel);
+			return selectedText && selectedText.startsWith(this.getStartTextToInsert(type)) && selectedText.endsWith(this.getEndTextToInsert(type));
+		} else {
+			return this.everyLineMatchesBeginString(selection, type, editorModel);
+		}
+	}
+
+	/**
+	 * Gets the extended selected text (current selection + potential beginning + ending transformed text)
+	 * @param selection Current selection in editor
+	 * @param type Markdown Button Type
+	 * @param lineType Markdown Line Type
+	 * @param editorModel TextModel
+	 */
+	private getExtendedSelectedText(selection: Selection, type: MarkdownButtonType, lineType: MarkdownLineType, editorModel: TextModel): string {
+		if (lineType === MarkdownLineType.BEGIN_AND_END_LINES) {
+			return editorModel.getValueInRange({
+				startColumn: selection.startColumn - this.getStartTextToInsert(type).length,
+				startLineNumber: selection.startLineNumber,
+				endColumn: selection.endColumn + this.getEndTextToInsert(type).length,
+				endLineNumber: selection.endLineNumber
+			});
+		}
+		return '';
+	}
+
+	/**
+	 * Returns whether all lines start with the expected transformed text for actions that match the EVERY_LINE line type
+	 * @param selection Current selection in editor
+	 * @param type Markdown Button Type
+	 * @param editorModel TextModel
+	 */
+	private everyLineMatchesBeginString(selection: Selection, type: MarkdownButtonType, editorModel: TextModel): boolean {
+		if (this.getMarkdownLineType(type) !== MarkdownLineType.EVERY_LINE) {
+			return false;
+		}
+		for (let selectionLine = selection.startLineNumber; selectionLine <= selection.endLineNumber; selectionLine++) {
+			if (!editorModel.getLineContent(selectionLine).startsWith(this.getStartTextToInsert(type))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Create new IRange object with arbitrary offsets
+	 * @param initialRange range object
+	 * @param startColumnOffset
+	 * @param startLineNumberOffset
+	 * @param endColumnOffset
+	 * @param endLineNumberOffset
+	 */
+	private getIRangeWithOffsets(initialRange: IRange, startColumnOffset = 0, startLineNumberOffset = 0, endColumnOffset = 0, endLineNumberOffset = 0): IRange {
+		return {
+			startColumn: initialRange.startColumn + startColumnOffset,
+			startLineNumber: initialRange.startLineNumber + startLineNumberOffset,
+			endColumn: initialRange.endColumn + endColumnOffset,
+			endLineNumber: initialRange.endLineNumber + endLineNumberOffset
+		};
 	}
 }
 
