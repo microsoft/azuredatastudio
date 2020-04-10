@@ -16,7 +16,9 @@ steps:
       set -e
       for f in $(Build.SourcesDirectory)/.build/linux/server/*.tar.gz
       do
-        tar -C $(agent.builddirectory)/${f%".tar.gz"} -zxvf $f
+        foldername=${f%".tar.gz"}
+        foldername=${foldername##"*/"}
+        tar -C $(agent.builddirectory)/${foldername} -zxvf $f
       done
     displayName: Unzip artifacts
 
