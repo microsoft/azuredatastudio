@@ -5,13 +5,42 @@
 
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as WS from 'ws';
 
 import { IAzureTerminalService } from '../interfaces';
 import { AzureAccount, AzureAccountSecurityToken, Tenant } from '../../account-provider/interfaces';
 
 const localize = nls.loadMessageBundle();
+
+
+const handleNeverUsed = async (): Promise<void> => {
+	const neverUsedString = localize('azure.coudTerminal.neverUsed', "If you have not launched Azure Cloud Shell from this account before, please visit https://shell.azure.com/ to get started. Once you are set up, you can use AzureCloud Shell directly in Azure Data Studio.");
+	enum TerminalOption {
+		OPEN_SITE,
+		OK
+	}
+	interface TerminalMessageItem extends vscode.MessageItem {
+		action: TerminalOption;
+	}
+
+	const openAzureShellButton: TerminalMessageItem = {
+		action: TerminalOption.OPEN_SITE,
+		title: localize('azure.cloudTerminal.openAzureShell', "Open Azure Shell")
+	};
+
+	const okButton: TerminalMessageItem = {
+		action: TerminalOption.OK,
+		title: localize('azure.cloudTerminal.ok', "OK")
+	};
+
+	const option = await vscode.window.showInformationMessage<TerminalMessageItem>(neverUsedString, openAzureShellButton, okButton);
+
+	if (option.action === TerminalOption.OPEN_SITE) {
+		vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/AA83f8f'));
+	}
+};
+
 export class AzureTerminalService implements IAzureTerminalService {
 	private readonly apiVersion = '?api-version=2018-10-01';
 
@@ -31,9 +60,16 @@ export class AzureTerminalService implements IAzureTerminalService {
 		};
 
 		const metadata = account.properties.providerSettings;
-
 		const userSettingsUri = this.getConsoleUserSettingsUri(metadata.settings.armResource.endpoint);
-		const userSettingsResult = await axios.get(userSettingsUri, settings);
+
+		let userSettingsResult: AxiosResponse<any>;
+		try {
+			userSettingsResult = await axios.get(userSettingsUri, settings);
+		} catch (ex) {
+			console.log(ex, ex.response);
+			await handleNeverUsed();
+			return;
+		}
 
 		const preferredShell = userSettingsResult.data?.properties?.preferredShellType ?? 'bash';
 		const preferredLocation = userSettingsResult.data?.properties?.preferredLocation;
@@ -43,7 +79,14 @@ export class AzureTerminalService implements IAzureTerminalService {
 			settings.headers['x-ms-console-preferred-location'] = preferredLocation;
 		}
 
-		const provisionResult = await axios.put(consoleRequestUri, {}, settings);
+		let provisionResult: AxiosResponse<any>;
+		try {
+			provisionResult = await axios.put(consoleRequestUri, {}, settings);
+		} catch (ex) {
+			console.log(ex, ex.response);
+			await handleNeverUsed();
+			return;
+		}
 
 		if (provisionResult.data?.properties?.provisioningState !== 'Succeeded') {
 			throw new Error(provisionResult.data);
@@ -114,7 +157,7 @@ class AzureTerminal implements vscode.Pseudoterminal {
 	}
 
 	async open(initialDimensions: vscode.TerminalDimensions): Promise<void> {
-		return this.resetTerminalSize(initialDimensions);
+		this.setDimensions(initialDimensions);
 	}
 
 	close(): void {
@@ -131,24 +174,22 @@ class AzureTerminal implements vscode.Pseudoterminal {
 	}
 
 	async setDimensions(dimensions: vscode.TerminalDimensions): Promise<void> {
-		return this.resetTerminalSize(dimensions);
+		if (!dimensions) {
+			return;
+		}
+		this.terminalDimensions = dimensions;
+		return this.resetTerminalSize();
 	}
 
-	private async resetTerminalSize(dimensions: vscode.TerminalDimensions): Promise<void> {
+	private async resetTerminalSize(): Promise<void> {
 		try {
-
-			if (!this.terminalDimensions) { // first time
-				this.writeEmitter.fire(localize('azure.connectingShellTerminal', "Connecting terminal...\n"));
-			}
-
-			if (dimensions) {
-				this.terminalDimensions = dimensions;
-			}
-
 			// Close the shell before this and restablish a new connection
 			this.close();
 
 			const terminalUri = await this.establishTerminal(this.terminalDimensions);
+			if (!terminalUri) {
+				return;
+			}
 			this.socket = new WS(terminalUri);
 
 			this.socket.on('message', (data: WS.Data) => {
@@ -172,13 +213,20 @@ class AzureTerminal implements vscode.Pseudoterminal {
 
 
 	private async establishTerminal(dimensions: vscode.TerminalDimensions): Promise<string> {
-		const terminalResult = await axios.post(`${this.consoleUri}/terminals?rows=${dimensions.rows}&cols=${dimensions.columns}&shell=${this.shell}`, undefined, {
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${this.token}`
-			}
-		});
+		let terminalResult: AxiosResponse<any>;
+		try {
+			terminalResult = await axios.post(`${this.consoleUri}/terminals?rows=${dimensions.rows}&cols=${dimensions.columns}&shell=${this.shell}`, undefined, {
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${this.token}`
+				}
+			});
+		} catch (ex) {
+			console.log(ex, ex.response);
+			await handleNeverUsed();
+			return undefined;
+		}
 
 		const terminalUri = terminalResult.data?.socketUri;
 
