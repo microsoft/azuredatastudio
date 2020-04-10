@@ -6,7 +6,7 @@
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
-  "icon": "src/images/extension.png",
+  "icon": "images/extension.png",
   "engines": {
     "vscode": "*",
     "azdata": "*"

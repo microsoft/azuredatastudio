@@ -16,7 +16,7 @@ const auth = new BasicAuth('username', 'password');
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	IconPathHelper.setExtensionContext(context);
-	const dashboard = azdata.window.createModelViewDashboard('Azure Arc - Postgres');
+	const dashboard: azdata.window.ModelViewDashboard = azdata.window.createModelViewDashboard('Azure Arc - Postgres');
 	dashboard.registerTabs(async (view: azdata.ModelView) => {
 		// TODO: Loading icon while we fetch information
 
