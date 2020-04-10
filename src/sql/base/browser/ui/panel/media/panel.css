@@ -80,7 +80,8 @@ panel {
 	display: block;
 	min-width: 150px;
 	line-height: 35px;
-	padding-left: 22px;
+	padding-left: 24px;
+	padding-right: 24px;
 }
 
 .tabbedPanel .tabList .tab .tabIcon.codicon {
