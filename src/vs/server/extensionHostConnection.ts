@@ -163,7 +163,12 @@ export class ExtensionHostConnection {
 			removeNulls(opts.env);
 
 			// Run Extension Host as fork of current process
-			this._extensionHostProcess = cp.fork(getPathFromAmdModule(require, 'bootstrap-fork'), ['--type=extensionHost', `--uriTransformerPath=${uriTransformerPath}`], opts);
+			const args = ['--type=extensionHost', `--uriTransformerPath=${uriTransformerPath}`];
+			const useHostProxy = this._environmentService.args['use-host-proxy'];
+			if (useHostProxy !== undefined) {
+				args.push(`--useHostProxy=${useHostProxy}`);
+			}
+			this._extensionHostProcess = cp.fork(getPathFromAmdModule(require, 'bootstrap-fork'), args, opts);
 			const pid = this._extensionHostProcess.pid;
 			this._log(`<${pid}> Launched Extension Host Process.`);
 

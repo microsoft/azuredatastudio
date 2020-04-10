@@ -232,7 +232,7 @@ function packageTask(type, platform, arch, sourceFolderName, destinationFolderNa
 				return !isUIExtension(manifest);
 			}).map((extensionPath) => path.basename(path.dirname(extensionPath)))
 			.filter(name => name !== 'vscode-api-tests' && name !== 'vscode-test-resolver'); // Do not ship the test extensions
-		const marketplaceExtensions = require('./builtInExtensions.json').map(entry => entry.name);
+		const marketplaceExtensions = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'product.json'), 'utf8')).builtInExtensions.map(entry => entry.name);
 		const extensionPaths = [...localWorkspaceExtensions, ...marketplaceExtensions]
 			.map(name => `.build/extensions/${name}/**`);
 

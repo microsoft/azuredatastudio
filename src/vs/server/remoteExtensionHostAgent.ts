@@ -40,6 +40,7 @@ const serverOptions: OptionDescriptions<ServerParsedArgs> = {
 	'folder': { type: 'string' },
 	'workspace': { type: 'string' },
 	'web-user-data-dir': { type: 'string' },
+	'use-host-proxy': { type: 'string' },
 
 	_: OPTIONS['_']
 };
@@ -62,6 +63,7 @@ export interface ServerParsedArgs {
 	'locate-extension'?: string[];
 
 	'disable-user-env-probe'?: boolean;
+	'use-host-proxy'?: string;
 
 	force?: boolean; // used by install-extension
 

@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *--------------------------------------------------------------------------------------------*/
 
-import { ParsedArgs, IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { PersistentProtocol, ProtocolConstants, ISocket } from 'vs/base/parts/ipc/common/ipc.net';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -30,6 +30,7 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { ServerEnvironmentService } from 'vs/server/remoteExtensionHostAgent';
 import { RunOnceScheduler } from 'vs/base/common/async';
+import { ParsedArgs } from 'vs/platform/environment/node/argv';
 
 export interface IExtensionsManagementProcessInitData {
 	args: ParsedArgs;

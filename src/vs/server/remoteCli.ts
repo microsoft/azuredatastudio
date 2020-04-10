@@ -8,10 +8,9 @@ import * as _cp from 'child_process';
 import * as _http from 'http';
 import * as _os from 'os';
 import { dirname, extname, resolve } from 'vs/base/common/path';
-import { parseArgs, buildHelpMessage, buildVersionMessage, OPTIONS, OptionDescriptions } from 'vs/platform/environment/node/argv';
+import { parseArgs, buildHelpMessage, buildVersionMessage, OPTIONS, OptionDescriptions, ParsedArgs } from 'vs/platform/environment/node/argv';
 import { createWaitMarkerFile } from 'vs/platform/environment/node/waitMarkerFile';
 import { OpenCommandPipeArgs, RunCommandPipeArgs, StatusPipeArgs } from 'vs/workbench/api/node/extHostCLIServer';
-import { ParsedArgs } from 'vs/platform/environment/common/environment';
 import { hasStdinWithoutTty, getStdinFilePath, readFromStdin } from 'vs/platform/environment/node/stdin';
 
 interface ProductDescription {
