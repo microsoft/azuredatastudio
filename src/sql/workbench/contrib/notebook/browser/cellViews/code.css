@@ -9,6 +9,10 @@ code-component {
 	display: block;
 }
 
+.notebook-cell:not(.active) code-component .toolbar {
+	border-right-color: transparent!important;
+}
+
 code-component .toolbar {
 	border-right-style: solid;
 	border-right-width: 1px;
