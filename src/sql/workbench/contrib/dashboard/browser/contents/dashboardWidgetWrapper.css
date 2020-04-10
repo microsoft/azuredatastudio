@@ -47,6 +47,6 @@ dashboard-widget-wrapper .actionbar {
 dashboard-widget-wrapper .bottomActionbar {
 	flex: 0 0 auto;
 	align-self: center;
-	margin-top: -28px;
+	margin-top: -27px;
 	display: none;
 }
