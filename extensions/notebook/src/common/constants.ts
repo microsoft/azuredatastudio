@@ -7,8 +7,6 @@ import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
 
-export const notebookFileExt = '.ipynb';
-
 // CONFIG VALUES ///////////////////////////////////////////////////////////
 export const extensionOutputChannel = 'Notebooks';
 

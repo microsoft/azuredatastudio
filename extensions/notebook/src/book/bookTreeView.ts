@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as constants from '../common/constants';
 import * as fsw from 'fs';
 import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
@@ -16,15 +17,9 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import { ApiWrapper } from '../common/apiWrapper';
-import { visitedNotebooksMementoKey, notebookFileExt } from '../common/constants';
 import * as glob from 'fast-glob';
 
 const Content = 'content';
-
-interface BookTreeCollection {
-	notebookPaths: string[];
-	bookPaths: string[];
-}
 
 export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined> = new vscode.EventEmitter<BookTreeItem | undefined>();
@@ -74,11 +69,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	get _visitedNotebooks(): string[] {
-		return this._extensionContext.globalState.get(visitedNotebooksMementoKey, []);
+		return this._extensionContext.globalState.get(constants.visitedNotebooksMementoKey, []);
 	}
 
 	set _visitedNotebooks(value: string[]) {
-		this._extensionContext.globalState.update(visitedNotebooksMementoKey, value);
+		this._extensionContext.globalState.update(constants.visitedNotebooksMementoKey, value);
 	}
 
 	trustBook(bookTreeItem?: BookTreeItem): void {
@@ -197,7 +192,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			const urlPath = sectionToOpen ? sectionToOpen.url : bookRoot.tableOfContents.sections[0].url;
 			const sectionToOpenMarkdown: string = path.join(this.currentBook.bookPath, Content, urlPath.concat('.md'));
 			// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-			const sectionToOpenNotebook: string = path.posix.join(this.currentBook.bookPath, Content, urlPath.concat(notebookFileExt));
+			const sectionToOpenNotebook: string = path.posix.join(this.currentBook.bookPath, Content, urlPath.concat('.ipynb'));
 			if (await fs.pathExists(sectionToOpenMarkdown)) {
 				this.openMarkdown(sectionToOpenMarkdown);
 			}
@@ -373,7 +368,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	private async getNotebooksInTree(folderPath: string): Promise<BookTreeCollection> {
+	private async getNotebooksInTree(folderPath: string): Promise<{ notebookPaths: string[]; bookPaths: string[]; }> {
 		let bookFilter = path.join(folderPath, '**', '_data', 'toc.yml').replace(/\\/g, '/');
 		let bookPaths = await glob(bookFilter);
 		let tocTrimLength = '/_data/toc.yml'.length * -1;
@@ -449,7 +444,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					return undefined;
 				}
 			}
-			else if (element.root.endsWith(notebookFileExt)) {
+			else if (element.root.endsWith('.ipynb')) {
 				let baseName: string = path.basename(element.root);
 				parentPath = element.root.replace(baseName, 'readme.md');
 			}
