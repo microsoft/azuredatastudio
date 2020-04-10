@@ -37,12 +37,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public books: BookModel[];
 	public currentBook: BookModel;
 
-	constructor(
-		private _apiWrapper: ApiWrapper,
-		workspaceFolders: vscode.WorkspaceFolder[],
-		extensionContext: vscode.ExtensionContext,
-		openAsUntitled: boolean,
-		view: string) {
+	constructor(private _apiWrapper: ApiWrapper, workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string) {
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
 		this.books = [];
