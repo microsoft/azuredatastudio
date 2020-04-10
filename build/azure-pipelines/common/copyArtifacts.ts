@@ -6,6 +6,9 @@
 'use strict';
 
 import * as vfs from 'vinyl-fs';
+import * as path from 'path';
+import * as es from 'event-stream';
+import * as fs from 'fs';
 
 const files = [
 	'.build/extensions/**/*.vsix', // external extensions
@@ -23,7 +26,9 @@ const files = [
 async function main() {
 	return new Promise((resolve, reject) => {
 		const stream = vfs.src(files, { base: '.build', allowEmpty: true })
-			.pipe(vfs.dest(process.env.BUILD_ARTIFACTSTAGINGDIRECTORY!));
+			.pipe(es.through( file => {
+				fs.renameSync(file.path, path.join(process.env.BUILD_ARTIFACTSTAGINGDIRECTORY!, path.basename(file.path)));
+			}));
 
 		stream.on('end', () => resolve());
 		stream.on('error', e => reject(e));
