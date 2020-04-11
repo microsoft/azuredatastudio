@@ -26,11 +26,11 @@ const files = [
 async function main() {
 	return new Promise((resolve, reject) => {
 		const stream = vfs.src(files, { base: '.build', allowEmpty: true })
-			.pipe(es.through( file => {
+			.pipe(es.through(file => {
 				const filePath = path.join(process.env.BUILD_ARTIFACTSTAGINGDIRECTORY!,
 					//Preserve intermediate directories after .build folder
 					file.path.substr(path.resolve('.build').length + 1));
-				fs.mkdirSync(path.dirname(filePath));
+				fs.mkdirSync(path.dirname(filePath), { recursive: true });
 				fs.renameSync(file.path, filePath);
 			}));
 
