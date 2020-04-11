@@ -19,7 +19,7 @@ import { CloseTabAction } from 'sql/base/browser/ui/panel/tabActions';
 @Component({
 	selector: 'tab-header',
 	template: `
-		<div #actionHeader role="tab" [attr.aria-selected]="tab.active" [attr.aria-label]="tab.title" class="tab-header" style="flex: 0 0; flex-direction: row; height: 100%" [class.active]="tab.active" tabindex="0" (click)="selectTab(tab)" (keyup)="onKey($event)">
+		<div #actionHeader role="tab" [attr.aria-selected]="tab.active" [attr.aria-label]="tab.title" class="tab-header" style="flex: 0 0; flex-direction: row;" [class.active]="tab.active" tabindex="0" (click)="selectTab(tab)" (keyup)="onKey($event)">
 			<span class="tab" role="presentation">
 				<div role="presentation">
 					<a #tabIcon></a>
