@@ -24,7 +24,7 @@ panel {
 	position: relative;
 }
 
-.tabbedPanel.vertical>.title {
+.tabbedPanel.vertical > .title {
 	flex: 0 0 auto;
 	flex-direction: column;
 	height: 100%;
@@ -53,15 +53,15 @@ panel {
 	flex-flow: row;
 }
 
-.tabbedPanel.horizontal .tabList .tab .tabLabel {
+.tabbedPanel.horizontal > .title .tabList .tab .tabLabel {
 	font-size: 12px;
-	font-weight: normal;
+	max-width: 100px;
 }
 
-.tabbedPanel.vertical .tabList .tab .tabLabel {
+.tabbedPanel.vertical >.title .tabList .tab .tabLabel {
 	font-size: 13px;
 	padding-bottom: 0px;
-	font-weight: normal;
+	max-width: 200px;
 }
 
 .tabbedPanel .tabList .tab .tabLabel {
@@ -72,10 +72,10 @@ panel {
 
 .tabbedPanel.horizontal > .title .tabList .tab .tabLabel,
 .tabbedPanel.vertical > .title .tabList .tab .tabLabel {
-	max-width: 250px;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	border: 0px;
+	font-weight: normal;
 }
 
 .tabbedPanel .tabList .tab-header {
@@ -133,18 +133,18 @@ panel {
 	flex-direction: row;
 }
 
-.tabbedPanel.vertical>.title {
+.tabbedPanel.vertical > .title {
 	flex: 0 0 auto;
 	flex-direction: column;
 	height: 100%;
 }
 
-.tabbedPanel>.tab-content {
+.tabbedPanel > .tab-content {
 	flex: 1 1 auto;
 	position: relative;
 }
 
-.tabbedPanel.vertical>.title > .tabContainer .tabList {
+.tabbedPanel.vertical > .title > .tabContainer .tabList {
 	flex-flow: column;
 	height: calc(100% - 35px);
 	overflow: auto;
