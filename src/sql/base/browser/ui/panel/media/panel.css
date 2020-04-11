@@ -50,6 +50,8 @@ panel {
 .tabbedPanel .tabList .tab {
 	cursor: pointer;
 	margin: auto;
+	display: flex;
+	flex-flow: row;
 }
 
 .tabbedPanel.horizontal .tabList .tab .tabLabel {
@@ -67,6 +69,13 @@ panel {
 	font-size: 13px;
 	padding-bottom: 4px;
 	font-weight: 600;
+}
+
+.tabbedPanel.horizontal > .title .tabList .tab .tabLabel,
+.tabbedPanel.vertical > .title .tabList .tab .tabLabel {
+	max-width: 150px;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .tabbedPanel .tabList .tab-header {
