@@ -1,9 +1,4 @@
 steps:
-  - script: |
-      set -e
-      ./build/azure-pipelines/linux/createDrop.sh
-    displayName: Create Drop
-
   - task: DownloadPipelineArtifact@2
     inputs:
       buildType: 'current'
@@ -16,13 +11,16 @@ steps:
       set -e
       for f in $(Build.SourcesDirectory)/.build/linux/server/*.tar.gz
       do
-        tar -C $(agent.builddirectory)/${f%".tar.gz"} -zxvf $f
+        foldername=${f%".tar.gz"}
+        foldername=${foldername#"$(Build.SourcesDirectory)/.build/linux/server/"}
+        mkdir -p $(agent.builddirectory)/${foldername}
+        tar -C $(agent.builddirectory)/${foldername} -zxvf $f
       done
     displayName: Unzip artifacts
 
   - script: |
       set -e
-      ./build/azure-pipelines/linux/createDrop.sh
+      ./build/azure-pipelines/docker/createDrop.sh
     displayName: Create Drop
 
   - task: PublishBuildArtifacts@1
