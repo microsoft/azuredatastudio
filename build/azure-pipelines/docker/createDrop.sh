@@ -2,6 +2,7 @@ set -e
 REPO="$(pwd)"
 ROOT="$REPO/.."
 
+PLATFORM_LINUX="linux-x64"
 SERVER_BUILD_NAME="azuredatastudio-server-$PLATFORM_LINUX"
 
 # create docker
