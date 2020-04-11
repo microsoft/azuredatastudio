@@ -41,7 +41,6 @@ panel {
 	margin: 0 auto;
 	padding: 0;
 	justify-content: flex-start;
-	line-height: 35px;
 	white-space: nowrap;
 	flex: 1;
 	height: 100%;
@@ -73,9 +72,10 @@ panel {
 
 .tabbedPanel.horizontal > .title .tabList .tab .tabLabel,
 .tabbedPanel.vertical > .title .tabList .tab .tabLabel {
-	max-width: 150px;
+	max-width: 250px;
 	text-overflow: ellipsis;
 	overflow: hidden;
+	border: 0px;
 }
 
 .tabbedPanel .tabList .tab-header {
@@ -146,10 +146,16 @@ panel {
 
 .tabbedPanel.vertical>.title > .tabContainer .tabList {
 	flex-flow: column;
+	height: calc(100% - 35px);
+	overflow: auto;
+	line-height: 35px;
 }
 
 .tabbedPanel.horizontal > .title > .tabContainer .tabList {
 	flex-flow: row;
+	width: 100%;
+	overflow: auto;
+	line-height: 35px;
 }
 
 .tabbedPanel > .title > .tabContainer > .monaco-scrollable-element {
