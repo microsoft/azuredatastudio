@@ -12,7 +12,8 @@ steps:
       for f in $(Build.SourcesDirectory)/.build/linux/server/*.tar.gz
       do
         foldername=${f%".tar.gz"}
-        foldername=${foldername##"*/"}
+        foldername=${foldername#"$(Build.SourcesDirectory)/.build/linux/server/"}
+        mkdir -p $(agent.builddirectory)/${foldername}
         tar -C $(agent.builddirectory)/${foldername} -zxvf $f
       done
     displayName: Unzip artifacts
