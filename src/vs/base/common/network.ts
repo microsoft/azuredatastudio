@@ -42,10 +42,6 @@ export namespace Schemas {
 
 	export const mailto = 'mailto';
 
-	// {{SQL CARBON EDIT}} - Begin
-	export const onenote = 'onenote';
-	// {{SQL CARBON EDIT}} - End
-
 	export const untitled = 'untitled';
 
 	export const data = 'data';

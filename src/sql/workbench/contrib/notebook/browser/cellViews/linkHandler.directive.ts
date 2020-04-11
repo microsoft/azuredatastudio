@@ -61,7 +61,12 @@ export class LinkHandlerDirective {
 			if (uri.fragment && uri.fragment.length > 0 && uri.fsPath === this.workbenchFilePath.fsPath) {
 				this.notebookService.navigateTo(this.notebookUri, uri.fragment);
 			} else {
-				this.openerService.open(uri).catch(onUnexpectedError);
+				if (this.forceOpenExternal(uri)) {
+					this.openerService.open(uri, { openExternal: true }).catch(onUnexpectedError);
+				}
+				else {
+					this.openerService.open(uri).catch(onUnexpectedError);
+				}
 			}
 		}
 	}
@@ -71,5 +76,12 @@ export class LinkHandlerDirective {
 			return true;
 		}
 		return !!this.isTrusted && link.scheme === 'command';
+	}
+
+	private forceOpenExternal(link: URI): boolean {
+		if (link.scheme.toLowerCase() === 'onenote') {
+			return true;
+		}
+		return false;
 	}
 }
