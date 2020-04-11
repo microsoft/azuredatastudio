@@ -1,9 +1,4 @@
 steps:
-  - script: |
-      set -e
-      ./build/azure-pipelines/linux/createDrop.sh
-    displayName: Create Drop
-
   - task: DownloadPipelineArtifact@2
     inputs:
       buildType: 'current'
