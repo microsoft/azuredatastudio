@@ -18,8 +18,8 @@ const files = [
 	'.build/linux/rpm/x86_64/*', // linux rpms
 	'.build/linux/server/*', // linux server
 	'.build/linux/archive/*', // linux archive
-	'.build/docker', // docker images
-	'.build/darwin', // darwin binaries
+	'.build/docker/*', // docker images
+	'.build/darwin/*', // darwin binaries
 	'.build/version.json' // version information
 ];
 
@@ -27,7 +27,10 @@ async function main() {
 	return new Promise((resolve, reject) => {
 		const stream = vfs.src(files, { base: '.build', allowEmpty: true })
 			.pipe(es.through( file => {
-				fs.renameSync(file.path, path.join(process.env.BUILD_ARTIFACTSTAGINGDIRECTORY!, path.basename(file.path)));
+				fs.renameSync(file.path,
+					path.join(process.env.BUILD_ARTIFACTSTAGINGDIRECTORY!,
+						//Preserve intermediate directories after .build folder
+						file.path.substr(path.resolve('.build').length + 1)));
 			}));
 
 		stream.on('end', () => resolve());
