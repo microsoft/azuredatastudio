@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.tabbedpanel-component {
-	width: 100%;
-	height: 100%;
+.propertiesName {
+	opacity: 0.6;
 }
 
-.tabbedpanel-component .tabbedPanel {
-	border-top-width: 0px;
+.vs-dark .propertiesName,
+.hc-black .propertiesName {
+	opacity: 1;
 }

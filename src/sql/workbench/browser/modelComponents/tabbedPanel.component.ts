@@ -11,6 +11,8 @@ import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBa
 import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import 'vs/css!./media/tabbedPanel';
 import { IUserFriendlyIcon, createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 
 export interface TabConfig {
 	title: string;
@@ -40,7 +42,9 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
+	) {
 		super(changeRef, el);
 	}
 
@@ -49,6 +53,7 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 	}
 
 	ngAfterViewInit(): void {
+		this._register(attachTabbedPanelStyler(this._panel, this.themeService));
 	}
 
 	ngOnDestroy(): void {
