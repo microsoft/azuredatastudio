@@ -14,10 +14,10 @@ import { IDataComponent, AzureWorkspaceResource } from '../interfaces';
 /**
  * View to render azure models in a table
  */
-export class AzureModelsTable extends ModelViewBase implements IDataComponent<WorkspaceModel> {
+export class AzureModelsTable extends ModelViewBase implements IDataComponent<WorkspaceModel[]> {
 
 	private _table: azdata.DeclarativeTableComponent;
-	private _selectedModelId: any;
+	private _selectedModel: WorkspaceModel[] = [];
 	private _models: WorkspaceModel[] | undefined;
 	private _onModelSelectionChanged: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	public readonly onModelSelectionChanged: vscode.Event<void> = this._onModelSelectionChanged.event;
@@ -25,7 +25,7 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 	/**
 	 * Creates a view to render azure models in a table
 	 */
-	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: ModelViewBase) {
+	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: ModelViewBase, private _multiSelect: boolean = true) {
 		super(apiWrapper, parent.root, parent);
 		this._table = this.registerComponent(this._modelBuilder);
 	}
@@ -123,17 +123,42 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 
 	private createTableRow(model: WorkspaceModel): any[] {
 		if (this._modelBuilder) {
-			let selectModelButton = this._modelBuilder.radioButton().withProperties({
-				name: 'amlModel',
-				value: model.id,
-				width: 15,
-				height: 15,
-				checked: false
-			}).component();
-			selectModelButton.onDidClick(() => {
-				this._selectedModelId = model.id;
+			let selectModelButton: azdata.Component;
+			let onSelectItem = (checked: boolean) => {
+				const foundItem = this._selectedModel.find(x => x === model);
+				if (checked && !foundItem) {
+					this._selectedModel.push(model);
+				} else if (foundItem) {
+					this._selectedModel = this._selectedModel.filter(x => x !== model);
+				}
 				this._onModelSelectionChanged.fire();
-			});
+			};
+			if (this._multiSelect) {
+				const checkbox = this._modelBuilder.checkBox().withProperties({
+					name: 'amlModel',
+					value: model.id,
+					width: 15,
+					height: 15,
+					checked: false
+				}).component();
+				checkbox.onChanged(() => {
+					onSelectItem(checkbox.checked || false);
+				});
+				selectModelButton = checkbox;
+			} else {
+				const radioButton = this._modelBuilder.radioButton().withProperties({
+					name: 'amlModel',
+					value: model.id,
+					width: 15,
+					height: 15,
+					checked: false
+				}).component();
+				radioButton.onDidClick(() => {
+					onSelectItem(radioButton.checked || false);
+				});
+				selectModelButton = radioButton;
+			}
+
 			return [model.name, model.createdTime, model.frameworkVersion, selectModelButton];
 		}
 
@@ -143,9 +168,9 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 	/**
 	 * Returns selected data
 	 */
-	public get data(): WorkspaceModel | undefined {
-		if (this._models && this._selectedModelId) {
-			return this._models.find(x => x.id === this._selectedModelId);
+	public get data(): WorkspaceModel[] | undefined {
+		if (this._models && this._selectedModel) {
+			return this._selectedModel;
 		}
 		return undefined;
 	}

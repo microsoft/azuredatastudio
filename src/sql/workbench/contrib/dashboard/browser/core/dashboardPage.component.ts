@@ -51,6 +51,7 @@ import { NAV_SECTION } from 'sql/workbench/contrib/dashboard/browser/containers/
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
@@ -132,6 +133,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	ngAfterViewInit(): void {
+		attachTabbedPanelStyler(this._panel, this.themeService);
 		this.updateTheme(this.themeService.getColorTheme());
 	}
 
