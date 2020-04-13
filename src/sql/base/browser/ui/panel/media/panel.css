@@ -76,6 +76,10 @@ panel {
 	min-width: 65px;
 }
 
+.tabbedPanel.horizontal > .title .tabList .tab-header {
+	margin: 5px;
+}
+
 .tabbedPanel.vertical > .title .tabList .tab-header {
 	display: block;
 	min-width: 150px;
@@ -156,9 +160,8 @@ panel {
 .tabbedPanel .tab-group-header {
 	font-weight: 600;
 	font-size: 14px;
-	margin: 15px 24px 3px 24px;
-	line-height: 20px;
-	height: 35px;
+	margin: 10px 24px 5px 24px;
+	line-height: 35px;
 	border-style: solid;
 	border-width: 0 0 1px 0;
 }

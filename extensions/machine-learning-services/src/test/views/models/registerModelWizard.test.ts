@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as should from 'should';
 import 'mocha';
 import { createContext } from './utils';
-import { ListModelsEventName, ListAccountsEventName, ListSubscriptionsEventName, ListGroupsEventName, ListWorkspacesEventName, ListAzureModelsEventName } from '../../../views/models/modelViewBase';
+import { ListModelsEventName, ListAccountsEventName, ListSubscriptionsEventName, ListGroupsEventName, ListWorkspacesEventName, ListAzureModelsEventName, ModelSourceType } from '../../../views/models/modelViewBase';
 import { RegisteredModel } from '../../../modelManagement/interfaces';
 import { azureResource } from '../../../typings/azure-resource';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
@@ -97,6 +97,10 @@ describe('Register Model Wizard', () => {
 		view.on(ListAzureModelsEventName, () => {
 			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListAzureModelsEventName), { data: models });
 		});
+
+		if (view.modelBrowsePage) {
+			view.modelBrowsePage.modelSourceType = ModelSourceType.Azure;
+		}
 		await view.refresh();
 		should.notEqual(view.azureModelsComponent?.data ,undefined);
 		should.notEqual(view.localModelsComponent?.data, undefined);
