@@ -88,7 +88,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		public connectionProfile: IConnectionProfile | undefined,
 		@ILogService private readonly logService: ILogService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@IAdsTelemetryService private readonly _adstelemetryService: IAdsTelemetryService
+		@IAdsTelemetryService private readonly adstelemetryService: IAdsTelemetryService
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
@@ -307,7 +307,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				if (contents.metadata) {
 					//Telemetry of loading notebook
 					if (contents.metadata.azdata_notebook_guid) {
-						this._adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.Open)
+						this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.Open)
 							.withAdditionalProperties({ azdata_notebook_guid: contents.metadata.azdata_notebook_guid })
 							.send();
 					}
@@ -953,7 +953,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				if (this._textCellsLoading <= 0) {
 					if (this._notebookOptions.editorLoadedTimestamp) {
 						let markdownRenderingTime = Date.now() - this._notebookOptions.editorLoadedTimestamp;
-						this._adstelemetryService.sendMetricsEvent({ markdownRenderingElapsedMs: markdownRenderingTime }, TelemetryKeys.TelemetryView.Notebook);
+						this.adstelemetryService.sendMetricsEvent({ markdownRenderingElapsedMs: markdownRenderingTime }, TelemetryKeys.TelemetryView.Notebook);
 					}
 				}
 			}
