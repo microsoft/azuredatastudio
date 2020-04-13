@@ -19,7 +19,7 @@
       "properties": {
         "notebook.maxBookSearchDepth": {
           "type": "number",
-          "default": 5,
+          "default": 10,
           "description": "%notebook.maxBookSearchDepth.description%"
         },
         "notebook.pythonPath": {

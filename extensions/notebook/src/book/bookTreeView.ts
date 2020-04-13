@@ -371,7 +371,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		let maxDepth = notebookConfig[constants.maxBookSearchDepth];
 		// Use default value if user enters an invalid value
 		if (isNullOrUndefined(maxDepth) || maxDepth < 0) {
-			maxDepth = 5;
+			maxDepth = 10;
 		} else if (maxDepth === 0) { // No limit of search depth if user enters 0
 			maxDepth = undefined;
 		}
