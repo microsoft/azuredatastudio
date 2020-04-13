@@ -33,7 +33,7 @@ export class CurrentModelsPage extends ModelViewBase implements IPageView {
 	 * @param modelBuilder register the components
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
-		this._dataTable = new CurrentModelsTable(this._apiWrapper, this);
+		this._dataTable = new CurrentModelsTable(this._apiWrapper, this, false);
 		this._dataTable.registerComponent(modelBuilder);
 		this._tableComponent = this._dataTable.component;
 
