@@ -87,7 +87,7 @@ function createOrUpdate(commit: string, quality: string, platform: string, type:
 		updateTries++;
 
 		return new Promise<void>((c, e) => {
-			client.queryDocuments(collection, updateQuery).toArray((err, results) => {
+			client.queryDocuments(collection, updateQuery, { enableCrossPartitionQuery: true }).toArray((err, results) => {
 				if (err) { return e(err); }
 				if (results.length !== 1) { return e(new Error('No documents')); }
 
