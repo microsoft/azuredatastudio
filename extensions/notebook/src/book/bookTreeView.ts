@@ -22,6 +22,11 @@ import { isNullOrUndefined } from 'util';
 
 const Content = 'content';
 
+interface BookSearchResults {
+	notebookPaths: string[];
+	bookPaths: string[];
+}
+
 export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined> = new vscode.EventEmitter<BookTreeItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<BookTreeItem | undefined> = this._onDidChangeTreeData.event;
@@ -366,7 +371,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	private async getNotebooksInTree(folderPath: string): Promise<{ notebookPaths: string[]; bookPaths: string[]; }> {
+	private async getNotebooksInTree(folderPath: string): Promise<BookSearchResults> {
 		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
 		let maxDepth = notebookConfig[constants.maxBookSearchDepth];
 		// Use default value if user enters an invalid value
