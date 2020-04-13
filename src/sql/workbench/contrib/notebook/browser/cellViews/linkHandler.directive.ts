@@ -9,6 +9,7 @@ import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { dirname, basename } from 'vs/base/common/path';
 
 const knownSchemes = new Set(['http', 'https', 'file', 'mailto', 'data', 'azuredatastudio', 'azuredatastudio-insiders', 'vscode', 'vscode-insiders', 'vscode-resource']);
 @Directive({
@@ -61,7 +62,9 @@ export class LinkHandlerDirective {
 			if (uri.fragment && uri.fragment.length > 0 && uri.fsPath === this.workbenchFilePath.fsPath) {
 				this.notebookService.navigateTo(this.notebookUri, uri.fragment);
 			} else {
-				this.openerService.open(uri).catch(onUnexpectedError);
+				let newUri = dirname(this.notebookUri.fsPath);
+				newUri = newUri + '\\' + basename(uri.fsPath);
+				this.openerService.open(newUri).catch(onUnexpectedError);
 			}
 		}
 	}
