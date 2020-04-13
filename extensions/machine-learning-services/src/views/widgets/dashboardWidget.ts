@@ -40,7 +40,7 @@ export class DashboardWidget {
 			const footerContainer = this.createFooter(view);
 			container.addItem(header, {
 				CSSStyles: {
-					'background-image': `url(file://${this.asAbsolutePath('images/background.svg')})`,
+					'background-image': `url(${vscode.Uri.file(this.asAbsolutePath('images/background.svg'))})`,
 					'background-repeat': 'no-repeat',
 					'background-position': 'top',
 					'width': `${maxWidth}px`,
@@ -211,7 +211,7 @@ export class DashboardWidget {
 		});
 		videosContainer.addItem(video1Container, {
 			CSSStyles: {
-				'background-image': `url(file://${this.asAbsolutePath(<string>linkMetaData.iconPath?.light || '')})`,
+				'background-image': `url(${vscode.Uri.file(this.asAbsolutePath(<string>linkMetaData.iconPath?.light || ''))})`,
 				'background-repeat': 'no-repeat',
 				'background-position': 'top',
 				'width': `150px`,
