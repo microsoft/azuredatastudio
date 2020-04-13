@@ -381,15 +381,16 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			maxDepth = undefined;
 		}
 
-		let bookFilter = path.join(folderPath, '**', '_data', 'toc.yml').replace(/\\/g, '/');
+		let escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
+		let bookFilter = path.posix.join(escapedPath, '**', '_data', 'toc.yml');
 		let bookPaths = await glob(bookFilter, { deep: maxDepth });
 		let tocTrimLength = '/_data/toc.yml'.length * -1;
-		bookPaths = bookPaths?.map(path => path.slice(0, tocTrimLength));
+		bookPaths = bookPaths.map(path => path.slice(0, tocTrimLength));
 
-		let notebookFilter = path.join(folderPath, '**', '*.ipynb').replace(/\\/g, '/');
-		let notebookPaths = await glob(notebookFilter, { ignore: bookPaths.map(path => path + '/**/*.ipynb'), deep: maxDepth });
+		let notebookFilter = path.posix.join(escapedPath, '**', '*.ipynb');
+		let notebookPaths = await glob(notebookFilter, { ignore: bookPaths.map(path => glob.escapePath(path) + '/**/*.ipynb'), deep: maxDepth });
 
-		return { notebookPaths: notebookPaths ?? [], bookPaths: bookPaths ?? [] };
+		return { notebookPaths: notebookPaths, bookPaths: bookPaths };
 	}
 
 	private runThrottledAction(resource: string, action: () => void) {
