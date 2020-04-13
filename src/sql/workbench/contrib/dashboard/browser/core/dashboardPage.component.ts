@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./dashboardPage';
-import 'vs/css!sql/media/icons/common-icons';
 import 'sql/workbench/contrib/dashboard/browser/core/dashboardPanelStyles';
 
 import { Component, Inject, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
@@ -52,6 +51,7 @@ import { NAV_SECTION } from 'sql/workbench/contrib/dashboard/browser/containers/
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
@@ -82,7 +82,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	// tslint:disable:no-unused-variable
 	private readonly homeTabTitle: string = nls.localize('home', "Home");
 	private readonly homeTabId: string = 'homeTab';
-	private tabToolbarActionsConfig = new Map<string, WidgetConfig>();
+	private tabToolbarActionsConfig = new Map<string, any[]>();
 	private tabContents = new Map<string, string>();
 
 	static tabName = new RawContextKey<string>('tabName', undefined);
@@ -133,6 +133,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	ngAfterViewInit(): void {
+		attachTabbedPanelStyler(this._panel, this.themeService);
 		this.updateTheme(this.themeService.getColorTheme());
 	}
 
@@ -145,12 +146,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			});
 		} else {
 			let tempWidgets = this.dashboardService.getSettings<Array<WidgetConfig>>([this.context, 'widgets'].join('.'));
-			// remove tasks widget because those will be shown in the toolbar
-			const index = tempWidgets.findIndex(c => c.widget['tasks-widget']);
-			if (index !== -1) {
-				tempWidgets.splice(index, 1);
-			}
-
+			this.processTasksWidgets(tempWidgets, this.homeTabId);
 			this._originalConfig = objects.deepClone(tempWidgets);
 			let properties = this.getProperties();
 			this._configModifiers.forEach((cb) => {
@@ -162,7 +158,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			});
 			this.propertiesWidget = properties ? properties[0] : undefined;
 			this._panel.options = {
-				showTabsWhenOne: true,
+				alwaysShowTabs: true,
 				layout: NavigationBarLayout.vertical,
 				showIcon: true
 			};
@@ -170,8 +166,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		}
 
 		this.showToolbar = true;
-		const homeToolbarConfig = this.dashboardService.getSettings<Array<WidgetConfig>>([this.context, 'widgets'].join('.'))[0].widget['tasks-widget'];
-		this.tabToolbarActionsConfig.set(this.homeTabId, homeToolbarConfig);
 		this.createToolbar(this.toolbarContainer.nativeElement, this.homeTabId);
 
 		this._register(this.themeService.onDidColorThemeChange((event: IColorTheme) => {
@@ -179,58 +173,52 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		}));
 	}
 
-	private getExtensionContributedHomeToolbarContent(content: ITaskbarContent[]): void {
-		let primary: IAction[] = [];
-		let secondary: IAction[] = [];
-		const menu = this.menuService.createMenu(MenuId.DashboardToolbar, this.contextKeyService);
-		let groups = menu.getActions({ arg: null, shouldForwardArgs: true });
-		fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined || group === '');
+	private getContributedTasks(tabId: string): ITaskbarContent[] {
+		const tasks: ITaskbarContent[] = [];
+		// for now we only allow contributing to the home tab toolbar.
+		if (tabId === this.homeTabId) {
+			let primary: IAction[] = [];
+			let secondary: IAction[] = [];
+			const menu = this.menuService.createMenu(MenuId.DashboardToolbar, this.contextKeyService);
+			let groups = menu.getActions({ arg: null, shouldForwardArgs: true });
+			fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined || group === '');
 
-		primary.forEach(a => {
-			if (a instanceof MenuItemAction) {
-				// Need to ensure that we don't add the same action multiple times
-				let foundIndex = firstIndex(content, act => act.action && act.action.id === a.id);
-				if (foundIndex < 0) {
-					content.push({ action: a });
+			primary.forEach(a => {
+				if (a instanceof MenuItemAction) {
+					// Need to ensure that we don't add the same action multiple times
+					let foundIndex = firstIndex(tasks, act => act.action && act.action.id === a.id);
+					if (foundIndex < 0) {
+						tasks.push({ action: a });
+					}
 				}
+			});
+
+			if (primary.length > 0) {
+				let separator: HTMLElement = Taskbar.createTaskbarSeparator();
+				tasks.push({ element: separator });
 			}
-		});
-
-		if (primary.length > 0) {
-			let separator: HTMLElement = Taskbar.createTaskbarSeparator();
-			content.push({ element: separator });
 		}
+		return tasks;
 	}
 
-	private hasExtensionContributedToolbarContent(): boolean {
-		let primary: IAction[] = [];
-		let secondary: IAction[] = [];
-		const menu = this.menuService.createMenu(MenuId.DashboardToolbar, this.contextKeyService);
-		let groups = menu.getActions({ arg: null, shouldForwardArgs: true });
-		fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined || group === '');
-		return primary.length > 0 || secondary.length > 0;
-	}
-
-	private createToolbar(parentElement: HTMLElement, tabName: string): void {
+	private createToolbar(parentElement: HTMLElement, tabId: string): void {
 		// clear out toolbar
 		DOM.clearNode(parentElement);
-		this.toolbar = this._register(new Taskbar(parentElement, { actionViewItemProvider: action => this.createActionItemProvider(action as Action) }));
-
+		this.toolbar = this._register(new Taskbar(parentElement, { actionViewItemProvider: action => this.createActionItemProvider(action as Action) }, true));
 		let content = [];
-		content = this.getToolbarContent(this.tabToolbarActionsConfig.get(tabName));
-
-		if (tabName === this.homeTabId) {
+		content = this.getToolbarContent(tabId);
+		if (tabId === this.homeTabId) {
 			const configureDashboardCommand = MenuRegistry.getCommand('configureDashboard');
 			const configureDashboardAction = new ToolbarAction(configureDashboardCommand.id, configureDashboardCommand.title.toString(), TaskRegistry.getOrCreateTaskIconClassName(configureDashboardCommand), this.runAction, this, this.logService);
 			content.push({ action: configureDashboardAction });
 		}
-
 		this.toolbar.setContent(content);
 	}
 
-	private getToolbarContent(toolbarTasks: WidgetConfig): ITaskbarContent[] {
+	private getToolbarContent(tabId: string): ITaskbarContent[] {
+		const toolbarTasks = this.tabToolbarActionsConfig.get(tabId);
 		let tasks = TaskRegistry.getTasks();
-		let content;
+		let content = [];
 		if (types.isArray(toolbarTasks) && toolbarTasks.length > 0) {
 			tasks = toolbarTasks.map(i => {
 				if (types.isString(i)) {
@@ -250,9 +238,12 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		}
 
 		// get extension actions contributed to the page's toolbar
-		this.getExtensionContributedHomeToolbarContent(content);
+		const contributedTasks = this.getContributedTasks(tabId);
+		content.push(...contributedTasks);
 
-		const refreshAction = new RefreshWidgetAction(this.refresh, this);
+		const refreshAction = new RefreshWidgetAction(() => {
+			this.refresh();
+		}, this);
 		content.push({ action: refreshAction });
 		return content;
 	}
@@ -456,12 +447,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				configs = cb.apply(this, [configs]);
 			});
 
-			// remove tasks widget because the tasks will be shown in the toolbar
-			const index = configs.findIndex(c => c.widget['tasks-widget']);
-			if (index !== -1) {
-				this.tabToolbarActionsConfig.set(value.id, configs[index].widget['tasks-widget']);
-				configs.splice(index, 1);
-			}
+			this.processTasksWidgets(configs, value.id);
 
 			if (key === WIDGETS_CONTAINER) {
 				return { id: value.id, title: value.title, container: { 'widgets-container': configs }, alwaysShow: value.alwaysShow, iconClass: value.iconClass };
@@ -471,6 +457,28 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			}
 		}
 		return { id: value.id, title: value.title, container: containerResult.container, alwaysShow: value.alwaysShow, iconClass: value.iconClass };
+	}
+
+	/**
+	 * Process the tasks widgets, tasks widgets has been deprecated and the tasks are now in toolbar.
+	 * @param widgets widgets
+	 * @param tabId tab id
+	 */
+	private processTasksWidgets(widgets: WidgetConfig[], tabId: string): void {
+		let index;
+		const allTasks = [];
+		// do this in a while loop since there might be multiple tasks widgets in a tab
+		do {
+			index = widgets.findIndex(c => c.widget['tasks-widget']);
+			if (index !== -1) {
+				const tasks = widgets[index].widget['tasks-widget'];
+				if (Array.isArray(tasks)) {
+					allTasks.push(...tasks);
+				}
+				widgets.splice(index, 1);
+			}
+		} while (index !== -1);
+		this.tabToolbarActionsConfig.set(tabId, allTasks);
 	}
 
 	protected getContentType(tab: TabConfig): string {
@@ -525,17 +533,13 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	public handleTabChange(tab: TabComponent): void {
 		this._tabName.set(tab.identifier);
 		const tabContent = this.tabContents.get(tab.identifier);
-		if (tab.identifier === this.homeTabId || tabContent === WIDGETS_CONTAINER || tabContent === GRID_CONTAINER || tabContent === NAV_SECTION
-			|| this.hasExtensionContributedToolbarContent()) {
+		if (tab.identifier === this.homeTabId || tabContent === WIDGETS_CONTAINER || tabContent === GRID_CONTAINER || tabContent === NAV_SECTION) {
 			this.showToolbar = true;
 			this.createToolbar(this.toolbarContainer.nativeElement, tab.identifier);
 		} else { // hide toolbar
 			this.showToolbar = false;
 		}
 
-		this._cd.detectChanges();
-		const localtab = this._tabs.find(i => i.id === tab.identifier);
-		this._editEnabled.fire(localtab.editable);
 		this._cd.detectChanges();
 	}
 

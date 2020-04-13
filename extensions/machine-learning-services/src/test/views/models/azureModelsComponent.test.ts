@@ -28,7 +28,7 @@ describe('Azure Models Component', () => {
 		let testContext = createContext();
 		let parent = new ParentDialog(testContext.apiWrapper.object);
 
-		let view = new AzureModelsComponent(testContext.apiWrapper.object, parent);
+		let view = new AzureModelsComponent(testContext.apiWrapper.object, parent, false);
 		view.registerComponent(testContext.view.modelBuilder);
 
 		let accounts: azdata.Account[] = [
@@ -88,12 +88,15 @@ describe('Azure Models Component', () => {
 			parent.sendCallbackRequest(ViewBase.getCallbackEventName(ListAzureModelsEventName), { data: models });
 		});
 		await view.refresh();
-		testContext.onClick.fire();
+		testContext.onClick.fire(true);
 		should.notEqual(view.data, undefined);
-		should.deepEqual(view.data?.account, accounts[0]);
-		should.deepEqual(view.data?.subscription, subscriptions[0]);
-		should.deepEqual(view.data?.group, groups[0]);
-		should.deepEqual(view.data?.workspace, workspaces[0]);
-		should.deepEqual(view.data?.model, models[0]);
+		should.equal(view.data?.length, 1);
+		if (view.data) {
+			should.deepEqual(view.data[0].account, accounts[0]);
+			should.deepEqual(view.data[0].subscription, subscriptions[0]);
+			should.deepEqual(view.data[0].group, groups[0]);
+			should.deepEqual(view.data[0].workspace, workspaces[0]);
+			should.deepEqual(view.data[0].model, models[0]);
+		}
 	});
 });

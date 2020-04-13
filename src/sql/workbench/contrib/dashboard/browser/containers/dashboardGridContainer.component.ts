@@ -235,8 +235,10 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 					widget.rowspan = '1';
 				}
 			});
-			this.rows = this.createIndexes(this._contents.map(w => w.row));
-			this.cols = this.createIndexes(this._contents.map(w => w.col));
+			if (this._contents.length > 0) {
+				this.rows = this.createIndexes(this._contents.map(w => w.row));
+				this.cols = this.createIndexes(this._contents.map(w => w.col));
+			}
 		}
 	}
 

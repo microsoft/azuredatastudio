@@ -33,7 +33,7 @@ Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConf
 	'properties': {
 		'workbench.showConnectDialogOnStartup': {
 			'type': 'boolean',
-			'default': true,
+			'default': false,
 			'description': nls.localize('showConnectDialogOnStartup', "Show connect dialog on startup")
 		}
 	}
