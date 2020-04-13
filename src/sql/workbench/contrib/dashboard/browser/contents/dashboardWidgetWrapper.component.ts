@@ -129,6 +129,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 				this._collapseAction = this.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed);
 				if (this.bottomCollapse) {
 					this._bottomActionbar.push(this._collapseAction, { icon: true, label: false });
+					this._bottomActionbarRef.nativeElement.style.display = 'block';
 				} else {
 					this._actionbar.push(this._collapseAction, { icon: true, label: false });
 				}
