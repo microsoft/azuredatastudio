@@ -52,7 +52,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		await vscode.commands.executeCommand('setContext', 'unsavedBooks', this._openAsUntitled);
 		await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
 			try {
-				await this.createAndAddBookModel(workspaceFolder.uri.fsPath, false);
+				await this.loadNotebooksInFolder(workspaceFolder.uri.fsPath);
 			} catch {
 				// no-op, not all workspace folders are going to be valid books
 			}
@@ -352,14 +352,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			openLabel: loc.labelSelectFolder
 		});
 		if (uris && uris.length > 0) {
-			let folderPath = uris[0];
-			let bookCollection = await this.getNotebooksInTree(folderPath?.fsPath);
-			for (let i = 0; i < bookCollection.bookPaths.length; i++) {
-				await this.openBook(bookCollection.bookPaths[i], undefined, false);
-			}
-			for (let i = 0; i < bookCollection.notebookPaths.length; i++) {
-				await this.openBook(bookCollection.notebookPaths[i], undefined, false, true);
-			}
+			await this.loadNotebooksInFolder(uris[0]?.fsPath);
+		}
+	}
+
+	private async loadNotebooksInFolder(folderPath: string) {
+		let bookCollection = await this.getNotebooksInTree(folderPath);
+		for (let i = 0; i < bookCollection.bookPaths.length; i++) {
+			await this.openBook(bookCollection.bookPaths[i], undefined, false);
+		}
+		for (let i = 0; i < bookCollection.notebookPaths.length; i++) {
+			await this.openBook(bookCollection.notebookPaths[i], undefined, false, true);
 		}
 	}
 
