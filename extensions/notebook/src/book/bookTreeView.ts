@@ -431,11 +431,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				return Promise.resolve([]);
 			}
 		} else {
-			let booksitems: BookTreeItem[] = [];
+			let bookItems: BookTreeItem[] = [];
 			this.books.map(book => {
-				booksitems = booksitems.concat(book.bookItems);
+				bookItems = bookItems.concat(book.bookItems);
 			});
-			return Promise.resolve(booksitems);
+			return Promise.resolve(bookItems);
 		}
 	}
 
