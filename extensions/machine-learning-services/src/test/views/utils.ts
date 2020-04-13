@@ -32,7 +32,12 @@ export function createViewContext(): ViewTestContext {
 		onDidClick: onClick.event
 	});
 	let radioButton: azdata.RadioButtonComponent = Object.assign({}, componentBase, {
+		checked: true,
 		onDidClick: onClick.event
+	});
+	let checkbox: azdata.CheckBoxComponent = Object.assign({}, componentBase, {
+		checked: true,
+		onChanged: onClick.event
 	});
 	let container = {
 		clearItems: () => { },
@@ -61,6 +66,11 @@ export function createViewContext(): ViewTestContext {
 		withProperties: () => radioButtonBuilder,
 		withValidation: () => radioButtonBuilder
 	};
+	let checkBoxBuilder: azdata.ComponentBuilder<azdata.CheckBoxComponent> = {
+		component: () => checkbox,
+		withProperties: () => checkBoxBuilder,
+		withValidation: () => checkBoxBuilder
+	};
 	let inputBox: () => azdata.InputBoxComponent = () => Object.assign({}, componentBase, {
 		onTextChanged: undefined!,
 		onEnterKeyPressed: undefined!,
@@ -86,6 +96,12 @@ export function createViewContext(): ViewTestContext {
 	let loadingComponent: () => azdata.LoadingComponent = () => Object.assign({}, componentBase, {
 		loading: false,
 		component: undefined!
+	});
+
+	let card: () => azdata.CardComponent = () => Object.assign({}, componentBase, {
+		label: '',
+		onDidActionClick: new vscode.EventEmitter<azdata.ActionDescriptor>().event,
+		onCardSelectedChanged: onClick.event
 	});
 
 	let declarativeTableBuilder: azdata.ComponentBuilder<azdata.DeclarativeTableComponent> = {
@@ -137,6 +153,15 @@ export function createViewContext(): ViewTestContext {
 		withProperties: () => inputBoxBuilder,
 		withValidation: () => inputBoxBuilder
 	};
+	let cardBuilder: azdata.ComponentBuilder<azdata.CardComponent> = {
+		component: () => {
+			let r = card();
+			return r;
+		},
+		withProperties: () => cardBuilder,
+		withValidation: () => cardBuilder
+	};
+
 	let imageBuilder: azdata.ComponentBuilder<azdata.ImageComponent> = {
 		component: () => {
 			let r = image();
@@ -169,9 +194,9 @@ export function createViewContext(): ViewTestContext {
 			flexContainer: () => flexBuilder,
 			splitViewContainer: undefined!,
 			dom: undefined!,
-			card: undefined!,
+			card: () => cardBuilder,
 			inputBox: () => inputBoxBuilder,
-			checkBox: undefined!,
+			checkBox: () => checkBoxBuilder!,
 			radioButton: () => radioButtonBuilder,
 			webView: undefined!,
 			editor: undefined!,
