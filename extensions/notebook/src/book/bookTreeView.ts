@@ -143,7 +143,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		let deletedBook: BookModel;
 		try {
 			let targetPath = book.book.type === BookTreeItemType.Book ? book.root : book.book.contentPath;
-			let targetBook = this.books.find(b => b.bookPath.replace(/\\/g, '/') === targetPath);
+			let targetBook = this.books.find(b => b.bookPath === targetPath);
 			let index: number = this.books.indexOf(targetBook);
 			if (index > -1) {
 				deletedBook = this.books.splice(index, 1)[0];
