@@ -24,7 +24,6 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { keys } from 'vs/base/common/map';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { startsWith } from 'vs/base/common/strings';
@@ -89,7 +88,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		public connectionProfile: IConnectionProfile | undefined,
 		@ILogService private readonly logService: ILogService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IAdsTelemetryService private readonly _adstelemetryService: IAdsTelemetryService
 	) {
 		super();
@@ -955,7 +953,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				if (this._textCellsLoading <= 0) {
 					if (this._notebookOptions.editorLoadedTimestamp) {
 						let markdownRenderingTime = Date.now() - this._notebookOptions.editorLoadedTimestamp;
-						this.telemetryService.publicLog(TelemetryKeys.NotebookMarkdownRendered, { markdownRenderingElapsedMs: markdownRenderingTime });
+						this._adstelemetryService.sendMetricsEvent({ markdownRenderingElapsedMs: markdownRenderingTime }, TelemetryKeys.TelemetryView.Notebook);
 					}
 				}
 			}
