@@ -58,7 +58,7 @@ panel {
 }
 
 .tabbedPanel.vertical .tabList .tab .tabLabel {
-	font-size: 12px;
+	font-size: 13px;
 	padding-bottom: 0px;
 	font-weight: normal;
 }
@@ -76,10 +76,16 @@ panel {
 	min-width: 65px;
 }
 
+.tabbedPanel.horizontal > .title .tabList .tab-header {
+	margin: 5px;
+}
+
 .tabbedPanel.vertical > .title .tabList .tab-header {
 	display: block;
 	min-width: 150px;
 	line-height: 35px;
+	padding-left: 24px;
+	padding-right: 24px;
 }
 
 .tabbedPanel .tabList .tab .tabIcon.codicon {
@@ -152,13 +158,12 @@ panel {
 }
 
 .tabbedPanel .tab-group-header {
-	font-weight: bold;
-	margin: 15px 5px 3px 5px;
+	font-weight: 600;
+	font-size: 14px;
+	margin: 10px 24px 5px 24px;
 	line-height: 35px;
-	height: 35px;
 	border-style: solid;
 	border-width: 0 0 1px 0;
-	border-color: rgb(214, 214, 214);
 }
 
 .tabbedPanel .vertical-tab-action-container {

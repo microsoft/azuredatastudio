@@ -24,6 +24,7 @@ import { IJSONContributionRegistry, Extensions as JSONExtensions } from 'vs/plat
 import product from 'vs/platform/product/common/product';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 
+// eslint-disable-next-line code-import-patterns
 import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions'; // {{SQL CARBON EDIT}} add import
 
 // Actions

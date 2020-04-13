@@ -4,123 +4,39 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./dashboardPanel';
-import { registerThemingParticipant, IColorTheme, ICssStyleCollector, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
-import {
-	TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_ACTIVE_BORDER, TAB_INACTIVE_BACKGROUND,
-	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER, DASHBOARD_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER
-} from 'vs/workbench/common/theme';
-import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
+import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { DASHBOARD_WIDGET_SUBTEXT, TAB_LABEL, DASHBOARD_WIDGET_TITLE, DASHBOARD_PROPERTIES_NAME } from 'vs/workbench/common/theme';
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
-	// Title Active
-	const tabActiveBackground = theme.getColor(TAB_ACTIVE_BACKGROUND);
-	const tabActiveForeground = theme.getColor(TAB_ACTIVE_FOREGROUND);
-	let tabActiveBackgroundVertical = theme.getColor(DASHBOARD_TAB_ACTIVE_BACKGROUND);
-
-	if (tabActiveBackground || tabActiveForeground) {
-		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab:hover .tabLabel,
-			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab .tabLabel.active {
-				color: ${tabActiveForeground};
-				border-bottom: 0px solid;
-			}
-
-			panel.dashboard-panel > .tabbedPanel.vertical > .title .tabList .tab-header.active {
-				background-color: ${tabActiveBackgroundVertical};
-			}
-
-			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab-header.active {
-				background-color: ${tabActiveBackground};
-			}
-
-			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab-header.active {
-				border-bottom-color: transparent;
-			}
-
-			panel.dashboard-panel > .tabbedPanel.vertical > .title .tabList .tab-header.active {
-				border-right-color: transparent;
-			}
-		`);
+	// tab label
+	const tabLabelColor = theme.getColor(TAB_LABEL);
+	if (tabLabelColor) {
+		collector.addRule(`properties-widget .propertiesValue {
+			color: ${tabLabelColor}
+		}`);
 	}
 
-	const activeTabBorderColor = theme.type === HIGH_CONTRAST ? theme.getColor(activeContrastBorder) : theme.getColor(TAB_ACTIVE_BORDER);
-	if (activeTabBorderColor) {
-		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header.active {
-				box-shadow: ${activeTabBorderColor} 0 -1px inset;
-			}
-		`);
+	// widget title
+	const widgetTitle = theme.getColor(DASHBOARD_WIDGET_TITLE);
+	if (widgetTitle) {
+		collector.addRule(`dashboard-widget-wrapper .header {
+			color: ${widgetTitle};
+		}`);
 	}
 
-	// Title Inactive
-	const tabInactiveBackground = theme.getColor(TAB_INACTIVE_BACKGROUND);
-	const tabInactiveForeground = theme.getColor(TAB_INACTIVE_FOREGROUND);
-	if (tabInactiveBackground || tabInactiveForeground) {
-		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab .tabLabel {
-				color: ${tabInactiveForeground};
-			}
-			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab-header {
-				background-color: ${tabInactiveBackground};
-			}
-		`);
+	// widget subtext
+	const subText = theme.getColor(DASHBOARD_WIDGET_SUBTEXT);
+	if (subText) {
+		collector.addRule(`.subText {
+			color: ${subText};
+		}`);
 	}
 
-	// Panel title background
-	const panelTitleBackground = theme.getColor(EDITOR_GROUP_HEADER_TABS_BACKGROUND);
-	if (panelTitleBackground) {
-		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel.horizontal > .title {
-				background-color: ${panelTitleBackground};
-			}
-		`);
-	}
-
-	// Panel title background
-	const tabBorder = theme.getColor(TAB_BORDER);
-	if (tabBorder) {
-		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab-header {
-				border-right-color: ${tabBorder};
-				border-bottom-color: ${tabBorder};
-			}
-		`);
-	}
-
-	// Styling with Outline color (e.g. high contrast theme)
-	const outline = theme.getColor(activeContrastBorder);
-	if (outline) {
-		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel.horizontal > .title {
-				border-bottom-color: ${tabBorder};
-				border-bottom-width: 1px;
-				border-bottom-style: solid;
-			}
-
-			panel.dashboard-panel > .tabbedPanel.vertical > .title {
-				border-right-color: ${tabBorder};
-				border-right-width: 1px;
-				border-right-style: solid;
-			}
-		`);
-	}
-
-	const divider = theme.getColor(EDITOR_GROUP_BORDER);
-	if (divider) {
-		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab-header {
-				border-right-width: 1px;
-				border-right-style: solid;
-			}
-		`);
-	}
-
-	const sideBorder = theme.getColor(DASHBOARD_BORDER);
-	if (divider) {
-		collector.addRule(`panel.dashboard-panel > .tabbedPanel.vertical > .title > .tabContainer {
-			border-right-width: 1px;
-			border-right-style: solid;
-			border-right-color: ${sideBorder};
+	// properties name
+	const propertiesName = theme.getColor(DASHBOARD_PROPERTIES_NAME);
+	if (propertiesName) {
+		collector.addRule(`properties-widget .propertiesName {
+			color: ${propertiesName}
 		}`);
 	}
 });
