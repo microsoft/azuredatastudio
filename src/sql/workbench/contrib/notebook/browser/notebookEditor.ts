@@ -377,6 +377,10 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		this._register(this._notebookModel.contentChanged(e => {
 			this._onFindStateChange(changeEvent).catch(onUnexpectedError);
 		}));
+		this._register(this._notebookService.onNotebookEditorAdd(async (e) => {
+			await e.modelReady;
+			this._triggerInputChange();
+		}));
 	}
 
 	public setSelection(range: NotebookRange): void {
