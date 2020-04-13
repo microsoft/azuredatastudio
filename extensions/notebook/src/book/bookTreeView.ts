@@ -101,22 +101,21 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	async openBook(bookPath: string, urlToOpen?: string, showPreview?: boolean, isNotebook?: boolean): Promise<void> {
 		try {
-			let existingBook = this.books.find(book => book.bookPath === bookPath);
 			// Check if the book is already open in viewlet.
+			let existingBook = this.books.find(book => book.bookPath === bookPath);
 			if (existingBook?.bookItems.length > 0) {
 				this.currentBook = existingBook;
-				if (showPreview) {
-					await this.showPreviewFile(urlToOpen);
-				}
 			} else {
 				await this.createAndAddBookModel(bookPath, isNotebook);
 				let bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
 				this.currentBook = this.books.find(book => book.bookPath === bookPath);
 				bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
-				if (showPreview) {
-					await this.showPreviewFile(urlToOpen);
-				}
 			}
+
+			if (showPreview) {
+				await this.showPreviewFile(urlToOpen);
+			}
+
 			// add file watcher on toc file.
 			if (!isNotebook) {
 				fsw.watch(path.join(this.currentBook.bookPath, '_data', 'toc.yml'), async (event, filename) => {
