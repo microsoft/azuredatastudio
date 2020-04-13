@@ -29,6 +29,7 @@ import { getErrorMessage } from 'vs/base/common/errors';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { startsWith } from 'vs/base/common/strings';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -87,7 +88,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		public connectionProfile: IConnectionProfile | undefined,
 		@ILogService private readonly logService: ILogService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@ITelemetryService private readonly telemetryService: ITelemetryService
+		@ITelemetryService private readonly telemetryService: ITelemetryService,
+		@IAdsTelemetryService private readonly _adstelemetryService: IAdsTelemetryService
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
@@ -303,6 +305,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (contents) {
 				this._defaultLanguageInfo = contents.metadata && contents.metadata.language_info;
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
+				if (contents.metadata) {
+					//Telemetry of loading notebook
+					if (contents.metadata.azdata_notebook_guid) {
+						this._adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.Open)
+							.withAdditionalProperties({ azdata_notebook_guid: contents.metadata.azdata_notebook_guid })
+							.send();
+					}
+				}
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => {
 						let cellModel = factory.createCell(c, { notebook: this, isTrusted: isTrusted });

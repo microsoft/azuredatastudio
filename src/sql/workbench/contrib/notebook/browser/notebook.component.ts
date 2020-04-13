@@ -56,6 +56,7 @@ import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellVi
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -105,7 +106,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
 		@Inject(ITelemetryService) private telemetryService: ITelemetryService,
-		@Inject(ICommandService) private commandService: ICommandService
+		@Inject(ICommandService) private commandService: ICommandService,
+		@Inject(IAdsTelemetryService) private _telemetryService: IAdsTelemetryService
 	) {
 		super();
 		this.updateProfile();
@@ -310,7 +312,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService,
 			editorLoadedTimestamp: this._notebookParams.input.editorOpenedTimestamp
-		}, this.profile, this.logService, this.notificationService, this.telemetryService);
+		}, this.profile, this.logService, this.notificationService, this.telemetryService, this._telemetryService);
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 		this._register(model.onError((errInfo: INotification) => this.handleModelError(errInfo)));
 		this._register(model.contentChanged((change) => this.handleContentChanged(change)));

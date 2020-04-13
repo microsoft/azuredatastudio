@@ -877,7 +877,7 @@ suite('Notebook Editor Model', function (): void {
 		let options: INotebookModelOptions = assign({}, defaultModelOptions, <Partial<INotebookModelOptions>><unknown>{
 			factory: mockModelFactory.object
 		});
-		notebookModel = new NotebookModel(options, undefined, logService, undefined, undefined);
+		notebookModel = new NotebookModel(options, undefined, logService, undefined, undefined, undefined);
 		await notebookModel.loadContents();
 	}
 

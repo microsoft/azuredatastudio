@@ -66,9 +66,11 @@ export const NotebookMarkdownRendered = 'NotebookMarkdownRendered';
 export enum TelemetryView {
 	Shell = 'Shell',
 	ExtensionRecommendationDialog = 'ExtensionRecommendationDialog',
-	ResultsPanel = 'ResultsPanel'
+	ResultsPanel = 'ResultsPanel',
+	Notebook = 'Notebook'
 }
 
 export enum TelemetryAction {
-	Click = 'Click'
+	Click = 'Click',
+	Open = 'Open'
 }
