@@ -162,7 +162,8 @@ export const invalidModelToPredictError = localize('models.invalidModelToPredict
 export const invalidModelToSelectError = localize('models.invalidModelToSelectError', "Please select a valid model");
 export const modelNameRequiredError = localize('models.modelNameRequiredError', "Model name is required.");
 export const updateModelFailedError = localize('models.updateModelFailedError', "Failed to update the model");
-export const importModelFailedError = localize('models.importModelFailedError', "Failed to register the model");
+export function importModelFailedError(modelName: string | undefined, filePath: string | undefined): string { return localize('models.importModelFailedError', "Failed to register the model: {0} ,file: {1}", modelName || '', filePath || ''); }
+
 export const loadModelParameterFailedError = localize('models.loadModelParameterFailedError', "Failed to load model parameters'");
 export const unsupportedModelParameterType = localize('models.unsupportedModelParameterType', "unsupported");
 

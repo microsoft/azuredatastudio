@@ -100,7 +100,7 @@ export class DeployedModelService {
 
 			let updatedModels = await this.getDeployedModels();
 			if (updatedModels.length < currentModels.length + 1) {
-				throw Error(constants.importModelFailedError);
+				throw Error(constants.importModelFailedError(details?.title, filePath));
 			}
 
 		}

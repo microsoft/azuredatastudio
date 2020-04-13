@@ -128,7 +128,7 @@ export class ModelDetailsComponent extends ModelViewBase implements IDataCompone
 		if (this._modelBuilder && model && model.modelDetails) {
 			const nameComponent = this._modelBuilder.inputBox().withProperties({
 				value: model.modelDetails.title,
-				width: this.componentMaxLength,
+				width: this.componentMaxLength - 100,
 				required: true
 			}).component();
 			const descriptionComponent = this._modelBuilder.inputBox().withProperties({
