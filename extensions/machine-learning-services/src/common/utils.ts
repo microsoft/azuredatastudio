@@ -248,3 +248,15 @@ export async function writeFileFromHex(content: string): Promise<string> {
 	await fs.promises.writeFile(tempFilePath, Buffer.from(content, 'hex'));
 	return tempFilePath;
 }
+
+/**
+ *
+ * @param filePath Returns file name
+ */
+export function getFileName(filePath: string) {
+	if (filePath) {
+		return filePath.replace(/^.*[\\\/]/, '');
+	} else {
+		return '';
+	}
+}
