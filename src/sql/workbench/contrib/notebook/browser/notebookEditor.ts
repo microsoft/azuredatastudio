@@ -298,16 +298,14 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 			// if the search scope changes remove the prev
 			if (this._notebookModel && this._findState.searchString) {
 				let findScope = this._findDecorations.getFindScope();
-				if (this._findState.searchString === this.notebookFindModel.findExpression && findScope !== null && !e.matchCase && !e.wholeWord && !e.searchScope) {
-					if (findScope) {
-						this._updateFinderMatchState();
-						this._findState.changeMatchInfo(
-							this.notebookFindModel.getFindIndex(),
-							this._findDecorations.getCount(),
-							this._currentMatch
-						);
-						this._setCurrentFindMatch(findScope);
-					}
+				if (this._findState.searchString === this.notebookFindModel.findExpression && findScope && !e.matchCase && !e.wholeWord && !e.searchScope) {
+					this._updateFinderMatchState();
+					this._findState.changeMatchInfo(
+						this.notebookFindModel.getFindIndex(),
+						this._findDecorations.getCount(),
+						this._currentMatch
+					);
+					this._setCurrentFindMatch(findScope);
 				} else {
 					this.notebookInput.notebookFindModel.clearDecorations();
 					this.notebookFindModel.findExpression = this._findState.searchString;
