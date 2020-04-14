@@ -47,6 +47,8 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 	@ViewChild('propertiesContainer') private _propertiesContainer: ElementRef;
 	@ContentChild(ScrollableDirective) private _scrollable: ScrollableDirective;
 
+	private height = 75; // default initial height
+
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: DashboardServiceInterface,
@@ -86,11 +88,11 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 	}
 
 	public getHeight(): number {
-		if (this._propertiesClass) {
-			return (<PropertiesWidgetComponent>this._propertiesClass.component).height;
-		} else {
-			return 75; // default height
+		if (this._propertiesClass && (<PropertiesWidgetComponent>this._propertiesClass.component).height) {
+			this.height = (<PropertiesWidgetComponent>this._propertiesClass.component).height;
 		}
+
+		return this.height;
 	}
 
 	public layout() {
