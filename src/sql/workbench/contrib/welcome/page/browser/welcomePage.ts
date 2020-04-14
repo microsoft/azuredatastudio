@@ -294,7 +294,7 @@ class WelcomePage extends Disposable {
 	}
 
 	private createWidePreviewToolTip() {
-		const previewLink = document.querySelector('#preview_link_wide');
+		const previewLink = document.querySelector('#tool_tip_container_wide');
 		const tooltip = document.querySelector('#tooltip_text_wide');
 		const previewModalBody = document.querySelector('.preview_tooltip_body') as HTMLElement;
 		const previewModalHeader = document.querySelector('.preview_tooltip_header') as HTMLElement;
