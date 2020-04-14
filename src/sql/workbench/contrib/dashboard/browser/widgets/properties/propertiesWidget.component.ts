@@ -63,6 +63,10 @@ enum propertyDisplayLayout {
 	stacked
 }
 
+const collapseHeight = 25;
+const horizontalPropertyHeight = 28;
+const verticalPropertyHeight = 46;
+
 @Component({
 	selector: 'properties-widget',
 	templateUrl: decodeURI(require.toUrl('./propertiesWidget.component.html'))
@@ -126,22 +130,19 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			this.setPropertiesClass('propertiesColumn', 'propertiesColumn');
 			this.setPropertiesClass('propertyLeft', 'property propertyLeft horizontal');
 			this.setPropertiesClass('propertyRight', 'property propertyRight horizontal');
-
-			this.height = this.properties.length / 2 * 25 + 40;
+			this.height = Math.ceil(this.properties.length / 2) * horizontalPropertyHeight + collapseHeight;
 		} else if (window.innerWidth < 1366 && window.innerWidth >= 1024 && this._layout !== propertyDisplayLayout.vertical) { // two columns
 			this._layout = propertyDisplayLayout.vertical;
 			this.setPropertiesClass('propertiesColumn', 'propertiesColumn');
 			this.setPropertiesClass('propertyLeft', 'property propertyLeft vertical');
 			this.setPropertiesClass('propertyRight', 'property propertyRight vertical');
-
-			this.height = (this.properties.length / 2 * 40) + 40;
+			this.height = Math.ceil(this.properties.length / 2) * verticalPropertyHeight + collapseHeight;
 		} else if (window.innerWidth < 1024 && this._layout !== propertyDisplayLayout.stacked) { // one column
 			this._layout = propertyDisplayLayout.stacked;
 			this.setPropertiesClass('propertiesColumn', 'propertiesColumn stacked');
 			this.setPropertiesClass('propertyLeft', 'property propertyLeft stacked');
 			this.setPropertiesClass('propertyRight', 'property propertyRight stacked');
-
-			this.height = this.properties.length * 40 + 50;
+			this.height = this.properties.length * verticalPropertyHeight + collapseHeight;
 		}
 
 		this._changeRef.detectChanges();
