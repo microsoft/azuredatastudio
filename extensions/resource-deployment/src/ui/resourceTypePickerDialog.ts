@@ -206,6 +206,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		}
 		this._installToolButton.hidden = true;
 		if (this.toolRequirements.length === 0) {
+			this._toolsLoadingComponent.loading = false;
 			this._dialogObject.okButton.enabled = true;
 			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
 			this._tools = [];

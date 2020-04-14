@@ -1,0 +1,16 @@
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+<defs><style>.cls-1{fill:#c1d6e6;}.cls-2{fill:#0078d4;}.cls-3{fill:#fff;}</style></defs>
+<title>stop_cell_solidanimation_inverse</title>
+<path class="cls-1" d="M8,16a8,8,0,1,1,8-8A8,8,0,0,1,8,16ZM8,1a7,7,0,1,0,7,7A7,7,0,0,0,8,1Z"/>
+<path class="cls-2" d="M8.51,0v1A7,7,0,0,1,15,8a6.87,6.87,0,0,1-1.07,3.7l.81.64A7.92,7.92,0,0,0,16,8,8,8,0,0,0,8.51,0Z">
+<animateTransform attributeName="transform"
+            type="rotate"
+            from="0 8 8"
+            to="360 8 8"
+            begin="0s"
+            dur="1.5s"
+            repeatCount="indefinite"
+        />
+</path>
+<circle class="cls-3" cx="8" cy="8" r="6.32"/>
+<rect x="4.91" y="4.91" width="6.18" height="6.18"/></svg>
