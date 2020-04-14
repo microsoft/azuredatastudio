@@ -311,7 +311,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				folderToSearch = path.join(folderToSearch, Content, path.dirname(treeItem.uri));
 			}
 			let filesToIncludeFiltered = path.join(folderToSearch, '**', '*.md') + ',' + path.join(folderToSearch, '**', '*.ipynb');
-			vscode.commands.executeCommand('workbench.action.findInFiles', { filesToInclude: filesToIncludeFiltered, query: '', showOnlyFileWithoutCollapsedResults: true });
+			let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
+			let modifySearchResults = notebookConfig[constants.modifySearchResults];
+			if (modifySearchResults) {
+				vscode.commands.executeCommand('workbench.action.findInFiles', { filesToInclude: filesToIncludeFiltered, query: '', showOnlyFileWithoutCollapsedResults: true });
+			} else {
+				vscode.commands.executeCommand('workbench.action.findInFiles', { filesToInclude: filesToIncludeFiltered, query: '' });
+			}
+
 		}
 	}
 

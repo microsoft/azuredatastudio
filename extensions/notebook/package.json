@@ -49,6 +49,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "notebook.modifySearchResults": {
+          "type": "boolean",
+          "default": false,
+          "description": "%notebook.modifySearchResults.description%"
         }
       }
     },

@@ -8,6 +8,7 @@
 	"notebook.maxTableRows.description": "Maximum number of rows returned per table in the Notebook editor",
 	"notebook.trustedBooks.description": "Notebooks contained in these books will automatically be trusted.",
 	"notebook.maxBookSearchDepth.description": "Maximum depth of subdirectories to search for Books (Enter 0 for infinite)",
+	"notebook.modifySearchResults.description": "Override default search to show only files without collapsible results and open file on click",
 	"notebook.command.new": "New Notebook",
 	"notebook.command.open": "Open Notebook",
 	"notebook.analyzeJupyterNotebook": "Analyze in Notebook",

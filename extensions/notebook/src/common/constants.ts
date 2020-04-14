@@ -18,6 +18,7 @@ export const existingPythonConfigKey = 'useExistingPython';
 export const notebookConfigKey = 'notebook';
 export const trustedBooksConfigKey = 'trustedBooks';
 export const maxBookSearchDepth = 'maxBookSearchDepth';
+export const modifySearchResults = 'modifySearchResults';
 
 export const winPlatform = 'win32';
 
