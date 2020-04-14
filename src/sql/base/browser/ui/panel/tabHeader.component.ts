@@ -20,14 +20,11 @@ import { CloseTabAction } from 'sql/base/browser/ui/panel/tabActions';
 	selector: 'tab-header',
 	template: `
 		<div #actionHeader role="tab" [attr.aria-selected]="tab.active" [attr.aria-label]="tab.title" class="tab-header" style="flex: 0 0; flex-direction: row;" [class.active]="tab.active" tabindex="0" (click)="selectTab(tab)" (keyup)="onKey($event)">
-			<span class="tab" role="presentation">
-				<div role="presentation">
-					<a #tabIcon></a>
-					<a class="tabLabel" [class.active]="tab.active" #tabLabel>
-					</a>
-				</div>
-			</span>
-			<span #actionbar style="flex: 0 0 auto; align-self: end; margin-top: auto; margin-bottom: auto;" ></span>
+			<div class="tab" role="presentation">
+				<a #tabIcon></a>
+				<a class="tabLabel" [class.active]="tab.active" [title]="tab.title" #tabLabel></a>
+			</div>
+			<div #actionbar style="flex: 0 0 auto; align-self: end; margin-top: auto; margin-bottom: auto;" ></div>
 		</div>
 	`
 })
