@@ -12,7 +12,6 @@ import { IHeaders, IRequestOptions, IRequestContext } from 'vs/base/parts/reques
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IAuthenticationTokenService } from 'vs/platform/authentication/common/authentication';
 import { IProductService } from 'vs/platform/product/common/productService';
-import { URI } from 'vs/base/common/uri';
 import { getServiceMachineId } from 'vs/platform/serviceMachineId/common/serviceMachineId';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -40,10 +39,13 @@ export class UserDataSyncStoreService extends Disposable implements IUserDataSyn
 		super();
 		this.userDataSyncStore = getUserDataSyncStore(productService, configurationService);
 		this.commonHeadersPromise = getServiceMachineId(environmentService, fileService, storageService)
-			.then(uuid => ({
-				'X-Sync-Client-Id': productService.version,
-				'X-Sync-Machine-Id': uuid
-			}));
+			.then(uuid => {
+				const headers: IHeaders = {
+					'X-Sync-Client-Id': productService.version,
+				};
+				headers['X-Sync-Machine-Id'] = uuid;
+				return headers;
+			});
 	}
 
 	async getAllRefs(resource: SyncResource): Promise<IResourceRefHandle[]> {
@@ -61,7 +63,7 @@ export class UserDataSyncStoreService extends Disposable implements IUserDataSyn
 		}
 
 		const result = await asJson<{ url: string, created: number }[]>(context) || [];
-		return result.map(({ url, created }) => ({ ref: relativePath(uri, URI.parse(url).with({ scheme: uri.scheme, authority: uri.authority }))!, created: created * 1000 /* Server returns in seconds */ }));
+		return result.map(({ url, created }) => ({ ref: relativePath(uri, uri.with({ path: url }))!, created: created * 1000 /* Server returns in seconds */ }));
 	}
 
 	async resolveContent(resource: SyncResource, ref: string): Promise<string | null> {
@@ -71,6 +73,7 @@ export class UserDataSyncStoreService extends Disposable implements IUserDataSyn
 
 		const url = joinPath(this.userDataSyncStore.url, 'resource', resource, ref).toString();
 		const headers: IHeaders = {};
+		headers['Cache-Control'] = 'no-cache';
 
 		const context = await this.request({ type: 'GET', url, headers }, undefined, CancellationToken.None);
 

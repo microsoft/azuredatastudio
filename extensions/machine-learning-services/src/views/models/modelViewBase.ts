@@ -8,10 +8,11 @@ import * as azdata from 'azdata';
 import { azureResource } from '../../typings/azure-resource';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { ViewBase } from '../viewBase';
-import { RegisteredModel, WorkspaceModel, RegisteredModelDetails } from '../../modelManagement/interfaces';
-import { PredictParameters, DatabaseTable } from '../../prediction/interfaces';
+import { RegisteredModel, WorkspaceModel, RegisteredModelDetails, ModelParameters } from '../../modelManagement/interfaces';
+import { PredictParameters, DatabaseTable, TableColumn } from '../../prediction/interfaces';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { AzureWorkspaceResource, AzureModelResource } from '../interfaces';
+
 
 export interface AzureResourceEventArgs extends AzureWorkspaceResource {
 }
@@ -20,17 +21,22 @@ export interface RegisterModelEventArgs extends AzureWorkspaceResource {
 	details?: RegisteredModelDetails
 }
 
-export interface RegisterAzureModelEventArgs extends AzureModelResource, RegisterModelEventArgs {
-	model?: WorkspaceModel;
-}
-
 export interface PredictModelEventArgs extends PredictParameters {
 	model?: RegisteredModel;
 	filePath?: string;
 }
 
-export interface RegisterLocalModelEventArgs extends RegisterModelEventArgs {
-	filePath?: string;
+
+export enum ModelSourceType {
+	Local,
+	Azure,
+	RegisteredModels
+}
+
+export interface ModelViewData {
+	modelFile?: string;
+	modelData: AzureModelResource | string | RegisteredModel;
+	modelDetails?: RegisteredModelDetails;
 }
 
 // Event names
@@ -47,14 +53,19 @@ export const ListWorkspacesEventName = 'listWorkspaces';
 export const RegisterLocalModelEventName = 'registerLocalModel';
 export const RegisterAzureModelEventName = 'registerAzureLocalModel';
 export const DownloadAzureModelEventName = 'downloadAzureLocalModel';
+export const DownloadRegisteredModelEventName = 'downloadRegisteredModel';
 export const PredictModelEventName = 'predictModel';
 export const RegisterModelEventName = 'registerModel';
 export const SourceModelSelectedEventName = 'sourceModelSelected';
+export const LoadModelParametersEventName = 'loadModelParameters';
 
 /**
  * Base class for all model management views
  */
 export abstract class ModelViewBase extends ViewBase {
+
+	private _modelSourceType: ModelSourceType = ModelSourceType.Local;
+	private _modelsViewData: ModelViewData[] = [];
 
 	constructor(apiWrapper: ApiWrapper, root?: string, parent?: ModelViewBase) {
 		super(apiWrapper, root, parent);
@@ -75,7 +86,9 @@ export abstract class ModelViewBase extends ViewBase {
 			ListTableNamesEventName,
 			ListColumnNamesEventName,
 			PredictModelEventName,
-			DownloadAzureModelEventName]);
+			DownloadAzureModelEventName,
+			DownloadRegisteredModelEventName,
+			LoadModelParametersEventName]);
 	}
 
 	/**
@@ -124,7 +137,7 @@ export abstract class ModelViewBase extends ViewBase {
 	/**
 	 * lists column names
 	 */
-	public async listColumnNames(table: DatabaseTable): Promise<string[]> {
+	public async listColumnNames(table: DatabaseTable): Promise<TableColumn[]> {
 		return await this.sendDataRequest(ListColumnNamesEventName, table);
 	}
 
@@ -143,12 +156,16 @@ export abstract class ModelViewBase extends ViewBase {
 	 * registers local model
 	 * @param localFilePath local file path
 	 */
-	public async registerLocalModel(localFilePath: string | undefined, details: RegisteredModelDetails | undefined): Promise<void> {
-		const args: RegisterLocalModelEventArgs = {
-			filePath: localFilePath,
-			details: details
-		};
-		return await this.sendDataRequest(RegisterLocalModelEventName, args);
+	public async registerLocalModel(models: ModelViewData[]): Promise<void> {
+		return await this.sendDataRequest(RegisterLocalModelEventName, models);
+	}
+
+	/**
+	 * downloads registered model
+	 * @param model model to download
+	 */
+	public async downloadRegisteredModel(model: RegisteredModel | undefined): Promise<string> {
+		return await this.sendDataRequest(DownloadRegisteredModelEventName, model);
 	}
 
 	/**
@@ -160,14 +177,18 @@ export abstract class ModelViewBase extends ViewBase {
 	}
 
 	/**
+	 * Loads model parameters
+	 */
+	public async loadModelParameters(): Promise<ModelParameters | undefined> {
+		return await this.sendDataRequest(LoadModelParametersEventName);
+	}
+
+	/**
 	 * registers azure model
 	 * @param args azure resource
 	 */
-	public async registerAzureModel(resource: AzureModelResource | undefined, details: RegisteredModelDetails | undefined): Promise<void> {
-		const args: RegisterAzureModelEventArgs = Object.assign({}, resource, {
-			details: details
-		});
-		return await this.sendDataRequest(RegisterAzureModelEventName, args);
+	public async registerAzureModel(models: ModelViewData[]): Promise<void> {
+		return await this.sendDataRequest(RegisterAzureModelEventName, models);
 	}
 
 	/**
@@ -194,6 +215,50 @@ export abstract class ModelViewBase extends ViewBase {
 			subscription: subscription
 		};
 		return await this.sendDataRequest(ListGroupsEventName, args);
+	}
+
+	/**
+	 * Sets model source type
+	 */
+	public set modelSourceType(value: ModelSourceType) {
+		if (this.parent) {
+			this.parent.modelSourceType = value;
+		} else {
+			this._modelSourceType = value;
+		}
+	}
+
+	/**
+	 * Returns model source type
+	 */
+	public get modelSourceType(): ModelSourceType {
+		if (this.parent) {
+			return this.parent.modelSourceType;
+		} else {
+			return this._modelSourceType;
+		}
+	}
+
+	/**
+	 * Sets model source type
+	 */
+	public set modelsViewData(value: ModelViewData[]) {
+		if (this.parent) {
+			this.parent.modelsViewData = value;
+		} else {
+			this._modelsViewData = value;
+		}
+	}
+
+	/**
+	 * Returns model source type
+	 */
+	public get modelsViewData(): ModelViewData[] {
+		if (this.parent) {
+			return this.parent.modelsViewData;
+		} else {
+			return this._modelsViewData;
+		}
 	}
 
 	/**

@@ -22,7 +22,17 @@ export async function execCommandOnTempFile<T>(content: string, command: (filePa
 		return result;
 	}
 	finally {
-		await fs.promises.unlink(tempFilePath);
+		await deleteFile(tempFilePath);
+	}
+}
+
+/**
+ * Deletes a file
+ * @param filePath file path
+ */
+export async function deleteFile(filePath: string) {
+	if (filePath) {
+		await fs.promises.unlink(filePath);
 	}
 }
 
@@ -215,7 +225,7 @@ export function getRegisteredModelsThreePartsName(config: Config) {
 	const dbName = doubleEscapeSingleBrackets(config.registeredModelDatabaseName);
 	const schema = doubleEscapeSingleBrackets(config.registeredModelTableSchemaName);
 	const tableName = doubleEscapeSingleBrackets(config.registeredModelTableName);
-	return `[${dbName}].${schema}.[${tableName}]`;
+	return `[${dbName}].[${schema}].[${tableName}]`;
 }
 
 /**
@@ -226,4 +236,27 @@ export function getRegisteredModelsTowPartsName(config: Config) {
 	const schema = doubleEscapeSingleBrackets(config.registeredModelTableSchemaName);
 	const tableName = doubleEscapeSingleBrackets(config.registeredModelTableName);
 	return `[${schema}].[${tableName}]`;
+}
+
+/**
+ * Write a file using a hex string
+ * @param content file content
+ */
+export async function writeFileFromHex(content: string): Promise<string> {
+	content = content.startsWith('0x') || content.startsWith('0X') ? content.substr(2) : content;
+	const tempFilePath = path.join(os.tmpdir(), `ads_ml_temp_${UUID.generateUuid()}`);
+	await fs.promises.writeFile(tempFilePath, Buffer.from(content, 'hex'));
+	return tempFilePath;
+}
+
+/**
+ *
+ * @param filePath Returns file name
+ */
+export function getFileName(filePath: string) {
+	if (filePath) {
+		return filePath.replace(/^.*[\\\/]/, '');
+	} else {
+		return '';
+	}
 }

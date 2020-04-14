@@ -56,10 +56,6 @@ export class CellModel implements ICellModel {
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
-	private readonly _ariaLabel: string;
-
-	private readonly codeCellLabel = localize('codeCellLabel', "Code Cell");
-	private readonly textCellLabel = localize('textCellLabel', "Text Cell");
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -72,12 +68,6 @@ export class CellModel implements ICellModel {
 		} else {
 			this._cellType = CellTypes.Code;
 			this._source = '';
-		}
-
-		if (this._cellType === CellTypes.Code) {
-			this._ariaLabel = this.codeCellLabel;
-		} else {
-			this._ariaLabel = this.textCellLabel;
 		}
 
 		this._isEditMode = this._cellType !== CellTypes.Markdown;
@@ -96,16 +86,16 @@ export class CellModel implements ICellModel {
 		return other !== undefined && other.id === this.id;
 	}
 
-	public get ariaLabel(): string {
-		return this._ariaLabel;
-	}
-
 	public get onCollapseStateChanged(): Event<boolean> {
 		return this._onCollapseStateChanged.event;
 	}
 
 	public get onOutputsChanged(): Event<IOutputChangedEvent> {
 		return this._onOutputsChanged.event;
+	}
+
+	public get onCellModeChanged(): Event<boolean> {
+		return this._onCellModeChanged.event;
 	}
 
 	public get isEditMode(): boolean {
@@ -455,7 +445,7 @@ export class CellModel implements ICellModel {
 		}
 	}
 
-	private sendChangeToNotebook(change: NotebookChangeType): void {
+	public sendChangeToNotebook(change: NotebookChangeType): void {
 		if (this._options && this._options.notebook) {
 			this._options.notebook.onCellChange(this, change);
 		}
@@ -546,12 +536,10 @@ export class CellModel implements ICellModel {
 							let host = hostAndIp.host ? hostAndIp.host : model.context.serverName;
 							let port = hostAndIp.port ? ':' + hostAndIp.port : defaultPort;
 							let html = result.data['text/html'];
-							// CTP 3.1 and earlier Spark link
-							html = this.rewriteUrlUsingRegex(/(https?:\/\/master.*\/proxy)(.*)/g, html, host, port, yarnUi);
-							// CTP 3.2 and later spark link
-							html = this.rewriteUrlUsingRegex(/(https?:\/\/sparkhead.*\/proxy)(.*)/g, html, host, port, yarnUi);
+							// BDC Spark UI Link
+							html = notebookUtils.rewriteUrlUsingRegex(/(https?:\/\/sparkhead.*\/proxy)(.*)/g, html, host, port, yarnUi);
 							// Driver link
-							html = this.rewriteUrlUsingRegex(/(https?:\/\/storage.*\/containerlogs)(.*)/g, html, host, port, driverLog);
+							html = notebookUtils.rewriteUrlUsingRegex(/(https?:\/\/storage.*\/containerlogs)(.*)/g, html, host, port, driverLog);
 							(<nb.IDisplayResult>output).data['text/html'] = html;
 						}
 					}
@@ -560,19 +548,6 @@ export class CellModel implements ICellModel {
 			catch (e) { }
 		}
 		return output;
-	}
-
-	private rewriteUrlUsingRegex(regex: RegExp, html: string, host: string, port: string, target: string): string {
-		return html.replace(regex, function (a, b, c) {
-			let ret = '';
-			if (b !== '') {
-				ret = 'https://' + host + port + target;
-			}
-			if (c !== '') {
-				ret = ret + c;
-			}
-			return ret;
-		});
 	}
 
 	public setStdInHandler(handler: nb.MessageHandler<nb.IStdinMessage>): void {

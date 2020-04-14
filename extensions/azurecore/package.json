@@ -33,12 +33,43 @@
       },
       {
         "type": "object",
-        "title": "Azure Account Configuration",
+        "title": "%config.azureAccountConfigurationSection%",
         "properties": {
-          "accounts.azure.enablePublicCloud": {
+          "accounts.azure.cloud.enablePublicCloud": {
             "type": "boolean",
             "default": true,
             "description": "%config.enablePublicCloudDescription%"
+          },
+          "accounts.azure.cloud.enableUsGovCloud": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.enableUsGovCloudDescription%"
+          },
+          "accounts.azure.cloud.enableGermanyCloud": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.enableGermanyCloudDescription%"
+          },
+          "accounts.azure.cloud.enableChinaCloud": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.enableChinaCloudDescription%"
+          }
+        }
+      },
+      {
+        "type": "object",
+        "title": "%config.azureAuthMethodConfigurationSection%",
+        "properties": {
+          "accounts.azure.auth.codeGrant": {
+            "type": "boolean",
+            "default": true,
+            "description": "%config.azureCodeGrantMethod%"
+          },
+          "accounts.azure.auth.deviceCode": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.azureDeviceCodeMethod%"
           }
         }
       },
@@ -50,6 +81,12 @@
             "type": "boolean",
             "default": false,
             "description": "%config.enableArcFeatures%"
+          },
+          "azure.noSystemKeychain": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.noSystemKeychain%",
+            "when": "isLinux || isWeb"
           }
         }
       }
@@ -105,6 +142,14 @@
         "command": "azure.resource.selectsubscriptions",
         "title": "%azure.resource.selectsubscriptions.title%",
         "icon": "$(filter)"
+      },
+      {
+        "command": "azure.resource.startterminal",
+        "title": "%azure.resource.startterminal.title%",
+        "icon": {
+          "dark": "resources/dark/console.svg",
+          "light": "resources/light/console.svg"
+        }
       },
       {
         "command": "azure.resource.connectsqlserver",
@@ -181,14 +226,39 @@
           "group": "inline"
         },
         {
+          "command": "azure.resource.selectsubscriptions",
+          "when": "viewItem == azure.resource.itemType.account",
+          "group": "azurecore"
+        },
+        {
           "command": "azure.resource.refresh",
           "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer)$/",
           "group": "inline"
         },
         {
+          "command": "azure.resource.refresh",
+          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer)$/",
+          "group": "azurecore"
+        },
+        {
           "command": "azure.resource.connectsqlserver",
           "when": "viewItem == azure.resource.itemType.databaseServer || viewItem == azure.resource.itemType.database || viewItem == azure.resource.itemType.sqlInstance",
           "group": "inline"
+        },
+        {
+          "command": "azure.resource.connectsqlserver",
+          "when": "viewItem == azure.resource.itemType.databaseServer || viewItem == azure.resource.itemType.database || viewItem == azure.resource.itemType.sqlInstance",
+          "group": "azurecore"
+        },
+        {
+          "command": "azure.resource.startterminal",
+          "when": "viewItem == azure.resource.itemType.account",
+          "group": "inline"
+        },
+        {
+          "command": "azure.resource.startterminal",
+          "when": "viewItem == azure.resource.itemType.account",
+          "group": "azurecore"
         }
       ]
     },
@@ -197,14 +267,18 @@
   "dependencies": {
     "@azure/arm-resourcegraph": "^2.0.0",
     "@azure/arm-subscriptions": "1.0.0",
-    "adal-node": "^0.2.1",
-    "request": "2.88.0",
-    "vscode-nls": "^4.0.0"
+    "axios": "^0.19.2",
+    "qs": "^6.9.1",
+    "vscode-nls": "^4.0.0",
+    "ws": "^7.2.0"
   },
   "devDependencies": {
+    "@types/keytar": "^4.4.2",
     "@types/mocha": "^5.2.5",
     "@types/node": "^12.11.7",
+    "@types/qs": "^6.9.1",
     "@types/request": "^2.48.1",
+    "@types/ws": "^6.0.4",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",

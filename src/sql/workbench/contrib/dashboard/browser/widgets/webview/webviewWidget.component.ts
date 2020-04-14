@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, Inject, forwardRef, OnInit, ElementRef } from '@angular/core';
+import { Component, Inject, forwardRef, OnInit, ElementRef, ChangeDetectorRef } from '@angular/core';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -41,9 +41,10 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 		@Inject(WIDGET_CONFIG) protected readonly _config: WidgetConfig,
 		@Inject(forwardRef(() => ElementRef)) private readonly _el: ElementRef,
 		@Inject(IDashboardViewService) private readonly dashboardViewService: IDashboardViewService,
-		@Inject(IWebviewService) private readonly webviewService: IWebviewService
+		@Inject(IWebviewService) private readonly webviewService: IWebviewService,
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
 	) {
-		super();
+		super(changeRef);
 		this._id = (_config.widget[selector] as IWebviewWidgetConfig).id;
 	}
 

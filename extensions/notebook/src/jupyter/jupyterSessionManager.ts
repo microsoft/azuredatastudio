@@ -351,9 +351,6 @@ export class JupyterSession implements nb.ISession {
 				}
 			}
 
-			// Add and register Kqlmagic to the python kernel
-			allCode += `%reload_ext Kqlmagic`;
-
 			let future = this.sessionImpl.kernel.requestExecute({
 				code: allCode,
 				silent: true,

@@ -12,7 +12,7 @@ import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { IClientSession, INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { NullLogService } from 'vs/platform/log/common/log';
-import { NotebookFindModel } from 'sql/workbench/contrib/notebook/find/notebookFindModel';
+import { NotebookFindModel } from 'sql/workbench/contrib/notebook/browser/find/notebookFindModel';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { Deferred } from 'sql/base/common/promise';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
@@ -29,6 +29,7 @@ import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServic
 import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
+import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -323,13 +324,48 @@ suite('Notebook Find Model', function (): void {
 		assert.equal(notebookFindModel.findMatches.length, 0, 'Find failed to apply match whole word for //');
 	});
 
+	test('Should find results in the code cell on markdown edit', async function (): Promise<void> {
+		let markdownContent: nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Markdown,
+				source: ['SOP067 - INTERNAL - Install azdata CLI - release candidate', '==========================================================', 'Steps', '-----', '### Parameters'],
+				metadata: { language: 'python' },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'mssql',
+					language: 'sql'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		await initNotebookModel(markdownContent);
+
+		// Need to set rendered text content for 1st cell
+		setRenderedTextContent(0);
+
+		let notebookFindModel = new NotebookFindModel(model);
+		await notebookFindModel.find('SOP', false, false, max_find_count);
+
+		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed on markdown');
+
+		// fire the edit mode on cell
+		model.cells[0].isEditMode = true;
+		notebookFindModel = new NotebookFindModel(model);
+		await notebookFindModel.find('SOP', false, false, max_find_count);
+
+		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed on markdown edit');
+	});
+
 
 	async function initNotebookModel(contents: nb.INotebookContents): Promise<void> {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(contents));
 		defaultModelOptions.contentManager = mockContentManager.object;
 		// Initialize the model
-		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService());
 		await model.loadContents();
 		await model.requestModelLoad();
 	}

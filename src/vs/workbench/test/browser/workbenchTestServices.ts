@@ -47,7 +47,7 @@ import { Range } from 'vs/editor/common/core/range';
 import { IDialogService, IPickAndOpenOptions, ISaveDialogOptions, IOpenDialogOptions, IFileDialogService, ConfirmResult } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
-import { IExtensionService, NullExtensionService } from 'vs/workbench/services/extensions/common/extensions';
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IDecorationsService, IResourceDecorationChangeEvent, IDecoration, IDecorationData, IDecorationsProvider } from 'vs/workbench/services/decorations/browser/decorations';
 import { IDisposable, toDisposable, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
@@ -103,8 +103,9 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { QuickInputService } from 'vs/workbench/services/quickinput/browser/quickInputService';
 import { IListService } from 'vs/platform/list/browser/listService';
 import { win32, posix } from 'vs/base/common/path';
-import { TestWorkingCopyService, TestContextService, TestStorageService, TestTextResourcePropertiesService } from 'vs/workbench/test/common/workbenchTestServices';
+import { TestWorkingCopyService, TestContextService, TestStorageService, TestTextResourcePropertiesService, TestExtensionService } from 'vs/workbench/test/common/workbenchTestServices';
 import { IViewsService, IView } from 'vs/workbench/common/views';
+import { IStorageKeysSyncRegistryService, StorageKeysSyncRegistryService } from 'vs/platform/userDataSync/common/storageKeys';
 
 export function createFileEditorInput(instantiationService: IInstantiationService, resource: URI): FileEditorInput {
 	return instantiationService.createInstance(FileEditorInput, resource, undefined, undefined);
@@ -167,7 +168,8 @@ export function workbenchInstantiationService(overrides?: { textFileService?: (i
 	instantiationService.stub(ICodeEditorService, new CodeEditorService(editorService, themeService));
 	instantiationService.stub(IViewletService, new TestViewletService());
 	instantiationService.stub(IListService, new TestListService());
-	instantiationService.stub(IQuickInputService, new QuickInputService(TestEnvironmentService, configService, instantiationService, keybindingService, contextKeyService, themeService, accessibilityService, layoutService));
+	instantiationService.stub(IQuickInputService, new QuickInputService(configService, instantiationService, keybindingService, contextKeyService, themeService, accessibilityService, layoutService));
+	instantiationService.stub(IStorageKeysSyncRegistryService, new StorageKeysSyncRegistryService());
 
 	return instantiationService;
 }
@@ -259,7 +261,11 @@ export class TestTextFileService extends BrowserTextFileService {
 	}
 }
 
-export const TestEnvironmentService = new BrowserWorkbenchEnvironmentService(Object.create(null));
+class TestEnvironmentServiceWithArgs extends BrowserWorkbenchEnvironmentService {
+	args = [];
+}
+
+export const TestEnvironmentService = new TestEnvironmentServiceWithArgs(Object.create(null));
 
 export class TestProgressService implements IProgressService {
 
@@ -295,8 +301,6 @@ export class TestDecorationsService implements IDecorationsService {
 	registerDecorationsProvider(_provider: IDecorationsProvider): IDisposable { return Disposable.None; }
 	getDecoration(_uri: URI, _includeChildren: boolean, _overwrite?: IDecorationData): IDecoration | undefined { return undefined; }
 }
-
-export class TestExtensionService extends NullExtensionService { }
 
 export class TestMenuService implements IMenuService {
 
@@ -809,6 +813,7 @@ export class TestBackupFileService implements IBackupFileService {
 	getBackups(): Promise<URI[]> { return Promise.resolve([]); }
 	resolve<T extends object>(_backup: URI): Promise<IResolvedBackup<T> | undefined> { return Promise.resolve(undefined); }
 	discardBackup(_resource: URI): Promise<void> { return Promise.resolve(); }
+	discardBackups(): Promise<void> { return Promise.resolve(); }
 	parseBackupContent(textBufferFactory: ITextBufferFactory): string {
 		const textBuffer = textBufferFactory.create(DefaultEndOfLine.LF);
 		const lineCount = textBuffer.getLineCount();
@@ -1104,7 +1109,8 @@ export class TestRemotePathService implements IRemotePathService {
 
 	get path() { return Promise.resolve(isWindows ? win32 : posix); }
 
-	get userHome() { return Promise.resolve(URI.file(this.environmentService.userHome)); }
+	get userHome() { return Promise.resolve(this.environmentService.userHome!); }
+	get userHomeSync() { return this.environmentService.userHome; }
 
 	async fileURI(path: string): Promise<URI> {
 		return URI.file(path);

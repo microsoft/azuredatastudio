@@ -34,6 +34,7 @@ import 'vs/workbench/services/textfile/browser/browserTextFileService';
 import 'vs/workbench/services/keybinding/browser/keymapService';
 import 'vs/workbench/services/extensions/browser/extensionService';
 import 'vs/workbench/services/extensionManagement/common/extensionManagementServerService';
+import 'vs/workbench/services/extensionManagement/common/extensionTipsService';
 import 'vs/workbench/services/telemetry/browser/telemetryService';
 import 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
 import 'vs/workbench/services/credentials/browser/credentialsService';
@@ -63,6 +64,7 @@ import { TunnelService } from 'vs/workbench/services/remote/common/tunnelService
 import { ILoggerService } from 'vs/platform/log/common/log';
 import { FileLoggerService } from 'vs/platform/log/common/fileLogService';
 import { IUserDataSyncStoreService, IUserDataSyncService, IUserDataSyncLogService, IUserDataAutoSyncService, IUserDataSyncBackupStoreService } from 'vs/platform/userDataSync/common/userDataSync';
+import { StorageKeysSyncRegistryService, IStorageKeysSyncRegistryService } from 'vs/platform/userDataSync/common/storageKeys';
 import { AuthenticationService, IAuthenticationService } from 'vs/workbench/services/authentication/browser/authenticationService';
 import { UserDataSyncLogService } from 'vs/platform/userDataSync/common/userDataSyncLog';
 import { UserDataSyncStoreService } from 'vs/platform/userDataSync/common/userDataSyncStoreService';
@@ -84,6 +86,7 @@ registerSingleton(IAuthenticationService, AuthenticationService);
 registerSingleton(IUserDataSyncLogService, UserDataSyncLogService);
 registerSingleton(IUserDataSyncStoreService, UserDataSyncStoreService);
 registerSingleton(IUserDataSyncBackupStoreService, UserDataSyncBackupStoreService);
+registerSingleton(IStorageKeysSyncRegistryService, StorageKeysSyncRegistryService);
 registerSingleton(IAuthenticationTokenService, AuthenticationTokenService);
 registerSingleton(IUserDataAutoSyncService, UserDataAutoSyncService);
 registerSingleton(IUserDataSyncService, UserDataSyncService);
@@ -129,8 +132,5 @@ import 'vs/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut.con
 
 // Issues
 import 'vs/workbench/contrib/issue/browser/issue.contribution';
-
-// Open In Desktop
-import 'vs/workbench/contrib/openInDesktop/browser/openInDesktop.web.contribution';
 
 //#endregion

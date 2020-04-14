@@ -51,6 +51,17 @@ export type WorkspacesModelsResponse = ListWorkspaceModelsResult & {
 export interface RegisteredModel extends RegisteredModelDetails {
 	id: number;
 	artifactName: string;
+	content?: string;
+}
+
+export interface ModelParameter {
+	name: string;
+	type: string;
+}
+
+export interface ModelParameters {
+	inputs: ModelParameter[],
+	outputs: ModelParameter[]
 }
 
 /**
@@ -61,6 +72,7 @@ export interface RegisteredModelDetails {
 	created?: string;
 	version?: string;
 	description?: string;
+	fileName?: string;
 }
 
 /**
@@ -220,3 +232,4 @@ export interface ArtifactAPIGetArtifactContentInformation2OptionalParams extends
 	 */
 	accountName?: string;
 }
+

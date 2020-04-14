@@ -3,10 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/explorerWidget';
 
-import { Component, Inject, forwardRef, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, Inject, forwardRef, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
@@ -27,6 +26,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { ObjectMetadataWrapper } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/objectMetadataWrapper';
+import { status, alert } from 'vs/base/browser/ui/aria/aria';
 
 @Component({
 	selector: 'explorer-widget',
@@ -46,8 +46,6 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	private _treeDataSource = new ExplorerDataSource();
 	private _treeFilter = new ExplorerFilter();
 
-	private _inited = false;
-
 	@ViewChild('input') private _inputContainer: ElementRef;
 	@ViewChild('table') private _tableContainer: ElementRef;
 
@@ -59,9 +57,12 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(IWorkbenchThemeService) private readonly themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private readonly contextViewService: IContextViewService,
 		@Inject(IInstantiationService) private readonly instantiationService: IInstantiationService,
-		@Inject(ICapabilitiesService) private readonly capabilitiesService: ICapabilitiesService
+		@Inject(ICapabilitiesService) private readonly capabilitiesService: ICapabilitiesService,
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
 	) {
-		super();
+		super(changeRef);
+		this._loadingMessage = this._config.context === 'database' ? nls.localize('loadingObjects', "loading objects") : nls.localize('loadingDatabases', "loading databases");
+		this._loadingCompletedMessage = this._config.context === 'database' ? nls.localize('loadingObjectsCompleted', "loading objects completed.") : nls.localize('loadingDatabasesCompleted', "loading databases completed.");
 		this.init();
 	}
 
@@ -76,9 +77,25 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		};
 		this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
 		this._register(this._input.onDidChange(e => {
-			this._filterDelayer.trigger(() => {
+			this._filterDelayer.trigger(async () => {
 				this._treeFilter.filterString = e;
-				this._tree.refresh();
+				await this._tree.refresh();
+				const navigator = this._tree.getNavigator();
+				let item = navigator.next();
+				let count = 0;
+				while (item) {
+					count++;
+					item = navigator.next();
+				}
+				let message: string;
+				if (count === 0) {
+					message = nls.localize('explorerSearchNoMatchResultMessage', "No matching item found");
+				} else if (count === 1) {
+					message = nls.localize('explorerSearchSingleMatchResultMessage', "Filtered search list to 1 item");
+				} else {
+					message = nls.localize('explorerSearchMatchResultMessage', "Filtered search list to {0} items", count);
+				}
+				status(message);
 			});
 		}));
 		this._tree = new Tree(this._tableContainer.nativeElement, {
@@ -95,6 +112,8 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	}
 
 	private init(): void {
+		this.setLoadingStatus(true);
+
 		if (this._config.context === 'database') {
 			this._register(subscriptionToDisposable(this._bootstrap.metadataService.metadata.subscribe(
 				data => {
@@ -103,10 +122,11 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 						objectData.sort(ObjectMetadataWrapper.sort);
 						this._treeDataSource.data = objectData;
 						this._tree.setInput(new ExplorerModel());
+						this.setLoadingStatus(false);
 					}
 				},
 				error => {
-					(<HTMLElement>this._el.nativeElement).innerText = nls.localize('dashboard.explorer.objectError', "Unable to load objects");
+					this.showErrorMessage(nls.localize('dashboard.explorer.objectError', "Unable to load objects"));
 				}
 			)));
 		} else {
@@ -122,9 +142,10 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 					});
 					this._treeDataSource.data = profileData;
 					this._tree.setInput(new ExplorerModel());
+					this.setLoadingStatus(false);
 				},
 				error => {
-					(<HTMLElement>this._el.nativeElement).innerText = nls.localize('dashboard.explorer.databaseError', "Unable to load databases");
+					this.showErrorMessage(nls.localize('dashboard.explorer.databaseError', "Unable to load databases"));
 				}
 			)));
 		}
@@ -138,5 +159,10 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		if (this._inited) {
 			this._tree.layout(getContentHeight(this._tableContainer.nativeElement));
 		}
+	}
+
+	private showErrorMessage(message: string): void {
+		(<HTMLElement>this._el.nativeElement).innerText = message;
+		alert(message);
 	}
 }

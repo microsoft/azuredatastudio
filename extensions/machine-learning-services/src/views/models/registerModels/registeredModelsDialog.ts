@@ -31,12 +31,12 @@ export class RegisteredModelsDialog extends ModelViewBase {
 
 		this.currentLanguagesTab = new CurrentModelsPage(this._apiWrapper, this);
 
-		let registerModelButton = this._apiWrapper.createButton(constants.registerModelTitle);
+		let registerModelButton = this._apiWrapper.createButton(constants.importModelTitle);
 		registerModelButton.onClick(async () => {
 			await this.sendDataRequest(RegisterModelEventName);
 		});
 
-		let dialog = this.dialogView.createDialog('', [this.currentLanguagesTab]);
+		let dialog = this.dialogView.createDialog(constants.registerModelTitle, [this.currentLanguagesTab]);
 		dialog.customButtons = [registerModelButton];
 		this.mainViewPanel = dialog;
 		dialog.okButton.hidden = true;

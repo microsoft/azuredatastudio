@@ -19,7 +19,7 @@ import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { Range } from 'vs/editor/common/core/range';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 
-export const SERVICE_ID = 'notebookService';
+export const SERVICE_ID = 'sqlNotebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
 
 export const DEFAULT_NOTEBOOK_PROVIDER = 'builtin';
@@ -179,10 +179,12 @@ export class NotebookRange extends Range {
 		this.cell = cell;
 	}
 	cell: ICellModel;
+	isMarkdownSourceCell: boolean;
 
-	constructor(cell: ICellModel, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number) {
+	constructor(cell: ICellModel, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number, markdownEditMode?: boolean) {
 		super(startLineNumber, startColumn, endLineNumber, endColumn);
 		this.updateActiveCell(cell);
+		this.isMarkdownSourceCell = markdownEditMode ? markdownEditMode : false;
 	}
 }
 

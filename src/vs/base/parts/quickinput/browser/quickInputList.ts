@@ -106,6 +106,11 @@ class ListElementRenderer implements IListRenderer<ListElement, IListElementTemp
 
 		// Checkbox
 		const label = dom.append(data.entry, $('label.quick-input-list-label'));
+		data.toDisposeTemplate.push(dom.addStandardDisposableListener(label, dom.EventType.CLICK, e => {
+			if (!data.checkbox.offsetParent) { // If checkbox not visible:
+				e.preventDefault(); // Prevent toggle of checkbox when it is immediately shown afterwards. #91740
+			}
+		}));
 		data.checkbox = <HTMLInputElement>dom.append(label, $('input.quick-input-list-checkbox'));
 		data.checkbox.type = 'checkbox';
 		data.toDisposeTemplate.push(dom.addStandardDisposableListener(data.checkbox, dom.EventType.CHANGE, e => {
@@ -181,7 +186,11 @@ class ListElementRenderer implements IListRenderer<ListElement, IListElementTemp
 		const buttons = element.item.buttons;
 		if (buttons && buttons.length) {
 			data.actionBar.push(buttons.map((button, index) => {
-				const action = new Action(`id-${index}`, '', button.iconClass || (button.iconPath ? getIconClass(button.iconPath) : undefined), true, () => {
+				let cssClasses = button.iconClass || (button.iconPath ? getIconClass(button.iconPath) : undefined);
+				if (button.alwaysVisible) {
+					cssClasses = cssClasses ? `${cssClasses} always-visible` : 'always-visible';
+				}
+				const action = new Action(`id-${index}`, '', cssClasses, true, () => {
 					element.fireButtonTriggered({
 						button,
 						item: element.item
@@ -194,12 +203,6 @@ class ListElementRenderer implements IListRenderer<ListElement, IListElementTemp
 			dom.addClass(data.entry, 'has-actions');
 		} else {
 			dom.removeClass(data.entry, 'has-actions');
-		}
-
-		if (element.item.buttonsAlwaysVisible) {
-			dom.addClass(data.entry, 'always-visible-actions');
-		} else {
-			dom.removeClass(data.entry, 'always-visible-actions');
 		}
 	}
 
@@ -222,6 +225,16 @@ class ListElementDelegate implements IListVirtualDelegate<ListElement> {
 	getTemplateId(element: ListElement): string {
 		return ListElementRenderer.ID;
 	}
+}
+
+export enum QuickInputListFocus {
+	First = 1,
+	Second,
+	Last,
+	Next,
+	Previous,
+	NextPage,
+	PreviousPage
 }
 
 export class QuickInputList {
@@ -267,7 +280,13 @@ export class QuickInputList {
 			setRowLineHeight: false,
 			multipleSelectionSupport: false,
 			horizontalScrolling: false,
-			accessibilityProvider
+			accessibilityProvider,
+			ariaProvider: {
+				getRole: () => 'option',
+				getSetSize: (_: ListElement, _index: number, listLength: number) => listLength,
+				getPosInSet: (_: ListElement, index: number) => index
+			},
+			ariaRole: 'listbox'
 		} as IListOptions<ListElement>);
 		this.list.getHTMLElement().id = id;
 		this.disposables.push(this.list);
@@ -283,14 +302,12 @@ export class QuickInputList {
 					}
 					break;
 				case KeyCode.UpArrow:
-				case KeyCode.PageUp:
 					const focus1 = this.list.getFocus();
 					if (focus1.length === 1 && focus1[0] === 0) {
 						this._onLeave.fire();
 					}
 					break;
 				case KeyCode.DownArrow:
-				case KeyCode.PageDown:
 					const focus2 = this.list.getFocus();
 					if (focus2.length === 1 && focus2[0] === this.list.length - 1) {
 						this._onLeave.fire();
@@ -307,6 +324,21 @@ export class QuickInputList {
 		this.disposables.push(dom.addDisposableListener(this.container, dom.EventType.CLICK, e => {
 			if (e.x || e.y) { // Avoid 'click' triggered by 'space' on checkbox.
 				this._onLeave.fire();
+			}
+		}));
+		this.disposables.push(this.list.onMouseMiddleClick(e => {
+			this._onLeave.fire();
+		}));
+		this.disposables.push(this.list.onContextMenu(e => {
+			if (typeof e.index === 'number') {
+				e.browserEvent.preventDefault();
+
+				// we want to treat a context menu event as
+				// a gesture to open the item at the index
+				// since we do not have any context menu
+				// this enables for example macOS to Ctrl-
+				// click on an item to open it.
+				this.list.setSelection([e.index]);
 			}
 		}));
 	}
@@ -418,6 +450,10 @@ export class QuickInputList {
 		this._onChangedVisibleCount.fire(this.elements.length);
 	}
 
+	getElementsCount(): number {
+		return this.inputElements.length;
+	}
+
 	getFocusedElements() {
 		return this.list.getFocusedElements()
 			.map(e => e.item);
@@ -428,7 +464,10 @@ export class QuickInputList {
 			.filter(item => this.elementsToIndexes.has(item))
 			.map(item => this.elementsToIndexes.get(item)!));
 		if (items.length > 0) {
-			this.list.reveal(this.list.getFocus()[0]);
+			const focused = this.list.getFocus()[0];
+			if (typeof focused === 'number') {
+				this.list.reveal(focused);
+			}
 		}
 	}
 
@@ -469,22 +508,54 @@ export class QuickInputList {
 	}
 
 	set enabled(value: boolean) {
-		this.list.getHTMLElement().style.pointerEvents = value ? null : 'none';
+		this.list.getHTMLElement().style.pointerEvents = value ? '' : 'none';
 	}
 
-	focus(what: 'First' | 'Last' | 'Next' | 'Previous' | 'NextPage' | 'PreviousPage'): void {
+	focus(what: QuickInputListFocus): void {
 		if (!this.list.length) {
 			return;
 		}
 
-		if ((what === 'Next' || what === 'NextPage') && this.list.getFocus()[0] === this.list.length - 1) {
-			what = 'First';
+		if (what === QuickInputListFocus.Next && this.list.getFocus()[0] === this.list.length - 1) {
+			what = QuickInputListFocus.First;
 		}
-		if ((what === 'Previous' || what === 'PreviousPage') && this.list.getFocus()[0] === 0) {
-			what = 'Last';
+
+		if (what === QuickInputListFocus.Previous && this.list.getFocus()[0] === 0) {
+			what = QuickInputListFocus.Last;
 		}
-		this.list['focus' + what as 'focusFirst' | 'focusLast' | 'focusNext' | 'focusPrevious' | 'focusNextPage' | 'focusPreviousPage']();
-		this.list.reveal(this.list.getFocus()[0]);
+
+		if (what === QuickInputListFocus.Second && this.list.length < 2) {
+			what = QuickInputListFocus.First;
+		}
+
+		switch (what) {
+			case QuickInputListFocus.First:
+				this.list.focusFirst();
+				break;
+			case QuickInputListFocus.Second:
+				this.list.focusNth(1);
+				break;
+			case QuickInputListFocus.Last:
+				this.list.focusLast();
+				break;
+			case QuickInputListFocus.Next:
+				this.list.focusNext();
+				break;
+			case QuickInputListFocus.Previous:
+				this.list.focusPrevious();
+				break;
+			case QuickInputListFocus.NextPage:
+				this.list.focusNextPage();
+				break;
+			case QuickInputListFocus.PreviousPage:
+				this.list.focusPreviousPage();
+				break;
+		}
+
+		const focused = this.list.getFocus()[0];
+		if (typeof focused === 'number') {
+			this.list.reveal(focused);
+		}
 	}
 
 	clearFocus() {
@@ -500,10 +571,10 @@ export class QuickInputList {
 		this.list.layout();
 	}
 
-	filter(query: string) {
+	filter(query: string): boolean {
 		if (!(this.sortByLabel || this.matchOnLabel || this.matchOnDescription || this.matchOnDetail)) {
 			this.list.layout();
-			return;
+			return false;
 		}
 		query = query.trim();
 
@@ -561,6 +632,8 @@ export class QuickInputList {
 
 		this._onChangedAllVisibleChecked.fire(this.getAllVisibleChecked());
 		this._onChangedVisibleCount.fire(shownElements.length);
+
+		return true;
 	}
 
 	toggleCheckbox() {
@@ -617,6 +690,10 @@ function compareEntries(elementA: ListElement, elementB: ListElement, lookFor: s
 
 	if (!labelHighlightsA.length && labelHighlightsB.length) {
 		return 1;
+	}
+
+	if (labelHighlightsA.length === 0 && labelHighlightsB.length === 0) {
+		return 0;
 	}
 
 	return compareAnything(elementA.saneLabel, elementB.saneLabel, lookFor);

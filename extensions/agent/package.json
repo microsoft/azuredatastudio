@@ -2,7 +2,7 @@
   "name": "agent",
   "displayName": "SQL Server Agent",
   "description": "Manage and troubleshoot SQL Server Agent jobs",
-  "version": "0.46.0",
+  "version": "0.47.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
@@ -32,6 +32,7 @@
         "description": "Manage and troubleshoot SQL Agent jobs",
         "provider": "MSSQL",
         "title": "SQL Agent",
+        "group": "administration",
         "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11 && dashboardContext == 'server'",
         "container": {
           "controlhost-container": {
@@ -91,7 +92,7 @@
     "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
   },
   "resolutions": {
-      "esprima": "^4.0.0"
+    "esprima": "^4.0.0"
   },
   "__metadata": {
     "id": "10",

@@ -16,13 +16,58 @@ import { TreeNode } from './treeNode';
 import { AzureResourceCredentialError } from './errors';
 import { AzureResourceTreeProvider } from './tree/treeProvider';
 import { AzureResourceAccountTreeNode } from './tree/accountTreeNode';
-import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService } from '../azureResource/interfaces';
+import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService } from '../azureResource/interfaces';
 import { AzureResourceServiceNames } from './constants';
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
 import { GetSubscriptionsResult, GetResourceGroupsResult } from '../azurecore';
 import { isArray } from 'util';
+import { AzureAccount, Tenant } from '../account-provider/interfaces';
 
 export function registerAzureResourceCommands(appContext: AppContext, tree: AzureResourceTreeProvider): void {
+	appContext.apiWrapper.registerCommand('azure.resource.startterminal', async (node?: TreeNode) => {
+		try {
+			if (!node || !(node instanceof AzureResourceAccountTreeNode)) {
+				return;
+			}
+
+			const accountNode = node as AzureResourceAccountTreeNode;
+			const azureAccount = accountNode.account as AzureAccount;
+
+			const tokens = await appContext.apiWrapper.getSecurityToken(azureAccount, azdata.AzureResource.MicrosoftResourceManagement);
+
+			const terminalService = appContext.getService<IAzureTerminalService>(AzureResourceServiceNames.terminalService);
+
+			const listOfTenants = azureAccount.properties.tenants.map(t => t.displayName);
+
+			if (listOfTenants.length === 0) {
+				window.showErrorMessage(localize('azure.noTenants', "A tenant is required for this feature. Your Azure subscription seems to have no tenants."));
+				return;
+			}
+
+			let tenant: Tenant;
+			window.setStatusBarMessage(localize('azure.startingCloudShell', "Starting cloud shell…"), 5000);
+
+			if (listOfTenants.length === 1) {
+				// Don't show quickpick for a single option
+				tenant = azureAccount.properties.tenants[0];
+			} else {
+				const pickedTenant = await window.showQuickPick(listOfTenants, { canPickMany: false });
+
+				if (!pickedTenant) {
+					window.showErrorMessage(localize('azure.mustPickTenant', "You must select a tenant for this feature to work."));
+					return;
+				}
+
+				// The tenant the user picked
+				tenant = azureAccount.properties.tenants[listOfTenants.indexOf(pickedTenant)];
+			}
+
+			await terminalService.getOrCreateCloudConsole(azureAccount, tenant, tokens);
+		} catch (ex) {
+			console.error(ex);
+			window.showErrorMessage(ex);
+		}
+	});
 
 	// Resource Management commands
 	appContext.apiWrapper.registerCommand('azure.accounts.getSubscriptions', async (account?: azdata.Account, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> => {
@@ -76,7 +121,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 				const token = tokens[tenant.id].token;
 				const tokenType = tokens[tenant.id].tokenType;
 
-				result.resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType)));
+				result.resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType), account));
 			} catch (err) {
 				const error = new Error(localize('azure.accounts.getResourceGroups.queryError', "Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}",
 					account.displayInfo.displayName,
@@ -98,6 +143,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 	});
 
 	// Resource Tree commands
+
 	appContext.apiWrapper.registerCommand('azure.resource.selectsubscriptions', async (node?: TreeNode) => {
 		if (!(node instanceof AzureResourceAccountTreeNode)) {
 			return;
@@ -120,6 +166,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 					subscriptions.push(...await subscriptionService.getSubscriptions(accountNode.account, new TokenCredentials(token, tokenType)));
 				}
 			} catch (error) {
+				this.account.isStale = true;
 				throw new AzureResourceCredentialError(localize('azure.resource.selectsubscriptions.credentialError', "Failed to get credential for account {0}. Please refresh the account.", this.account.key.accountId), error);
 			}
 		}
