@@ -307,9 +307,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				if (contents.metadata) {
 					//Telemetry of loading notebook
 					if (contents.metadata.azdata_notebook_guid) {
-						this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.Open)
-							.withAdditionalProperties({ azdata_notebook_guid: contents.metadata.azdata_notebook_guid })
-							.send();
+						//Verify if it is actual GUID and then send it to the telemetry
+						let regex = new RegExp('(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}');
+						if (regex.test(contents.metadata.azdata_notebook_guid)) {
+							this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.Open)
+								.withAdditionalProperties({ azdata_notebook_guid: contents.metadata.azdata_notebook_guid })
+								.send();
+						}
 					}
 					Object.keys(contents.metadata).forEach(key => {
 						let expectedKeys = ['kernelspec', 'language_info', 'tags'];
