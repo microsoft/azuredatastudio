@@ -31,7 +31,6 @@ import { IColorTheme } from 'vs/platform/theme/common/themeService';
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
 
-
 @Component({
 	selector: TEXT_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./textCell.component.html'))
