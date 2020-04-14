@@ -106,6 +106,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	async openBook(bookPath: string, urlToOpen?: string, showPreview?: boolean, isNotebook?: boolean): Promise<void> {
 		try {
+			// Convert path to posix style for easier comparisons
+			bookPath = bookPath.replace(/\\/g, '/');
+
 			// Check if the book is already open in viewlet.
 			let existingBook = this.books.find(book => book.bookPath === bookPath);
 			if (existingBook?.bookItems.length > 0) {
