@@ -210,6 +210,12 @@ declare module 'azdata' {
 		 * The event argument is the id of the selected tab.
 		 */
 		onTabChanged: vscode.Event<string>;
+
+		/**
+		 * update the tabs.
+		 * @param tabs new tabs
+		 */
+		updateTabs(tabs: (Tab | TabGroup)[]): void;
 	}
 
 	/**
@@ -310,6 +316,7 @@ declare module 'azdata' {
 		export interface ModelViewDashboard {
 			registerTabs(handler: (view: ModelView) => Thenable<(DashboardTab | DashboardTabGroup)[]>): void;
 			open(): Thenable<void>;
+			updateTabs(tabs: (DashboardTab | DashboardTabGroup)[]): void;
 		}
 
 		export function createModelViewDashboard(title: string, options?: ModelViewDashboardOptions): ModelViewDashboard;

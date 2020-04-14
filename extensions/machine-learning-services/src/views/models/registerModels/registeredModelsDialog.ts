@@ -31,7 +31,7 @@ export class RegisteredModelsDialog extends ModelViewBase {
 
 		this.currentLanguagesTab = new CurrentModelsPage(this._apiWrapper, this);
 
-		let registerModelButton = this._apiWrapper.createButton(constants.deployModelTitle);
+		let registerModelButton = this._apiWrapper.createButton(constants.importModelTitle);
 		registerModelButton.onClick(async () => {
 			await this.sendDataRequest(RegisterModelEventName);
 		});

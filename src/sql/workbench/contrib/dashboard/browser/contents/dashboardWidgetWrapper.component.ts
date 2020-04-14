@@ -51,9 +51,12 @@ const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 export class DashboardWidgetWrapper extends AngularDisposable implements OnInit {
 	@Input() private _config: WidgetConfig;
 	@Input() private collapsable = false;
+	@Input() private bottomCollapse = false;
+	@Input() private toggleMore = true;
 
 	private _collapseAction: CollapseWidgetAction;
 	private _collapsed = false;
+	private _showTitle = true;
 
 	public get collapsed(): boolean {
 		return this._collapsed;
@@ -71,6 +74,14 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		}
 	}
 
+	public get showTitle(): boolean {
+		return this._showTitle;
+	}
+
+	public set showTitle(val: boolean) {
+		this._showTitle = val;
+	}
+
 	@memoize
 	public get guid(): string {
 		return generateUuid();
@@ -79,9 +90,11 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	private _actions: Array<Action>;
 	private _component: IDashboardWidget;
 	private _actionbar: ActionBar;
+	private _bottomActionbar: ActionBar;
 
 	@ViewChild('header', { read: ElementRef }) private header: ElementRef;
 	@ViewChild('actionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
+	@ViewChild('bottomActionbar', { read: ElementRef }) private _bottomActionbarRef: ElementRef;
 	@ViewChild(ComponentHostDirective) componentHost: ComponentHostDirective;
 
 	constructor(
@@ -110,12 +123,20 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		}
 		this._changeref.detectChanges();
 		this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
+		this._bottomActionbar = new ActionBar(this._bottomActionbarRef.nativeElement);
 		if (this._actions) {
 			if (this.collapsable) {
 				this._collapseAction = this.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed);
-				this._actionbar.push(this._collapseAction, { icon: true, label: false });
+				if (this.bottomCollapse) {
+					this._bottomActionbar.push(this._collapseAction, { icon: true, label: false });
+					this._bottomActionbarRef.nativeElement.style.display = 'block';
+				} else {
+					this._actionbar.push(this._collapseAction, { icon: true, label: false });
+				}
 			}
-			this._actionbar.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions as Array<IAction>, this._component.actionsContext), { icon: true, label: false });
+			if (this.toggleMore) {
+				this._actionbar.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions as Array<IAction>, this._component.actionsContext), { icon: true, label: false });
+			}
 		}
 		this.layout();
 	}

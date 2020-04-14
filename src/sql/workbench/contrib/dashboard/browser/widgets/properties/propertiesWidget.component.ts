@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import 'vs/css!./propertiesWidget';
 
 import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef, ViewChild } from '@angular/core';
 
@@ -18,10 +19,6 @@ import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
-import { IColorTheme } from 'vs/platform/theme/common/themeService';
-import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
@@ -72,15 +69,13 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 	@ViewChild('child', { read: ElementRef }) private _child: ElementRef;
 	@ViewChild('parent', { read: ElementRef }) private _parent: ElementRef;
-	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
-		@Inject(ILogService) private logService: ILogService,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
+		@Inject(ILogService) private logService: ILogService
 	) {
 		super(changeRef);
 		this._loadingMessage = nls.localize('loadingProperties', "Loading properties");
@@ -92,14 +87,6 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		this._inited = true;
 		this._register(addDisposableListener(window, EventType.RESIZE, () => this.handleClipping()));
 		this._changeRef.detectChanges();
-
-		this._register(this.themeService.onDidColorThemeChange((event: IColorTheme) => {
-			this.updateTheme(event);
-		}));
-	}
-
-	ngAfterViewInit(): void {
-		this.updateTheme(this.themeService.getColorTheme());
 	}
 
 	public refresh(): void {
@@ -282,14 +269,5 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			val = defaultVal;
 		}
 		return val;
-	}
-
-	private updateTheme(theme: IColorTheme): void {
-		if (theme.getColor(contrastBorder)) {
-			this._container.nativeElement.style.borderBottom = 'none';
-		} else {
-			const border = theme.getColor(DASHBOARD_BORDER);
-			this._container.nativeElement.style.borderBottom = '1px solid ' + border.toString();
-		}
 	}
 }

@@ -31,20 +31,6 @@ describe('Package Management Service', () => {
 		should.equal(await serverConfigManager.openDocuments(), true);
 	});
 
-	it('openOdbcDriverDocuments should open document in browser successfully', async function (): Promise<void> {
-		const context = createContext();
-		context.apiWrapper.setup(x => x.openExternal(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
-		let serverConfigManager = new PackageManagementService(context.apiWrapper.object, context.queryRunner.object);
-		should.equal(await serverConfigManager.openOdbcDriverDocuments(), true);
-	});
-
-	it('openInstallDocuments should open document in browser successfully', async function (): Promise<void> {
-		const context = createContext();
-		context.apiWrapper.setup(x => x.openExternal(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
-		let serverConfigManager = new PackageManagementService(context.apiWrapper.object, context.queryRunner.object);
-		should.equal(await serverConfigManager.openInstallDocuments(), true);
-	});
-
 	it('isMachineLearningServiceEnabled should return true if external script is enabled', async function (): Promise<void> {
 		const context = createContext();
 		context.queryRunner.setup(x => x.isMachineLearningServiceEnabled(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
