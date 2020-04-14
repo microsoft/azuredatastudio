@@ -4,8 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 cell-toolbar-component {
-	background-color: #FFFFFF;
-	border: 1px solid #0078D4;
 	position: absolute;
 	left: 25px;
 	top: -21px;

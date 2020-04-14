@@ -9,8 +9,6 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { TransformMarkdownAction, MarkdownButtonType } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { toolbarBackground, toolbarForeground, toolbarBottomBorder } from 'sql/platform/theme/common/colorRegistry';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 
@@ -43,14 +41,14 @@ export class MarkdownToolbarComponent {
 	}
 
 	private initActionBar() {
-		let boldButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.boldText', '', 'markdown-toolbar-bold', this.buttonBold, this.cellModel, MarkdownButtonType.BOLD);
-		let italicButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.italicText', '', 'markdown-toolbar-italic', this.buttonItalic, this.cellModel, MarkdownButtonType.ITALIC);
-		let highlightButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.highlightText', '', 'markdown-toolbar-highlight', this.buttonHighlight, this.cellModel, MarkdownButtonType.HIGHLIGHT);
-		let codeButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.codeText', '', 'markdown-toolbar-code', this.buttonCode, this.cellModel, MarkdownButtonType.CODE);
-		let linkButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.linkText', '', 'markdown-toolbar-link', this.buttonLink, this.cellModel, MarkdownButtonType.LINK);
-		let listButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.listText', '', 'markdown-toolbar-list', this.buttonList, this.cellModel, MarkdownButtonType.UNORDERED_LIST);
-		let orderedListButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.orderedText', '', 'markdown-toolbar-ordered-list', this.buttonOrderedList, this.cellModel, MarkdownButtonType.ORDERED_LIST);
-		let imageButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.imageText', '', 'markdown-toolbar-image', this.buttonImage, this.cellModel, MarkdownButtonType.IMAGE);
+		let boldButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.boldText', '', 'bold', this.buttonBold, this.cellModel, MarkdownButtonType.BOLD);
+		let italicButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.italicText', '', 'italic', this.buttonItalic, this.cellModel, MarkdownButtonType.ITALIC);
+		let highlightButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.highlightText', '', 'highlight', this.buttonHighlight, this.cellModel, MarkdownButtonType.HIGHLIGHT);
+		let codeButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.codeText', '', 'code', this.buttonCode, this.cellModel, MarkdownButtonType.CODE);
+		let linkButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.linkText', '', 'insert-link', this.buttonLink, this.cellModel, MarkdownButtonType.LINK);
+		let listButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.listText', '', 'list', this.buttonList, this.cellModel, MarkdownButtonType.UNORDERED_LIST);
+		let orderedListButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.orderedText', '', 'ordered-list', this.buttonOrderedList, this.cellModel, MarkdownButtonType.ORDERED_LIST);
+		let imageButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.imageText', '', 'insert-image', this.buttonImage, this.cellModel, MarkdownButtonType.IMAGE);
 
 		let taskbar = <HTMLElement>this.mdtoolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar);
@@ -67,18 +65,3 @@ export class MarkdownToolbarComponent {
 		]);
 	}
 }
-
-registerThemingParticipant((theme, collector) => {
-	const toolbarBackgroundColor = theme.getColor(toolbarBackground);
-	if (toolbarBackgroundColor) {
-		collector.addRule(`markdown-toolbar-component { background: ${toolbarBackgroundColor};}`);
-	}
-	const toolbarForegroundColor = theme.getColor(toolbarForeground);
-	if (toolbarForegroundColor) {
-		collector.addRule(`.markdown-toolbar li a { background-color: ${toolbarForegroundColor};}`);
-	}
-	const toolbarBottomBorderColor = theme.getColor(toolbarBottomBorder);
-	if (toolbarBottomBorderColor) {
-		collector.addRule(`.markdown-toolbar { border-bottom-color: ${toolbarBottomBorderColor};}`);
-	}
-});

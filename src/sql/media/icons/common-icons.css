@@ -325,43 +325,43 @@
 }
 
 /* Icons as masked elements for easy theme switching */
-.markdown-toolbar-bold {
+.codicon.bold {
 	-webkit-mask-image: url('toolbar-bold.svg');
 	mask-image: url('toolbar-bold.svg');
 }
-.markdown-toolbar-italic {
+.codicon.italic {
 	-webkit-mask-image: url('toolbar-italic.svg');
 	mask-image: url('toolbar-italic.svg');
 }
-.markdown-toolbar-highlight {
+.codicon.highlight {
 	-webkit-mask-image: url('toolbar-highlight.svg');
 	mask-image: url('toolbar-highlight.svg');
 }
-.markdown-toolbar-code {
+.codicon.code {
 	-webkit-mask-image: url('toolbar-code.svg');
 	mask-image: url('toolbar-code.svg');
 }
-.markdown-toolbar-link {
+.codicon.insert-link {
 	-webkit-mask-image: url('toolbar-link.svg');
 	mask-image: url('toolbar-link.svg');
 }
-.markdown-toolbar-list {
+.codicon.list {
 	-webkit-mask-image: url('toolbar-list.svg');
 	mask-image: url('toolbar-list.svg');
 }
-.markdown-toolbar-ordered-list {
+.codicon.ordered-list {
 	-webkit-mask-image: url('toolbar-ordered-list.svg');
 	mask-image: url('toolbar-ordered-list.svg');
 }
-.markdown-toolbar-image {
+.codicon.insert-image {
 	-webkit-mask-image: url('toolbar-image.svg');
 	mask-image: url('toolbar-image.svg');
 }
-.markdown-toolbar-preview-toggle-on {
+.codicon.split-toggle-on {
 	-webkit-mask-image: url('toolbar-preview-toggle-on.svg');
 	mask-image: url('toolbar-preview-toggle-on.svg');
 }
-.markdown-toolbar-preview-toggle-off {
+.codicon.split-toggle-off {
 	-webkit-mask-image: url('toolbar-preview-toggle-off.svg');
 	mask-image: url('toolbar-preview-toggle-off.svg');
 }
