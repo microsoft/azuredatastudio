@@ -493,7 +493,7 @@
         "description": "%mssql.tabs.databases%",
         "provider": "*",
         "title": "%mssql.tabs.databases%",
-        "when": "dashboardContext == 'server'",
+        "when": "dashboardContext == 'server' && !mssql:iscloud && mssql:engineedition != 11",
         "group": "home",
         "icon": "resources/database.svg",
         "container": {
