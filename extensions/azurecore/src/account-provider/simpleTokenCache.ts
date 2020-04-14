@@ -159,9 +159,11 @@ export class SimpleTokenCache {
 	async getCredential(id: string): Promise<string | undefined> {
 		try {
 			const result = await this.keytar.getPassword(this.serviceName, id);
+
 			if (result === null) {
 				return undefined;
 			}
+
 			return result;
 		} catch (ex) {
 			console.log(`Getting key failed: ${ex}`);
