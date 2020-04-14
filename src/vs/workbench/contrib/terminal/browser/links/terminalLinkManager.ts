@@ -17,11 +17,12 @@ import { Terminal, ILinkMatcherOptions, IViewportRange, ITerminalAddon } from 'x
 import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
 import { posix, win32 } from 'vs/base/common/path';
 import { ITerminalInstanceService, ITerminalBeforeHandleLinkEvent, LINK_INTERCEPT_THRESHOLD } from 'vs/workbench/contrib/terminal/browser/terminal';
-import { OperatingSystem, isMacintosh } from 'vs/base/common/platform';
+import { OperatingSystem, isMacintosh, OS } from 'vs/base/common/platform';
 import { IMarkdownString, MarkdownString } from 'vs/base/common/htmlContent';
 import { Emitter, Event } from 'vs/base/common/event';
 import { ILogService } from 'vs/platform/log/common/log';
-import { TerminalWebLinkProvider } from 'vs/workbench/contrib/terminal/browser/terminalWebLinkProvider';
+import { TerminalWebLinkProvider } from 'vs/workbench/contrib/terminal/browser/links/terminalWebLinkProvider';
+import { TerminalRegexLocalLinkProvider } from 'vs/workbench/contrib/terminal/browser/links/terminalRegexLocalLinkProvider';
 
 const pathPrefix = '(\\.\\.?|\\~)';
 const pathSeparatorClause = '\\/';
@@ -69,7 +70,10 @@ interface IPath {
 	normalize(path: string): string;
 }
 
-export class TerminalLinkHandler extends DisposableStore {
+/**
+ * An object responsible for managing registration of link matchers and link providers.
+ */
+export class TerminalLinkManager extends DisposableStore {
 	private _widgetManager: TerminalWidgetManager | undefined;
 	private _processCwd: string | undefined;
 	private _gitDiffPreImagePattern: RegExp;
@@ -82,7 +86,7 @@ export class TerminalLinkHandler extends DisposableStore {
 	private _hasBeforeHandleLinkListeners = false;
 
 	protected static _LINK_INTERCEPT_THRESHOLD = LINK_INTERCEPT_THRESHOLD;
-	public static readonly LINK_INTERCEPT_THRESHOLD = TerminalLinkHandler._LINK_INTERCEPT_THRESHOLD;
+	public static readonly LINK_INTERCEPT_THRESHOLD = TerminalLinkManager._LINK_INTERCEPT_THRESHOLD;
 
 	private readonly _onBeforeHandleLink = this.add(new Emitter<ITerminalBeforeHandleLinkEvent>({
 		onFirstListenerAdd: () => this._hasBeforeHandleLinkListeners = true,
@@ -97,7 +101,7 @@ export class TerminalLinkHandler extends DisposableStore {
 
 	constructor(
 		private _xterm: Terminal,
-		private readonly _processManager: ITerminalProcessManager | undefined,
+		private readonly _processManager: ITerminalProcessManager,
 		private readonly _configHelper: ITerminalConfigHelper,
 		@IOpenerService private readonly _openerService: IOpenerService,
 		@IEditorService private readonly _editorService: IEditorService,
@@ -282,6 +286,13 @@ export class TerminalLinkHandler extends DisposableStore {
 		};
 		const wrappedActivateCallback = this._wrapLinkHandler(this._handleHypertextLink.bind(this));
 		this._linkProvider = this._xterm.registerLinkProvider(new TerminalWebLinkProvider(this._xterm, wrappedActivateCallback, tooltipCallback, this._leaveCallback));
+
+		// Local links
+		const tooltipLinkCallback = (event: MouseEvent, link: string, location: IViewportRange) => {
+			this._tooltipCallback(event, link, location, this._handleLocalLink.bind(this, link));
+		};
+		const wrappedLinkActivateCallback = this._wrapLinkHandler(this._handleLocalLink.bind(this));
+		this._linkProvider = this._xterm.registerLinkProvider(new TerminalRegexLocalLinkProvider(this._xterm, this._processManager.os || OS, wrappedLinkActivateCallback, tooltipLinkCallback, this._leaveCallback, this._validateLocalLink.bind(this)));
 	}
 
 	protected _wrapLinkHandler(handler: (link: string) => void): XtermLinkMatcherHandler {
@@ -298,9 +309,9 @@ export class TerminalLinkHandler extends DisposableStore {
 				const wasHandled = await new Promise<boolean>(r => {
 					const timeoutId = setTimeout(() => {
 						canceled = true;
-						this._logService.error(`An extension intecepted a terminal link but it timed out after ${TerminalLinkHandler.LINK_INTERCEPT_THRESHOLD / 1000} seconds`);
+						this._logService.error(`An extension intecepted a terminal link but it timed out after ${TerminalLinkManager.LINK_INTERCEPT_THRESHOLD / 1000} seconds`);
 						r(false);
-					}, TerminalLinkHandler.LINK_INTERCEPT_THRESHOLD);
+					}, TerminalLinkManager.LINK_INTERCEPT_THRESHOLD);
 					let canceled = false;
 					const resolve = (handled: boolean) => {
 						if (!canceled) {
