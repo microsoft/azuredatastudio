@@ -159,7 +159,7 @@ export interface MainThreadCommentsShape extends IDisposable {
 }
 
 export interface MainThreadAuthenticationShape extends IDisposable {
-	$registerAuthenticationProvider(id: string, displayName: string): void;
+	$registerAuthenticationProvider(id: string, displayName: string, supportsMultipleAccounts: boolean): void;
 	$unregisterAuthenticationProvider(id: string): void;
 	$onDidChangeSessions(providerId: string, event: modes.AuthenticationSessionsChangeEvent): void;
 	$getSessionsPrompt(providerId: string, accountName: string, providerName: string, extensionId: string, extensionName: string): Promise<boolean>;
@@ -1002,7 +1002,7 @@ export interface ExtHostLabelServiceShape {
 export interface ExtHostAuthenticationShape {
 	$getSessions(id: string): Promise<ReadonlyArray<modes.AuthenticationSession>>;
 	$getSessionAccessToken(id: string, sessionId: string): Promise<string>;
-	$login(id: string, scopes: string[]): Promise<modes.AuthenticationSession>;
+	$login(id: string, scopes: string[] | undefined): Promise<modes.AuthenticationSession>;
 	$logout(id: string, sessionId: string): Promise<void>;
 }
 
