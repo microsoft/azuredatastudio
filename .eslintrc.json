@@ -412,6 +412,7 @@
                     "**/{vs,sql}/editor/{common,browser}/**",
                     "**/{vs,sql}/editor/contrib/**", // editor/contrib is equivalent to /browser/ by convention
                     "**/{vs,sql}/workbench/workbench.web.api",
+                    "**/{vs,sql}/workbench/api/**",
                     "**/{vs,sql}/workbench/{common,browser}/**",
                     "**/{vs,sql}/workbench/services/*/{common,browser}/**",
                     "assert"
