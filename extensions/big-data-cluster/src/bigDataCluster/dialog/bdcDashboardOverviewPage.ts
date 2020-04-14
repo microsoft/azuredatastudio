@@ -9,7 +9,6 @@ import { BdcDashboardModel, BdcErrorEvent } from './bdcDashboardModel';
 import { IconPathHelper, cssStyles } from '../constants';
 import { getStateDisplayText, getHealthStatusDisplayText, getEndpointDisplayText, getHealthStatusIcon, getServiceNameDisplayText, Endpoint, getBdcStatusErrorMessage } from '../utils';
 import { EndpointModel, BdcStatusModel } from '../controller/apiGenerated';
-import { BdcDashboard } from './bdcDashboard';
 import { createViewDetailsButton } from './commonControls';
 import { HdfsDialogCancelledError } from './hdfsDialogBase';
 import { BdcDashboardPage } from './bdcDashboardPage';
@@ -22,9 +21,7 @@ const healthStatusColumnWidth = 125;
 const hyperlinkedEndpoints = [Endpoint.metricsui, Endpoint.logsui, Endpoint.sparkHistory, Endpoint.yarnUi];
 
 export class BdcDashboardOverviewPage extends BdcDashboardPage {
-
-	private modelBuilder: azdata.ModelBuilder;
-
+	private rootContainer: azdata.FlexContainer;
 	private lastUpdatedLabel: azdata.TextComponent;
 	private propertiesContainer: azdata.DivContainer;
 	private clusterStateLoadingComponent: azdata.LoadingComponent;
@@ -40,16 +37,23 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 	private endpointsErrorMessage: azdata.TextComponent;
 	private serviceStatusErrorMessage: azdata.TextComponent;
 
-	constructor(private dashboard: BdcDashboard, private model: BdcDashboardModel) {
-		super();
+	constructor(model: BdcDashboardModel, modelView: azdata.ModelView) {
+		super(model, modelView);
 		this.model.onDidUpdateEndpoints(endpoints => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdate(endpoints)));
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.eventuallyRunOnInitialized(() => this.handleBdcStatusUpdate(bdcStatus)));
 		this.model.onBdcError(error => this.eventuallyRunOnInitialized(() => this.handleBdcError(error)));
 	}
 
-	public create(view: azdata.ModelView): azdata.FlexContainer {
-		this.modelBuilder = view.modelBuilder;
-		const rootContainer = view.modelBuilder.flexContainer().withLayout(
+	public get container(): azdata.FlexContainer {
+		// Lazily create the container only when needed
+		//if (!this.rootContainer) {
+		this.rootContainer = this.createContainer();
+		//}
+		return this.rootContainer;
+	}
+
+	public createContainer(): azdata.FlexContainer {
+		const rootContainer = this.modelView.modelBuilder.flexContainer().withLayout(
 			{
 				flexFlow: 'column',
 				width: '100%',
@@ -60,35 +64,41 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		// # PROPERTIES #
 		// ##############
 
-		const propertiesLabel = view.modelBuilder.text()
+		const propertiesLabel = this.modelView.modelBuilder.text()
 			.withProperties<azdata.TextComponentProperties>({ value: loc.clusterProperties, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '10px' } })
 			.component();
 		rootContainer.addItem(propertiesLabel, { CSSStyles: { 'margin-top': '15px', 'padding-left': '10px', ...cssStyles.title } });
 
-		this.propertiesErrorMessage = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ display: 'none', CSSStyles: { ...cssStyles.errorText } }).component();
+		this.propertiesErrorMessage = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ display: 'none', CSSStyles: { ...cssStyles.errorText } }).component();
 		rootContainer.addItem(this.propertiesErrorMessage, { flex: '0 0 auto' });
 
-		this.propertiesContainer = view.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
+		this.propertiesContainer = this.modelView.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
 
 		// Row 1
-		const row1 = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', height: '30px', alignItems: 'center' }).component();
+		const row1 = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', height: '30px', alignItems: 'center' }).component();
 
 		// Cluster State
-		const clusterStateLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.clusterState }).component();
-		const clusterStateValue = view.modelBuilder.text().component();
-		this.clusterStateLoadingComponent = view.modelBuilder.loadingComponent()
+		const clusterStateLabel = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.clusterState }).component();
+		const clusterStateValue = this.modelView.modelBuilder.text().component();
+		this.clusterStateLoadingComponent = this.modelView.modelBuilder.loadingComponent()
 			.withItem(clusterStateValue)
-			.withProperties<azdata.LoadingComponentProperties>({ loadingCompletedText: loc.loadingClusterStateCompleted })
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this.model.bdcStatus,
+				loadingCompletedText: loc.loadingClusterStateCompleted
+			})
 			.component();
 		row1.addItem(clusterStateLabel, { CSSStyles: { 'width': `${clusterStateLabelColumnWidth}px`, 'min-width': `${clusterStateLabelColumnWidth}px`, 'user-select': 'none', 'font-weight': 'bold' } });
 		row1.addItem(this.clusterStateLoadingComponent, { CSSStyles: { 'width': `${clusterStateValueColumnWidth}px`, 'min-width': `${clusterStateValueColumnWidth}px` } });
 
 		// Health Status
-		const healthStatusLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.healthStatusWithColon }).component();
-		const healthStatusValue = view.modelBuilder.text().component();
-		this.clusterHealthStatusLoadingComponent = view.modelBuilder.loadingComponent()
+		const healthStatusLabel = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.healthStatusWithColon }).component();
+		const healthStatusValue = this.modelView.modelBuilder.text().component();
+		this.clusterHealthStatusLoadingComponent = this.modelView.modelBuilder.loadingComponent()
 			.withItem(healthStatusValue)
-			.withProperties<azdata.LoadingComponentProperties>({ loadingCompletedText: loc.loadingHealthStatusCompleted })
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this.model.bdcStatus,
+				loadingCompletedText: loc.loadingHealthStatusCompleted
+			})
 			.component();
 		row1.addItem(healthStatusLabel, { CSSStyles: { 'width': `${healthStatusColumnWidth}px`, 'min-width': `${healthStatusColumnWidth}px`, 'user-select': 'none', 'font-weight': 'bold' } });
 		row1.addItem(this.clusterHealthStatusLoadingComponent, { CSSStyles: { 'width': `${healthStatusColumnWidth}px`, 'min-width': `${healthStatusColumnWidth}px` } });
@@ -101,10 +111,10 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		// # OVERVIEW #
 		// ############
 
-		const overviewHeaderContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', height: '20px' }).component();
+		const overviewHeaderContainer = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', height: '20px' }).component();
 		rootContainer.addItem(overviewHeaderContainer, { CSSStyles: { 'padding-left': '10px', 'padding-top': '15px' } });
 
-		const overviewLabel = view.modelBuilder.text()
+		const overviewLabel = this.modelView.modelBuilder.text()
 			.withProperties<azdata.TextComponentProperties>({
 				value: loc.clusterOverview,
 				CSSStyles: { ...cssStyles.text }
@@ -113,7 +123,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 
 		overviewHeaderContainer.addItem(overviewLabel, { CSSStyles: { ...cssStyles.title } });
 
-		this.lastUpdatedLabel = view.modelBuilder.text()
+		this.lastUpdatedLabel = this.modelView.modelBuilder.text()
 			.withProperties({
 				value: loc.lastUpdated(),
 				CSSStyles: { ...cssStyles.lastUpdatedText }
@@ -121,9 +131,9 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 
 		overviewHeaderContainer.addItem(this.lastUpdatedLabel, { CSSStyles: { 'margin-left': '45px' } });
 
-		const overviewContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%' }).component();
+		const overviewContainer = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%' }).component();
 
-		this.serviceStatusTable = view.modelBuilder.declarativeTable()
+		this.serviceStatusTable = this.modelView.modelBuilder.declarativeTable()
 			.withProperties<azdata.DeclarativeTableProperties>(
 				{
 					columns: [
@@ -214,19 +224,19 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 				})
 			.component();
 
-		this.serviceStatusDisplayContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
+		this.serviceStatusDisplayContainer = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 		this.serviceStatusDisplayContainer.addItem(this.serviceStatusTable);
 
 		// Note we don't make the table a child of the loading component since making the loading component align correctly
 		// messes up the layout for the table that we display after loading is finished. Instead we'll just remove the loading
 		// component once it's finished loading the content
-		this.serviceStatusLoadingComponent = view.modelBuilder.loadingComponent()
+		this.serviceStatusLoadingComponent = this.modelView.modelBuilder.loadingComponent()
 			.withProperties({ CSSStyles: { 'padding-top': '0px', 'padding-bottom': '0px' } })
 			.component();
 
 		this.serviceStatusDisplayContainer.addItem(this.serviceStatusLoadingComponent, { flex: '0 0 auto', CSSStyles: { 'padding-left': '150px', width: '30px' } });
 
-		this.serviceStatusErrorMessage = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ display: 'none', CSSStyles: { ...cssStyles.errorText } }).component();
+		this.serviceStatusErrorMessage = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ display: 'none', CSSStyles: { ...cssStyles.errorText } }).component();
 		overviewContainer.addItem(this.serviceStatusErrorMessage);
 
 		overviewContainer.addItem(this.serviceStatusDisplayContainer);
@@ -237,16 +247,16 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		// # SERVICE ENDPOINTS #
 		// #####################
 
-		const endpointsLabel = view.modelBuilder.text()
+		const endpointsLabel = this.modelView.modelBuilder.text()
 			.withProperties<azdata.TextComponentProperties>({ value: loc.serviceEndpoints, CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
 			.component();
 		rootContainer.addItem(endpointsLabel, { CSSStyles: { 'padding-left': '10px', ...cssStyles.title } });
 
-		this.endpointsErrorMessage = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ display: 'none', CSSStyles: { ...cssStyles.errorText } }).component();
+		this.endpointsErrorMessage = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ display: 'none', CSSStyles: { ...cssStyles.errorText } }).component();
 
-		const endpointsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%' }).component();
+		const endpointsContainer = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%' }).component();
 
-		this.endpointsTable = view.modelBuilder.declarativeTable()
+		this.endpointsTable = this.modelView.modelBuilder.declarativeTable()
 			.withProperties<azdata.DeclarativeTableProperties>(
 				{
 					columns: [
@@ -305,13 +315,13 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 					ariaLabel: loc.serviceEndpoints
 				}).component();
 
-		this.endpointsDisplayContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
+		this.endpointsDisplayContainer = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 		this.endpointsDisplayContainer.addItem(this.endpointsTable);
 
 		// Note we don't make the table a child of the loading component since making the loading component align correctly
 		// messes up the layout for the table that we display after loading is finished. Instead we'll just remove the loading
 		// component once it's finished loading the content
-		this.endpointsLoadingComponent = view.modelBuilder.loadingComponent()
+		this.endpointsLoadingComponent = this.modelView.modelBuilder.loadingComponent()
 			.withProperties({ CSSStyles: { 'padding-top': '0px', 'padding-bottom': '0px' } })
 			.component();
 		this.endpointsDisplayContainer.addItem(this.endpointsLoadingComponent, { flex: '0 0 auto', CSSStyles: { 'padding-left': '150px', width: '30px' } });
@@ -352,24 +362,24 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 
 		if (bdcStatus.services) {
 			this.serviceStatusTable.data = bdcStatus.services.map(serviceStatus => {
-				const statusIconCell = this.modelBuilder.text()
+				const statusIconCell = this.modelView.modelBuilder.text()
 					.withProperties<azdata.TextComponentProperties>({
 						value: getHealthStatusIcon(serviceStatus.healthStatus),
 						ariaRole: 'img',
 						title: getHealthStatusDisplayText(serviceStatus.healthStatus),
 						CSSStyles: { 'user-select': 'none', ...cssStyles.text }
 					}).component();
-				const nameCell = this.modelBuilder.hyperlink()
+				const nameCell = this.modelView.modelBuilder.hyperlink()
 					.withProperties<azdata.HyperlinkComponentProperties>({
 						label: getServiceNameDisplayText(serviceStatus.serviceName),
 						url: '',
 						CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink }
 					}).component();
 				nameCell.onDidClick(() => {
-					this.dashboard.switchToServiceTab(serviceStatus.serviceName);
+					//this.dashboard.switchToServiceTab(serviceStatus.serviceName); TODO: Enable direct link to tab page
 				});
 
-				const viewDetailsButton = serviceStatus.healthStatus !== 'healthy' && serviceStatus.details && serviceStatus.details.length > 0 ? createViewDetailsButton(this.modelBuilder, serviceStatus.details) : undefined;
+				const viewDetailsButton = serviceStatus.healthStatus !== 'healthy' && serviceStatus.details && serviceStatus.details.length > 0 ? createViewDetailsButton(this.modelView.modelBuilder, serviceStatus.details) : undefined;
 				return [
 					statusIconCell,
 					nameCell,
@@ -397,7 +407,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		endpoints.unshift(...sqlServerMasterEndpoints);
 
 		this.endpointsTable.data = endpoints.map(e => {
-			const copyValueCell = this.modelBuilder.button().withProperties<azdata.ButtonProperties>({ title: loc.copy }).component();
+			const copyValueCell = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({ title: loc.copy }).component();
 			copyValueCell.iconPath = IconPathHelper.copy;
 			copyValueCell.onDidClick(() => {
 				vscode.env.clipboard.writeText(e.endpoint);
@@ -406,7 +416,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 			copyValueCell.iconHeight = '14px';
 			copyValueCell.iconWidth = '14px';
 			return [getEndpointDisplayText(e.name, e.description),
-			createEndpointComponent(this.modelBuilder, e, this.model, hyperlinkedEndpoints.some(he => he === e.name)),
+			createEndpointComponent(this.modelView.modelBuilder, e, this.model, hyperlinkedEndpoints.some(he => he === e.name)),
 				copyValueCell];
 		});
 

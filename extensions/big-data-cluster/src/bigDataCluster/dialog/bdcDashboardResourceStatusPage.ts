@@ -21,8 +21,8 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 	private metricsAndLogsRowsTable: azdata.DeclarativeTableComponent;
 	private lastUpdatedLabel: azdata.TextComponent;
 
-	constructor(private model: BdcDashboardModel, private modelView: azdata.ModelView, private serviceName: string, private resourceName: string) {
-		super();
+	constructor(model: BdcDashboardModel, modelView: azdata.ModelView, serviceName: string, private resourceName: string) {
+		super(model, modelView, serviceName);
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.eventuallyRunOnInitialized(() => this.handleBdcStatusUpdate(bdcStatus)));
 	}
 

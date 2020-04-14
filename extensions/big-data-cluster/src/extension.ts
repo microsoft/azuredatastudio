@@ -68,7 +68,7 @@ function registerCommands(context: vscode.ExtensionContext, treeDataProvider: Co
 			await treeDataProvider.saveControllers();
 		}
 		const dashboard: BdcDashboard = new BdcDashboard(title, new BdcDashboardModel(info, treeDataProvider));
-		dashboard.showDashboard();
+		await dashboard.showDashboard();
 	});
 
 	vscode.commands.registerCommand(commands.MountHdfsCommand, e => mountHdfs(e).catch(error => {
