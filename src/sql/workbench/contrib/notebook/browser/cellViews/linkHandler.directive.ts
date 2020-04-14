@@ -62,9 +62,15 @@ export class LinkHandlerDirective {
 			if (uri.fragment && uri.fragment.length > 0 && uri.fsPath === this.workbenchFilePath.fsPath) {
 				this.notebookService.navigateTo(this.notebookUri, uri.fragment);
 			} else {
-				let newUri = dirname(this.notebookUri.fsPath);
-				newUri = newUri + '\\' + basename(uri.fsPath);
-				this.openerService.open(newUri).catch(onUnexpectedError);
+				let newUri: URI | undefined;
+				let path = dirname(this.notebookUri.path);
+				path = 'file://' + path + '//' + basename(uri.path);
+				try {
+					newUri = URI.parse(path);
+				} catch{
+					//ignore
+				}
+				this.openerService.open(newUri);
 			}
 		}
 	}
