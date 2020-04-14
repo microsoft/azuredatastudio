@@ -5,9 +5,10 @@
 import 'vs/css!./notebook';
 
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
-import { SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
+import { SIDE_BAR_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
 import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, editorBackground, lighten } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
+import { cellBorder, markdownEditorBackground, splitBorder, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder } from 'sql/platform/theme/common/colorRegistry';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
@@ -16,10 +17,6 @@ import * as types from 'vs/base/common/types';
 
 export function registerNotebookThemes(overrideEditorThemeSetting: boolean, configurationService: IConfigurationService): IDisposable {
 	return registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
-
-		let lightBoxShadow = '0px 4px 6px 0px rgba(0, 0, 0, 0.14)';
-		let darkBoxShadow = '0px 4px 6px 0px rgba(0, 0, 0, 1)';
-		let addBorderToInactiveCodeCells = true;
 
 		// Book Navigation Buttons
 		const buttonForegroundColor = theme.getColor(buttonForeground);
@@ -40,14 +37,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		if (buttonBackgroundColor) {
 			let lighterBackgroundColor = lighten(buttonBackgroundColor, 0.825)(theme);
 			collector.addRule(`
-				.notebookEditor .notebook-cell.active {
-					border-color: ${buttonBackgroundColor};
-					border-width: 1px;
-				}
-				.notebookEditor .notebook-cell.active:hover {
-					border-color: ${buttonBackgroundColor};
-				}
-
 				.notebookEditor .hoverButton {
 					border-color: ${buttonBackgroundColor};
 				}
@@ -58,7 +47,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				.notebookEditor .hoverButton {
 					color: ${buttonBackgroundColor};
 				}
-
 				.vs-dark .notebookEditor .hoverButton {
 					border-color: ${lighterBackgroundColor};
 				}
@@ -89,38 +77,11 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			`);
 		}
 
-		// Box shadow handling
-		collector.addRule(`
-			.notebookEditor .notebook-cell.active {
-				box-shadow: ${lightBoxShadow};
-			}
-
-			.vs-dark .notebookEditor .notebook-cell.active {
-				box-shadow: ${darkBoxShadow};
-			}
-
-			.hc-black .notebookEditor .notebook-cell.active {
-				box-shadow: 0;
-			}
-
-			.notebookEditor .notebook-cell:hover:not(.active) {
-				box-shadow: ${lightBoxShadow};
-			}
-
-			.vs-dark .notebookEditor .notebook-cell:hover:not(.active) {
-				box-shadow: ${darkBoxShadow};
-			}
-
-			.hc-black .notebookEditor .notebook-cell:hover:not(.active) {
-				box-shadow: 0;
-			}
-		`);
-
 		const inactiveBorder = theme.getColor(SIDE_BAR_BACKGROUND);
-		const sidebarColor = theme.getColor(SIDE_BAR_SECTION_HEADER_BACKGROUND);
 		const notebookLineHighlight = theme.getColor(EDITOR_GROUP_HEADER_TABS_BACKGROUND);
 		// Code editor style overrides - only applied if user chooses this as preferred option
 		if (overrideEditorThemeSetting) {
+
 			let lineHighlight = theme.getColor(editorLineHighlight);
 			if (!lineHighlight || lineHighlight.isTransparent()) {
 				// Use notebook color override
@@ -135,43 +96,12 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				// Override values only for the children of code-component so regular editors aren't affected
 				collector.addRule(`code-component .monaco-editor .view-overlays .current-line { border: 0px; }`);
 			}
-
-			// Override code editor background if color is defined
-			let codeBackground = inactiveBorder; // theme.getColor(EDITOR_GROUP_HEADER_TABS_BACKGROUND);
-			if (codeBackground) {
-				// Main background
-				collector.addRule(`.notebook-cell:not(.active) code-component { background-color: ${codeBackground}; }`);
-				collector.addRule(`
-					.notebook-cell:not(.active) code-component .monaco-editor,
-					.notebook-cell:not(.active) code-component .monaco-editor-background,
-					.notebook-cell:not(.active) code-component .monaco-editor .inputarea.ime-input,
-					.notebook-cell.active .hide-component-button:hover
-					{
-						background-color: ${codeBackground};
-					}`);
-
-				// Margin background will be the same (may override some styles)
-				collector.addRule(`.notebook-cell:not(.active) code-component .monaco-editor .margin { background-color: ${codeBackground}; }`);
-				addBorderToInactiveCodeCells = false;
-			}
 		}
 
 		// Inactive border
 		if (inactiveBorder) {
 			// Standard notebook cell behavior
 			collector.addRule(`
-				.notebookEditor .notebook-cell {
-					border-color: transparent;
-					border-width: 1px;
-				}
-				.notebookEditor .notebook-cell.active {
-					border-width: 1px;
-				}
-				.notebookEditor .notebook-cell:hover {
-					border-color: ${inactiveBorder};
-					border-width: 1px;
-				}
-
 				.notebookEditor .hoverButtonsContainer .containerBackground {
 					background-color: ${inactiveBorder};
 				}
@@ -181,35 +111,10 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			collector.addRule(`
 				.notebookEditor .notebook-cell.active code-component {
 					border-color: ${inactiveBorder};
-					border-width: 0px 0px 1px 0px;
-					border-style: solid;
-					border-radius: 0;
 				}
 			`);
-
-			if (addBorderToInactiveCodeCells) {
-				// Sets a border for the editor component if we don't have a custom line color for editor instead
-				collector.addRule(`
-					.notebookEditor .notebook-cell code-component {
-						border-color: ${inactiveBorder};
-						border-width: 1px;
-						border-style: solid;
-						border-radius: 3px 3px 3px 3px;
-					}
-					.notebookEditor .notebook-cell:hover code-component {
-						border-width: 0px 0px 1px 0px;
-						border-radius: 0px;
-					}
-				`);
-			}
 		}
 
-		// Sidebar and cell outline toolbar color set only when active
-		collector.addRule(`
-			.notebook-cell.active code-component .toolbar {
-				background-color: ${sidebarColor};
-			}
-		`);
 		// Styling with Outline color (e.g. high contrast theme)
 		const outline = theme.getColor(activeContrastBorder);
 		const hcOutline = theme.getColor(contrastBorder);
@@ -219,21 +124,11 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 					border-color: ${hcOutline};
 					border-width: 0px 0px 1px 0px;
 				}
-				.hc-black .notebookEditor .notebook-cell.active code-component {
-					border-color: ${outline};
-					border-width: 0px 0px 1px 0px;
-				}
 				.hc-black .notebookEditor .notebook-cell:not(.active) {
 					outline-color: ${hcOutline};
 					outline-width: 1px;
 					outline-style: solid;
 				}
-				.notebookEditor .notebook-cell.active {
-					outline-color: ${outline};
-					outline-width: 1px;
-					outline-style: solid;
-				}
-
 				.hc-black .notebookEditor .hoverButton {
 					color: ${hcOutline};
 				}
@@ -283,8 +178,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			}
 			`);
 		}
-
-
 		let blockQuoteBackground = theme.getColor(textBlockQuoteBackground);
 		let blockQuoteBorder = theme.getColor(textBlockQuoteBorder);
 		if (preformatForeground) {
@@ -313,5 +206,64 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		.grid-panel .monaco-table, .message-tree {
 			${getBareResultsGridInfoStyles(rawOptions)}
 		}`);
+
+
+		// Cell border
+		const cellBorderColor = theme.getColor(cellBorder);
+		if (cellBorderColor) {
+			collector.addRule(`.notebookEditor .notebook-cell.active { border-color: ${cellBorderColor};}`);
+		}
+
+		// Markdown editor toolbar
+		const toolbarBackgroundColor = theme.getColor(toolbarBackground);
+		if (toolbarBackgroundColor) {
+			collector.addRule(`markdown-toolbar-component { background: ${toolbarBackgroundColor};}`);
+		}
+		const toolbarIconColor = theme.getColor(toolbarIcon);
+		if (toolbarIconColor) {
+			collector.addRule(`.markdown-toolbar li a { background-color: ${toolbarIconColor};}`);
+		}
+		const toolbarBottomBorderColor = theme.getColor(toolbarBottomBorder);
+		if (toolbarBottomBorderColor) {
+			collector.addRule(`.markdown-toolbar { border-bottom-color: ${toolbarBottomBorderColor};}`);
+		}
+
+		// Markdwon editor colors
+		const markdownEditorBackgroundColor = theme.getColor(markdownEditorBackground);
+		if (markdownEditorBackgroundColor) {
+			collector.addRule(`text-cell-component code-component { background-color: ${markdownEditorBackgroundColor}; }`);
+		}
+		const splitBorderColor = theme.getColor(splitBorder);
+		if (splitBorderColor) {
+			collector.addRule(`.notebookEditor .notebook-cell.active text-cell-component code-component { border-bottom-color: ${splitBorderColor}; }`);
+		}
+
+		// Code editor colors
+		const codeEditorBackgroundColor = theme.getColor(codeEditorBackground);
+		if (codeEditorBackgroundColor) {
+			collector.addRule(`code-cell-component code-component { background-color: ${codeEditorBackgroundColor}; }`);
+		}
+		const codeEditorBackgroundActiveColor = theme.getColor(codeEditorBackgroundActive);
+		if (codeEditorBackgroundActiveColor) {
+			collector.addRule(`.notebook-cell.active code-cell-component code-component { background-color: ${codeEditorBackgroundActiveColor}; }`);
+		}
+		const codeEditorLineNumberColor = theme.getColor(codeEditorLineNumber);
+		if (codeEditorLineNumberColor) {
+			collector.addRule(`code-cell-component code-component .editor .line-numbers { color: ${codeEditorLineNumberColor};}`);
+		}
+		const codeEditorToolbarIconColor = theme.getColor(codeEditorToolbarIcon);
+		if (codeEditorToolbarIconColor) {
+			collector.addRule(
+				`code-cell-component code-component .carbon-taskbar .codicon.hideIcon { color: ${codeEditorToolbarIconColor};}`
+			);
+		}
+		const codeEditorToolbarBackgroundColor = theme.getColor(codeEditorToolbarBackground);
+		if (codeEditorToolbarBackgroundColor) {
+			collector.addRule(`.notebook-cell.active code-cell-component code-component .toolbar { background-color: ${codeEditorToolbarBackgroundColor};}`);
+		}
+		const codeEditorToolbarBorderColor = theme.getColor(codeEditorToolbarBorder);
+		if (codeEditorToolbarBorderColor) {
+			collector.addRule(`.notebook-cell.active code-cell-component code-component .toolbar { border-right-color: ${codeEditorToolbarBorderColor}!important;}`);
+		}
 	});
 }
