@@ -196,12 +196,11 @@ describe('BookTreeViewProviderTests', function () {
 				equalBookItems(notebook3, expectedNotebook3);
 			});
 
-			it('sould set notebooks trusted to true on trustBook', async () => {
-				// await bookTreeViewProvider.openBook(rootFolderPath);
+			it('should set notebooks trusted to true on trustBook', async () => {
 				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
 				let bookTrustManager: BookTrustManager = new BookTrustManager(bookTreeViewProvider.books, appContext.apiWrapper);
 				let isTrusted = bookTrustManager.isNotebookTrustedByDefault(notebook1Path);
-				should(isTrusted).equal(false, 'Failed to set trust on trustBook');
+				should(isTrusted).equal(false, 'Notebook should not be trusted by default');
 
 				bookTreeViewProvider.trustBook(bookTreeViewProvider.currentBook.bookItems[0]);
 				isTrusted = bookTrustManager.isNotebookTrustedByDefault(notebook1Path);
