@@ -220,7 +220,7 @@ async function publish(commit: string, quality: string, platform: string, type: 
 	const isReleased = (
 		(
 			(quality === 'insider' && /^master$|^refs\/heads\/master$/.test(sourceBranch)) ||
-			(quality === 'rc1' && /^release\//.test(sourceBranch))
+			(quality === 'rc1' && /^release\/|^refs\/heads\/release\//.test(sourceBranch))
 		) &&
 		/Project Collection Service Accounts|Microsoft.VisualStudio.Services.TFS/.test(queuedBy)
 	);
