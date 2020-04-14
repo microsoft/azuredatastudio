@@ -116,6 +116,7 @@ export default class MainController implements vscode.Disposable {
 			const newProjUri = (selectionResult as vscode.Uri[])[0];
 			console.log(newProjUri.fsPath);
 			await this.projectsController.createNewProject(newProjName as string, newProjUri as vscode.Uri);
+			await this.projectsController.openProject(newProjUri as vscode.Uri);
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(getErrorMessage(err));

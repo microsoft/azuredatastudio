@@ -31,11 +31,16 @@ export class ProjectsController {
 		this.projectTreeViewProvider = projTreeViewProvider;
 	}
 
-	public async openProject(projectFile: vscode.Uri) {
+
+	public refreshProjectsTree() {
+		this.projectTreeViewProvider.load(this.projects);
+	}
+
+	public async openProject(projectFile: vscode.Uri): Promise<Project> {
 		for (const proj of this.projects) {
 			if (proj.projectFilePath === projectFile.fsPath) {
 				vscode.window.showInformationMessage(constants.projectAlreadyOpened(projectFile.fsPath));
-				return;
+				return proj;
 			}
 		}
 
@@ -61,12 +66,18 @@ export class ProjectsController {
 		}
 
 		this.refreshProjectsTree();
+
+		return newProject;
 	}
 
-	public async createNewProject(newProjName: string, newProjUri: vscode.Uri) {
+	public async createNewProject(newProjName: string, newProjUri: vscode.Uri, projectGuid?: string): Promise<string> {
+		if (projectGuid && !UUID.isUUID(projectGuid)) {
+			throw new Error(`Specified GUID is invalid: '${projectGuid}'`);
+		}
+
 		const macroDict: Record<string, string> = {
 			'PROJECT_NAME': newProjName,
-			'PROJECT_GUID': UUID.generateUuid().toUpperCase()
+			'PROJECT_GUID': projectGuid ?? UUID.generateUuid().toUpperCase()
 		};
 
 		let newProjFileContents = this.macroExpansion(newSqlProjectTemplate, macroDict);
@@ -85,49 +96,16 @@ export class ProjectsController {
 		}
 		catch { } // file doesn't already exist
 
+		await fs.mkdir(path.dirname(newProjFilePath), { recursive: true });
 		await fs.writeFile(newProjFilePath, newProjFileContents);
-		this.openProject(vscode.Uri.file(newProjFilePath));
+
+		return newProjFilePath;
 	}
 
 	public closeProject(treeNode: BaseProjectTreeItem) {
 		const project = this.getProjectContextFromTreeNode(treeNode);
 		this.projects = this.projects.filter((e) => { return e !== project; });
 		this.refreshProjectsTree();
-	}
-
-	private getProjectContextFromTreeNode(treeNode: BaseProjectTreeItem): Project {
-		if (!treeNode) {
-			// TODO: prompt for which (currently-open) project when invoked via command pallet
-			throw new Error('TODO: prompt for which project when invoked via command pallet');
-		}
-
-		if (treeNode.root instanceof ProjectRootTreeItem) {
-			return (treeNode.root as ProjectRootTreeItem).project;
-		}
-		else {
-			throw new Error('"Add item" command invoked from unexpected location: ' + treeNode.uri.path);
-		}
-	}
-
-	private async promptForNewObjectName(itemType: templateMap.ProjectScriptType, _project: Project): Promise<string | undefined> {
-		// TODO: ask project for suggested name that doesn't conflict
-		const suggestedName = itemType.friendlyName.replace(new RegExp('\s', 'g'), '') + '1';
-
-		const itemObjectName = await vscode.window.showInputBox({
-			prompt: constants.newObjectNamePrompt(itemType.friendlyName),
-			value: suggestedName,
-		});
-
-		return itemObjectName;
-	}
-
-	private prependContextPath(treeNode: BaseProjectTreeItem, objectName: string): string {
-		if (treeNode instanceof FolderNode) {
-			return path.join(utils.trimUri(treeNode.root.uri, treeNode.uri), objectName);
-		}
-		else {
-			return objectName;
-		}
 	}
 
 	public async addFolderPrompt(treeNode: BaseProjectTreeItem) {
@@ -199,7 +177,38 @@ export class ProjectsController {
 		return output;
 	}
 
-	public refreshProjectsTree() {
-		this.projectTreeViewProvider.load(this.projects);
+	private getProjectContextFromTreeNode(treeNode: BaseProjectTreeItem): Project {
+		if (!treeNode) {
+			// TODO: prompt for which (currently-open) project when invoked via command pallet
+			throw new Error('TODO: prompt for which project when invoked via command pallet');
+		}
+
+		if (treeNode.root instanceof ProjectRootTreeItem) {
+			return (treeNode.root as ProjectRootTreeItem).project;
+		}
+		else {
+			throw new Error('"Add item" command invoked from unexpected location: ' + treeNode.uri.path);
+		}
+	}
+
+	private async promptForNewObjectName(itemType: templateMap.ProjectScriptType, _project: Project): Promise<string | undefined> {
+		// TODO: ask project for suggested name that doesn't conflict
+		const suggestedName = itemType.friendlyName.replace(new RegExp('\s', 'g'), '') + '1';
+
+		const itemObjectName = await vscode.window.showInputBox({
+			prompt: constants.newObjectNamePrompt(itemType.friendlyName),
+			value: suggestedName,
+		});
+
+		return itemObjectName;
+	}
+
+	private prependContextPath(treeNode: BaseProjectTreeItem, objectName: string): string {
+		if (treeNode instanceof FolderNode) {
+			return path.join(utils.trimUri(treeNode.root.uri, treeNode.uri), objectName);
+		}
+		else {
+			return objectName;
+		}
 	}
 }

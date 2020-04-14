@@ -57,6 +57,9 @@ export class Project {
 		}
 	}
 
+	/**
+	 * Writes the project file to disk
+	 */
 	public async writeProjFile() {
 		try {
 			const projFileText = '';
@@ -68,10 +71,10 @@ export class Project {
 		}
 	}
 
-	private createProjectEntry(relativePath: string, entryType: EntryType): ProjectEntry {
-		return new ProjectEntry(vscode.Uri.file(path.join(this.projectFolderPath, relativePath)), relativePath, entryType);
-	}
-
+	/**
+	 * Adds a folder to the project, and saves the project file
+	 * @param relativeFolderPath Relative path of the folder
+	 */
 	public async addFolderItem(relativeFolderPath: string): Promise<ProjectEntry> {
 		const absoluteFolderPath = path.join(this.projectFolderPath, relativeFolderPath);
 		await fs.mkdir(absoluteFolderPath, { recursive: true });
@@ -83,6 +86,11 @@ export class Project {
 		return folderEntry;
 	}
 
+	/**
+	 * Writes a file to disk, adds that file to the project, and writes it to disk
+	 * @param relativeFilePath Relative path of the file
+	 * @param contents Contents to be written to the new file
+	 */
 	public async addScriptItem(relativeFilePath: string, contents: string): Promise<ProjectEntry> {
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
 		await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
@@ -94,6 +102,10 @@ export class Project {
 		await this.addToProjFile(fileEntry);
 
 		return fileEntry;
+	}
+
+	private createProjectEntry(relativePath: string, entryType: EntryType): ProjectEntry {
+		return new ProjectEntry(vscode.Uri.file(path.join(this.projectFolderPath, relativePath)), relativePath, entryType);
 	}
 
 	private findOrCreateItemGroup(containedTag?: string): any {

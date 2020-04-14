@@ -130,7 +130,10 @@
   },
   "devDependencies": {
     "@types/xmldom": "^0.1.29",
+    "should": "^13.2.1",
     "tslint": "^5.8.0",
-    "typescript": "^2.6.1"
+    "typescript": "^2.6.1",
+    "typemoq": "^2.1.0",
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.6"
   }
 }

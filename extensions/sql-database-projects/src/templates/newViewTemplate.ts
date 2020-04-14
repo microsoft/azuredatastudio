@@ -6,5 +6,5 @@
 // TODO: how to disable linter for leading whitespace in multi-line strings?
 
 export const newSqlViewTemplate = `CREATE VIEW [dbo].[@@OBJECT_NAME@@]
-\tAS SELECT * FROM [SomeTableOrView]
+\u0020AS SELECT * FROM [SomeTableOrView]
 `;

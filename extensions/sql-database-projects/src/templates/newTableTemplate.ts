@@ -7,6 +7,6 @@
 
 export const newSqlTableTemplate = `CREATE TABLE [dbo].[@@OBJECT_NAME@@]
 (
-\t[Id] INT NOT NULL PRIMARY KEY
+\u0020[Id] INT NOT NULL PRIMARY KEY
 )
 `;
