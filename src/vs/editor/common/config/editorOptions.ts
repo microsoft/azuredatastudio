@@ -1073,7 +1073,7 @@ class EditorComments extends BaseEditorOption<EditorOption.comments, EditorComme
 	}
 
 	public validate(_input: any): EditorCommentsOptions {
-		if (typeof _input !== 'object') {
+		if (!_input || typeof _input !== 'object') {
 			return this.defaultValue;
 		}
 		const input = _input as IEditorCommentsOptions;
@@ -1318,7 +1318,7 @@ class EditorFind extends BaseEditorOption<EditorOption.find, EditorFindOptions> 
 	}
 
 	public validate(_input: any): EditorFindOptions {
-		if (typeof _input !== 'object') {
+		if (!_input || typeof _input !== 'object') {
 			return this.defaultValue;
 		}
 		const input = _input as IEditorFindOptions;
@@ -1544,7 +1544,7 @@ class EditorGoToLocation extends BaseEditorOption<EditorOption.gotoLocation, GoT
 	}
 
 	public validate(_input: any): GoToLocationOptions {
-		if (typeof _input !== 'object') {
+		if (!_input || typeof _input !== 'object') {
 			return this.defaultValue;
 		}
 		const input = _input as IGotoLocationOptions;
@@ -1622,7 +1622,7 @@ class EditorHover extends BaseEditorOption<EditorOption.hover, EditorHoverOption
 	}
 
 	public validate(_input: any): EditorHoverOptions {
-		if (typeof _input !== 'object') {
+		if (!_input || typeof _input !== 'object') {
 			return this.defaultValue;
 		}
 		const input = _input as IEditorHoverOptions;
@@ -2048,7 +2048,7 @@ class EditorLightbulb extends BaseEditorOption<EditorOption.lightbulb, EditorLig
 	}
 
 	public validate(_input: any): EditorLightbulbOptions {
-		if (typeof _input !== 'object') {
+		if (!_input || typeof _input !== 'object') {
 			return this.defaultValue;
 		}
 		const input = _input as IEditorLightbulbOptions;
@@ -2192,7 +2192,7 @@ class EditorMinimap extends BaseEditorOption<EditorOption.minimap, EditorMinimap
 	}
 
 	public validate(_input: any): EditorMinimapOptions {
-		if (typeof _input !== 'object') {
+		if (!_input || typeof _input !== 'object') {
 			return this.defaultValue;
 		}
 		const input = _input as IEditorMinimapOptions;
@@ -2267,7 +2267,7 @@ class EditorPadding extends BaseEditorOption<EditorOption.padding, InternalEdito
 	}
 
 	public validate(_input: any): InternalEditorPaddingOptions {
-		if (typeof _input !== 'object') {
+		if (!_input || typeof _input !== 'object') {
 			return this.defaultValue;
 		}
 		const input = _input as IEditorPaddingOptions;
@@ -2325,7 +2325,7 @@ class EditorParameterHints extends BaseEditorOption<EditorOption.parameterHints,
 	}
 
 	public validate(_input: any): InternalParameterHintOptions {
-		if (typeof _input !== 'object') {
+		if (!_input || typeof _input !== 'object') {
 			return this.defaultValue;
 		}
 		const input = _input as IEditorParameterHintOptions;
@@ -2415,7 +2415,7 @@ class EditorQuickSuggestions extends BaseEditorOption<EditorOption.quickSuggesti
 		if (typeof _input === 'boolean') {
 			return _input;
 		}
-		if (typeof _input === 'object') {
+		if (_input && typeof _input === 'object') {
 			const input = _input as IQuickSuggestionsOptions;
 			const opts = {
 				other: EditorBooleanOption.boolean(input.other, this.defaultValue.other),
@@ -2565,7 +2565,7 @@ class EditorRulers extends BaseEditorOption<EditorOption.rulers, IRulerOption[]>
 						column: EditorIntOption.clampedInt(_element, 0, 0, 10000),
 						color: null
 					});
-				} else if (typeof _element === 'object') {
+				} else if (_element && typeof _element === 'object') {
 					const element = _element as IRulerOption;
 					rulers.push({
 						column: EditorIntOption.clampedInt(element.column, 0, 0, 10000),
@@ -2699,7 +2699,7 @@ class EditorScrollbar extends BaseEditorOption<EditorOption.scrollbar, InternalE
 	}
 
 	public validate(_input: any): InternalEditorScrollbarOptions {
-		if (typeof _input !== 'object') {
+		if (!_input || typeof _input !== 'object') {
 			return this.defaultValue;
 		}
 		const input = _input as IEditorScrollbarOptions;
@@ -3120,7 +3120,7 @@ class EditorSuggest extends BaseEditorOption<EditorOption.suggest, InternalSugge
 	}
 
 	public validate(_input: any): InternalSuggestOptions {
-		if (typeof _input !== 'object') {
+		if (!_input || typeof _input !== 'object') {
 			return this.defaultValue;
 		}
 		const input = _input as ISuggestOptions;
