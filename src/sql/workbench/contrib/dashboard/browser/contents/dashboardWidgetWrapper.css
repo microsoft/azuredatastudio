@@ -47,5 +47,14 @@ dashboard-widget-wrapper .actionbar {
 dashboard-widget-wrapper .bottomActionbar {
 	flex: 0 0 auto;
 	align-self: center;
-	margin-top: -28px;
+	margin-top: -27px;
+	display: none;
+}
+
+dashboard-widget-wrapper .bottomActionbar .actions-container .action-item a.action-label.codicon-chevron-up {
+	padding-left: 5px;
+}
+
+dashboard-widget-wrapper .bottomActionbar .actions-container .action-item a.action-label.codicon-chevron-down {
+	padding-left: 5px;
 }

@@ -55,7 +55,11 @@
     "commands": [
       {
         "command": "mls.command.managePackages",
-        "title": "%mls.command.managePackages%"
+        "title": "%mls.command.managePackages%",
+        "icon": {
+          "light": "./images/installPackages.svg",
+          "dark": "./images/installPackages.svg"
+        }
       },
       {
         "command": "mls.command.predictModel",
@@ -70,8 +74,8 @@
         "title": "%mls.command.manageModels%"
       },
       {
-        "command": "mls.command.registerModel",
-        "title": "%mls.command.registerModel%",
+        "command": "mls.command.importModel",
+        "title": "%mls.command.importModel%",
         "icon": {
           "light": "./images/registerModel.svg",
           "dark": "./images/registerModel.svg"
@@ -79,15 +83,11 @@
       },
       {
         "command": "mls.command.manageLanguages",
-        "title": "%mls.command.manageLanguages%"
-      },
-      {
-        "command": "mls.command.odbcdriver",
-        "title": "%mls.command.odbcdriver%"
-      },
-      {
-        "command": "mls.command.mlsdocs",
-        "title": "%mls.command.mlsdocs%"
+        "title": "%mls.command.manageLanguages%",
+        "icon": {
+          "light": "./images/registerRuntime.svg",
+          "dark": "./images/registerRuntime.svg"
+        }
       },
       {
         "command": "mls.command.dependencies",
@@ -110,21 +110,20 @@
               "widget": {
                 "tasks-widget": [
                   "mls.command.managePackages",
-                  "mls.command.manageLanguages",
-                  "mls.command.manageModels",
-                  "mls.command.predictModel"
+                  "mls.command.manageLanguages"
                 ]
               }
             },
             {
-              "name": "%title.documents%",
+              "name": "",
               "row": 0,
               "col": 1,
+              "rowspan": 3,
+              "colspan": 4,
               "widget": {
-                "tasks-widget": [
-                  "mls.command.odbcdriver",
-                  "mls.command.mlsdocs"
-                ]
+                "modelview": {
+                  "id":"mls.dashboard"
+                }
               }
             }
           ]
