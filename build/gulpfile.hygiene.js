@@ -97,7 +97,7 @@ const indentationFilter = [
 	'!extensions/markdown-language-features/media/*.js',
 	// {{SQL CARBON EDIT}}
 	'!build/actions/**/dist/*',
-	'!**/*.{xlf,docx,sql,vsix,bacpac,ipynb}',
+	'!**/*.{xlf,docx,sql,vsix,bacpac,ipynb,jpg}',
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/admin-tool-ext-win/ssmsmin/**',
