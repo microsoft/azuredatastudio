@@ -117,26 +117,31 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	}
 
 	private organizeProperties(): void {
-		if (window.innerWidth < 1200 && this._layout !== propertyDisplayLayout.stacked) {
-			this._layout = propertyDisplayLayout.stacked;
-			this.setPropertiesClass('propertiesColumn', 'propertiesColumn stacked');
-			this.setPropertiesClass('propertyLeft', 'property propertyLeft stacked');
-			this.setPropertiesClass('propertyRight', 'property propertyRight stacked');
+		// Reflow:
+		// 4 columns: 1366px and above
+		// 2 columns: 1024 - 1365px
+		// 1 column: 1024px or less
+		if (window.innerWidth >= 1366 && this._layout !== propertyDisplayLayout.horizontal) { // four columns
+			this._layout = propertyDisplayLayout.horizontal;
+			this.setPropertiesClass('propertiesColumn', 'propertiesColumn');
+			this.setPropertiesClass('propertyLeft', 'property propertyLeft horizontal');
+			this.setPropertiesClass('propertyRight', 'property propertyRight horizontal');
 
-			this.height = this.properties.length * 40 + 50;
-		} else if (window.innerWidth < 1800 && window.innerWidth >= 1200 && this._layout !== propertyDisplayLayout.vertical) {
+			this.height = this.properties.length / 2 * 25 + 40;
+		} else if (window.innerWidth < 1366 && window.innerWidth >= 1024 && this._layout !== propertyDisplayLayout.vertical) { // two columns
 			this._layout = propertyDisplayLayout.vertical;
 			this.setPropertiesClass('propertiesColumn', 'propertiesColumn');
 			this.setPropertiesClass('propertyLeft', 'property propertyLeft vertical');
 			this.setPropertiesClass('propertyRight', 'property propertyRight vertical');
 
 			this.height = (this.properties.length / 2 * 40) + 40;
-		} else if (window.innerWidth >= 1800 && this._layout !== propertyDisplayLayout.horizontal) {
-			this._layout = propertyDisplayLayout.horizontal;
-			this.setPropertiesClass('propertiesColumn', 'propertiesColumn');
-			this.setPropertiesClass('propertyLeft', 'property propertyLeft horizontal');
-			this.setPropertiesClass('propertyRight', 'property propertyRight horizontal');
-			this.height = this.properties.length / 2 * 25 + 40;
+		} else if (window.innerWidth < 1024 && this._layout !== propertyDisplayLayout.stacked) { // one column
+			this._layout = propertyDisplayLayout.stacked;
+			this.setPropertiesClass('propertiesColumn', 'propertiesColumn stacked');
+			this.setPropertiesClass('propertyLeft', 'property propertyLeft stacked');
+			this.setPropertiesClass('propertyRight', 'property propertyRight stacked');
+
+			this.height = this.properties.length * 40 + 50;
 		}
 
 		this._changeRef.detectChanges();
