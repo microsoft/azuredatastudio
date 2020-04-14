@@ -24,11 +24,11 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { keys } from 'vs/base/common/map';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { startsWith } from 'vs/base/common/strings';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -63,6 +63,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _cells: ICellModel[];
 	private _defaultLanguageInfo: nb.ILanguageInfo;
 	private _tags: string[];
+	private _existingMetadata = {};
 	private _language: string;
 	private _onErrorEmitter = new Emitter<INotification>();
 	private _savedKernelInfo: nb.IKernelInfo;
@@ -87,7 +88,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		public connectionProfile: IConnectionProfile | undefined,
 		@ILogService private readonly logService: ILogService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@ITelemetryService private readonly telemetryService: ITelemetryService
+		@IAdsTelemetryService private readonly adstelemetryService: IAdsTelemetryService
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
@@ -303,6 +304,25 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (contents) {
 				this._defaultLanguageInfo = contents.metadata && contents.metadata.language_info;
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
+				if (contents.metadata) {
+					//Telemetry of loading notebook
+					if (contents.metadata.azdata_notebook_guid && contents.metadata.azdata_notebook_guid.length === 36) {
+						//Verify if it is actual GUID and then send it to the telemetry
+						let regex = new RegExp('(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}');
+						if (regex.test(contents.metadata.azdata_notebook_guid)) {
+							this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.Open)
+								.withAdditionalProperties({ azdata_notebook_guid: contents.metadata.azdata_notebook_guid })
+								.send();
+						}
+					}
+					Object.keys(contents.metadata).forEach(key => {
+						let expectedKeys = ['kernelspec', 'language_info', 'tags'];
+						// If custom metadata is defined, add to the _existingMetadata object
+						if (expectedKeys.indexOf(key) < 0) {
+							this._existingMetadata[key] = contents.metadata[key];
+						}
+					});
+				}
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => {
 						let cellModel = factory.createCell(c, { notebook: this, isTrusted: isTrusted });
@@ -937,7 +957,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				if (this._textCellsLoading <= 0) {
 					if (this._notebookOptions.editorLoadedTimestamp) {
 						let markdownRenderingTime = Date.now() - this._notebookOptions.editorLoadedTimestamp;
-						this.telemetryService.publicLog(TelemetryKeys.NotebookMarkdownRendered, { markdownRenderingElapsedMs: markdownRenderingTime });
+						this.adstelemetryService.sendMetricsEvent({ markdownRenderingElapsedMs: markdownRenderingTime }, TelemetryKeys.TelemetryView.Notebook);
 					}
 				}
 			}
@@ -971,6 +991,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		metadata.kernelspec = this._savedKernelInfo;
 		metadata.language_info = this.languageInfo;
 		metadata.tags = this._tags;
+		Object.keys(this._existingMetadata).forEach(key => {
+			metadata[key] = this._existingMetadata[key];
+		});
 		return {
 			metadata,
 			nbformat_minor: this._nbformatMinor,
