@@ -141,7 +141,7 @@ export class SimpleTokenCache {
 	}
 
 	async saveCredential(id: string, key: string): Promise<void> {
-		if (key.length > 2500) { // Windows limitation
+		if (!this.forceFileStorage && key.length > 2500) { // Windows limitation
 			throw new Error('Key length is longer than 2500 chars');
 		}
 
@@ -159,9 +159,11 @@ export class SimpleTokenCache {
 	async getCredential(id: string): Promise<string | undefined> {
 		try {
 			const result = await this.keytar.getPassword(this.serviceName, id);
+
 			if (result === null) {
 				return undefined;
 			}
+
 			return result;
 		} catch (ex) {
 			console.log(`Getting key failed: ${ex}`);
