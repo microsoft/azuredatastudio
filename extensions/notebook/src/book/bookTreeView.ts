@@ -16,6 +16,7 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import { ApiWrapper } from '../common/apiWrapper';
+import { debounce } from '../common/utils';
 
 const Content = 'content';
 
@@ -114,17 +115,22 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			// add file watcher on toc file.
 			fs.watchFile(path.join(bookPath, '_data', 'toc.yml'), async (curr, prev) => {
 				if (curr.mtime > prev.mtime) {
-					let index = this.books.findIndex(book => book.bookPath === bookPath);
-					if (index > -1) {
-						await this.books[index].initializeContents().then(() => {
-							this._onDidChangeTreeData.fire();
-						});
+					let book = this.books.find(book => book.bookPath === bookPath);
+					if (book) {
+						this.fireBookRefresh(book);
 					}
 				}
 			});
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
 		}
+	}
+
+	@debounce(5000)
+	async fireBookRefresh(book: BookModel): Promise<void> {
+		await book.initializeContents().then(() => {
+			this._onDidChangeTreeData.fire();
+		});
 	}
 
 	async closeBook(book: BookTreeItem): Promise<void> {
