@@ -8,16 +8,23 @@
 	[loadingCompletedMessage]="_loadingCompletedMessage"></loading-spinner>
 <div #parent style="position: absolute; height: 100%; width: 100%;" [style.display]="_loading ? 'none':'block'">
 	<div #container [style.margin-right.px]="_clipped ? 30 : 0" [style.width]="_clipped ? 94 + '%' : '100%'" style="overflow: hidden; padding-bottom: 10px">
-		<span #child style="white-space : nowrap; width: fit-content">
-			<ng-template ngFor let-item [ngForOf]="properties">
-				<span style="margin-left: 10px; display: inline-block;">
-					<div class="propertiesName" style="font-size: 11px;">{{item.displayName}}</div>
-					<div class="propertiesValue">{{item.value}}</div>
-				</span>
+		<div #leftColumn class="propertiesColumn" role="presentation">
+			<ng-template ngFor let-item [ngForOf]="leftProperties">
+				<div class="property propertyLeft" role="presentation">
+					<div class="propertiesName">{{item.displayName}}</div>
+					<div class="horizontalColon">:  </div>
+					<div class="propertiesValue horizontal">{{item.value}}</div>
+				</div>
 			</ng-template>
-		</span>
+		</div>
+		<div class="propertiesColumn" role="presentation">
+			<ng-template ngFor let-item [ngForOf]="rightProperties">
+				<div class="property propertyRight" role="presentation">
+					<div class="propertiesName">{{item.displayName}}</div>
+					<div class="horizontalColon">:</div>
+					<div class="propertiesValue horizontal">{{item.value}}</div>
+				</div>
+			</ng-template>
+		</div>
 	</div>
-	<span *ngIf="_clipped" style="position: absolute; right: 0; top: 0; padding-top: 5px; padding-right: 14px; z-index: 2">
-		...
-	</span>
 </div>

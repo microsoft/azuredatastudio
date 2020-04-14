@@ -5,9 +5,91 @@
 
 .propertiesName {
 	opacity: 0.6;
+	width: 145px;
+	font-size: 12px;
 }
 
 .vs-dark .propertiesName,
 .hc-black .propertiesName {
 	opacity: 1;
+}
+
+.horizontal > .propertiesName {
+	float: left;
+	margin-left: 5px;
+}
+
+.vertical > .propertiesName,
+.vertical > .propertiesName {
+	float: none;
+	margin-left: 0;
+}
+
+.propertiesValue {
+	font-size: 12px;
+	margin-left: 5px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.horizontal > .propertiesValue {
+	width: calc(100% - 210px);
+}
+
+.vertical > .propertiesValue,
+.stacked > .propertiesValue {
+	margin-left: 0;
+}
+
+.vertical > .propertiesValue {
+	width: 85%;
+}
+
+.stacked > .propertiesValue {
+	width: 90%
+}
+
+.property {
+	display: inline-block;
+	width: 100%;
+	padding-bottom: 10px;
+}
+
+.propertyRight {
+	margin-left: 20px;
+}
+
+.propertyLeft {
+	margin-left: 10px;
+	float: left;
+}
+
+.propertyLeft.stacked {
+	float: none;
+}
+
+.propertyRight.stacked {
+	margin-left: 10px;
+}
+
+.horizontal > .horizontalColon {
+	float: left;
+	display: block;
+	margin-right: 8px;
+}
+
+.vertical > .horizontalColon,
+.stacked > .horizontalColon {
+	display: none;
+}
+
+.propertiesColumn {
+	width: 50%;
+	float: left;
+}
+
+.propertiesColumn.stacked {
+	float: none;
+	width: 100%;
 }

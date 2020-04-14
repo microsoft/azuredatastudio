@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./propertiesWidget';
 
-import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef } from '@angular/core';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
@@ -57,6 +57,12 @@ export interface DisplayProperty {
 	value: string;
 }
 
+enum propertyDisplayLayout {
+	horizontal,
+	vertical,
+	stacked
+}
+
 @Component({
 	selector: 'properties-widget',
 	templateUrl: decodeURI(require.toUrl('./propertiesWidget.component.html'))
@@ -64,11 +70,11 @@ export interface DisplayProperty {
 export class PropertiesWidgetComponent extends DashboardWidget implements IDashboardWidget, OnInit {
 	private _connection: ConnectionManagementInfo;
 	private _databaseInfo: DatabaseInfo;
-	public _clipped: boolean;
+	private _layout: propertyDisplayLayout;
 	private properties: Array<DisplayProperty>;
-
-	@ViewChild('child', { read: ElementRef }) private _child: ElementRef;
-	@ViewChild('parent', { read: ElementRef }) private _parent: ElementRef;
+	private leftProperties: Array<DisplayProperty>;
+	private rightProperties: Array<DisplayProperty>;
+	public height;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
@@ -85,7 +91,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 	ngOnInit() {
 		this._inited = true;
-		this._register(addDisposableListener(window, EventType.RESIZE, () => this.handleClipping()));
+		this._register(addDisposableListener(window, EventType.RESIZE, () => this.organizeProperties()));
 		this._changeRef.detectChanges();
 	}
 
@@ -101,7 +107,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			this._changeRef.detectChanges();
 			this.parseProperties();
 			if (this._inited) {
-				this.handleClipping();
+				this.organizeProperties();
 			}
 			this.setLoadingStatus(false);
 		}, error => {
@@ -110,13 +116,37 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		})));
 	}
 
-	private handleClipping(): void {
-		if (this._child.nativeElement.offsetWidth > this._parent.nativeElement.offsetWidth) {
-			this._clipped = true;
-		} else {
-			this._clipped = false;
+	private organizeProperties(): void {
+		if (window.innerWidth < 1200 && this._layout !== propertyDisplayLayout.stacked) {
+			this._layout = propertyDisplayLayout.stacked;
+			this.setPropertiesClass('propertiesColumn', 'propertiesColumn stacked');
+			this.setPropertiesClass('propertyLeft', 'property propertyLeft stacked');
+			this.setPropertiesClass('propertyRight', 'property propertyRight stacked');
+
+			this.height = this.properties.length * 40 + 50;
+		} else if (window.innerWidth < 1800 && window.innerWidth >= 1200 && this._layout !== propertyDisplayLayout.vertical) {
+			this._layout = propertyDisplayLayout.vertical;
+			this.setPropertiesClass('propertiesColumn', 'propertiesColumn');
+			this.setPropertiesClass('propertyLeft', 'property propertyLeft vertical');
+			this.setPropertiesClass('propertyRight', 'property propertyRight vertical');
+
+			this.height = (this.properties.length / 2 * 40) + 40;
+		} else if (window.innerWidth >= 1800 && this._layout !== propertyDisplayLayout.horizontal) {
+			this._layout = propertyDisplayLayout.horizontal;
+			this.setPropertiesClass('propertiesColumn', 'propertiesColumn');
+			this.setPropertiesClass('propertyLeft', 'property propertyLeft horizontal');
+			this.setPropertiesClass('propertyRight', 'property propertyRight horizontal');
+			this.height = this.properties.length / 2 * 25 + 40;
 		}
+
 		this._changeRef.detectChanges();
+	}
+
+	private setPropertiesClass(findClass: string, newClass: string): void {
+		let properties = document.getElementsByClassName(findClass);
+		for (let i = 0; i < properties.length; ++i) {
+			(<HTMLElement>properties[i]).className = newClass;
+		}
 	}
 
 	private parseProperties() {
@@ -228,6 +258,16 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			assignProperty['displayName'] = property.displayName;
 			assignProperty['value'] = propertyObject;
 			this.properties.push(<DisplayProperty>assignProperty);
+		}
+
+		this.leftProperties = [];
+		for (let i = 0; i < this.properties.length / 2; ++i) {
+			this.leftProperties.push(this.properties[i]);
+		}
+
+		this.rightProperties = [];
+		for (let i = Math.ceil(this.properties.length / 2); i < this.properties.length; ++i) {
+			this.rightProperties.push(this.properties[i]);
 		}
 
 		if (this._inited) {

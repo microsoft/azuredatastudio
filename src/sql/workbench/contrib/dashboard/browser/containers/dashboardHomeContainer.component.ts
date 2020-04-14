@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./dashboardHomeContainer';
-
+import * as DOM from 'vs/base/browser/dom';
 import { Component, forwardRef, Input, ChangeDetectorRef, Inject, ViewChild, ContentChild, ElementRef } from '@angular/core';
 
 import { DashboardWidgetContainer } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardWidgetContainer.component';
@@ -22,6 +22,7 @@ import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
+import { PropertiesWidgetComponent } from 'sql/workbench/contrib/dashboard/browser/widgets/properties/propertiesWidget.component';
 
 @Component({
 	selector: 'dashboard-home-container',
@@ -31,7 +32,7 @@ import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 			<div scrollable [horizontalScroll]="${ScrollbarVisibility.Hidden}" [verticalScroll]="${ScrollbarVisibility.Auto}">
 				<div #propertiesContainer>
 					<dashboard-widget-wrapper #propertiesClass *ngIf="properties" [collapsable]="true" [bottomCollapse]="true" [toggleMore]="false" [_config]="properties"
-						class="properties" [style.height.px]="_propertiesClass?.collapsed ? '30' : '75'">
+						class="properties" [style.height.px]="_propertiesClass?.collapsed ? '30' : getHeight()">
 					</dashboard-widget-wrapper>
 				</div>
 				<widget-content style="flex: 1" [scrollContent]="false" [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
@@ -78,6 +79,18 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 					this._propertiesClass.collapsed ? 'collapsed' : true, ConfigurationTarget.USER);
 			}
 		}));
+
+		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
+			this._cd.detectChanges();
+		}));
+	}
+
+	public getHeight(): number {
+		if (this._propertiesClass) {
+			return (<PropertiesWidgetComponent>this._propertiesClass.component).height;
+		} else {
+			return 75; // default height
+		}
 	}
 
 	public layout() {
