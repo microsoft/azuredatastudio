@@ -217,7 +217,13 @@ async function publish(commit: string, quality: string, platform: string, type: 
 
 	// {{SQL CARBON EDIT}}
 	// Insiders: nightly build from master
-	const isReleased = (quality === 'insider' && /^master$|^refs\/heads\/master$/.test(sourceBranch) && /Project Collection Service Accounts|Microsoft.VisualStudio.Services.TFS/.test(queuedBy));
+	const isReleased = (
+		(
+			(quality === 'insider' && /^master$|^refs\/heads\/master$/.test(sourceBranch)) ||
+			(quality === 'rc1' && /^release\/|^refs\/heads\/release\//.test(sourceBranch))
+		) &&
+		/Project Collection Service Accounts|Microsoft.VisualStudio.Services.TFS/.test(queuedBy)
+	);
 
 	const release = {
 		id: commit,
