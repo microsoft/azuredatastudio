@@ -58,9 +58,9 @@ export interface DisplayProperty {
 }
 
 enum propertyDisplayLayout {
-	horizontal,
-	vertical,
-	stacked
+	fourColumns,
+	twoColumns,
+	oneColumn
 }
 
 const collapseHeight = 25;
@@ -95,7 +95,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 	ngOnInit() {
 		this._inited = true;
-		this._register(addDisposableListener(window, EventType.RESIZE, () => this.organizeProperties()));
+		this._register(addDisposableListener(window, EventType.RESIZE, () => this.layoutProperties()));
 		this._changeRef.detectChanges();
 	}
 
@@ -111,7 +111,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			this._changeRef.detectChanges();
 			this.parseProperties();
 			if (this._inited) {
-				this.organizeProperties();
+				this.layoutProperties();
 			}
 			this.setLoadingStatus(false);
 		}, error => {
@@ -120,28 +120,28 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		})));
 	}
 
-	private organizeProperties(): void {
+	private layoutProperties(): void {
 		// Reflow:
 		// 4 columns: 1366px and above
 		// 2 columns: 1024 - 1365px
 		// 1 column: 1024px or less
-		if (window.innerWidth >= 1366 && this._layout !== propertyDisplayLayout.horizontal) { // four columns
-			this._layout = propertyDisplayLayout.horizontal;
+		if (window.innerWidth >= 1366 && this._layout !== propertyDisplayLayout.fourColumns) {
+			this._layout = propertyDisplayLayout.fourColumns;
 			this.setPropertiesClass('propertiesColumn', 'propertiesColumn');
-			this.setPropertiesClass('propertyLeft', 'property propertyLeft horizontal');
-			this.setPropertiesClass('propertyRight', 'property propertyRight horizontal');
+			this.setPropertiesClass('propertyLeft', 'property propertyLeft fourColumns');
+			this.setPropertiesClass('propertyRight', 'property propertyRight fourColumns');
 			this.height = Math.ceil(this.properties.length / 2) * horizontalPropertyHeight + collapseHeight;
-		} else if (window.innerWidth < 1366 && window.innerWidth >= 1024 && this._layout !== propertyDisplayLayout.vertical) { // two columns
-			this._layout = propertyDisplayLayout.vertical;
+		} else if (window.innerWidth < 1366 && window.innerWidth >= 1024 && this._layout !== propertyDisplayLayout.twoColumns) {
+			this._layout = propertyDisplayLayout.twoColumns;
 			this.setPropertiesClass('propertiesColumn', 'propertiesColumn');
-			this.setPropertiesClass('propertyLeft', 'property propertyLeft vertical');
-			this.setPropertiesClass('propertyRight', 'property propertyRight vertical');
+			this.setPropertiesClass('propertyLeft', 'property propertyLeft twoColumns');
+			this.setPropertiesClass('propertyRight', 'property propertyRight twoColumns');
 			this.height = Math.ceil(this.properties.length / 2) * verticalPropertyHeight + collapseHeight;
-		} else if (window.innerWidth < 1024 && this._layout !== propertyDisplayLayout.stacked) { // one column
-			this._layout = propertyDisplayLayout.stacked;
-			this.setPropertiesClass('propertiesColumn', 'propertiesColumn stacked');
-			this.setPropertiesClass('propertyLeft', 'property propertyLeft stacked');
-			this.setPropertiesClass('propertyRight', 'property propertyRight stacked');
+		} else if (window.innerWidth < 1024 && this._layout !== propertyDisplayLayout.oneColumn) {
+			this._layout = propertyDisplayLayout.oneColumn;
+			this.setPropertiesClass('propertiesColumn', 'propertiesColumn oneColumn');
+			this.setPropertiesClass('propertyLeft', 'property propertyLeft oneColumn');
+			this.setPropertiesClass('propertyRight', 'property propertyRight oneColumn');
 			this.height = this.properties.length * verticalPropertyHeight + collapseHeight;
 		}
 

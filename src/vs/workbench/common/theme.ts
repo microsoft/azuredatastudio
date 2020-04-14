@@ -631,11 +631,11 @@ export const DASHBOARD_WIDGET_SUBTEXT = registerColor('dashboardWidget.subText',
 	hc: '#FFFFFF'
 }, nls.localize('dashboardWidgetSubtext', "Color for dashboard widget subtext"));
 
-export const DASHBOARD_PROPERTIES_NAME = registerColor('dashboardWidget.propertiesName', {
+export const DASHBOARD_PROPERTY_NAME = registerColor('dashboardWidget.propertyName', {
 	light: '#161616',
 	dark: '#8A8886',
 	hc: '#FFFFFF'
-}, nls.localize('dashboardWidgetPropertiesName', "Color for dashboard properties widget names"));
+}, nls.localize('dashboardWidgetPropertyName', "Color for dashboard properties widget names"));
 
 export const TOOLBAR_OVERFLOW_SHADOW = registerColor('toolbar.overflowShadow', {
 	light: new Color(new RGBA(0, 0, 0, .132)),

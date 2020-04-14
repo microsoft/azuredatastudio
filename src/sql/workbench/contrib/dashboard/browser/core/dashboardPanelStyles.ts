@@ -5,13 +5,13 @@
 
 import 'vs/css!./dashboardPanel';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
-import { DASHBOARD_WIDGET_SUBTEXT, TAB_LABEL, DASHBOARD_WIDGET_TITLE, DASHBOARD_PROPERTIES_NAME } from 'vs/workbench/common/theme';
+import { DASHBOARD_WIDGET_SUBTEXT, TAB_LABEL, DASHBOARD_WIDGET_TITLE, DASHBOARD_PROPERTY_NAME } from 'vs/workbench/common/theme';
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 	// tab label
 	const tabLabelColor = theme.getColor(TAB_LABEL);
 	if (tabLabelColor) {
-		collector.addRule(`properties-widget .propertiesValue {
+		collector.addRule(`properties-widget .propertyValue {
 			color: ${tabLabelColor}
 		}`);
 	}
@@ -32,11 +32,11 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		}`);
 	}
 
-	// properties name
-	const propertiesName = theme.getColor(DASHBOARD_PROPERTIES_NAME);
-	if (propertiesName) {
-		collector.addRule(`properties-widget .propertiesName {
-			color: ${propertiesName}
+	// property name
+	const propertyName = theme.getColor(DASHBOARD_PROPERTY_NAME);
+	if (propertyName) {
+		collector.addRule(`properties-widget .propertyName {
+			color: ${propertyName}
 		}`);
 	}
 });

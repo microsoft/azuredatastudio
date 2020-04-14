@@ -3,29 +3,29 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.propertiesName {
+.propertyName {
 	opacity: 0.6;
 	width: 145px;
 	font-size: 12px;
 }
 
-.vs-dark .propertiesName,
-.hc-black .propertiesName {
+.vs-dark .propertyName,
+.hc-black .propertyName {
 	opacity: 1;
 }
 
-.horizontal > .propertiesName {
+.fourColumns > .propertyName {
 	float: left;
 	margin-left: 5px;
 }
 
-.vertical > .propertiesName,
-.vertical > .propertiesName {
+.twoColumns > .propertyName,
+.twoColumns > .propertyName {
 	float: none;
 	margin-left: 0;
 }
 
-.propertiesValue {
+.propertyValue {
 	font-size: 12px;
 	margin-left: 5px;
 	white-space: nowrap;
@@ -33,20 +33,20 @@
 	text-overflow: ellipsis;
 }
 
-.horizontal > .propertiesValue {
+.fourColumns > .propertyValue {
 	width: calc(100% - 210px);
 }
 
-.vertical > .propertiesValue,
-.stacked > .propertiesValue {
+.twoColumns > .propertyValue,
+.oneColumn > .propertyValue {
 	margin-left: 0;
 }
 
-.vertical > .propertiesValue {
+.twoColumns > .propertyValue {
 	width: 85%;
 }
 
-.stacked > .propertiesValue {
+.oneColumn > .propertyValue {
 	width: 90%
 }
 
@@ -65,22 +65,22 @@
 	float: left;
 }
 
-.propertyLeft.stacked {
+.propertyLeft.oneColumn {
 	float: none;
 }
 
-.propertyRight.stacked {
+.propertyRight.oneColumn {
 	margin-left: 10px;
 }
 
-.horizontal > .horizontalColon {
+.fourColumns > .horizontalColon {
 	float: left;
 	display: block;
 	margin-right: 8px;
 }
 
-.vertical > .horizontalColon,
-.stacked > .horizontalColon {
+.twoColumns > .horizontalColon,
+.oneColumn > .horizontalColon {
 	display: none;
 }
 
@@ -89,7 +89,7 @@
 	float: left;
 }
 
-.propertiesColumn.stacked {
+.propertiesColumn.oneColumn {
 	float: none;
 	width: 100%;
 }
