@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as constants from '../common/constants';
-import * as fsw from 'fs';
 import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
@@ -19,6 +18,7 @@ import * as loc from '../common/localizedConstants';
 import { ApiWrapper } from '../common/apiWrapper';
 import * as glob from 'fast-glob';
 import { isNullOrUndefined } from 'util';
+import { debounce } from '../common/utils';
 
 const Content = 'content';
 
@@ -126,19 +126,25 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 			// add file watcher on toc file.
 			if (!isNotebook) {
-				fsw.watch(path.join(this.currentBook.bookPath, '_data', 'toc.yml'), async (event, filename) => {
-					if (event === 'change') {
-						let changedBook = this.books.find(book => book.bookPath === bookPath);
-						await changedBook.initializeContents().then(() => {
-							this._onDidChangeTreeData.fire(changedBook.bookItems[0]);
-						});
-						this._onDidChangeTreeData.fire();
+				fs.watchFile(path.join(bookPath, '_data', 'toc.yml'), async (curr, prev) => {
+					if (curr.mtime > prev.mtime) {
+						let book = this.books.find(book => book.bookPath === bookPath);
+						if (book) {
+							this.fireBookRefresh(book);
+						}
 					}
 				});
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
 		}
+	}
+
+	@debounce(1500)
+	async fireBookRefresh(book: BookModel): Promise<void> {
+		await book.initializeContents().then(() => {
+			this._onDidChangeTreeData.fire();
+		});
 	}
 
 	async closeBook(book: BookTreeItem): Promise<void> {
@@ -160,7 +166,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		} finally {
 			// remove watch on toc file.
 			if (deletedBook && !deletedBook.isNotebook) {
-				fsw.unwatchFile(path.join(deletedBook.bookPath, '_data', 'toc.yml'));
+				fs.unwatchFile(path.join(deletedBook.bookPath, '_data', 'toc.yml'));
 			}
 		}
 	}
