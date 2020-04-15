@@ -79,15 +79,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	trustBook(bookTreeItem?: BookTreeItem): void {
 		let bookPathToTrust = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath;
-
 		if (bookPathToTrust) {
-
 			let trustChanged = this._bookTrustManager.setBookAsTrusted(bookPathToTrust);
-
 			if (trustChanged) {
-
 				let notebookDocuments = this._apiWrapper.getNotebookDocuments();
-
 				if (notebookDocuments) {
 					// update trust state of opened items
 					notebookDocuments.forEach(document => {
@@ -456,7 +451,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
 		if (element) {
 			let parentPath;
@@ -487,7 +481,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 		return untitledFileName;
 	}
-
 
 	//Confirmation message dialog
 	private async confirmReplace(): Promise<boolean> {
