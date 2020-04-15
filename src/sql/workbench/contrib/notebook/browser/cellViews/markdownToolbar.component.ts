@@ -9,6 +9,7 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { TransformMarkdownAction, MarkdownButtonType } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 
@@ -32,11 +33,15 @@ export class MarkdownToolbarComponent {
 	@Input() public cellModel: ICellModel;
 	private _actionBar: Taskbar;
 
+	private _configurationService: IConfigurationService;
+	public previewFeaturesEnabled: boolean = false;
+
 	constructor(
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService
 	) { }
 
 	ngOnInit() {
+		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		this.initActionBar();
 	}
 
