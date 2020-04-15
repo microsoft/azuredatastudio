@@ -26,12 +26,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		const controllerModel = new ControllerModel(controllerUrl, auth);
 		const databaseModel = new PostgresModel(controllerUrl, auth, dbNamespace, dbName);
 		const postgresDashboard = new PostgresDashboard(loc.postgresDashboard, controllerModel, databaseModel);
-
-		try { await postgresDashboard.showDashboard(); }
-		catch (error) {
-			vscode.window.showErrorMessage(error instanceof Error ? error.message : error);
-			throw error;
-		}
+		await postgresDashboard.showDashboard();
 	});
 }
 
