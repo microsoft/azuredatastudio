@@ -6,7 +6,7 @@
 import * as Assert from 'vs/base/common/assert';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IDisposable, combinedDisposable, Disposable } from 'vs/base/common/lifecycle';
-import { INavigator } from 'vs/base/common/iterator';
+import { INavigator } from 'sql/base/common/navigator';
 import * as _ from './tree';
 import { Event, Emitter, EventMultiplexer, Relay } from 'vs/base/common/event';
 

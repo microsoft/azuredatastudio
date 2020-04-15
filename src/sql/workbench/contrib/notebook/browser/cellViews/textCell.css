@@ -7,6 +7,12 @@ text-cell-component {
 	display: block;
 }
 
+.notebookEditor .notebook-cell.active text-cell-component code-component {
+	border-color: transparent;
+	border-bottom-width: 1px;
+	border-style: solid;
+}
+
 text-cell-component .notebook-preview {
 	user-select: none;
 	padding-left: 8px;
@@ -15,6 +21,16 @@ text-cell-component .notebook-preview {
 
 .notebook-preview.actionselect {
 	user-select: text;
+}
+
+text-cell-component code-component .monaco-scrollable-element.editor-scrollable.vs {
+	left: 16px!important;
+}
+text-cell-component .monaco-editor .margin,
+text-cell-component code-component .monaco-editor,
+text-cell-component code-component .monaco-editor-background,
+text-cell-component code-component .monaco-editor .inputarea.ime-input {
+	background-color: transparent;
 }
 
 .vs .notebook-preview .rangeHighlight {

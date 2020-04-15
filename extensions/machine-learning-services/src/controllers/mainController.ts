@@ -22,6 +22,7 @@ import { DeployedModelService } from '../modelManagement/deployedModelService';
 import { AzureModelRegistryService } from '../modelManagement/azureModelRegistryService';
 import { ModelPythonClient } from '../modelManagement/modelPythonClient';
 import { PredictService } from '../prediction/predictService';
+import { DashboardWidget } from '../views/widgets/dashboardWidget';
 
 /**
  * The main controller class that initializes the extension
@@ -110,13 +111,16 @@ export default class MainController implements vscode.Disposable {
 		let modelManagementController = new ModelManagementController(this._apiWrapper, this._rootPath,
 			azureModelsService, registeredModelService, predictService);
 
+		let dashboardWidget = new DashboardWidget(this._apiWrapper, this._rootPath);
+		dashboardWidget.register();
+
 		this._apiWrapper.registerCommand(constants.mlManageLanguagesCommand, (async () => {
 			await languageController.manageLanguages();
 		}));
 		this._apiWrapper.registerCommand(constants.mlManageModelsCommand, (async () => {
 			await modelManagementController.manageRegisteredModels();
 		}));
-		this._apiWrapper.registerCommand(constants.mlRegisterModelCommand, (async () => {
+		this._apiWrapper.registerCommand(constants.mlImportModelCommand, (async () => {
 			await modelManagementController.registerModel();
 		}));
 		this._apiWrapper.registerCommand(constants.mlsPredictModelCommand, (async () => {
@@ -134,17 +138,11 @@ export default class MainController implements vscode.Disposable {
 		this._apiWrapper.registerTaskHandler(constants.mlManageModelsCommand, async () => {
 			await modelManagementController.manageRegisteredModels();
 		});
-		this._apiWrapper.registerTaskHandler(constants.mlRegisterModelCommand, async () => {
+		this._apiWrapper.registerTaskHandler(constants.mlImportModelCommand, async () => {
 			await modelManagementController.registerModel();
 		});
 		this._apiWrapper.registerTaskHandler(constants.mlsPredictModelCommand, async () => {
 			await modelManagementController.predictModel();
-		});
-		this._apiWrapper.registerTaskHandler(constants.mlOdbcDriverCommand, async () => {
-			await this.packageManagementService.openOdbcDriverDocuments();
-		});
-		this._apiWrapper.registerTaskHandler(constants.mlsDocumentsCommand, async () => {
-			await this.packageManagementService.openDocuments();
 		});
 	}
 

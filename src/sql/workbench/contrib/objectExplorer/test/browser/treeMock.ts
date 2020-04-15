@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { Event } from 'vs/base/common/event';
-import { INavigator } from 'vs/base/common/iterator';
+import { INavigator } from 'sql/base/common/navigator';
 import { ITree, IHighlightEvent, ISelectionEvent, IFocusEvent, ITreeStyles } from 'vs/base/parts/tree/browser/tree';
 import { IItemExpandEvent, IItemCollapseEvent } from 'vs/base/parts/tree/browser/treeModel';
 

@@ -498,10 +498,10 @@ node-addon-api@1.6.2:
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-1.6.2.tgz#d8aad9781a5cfc4132cc2fecdbdd982534265217"
   integrity sha512-479Bjw9nTE5DdBSZZWprFryHGjUaQC31y1wHo19We/k0BZlrmhqQitWoUL0cD8+scljCbIUL+E58oRDEakdGGA==
 
-node-pty@^0.10.0-beta2:
-  version "0.10.0-beta2"
-  resolved "https://registry.yarnpkg.com/node-pty/-/node-pty-0.10.0-beta2.tgz#6fd0d2fbbe881869e4e19795a05c557ac958da81"
-  integrity sha512-IU2lzlPUZ+gKG7pHJjzBHpnuwPTxWGgT3iyQicZfdL7dwLvP5cm00QxavAXCInBmRkOMhvM4aBSKvfzqQnCDBA==
+node-pty@0.10.0-beta7:
+  version "0.10.0-beta7"
+  resolved "https://registry.yarnpkg.com/node-pty/-/node-pty-0.10.0-beta7.tgz#7e383b2d1fe2f34509b57187f5a9a6ff90c46111"
+  integrity sha512-oC2VyIz9YaIvv6lWjAPZbUzmhLW1ouFmxOogNRNQrKeUzUi2yM/QRmybs+dW/Mhd3V89Yh61Ml0J5yuWiMIBbw==
   dependencies:
     nan "^2.14.0"
 
@@ -610,9 +610,9 @@ semver@^5.3.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.6.0.tgz#7e74256fbaa49c75aa7c7a205cc22799cac80004"
   integrity sha512-RS9R6R35NYgQn++fkDWaOmqGoj4Ek9gGs+DPxNUZKuwE183xjJroKvyo1IzVFeXvUrvmALy6FWD5xrdJT25gMg==
 
-"slickgrid@github:anthonydresser/SlickGrid#2.3.32":
-  version "2.3.32"
-  resolved "https://codeload.github.com/anthonydresser/SlickGrid/tar.gz/3909801b6c5de2b92147eeb474e8082df95b7098"
+"slickgrid@github:anthonydresser/SlickGrid#2.3.33":
+  version "2.3.33"
+  resolved "https://codeload.github.com/anthonydresser/SlickGrid/tar.gz/7555f28a55a6663469b716dcd288bb35179a8ffd"
 
 smart-buffer@4.0.2:
   version "4.0.2"

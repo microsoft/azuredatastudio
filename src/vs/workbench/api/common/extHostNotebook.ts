@@ -184,11 +184,17 @@ export class ExtHostNotebookDocument extends Disposable implements vscode.Notebo
 			...notebookDocumentMetadataDefaults,
 			...newMetadata
 		};
+		if (this._metadataChangeListener) {
+			this._metadataChangeListener.dispose();
+		}
+
 		const observableMetadata = getObservable(newMetadata);
 		this._metadata = observableMetadata.proxy;
 		this._metadataChangeListener = this._register(observableMetadata.onDidChange(() => {
 			this.updateMetadata();
 		}));
+
+		this.updateMetadata();
 	}
 
 	private _displayOrder: string[] = [];
@@ -402,11 +408,12 @@ export class NotebookEditorCellEdit {
 		}
 	}
 
-	insert(index: number, content: string, language: string, type: CellKind, outputs: vscode.CellOutput[], metadata: vscode.NotebookCellMetadata | undefined): void {
+	insert(index: number, content: string | string[], language: string, type: CellKind, outputs: vscode.CellOutput[], metadata: vscode.NotebookCellMetadata | undefined): void {
 		this._throwIfFinalized();
 
+		const sourceArr = Array.isArray(content) ? content : content.split(/\r|\n|\r\n/g);
 		let cell = {
-			source: [content],
+			source: sourceArr,
 			language,
 			cellKind: type,
 			outputs: (outputs as any[]), // TODO@rebornix
@@ -566,7 +573,7 @@ export class ExtHostNotebookOutputRenderer {
 		return false;
 	}
 
-	render(document: ExtHostNotebookDocument, output: vscode.CellOutput, mimeType: string): string {
+	render(document: ExtHostNotebookDocument, output: vscode.CellDisplayOutput, mimeType: string): string {
 		let html = this.renderer.render(document, output, mimeType);
 
 		return html;

@@ -19,7 +19,7 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { IExtensionTipsService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
+import { IExtensionRecommendationsService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { IExtensionManifest, IKeyBinding, IView, IViewContainer, ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { ResolvedKeybinding, KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput';
@@ -150,6 +150,7 @@ interface IExtensionEditorTemplate {
 	preview: HTMLElement;
 	builtin: HTMLElement;
 	license: HTMLElement;
+	version: HTMLElement;
 	publisher: HTMLElement;
 	// installCount: HTMLElement; // {{SQL CARBON EDIT}} remove install count widget
 	// rating: HTMLElement; // {{SQL CARBON EDIT}} remove rating widget
@@ -189,7 +190,7 @@ export class ExtensionEditor extends BaseEditor {
 		@IKeybindingService private readonly keybindingService: IKeybindingService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IOpenerService private readonly openerService: IOpenerService,
-		@IExtensionTipsService private readonly extensionTipsService: IExtensionTipsService,
+		@IExtensionRecommendationsService private readonly extensionRecommendationsService: IExtensionRecommendationsService,
 		@IStorageService storageService: IStorageService,
 		@IExtensionService private readonly extensionService: IExtensionService,
 		@IWorkbenchThemeService private readonly workbenchThemeService: IWorkbenchThemeService,
@@ -241,6 +242,9 @@ export class ExtensionEditor extends BaseEditor {
 		license.style.display = 'none';
 		license.tabIndex = 0;
 
+		const version = append(subtitle, $('span.version'));
+		version.textContent = localize('version', 'Version');
+
 		const description = append(details, $('.description'));
 
 		const extensionActions = append(details, $('.actions'));
@@ -282,6 +286,7 @@ export class ExtensionEditor extends BaseEditor {
 			icon,
 			iconContainer,
 			identifier,
+			version,
 			ignoreActionbar,
 			// installCount, // {{SQL CARBON EDIT}} remove install count widget
 			license,
@@ -341,9 +346,10 @@ export class ExtensionEditor extends BaseEditor {
 		template.builtin.style.display = extension.type === ExtensionType.System ? 'inherit' : 'none';
 
 		template.publisher.textContent = extension.publisherDisplayName;
+		template.version.textContent = extension.version;
 		template.description.textContent = extension.description;
 
-		const extRecommendations = this.extensionTipsService.getAllRecommendationsWithReason();
+		const extRecommendations = this.extensionRecommendationsService.getAllRecommendationsWithReason();
 		let recommendationsData = {};
 		if (extRecommendations[extension.identifier.id.toLowerCase()]) {
 			recommendationsData = { recommendationReason: extRecommendations[extension.identifier.id.toLowerCase()].reasonId };
@@ -488,12 +494,12 @@ export class ExtensionEditor extends BaseEditor {
 		this.transientDisposables.add(ignoreAction);
 		this.transientDisposables.add(undoIgnoreAction);
 
-		const extRecommendations = this.extensionTipsService.getAllRecommendationsWithReason();
+		const extRecommendations = this.extensionRecommendationsService.getAllRecommendationsWithReason();
 		if (extRecommendations[extension.identifier.id.toLowerCase()]) {
 			ignoreAction.enabled = true;
 			template.subtext.textContent = extRecommendations[extension.identifier.id.toLowerCase()].reasonText;
 			show(template.subtextContainer);
-		} else if (this.extensionTipsService.getAllIgnoredRecommendations().global.indexOf(extension.identifier.id.toLowerCase()) !== -1) {
+		} else if (this.extensionRecommendationsService.getAllIgnoredRecommendations().global.indexOf(extension.identifier.id.toLowerCase()) !== -1) {
 			undoIgnoreAction.enabled = true;
 			template.subtext.textContent = localize('recommendationHasBeenIgnored', "You have chosen not to receive recommendations for this extension.");
 			show(template.subtextContainer);
@@ -502,11 +508,11 @@ export class ExtensionEditor extends BaseEditor {
 			template.subtext.textContent = '';
 		}
 
-		this.extensionTipsService.onRecommendationChange(change => {
+		this.extensionRecommendationsService.onRecommendationChange(change => {
 			if (change.extensionId.toLowerCase() === extension.identifier.id.toLowerCase()) {
 				if (change.isRecommended) {
 					undoIgnoreAction.enabled = false;
-					const extRecommendations = this.extensionTipsService.getAllRecommendationsWithReason();
+					const extRecommendations = this.extensionRecommendationsService.getAllRecommendationsWithReason();
 					if (extRecommendations[extension.identifier.id.toLowerCase()]) {
 						ignoreAction.enabled = true;
 						template.subtext.textContent = extRecommendations[extension.identifier.id.toLowerCase()].reasonText;
@@ -862,7 +868,15 @@ export class ExtensionEditor extends BaseEditor {
 		extensionPackReadme.style.maxWidth = '882px';
 
 		const extensionPack = append(extensionPackReadme, $('div', { class: 'extension-pack' }));
-		toggleClass(extensionPackReadme, 'narrow', manifest.extensionPack!.length <= 2);
+		if (manifest.extensionPack!.length <= 3) {
+			addClass(extensionPackReadme, 'one-row');
+		} else if (manifest.extensionPack!.length <= 6) {
+			addClass(extensionPackReadme, 'two-rows');
+		} else if (manifest.extensionPack!.length <= 9) {
+			addClass(extensionPackReadme, 'three-rows');
+		} else {
+			addClass(extensionPackReadme, 'more-rows');
+		}
 
 		const extensionPackHeader = append(extensionPack, $('div.header'));
 		extensionPackHeader.textContent = localize('extension pack', "Extension Pack ({0})", manifest.extensionPack!.length);
@@ -1181,7 +1195,7 @@ export class ExtensionEditor extends BaseEditor {
 		}
 
 		const details = $('details', { open: true, ontoggle: onDetailsToggle },
-			$('summary', { tabindex: '0' }, localize('iconThemes', "Icon Themes ({0})", contrib.length)),
+			$('summary', { tabindex: '0' }, localize('iconThemes', "File Icon Themes ({0})", contrib.length)),
 			$('ul', undefined, ...contrib.map(theme => $('li', undefined, theme.label)))
 		);
 

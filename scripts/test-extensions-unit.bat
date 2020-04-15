@@ -23,6 +23,7 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 	call yarn gulp compile-extension:cms
 	call yarn gulp compile-extension:dacpac
 	call yarn gulp compile-extension:schema-compare
+	call yarn gulp compile-extension:mssql
 	call yarn gulp compile-extension:notebook
 	call yarn gulp compile-extension:resource-deployment
 

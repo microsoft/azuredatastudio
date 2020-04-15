@@ -227,7 +227,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		this.applyStyles();
 
 		jQuery(':checkbox', $filter).bind('click', (e) => {
-			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, jQuery(target));
+			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, jQuery(e.target));
 		});
 
 		const offset = jQuery(target).offset();

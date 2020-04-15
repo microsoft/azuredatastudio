@@ -3,9 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.editdatagridpanel * {
-	box-sizing: border-box;
+.editDataGridPanel.slickgridContainer {
+	height: 100%;
+	width: 100%;
 }
+
 
 #workbench\.editor\.editDataEditor .monaco-toolbar .monaco-select-box {
 	margin-top: 4px;
