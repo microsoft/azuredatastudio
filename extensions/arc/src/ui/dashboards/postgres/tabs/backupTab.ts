@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { IconPathHelper } from '../constants';
+import { IconPathHelper } from '../../../../constants';
 import { Tab } from './tab';
 
 export class BackupTab extends Tab {

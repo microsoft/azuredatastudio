@@ -5,9 +5,9 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { IconPathHelper, cssStyles } from '../constants';
+import { IconPathHelper, cssStyles } from '../../../../constants';
 import { Tab } from './tab';
-import { DuskyObjectModelsDatabaseService, DuskyObjectModelsDatabase, DuskyObjectModelsDatabaseServiceArcPayload } from '../controller/generated/dusky/api';
+import { DuskyObjectModelsDatabaseService, DuskyObjectModelsDatabase, DuskyObjectModelsDatabaseServiceArcPayload } from '../../../../controller/generated/dusky/api';
 
 export class OverviewTab extends Tab {
 	async tab(view: azdata.ModelView): Promise<azdata.DashboardTab> {

@@ -4,20 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { IconPathHelper } from '../constants';
+import { IconPathHelper } from '../../../../constants';
 import { Tab } from './tab';
 
-export class PropertiesTab extends Tab {
+export class ConnectionStringsTab extends Tab {
 	tab(view: azdata.ModelView): Promise<azdata.DashboardTab> {
-		const properties: azdata.FlexContainer = view.modelBuilder.flexContainer().withItems([
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Properties' }).component()
+		const connectionStrings: azdata.FlexContainer = view.modelBuilder.flexContainer().withItems([
+			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Connection strings' }).component()
 		]).component();
 
 		return Promise.resolve({
-			title: 'Properties',
-			id: 'properties-tab',
-			icon: IconPathHelper.properties,
-			content: properties
+			title: 'Connection strings',
+			id: 'connection-strings-tab',
+			icon: IconPathHelper.connection,
+			content: connectionStrings
 		});
 	}
 }

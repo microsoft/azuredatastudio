@@ -4,20 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { IconPathHelper } from '../constants';
+import { IconPathHelper } from '../../../../constants';
 import { Tab } from './tab';
 
-export class ComputeStorageTab extends Tab {
+export class PropertiesTab extends Tab {
 	tab(view: azdata.ModelView): Promise<azdata.DashboardTab> {
-		const computeStorage: azdata.FlexContainer = view.modelBuilder.flexContainer().withItems([
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Compute + storage' }).component()
+		const properties: azdata.FlexContainer = view.modelBuilder.flexContainer().withItems([
+			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Properties' }).component()
 		]).component();
 
 		return Promise.resolve({
-			title: 'Compute + storage',
-			id: 'compute-storage-tab',
-			icon: IconPathHelper.computeStorage,
-			content: computeStorage
+			title: 'Properties',
+			id: 'properties-tab',
+			icon: IconPathHelper.properties,
+			content: properties
 		});
 	}
 }

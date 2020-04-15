@@ -4,16 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { ControllerModel } from './models/controllerModel';
-import { DatabaseModel } from './models/databaseModel';
+import { ControllerModel } from '../../../models/controllerModel';
+import { DatabaseModel } from '../../../models/databaseModel';
 import { OverviewTab } from './tabs/overviewTab';
 import { ComputeStorageTab } from './tabs/computeStorageTab';
 import { ConnectionStringsTab } from './tabs/connectionStringsTab';
 import { BackupTab } from './tabs/backupTab';
 import { PropertiesTab } from './tabs/propertiesTab';
 import { NetworkingTab } from './tabs/networkingTab';
+import { Dashboard } from '../../components/dashboard';
 
-export class PostgresDashboard {
+export class PostgresDashboard extends Dashboard {
 	private _overviewTab: OverviewTab;
 	private _computeStorageTab: ComputeStorageTab;
 	private _connectionStringsTab: ComputeStorageTab;
@@ -21,7 +22,8 @@ export class PostgresDashboard {
 	private _propertiesTab: PropertiesTab;
 	private _networkingTab: NetworkingTab;
 
-	constructor(private _controllerModel: ControllerModel, private _databaseModel: DatabaseModel) {
+	constructor(title: string, private _controllerModel: ControllerModel, private _databaseModel: DatabaseModel) {
+		super(title);
 		this._overviewTab = new OverviewTab(_controllerModel, _databaseModel);
 		this._computeStorageTab = new ComputeStorageTab(_controllerModel, _databaseModel);
 		this._connectionStringsTab = new ConnectionStringsTab(_controllerModel, _databaseModel);
@@ -30,23 +32,22 @@ export class PostgresDashboard {
 		this._networkingTab = new NetworkingTab(_controllerModel, _databaseModel);
 	}
 
-	public async dashboard(view: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]> {
-		//
+	protected async registerTabs(modelView: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]> {
 		await Promise.all([this._controllerModel.refresh(), this._databaseModel.refresh()]);
 		return [
-			await this._overviewTab.tab(view),
+			await this._overviewTab.tab(modelView),
 			{
 				title: 'Settings',
 				tabs: [
-					await this._computeStorageTab.tab(view),
-					await this._connectionStringsTab.tab(view),
-					await this._backupTab.tab(view),
-					await this._propertiesTab.tab(view)
+					await this._computeStorageTab.tab(modelView),
+					await this._connectionStringsTab.tab(modelView),
+					await this._backupTab.tab(modelView),
+					await this._propertiesTab.tab(modelView)
 				]
 			}, {
 				title: 'Security',
 				tabs: [
-					await this._networkingTab.tab(view)
+					await this._networkingTab.tab(modelView)
 				]
 			}
 		];

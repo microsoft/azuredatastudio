@@ -3,11 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
-import { ControllerModel } from '../models/controllerModel';
-import { DatabaseModel } from '../models/databaseModel';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
 
-export abstract class Tab {
-	constructor(protected controllerModel: ControllerModel, protected databaseModel: DatabaseModel) { }
-	abstract tab(view: azdata.ModelView): Promise<azdata.DashboardTab>;
-}
+export const postgresDashboard = localize('arc.postgresDashboard', "Postgres Dashboard (Preview)");

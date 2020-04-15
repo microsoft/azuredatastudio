@@ -4,20 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { IconPathHelper } from '../constants';
+import { IconPathHelper } from '../../../../constants';
 import { Tab } from './tab';
 
-export class NetworkingTab extends Tab {
+export class ComputeStorageTab extends Tab {
 	tab(view: azdata.ModelView): Promise<azdata.DashboardTab> {
-		const networking: azdata.FlexContainer = view.modelBuilder.flexContainer().withItems([
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Networking' }).component()
+		const computeStorage: azdata.FlexContainer = view.modelBuilder.flexContainer().withItems([
+			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Compute + storage' }).component()
 		]).component();
 
 		return Promise.resolve({
-			title: 'Networking',
-			id: 'networking-tab',
-			icon: IconPathHelper.networking,
-			content: networking
+			title: 'Compute + storage',
+			id: 'compute-storage-tab',
+			icon: IconPathHelper.computeStorage,
+			content: computeStorage
 		});
 	}
 }
