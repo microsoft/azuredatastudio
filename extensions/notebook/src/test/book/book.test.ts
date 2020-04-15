@@ -43,7 +43,6 @@ export function equalBookItems(book: BookTreeItem, expectedBook: IExpectedBookIt
 }
 
 describe('BookTreeViewProviderTests', function () {
-
 	describe('BookTreeViewProvider', () => {
 
 		let mockExtensionContext: vscode.ExtensionContext;
@@ -444,6 +443,66 @@ describe('BookTreeViewProviderTests', function () {
 		});
 
 		this.afterAll(async function (): Promise<void> {
+			if (await exists(rootFolderPath)) {
+				await promisify(rimraf)(rootFolderPath);
+			}
+		});
+	});
+
+	describe('BookTreeViewProvider.openNotebookFolder', function (): void {
+		let rootFolderPath: string;
+		let bookFolderPath: string;
+		let notebookFolderPath: string;
+		let tableOfContentsFile: string;
+		let bookTreeViewProvider: BookTreeViewProvider;
+		let appContext: AppContext;
+
+		this.beforeAll(async () => {
+			rootFolderPath = path.join(os.tmpdir(), `BookFolderTest_${uuid.v4()}`);
+			bookFolderPath = path.join(rootFolderPath, `BookTestData`);
+			let dataFolderPath = path.join(bookFolderPath, '_data');
+			let contentFolderPath = path.join(bookFolderPath, 'content');
+			let configFile = path.join(bookFolderPath, '_config.yml');
+			tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
+			let bookNotebookFile = path.join(contentFolderPath, 'notebook1.ipynb');
+			notebookFolderPath = path.join(rootFolderPath, `NotebookTestData`);
+			let standaloneNotebookFile = path.join(notebookFolderPath, `notebook2.ipynb`);
+			await fs.mkdir(rootFolderPath);
+			await fs.mkdir(bookFolderPath);
+			await fs.mkdir(dataFolderPath);
+			await fs.mkdir(contentFolderPath);
+			await fs.mkdir(notebookFolderPath);
+			await fs.writeFile(configFile, 'title: Test Book');
+			await fs.writeFile(tableOfContentsFile, '- title: Notebook1\n  url: /notebook1');
+			await fs.writeFile(bookNotebookFile, '');
+			await fs.writeFile(standaloneNotebookFile, '');
+
+			const mockExtensionContext = new MockExtensionContext();
+			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
+			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], mockExtensionContext, false, 'bookTreeView');
+			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
+			appContext = new AppContext(undefined, new ApiWrapper());
+		});
+
+		it('should include books and notebooks when opening parent folder', async () => {
+			await bookTreeViewProvider.loadNotebooksInFolder(rootFolderPath);
+			should(bookTreeViewProvider.books.length).equal(2, 'Should have loaded a book and a notebook');
+		});
+
+		it('should include only books when opening books folder', async () => {
+			await bookTreeViewProvider.loadNotebooksInFolder(bookFolderPath);
+			should(bookTreeViewProvider.books.length).equal(1, 'Should have loaded only one book');
+		});
+
+		it('should include only notebooks when opening notebooks folder', async () => {
+			await bookTreeViewProvider.loadNotebooksInFolder(notebookFolderPath);
+			should(bookTreeViewProvider.books.length).equal(1, 'Should have loaded only one notebook');
+		});
+
+		this.afterAll(async function (): Promise<void> {
+			let bookItems = await bookTreeViewProvider.getChildren();
+			await Promise.all(bookItems.map(bookItem => bookTreeViewProvider.closeBook(bookItem)));
 			if (await exists(rootFolderPath)) {
 				await promisify(rimraf)(rootFolderPath);
 			}

@@ -370,7 +370,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	private async loadNotebooksInFolder(folderPath: string) {
+	public async loadNotebooksInFolder(folderPath: string) {
 		let bookCollection = await this.getNotebooksInTree(folderPath);
 		for (let i = 0; i < bookCollection.bookPaths.length; i++) {
 			await this.openBook(bookCollection.bookPaths[i], undefined, false);
