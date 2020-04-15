@@ -9,6 +9,7 @@ import * as os from 'os';
 import * as vscode from 'vscode';
 import * as baselines from './baselines/baselines';
 import * as templates from '../templates/templates';
+import * as testUtils from './testUtils';
 
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
@@ -32,6 +33,16 @@ describe('SqlDatabaseProjectTreeViewProvider: project controller operations', fu
 	});
 
 	it('Should load Project and associated DataSources', async function (): Promise<void> {
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProj(baselines.openProjectFileBaseline, folderPath);
+		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
 
+		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+
+		const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
+
+		should(project.files.length).equal(9); // detailed sqlproj tests in their own test file
+		should(project.dataSources.length).equal(2); // detailed datasources tests in their own test file
 	});
 });

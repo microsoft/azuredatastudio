@@ -13,7 +13,7 @@ import { SqlConnectionDataSource } from './sqlConnectionStringSource';
 export abstract class DataSource {
 	public name: string;
 	public abstract get type(): string;
-	public abstract get friendlyName(): string;
+	public abstract get typeFriendlyName(): string;
 
 	constructor(name: string) {
 		this.name = name;

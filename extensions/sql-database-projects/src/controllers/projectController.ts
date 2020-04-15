@@ -79,7 +79,7 @@ export class ProjectsController {
 			'PROJECT_NAME': newProjName,
 			'PROJECT_GUID': projectGuid ?? UUID.generateUuid().toUpperCase()
 		};
-		console.log('expanding...');
+
 		let newProjFileContents = this.macroExpansion(templates.newSqlProjectTemplate, macroDict);
 
 		let newProjFileName = newProjName;
@@ -166,6 +166,8 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 	}
 
+	//#region Helper methods
+
 	private macroExpansion(template: string, macroDict: Record<string, string>): string {
 		const macroIndicator = '@@';
 		let output = template;
@@ -216,4 +218,6 @@ export class ProjectsController {
 			return objectName;
 		}
 	}
+
+	//#endregion
 }

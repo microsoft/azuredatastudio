@@ -9,10 +9,12 @@ import { promises as fs } from 'fs';
 // Project baselines
 export let newProjectFileBaseline: string;
 export let openProjectFileBaseline: string;
+export let openDataSourcesBaseline: string;
 
 export async function loadBaselines(baselineFolderPath: string) {
 	newProjectFileBaseline = await loadBaseline(baselineFolderPath, 'newSqlProjectBaseline.xml');
 	openProjectFileBaseline = await loadBaseline(baselineFolderPath, 'openSqlProjectBaseline.xml');
+	openDataSourcesBaseline = await loadBaseline(baselineFolderPath, 'openDataSourcesBaseline.json');
 }
 
 async function loadBaseline(baselineFolderPath: string, fileName: string): Promise<string> {

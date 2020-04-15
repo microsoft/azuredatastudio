@@ -21,7 +21,7 @@ export class SqlConnectionDataSource extends DataSource {
 		return SqlConnectionDataSource.type;
 	}
 
-	public get friendlyName(): string {
+	public get typeFriendlyName(): string {
 		return constants.sqlConnectionStringFriendly;
 	}
 
@@ -40,6 +40,10 @@ export class SqlConnectionDataSource extends DataSource {
 
 			this.connectionStringComponents[split[0]] = split[1];
 		}
+	}
+
+	public getSetting(settingName: string): string {
+		return this.connectionStringComponents[settingName];
 	}
 
 	public static fromJson(json: DataSourceJson): SqlConnectionDataSource {
