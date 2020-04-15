@@ -98,8 +98,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		@ILogService protected logService: ILogService
 	) {
 		super(contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, logService);
-		this.nativeElement = document.createElement('editdatagridpanel');
-		this.nativeElement.className = 'slickgridContainer';
+		this.nativeElement = document.createElement('div');
+		this.nativeElement.className = 'editDataGridPanel';
+		this.nativeElement.classList.add('slickgridContainer');
 		this.dataService = dataService;
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
 		onRestoreViewState(() => this.restoreViewState());
@@ -289,6 +290,11 @@ export class EditDataGridPanel extends GridParentComponent {
 		// Skip processing if the cell hasn't moved (eg, we reset focus to the previous cell after a failed update)
 		if (this.currentCell.row === row && this.currentCell.column === column && this.currentCell.isDirty === false) {
 			return;
+		}
+
+		if (this.isNullRow(row)) {
+			self.addRow(row);
+			self.refreshGrid();
 		}
 
 		let cellSelectTasks: Promise<void> = this.submitCurrentCellChange(
@@ -543,15 +549,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private submitCurrentCellChange(resultHandler, errorHandler): Promise<void> {
 		let self = this;
 		let updateCellPromise: Promise<void> = Promise.resolve();
-		let refreshGrid = false;
 		if (this.currentCell && this.currentCell.isEditable && this.currentEditCellValue !== undefined && !this.removingNewRow) {
-			if (this.isNullRow(this.currentCell.row)) {
-				refreshGrid = true;
-				// We've entered the "new row", so we need to add a row and jump to it
-				updateCellPromise = updateCellPromise.then(() => {
-					return self.addRow(this.currentCell.row);
-				});
-			}
 			// We're exiting a read/write cell after having changed the value, update the cell value in the service
 			updateCellPromise = updateCellPromise.then(() => {
 				// Use the mapped row ID if we're on that row
@@ -564,9 +562,6 @@ export class EditDataGridPanel extends GridParentComponent {
 				result => {
 					self.currentEditCellValue = undefined;
 					let refreshPromise: Thenable<void> = Promise.resolve();
-					if (refreshGrid) {
-						refreshPromise = self.refreshGrid();
-					}
 					return refreshPromise.then(() => {
 						return resultHandler(result);
 					});

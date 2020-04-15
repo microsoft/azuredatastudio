@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./dashboardWidgetWrapper';
 
 import {
@@ -20,7 +19,6 @@ import { AngularDisposable } from 'sql/base/browser/lifecycle';
 /* Widgets */
 import { PropertiesWidgetComponent } from 'sql/workbench/contrib/dashboard/browser/widgets/properties/propertiesWidget.component';
 import { ExplorerWidget } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerWidget.component';
-import { TasksWidget } from 'sql/workbench/contrib/dashboard/browser/widgets/tasks/tasksWidget.component';
 import { InsightsWidget } from 'sql/workbench/contrib/dashboard/browser/widgets/insights/insightsWidget.component';
 import { WebviewWidget } from 'sql/workbench/contrib/dashboard/browser/widgets/webview/webviewWidget.component';
 
@@ -42,7 +40,6 @@ import { IColorTheme } from 'vs/platform/theme/common/themeService';
 const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 	'properties-widget': PropertiesWidgetComponent,
 	'explorer-widget': ExplorerWidget,
-	'tasks-widget': TasksWidget,
 	'insights-widget': InsightsWidget,
 	'webview-widget': WebviewWidget
 };
@@ -54,9 +51,12 @@ const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 export class DashboardWidgetWrapper extends AngularDisposable implements OnInit {
 	@Input() private _config: WidgetConfig;
 	@Input() private collapsable = false;
+	@Input() private bottomCollapse = false;
+	@Input() private toggleMore = true;
 
 	private _collapseAction: CollapseWidgetAction;
 	private _collapsed = false;
+	private _showTitle = true;
 
 	public get collapsed(): boolean {
 		return this._collapsed;
@@ -74,6 +74,14 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		}
 	}
 
+	public get showTitle(): boolean {
+		return this._showTitle;
+	}
+
+	public set showTitle(val: boolean) {
+		this._showTitle = val;
+	}
+
 	@memoize
 	public get guid(): string {
 		return generateUuid();
@@ -82,9 +90,11 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	private _actions: Array<Action>;
 	private _component: IDashboardWidget;
 	private _actionbar: ActionBar;
+	private _bottomActionbar: ActionBar;
 
 	@ViewChild('header', { read: ElementRef }) private header: ElementRef;
 	@ViewChild('actionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
+	@ViewChild('bottomActionbar', { read: ElementRef }) private _bottomActionbarRef: ElementRef;
 	@ViewChild(ComponentHostDirective) componentHost: ComponentHostDirective;
 
 	constructor(
@@ -113,12 +123,20 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		}
 		this._changeref.detectChanges();
 		this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
+		this._bottomActionbar = new ActionBar(this._bottomActionbarRef.nativeElement);
 		if (this._actions) {
 			if (this.collapsable) {
 				this._collapseAction = this.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed);
-				this._actionbar.push(this._collapseAction, { icon: true, label: false });
+				if (this.bottomCollapse) {
+					this._bottomActionbar.push(this._collapseAction, { icon: true, label: false });
+					this._bottomActionbarRef.nativeElement.style.display = 'block';
+				} else {
+					this._actionbar.push(this._collapseAction, { icon: true, label: false });
+				}
 			}
-			this._actionbar.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions as Array<IAction>, this._component.actionsContext), { icon: true, label: false });
+			if (this.toggleMore) {
+				this._actionbar.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions as Array<IAction>, this._component.actionsContext), { icon: true, label: false });
+			}
 		}
 		this.layout();
 	}
@@ -162,7 +180,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		// If _config.name is not set, set it to _config.widget.name
 		if (!this._config.name) {
 			const widget = values(this._config.widget)[0];
-			if (widget.name) {
+			if (widget && widget.name) {
 				this._config.name = widget.name;
 			}
 		}
@@ -221,7 +239,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	private updateTheme(theme: IColorTheme): void {
 		const el = <HTMLElement>this._ref.nativeElement;
 		const headerEl: HTMLElement = this.header.nativeElement;
-		let borderColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true);
+		let borderColor = theme.getColor(themeColors.DASHBOARD_BORDER);
 		let backgroundColor = theme.getColor(colors.editorBackground, true);
 		const foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
 		const border = theme.getColor(colors.contrastBorder, true);
@@ -249,16 +267,10 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			el.style.borderWidth = '1px';
 			el.style.borderStyle = 'solid';
 		} else if (borderColor) {
-			borderString = borderColor.toString();
-			el.style.border = '3px solid ' + borderColor.toString();
+			borderString = borderColor;
+			el.style.border = '1px solid ' + borderColor;
 		} else {
 			el.style.border = 'none';
-		}
-
-		if (borderString) {
-			headerEl.style.backgroundColor = borderString;
-		} else {
-			headerEl.style.backgroundColor = '';
 		}
 
 		if (this._config.fontSize) {

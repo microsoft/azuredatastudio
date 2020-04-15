@@ -82,6 +82,10 @@ export class NotebookEditorEdit {
 		return range;
 	}
 
+	setTrusted(isTrusted: boolean) {
+		this._document.setTrusted(isTrusted);
+	}
+
 	insertCell(value: Partial<azdata.nb.ICellContents>, index?: number, collapsed?: boolean): void {
 		if (index === null || index === undefined) {
 			// If not specified, assume adding to end of list

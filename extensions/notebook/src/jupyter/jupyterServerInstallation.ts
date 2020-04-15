@@ -585,9 +585,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		let versionSpecifier = useMinVersion ? '>=' : '==';
 		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
-		// Force reinstall in case some dependencies are split across multiple locations
-		let cmdOptions = this._usingExistingPython ? '--user --force-reinstall' : '--force-reinstall';
-		let cmd = `"${this.pythonExecutable}" -m pip install ${cmdOptions} ${packagesStr} --extra-index-url https://prose-python-packages.azurewebsites.net`;
+		let cmd = `"${this.pythonExecutable}" -m pip install --user ${packagesStr} --extra-index-url https://prose-python-packages.azurewebsites.net`;
 		return this.executeStreamedCommand(cmd);
 	}
 
@@ -627,7 +625,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let versionSpecifier = useMinVersion ? '>=' : '==';
 		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
 		let condaExe = this.getCondaExePath();
-		let cmd = `"${condaExe}" install -y --force-reinstall ${packagesStr}`;
+		let cmd = `"${condaExe}" install -y ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
 

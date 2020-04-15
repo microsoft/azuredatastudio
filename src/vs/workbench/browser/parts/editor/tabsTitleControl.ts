@@ -19,7 +19,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IMenuService } from 'vs/platform/actions/common/actions';
 import { TitleControl } from 'vs/workbench/browser/parts/editor/titleControl';
-import { IQuickOpenService } from 'vs/platform/quickOpen/common/quickOpen';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IDisposable, dispose, DisposableStore, combinedDisposable, MutableDisposable } from 'vs/base/common/lifecycle';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
@@ -61,6 +61,11 @@ type AugmentedLabel = IEditorInputLabel & { editor: IEditorInput };
 
 export class TabsTitleControl extends TitleControl {
 
+	private static readonly SCROLLBAR_SIZES = {
+		default: 3,
+		large: 10
+	};
+
 	private titleContainer: HTMLElement | undefined;
 	private tabsContainer: HTMLElement | undefined;
 	private editorToolbarContainer: HTMLElement | undefined;
@@ -89,7 +94,7 @@ export class TabsTitleControl extends TitleControl {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@INotificationService notificationService: INotificationService,
 		@IMenuService menuService: IMenuService,
-		@IQuickOpenService quickOpenService: IQuickOpenService,
+		@IQuickInputService quickInputService: IQuickInputService,
 		@IThemeService themeService: IThemeService,
 		@IExtensionService extensionService: IExtensionService,
 		@IConfigurationService configurationService: IConfigurationService,
@@ -97,7 +102,7 @@ export class TabsTitleControl extends TitleControl {
 		@IEditorService private readonly editorService: EditorServiceImpl,
 		@IRemotePathService private readonly remotePathService: IRemotePathService
 	) {
-		super(parent, accessor, group, contextMenuService, instantiationService, contextKeyService, keybindingService, telemetryService, notificationService, menuService, quickOpenService, themeService, extensionService, configurationService, fileService);
+		super(parent, accessor, group, contextMenuService, instantiationService, contextKeyService, keybindingService, telemetryService, notificationService, menuService, quickInputService, themeService, extensionService, configurationService, fileService);
 
 		this.tabResourceLabels = this._register(this.instantiationService.createInstance(ResourceLabels, DEFAULT_LABELS_CONTAINER));
 		this.closeOneEditorAction = this._register(this.instantiationService.createInstance(CloseOneEditorAction, CloseOneEditorAction.ID, CloseOneEditorAction.LABEL));
@@ -106,6 +111,16 @@ export class TabsTitleControl extends TitleControl {
 		// If we are connected to remote, this accounts for the
 		// remote OS.
 		(async () => this.path = await this.remotePathService.path)();
+	}
+
+	protected registerListeners(): void {
+		super.registerListeners();
+
+		this._register(this.accessor.onDidEditorPartOptionsChange(e => {
+			if (e.oldPartOptions.titleScrollbarSizing !== e.newPartOptions.titleScrollbarSizing) {
+				this.updateTabsScrollbarSizing();
+			}
+		}));
 	}
 
 	protected create(parent: HTMLElement): void {
@@ -148,10 +163,10 @@ export class TabsTitleControl extends TitleControl {
 	private createTabsScrollbar(scrollable: HTMLElement): ScrollableElement {
 		const tabsScrollbar = new ScrollableElement(scrollable, {
 			horizontal: ScrollbarVisibility.Auto,
+			horizontalScrollbarSize: this.getTabsScrollbarSizing(),
 			vertical: ScrollbarVisibility.Hidden,
 			scrollYToX: true,
-			useShadows: false,
-			horizontalScrollbarSize: 3
+			useShadows: false
 		});
 
 		tabsScrollbar.onScroll(e => {
@@ -159,6 +174,20 @@ export class TabsTitleControl extends TitleControl {
 		});
 
 		return tabsScrollbar;
+	}
+
+	private updateTabsScrollbarSizing(): void {
+		this.tabsScrollbar?.updateOptions({
+			horizontalScrollbarSize: this.getTabsScrollbarSizing()
+		});
+	}
+
+	private getTabsScrollbarSizing(): number {
+		if (this.accessor.partOptions.titleScrollbarSizing !== 'large') {
+			return TabsTitleControl.SCROLLBAR_SIZES.default;
+		}
+
+		return TabsTitleControl.SCROLLBAR_SIZES.large;
 	}
 
 	private updateBreadcrumbsControl(): void {
@@ -207,13 +236,13 @@ export class TabsTitleControl extends TitleControl {
 
 				EventHelper.stop(e);
 
-				this.group.openEditor(this.editorService.createEditorInput({
-					forceUntitled: true,
-					options: {
+				this.group.openEditor(
+					this.editorService.createEditorInput({ forceUntitled: true }),
+					{
 						pinned: true,			// untitled is always pinned
 						index: this.group.count // always at the end
 					}
-				}));
+				);
 			}));
 		});
 
@@ -975,11 +1004,15 @@ export class TabsTitleControl extends TitleControl {
 		tabContainer.title = title;
 
 		// Label
-		const resource = toResource(editor, { supportSideBySide: SideBySideEditor.MASTER });
-		tabLabelWidget.setResource({ name, description, resource }, { title, extraClasses: ['tab-label'], italic: !this.group.isPinned(editor) });
+		tabLabelWidget.setResource(
+			{ name, description, resource: toResource(editor, { supportSideBySide: SideBySideEditor.BOTH }) },
+			{ title, extraClasses: ['tab-label'], italic: !this.group.isPinned(editor) }
+		);
+
 		this.setEditorTabColor(editor, tabContainer, this.group.isActive(editor)); // {{SQL CARBON EDIT}} -- Display the editor's tab color
 
 		// Tests helper
+		const resource = toResource(editor, { supportSideBySide: SideBySideEditor.MASTER });
 		if (resource) {
 			tabContainer.setAttribute('data-resource-name', basenameOrAuthority(resource));
 		} else {

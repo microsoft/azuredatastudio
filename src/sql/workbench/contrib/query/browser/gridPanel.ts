@@ -44,7 +44,7 @@ import { localize } from 'vs/nls';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { GridPanelState, GridTableState } from 'sql/workbench/common/editor/query/gridPanelState';
+import { GridPanelState, GridTableState } from 'sql/workbench/common/editor/query/gridTableState';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { Progress } from 'vs/platform/progress/common/progress';
@@ -108,6 +108,7 @@ export class GridPanel extends Disposable {
 
 	public focus(): void {
 		// will need to add logic to save the focused grid and focus that
+		this.tables[0].focus();
 	}
 
 	public set queryRunner(runner: QueryRunner) {
@@ -350,6 +351,14 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	// this handles if the row count is small, like 4-5 rows
 	protected get maxSize(): number {
 		return ((this.resultSet.rowCount) * this.rowHeight) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
+	}
+
+	public focus(): void {
+		if (!this.table.activeCell) {
+			this.table.setActiveCell(0, 1);
+			this.selectionModel.setSelectedRanges([new Slick.Range(0, 1)]);
+		}
+		this.table.focus();
 	}
 
 	constructor(

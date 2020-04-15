@@ -20,13 +20,16 @@ export interface ILocalizedString {
 	original: string;
 }
 
+export type Icon = { dark?: URI; light?: URI; } | ThemeIcon;
+
 export interface ICommandAction {
 	id: string;
 	title: string | ILocalizedString;
 	category?: string | ILocalizedString;
-	icon?: { dark?: URI; light?: URI; } | ThemeIcon;
+	tooltip?: string | ILocalizedString;
+	icon?: Icon;
 	precondition?: ContextKeyExpression;
-	toggled?: ContextKeyExpression;
+	toggled?: ContextKeyExpression | { condition: ContextKeyExpression, icon?: Icon, tooltip?: string | ILocalizedString };
 }
 
 export type ISerializableCommandAction = UriDto<ICommandAction>;
@@ -89,6 +92,7 @@ export class MenuId {
 	static readonly MenubarSwitchGroupMenu = new MenuId('MenubarSwitchGroupMenu');
 	static readonly MenubarTerminalMenu = new MenuId('MenubarTerminalMenu');
 	static readonly MenubarViewMenu = new MenuId('MenubarViewMenu');
+	static readonly MenubarWebNavigationMenu = new MenuId('MenubarWebNavigationMenu');
 	static readonly OpenEditorsContext = new MenuId('OpenEditorsContext');
 	static readonly ProblemsPanelContext = new MenuId('ProblemsPanelContext');
 	static readonly SCMChangeContext = new MenuId('SCMChangeContext');
@@ -111,6 +115,7 @@ export class MenuId {
 	static readonly CommentThreadActions = new MenuId('CommentThreadActions');
 	static readonly CommentTitle = new MenuId('CommentTitle');
 	static readonly CommentActions = new MenuId('CommentActions');
+	static readonly NotebookCellTitle = new MenuId('NotebookCellTitle');
 	static readonly BulkEditTitle = new MenuId('BulkEditTitle');
 	static readonly BulkEditContext = new MenuId('BulkEditContext');
 	static readonly ObjectExplorerItemContext = new MenuId('ObjectExplorerItemContext'); // {{SQL CARBON EDIT}}
@@ -118,9 +123,11 @@ export class MenuId {
 	static readonly DataExplorerContext = new MenuId('DataExplorerContext'); // {{SQL CARBON EDIT}}
 	static readonly DataExplorerAction = new MenuId('DataExplorerAction'); // {{SQL CARBON EDIT}}
 	static readonly ExplorerWidgetContext = new MenuId('ExplorerWidgetContext'); // {{SQL CARBON EDIT}}
+	static readonly DashboardToolbar = new MenuId('DashboardToolbar'); // {{SQL CARBON EDIT}}
 	static readonly TimelineItemContext = new MenuId('TimelineItemContext');
 	static readonly TimelineTitle = new MenuId('TimelineTitle');
 	static readonly TimelineTitleContext = new MenuId('TimelineTitleContext');
+	static readonly AccountsContext = new MenuId('AccountsContext');
 
 	readonly id: number;
 	readonly _debugName: string;
@@ -280,9 +287,20 @@ export class MenuItemAction extends ExecuteCommandAction {
 		@ICommandService commandService: ICommandService
 	) {
 		typeof item.title === 'string' ? super(item.id, item.title, commandService) : super(item.id, item.title.value, commandService);
+
 		this._cssClass = undefined;
 		this._enabled = !item.precondition || contextKeyService.contextMatchesRules(item.precondition);
-		this._checked = Boolean(item.toggled && contextKeyService.contextMatchesRules(item.toggled));
+		this._tooltip = item.tooltip ? typeof item.tooltip === 'string' ? item.tooltip : item.tooltip.value : undefined;
+
+		if (item.toggled) {
+			const toggled = ((item.toggled as { condition: ContextKeyExpression }).condition ? item.toggled : { condition: item.toggled }) as {
+				condition: ContextKeyExpression, icon?: Icon, tooltip?: string | ILocalizedString
+			};
+			this._checked = contextKeyService.contextMatchesRules(toggled.condition);
+			if (this._checked && toggled.tooltip) {
+				this._tooltip = typeof toggled.tooltip === 'string' ? toggled.tooltip : toggled.tooltip.value;
+			}
+		}
 
 		this._options = options || {};
 
@@ -428,14 +446,14 @@ export function registerAction2(ctor: { new(): Action2 }): IDisposable {
 			KeybindingsRegistry.registerKeybindingRule({
 				...item,
 				id: command.id,
-				when: ContextKeyExpr.and(command.precondition, item.when)
+				when: command.precondition ? ContextKeyExpr.and(command.precondition, item.when) : item.when
 			});
 		}
 	} else if (keybinding) {
 		KeybindingsRegistry.registerKeybindingRule({
 			...keybinding,
 			id: command.id,
-			when: ContextKeyExpr.and(command.precondition, keybinding.when)
+			when: command.precondition ? ContextKeyExpr.and(command.precondition, keybinding.when) : keybinding.when
 		});
 	}
 

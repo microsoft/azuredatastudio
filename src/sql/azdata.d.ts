@@ -2209,7 +2209,11 @@ declare module 'azdata' {
 
 	export enum AzureResource {
 		ResourceManagement = 0,
-		Sql = 1
+		Sql = 1,
+		OssRdbms = 2,
+		AzureKeyVault = 3,
+		Graph = 4,
+		MicrosoftResourceManagement = 5
 	}
 
 	export interface DidChangeAccountsParams {
@@ -2272,7 +2276,7 @@ declare module 'azdata' {
 		 * @param resource The resource to get the token for
 		 * @return Promise to return a security token object
 		 */
-		getSecurityToken(account: Account, resource: AzureResource): Thenable<{}>;
+		getSecurityToken(account: Account, resource: AzureResource): Thenable<{} | undefined>;
 
 		/**
 		 * Prompts the user to enter account information.
@@ -4675,6 +4679,9 @@ declare module 'azdata' {
 
 		export interface ICellOutput {
 			output_type: OutputTypeName;
+			metadata?: {
+				azdata_chartOptions?: any;
+			}
 		}
 
 		/**

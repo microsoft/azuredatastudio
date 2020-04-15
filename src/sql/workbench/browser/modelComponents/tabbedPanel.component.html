@@ -1,0 +1,19 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<div class="tabbedpanel-component">
+	<panel (onTabChange)="handleTabChange($event)">
+		<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize"
+			[identifier]="tab.id" [type]="tab.type" [iconClass]="tab.iconClass">
+			<ng-template>
+				<ng-container *ngIf="tab.type === 'tab'">
+					<model-component-wrapper [descriptor]="tab.content" [modelStore]="modelStore">
+					</model-component-wrapper>
+				</ng-container>
+			</ng-template>
+		</tab>
+	</panel>
+</div>

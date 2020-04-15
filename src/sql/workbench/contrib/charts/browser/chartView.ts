@@ -29,6 +29,7 @@ import * as nls from 'vs/nls';
 import { find } from 'vs/base/common/arrays';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { DbCellValue } from 'azdata';
+import { Event, Emitter } from 'vs/base/common/event';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -61,10 +62,9 @@ export class ChartView extends Disposable implements IPanelView {
 
 	private _state: ChartState;
 
-	private options: IInsightOptions = {
+	private _options: IInsightOptions = {
 		type: ChartType.Bar
 	};
-
 
 	/** parent container */
 	private container: HTMLElement;
@@ -82,8 +82,11 @@ export class ChartView extends Disposable implements IPanelView {
 	private optionDisposables: IDisposable[] = [];
 	private optionMap: { [x: string]: { element: HTMLElement; set: (val) => void } } = {};
 
+	private readonly _onOptionsChange: Emitter<IInsightOptions> = this._register(new Emitter<IInsightOptions>());
+	public readonly onOptionsChange: Event<IInsightOptions> = this._onOptionsChange.event;
+
 	constructor(
-		private readonly _renderOptionsInline: boolean,
+		private readonly _isQueryEditorChart: boolean,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IThemeService private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -99,19 +102,19 @@ export class ChartView extends Disposable implements IPanelView {
 		this.typeControls = DOM.$('div.type-controls');
 		this.optionsControl.appendChild(this.typeControls);
 
-		this._createInsightAction = this._instantiationService.createInstance(CreateInsightAction);
 		this._copyAction = this._instantiationService.createInstance(CopyAction);
 		this._saveAction = this._instantiationService.createInstance(SaveImageAction);
 
-		if (this._renderOptionsInline) {
+		if (this._isQueryEditorChart) {
+			this._createInsightAction = this._instantiationService.createInstance(CreateInsightAction);
 			this.taskbar.setContent([{ action: this._createInsightAction }]);
 		} else {
 			this._configureChartAction = this._instantiationService.createInstance(ConfigureChartAction, this);
-			this.taskbar.setContent([{ action: this._createInsightAction }, { action: this._configureChartAction }]);
+			this.taskbar.setContent([{ action: this._configureChartAction }]);
 		}
 
 		const self = this;
-		this.options = new Proxy(this.options, {
+		this._options = new Proxy(this._options, {
 			get: function (target, key) {
 				return target[key];
 			},
@@ -128,12 +131,13 @@ export class ChartView extends Disposable implements IPanelView {
 				}
 
 				if (change) {
-					self.taskbar.context = <IChartActionContext>{ options: self.options, insight: self.insight ? self.insight.insight : undefined };
+					self.taskbar.context = <IChartActionContext>{ options: self._options, insight: self.insight ? self.insight.insight : undefined };
 					if (key === 'type') {
 						self.buildOptions();
 					} else {
 						self.verifyOptions();
 					}
+					self._onOptionsChange.fire(self._options);
 				}
 
 				return true;
@@ -173,10 +177,10 @@ export class ChartView extends Disposable implements IPanelView {
 			this.container.appendChild(this.taskbarContainer);
 			this.container.appendChild(this.chartingContainer);
 			this.chartingContainer.appendChild(this.insightContainer);
-			if (this._renderOptionsInline) {
+			if (this._isQueryEditorChart) {
 				this.chartingContainer.appendChild(this.optionsControl);
 			}
-			this.insight = new Insight(this.insightContainer, this.options, this._instantiationService);
+			this.insight = new Insight(this.insightContainer, this._options, this._instantiationService);
 		}
 
 		container.appendChild(this.container);
@@ -259,11 +263,11 @@ export class ChartView extends Disposable implements IPanelView {
 		DOM.clearNode(this.typeControls);
 
 		this.updateActionbar();
-		ChartOptions[this.options.type].map(o => {
+		this.getChartTypeOptions().map(o => {
 			this.createOption(o, this.typeControls);
 		});
 		if (this.insight) {
-			this.insight.options = this.options;
+			this.insight.options = this._options;
 		}
 		this.verifyOptions();
 	}
@@ -272,9 +276,9 @@ export class ChartView extends Disposable implements IPanelView {
 		this.updateActionbar();
 		for (let key in this.optionMap) {
 			if (this.optionMap.hasOwnProperty(key)) {
-				let option = find(ChartOptions[this.options.type], e => e.configEntry === key);
+				let option = find(this.getChartTypeOptions(), e => e.configEntry === key);
 				if (option && option.if) {
-					if (option.if(this.options)) {
+					if (option.if(this._options)) {
 						DOM.show(this.optionMap[key].element);
 					} else {
 						DOM.hide(this.optionMap[key].element);
@@ -284,19 +288,28 @@ export class ChartView extends Disposable implements IPanelView {
 		}
 	}
 
+	private getChartTypeOptions(): IChartOption[] {
+		let options = ChartOptions[this._options.type];
+		if (!options) {
+			throw new Error(nls.localize('charting.unsupportedType', "Chart type '{0}' is not supported.", this._options.type));
+		}
+		return options;
+	}
+
 	private updateActionbar() {
 		let actions: ITaskbarContent[];
 		if (this.insight && this.insight.isCopyable) {
-			this.taskbar.context = { insight: this.insight.insight, options: this.options };
+			this.taskbar.context = { insight: this.insight.insight, options: this._options };
 			actions = [
-				{ action: this._createInsightAction },
 				{ action: this._copyAction },
 				{ action: this._saveAction }
 			];
 		} else {
-			actions = [{ action: this._createInsightAction }];
+			actions = [];
 		}
-		if (!this._renderOptionsInline) {
+		if (this._isQueryEditorChart) {
+			actions.unshift({ action: this._createInsightAction });
+		} else {
 			actions.push({ action: this._configureChartAction });
 		}
 		this.taskbar.setContent(actions);
@@ -318,10 +331,10 @@ export class ChartView extends Disposable implements IPanelView {
 					ariaLabel: option.label,
 					checked: value,
 					onChange: () => {
-						if (this.options[option.configEntry] !== checkbox.checked) {
-							this.options[option.configEntry] = checkbox.checked;
+						if (this._options[option.configEntry] !== checkbox.checked) {
+							this._options[option.configEntry] = checkbox.checked;
 							if (this.insight) {
-								this.insight.options = this.options;
+								this.insight.options = this._options;
 							}
 						}
 					}
@@ -337,10 +350,10 @@ export class ChartView extends Disposable implements IPanelView {
 				dropdown.select(option.options.indexOf(value));
 				dropdown.render(optionInput);
 				dropdown.onDidSelect(e => {
-					if (this.options[option.configEntry] !== option.options[e.index]) {
-						this.options[option.configEntry] = option.options[e.index];
+					if (this._options[option.configEntry] !== option.options[e.index]) {
+						this._options[option.configEntry] = option.options[e.index];
 						if (this.insight) {
-							this.insight.options = this.options;
+							this.insight.options = this._options;
 						}
 					}
 				});
@@ -356,10 +369,10 @@ export class ChartView extends Disposable implements IPanelView {
 				input.setAriaLabel(option.label);
 				input.value = value || '';
 				input.onDidChange(e => {
-					if (this.options[option.configEntry] !== e) {
-						this.options[option.configEntry] = e;
+					if (this._options[option.configEntry] !== e) {
+						this._options[option.configEntry] = e;
 						if (this.insight) {
-							this.insight.options = this.options;
+							this.insight.options = this._options;
 						}
 					}
 				});
@@ -375,10 +388,10 @@ export class ChartView extends Disposable implements IPanelView {
 				numberInput.setAriaLabel(option.label);
 				numberInput.value = value || '';
 				numberInput.onDidChange(e => {
-					if (this.options[option.configEntry] !== Number(e)) {
-						this.options[option.configEntry] = Number(e);
+					if (this._options[option.configEntry] !== Number(e)) {
+						this._options[option.configEntry] = Number(e);
 						if (this.insight) {
-							this.insight.options = this.options;
+							this.insight.options = this._options;
 						}
 					}
 				});
@@ -394,10 +407,10 @@ export class ChartView extends Disposable implements IPanelView {
 				dateInput.setAriaLabel(option.label);
 				dateInput.value = value || '';
 				dateInput.onDidChange(e => {
-					if (this.options[option.configEntry] !== e) {
-						this.options[option.configEntry] = e;
+					if (this._options[option.configEntry] !== e) {
+						this._options[option.configEntry] = e;
 						if (this.insight) {
-							this.insight.options = this.options;
+							this.insight.options = this._options;
 						}
 					}
 				});
@@ -411,25 +424,33 @@ export class ChartView extends Disposable implements IPanelView {
 		}
 		this.optionMap[option.configEntry] = { element: optionContainer, set: setFunc };
 		container.appendChild(optionContainer);
-		this.options[option.configEntry] = value;
+		this._options[option.configEntry] = value;
 	}
 
 	public set state(val: ChartState) {
 		this._state = val;
-		if (this.state.options) {
-			for (let key in this.state.options) {
-				if (this.state.options.hasOwnProperty(key) && this.optionMap[key]) {
-					this.options[key] = this.state.options[key];
-					this.optionMap[key].set(this.state.options[key]);
-				}
-			}
-		}
-		if (this.state.dataId) {
-			this.chart(this.state.dataId);
+		this.options = this._state.options;
+		if (this._state.dataId) {
+			this.chart(this._state.dataId);
 		}
 	}
 
 	public get state(): ChartState {
 		return this._state;
+	}
+
+	public get options(): IInsightOptions {
+		return this._options;
+	}
+
+	public set options(newOptions: IInsightOptions) {
+		if (newOptions) {
+			for (let key in newOptions) {
+				if (newOptions.hasOwnProperty(key) && this.optionMap[key]) {
+					this._options[key] = newOptions[key];
+					this.optionMap[key].set(newOptions[key]);
+				}
+			}
+		}
 	}
 }

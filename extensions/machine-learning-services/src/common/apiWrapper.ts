@@ -129,4 +129,8 @@ export class ApiWrapper {
 	public createButton(label: string, position?: azdata.window.DialogButtonPosition): azdata.window.Button {
 		return azdata.window.createButton(label, position);
 	}
+
+	public registerWidget(widgetId: string, handler: (view: azdata.ModelView) => void): void {
+		azdata.ui.registerModelViewProvider(widgetId, handler);
+	}
 }

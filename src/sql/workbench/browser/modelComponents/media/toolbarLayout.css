@@ -9,6 +9,7 @@
 	line-height: 1.4em;
 	white-space: nowrap;
 	flex-wrap: wrap;
+	padding: 3px 0px;
 }
 
 .modelview-toolbar-container.toolbar-horizontal {

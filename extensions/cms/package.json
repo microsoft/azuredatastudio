@@ -2,7 +2,7 @@
   "name": "cms",
   "displayName": "%cms.displayName%",
   "description": "%cms.description%",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
@@ -618,6 +618,31 @@
           "when": "viewItem == cms.resource.itemType.databaseServerContainer",
           "group": "navigation@10"
         }
+      ],"commandPalette": [
+        {
+          "command": "cms.resource.addRegisteredServer",
+          "when": "false"
+        },
+        {
+          "command": "cms.resource.deleteRegisteredServer",
+          "when": "false"
+        },
+        {
+          "command": "cms.resource.deleteServerGroup",
+          "when": "false"
+        },
+        {
+          "command": "cms.resource.addServerGroup",
+          "when": "false"
+        },
+        {
+          "command": "cms.resource.refresh",
+          "when": "false"
+        },
+        {
+          "command": "cms.resource.deleteCmsServer",
+          "when": "false"
+        }
       ]
     }
   },
@@ -632,11 +657,8 @@
     "mocha-multi-reporters": "^1.1.7",
     "mocha": "^5.2.0",
     "should": "^13.2.1",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5",
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.6",
     "typemoq": "^2.1.0"
-  },
-  "resolutions": {
-      "esprima": "^4.0.0"
   },
   "__metadata": {
     "id": "40",

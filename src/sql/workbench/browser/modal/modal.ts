@@ -7,7 +7,7 @@ import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Color } from 'vs/base/common/color';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { mixin } from 'vs/base/common/objects';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -27,6 +27,7 @@ import { find, firstIndex } from 'vs/base/common/arrays';
 import { IThemable } from 'vs/base/common/styler';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { alert } from 'vs/base/browser/ui/aria/aria';
 
 export enum MessageLevel {
 	Error = 0,
@@ -63,6 +64,7 @@ export interface IModalOptions {
 	hasTitleIcon?: boolean;
 	hasErrors?: boolean;
 	hasSpinner?: boolean;
+	spinnerTitle?: string;
 }
 
 const defaultOptions: IModalOptions = {
@@ -81,6 +83,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	protected _useDefaultMessageBoxLocation: boolean = true;
 	protected _messageElement: HTMLElement;
 	protected _modalOptions: IModalOptions;
+	protected readonly disposableStore = this._register(new DisposableStore());
 	private _detailsButtonContainer: HTMLElement;
 	private _messageIcon: HTMLElement;
 	private _messageSeverity: HTMLElement;
@@ -115,10 +118,6 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _leftFooter: HTMLElement;
 	private _rightFooter: HTMLElement;
 	private _footerButtons: Button[];
-
-	private _keydownListener: IDisposable;
-	private _resizeListener: IDisposable;
-
 	private _backButton: Button;
 
 	private _modalShowingContext: IContextKey<Array<string>>;
@@ -245,6 +244,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalFooterSection = DOM.append(this._modalContent, DOM.$('.modal-footer'));
 			if (this._modalOptions.hasSpinner) {
 				this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.codicon.in-progress'));
+				this._spinnerElement.setAttribute('title', this._modalOptions.spinnerTitle);
 				DOM.hide(this._spinnerElement);
 			}
 			this._leftFooter = DOM.append(this._modalFooterSection, DOM.$('.left-footer'));
@@ -342,8 +342,6 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalBodySection.querySelectorAll(tabbableElementsQuerySelector) :
 			this._bodyContainer.querySelectorAll(tabbableElementsQuerySelector);
 
-		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
-
 		if (focusableElements && focusableElements.length > 0) {
 			(<HTMLElement>focusableElements[0]).focus();
 		}
@@ -353,11 +351,12 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Shows the modal and attaches key listeners
 	 */
 	protected show() {
+		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
 		this._modalShowingContext.get()!.push(this._staticKey);
 		DOM.append(this.layoutService.container, this._bodyContainer);
 		this.setInitialFocusedElement();
 
-		this._keydownListener = DOM.addDisposableListener(document, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+		this.disposableStore.add(DOM.addDisposableListener(document, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			let context = this._modalShowingContext.get()!;
 			if (context[context.length - 1] === this._staticKey) {
 				let event = new StandardKeyboardEvent(e);
@@ -371,10 +370,10 @@ export abstract class Modal extends Disposable implements IThemable {
 					this.handleForwardTab(e);
 				}
 			}
-		});
-		this._resizeListener = DOM.addDisposableListener(window, DOM.EventType.RESIZE, (e: Event) => {
+		}));
+		this.disposableStore.add(DOM.addDisposableListener(window, DOM.EventType.RESIZE, (e: Event) => {
 			this.layout(DOM.getTotalHeight(this._modalBodySection));
-		});
+		}));
 
 		this.layout(DOM.getTotalHeight(this._modalBodySection));
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ModalDialogOpened)
@@ -393,14 +392,17 @@ export abstract class Modal extends Disposable implements IThemable {
 	protected hide() {
 		this._modalShowingContext.get()!.pop();
 		this._bodyContainer.remove();
-		if (this._focusedElementBeforeOpen) {
-			this._focusedElementBeforeOpen.focus();
-		}
-		this._keydownListener.dispose();
-		this._resizeListener.dispose();
+		this.disposableStore.clear();
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ModalDialogClosed)
 			.withAdditionalProperties({ name: this._name })
 			.send();
+		this.restoreKeyboardFocus();
+	}
+
+	private restoreKeyboardFocus() {
+		if (this._focusedElementBeforeOpen) {
+			this._focusedElementBeforeOpen.focus();
+		}
 	}
 
 	/**
@@ -410,7 +412,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	protected addFooterButton(label: string, onSelect: () => void, orientation: 'left' | 'right' = 'right'): Button {
 		let footerButton = DOM.$('.footer-button');
-		let button = new Button(footerButton);
+		let button = this._register(new Button(footerButton));
 		button.label = label;
 		button.onDidClick(() => onSelect()); // @todo this should be registered to dispose but that brakes some dialogs
 		if (orientation === 'left') {
@@ -498,9 +500,11 @@ export abstract class Modal extends Disposable implements IThemable {
 				DOM.prepend(this._modalContent, (this._messageElement));
 			}
 		} else {
-			// Set the focus manually otherwise it'll escape the dialog to something behind it
-			this.setInitialFocusedElement();
 			DOM.removeNode(this._messageElement);
+			// Set the focus to first focus element if the focus is not within the dialog
+			if (!DOM.isAncestor(document.activeElement, this._bodyContainer)) {
+				this.setInitialFocusedElement();
+			}
 		}
 	}
 
@@ -511,6 +515,9 @@ export abstract class Modal extends Disposable implements IThemable {
 		if (this._modalOptions.hasSpinner) {
 			if (show) {
 				DOM.show(this._spinnerElement);
+				if (this._modalOptions.spinnerTitle) {
+					alert(this._modalOptions.spinnerTitle);
+				}
 			} else {
 				DOM.hide(this._spinnerElement);
 			}
@@ -607,7 +614,6 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	public dispose() {
 		super.dispose();
-		this._keydownListener.dispose();
 		this._footerButtons = [];
 	}
 }

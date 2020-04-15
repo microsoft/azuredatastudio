@@ -8,7 +8,7 @@ import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { Disposable, IDisposable, toDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
-import { values, ResourceMap } from 'vs/base/common/map';
+import { ResourceMap } from 'vs/base/common/map';
 import { ISaveOptions, IRevertOptions } from 'vs/workbench/common/editor';
 import { ITextSnapshot } from 'vs/editor/common/model';
 import { Schemas } from 'vs/base/common/network'; // {{SQL CARBON EDIT}} @chlafreniere need to block working copies of notebook editors from being tracked
@@ -28,12 +28,12 @@ export const enum WorkingCopyCapabilities {
  * `IBackupFileService.resolve(workingCopy.resource)` to
  * retrieve the backup when loading the working copy.
  */
-export interface IWorkingCopyBackup {
+export interface IWorkingCopyBackup<MetaType = object> {
 
 	/**
 	 * Any serializable metadata to be associated with the backup.
 	 */
-	meta?: object;
+	meta?: MetaType;
 
 	/**
 	 * Use this for larger textual content of the backup.
@@ -185,7 +185,7 @@ export class WorkingCopyService extends Disposable implements IWorkingCopyServic
 
 	//#region Registry
 
-	get workingCopies(): IWorkingCopy[] { return values(this._workingCopies); }
+	get workingCopies(): IWorkingCopy[] { return Array.from(this._workingCopies.values()); }
 	private _workingCopies = new Set<IWorkingCopy>();
 
 	private readonly mapResourceToWorkingCopy = new ResourceMap<IWorkingCopy>();

@@ -249,6 +249,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
+	tabbedPanel(): azdata.TabbedPanelComponentBuilder {
+		let id = this.getNextComponentId();
+		let builder = new TabbedPanelComponentBuilder(new TabbedPanelComponentWrapper(this._proxy, this._handle, id));
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	getComponentBuilder<T extends azdata.Component>(component: ComponentWrapper, id: string): ComponentBuilderImpl<T> {
 		let componentBuilder: ComponentBuilderImpl<T> = new ComponentBuilderImpl<T>(component);
 		this._componentBuilders.set(id, componentBuilder);
@@ -484,6 +491,37 @@ class ToolbarContainerBuilder extends GenericContainerBuilder<azdata.ToolbarCont
 		let itemImpl = this.convertToItemConfig(toolbarComponent);
 		this._component.addItem(toolbarComponent.component as ComponentWrapper, itemImpl.config);
 	}
+}
+
+class TabbedPanelComponentBuilder extends ContainerBuilderImpl<azdata.TabbedPanelComponent, azdata.TabbedPanelLayout, any> implements azdata.TabbedPanelComponentBuilder {
+	withTabs(items: (azdata.Tab | azdata.TabGroup)[]): azdata.ContainerBuilder<azdata.TabbedPanelComponent, azdata.TabbedPanelLayout, any> {
+		this._component.itemConfigs = createFromTabs(items);
+		return this;
+	}
+}
+
+function createFromTabs(items: (azdata.Tab | azdata.TabGroup)[]): InternalItemConfig[] {
+	const itemConfigs = [];
+	items.forEach(item => {
+		if (item && 'tabs' in item) {
+			item.tabs.forEach(tab => {
+				itemConfigs.push(toTabItemConfig(tab.content, tab.title, tab.id, item.title, tab.icon));
+			});
+		} else {
+			const tab = <azdata.Tab>item;
+			itemConfigs.push(toTabItemConfig(tab.content, tab.title, tab.id, undefined, tab.icon));
+		}
+	});
+	return itemConfigs;
+}
+
+function toTabItemConfig(content: azdata.Component, title: string, id?: string, group?: string, icon?: string | URI | { light: string | URI; dark: string | URI }): InternalItemConfig {
+	return new InternalItemConfig(content as ComponentWrapper, {
+		title: title,
+		group: group,
+		id: id,
+		icon: icon
+	});
 }
 
 class LoadingComponentBuilder extends ComponentBuilderImpl<azdata.LoadingComponent> implements azdata.LoadingComponentBuilder {
@@ -1683,6 +1721,26 @@ class RadioCardGroupComponentWrapper extends ComponentWrapper implements azdata.
 	}
 
 	public get onSelectionChanged(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+}
+
+class TabbedPanelComponentWrapper extends ComponentWrapper implements azdata.TabbedPanelComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.TabbedPanel, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<string>());
+	}
+	updateTabs(tabs: (azdata.Tab | azdata.TabGroup)[]): void {
+		this.clearItems();
+		const itemConfigs = createFromTabs(tabs);
+		itemConfigs.forEach(itemConfig => {
+			this.addItem(itemConfig.component, itemConfig.config);
+		});
+	}
+
+	public get onTabChanged(): vscode.Event<string> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}

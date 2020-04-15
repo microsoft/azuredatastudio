@@ -19,7 +19,7 @@
       "properties": {
         "notebook.maxBookSearchDepth": {
           "type": "number",
-          "default": 5,
+          "default": 10,
           "description": "%notebook.maxBookSearchDepth.description%"
         },
         "notebook.pythonPath": {
@@ -41,6 +41,14 @@
           "type": "number",
           "default": 5000,
           "description": "%notebook.maxTableRows.description%"
+        },
+        "notebook.trustedBooks": {
+          "type": "array",
+          "default": [],
+          "description": "%notebook.trustedBooks.description%",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -160,6 +168,15 @@
         }
       },
       {
+        "command": "notebook.command.trustBook",
+        "title": "%title.trustBook%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/trust_inverse.svg",
+          "light": "resources/light/trust.svg"
+        }
+      },
+      {
         "command": "notebook.command.searchBook",
         "title": "%title.searchJupyterBook%",
         "category": "%books-preview-category%",
@@ -187,8 +204,21 @@
         }
       },
       {
+        "command": "notebook.command.openNotebookFolder",
+        "title": "%title.openNotebookFolder%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/open_folder_inverse.svg",
+          "light": "resources/light/open_folder.svg"
+        }
+      },
+      {
         "command": "notebook.command.closeBook",
         "title": "%title.closeJupyterBook%"
+      },
+      {
+        "command": "notebook.command.closeNotebook",
+        "title": "%title.closeJupyterNotebook%"
       },
       {
         "command": "notebook.command.createBook",
@@ -234,23 +264,23 @@
         },
         {
           "command": "notebook.command.runactivecell",
-          "when": "notebookEditorVisible"
+          "when": "activeEditor == workbench.editor.notebookEditor"
         },
         {
           "command": "notebook.command.clearactivecellresult",
-          "when": "notebookEditorVisible"
+          "when": "activeEditor == workbench.editor.notebookEditor"
         },
         {
           "command": "notebook.command.runallcells",
-          "when": "notebookEditorVisible"
+          "when": "activeEditor == workbench.editor.notebookEditor"
         },
         {
           "command": "notebook.command.addcode",
-          "when": "notebookEditorVisible"
+          "when": "activeEditor == workbench.editor.notebookEditor"
         },
         {
           "command": "notebook.command.addtext",
-          "when": "notebookEditorVisible"
+          "when": "activeEditor == workbench.editor.notebookEditor"
         },
         {
           "command": "notebook.command.addcell",
@@ -293,7 +323,15 @@
           "when": "false"
         },
         {
+          "command": "notebook.command.trustBook",
+          "when": "view == bookTreeView && viewItem == savedBook"
+        },
+        {
           "command": "notebook.command.closeBook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.closeNotebook",
           "when": "false"
         },
         {
@@ -327,6 +365,11 @@
       ],
       "view/item/context": [
         {
+          "command": "notebook.command.trustBook",
+          "when": "view == bookTreeView && viewItem == savedBook",
+          "group": "inline"
+        },
+        {
           "command": "notebook.command.searchBook",
           "when": "view == bookTreeView && viewItem == savedBook || viewItem  == section",
           "group": "inline"
@@ -344,6 +387,10 @@
         {
           "command": "notebook.command.closeBook",
           "when": "view == bookTreeView && viewItem == savedBook"
+        },
+        {
+          "command": "notebook.command.closeNotebook",
+          "when": "view == bookTreeView && viewItem == savedNotebook"
         }
       ],
       "view/title": [
@@ -355,6 +402,11 @@
         {
           "command": "notebook.command.createBook",
           "when": "view == bookTreeView"
+        },
+        {
+          "command": "notebook.command.openNotebookFolder",
+          "when": "view == bookTreeView",
+          "group": "navigation"
         }
       ],
       "notebook/toolbar": [
@@ -484,7 +536,7 @@
     "@types/tar": "^4.0.3",
     "adm-zip": "^0.4.14",
     "error-ex": "^1.3.1",
-    "fast-glob": "^3.0.4",
+    "fast-glob": "^3.1.0",
     "figures": "^2.0.0",
     "fs-extra": "^5.0.0",
     "glob": "^7.1.1",
@@ -512,10 +564,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.3",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
-  },
-  "resolutions": {
-    "esprima": "^4.0.0"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.6"
   },
   "enableProposedApi": true
 }

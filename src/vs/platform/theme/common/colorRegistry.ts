@@ -227,7 +227,7 @@ export const simpleCheckboxForeground = registerColor('checkbox.foreground', { d
 export const simpleCheckboxBorder = registerColor('checkbox.border', { dark: selectBorder, light: selectBorder, hc: selectBorder }, nls.localize('checkbox.border', "Border color of checkbox widget."));
 
 export const buttonForeground = registerColor('button.foreground', { dark: Color.white, light: Color.white, hc: Color.white }, nls.localize('buttonForeground', "Button foreground color."));
-export const buttonBackground = registerColor('button.background', { dark: '#0E639C', light: '#007ACC', hc: null }, nls.localize('buttonBackground', "Button background color."));
+export const buttonBackground = registerColor('button.background', { dark: '#0078D4', light: '#007ACC', hc: '#0078D4' }, nls.localize('buttonBackground', "Button background color."));
 export const buttonHoverBackground = registerColor('button.hoverBackground', { dark: lighten(buttonBackground, 0.2), light: darken(buttonBackground, 0.2), hc: null }, nls.localize('buttonHoverBackground', "Button background color when hovering."));
 
 export const badgeBackground = registerColor('badge.background', { dark: '#4D4D4D', light: '#C4C4C4', hc: Color.black }, nls.localize('badgeBackground', "Badge background color. Badges are small information labels, e.g. for search results count."));

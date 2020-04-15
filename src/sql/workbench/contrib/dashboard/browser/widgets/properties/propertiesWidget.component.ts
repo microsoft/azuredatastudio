@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import 'vs/css!./propertiesWidget';
 
 import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef, ViewChild } from '@angular/core';
 
@@ -65,24 +66,25 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	private _databaseInfo: DatabaseInfo;
 	public _clipped: boolean;
 	private properties: Array<DisplayProperty>;
-	private _hasInit = false;
 
 	@ViewChild('child', { read: ElementRef }) private _child: ElementRef;
 	@ViewChild('parent', { read: ElementRef }) private _parent: ElementRef;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
 		@Inject(ILogService) private logService: ILogService
 	) {
-		super();
+		super(changeRef);
+		this._loadingMessage = nls.localize('loadingProperties', "Loading properties");
+		this._loadingCompletedMessage = nls.localize('loadingPropertiesCompleted', "Loading properties completed");
 		this.init();
 	}
 
 	ngOnInit() {
-		this._hasInit = true;
+		this._inited = true;
 		this._register(addDisposableListener(window, EventType.RESIZE, () => this.handleClipping()));
 		this._changeRef.detectChanges();
 	}
@@ -93,14 +95,17 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 	private init(): void {
 		this._connection = this._bootstrap.connectionManagementService.connectionInfo;
+		this.setLoadingStatus(true);
 		this._register(subscriptionToDisposable(this._bootstrap.adminService.databaseInfo.subscribe(data => {
 			this._databaseInfo = data;
 			this._changeRef.detectChanges();
 			this.parseProperties();
-			if (this._hasInit) {
+			if (this._inited) {
 				this.handleClipping();
 			}
+			this.setLoadingStatus(false);
 		}, error => {
+			this.setLoadingStatus(false);
 			(<HTMLElement>this._el.nativeElement).innerText = nls.localize('dashboard.properties.error', "Unable to load dashboard properties");
 		})));
 	}
@@ -225,7 +230,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			this.properties.push(<DisplayProperty>assignProperty);
 		}
 
-		if (this._hasInit) {
+		if (this._inited) {
 			this._changeRef.detectChanges();
 		}
 	}

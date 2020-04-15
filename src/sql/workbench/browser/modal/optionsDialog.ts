@@ -9,7 +9,6 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IModalOptions, Modal } from './modal';
 import * as OptionsDialogHelper from './optionsDialogHelper';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
-import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 
 import * as azdata from 'azdata';
 
@@ -26,13 +25,13 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { append, $ } from 'vs/base/browser/dom';
+import { append, $, clearNode } from 'vs/base/browser/dom';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
-import { attachModalDialogStyler, attachPanelStyler } from 'sql/workbench/common/styler';
+import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
@@ -77,16 +76,13 @@ export interface IOptionsDialogOptions extends IModalOptions {
 
 export class OptionsDialog extends Modal {
 	private _body: HTMLElement;
-	private _optionGroups: HTMLElement;
+	private _optionGroupsContainer: HTMLElement;
+	private _categoryTitles: HTMLElement[] = [];
 	private _dividerBuilder: HTMLElement;
 	private _optionTitle: HTMLElement;
 	private _optionDescription: HTMLElement;
 	private _optionElements: { [optionName: string]: OptionsDialogHelper.IOptionElement } = {};
 	private _optionValues: { [optionName: string]: string };
-	private _optionRowSize = 31;
-	private _optionCategoryPadding = 30;
-	private height: number;
-	private splitview: ScrollableSplitView;
 
 	private _onOk = new Emitter<void>();
 	public onOk: Event<void> = this._onOk.event;
@@ -101,7 +97,6 @@ export class OptionsDialog extends Modal {
 		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
@@ -132,8 +127,7 @@ export class OptionsDialog extends Modal {
 
 		this._dividerBuilder = append(this._body, $('div'));
 
-		this._optionGroups = append(this._body, $('div.optionsDialog-options-groups.monaco-pane-view'));
-		this.splitview = new ScrollableSplitView(this._optionGroups, { enableResizing: false, scrollDebounce: 0 });
+		this._optionGroupsContainer = append(this._body, $('div.optionsDialog-options-groups.monaco-pane-view'));
 
 		const descriptionContainer = append(this._body, $('div.optionsDialog-description'));
 
@@ -143,13 +137,20 @@ export class OptionsDialog extends Modal {
 
 	// Update theming that is specific to options dialog flyout body
 	private updateTheme(theme: IColorTheme): void {
-		let borderColor = theme.getColor(contrastBorder);
-		let border = borderColor ? borderColor.toString() : null;
+		const borderColor = theme.getColor(contrastBorder);
+		const border = borderColor ? borderColor.toString() : null;
+		const backgroundColor = theme.getColor(SIDE_BAR_BACKGROUND);
 		if (this._dividerBuilder) {
 			this._dividerBuilder.style.borderTopWidth = border ? '1px' : null;
 			this._dividerBuilder.style.borderTopStyle = border ? 'solid' : null;
 			this._dividerBuilder.style.borderTopColor = border;
 		}
+		this._categoryTitles.forEach(titleElement => {
+			titleElement.style.borderWidth = border ? '1px 0px' : null;
+			titleElement.style.borderStyle = border ? 'solid none' : null;
+			titleElement.style.borderColor = border;
+			titleElement.style.backgroundColor = backgroundColor ? backgroundColor.toString() : null;
+		});
 	}
 
 	private onOptionLinkClicked(optionName: string): void {
@@ -162,7 +163,8 @@ export class OptionsDialog extends Modal {
 		for (let i = 0; i < options.length; i++) {
 			let option: azdata.ServiceOption = options[i];
 			let rowContainer = DialogHelper.appendRow(container, option.displayName, 'optionsDialog-label', 'optionsDialog-input');
-			OptionsDialogHelper.createOptionElement(option, rowContainer, this._optionValues, this._optionElements, this._contextViewService, (name) => this.onOptionLinkClicked(name));
+			const optionElement = OptionsDialogHelper.createOptionElement(option, rowContainer, this._optionValues, this._optionElements, this._contextViewService, (name) => this.onOptionLinkClicked(name));
+			this.disposableStore.add(optionElement.optionWidget);
 		}
 	}
 
@@ -174,12 +176,12 @@ export class OptionsDialog extends Modal {
 			switch (option.valueType) {
 				case ServiceOptionType.category:
 				case ServiceOptionType.boolean:
-					this._register(styler.attachSelectBoxStyler(<SelectBox>widget, this._themeService));
+					this.disposableStore.add(styler.attachSelectBoxStyler(<SelectBox>widget, this._themeService));
 					break;
 				case ServiceOptionType.string:
 				case ServiceOptionType.password:
 				case ServiceOptionType.number:
-					this._register(styler.attachInputBoxStyler(<InputBox>widget, this._themeService));
+					this.disposableStore.add(styler.attachInputBoxStyler(<InputBox>widget, this._themeService));
 			}
 		}
 	}
@@ -223,52 +225,42 @@ export class OptionsDialog extends Modal {
 	}
 
 	public close() {
-		this.dispose();
 		this.hide();
+		this._optionElements = {};
 		this._onCloseEvent.fire();
 	}
 
 	public open(options: azdata.ServiceOption[], optionValues: { [name: string]: any }) {
 		this._optionValues = optionValues;
 		let firstOption: string;
-		this.splitview.clear();
 		let categoryMap = OptionsDialogHelper.groupOptionsByCategory(options);
+		clearNode(this._optionGroupsContainer);
 		for (let category in categoryMap) {
+			const title = append(this._optionGroupsContainer, $('h2.option-category-title'));
+			title.innerText = category;
+			this._categoryTitles.push(title);
+
 			let serviceOptions: azdata.ServiceOption[] = categoryMap[category];
 			let bodyContainer = $('table.optionsDialog-table');
 			this.fillInOptions(bodyContainer, serviceOptions);
-
-			let viewSize = this._optionCategoryPadding + serviceOptions.length * this._optionRowSize;
-			let categoryView = this._instantiationService.createInstance(CategoryView, bodyContainer, viewSize, { title: category, id: category });
-			this.splitview.addView(categoryView, viewSize);
-			categoryView.render();
-			attachPanelStyler(categoryView, this._themeService);
+			append(this._optionGroupsContainer, bodyContainer);
 
 			if (!firstOption) {
 				firstOption = serviceOptions[0].name;
 			}
 		}
-		if (this.height) {
-			this.splitview.layout(this.height - 120);
-		}
+		this.updateTheme(this._themeService.getColorTheme());
 		this.show();
 		let firstOptionWidget = this._optionElements[firstOption].optionWidget;
 		this.registerStyling();
-		firstOptionWidget.focus();
+		setTimeout(() => firstOptionWidget.focus(), 1);
 	}
 
 	protected layout(height?: number): void {
-		this.height = height;
-		// account for padding and the details view
-		this.splitview.layout(this.height - 120 - 20);
 	}
 
 	public dispose(): void {
 		super.dispose();
-		for (let optionName in this._optionElements) {
-			let widget: Widget = this._optionElements[optionName].optionWidget;
-			widget.dispose();
-			delete this._optionElements[optionName];
-		}
+		this._optionElements = {};
 	}
 }

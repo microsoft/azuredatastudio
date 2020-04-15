@@ -46,8 +46,8 @@ export class AgentViewComponent {
 	public readonly operatorsComponentTitle: string = nls.localize('jobview.Operators', "Operators");
 
 	public readonly panelOpt: IPanelOptions = {
-		showTabsWhenOne: true,
-		layout: NavigationBarLayout.vertical,
+		alwaysShowTabs: true,
+		layout: NavigationBarLayout.horizontal,
 		showIcon: true
 	};
 

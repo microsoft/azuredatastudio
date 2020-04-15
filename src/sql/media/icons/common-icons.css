@@ -12,22 +12,16 @@
 	background-image: url('settings_inverse.svg');
 }
 
-.vs .codicon.backup {
+.vs .codicon.backup,
+.vs-dark .codicon.backup,
+.hc-black .codicon.backup {
 	background: url("backup.svg") center center no-repeat;
 }
 
-.vs-dark .codicon.backup,
-.hc-black .codicon.backup {
-	background: url("backup_inverse.svg") center center no-repeat;
-}
-
-.vs .codicon.restore {
-	background: url("restore.svg") center center no-repeat;
-}
-
+.vs .codicon.restore,
 .vs-dark .codicon.restore,
 .hc-black .codicon.restore {
-	background: url("restore_inverse.svg") center center no-repeat;
+	background: url("restore.svg") center center no-repeat;
 }
 
 .vs .codicon.database {
@@ -179,13 +173,10 @@
 	background: url("status_warning.svg") center center no-repeat;
 }
 
-.vs .codicon.refresh {
-	background-image: url('refresh.svg');
-}
-
+.vs .codicon.refresh,
 .vs-dark .codicon.refresh,
-.hc-black .codicon.refresh  {
-	background-image: url('refresh_inverse.svg');
+.hc-black .codicon.refresh {
+	background: url("refresh.svg") no-repeat;
 }
 
 .hc-black .codicon.toggle-more,
@@ -206,31 +197,22 @@
 	background: url('new.svg') center center no-repeat;
 }
 
-.hc-black .codicon.new-query,
-.vs-dark .codicon.new-query {
-	background: url('newquery_inverse.svg') center center no-repeat;
+.vs .codicon.new-query,
+.vs-dark .codicon.new-query,
+.hc-black .codicon.new-query {
+	background: url("newquery.svg") center center no-repeat;
 }
 
-.vs .codicon.new-query {
-	background: url('newquery.svg') center center no-repeat;
-}
-
+.vs .codicon.configure-dashboard,
 .hc-black .codicon.configure-dashboard,
 .vs-dark .codicon.configure-dashboard {
-	background: url('configdashboard_inverse.svg') center center no-repeat;
+	background: url('configuredashboard.svg') center center no-repeat;
 }
 
-.vs .codicon.configure-dashboard {
-	background: url('configdashboard.svg') center center no-repeat;
-}
-
+.vs .codicon.edit,
 .hc-black .codicon.edit,
 .vs-dark .codicon.edit {
-	background: url('edit_inverse.svg') center center no-repeat;
-}
-
-.vs .codicon.edit {
-	background: url('edit.svg') center center no-repeat;
+	background: url("edit.svg") center center no-repeat;
 }
 
 .hc-black .codicon.pin,
@@ -295,6 +277,119 @@
 .hc-black .sql.codicon.stop {
 	background-image: url('stop_inverse.svg')
 }
+
+/* Notebook cells */
+.codicon.toolbarIconRunInactive {
+	background-image: url('execute_cell_grey.svg');
+}
+.codicon.toolbarIconRun {
+	background-image: url('execute_cell.svg');
+}
+.codicon.toolbarIconRunError {
+	background-image: url('execute_cell_error.svg');
+}
+.codicon.toolbarIconStop {
+	background-image: url('stop_cell_solidanimation.svg');
+}
+.vs-dark .codicon.toolbarIconRunInactive {
+	background-image: url('execute_cell_dark.svg');
+}
+.vs-dark .codicon.toolbarIconRun {
+	background-image: url('execute_cell_white.svg');
+}
+.hc-black .codicon.toolbarIconRunInactive {
+	background-image: url('execute_cell_hc.svg');
+}
+.hc-black .codicon.toolbarIconRun {
+	background-image: url('execute_cell_orange_hc.svg');
+}
+.vs-dark .codicon.toolbarIconStop,
+.hc-black .codicon.toolbarIconStop {
+	background-image: url('stop_cell_solidanimation_inverse.svg');
+}
+
+.codicon.arrow-up {
+	background-image: url("chevron_up.svg");
+}
+.vs-dark .codicon.arrow-up,
+.hc-black .codicon.arrow-up {
+	background-image: url("chevron_up_inverse.svg");
+}
+
+.codicon.arrow-down {
+	background-image: url("chevron_down.svg");
+}
+.vs-dark .codicon.arrow-down,
+.hc-black .codicon.arrow-down {
+	background-image: url("chevron_down_inverse.svg");
+}
+
+/* Icons as masked elements for easy theme switching */
+.codicon.bold {
+	-webkit-mask-image: url('toolbar-bold.svg');
+	mask-image: url('toolbar-bold.svg');
+}
+.codicon.italic {
+	-webkit-mask-image: url('toolbar-italic.svg');
+	mask-image: url('toolbar-italic.svg');
+}
+.codicon.highlight {
+	-webkit-mask-image: url('toolbar-highlight.svg');
+	mask-image: url('toolbar-highlight.svg');
+}
+.codicon.code {
+	-webkit-mask-image: url('toolbar-code.svg');
+	mask-image: url('toolbar-code.svg');
+}
+.codicon.insert-link {
+	-webkit-mask-image: url('toolbar-link.svg');
+	mask-image: url('toolbar-link.svg');
+}
+.codicon.list {
+	-webkit-mask-image: url('toolbar-list.svg');
+	mask-image: url('toolbar-list.svg');
+}
+.codicon.ordered-list {
+	-webkit-mask-image: url('toolbar-ordered-list.svg');
+	mask-image: url('toolbar-ordered-list.svg');
+}
+.codicon.insert-image {
+	-webkit-mask-image: url('toolbar-image.svg');
+	mask-image: url('toolbar-image.svg');
+}
+.codicon.split-toggle-on {
+	-webkit-mask-image: url('toolbar-preview-toggle-on.svg');
+	mask-image: url('toolbar-preview-toggle-on.svg');
+}
+.codicon.split-toggle-off {
+	-webkit-mask-image: url('toolbar-preview-toggle-off.svg');
+	mask-image: url('toolbar-preview-toggle-off.svg');
+}
+
+/* Cell toolbar icons */
+.cell-tool-close {
+	background-image: url('close-blue.svg');
+}
+.cell-tool-edit {
+	background-image: url('edit.svg');
+}
+.cell-tool-add {
+	background-image: url('new-blue.svg');
+}
+.cell-tool-move-up {
+	background-image: url('down-arrow-blue.svg');
+	transform: scale(-1);
+}
+.cell-tool-move-down {
+	background-image: url('down-arrow-blue.svg');
+}
+.cell-tool-delete {
+	background-image: url('garbage-can-blue.svg');
+}
+.cell-tool-more {
+	background-image: url('ellipsis-blue.svg');
+}
+
 
 .small {
 	width: 16px;

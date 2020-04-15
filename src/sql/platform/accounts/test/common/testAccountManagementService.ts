@@ -43,6 +43,10 @@ export class TestAccountManagementService implements IAccountManagementService {
 		return Promise.resolve([]);
 	}
 
+	getAccounts(): Thenable<azdata.Account[]> {
+		return Promise.resolve([]);
+	}
+
 	getAccountsForProvider(providerId: string): Thenable<azdata.Account[]> {
 		return Promise.resolve([]);
 	}
@@ -52,6 +56,10 @@ export class TestAccountManagementService implements IAccountManagementService {
 	}
 
 	removeAccount(accountKey: azdata.AccountKey): Thenable<boolean> {
+		throw new Error('Method not implemented');
+	}
+
+	removeAccounts(): Thenable<boolean> {
 		throw new Error('Method not implemented');
 	}
 
