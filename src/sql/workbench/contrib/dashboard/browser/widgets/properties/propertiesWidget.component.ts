@@ -110,10 +110,8 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			this._databaseInfo = data;
 			this._changeRef.detectChanges();
 			this.parseProperties();
-			if (this._inited) {
-				this.layoutProperties();
-			}
 			this.setLoadingStatus(false);
+			this.layoutProperties();
 		}, error => {
 			this.setLoadingStatus(false);
 			(<HTMLElement>this._el.nativeElement).innerText = nls.localize('dashboard.properties.error', "Unable to load dashboard properties");
@@ -125,27 +123,29 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		// 4 columns: 1366px and above
 		// 2 columns: 1024 - 1365px
 		// 1 column: 1024px or less
-		if (window.innerWidth >= 1366 && this._layout !== propertyDisplayLayout.fourColumns) {
-			this._layout = propertyDisplayLayout.fourColumns;
-			this.setPropertiesClass('propertiesColumn', 'propertiesColumn');
-			this.setPropertiesClass('propertyLeft', 'property propertyLeft fourColumns');
-			this.setPropertiesClass('propertyRight', 'property propertyRight fourColumns');
-			this.height = Math.ceil(this.properties.length / 2) * horizontalPropertyHeight + collapseHeight;
-		} else if (window.innerWidth < 1366 && window.innerWidth >= 1024 && this._layout !== propertyDisplayLayout.twoColumns) {
-			this._layout = propertyDisplayLayout.twoColumns;
-			this.setPropertiesClass('propertiesColumn', 'propertiesColumn');
-			this.setPropertiesClass('propertyLeft', 'property propertyLeft twoColumns');
-			this.setPropertiesClass('propertyRight', 'property propertyRight twoColumns');
-			this.height = Math.ceil(this.properties.length / 2) * verticalPropertyHeight + collapseHeight;
-		} else if (window.innerWidth < 1024 && this._layout !== propertyDisplayLayout.oneColumn) {
-			this._layout = propertyDisplayLayout.oneColumn;
-			this.setPropertiesClass('propertiesColumn', 'propertiesColumn oneColumn');
-			this.setPropertiesClass('propertyLeft', 'property propertyLeft oneColumn');
-			this.setPropertiesClass('propertyRight', 'property propertyRight oneColumn');
-			this.height = this.properties.length * verticalPropertyHeight + collapseHeight;
-		}
+		if (!this._loading) {
+			if (window.innerWidth >= 1366 && this._layout !== propertyDisplayLayout.fourColumns) {
+				this._layout = propertyDisplayLayout.fourColumns;
+				this.setPropertiesClass('propertiesColumn', 'propertiesColumn');
+				this.setPropertiesClass('propertyLeft', 'property propertyLeft fourColumns');
+				this.setPropertiesClass('propertyRight', 'property propertyRight fourColumns');
+				this.height = Math.ceil(this.properties.length / 2) * horizontalPropertyHeight + collapseHeight;
+			} else if (window.innerWidth < 1366 && window.innerWidth >= 1024 && this._layout !== propertyDisplayLayout.twoColumns) {
+				this._layout = propertyDisplayLayout.twoColumns;
+				this.setPropertiesClass('propertiesColumn', 'propertiesColumn');
+				this.setPropertiesClass('propertyLeft', 'property propertyLeft twoColumns');
+				this.setPropertiesClass('propertyRight', 'property propertyRight twoColumns');
+				this.height = Math.ceil(this.properties.length / 2) * verticalPropertyHeight + collapseHeight;
+			} else if (window.innerWidth < 1024 && this._layout !== propertyDisplayLayout.oneColumn) {
+				this._layout = propertyDisplayLayout.oneColumn;
+				this.setPropertiesClass('propertiesColumn', 'propertiesColumn oneColumn');
+				this.setPropertiesClass('propertyLeft', 'property propertyLeft oneColumn');
+				this.setPropertiesClass('propertyRight', 'property propertyRight oneColumn');
+				this.height = this.properties.length * verticalPropertyHeight + collapseHeight;
+			}
 
-		this._changeRef.detectChanges();
+			this._changeRef.detectChanges();
+		}
 	}
 
 	private setPropertiesClass(findClass: string, newClass: string): void {
