@@ -28,6 +28,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		const postgresDashboard = new PostgresDashboard(loc.postgresDashboard, controllerModel, databaseModel);
 		await postgresDashboard.showDashboard();
 	});
+
+	vscode.commands.registerCommand('arc.manageMiaa', async () => {
+
+	});
 }
 
 export function deactivate(): void {
