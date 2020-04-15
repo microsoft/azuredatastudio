@@ -9,7 +9,8 @@ import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
-import { dirname, basename } from 'vs/base/common/path';
+import { relative, resolve } from 'vs/base/common/path';
+import { IFileService } from 'vs/platform/files/common/files';
 
 const knownSchemes = new Set(['http', 'https', 'file', 'mailto', 'data', 'azuredatastudio', 'azuredatastudio-insiders', 'vscode', 'vscode-insiders', 'vscode-resource', 'onenote']);
 @Directive({
@@ -22,7 +23,8 @@ export class LinkHandlerDirective {
 
 	constructor(
 		@Inject(IOpenerService) private readonly openerService: IOpenerService,
-		@Inject(INotebookService) private readonly notebookService: INotebookService
+		@Inject(INotebookService) private readonly notebookService: INotebookService,
+		@Inject(IFileService) private readonly fileService: IFileService
 	) {
 		this.workbenchFilePath = URI.parse(require.toUrl('vs/code/electron-browser/workbench/workbench.html'));
 	}
@@ -51,7 +53,7 @@ export class LinkHandlerDirective {
 		}
 	}
 
-	private handleLink(content: string): void {
+	private async handleLink(content: string): Promise<void> {
 		let uri: URI | undefined;
 		try {
 			uri = URI.parse(content);
@@ -62,19 +64,22 @@ export class LinkHandlerDirective {
 			if (uri.fragment && uri.fragment.length > 0 && uri.fsPath === this.workbenchFilePath.fsPath) {
 				this.notebookService.navigateTo(this.notebookUri, uri.fragment);
 			} else {
-				let newUri: URI | undefined;
-				let path = dirname(this.notebookUri.path);
-				path = 'file://' + path + '//' + basename(uri.path);
-				try {
-					newUri = URI.parse(path);
-				} catch{
-					//ignore
+				let exists = await this.fileService.exists(uri);
+				if (!exists) {
+					let relPath = relative(this.workbenchFilePath.fsPath, uri.fsPath);
+					let path = resolve(this.notebookUri.fsPath, relPath);
+					path = 'file:///' + path;
+					try {
+						uri = URI.parse(path);
+					} catch (error) {
+						onUnexpectedError(error);
+					}
 				}
-				if (this.forceOpenExternal(newUri)) {
-					this.openerService.open(newUri, { openExternal: true }).catch(onUnexpectedError);
+				if (this.forceOpenExternal(uri)) {
+					this.openerService.open(uri, { openExternal: true }).catch(onUnexpectedError);
 				}
 				else {
-					this.openerService.open(newUri).catch(onUnexpectedError);
+					this.openerService.open(uri).catch(onUnexpectedError);
 				}
 			}
 		}
