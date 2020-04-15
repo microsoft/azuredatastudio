@@ -26,6 +26,12 @@ import { AzureAccount, Tenant } from '../account-provider/interfaces';
 export function registerAzureResourceCommands(appContext: AppContext, tree: AzureResourceTreeProvider): void {
 	appContext.apiWrapper.registerCommand('azure.resource.startterminal', async (node?: TreeNode) => {
 		try {
+			const enablePreviewFeatures = appContext.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
+			if (!enablePreviewFeatures) {
+				const msg = localize('azure.cloudTerminalPreview', "You must enable preview features in order to use Azure Cloud Shell.");
+				appContext.apiWrapper.showInformationMessage(msg);
+				return;
+			}
 			if (!node || !(node instanceof AzureResourceAccountTreeNode)) {
 				return;
 			}
