@@ -68,9 +68,8 @@ export class LinkHandlerDirective {
 				if (!exists) {
 					let relPath = relative(this.workbenchFilePath.fsPath, uri.fsPath);
 					let path = resolve(this.notebookUri.fsPath, relPath);
-					path = 'file:///' + path;
 					try {
-						uri = URI.parse(path);
+						uri = URI.file(path);
 					} catch (error) {
 						onUnexpectedError(error);
 					}
