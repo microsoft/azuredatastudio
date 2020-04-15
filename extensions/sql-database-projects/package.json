@@ -80,6 +80,34 @@
         },
         {
           "command": "sqlDatabaseProjects.open"
+        },
+        {
+          "command": "sqlDatabaseProjects.close",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newScript",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newTable",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newView",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newStoredProcedure",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newItem",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newFolder",
+          "when": "false"
         }
       ],
       "view/item/context": [

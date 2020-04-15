@@ -5,10 +5,12 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as xmldom from 'xmldom';
+import * as constants from '../common/constants';
+
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { getErrorMessage } from '../common/utils';
-import * as xmldom from 'xmldom';
 
 /**
  * Class representing a Project, and providing functions for operating on it
@@ -44,15 +46,15 @@ export class Project {
 
 		// find all folders and files to include
 
-		for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName('ItemGroup').length; ig++) {
-			const itemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName('ItemGroup')[ig];
+		for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
+			const itemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
 
-			for (let b = 0; b < itemGroup.getElementsByTagName('Build').length; b++) {
-				this.files.push(this.createProjectEntry(itemGroup.getElementsByTagName('Build')[b].getAttribute('Include'), EntryType.File));
+			for (let b = 0; b < itemGroup.getElementsByTagName(constants.Build).length; b++) {
+				this.files.push(this.createProjectEntry(itemGroup.getElementsByTagName(constants.Build)[b].getAttribute(constants.Include), EntryType.File));
 			}
 
-			for (let f = 0; f < itemGroup.getElementsByTagName('Folder').length; f++) {
-				this.files.push(this.createProjectEntry(itemGroup.getElementsByTagName('Folder')[f].getAttribute('Include'), EntryType.Folder));
+			for (let f = 0; f < itemGroup.getElementsByTagName(constants.Folder).length; f++) {
+				this.files.push(this.createProjectEntry(itemGroup.getElementsByTagName(constants.Folder)[f].getAttribute(constants.Include), EntryType.Folder));
 			}
 		}
 	}
@@ -98,8 +100,8 @@ export class Project {
 		let outputItemGroup = undefined;
 
 		// find any ItemGroup node that contains files; that's where we'll add
-		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName('ItemGroup').length; i++) {
-			const currentItemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName('ItemGroup')[i];
+		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup).length; i++) {
+			const currentItemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup)[i];
 
 			// if we're not hunting for a particular child type, or if we are and we find it, use the ItemGroup
 			if (!containedTag || currentItemGroup.getElementsByTagName(containedTag).length > 0) {
@@ -110,7 +112,7 @@ export class Project {
 
 		// if none already exist, make a new ItemGroup for it
 		if (!outputItemGroup) {
-			outputItemGroup = this.projFileXmlDoc.createElement('ItemGroup');
+			outputItemGroup = this.projFileXmlDoc.createElement(constants.ItemGroup);
 			this.projFileXmlDoc.documentElement.appendChild(outputItemGroup);
 		}
 
@@ -118,17 +120,17 @@ export class Project {
 	}
 
 	private addFileToProjFile(path: string) {
-		const newFileNode = this.projFileXmlDoc.createElement('Build');
-		newFileNode.setAttribute('Include', path);
+		const newFileNode = this.projFileXmlDoc.createElement(constants.Build);
+		newFileNode.setAttribute(constants.Include, path);
 
-		this.findOrCreateItemGroup('Build').appendChild(newFileNode);
+		this.findOrCreateItemGroup(constants.Build).appendChild(newFileNode);
 	}
 
 	private addFolderToProjFile(path: string) {
-		const newFolderNode = this.projFileXmlDoc.createElement('Folder');
-		newFolderNode.setAttribute('Include', path);
+		const newFolderNode = this.projFileXmlDoc.createElement(constants.Folder);
+		newFolderNode.setAttribute(constants.Include, path);
 
-		this.findOrCreateItemGroup('Folder').appendChild(newFolderNode);
+		this.findOrCreateItemGroup(constants.Folder).appendChild(newFolderNode);
 	}
 
 	private async addToProjFile(entry: ProjectEntry) {

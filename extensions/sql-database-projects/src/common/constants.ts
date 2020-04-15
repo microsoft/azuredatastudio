@@ -42,3 +42,9 @@ export const scriptFriendlyName = localize('scriptFriendlyName', "Script");
 export const tableFriendlyName = localize('tableFriendlyName', "Table");
 export const viewFriendlyName = localize('viewFriendlyName', "View");
 export const storedProcedureFriendlyName = localize('storedProcedureFriendlyName', "Stored Procedure");
+
+// SqlProj file XML names
+export const ItemGroup = 'ItemGroup';
+export const Build = 'Build';
+export const Folder = 'Folder';
+export const Include = 'Include';

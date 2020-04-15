@@ -70,7 +70,7 @@ export class ProjectsController {
 		return newProject;
 	}
 
-	public async createNewProject(newProjName: string, newProjUri: vscode.Uri, projectGuid?: string): Promise<string> {
+	public async createNewProject(newProjName: string, folderUri: vscode.Uri, projectGuid?: string): Promise<string> {
 		if (projectGuid && !UUID.isUUID(projectGuid)) {
 			throw new Error(`Specified GUID is invalid: '${projectGuid}'`);
 		}
@@ -88,7 +88,7 @@ export class ProjectsController {
 			newProjFileName += constants.sqlprojExtension;
 		}
 
-		const newProjFilePath = path.join(newProjUri.fsPath, newProjFileName);
+		const newProjFilePath = path.join(folderUri.fsPath, newProjFileName);
 
 		let fileExists = false;
 		try {
@@ -98,7 +98,7 @@ export class ProjectsController {
 		catch { } // file doesn't already exist
 
 		if (fileExists) {
-			throw new Error(constants.projectAlreadyExists(newProjFileName, newProjUri.fsPath));
+			throw new Error(constants.projectAlreadyExists(newProjFileName, folderUri.fsPath));
 		}
 
 		await fs.mkdir(path.dirname(newProjFilePath), { recursive: true });

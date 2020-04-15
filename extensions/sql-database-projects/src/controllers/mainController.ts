@@ -42,16 +42,16 @@ export default class MainController implements vscode.Disposable {
 
 	private async initializeDatabaseProjects(): Promise<void> {
 		// init commands
-		vscode.commands.registerCommand('sqlDatabaseProjects.new', async () => { this.createNewProject(); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.open', async () => { this.openProjectFromFile(); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.new', async () => { await this.createNewProject(); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.open', async () => { await this.openProjectFromFile(); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.close', (node: BaseProjectTreeItem) => { this.projectsController.closeProject(node); });
 
-		vscode.commands.registerCommand('sqlDatabaseProjects.newScript', (node: BaseProjectTreeItem) => { this.projectsController.addItemPrompt(node, templateMap.script); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newTable', (node: BaseProjectTreeItem) => { this.projectsController.addItemPrompt(node, templateMap.table); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newView', (node: BaseProjectTreeItem) => { this.projectsController.addItemPrompt(node, templateMap.view); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newStoredProcedure', (node: BaseProjectTreeItem) => { this.projectsController.addItemPrompt(node, templateMap.storedProcedure); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newItem', (node: BaseProjectTreeItem) => { this.projectsController.addItemPrompt(node); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newFolder', (node: BaseProjectTreeItem) => { this.projectsController.addFolderPrompt(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newScript', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPrompt(node, templateMap.script); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newTable', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPrompt(node, templateMap.table); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newView', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPrompt(node, templateMap.view); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newStoredProcedure', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPrompt(node, templateMap.storedProcedure); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newItem', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPrompt(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newFolder', async (node: BaseProjectTreeItem) => { await this.projectsController.addFolderPrompt(node); });
 
 		// init view
 		this.extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(SQL_DATABASE_PROJECTS_VIEW_ID, this.dbProjectTreeViewProvider));
@@ -93,7 +93,7 @@ export default class MainController implements vscode.Disposable {
 				// TODO: Smarter way to suggest a name.  Easy if we prompt for location first, but that feels odd...
 			});
 
-			if (!newProjName || newProjName === '') {
+			if (!newProjName) {
 				// TODO: is this case considered an intentional cancellation (shouldn't warn) or an error case (should warn)?
 				vscode.window.showErrorMessage(constants.projectNameRequired);
 				return;
@@ -109,10 +109,6 @@ export default class MainController implements vscode.Disposable {
 			if (!selectionResult) {
 				vscode.window.showErrorMessage(constants.projectLocationRequired);
 				return;
-			}
-
-			if (selectionResult.length !== 1) {
-				throw new Error(`One folder should be selected, but ${selectionResult.length} were.`);
 			}
 
 			// TODO: what if the selected folder is outside the workspace?
