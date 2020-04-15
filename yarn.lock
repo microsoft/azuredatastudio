@@ -7186,10 +7186,10 @@ plist@^3.0.1:
     xmlbuilder "^9.0.7"
     xmldom "0.1.x"
 
-plotly.js-dist@^1.48.3:
-  version "1.48.3"
-  resolved "https://registry.yarnpkg.com/plotly.js-dist/-/plotly.js-dist-1.48.3.tgz#b160b2d080ad87720121c9119f28036f35a301dc"
-  integrity sha512-Ocy2WWjzh4Ofk293AgTvP0ga053nTV7TvUbYEzmq1E9Eh7wc6HCPBxo55YcZThHw3hVycEnhktLQK94en1bYSw==
+plotly.js-dist-min@^1.53.0:
+  version "1.53.0"
+  resolved "https://registry.yarnpkg.com/plotly.js-dist-min/-/plotly.js-dist-min-1.53.0.tgz#bcec2c0ce0c64ea8d7a261213540669a8cc166e9"
+  integrity sha512-tcNz8PmtUL9NfN7gGhMf5TuNt5x20dig+biFLvFH9uFT1kD2Erq5p058QNV2A+vLULTlESlJvVzR9hwpdPMUrw==
 
 plugin-error@0.1.2, plugin-error@^0.1.2:
   version "0.1.2"
