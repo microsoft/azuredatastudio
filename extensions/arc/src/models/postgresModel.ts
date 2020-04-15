@@ -6,32 +6,53 @@
 import { DuskyObjectModelsDatabaseService, DatabaseRouterApi, DuskyObjectModelsDatabase, V1Status } from '../controller/generated/dusky/api';
 import { Authentication } from '../controller/auth';
 
-export class DatabaseModel {
+export class PostgresModel {
 	private _databaseRouter: DatabaseRouterApi;
 	private _service: DuskyObjectModelsDatabaseService;
+	private _password: string;
 
 	constructor(controllerUrl: string, auth: Authentication, private _namespace: string, private _name: string) {
 		this._databaseRouter = new DatabaseRouterApi(controllerUrl);
 		this._databaseRouter.setDefaultAuthentication(auth);
 	}
 
+	/** Returns the Kubernetes namespace of the service */
 	public namespace(): string {
 		return this._namespace;
 	}
 
+	/** Returns the name of the service */
 	public name(): string {
 		return this._name;
 	}
 
+	/** Returns the service's spec */
 	public service(): DuskyObjectModelsDatabaseService {
 		return this._service;
 	}
 
-	public async refresh() {
-		this._service = (await this._databaseRouter.getDuskyDatabaseService(this._namespace, this._name)).body;
+	/** Returns the service's password */
+	public password(): string {
+		return this._password;
 	}
 
-	public async update(func: (service: DuskyObjectModelsDatabaseService) => void): Promise<void | DuskyObjectModelsDatabaseService> {
+	/** Refreshes the service's model */
+	public async refresh() {
+		await Promise.all([
+			this._databaseRouter.getDuskyDatabaseService(this._namespace, this._name).then(response => {
+				this._service = response.body;
+			}),
+			this._databaseRouter.getDuskyPassword(this._namespace, this._name).then(async response => {
+				this._password = response.body;
+			})
+		]);
+	}
+
+	/**
+	 * Updates the service
+	 * @param func A function of modifications to apply to the service
+	 */
+	public async update(func: (service: DuskyObjectModelsDatabaseService) => void): Promise<DuskyObjectModelsDatabaseService> {
 		// Get the latest spec of the service in case it has changed
 		const service = (await this._databaseRouter.getDuskyDatabaseService(this._namespace, this._name)).body;
 		service.status = undefined; // can't update the status
@@ -43,26 +64,24 @@ export class DatabaseModel {
 		});
 	}
 
+	/** Deletes the service */
 	public async delete(): Promise<V1Status> {
 		return (await this._databaseRouter.deleteDuskyDatabaseService(this._namespace, this._name)).body;
 	}
 
+	/** Creates a SQL database in the service */
 	public async createDatabase(db: DuskyObjectModelsDatabase): Promise<DuskyObjectModelsDatabase> {
 		return await (await this._databaseRouter.createDuskyDatabase(this.namespace(), this.name(), db)).body;
 	}
 
-	public async password(): Promise<string> {
-		return (await this._databaseRouter.getDuskyPassword(this._namespace, this._name)).body;
-	}
-
-	// Returns the number of nodes in the service
+	/** Returns the number of nodes in the service */
 	public numNodes(): number {
 		let nodes = this._service.spec.scale?.shards ?? 1;
 		if (nodes > 1) { nodes++; } // for multiple shards there is an additional node for the coordinator
 		return nodes;
 	}
 
-	// Returns the ip:port of the service
+	/** Returns the ip:port of the service */
 	public endpoint(): string {
 		const externalIp = this._service.status.externalIP;
 		const internalIp = this._service.status.internalIP;
@@ -85,7 +104,7 @@ export class DatabaseModel {
 		return ip;
 	}
 
-	// Returns the service's configuration e.g. '3 nodes, 1.5 vCores, 1GiB RAM, 2GiB storage per node'
+	/** Returns the service's configuration e.g. '3 nodes, 1.5 vCores, 1GiB RAM, 2GiB storage per node' */
 	public configuration(): string {
 		const nodes = this.numNodes();
 		const cpuLimit = this.formatCores(this._service.spec.scheduling?.resources.limits?.['cpu']);
@@ -111,19 +130,25 @@ export class DatabaseModel {
 		return nodeConfiguration;
 	}
 
-	// Converts millicores to cores (600m -> 0.6 cores)
-	// https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-cpu
+	/**
+	 * Converts millicores to cores (600m -> 0.6 cores)
+	 * https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-cpu
+	 * @param cores The millicores to format e.g. 600m
+	 */
 	private formatCores(cores: string): number {
 		return cores?.endsWith('m') ? +cores.slice(0, -1) / 1000 : +cores;
 	}
 
-	// Formats the memory to end with 'B' e.g:
-	// 1 -> 1B
-	// 1K -> 1KB, 1Ki -> 1KiB
-	// 1M -> 1MB, 1Mi -> 1MiB
-	// 1G -> 1GB, 1Gi -> 1GiB
-	// 1T -> 1TB, 1Ti -> 1TiB
-	// https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-memory
+	/**
+	 * Formats the memory to end with 'B' e.g:
+	 * 1 -> 1B
+	 * 1K -> 1KB, 1Ki -> 1KiB
+	 * 1M -> 1MB, 1Mi -> 1MiB
+	 * 1G -> 1GB, 1Gi -> 1GiB
+	 * 1T -> 1TB, 1Ti -> 1TiB
+	 * https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-memory
+	 * @param memory The amount + unit of memory to format e.g. 1K
+	 */
 	private formatMemory(memory: string): string {
 		return memory && !memory.endsWith('B') ? `${memory}B` : memory;
 	}

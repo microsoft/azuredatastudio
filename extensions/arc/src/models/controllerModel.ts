@@ -16,7 +16,7 @@ export class ControllerModel {
 
 	constructor(controllerUrl: string, auth: Authentication) {
 		this._endpointsRouter = new EndpointsRouterApi(controllerUrl);
-		//this._endpointsRouter.setDefaultAuthentication(auth);
+		this._endpointsRouter.setDefaultAuthentication(auth);
 
 		this._tokenRouter = new TokenRouterApi(controllerUrl);
 		this._tokenRouter.setDefaultAuthentication(auth);

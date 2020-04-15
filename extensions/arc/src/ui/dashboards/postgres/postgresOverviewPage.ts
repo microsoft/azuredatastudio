@@ -5,22 +5,35 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { IconPathHelper, cssStyles } from '../../../../constants';
-import { Tab } from './tab';
-import { DuskyObjectModelsDatabaseService, DuskyObjectModelsDatabase, DuskyObjectModelsDatabaseServiceArcPayload } from '../../../../controller/generated/dusky/api';
+import * as loc from '../../../localizedConstants';
+import { IconPathHelper, cssStyles } from '../../../constants';
+import { DuskyObjectModelsDatabase, DuskyObjectModelsDatabaseServiceArcPayload } from '../../../controller/generated/dusky/api';
+import { PostgresDashboardPage } from './postgresDashboardPage';
 
-export class OverviewTab extends Tab {
-	async tab(view: azdata.ModelView): Promise<azdata.DashboardTab> {
-		const overview = view.modelBuilder.divContainer().component();
-		const essentials = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-		const leftEssentials = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-		const rightEssentials = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-		const essentialColumns = view.modelBuilder.flexContainer().withItems([leftEssentials, rightEssentials], { flex: '1', CSSStyles: { 'padding': '0px 15px', 'overflow': 'hidden' } }).component();
+export class PostgresOverviewPage extends PostgresDashboardPage {
+	protected get title(): string {
+		return loc.overview;
+	}
+
+	protected get id(): string {
+		return 'postgres-overview';
+	}
+
+	protected get icon(): { dark: string; light: string; } {
+		return IconPathHelper.postgres;
+	}
+
+	protected get container(): azdata.Component {
+		const overview = this.modelView.modelBuilder.divContainer().component();
+		const essentials = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
+		const leftEssentials = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
+		const rightEssentials = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
+		const essentialColumns = this.modelView.modelBuilder.flexContainer().withItems([leftEssentials, rightEssentials], { flex: '1', CSSStyles: { 'padding': '0px 15px', 'overflow': 'hidden' } }).component();
 		essentials.addItem(essentialColumns);
 		overview.addItem(essentials);
 
 		// Collapse essentials button
-		const collapse = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({ iconPath: IconPathHelper.collapseUp, width: '10px', height: '10px' }).component();
+		const collapse = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({ iconPath: IconPathHelper.collapseUp, width: '10px', height: '10px' }).component();
 		essentials.addItem(collapse, { CSSStyles: { 'margin-left': 'auto', 'margin-right': 'auto' } });
 		collapse.onDidClick(async () => {
 			if (essentialColumns.display === undefined) {
@@ -36,35 +49,32 @@ export class OverviewTab extends Tab {
 		const textCSS = { ...cssStyles.text, 'font-weight': '500', 'margin-block-start': '0px', 'margin-block-end': '0px' };
 
 		// Left essentials
-		const service: DuskyObjectModelsDatabaseService = this.databaseModel.service();
 		const registration = this.controllerModel.registration('postgres', this.databaseModel.namespace(), this.databaseModel.name());
 		leftEssentials.addItems([
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Name', CSSStyles: headerCSS }).component(),
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this.databaseModel.name(), CSSStyles: textCSS }).component(),
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Resource group', CSSStyles: headerCSS }).component(),
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: registration?.resourceGroupName ?? 'None', CSSStyles: textCSS }).component(),
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Status', CSSStyles: headerCSS }).component(),
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: service.status.state, CSSStyles: textCSS }).component(),
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Data controller', CSSStyles: headerCSS }).component(),
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this.controllerModel.controllerNamespace(), CSSStyles: textCSS }).component(),
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Subscription', CSSStyles: headerCSS }).component(),
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: registration?.subscriptionId ?? 'None', CSSStyles: textCSS }).component()]);
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Name', CSSStyles: headerCSS }).component(),
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this.databaseModel.name(), CSSStyles: textCSS }).component(),
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Resource group', CSSStyles: headerCSS }).component(),
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: registration?.resourceGroupName ?? 'None', CSSStyles: textCSS }).component(),
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Status', CSSStyles: headerCSS }).component(),
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this.databaseModel.service().status.state, CSSStyles: textCSS }).component(),
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Data controller', CSSStyles: headerCSS }).component(),
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this.controllerModel.controllerNamespace(), CSSStyles: textCSS }).component(),
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Subscription', CSSStyles: headerCSS }).component(),
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: registration?.subscriptionId ?? 'None', CSSStyles: textCSS }).component()]);
 
 		// Right essentials
-		// Get the service's password and endpoint
-		const pgConnString = `postgresql://postgres:${await this.databaseModel.password()}@${this.databaseModel.endpoint()}`;
-
-		// Connection string link
-		const endpointLink = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+		// Connection string
+		const pgConnString = `postgresql://postgres:${this.databaseModel.password()}@${this.databaseModel.endpoint()}`;
+		const endpointLink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
 			url: pgConnString, label: pgConnString, CSSStyles: {
 				...cssStyles.hyperlink, 'display': 'inline-block', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis'
 			}
 		}).component();
-		const endpointDiv = view.modelBuilder.divContainer().component();
+		const endpointDiv = this.modelView.modelBuilder.divContainer().component();
 		endpointDiv.addItem(endpointLink, { CSSStyles: { 'display': 'inline-block', 'max-width': 'calc(100% - 20px)', 'padding-right': '5px' } });
 
 		// Button to copy the connection string
-		const endpointCopy = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({ iconPath: IconPathHelper.copy, width: '15px', height: '15px' }).component();
+		const endpointCopy = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({ iconPath: IconPathHelper.copy, width: '15px', height: '15px' }).component();
 		endpointDiv.addItem(endpointCopy, { CSSStyles: { 'display': 'inline-block' } });
 		endpointCopy.onDidClick(async () => {
 			vscode.env.clipboard.writeText(pgConnString);
@@ -72,29 +82,29 @@ export class OverviewTab extends Tab {
 		});
 
 		rightEssentials.addItems([
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Server group type', CSSStyles: headerCSS }).component(),
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Azure Database for PostgreSQL - Azure Arc', CSSStyles: textCSS }).component(),
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Coordinator endpoint', CSSStyles: headerCSS }).component(),
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Server group type', CSSStyles: headerCSS }).component(),
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Azure Database for PostgreSQL - Azure Arc', CSSStyles: textCSS }).component(),
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Coordinator endpoint', CSSStyles: headerCSS }).component(),
 			endpointDiv,
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Admin username', CSSStyles: headerCSS }).component(),
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'postgres', CSSStyles: textCSS }).component(),
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Node configuration', CSSStyles: headerCSS }).component(),
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this.databaseModel.configuration(), CSSStyles: textCSS }).component(),
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'PostgreSQL version', CSSStyles: headerCSS }).component(),
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: service.spec.engine.version.toString(), CSSStyles: textCSS }).component()]);
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Admin username', CSSStyles: headerCSS }).component(),
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'postgres', CSSStyles: textCSS }).component(),
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Node configuration', CSSStyles: headerCSS }).component(),
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this.databaseModel.configuration(), CSSStyles: textCSS }).component(),
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'PostgreSQL version', CSSStyles: headerCSS }).component(),
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this.databaseModel.service().spec.engine.version.toString(), CSSStyles: textCSS }).component()]);
 
 		// Service endpoints
 		const titleCSS = { ...cssStyles.text, 'font-weight': 'bold', 'font-size': '14px', 'margin-left': '10px', 'margin-block-start': '0', 'margin-block-end': '0' };
-		overview.addItem(view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Service endpoints', CSSStyles: titleCSS }).component());
+		overview.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Service endpoints', CSSStyles: titleCSS }).component());
 
 		const kibanaQuery = `kubernetes_namespace:"${this.databaseModel.namespace()}" and cluster_name:"${this.databaseModel.name()}"`;
 		const kibanaUrl = `${this.controllerModel.endpoint('logsui').endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
 		const grafanaUrl = `${this.controllerModel.endpoint('metricsui').endpoint}/d/postgres-metrics?var-Namespace=${this.databaseModel.namespace()}&var-Name=${this.databaseModel.name()}`;
 
-		const kibanaLink = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: kibanaUrl, url: kibanaUrl, CSSStyles: cssStyles.hyperlink }).component();
-		const grafanaLink = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: grafanaUrl, url: grafanaUrl, CSSStyles: cssStyles.hyperlink }).component();
+		const kibanaLink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: kibanaUrl, url: kibanaUrl, CSSStyles: cssStyles.hyperlink }).component();
+		const grafanaLink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: grafanaUrl, url: grafanaUrl, CSSStyles: cssStyles.hyperlink }).component();
 
-		const endpointsTable = view.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
 			columns: [
 				{
@@ -135,8 +145,8 @@ export class OverviewTab extends Tab {
 		overview.addItem(endpointsTable, { CSSStyles: { 'margin-left': '10px', 'margin-right': '10px' } });
 
 		// Server group nodes
-		overview.addItem(view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Server group nodes', CSSStyles: titleCSS }).component());
-		const nodesTable = view.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+		overview.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Server group nodes', CSSStyles: titleCSS }).component());
+		const nodesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
 			columns: [
 				{
@@ -176,20 +186,12 @@ export class OverviewTab extends Tab {
 		}
 
 		overview.addItem(nodesTable, { CSSStyles: { 'margin-left': '10px', 'margin-right': '10px', 'margin-bottom': '20px' } });
-		return {
-			title: 'Overview',
-			id: 'overview-tab',
-			icon: IconPathHelper.postgres,
-			toolbar: this.getOverviewToolbar(view),
-			content: overview
-		};
+		return overview;
 	}
 
-	// List of buttons at the top of the overview page
-	private getOverviewToolbar(view: azdata.ModelView): azdata.ToolbarContainer {
-
+	protected get toolbarContainer(): azdata.ToolbarContainer {
 		// New database
-		const newDatabaseButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const newDatabaseButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: 'New Database',
 			iconPath: IconPathHelper.add
 		}).component();
@@ -202,7 +204,7 @@ export class OverviewTab extends Tab {
 		});
 
 		// Reset password
-		const resetPasswordButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const resetPasswordButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: 'Reset Password',
 			iconPath: IconPathHelper.edit
 		}).component();
@@ -218,7 +220,7 @@ export class OverviewTab extends Tab {
 		});
 
 		// Delete service
-		const deleteButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const deleteButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: 'Delete',
 			iconPath: IconPathHelper.delete
 		}).component();
@@ -234,18 +236,18 @@ export class OverviewTab extends Tab {
 		});
 
 		// TODO implement click
-		const openInAzurePortalButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: 'Open in Azure portal',
 			iconPath: IconPathHelper.openInTab
 		}).component();
 
 		// TODO implement click
-		const feedbackButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const feedbackButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: 'Feedback',
 			iconPath: IconPathHelper.heart
 		}).component();
 
-		return view.modelBuilder.toolbarContainer().withToolbarItems([
+		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
 			{ component: newDatabaseButton },
 			{ component: resetPasswordButton },
 			{ component: deleteButton, toolbarSeparatorAfter: true },

@@ -6,4 +6,11 @@
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
+export const overview = localize('arc.overview', "Overview");
+export const backup = localize('arc.backup', "Backup");
+export const connectionStrings = localize('arc.connectionStrings', "Connection Strings");
+export const networking = localize('arc.networking', "Networking");
+export const properties = localize('arc.properties', "Properties");
+
 export const postgresDashboard = localize('arc.postgresDashboard', "Postgres Dashboard (Preview)");
+export const computeAndStorage = localize('arc.computeAndStorage', 'Compute + Storage');

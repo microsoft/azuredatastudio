@@ -4,13 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-// import * as azdata from 'azdata';
 import * as loc from './localizedConstants';
 import { IconPathHelper } from './constants';
 import { BasicAuth } from './controller/auth';
 import { PostgresDashboard } from './ui/dashboards/postgres/postgresDashboard';
 import { ControllerModel } from './models/controllerModel';
-import { DatabaseModel } from './models/databaseModel';
+import { PostgresModel } from './models/postgresModel';
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	IconPathHelper.setExtensionContext(context);
@@ -25,7 +24,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		const dbName = 'my-postgres2';
 
 		const controllerModel = new ControllerModel(controllerUrl, auth);
-		const databaseModel = new DatabaseModel(controllerUrl, auth, dbNamespace, dbName);
+		const databaseModel = new PostgresModel(controllerUrl, auth, dbNamespace, dbName);
 		const postgresDashboard = new PostgresDashboard(loc.postgresDashboard, controllerModel, databaseModel);
 
 		try { await postgresDashboard.showDashboard(); }
