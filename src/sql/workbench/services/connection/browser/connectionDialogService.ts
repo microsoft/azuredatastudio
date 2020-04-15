@@ -423,7 +423,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._params = params;
 		this._inputModel = model;
 		return new Promise<void>((resolve, reject) => {
-			this.updateModelServerCapabilities(model);
 			// If connecting from a query editor set "save connection" to false
 			if (params && (params.input && params.connectionType === ConnectionType.editor ||
 				params.connectionType === ConnectionType.temporary)) {
@@ -455,7 +454,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this._connectionDialog.render();
 		}
 		this._connectionDialog.newConnectionParams = params;
-		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[this._currentProviderType]);
 
 		const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections(params.providers);
 		await this._connectionDialog.open(recentConnections.length > 0);
