@@ -5,14 +5,13 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnDestroy, ViewChild } from '@angular/core';
 import { NavigationBarLayout, PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { TabType } from 'sql/base/browser/ui/panel/tab.component';
-// eslint-disable-next-line code-import-patterns
-import { TabOrientation, TabbedPanelLayout } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import 'vs/css!./media/tabbedPanel';
 import { IUserFriendlyIcon, createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
+import { TabbedPanelLayout } from 'azdata';
 
 export interface TabConfig {
 	title: string;
@@ -27,6 +26,14 @@ interface Tab {
 	id?: string;
 	type: TabType;
 	iconClass?: string;
+}
+
+/**
+ * Defines the tab orientation of TabbedPanelComponent
+ */
+export enum TabOrientation {
+	Vertical = 'vertical',
+	Horizontal = 'horizontal'
 }
 
 @Component({
@@ -62,9 +69,9 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 
 	setLayout(layout: TabbedPanelLayout): void {
 		this._panel.options = {
-			alwaysShowTabs: layout.alwaysShowTabs,
-			layout: layout.orientation === TabOrientation.Horizontal ? NavigationBarLayout.horizontal : NavigationBarLayout.vertical,
-			showIcon: layout.showIcon
+			alwaysShowTabs: layout.alwaysShowTabs ?? false,
+			layout: (layout.orientation ?? TabOrientation.Horizontal) === TabOrientation.Horizontal ? NavigationBarLayout.horizontal : NavigationBarLayout.vertical,
+			showIcon: layout.showIcon ?? false
 		};
 	}
 
