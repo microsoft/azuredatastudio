@@ -5,10 +5,12 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import * as loc from './localizedConstants';
 import { IconPathHelper, cssStyles } from './constants';
 import { BasicAuth } from './controller/auth';
 import { DatabaseRouterApi, DuskyObjectModelsDatabaseService, DuskyObjectModelsDatabase, DuskyObjectModelsDatabaseServiceArcPayload } from './controller/generated/dusky/api';
 import { EndpointsRouterApi, EndpointModel, RegistrationRouterApi, RegistrationResponse, TokenRouterApi, TokenModel } from './controller/generated/v1/api';
+import { MiaaDashboard } from './ui/dashboards/miaa/miaaDashboard';
 
 // Controller information
 const controllerUrl = 'https://0.0.0.0:30080';
@@ -16,6 +18,9 @@ const auth = new BasicAuth('username', 'password');
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	IconPathHelper.setExtensionContext(context);
+	vscode.commands.registerCommand('arc.manageMiaa', async () => {
+		await new MiaaDashboard(loc.miaaDashboard).showDashboard();
+	});
 	vscode.commands.registerCommand('arc.managePostgres', async () => {
 		await openPostgresDashboard();
 	});
