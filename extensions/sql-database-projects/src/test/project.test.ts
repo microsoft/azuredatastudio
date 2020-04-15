@@ -5,34 +5,43 @@
 
 import * as should from 'should';
 import * as path from 'path';
-import * as vscode from 'vscode';
-import * as baselines from './baselines';
+import * as baselines from './baselines/baselines';
 import * as testUtils from './testUtils';
 
-import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
-import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
 import { Project, EntryType } from '../models/project';
 
-let projController: ProjectsController;
-let testProject: Project;
+let projFilePath: string;
 
-describe('Sqlproj content operations', function (): void {
+describe('Project: sqlproj content operations', function (): void {
 	beforeEach(async () => {
-		projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-		const projFilePath = await testUtils.createTestSqlProj(baselines.openProjectFileBaseline);
-		testProject = await projController.openProject(vscode.Uri.file(projFilePath));
+		projFilePath = await testUtils.createTestSqlProj(baselines.openProjectFileBaseline);
+	});
+
+	it('Should read Project from sqlproj', async function (): Promise<void> {
+		const project: Project = new Project(projFilePath);
+		await project.readProjFile();
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(4);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(5);
+
+		should(project.files.find(f => f.type === EntryType.Folder && f.relativePath === 'Views\\User')).not.equal(undefined); // mixed ItemGroup folder
+		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Views\\User\\Profile.sql')).not.equal(undefined); // mixed ItemGroup file
 	});
 
 	it('Should add Folder and Build entries to sqlproj', async function (): Promise<void> {
+		const project: Project = new Project(projFilePath);
+		await project.readProjFile();
+
 		const folderPath = 'Stored Procedures';
 		const filePath = path.join(folderPath, 'Fake Stored Proc.sql');
 		const fileContents = 'SELECT \'This is not actually a stored procedure.\'';
 
-		await testProject.addFolderItem(folderPath);
-		await testProject.addScriptItem(filePath, fileContents);
+		await project.addFolderItem(folderPath);
+		await project.addScriptItem(filePath, fileContents);
 
-		const newProject = await projController.openProject(vscode.Uri.file(testProject.projectFilePath));
+		const newProject = new Project(projFilePath);
+		await newProject.readProjFile();
 
 		should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === folderPath)).not.equal(undefined);
 		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === filePath)).not.equal(undefined);

@@ -5,7 +5,9 @@
 
 import * as vscode from 'vscode';
 import * as templateMap from '../templates/templateMap';
+import * as templates from '../templates/templates';
 import * as constants from '../common/constants';
+import * as path from 'path';
 
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { getErrorMessage } from '../common/utils';
@@ -53,6 +55,8 @@ export default class MainController implements vscode.Disposable {
 
 		// init view
 		this.extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(SQL_DATABASE_PROJECTS_VIEW_ID, this.dbProjectTreeViewProvider));
+
+		await templates.loadTemplates(path.join(this._context.extensionPath, 'resources', 'templates'));
 	}
 
 	/**
@@ -113,10 +117,10 @@ export default class MainController implements vscode.Disposable {
 
 			// TODO: what if the selected folder is outside the workspace?
 
-			const newProjUri = (selectionResult as vscode.Uri[])[0];
-			console.log(newProjUri.fsPath);
-			await this.projectsController.createNewProject(newProjName as string, newProjUri as vscode.Uri);
-			await this.projectsController.openProject(newProjUri as vscode.Uri);
+			const newProjFolderUri = (selectionResult as vscode.Uri[])[0];
+			console.log(newProjFolderUri.fsPath);
+			const newProjFilePath = await this.projectsController.createNewProject(newProjName as string, newProjFolderUri as vscode.Uri);
+			await this.projectsController.openProject(vscode.Uri.file(newProjFilePath));
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(getErrorMessage(err));

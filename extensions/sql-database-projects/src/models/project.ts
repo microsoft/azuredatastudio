@@ -32,7 +32,7 @@ export class Project {
 	 * Reads the project setting and contents from the file
 	 */
 	public async readProjFile() {
-		let projFileText = await fs.readFile(this.projectFilePath);
+		const projFileText = await fs.readFile(this.projectFilePath);
 
 		try {
 			this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
@@ -54,20 +54,6 @@ export class Project {
 			for (let f = 0; f < itemGroup.getElementsByTagName('Folder').length; f++) {
 				this.files.push(this.createProjectEntry(itemGroup.getElementsByTagName('Folder')[f].getAttribute('Include'), EntryType.Folder));
 			}
-		}
-	}
-
-	/**
-	 * Writes the project file to disk
-	 */
-	public async writeProjFile() {
-		try {
-			const projFileText = '';
-			await fs.writeFile(this.projectFilePath, projFileText);
-		}
-		catch (err) {
-			vscode.window.showErrorMessage(err);
-			return;
 		}
 	}
 

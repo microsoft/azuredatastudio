@@ -4,11 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as constants from '../common/constants';
-
-import { newSqlScriptTemplate } from './newScriptTemplate';
-import { newSqlTableTemplate } from './newTableTemplate';
-import { newSqlViewTemplate } from './newViewTemplate';
-import { newSqlStoredProcedureTemplate } from './newStoredProcedureTemplate';
+import * as templates from './templates';
 
 export class ProjectScriptType {
 	type: string;
@@ -29,10 +25,10 @@ export const storedProcedure: string = 'storedProcedure';
 export const folder: string = 'folder';
 
 export const projectScriptTypes: ProjectScriptType[] = [
-	new ProjectScriptType(script, constants.scriptFriendlyName, newSqlScriptTemplate),
-	new ProjectScriptType(table, constants.tableFriendlyName, newSqlTableTemplate),
-	new ProjectScriptType(view, constants.viewFriendlyName, newSqlViewTemplate),
-	new ProjectScriptType(storedProcedure, constants.storedProcedureFriendlyName, newSqlStoredProcedureTemplate),
+	new ProjectScriptType(script, constants.scriptFriendlyName, templates.newSqlScriptTemplate),
+	new ProjectScriptType(table, constants.tableFriendlyName, templates.newSqlTableTemplate),
+	new ProjectScriptType(view, constants.viewFriendlyName, templates.newSqlViewTemplate),
+	new ProjectScriptType(storedProcedure, constants.storedProcedureFriendlyName, templates.newSqlStoredProcedureTemplate),
 ];
 
 export const projectScriptTypeMap: Record<string, ProjectScriptType> = {};

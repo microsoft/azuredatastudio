@@ -10,11 +10,11 @@ import * as dataSources from '../models/dataSources/dataSources';
 import * as templateMap from '../templates/templateMap';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+import * as templates from '../templates/templates';
 
 import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { promises as fs } from 'fs';
-import { newSqlProjectTemplate } from '../templates/newSqlProjTemplate';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
@@ -79,8 +79,8 @@ export class ProjectsController {
 			'PROJECT_NAME': newProjName,
 			'PROJECT_GUID': projectGuid ?? UUID.generateUuid().toUpperCase()
 		};
-
-		let newProjFileContents = this.macroExpansion(newSqlProjectTemplate, macroDict);
+		console.log('expanding...');
+		let newProjFileContents = this.macroExpansion(templates.newSqlProjectTemplate, macroDict);
 
 		let newProjFileName = newProjName;
 
@@ -90,11 +90,16 @@ export class ProjectsController {
 
 		const newProjFilePath = path.join(newProjUri.fsPath, newProjFileName);
 
+		let fileExists = false;
 		try {
 			await fs.access(newProjFilePath);
-			throw new Error(constants.projectAlreadyExists(newProjFileName, newProjUri.fsPath));
+			fileExists = true;
 		}
 		catch { } // file doesn't already exist
+
+		if (fileExists) {
+			throw new Error(constants.projectAlreadyExists(newProjFileName, newProjUri.fsPath));
+		}
 
 		await fs.mkdir(path.dirname(newProjFilePath), { recursive: true });
 		await fs.writeFile(newProjFilePath, newProjFileContents);
