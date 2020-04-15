@@ -1,7 +1,7 @@
 {
   "name": "arc",
   "displayName": "Azure Arc",
-  "description": "%description%",
+  "description": "%arc.description%",
   "version": "1.0.0",
   "publisher": "Microsoft",
   "preview": true,
@@ -19,6 +19,18 @@
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
   "main": "./out/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "arc.manageMiaa",
+        "title": "%arc.manageMiaa%"
+      },
+      {
+        "command": "arc.managePostgres",
+        "title": "%arc.managePostgres%"
+      }
+    ]
+  },
   "dependencies": {
     "request": "^2.88.0",
     "vscode-nls": "^4.1.2"

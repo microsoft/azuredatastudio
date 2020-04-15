@@ -16,6 +16,12 @@ const auth = new BasicAuth('username', 'password');
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	IconPathHelper.setExtensionContext(context);
+	vscode.commands.registerCommand('arc.managePostgres', async () => {
+		await openPostgresDashboard();
+	});
+}
+
+async function openPostgresDashboard(): Promise<void> {
 	const dashboard: azdata.window.ModelViewDashboard = azdata.window.createModelViewDashboard('Azure Arc - Postgres');
 	dashboard.registerTabs(async (view: azdata.ModelView) => {
 		// TODO: Loading icon while we fetch information
@@ -85,7 +91,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 			}
 		];
 	});
-	return await dashboard.open();
+	await dashboard.open();
 }
 
 // List of buttons at the top of the overview page
