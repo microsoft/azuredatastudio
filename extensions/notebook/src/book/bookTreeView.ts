@@ -140,7 +140,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	@debounce(5000)
+	@debounce(1500)
 	async fireBookRefresh(book: BookModel): Promise<void> {
 		await book.initializeContents().then(() => {
 			this._onDidChangeTreeData.fire();
