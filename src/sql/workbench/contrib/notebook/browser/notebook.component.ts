@@ -6,6 +6,7 @@
 import { nb } from 'azdata';
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, ViewChildren, QueryList } from '@angular/core';
 
+//import { Event } from 'vs/base/common/event';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
 import { INotificationService, INotification } from 'vs/platform/notification/common/notification';
@@ -56,8 +57,8 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IPreviewEnabledService } from 'sql/workbench/services/notebook/common/interfaces';
+//import { PreviewEnabledService } from 'sql/workbench/contrib/notebook/browser/services/previewEnabledService';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -86,7 +87,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _scrollTop: number;
 	private _navProvider: INavigationProvider;
 	private navigationResult: nb.NavigationResult;
-	public previewFeaturesEnabled: boolean = false;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -108,7 +108,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(ILogService) private readonly logService: ILogService,
 		@Inject(ICommandService) private commandService: ICommandService,
 		@Inject(IAdsTelemetryService) private adstelemetryService: IAdsTelemetryService,
-		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
 		@Inject(IPreviewEnabledService) private previewEnabledService: IPreviewEnabledService
 	) {
 		super();
@@ -127,7 +126,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.setScrollPosition();
 		this.doLoad().catch(e => onUnexpectedError(e));
 		this.initNavSection();
-		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 	}
 
 	ngOnDestroy() {
@@ -137,8 +135,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
-	public getPreviewEnabled(): void {
-
+	public checkIfPreviewEnabled(): void {
+		return this.previewEnabledService.fireOnPreviewEnabled();
 	}
 
 	public get model(): NotebookModel | null {

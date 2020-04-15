@@ -4,10 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Event } from 'vs/base/common/event';
+import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+
+export const IPreviewEnabledService = createDecorator<IPreviewEnabledService>('previewEnabledService');
 
 export interface IPreviewEnabledService {
-	_toolbarItem: string;
-	onPreviewEnabled: Event<boolean>;
+	previewFeaturesEnabled: boolean;
+	onPreviewEnabled: Event<void>;
 
-	fireOnPreviewEnabled(_toolbarItem: boolean): void;
+	fireOnPreviewEnabled(): void;
 }
