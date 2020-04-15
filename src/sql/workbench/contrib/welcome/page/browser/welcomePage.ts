@@ -294,7 +294,7 @@ class WelcomePage extends Disposable {
 	}
 
 	private createWidePreviewToolTip() {
-		const previewLink = document.querySelector('#preview_link_wide');
+		const previewLink = document.querySelector('#tool_tip_container_wide');
 		const tooltip = document.querySelector('#tooltip_text_wide');
 		const previewModalBody = document.querySelector('.preview_tooltip_body') as HTMLElement;
 		const previewModalHeader = document.querySelector('.preview_tooltip_header') as HTMLElement;
@@ -625,40 +625,47 @@ class WelcomePage extends Disposable {
 				description.innerHTML = extension.description;
 				header.innerHTML = extension.name;
 
-				const extensionListContainer = document.querySelector('.extension_pack_extension_list');
-				extensionPackExtensions.forEach((j) => {
-					const outerContainerElem = document.createElement('div');
-					const flexContainerElem = document.createElement('div');
-					const iconContainerElem = document.createElement('img');
-					const descriptionContainerElem = document.createElement('div');
-					const pElem = document.createElement('p');
-					const anchorElem = document.createElement('a');
-
-					const outerContainerClasses = ['extension_pack_extension_container', 'flex', 'flex_j_center'];
-					const flexContainerClasses = ['flex', 'flex_a_center'];
-
-					anchorElem.href = j.link;
-
-					outerContainerElem.classList.add(...outerContainerClasses);
-					flexContainerElem.classList.add(...flexContainerClasses);
-					iconContainerElem.classList.add('icon');
-					pElem.classList.add('extension_pack_extension_list_header');
-					descriptionContainerElem.classList.add('description');
-
-					outerContainerElem.appendChild(flexContainerElem);
-					flexContainerElem.appendChild(iconContainerElem);
-					flexContainerElem.appendChild(descriptionContainerElem);
-					descriptionContainerElem.appendChild(anchorElem);
-					anchorElem.appendChild(pElem);
-
-					pElem.innerText = j.name;
-					iconContainerElem.src = j.icon;
-
-					extensionListContainer.appendChild(outerContainerElem);
-				});
+				this.addExtensionPackList(container, '.extension_pack_extension_list');
 			});
 		}
 	}
+
+	private addExtensionPackList(container: HTMLElement, listSelector: string) {
+		const list = container.querySelector(listSelector);
+		if (list) {
+			extensionPackExtensions.forEach((j) => {
+				const outerContainerElem = document.createElement('div');
+				const flexContainerElem = document.createElement('div');
+				const iconContainerElem = document.createElement('img');
+				const descriptionContainerElem = document.createElement('div');
+				const pElem = document.createElement('p');
+				const anchorElem = document.createElement('a');
+
+				const outerContainerClasses = ['extension_pack_extension_container', 'flex', 'flex_j_center'];
+				const flexContainerClasses = ['flex', 'flex_a_center'];
+
+				anchorElem.href = j.link;
+
+				outerContainerElem.classList.add(...outerContainerClasses);
+				flexContainerElem.classList.add(...flexContainerClasses);
+				iconContainerElem.classList.add('icon');
+				pElem.classList.add('extension_pack_extension_list_header');
+				descriptionContainerElem.classList.add('description');
+
+				outerContainerElem.appendChild(flexContainerElem);
+				flexContainerElem.appendChild(iconContainerElem);
+				flexContainerElem.appendChild(descriptionContainerElem);
+				descriptionContainerElem.appendChild(anchorElem);
+				anchorElem.appendChild(pElem);
+
+				pElem.innerText = j.name;
+				iconContainerElem.src = j.icon;
+
+				list.appendChild(outerContainerElem);
+			});
+		}
+	}
+
 
 	private installExtension(extensionSuggestion: ExtensionSuggestion): void {
 		/* __GDPR__FRAGMENT__
