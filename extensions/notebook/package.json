@@ -19,7 +19,7 @@
       "properties": {
         "notebook.maxBookSearchDepth": {
           "type": "number",
-          "default": 5,
+          "default": 10,
           "description": "%notebook.maxBookSearchDepth.description%"
         },
         "notebook.pythonPath": {
@@ -204,8 +204,21 @@
         }
       },
       {
+        "command": "notebook.command.openNotebookFolder",
+        "title": "%title.openNotebookFolder%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/open_folder_inverse.svg",
+          "light": "resources/light/open_folder.svg"
+        }
+      },
+      {
         "command": "notebook.command.closeBook",
         "title": "%title.closeJupyterBook%"
+      },
+      {
+        "command": "notebook.command.closeNotebook",
+        "title": "%title.closeJupyterNotebook%"
       },
       {
         "command": "notebook.command.createBook",
@@ -318,6 +331,10 @@
           "when": "false"
         },
         {
+          "command": "notebook.command.closeNotebook",
+          "when": "false"
+        },
+        {
           "command": "notebook.command.revealInBooksViewlet",
           "when": "false"
         }
@@ -370,6 +387,10 @@
         {
           "command": "notebook.command.closeBook",
           "when": "view == bookTreeView && viewItem == savedBook"
+        },
+        {
+          "command": "notebook.command.closeNotebook",
+          "when": "view == bookTreeView && viewItem == savedNotebook"
         }
       ],
       "view/title": [
@@ -381,6 +402,11 @@
         {
           "command": "notebook.command.createBook",
           "when": "view == bookTreeView"
+        },
+        {
+          "command": "notebook.command.openNotebookFolder",
+          "when": "view == bookTreeView",
+          "group": "navigation"
         }
       ],
       "notebook/toolbar": [
@@ -538,10 +564,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.3",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
-  },
-  "resolutions": {
-    "esprima": "^4.0.0"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.6"
   },
   "enableProposedApi": true
 }

@@ -4,27 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as testRunner from 'vscode/lib/testrunner';
-import { SuiteType, getSuiteType } from 'adstest';
 import * as path from 'path';
 
-const suite = getSuiteType();
+const suite = 'Extension Integration Tests';
 
 const options: any = {
 	ui: 'tdd',
 	useColors: true,
 	timeout: 600000
 };
-
-if (suite === SuiteType.Stress) {
-	options.timeout = 7200000;	// 2 hours
-	// StressRuntime sets the default run time in stress/perf mode for those suites. By default ensure that there is sufficient timeout available.
-	// if ADS_TEST_TIMEOUT is also defined then that value overrides this calculated timeout value. User needs to ensure that ADS_TEST_GREP > StressRuntime if
-	// both are set.
-	if (process.env.StressRuntime) {
-		options.timeout = (120 + 1.2 * parseInt(process.env.StressRuntime)) * 1000; // allow sufficient timeout based on StressRuntime setting
-		console.log(`setting options.timeout to: ${options.timeout} based on process.env.StressRuntime value of ${process.env.StressRuntime} seconds`);
-	}
-}
 
 // set relevant mocha options from the environment
 if (process.env.ADS_TEST_GREP) {
