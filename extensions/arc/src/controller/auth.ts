@@ -6,7 +6,7 @@
 import * as request from 'request';
 import * as vscode from 'vscode';
 
-interface Authentication {
+export interface Authentication {
 	applyToRequest(requestOptions: request.Options): Promise<void> | void;
 }
 

@@ -63,28 +63,28 @@ export class IconPathHelper {
 			dark: IconPathHelper.context.asAbsolutePath('images/collapse-down-inverse.svg')
 		};
 		IconPathHelper.postgres = {
-			light: IconPathHelper.context.asAbsolutePath('images/Icon-databases-131-Azure-Database-PostgreSQL-Server.svg'),
-			dark: IconPathHelper.context.asAbsolutePath('images/Icon-databases-131-Azure-Database-PostgreSQL-Server.svg')
+			light: IconPathHelper.context.asAbsolutePath('images/postgres.svg'),
+			dark: IconPathHelper.context.asAbsolutePath('images/postgres.svg')
 		};
 		IconPathHelper.computeStorage = {
-			light: context.asAbsolutePath('images/Icon-general-12-Billing.svg'),
-			dark: context.asAbsolutePath('images/Icon-general-12-Billing.svg')
+			light: context.asAbsolutePath('images/billing.svg'),
+			dark: context.asAbsolutePath('images/billing.svg')
 		};
 		IconPathHelper.connection = {
 			light: context.asAbsolutePath('images/connections.svg'),
 			dark: context.asAbsolutePath('images/connections.svg')
 		};
 		IconPathHelper.backup = {
-			light: context.asAbsolutePath('images/Icon-migrate-282-Recovery-Services-Vaults.svg'),
-			dark: context.asAbsolutePath('images/Icon-migrate-282-Recovery-Services-Vaults.svg')
+			light: context.asAbsolutePath('images/migrate.svg'),
+			dark: context.asAbsolutePath('images/migrate.svg')
 		};
 		IconPathHelper.properties = {
 			light: context.asAbsolutePath('images/properties.svg'),
 			dark: context.asAbsolutePath('images/properties.svg')
 		};
 		IconPathHelper.networking = {
-			light: context.asAbsolutePath('images/Icon-security-241-Security-Center.svg'),
-			dark: context.asAbsolutePath('images/Icon-security-241-Security-Center.svg')
+			light: context.asAbsolutePath('images/security.svg'),
+			dark: context.asAbsolutePath('images/security.svg')
 		};
 	}
 }

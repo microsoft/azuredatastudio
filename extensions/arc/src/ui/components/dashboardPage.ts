@@ -16,6 +16,7 @@ export abstract class DashboardPage extends InitializingComponent {
 		return {
 			title: this.title,
 			id: this.id,
+			icon: this.icon,
 			content: this.container,
 			toolbar: this.toolbarContainer
 		};
@@ -23,6 +24,7 @@ export abstract class DashboardPage extends InitializingComponent {
 
 	protected abstract get title(): string;
 	protected abstract get id(): string;
+	protected abstract get icon(): { dark: string; light: string; };
 	protected abstract get container(): azdata.Component;
 	protected abstract get toolbarContainer(): azdata.ToolbarContainer;
 
