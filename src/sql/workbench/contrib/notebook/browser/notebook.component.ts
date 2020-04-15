@@ -56,7 +56,8 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IPreviewEnabledService } from 'sql/workbench/services/notebook/common/interfaces';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -85,6 +86,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _scrollTop: number;
 	private _navProvider: INavigationProvider;
 	private navigationResult: nb.NavigationResult;
+	public previewFeaturesEnabled: boolean = false;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -105,7 +107,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
 		@Inject(ICommandService) private commandService: ICommandService,
-		@Inject(IAdsTelemetryService) private adstelemetryService: IAdsTelemetryService
+		@Inject(IAdsTelemetryService) private adstelemetryService: IAdsTelemetryService,
+		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
+		@Inject(IPreviewEnabledService) private previewEnabledService: IPreviewEnabledService
 	) {
 		super();
 		this.updateProfile();
@@ -123,6 +127,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.setScrollPosition();
 		this.doLoad().catch(e => onUnexpectedError(e));
 		this.initNavSection();
+		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 	}
 
 	ngOnDestroy() {
@@ -130,6 +135,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		if (this.notebookService) {
 			this.notebookService.removeNotebookEditor(this);
 		}
+	}
+
+	public getPreviewEnabled(): void {
+
 	}
 
 	public get model(): NotebookModel | null {
