@@ -500,9 +500,12 @@ describe('BookTreeViewProviderTests', function () {
 			should(bookTreeViewProvider.books.length).equal(1, 'Should have loaded only one notebook');
 		});
 
-		this.afterAll(async function (): Promise<void> {
+		this.afterEach(async function (): Promise<void> {
 			let bookItems = await bookTreeViewProvider.getChildren();
 			await Promise.all(bookItems.map(bookItem => bookTreeViewProvider.closeBook(bookItem)));
+		});
+
+		this.afterAll(async function (): Promise<void> {
 			if (await exists(rootFolderPath)) {
 				await promisify(rimraf)(rootFolderPath);
 			}
