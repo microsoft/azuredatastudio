@@ -10,7 +10,7 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 
-const knownSchemes = new Set(['http', 'https', 'file', 'mailto', 'data', 'azuredatastudio', 'azuredatastudio-insiders', 'vscode', 'vscode-insiders', 'vscode-resource']);
+const knownSchemes = new Set(['http', 'https', 'file', 'mailto', 'data', 'azuredatastudio', 'azuredatastudio-insiders', 'vscode', 'vscode-insiders', 'vscode-resource', 'onenote']);
 @Directive({
 	selector: '[link-handler]',
 })
@@ -58,10 +58,15 @@ export class LinkHandlerDirective {
 			// ignore
 		}
 		if (uri && this.openerService && this.isSupportedLink(uri)) {
-			if (uri.fragment && uri.fragment.length > 0 && uri.path === this.workbenchFilePath.path) {
+			if (uri.fragment && uri.fragment.length > 0 && uri.fsPath === this.workbenchFilePath.fsPath) {
 				this.notebookService.navigateTo(this.notebookUri, uri.fragment);
 			} else {
-				this.openerService.open(uri).catch(onUnexpectedError);
+				if (this.forceOpenExternal(uri)) {
+					this.openerService.open(uri, { openExternal: true }).catch(onUnexpectedError);
+				}
+				else {
+					this.openerService.open(uri).catch(onUnexpectedError);
+				}
 			}
 		}
 	}
@@ -71,5 +76,12 @@ export class LinkHandlerDirective {
 			return true;
 		}
 		return !!this.isTrusted && link.scheme === 'command';
+	}
+
+	private forceOpenExternal(link: URI): boolean {
+		if (link.scheme.toLowerCase() === 'onenote') {
+			return true;
+		}
+		return false;
 	}
 }

@@ -45,7 +45,6 @@ import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { LabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
@@ -56,6 +55,7 @@ import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellVi
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -104,8 +104,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
-		@Inject(ITelemetryService) private telemetryService: ITelemetryService,
-		@Inject(ICommandService) private commandService: ICommandService
+		@Inject(ICommandService) private commandService: ICommandService,
+		@Inject(IAdsTelemetryService) private adstelemetryService: IAdsTelemetryService
 	) {
 		super();
 		this.updateProfile();
@@ -310,7 +310,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService,
 			editorLoadedTimestamp: this._notebookParams.input.editorOpenedTimestamp
-		}, this.profile, this.logService, this.notificationService, this.telemetryService);
+		}, this.profile, this.logService, this.notificationService, this.adstelemetryService);
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 		this._register(model.onError((errInfo: INotification) => this.handleModelError(errInfo)));
 		this._register(model.contentChanged((change) => this.handleContentChanged(change)));
@@ -538,7 +538,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	isActive(): boolean {
-		return this.editorService.activeEditor.matches(this.notebookParams.input);
+		return this.editorService.activeEditor ? this.editorService.activeEditor.matches(this.notebookParams.input) : false;
 	}
 
 	isVisible(): boolean {
@@ -654,10 +654,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private getSectionElements(): NotebookSection[] {
 		let headers: NotebookSection[] = [];
 		let el: HTMLElement = this.container.nativeElement;
-		let headerElements = el.querySelectorAll('h1, h2, h3, h4, h5, h6');
+		let headerElements = el.querySelectorAll('h1, h2, h3, h4, h5, h6, a[name], a[id]');
 		for (let i = 0; i < headerElements.length; i++) {
 			let headerEl = headerElements[i] as HTMLElement;
-			if (headerEl['id']) {
+			if (headerEl['id'] || headerEl['name']) {
 				headers.push(new NotebookSection(headerEl));
 			}
 		}
@@ -669,7 +669,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let section = find(this.getSectionElements(), s => s.relativeUri && s.relativeUri.toLowerCase() === id);
 		if (section) {
 			// Scroll this section to the top of the header instead of just bringing header into view.
-			let scrollTop = jQuery(section.headerEl).offset().top;
+			let scrollTop = section.headerEl.offsetTop;
 			(<HTMLElement>this.container.nativeElement).scrollTo({
 				top: scrollTop,
 				behavior: 'smooth'
@@ -685,7 +685,7 @@ class NotebookSection implements INotebookSection {
 	}
 
 	get relativeUri(): string {
-		return this.headerEl['id'];
+		return this.headerEl['id'] || this.headerEl['name'];
 	}
 
 	get header(): string {

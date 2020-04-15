@@ -14,7 +14,7 @@ import { IDataComponent } from '../interfaces';
 /**
  * View to pick local models file
  */
-export class LocalModelsComponent extends ModelViewBase implements IDataComponent<string> {
+export class LocalModelsComponent extends ModelViewBase implements IDataComponent<string[]> {
 
 	private _form: azdata.FormContainer | undefined;
 	private _flex: azdata.FlexContainer | undefined;
@@ -24,7 +24,7 @@ export class LocalModelsComponent extends ModelViewBase implements IDataComponen
 	/**
 	 * Creates new view
 	 */
-	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase) {
+	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _multiSelect: boolean = true) {
 		super(apiWrapper, parent.root, parent);
 	}
 
@@ -49,13 +49,15 @@ export class LocalModelsComponent extends ModelViewBase implements IDataComponen
 			let options: vscode.OpenDialogOptions = {
 				canSelectFiles: true,
 				canSelectFolders: false,
-				canSelectMany: false,
+				canSelectMany: this._multiSelect,
 				filters: { 'ONNX File': ['onnx'] }
 			};
 
 			const filePaths = await this.getLocalPaths(options);
-			if (this._localPath) {
-				this._localPath.value = filePaths && filePaths.length > 0 ? filePaths[0] : '';
+			if (this._localPath && filePaths && filePaths.length > 0) {
+				this._localPath.value = this._multiSelect ? filePaths.join(';') : filePaths[0];
+			} else if (this._localPath) {
+				this._localPath.value = '';
 			}
 		});
 
@@ -96,8 +98,12 @@ export class LocalModelsComponent extends ModelViewBase implements IDataComponen
 	/**
 	 * Returns selected data
 	 */
-	public get data(): string {
-		return this._localPath?.value || '';
+	public get data(): string[] {
+		if (this._localPath?.value) {
+			return this._localPath?.value.split(';');
+		} else {
+			return [];
+		}
 	}
 
 	/**

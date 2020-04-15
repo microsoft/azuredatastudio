@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as should from 'should';
 import * as path from 'path';
@@ -17,6 +18,7 @@ import { MockExtensionContext } from '../common/stubs';
 import { exists } from '../../common/utils';
 import { AppContext } from '../../common/appContext';
 import { ApiWrapper } from '../../common/apiWrapper';
+import { BookTrustManager } from '../../book/bookTrustManager';
 
 export interface IExpectedBookItem {
 	title: string;
@@ -194,6 +196,31 @@ describe('BookTreeViewProviderTests', function () {
 				equalBookItems(notebook3, expectedNotebook3);
 			});
 
+			it('should set notebooks trusted to true on trustBook', async () => {
+				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
+				let bookTrustManager: BookTrustManager = new BookTrustManager(bookTreeViewProvider.books, appContext.apiWrapper);
+				let isTrusted = bookTrustManager.isNotebookTrustedByDefault(notebook1Path);
+				should(isTrusted).equal(false, 'Notebook should not be trusted by default');
+
+				bookTreeViewProvider.trustBook(bookTreeViewProvider.currentBook.bookItems[0]);
+				isTrusted = bookTrustManager.isNotebookTrustedByDefault(notebook1Path);
+				should(isTrusted).equal(true, 'Failed to set trust on trustBook');
+
+			});
+
+			it('getNavigation should get previous and next urls correctly from the bookModel', async () => {
+				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
+				let notebook2Path = path.join(rootFolderPath, 'Book', 'content', 'notebook2.ipynb');
+				let notebook3Path = path.join(rootFolderPath, 'Book', 'content', 'notebook3.ipynb');
+				let result: azdata.nb.NavigationResult;
+				await bookTreeViewProvider.currentBook.getNavigation(vscode.Uri.file(notebook2Path)).then(navigationResult => { result = navigationResult;});
+				should(result.hasNavigation).be.true('getNavigation failed to get previous and next urls');
+				should(result.next.fsPath).equal(notebook3Path, 'getNavigation failed to get the next url');
+				should(result.previous.fsPath).equal(notebook1Path, 'getNavigation failed to get the previous url');
+
+			});
+
+
 			this.afterAll(async function (): Promise<void> {
 				console.log('Removing temporary files...');
 				if (await exists(rootFolderPath)) {
@@ -235,10 +262,9 @@ describe('BookTreeViewProviderTests', function () {
 		});
 
 		it('should ignore toc.yml files not in _data folder', async () => {
-			await bookTreeViewProvider.currentBook.getTableOfContentFiles(rootFolderPath);
-			for (let p of bookTreeViewProvider.currentBook.tableOfContentPaths) {
-				should(p.toLocaleLowerCase()).equal(tableOfContentsFile.replace(/\\/g, '/').toLocaleLowerCase());
-			}
+			await bookTreeViewProvider.currentBook.loadTableOfContentFiles(rootFolderPath);
+			let path = bookTreeViewProvider.currentBook.tableOfContentsPath;
+			should(path.toLocaleLowerCase()).equal(tableOfContentsFile.replace(/\\/g, '/').toLocaleLowerCase());
 		});
 
 		this.afterAll(async function (): Promise<void> {
@@ -344,6 +370,77 @@ describe('BookTreeViewProviderTests', function () {
 			should(bookTreeViewProvider.currentBook.errorMessage).equal('Missing file : Notebook1');
 			// rest of book should be detected correctly even with a missing file
 			equalBookItems(children[0], expectedNotebook2);
+		});
+
+		this.afterAll(async function (): Promise<void> {
+			if (await exists(rootFolderPath)) {
+				await promisify(rimraf)(rootFolderPath);
+			}
+		});
+	});
+
+	describe('BookTreeViewProvider.Commands', function (): void {
+		let rootFolderPath: string;
+		let tableOfContentsFile: string;
+		let bookTreeViewProvider: BookTreeViewProvider;
+		let appContext: AppContext;
+
+		this.beforeAll(async () => {
+			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
+			let dataFolderPath = path.join(rootFolderPath, '_data');
+			let contentFolderPath = path.join(rootFolderPath, 'content');
+			let configFile = path.join(rootFolderPath, '_config.yml');
+			tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
+			let notebook2File = path.join(contentFolderPath, 'notebook2.ipynb');
+			await fs.mkdir(rootFolderPath);
+			await fs.mkdir(dataFolderPath);
+			await fs.mkdir(contentFolderPath);
+			await fs.writeFile(configFile, 'title: Test Book');
+			await fs.writeFile(tableOfContentsFile, '- title: Notebook1\n  url: /notebook1\n- title: Notebook2\n  url: /notebook2');
+			await fs.writeFile(notebook2File, '');
+
+			const mockExtensionContext = new MockExtensionContext();
+			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
+			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], mockExtensionContext, false, 'bookTreeView');
+			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
+			appContext = new AppContext(undefined, new ApiWrapper());
+		});
+
+		it('should add book and initialize book on openBook', async () => {
+			should(bookTreeViewProvider.books.length).equal(0, 'Invalid books on initialize.');
+			await bookTreeViewProvider.openBook(rootFolderPath);
+			should(bookTreeViewProvider.books.length).equal(1, 'Failed to initialize the book on open');
+		});
+
+		it('should remove book on closeBook', async () => {
+			await bookTreeViewProvider.openBook(rootFolderPath);
+			should(bookTreeViewProvider.books.length).equal(1, 'Failed to initialize the book on open');
+			await bookTreeViewProvider.closeBook(bookTreeViewProvider.books[0].bookItems[0]);
+			should(bookTreeViewProvider.books.length).equal(0, 'Failed to remove the book on close');
+		});
+
+		it('should add book when bookPath contains special characters on openBook', async () => {
+			let rootFolderPath2 = path.join(os.tmpdir(), `BookTestData(1)_${uuid.v4()}`);
+			let dataFolderPath2 = path.join(rootFolderPath2, '_data');
+			let contentFolderPath2 = path.join(rootFolderPath2, 'content');
+			let configFile2 = path.join(rootFolderPath2, '_config.yml');
+			let tableOfContentsFile2 = path.join(dataFolderPath2, 'toc.yml');
+			let notebook2File2 = path.join(contentFolderPath2, 'notebook2.ipynb');
+			await fs.mkdir(rootFolderPath2);
+			await fs.mkdir(dataFolderPath2);
+			await fs.mkdir(contentFolderPath2);
+			await fs.writeFile(configFile2, 'title: Test Book');
+			await fs.writeFile(tableOfContentsFile2, '- title: Notebook1\n  url: /notebook1\n- title: Notebook2\n  url: /notebook2');
+			await fs.writeFile(notebook2File2, '');
+
+			await bookTreeViewProvider.openBook(rootFolderPath2);
+			should(bookTreeViewProvider.books.length).equal(1, 'Failed to initialize the book on open');
+		});
+
+		it('should get notebook path with untitled schema on openNotebookAsUntitled', async () => {
+			let notebookUri = bookTreeViewProvider.getUntitledNotebookUri(path.join(rootFolderPath, 'content', 'notebook2.ipynb'));
+			should(notebookUri.scheme).equal('untitled', 'Failed to get untitled uri of the resource');
 		});
 
 		this.afterAll(async function (): Promise<void> {

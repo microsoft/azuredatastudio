@@ -12,10 +12,10 @@ import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, IN
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
-import { NotebookFindMatch } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
-import { URI } from 'vs/workbench/workbench.web.api';
+import { NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/find/notebookFindDecorations';
 import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { URI } from 'vs/base/common/uri';
 
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo) {

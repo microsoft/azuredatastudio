@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { ModelViewBase } from '../modelViewBase';
+import { ModelViewBase, ModelSourceType } from '../modelViewBase';
 import { ApiWrapper } from '../../../common/apiWrapper';
-import { ModelSourcesComponent, ModelSourceType } from '../modelSourcesComponent';
+import { ModelSourcesComponent } from '../modelSourcesComponent';
 import { LocalModelsComponent } from '../localModelsComponent';
 import { AzureModelsComponent } from '../azureModelsComponent';
 import * as constants from '../../../common/constants';
@@ -15,6 +15,7 @@ import { ModelSourcePage } from '../modelSourcePage';
 import { ColumnsSelectionPage } from './columnsSelectionPage';
 import { RegisteredModel } from '../../../modelManagement/interfaces';
 import { ModelArtifact } from './modelArtifact';
+import { ModelBrowsePage } from '../modelBrowsePage';
 
 /**
  * Wizard to register a model
@@ -23,6 +24,7 @@ export class PredictWizard extends ModelViewBase {
 
 	public modelSourcePage: ModelSourcePage | undefined;
 	public columnsSelectionPage: ColumnsSelectionPage | undefined;
+	public modelBrowsePage: ModelBrowsePage | undefined;
 	public wizardView: WizardView | undefined;
 	private _parentView: ModelViewBase | undefined;
 
@@ -40,10 +42,12 @@ export class PredictWizard extends ModelViewBase {
 	public async open(): Promise<void> {
 		this.modelSourcePage = new ModelSourcePage(this._apiWrapper, this, [ModelSourceType.RegisteredModels, ModelSourceType.Local, ModelSourceType.Azure]);
 		this.columnsSelectionPage = new ColumnsSelectionPage(this._apiWrapper, this);
+		this.modelBrowsePage = new ModelBrowsePage(this._apiWrapper, this, false);
 		this.wizardView = new WizardView(this._apiWrapper);
 
 		let wizard = this.wizardView.createWizard(constants.makePredictionTitle,
 			[this.modelSourcePage,
+			this.modelBrowsePage,
 			this.columnsSelectionPage]);
 
 		this.mainViewPanel = wizard;
@@ -57,7 +61,10 @@ export class PredictWizard extends ModelViewBase {
 			await this.onClose();
 		});
 		wizard.registerNavigationValidator(async (pageInfo: azdata.window.WizardPageChangeInfo) => {
-			let validated = this.wizardView ? await this.wizardView.validate(pageInfo) : false;
+			let validated: boolean = true;
+			if (pageInfo.newPage > pageInfo.lastPage) {
+				validated = this.wizardView ? await this.wizardView.validate(pageInfo) : false;
+			}
 			if (validated) {
 				if (pageInfo.newPage === undefined) {
 					this.onLoading();
@@ -96,20 +103,20 @@ export class PredictWizard extends ModelViewBase {
 	}
 
 	public get localModelsComponent(): LocalModelsComponent | undefined {
-		return this.modelSourcePage?.localModelsComponent;
+		return this.modelBrowsePage?.localModelsComponent;
 	}
 
 	public get azureModelsComponent(): AzureModelsComponent | undefined {
-		return this.modelSourcePage?.azureModelsComponent;
+		return this.modelBrowsePage?.azureModelsComponent;
 	}
 
 	public async getModelFileName(): Promise<ModelArtifact | undefined> {
 		if (this.modelResources && this.localModelsComponent && this.modelResources.data === ModelSourceType.Local) {
-			return new ModelArtifact(this.localModelsComponent.data, false);
+			return new ModelArtifact(this.localModelsComponent.data[0], false);
 		} else if (this.modelResources && this.azureModelsComponent && this.modelResources.data === ModelSourceType.Azure) {
 			return await this.azureModelsComponent.getDownloadedModel();
-		} else if (this.modelSourcePage && this.modelSourcePage.registeredModelsComponent) {
-			return await this.modelSourcePage.registeredModelsComponent.getDownloadedModel();
+		} else if (this.modelBrowsePage && this.modelBrowsePage.registeredModelsComponent) {
+			return await this.modelBrowsePage.registeredModelsComponent.getDownloadedModel();
 		}
 		return undefined;
 	}
@@ -118,8 +125,10 @@ export class PredictWizard extends ModelViewBase {
 		try {
 			let modelFilePath: string | undefined;
 			let registeredModel: RegisteredModel | undefined = undefined;
-			if (this.modelSourcePage && this.modelSourcePage.registeredModelsComponent) {
-				registeredModel = this.modelSourcePage?.registeredModelsComponent?.data;
+			if (this.modelResources && this.modelResources.data && this.modelResources.data === ModelSourceType.RegisteredModels
+				&& this.modelBrowsePage && this.modelBrowsePage.registeredModelsComponent) {
+				const data = this.modelBrowsePage?.registeredModelsComponent?.data;
+				registeredModel = data && data.length > 0 ? data[0] : undefined;
 			} else {
 				const artifact = await this.getModelFileName();
 				modelFilePath = artifact?.filePath;
