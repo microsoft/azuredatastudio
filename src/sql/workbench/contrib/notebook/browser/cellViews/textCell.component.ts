@@ -308,8 +308,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (element.nodeName.toLowerCase() === 'table') {
 				// add table header and table rows.
 				children.push(element.children[0]);
-				for (let trow of element.children[1].children) {
-					children.push(trow);
+				if (element.children.length > 1) {
+					for (let trow of element.children[1].children) {
+						children.push(trow);
+					}
 				}
 			} else if (element.children.length > 1) {
 				children = children.concat(this.getChildren(element));
