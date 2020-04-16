@@ -8,7 +8,7 @@
 	[actions]="panelActions">
 	<div #toolbar [style.display]="showToolbar ? 'block': 'none'" class="editor-toolbar">
 	</div>
-	<div [style.height]="showToolbar ? 'calc(100% - 37px)' : '100%'">
+	<div [style.height]="getContentAreaHeight()">
 		<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize"
 			[identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions" [type]="tab.type"
 			[iconClass]="tab.iconClass">
