@@ -5,7 +5,7 @@
 
 import 'vs/css!./dashboardHomeContainer';
 
-import { Component, forwardRef, Input, ChangeDetectorRef, Inject, ViewChild, ContentChild, ElementRef } from '@angular/core';
+import { Component, forwardRef, Input, ChangeDetectorRef, Inject, ViewChild, ElementRef } from '@angular/core';
 
 import { DashboardWidgetContainer } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardWidgetContainer.component';
 import { WidgetConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
@@ -44,7 +44,7 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 	@Input() private properties: WidgetConfig;
 	@ViewChild('propertiesClass') private _propertiesClass: DashboardWidgetWrapper;
 	@ViewChild('propertiesContainer') private _propertiesContainer: ElementRef;
-	@ContentChild(ScrollableDirective) private _scrollable: ScrollableDirective;
+	@ViewChild(ScrollableDirective) private _scrollable: ScrollableDirective;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
