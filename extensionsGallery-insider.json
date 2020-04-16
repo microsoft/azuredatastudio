@@ -25,7 +25,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/agent/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -86,7 +86,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/samples/sp_whoIsActive/images/sqlserver.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/samples/sp_whoIsActive/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -143,7 +143,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/samples/serverReports/images/sqlserver.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/samples/serverReports/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -485,7 +485,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/profiler/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -717,7 +717,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/import/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -1222,7 +1222,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/admin-pack/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -1283,7 +1283,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/dacpac/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -1515,7 +1515,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/schema-compare/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -1690,7 +1690,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/cms/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -1751,7 +1751,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/admin-tool-ext-win/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -2637,7 +2637,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/query-history/images/sqlserver.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/query-history/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
