@@ -27,6 +27,7 @@ import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/ce
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
 import { NotebookRange, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -87,11 +88,13 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private _hover: boolean;
 	private markdownRenderer: NotebookMarkdownRenderer;
 	private markdownResult: IMarkdownRenderResult;
+	public previewFeaturesEnabled: boolean = false;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
 		super();
 		this.isEditMode = true;
@@ -134,6 +137,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	ngOnInit() {
+		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this._cellToggleMoreActions.onInit(this.moreActionsElementRef, this.model, this.cellModel);
