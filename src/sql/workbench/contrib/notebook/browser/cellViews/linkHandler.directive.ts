@@ -44,7 +44,7 @@ export class LinkHandlerDirective {
 		try {
 			const href = target['href'];
 			if (href) {
-				Promise.resolve(this.handleLink(href));
+				this.handleLink(href).catch(e => onUnexpectedError(e));
 			}
 		} catch (err) {
 			onUnexpectedError(err);
