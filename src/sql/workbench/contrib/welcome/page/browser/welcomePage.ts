@@ -322,11 +322,14 @@ class WelcomePage extends Disposable {
 	}
 
 	private addVideoImageSource() {
-		const videoIntroduction = document.querySelector('#video_introduction') as HTMLImageElement;
-		const videoOverview = document.querySelector('#video_overview') as HTMLImageElement;
-
-		videoIntroduction.src = require.toUrl('./../../media/video_introduction.png');
-		videoOverview.src = require.toUrl('./../../media/video_overview.png');
+		const videoIntroduction = document.querySelectorAll('.video_introduction') as NodeListOf<HTMLImageElement>;
+		const videoOverview = document.querySelectorAll('.video_overview') as NodeListOf<HTMLImageElement>;
+		videoOverview.forEach((elm, i) => {
+			elm.src = require.toUrl('./../../media/video_overview.png');
+		});
+		videoIntroduction.forEach((elm, i) => {
+			elm.src = require.toUrl('./../../media/video_introduction.png');
+		});
 	}
 
 	private createWidePreviewToolTip() {
