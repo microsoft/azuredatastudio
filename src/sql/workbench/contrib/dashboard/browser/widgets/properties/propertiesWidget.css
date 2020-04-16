@@ -3,10 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-properties-widget .fourColumns.grid-container {
-	grid-template-columns: 25% 25% 25% 25%;
-}
-
 properties-widget .twoColumns.grid-container {
 	grid-template-columns: 50% 50%;
 }
@@ -15,8 +11,7 @@ properties-widget .oneColumn.grid-container {
 	grid-template-columns: 100%;
 }
 
-properties-widget .oneColumn .property,
-properties-widget .twoColumns .property {
+properties-widget .columnLayout.property {
 	flex-direction: column;
 }
 
@@ -45,7 +40,6 @@ properties-widget .splitter {
 	text-align: center;
 }
 
-properties-widget .twoColumns .splitter,
-properties-widget .oneColumn .splitter {
+properties-widget .columnLayout .splitter {
 	display: none;
 }

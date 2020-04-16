@@ -58,10 +58,15 @@ export interface DisplayProperty {
 }
 
 enum GridDisplayLayout {
-	fourColumns = 'fourColumns',
 	twoColumns = 'twoColumns',
 	oneColumn = 'oneColumn'
 }
+
+enum PropertyLayoutDirection {
+	row = 'rowLayout',
+	column = 'columnLayout'
+}
+
 
 const collapseHeight = 25;
 const horizontalPropertyHeight = 28;
@@ -75,7 +80,8 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	private _connection: ConnectionManagementInfo;
 	private _databaseInfo: DatabaseInfo;
 	private _properties: Array<DisplayProperty>;
-	private _gridDisplayLayout = GridDisplayLayout.oneColumn;
+	public gridDisplayLayout: GridDisplayLayout;
+	public propertyLayout: PropertyLayoutDirection;
 	public height: number;
 
 	constructor(
@@ -122,14 +128,17 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		// 2 columns: 1024 - 1365px
 		// 1 column: 1024px or less
 		if (!this._loading) {
-			if (window.innerWidth >= 1366 && this._gridDisplayLayout !== GridDisplayLayout.fourColumns) {
-				this._gridDisplayLayout = GridDisplayLayout.fourColumns;
+			if (window.innerWidth >= 1366) {
+				this.gridDisplayLayout = GridDisplayLayout.twoColumns;
+				this.propertyLayout = PropertyLayoutDirection.row;
 				this.height = Math.ceil(this._properties.length / 2) * horizontalPropertyHeight + collapseHeight;
-			} else if (window.innerWidth < 1366 && window.innerWidth >= 1024 && this._gridDisplayLayout !== GridDisplayLayout.twoColumns) {
-				this._gridDisplayLayout = GridDisplayLayout.twoColumns;
+			} else if (window.innerWidth < 1366 && window.innerWidth >= 1024) {
+				this.gridDisplayLayout = GridDisplayLayout.twoColumns;
+				this.propertyLayout = PropertyLayoutDirection.column;
 				this.height = Math.ceil(this._properties.length / 2) * verticalPropertyHeight + collapseHeight;
-			} else if (window.innerWidth < 1024 && this._gridDisplayLayout !== GridDisplayLayout.oneColumn) {
-				this._gridDisplayLayout = GridDisplayLayout.oneColumn;
+			} else if (window.innerWidth < 1024) {
+				this.gridDisplayLayout = GridDisplayLayout.oneColumn;
+				this.propertyLayout = PropertyLayoutDirection.column;
 				this.height = this._properties.length * verticalPropertyHeight + collapseHeight;
 			}
 
