@@ -57,10 +57,10 @@ export interface DisplayProperty {
 	value: string;
 }
 
-enum propertyDisplayLayout {
-	fourColumns,
-	twoColumns,
-	oneColumn
+enum GridDisplayLayout {
+	fourColumns = 'fourColumns',
+	twoColumns = 'twoColumns',
+	oneColumn = 'oneColumn'
 }
 
 const collapseHeight = 25;
@@ -74,11 +74,9 @@ const verticalPropertyHeight = 46;
 export class PropertiesWidgetComponent extends DashboardWidget implements IDashboardWidget, OnInit {
 	private _connection: ConnectionManagementInfo;
 	private _databaseInfo: DatabaseInfo;
-	private _layout: propertyDisplayLayout;
-	private properties: Array<DisplayProperty>;
-	private leftProperties: Array<DisplayProperty>;
-	private rightProperties: Array<DisplayProperty>;
-	public height;
+	private _properties: Array<DisplayProperty>;
+	private _gridDisplayLayout = GridDisplayLayout.oneColumn;
+	public height: number;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
@@ -124,34 +122,18 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		// 2 columns: 1024 - 1365px
 		// 1 column: 1024px or less
 		if (!this._loading) {
-			if (window.innerWidth >= 1366 && this._layout !== propertyDisplayLayout.fourColumns) {
-				this._layout = propertyDisplayLayout.fourColumns;
-				this.setPropertiesClass('propertiesColumn', 'propertiesColumn');
-				this.setPropertiesClass('propertyLeft', 'property propertyLeft fourColumns');
-				this.setPropertiesClass('propertyRight', 'property propertyRight fourColumns');
-				this.height = Math.ceil(this.properties.length / 2) * horizontalPropertyHeight + collapseHeight;
-			} else if (window.innerWidth < 1366 && window.innerWidth >= 1024 && this._layout !== propertyDisplayLayout.twoColumns) {
-				this._layout = propertyDisplayLayout.twoColumns;
-				this.setPropertiesClass('propertiesColumn', 'propertiesColumn');
-				this.setPropertiesClass('propertyLeft', 'property propertyLeft twoColumns');
-				this.setPropertiesClass('propertyRight', 'property propertyRight twoColumns');
-				this.height = Math.ceil(this.properties.length / 2) * verticalPropertyHeight + collapseHeight;
-			} else if (window.innerWidth < 1024 && this._layout !== propertyDisplayLayout.oneColumn) {
-				this._layout = propertyDisplayLayout.oneColumn;
-				this.setPropertiesClass('propertiesColumn', 'propertiesColumn oneColumn');
-				this.setPropertiesClass('propertyLeft', 'property propertyLeft oneColumn');
-				this.setPropertiesClass('propertyRight', 'property propertyRight oneColumn');
-				this.height = this.properties.length * verticalPropertyHeight + collapseHeight;
+			if (window.innerWidth >= 1366 && this._gridDisplayLayout !== GridDisplayLayout.fourColumns) {
+				this._gridDisplayLayout = GridDisplayLayout.fourColumns;
+				this.height = Math.ceil(this._properties.length / 2) * horizontalPropertyHeight + collapseHeight;
+			} else if (window.innerWidth < 1366 && window.innerWidth >= 1024 && this._gridDisplayLayout !== GridDisplayLayout.twoColumns) {
+				this._gridDisplayLayout = GridDisplayLayout.twoColumns;
+				this.height = Math.ceil(this._properties.length / 2) * verticalPropertyHeight + collapseHeight;
+			} else if (window.innerWidth < 1024 && this._gridDisplayLayout !== GridDisplayLayout.oneColumn) {
+				this._gridDisplayLayout = GridDisplayLayout.oneColumn;
+				this.height = this._properties.length * verticalPropertyHeight + collapseHeight;
 			}
 
 			this._changeRef.detectChanges();
-		}
-	}
-
-	private setPropertiesClass(findClass: string, newClass: string): void {
-		let properties = document.getElementsByClassName(findClass);
-		for (let i = 0; i < properties.length; ++i) {
-			(<HTMLElement>properties[i]).className = newClass;
 		}
 	}
 
@@ -244,11 +226,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			infoObject = this._connection.serverInfo;
 		}
 
-		// iterate over properties and display them
-		this.properties = [];
-		for (let i = 0; i < propertyArray.length; i++) {
-			const property = propertyArray[i];
-			const assignProperty = {};
+		this._properties = propertyArray.map(property => {
 			let propertyObject = this.getValueOrDefault<string>(infoObject, property.value, property.default || '--');
 
 			// make sure the value we got shouldn't be ignored
@@ -261,20 +239,11 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 					}
 				}
 			}
-			assignProperty['displayName'] = property.displayName;
-			assignProperty['value'] = propertyObject;
-			this.properties.push(<DisplayProperty>assignProperty);
-		}
-
-		this.leftProperties = [];
-		for (let i = 0; i < this.properties.length / 2; ++i) {
-			this.leftProperties.push(this.properties[i]);
-		}
-
-		this.rightProperties = [];
-		for (let i = Math.ceil(this.properties.length / 2); i < this.properties.length; ++i) {
-			this.rightProperties.push(this.properties[i]);
-		}
+			return {
+				displayName: property.displayName,
+				value: propertyObject
+			};
+		});
 
 		if (this._inited) {
 			this._changeRef.detectChanges();

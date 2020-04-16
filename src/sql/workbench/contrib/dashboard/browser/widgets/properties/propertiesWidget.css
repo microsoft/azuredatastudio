@@ -3,93 +3,49 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.propertyName {
-	opacity: 0.6;
-	width: 145px;
-	font-size: 12px;
+properties-widget .fourColumns.grid-container {
+	grid-template-columns: 25% 25% 25% 25%;
 }
 
-.vs-dark .propertyName,
-.hc-black .propertyName {
+properties-widget .twoColumns.grid-container {
+	grid-template-columns: 50% 50%;
+}
+
+properties-widget .oneColumn.grid-container {
+	grid-template-columns: 100%;
+}
+
+properties-widget .oneColumn .property,
+properties-widget .twoColumns .property {
+	flex-direction: column;
+}
+
+properties-widget .propertyName {
+	opacity: 0.6;
+	font-size: 12px;
+	flex: 0 0 auto
+}
+
+.vs-dark properties-widget .propertyName,
+.hc-black properties-widget .propertyName {
 	opacity: 1;
 }
 
-.fourColumns > .propertyName {
-	float: left;
-	margin-left: 5px;
-}
-
-.twoColumns > .propertyName,
-.twoColumns > .propertyName {
-	float: none;
-	margin-left: 0;
-}
-
-.propertyValue {
+properties-widget .propertyValue {
 	font-size: 12px;
-	margin-left: 5px;
+	flex: 1 1 auto;
+	margin-right: 5px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
-.fourColumns > .propertyValue {
-	width: calc(100% - 210px);
+properties-widget .splitter {
+	flex: 0 0 15px;
+	text-align: center;
 }
 
-.twoColumns > .propertyValue,
-.oneColumn > .propertyValue {
-	margin-left: 0;
-}
-
-.twoColumns > .propertyValue {
-	width: 85%;
-}
-
-.oneColumn > .propertyValue {
-	width: 90%
-}
-
-.property {
-	display: inline-block;
-	width: 100%;
-	padding-bottom: 10px;
-}
-
-.propertyRight {
-	margin-left: 20px;
-}
-
-.propertyLeft {
-	margin-left: 10px;
-	float: left;
-}
-
-.propertyLeft.oneColumn {
-	float: none;
-}
-
-.propertyRight.oneColumn {
-	margin-left: 10px;
-}
-
-.fourColumns > .horizontalColon {
-	float: left;
-	display: block;
-	margin-right: 8px;
-}
-
-.twoColumns > .horizontalColon,
-.oneColumn > .horizontalColon {
+properties-widget .twoColumns .splitter,
+properties-widget .oneColumn .splitter {
 	display: none;
-}
-
-.propertiesColumn {
-	width: 50%;
-	float: left;
-}
-
-.propertiesColumn.oneColumn {
-	float: none;
-	width: 100%;
 }
