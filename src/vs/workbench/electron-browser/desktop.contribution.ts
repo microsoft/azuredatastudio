@@ -85,7 +85,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 
 				MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 					command,
-					when: ContextKeyExpr.equals('config.window.nativeTabs', 'true')
+					when: ContextKeyExpr.equals('config.window.nativeTabs', true)
 				});
 			});
 		}
