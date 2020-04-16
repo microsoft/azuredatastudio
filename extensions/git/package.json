@@ -1262,7 +1262,7 @@
       "timeline/item/context": [
         {
           "command": "git.timeline.openDiff",
-          "group": "1_actions",
+          "group": "1_timeline",
           "when": "config.git.enabled && !git.missing && timelineItem =~ /git:file\\b/"
         },
         {
