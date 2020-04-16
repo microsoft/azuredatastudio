@@ -30,10 +30,9 @@ export class LinkHandlerDirective {
 	}
 
 	@HostListener('click', ['$event'])
-	async onclick(event: MouseEvent): Promise<void> {
+	onclick(event: MouseEvent): void {
 		// Note: this logic is taken from the VSCode handling of links in markdown
 		// Untrusted cells will not support commands or raw HTML tags
-		// Finally, we should consider supporting relative paths - created #5238 to track
 		let target: HTMLElement = event.target as HTMLElement;
 		if (target.tagName !== 'A') {
 			target = target.parentElement;
@@ -43,7 +42,7 @@ export class LinkHandlerDirective {
 		}
 		const href = target['href'];
 		if (href) {
-			await this.handleLink(href).catch(e => onUnexpectedError(e)).finally(event.preventDefault);
+			this.handleLink(href).catch(e => onUnexpectedError(e)).finally(event.preventDefault);
 		}
 	}
 
