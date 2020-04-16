@@ -6,7 +6,6 @@
 import { nb } from 'azdata';
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, ViewChildren, QueryList } from '@angular/core';
 
-//import { Event } from 'vs/base/common/event';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
 import { INotificationService, INotification } from 'vs/platform/notification/common/notification';
@@ -57,11 +56,8 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { IPreviewEnabledService } from 'sql/workbench/services/notebook/common/interfaces';
-//import { PreviewEnabledService } from 'sql/workbench/contrib/notebook/browser/services/previewEnabledService';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
-
 
 @Component({
 	selector: NOTEBOOK_SELECTOR,
@@ -107,8 +103,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
 		@Inject(ICommandService) private commandService: ICommandService,
-		@Inject(IAdsTelemetryService) private adstelemetryService: IAdsTelemetryService,
-		@Inject(IPreviewEnabledService) private previewEnabledService: IPreviewEnabledService
+		@Inject(IAdsTelemetryService) private adstelemetryService: IAdsTelemetryService
 	) {
 		super();
 		this.updateProfile();
@@ -133,10 +128,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		if (this.notebookService) {
 			this.notebookService.removeNotebookEditor(this);
 		}
-	}
-
-	public checkIfPreviewEnabled(): void {
-		return this.previewEnabledService.fireOnPreviewEnabled();
 	}
 
 	public get model(): NotebookModel | null {
