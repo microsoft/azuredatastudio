@@ -5,7 +5,7 @@
 
 import 'vs/css!./dashboardPanel';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
-import { DASHBOARD_WIDGET_SUBTEXT, TAB_LABEL, DASHBOARD_WIDGET_TITLE, DASHBOARD_PROPERTY_NAME } from 'vs/workbench/common/theme';
+import { DASHBOARD_WIDGET_SUBTEXT, TAB_LABEL, DASHBOARD_WIDGET_TITLE, DASHBOARD_PROPERTIES_NAME } from 'vs/workbench/common/theme';
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 	// tab label
@@ -33,7 +33,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	}
 
 	// property name
-	const propertyName = theme.getColor(DASHBOARD_PROPERTY_NAME);
+	const propertyName = theme.getColor(DASHBOARD_PROPERTIES_NAME);
 	if (propertyName) {
 		collector.addRule(`properties-widget .propertyName {
 			color: ${propertyName}
