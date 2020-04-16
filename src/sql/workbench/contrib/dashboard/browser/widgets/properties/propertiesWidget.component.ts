@@ -124,9 +124,9 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 	private layoutProperties(): void {
 		// Reflow:
-		// 4 columns: 1366px and above
-		// 2 columns: 1024 - 1365px
-		// 1 column: 1024px or less
+		// 2 columns w/ horizontal alignment : 1366px and above
+		// 2 columns w/ vertical alignment : 1024 - 1365px
+		// 1 column w/ vertical alignment : 1024px or less
 		if (!this._loading) {
 			if (window.innerWidth >= 1366) {
 				this.gridDisplayLayout = GridDisplayLayout.twoColumns;
