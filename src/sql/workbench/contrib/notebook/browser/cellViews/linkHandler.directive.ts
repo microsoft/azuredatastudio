@@ -41,15 +41,9 @@ export class LinkHandlerDirective {
 				return;
 			}
 		}
-		try {
-			const href = target['href'];
-			if (href) {
-				this.handleLink(href).catch(e => onUnexpectedError(e));
-			}
-		} catch (err) {
-			onUnexpectedError(err);
-		} finally {
-			event.preventDefault();
+		const href = target['href'];
+		if (href) {
+			this.handleLink(href).catch(e => onUnexpectedError(e)).finally(event.preventDefault);
 		}
 	}
 
