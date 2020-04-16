@@ -46,10 +46,9 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 	@Input() private properties: WidgetConfig;
 	@ViewChild('propertiesClass') private _propertiesClass: DashboardWidgetWrapper;
 	@ViewChild('propertiesContainer') private _propertiesContainer: ElementRef;
-	@ContentChild(ScrollableDirective) private _scrollable: ScrollableDirective;
+	@ViewChild(ScrollableDirective) private _scrollable: ScrollableDirective;
 
 	private height = 75; // default initial height
-	@ViewChild(ScrollableDirective) private _scrollable: ScrollableDirective;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
