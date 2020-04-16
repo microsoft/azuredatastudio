@@ -38,6 +38,8 @@
 	"title.PreviewLocalizedBook": "Get localized SQL Server 2019 guide",
 	"title.openJupyterBook": "Open Jupyter Book",
 	"title.closeJupyterBook": "Close Jupyter Book",
+	"title.closeJupyterNotebook": "Close Jupyter Notebook",
 	"title.revealInBooksViewlet": "Reveal in Books",
-	"title.createJupyterBook": "Create Book (Preview)"
+	"title.createJupyterBook": "Create Book (Preview)",
+	"title.openNotebookFolder": "Open Notebooks in Folder"
 }

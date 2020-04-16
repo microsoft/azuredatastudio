@@ -231,19 +231,19 @@ declare module 'azdata' {
 	 */
 	export interface TabbedPanelLayout {
 		/**
-		 * Tab orientation
+		 * Tab orientation. Default horizontal.
 		 */
-		orientation: TabOrientation;
+		orientation?: TabOrientation;
 
 		/**
-		 * Whether to show the tab icon
+		 * Whether to show the tab icon. Default false.
 		 */
-		showIcon: boolean;
+		showIcon?: boolean;
 
 		/**
-		 * Whether to show the tab navigation pane even when there is only one tab
+		 * Whether to show the tab navigation pane even when there is only one tab. Default false.
 		 */
-		alwaysShowTabs: boolean;
+		alwaysShowTabs?: boolean;
 	}
 
 	/**
@@ -289,12 +289,12 @@ declare module 'azdata' {
 	/**
 	 * Builder for TabbedPannelComponent
 	 */
-	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, any, any> {
+	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any> {
 		/**
 		 * Add the tabs to the component
 		 * @param tabs tabs/tab groups to be added
 		 */
-		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, any, any>;
+		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any>;
 	}
 
 	export interface InputBoxProperties extends ComponentProperties {

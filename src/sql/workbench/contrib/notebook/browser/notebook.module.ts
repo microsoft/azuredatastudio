@@ -30,6 +30,8 @@ import { LinkHandlerDirective } from 'sql/workbench/contrib/notebook/browser/cel
 import { IBootstrapParams, ISelector } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { ICellComponenetRegistry, Extensions as OutputComponentExtensions } from 'sql/platform/notebooks/common/outputRegistry';
 import { CollapseComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/collapse.component';
+import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
+import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
 
 const outputComponentRegistry = Registry.as<ICellComponenetRegistry>(OutputComponentExtensions.CellComponentContributions);
 
@@ -46,6 +48,8 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			LoadingSpinner,
 			CodeComponent,
 			CodeCellComponent,
+			CellToolbarComponent,
+			MarkdownToolbarComponent,
 			PlaceholderCellComponent,
 			NotebookComponent,
 			ComponentHostDirective,
