@@ -109,7 +109,7 @@ const indentationFilter = [
 	'!resources/linux/snap/electron-launch',
 	'!extensions/sql-database-projects/resources/templates/*.xml',
 	'!extensions/sql-database-projects/src/test/baselines/*.xml',
-	'!extensions/sql-database-projects/src/test/baselines/*.json',
+	'!extensions/sql-database-projects/src/test/baselines/*.json'
 ];
 
 const copyrightFilter = [
