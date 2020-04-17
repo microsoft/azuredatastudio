@@ -15,12 +15,12 @@ import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProje
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
 
-before(async function () : Promise<void> {
-	await templates.loadTemplates('../../extensions/sql-database-projects/resources/templates');
-	await baselines.loadBaselines();
-});
+describe('ProjectsController: project controller operations', function (): void {
+	before(async function () : Promise<void> {
+		await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
+		await baselines.loadBaselines();
+	});
 
-describe('SqlDatabaseProjectTreeViewProvider: project controller operations', function (): void {
 	it('Should create new sqlproj file with correct values', async function (): Promise<void> {
 		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 		const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);

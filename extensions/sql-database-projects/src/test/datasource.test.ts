@@ -9,10 +9,11 @@ import * as testUtils from './testUtils';
 import * as sql from '../models/dataSources/sqlConnectionStringSource';
 import * as dataSources from '../models/dataSources/dataSources';
 
-//import { load } from '../models/dataSources/dataSources';
-// import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
-
 describe('Data Sources: DataSource operations', function (): void {
+	before(async function () : Promise<void> {
+		await baselines.loadBaselines();
+	});
+
 	it('Should read DataSources from datasource.json', async function (): Promise<void> {
 		const dataSourcePath = await testUtils.createTestDataSources(baselines.openDataSourcesBaseline);
 		const dataSourceList = await dataSources.load(dataSourcePath);

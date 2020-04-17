@@ -10,11 +10,11 @@ import * as constants from '../common/constants';
 import { promises as fs } from 'fs';
 
 export async function createTestSqlProj(contents: string, folderPath?: string): Promise<string> {
-	return createTestFile(contents, 'TestProject.sqlproj', folderPath);
+	return await createTestFile(contents, 'TestProject.sqlproj', folderPath);
 }
 
 export async function createTestDataSources(contents: string, folderPath?: string): Promise<string> {
-	return createTestFile(contents, constants.dataSourcesFileName, folderPath);
+	return await createTestFile(contents, constants.dataSourcesFileName, folderPath);
 }
 
 export async function generateTestFolderPath(): Promise<string> {

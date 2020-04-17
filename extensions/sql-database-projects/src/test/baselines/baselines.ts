@@ -11,7 +11,7 @@ export let newProjectFileBaseline: string;
 export let openProjectFileBaseline: string;
 export let openDataSourcesBaseline: string;
 
-const baselineFolderPath = '../../extensions/sql-database-projects/src/test/baselines';
+const baselineFolderPath = __dirname;
 
 export async function loadBaselines() {
 	newProjectFileBaseline = await loadBaseline(baselineFolderPath, 'newSqlProjectBaseline.xml');
