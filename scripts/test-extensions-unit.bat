@@ -26,6 +26,8 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 	call yarn gulp compile-extension:mssql
 	call yarn gulp compile-extension:notebook
 	call yarn gulp compile-extension:resource-deployment
+	call yarn gulp compile-extension:machine-learning-services
+	call yarn gulp compile-extension:sql-database-projects
 
 	echo "Running integration tests with '%INTEGRATION_TEST_ELECTRON_PATH%' as build."
 )
@@ -89,9 +91,9 @@ REM echo *** starting mssql tests ***
 REM echo ******************************************
 REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\mssql --extensionTestsPath=%~dp0\..\extensions\mssql\out\test --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
 
-echo *******************************
+echo ********************************************
 echo *** starting sql-database-projects tests ***
-echo *******************************
+echo ********************************************
 call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\sql-database-projects --extensionTestsPath=%~dp0\..\extensions\sql-database-projects\out\test --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
 
 if %errorlevel% neq 0 exit /b %errorlevel%
