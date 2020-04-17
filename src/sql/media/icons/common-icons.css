@@ -365,16 +365,43 @@
 	-webkit-mask-image: url('toolbar-preview-toggle-off.svg');
 	mask-image: url('toolbar-preview-toggle-off.svg');
 }
+.codicon.code {
+	-webkit-mask-image: url('code.svg');
+	mask-image: url('code.svg');
+}
+.codicon.markdown {
+	-webkit-mask-image: url('markdown.svg');
+	mask-image: url('markdown.svg');
+}
+.codicon.action-collapse {
+	-webkit-mask-image: url('action-collapse.svg');
+	mask-image: url('action-collapse.svg');
+}
+.codicon.clear {
+	-webkit-mask-image: url('clear.svg');
+	mask-image: url('clear.svg');
+}
+.codicon.shield {
+	-webkit-mask-image: url('shield.svg');
+	mask-image: url('shield.svg');
+}
+.codicon.packages {
+	-webkit-mask-image: url('packages.svg');
+	mask-image: url('packages.svg');
+}
 
-/* Cell toolbar icons */
+
+.vs .codicon.new-blue {
+	background-image: url('new-blue.svg');
+}
+.vs .codicon.start-outline {
+	background-image: url('start-outline.svg');
+}
 .cell-tool-close {
 	background-image: url('close-blue.svg');
 }
 .cell-tool-edit {
 	background-image: url('edit.svg');
-}
-.cell-tool-add {
-	background-image: url('new-blue.svg');
 }
 .cell-tool-move-up {
 	background-image: url('down-arrow-blue.svg');
@@ -389,6 +416,7 @@
 .cell-tool-more {
 	background-image: url('ellipsis-blue.svg');
 }
+
 
 
 .small {

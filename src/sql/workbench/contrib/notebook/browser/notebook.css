@@ -54,23 +54,8 @@
 	vertical-align: bottom;
 }
 
-.notebookEditor .notebook-button.icon-add {
-	background-image: url("./media/light/add.svg");
-}
 
-.vs-dark .notebookEditor .notebook-button.icon-add,
-.hc-black .notebookEditor .notebook-button.icon-add {
-	background-image: url("./media/dark/add_inverse.svg");
-}
 
-.notebookEditor .notebook-button.icon-run-cells {
-	background-image: url("./media/light/run_cells.svg");
-}
-
-.vs-dark .notebookEditor .notebook-button.icon-run-cells,
-.hc-black .notebookEditor .notebook-button.icon-run-cells {
-	background-image: url("./media/dark/run_cells_inverse.svg");
-}
 
 .notebookEditor .notebook-button.icon-trusted {
 	background-image: url("./media/light/trusted.svg");

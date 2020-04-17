@@ -406,32 +406,38 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		attachToDropdown.render(attachToContainer);
 		attachSelectBoxStyler(attachToDropdown, this.themeService);
 
-		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Code"), 'notebook-button icon-add');
+		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Cell"), 'notebook-button codicon new-blue');
 		addCodeCellButton.cellType = CellTypes.Code;
 
-		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Text"), 'notebook-button icon-add');
-		addTextCellButton.cellType = CellTypes.Markdown;
+		// let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Text"), 'notebook-button icon-add');
+		// addTextCellButton.cellType = CellTypes.Markdown;
 
-		this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run Cells"), 'notebook-button icon-run-cells');
+		this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run all"), 'notebook-button codicon start-outline');
+
+
+		let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells');
+
 		let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', localize('clearResults', "Clear Results"), 'notebook-button icon-clear-results');
 
 		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted');
 		this._trustedAction.enabled = false;
 
-		let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells');
 
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
+		//let separator = <HTMLElement>this.
 		this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
 		this._actionBar.context = this;
 		this._actionBar.setContent([
 			{ action: addCodeCellButton },
-			{ action: addTextCellButton },
-			{ element: kernelContainer },
-			{ element: attachToContainer },
-			{ action: this._trustedAction },
+			//{ action: addTextCellButton },
 			{ action: this._runAllCellsAction },
+			//{ element: "|"},
+			{ element: attachToContainer },
+			{ element: kernelContainer },
+			{ action: collapseCellsAction },
 			{ action: clearResultsButton },
-			{ action: collapseCellsAction }
+			{ action: this._trustedAction },
+			//{ action: managePakages }
 		]);
 	}
 
