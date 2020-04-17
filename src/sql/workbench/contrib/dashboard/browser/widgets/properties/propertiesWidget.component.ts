@@ -2,9 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./propertiesWidget';
-
-import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef } from '@angular/core';
+import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef, ViewChild } from '@angular/core';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
@@ -12,13 +10,13 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 
 import { DatabaseInfo, ServerInfo } from 'azdata';
-
-import { EventType, addDisposableListener } from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
 import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
+import { PropertiesContainer } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
+import { convertSizeToNumber } from 'sql/base/browser/dom';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
@@ -52,37 +50,14 @@ export interface Property {
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 
-export interface DisplayProperty {
-	displayName: string;
-	value: string;
-}
-
-enum GridDisplayLayout {
-	twoColumns = 'twoColumns',
-	oneColumn = 'oneColumn'
-}
-
-enum PropertyLayoutDirection {
-	row = 'rowLayout',
-	column = 'columnLayout'
-}
-
-
-const collapseHeight = 25;
-const horizontalPropertyHeight = 28;
-const verticalPropertyHeight = 46;
-
 @Component({
 	selector: 'properties-widget',
-	templateUrl: decodeURI(require.toUrl('./propertiesWidget.component.html'))
+	template: '<properties-container></properties-container>'
 })
 export class PropertiesWidgetComponent extends DashboardWidget implements IDashboardWidget, OnInit {
+	@ViewChild(PropertiesContainer) private _propertiesContainer: PropertiesContainer;
 	private _connection: ConnectionManagementInfo;
 	private _databaseInfo: DatabaseInfo;
-	private _properties: Array<DisplayProperty>;
-	public gridDisplayLayout: GridDisplayLayout;
-	public propertyLayout: PropertyLayoutDirection;
-	public height: number;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
@@ -92,14 +67,11 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		@Inject(ILogService) private logService: ILogService
 	) {
 		super(changeRef);
-		this._loadingMessage = nls.localize('loadingProperties', "Loading properties");
-		this._loadingCompletedMessage = nls.localize('loadingPropertiesCompleted', "Loading properties completed");
 		this.init();
 	}
 
 	ngOnInit() {
 		this._inited = true;
-		this._register(addDisposableListener(window, EventType.RESIZE, () => this.layoutProperties()));
 		this._changeRef.detectChanges();
 	}
 
@@ -115,35 +87,10 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			this._changeRef.detectChanges();
 			this.parseProperties();
 			this.setLoadingStatus(false);
-			this.layoutProperties();
 		}, error => {
 			this.setLoadingStatus(false);
 			(<HTMLElement>this._el.nativeElement).innerText = nls.localize('dashboard.properties.error', "Unable to load dashboard properties");
 		})));
-	}
-
-	private layoutProperties(): void {
-		// Reflow:
-		// 2 columns w/ horizontal alignment : 1366px and above
-		// 2 columns w/ vertical alignment : 1024 - 1365px
-		// 1 column w/ vertical alignment : 1024px or less
-		if (!this._loading) {
-			if (window.innerWidth >= 1366) {
-				this.gridDisplayLayout = GridDisplayLayout.twoColumns;
-				this.propertyLayout = PropertyLayoutDirection.row;
-				this.height = Math.ceil(this._properties.length / 2) * horizontalPropertyHeight + collapseHeight;
-			} else if (window.innerWidth < 1366 && window.innerWidth >= 1024) {
-				this.gridDisplayLayout = GridDisplayLayout.twoColumns;
-				this.propertyLayout = PropertyLayoutDirection.column;
-				this.height = Math.ceil(this._properties.length / 2) * verticalPropertyHeight + collapseHeight;
-			} else if (window.innerWidth < 1024) {
-				this.gridDisplayLayout = GridDisplayLayout.oneColumn;
-				this.propertyLayout = PropertyLayoutDirection.column;
-				this.height = this._properties.length * verticalPropertyHeight + collapseHeight;
-			}
-
-			this._changeRef.detectChanges();
-		}
 	}
 
 	private parseProperties() {
@@ -235,7 +182,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			infoObject = this._connection.serverInfo;
 		}
 
-		this._properties = propertyArray.map(property => {
+		this._propertiesContainer.displayProperties = propertyArray.map(property => {
 			let propertyObject = this.getValueOrDefault<string>(infoObject, property.value, property.default || '--');
 
 			// make sure the value we got shouldn't be ignored
@@ -293,5 +240,16 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			val = defaultVal;
 		}
 		return val;
+	}
+
+	protected setLoadingStatus(loading: boolean): void {
+		super.setLoadingStatus(loading);
+		if (this._inited) {
+			this._propertiesContainer.loading = loading;
+		}
+	}
+
+	public get height(): number {
+		return convertSizeToNumber(this._propertiesContainer.height);
 	}
 }
