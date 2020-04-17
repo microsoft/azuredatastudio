@@ -300,7 +300,7 @@ export abstract class NotebookInput extends EditorInput {
 
 	private async setTrustForNewEditor(newInput: IEditorInput | undefined): Promise<void> {
 		let model = this._model.getNotebookModel();
-		if (model?.trustedMode && newInput?.resource !== this.resource) {
+		if (model?.trustedMode && newInput && newInput.resource !== this.resource) {
 			await this.notebookService.serializeNotebookStateChange(newInput.resource, NotebookChangeType.Saved, undefined, true);
 		}
 	}
