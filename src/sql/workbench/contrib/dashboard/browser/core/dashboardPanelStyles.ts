@@ -11,7 +11,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	// tab label
 	const tabLabelColor = theme.getColor(TAB_LABEL);
 	if (tabLabelColor) {
-		collector.addRule(`properties-widget .propertiesValue {
+		collector.addRule(`properties-widget .propertyValue {
 			color: ${tabLabelColor}
 		}`);
 	}
@@ -32,11 +32,11 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		}`);
 	}
 
-	// properties name
-	const propertiesName = theme.getColor(DASHBOARD_PROPERTIES_NAME);
-	if (propertiesName) {
-		collector.addRule(`properties-widget .propertiesName {
-			color: ${propertiesName}
+	// property name
+	const propertyName = theme.getColor(DASHBOARD_PROPERTIES_NAME);
+	if (propertyName) {
+		collector.addRule(`properties-widget .propertyName {
+			color: ${propertyName}
 		}`);
 	}
 });

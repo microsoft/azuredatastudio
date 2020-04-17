@@ -836,7 +836,6 @@ export enum TabOrientation {
 	Horizontal = 'horizontal'
 }
 
-
 export interface TabbedPanelLayout {
 	orientation: TabOrientation;
 	showIcon: boolean;

@@ -29,6 +29,7 @@ import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServic
 import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
+import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -364,7 +365,7 @@ suite('Notebook Find Model', function (): void {
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(contents));
 		defaultModelOptions.contentManager = mockContentManager.object;
 		// Initialize the model
-		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService());
 		await model.loadContents();
 		await model.requestModelLoad();
 	}

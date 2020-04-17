@@ -2,8 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import 'vs/css!./propertiesWidget';
 
-import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef } from '@angular/core';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
@@ -56,6 +57,21 @@ export interface DisplayProperty {
 	value: string;
 }
 
+enum GridDisplayLayout {
+	twoColumns = 'twoColumns',
+	oneColumn = 'oneColumn'
+}
+
+enum PropertyLayoutDirection {
+	row = 'rowLayout',
+	column = 'columnLayout'
+}
+
+
+const collapseHeight = 25;
+const horizontalPropertyHeight = 28;
+const verticalPropertyHeight = 46;
+
 @Component({
 	selector: 'properties-widget',
 	templateUrl: decodeURI(require.toUrl('./propertiesWidget.component.html'))
@@ -63,11 +79,10 @@ export interface DisplayProperty {
 export class PropertiesWidgetComponent extends DashboardWidget implements IDashboardWidget, OnInit {
 	private _connection: ConnectionManagementInfo;
 	private _databaseInfo: DatabaseInfo;
-	public _clipped: boolean;
-	private properties: Array<DisplayProperty>;
-
-	@ViewChild('child', { read: ElementRef }) private _child: ElementRef;
-	@ViewChild('parent', { read: ElementRef }) private _parent: ElementRef;
+	private _properties: Array<DisplayProperty>;
+	public gridDisplayLayout: GridDisplayLayout;
+	public propertyLayout: PropertyLayoutDirection;
+	public height: number;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
@@ -84,7 +99,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 	ngOnInit() {
 		this._inited = true;
-		this._register(addDisposableListener(window, EventType.RESIZE, () => this.handleClipping()));
+		this._register(addDisposableListener(window, EventType.RESIZE, () => this.layoutProperties()));
 		this._changeRef.detectChanges();
 	}
 
@@ -99,23 +114,36 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			this._databaseInfo = data;
 			this._changeRef.detectChanges();
 			this.parseProperties();
-			if (this._inited) {
-				this.handleClipping();
-			}
 			this.setLoadingStatus(false);
+			this.layoutProperties();
 		}, error => {
 			this.setLoadingStatus(false);
 			(<HTMLElement>this._el.nativeElement).innerText = nls.localize('dashboard.properties.error', "Unable to load dashboard properties");
 		})));
 	}
 
-	private handleClipping(): void {
-		if (this._child.nativeElement.offsetWidth > this._parent.nativeElement.offsetWidth) {
-			this._clipped = true;
-		} else {
-			this._clipped = false;
+	private layoutProperties(): void {
+		// Reflow:
+		// 2 columns w/ horizontal alignment : 1366px and above
+		// 2 columns w/ vertical alignment : 1024 - 1365px
+		// 1 column w/ vertical alignment : 1024px or less
+		if (!this._loading) {
+			if (window.innerWidth >= 1366) {
+				this.gridDisplayLayout = GridDisplayLayout.twoColumns;
+				this.propertyLayout = PropertyLayoutDirection.row;
+				this.height = Math.ceil(this._properties.length / 2) * horizontalPropertyHeight + collapseHeight;
+			} else if (window.innerWidth < 1366 && window.innerWidth >= 1024) {
+				this.gridDisplayLayout = GridDisplayLayout.twoColumns;
+				this.propertyLayout = PropertyLayoutDirection.column;
+				this.height = Math.ceil(this._properties.length / 2) * verticalPropertyHeight + collapseHeight;
+			} else if (window.innerWidth < 1024) {
+				this.gridDisplayLayout = GridDisplayLayout.oneColumn;
+				this.propertyLayout = PropertyLayoutDirection.column;
+				this.height = this._properties.length * verticalPropertyHeight + collapseHeight;
+			}
+
+			this._changeRef.detectChanges();
 		}
-		this._changeRef.detectChanges();
 	}
 
 	private parseProperties() {
@@ -207,11 +235,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			infoObject = this._connection.serverInfo;
 		}
 
-		// iterate over properties and display them
-		this.properties = [];
-		for (let i = 0; i < propertyArray.length; i++) {
-			const property = propertyArray[i];
-			const assignProperty = {};
+		this._properties = propertyArray.map(property => {
 			let propertyObject = this.getValueOrDefault<string>(infoObject, property.value, property.default || '--');
 
 			// make sure the value we got shouldn't be ignored
@@ -224,10 +248,11 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 					}
 				}
 			}
-			assignProperty['displayName'] = property.displayName;
-			assignProperty['value'] = propertyObject;
-			this.properties.push(<DisplayProperty>assignProperty);
-		}
+			return {
+				displayName: property.displayName,
+				value: propertyObject
+			};
+		});
 
 		if (this._inited) {
 			this._changeRef.detectChanges();

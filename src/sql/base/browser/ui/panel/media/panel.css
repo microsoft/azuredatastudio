@@ -24,7 +24,7 @@ panel {
 	position: relative;
 }
 
-.tabbedPanel.vertical>.title {
+.tabbedPanel.vertical > .title {
 	flex: 0 0 auto;
 	flex-direction: column;
 	height: 100%;
@@ -41,7 +41,6 @@ panel {
 	margin: 0 auto;
 	padding: 0;
 	justify-content: flex-start;
-	line-height: 35px;
 	white-space: nowrap;
 	flex: 1;
 	height: 100%;
@@ -50,23 +49,33 @@ panel {
 .tabbedPanel .tabList .tab {
 	cursor: pointer;
 	margin: auto;
+	display: flex;
+	flex-flow: row;
 }
 
-.tabbedPanel.horizontal .tabList .tab .tabLabel {
+.tabbedPanel.horizontal > .title .tabList .tab .tabLabel {
 	font-size: 12px;
-	font-weight: normal;
+	max-width: 100px;
 }
 
-.tabbedPanel.vertical .tabList .tab .tabLabel {
+.tabbedPanel.vertical >.title .tabList .tab .tabLabel {
 	font-size: 13px;
 	padding-bottom: 0px;
-	font-weight: normal;
+	max-width: 200px;
 }
 
 .tabbedPanel .tabList .tab .tabLabel {
 	font-size: 13px;
 	padding-bottom: 4px;
 	font-weight: 600;
+}
+
+.tabbedPanel.horizontal > .title .tabList .tab .tabLabel,
+.tabbedPanel.vertical > .title .tabList .tab .tabLabel {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	border: 0px;
+	font-weight: normal;
 }
 
 .tabbedPanel .tabList .tab-header {
@@ -124,23 +133,29 @@ panel {
 	flex-direction: row;
 }
 
-.tabbedPanel.vertical>.title {
+.tabbedPanel.vertical > .title {
 	flex: 0 0 auto;
 	flex-direction: column;
 	height: 100%;
 }
 
-.tabbedPanel>.tab-content {
+.tabbedPanel > .tab-content {
 	flex: 1 1 auto;
 	position: relative;
 }
 
-.tabbedPanel.vertical>.title > .tabContainer .tabList {
+.tabbedPanel.vertical > .title > .tabContainer .tabList {
 	flex-flow: column;
+	height: calc(100% - 35px);
+	overflow: auto;
+	line-height: 35px;
 }
 
 .tabbedPanel.horizontal > .title > .tabContainer .tabList {
 	flex-flow: row;
+	width: 100%;
+	overflow: auto;
+	line-height: 35px;
 }
 
 .tabbedPanel > .title > .tabContainer > .monaco-scrollable-element {
@@ -183,6 +198,7 @@ panel {
 	background-repeat: no-repeat;
 	background-size: 9px 9px;
 	align-self: center;
+	cursor: pointer;
 }
 
 .vs .tabbedPanel .tab-action.collapse {
