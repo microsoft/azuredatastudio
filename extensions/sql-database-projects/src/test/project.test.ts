@@ -13,6 +13,10 @@ import { Project, EntryType } from '../models/project';
 
 let projFilePath: string;
 
+before(async function () : Promise<void> {
+	await baselines.loadBaselines();
+});
+
 describe('Project: sqlproj content operations', function (): void {
 	beforeEach(async () => {
 		projFilePath = await testUtils.createTestSqlProj(baselines.openProjectFileBaseline);

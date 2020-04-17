@@ -11,7 +11,9 @@ export let newProjectFileBaseline: string;
 export let openProjectFileBaseline: string;
 export let openDataSourcesBaseline: string;
 
-export async function loadBaselines(baselineFolderPath: string) {
+const baselineFolderPath = '../../extensions/sql-database-projects/src/test/baselines';
+
+export async function loadBaselines() {
 	newProjectFileBaseline = await loadBaseline(baselineFolderPath, 'newSqlProjectBaseline.xml');
 	openProjectFileBaseline = await loadBaseline(baselineFolderPath, 'openSqlProjectBaseline.xml');
 	openDataSourcesBaseline = await loadBaseline(baselineFolderPath, 'openDataSourcesBaseline.json');

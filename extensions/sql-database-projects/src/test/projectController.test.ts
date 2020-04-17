@@ -16,8 +16,8 @@ import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
 
 before(async function () : Promise<void> {
-	await templates.loadTemplates('..\\..\\extensions\\sql-database-projects\\resources\\templates');
-	await baselines.loadBaselines('..\\..\\extensions\\sql-database-projects\\src\\test\\baselines');
+	await templates.loadTemplates('../../extensions/sql-database-projects/resources/templates');
+	await baselines.loadBaselines();
 });
 
 describe('SqlDatabaseProjectTreeViewProvider: project controller operations', function (): void {
