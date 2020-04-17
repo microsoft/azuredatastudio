@@ -19,10 +19,10 @@ export let newSqlStoredProcedureTemplate: string;
 export async function loadTemplates(templateFolderPath: string) {
 	newSqlProjectTemplate = await loadTemplate(templateFolderPath, 'newSqlProjectTemplate.xml');
 
-	newSqlScriptTemplate = await loadTemplate(templateFolderPath, 'newTSqlScriptTemplate.sql');
-	newSqlTableTemplate = await loadTemplate(templateFolderPath, 'newTSqlTableTemplate.sql');
-	newSqlViewTemplate = await loadTemplate(templateFolderPath, 'newTSqlViewTemplate.sql');
-	newSqlStoredProcedureTemplate = await loadTemplate(templateFolderPath, 'newTSqlStoredProcedureTemplate.sql');
+	newSqlScriptTemplate = await loadTemplate(templateFolderPath, 'newTsqlScriptTemplate.sql');
+	newSqlTableTemplate = await loadTemplate(templateFolderPath, 'newTsqlTableTemplate.sql');
+	newSqlViewTemplate = await loadTemplate(templateFolderPath, 'newTsqlViewTemplate.sql');
+	newSqlStoredProcedureTemplate = await loadTemplate(templateFolderPath, 'newTsqlStoredProcedureTemplate.sql');
 }
 
 async function loadTemplate(templateFolderPath: string, fileName: string): Promise<string> {
