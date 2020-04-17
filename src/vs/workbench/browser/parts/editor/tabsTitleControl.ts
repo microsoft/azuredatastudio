@@ -1052,6 +1052,9 @@ export class TabsTitleControl extends TitleControl {
 
 		if (tabLabel.ariaLabel) {
 			tabContainer.setAttribute('aria-label', tabLabel.ariaLabel);
+			// Set aria-description to empty string so that screen readers would not read the title as well
+			// More details https://github.com/microsoft/vscode/issues/95378
+			tabContainer.setAttribute('aria-description', '');
 		}
 		tabContainer.title = title;
 
