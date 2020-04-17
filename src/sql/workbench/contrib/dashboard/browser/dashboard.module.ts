@@ -56,7 +56,6 @@ import { OperatorsViewComponent } from 'sql/workbench/contrib/jobManagement/brow
 import { ProxiesViewComponent } from 'sql/workbench/contrib/jobManagement/browser/proxiesView.component';
 import { NotebooksViewComponent } from 'sql/workbench/contrib/jobManagement/browser/notebooksView.component';
 import { NotebookHistoryComponent } from 'sql/workbench/contrib/jobManagement/browser/notebookHistory.component';
-import LoadingSpinner from 'sql/base/browser/ui/loadingSpinner/loadingSpinner.component';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
 import { SelectBox } from 'sql/platform/browser/selectBox/selectBox.component';
 import { InputBox } from 'sql/platform/browser/inputbox/inputBox.component';
