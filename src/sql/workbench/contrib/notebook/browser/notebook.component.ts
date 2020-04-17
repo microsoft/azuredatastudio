@@ -57,9 +57,7 @@ import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
-
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
-
 
 @Component({
 	selector: NOTEBOOK_SELECTOR,

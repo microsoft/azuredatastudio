@@ -25,6 +25,7 @@ import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser/simpleProgressIndicator';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { convertSizeToNumber } from 'sql/base/browser/dom';
 
 @Component({
 	template: '',
@@ -111,9 +112,9 @@ export default class EditorComponent extends ComponentBase implements IComponent
 	/// IComponent implementation
 
 	public layout(): void {
-		let width: number = this.convertSizeToNumber(this.width);
+		let width: number = convertSizeToNumber(this.width);
 
-		let height: number = this.convertSizeToNumber(this.height);
+		let height: number = convertSizeToNumber(this.height);
 		if (this._isAutoResizable) {
 			this._editor.setHeightToScrollHeight();
 			height = Math.max(this._editor.scrollHeight, this._minimumHeight ? this._minimumHeight : 0);

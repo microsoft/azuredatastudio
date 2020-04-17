@@ -25,6 +25,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { assign } from 'vs/base/common/objects';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { isNumber } from 'vs/base/common/types';
+import { convertSize, convertSizeToNumber } from 'sql/base/browser/dom';
 
 @Component({
 	selector: 'modelview-inputBox',
@@ -193,10 +194,10 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	private layoutInputBox(): void {
 		if (isNumber(this.width) || this.width) {
-			this.inputElement.width = this.convertSizeToNumber(this.width);
+			this.inputElement.width = convertSizeToNumber(this.width);
 		}
 		if (isNumber(this.height) || this.height) {
-			this.inputElement.setHeight(this.convertSize(this.height));
+			this.inputElement.setHeight(convertSize(this.height));
 		}
 	}
 
