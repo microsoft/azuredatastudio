@@ -553,4 +553,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		const border = theme.getColor(DASHBOARD_BORDER);
 		this.toolbarContainer.nativeElement.style.borderBottomColor = border.toString();
 	}
+
+	public getContentAreaHeight() {
+		return this.showToolbar ? `calc(100% - ${(<HTMLElement>this.toolbarContainer.nativeElement).clientHeight}px)` : '100%';
+	}
 }
