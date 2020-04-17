@@ -10,7 +10,13 @@ export function isHidden(element: HTMLElement): boolean {
 	return element.style.display === 'none';
 }
 
-export function convertSize(size: number | string, defaultValue?: string): string {
+/**
+ * Converts a size value into its string representation. This will add px to the end unless
+ * it already ends with %. If the size value is undefined it will return the defaultValue as-is.
+ * @param size The size value to convert
+ * @param defaultValue The default value to use if the size is undefined
+ */
+export function convertSize(size: number | string | undefined, defaultValue?: string): string {
 	defaultValue = defaultValue || '';
 	if (types.isUndefinedOrNull(size)) {
 		return defaultValue;
@@ -22,7 +28,11 @@ export function convertSize(size: number | string, defaultValue?: string): strin
 	return convertedSize;
 }
 
-export function convertSizeToNumber(size: number | string): number {
+/**
+ * Converts a size value into its number representation. Supports px, em and unspecified units. 
+ * @param size The size value to convert
+ */
+export function convertSizeToNumber(size: number | string | undefined): number {
 	if (size && typeof (size) === 'string') {
 		if (endsWith(size.toLowerCase(), 'px')) {
 			return +size.replace('px', '');
