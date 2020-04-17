@@ -512,7 +512,7 @@
       "activitybar": [
         {
           "id": "books-explorer",
-          "title": "Jupyter Books",
+          "title": "Notebooks",
           "icon": "resources/dark/JupyterBook_2.svg"
         }
       ]
