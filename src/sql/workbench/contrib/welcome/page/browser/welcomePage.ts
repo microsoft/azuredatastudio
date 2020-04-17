@@ -315,22 +315,22 @@ class WelcomePage extends Disposable {
 				}
 			}
 		}));
-		this.addVideoImageSource();
+		// this.addVideoImageSource();
 		this.createDropDown();
 		this.createWidePreviewToolTip();
 		this.createPreviewModal();
 	}
 
-	private addVideoImageSource() {
-		const videoIntroduction = document.querySelectorAll('.video_introduction') as NodeListOf<HTMLImageElement>;
-		const videoOverview = document.querySelectorAll('.video_overview') as NodeListOf<HTMLImageElement>;
-		videoOverview.forEach((elm, i) => {
-			elm.src = require.toUrl('./../../media/video_overview.png');
-		});
-		videoIntroduction.forEach((elm, i) => {
-			elm.src = require.toUrl('./../../media/video_introduction.png');
-		});
-	}
+	// private addVideoImageSource() {
+	// const videoIntroduction = document.querySelectorAll('.video_introduction') as NodeListOf<HTMLImageElement>;
+	//  	// const videoOverview = document.querySelectorAll('.video_overview') as NodeListOf<HTMLImageElement>;
+	//  	// videoOverview.forEach((elm, i) => {
+	//  	// 	elm.src = require.toUrl('./../../media/video_overview.png');
+	//  	// });
+	//  	videoIntroduction.forEach((elm, i) => {
+	//  		elm.src = require.toUrl('./../../media/video_introduction.png');
+	//  	});
+	//  }
 
 	private createWidePreviewToolTip() {
 		const previewLink = document.querySelector('#tool_tip_container_wide');
