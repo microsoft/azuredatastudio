@@ -18,6 +18,7 @@ import { MockExtensionContext } from '../common/stubs';
 import { exists } from '../../common/utils';
 import { AppContext } from '../../common/appContext';
 import { ApiWrapper } from '../../common/apiWrapper';
+import { BookModel } from '../../book/bookModel';
 // import { BookTrustManager } from '../../book/bookTrustManager';
 
 export interface IExpectedBookItem {
@@ -452,6 +453,7 @@ describe('BookTreeViewProviderTests', function () {
 	describe('BookTreeViewProvider.openNotebookFolder', function (): void {
 		let rootFolderPath: string;
 		let bookFolderPath: string;
+		let bookTitle: string;
 		let notebookFolderPath: string;
 		let tableOfContentsFile: string;
 		let standaloneNotebookTitle: string;
@@ -475,7 +477,8 @@ describe('BookTreeViewProviderTests', function () {
 			await fs.mkdir(dataFolderPath);
 			await fs.mkdir(contentFolderPath);
 			await fs.mkdir(notebookFolderPath);
-			await fs.writeFile(configFile, 'title: Test Book');
+			bookTitle = 'Test Book';
+			await fs.writeFile(configFile, `title: ${bookTitle}`);
 			await fs.writeFile(tableOfContentsFile, '- title: Notebook1\n  url: /notebook1');
 			await fs.writeFile(bookNotebookFile, '');
 			await fs.writeFile(standaloneNotebookFile, '');
@@ -491,18 +494,52 @@ describe('BookTreeViewProviderTests', function () {
 		it('should include books and notebooks when opening parent folder', async () => {
 			await bookTreeViewProvider.loadNotebooksInFolder(rootFolderPath);
 			should(bookTreeViewProvider.books.length).equal(2, 'Should have loaded a book and a notebook');
+
+			validateIsBook(bookTreeViewProvider.books[0]);
+			validateIsNotebook(bookTreeViewProvider.books[1]);
 		});
 
 		it('should include only books when opening books folder', async () => {
 			await bookTreeViewProvider.loadNotebooksInFolder(bookFolderPath);
 			should(bookTreeViewProvider.books.length).equal(1, 'Should have loaded only one book');
+
+			validateIsBook(bookTreeViewProvider.books[0]);
 		});
 
 		it('should include only notebooks when opening notebooks folder', async () => {
 			await bookTreeViewProvider.loadNotebooksInFolder(notebookFolderPath);
 			should(bookTreeViewProvider.books.length).equal(1, 'Should have loaded only one notebook');
 
-			let book = bookTreeViewProvider.books[0];
+			validateIsNotebook(bookTreeViewProvider.books[0]);
+		});
+
+		this.afterEach(async function (): Promise<void> {
+			let bookItems = await bookTreeViewProvider.getChildren();
+			await Promise.all(bookItems.map(bookItem => bookTreeViewProvider.closeBook(bookItem)));
+		});
+
+		this.afterAll(async function (): Promise<void> {
+			if (await exists(rootFolderPath)) {
+				await promisify(rimraf)(rootFolderPath);
+			}
+		});
+
+		let validateIsBook = (book: BookModel) => {
+			should(book.isNotebook).be.false();
+			should(book.bookItems.length).equal(1);
+
+			let bookItem = book.bookItems[0];
+
+			let bookDetails = bookItem.book;
+			should(bookDetails.type).equal(BookTreeItemType.Book);
+			should(bookDetails.title).equal(bookTitle);
+			should(bookDetails.contentPath).equal(tableOfContentsFile.replace(/\\/g, '/'));
+			should(bookDetails.root).equal(bookFolderPath.replace(/\\/g, '/'));
+			should(bookDetails.tableOfContents.sections).not.equal(undefined);
+			should(bookDetails.page.sections).not.equal(undefined);
+		};
+
+		let validateIsNotebook = (book: BookModel) => {
 			should(book.isNotebook).be.true();
 			should(book.bookItems.length).equal(1);
 
@@ -516,17 +553,6 @@ describe('BookTreeViewProviderTests', function () {
 			should(bookDetails.root).equal(notebookFolderPath.replace(/\\/g, '/'));
 			should(bookDetails.tableOfContents.sections).equal(undefined);
 			should(bookDetails.page.sections).equal(undefined);
-		});
-
-		this.afterEach(async function (): Promise<void> {
-			let bookItems = await bookTreeViewProvider.getChildren();
-			await Promise.all(bookItems.map(bookItem => bookTreeViewProvider.closeBook(bookItem)));
-		});
-
-		this.afterAll(async function (): Promise<void> {
-			if (await exists(rootFolderPath)) {
-				await promisify(rimraf)(rootFolderPath);
-			}
-		});
+		};
 	});
 });
