@@ -37,6 +37,7 @@ export interface ModelViewData {
 	modelFile?: string;
 	modelData: AzureModelResource | string | RegisteredModel;
 	modelDetails?: RegisteredModelDetails;
+	targetImportTable?: DatabaseTable;
 }
 
 // Event names
@@ -58,6 +59,7 @@ export const PredictModelEventName = 'predictModel';
 export const RegisterModelEventName = 'registerModel';
 export const SourceModelSelectedEventName = 'sourceModelSelected';
 export const LoadModelParametersEventName = 'loadModelParameters';
+export const StoreImportTableEventName = 'storeImportTable';
 
 /**
  * Base class for all model management views
@@ -66,6 +68,7 @@ export abstract class ModelViewBase extends ViewBase {
 
 	private _modelSourceType: ModelSourceType = ModelSourceType.Local;
 	private _modelsViewData: ModelViewData[] = [];
+	private _importTable: DatabaseTable | undefined;
 
 	constructor(apiWrapper: ApiWrapper, root?: string, parent?: ModelViewBase) {
 		super(apiWrapper, root, parent);
@@ -88,7 +91,8 @@ export abstract class ModelViewBase extends ViewBase {
 			PredictModelEventName,
 			DownloadAzureModelEventName,
 			DownloadRegisteredModelEventName,
-			LoadModelParametersEventName]);
+			LoadModelParametersEventName,
+			StoreImportTableEventName]);
 	}
 
 	/**
@@ -109,8 +113,8 @@ export abstract class ModelViewBase extends ViewBase {
 	/**
 	 * list registered models
 	 */
-	public async listModels(): Promise<RegisteredModel[]> {
-		return await this.sendDataRequest(ListModelsEventName);
+	public async listModels(table: DatabaseTable): Promise<RegisteredModel[]> {
+		return await this.sendDataRequest(ListModelsEventName, table);
 	}
 
 	/**
@@ -156,7 +160,7 @@ export abstract class ModelViewBase extends ViewBase {
 	 * registers local model
 	 * @param localFilePath local file path
 	 */
-	public async registerLocalModel(models: ModelViewData[]): Promise<void> {
+	public async importLocalModel(models: ModelViewData[]): Promise<void> {
 		return await this.sendDataRequest(RegisterLocalModelEventName, models);
 	}
 
@@ -187,8 +191,12 @@ export abstract class ModelViewBase extends ViewBase {
 	 * registers azure model
 	 * @param args azure resource
 	 */
-	public async registerAzureModel(models: ModelViewData[]): Promise<void> {
+	public async importAzureModel(models: ModelViewData[]): Promise<void> {
 		return await this.sendDataRequest(RegisterAzureModelEventName, models);
+	}
+
+	public async storeImportConfigTable(): Promise<void> {
+		await this.sendRequest(StoreImportTableEventName, this.importTable);
 	}
 
 	/**
@@ -240,7 +248,7 @@ export abstract class ModelViewBase extends ViewBase {
 	}
 
 	/**
-	 * Sets model source type
+	 * Sets model data
 	 */
 	public set modelsViewData(value: ModelViewData[]) {
 		if (this.parent) {
@@ -251,13 +259,35 @@ export abstract class ModelViewBase extends ViewBase {
 	}
 
 	/**
-	 * Returns model source type
+	 * Returns model data
 	 */
 	public get modelsViewData(): ModelViewData[] {
 		if (this.parent) {
 			return this.parent.modelsViewData;
 		} else {
 			return this._modelsViewData;
+		}
+	}
+
+	/**
+	 * Sets import table
+	 */
+	public set importTable(value: DatabaseTable | undefined) {
+		if (this.parent) {
+			this.parent.importTable = value;
+		} else {
+			this._importTable = value;
+		}
+	}
+
+	/**
+	 * Returns import table
+	 */
+	public get importTable(): DatabaseTable | undefined {
+		if (this.parent) {
+			return this.parent.importTable;
+		} else {
+			return this._importTable;
 		}
 	}
 

@@ -116,7 +116,7 @@ export class PredictWizard extends ModelViewBase {
 		} else if (this.modelResources && this.azureModelsComponent && this.modelResources.data === ModelSourceType.Azure) {
 			return await this.azureModelsComponent.getDownloadedModel();
 		} else if (this.modelBrowsePage && this.modelBrowsePage.registeredModelsComponent) {
-			return await this.modelBrowsePage.registeredModelsComponent.getDownloadedModel();
+			return await this.modelBrowsePage.registeredModelsComponent.modelTable?.getDownloadedModel();
 		}
 		return undefined;
 	}

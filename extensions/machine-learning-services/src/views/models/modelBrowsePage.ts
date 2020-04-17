@@ -10,8 +10,8 @@ import * as constants from '../../common/constants';
 import { IPageView, IDataComponent } from '../interfaces';
 import { LocalModelsComponent } from './localModelsComponent';
 import { AzureModelsComponent } from './azureModelsComponent';
-import { CurrentModelsTable } from './registerModels/currentModelsTable';
 import * as utils from '../../common/utils';
+import { CurrentModelsComponent } from './manageModels/currentModelsComponent';
 
 /**
  * View to pick model source
@@ -22,7 +22,7 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 	private _formBuilder: azdata.FormBuilder | undefined;
 	public localModelsComponent: LocalModelsComponent | undefined;
 	public azureModelsComponent: AzureModelsComponent | undefined;
-	public registeredModelsComponent: CurrentModelsTable | undefined;
+	public registeredModelsComponent: CurrentModelsComponent | undefined;
 
 	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _multiSelect: boolean = true) {
 		super(apiWrapper, parent.root, parent);
@@ -39,7 +39,7 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 		this.localModelsComponent.registerComponent(modelBuilder);
 		this.azureModelsComponent = new AzureModelsComponent(this._apiWrapper, this, this._multiSelect);
 		this.azureModelsComponent.registerComponent(modelBuilder);
-		this.registeredModelsComponent = new CurrentModelsTable(this._apiWrapper, this, this._multiSelect);
+		this.registeredModelsComponent = new CurrentModelsComponent(this._apiWrapper, this, this._multiSelect);
 		this.registeredModelsComponent.registerComponent(modelBuilder);
 		this.refresh();
 		this._form = this._formBuilder.component();
@@ -128,7 +128,8 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 						modelDetails: {
 							title: fileName,
 							fileName: fileName
-						}
+						},
+						targetImportTable: this.importTable
 					};
 				});
 			}
@@ -147,7 +148,8 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 						modelDetails: {
 							title: x.model?.name || '',
 							fileName: x.model?.name
-						}
+						},
+						targetImportTable: this.importTable
 					};
 				});
 			}
@@ -159,7 +161,8 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 						modelData: x,
 						modelDetails: {
 							title: ''
-						}
+						},
+						targetImportTable: this.importTable
 					};
 				});
 			}

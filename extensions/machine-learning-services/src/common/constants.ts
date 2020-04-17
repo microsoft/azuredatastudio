@@ -115,6 +115,8 @@ export const extLangInstallFailedError = localize('extLang.installFailedError', 
 export const extLangUpdateFailedError = localize('extLang.updateFailedError', "Failed to update language");
 
 export const modelArtifactName = localize('models.artifactName', "Artifact Name");
+export const databaseName = localize('databaseName', "Database name");
+export const tableName = localize('tableName', "Table name");
 export const modelName = localize('models.name', "Name");
 export const modelFileName = localize('models.fileName', "File");
 export const modelDescription = localize('models.description', "Description");
@@ -140,6 +142,7 @@ export const azureModelsTitle = localize('models.azureModelsTitle', "Azure model
 export const localModelsTitle = localize('models.localModelsTitle', "Local models");
 export const modelSourcesTitle = localize('models.modelSourcesTitle', "Source location");
 export const modelSourcePageTitle = localize('models.modelSourcePageTitle', "Where is your model located?");
+export const modelImportTargetPageTitle = localize('models.modelImportTargetPageTitle', "Where do you want import models to?");
 export const columnSelectionPageTitle = localize('models.columnSelectionPageTitle', "Map predictions target data to model input");
 export const modelDetailsPageTitle = localize('models.modelDetailsPageTitle', "Enter model details");
 export const modelLocalSourceTitle = localize('models.modelLocalSourceTitle', "Source file");
@@ -163,6 +166,7 @@ export const invalidAzureResourceError = localize('models.invalidAzureResourceEr
 export const invalidModelToRegisterError = localize('models.invalidModelToRegisterError', "Invalid model to register");
 export const invalidModelToPredictError = localize('models.invalidModelToPredictError', "Invalid model to predict");
 export const invalidModelToSelectError = localize('models.invalidModelToSelectError', "Please select a valid model");
+export const invalidModelImportTargetError = localize('models.invalidModelImportTargetError', "Please select a valid table");
 export const modelNameRequiredError = localize('models.modelNameRequiredError', "Model name is required.");
 export const updateModelFailedError = localize('models.updateModelFailedError', "Failed to update the model");
 export function importModelFailedError(modelName: string | undefined, filePath: string | undefined): string { return localize('models.importModelFailedError', "Failed to register the model: {0} ,file: {1}", modelName || '', filePath || ''); }
