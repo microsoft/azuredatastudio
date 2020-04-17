@@ -315,18 +315,9 @@ class WelcomePage extends Disposable {
 				}
 			}
 		}));
-		this.addVideoImageSource();
 		this.createDropDown();
 		this.createWidePreviewToolTip();
 		this.createPreviewModal();
-	}
-
-	private addVideoImageSource() {
-		const videoIntroduction = document.querySelector('#video_introduction') as HTMLImageElement;
-		const videoOverview = document.querySelector('#video_overview') as HTMLImageElement;
-
-		videoIntroduction.src = require.toUrl('./../../media/video_introduction.png');
-		videoOverview.src = require.toUrl('./../../media/video_overview.png');
 	}
 
 	private createWidePreviewToolTip() {
