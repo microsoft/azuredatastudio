@@ -84,7 +84,7 @@
           },
           "azure.noSystemKeychain": {
             "type": "boolean",
-            "default": false,
+            "default": true,
             "description": "%config.noSystemKeychain%",
             "when": "isLinux || isWeb"
           }
