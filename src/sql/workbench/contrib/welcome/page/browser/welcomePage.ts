@@ -320,7 +320,6 @@ class WelcomePage extends Disposable {
 		this.createPreviewModal();
 	}
 
-
 	private createWidePreviewToolTip() {
 		const previewLink = document.querySelector('#tool_tip_container_wide');
 		const tooltip = document.querySelector('#tooltip_text_wide');
