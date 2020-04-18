@@ -16,6 +16,7 @@ import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBa
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IComponentDescriptor, IComponent, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { convertSize } from 'sql/base/browser/dom';
 
 class DivItem {
 	constructor(public descriptor: IComponentDescriptor, public config: azdata.DivItemLayout) { }
@@ -67,8 +68,8 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout> im
 	/// IComponent implementation
 
 	public setLayout(layout: azdata.DivLayout): void {
-		this._height = this.convertSize(layout.height);
-		this._width = this.convertSize(layout.width);
+		this._height = convertSize(layout.height);
+		this._width = convertSize(layout.width);
 		this.layout();
 	}
 
