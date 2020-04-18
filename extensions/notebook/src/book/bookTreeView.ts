@@ -79,15 +79,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	trustBook(bookTreeItem?: BookTreeItem): void {
 		let bookPathToTrust = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath;
-
 		if (bookPathToTrust) {
-
 			let trustChanged = this._bookTrustManager.setBookAsTrusted(bookPathToTrust);
-
 			if (trustChanged) {
-
 				let notebookDocuments = this._apiWrapper.getNotebookDocuments();
-
 				if (notebookDocuments) {
 					// update trust state of opened items
 					notebookDocuments.forEach(document => {
@@ -114,7 +109,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			if (existingBook?.bookItems.length > 0) {
 				this.currentBook = existingBook;
 			} else {
-				await this.createAndAddBookModel(bookPath, isNotebook);
+				await this.createAndAddBookModel(bookPath, !!isNotebook);
 				let bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
 				this.currentBook = this.books.find(book => book.bookPath === bookPath);
 				bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
@@ -370,7 +365,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	private async loadNotebooksInFolder(folderPath: string) {
+	public async loadNotebooksInFolder(folderPath: string) {
 		let bookCollection = await this.getNotebooksInTree(folderPath);
 		for (let i = 0; i < bookCollection.bookPaths.length; i++) {
 			await this.openBook(bookCollection.bookPaths[i], undefined, false);
@@ -456,7 +451,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
 		if (element) {
 			let parentPath;
@@ -487,7 +481,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 		return untitledFileName;
 	}
-
 
 	//Confirmation message dialog
 	private async confirmReplace(): Promise<boolean> {
