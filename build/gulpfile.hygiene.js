@@ -67,7 +67,6 @@ const indentationFilter = [
 
 	// except multiple specific files
 	'!**/package.json',
-	'!**/package-lock.json', // {{SQL CARBON EDIT}}
 	'!**/yarn.lock',
 	'!**/yarn-error.log',
 
@@ -406,7 +405,7 @@ function createGitIndexVinyls(paths) {
 				return e(err);
 			}
 
-			cp.exec(`git show ":${relativePath}"`, { maxBuffer: 2000 * 1024, encoding: 'buffer' }, (err, out) => {
+			cp.exec(`git show :${relativePath}`, { maxBuffer: 2000 * 1024, encoding: 'buffer' }, (err, out) => {
 				if (err) {
 					return e(err);
 				}
