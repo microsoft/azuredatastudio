@@ -14,12 +14,16 @@
 		{
 			"type": "node",
 			"request": "attach",
+			"restart": true,
 			"name": "Attach to Extension Host",
 			"timeout": 30000,
 			"port": 5870,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
-			]
+			],
+			"presentation": {
+				"hidden": true
+			}
 		},
 		{
 			"type": "pwa-chrome",
@@ -27,6 +31,9 @@
 			"name": "Attach to Shared Process",
 			"port": 9222,
 			"urlFilter": "*sharedProcess.html*",
+			"presentation": {
+				"hidden": true
+			}
 		},
 		{
 			"type": "node",
@@ -71,6 +78,7 @@
 			"type": "pwa-chrome",
 			"request": "launch",
 			"name": "Launch azuredatastudio",
+			"browserLaunchLocation": "workspace",
 			"windows": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
 			},
@@ -133,7 +141,7 @@
 				"web"
 			],
 			"presentation": {
-				"group": "2_launch",
+				"group": "0_vscode",
 				"order": 2
 			}
 		},
@@ -144,7 +152,7 @@
 			"url": "http://localhost:8080",
 			"preLaunchTask": "Run web",
 			"presentation": {
-				"group": "2_launch",
+				"group": "0_vscode",
 				"order": 3
 			}
 		},

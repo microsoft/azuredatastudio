@@ -11,7 +11,6 @@ import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { PrefixSumComputer } from 'vs/editor/common/viewModel/prefixSumComputer';
 import { BOTTOM_CELL_TOOLBAR_HEIGHT, CELL_MARGIN, CELL_RUN_GUTTER, CELL_STATUSBAR_HEIGHT, EDITOR_BOTTOM_PADDING, EDITOR_TOOLBAR_HEIGHT, EDITOR_TOP_MARGIN, EDITOR_TOP_PADDING } from 'vs/workbench/contrib/notebook/browser/constants';
 import { CellEditState, CellFindMatch, CodeCellLayoutChangeEvent, CodeCellLayoutInfo, ICellViewModel, NotebookLayoutInfo } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
-import { NotebookEventDispatcher } from 'vs/workbench/contrib/notebook/browser/viewModel/eventDispatcher';
 import { NotebookCellTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookCellTextModel';
 import { CellKind, NotebookCellOutputsSplice } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { BaseCellViewModel } from './baseCellViewModel';
@@ -59,7 +58,6 @@ export class CodeCellViewModel extends BaseCellViewModel implements ICellViewMod
 		readonly viewType: string,
 		readonly notebookHandle: number,
 		readonly model: NotebookCellTextModel,
-		readonly eventDispatcher: NotebookEventDispatcher,
 		initialNotebookLayoutInfo: NotebookLayoutInfo | null,
 		@ITextModelService private readonly _modelService: ITextModelService,
 	) {
@@ -83,22 +81,6 @@ export class CodeCellViewModel extends BaseCellViewModel implements ICellViewMod
 			indicatorHeight: 0,
 			bottomToolbarOffset: 0
 		};
-
-		this._register(eventDispatcher.onDidChangeLayout((e) => {
-			if (e.source.width !== undefined) {
-				this.layoutChange({ outerWidth: e.value.width, font: e.value.fontInfo });
-			}
-		}));
-
-		this._register(this.onDidChangeState((e) => {
-			if (!e.languageChanged) {
-				return;
-			}
-
-			if (this._textModel && !this._textModel.isDisposed()) {
-
-			}
-		}));
 	}
 
 	layoutChange(state: CodeCellLayoutChangeEvent) {
