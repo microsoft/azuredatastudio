@@ -263,22 +263,22 @@ MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 	}
 });
 
-// {{SQL CARBON EDIT}} - Disable unused menu item
-// MenuRegistry.appendMenuItem(MenuId.MenubarPreferencesMenu, {
-// 	group: '3_snippets',
-// 	command: {
-// 		id,
-// 		title: nls.localize({ key: 'miOpenSnippets', comment: ['&& denotes a mnemonic'] }, "User &&Snippets")
-// 	},
-// 	order: 1
-// });
+/* {{SQL CARBON EDIT}} - Disable unused menu item
+MenuRegistry.appendMenuItem(MenuId.MenubarPreferencesMenu, {
+	group: '3_snippets',
+	command: {
+		id,
+		title: nls.localize({ key: 'miOpenSnippets', comment: ['&& denotes a mnemonic'] }, "User &&Snippets")
+	},
+	order: 1
+});
 
-// MenuRegistry.appendMenuItem(MenuId.GlobalActivity, {
-// 	group: '3_snippets',
-// 	command: {
-// 		id,
-// 		title: nls.localize('userSnippets', "User Snippets")
-// 	},
-// 	order: 1
-// });
-// {{SQL CARBON EDIT}} - End
+MenuRegistry.appendMenuItem(MenuId.GlobalActivity, {
+	group: '3_snippets',
+	command: {
+		id,
+		title: nls.localize('userSnippets', "User Snippets")
+	},
+	order: 1
+});
+*/
