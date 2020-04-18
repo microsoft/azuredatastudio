@@ -32,6 +32,8 @@ import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtil
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 class TestNotebookEditor extends NotebookEditorStub {
 	constructor(private _cellGuid?: string, private _instantiationService?: IInstantiationService) {
@@ -80,6 +82,8 @@ suite('MarkdownTextTransformer', () => {
 	instantiationService.stub(IContextKeyService, new MockContextKeyService());
 	instantiationService.stub(ICodeEditorService, new TestCodeEditorService());
 	instantiationService.stub(IThemeService, new TestThemeService());
+	instantiationService.stub(IEnvironmentService, TestEnvironmentService);
+	instantiationService.stub(IStorageService, new TestStorageService());
 
 	mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, new TestLifecycleService(), undefined, undefined, undefined, instantiationService, new MockContextKeyService(),
 		undefined, undefined, undefined, undefined, undefined, undefined, TestEnvironmentService);
