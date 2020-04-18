@@ -709,7 +709,7 @@ suite('TelemetryService', () => {
 			Errors.setUnexpectedErrorHandler(origErrorHandler);
 		}
 	}));
-	test('Uncaught Error Telemetry removes PII but preserves No Such File error message', sinon.test(async function (this: any) {
+	test.skip('Uncaught Error Telemetry removes PII but preserves No Such File error message', sinon.test(async function (this: any) { // {{SQL CARBON EDIT}} skip tests
 		let origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 		Errors.setUnexpectedErrorHandler(() => { });
 		try {
