@@ -24,7 +24,7 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { activeContrastBorder, scrollbarSliderActiveBackground, scrollbarSliderBackground, scrollbarSliderHoverBackground } from 'vs/platform/theme/common/colorRegistry';
 import { ICssStyleCollector, IColorTheme, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { PANEL_BACKGROUND, SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
-import { TerminalWidgetManager } from 'vs/workbench/contrib/terminal/browser/terminalWidgetManager';
+import { TerminalWidgetManager } from 'vs/workbench/contrib/terminal/browser/widgets/widgetManager';
 import { IShellLaunchConfig, ITerminalDimensions, ITerminalProcessManager, KEYBINDING_CONTEXT_TERMINAL_TEXT_SELECTED, NEVER_MEASURE_RENDER_TIME_STORAGE_KEY, ProcessState, TERMINAL_VIEW_ID, IWindowsShellHelper, SHELL_PATH_INVALID_EXIT_CODE, SHELL_PATH_DIRECTORY_EXIT_CODE, SHELL_CWD_INVALID_EXIT_CODE, KEYBINDING_CONTEXT_TERMINAL_A11Y_TREE_FOCUS, INavigationMode, TitleEventSource, LEGACY_CONSOLE_MODE_EXIT_CODE, DEFAULT_COMMANDS_TO_SKIP_SHELL } from 'vs/workbench/contrib/terminal/common/terminal';
 import { ansiColorIdentifiers, TERMINAL_BACKGROUND_COLOR, TERMINAL_CURSOR_BACKGROUND_COLOR, TERMINAL_CURSOR_FOREGROUND_COLOR, TERMINAL_FOREGROUND_COLOR, TERMINAL_SELECTION_BACKGROUND_COLOR } from 'vs/workbench/contrib/terminal/common/terminalColorRegistry';
 import { TerminalConfigHelper } from 'vs/workbench/contrib/terminal/browser/terminalConfigHelper';
@@ -40,6 +40,8 @@ import { NavigationModeAddon } from 'vs/workbench/contrib/terminal/browser/addon
 import { XTermCore } from 'vs/workbench/contrib/terminal/browser/xterm-private';
 import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import { IViewsService, IViewDescriptorService, ViewContainerLocation } from 'vs/workbench/common/views';
+import { EnvironmentVariableInfoWidget } from 'vs/workbench/contrib/terminal/browser/widgets/environmentVariableInfoWidget';
+import { IEnvironmentVariableInfo } from 'vs/workbench/contrib/terminal/common/environmentVariable';
 
 // How long in milliseconds should an average frame take to render for a notification to appear
 // which suggests the fallback DOM-based renderer
@@ -95,8 +97,9 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 
 	private _messageTitleDisposable: IDisposable | undefined;
 
-	private _widgetManager: TerminalWidgetManager | undefined;
+	private _hoverManager: TerminalWidgetManager = this._instantiationService.createInstance(TerminalWidgetManager);
 	private _linkManager: TerminalLinkManager | undefined;
+	private _environmentVariableWidget: EnvironmentVariableInfoWidget | undefined;
 	private _commandTrackerAddon: CommandTrackerAddon | undefined;
 	private _navigationModeAddon: INavigationMode & ITerminalAddon | undefined;
 
@@ -582,9 +585,8 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 			this._refreshSelectionContextKey();
 		}));
 
-		const widgetManager = new TerminalWidgetManager(this._wrapperElement);
-		this._widgetManager = widgetManager;
-		this._processManager.onProcessReady(() => this._linkManager?.setWidgetManager(widgetManager));
+		this._hoverManager.attachToElement(this._wrapperElement);
+		this._processManager.onProcessReady(() => this._linkManager?.setWidgetManager(this._hoverManager));
 
 		const computedStyle = window.getComputedStyle(this._container);
 		const width = parseInt(computedStyle.getPropertyValue('width').replace('px', ''), 10);
@@ -719,8 +721,7 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 		this._linkManager = undefined;
 		dispose(this._commandTrackerAddon);
 		this._commandTrackerAddon = undefined;
-		dispose(this._widgetManager);
-		this._widgetManager = undefined;
+		dispose(this._hoverManager);
 
 		if (this._xterm && this._xterm.element) {
 			this._hadFocusOnExit = dom.hasClass(this._xterm.element, 'focus');
@@ -789,6 +790,7 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 		this.focus();
 		this._xterm.paste(await this._clipboardService.readText());
 	}
+
 	public async sendText(text: string, addNewLine: boolean): Promise<void> {
 		// Normalize line endings to 'enter' press.
 		text = text.replace(TerminalInstance.EOL_REGEX, '\r');
@@ -871,6 +873,7 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 		this._processManager.onProcessData(data => this._onData.fire(data));
 		this._processManager.onProcessOverrideDimensions(e => this.setDimensions(e));
 		this._processManager.onProcessResolvedShellLaunchConfig(e => this._setResolvedShellLaunchConfig(e));
+		this._processManager.onEnvironmentVariableInfoChanged(e => this._onEnvironmentVariableInfoChanged(e));
 
 		if (this._shellLaunchConfig.name) {
 			this.setTitle(this._shellLaunchConfig.name, TitleEventSource.Api);
@@ -912,7 +915,7 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 	}
 
 	private _onProcessData(data: string): void {
-		this._widgetManager?.closeMessage();
+		this._hoverManager?.closeHover();
 		this._xterm?.write(data);
 	}
 
@@ -1018,7 +1021,7 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 		}
 	}
 
-	public reuseTerminal(shell: IShellLaunchConfig): void {
+	public reuseTerminal(shell: IShellLaunchConfig, reset: boolean = false): void {
 		// Unsubscribe any key listener we may have.
 		this._pressAnyKeyToCloseListener?.dispose();
 		this._pressAnyKeyToCloseListener = undefined;
@@ -1027,8 +1030,12 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 		this._processManager.dispose();
 
 		if (this._xterm) {
-			// Ensure new processes' output starts at start of new line
-			this._xterm.write('\n\x1b[G');
+			if (reset) {
+				this._xterm.reset();
+			} else {
+				// Ensure new processes' output starts at start of new line
+				this._xterm.write('\n\x1b[G');
+			}
 
 			// Print initialText if specified
 			if (shell.initialText) {
@@ -1042,11 +1049,13 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 			}
 		}
 
-		// HACK: Force initialText to be non-falsy for reused terminals such that the
-		// conptyInheritCursor flag is passed to the node-pty, this flag can cause a Window to hang
-		// in Windows 10 1903 so we only want to use it when something is definitely written to the
-		// terminal.
-		shell.initialText = ' ';
+		if (!reset) {
+			// HACK: Force initialText to be non-falsy for reused terminals such that the
+			// conptyInheritCursor flag is passed to the node-pty, this flag can cause a Window to hang
+			// in Windows 10 1903 so we only want to use it when something is definitely written to the
+			// terminal.
+			shell.initialText = ' ';
+		}
 
 		// Set the new shell launch config
 		this._shellLaunchConfig = shell; // Must be done before calling _createProcess()
@@ -1061,6 +1070,10 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 		}
 
 		this._processManager.onProcessData(data => this._onProcessData(data));
+	}
+
+	public relaunch(): void {
+		this.reuseTerminal(this._shellLaunchConfig, true);
 	}
 
 	private _onLineFeed(): void {
@@ -1343,6 +1356,12 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 		this._shellLaunchConfig.cwd = shellLaunchConfig.cwd;
 		this._shellLaunchConfig.executable = shellLaunchConfig.executable;
 		this._shellLaunchConfig.env = shellLaunchConfig.env;
+	}
+
+	private _onEnvironmentVariableInfoChanged(info: IEnvironmentVariableInfo): void {
+		this._environmentVariableWidget?.dispose();
+		this._environmentVariableWidget = this._instantiationService.createInstance(EnvironmentVariableInfoWidget, info);
+		this._hoverManager.attachWidget(this._environmentVariableWidget);
 	}
 
 	private _getXtermTheme(theme?: IColorTheme): any {

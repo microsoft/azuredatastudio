@@ -23,7 +23,8 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { withNullAsUndefined } from 'vs/base/common/types';
-import { IEnvironmentVariableService, IMergedEnvironmentVariableCollection } from 'vs/workbench/contrib/terminal/common/environmentVariable';
+import { IEnvironmentVariableService, IMergedEnvironmentVariableCollection, IEnvironmentVariableInfo } from 'vs/workbench/contrib/terminal/common/environmentVariable';
+import { EnvironmentVariableInfoStale, EnvironmentVariableInfoChangesActive } from 'vs/workbench/contrib/terminal/browser/environmentVariableInfo';
 import { IPathService } from 'vs/workbench/services/path/common/pathService';
 
 /** The amount of time to consider terminal errors to be related to the launch */
@@ -77,6 +78,8 @@ export class TerminalProcessManager extends Disposable implements ITerminalProce
 	public get onProcessOverrideDimensions(): Event<ITerminalDimensions | undefined> { return this._onProcessOverrideDimensions.event; }
 	private readonly _onProcessOverrideShellLaunchConfig = this._register(new Emitter<IShellLaunchConfig>());
 	public get onProcessResolvedShellLaunchConfig(): Event<IShellLaunchConfig> { return this._onProcessOverrideShellLaunchConfig.event; }
+	private readonly _onEnvironmentVariableInfoChange = this._register(new Emitter<IEnvironmentVariableInfo>());
+	public get onEnvironmentVariableInfoChanged(): Event<IEnvironmentVariableInfo> { return this._onEnvironmentVariableInfoChange.event; }
 
 	constructor(
 		private readonly _terminalId: number,
@@ -242,6 +245,9 @@ export class TerminalProcessManager extends Disposable implements ITerminalProce
 		this._extEnvironmentVariableCollection = this._environmentVariableService.mergedCollection;
 		this._register(this._environmentVariableService.onDidChangeCollections(newCollection => this._onEnvironmentVariableCollectionChange(newCollection)));
 		this._extEnvironmentVariableCollection.applyToProcessEnvironment(env);
+		if (this._extEnvironmentVariableCollection.map.size > 0) {
+			this._onEnvironmentVariableInfoChange.fire(new EnvironmentVariableInfoChangesActive(this._extEnvironmentVariableCollection));
+		}
 
 		const useConpty = this._configHelper.config.windowsEnableConpty && !isScreenReaderModeEnabled;
 		return this._terminalInstanceService.createTerminalProcess(shellLaunchConfig, initialCwd, cols, rows, env, useConpty);
@@ -320,10 +326,13 @@ export class TerminalProcessManager extends Disposable implements ITerminalProce
 
 	private _onEnvironmentVariableCollectionChange(newCollection: IMergedEnvironmentVariableCollection): void {
 		// TODO: React to changes in environment variable collections
-		// const newAdditions = this._extEnvironmentVariableCollection!.getNewAdditions(newCollection);
-		// if (newAdditions === undefined) {
-		// 	return;
-		// }
+		const diff = this._extEnvironmentVariableCollection!.diff(newCollection);
+		if (diff === undefined) {
+			return;
+		}
+		console.log('environments differ', diff);
+		const info = this._instantiationService.createInstance(EnvironmentVariableInfoStale, diff, this._terminalId);
+		this._onEnvironmentVariableInfoChange.fire(info);
 		// const promptChoices: IPromptChoice[] = [
 		// 	{
 		// 		label: nls.localize('apply', "Apply"),
