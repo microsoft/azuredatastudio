@@ -277,7 +277,6 @@ export class ConnectionDialogWidget extends Modal {
 		// Show connection form based on server type
 		DOM.clearNode(this._connectionUIContainer);
 		this._onShowUiComponent.fire({ selectedProviderDisplayName: selectedProviderDisplayName, container: this._connectionUIContainer });
-		this.initDialog();
 	}
 
 	private connect(element?: IConnectionProfile): void {
