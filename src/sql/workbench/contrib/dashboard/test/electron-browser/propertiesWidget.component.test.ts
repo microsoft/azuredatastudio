@@ -104,9 +104,9 @@ suite('Dashboard Properties Widget Tests', () => {
 			// because config parsing is done async we need to put our asserts on the thread stack
 			setImmediate(() => {
 				// because properties is private we need to do some work arounds to access it.
-				assert.equal((<any>testComponent).properties.length, 1);
-				assert.equal((<any>testComponent).properties[0].displayName, 'Test');
-				assert.equal((<any>testComponent).properties[0].value, 'Test Property');
+				assert.equal((<any>testComponent)._properties.length, 1);
+				assert.equal((<any>testComponent)._properties[0].displayName, 'Test');
+				assert.equal((<any>testComponent)._properties[0].value, 'Test Property');
 				resolve();
 			});
 		});
