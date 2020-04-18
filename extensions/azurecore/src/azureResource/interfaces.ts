@@ -9,6 +9,7 @@ import { Account, DidChangeAccountsParams } from 'azdata';
 import { Event } from 'vscode';
 
 import { azureResource } from './azure-resource';
+import { AzureAccount, AzureAccountSecurityToken, Tenant } from '../account-provider/interfaces';
 
 export interface IAzureResourceAccountService {
 	getAccounts(): Promise<Account[]>;
@@ -24,6 +25,10 @@ export interface IAzureResourceSubscriptionFilterService {
 	saveSelectedSubscriptions(account: Account, selectedSubscriptions: azureResource.AzureResourceSubscription[]): Promise<void>;
 }
 
+export interface IAzureTerminalService {
+	getOrCreateCloudConsole(account: AzureAccount, tenant: Tenant, tokens: { [key: string]: AzureAccountSecurityToken }): Promise<void>;
+}
+
 export interface IAzureResourceCacheService {
 	generateKey(id: string): string;
 
@@ -33,7 +38,7 @@ export interface IAzureResourceCacheService {
 }
 
 export interface IAzureResourceTenantService {
-	getTenantId(subscription: azureResource.AzureResourceSubscription): Promise<string>;
+	getTenantId(subscription: azureResource.AzureResourceSubscription, account: Account, credential: msRest.ServiceClientCredentials): Promise<string>;
 }
 
 export interface IAzureResourceNodeWithProviderId {
@@ -42,5 +47,5 @@ export interface IAzureResourceNodeWithProviderId {
 }
 
 export interface IAzureResourceService<T extends azureResource.AzureResource> {
-	getResources(subscription: azureResource.AzureResourceSubscription, credential: msRest.ServiceClientCredentials): Promise<T[]>;
+	getResources(subscription: azureResource.AzureResourceSubscription, credential: msRest.ServiceClientCredentials, account: Account): Promise<T[]>;
 }

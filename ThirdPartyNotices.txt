@@ -12,6 +12,7 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     angular2-grid: https://github.com/BTMorton/angular2-grid
     angular2-slickgrid: https://github.com/Microsoft/angular2-slickgrid
     applicationinsights: https://github.com/Microsoft/ApplicationInsights-node.js
+		axios: https://github.com/axios/axios
     bootstrap: https://github.com/twbs/bootstrap
     chart.js: https://github.com/Timer/chartjs
     chokidar: https://github.com/paulmillr/chokidar
@@ -38,6 +39,7 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     jschardet: https://github.com/aadsm/jschardet
     jupyter-powershell: https://github.com/vors/jupyter-powershell
     JupyterLab: https://github.com/jupyterlab/jupyterlab
+		keytar: https://github.com/atom/node-keytar
     make-error: https://github.com/JsCommunity/make-error
     minimist: https://github.com/substack/minimist
     moment: https://github.com/moment/moment
@@ -50,6 +52,7 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     primeng: https://github.com/primefaces/primeng
     process-nextick-args: https://github.com/calvinmetcalf/process-nextick-args
     pty.js: https://github.com/chjj/pty.js
+		qs: https://github.com/ljharb/qs
     reflect-metadata: https://github.com/rbuckton/reflect-metadata
     request: https://github.com/request/request
     rxjs: https://github.com/ReactiveX/RxJS

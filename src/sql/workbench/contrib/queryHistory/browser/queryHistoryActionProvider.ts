@@ -5,7 +5,6 @@
 
 import { DeleteAction, OpenQueryAction, RunQueryAction, ClearHistoryAction, ToggleQueryHistoryCaptureAction } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryActions';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { QueryHistoryNode } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryNode';
@@ -13,7 +12,7 @@ import { QueryHistoryNode } from 'sql/workbench/contrib/queryHistory/browser/que
 /**
  *  Provides query history actions
  */
-export class QueryHistoryActionProvider extends ContributableActionProvider {
+export class QueryHistoryActionProvider {
 
 	private _actions: {
 		openQueryAction: IAction,
@@ -26,7 +25,6 @@ export class QueryHistoryActionProvider extends ContributableActionProvider {
 	constructor(
 		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		super();
 		this._actions = {
 			openQueryAction: instantiationService.createInstance(OpenQueryAction, OpenQueryAction.ID, OpenQueryAction.LABEL),
 			runQueryAction: instantiationService.createInstance(RunQueryAction, RunQueryAction.ID, RunQueryAction.LABEL),

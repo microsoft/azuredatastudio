@@ -9,15 +9,12 @@ export interface IPackageInfo {
 	aiKey: string;
 }
 
-export function getPackageInfo(packageJson: any): IPackageInfo | undefined {
-	if (packageJson) {
-		return {
-			name: packageJson.name,
-			version: packageJson.version,
-			aiKey: packageJson.aiKey
-		};
-	}
-	return undefined;
+export function getPackageInfo(packageJson: any): IPackageInfo {
+	return {
+		name: packageJson.name,
+		version: packageJson.version,
+		aiKey: packageJson.aiKey
+	};
 }
 
 /**

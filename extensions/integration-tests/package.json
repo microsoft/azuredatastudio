@@ -9,7 +9,8 @@
     "azdata": "*"
   },
   "activationEvents": [
-    "*"
+		"onFileSystem:memfs",
+		"onDebug"
   ],
   "main": "./out/main",
   "extensionDependencies": [
@@ -17,33 +18,9 @@
     "Microsoft.import",
     "Microsoft.profiler",
     "Microsoft.mssql",
-    "Microsoft.notebook"
+    "Microsoft.notebook",
+    "Microsoft.azuredatastudio-postgresql"
   ],
-  "contributes": {
-    "configuration": {
-      "type": "object",
-      "title": "ADS Integration Test Configuration",
-      "properties": {
-        "test.testSetupCompleted": {
-          "type": "boolean",
-          "default": false,
-          "description": ""
-        }
-      }
-    },
-    "commands": [
-      {
-        "command": "test.setupIntegrationTest",
-        "title": "Setup Integration Test",
-        "category": "Test"
-      },
-      {
-        "command": "test.waitForExtensionsToLoad",
-        "title": "Wait For Extensions To Load",
-        "category": "Test"
-      }
-    ]
-  },
   "scripts": {
     "vscode:prepublish": "node ../../node_modules/gulp/bin/gulp.js --gulpfile ../../build/gulpfile.extensions.js compile-extension:vscode-colorize-tests ./tsconfig.json",
     "postinstall": "node ./node_modules/vscode/bin/install"
@@ -51,7 +28,6 @@
   "devDependencies": {
     "@types/chai": "3.4.34",
     "@types/node": "^10.14.8",
-    "adstest": "github:ranasaria/adstest.git#0.0.2",
     "chai": "3.5.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",

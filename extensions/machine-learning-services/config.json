@@ -2,12 +2,8 @@
 	"sqlPackageManagement": {
 		"requiredPythonPackages": [
 			{
-				"name": "pymssql",
-				"version": "2.1.4"
-			},
-			{
 				"name": "sqlmlutils",
-				"version": ""
+				"version": "1.0.0"
 			}
 		],
 		"requiredRPackages": [
@@ -26,6 +22,7 @@
 	"modelManagement": {
 		"registeredModelsDatabaseName": "MlFlowDB",
 		"registeredModelsTableName": "artifacts",
+		"registeredModelsTableSchemaName": "dbo",
 		"amlModelManagementUrl": "modelmanagement.azureml.net",
 		"amlExperienceUrl": "experiments.azureml.net",
 		"amlApiVersion": "2018-11-19",

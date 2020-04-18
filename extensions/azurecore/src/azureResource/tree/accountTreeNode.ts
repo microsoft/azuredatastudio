@@ -42,11 +42,10 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 	public async getChildren(): Promise<TreeNode[]> {
 		try {
 			let subscriptions: azureResource.AzureResourceSubscription[] = [];
+			const tokens = await this.appContext.apiWrapper.getSecurityToken(this.account, AzureResource.ResourceManagement);
 
 			if (this._isClearingCache) {
 				try {
-					const tokens = await this.appContext.apiWrapper.getSecurityToken(this.account, AzureResource.ResourceManagement);
-
 					for (const tenant of this.account.properties.tenants) {
 						const token = tokens[tenant.id].token;
 						const tokenType = tokens[tenant.id].tokenType;
@@ -56,7 +55,6 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 				} catch (error) {
 					throw new AzureResourceCredentialError(localize('azure.resource.tree.accountTreeNode.credentialError', "Failed to get credential for account {0}. Please refresh the account.", this.account.key.accountId), error);
 				}
-
 				this.updateCache<azureResource.AzureResourceSubscription[]>(subscriptions);
 
 				this._isClearingCache = false;
@@ -81,8 +79,19 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 			if (subscriptions.length === 0) {
 				return [AzureResourceMessageTreeNode.create(AzureResourceAccountTreeNode.noSubscriptionsLabel, this)];
 			} else {
+				// Filter out everything that we can't authenticate to.
+				subscriptions = subscriptions.filter(s => {
+					const token = tokens[s.id];
+					if (!token) {
+						console.info(`Account does not have permissions to view subscription ${JSON.stringify(s)}.`);
+						return false;
+					}
+					return true;
+				});
+
 				let subTreeNodes = await Promise.all(subscriptions.map(async (subscription) => {
-					const tenantId = await this._tenantService.getTenantId(subscription);
+					const token = tokens[subscription.id];
+					const tenantId = await this._tenantService.getTenantId(subscription, this.account, new TokenCredentials(token.token, token.tokenType));
 
 					return new AzureResourceSubscriptionTreeNode(this.account, subscription, tenantId, this.appContext, this.treeChangeHandler, this);
 				}));

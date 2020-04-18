@@ -35,7 +35,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 
 	// tslint:disable-next-line:no-unused-variable
 	private readonly panelOpt: IPanelOptions = {
-		layout: NavigationBarLayout.vertical
+		layout: NavigationBarLayout.horizontal
 	};
 
 	// a set of config modifiers

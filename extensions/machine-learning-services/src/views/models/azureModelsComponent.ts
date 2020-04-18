@@ -9,19 +9,21 @@ import { ApiWrapper } from '../../common/apiWrapper';
 import { AzureResourceFilterComponent } from './azureResourceFilterComponent';
 import { AzureModelsTable } from './azureModelsTable';
 import { IDataComponent, AzureModelResource } from '../interfaces';
+import { ModelArtifact } from './prediction/modelArtifact';
 
-export class AzureModelsComponent extends ModelViewBase implements IDataComponent<AzureModelResource> {
+export class AzureModelsComponent extends ModelViewBase implements IDataComponent<AzureModelResource[]> {
 
 	public azureModelsTable: AzureModelsTable | undefined;
 	public azureFilterComponent: AzureResourceFilterComponent | undefined;
 
 	private _loader: azdata.LoadingComponent | undefined;
 	private _form: azdata.FormContainer | undefined;
+	private _downloadedFile: ModelArtifact | undefined;
 
 	/**
 	 * Component to render a view to pick an azure model
 	 */
-	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase) {
+	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _multiSelect: boolean = true) {
 		super(apiWrapper, parent.root, parent);
 	}
 
@@ -31,14 +33,20 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		this.azureFilterComponent = new AzureResourceFilterComponent(this._apiWrapper, modelBuilder, this);
-		this.azureModelsTable = new AzureModelsTable(this._apiWrapper, modelBuilder, this);
+		this.azureModelsTable = new AzureModelsTable(this._apiWrapper, modelBuilder, this, this._multiSelect);
 		this._loader = modelBuilder.loadingComponent()
 			.withItem(this.azureModelsTable.component)
 			.withProperties({
 				loading: true
 			}).component();
+		this.azureModelsTable.onModelSelectionChanged(async () => {
+			if (this._downloadedFile) {
+				await this._downloadedFile.close();
+			}
+			this._downloadedFile = undefined;
+		});
 
-		this.azureFilterComponent.onWorkspacesSelected(async () => {
+		this.azureFilterComponent.onWorkspacesSelectedChanged(async () => {
 			await this.onLoading();
 			await this.azureModelsTable?.loadData(this.azureFilterComponent?.data);
 			await this.onLoaded();
@@ -101,10 +109,27 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 	/**
 	 * Returns selected data
 	 */
-	public get data(): AzureModelResource | undefined {
-		return Object.assign({}, this.azureFilterComponent?.data, {
-			model: this.azureModelsTable?.data
-		});
+	public get data(): AzureModelResource[] | undefined {
+		return this.azureModelsTable?.data ? this.azureModelsTable?.data.map(x => Object.assign({}, this.azureFilterComponent?.data, {
+			model: x
+		})) : undefined;
+	}
+
+	public async getDownloadedModel(): Promise<ModelArtifact | undefined> {
+		const data = this.data;
+		if (!this._downloadedFile && data && data.length > 0) {
+			this._downloadedFile = new ModelArtifact(await this.downloadAzureModel(data[0]));
+		}
+		return this._downloadedFile;
+	}
+
+	/**
+	 * disposes the view
+	 */
+	public async disposeComponent(): Promise<void> {
+		if (this._downloadedFile) {
+			await this._downloadedFile.close();
+		}
 	}
 
 	/**

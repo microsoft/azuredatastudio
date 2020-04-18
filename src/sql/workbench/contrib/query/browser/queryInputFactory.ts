@@ -21,6 +21,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 
 const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorInputExtensions.EditorInputFactories);
 
@@ -31,9 +32,37 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
-		@IEditorService private readonly editorService: IEditorService) { }
+		@IEditorService private readonly editorService: IEditorService,
+		@IQueryEditorService private readonly queryEditorService: IQueryEditorService) { }
 
-	convertInput(activeEditor: IEditorInput): QueryEditorInput | undefined {
+	async convertInput(activeEditor: IEditorInput): Promise<QueryEditorInput | undefined> {
+		const queryResultsInput = this.instantiationService.createInstance(QueryResultsInput, activeEditor.resource.toString(true));
+		let queryEditorInput: QueryEditorInput;
+		if (activeEditor instanceof FileEditorInput) {
+			queryEditorInput = this.instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput);
+		} else if (activeEditor instanceof UntitledTextEditorInput) {
+			const content = (await activeEditor.resolve()).textEditorModel.getValue();
+			queryEditorInput = await this.queryEditorService.newSqlEditor({ open: false, initalContent: content }) as UntitledQueryEditorInput;
+		} else {
+			return undefined;
+		}
+
+		const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+		if (profile) {
+			const options: IConnectionCompletionOptions = {
+				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: undefined, input: queryEditorInput },
+				saveTheConnection: false,
+				showDashboard: false,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			};
+			this.connectionManagementService.connect(profile, queryEditorInput.uri, options).catch(err => onUnexpectedError(err));
+		}
+
+		return queryEditorInput;
+	}
+
+	syncConvertinput(activeEditor: IEditorInput): QueryEditorInput | undefined {
 		const queryResultsInput = this.instantiationService.createInstance(QueryResultsInput, activeEditor.resource.toString(true));
 		let queryEditorInput: QueryEditorInput;
 		if (activeEditor instanceof FileEditorInput) {

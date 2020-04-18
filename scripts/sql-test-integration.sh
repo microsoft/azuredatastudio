@@ -60,7 +60,7 @@ fi
 --extensionDevelopmentPath=$ROOT/extensions/profiler \
 --extensionDevelopmentPath=$ROOT/extensions/resource-deployment \
 --extensionDevelopmentPath=$ROOT/extensions/schema-compare \
---extensionTestsPath=$ROOT/extensions/integration-tests/out \
+--extensionTestsPath=$ROOT/extensions/integration-tests/out/tests \
 --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR \
 --disable-telemetry --disable-crash-reporter --disable-updates --skip-getting-started --disable-inspect
 

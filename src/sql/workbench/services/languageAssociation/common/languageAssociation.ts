@@ -12,7 +12,12 @@ export type InputCreator = (servicesAccessor: ServicesAccessor, activeEditor: IE
 export type BaseInputCreator = (activeEditor: IEditorInput) => IEditorInput;
 
 export interface ILanguageAssociation {
-	convertInput(activeEditor: IEditorInput): EditorInput | undefined;
+	convertInput(activeEditor: IEditorInput): Promise<EditorInput | undefined> | EditorInput | undefined;
+	/**
+	 * Used for scenarios when we need to synchrounly create inputs, currently only for handling upgrades
+	 * and planned to be removed eventually
+	 */
+	syncConvertinput?(activeEditor: IEditorInput): EditorInput | undefined;
 	createBase(activeEditor: IEditorInput): IEditorInput;
 }
 

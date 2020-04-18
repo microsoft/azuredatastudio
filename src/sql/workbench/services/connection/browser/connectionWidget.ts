@@ -56,7 +56,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private _azureTenantDropdown: SelectBox;
 	private _refreshCredentialsLink: HTMLLinkElement;
 	private _addAzureAccountMessage: string = localize('connectionWidget.AddAzureAccount', "Add an account...");
-	private readonly _azureProviderId = 'azurePublicCloud';
+	private readonly _azureProviderId = 'azure_publicCloud';
 	private _azureTenantId: string;
 	private _azureAccountList: azdata.Account[];
 	private _callbacks: IConnectionComponentCallbacks;
@@ -518,7 +518,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 	private async fillInAzureAccountOptions(): Promise<void> {
 		let oldSelection = this._azureAccountDropdown.value;
-		this._azureAccountList = await this._accountManagementService.getAccountsForProvider(this._azureProviderId);
+		const accounts = await this._accountManagementService.getAccounts();
+		this._azureAccountList = accounts.filter(a => a.key.providerId.startsWith('azure'));
 		let accountDropdownOptions = this._azureAccountList.map(account => account.key.accountId);
 		if (accountDropdownOptions.length === 0) {
 			// If there are no accounts add a blank option so that add account isn't automatically selected
@@ -697,7 +698,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
 				this.fillInAzureAccountOptions().then(async () => {
 					let accountName = (this.authType === AuthenticationType.AzureMFA)
-						? connectionInfo.userName : connectionInfo.azureAccount;
+						? connectionInfo.azureAccount : connectionInfo.userName;
 					this._azureAccountDropdown.selectWithOptionName(this.getModelValue(accountName));
 					await this.onAzureAccountSelected();
 					let tenantId = connectionInfo.azureTenantId;
@@ -821,7 +822,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	public get azureAccount(): string {
-		return this.authenticationType === AuthenticationType.AzureMFAAndUser ? this._azureAccountDropdown.value : undefined;
+		return this.authenticationType === AuthenticationType.AzureMFAAndUser || this.authenticationType === AuthenticationType.AzureMFA ? this._azureAccountDropdown.value : undefined;
 	}
 
 	private validateAzureAccountSelection(showMessage: boolean = true): boolean {

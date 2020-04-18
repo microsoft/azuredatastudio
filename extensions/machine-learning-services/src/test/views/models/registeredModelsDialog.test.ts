@@ -6,7 +6,7 @@
 import * as should from 'should';
 import 'mocha';
 import { createContext } from './utils';
-import { RegisteredModelsDialog } from '../../../views/models/registeredModelsDialog';
+import { RegisteredModelsDialog } from '../../../views/models/registerModels/registeredModelsDialog';
 import { ListModelsEventName } from '../../../views/models/modelViewBase';
 import { RegisteredModel } from '../../../modelManagement/interfaces';
 import { ViewBase } from '../../../views/viewBase';
@@ -30,7 +30,8 @@ describe('Registered Models Dialog', () => {
 		let models: RegisteredModel[] = [
 			{
 				id: 1,
-				artifactName: 'model'
+				artifactName: 'model',
+				title: ''
 			}
 		];
 		view.on(ListModelsEventName, () => {

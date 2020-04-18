@@ -13,6 +13,7 @@ import * as azdata from 'azdata';
 
 import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostModelViewShape, ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { TabOrientation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 const DONE_LABEL = nls.localize('dialogDoneLabel', "Done");
 const CANCEL_LABEL = nls.localize('dialogCancelLabel', "Cancel");
@@ -457,6 +458,76 @@ class WizardImpl implements azdata.window.Wizard {
 	}
 }
 
+class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
+	private _tabbedPanel: azdata.TabbedPanelComponent;
+	private _view: azdata.ModelView;
+
+	constructor(
+		private _editor: ModelViewEditorImpl,
+		private _options?: azdata.ModelViewDashboardOptions
+	) {
+	}
+
+	updateTabs(tabs: (azdata.DashboardTab | azdata.DashboardTabGroup)[]): void {
+		if (this._tabbedPanel === undefined || this._view === undefined) {
+			throw new Error(nls.localize('dashboardNotInitialized', "Tabs are not initialized"));
+		}
+
+		this._tabbedPanel.updateTabs(this.createTabs(tabs, this._view));
+	}
+
+	registerTabs(handler: (view: azdata.ModelView) => Thenable<(azdata.DashboardTab | azdata.DashboardTabGroup)[]>): void {
+		this._editor.registerContent(async (view) => {
+			this._view = view;
+			const dashboardTabs = await handler(view);
+			const tabs = this.createTabs(dashboardTabs, view);
+			this._tabbedPanel = view.modelBuilder.tabbedPanel().withTabs(tabs).withLayout({
+				orientation: TabOrientation.Vertical,
+				showIcon: this._options?.showIcon ?? true,
+				alwaysShowTabs: this._options?.alwaysShowTabs ?? false
+			}).component();
+			return view.initializeModel(this._tabbedPanel);
+		});
+	}
+
+	open(): Thenable<void> {
+		return this._editor.openEditor();
+	}
+
+	createTab(tab: azdata.DashboardTab, view: azdata.ModelView): azdata.Tab {
+		if (tab.toolbar) {
+			const flexContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
+			flexContainer.addItem(tab.toolbar, { flex: '0 0 auto' });
+			flexContainer.addItem(tab.content, { flex: '1 1 auto' });
+			return {
+				title: tab.title,
+				id: tab.id,
+				content: flexContainer,
+				icon: tab.icon
+			};
+		} else {
+			return tab;
+		}
+	}
+
+	createTabs(dashboardTabs: (azdata.DashboardTab | azdata.DashboardTabGroup)[], view: azdata.ModelView): (azdata.TabGroup | azdata.Tab)[] {
+		const tabs: (azdata.TabGroup | azdata.Tab)[] = [];
+		dashboardTabs.forEach((item: azdata.DashboardTab | azdata.DashboardTabGroup) => {
+			if ('tabs' in item) {
+				tabs.push(<azdata.TabGroup>{
+					title: item.title,
+					tabs: item.tabs.map(tab => {
+						return this.createTab(tab, view);
+					})
+				});
+			} else {
+				tabs.push(this.createTab(item, view));
+			}
+		});
+		return tabs;
+	}
+}
+
 export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	private static _currentHandle = 0;
 
@@ -560,6 +631,11 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		let editor = new ModelViewEditorImpl(this, this._extHostModelView, extension, this._proxy, title, options);
 		editor.handle = this.getHandle(editor);
 		return editor;
+	}
+
+	public createModelViewDashboard(title: string, options: azdata.ModelViewDashboardOptions | undefined, extension: IExtensionDescription): azdata.window.ModelViewDashboard {
+		const editor = this.createModelViewEditor(title, extension, { supportsSave: false }) as ModelViewEditorImpl;
+		return new ModelViewDashboardImpl(editor, options);
 	}
 
 	public updateDialogContent(dialog: azdata.window.Dialog): void {

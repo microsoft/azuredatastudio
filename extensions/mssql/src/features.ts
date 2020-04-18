@@ -2,15 +2,18 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
+import * as nls from 'vscode-nls';
 import { SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import { ClientCapabilities, StaticFeature, RPCMessageType, ServerCapabilities } from 'vscode-languageclient';
-import { Disposable } from 'vscode';
+import { Disposable, window, QuickPickItem, QuickPickOptions } from 'vscode';
 import { Telemetry } from './telemetry';
 import * as contracts from './contracts';
 import * as azdata from 'azdata';
 import * as Utils from './utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+import { DataItemCache } from './util/dataCache';
+
+const localize = nls.loadMessageBundle();
 
 export class TelemetryFeature implements StaticFeature {
 
@@ -25,6 +28,82 @@ export class TelemetryFeature implements StaticFeature {
 			Telemetry.sendTelemetryEvent(e.params.eventName, e.params.properties, e.params.measures);
 		});
 	}
+}
+
+export class AccountFeature implements StaticFeature {
+
+	tokenCache: DataItemCache<contracts.RequestSecurityTokenResponse | undefined>;
+
+	constructor(private _client: SqlOpsDataClient) { }
+
+	fillClientCapabilities(capabilities: ClientCapabilities): void { }
+
+	initialize(): void {
+		let timeToLiveInSeconds = 10;
+		this.tokenCache = new DataItemCache(this.getToken, timeToLiveInSeconds);
+		this._client.onRequest(contracts.SecurityTokenRequest.type, async (request): Promise<contracts.RequestSecurityTokenResponse | undefined> => {
+			return this.tokenCache.getData(request);
+		});
+	}
+
+	protected async getToken(request: contracts.RequestSecurityTokenParams): Promise<contracts.RequestSecurityTokenResponse | undefined> {
+		const accountList = await azdata.accounts.getAllAccounts();
+		let account: azdata.Account;
+
+		if (accountList.length < 1) {
+			// TODO: Prompt user to add account
+			window.showErrorMessage(localize('mssql.missingLinkedAzureAccount', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query."));
+			return undefined;
+		} else if (accountList.length > 1) {
+			let options: QuickPickOptions = {
+				ignoreFocusOut: true,
+				placeHolder: localize('mssql.chooseLinkedAzureAccount', "Please select a linked Azure account:")
+			};
+			let items = accountList.map(a => new AccountFeature.AccountQuickPickItem(a));
+			let selectedItem = await window.showQuickPick(items, options);
+			if (!selectedItem) { // The user canceled the selection.
+				window.showErrorMessage(localize('mssql.canceledLinkedAzureAccountSelection', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted."));
+				return undefined;
+			}
+			account = selectedItem.account;
+		} else {
+			account = accountList[0];
+		}
+
+		const securityToken: { [key: string]: any } = await azdata.accounts.getSecurityToken(account, azdata.AzureResource.AzureKeyVault);
+		const tenant = account.properties.tenants.find((t: { [key: string]: string }) => request.authority.includes(t.id));
+		const unauthorizedMessage = localize('mssql.insufficientlyPrivelagedAzureAccount', "The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.", account.key.accountId);
+		if (!tenant) {
+			window.showErrorMessage(unauthorizedMessage);
+			return undefined;
+		}
+		let tokenBundle = securityToken[tenant.id];
+		if (!tokenBundle) {
+			window.showErrorMessage(unauthorizedMessage);
+			return undefined;
+		}
+
+		let params: contracts.RequestSecurityTokenResponse = {
+			accountKey: JSON.stringify(account.key),
+			token: securityToken[tenant.id].token
+		};
+
+		return params;
+	}
+
+	static AccountQuickPickItem = class implements QuickPickItem {
+		account: azdata.Account;
+		label: string;
+		description?: string;
+		detail?: string;
+		picked?: boolean;
+		alwaysShow?: boolean;
+
+		constructor(account: azdata.Account) {
+			this.account = account;
+			this.label = account.key.accountId;
+		}
+	};
 }
 
 export class AgentServicesFeature extends SqlOpsFeature<undefined> {

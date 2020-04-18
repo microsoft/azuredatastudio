@@ -23,16 +23,19 @@ export class ProcessService {
 			scriptExecution.stdin.end();
 
 			// Add listeners to print stdout and stderr if an output channel was provided
-			if (outputChannel) {
-				scriptExecution.stdout.on('data', data => {
+
+			scriptExecution.stdout.on('data', data => {
+				if (outputChannel) {
 					this.outputDataChunk(data, outputChannel, '    stdout: ');
-					output = output + data.toString();
-				});
-				scriptExecution.stderr.on('data', data => {
+				}
+				output = output + data.toString();
+			});
+			scriptExecution.stderr.on('data', data => {
+				if (outputChannel) {
 					this.outputDataChunk(data, outputChannel, '    stderr: ');
-					output = output + data.toString();
-				});
-			}
+				}
+				output = output + data.toString();
+			});
 
 			scriptExecution.on('exit', (code) => {
 				if (timer) {

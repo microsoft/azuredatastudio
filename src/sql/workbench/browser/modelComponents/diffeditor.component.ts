@@ -26,6 +26,7 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser/simpleProgressIndicator';
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { convertSizeToNumber } from 'sql/base/browser/dom';
 
 @Component({
 	template: `
@@ -119,8 +120,8 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 	/// IComponent implementation
 
 	public layout(): void {
-		let width: number = this.convertSizeToNumber(this.width);
-		let height: number = this.convertSizeToNumber(this.height);
+		let width: number = convertSizeToNumber(this.width);
+		let height: number = convertSizeToNumber(this.height);
 		if (this._isAutoResizable) {
 			height = Math.max(this._editor.maximumHeight, this._minimumHeight ? this._minimumHeight : 0);
 		}

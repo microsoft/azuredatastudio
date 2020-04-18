@@ -37,6 +37,16 @@ export class MainViewBase {
 		}
 	}
 
+	public async disposePages(): Promise<void> {
+		if (this._pages) {
+			await Promise.all(this._pages.map(async (p) => {
+				if (p.disposePage) {
+					await p.disposePage();
+				}
+			}));
+		}
+	}
+
 	public async refresh(): Promise<void> {
 		if (this._pages) {
 			await Promise.all(this._pages.map(async (p) => await p.refresh()));

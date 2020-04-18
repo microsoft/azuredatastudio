@@ -12,7 +12,8 @@ const fs = require('fs');
 const path = require('path');
 
 const externals = {
-	'node-fetch': 'commonjs node-fetch'
+	'node-fetch': 'commonjs node-fetch',
+	'adm-zip': 'commonjs adm-zip'
 };
 
 // conditionally add ws if we are going to be running in a node environment

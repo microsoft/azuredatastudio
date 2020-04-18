@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../../common/constants';
 import { ApiWrapper } from '../../common/apiWrapper';
-import * as mssql from '../../../../mssql/src/mssql';
+import * as mssql from '../../../../mssql';
 import * as path from 'path';
 
 export interface LanguageUpdateModel {
@@ -59,7 +59,7 @@ export abstract class LanguageViewBase {
 	public browseButtonMaxLength = 20;
 	public spaceBetweenComponentsLength = 10;
 
-	constructor(protected _apiWrapper: ApiWrapper, protected _root?: string, protected _parent?: LanguageViewBase, ) {
+	constructor(protected _apiWrapper: ApiWrapper, protected _root?: string, protected _parent?: LanguageViewBase,) {
 		if (this._parent) {
 			if (!this._root) {
 				this._root = this._parent.root;
@@ -107,14 +107,14 @@ export abstract class LanguageViewBase {
 		if (connection) {
 			return `${connection.serverName} ${connection.databaseName ? connection.databaseName : constants.extLangLocal}`;
 		}
-		return constants.packageManagerNoConnection;
+		return constants.noConnectionError;
 	}
 
 	public getServerTitle(): string {
 		if (this.connection) {
 			return this.connection.serverName;
 		}
-		return constants.packageManagerNoConnection;
+		return constants.noConnectionError;
 	}
 
 	private async getCurrentConnectionUrl(): Promise<string> {

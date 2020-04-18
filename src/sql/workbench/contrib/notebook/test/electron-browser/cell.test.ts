@@ -833,4 +833,39 @@ suite('Cell Model', function (): void {
 			assert.strictEqual(actualMsg, testMsg);
 		});
 	});
+
+	test('Should emit event on markdown cell edit', async function (): Promise<void> {
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: ''
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		assert(!model.isEditMode);
+
+		let createCellModePromise = () => {
+			return new Promise((resolve, reject) => {
+				setTimeout((error) => reject(error), 2000);
+				model.onCellModeChanged(isEditMode => {
+					resolve(isEditMode);
+				});
+			});
+		};
+
+		assert(!model.isEditMode);
+		let cellModePromise = createCellModePromise();
+		model.isEditMode = true;
+		let isEditMode = await cellModePromise;
+		assert(isEditMode);
+
+		cellModePromise = createCellModePromise();
+		model.isEditMode = false;
+		isEditMode = await cellModePromise;
+		assert(!isEditMode);
+	});
+
 });

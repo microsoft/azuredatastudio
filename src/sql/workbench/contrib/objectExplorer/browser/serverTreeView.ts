@@ -37,6 +37,7 @@ import { isHidden } from 'sql/base/browser/dom';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { startsWith } from 'vs/base/common/strings';
 import { SERVER_GROUP_CONFIG } from 'sql/workbench/services/serverGroup/common/interfaces';
+import { horizontalScrollingKey } from 'vs/platform/list/browser/listService';
 
 /**
  * ServerTreeview implements the dynamic tree view.
@@ -140,7 +141,9 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				this._connectionManagementService.showConnectionDialog();
 			}));
 		}
-		this._tree = this._register(TreeCreationUtils.createRegisteredServersTree(container, this._instantiationService));
+
+		const horizontalScrollEnabled: boolean = this._configurationService.getValue(horizontalScrollingKey) || false;
+		this._tree = this._register(TreeCreationUtils.createRegisteredServersTree(container, this._instantiationService, horizontalScrollEnabled));
 		//this._tree.setInput(undefined);
 		this._register(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
 		this._register(this._tree.onDidBlur(() => this._onSelectionOrFocusChange.fire()));

@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
+
 import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 import * as constants from '../../common/constants';
@@ -12,7 +14,7 @@ import { IDataComponent } from '../interfaces';
 /**
  * View to pick local models file
  */
-export class LocalModelsComponent extends ModelViewBase implements IDataComponent<string> {
+export class LocalModelsComponent extends ModelViewBase implements IDataComponent<string[]> {
 
 	private _form: azdata.FormContainer | undefined;
 	private _flex: azdata.FlexContainer | undefined;
@@ -22,7 +24,7 @@ export class LocalModelsComponent extends ModelViewBase implements IDataComponen
 	/**
 	 * Creates new view
 	 */
-	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase) {
+	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _multiSelect: boolean = true) {
 		super(apiWrapper, parent.root, parent);
 	}
 
@@ -43,9 +45,19 @@ export class LocalModelsComponent extends ModelViewBase implements IDataComponen
 			}
 		}).component();
 		this._localBrowse.onDidClick(async () => {
-			const filePath = await this.getLocalFilePath();
-			if (this._localPath) {
-				this._localPath.value = filePath;
+
+			let options: vscode.OpenDialogOptions = {
+				canSelectFiles: true,
+				canSelectFolders: false,
+				canSelectMany: this._multiSelect,
+				filters: { 'ONNX File': ['onnx'] }
+			};
+
+			const filePaths = await this.getLocalPaths(options);
+			if (this._localPath && filePaths && filePaths.length > 0) {
+				this._localPath.value = this._multiSelect ? filePaths.join(';') : filePaths[0];
+			} else if (this._localPath) {
+				this._localPath.value = '';
 			}
 		});
 
@@ -86,8 +98,12 @@ export class LocalModelsComponent extends ModelViewBase implements IDataComponen
 	/**
 	 * Returns selected data
 	 */
-	public get data(): string {
-		return this._localPath?.value || '';
+	public get data(): string[] {
+		if (this._localPath?.value) {
+			return this._localPath?.value.split(';');
+		} else {
+			return [];
+		}
 	}
 
 	/**

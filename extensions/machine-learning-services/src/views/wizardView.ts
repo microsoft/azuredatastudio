@@ -46,6 +46,19 @@ export class WizardView extends MainViewBase {
 	}
 
 	/**
+	 * Adds wizard page
+	 * @param page page
+	 * @param index page index
+	 */
+	public removeWizardPage(page: IPageView, index: number): void {
+		if (this._wizard && this._pages[index] === page) {
+			this._pages = this._pages.splice(index);
+			this._wizard.removePage(index);
+		}
+	}
+
+
+	/**
 	 *
 	 * @param title Creates anew wizard
 	 * @param pages wizard pages
@@ -55,22 +68,38 @@ export class WizardView extends MainViewBase {
 		this._pages = pages;
 		this._wizard.pages = pages.map(x => this.createWizardPage(x.title || '', x));
 		this._wizard.onPageChanged(async (info) => {
-			this.onWizardPageChanged(info);
+			await this.onWizardPageChanged(info);
 		});
+
 		return this._wizard;
 	}
 
-	private onWizardPageChanged(pageInfo: azdata.window.WizardPageChangeInfo) {
+	public async validate(pageInfo: azdata.window.WizardPageChangeInfo): Promise<boolean> {
+		if (pageInfo.lastPage !== undefined) {
+			let idxLast = pageInfo.lastPage;
+			let lastPage = this._pages[idxLast];
+			if (lastPage && lastPage.validate) {
+				return await lastPage.validate();
+			}
+		}
+		return true;
+	}
+
+	private async onWizardPageChanged(pageInfo: azdata.window.WizardPageChangeInfo) {
 		let idxLast = pageInfo.lastPage;
 		let lastPage = this._pages[idxLast];
 		if (lastPage && lastPage.onLeave) {
-			lastPage.onLeave();
+			await lastPage.onLeave();
 		}
 
 		let idx = pageInfo.newPage;
 		let page = this._pages[idx];
 		if (page && page.onEnter) {
-			page.onEnter();
+			await page.onEnter();
 		}
+	}
+
+	public get wizard(): azdata.window.Wizard | undefined {
+		return this._wizard;
 	}
 }

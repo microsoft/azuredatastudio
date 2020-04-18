@@ -36,10 +36,8 @@ const { compileBuildTask } = require('./gulpfile.compile');
 const { compileExtensionsBuildTask } = require('./gulpfile.extensions');
 
 const productionDependencies = deps.getProductionDependencies(path.dirname(__dirname));
-
 const baseModules = Object.keys(process.binding('natives')).filter(n => !/^_|\//.test(n));
-// {{SQL CARBON EDIT}}
-const nodeModules = [
+const nodeModules = [ // {{SQL CARBON EDIT}}
 	'electron',
 	'original-fs',
 	'rxjs/Observable',
@@ -123,7 +121,6 @@ const optimizeVSCodeTask = task.define('optimize-vscode', task.series(
 		resources: vscodeResources,
 		loaderConfig: common.loaderConfig(nodeModules),
 		out: 'out-vscode',
-		inlineAmdImages: true,
 		bundleInfo: undefined
 	})
 ));

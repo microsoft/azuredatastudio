@@ -7,22 +7,32 @@ import * as azdata from 'azdata';
 import * as nbExtensionApis from '../typings/notebookServices';
 import { ApiWrapper } from './apiWrapper';
 import * as constants from '../common/constants';
+import * as utils from '../common/utils';
 
-const maxNumberOfRetries = 3;
+const maxNumberOfRetries = 2;
 
 const listPythonPackagesQuery = `
+Declare @tablevar table(name NVARCHAR(MAX), version NVARCHAR(MAX))
+insert into @tablevar(name, version)
 EXEC sp_execute_external_script
 @language=N'Python',
 @script=N'import pkg_resources
 import pandas
 OutputDataSet = pandas.DataFrame([(d.project_name, d.version) for d in pkg_resources.working_set])'
+select e.name, version from sys.external_libraries e join @tablevar t on e.name = t.name
+where [language] = 'PYTHON'
 `;
 
 const listRPackagesQuery = `
+Declare @tablevar table(name NVARCHAR(MAX), version NVARCHAR(MAX))
+insert into @tablevar(name, version)
 EXEC sp_execute_external_script
 @language=N'R',
 @script=N'
 OutputDataSet <- as.data.frame(installed.packages()[,c(1,3)])'
+
+select e.name, version from sys.external_libraries e join @tablevar t on e.name = t.name
+where [language] = 'R'
 `;
 
 const checkMlInstalledQuery = `
@@ -63,24 +73,24 @@ export class QueryRunner {
 	 * Returns python packages installed in SQL server instance
 	 * @param connection SQL Connection
 	 */
-	public async getPythonPackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
-		return this.getPackages(connection, listPythonPackagesQuery);
+	public async getPythonPackages(connection: azdata.connection.ConnectionProfile, databaseName: string): Promise<nbExtensionApis.IPackageDetails[]> {
+		return this.getPackages(connection, databaseName, listPythonPackagesQuery);
 	}
 
 	/**
 	 * Returns python packages installed in SQL server instance
 	 * @param connection SQL Connection
 	 */
-	public async getRPackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
-		return this.getPackages(connection, listRPackagesQuery);
+	public async getRPackages(connection: azdata.connection.ConnectionProfile, databaseName: string): Promise<nbExtensionApis.IPackageDetails[]> {
+		return this.getPackages(connection, databaseName, listRPackagesQuery);
 	}
 
-	private async getPackages(connection: azdata.connection.ConnectionProfile, script: string): Promise<nbExtensionApis.IPackageDetails[]> {
+	private async getPackages(connection: azdata.connection.ConnectionProfile, databaseName: string, script: string): Promise<nbExtensionApis.IPackageDetails[]> {
 		let packages: nbExtensionApis.IPackageDetails[] = [];
 		let result: azdata.SimpleExecuteResult | undefined = undefined;
 
 		for (let index = 0; index < maxNumberOfRetries; index++) {
-			result = await this.runQuery(connection, script);
+			result = await this.runQuery(connection, utils.getScriptWithDBChange(connection.databaseName, databaseName, script));
 			if (result && result.rowCount > 0) {
 				break;
 			}
@@ -163,4 +173,21 @@ export class QueryRunner {
 		}
 		return result;
 	}
+
+	/**
+	 * Executes the query but doesn't fail it is fails
+	 * @param connection SQL connection
+	 * @param query query to run
+	 */
+	public async safeRunQuery(connection: azdata.connection.ConnectionProfile, query: string): Promise<azdata.SimpleExecuteResult | undefined> {
+		try {
+			return await this.runQuery(connection, query);
+		} catch (error) {
+			console.log(error);
+			return undefined;
+		}
+	}
 }
+
+
+

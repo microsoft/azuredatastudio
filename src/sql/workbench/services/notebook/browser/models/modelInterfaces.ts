@@ -484,9 +484,10 @@ export interface ICellModel {
 	readonly onLoaded: Event<string>;
 	isCollapsed: boolean;
 	readonly onCollapseStateChanged: Event<boolean>;
+	readonly onCellModeChanged: Event<boolean>;
 	modelContentChangedEvent: IModelContentChangedEvent;
 	isEditMode: boolean;
-	readonly ariaLabel: string;
+	sendChangeToNotebook(change: NotebookChangeType): void;
 }
 
 export interface IModelFactory {

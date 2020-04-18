@@ -65,9 +65,7 @@ gulp.task('compile:src', function (done) {
 
 gulp.task('compile:test', function (done) {
 	let srcFiles = [
-		config.paths.project.root + '/test/**/*.ts',
-		config.paths.project.root + '/typings/**/*.ts'
-	];
+		config.paths.project.root + '/test/**/*.ts'];
 
 	return gulp.src(srcFiles)
 		.pipe(srcmap.init())

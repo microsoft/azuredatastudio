@@ -7,20 +7,20 @@ import * as azdata from 'azdata';
 import * as should from 'should';
 import 'mocha';
 import { createContext } from './utils';
-import { ListModelsEventName, ListAccountsEventName, ListSubscriptionsEventName, ListGroupsEventName, ListWorkspacesEventName, ListAzureModelsEventName } from '../../../views/models/modelViewBase';
+import { ListModelsEventName, ListAccountsEventName, ListSubscriptionsEventName, ListGroupsEventName, ListWorkspacesEventName, ListAzureModelsEventName, ModelSourceType } from '../../../views/models/modelViewBase';
 import { RegisteredModel } from '../../../modelManagement/interfaces';
 import { azureResource } from '../../../typings/azure-resource';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { ViewBase } from '../../../views/viewBase';
 import { WorkspaceModel } from '../../../modelManagement/interfaces';
-import { RegisterModelWizard } from '../../../views/models/registerModelWizard';
+import { RegisterModelWizard } from '../../../views/models/registerModels/registerModelWizard';
 
 describe('Register Model Wizard', () => {
 	it('Should create view components successfully ', async function (): Promise<void> {
 		let testContext = createContext();
 
 		let view = new RegisterModelWizard(testContext.apiWrapper.object, '');
-		view.open();
+		await view.open();
 		await view.refresh();
 		should.notEqual(view.wizardView, undefined);
 		should.notEqual(view.modelSourcePage, undefined);
@@ -30,7 +30,7 @@ describe('Register Model Wizard', () => {
 		let testContext = createContext();
 
 		let view = new RegisterModelWizard(testContext.apiWrapper.object, '');
-		view.open();
+		await view.open();
 		let accounts: azdata.Account[] = [
 			{
 				key: {
@@ -74,7 +74,8 @@ describe('Register Model Wizard', () => {
 		let localModels: RegisteredModel[] = [
 			{
 				id: 1,
-				artifactName: 'model'
+				artifactName: 'model',
+				title: 'model'
 			}
 		];
 		view.on(ListModelsEventName, () => {
@@ -96,6 +97,12 @@ describe('Register Model Wizard', () => {
 		view.on(ListAzureModelsEventName, () => {
 			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListAzureModelsEventName), { data: models });
 		});
+
+		if (view.modelBrowsePage) {
+			view.modelBrowsePage.modelSourceType = ModelSourceType.Azure;
+		}
 		await view.refresh();
+		should.notEqual(view.azureModelsComponent?.data ,undefined);
+		should.notEqual(view.localModelsComponent?.data, undefined);
 	});
 });

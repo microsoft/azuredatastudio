@@ -26,6 +26,7 @@ import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { convertSizeToNumber } from 'sql/base/browser/dom';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -36,7 +37,7 @@ export enum ColumnSizingMode {
 @Component({
 	selector: 'modelview-table',
 	template: `
-		<div #table style="height:100%;" [style.font-size]="fontSize" [style.width]="width" tabindex="-1"></div>
+		<div #table style="height:100%;" [style.font-size]="fontSize" [style.width]="width"></div>
 	`
 })
 export default class TableComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
@@ -147,9 +148,9 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				});
 			}));
 
-			this._table.grid.onKeyDown.subscribe((e: KeyboardEvent) => {
+			this._table.grid.onKeyDown.subscribe((e: DOMEvent) => {
 				if (this.moveFocusOutWithTab) {
-					let event = new StandardKeyboardEvent(e);
+					let event = new StandardKeyboardEvent(e as KeyboardEvent);
 					if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 						e.stopImmediatePropagation();
 						(<HTMLElement>(<HTMLElement>this._inputContainer.nativeElement).previousElementSibling).focus();
@@ -182,8 +183,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	}
 
 	private layoutTable(): void {
-		let width: number = this.convertSizeToNumber(this.width);
-		let height: number = this.convertSizeToNumber(this.height);
+		let width: number = convertSizeToNumber(this.width);
+		let height: number = convertSizeToNumber(this.height);
 		let forceFit: boolean = true;
 
 		// convert the tri-state viewmodel columnSizingMode to be either true or false for SlickGrid
@@ -313,6 +314,15 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		this._table.registerPlugin(checkboxSelectColumn);
 		this._table.columns = this._tableColumns;
 		this._table.autosizeColumns();
+	}
+
+	public focus(): void {
+		if (this._table.grid.getDataLength() > 0) {
+			if (!this._table.grid.getActiveCell()) {
+				this._table.grid.setActiveCell(0, 0);
+			}
+			this._table.grid.getActiveCellNode().focus();
+		}
 	}
 
 	// CSS-bound properties

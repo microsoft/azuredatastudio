@@ -37,13 +37,16 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 	private hookAccountService(appContext: AppContext): void {
 		this.accountService = appContext.getService<IAzureResourceAccountService>(AzureResourceServiceNames.accountService);
 		if (this.accountService) {
-			this.accountService.onDidChangeAccounts((e: azdata.DidChangeAccountsParams) => {
+			this.accountService.onDidChangeAccounts(async (e: azdata.DidChangeAccountsParams) => {
+				// This event sends it per provider, we need to make sure we get all the azure related accounts
+				let accounts = await this.accountService.getAccounts();
+				accounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 				// the onDidChangeAccounts event will trigger in many cases where the accounts didn't actually change
 				// the notifyNodeChanged event triggers a refresh which triggers a getChildren which can trigger this callback
 				// this below check short-circuits the infinite callback loop
 				this.setSystemInitialized();
-				if (!equals(e.accounts, this.accounts)) {
-					this.accounts = e.accounts;
+				if (!equals(accounts, this.accounts)) {
+					this.accounts = accounts;
 					this.notifyNodeChanged(undefined);
 				}
 			});

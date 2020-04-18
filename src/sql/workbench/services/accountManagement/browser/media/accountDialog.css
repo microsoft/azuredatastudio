@@ -93,13 +93,3 @@
 .account-view .list-row .actions-container .action-item .action-label.codicon.remove {
 	background-size: 14px !important;
 }
-
-.account-view .list-row .actions-container {
-	display: none;
-}
-
-.account-view .monaco-list .monaco-list-row:hover .list-row .actions-container,
-.account-view .monaco-list .monaco-list-row.selected .list-row .actions-container,
-.account-view .monaco-list .monaco-list-row.focused .list-row .actions-container{
-	display: block;
-}

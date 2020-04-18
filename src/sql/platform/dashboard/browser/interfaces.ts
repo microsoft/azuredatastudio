@@ -126,5 +126,6 @@ export enum ModelComponentTypes {
 	Hyperlink,
 	Image,
 	RadioCardGroup,
+	TabbedPanel,
 	Separator
 }

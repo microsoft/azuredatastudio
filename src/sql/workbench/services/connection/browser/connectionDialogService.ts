@@ -489,6 +489,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			}));
 
 		}
+		this._logService.error(message);
 		this._errorMessageService.showDialog(severity, headerTitle, message, messageDetails, actions);
 	}
 }

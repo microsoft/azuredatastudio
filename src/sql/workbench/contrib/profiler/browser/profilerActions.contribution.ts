@@ -83,7 +83,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		let profilerService: IProfilerService = accessor.get(IProfilerService);
 		let editorService: IEditorService = accessor.get(IEditorService);
 
-		let activeEditor = editorService.activeControl;
+		let activeEditor = editorService.activeEditorPane;
 		if (activeEditor instanceof ProfilerEditor) {
 			let profilerInput = activeEditor.input;
 			if (profilerInput.state.isRunning) {

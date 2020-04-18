@@ -76,10 +76,13 @@ const mockSubscriptions = [mockSubscription1, mockSubscription2];
 const mockFilteredSubscriptions = [mockSubscription1];
 
 const mockTokens: { [key: string]: any } = {};
-mockTokens[mockTenantId] = {
-	token: 'mock_token',
-	tokenType: 'Bearer'
-};
+
+[mockSubscription1.id, mockSubscription2.id, mockTenantId].forEach(s => {
+	mockTokens[s] = {
+		token: 'mock_token',
+		tokenType: 'Bearer'
+	};
+});
 
 const mockCredential = new TokenCredentials(mockTokens[mockTenantId].token, mockTokens[mockTenantId].tokenType);
 
@@ -108,7 +111,7 @@ describe('AzureResourceAccountTreeNode.info', function (): void {
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 		mockCacheService.setup((o) => o.get(TypeMoq.It.isAnyString())).returns(() => mockSubscriptionCache);
 		mockCacheService.setup((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => mockSubscriptionCache = mockSubscriptions);
-		mockTenantService.setup((o) => o.getTenantId(TypeMoq.It.isAny())).returns(() => Promise.resolve(mockTenantId));
+		mockTenantService.setup((o) => o.getTenantId(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(mockTenantId));
 	});
 
 	it('Should be correct when created.', async function (): Promise<void> {
@@ -196,7 +199,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 		mockCacheService.setup((o) => o.get(TypeMoq.It.isAnyString())).returns(() => mockSubscriptionCache);
 		mockCacheService.setup((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => mockSubscriptionCache = mockSubscriptions);
-		mockTenantService.setup((o) => o.getTenantId(TypeMoq.It.isAny())).returns(() => Promise.resolve(mockTenantId));
+		mockTenantService.setup((o) => o.getTenantId(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(mockTenantId));
 	});
 
 	it('Should load subscriptions from scratch and update cache when it is clearing cache.', async function (): Promise<void> {
@@ -207,7 +210,6 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 
 		const children = await accountTreeNode.getChildren();
 
-		mockApiWrapper.verify((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement), TypeMoq.Times.once());
 		mockSubscriptionService.verify((o) => o.getSubscriptions(mockAccount, mockCredential), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.get(TypeMoq.It.isAnyString()), TypeMoq.Times.exactly(0));
 		mockCacheService.verify((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());
@@ -242,7 +244,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 		await accountTreeNode.getChildren();
 		const children = await accountTreeNode.getChildren();
 
-		mockApiWrapper.verify((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement), TypeMoq.Times.once());
+
 		mockSubscriptionService.verify((o) => o.getSubscriptions(mockAccount, mockCredential), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.get(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());
@@ -331,11 +333,11 @@ describe('AzureResourceAccountTreeNode.clearCache', function (): void {
 		mockAppContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, mockSubscriptionFilterService.object);
 		mockAppContext.registerService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService, mockTenantService.object);
 
-		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
+		mockApiWrapper.setup((o,) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 		mockCacheService.setup((o) => o.get(TypeMoq.It.isAnyString())).returns(() => mockSubscriptionCache);
 		mockCacheService.setup((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => mockSubscriptionCache = mockSubscriptions);
-		mockTenantService.setup((o) => o.getTenantId(TypeMoq.It.isAny())).returns(() => Promise.resolve(mockTenantId));
+		mockTenantService.setup((o) => o.getTenantId(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(mockTenantId));
 	});
 
 	it('Should clear cache.', async function (): Promise<void> {

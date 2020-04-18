@@ -16,6 +16,7 @@ import { attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { isNumber } from 'vs/base/common/types';
+import { convertSize } from 'sql/base/browser/dom';
 
 @Component({
 	selector: 'modelview-checkbox',
@@ -32,7 +33,7 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef, ) {
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
 		super(changeRef, el);
 	}
 
@@ -50,14 +51,16 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 			this._input = new Checkbox(this._inputContainer.nativeElement, inputOptions);
 
 			this._register(this._input);
-			this._register(this._input.onChange(e => {
+			this._register(this._input.onChange(async e => {
 				this.checked = this._input.checked;
+				await this.validate();
 				this.fireEvent({
 					eventType: ComponentEventType.onDidChange,
 					args: e
 				});
 			}));
 			this._register(attachCheckboxStyler(this._input, this.themeService));
+			this._validations.push(() => !this.required || this.checked);
 		}
 	}
 
@@ -82,10 +85,10 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 			this._input.disable();
 		}
 		if (this.width || isNumber(this.width)) {
-			this._input.setWidth(this.convertSize(this.width));
+			this._input.setWidth(convertSize(this.width));
 		}
 		if (this.height || isNumber(this.height)) {
-			this._input.setHeight(this.convertSize(this.height));
+			this._input.setHeight(convertSize(this.height));
 		}
 		if (this.ariaLabel) {
 			this._input.ariaLabel = this.ariaLabel;
@@ -93,6 +96,7 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 		if (this.required) {
 			this._input.required = this.required;
 		}
+		this.validate();
 	}
 
 	// CSS-bound properties

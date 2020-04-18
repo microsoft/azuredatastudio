@@ -606,4 +606,25 @@ export class NotebookService extends Disposable implements INotebookService {
 			editor.navigateToSection(sectionId);
 		}
 	}
+
+	/**
+	 * Trusts a notebook with the specified URI.
+	 * @param notebookUri The notebook URI to set the trusted mode for.
+	 * @param isTrusted True if the notebook is to be trusted, false otherwise.
+	 */
+	async setTrusted(notebookUri: URI, isTrusted: boolean): Promise<boolean> {
+		let editor = this.findNotebookEditor(notebookUri);
+
+		if (editor && editor.model) {
+			if (isTrusted) {
+				this._trustedCacheQueue.push(notebookUri);
+			} else {
+				this._unTrustedCacheQueue.push(notebookUri);
+			}
+			await this.updateTrustedCache();
+			editor.model.trustedMode = isTrusted;
+		}
+
+		return isTrusted;
+	}
 }

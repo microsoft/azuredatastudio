@@ -255,7 +255,7 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 		return !!target;
 	}
 
-	async revert(): Promise<boolean> {
+	async revert(): Promise<void> {
 		this.setDirty(false);
 
 		// Emit as event
@@ -265,8 +265,6 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 		// no actual source on disk to revert to. As such we
 		// dispose the model.
 		this.dispose();
-
-		return true;
 	}
 
 	async backup(): Promise<IWorkingCopyBackup> {

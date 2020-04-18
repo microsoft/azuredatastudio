@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionNodeType, TreeItem } from 'azdata';
+import { ExtensionNodeType, TreeItem, Account } from 'azdata';
 import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -28,7 +28,7 @@ export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase
 	}
 
 
-	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer): TreeItem {
+	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: Account): TreeItem {
 		return {
 			id: `databaseServer_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: databaseServer.name,
@@ -45,7 +45,7 @@ export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase
 				databaseName: databaseServer.defaultDatabaseName,
 				userName: `${databaseServer.loginName}@${databaseServer.fullName}`,
 				password: '',
-				authenticationType: 'SqlLogin',
+				authenticationType: 'AzureMFA',
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
@@ -54,7 +54,8 @@ export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase
 				options: {
 					// Set default for SSL or will get error complaining about it not being set correctly
 					'sslmode': 'require'
-				}
+				},
+				azureAccount: account.key.accountId
 			},
 			childProvider: 'PGSQL',
 			type: ExtensionNodeType.Server

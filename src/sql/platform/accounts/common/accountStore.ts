@@ -47,6 +47,7 @@ export default class AccountStore implements IAccountStore {
 		});
 	}
 
+
 	public remove(key: azdata.AccountKey): Thenable<boolean> {
 		return this.doOperation(() => {
 			return this.readFromMemento()

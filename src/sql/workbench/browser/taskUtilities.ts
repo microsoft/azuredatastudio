@@ -57,7 +57,7 @@ export function replaceConnection(oldUri: string, newUri: string, connectionServ
  *
  * @param topLevelOnly If true, only return top-level (i.e. connected) Object Explorer connections instead of database connections when appropriate
 */
-export function getCurrentGlobalConnection(objectExplorerService: IObjectExplorerService, connectionManagementService: IConnectionManagementService, workbenchEditorService: IEditorService, topLevelOnly: boolean = false): IConnectionProfile {
+export function getCurrentGlobalConnection(objectExplorerService: IObjectExplorerService, connectionManagementService: IConnectionManagementService, workbenchEditorService: IEditorService, topLevelOnly: boolean = false): IConnectionProfile | undefined {
 	let connection: IConnectionProfile;
 	// object Explorer Connection
 	let objectExplorerSelection = objectExplorerService.getSelectedProfileAndDatabase();
@@ -78,11 +78,11 @@ export function getCurrentGlobalConnection(objectExplorerService: IObjectExplore
 	let activeInput = workbenchEditorService.activeEditor;
 	if (activeInput) {
 		// dashboard Connection
-		if (activeInput instanceof DashboardInput) {
-			connection = connectionManagementService.getConnectionProfile(activeInput.uri.toString());
-		} else {
+		if (activeInput instanceof DashboardInput && activeInput.uri) {
+			connection = connectionManagementService.getConnectionProfile(activeInput.uri);
+		} else if (activeInput.resource) {
 			// editor Connection
-			connection = connectionManagementService.getConnectionProfile(activeInput.resource.toString());
+			connection = connectionManagementService.getConnectionProfile(activeInput.resource.toString(true));
 		}
 	}
 

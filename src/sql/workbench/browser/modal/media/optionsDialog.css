@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.optionsDialog-label {
+.optionsDialog-options .optionsDialog-label {
 	width: 120px;
 }
 
-.optionsDialog-input {
+.optionsDialog-options .optionsDialog-input {
 	width: 200px;
 }
 
@@ -22,27 +22,29 @@
 	overflow-y: auto;
 }
 
-.optionsDialog-options-groups {
+.optionsDialog-options .optionsDialog-options-groups {
 	margin: 10px 0px;
 	flex: 1 1;
 	overflow-y: auto;
 }
 
-.vs .optionsDialog-options-groups {
+.vs .optionsDialog-options .optionsDialog-options-groups {
 	box-shadow: 0 1px 4px 1px rgba(220, 220, 220, 0.71);
 }
 
-.vs-dark .optionsDialog-options-groups {
+.vs-dark .optionsDialog-options .optionsDialog-options-groups {
 	box-shadow: 0 4px 5px 0px rgba(0, 0, 0, 0.71);
 }
 
-.optionsDialog-options-groups .split-view-view .header {
-	padding-left: 28px !important;
+.optionsDialog-options .option-category-title {
+	font-size: 11px;
+	margin: 5px 0px;
+	padding-left: 20px !important;
+	font-weight: bold;
 	background-position-x: 8px !important;
-}
-
-.optionsDialog-options-groups .split-view-view .body {
-	padding-left: 5px !important;
+	text-transform: uppercase;
+	line-height: 22px;
+	align-items: center;
 }
 
 .backButtonIcon {
@@ -58,25 +60,25 @@
 	content: url('back_inverse.svg');
 }
 
-.optionsDialog-description {
+.optionsDialog-options .optionsDialog-description {
 	height: 90px;
 	margin: 15px;
 	overflow-y: auto;
 }
 
-.optionsDialog-description .modal-title {
+.optionsDialog-options .optionsDialog-description .modal-title {
 	background-repeat: no-repeat;
 	background-position: 2px center;
 	padding-left: 25px;
 	background-size: 16px;
 }
 
-.vs .optionsDialog-description .modal-title {
+.vs .optionsDialog-options .optionsDialog-description .modal-title {
 	background-image: url('info_notification.svg')
 }
 
-.vs-dark .optionsDialog-description .modal-title,
-.hc-black .optionsDialog-description .modal-title {
+.vs-dark .optionsDialog-options .optionsDialog-description .modal-title,
+.hc-black .optionsDialog-options .optionsDialog-description .modal-title {
 	background-image: url('info_notification_inverse.svg')
 }
 
@@ -86,13 +88,14 @@
 	flex-direction: column;
 }
 
-.optionsDialog-description-content {
+.optionsDialog-options .optionsDialog-description-content {
 	padding-top: 10px;
 	padding-left: 25px;
 }
 
-.optionsDialog-table{
+.optionsDialog-options .optionsDialog-table {
 	width:100%;
 	padding: 10px 19px 10px 10px;
 	border-spacing: 5px;
+	padding-left: 5px !important;
 }

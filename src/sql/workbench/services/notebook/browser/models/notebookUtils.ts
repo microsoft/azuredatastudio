@@ -110,6 +110,19 @@ export function getHostAndPortFromEndpoint(endpoint: string): HostAndIp {
 	};
 }
 
+export function rewriteUrlUsingRegex(regex: RegExp, html: string, host: string, port: string, target: string): string {
+	return html.replace(regex, function (a, b, c) {
+		let ret = '';
+		if (b !== '') {
+			ret = 'https://' + host + port + target;
+		}
+		if (c !== '') {
+			ret = ret + c;
+		}
+		return ret;
+	});
+}
+
 export interface RawEndpoint {
 	serviceName: string;
 	description?: string;

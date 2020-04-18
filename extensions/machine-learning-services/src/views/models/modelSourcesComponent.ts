@@ -4,15 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { ModelViewBase, SourceModelSelectedEventName } from './modelViewBase';
+import { ModelViewBase, SourceModelSelectedEventName, ModelSourceType } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 import * as constants from '../../common/constants';
 import { IDataComponent } from '../interfaces';
 
-export enum ModelSourceType {
-	Local,
-	Azure
-}
 /**
  * View to pick model source
  */
@@ -20,11 +16,12 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 
 	private _form: azdata.FormContainer | undefined;
 	private _flexContainer: azdata.FlexContainer | undefined;
-	private _amlModel: azdata.RadioButtonComponent | undefined;
-	private _localModel: azdata.RadioButtonComponent | undefined;
-	private _isLocalModel: boolean = true;
+	private _amlModel: azdata.CardComponent | undefined;
+	private _localModel: azdata.CardComponent | undefined;
+	private _registeredModels: azdata.CardComponent | undefined;
+	private _sourceType: ModelSourceType = ModelSourceType.Local;
 
-	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase) {
+	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _options: ModelSourceType[] = [ModelSourceType.Local, ModelSourceType.Azure]) {
 		super(apiWrapper, parent.root, parent);
 	}
 
@@ -33,40 +30,89 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 	 * @param modelBuilder Register components
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
-		this._localModel = modelBuilder.radioButton()
+
+		this._localModel = modelBuilder.card()
 			.withProperties({
 				value: 'local',
 				name: 'modelLocation',
 				label: constants.localModelSource,
-				checked: true
+				selected: this._options[0] === ModelSourceType.Local,
+				cardType: azdata.CardType.VerticalButton,
+				width: 50
 			}).component();
-
-
-		this._amlModel = modelBuilder.radioButton()
+		this._amlModel = modelBuilder.card()
 			.withProperties({
 				value: 'aml',
 				name: 'modelLocation',
 				label: constants.azureModelSource,
+				selected: this._options[0] === ModelSourceType.Azure,
+				cardType: azdata.CardType.VerticalButton,
+				width: 50
 			}).component();
 
-		this._localModel.onDidClick(() => {
-			this._isLocalModel = true;
-			this.sendRequest(SourceModelSelectedEventName);
+		this._registeredModels = modelBuilder.card()
+			.withProperties({
+				value: 'registered',
+				name: 'modelLocation',
+				label: constants.registeredModelsSource,
+				selected: this._options[0] === ModelSourceType.RegisteredModels,
+				cardType: azdata.CardType.VerticalButton,
+				width: 50
+			}).component();
 
+		this._localModel.onCardSelectedChanged(() => {
+			this._sourceType = ModelSourceType.Local;
+			this.sendRequest(SourceModelSelectedEventName, this._sourceType);
+			if (this._amlModel && this._registeredModels) {
+				this._amlModel.selected = false;
+				this._registeredModels.selected = false;
+			}
 		});
-		this._amlModel.onDidClick(() => {
-			this._isLocalModel = false;
-			this.sendRequest(SourceModelSelectedEventName);
+		this._amlModel.onCardSelectedChanged(() => {
+			this._sourceType = ModelSourceType.Azure;
+			this.sendRequest(SourceModelSelectedEventName, this._sourceType);
+			if (this._localModel && this._registeredModels) {
+				this._localModel.selected = false;
+				this._registeredModels.selected = false;
+			}
 		});
+		this._registeredModels.onCardSelectedChanged(() => {
+			this._sourceType = ModelSourceType.RegisteredModels;
+			this.sendRequest(SourceModelSelectedEventName, this._sourceType);
+			if (this._localModel && this._amlModel) {
+				this._localModel.selected = false;
+				this._amlModel.selected = false;
+			}
+		});
+		let components: azdata.Component[] = [];
 
+		this._options.forEach(option => {
+			switch (option) {
+				case ModelSourceType.Local:
+					if (this._localModel) {
+						components.push(this._localModel);
+					}
+					break;
+				case ModelSourceType.Azure:
+					if (this._amlModel) {
+						components.push(this._amlModel);
+					}
+					break;
+				case ModelSourceType.RegisteredModels:
+					if (this._registeredModels) {
+						components.push(this._registeredModels);
+					}
+					break;
+			}
+		});
+		this._sourceType = this._options[0];
+		this.sendRequest(SourceModelSelectedEventName, this._sourceType);
 
 		this._flexContainer = modelBuilder.flexContainer()
 			.withLayout({
-				flexFlow: 'column',
+				flexFlow: 'row',
 				justifyContent: 'space-between'
-			}).withItems([
-				this._localModel, this._amlModel]
-			).component();
+			}).withItems(components).component();
 
 		this._form = modelBuilder.formContainer().withFormItems([{
 			title: '',
@@ -78,13 +124,13 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
 		if (this._flexContainer) {
-			formBuilder.addFormItem({ title: constants.modelSourcesTitle, component: this._flexContainer });
+			formBuilder.addFormItem({ title: '', component: this._flexContainer });
 		}
 	}
 
 	public removeComponents(formBuilder: azdata.FormBuilder) {
 		if (this._flexContainer) {
-			formBuilder.removeFormItem({ title: constants.modelSourcesTitle, component: this._flexContainer });
+			formBuilder.removeFormItem({ title: '', component: this._flexContainer });
 		}
 	}
 
@@ -92,7 +138,7 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 	 * Returns selected data
 	 */
 	public get data(): ModelSourceType {
-		return this._isLocalModel ? ModelSourceType.Local : ModelSourceType.Azure;
+		return this._sourceType;
 	}
 
 	/**

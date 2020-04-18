@@ -163,7 +163,7 @@ class MinimapOptions {
 			&& this.fontScale === other.fontScale
 			&& this.minimapLineHeight === other.minimapLineHeight
 			&& this.minimapCharWidth === other.minimapCharWidth
-			&& this.backgroundColor.equals(other.backgroundColor)
+			&& this.backgroundColor && this.backgroundColor.equals(other.backgroundColor)
 		);
 	}
 }
@@ -1012,6 +1012,7 @@ export class Minimap extends ViewPart implements IMinimapModel {
 		this._context.privateViewEventBus.emit(new viewEvents.ViewRevealRangeRequestEvent(
 			'mouse',
 			new Range(lineNumber, 1, lineNumber, 1),
+			null,
 			viewEvents.VerticalRevealType.Center,
 			false,
 			ScrollType.Smooth

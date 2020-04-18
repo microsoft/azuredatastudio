@@ -6,7 +6,7 @@
 import * as Touch from 'vs/base/browser/touch';
 import * as Mouse from 'vs/base/browser/mouseEvent';
 import * as Keyboard from 'vs/base/browser/keyboardEvent';
-import { INavigator } from 'vs/base/common/iterator';
+import { INavigator } from 'sql/base/common/navigator';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { Event } from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';

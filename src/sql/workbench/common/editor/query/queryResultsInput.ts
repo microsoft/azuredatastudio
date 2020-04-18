@@ -10,7 +10,7 @@ import { TopOperationsState } from 'sql/workbench/common/editor/query/topOperati
 import { ChartState } from 'sql/workbench/common/editor/query/chartState';
 import { QueryPlanState } from 'sql/workbench/common/editor/query/queryPlanState';
 import { MessagePanelState } from 'sql/workbench/common/editor/query/messagePanelState';
-import { GridPanelState } from 'sql/workbench/common/editor/query/gridPanelState';
+import { GridPanelState } from 'sql/workbench/common/editor/query/gridTableState';
 import { QueryModelViewState } from 'sql/workbench/common/editor/query/modelViewState';
 import { URI } from 'vs/base/common/uri';
 

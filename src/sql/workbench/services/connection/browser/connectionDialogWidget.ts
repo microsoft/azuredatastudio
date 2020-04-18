@@ -33,13 +33,13 @@ import * as DOM from 'vs/base/browser/dom';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
-import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
+import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { entries } from 'sql/base/common/collections';
 import { attachTabbedPanelStyler, attachModalDialogStyler } from 'sql/workbench/common/styler';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -94,7 +94,7 @@ export class ConnectionDialogWidget extends Modal {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IThemeService themeService: IThemeService,
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+		@ILayoutService layoutService: ILayoutService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
@@ -103,7 +103,17 @@ export class ConnectionDialogWidget extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(localize('connection', "Connection"), TelemetryKeys.Connection, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasSpinner: true, hasErrors: true });
+		super(
+			localize('connection', "Connection"),
+			TelemetryKeys.Connection,
+			telemetryService,
+			layoutService,
+			clipboardService,
+			themeService,
+			logService,
+			textResourcePropertiesService,
+			contextKeyService,
+			{ hasSpinner: true, spinnerTitle: localize('connecting', "Connecting"), hasErrors: true });
 	}
 
 	/**
@@ -220,8 +230,8 @@ export class ConnectionDialogWidget extends Modal {
 		this._connectionUIContainer = DOM.$('.connection-provider-info', { id: 'connectionProviderInfo' });
 		this._body.append(this._connectionUIContainer);
 
-		this._register(this._themeService.onThemeChange(e => this.updateTheme(e)));
-		this.updateTheme(this._themeService.getTheme());
+		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
+		this.updateTheme(this._themeService.getColorTheme());
 	}
 
 	/**
@@ -240,7 +250,7 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	// Update theming that is specific to connection flyout body
-	private updateTheme(theme: ITheme): void {
+	private updateTheme(theme: IColorTheme): void {
 		const borderColor = theme.getColor(contrastBorder);
 		const border = borderColor ? borderColor.toString() : null;
 		const backgroundColor = theme.getColor(SIDE_BAR_BACKGROUND);

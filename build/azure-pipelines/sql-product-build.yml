@@ -10,6 +10,10 @@ jobs:
     vmImage: 'Ubuntu-16.04'
   container: linux-x64
   steps:
+  - script: |
+      set -e
+      echo "##vso[build.addbuildtag]$(VSCODE_QUALITY)"
+    displayName: Add Quality Build Tag
   - template: sql-product-compile.yml
 
 - job: macOS
@@ -31,6 +35,17 @@ jobs:
   - Compile
   steps:
   - template: linux/sql-product-build-linux.yml
+  timeoutInMinutes: 70
+
+- job: Docker
+  condition: eq(variables['VSCODE_BUILD_DOCKER'], 'true')
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  container: linux-x64
+  dependsOn:
+  - Linux
+  steps:
+  - template: docker/sql-product-build-docker.yml
 
 - job: Windows
   condition: eq(variables['VSCODE_BUILD_WIN32'], 'true')
@@ -40,6 +55,7 @@ jobs:
   - Compile
   steps:
   - template: win32/sql-product-build-win32.yml
+  timeoutInMinutes: 70
 
 - job: Windows_Test
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
@@ -58,6 +74,7 @@ jobs:
   dependsOn:
   - macOS
   - Linux
+  - Docker
   - Windows
   - Windows_Test
   steps:

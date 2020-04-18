@@ -5,7 +5,7 @@
 
 import 'vs/css!./dashboardGridContainer';
 
-import { Component, Inject, Input, forwardRef, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, ContentChild } from '@angular/core';
+import { Component, Inject, Input, forwardRef, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, ViewChild } from '@angular/core';
 
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { TabConfig, WidgetConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
@@ -17,7 +17,6 @@ import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
 import { values } from 'vs/base/common/collections';
-import { fill } from 'vs/base/common/arrays';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 export interface GridCellConfig {
@@ -207,7 +206,7 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 
 	@ViewChildren(DashboardWidgetWrapper) private _widgets: QueryList<DashboardWidgetWrapper>;
 	@ViewChildren(WebviewContent) private _webViews: QueryList<WebviewContent>;
-	@ContentChild(ScrollableDirective) private _scrollable: ScrollableDirective;
+	@ViewChild(ScrollableDirective) private _scrollable: ScrollableDirective;
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ElementRef)) protected _el: ElementRef,
@@ -236,14 +235,16 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 					widget.rowspan = '1';
 				}
 			});
-			this.rows = this.createIndexes(this._contents.map(w => w.row));
-			this.cols = this.createIndexes(this._contents.map(w => w.col));
+			if (this._contents.length > 0) {
+				this.rows = this.createIndexes(this._contents.map(w => w.row));
+				this.cols = this.createIndexes(this._contents.map(w => w.col));
+			}
 		}
 	}
 
 	private createIndexes(indexes: number[]) {
 		const max = Math.max(...indexes) + 1;
-		return fill(max, 0).map((x, i) => i);
+		return new Array(max).fill(0).map((x, i) => i);
 	}
 
 	ngOnDestroy() {

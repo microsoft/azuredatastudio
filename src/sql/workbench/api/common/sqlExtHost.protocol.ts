@@ -35,6 +35,7 @@ export abstract class ExtHostAccountManagementShape {
 	$prompt(handle: number): Thenable<azdata.Account | azdata.PromptFailedResult> { throw ni(); }
 	$refresh(handle: number, account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> { throw ni(); }
 	$accountsChanged(handle: number, accounts: azdata.Account[]): Thenable<void> { throw ni(); }
+	$clearTokenCache(): Thenable<void> { throw ni(); }
 }
 
 export abstract class ExtHostConnectionManagementShape {
@@ -890,6 +891,7 @@ export interface ExtHostNotebookDocumentsAndEditorsShape {
 }
 
 export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable {
+	$trySetTrusted(_uri: UriComponents, isTrusted: boolean): Thenable<boolean>;
 	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string>;
 	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;

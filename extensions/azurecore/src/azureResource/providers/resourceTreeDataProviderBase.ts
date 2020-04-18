@@ -36,7 +36,7 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 				account: element.account,
 				subscription: element.subscription,
 				tenantId: element.tenantId,
-				treeItem: this.getTreeItemForResource(resource)
+				treeItem: this.getTreeItemForResource(resource, element.account)
 			}).sort((a, b) => a.treeItem.label.localeCompare(b.treeItem.label));
 		} catch (error) {
 			console.log(AzureResourceErrorMessageUtil.getErrorMessage(error));
@@ -48,11 +48,11 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 		const tokens = await this._apiWrapper.getSecurityToken(element.account, azdata.AzureResource.ResourceManagement);
 		const credential = new msRest.TokenCredentials(tokens[element.tenantId].token, tokens[element.tenantId].tokenType);
 
-		const resources: T[] = await this._resourceService.getResources(element.subscription, credential) || <T[]>[];
+		const resources: T[] = await this._resourceService.getResources(element.subscription, credential, element.account) || <T[]>[];
 		return resources;
 	}
 
-	protected abstract getTreeItemForResource(resource: T): azdata.TreeItem;
+	protected abstract getTreeItemForResource(resource: T, account: azdata.Account): azdata.TreeItem;
 
 	protected abstract createContainerNode(): azureResource.IAzureResourceNode;
 }
@@ -121,9 +121,9 @@ export abstract class ResourceServiceBase<T extends GraphData, U extends azureRe
 	 */
 	protected abstract get query(): string;
 
-	public async getResources(subscription: azureResource.AzureResourceSubscription, credential: msRest.ServiceClientCredentials): Promise<U[]> {
+	public async getResources(subscription: azureResource.AzureResourceSubscription, credential: msRest.ServiceClientCredentials, account: azdata.Account): Promise<U[]> {
 		const convertedResources: U[] = [];
-		const resourceClient = new ResourceGraphClient(credential);
+		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 		let graphResources = await queryGraphResources<T>(resourceClient, subscription.id, this.query);
 		let ids = new Set<string>();
 		graphResources.forEach((res) => {
