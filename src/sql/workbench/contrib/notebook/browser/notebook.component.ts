@@ -431,7 +431,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			{ action: addCodeCellButton },
 			//{ action: addTextCellButton },
 			{ action: this._runAllCellsAction },
-			//{ element: "|"},
+			{ element: Taskbar.createTaskbarSeparator() },
 			{ element: attachToContainer },
 			{ element: kernelContainer },
 			{ action: collapseCellsAction },
