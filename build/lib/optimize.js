@@ -28,7 +28,6 @@ const REPO_ROOT_PATH = path.join(__dirname, '../..');
 function log(prefix, message) {
     fancyLog(ansiColors.cyan('[' + prefix + ']'), message);
 }
-// {{SQL CARBON EDIT}}
 function loaderConfig(emptyPaths) {
     const result = {
         paths: {
