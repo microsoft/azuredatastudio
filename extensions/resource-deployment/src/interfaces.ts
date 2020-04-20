@@ -202,7 +202,6 @@ export interface FieldInfo extends SubFieldInfo, SharedFieldAttributes {
 	editable?: boolean; // for editable drop-down,
 	enabled?: boolean;
 }
-
 export interface AzureAccountFieldInfo extends AzureLocationsFieldInfo {
 	subscriptionVariableName?: string;
 	resourceGroupVariableName?: string;
@@ -236,6 +235,7 @@ export enum FieldType {
 	SQLPassword = 'sql_password',
 	Password = 'password',
 	Options = 'options',
+	RadioOptions = 'radio_options',
 	ReadonlyText = 'readonly_text',
 	Checkbox = 'checkbox',
 	AzureAccount = 'azure_account',

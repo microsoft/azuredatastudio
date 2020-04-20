@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 
 import { NotebookWizardPageInfo } from '../../interfaces';
-import { initializeWizardPage, InputComponents, setModelValues, Validator } from '../modelViewUtils';
+import { FieldTypeComponent, initializeWizardPage, InputComponents, setModelValues, Validator } from '../modelViewUtils';
 import { WizardPageBase } from '../wizardPageBase';
 import { NotebookWizard } from './notebookWizard';
 
@@ -37,7 +37,7 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 			onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 				self.wizard.registerDisposable(disposable);
 			},
-			onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent): void => {
+			onNewInputComponentCreated: (name: string, component: FieldTypeComponent): void => {
 				self.inputComponents[name] = { component: component };
 			},
 			onNewValidatorCreated: (validator: Validator): void => {

@@ -9,7 +9,7 @@ import * as nls from 'vscode-nls';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { SectionInfo, FieldType, LabelPosition } from '../../../interfaces';
 import { WizardPageBase } from '../../wizardPageBase';
-import { createSection, InputComponents, setModelValues, Validator, getDropdownComponent, MissingRequiredInformationErrorMessage } from '../../modelViewUtils';
+import { createSection, InputComponents, setModelValues, Validator, getDropdownComponent, MissingRequiredInformationErrorMessage, FieldTypeComponent } from '../../modelViewUtils';
 import { SubscriptionId_VariableName, ResourceGroup_VariableName, Location_VariableName, AksName_VariableName, VMCount_VariableName, VMSize_VariableName } from '../constants';
 const localize = nls.loadMessageBundle();
 
@@ -136,7 +136,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, component: azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent): void => {
+				onNewInputComponentCreated: (name: string, component: FieldTypeComponent): void => {
 					self.inputComponents[name] = { component: component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
