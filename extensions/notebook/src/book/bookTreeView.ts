@@ -20,7 +20,7 @@ import * as glob from 'fast-glob';
 import { isNullOrUndefined } from 'util';
 import { debounce } from '../common/utils';
 
-const ContentFolder = 'content';
+const Content = 'content';
 
 interface BookSearchResults {
 	notebookPaths: string[];
@@ -194,9 +194,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			const bookRoot = this.currentBook.bookItems[0];
 			const sectionToOpen = bookRoot.findChildSection(urlToOpen);
 			const urlPath = sectionToOpen ? sectionToOpen.url : bookRoot.tableOfContents.sections[0].url;
-			const sectionToOpenMarkdown: string = path.join(this.currentBook.bookPath, ContentFolder, urlPath.concat('.md'));
+			const sectionToOpenMarkdown: string = path.join(this.currentBook.bookPath, Content, urlPath.concat('.md'));
 			// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-			const sectionToOpenNotebook: string = path.posix.join(this.currentBook.bookPath, ContentFolder, urlPath.concat('.ipynb'));
+			const sectionToOpenNotebook: string = path.posix.join(this.currentBook.bookPath, Content, urlPath.concat('.ipynb'));
 			if (await fs.pathExists(sectionToOpenMarkdown)) {
 				this.openMarkdown(sectionToOpenMarkdown);
 			}
@@ -324,15 +324,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public async searchJupyterBooks(treeItem?: BookTreeItem): Promise<void> {
 		let folderToSearch: string;
 		if (treeItem && treeItem.book.type !== BookTreeItemType.Notebook) {
-			if (treeItem.url) {
-				folderToSearch = path.join(treeItem.root, ContentFolder, path.dirname(treeItem.url));
+			if (treeItem.uri) {
+				folderToSearch = path.join(treeItem.root, Content, path.dirname(treeItem.uri));
 			} else {
-				folderToSearch = path.join(treeItem.root, ContentFolder);
+				folderToSearch = path.join(treeItem.root, Content);
 			}
 		} else if (this.currentBook && !this.currentBook.isNotebook) {
-			folderToSearch = path.join(this.currentBook.bookPath, ContentFolder);
+			folderToSearch = path.join(this.currentBook.bookPath, Content);
 		} else {
-			vscode.window.showErrorMessage(loc.noBooksOpenError);
+			vscode.window.showErrorMessage(loc.noBooksSelectedError);
 		}
 
 		if (folderToSearch) {
@@ -464,7 +464,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (element) {
 			let parentPath;
 			if (element.root.endsWith('.md')) {
-				parentPath = path.join(this.currentBook.bookPath, ContentFolder, 'readme.md');
+				parentPath = path.join(this.currentBook.bookPath, Content, 'readme.md');
 				if (parentPath === element.root) {
 					return undefined;
 				}

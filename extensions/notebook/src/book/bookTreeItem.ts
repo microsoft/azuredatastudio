@@ -29,7 +29,7 @@ export interface BookTreeItemFormat {
 
 export class BookTreeItem extends vscode.TreeItem {
 	private _sections: IJupyterBookSection[];
-	private _url: string;
+	private _uri: string;
 	private _previousUri: string;
 	private _nextUri: string;
 	public command: vscode.Command;
@@ -68,7 +68,7 @@ export class BookTreeItem extends vscode.TreeItem {
 				vscode.TreeItemCollapsibleState.Collapsed :
 				vscode.TreeItemCollapsibleState.None;
 		this._sections = this.book.page.sections || this.book.page.subsections;
-		this._url = this.book.page.url;
+		this._uri = this.book.page.url;
 
 		if (this.book.tableOfContents.sections) {
 			let index = (this.book.tableOfContents.sections.indexOf(this.book.page));
@@ -84,7 +84,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		} else if (this.book.type === BookTreeItemType.Markdown) {
 			this.command = { command: 'bookTreeView.openMarkdown', title: loc.openMarkdownCommand, arguments: [this.book.contentPath], };
 		} else if (this.book.type === BookTreeItemType.ExternalLink) {
-			this.command = { command: 'bookTreeView.openExternalLink', title: loc.openExternalLinkCommand, arguments: [this._url], };
+			this.command = { command: 'bookTreeView.openExternalLink', title: loc.openExternalLinkCommand, arguments: [this._uri], };
 		}
 	}
 
@@ -124,8 +124,8 @@ export class BookTreeItem extends vscode.TreeItem {
 		return this.book.title;
 	}
 
-	public get url(): string {
-		return this._url;
+	public get uri(): string {
+		return this._uri;
 	}
 
 	public get root(): string {
@@ -150,7 +150,7 @@ export class BookTreeItem extends vscode.TreeItem {
 
 	get tooltip(): string {
 		if (this.book.type === BookTreeItemType.ExternalLink) {
-			return `${this._url}`;
+			return `${this._uri}`;
 		}
 		else {
 			return this.book.type === BookTreeItemType.Book ? this.book.root : this.book.contentPath;
