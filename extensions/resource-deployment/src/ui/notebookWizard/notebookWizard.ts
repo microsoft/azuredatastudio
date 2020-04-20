@@ -8,7 +8,7 @@ import * as nls from 'vscode-nls';
 import { INotebookService } from '../../services/notebookService';
 import { WizardBase } from '../wizardBase';
 import { WizardPageBase } from '../wizardPageBase';
-import { ArcDeploymentType, BdcDeploymentType, NotebookWizardInfo } from './../../interfaces';
+import { DeploymentType, NotebookWizardInfo } from './../../interfaces';
 import { IPlatformService } from './../../services/platformService';
 import { NotebookWizardModel } from './notebookWizardModel';
 import { NotebookWizardPage } from './notebookWizardPage';
@@ -31,11 +31,11 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardMod
 	}
 
 	constructor(private _wizardInfo: NotebookWizardInfo, private _notebookService: INotebookService, private _platformService: IPlatformService) {
-		super(_wizardInfo.title, new NotebookWizardModel(_wizardInfo.type));
+		super(_wizardInfo.title, new NotebookWizardModel());
 		this.wizardObject.doneButton.label = _wizardInfo.actionText || this.wizardObject.doneButton.label;
 	}
 
-	public get deploymentType(): ArcDeploymentType | BdcDeploymentType {
+	public get deploymentType(): DeploymentType | undefined {
 		return this._wizardInfo.type;
 	}
 

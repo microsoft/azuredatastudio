@@ -111,7 +111,7 @@ export interface NotebookWizardInfo extends SharedFieldAttributes, WizardInfoBas
 
 export interface WizardInfoBase extends SharedFieldAttributes {
 	taskName?: string;
-	type: ArcDeploymentType;
+	type?: DeploymentType;
 	runNotebook?: boolean;
 	actionText?: string;
 	title: string;
@@ -213,7 +213,6 @@ export interface AzureLocationsFieldInfo extends FieldInfo {
 }
 
 export const enum LabelPosition {
-
 	Top = 'top',
 	Left = 'left'
 }
@@ -318,6 +317,8 @@ export const enum BdcDeploymentType {
 export const enum ArcDeploymentType {
 	NewControlPlane = 'new-control-plane'
 }
+
+export type DeploymentType = ArcDeploymentType | BdcDeploymentType;
 
 export interface Command {
 	command: string;
