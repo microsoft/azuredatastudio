@@ -323,7 +323,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	public async searchJupyterBooks(treeItem?: BookTreeItem): Promise<void> {
 		let folderToSearch: string;
-		if (treeItem && treeItem.book.type === BookTreeItemType.Book) {
+		if (treeItem && treeItem.book.type !== BookTreeItemType.Notebook) {
 			if (treeItem.url) {
 				folderToSearch = path.join(treeItem.root, ContentFolder, path.dirname(treeItem.url));
 			} else {
