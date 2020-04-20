@@ -20,7 +20,7 @@ import * as glob from 'fast-glob';
 import { isNullOrUndefined } from 'util';
 import { debounce } from '../common/utils';
 
-const Content = 'content';
+const ContentFolder = 'content';
 
 interface BookSearchResults {
 	notebookPaths: string[];
@@ -194,9 +194,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			const bookRoot = this.currentBook.bookItems[0];
 			const sectionToOpen = bookRoot.findChildSection(urlToOpen);
 			const urlPath = sectionToOpen ? sectionToOpen.url : bookRoot.tableOfContents.sections[0].url;
-			const sectionToOpenMarkdown: string = path.join(this.currentBook.bookPath, Content, urlPath.concat('.md'));
+			const sectionToOpenMarkdown: string = path.join(this.currentBook.bookPath, ContentFolder, urlPath.concat('.md'));
 			// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-			const sectionToOpenNotebook: string = path.posix.join(this.currentBook.bookPath, Content, urlPath.concat('.ipynb'));
+			const sectionToOpenNotebook: string = path.posix.join(this.currentBook.bookPath, ContentFolder, urlPath.concat('.ipynb'));
 			if (await fs.pathExists(sectionToOpenMarkdown)) {
 				this.openMarkdown(sectionToOpenMarkdown);
 			}
@@ -322,11 +322,16 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	public async searchJupyterBooks(treeItem?: BookTreeItem): Promise<void> {
-		if (this.currentBook && this.currentBook.bookPath) {
-			let folderToSearch = this.currentBook.bookPath;
-			if (treeItem && treeItem.uri) {
-				folderToSearch = path.join(folderToSearch, Content, path.dirname(treeItem.uri));
-			}
+		let folderToSearch: string;
+		if (treeItem && treeItem.root && treeItem.book.type === BookTreeItemType.Book) {
+			folderToSearch = path.join(treeItem.root, ContentFolder);
+		} else if (this.currentBook && !this.currentBook.isNotebook && this.currentBook.bookPath) {
+			folderToSearch = this.currentBook.bookPath;
+		} else {
+			vscode.window.showErrorMessage(loc.noBooksOpenError);
+		}
+
+		if (folderToSearch) {
 			let filesToIncludeFiltered = path.join(folderToSearch, '**', '*.md') + ',' + path.join(folderToSearch, '**', '*.ipynb');
 			vscode.commands.executeCommand('workbench.action.findInFiles', { filesToInclude: filesToIncludeFiltered, query: '' });
 		}
@@ -455,7 +460,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (element) {
 			let parentPath;
 			if (element.root.endsWith('.md')) {
-				parentPath = path.join(this.currentBook.bookPath, Content, 'readme.md');
+				parentPath = path.join(this.currentBook.bookPath, ContentFolder, 'readme.md');
 				if (parentPath === element.root) {
 					return undefined;
 				}
