@@ -32,7 +32,7 @@ export interface IExpectedBookItem {
 
 export function equalBookItems(book: BookTreeItem, expectedBook: IExpectedBookItem): void {
 	should(book.title).equal(expectedBook.title);
-	should(path.posix.parse(book.uri)).deepEqual(path.posix.parse(expectedBook.url));
+	should(path.posix.parse(book.url)).deepEqual(path.posix.parse(expectedBook.url));
 	if (expectedBook.previousUri || expectedBook.nextUri) {
 		let prevUri = book.previousUri ? book.previousUri.toLocaleLowerCase() : undefined;
 		let expectedPrevUri = expectedBook.previousUri ? expectedBook.previousUri.replace(/\\/g, '/') : undefined;
