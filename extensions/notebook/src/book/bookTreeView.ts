@@ -326,7 +326,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (treeItem && treeItem.root && treeItem.book.type === BookTreeItemType.Book) {
 			folderToSearch = path.join(treeItem.root, ContentFolder);
 		} else if (this.currentBook && !this.currentBook.isNotebook && this.currentBook.bookPath) {
-			folderToSearch = this.currentBook.bookPath;
+			folderToSearch = path.join(this.currentBook.bookPath, ContentFolder);
 		} else {
 			vscode.window.showErrorMessage(loc.noBooksOpenError);
 		}
