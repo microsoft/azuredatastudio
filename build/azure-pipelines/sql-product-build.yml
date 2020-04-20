@@ -38,7 +38,7 @@ jobs:
   timeoutInMinutes: 70
 
 - job: Docker
-  condition: eq(variables['VSCODE_BUILD_DOCKER'], 'true')
+  condition: and(succeeded(), eq(variables['VSCODE_BUILD_DOCKER'], 'true'))
   pool:
     vmImage: 'Ubuntu-16.04'
   container: linux-x64
