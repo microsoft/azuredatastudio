@@ -131,10 +131,10 @@ steps:
       yarn gulp vscode-linux-x64-build-deb
     displayName: Build Deb
 
-  - script: |
-      set -e
-      yarn gulp vscode-linux-x64-build-rpm
-    displayName: Build Rpm
+  # - script: |
+  #     set -e
+  #     yarn gulp vscode-linux-x64-build-rpm
+  #   displayName: Build Rpm
 
   - script: |
       set -e
