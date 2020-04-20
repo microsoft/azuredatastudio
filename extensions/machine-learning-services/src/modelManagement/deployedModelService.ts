@@ -126,6 +126,31 @@ export class DeployedModelService {
 		}
 	}
 
+	/**
+	 * Verifies if the given table name is valid to be used as import table. If table doesn't exist returns true to create new table
+	 * Otherwise verifies the schema and returns true if the schema is supported
+	 * @param connection database connection
+	 * @param table config table name
+	 */
+	public async verifyConfigTable(table: DatabaseTable): Promise<boolean> {
+		let connection = await this.getCurrentConnection();
+		if (connection && table.databaseName) {
+			let databases = await this._apiWrapper.listDatabases(connection.connectionId);
+
+			// If database exist verify the table schema
+			//
+			if ((await databases).find(x => x === table.databaseName)) {
+				const query = this.getConfigTableVerificationQuery(table);
+				const result = await this._queryRunner.runWithDatabaseChange(connection, query, table.databaseName);
+				return result !== undefined && result.rows.length > 0 && result.rows[0][0].displayValue === '1';
+			} else {
+				return true;
+			}
+		} else {
+			throw new Error(constants.noConnectionError);
+		}
+	}
+
 	public async getRecentImportTable(): Promise<DatabaseTable> {
 		let connection = await this.getCurrentConnection();
 		let table: DatabaseTable | undefined;
@@ -186,6 +211,54 @@ export class DeployedModelService {
 		FROM ${utils.getRegisteredModelsThreePartsName(table.databaseName || '', table.tableName || '', table.schema || '')}
 		WHERE artifact_name not like 'MLmodel' and artifact_name not like 'conda.yaml'
 		Order by artifact_id
+		`;
+	}
+
+	/**
+	 * Verifies config table has the expected schema
+	 * @param databaseName
+	 * @param tableName
+	 */
+	public getConfigTableVerificationQuery(table: DatabaseTable): string {
+		let tableName = table.tableName;
+		let schemaName = table.schema;
+		const twoPartTableName = utils.getRegisteredModelsTowPartsName(table.tableName || '', table.schema || '');
+
+		return `
+		IF NOT EXISTS (
+			SELECT name
+				FROM sys.databases
+				WHERE name = N'${utils.doubleEscapeSingleQuotes(table.databaseName)}'
+		)
+		BEGIN
+			Select 1
+		END
+		ELSE
+		BEGIN
+			USE [${utils.doubleEscapeSingleBrackets(table.databaseName)}]
+			IF EXISTS
+				(  SELECT t.name, s.name
+					FROM sys.tables t join sys.schemas s on t.schema_id=t.schema_id
+					WHERE t.name = '${utils.doubleEscapeSingleQuotes(tableName)}'
+					AND s.name = '${utils.doubleEscapeSingleQuotes(schemaName)}'
+				)
+			BEGIN
+				IF EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('${twoPartTableName}') AND NAME='artifact_name')
+					AND EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('${twoPartTableName}') AND NAME='artifact_content')
+					AND EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('${twoPartTableName}') AND NAME='name')
+					AND EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('${twoPartTableName}') AND NAME='version')
+					AND EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('${twoPartTableName}') AND NAME='created')
+				BEGIN
+					Select 1
+				END
+				ELSE
+				BEGIN
+					Select 0
+				END
+			END
+			ELSE
+				select 1
+		END
 		`;
 	}
 

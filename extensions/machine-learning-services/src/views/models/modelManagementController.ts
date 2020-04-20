@@ -17,7 +17,7 @@ import {
 	AzureResourceEventArgs, ListAzureModelsEventName, ListSubscriptionsEventName, ListModelsEventName, ListWorkspacesEventName,
 	ListGroupsEventName, ListAccountsEventName, RegisterLocalModelEventName, RegisterAzureModelEventName,
 	ModelViewBase, SourceModelSelectedEventName, RegisterModelEventName, DownloadAzureModelEventName,
-	ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, PredictModelEventName, PredictModelEventArgs, DownloadRegisteredModelEventName, LoadModelParametersEventName, ModelSourceType, ModelViewData, StoreImportTableEventName
+	ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, PredictModelEventName, PredictModelEventArgs, DownloadRegisteredModelEventName, LoadModelParametersEventName, ModelSourceType, ModelViewData, StoreImportTableEventName, VerifyImportTableEventName
 } from './modelViewBase';
 import { ControllerBase } from '../controllerBase';
 import { ImportModelWizard } from './manageModels/importModelWizard';
@@ -173,6 +173,11 @@ export class ModelManagementController extends ControllerBase {
 			await this.executeAction(view, StoreImportTableEventName, this.storeImportTable, this._registeredModelService,
 				importTable);
 		});
+		view.on(VerifyImportTableEventName, async (arg) => {
+			let importTable = <DatabaseTable>arg;
+			await this.executeAction(view, VerifyImportTableEventName, this.verifyImportTable, this._registeredModelService,
+				importTable);
+		});
 		view.on(SourceModelSelectedEventName, (arg) => {
 			view.modelSourceType = <ModelSourceType>arg;
 			view.refresh();
@@ -286,15 +291,15 @@ export class ModelManagementController extends ControllerBase {
 		}));
 	}
 
-	public async getDatabaseList(predictService: PredictService): Promise<string[]> {
+	private async getDatabaseList(predictService: PredictService): Promise<string[]> {
 		return await predictService.getDatabaseList();
 	}
 
-	public async getTableList(predictService: PredictService, databaseName: string): Promise<DatabaseTable[]> {
+	private async getTableList(predictService: PredictService, databaseName: string): Promise<DatabaseTable[]> {
 		return await predictService.getTableList(databaseName);
 	}
 
-	public async getTableColumnsList(predictService: PredictService, databaseTable: DatabaseTable): Promise<TableColumn[]> {
+	private async getTableColumnsList(predictService: PredictService, databaseTable: DatabaseTable): Promise<TableColumn[]> {
 		return await predictService.getTableColumnsList(databaseTable);
 	}
 
@@ -315,7 +320,15 @@ export class ModelManagementController extends ControllerBase {
 		if (table) {
 			await registeredModelService.storeRecentImportTable(table);
 		} else {
-			throw Error('invalid import table');
+			throw Error(constants.invalidImportTableError(undefined, undefined));
+		}
+	}
+
+	private async verifyImportTable(registeredModelService: DeployedModelService, table: DatabaseTable | undefined): Promise<boolean> {
+		if (table) {
+			return await registeredModelService.verifyConfigTable(table);
+		} else {
+			throw Error(constants.invalidImportTableError(undefined, undefined));
 		}
 	}
 

@@ -81,15 +81,18 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 	public async disposePage(): Promise<void> {
 	}
 
-	public validate(): Promise<boolean> {
+	public async validate(): Promise<boolean> {
 		let validated = false;
 
 		if (this.data?.databaseName && this.data?.tableName) {
 			validated = true;
+			validated = await this.verifyImportConfigTable(this.data);
+			if (!validated) {
+				this.showErrorMessage(constants.invalidImportTableSchemaError(this.data?.databaseName, this.data?.tableName));
+			}
+		} else {
+			this.showErrorMessage(constants.invalidImportTableError(this.data?.databaseName, this.data?.tableName));
 		}
-		if (!validated) {
-			this.showErrorMessage(constants.invalidModelImportTargetError);
-		}
-		return Promise.resolve(validated);
+		return validated;
 	}
 }

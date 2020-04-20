@@ -60,6 +60,7 @@ export const RegisterModelEventName = 'registerModel';
 export const SourceModelSelectedEventName = 'sourceModelSelected';
 export const LoadModelParametersEventName = 'loadModelParameters';
 export const StoreImportTableEventName = 'storeImportTable';
+export const VerifyImportTableEventName = 'verifyImportTable';
 
 /**
  * Base class for all model management views
@@ -92,7 +93,8 @@ export abstract class ModelViewBase extends ViewBase {
 			DownloadAzureModelEventName,
 			DownloadRegisteredModelEventName,
 			LoadModelParametersEventName,
-			StoreImportTableEventName]);
+			StoreImportTableEventName,
+			VerifyImportTableEventName]);
 	}
 
 	/**
@@ -195,8 +197,18 @@ export abstract class ModelViewBase extends ViewBase {
 		return await this.sendDataRequest(RegisterAzureModelEventName, models);
 	}
 
+	/**
+	 * Stores the name of the table as recent config table for importing models
+	 */
 	public async storeImportConfigTable(): Promise<void> {
 		await this.sendRequest(StoreImportTableEventName, this.importTable);
+	}
+
+	/**
+	 * Verifies if table is valid to import models to
+	 */
+	public async verifyImportConfigTable(table: DatabaseTable): Promise<boolean> {
+		return await this.sendDataRequest(VerifyImportTableEventName, table);
 	}
 
 	/**
