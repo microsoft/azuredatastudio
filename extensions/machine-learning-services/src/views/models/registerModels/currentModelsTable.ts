@@ -15,11 +15,11 @@ import { ModelArtifact } from '../prediction/modelArtifact';
 /**
  * View to render registered models table
  */
-export class CurrentModelsTable extends ModelViewBase implements IDataComponent<RegisteredModel> {
+export class CurrentModelsTable extends ModelViewBase implements IDataComponent<RegisteredModel[]> {
 
 	private _table: azdata.DeclarativeTableComponent | undefined;
 	private _modelBuilder: azdata.ModelBuilder | undefined;
-	private _selectedModel: any;
+	private _selectedModel: RegisteredModel[] = [];
 	private _loader: azdata.LoadingComponent | undefined;
 	private _downloadedFile: ModelArtifact | undefined;
 	private _onModelSelectionChanged: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
@@ -28,7 +28,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	/**
 	 * Creates new view
 	 */
-	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase) {
+	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _multiSelect: boolean = true) {
 		super(apiWrapper, parent.root, parent);
 	}
 
@@ -161,17 +161,45 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 
 	private createTableRow(model: RegisteredModel): any[] {
 		if (this._modelBuilder) {
-			let selectModelButton = this._modelBuilder.radioButton().withProperties({
-				name: 'amlModel',
-				value: model.id,
-				width: 15,
-				height: 15,
-				checked: false
-			}).component();
-			selectModelButton.onDidClick(async () => {
-				this._selectedModel = model;
-				await this.onModelSelected();
-			});
+			let selectModelButton: azdata.Component;
+			let onSelectItem = (checked: boolean) => {
+				if (!this._multiSelect) {
+					this._selectedModel = [];
+				}
+				const foundItem = this._selectedModel.find(x => x === model);
+				if (checked && !foundItem) {
+					this._selectedModel.push(model);
+				} else if (foundItem) {
+					this._selectedModel = this._selectedModel.filter(x => x !== model);
+				}
+				this.onModelSelected();
+			};
+			if (this._multiSelect) {
+				const checkbox = this._modelBuilder.checkBox().withProperties({
+					name: 'amlModel',
+					value: model.id,
+					width: 15,
+					height: 15,
+					checked: false
+				}).component();
+				checkbox.onChanged(() => {
+					onSelectItem(checkbox.checked || false);
+				});
+				selectModelButton = checkbox;
+			} else {
+				const radioButton = this._modelBuilder.radioButton().withProperties({
+					name: 'amlModel',
+					value: model.id,
+					width: 15,
+					height: 15,
+					checked: false
+				}).component();
+				radioButton.onDidClick(() => {
+					onSelectItem(radioButton.checked || false);
+				});
+				selectModelButton = radioButton;
+			}
+
 			return [model.artifactName, model.title, model.created, selectModelButton];
 		}
 
@@ -189,13 +217,13 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	/**
 	 * Returns selected data
 	 */
-	public get data(): RegisteredModel | undefined {
+	public get data(): RegisteredModel[] | undefined {
 		return this._selectedModel;
 	}
 
-	public async getDownloadedModel(): Promise<ModelArtifact> {
-		if (!this._downloadedFile) {
-			this._downloadedFile = new ModelArtifact(await this.downloadRegisteredModel(this.data));
+	public async getDownloadedModel(): Promise<ModelArtifact | undefined> {
+		if (!this._downloadedFile && this.data && this.data.length > 0) {
+			this._downloadedFile = new ModelArtifact(await this.downloadRegisteredModel(this.data[0]));
 		}
 		return this._downloadedFile;
 	}

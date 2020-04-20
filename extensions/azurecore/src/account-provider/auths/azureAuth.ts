@@ -219,12 +219,14 @@ export abstract class AzureAuth implements vscode.Disposable {
 					console.log('Base token was empty, account is stale.');
 					return undefined;
 				}
+
 				try {
 					await this.refreshAccessToken(account.key, baseToken.refreshToken, tenant, resource);
 				} catch (ex) {
-					console.log(ex);
-					account.isStale = true;
-					return undefined;
+					console.log(`Could not refresh access token for ${JSON.stringify(tenant)} - silently removing the tenant from the user's account.`);
+					azureAccount.properties.tenants = azureAccount.properties.tenants.filter(t => t.id !== tenant.id);
+					console.log(ex, ex?.data, ex?.response);
+					continue;
 				}
 
 				cachedTokens = await this.getCachedToken(account.key, resource.id, tenant.id);
@@ -243,9 +245,12 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		if (azureAccount.properties.subscriptions) {
 			azureAccount.properties.subscriptions.forEach(subscription => {
-				response[subscription.id] = {
-					...response[subscription.tenantId]
-				};
+				// Make sure that tenant has information populated.
+				if (response[subscription.tenantId]) {
+					response[subscription.id] = {
+						...response[subscription.tenantId]
+					};
+				}
 			});
 		}
 

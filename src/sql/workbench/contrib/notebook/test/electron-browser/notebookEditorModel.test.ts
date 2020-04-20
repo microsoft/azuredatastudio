@@ -39,6 +39,7 @@ import { assign } from 'vs/base/common/objects';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { TestStorageService, TestTextResourcePropertiesService } from 'vs/workbench/test/common/workbenchTestServices';
+import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 
 
 class ServiceAccessor {
@@ -877,7 +878,7 @@ suite('Notebook Editor Model', function (): void {
 		let options: INotebookModelOptions = assign({}, defaultModelOptions, <Partial<INotebookModelOptions>><unknown>{
 			factory: mockModelFactory.object
 		});
-		notebookModel = new NotebookModel(options, undefined, logService, undefined, undefined);
+		notebookModel = new NotebookModel(options, undefined, logService, undefined, new NullAdsTelemetryService());
 		await notebookModel.loadContents();
 	}
 

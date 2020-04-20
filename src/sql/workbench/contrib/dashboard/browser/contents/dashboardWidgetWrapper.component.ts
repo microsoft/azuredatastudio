@@ -129,6 +129,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 				this._collapseAction = this.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed);
 				if (this.bottomCollapse) {
 					this._bottomActionbar.push(this._collapseAction, { icon: true, label: false });
+					this._bottomActionbarRef.nativeElement.style.display = 'block';
 				} else {
 					this._actionbar.push(this._collapseAction, { icon: true, label: false });
 				}
@@ -162,6 +163,10 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 
 	public disableEdit(): void {
 		this._actionbar.pull(this._actionbar.length() - 1);
+	}
+
+	public get component(): IDashboardWidget {
+		return this._component;
 	}
 
 	private loadWidget(): void {

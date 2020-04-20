@@ -9,7 +9,7 @@ import 'mocha';
 import { createContext } from './utils';
 import {
 	ListModelsEventName, ListAccountsEventName, ListSubscriptionsEventName, ListGroupsEventName, ListWorkspacesEventName,
-	ListAzureModelsEventName, ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, LoadModelParametersEventName, DownloadAzureModelEventName, DownloadRegisteredModelEventName
+	ListAzureModelsEventName, ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, LoadModelParametersEventName, DownloadAzureModelEventName, DownloadRegisteredModelEventName, ModelSourceType
 }
 	from '../../../views/models/modelViewBase';
 import { RegisteredModel, ModelParameters } from '../../../modelManagement/interfaces';
@@ -164,9 +164,25 @@ describe('Predict Wizard', () => {
 		view.on(DownloadRegisteredModelEventName, () => {
 			view.sendCallbackRequest(ViewBase.getCallbackEventName(DownloadRegisteredModelEventName), { data: 'path' });
 		});
+		if (view.modelBrowsePage) {
+			view.modelBrowsePage.modelSourceType = ModelSourceType.Azure;
+		}
 		await view.refresh();
 		should.notEqual(view.azureModelsComponent?.data, undefined);
+
+		if (view.modelBrowsePage) {
+			view.modelBrowsePage.modelSourceType = ModelSourceType.RegisteredModels;
+		}
+		await view.refresh();
+		testContext.onClick.fire();
+
+		should.equal(view.modelSourcePage?.data, ModelSourceType.RegisteredModels);
 		should.notEqual(view.localModelsComponent?.data, undefined);
+		should.notEqual(view.modelBrowsePage?.registeredModelsComponent?.data, undefined);
+		if (view.modelBrowsePage?.registeredModelsComponent?.data) {
+			should.equal(view.modelBrowsePage.registeredModelsComponent.data.length, 1);
+		}
+
 
 		should.notEqual(await view.getModelFileName(), undefined);
 		await view.columnsSelectionPage?.onEnter();

@@ -9,15 +9,15 @@ import { azureResource } from '../../typings/azure-resource';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { AzureModelRegistryService } from '../../modelManagement/azureModelRegistryService';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
-import { RegisteredModel, WorkspaceModel, RegisteredModelDetails, ModelParameters } from '../../modelManagement/interfaces';
+import { RegisteredModel, WorkspaceModel, ModelParameters } from '../../modelManagement/interfaces';
 import { PredictParameters, DatabaseTable, TableColumn } from '../../prediction/interfaces';
 import { DeployedModelService } from '../../modelManagement/deployedModelService';
 import { RegisteredModelsDialog } from './registerModels/registeredModelsDialog';
 import {
 	AzureResourceEventArgs, ListAzureModelsEventName, ListSubscriptionsEventName, ListModelsEventName, ListWorkspacesEventName,
-	ListGroupsEventName, ListAccountsEventName, RegisterLocalModelEventName, RegisterLocalModelEventArgs, RegisterAzureModelEventName,
-	RegisterAzureModelEventArgs, ModelViewBase, SourceModelSelectedEventName, RegisterModelEventName, DownloadAzureModelEventName,
-	ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, PredictModelEventName, PredictModelEventArgs, DownloadRegisteredModelEventName, LoadModelParametersEventName
+	ListGroupsEventName, ListAccountsEventName, RegisterLocalModelEventName, RegisterAzureModelEventName,
+	ModelViewBase, SourceModelSelectedEventName, RegisterModelEventName, DownloadAzureModelEventName,
+	ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, PredictModelEventName, PredictModelEventArgs, DownloadRegisteredModelEventName, LoadModelParametersEventName, ModelSourceType, ModelViewData
 } from './modelViewBase';
 import { ControllerBase } from '../controllerBase';
 import { RegisterModelWizard } from './registerModels/registerModelWizard';
@@ -122,17 +122,17 @@ export class ModelManagementController extends ControllerBase {
 			await this.executeAction(view, ListModelsEventName, this.getRegisteredModels, this._registeredModelService);
 		});
 		view.on(RegisterLocalModelEventName, async (arg) => {
-			let registerArgs = <RegisterLocalModelEventArgs>arg;
-			await this.executeAction(view, RegisterLocalModelEventName, this.registerLocalModel, this._registeredModelService, registerArgs.filePath, registerArgs.details);
+			let models = <ModelViewData[]>arg;
+			await this.executeAction(view, RegisterLocalModelEventName, this.registerLocalModel, this._registeredModelService, models);
 			view.refresh();
 		});
 		view.on(RegisterModelEventName, async () => {
 			await this.executeAction(view, RegisterModelEventName, this.registerModel, view, this, this._apiWrapper, this._root);
 		});
 		view.on(RegisterAzureModelEventName, async (arg) => {
-			let registerArgs = <RegisterAzureModelEventArgs>arg;
+			let models = <ModelViewData[]>arg;
 			await this.executeAction(view, RegisterAzureModelEventName, this.registerAzureModel, this._amlService, this._registeredModelService,
-				registerArgs.account, registerArgs.subscription, registerArgs.group, registerArgs.workspace, registerArgs.model, registerArgs.details);
+				models);
 		});
 		view.on(DownloadAzureModelEventName, async (arg) => {
 			let registerArgs = <AzureModelResource>arg;
@@ -161,7 +161,8 @@ export class ModelManagementController extends ControllerBase {
 			await this.executeAction(view, DownloadRegisteredModelEventName, this.downloadRegisteredModel, this._registeredModelService,
 				model);
 		});
-		view.on(SourceModelSelectedEventName, () => {
+		view.on(SourceModelSelectedEventName, (arg) => {
+			view.modelSourceType = <ModelSourceType>arg;
 			view.refresh();
 		});
 	}
@@ -217,35 +218,46 @@ export class ModelManagementController extends ControllerBase {
 		return await service.getModels(account, subscription, resourceGroup, workspace) || [];
 	}
 
-	private async registerLocalModel(service: DeployedModelService, filePath: string, details: RegisteredModelDetails | undefined): Promise<void> {
-		if (filePath) {
-			await service.deployLocalModel(filePath, details);
+	private async registerLocalModel(service: DeployedModelService, models: ModelViewData[] | undefined): Promise<void> {
+		if (models) {
+			await Promise.all(models.map(async (model) => {
+				const localModel = <string>model.modelData;
+				if (localModel) {
+					await service.deployLocalModel(localModel, model.modelDetails);
+				}
+			}));
 		} else {
 			throw Error(constants.invalidModelToRegisterError);
-
 		}
 	}
 
 	private async registerAzureModel(
 		azureService: AzureModelRegistryService,
 		service: DeployedModelService,
-		account: azdata.Account | undefined,
-		subscription: azureResource.AzureResourceSubscription | undefined,
-		resourceGroup: azureResource.AzureResource | undefined,
-		workspace: Workspace | undefined,
-		model: WorkspaceModel | undefined,
-		details: RegisteredModelDetails | undefined): Promise<void> {
-		if (!account || !subscription || !resourceGroup || !workspace || !model || !details) {
+		models: ModelViewData[] | undefined): Promise<void> {
+		if (!models) {
 			throw Error(constants.invalidAzureResourceError);
 		}
-		const filePath = await azureService.downloadModel(account, subscription, resourceGroup, workspace, model);
-		if (filePath) {
 
-			await service.deployLocalModel(filePath, details);
-			await fs.promises.unlink(filePath);
-		} else {
-			throw Error(constants.invalidModelToRegisterError);
-		}
+		await Promise.all(models.map(async (model) => {
+			const azureModel = <AzureModelResource>model.modelData;
+			if (azureModel && azureModel.account && azureModel.subscription && azureModel.group && azureModel.workspace && azureModel.model) {
+				let filePath: string | undefined;
+				try {
+					const filePath = await azureService.downloadModel(azureModel.account, azureModel.subscription, azureModel.group,
+						azureModel.workspace, azureModel.model);
+					if (filePath) {
+						await service.deployLocalModel(filePath, model.modelDetails);
+					} else {
+						throw Error(constants.invalidModelToRegisterError);
+					}
+				} finally {
+					if (filePath) {
+						await fs.promises.unlink(filePath);
+					}
+				}
+			}
+		}));
 	}
 
 	public async getDatabaseList(predictService: PredictService): Promise<string[]> {

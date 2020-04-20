@@ -94,11 +94,6 @@ steps:
 
   - script: |
       set -e
-      yarn gulp install-sqltoolsservice
-    displayName: Install sqltoolsservice
-
-  - script: |
-      set -e
       yarn gulp package-rebuild-extensions
       yarn gulp vscode-darwin-min-ci
       yarn gulp vscode-reh-darwin-min-ci

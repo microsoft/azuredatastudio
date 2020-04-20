@@ -34,12 +34,12 @@ suite('Chart View', () => {
 	});
 });
 
-function createChartView(renderOptions: boolean): ChartView {
+function createChartView(isQueryEditorChart: boolean): ChartView {
 	const layoutService = new TestLayoutService();
 	const contextViewService = new ContextViewService(layoutService);
 	const themeService = new TestThemeService();
 	const instantiationService = new TestInstantiationService();
 	const notificationService = new TestNotificationService();
 	instantiationService.stub(IThemeService, themeService);
-	return new ChartView(renderOptions, contextViewService, themeService, instantiationService, notificationService);
+	return new ChartView(isQueryEditorChart, contextViewService, themeService, instantiationService, notificationService);
 }
