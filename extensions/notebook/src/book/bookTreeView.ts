@@ -327,11 +327,20 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	public async searchJupyterBooks(treeItem?: BookTreeItem): Promise<void> {
-		if (this.currentBook && this.currentBook.bookPath) {
-			let folderToSearch = this.currentBook.bookPath;
-			if (treeItem && treeItem.uri) {
-				folderToSearch = path.join(folderToSearch, Content, path.dirname(treeItem.uri));
+		let folderToSearch: string;
+		if (treeItem && treeItem.book.type !== BookTreeItemType.Notebook) {
+			if (treeItem.uri) {
+				folderToSearch = path.join(treeItem.root, Content, path.dirname(treeItem.uri));
+			} else {
+				folderToSearch = path.join(treeItem.root, Content);
 			}
+		} else if (this.currentBook && !this.currentBook.isNotebook) {
+			folderToSearch = path.join(this.currentBook.bookPath, Content);
+		} else {
+			vscode.window.showErrorMessage(loc.noBooksSelectedError);
+		}
+
+		if (folderToSearch) {
 			let filesToIncludeFiltered = path.join(folderToSearch, '**', '*.md') + ',' + path.join(folderToSearch, '**', '*.ipynb');
 			vscode.commands.executeCommand('workbench.action.findInFiles', { filesToInclude: filesToIncludeFiltered, query: '' });
 		}
