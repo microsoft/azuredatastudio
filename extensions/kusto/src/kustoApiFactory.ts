@@ -4,13 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AppContext } from './appContext';
-import { IExtension, MssqlObjectExplorerBrowser } from './kusto';
+import { IExtension, MssqlObjectExplorerBrowser, ILanguageExtensionService } from './kusto';
 import * as constants from './constants';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import * as azdata from 'azdata';
 
 export function createMssqlApi(context: AppContext): IExtension {
 	return {
+		get languageExtension() {
+			return context.getService<ILanguageExtensionService>(constants.LanguageExtensionService);
+		},
 		getMssqlObjectExplorerBrowser(): MssqlObjectExplorerBrowser {
 			return {
 				getNode: (explorerContext: azdata.ObjectExplorerContext) => {

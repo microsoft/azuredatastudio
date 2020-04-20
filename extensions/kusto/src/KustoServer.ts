@@ -136,7 +136,7 @@ function generateHandleServerProviderEvent() {
 
 function getClientOptions(context: AppContext): ClientOptions {
 	return {
-		documentSelector: ['kql'],
+		documentSelector: ['kusto'],
 		synchronize: {
 			configurationSection: Constants.extensionConfigSectionName
 		},
