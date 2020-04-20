@@ -897,7 +897,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				return providerId;
 			}
 		} else {
-			return 'jupyter';
+			if (this.notebookManagers?.length) {
+				return this.notebookManagers.map(m => m.providerId).find(p => p !== DEFAULT_NOTEBOOK_PROVIDER && p !== SQL_NOTEBOOK_PROVIDER);
+			}
 		}
 		return undefined;
 	}
