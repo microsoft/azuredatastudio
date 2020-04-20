@@ -385,6 +385,7 @@ export enum DatabaseEngineEdition {
 
 export interface ToolbarLayout {
 	orientation: Orientation;
+	overflow?: boolean;
 }
 
 export class TreeComponentItem extends vsExtTypes.TreeItem {

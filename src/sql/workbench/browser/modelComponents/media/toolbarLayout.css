@@ -8,7 +8,6 @@
 	justify-content: flex-start;
 	line-height: 1.4em;
 	white-space: nowrap;
-	flex-wrap: wrap;
 	padding: 3px 0px;
 }
 
@@ -22,6 +21,14 @@
 
 .modelview-toolbar-container.toolbar-vertical {
 	flex-direction: column;
+}
+
+.modelview-toolbar-container .toolbar-overflow {
+	flex-wrap: none;
+}
+
+.modelview-toolbar-container .toolbar-wrap {
+	flex-wrap: wrap;
 }
 
 .modelview-toolbar-container .modelview-toolbar-item {
@@ -71,4 +78,27 @@
 	-moz-transform: scale(1.272019649, 1.272019649);
 	-o-transform: scale(1.272019649, 1.272019649);
 	transform: scale(1.272019649, 1.272019649);
+}
+
+modelview-toolbarcontainer .toolbarOverflow modelview-button a.monaco-button.monaco-text-button.icon {
+	background-size: 16px;
+}
+
+modelview-toolbarcontainer .toolbarOverflow {
+	display: none;
+	width: 150px;
+	position: fixed;
+	right: 0;
+	z-index: 3;
+	padding: 5px 5px 0 0;
+	margin-right: 5px;
+}
+
+modelview-toolbarcontainer .toolbarOverflow > .modelview-toolbar-item {
+	padding-left: 5px;
+}
+
+modelview-toolbarcontainer .moreActions {
+	padding-left: 30px;
+	display: none;
 }

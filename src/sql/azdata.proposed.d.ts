@@ -352,5 +352,9 @@ declare module 'azdata' {
 		 */
 		alwaysShowTabs?: boolean;
 	}
+
+	export interface ToolbarLayout {
+		overflow?: boolean;
+	}
 }
 

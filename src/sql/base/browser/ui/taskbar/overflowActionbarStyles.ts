@@ -13,28 +13,28 @@ import { focusBorder } from 'vs/platform/theme/common/colorRegistry';
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 	const overflowBackground = theme.getColor(EDITOR_PANE_BACKGROUND);
 	if (overflowBackground) {
-		collector.addRule(`.carbon-taskbar .overflow {
+		collector.addRule(`.toolbarOverflow {
 			background-color: ${overflowBackground};
 		}`);
 	}
 
 	const overflowShadow = theme.getColor(TOOLBAR_OVERFLOW_SHADOW);
 	if (overflowShadow) {
-		collector.addRule(`.carbon-taskbar .overflow {
+		collector.addRule(`.toolbarOverflow {
 			box-shadow: 0px 4px 4px ${overflowShadow};
 		}`);
 	}
 
 	const border = theme.getColor(DASHBOARD_BORDER);
 	if (border) {
-		collector.addRule(`.carbon-taskbar .overflow {
+		collector.addRule(`.toolbarOverflow {
 			border: 1px solid ${border};
 		}`);
 	}
 
 	const activeOutline = theme.getColor(focusBorder);
 	if (activeOutline) {
-		collector.addRule(`.carbon-taskbar .overflow li.focused {
+		collector.addRule(`.carbon-taskbar .toolbarOverflow li.focused {
 			outline: 1px solid;
 			outline-offset: -3px;
 			outline-color: ${activeOutline}

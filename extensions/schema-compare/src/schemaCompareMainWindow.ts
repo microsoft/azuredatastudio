@@ -131,26 +131,30 @@ export class SchemaCompareMainWindow {
 			this.createSourceAndTargetButtons(view);
 			this.resetButtons(ResetButtonState.noSourceTarget);
 
-			let toolBar = view.modelBuilder.toolbarContainer();
-			toolBar.addToolbarItems([{
-				component: this.compareButton
-			}, {
-				component: this.cancelCompareButton
-			}, {
-				component: this.generateScriptButton
-			}, {
-				component: this.applyButton
-			}, {
-				component: this.optionsButton,
-				toolbarSeparatorAfter: true
-			}, {
-				component: this.switchButton,
-				toolbarSeparatorAfter: true
-			}, {
-				component: this.openScmpButton
-			}, {
-				component: this.saveScmpButton
-			}]);
+			let toolBar = view.modelBuilder.toolbarContainer().withToolbarItems(
+				[{
+					component: this.compareButton
+				}, {
+					component: this.cancelCompareButton
+				}, {
+					component: this.generateScriptButton
+				}, {
+					component: this.applyButton
+				}, {
+					component: this.optionsButton,
+					toolbarSeparatorAfter: true
+				}, {
+					component: this.switchButton,
+					toolbarSeparatorAfter: true
+				}, {
+					component: this.openScmpButton
+				}, {
+					component: this.saveScmpButton
+				}]
+			).withLayout({
+				orientation: azdata.Orientation.Horizontal,
+				overflow: true
+			});
 
 			let sourceLabel = view.modelBuilder.text().withProperties({
 				value: loc.sourceTitle,

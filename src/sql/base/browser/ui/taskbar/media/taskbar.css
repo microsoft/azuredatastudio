@@ -91,34 +91,34 @@
 	background-size: 11px;
 }
 
-.carbon-taskbar .overflow {
+.carbon-taskbar .toolbarOverflow {
 	position:absolute;
 	right:0;
-	display:none;
+	display: none;
 	z-index: 3;
 	padding-left: 0;
 	margin-top: 6px;
 	margin-right: 5px;
 }
 
-.vs-dark .carbon-taskbar .overflow {
+.vs-dark .carbon-taskbar .toolbarOverflow {
 	box-sizing: border-box;
 }
 
-.hc-black .carbon-taskbar .overflow {
+.hc-black .carbon-taskbar .toolbarOverflow {
 	box-shadow: none;
 }
 
-.carbon-taskbar .overflow li {
+.carbon-taskbar .toolbarOverflow li {
 	padding: 5px;
 	margin-right: 0;
 }
 
-.carbon-taskbar .overflow li.focused a.action-label {
+.carbon-taskbar .toolbarOverflow li.focused a.action-label {
 	outline: none;
 }
 
-.carbon-taskbar .overflow a {
+.carbon-taskbar .toolbarOverflow a {
 	padding-left: 20px;
 }
 
@@ -129,12 +129,12 @@
 	padding-right: 20px;
 }
 
-.carbon-taskbar .overflow .action-item .action-label{
+.carbon-taskbar .toolbarOverflow .action-item .action-label{
 	background-size: 16px;
 	background-position: left;
 }
 
-.overflow .taskbarSeparator {
+.toolbarOverflow .taskbarSeparator {
 	height: 1px;
 	width: 100%;
 	margin-left: 0;
