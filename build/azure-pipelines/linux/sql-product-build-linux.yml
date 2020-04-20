@@ -129,19 +129,19 @@ steps:
   - script: |
       set -e
       yarn gulp vscode-linux-x64-build-deb
-      du -h .
+      du -ah ../ | sort -n -r
     displayName: Build Deb
 
   - script: |
       set -e
       yarn gulp vscode-linux-x64-build-rpm
-      du -h .
+      du -ah ../ | sort -n -r
     displayName: Build Rpm
 
   - script: |
       set -e
       ./build/azure-pipelines/linux/createDrop.sh
-      du -h .
+      du -ah ../ | sort -n -r
     displayName: Create Drop
 
   - task: CopyFiles@2
