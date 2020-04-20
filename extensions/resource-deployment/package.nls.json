@@ -50,6 +50,4 @@
 	"bdc-agreement-bdc-eula": "SQL Server License Terms",
 	"deployment.configuration.title": "Deployment configuration",
 	"azdata-install-location-description": "Location of the azdata package used for the install command"
-
-
 }
