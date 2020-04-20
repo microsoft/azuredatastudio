@@ -376,12 +376,12 @@
         },
         {
           "command": "notebook.command.searchUntitledBook",
-          "when": "view == unsavedBookTreeView && viewItem == unsavedBook && unsavedBooks",
+          "when": "view == providedBooksView && viewItem == providedBook && providedBooks",
           "group": "inline"
         },
         {
           "command": "notebook.command.saveBook",
-          "when": "view == unsavedBookTreeView && viewItem == unsavedBook && unsavedBooks",
+          "when": "view == providedBooksView && viewItem == providedBook && providedBooks",
           "group": "inline"
         },
         {
@@ -524,8 +524,8 @@
           "name": "%title.SavedBooks%"
         },
         {
-          "id": "unsavedBookTreeView",
-          "name": "%title.UnsavedBooks%"
+          "id": "providedBooksView",
+          "name": "%title.ProvidedBooks%"
         }
       ]
     }
