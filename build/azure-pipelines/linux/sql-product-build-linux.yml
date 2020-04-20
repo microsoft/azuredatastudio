@@ -88,8 +88,8 @@ steps:
   - script: |
       set -e
       yarn gulp vscode-linux-x64-min-ci
-      yarn gulp vscode-reh-linux-x64-min-ci
-      yarn gulp vscode-reh-web-linux-x64-min-ci
+#      yarn gulp vscode-reh-linux-x64-min-ci
+#      yarn gulp vscode-reh-web-linux-x64-min-ci
     displayName: Build
     env:
       VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
@@ -131,10 +131,10 @@ steps:
       yarn gulp vscode-linux-x64-build-deb
     displayName: Build Deb
 
-  # - script: |
-  #     set -e
-  #     yarn gulp vscode-linux-x64-build-rpm
-  #   displayName: Build Rpm
+  - script: |
+      set -e
+      yarn gulp vscode-linux-x64-build-rpm
+    displayName: Build Rpm
 
   - script: |
       set -e
