@@ -15,7 +15,7 @@ import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
-import { PropertiesContainer } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
+import { PropertiesContainer, DisplayProperty } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
 
 export interface PropertiesConfig {
@@ -57,7 +57,6 @@ const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.Da
 export class PropertiesWidgetComponent extends DashboardWidget implements IDashboardWidget, OnInit {
 	@ViewChild(PropertiesContainer) private _propertiesContainer: PropertiesContainer;
 	private _connection: ConnectionManagementInfo;
-	private _databaseInfo: DatabaseInfo;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
@@ -82,10 +81,14 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	private init(): void {
 		this._connection = this._bootstrap.connectionManagementService.connectionInfo;
 		this.setLoadingStatus(true);
-		this._register(subscriptionToDisposable(this._bootstrap.adminService.databaseInfo.subscribe(data => {
-			this._databaseInfo = data;
-			this._changeRef.detectChanges();
-			this.parseProperties();
+		this._register(subscriptionToDisposable(this._bootstrap.adminService.databaseInfo.subscribe(databaseInfo => {
+			const displayProperties = this.parseProperties(databaseInfo);
+			if (this._inited) {
+				this._propertiesContainer.displayProperties = displayProperties;
+				this._changeRef.detectChanges();
+			} else {
+				this.logService.info('Database properties successfully retrieved but component not initialized yet');
+			}
 			this.setLoadingStatus(false);
 		}, error => {
 			this.setLoadingStatus(false);
@@ -93,7 +96,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		})));
 	}
 
-	private parseProperties() {
+	private parseProperties(databaseInfo?: DatabaseInfo): DisplayProperty[] {
 		const provider = this._config.provider;
 
 		let propertyArray: Array<Property>;
@@ -107,7 +110,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 			if (!providerProperties) {
 				this.logService.error('No property definitions found for provider', provider);
-				return;
+				return [];
 			}
 
 			let flavor: FlavorProperties;
@@ -118,7 +121,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			} else if (providerProperties.flavors.length === 0) {
 				this.logService.error('No flavor definitions found for "', provider,
 					'. If there are not multiple flavors of this provider, add one flavor without a condition');
-				return;
+				return [];
 			} else {
 				const flavorArray = providerProperties.flavors.filter((item) => {
 
@@ -143,10 +146,10 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 				if (flavorArray.length === 0) {
 					this.logService.error('Could not determine flavor');
-					return;
+					return [];
 				} else if (flavorArray.length > 1) {
 					this.logService.error('Multiple flavors matched correctly for this provider', provider);
-					return;
+					return [];
 				}
 
 				flavor = flavorArray[0];
@@ -175,14 +178,14 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 		let infoObject: ServerInfo | {};
 		if (this._config.context === 'database') {
-			if (this._databaseInfo && this._databaseInfo.options) {
-				infoObject = this._databaseInfo.options;
+			if (databaseInfo?.options) {
+				infoObject = databaseInfo.options;
 			}
 		} else {
 			infoObject = this._connection.serverInfo;
 		}
 
-		this._propertiesContainer.displayProperties = propertyArray.map(property => {
+		return propertyArray.map(property => {
 			let propertyObject = this.getValueOrDefault<string>(infoObject, property.value, property.default || '--');
 
 			// make sure the value we got shouldn't be ignored
