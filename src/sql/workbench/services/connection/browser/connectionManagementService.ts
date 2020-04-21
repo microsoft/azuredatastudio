@@ -233,7 +233,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (!model) {
 			return Promise.reject();
 		}
-		let params = { connectionType: ConnectionType.default };
+		let params = {
+			connectionType: ConnectionType.default,
+			isEditConnection: true
+		};
 
 		return this._connectionDialogService.showDialog(this, params, model).catch(dialogError => {
 			this._logService.warn('failed to open the connection dialog. error: ' + dialogError);
@@ -432,37 +435,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this.connectWithOptions(connection, uri, options, callbacks);
 	}
 
-	/**
-	 * Method to try and retrieve a connection that has a specified ID
-	 * from list of active connections.
-	 */
-	public idConnectionCheck(id: string): ConnectionProfile {
-		const connections = this.getActiveConnections();
-		if (connections) {
-			for (let connection of connections) {
-				if (connection.id === id) {
-					return connection;
-				}
-			}
-		}
-
-		return undefined;
-	}
-
 	private async connectWithOptions(connection: interfaces.IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		connection.options['groupId'] = connection.groupId;
 		connection.options['databaseDisplayName'] = connection.databaseName;
 
-		let isEdit = false;
-
-		if (this.idConnectionCheck(connection.id)) {
-
-			//failed test command, try to delete existing command that has same id.
-			//this.deleteConnection(connection as ConnectionProfile);
-
-			//Command below set to false for now, will be set to true in final version.
-			isEdit = true;
-		}
+		let isEdit = options?.params?.isEditConnection ?? false;
 
 		if (!uri) {
 			uri = Utils.generateUri(connection);
@@ -494,58 +471,102 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			throw new Error(nls.localize('connection.noAzureAccount', "Failed to get Azure account token for connection"));
 		}
 
-		if (isEdit) {
-			return this.createNewConnection(uri, connection).then(async connectionResult => {
-				if (connectionResult && connectionResult.connected) {
-					// The connected succeeded so add it to our active connections now, optionally adding it to the MRU based on
-					// the options.saveTheConnection setting
-					let connectionMgmtInfo = this._connectionStatusManager.findConnection(uri);
-					this.tryAddActiveConnection(connectionMgmtInfo, connection, options.saveTheConnection);
+		return this.createNewConnection(uri, connection).then(async connectionResult => {
+			if (connectionResult && connectionResult.connected) {
+				// The connected succeeded so add it to our active connections now, optionally adding it to the MRU based on
+				// the options.saveTheConnection setting
+				let connectionMgmtInfo = this._connectionStatusManager.findConnection(uri);
+				this.tryAddActiveConnection(connectionMgmtInfo, connection, options.saveTheConnection);
 
-					if (callbacks.onConnectSuccess) {
-						callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
+				if (callbacks.onConnectSuccess) {
+					callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
+				}
+				if (options.saveTheConnection) {
+					let matcher: interfaces.ProfileMatcher;
+					if (isEdit) {
+						matcher = (a: ConnectionProfile, b: ConnectionProfile) => {
+							return a.id === b.id;
+						};
 					}
-					if (options.saveTheConnection) {
-						await this.saveToSettings(uri, connection).then(value => {
-							this._onAddConnectionProfile.fire(connection);
-							this.doActionsAfterConnectionComplete(value, options);
-						});
-					} else {
-						connection.saveProfile = false;
-						this.doActionsAfterConnectionComplete(uri, options);
-					}
-					if (connection.savePassword) {
-						return this._connectionStore.savePassword(connection).then(() => {
-							return connectionResult;
-						});
-					} else {
-						return connectionResult;
-					}
-				} else if (connectionResult && connectionResult.errorMessage) {
-					return this.handleConnectionError(connection, uri, options, callbacks, connectionResult).catch(handleConnectionError => {
-						if (callbacks.onConnectReject) {
-							callbacks.onConnectReject(handleConnectionError);
-						}
-						throw handleConnectionError;
+
+					await this.saveToSettings(uri, connection, matcher).then(value => {
+						this._onAddConnectionProfile.fire(connection);
+						this.doActionsAfterConnectionComplete(value, options);
 					});
 				} else {
-					if (callbacks.onConnectReject) {
-						callbacks.onConnectReject(nls.localize('connectionNotAcceptedError', "Connection Not Accepted"));
-					}
+					connection.saveProfile = false;
+					this.doActionsAfterConnectionComplete(uri, options);
+				}
+				if (connection.savePassword) {
+					return this._connectionStore.savePassword(connection).then(() => {
+						return connectionResult;
+					});
+				} else {
 					return connectionResult;
 				}
-			}).catch(err => {
+			} else if (connectionResult && connectionResult.errorMessage) {
+				return this.handleConnectionError(connection, uri, options, callbacks, connectionResult).catch(handleConnectionError => {
+					if (callbacks.onConnectReject) {
+						callbacks.onConnectReject(handleConnectionError);
+					}
+					throw handleConnectionError;
+				});
+			} else {
 				if (callbacks.onConnectReject) {
-					callbacks.onConnectReject(err);
+					callbacks.onConnectReject(nls.localize('connectionNotAcceptedError', "Connection Not Accepted"));
 				}
-				throw err;
-			});
-		}
-		else {
-			//WIP command, not finished.
-			return this.editExistingConnection(uri, connection);
-		}
+				return connectionResult;
+			}
+		}).catch(err => {
+			if (callbacks.onConnectReject) {
+				callbacks.onConnectReject(err);
+			}
+			throw err;
+		});
 	}
+
+
+	// private editExistingConnection(uri: string, connection: interfaces.IConnectionProfile): Promise<IConnectionResult> {
+	// 	this._logService.info(`Editing existing connection ${uri}`);
+
+	// 	return new Promise<IConnectionResult>((resolve, reject) => {
+
+	// 		let existingConnection = this.getActiveConnections()?.find(c => c.id === connection.id);
+	// 		if (existingConnection) {
+	// 			this.disconnect(existingConnection);
+	// 		}
+
+	// 		//handle editing profile with new information.
+	// 		let connectionInfo = this._connectionStatusManager.addConnection(connection, uri);
+	// 		// Setup the handler for the connection complete notification to call
+	// 		connectionInfo.connectHandler = (async (connectResult, errorMessage, errorCode, callStack) => {
+	// 			let connectionMngInfo = this._connectionStatusManager.findConnectionByProfileId(connection.id);
+	// 			if (connectionMngInfo) {
+	// 				this._connectionStatusManager.deleteConnection(uri);
+
+	// 				await this.saveToSettings(uri, connection);
+	// 				this._onAddConnectionProfile.fire(connection);
+	// 				this.doActionsAfterConnectionComplete(value, options);
+
+	// 				resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, callStack: undefined, errorHandled: true, connectionProfile: connection });
+	// 			} else {
+	// 				if (errorMessage) {
+	// 					// Connection to the server failed
+	// 					this._connectionStatusManager.deleteConnection(uri);
+	// 					resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
+	// 				} else {
+	// 					if (connectionMngInfo.serverInfo) {
+	// 						connection.options.isCloud = connectionMngInfo.serverInfo.isCloud;
+	// 					}
+	// 					resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
+	// 				}
+	// 			}
+	// 		});
+
+	// 		// send connection request
+	// 		this.sendConnectRequest(connection, uri).catch((e) => this._logService.error(e));
+	// 	});
+	// }
 
 	private handleConnectionError(connection: interfaces.IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
 		let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', "Connection Not Accepted");
@@ -924,11 +945,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private saveToSettings(id: string, connection: interfaces.IConnectionProfile): Promise<string> {
-		return this._connectionStore.saveProfile(connection).then(savedProfile => {
-			let newId = this._connectionStatusManager.updateConnectionProfile(savedProfile, id);
-			return newId;
-		});
+
+	private async saveToSettings(id: string, connection: interfaces.IConnectionProfile, matcher?: interfaces.ProfileMatcher): Promise<string> {
+		const savedProfile = await this._connectionStore.saveProfile(connection, undefined, matcher);
+		let newId = this._connectionStatusManager.updateConnectionProfile(savedProfile, id);
+		return newId;
 	}
 
 	/**
@@ -1073,43 +1094,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Functions to handle the connecting life cycle
 	 */
 
-	private editExistingConnection(uri: string, connection: interfaces.IConnectionProfile): Promise<IConnectionResult> {
-		const self = this;
-		this._logService.info(`Editing existing connection ${uri}`);
-
-		return new Promise<IConnectionResult>((resolve, reject) => {
-			let existingProfile = this.idConnectionCheck(connection.id);
-			//disconnect existingProfile with same id.
-			if (existingProfile) {
-				this.disconnect(existingProfile);
-			}
-
-			//handle editing profile with new information.
-			let connectionInfo = this._connectionStatusManager.addConnection(connection, uri);
-			// Setup the handler for the connection complete notification to call
-			connectionInfo.connectHandler = ((connectResult, errorMessage, errorCode, callStack) => {
-				let connectionMngInfo = this._connectionStatusManager.findConnection(uri);
-				if (connectionMngInfo && connectionMngInfo.deleted) {
-					this._connectionStatusManager.deleteConnection(uri);
-					resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, callStack: undefined, errorHandled: true, connectionProfile: connection });
-				} else {
-					if (errorMessage) {
-						// Connection to the server failed
-						this._connectionStatusManager.deleteConnection(uri);
-						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
-					} else {
-						if (connectionMngInfo.serverInfo) {
-							connection.options.isCloud = connectionMngInfo.serverInfo.isCloud;
-						}
-						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
-					}
-				}
-			});
-
-			// send connection request
-			self.sendConnectRequest(connection, uri).catch((e) => this._logService.error(e));
-		});
-	}
 	// Connect an open URI to a connection profile
 	private createNewConnection(uri: string, connection: interfaces.IConnectionProfile): Promise<IConnectionResult> {
 		const self = this;
