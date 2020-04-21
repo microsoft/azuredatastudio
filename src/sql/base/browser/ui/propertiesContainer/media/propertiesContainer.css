@@ -3,30 +3,30 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-properties-widget .twoColumns.grid-container {
+properties-container .twoColumns.grid-container {
 	grid-template-columns: 50% 50%;
 }
 
-properties-widget .oneColumn.grid-container {
+properties-container .oneColumn.grid-container {
 	grid-template-columns: 100%;
 }
 
-properties-widget .columnLayout.property {
+properties-container .columnLayout.property {
 	flex-direction: column;
 }
 
-properties-widget .propertyName {
+properties-container .propertyName {
 	opacity: 0.6;
 	font-size: 12px;
 	flex: 0 0 auto
 }
 
-.vs-dark properties-widget .propertyName,
-.hc-black properties-widget .propertyName {
+.vs-dark properties-container .propertyName,
+.hc-black properties-container .propertyName {
 	opacity: 1;
 }
 
-properties-widget .propertyValue {
+properties-container .propertyValue {
 	font-size: 12px;
 	flex: 1 1 auto;
 	margin-right: 5px;
@@ -35,11 +35,11 @@ properties-widget .propertyValue {
 	text-overflow: ellipsis;
 }
 
-properties-widget .splitter {
+properties-container .splitter {
 	flex: 0 0 15px;
 	text-align: center;
 }
 
-properties-widget .columnLayout .splitter {
+properties-container .columnLayout .splitter {
 	display: none;
 }

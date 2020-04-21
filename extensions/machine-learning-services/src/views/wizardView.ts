@@ -75,7 +75,7 @@ export class WizardView extends MainViewBase {
 	}
 
 	public async validate(pageInfo: azdata.window.WizardPageChangeInfo): Promise<boolean> {
-		if (pageInfo.lastPage !== undefined) {
+		if (pageInfo?.lastPage !== undefined) {
 			let idxLast = pageInfo.lastPage;
 			let lastPage = this._pages[idxLast];
 			if (lastPage && lastPage.validate) {
@@ -86,16 +86,23 @@ export class WizardView extends MainViewBase {
 	}
 
 	private async onWizardPageChanged(pageInfo: azdata.window.WizardPageChangeInfo) {
-		let idxLast = pageInfo.lastPage;
-		let lastPage = this._pages[idxLast];
-		if (lastPage && lastPage.onLeave) {
-			await lastPage.onLeave();
+		if (pageInfo?.lastPage !== undefined) {
+			let idxLast = pageInfo.lastPage;
+			let lastPage = this._pages[idxLast];
+			if (lastPage && lastPage.onLeave) {
+				await lastPage.onLeave();
+			}
 		}
 
-		let idx = pageInfo.newPage;
-		let page = this._pages[idx];
-		if (page && page.onEnter) {
-			await page.onEnter();
+		if (pageInfo?.newPage !== undefined) {
+			let idx = pageInfo.newPage;
+			let page = this._pages[idx];
+			if (page && page.onEnter) {
+				if (this._wizard && this._wizard.pages.length > idx) {
+					this._wizard.pages[idx].title = page.title;
+				}
+				await page.onEnter();
+			}
 		}
 	}
 

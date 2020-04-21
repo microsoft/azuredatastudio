@@ -18,9 +18,9 @@ import { URI } from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 import { EventType, addDisposableListener } from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { endsWith } from 'vs/base/common/strings';
 import { firstIndex } from 'vs/base/common/arrays';
 import { IComponentDescriptor, IComponent, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { convertSize } from 'sql/base/browser/dom';
 
 export type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
 
@@ -215,37 +215,12 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		this.setPropertyFromUI<azdata.ComponentProperties, { [key: string]: string }>((properties, CSSStyles) => { properties.CSSStyles = CSSStyles; }, newValue);
 	}
 
-	public convertSizeToNumber(size: number | string): number {
-		if (size && typeof (size) === 'string') {
-			if (endsWith(size.toLowerCase(), 'px')) {
-				return +size.replace('px', '');
-			} else if (endsWith(size.toLowerCase(), 'em')) {
-				return +size.replace('em', '') * 11;
-			}
-		} else if (!size) {
-			return 0;
-		}
-		return +size;
-	}
-
 	protected getWidth(): string {
-		return this.width ? this.convertSize(this.width) : '';
+		return this.width ? convertSize(this.width) : '';
 	}
 
 	protected getHeight(): string {
-		return this.height ? this.convertSize(this.height) : '';
-	}
-
-	public convertSize(size: number | string, defaultValue?: string): string {
-		defaultValue = defaultValue || '';
-		if (types.isUndefinedOrNull(size)) {
-			return defaultValue;
-		}
-		let convertedSize: string = size ? size.toString() : defaultValue;
-		if (!endsWith(convertedSize.toLowerCase(), 'px') && !endsWith(convertedSize.toLowerCase(), '%')) {
-			convertedSize = convertedSize + 'px';
-		}
-		return convertedSize;
+		return this.height ? convertSize(this.height) : '';
 	}
 
 	public get valid(): boolean {

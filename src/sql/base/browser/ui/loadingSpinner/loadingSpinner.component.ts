@@ -14,8 +14,8 @@ const DefaultLoadingCompletedMessage = nls.localize('loadingCompletedMessage', "
 @Component({
 	selector: 'loading-spinner',
 	template: `
-		<div class="modelview-loadingComponent-container" *ngIf="loading">
-			<div class="modelview-loadingComponent-spinner" *ngIf="loading" [title]="_loadingMessage" #spinnerElement></div>
+		<div class="loading-spinner-container" *ngIf="loading">
+			<div class="loading-spinner codicon in-progress" *ngIf="loading" [title]="_loadingMessage" #spinnerElement></div>
 		</div>
 	`
 })

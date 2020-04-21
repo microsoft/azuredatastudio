@@ -3,8 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-declare module 'semver-umd' {
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
-	export * from "semver";
+import LoadingSpinner from './loadingSpinner.component';
 
-}
+@NgModule({
+	imports: [CommonModule],
+	exports: [LoadingSpinner],
+	declarations: [LoadingSpinner]
+})
+export class LoadingSpinnerModule { }
