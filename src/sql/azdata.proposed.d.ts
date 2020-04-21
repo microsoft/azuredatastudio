@@ -210,6 +210,12 @@ declare module 'azdata' {
 		 * The event argument is the id of the selected tab.
 		 */
 		onTabChanged: vscode.Event<string>;
+
+		/**
+		 * update the tabs.
+		 * @param tabs new tabs
+		 */
+		updateTabs(tabs: (Tab | TabGroup)[]): void;
 	}
 
 	/**
@@ -224,8 +230,20 @@ declare module 'azdata' {
 	 * Layout of TabbedPanelComponent, can be used to initialize the component when using ModelBuilder
 	 */
 	export interface TabbedPanelLayout {
-		orientation: TabOrientation;
-		showIcon: boolean;
+		/**
+		 * Tab orientation. Default horizontal.
+		 */
+		orientation?: TabOrientation;
+
+		/**
+		 * Whether to show the tab icon. Default false.
+		 */
+		showIcon?: boolean;
+
+		/**
+		 * Whether to show the tab navigation pane even when there is only one tab. Default false.
+		 */
+		alwaysShowTabs?: boolean;
 	}
 
 	/**
@@ -271,12 +289,12 @@ declare module 'azdata' {
 	/**
 	 * Builder for TabbedPannelComponent
 	 */
-	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, any, any> {
+	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any> {
 		/**
 		 * Add the tabs to the component
 		 * @param tabs tabs/tab groups to be added
 		 */
-		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, any, any>;
+		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any>;
 	}
 
 	export interface InputBoxProperties extends ComponentProperties {
@@ -298,9 +316,10 @@ declare module 'azdata' {
 		export interface ModelViewDashboard {
 			registerTabs(handler: (view: ModelView) => Thenable<(DashboardTab | DashboardTabGroup)[]>): void;
 			open(): Thenable<void>;
+			updateTabs(tabs: (DashboardTab | DashboardTabGroup)[]): void;
 		}
 
-		export function createModelViewDashboard(title: string): ModelViewDashboard;
+		export function createModelViewDashboard(title: string, options?: ModelViewDashboardOptions): ModelViewDashboard;
 	}
 
 	export interface DashboardTab extends Tab {
@@ -320,6 +339,18 @@ declare module 'azdata' {
 		 * children of the tab group
 		 */
 		tabs: DashboardTab[];
+	}
+
+	export interface ModelViewDashboardOptions {
+		/**
+		 * Whether to show the tab icon, default is true
+		 */
+		showIcon?: boolean;
+
+		/**
+		 * Whether to show the tab navigation pane even when there is only one tab, default is false
+		 */
+		alwaysShowTabs?: boolean;
 	}
 }
 

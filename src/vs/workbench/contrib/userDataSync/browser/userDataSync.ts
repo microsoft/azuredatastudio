@@ -251,7 +251,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 		return new Promise((resolve, _) => {
 			const quickPick = this.quickInputService.createQuickPick<{ label: string, session: AuthenticationSession }>();
 			quickPick.title = localize('chooseAccountTitle', "Preferences Sync: Choose Account");
-			quickPick.placeholder = localize('chooseAccount', "Choose an account you would like to use for settings sync");
+			quickPick.placeholder = localize('chooseAccount', "Choose an account you would like to use for preferences sync");
 			const dedupedSessions = distinct(sessions, (session) => session.accountName);
 			quickPick.items = dedupedSessions.map(session => {
 				return {
@@ -287,10 +287,16 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 			if (this.activeAccount) {
 				if (event.removed.length) {
 					const activeWasRemoved = !!event.removed.find(removed => removed === this.activeAccount!.id);
-					// If the current account was removed, offer to turn off sync
 					if (activeWasRemoved) {
-						await this.turnOff();
 						this.setActiveAccount(undefined);
+						this.notificationService.notify({
+							severity: Severity.Info,
+							message: localize('turned off on logout', "Sync has stopped because you are no longer signed in."),
+							actions: {
+								primary: [new Action('turn on sync', localize('turn on sync', "Turn on Sync"), undefined, true, () => this.turnOn())]
+							}
+						});
+						return;
 						return;
 					}
 				}
@@ -683,7 +689,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 		}
 		await this.handleFirstTimeSync();
 		this.userDataSyncEnablementService.setEnablement(true);
-		this.notificationService.info(localize('sync turned on', "Sync will happen automatically from now on."));
+		this.notificationService.info(localize('sync turned on', "Preferences sync is turned on"));
 		this.storageService.store('sync.donotAskPreviewConfirmation', true, StorageScope.GLOBAL);
 	}
 

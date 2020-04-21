@@ -123,6 +123,14 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 		return this.view.elementTop(index);
 	}
 
+	getElementHeight(index: number): number {
+		if (index < 0 || index >= this.length) {
+			throw new ListError(this.listUser, `Invalid index ${index}`);
+		}
+
+		return this.view.elementHeight(index);
+	}
+
 	triggerScrollFromMouseWheelEvent(browserEvent: IMouseWheelEvent) {
 		this.view.triggerScrollFromMouseWheelEvent(browserEvent);
 	}
@@ -261,9 +269,7 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 			this.view.setScrollTop(lineOffsetInView - this.view.renderHeight / 2);
 
 			if (revealType === CellRevealType.Range) {
-				setTimeout(() => {
-					element.revealRangeInCenter(range);
-				}, 240);
+				element.revealRangeInCenter(range);
 			}
 		};
 

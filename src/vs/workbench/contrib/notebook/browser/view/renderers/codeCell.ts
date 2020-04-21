@@ -6,7 +6,6 @@
 import * as DOM from 'vs/base/browser/dom';
 import { raceCancellation } from 'vs/base/common/async';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
-import { debounce } from 'vs/base/common/decorators';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import * as nls from 'vs/nls';
@@ -17,6 +16,8 @@ import { INotebookService } from 'vs/workbench/contrib/notebook/browser/notebook
 import { getResizesObserver } from 'vs/workbench/contrib/notebook/browser/view/renderers/sizeObserver';
 import { CodeCellViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/codeCellViewModel';
 import { CellOutputKind, IOutput, IRenderOutput, ITransformedDisplayOutputDto } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 interface IMimeTypeRenderer extends IQuickPickItem {
 	index: number;
@@ -45,7 +46,7 @@ export class CodeCell extends Disposable {
 				height: totalHeight
 			}
 		);
-		viewCell.editorHeight = totalHeight;
+		// viewCell.editorHeight = totalHeight;
 
 		const cts = new CancellationTokenSource();
 		this._register({ dispose() { cts.dispose(true); } });
@@ -211,6 +212,12 @@ export class CodeCell extends Disposable {
 		}));
 
 		if (viewCell.outputs.length > 0) {
+			let layoutCache = false;
+			if (this.viewCell.layoutInfo.totalHeight !== 0 && this.viewCell.layoutInfo.totalHeight > totalHeight) {
+				layoutCache = true;
+				this.relayoutCell();
+			}
+
 			this.templateData.outputContainer!.style.display = 'block';
 			// there are outputs, we need to calcualte their sizes and trigger relayout
 			// @todo, if there is no resizable output, we should not check their height individually, which hurts the performance
@@ -222,9 +229,15 @@ export class CodeCell extends Disposable {
 			}
 
 			viewCell.editorHeight = totalHeight;
-			this.relayoutCell();
+			if (layoutCache) {
+				this.relayoutCellDebounced();
+			} else {
+				this.relayoutCell();
+			}
 		} else {
 			// noop
+			viewCell.editorHeight = totalHeight;
+			this.relayoutCell();
 			this.templateData.outputContainer!.style.display = 'none';
 		}
 	}
@@ -244,12 +257,26 @@ export class CodeCell extends Disposable {
 				outputItemDiv.style.position = 'relative';
 				const mimeTypePicker = DOM.$('.multi-mimetype-output');
 				DOM.addClasses(mimeTypePicker, 'codicon', 'codicon-code');
+				mimeTypePicker.tabIndex = 0;
+				mimeTypePicker.title = nls.localize('mimeTypePicker', "Choose a different output mimetype");
 				outputItemDiv.appendChild(mimeTypePicker);
 				this.outputResizeListeners.get(currOutput)!.add(DOM.addStandardDisposableListener(mimeTypePicker, 'mousedown', async e => {
-					e.preventDefault();
-					e.stopPropagation();
-					await this.pickActiveMimeTypeRenderer(transformedDisplayOutput);
+					if (e.leftButton) {
+						e.preventDefault();
+						e.stopPropagation();
+						await this.pickActiveMimeTypeRenderer(transformedDisplayOutput);
+					}
 				}));
+
+				this.outputResizeListeners.get(currOutput)!.add((DOM.addDisposableListener(mimeTypePicker, DOM.EventType.KEY_DOWN, async e => {
+					const event = new StandardKeyboardEvent(e);
+					if ((event.equals(KeyCode.Enter) || event.equals(KeyCode.Space))) {
+						e.preventDefault();
+						e.stopPropagation();
+						await this.pickActiveMimeTypeRenderer(transformedDisplayOutput);
+					}
+				})));
+
 			}
 			let pickedMimeTypeRenderer = currOutput.orderedMimeTypes[currOutput.pickedMimeTypeIndex];
 
@@ -330,7 +357,7 @@ export class CodeCell extends Disposable {
 
 	generateRendererInfo(renderId: number | undefined): string {
 		if (renderId === undefined || renderId === -1) {
-			return 'builtin';
+			return nls.localize('builtinRenderInfo', "built-in");
 		}
 
 		let renderInfo = this.notebookService.getRendererInfo(renderId);
@@ -339,7 +366,7 @@ export class CodeCell extends Disposable {
 			return renderInfo.id.value;
 		}
 
-		return 'builtin';
+		return nls.localize('builtinRenderInfo', "built-in");
 	}
 
 	async pickActiveMimeTypeRenderer(output: ITransformedDisplayOutputDto) {
@@ -390,12 +417,21 @@ export class CodeCell extends Disposable {
 	}
 
 	relayoutCell() {
+		if (this._timer !== null) {
+			clearTimeout(this._timer);
+		}
+
 		this.notebookEditor.layoutNotebookCell(this.viewCell, this.viewCell.layoutInfo.totalHeight);
 	}
 
-	@debounce(500)
+	private _timer: any = null;
+
 	relayoutCellDebounced() {
-		this.notebookEditor.layoutNotebookCell(this.viewCell, this.viewCell.layoutInfo.totalHeight);
+		clearTimeout(this._timer);
+		this._timer = setTimeout(() => {
+			this.notebookEditor.layoutNotebookCell(this.viewCell, this.viewCell.layoutInfo.totalHeight);
+			this._timer = null;
+		}, 500);
 	}
 
 	dispose() {

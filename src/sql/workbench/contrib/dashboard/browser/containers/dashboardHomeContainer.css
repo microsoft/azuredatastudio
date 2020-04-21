@@ -8,3 +8,10 @@ dashboard-home-tab {
 	width: 100%;
 	display: block;
 }
+
+dashboard-home-container .properties {
+	padding-left: 10px;
+	padding-right: 10px;
+	display: block;
+	flex: 0;
+}

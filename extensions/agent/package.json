@@ -32,6 +32,7 @@
         "description": "Manage and troubleshoot SQL Agent jobs",
         "provider": "MSSQL",
         "title": "SQL Agent",
+        "group": "administration",
         "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11 && dashboardContext == 'server'",
         "container": {
           "controlhost-container": {
@@ -88,10 +89,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
-  },
-  "resolutions": {
-      "esprima": "^4.0.0"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.6"
   },
   "__metadata": {
     "id": "10",

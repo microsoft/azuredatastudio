@@ -15,6 +15,7 @@ import { AccountProviderStub } from 'sql/platform/accounts/test/common/testAccou
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { EventVerifierSingle } from 'sql/base/test/common/event';
+import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 
 // SUITE CONSTANTS /////////////////////////////////////////////////////////
 const hasAccountProvider: azdata.AccountProviderMetadata = {
@@ -505,8 +506,10 @@ function getTestState(): AccountManagementState {
 	// Create mock memento
 	let mockMemento = {};
 
+	const testNotificationService = new TestNotificationService();
+
 	// Create the account management service
-	let ams = new AccountManagementService(mockMemento, mockInstantiationService.object, new TestStorageService(), null, null, undefined);
+	let ams = new AccountManagementService(mockMemento, mockInstantiationService.object, new TestStorageService(), null, null, undefined, testNotificationService);
 
 	// Wire up event handlers
 	let evUpdate = new EventVerifierSingle<UpdateAccountListEventParams>();
