@@ -26,7 +26,6 @@ describe('Register Model Wizard', () => {
 			schema: 'dbo'
 		};
 		await view.open();
-		//await view.refresh();
 		should.notEqual(view.wizardView, undefined);
 		should.notEqual(view.modelSourcePage, undefined);
 	});
