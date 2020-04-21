@@ -12,15 +12,15 @@ import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { RegisteredModel, WorkspaceModel, ModelParameters } from '../../modelManagement/interfaces';
 import { PredictParameters, DatabaseTable, TableColumn } from '../../prediction/interfaces';
 import { DeployedModelService } from '../../modelManagement/deployedModelService';
-import { RegisteredModelsDialog } from './registerModels/registeredModelsDialog';
+import { ManageModelsDialog } from './manageModels/manageModelsDialog';
 import {
 	AzureResourceEventArgs, ListAzureModelsEventName, ListSubscriptionsEventName, ListModelsEventName, ListWorkspacesEventName,
 	ListGroupsEventName, ListAccountsEventName, RegisterLocalModelEventName, RegisterAzureModelEventName,
 	ModelViewBase, SourceModelSelectedEventName, RegisterModelEventName, DownloadAzureModelEventName,
-	ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, PredictModelEventName, PredictModelEventArgs, DownloadRegisteredModelEventName, LoadModelParametersEventName, ModelSourceType, ModelViewData
+	ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, PredictModelEventName, PredictModelEventArgs, DownloadRegisteredModelEventName, LoadModelParametersEventName, ModelSourceType, ModelViewData, StoreImportTableEventName, VerifyImportTableEventName
 } from './modelViewBase';
 import { ControllerBase } from '../controllerBase';
-import { RegisterModelWizard } from './registerModels/registerModelWizard';
+import { ImportModelWizard } from './manageModels/importModelWizard';
 import * as fs from 'fs';
 import * as constants from '../../common/constants';
 import { PredictWizard } from './prediction/predictWizard';
@@ -51,11 +51,16 @@ export class ModelManagementController extends ControllerBase {
 	 * @param apiWrapper apiWrapper
 	 * @param root root folder path
 	 */
-	public async registerModel(parent?: ModelViewBase, controller?: ModelManagementController, apiWrapper?: ApiWrapper, root?: string): Promise<ModelViewBase> {
+	public async registerModel(importTable: DatabaseTable | undefined, parent?: ModelViewBase, controller?: ModelManagementController, apiWrapper?: ApiWrapper, root?: string): Promise<ModelViewBase> {
 		controller = controller || this;
 		apiWrapper = apiWrapper || this._apiWrapper;
 		root = root || this._root;
-		let view = new RegisterModelWizard(apiWrapper, root, parent);
+		let view = new ImportModelWizard(apiWrapper, root, parent);
+		if (importTable) {
+			view.importTable = importTable;
+		} else {
+			view.importTable = await controller._registeredModelService.getRecentImportTable();
+		}
 
 		controller.registerEvents(view);
 
@@ -72,6 +77,7 @@ export class ModelManagementController extends ControllerBase {
 	public async predictModel(): Promise<ModelViewBase> {
 
 		let view = new PredictWizard(this._apiWrapper, this._root);
+		view.importTable = await this._registeredModelService.getRecentImportTable();
 
 		this.registerEvents(view);
 		view.on(LoadModelParametersEventName, async () => {
@@ -117,17 +123,18 @@ export class ModelManagementController extends ControllerBase {
 			await this.executeAction(view, ListAzureModelsEventName, this.getAzureModels, this._amlService
 				, azureArgs.account, azureArgs.subscription, azureArgs.group, azureArgs.workspace);
 		});
-
-		view.on(ListModelsEventName, async () => {
-			await this.executeAction(view, ListModelsEventName, this.getRegisteredModels, this._registeredModelService);
+		view.on(ListModelsEventName, async (args) => {
+			const table = <DatabaseTable>args;
+			await this.executeAction(view, ListModelsEventName, this.getRegisteredModels, this._registeredModelService, table);
 		});
 		view.on(RegisterLocalModelEventName, async (arg) => {
 			let models = <ModelViewData[]>arg;
 			await this.executeAction(view, RegisterLocalModelEventName, this.registerLocalModel, this._registeredModelService, models);
 			view.refresh();
 		});
-		view.on(RegisterModelEventName, async () => {
-			await this.executeAction(view, RegisterModelEventName, this.registerModel, view, this, this._apiWrapper, this._root);
+		view.on(RegisterModelEventName, async (args) => {
+			const importTable = <DatabaseTable>args;
+			await this.executeAction(view, RegisterModelEventName, this.registerModel, importTable, view, this, this._apiWrapper, this._root);
 		});
 		view.on(RegisterAzureModelEventName, async (arg) => {
 			let models = <ModelViewData[]>arg;
@@ -161,6 +168,16 @@ export class ModelManagementController extends ControllerBase {
 			await this.executeAction(view, DownloadRegisteredModelEventName, this.downloadRegisteredModel, this._registeredModelService,
 				model);
 		});
+		view.on(StoreImportTableEventName, async (arg) => {
+			let importTable = <DatabaseTable>arg;
+			await this.executeAction(view, StoreImportTableEventName, this.storeImportTable, this._registeredModelService,
+				importTable);
+		});
+		view.on(VerifyImportTableEventName, async (arg) => {
+			let importTable = <DatabaseTable>arg;
+			await this.executeAction(view, VerifyImportTableEventName, this.verifyImportTable, this._registeredModelService,
+				importTable);
+		});
 		view.on(SourceModelSelectedEventName, (arg) => {
 			view.modelSourceType = <ModelSourceType>arg;
 			view.refresh();
@@ -170,8 +187,14 @@ export class ModelManagementController extends ControllerBase {
 	/**
 	 * Opens the dialog for model management
 	 */
-	public async manageRegisteredModels(): Promise<ModelViewBase> {
-		let view = new RegisteredModelsDialog(this._apiWrapper, this._root);
+	public async manageRegisteredModels(importTable?: DatabaseTable): Promise<ModelViewBase> {
+		let view = new ManageModelsDialog(this._apiWrapper, this._root);
+
+		if (importTable) {
+			view.importTable = importTable;
+		} else {
+			view.importTable = await this._registeredModelService.getRecentImportTable();
+		}
 
 		// Register events
 		//
@@ -202,8 +225,8 @@ export class ModelManagementController extends ControllerBase {
 		return await service.getWorkspaces(account, subscription, group);
 	}
 
-	private async getRegisteredModels(registeredModelService: DeployedModelService): Promise<RegisteredModel[]> {
-		return registeredModelService.getDeployedModels();
+	private async getRegisteredModels(registeredModelService: DeployedModelService, table: DatabaseTable): Promise<RegisteredModel[]> {
+		return registeredModelService.getDeployedModels(table);
 	}
 
 	private async getAzureModels(
@@ -221,9 +244,13 @@ export class ModelManagementController extends ControllerBase {
 	private async registerLocalModel(service: DeployedModelService, models: ModelViewData[] | undefined): Promise<void> {
 		if (models) {
 			await Promise.all(models.map(async (model) => {
-				const localModel = <string>model.modelData;
-				if (localModel) {
-					await service.deployLocalModel(localModel, model.modelDetails);
+				if (model && model.targetImportTable) {
+					const localModel = <string>model.modelData;
+					if (localModel) {
+						await service.deployLocalModel(localModel, model.modelDetails, model.targetImportTable);
+					}
+				} else {
+					throw Error(constants.invalidModelToRegisterError);
 				}
 			}));
 		} else {
@@ -240,35 +267,39 @@ export class ModelManagementController extends ControllerBase {
 		}
 
 		await Promise.all(models.map(async (model) => {
-			const azureModel = <AzureModelResource>model.modelData;
-			if (azureModel && azureModel.account && azureModel.subscription && azureModel.group && azureModel.workspace && azureModel.model) {
-				let filePath: string | undefined;
-				try {
-					const filePath = await azureService.downloadModel(azureModel.account, azureModel.subscription, azureModel.group,
-						azureModel.workspace, azureModel.model);
-					if (filePath) {
-						await service.deployLocalModel(filePath, model.modelDetails);
-					} else {
-						throw Error(constants.invalidModelToRegisterError);
-					}
-				} finally {
-					if (filePath) {
-						await fs.promises.unlink(filePath);
+			if (model && model.targetImportTable) {
+				const azureModel = <AzureModelResource>model.modelData;
+				if (azureModel && azureModel.account && azureModel.subscription && azureModel.group && azureModel.workspace && azureModel.model) {
+					let filePath: string | undefined;
+					try {
+						const filePath = await azureService.downloadModel(azureModel.account, azureModel.subscription, azureModel.group,
+							azureModel.workspace, azureModel.model);
+						if (filePath) {
+							await service.deployLocalModel(filePath, model.modelDetails, model.targetImportTable);
+						} else {
+							throw Error(constants.invalidModelToRegisterError);
+						}
+					} finally {
+						if (filePath) {
+							await fs.promises.unlink(filePath);
+						}
 					}
 				}
+			} else {
+				throw Error(constants.invalidModelToRegisterError);
 			}
 		}));
 	}
 
-	public async getDatabaseList(predictService: PredictService): Promise<string[]> {
+	private async getDatabaseList(predictService: PredictService): Promise<string[]> {
 		return await predictService.getDatabaseList();
 	}
 
-	public async getTableList(predictService: PredictService, databaseName: string): Promise<DatabaseTable[]> {
+	private async getTableList(predictService: PredictService, databaseName: string): Promise<DatabaseTable[]> {
 		return await predictService.getTableList(databaseName);
 	}
 
-	public async getTableColumnsList(predictService: PredictService, databaseTable: DatabaseTable): Promise<TableColumn[]> {
+	private async getTableColumnsList(predictService: PredictService, databaseTable: DatabaseTable): Promise<TableColumn[]> {
 		return await predictService.getTableColumnsList(databaseTable);
 	}
 
@@ -283,6 +314,22 @@ export class ModelManagementController extends ControllerBase {
 		}
 		const result = await predictService.generatePredictScript(predictParams, registeredModel, filePath);
 		return result;
+	}
+
+	private async storeImportTable(registeredModelService: DeployedModelService, table: DatabaseTable | undefined): Promise<void> {
+		if (table) {
+			await registeredModelService.storeRecentImportTable(table);
+		} else {
+			throw Error(constants.invalidImportTableError(undefined, undefined));
+		}
+	}
+
+	private async verifyImportTable(registeredModelService: DeployedModelService, table: DatabaseTable | undefined): Promise<boolean> {
+		if (table) {
+			return await registeredModelService.verifyConfigTable(table);
+		} else {
+			throw Error(constants.invalidImportTableError(undefined, undefined));
+		}
 	}
 
 	private async downloadRegisteredModel(

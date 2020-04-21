@@ -134,7 +134,11 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 		if (this._table) {
 			let models: RegisteredModel[] | undefined;
 
-			models = await this.listModels();
+			if (this.importTable) {
+				models = await this.listModels(this.importTable);
+			} else {
+				this.showErrorMessage('No import table');
+			}
 			let tableData: any[][] = [];
 
 			if (models) {
