@@ -98,6 +98,9 @@ export class WizardView extends MainViewBase {
 			let idx = pageInfo.newPage;
 			let page = this._pages[idx];
 			if (page && page.onEnter) {
+				if (this._wizard && this._wizard.pages.length > idx) {
+					this._wizard.pages[idx].title = page.title;
+				}
 				await page.onEnter();
 			}
 		}

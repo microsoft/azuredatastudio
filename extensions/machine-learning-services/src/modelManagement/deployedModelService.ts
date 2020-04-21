@@ -222,7 +222,7 @@ export class DeployedModelService {
 	public getConfigTableVerificationQuery(table: DatabaseTable): string {
 		let tableName = table.tableName;
 		let schemaName = table.schema;
-		const twoPartTableName = utils.getRegisteredModelsTowPartsName(table.tableName || '', table.schema || '');
+		const twoPartTableName = utils.getRegisteredModelsTwoPartsName(table.tableName || '', table.schema || '');
 
 		return `
 		IF NOT EXISTS (
@@ -271,7 +271,7 @@ export class DeployedModelService {
 	public getConfigureTableQuery(table: DatabaseTable): string {
 		let tableName = table.tableName;
 		let schemaName = table.schema;
-		const twoPartTableName = utils.getRegisteredModelsTowPartsName(table.tableName || '', table.schema || '');
+		const twoPartTableName = utils.getRegisteredModelsTwoPartsName(table.tableName || '', table.schema || '');
 
 		return `
 		IF EXISTS
@@ -319,7 +319,7 @@ export class DeployedModelService {
 	}
 
 	public getInsertModelQuery(model: RegisteredModel, table: DatabaseTable): string {
-		const twoPartTableName = utils.getRegisteredModelsTowPartsName(table.tableName || '', table.schema || '');
+		const twoPartTableName = utils.getRegisteredModelsTwoPartsName(table.tableName || '', table.schema || '');
 		const threePartTableName = utils.getRegisteredModelsThreePartsName(table.databaseName || '', table.tableName || '', table.schema || '');
 		let updateScript = `
 		Insert into ${twoPartTableName}

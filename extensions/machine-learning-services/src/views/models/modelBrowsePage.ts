@@ -19,6 +19,7 @@ import { CurrentModelsComponent } from './manageModels/currentModelsComponent';
 export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataComponent<ModelViewData[]> {
 
 	private _form: azdata.FormContainer | undefined;
+	private _title: string = constants.modelSourcePageTitle;
 	private _formBuilder: azdata.FormBuilder | undefined;
 	public localModelsComponent: LocalModelsComponent | undefined;
 	public azureModelsComponent: AzureModelsComponent | undefined;
@@ -88,8 +89,21 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 					this.registeredModelsComponent.addComponents(this._formBuilder);
 					await this.registeredModelsComponent.refresh();
 				}
-
 			}
+		}
+		this.loadTitle();
+	}
+
+	private loadTitle(): void {
+		if (this.modelSourceType === ModelSourceType.Local) {
+			this._title = 'Upload model file';
+		} else if (this.modelSourceType === ModelSourceType.Azure) {
+			this._title = 'Import from Azure Machine Learning';
+
+		} else if (this.modelSourceType === ModelSourceType.RegisteredModels) {
+			this._title = 'Select imported model';
+		} else {
+			this._title = constants.modelSourcePageTitle;
 		}
 	}
 
@@ -97,7 +111,7 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 	 * Returns page title
 	 */
 	public get title(): string {
-		return constants.modelSourcePageTitle;
+		return this._title;
 	}
 
 	public validate(): Promise<boolean> {
@@ -115,6 +129,10 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 			this.showErrorMessage(constants.invalidModelToSelectError);
 		}
 		return Promise.resolve(validated);
+	}
+
+	public onEnter(): Promise<void> {
+		return Promise.resolve();
 	}
 
 	public async onLeave(): Promise<void> {

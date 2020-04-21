@@ -231,7 +231,7 @@ export function getRegisteredModelsThreePartsName(db: string, table: string, sch
  * Returns full name of model registration table
  * @param config config object
  */
-export function getRegisteredModelsTowPartsName(table: string, schema: string) {
+export function getRegisteredModelsTwoPartsName(table: string, schema: string) {
 	const schemaName = doubleEscapeSingleBrackets(schema);
 	const tableName = doubleEscapeSingleBrackets(table);
 	return `[${schemaName}].[${tableName}]`;
