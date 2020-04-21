@@ -29,7 +29,6 @@ export const hdfsRootPath = '/';
 // SERVICE NAMES //////////////////////////////////////////////////////////
 export const ObjectExplorerService = 'objectexplorer';
 export const objectExplorerPrefix: string = 'objectexplorer://';
-export const LanguageExtensionService = 'languageExtensionService';
 export const ViewType = 'view';
 
 export enum BuiltInCommands {
