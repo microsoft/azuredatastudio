@@ -119,8 +119,8 @@ steps:
     node build/azure-pipelines/common/copyArtifacts.js
   displayName: Write Version Information
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: drop'
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
 
 - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
   inputs:
