@@ -14,10 +14,10 @@ steps:
     exec { git clean -fxd }
   displayName: Clean repo
 
-- task: DownloadPipelineArtifact@2
+- task: DownloadBuildArtifacts@0
   inputs:
     buildType: 'current'
-    targetPath: '$(Build.SourcesDirectory)\.build'
+    downloadPath: '$(Build.SourcesDirectory)\.build'
     artifactName: drop
     itemPattern: |
      drop/extensions/**
