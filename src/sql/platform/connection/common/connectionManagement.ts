@@ -305,6 +305,7 @@ export interface INewConnectionParams {
 	querySelection?: azdata.ISelectionData;
 	showDashboard?: boolean;
 	providers?: string[];
+	isEditConnection?: boolean;
 }
 
 export interface IConnectableInput {
