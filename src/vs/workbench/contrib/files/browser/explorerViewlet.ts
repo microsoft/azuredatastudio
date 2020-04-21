@@ -263,6 +263,7 @@ export const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry
 	ctorDescriptor: new SyncDescriptor(ExplorerViewPaneContainer),
 	storageId: 'workbench.explorer.views.state',
 	icon: Codicon.files.classNames,
+	alwaysUseContainerInfo: true,
 	order: 10 // {{SQL CARBON EDIT}}
 }, ViewContainerLocation.Sidebar);
 

@@ -85,6 +85,7 @@ Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegis
 		icon: 'codicon-extensions',
 		order: 14, // {{SQL CARBON EDIT}}
 		rejectAddedViews: true,
+		alwaysUseContainerInfo: true
 	}, ViewContainerLocation.Sidebar);
 
 

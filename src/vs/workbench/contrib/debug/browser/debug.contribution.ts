@@ -75,6 +75,7 @@ const viewContainer = Registry.as<IViewContainersRegistry>(ViewExtensions.ViewCo
 	name: nls.localize('run', "Run"),
 	ctorDescriptor: new SyncDescriptor(DebugViewPaneContainer),
 	icon: 'codicon-debug-alt-2',
+	alwaysUseContainerInfo: true,
 	order: 13 // {{SQL CARBON EDIT}}
 }, ViewContainerLocation.Sidebar);
 
