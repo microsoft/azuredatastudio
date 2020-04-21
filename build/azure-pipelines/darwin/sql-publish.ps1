@@ -17,8 +17,4 @@ $ZipName = "azuredatastudio-darwin.zip"
 $Zip = "$artifactsDir\darwin\archive\$ZipName"
 $UploadName = "azuredatastudio-macos-$Version"
 
-If (-NOT ($Quality -eq "stable")) {
-	$UploadName = "$UploadName-$Quality"
-}
-
 node $sourcesDir\build\azure-pipelines\common\publish.js $Quality darwin archive "$UploadName.zip" $Version true $Zip $CommitId
