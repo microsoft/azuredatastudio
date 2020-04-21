@@ -526,48 +526,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 
-	// private editExistingConnection(uri: string, connection: interfaces.IConnectionProfile): Promise<IConnectionResult> {
-	// 	this._logService.info(`Editing existing connection ${uri}`);
-
-	// 	return new Promise<IConnectionResult>((resolve, reject) => {
-
-	// 		let existingConnection = this.getActiveConnections()?.find(c => c.id === connection.id);
-	// 		if (existingConnection) {
-	// 			this.disconnect(existingConnection);
-	// 		}
-
-	// 		//handle editing profile with new information.
-	// 		let connectionInfo = this._connectionStatusManager.addConnection(connection, uri);
-	// 		// Setup the handler for the connection complete notification to call
-	// 		connectionInfo.connectHandler = (async (connectResult, errorMessage, errorCode, callStack) => {
-	// 			let connectionMngInfo = this._connectionStatusManager.findConnectionByProfileId(connection.id);
-	// 			if (connectionMngInfo) {
-	// 				this._connectionStatusManager.deleteConnection(uri);
-
-	// 				await this.saveToSettings(uri, connection);
-	// 				this._onAddConnectionProfile.fire(connection);
-	// 				this.doActionsAfterConnectionComplete(value, options);
-
-	// 				resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, callStack: undefined, errorHandled: true, connectionProfile: connection });
-	// 			} else {
-	// 				if (errorMessage) {
-	// 					// Connection to the server failed
-	// 					this._connectionStatusManager.deleteConnection(uri);
-	// 					resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
-	// 				} else {
-	// 					if (connectionMngInfo.serverInfo) {
-	// 						connection.options.isCloud = connectionMngInfo.serverInfo.isCloud;
-	// 					}
-	// 					resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
-	// 				}
-	// 			}
-	// 		});
-
-	// 		// send connection request
-	// 		this.sendConnectRequest(connection, uri).catch((e) => this._logService.error(e));
-	// 	});
-	// }
-
 	private handleConnectionError(connection: interfaces.IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
 		let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', "Connection Not Accepted");
 		if (options.showFirewallRuleOnError && connectionResult.errorCode) {
