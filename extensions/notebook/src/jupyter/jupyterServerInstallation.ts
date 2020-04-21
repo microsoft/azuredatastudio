@@ -17,7 +17,7 @@ import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import { OutputChannel, ConfigurationTarget, window } from 'vscode';
 import { Deferred } from '../common/promise';
-import { ConfigurePythonDialog } from '../dialog/configurePythonDialog';
+import { ConfigurePythonDialog } from '../dialog/configurePython/configurePythonDialog';
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 

@@ -22,7 +22,7 @@ import { ApiWrapper } from '../common/apiWrapper';
 import { LocalJupyterServerManager, ServerInstanceFactory } from './jupyterServerManager';
 import { NotebookCompletionItemProvider } from '../intellisense/completionItemProvider';
 import { JupyterNotebookProvider } from './jupyterNotebookProvider';
-import { ConfigurePythonDialog } from '../dialog/configurePythonDialog';
+import { ConfigurePythonDialog } from '../dialog/configurePython/configurePythonDialog';
 import CodeAdapter from '../prompts/adapter';
 import { ManagePackagesDialog } from '../dialog/managePackages/managePackagesDialog';
 import { IPackageManageProvider } from '../types';
