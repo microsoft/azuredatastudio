@@ -319,7 +319,7 @@ class HdfsFileSource implements IFileSource {
 				error = <HdfsError>err;
 				reject(error);
 			});
-			writeStream.on('finish', (location) => {
+			writeStream.on('finish', (location: string) => {
 				if (!error) {
 					resolve(location);
 				}

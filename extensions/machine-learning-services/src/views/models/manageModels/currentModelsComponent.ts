@@ -10,21 +10,24 @@ import { ModelViewBase } from '../modelViewBase';
 import { CurrentModelsTable } from './currentModelsTable';
 import { ApiWrapper } from '../../../common/apiWrapper';
 import { IPageView } from '../../interfaces';
+import { TableSelectionComponent } from '../tableSelectionComponent';
+import { RegisteredModel } from '../../../modelManagement/interfaces';
 
 /**
  * View to render current registered models
  */
-export class CurrentModelsPage extends ModelViewBase implements IPageView {
+export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 	private _tableComponent: azdata.Component | undefined;
 	private _dataTable: CurrentModelsTable | undefined;
 	private _loader: azdata.LoadingComponent | undefined;
+	private _tableSelectionComponent: TableSelectionComponent | undefined;
 
 	/**
 	 *
 	 * @param apiWrapper Creates new view
 	 * @param parent page parent
 	 */
-	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase) {
+	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _multiSelect: boolean = false) {
 		super(apiWrapper, parent.root, parent);
 	}
 
@@ -33,11 +36,17 @@ export class CurrentModelsPage extends ModelViewBase implements IPageView {
 	 * @param modelBuilder register the components
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
-		this._dataTable = new CurrentModelsTable(this._apiWrapper, this, false);
+		this._tableSelectionComponent = new TableSelectionComponent(this._apiWrapper, this, false);
+		this._tableSelectionComponent.registerComponent(modelBuilder);
+		this._tableSelectionComponent.onSelectedChanged(async () => {
+			await this.onTableSelected();
+		});
+		this._dataTable = new CurrentModelsTable(this._apiWrapper, this, this._multiSelect);
 		this._dataTable.registerComponent(modelBuilder);
 		this._tableComponent = this._dataTable.component;
 
 		let formModelBuilder = modelBuilder.formContainer();
+		this._tableSelectionComponent.addComponents(formModelBuilder);
 
 		if (this._tableComponent) {
 			formModelBuilder.addFormItem({
@@ -54,6 +63,20 @@ export class CurrentModelsPage extends ModelViewBase implements IPageView {
 		return this._loader;
 	}
 
+	public addComponents(formBuilder: azdata.FormBuilder) {
+		if (this._tableSelectionComponent && this._dataTable) {
+			this._tableSelectionComponent.addComponents(formBuilder);
+			this._dataTable.addComponents(formBuilder);
+		}
+	}
+
+	public removeComponents(formBuilder: azdata.FormBuilder) {
+		if (this._tableSelectionComponent && this._dataTable) {
+			this._tableSelectionComponent.removeComponents(formBuilder);
+			this._dataTable.removeComponents(formBuilder);
+		}
+	}
+
 	/**
 	 * Returns the component
 	 */
@@ -68,11 +91,39 @@ export class CurrentModelsPage extends ModelViewBase implements IPageView {
 		await this.onLoading();
 
 		try {
+			if (this._tableSelectionComponent) {
+				this._tableSelectionComponent.refresh();
+			}
 			await this._dataTable?.refresh();
 		} catch (err) {
 			this.showErrorMessage(constants.getErrorMessage(err));
 		} finally {
 			await this.onLoaded();
+		}
+	}
+
+	public get data(): RegisteredModel[] | undefined {
+		return this._dataTable?.data;
+	}
+
+	private async onTableSelected(): Promise<void> {
+		if (this._tableSelectionComponent?.data) {
+			this.importTable = this._tableSelectionComponent?.data;
+			await this.storeImportConfigTable();
+			await this._dataTable?.refresh();
+		}
+	}
+
+	public get modelTable(): CurrentModelsTable | undefined {
+		return this._dataTable;
+	}
+
+	/**
+	 * disposes the view
+	 */
+	public async disposeComponent(): Promise<void> {
+		if (this._dataTable) {
+			await this._dataTable.disposeComponent();
 		}
 	}
 

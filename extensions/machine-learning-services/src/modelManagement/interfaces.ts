@@ -5,6 +5,7 @@
 
 import * as msRest from '@azure/ms-rest-js';
 import { Resource } from '@azure/arm-machinelearningservices/esm/models';
+import { DatabaseTable } from '../prediction/interfaces';
 
 /**
  * An interface representing ListWorkspaceModelResult.
@@ -52,6 +53,7 @@ export interface RegisteredModel extends RegisteredModelDetails {
 	id: number;
 	artifactName: string;
 	content?: string;
+	table: DatabaseTable;
 }
 
 export interface ModelParameter {

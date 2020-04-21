@@ -20,7 +20,7 @@ import { OutputAreaComponent } from 'sql/workbench/contrib/notebook/browser/cell
 import { OutputComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/output.component';
 import { StdInComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/stdin.component';
 import { PlaceholderCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/placeholderCell.component';
-import LoadingSpinner from 'sql/workbench/browser/modelComponents/loadingSpinner.component';
+import LoadingSpinner from 'sql/base/browser/ui/loadingSpinner/loadingSpinner.component';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
 import { SelectBox } from 'sql/platform/browser/selectBox/selectBox.component';
 import { InputBox } from 'sql/platform/browser/inputbox/inputBox.component';
