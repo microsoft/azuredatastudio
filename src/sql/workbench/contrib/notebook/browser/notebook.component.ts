@@ -57,9 +57,7 @@ import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
-
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
-
 
 @Component({
 	selector: NOTEBOOK_SELECTOR,
@@ -666,10 +664,17 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	navigateToSection(id: string): void {
 		id = id.toLowerCase();
+		let chromeHeight: number = 0;
+		let elBody: HTMLElement = document.body;
+		let tabBar = elBody.querySelector('.title.tabs') as HTMLElement;
+		let actionBar = elBody.querySelector('.editor-toolbar.actionbar-container') as HTMLElement;
 		let section = find(this.getSectionElements(), s => s.relativeUri && s.relativeUri.toLowerCase() === id);
 		if (section) {
 			// Scroll this section to the top of the header instead of just bringing header into view.
-			let scrollTop = section.headerEl.offsetTop;
+			if (tabBar && actionBar) {
+				chromeHeight = tabBar.scrollHeight + actionBar.scrollHeight;
+			}
+			let scrollTop: number = section.headerEl.getBoundingClientRect().top - (chromeHeight + 10);
 			(<HTMLElement>this.container.nativeElement).scrollTo({
 				top: scrollTop,
 				behavior: 'smooth'

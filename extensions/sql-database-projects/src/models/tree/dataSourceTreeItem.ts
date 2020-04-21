@@ -53,7 +53,7 @@ export class SqlConnectionDataSourceTreeItem extends DataSourceTreeItem {
 
 	public get treeItem(): vscode.TreeItem {
 		let item = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Collapsed);
-		item.label = `${this.dataSource.name} (${this.dataSource.friendlyName})`;
+		item.label = `${this.dataSource.name} (${this.dataSource.typeFriendlyName})`;
 
 		return item;
 	}

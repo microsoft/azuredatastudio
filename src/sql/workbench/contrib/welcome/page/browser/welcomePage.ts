@@ -245,6 +245,42 @@ class WelcomePage extends Disposable {
 		if (prodName) {
 			prodName.innerHTML = this.productService.nameLong;
 		}
+
+		const welcomeContainerContainer = document.querySelector('.welcomePageContainer').parentElement as HTMLElement;
+		const adsHomepage = document.querySelector('.ads_homepage') as HTMLElement;
+		adsHomepage.classList.add('responsive-container');
+
+		const observer = new MutationObserver(parseMutations);
+		observer.observe(welcomeContainerContainer, {
+			attributes: true,
+			attributeFilter: ['style']
+		});
+		const defaultBreakpoints = { SM: 480, MD: 640, LG: 1024, XL: 1365 };
+		const startingWidth = parseInt(welcomeContainerContainer.style.width);
+		adsHomepage.classList.add('XS');
+		Object.keys(defaultBreakpoints).forEach(function (breakpoint) {
+			let minWidth = defaultBreakpoints[breakpoint];
+			if (startingWidth >= minWidth) {
+				adsHomepage.classList.add(breakpoint);
+			}
+			else {
+				adsHomepage.classList.remove(breakpoint);
+			}
+		});
+
+		function parseMutations() {
+			const width = parseInt(welcomeContainerContainer.style.width);
+			Object.keys(defaultBreakpoints).forEach(function (breakpoint) {
+				let minWidth = defaultBreakpoints[breakpoint];
+				if (width >= minWidth) {
+					adsHomepage.classList.add(breakpoint);
+				}
+				else {
+					adsHomepage.classList.remove(breakpoint);
+				}
+			});
+		}
+
 		recentlyOpened.then(async ({ workspaces }) => {
 			// Filter out the current workspace
 			workspaces = workspaces.filter(recent => !this.contextService.isCurrentWorkspace(isRecentWorkspace(recent) ? recent.workspace : recent.folderUri));
@@ -279,22 +315,13 @@ class WelcomePage extends Disposable {
 				}
 			}
 		}));
-		this.addVideoImageSource();
 		this.createDropDown();
 		this.createWidePreviewToolTip();
 		this.createPreviewModal();
 	}
 
-	private addVideoImageSource() {
-		const videoIntroduction = document.querySelector('#video_introduction') as HTMLImageElement;
-		const videoOverview = document.querySelector('#video_overview') as HTMLImageElement;
-
-		videoIntroduction.src = require.toUrl('./../../media/video_introduction.png');
-		videoOverview.src = require.toUrl('./../../media/video_overview.png');
-	}
-
 	private createWidePreviewToolTip() {
-		const previewLink = document.querySelector('#preview_link_wide');
+		const previewLink = document.querySelector('#tool_tip_container_wide');
 		const tooltip = document.querySelector('#tooltip_text_wide');
 		const previewModalBody = document.querySelector('.preview_tooltip_body') as HTMLElement;
 		const previewModalHeader = document.querySelector('.preview_tooltip_header') as HTMLElement;
@@ -625,40 +652,47 @@ class WelcomePage extends Disposable {
 				description.innerHTML = extension.description;
 				header.innerHTML = extension.name;
 
-				const extensionListContainer = document.querySelector('.extension_pack_extension_list');
-				extensionPackExtensions.forEach((j) => {
-					const outerContainerElem = document.createElement('div');
-					const flexContainerElem = document.createElement('div');
-					const iconContainerElem = document.createElement('img');
-					const descriptionContainerElem = document.createElement('div');
-					const pElem = document.createElement('p');
-					const anchorElem = document.createElement('a');
-
-					const outerContainerClasses = ['extension_pack_extension_container', 'flex', 'flex_j_center'];
-					const flexContainerClasses = ['flex', 'flex_a_center'];
-
-					anchorElem.href = j.link;
-
-					outerContainerElem.classList.add(...outerContainerClasses);
-					flexContainerElem.classList.add(...flexContainerClasses);
-					iconContainerElem.classList.add('icon');
-					pElem.classList.add('extension_pack_extension_list_header');
-					descriptionContainerElem.classList.add('description');
-
-					outerContainerElem.appendChild(flexContainerElem);
-					flexContainerElem.appendChild(iconContainerElem);
-					flexContainerElem.appendChild(descriptionContainerElem);
-					descriptionContainerElem.appendChild(anchorElem);
-					anchorElem.appendChild(pElem);
-
-					pElem.innerText = j.name;
-					iconContainerElem.src = j.icon;
-
-					extensionListContainer.appendChild(outerContainerElem);
-				});
+				this.addExtensionPackList(container, '.extension_pack_extension_list');
 			});
 		}
 	}
+
+	private addExtensionPackList(container: HTMLElement, listSelector: string) {
+		const list = container.querySelector(listSelector);
+		if (list) {
+			extensionPackExtensions.forEach((j) => {
+				const outerContainerElem = document.createElement('div');
+				const flexContainerElem = document.createElement('div');
+				const iconContainerElem = document.createElement('img');
+				const descriptionContainerElem = document.createElement('div');
+				const pElem = document.createElement('p');
+				const anchorElem = document.createElement('a');
+
+				const outerContainerClasses = ['extension_pack_extension_container', 'flex', 'flex_j_center'];
+				const flexContainerClasses = ['flex', 'flex_a_center'];
+
+				anchorElem.href = j.link;
+
+				outerContainerElem.classList.add(...outerContainerClasses);
+				flexContainerElem.classList.add(...flexContainerClasses);
+				iconContainerElem.classList.add('icon');
+				pElem.classList.add('extension_pack_extension_list_header');
+				descriptionContainerElem.classList.add('description');
+
+				outerContainerElem.appendChild(flexContainerElem);
+				flexContainerElem.appendChild(iconContainerElem);
+				flexContainerElem.appendChild(descriptionContainerElem);
+				descriptionContainerElem.appendChild(anchorElem);
+				anchorElem.appendChild(pElem);
+
+				pElem.innerText = j.name;
+				iconContainerElem.src = j.icon;
+
+				list.appendChild(outerContainerElem);
+			});
+		}
+	}
+
 
 	private installExtension(extensionSuggestion: ExtensionSuggestion): void {
 		/* __GDPR__FRAGMENT__

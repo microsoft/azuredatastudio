@@ -14,6 +14,7 @@ import { FormLayout, FormItemLayout } from 'azdata';
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { find } from 'vs/base/common/arrays';
 import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { convertSize } from 'sql/base/browser/dom';
 
 export interface TitledFormItemLayout {
 	title: string;
@@ -125,7 +126,7 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 	}
 
 	public getFormWidth(): string {
-		return this.convertSize(this._formLayout && this._formLayout.width, '');
+		return convertSize(this._formLayout && this._formLayout.width, '');
 	}
 
 	public getFormPadding(): string {
@@ -133,17 +134,17 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 	}
 
 	public getFormHeight(): string {
-		return this.convertSize(this._formLayout && this._formLayout.height, '');
+		return convertSize(this._formLayout && this._formLayout.height, '');
 	}
 
 	public getComponentWidth(item: FormItem): string {
 		let itemConfig = item.config;
-		return (itemConfig && itemConfig.componentWidth) ? this.convertSize(itemConfig.componentWidth, '') : '';
+		return (itemConfig && itemConfig.componentWidth) ? convertSize(itemConfig.componentWidth, '') : '';
 	}
 
 	public getRowHeight(item: FormItem): string {
 		let itemConfig = item.config;
-		return (itemConfig && itemConfig.componentHeight) ? this.convertSize(itemConfig.componentHeight, '') : '';
+		return (itemConfig && itemConfig.componentHeight) ? convertSize(itemConfig.componentHeight, '') : '';
 	}
 
 	public isItemRequired(item: FormItem): boolean {
@@ -177,7 +178,7 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 			defaultFontSize = '12px';
 		}
 		let itemConfig = item.config;
-		return itemConfig && itemConfig.titleFontSize ? this.convertSize(itemConfig.titleFontSize, defaultFontSize) : defaultFontSize;
+		return itemConfig && itemConfig.titleFontSize ? convertSize(itemConfig.titleFontSize, defaultFontSize) : defaultFontSize;
 	}
 
 	public getActionComponents(item: FormItem): FormItem[] {
