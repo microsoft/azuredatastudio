@@ -19,8 +19,25 @@ export const folder: string = 'folder';
 
 // Object maps
 
-export const projectScriptTypeMap: Record<string, ProjectScriptType> = {};
-export const projectScriptTypes: ProjectScriptType[] = [];
+let scriptTypeMap: Record<string, ProjectScriptType> = {};
+
+export function projectScriptTypeMap(): Record<string, ProjectScriptType> {
+	if (Object.keys(scriptTypeMap).length === 0) {
+		throw new Error('Templates must be loaded from file before attempting to use.');
+	}
+
+	return scriptTypeMap;
+}
+
+let scriptTypes: ProjectScriptType[] = [];
+
+export function projectScriptTypes(): ProjectScriptType[] {
+	if (scriptTypes.length === 0) {
+		throw new Error('Templates must be loaded from file before attempting to use.');
+	}
+
+	return scriptTypes;
+}
 
 export async function loadTemplates(templateFolderPath: string) {
 
@@ -31,19 +48,19 @@ export async function loadTemplates(templateFolderPath: string) {
 	await loadObjectTypeInfo(view, constants.viewFriendlyName, templateFolderPath, 'newTsqlViewTemplate.sql');
 	await loadObjectTypeInfo(storedProcedure, constants.storedProcedureFriendlyName, templateFolderPath, 'newTsqlStoredProcedureTemplate.sql');
 
-	for (const scriptType of projectScriptTypes) {
+	for (const scriptType of scriptTypes) {
 		if (Object.keys(projectScriptTypeMap).find(s => s === scriptType.type.toLocaleLowerCase() || s === scriptType.friendlyName.toLocaleLowerCase())) {
 			throw new Error(`Script type map already contains ${scriptType.type} or its friendlyName.`);
 		}
 
-		projectScriptTypeMap[scriptType.type.toLocaleLowerCase()] = scriptType;
-		projectScriptTypeMap[scriptType.friendlyName.toLocaleLowerCase()] = scriptType;
+		scriptTypeMap[scriptType.type.toLocaleLowerCase()] = scriptType;
+		scriptTypeMap[scriptType.friendlyName.toLocaleLowerCase()] = scriptType;
 	}
 }
 
 async function loadObjectTypeInfo(key: string, friendlyName: string, templateFolderPath: string, fileName: string) {
 	const template = await loadTemplate(templateFolderPath, fileName);
-	projectScriptTypes.push(new ProjectScriptType(key, friendlyName, template));
+	scriptTypes.push(new ProjectScriptType(key, friendlyName, template));
 }
 
 async function loadTemplate(templateFolderPath: string, fileName: string): Promise<string> {
@@ -60,4 +77,12 @@ export class ProjectScriptType {
 		this.friendlyName = friendlyName;
 		this.templateScript = templateScript;
 	}
+}
+
+/**
+ * For testing purposes only
+ */
+export function reset() {
+	scriptTypeMap = {};
+	scriptTypes = [];
 }

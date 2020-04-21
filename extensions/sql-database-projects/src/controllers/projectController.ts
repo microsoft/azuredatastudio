@@ -133,7 +133,7 @@ export class ProjectsController {
 		if (!itemTypeName) {
 			let itemFriendlyNames: string[] = [];
 
-			for (const itemType of templates.projectScriptTypes) {
+			for (const itemType of templates.projectScriptTypes()) {
 				itemFriendlyNames.push(itemType.friendlyName);
 			}
 
@@ -146,7 +146,7 @@ export class ProjectsController {
 			}
 		}
 
-		const itemType = templates.projectScriptTypeMap[itemTypeName.toLocaleLowerCase()];
+		const itemType = templates.projectScriptTypeMap()[itemTypeName.toLocaleLowerCase()];
 		const itemObjectName = await this.promptForNewObjectName(itemType, project);
 
 		if (!itemObjectName) {
