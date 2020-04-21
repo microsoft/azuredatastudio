@@ -5,7 +5,7 @@
 
 import 'vs/css!./dashboardGridContainer';
 
-import { Component, Inject, Input, forwardRef, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, ContentChild } from '@angular/core';
+import { Component, Inject, Input, forwardRef, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, ViewChild } from '@angular/core';
 
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { TabConfig, WidgetConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
@@ -206,7 +206,7 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 
 	@ViewChildren(DashboardWidgetWrapper) private _widgets: QueryList<DashboardWidgetWrapper>;
 	@ViewChildren(WebviewContent) private _webViews: QueryList<WebviewContent>;
-	@ContentChild(ScrollableDirective) private _scrollable: ScrollableDirective;
+	@ViewChild(ScrollableDirective) private _scrollable: ScrollableDirective;
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ElementRef)) protected _el: ElementRef,

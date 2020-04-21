@@ -34,9 +34,11 @@ export default () => `
 					<div class="row start">
 						<div class="header_top_nav">
 							<div class="flex">
-								<div class="icon"></div>
+								<div class="icon sm"></div>
 								<div class="title">
-									<h1 class="caption"></h1>
+									<div class="caption_container">
+										<span class="icon xs"></span><h1 class="caption"></h1>
+									</div>
 									<div class="flex btn_container">
 										<div>
 											<button id="dropdown_btn" class="btn btn_primary dropdown" role="navigation" aria-haspopup="true" aria-controls="dropdown">
@@ -67,7 +69,7 @@ export default () => `
 					<div class="row header_bottom_nav_tiles ads_grid">
 						<div class="col">
 							<a class="header_bottom_nav_tile_link" href="command:registeredServers.addConnection">
-								<div class="header_bottom_nav_tile tile tile_connection content">
+								<div class="header_bottom_nav_tile tile tile_connection">
 									<h3>${escape(localize('welcomePage.createConnection', "Create a connection"))}</h3>
 									<p>${escape(localize('welcomePage.createConnectionBody', "Connect to a database instance through the connection dialog."))}</p>
 									<div class="icon connection"></div>
@@ -77,7 +79,7 @@ export default () => `
 						<div class="col">
 							<a class="header_bottom_nav_tile_link"
 								href="command:workbench.action.files.newUntitledFile">
-								<div class="header_bottom_nav_tile tile tile_query content">
+								<div class="header_bottom_nav_tile tile tile_query">
 									<h3>${escape(localize('welcomePage.runQuery', "Run a query"))}</h3>
 									<p>${escape(localize('welcomePage.runQueryBody', "Interact with data through a query editor."))}</p>
 									<div class="icon query"></div>
@@ -86,7 +88,7 @@ export default () => `
 						</div>
 						<div class="col">
 							<a class="header_bottom_nav_tile_link" href="command:notebook.command.new">
-								<div class="header_bottom_nav_tile tile tile_notebook content">
+								<div class="header_bottom_nav_tile tile tile_notebook">
 									<h3>${escape(localize('welcomePage.createNotebook', "Create a notebook"))}</h3>
 									<p>${escape(localize('welcomePage.createNotebookBody', "Build a new notebook using a native notebook editor."))}</p>
 									<div class="icon notebook"></div>
@@ -95,7 +97,7 @@ export default () => `
 						</div>
 						<div class="col">
 							<a class="header_bottom_nav_tile_link" href="command:azdata.resource.deploy">
-								<div class="header_bottom_nav_tile tile tile_server content">
+								<div class="header_bottom_nav_tile tile tile_server">
 									<h3>${escape(localize('welcomePage.deployServer', "Deploy a server"))}</h3>
 									<p>${escape(localize('welcomePage.deployServerBody', "Create a new instance of SQL Server on the platform of your choice."))}</p>
 									<div class="icon server"></div>
@@ -133,7 +135,7 @@ export default () => `
 						</div>
 					</div>
 					<p class="showOnStartup"><input type="checkbox" id="showOnStartup" class="checkbox">
-						<label class="caption" for="showOnStartup">${escape(localize('welcomePage.showOnStartup', "Show welcome page on startup"))}</label>
+						<label for="showOnStartup">${escape(localize('welcomePage.showOnStartup', "Show welcome page on startup"))}</label>
 					</p>
 				</div>
 				<div class="getting_started_container">
@@ -160,10 +162,10 @@ export default () => `
 
 						<div class="videos_container row">
 							<h2>Videos</h2>
-							<div class="flex flex_d_row">
+							<div class="flex flex_container_video">
 								<div class="videos_container_video">
 									<a href="https://www.youtube.com/watch?v=Orv7fptVoUA" class="video overview">
-									<img id="video_overview" />
+									<img src="${require.toUrl('./../../media/video_overview.png')}" class="video_overview" id="video_overview" />
 										<h4>${escape(localize('welcomePage.videoDescriptionOverview',
 					"Overview of Azure Data Studio"))}</h4>
 									</a>
@@ -171,7 +173,7 @@ export default () => `
 								</div>
 								<div class="videos_container_video">
 									<a href="https://www.youtube.com/watch?v=Nt4kIHQ0IOc" class="video overview">
-									<img id="video_introduction" />
+									<img src="${require.toUrl('./../../media/video_introduction.png')}" class="video_introduction" id="video_introduction" />
 										<h4>${escape(localize('welcomePage.videoDescriptionIntroduction',
 						"Introduction to Azure Data Studio Notebooks | Data Exposed"))}</h4>
 									</a>

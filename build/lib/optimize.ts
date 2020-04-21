@@ -32,12 +32,11 @@ function log(prefix: string, message: string): void {
 	fancyLog(ansiColors.cyan('[' + prefix + ']'), message);
 }
 
-// {{SQL CARBON EDIT}}
 export function loaderConfig(emptyPaths?: string[]) {
 	const result: any = {
 		paths: {
 			'vs': 'out-build/vs',
-			'sql': 'out-build/sql',
+			'sql': 'out-build/sql', // {{SQL CARBON EDIT}}
 			'vscode': 'empty:'
 		},
 		nodeModules: emptyPaths || []
