@@ -53,7 +53,9 @@
           "kusto"
         ],
         "extensions": [
-          ".kusto"
+          ".csl",
+          ".kusto",
+          ".kql"
         ],
         "configuration": "./language-configuration.json"
       }

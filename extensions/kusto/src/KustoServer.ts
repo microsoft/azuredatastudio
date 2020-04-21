@@ -136,7 +136,7 @@ function generateHandleServerProviderEvent() {
 
 function getClientOptions(context: AppContext): ClientOptions {
 	return {
-		documentSelector: ['kusto'],
+		documentSelector: ['kusto'],		// TodoKusto: This should be same as the language id in package.json. See if we can surface that better later.
 		synchronize: {
 			configurationSection: Constants.extensionConfigSectionName
 		},
