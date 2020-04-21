@@ -481,7 +481,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				if (callbacks.onConnectSuccess) {
 					callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
 				}
-				if (options.saveTheConnection) {
+				if (options.saveTheConnection || isEdit) {
 					let matcher: interfaces.ProfileMatcher;
 					if (isEdit) {
 						matcher = (a: ConnectionProfile, b: ConnectionProfile) => {
