@@ -9,7 +9,7 @@ import * as constants from './constants';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import * as azdata from 'azdata';
 
-export function createMssqlApi(context: AppContext): IExtension {
+export function createKustoApi(context: AppContext): IExtension {
 	return {
 		getMssqlObjectExplorerBrowser(): MssqlObjectExplorerBrowser {
 			return {

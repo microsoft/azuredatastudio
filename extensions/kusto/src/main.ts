@@ -19,7 +19,7 @@ import { registerSearchServerCommand } from './objectExplorerNodeProvider/comman
 import { MssqlIconProvider } from './iconProvider';
 //import { getBookExtensionContributions } from './dashboard/bookExtensions';
 //import { registerBooksWidget } from './dashboard/bookWidget';
-import { createMssqlApi } from './kustoApiFactory';
+import { createKustoApi } from './kustoApiFactory';
 import { localize } from './localize';
 import { KustoServer } from './KustoServer';
 import { promises as fs } from 'fs';
@@ -60,7 +60,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	context.subscriptions.push(server);
 	await server.start(appContext);
 
-	return createMssqlApi(appContext);
+	return createKustoApi(appContext);
 }
 
 const logFiles = ['resourceprovider.log', 'kustoservice.log', 'credentialstore.log'];
