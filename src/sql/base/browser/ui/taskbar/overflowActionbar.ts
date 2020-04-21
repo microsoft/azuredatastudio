@@ -42,7 +42,7 @@ export class OverflowActionBar extends ActionBar {
 
 		this._overflow = document.createElement('ul');
 		this._overflow.id = 'toolbarOverflow';
-		this._overflow.className = 'toolbarOverflow';
+		this._overflow.className = 'toolbar-overflow';
 		this._overflow.setAttribute('role', 'menu');
 		this._domNode.appendChild(this._overflow);
 

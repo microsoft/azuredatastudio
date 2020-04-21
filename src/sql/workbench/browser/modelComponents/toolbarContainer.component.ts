@@ -16,6 +16,8 @@ import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dash
 import { debounce } from 'vs/base/common/decorators';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { EDITOR_PANE_BACKGROUND, TOOLBAR_OVERFLOW_SHADOW, DASHBOARD_BORDER } from 'vs/workbench/common/theme';
 
 export enum Orientation {
 	Horizontal = 'horizontal',
@@ -55,7 +57,7 @@ export class ToolbarItem {
 			</ng-container>
 			<a #moreActionsButton class="moreActions action-label codicon toggle-more" role="button" tabindex="0" aria-haspopup="true"> </a>
 		</div>
-		<div #overflow class="toolbarOverflow" role="menu">
+		<div #overflow class="toolbar-overflow" role="menu">
 		</div>
 	`
 })
@@ -284,9 +286,9 @@ export default class ToolbarContainer extends ContainerBase<ToolbarItemConfig> i
 		}
 
 		if (this._overflow) {
-			classes.push('toolbar-overflow');
+			classes.push('overflow');
 		} else {
-			classes.push('toolbar-wrap');
+			classes.push('wrap');
 		}
 		return classes.join(' ');
 	}
@@ -295,3 +297,26 @@ export default class ToolbarContainer extends ContainerBase<ToolbarItemConfig> i
 		return this._orientation === Orientation.Horizontal;
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const overflowBackground = theme.getColor(EDITOR_PANE_BACKGROUND);
+	if (overflowBackground) {
+		collector.addRule(`modelview-toolbarcontainer .toolbar-overflow {
+			background-color: ${overflowBackground};
+		}`);
+	}
+
+	const overflowShadow = theme.getColor(TOOLBAR_OVERFLOW_SHADOW);
+	if (overflowShadow) {
+		collector.addRule(`modelview-toolbarcontainer .toolbar-overflow {
+			box-shadow: 0px 4px 4px ${overflowShadow};
+		}`);
+	}
+
+	const border = theme.getColor(DASHBOARD_BORDER);
+	if (border) {
+		collector.addRule(`modelview-toolbarcontainer .toolbar-overflow {
+			border: 1px solid ${border};
+		}`);
+	}
+});

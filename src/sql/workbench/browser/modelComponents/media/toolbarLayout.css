@@ -23,11 +23,11 @@
 	flex-direction: column;
 }
 
-.modelview-toolbar-container .toolbar-overflow {
+.modelview-toolbar-container .overflow {
 	flex-wrap: none;
 }
 
-.modelview-toolbar-container .toolbar-wrap {
+.modelview-toolbar-container .wrap {
 	flex-wrap: wrap;
 }
 
@@ -80,11 +80,11 @@
 	transform: scale(1.272019649, 1.272019649);
 }
 
-modelview-toolbarcontainer .toolbarOverflow modelview-button a.monaco-button.monaco-text-button.icon {
+modelview-toolbarcontainer .toolbar-overflow modelview-button a.monaco-button.monaco-text-button.icon {
 	background-size: 16px;
 }
 
-modelview-toolbarcontainer .toolbarOverflow {
+modelview-toolbarcontainer .toolbar-overflow {
 	display: none;
 	width: 150px;
 	position: fixed;
@@ -94,7 +94,13 @@ modelview-toolbarcontainer .toolbarOverflow {
 	margin-right: 5px;
 }
 
-modelview-toolbarcontainer .toolbarOverflow > .modelview-toolbar-item {
+modelview-toolbarcontainer .toolbar-overflow .taskbarSeparator {
+	height: 1px;
+	width: 100%;
+	margin-left: 0;
+}
+
+modelview-toolbarcontainer .toolbar-overflow > .modelview-toolbar-item {
 	padding-left: 5px;
 }
 
