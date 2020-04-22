@@ -9,7 +9,7 @@ import * as nls from 'vscode-nls';
 import { DialogBase } from './dialogBase';
 import { INotebookService } from '../services/notebookService';
 import { DialogInfo, instanceOfNotebookBasedDialogInfo, NotebookBasedDialogInfo } from '../interfaces';
-import { Validator, initializeDialog, InputComponents, setModelValues, InputValueTransformer, FieldTypeComponent } from './modelViewUtils';
+import { Validator, initializeDialog, InputComponents, setModelValues, InputValueTransformer, InputFieldComponent } from './modelViewUtils';
 import { Model } from './model';
 import { EOL } from 'os';
 import { IPlatformService } from '../services/platformService';
@@ -45,7 +45,7 @@ export class DeploymentInputDialog extends DialogBase {
 			onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 				this._toDispose.push(disposable);
 			},
-			onNewInputComponentCreated: (name: string, component: FieldTypeComponent, inputValueTransformer?: InputValueTransformer): void => {
+			onNewInputComponentCreated: (name: string, component: InputFieldComponent, inputValueTransformer?: InputValueTransformer): void => {
 				this.inputComponents[name] = { component: component, inputValueTransformer: inputValueTransformer };
 			},
 			onNewValidatorCreated: (validator: Validator): void => {

@@ -20,8 +20,8 @@ const localize = nls.loadMessageBundle();
 
 export type Validator = () => { valid: boolean, message: string };
 export type InputValueTransformer = (inputValue: string) => string;
-export type FieldTypeComponent = azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | azdata.RadioButtonComponent;
-export type InputComponents = { [s: string]: { component: FieldTypeComponent; inputValueTransformer?: InputValueTransformer } };
+export type InputFieldComponent = azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | azdata.RadioButtonComponent;
+export type InputComponents = { [s: string]: { component: InputFieldComponent; inputValueTransformer?: InputValueTransformer } };
 
 export function getInputBoxComponent(name: string, inputComponents: InputComponents): azdata.InputBoxComponent {
 	return <azdata.InputBoxComponent>inputComponents[name].component;
@@ -73,7 +73,7 @@ interface CreateContext {
 	container: azdata.window.Dialog | azdata.window.Wizard;
 	onNewValidatorCreated: (validator: Validator) => void;
 	onNewDisposableCreated: (disposable: vscode.Disposable) => void;
-	onNewInputComponentCreated: (name: string, component: azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | azdata.RadioButtonComponent, inputValueTransformer?: InputValueTransformer) => void;
+	onNewInputComponentCreated: (name: string, component: InputFieldComponent, inputValueTransformer?: InputValueTransformer) => void;
 }
 
 export function createTextInput(view: azdata.ModelView, inputInfo: { defaultValue?: string, ariaLabel: string, required?: boolean, placeHolder?: string, width?: string, enabled?: boolean }): azdata.InputBoxComponent {
@@ -384,13 +384,6 @@ function processTextField(context: FieldContext): void {
 
 	}
 }
-// Note that object must be an object or array,
-// NOT a primitive value like string, number, etc.
-// let objIdMap=new WeakMap, objectCount = 0;
-// function objectId(object: any){
-//   if (!objIdMap.has(object)) { objIdMap.set(object,++objectCount); }
-//   return objIdMap.get(object);
-// }
 
 function processPasswordField(context: FieldContext): void {
 	const passwordLabel = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
@@ -572,7 +565,6 @@ async function createRadioOptions(context: FieldContext, getClusterContextNotFou
 async function loadOrReloadRadioOptions(context: FieldContext, optionsList: azdata.DivContainer, radioOptionsLoadingComponent: azdata.LoadingComponent, getRadioButtonInfo: (() => Promise<{ values: string[] | azdata.CategoryValue[]; defaultValue: string; }>) | undefined, getClusterContextNotFoundErrorMessage: () => string): Promise<void> {
 	radioOptionsLoadingComponent.loading = true;
 	optionsList.clearItems();
-	const optionsMap: Map<string, string> = new Map<string, string>();
 	let options: (string[] | azdata.CategoryValue[]) = context.fieldInfo.options!;
 	let defaultValue: string = context.fieldInfo.defaultValue!;
 	let errorMessage = (getClusterContextNotFoundErrorMessage && getClusterContextNotFoundErrorMessage()) || localize('radioOptions.errorLoadingRadioOptions', "No options found or an error ocurred while loading the options");
@@ -590,32 +582,23 @@ async function loadOrReloadRadioOptions(context: FieldContext, optionsList: azda
 
 	if (options && options.length > 0) {
 		options.forEach((op: string | azdata.CategoryValue) => {
-			if (typeof op === 'string') {
-				optionsMap.set(op, op);
-			}
-			else {
-				const option: azdata.CategoryValue = op as azdata.CategoryValue;
-				optionsMap.set(option.name, option.displayName);
-			}
-		});
-		for (const key of optionsMap.keys()) {
-			let option = context.view!.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
-				label: optionsMap.get(key),
-				checked: optionsMap.get(key) === defaultValue,
-				name: key
+			const option: azdata.CategoryValue = (typeof op === 'string') ? { name: op, displayName: op } : op as azdata.CategoryValue;
+			const radioOption = context.view!.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
+				label: option.displayName,
+				checked: option.displayName === defaultValue,
+				name: option.name,
 			}).component();
-			if (option.checked) {
-				context.onNewInputComponentCreated(context.fieldInfo.variableName!, option);
+			if (radioOption.checked) {
+				context.onNewInputComponentCreated(context.fieldInfo.variableName!, radioOption);
 			}
-			context.onNewDisposableCreated(option.onDidClick(() => {
+			context.onNewDisposableCreated(radioOption.onDidClick(() => {
 				// reset checked status of all remaining radioButtons
-				optionsList.items.filter(otherOption => otherOption !== option).forEach(radioOption => (radioOption as azdata.RadioButtonComponent).checked = false);
-				context.onNewInputComponentCreated(context.fieldInfo.variableName!, option!);
+				optionsList.items.filter(otherOption => otherOption !== radioOption).forEach(otherOption => (otherOption as azdata.RadioButtonComponent).checked = false);
+				context.onNewInputComponentCreated(context.fieldInfo.variableName!, radioOption!);
 			}));
-			optionsList.addItem(option);
-		}
-	}
-	else {
+			optionsList.addItem(radioOption);
+		});
+	} else {
 		const errorLoadingRadioOptionsLabel = context.view!.modelBuilder.text().withProperties({ value: errorMessage }).component();
 		optionsList.addItem(errorLoadingRadioOptionsLabel);
 	}

@@ -105,7 +105,7 @@ export interface WizardInfo {
 	type: BdcDeploymentType;
 }
 
-export interface NotebookWizardInfo extends SharedFieldAttributes, WizardInfoBase {
+export interface NotebookWizardInfo extends WizardInfoBase {
 	notebook: string | NotebookInfo;
 }
 
