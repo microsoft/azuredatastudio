@@ -27,6 +27,7 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
@@ -210,7 +211,8 @@ export class CollapseCellsAction extends ToggleableAction {
 
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>) {
+	private _showAllKernels: boolean = false;
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationSerivce: IConfigurationService) {
 		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false, ariaLabel: kernelLabel } as ISelectBoxOptionsWithLabel);
 
 		if (modelReady) {
@@ -222,6 +224,12 @@ export class KernelsDropdown extends SelectBox {
 		}
 
 		this.onDidSelect(e => this.doChangeKernel(e.selected));
+		this.getAllKernelConfigValue();
+		this._register(this._configurationSerivce.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration('notebook.showAllKernels')) {
+				this.getAllKernelConfigValue();
+			}
+		}));
 	}
 
 	updateModel(model: INotebookModel): void {
@@ -235,7 +243,7 @@ export class KernelsDropdown extends SelectBox {
 
 	// Update SelectBox values
 	public updateKernel(kernel: azdata.nb.IKernel) {
-		let kernels: string[] = [...new Set(this.model.specs.kernels.map(a => a.display_name).concat(this.model.standardKernelsDisplayName()))];
+		let kernels: string[] = this._showAllKernels ? [...new Set(this.model.specs.kernels.map(a => a.display_name).concat(this.model.standardKernelsDisplayName()))] : this.model.standardKernelsDisplayName();
 		if (kernel && kernel.isReady) {
 			let standardKernel = this.model.getStandardKernelFromName(kernel.name);
 			if (kernels) {
@@ -258,6 +266,10 @@ export class KernelsDropdown extends SelectBox {
 	public doChangeKernel(displayName: string): void {
 		this.setOptions([msgChanging], 0);
 		this.model.changeKernel(displayName);
+	}
+
+	private getAllKernelConfigValue(): void {
+		this._showAllKernels = !!this._configurationSerivce.getValue('notebook.showAllKernels');
 	}
 }
 
