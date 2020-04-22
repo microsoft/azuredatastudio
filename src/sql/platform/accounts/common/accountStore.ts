@@ -8,15 +8,20 @@ import { AccountAdditionResult } from 'sql/platform/accounts/common/eventTypes';
 import { IAccountStore } from 'sql/platform/accounts/common/interfaces';
 import { deepClone } from 'vs/base/common/objects';
 import { firstIndex } from 'vs/base/common/arrays';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export default class AccountStore implements IAccountStore {
+	private readonly deprecatedProviders = ['azurePublicCloud'];
 	// CONSTANTS ///////////////////////////////////////////////////////////
 	public static MEMENTO_KEY: string = 'Microsoft.SqlTools.Accounts';
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _activeOperation?: Thenable<any>;
 
-	constructor(private _memento: { [key: string]: any }) { }
+	constructor(
+		private _memento: { [key: string]: any },
+		@ILogService readonly logService: ILogService
+	) { }
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	public addOrUpdate(newAccount: azdata.Account): Thenable<AccountAdditionResult> {
@@ -43,10 +48,37 @@ export default class AccountStore implements IAccountStore {
 
 	public getAllAccounts(): Thenable<azdata.Account[]> {
 		return this.doOperation(() => {
-			return this.readFromMemento();
+			return this.cleanupDeprecatedAccounts().then(() => {
+				return this.readFromMemento();
+			});
 		});
 	}
 
+	public cleanupDeprecatedAccounts(): Thenable<void> {
+		return this.readFromMemento()
+			.then(accounts => {
+				// No need to waste cycles
+				if (!accounts || accounts.length === 0) {
+					return Promise.resolve();
+				}
+				// Remove old accounts that are now deprecated
+				try {
+					accounts = accounts.filter(account => {
+						const providerKey = account?.key?.providerId;
+						// Account has no provider, remove it.
+						if (providerKey === undefined) {
+							return false;
+						}
+						// Returns true if the account isn't from a deprecated provider
+						return !this.deprecatedProviders.includes(providerKey);
+					});
+				} catch (ex) {
+					this.logService.error(ex);
+					return Promise.resolve();
+				}
+				return this.writeToMemento(accounts);
+			});
+	}
 
 	public remove(key: azdata.AccountKey): Thenable<boolean> {
 		return this.doOperation(() => {
