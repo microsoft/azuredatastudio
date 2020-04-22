@@ -80,6 +80,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _connectionUrisToDispose: string[] = [];
 	private _textCellsLoading: number = 0;
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[];
+	private _notebookProviderIds: Set<string> = new Set<string>();
 
 	public requestConnectionHandler: () => Promise<boolean>;
 
@@ -519,6 +520,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let provider = this._kernelDisplayNameToNotebookProviderIds.get(this._savedKernelInfo.display_name);
 			if (provider && provider !== this._providerId) {
 				this._providerId = provider;
+			} else if (!provider) {
+				this._notebookProviderIds.forEach(p => {
+					if (p !== SQL_NOTEBOOK_PROVIDER) {
+						// We don't know which provider it is before that provider is chosen to query its specs. Choosing the "last" one registered.
+						this._providerId = p;
+					}
+				});
 			}
 			this._defaultKernel = this._savedKernelInfo;
 		} else if (this._defaultKernel) {
@@ -965,6 +973,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				}
 				this._kernelDisplayNameToConnectionProviderIds.set(displayName, kernel.connectionProviderIds);
 				this._kernelDisplayNameToNotebookProviderIds.set(displayName, kernel.notebookProvider);
+				this._notebookProviderIds.add(kernel.notebookProvider);
 			});
 		}
 	}
