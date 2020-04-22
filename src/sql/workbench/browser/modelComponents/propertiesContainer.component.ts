@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 
 import * as azdata from 'azdata';
-import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
+import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { PropertiesContainer, DisplayProperty } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
 
@@ -23,7 +23,7 @@ export interface DisplayPropertyConfig {
 		<properties-container> </properties-container>
 	`
 })
-export default class PropertiesContainerComponent extends ContainerBase<DisplayPropertyConfig> implements IComponent, OnDestroy {
+export default class PropertiesContainerComponent extends ComponentBase implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
@@ -37,10 +37,6 @@ export default class PropertiesContainerComponent extends ContainerBase<DisplayP
 
 	ngOnInit(): void {
 		this.baseInit();
-	}
-
-	ngOnDestroy(): void {
-		this.baseDestroy();
 	}
 
 	setLayout(layout: any): void {
