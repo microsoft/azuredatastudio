@@ -32,10 +32,4 @@ export abstract class BasePage {
 	public async onPageLeave(): Promise<boolean> {
 		return true;
 	}
-
-	/**
-	 * Sets up a navigation validator.
-	 * This will be called right before onPageEnter().
-	 */
-	public abstract setupNavigationValidator(): void;
 }

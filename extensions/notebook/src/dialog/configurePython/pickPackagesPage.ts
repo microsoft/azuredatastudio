@@ -18,10 +18,4 @@ export class PickPackagesPage extends BasePage {
 	public async onPageLeave(): Promise<boolean> {
 		return true;
 	}
-
-	public setupNavigationValidator(): void {
-		this.instance.registerNavigationValidator(() => {
-			return true;
-		});
-	}
 }

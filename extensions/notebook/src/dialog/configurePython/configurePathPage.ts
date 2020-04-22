@@ -87,12 +87,6 @@ export class ConfigurePathPage extends BasePage {
 		return true;
 	}
 
-	public setupNavigationValidator(): void {
-		this.instance.registerNavigationValidator(() => {
-			return true;
-		});
-	}
-
 	private async updatePythonPathsDropdown(useExistingPython: boolean): Promise<void> {
 		await this.pythonDropdownLoader.updateProperties({ loading: true });
 		try {

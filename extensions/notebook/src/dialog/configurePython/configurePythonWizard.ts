@@ -120,14 +120,6 @@ export class ConfigurePythonWizard {
 		this.wizard.open();
 	}
 
-	public registerNavigationValidator(validator: (pageChangeInfo: azdata.window.WizardPageChangeInfo) => boolean) {
-		this.wizard.registerNavigationValidator(validator);
-	}
-
-	public changeDoneButtonLabel(label: string) {
-		this.wizard.doneButton.label = label;
-	}
-
 	public showErrorMessage(errorMsg: string) {
 		this.showStatusMessage(errorMsg, azdata.window.MessageLevel.Error);
 	}
