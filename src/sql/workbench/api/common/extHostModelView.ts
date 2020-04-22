@@ -256,6 +256,14 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
+	propertiesContainer(): azdata.ComponentBuilder<azdata.PropertiesContainerComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.PropertiesContainerComponent> = this.getComponentBuilder(new PropertiesContainerComponentWrapper(this._proxy, this._handle, id), id);
+
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	getComponentBuilder<T extends azdata.Component>(component: ComponentWrapper, id: string): ComponentBuilderImpl<T> {
 		let componentBuilder: ComponentBuilderImpl<T> = new ComponentBuilderImpl<T>(component);
 		this._componentBuilders.set(id, componentBuilder);
@@ -1743,6 +1751,27 @@ class TabbedPanelComponentWrapper extends ComponentWrapper implements azdata.Tab
 	public get onTabChanged(): vscode.Event<string> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
+	}
+}
+
+class PropertiesContainerComponentWrapper extends ComponentWrapper implements azdata.PropertiesContainerComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.PropertiesContainer, id);
+		this.properties = {};
+	}
+
+	public get displayProperties(): azdata.DisplayProperty[] {
+		return this.properties['displayProperties'];
+	}
+	public set displayProperties(v: azdata.DisplayProperty[]) {
+		this.setProperty('displayProperties', v);
+	}
+
+	public get loading(): boolean {
+		return this.properties['loading'];
+	}
+	public set loading(v: boolean) {
+		this.setProperty('loading', v);
 	}
 }
 

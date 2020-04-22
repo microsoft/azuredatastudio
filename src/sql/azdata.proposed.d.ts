@@ -129,6 +129,7 @@ declare module 'azdata' {
 		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent>;
 		tabbedPanel(): TabbedPanelComponentBuilder;
 		separator(): ComponentBuilder<SeparatorComponent>;
+		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent>;
 	}
 
 	export interface RadioCard {
@@ -303,6 +304,41 @@ declare module 'azdata' {
 
 	export interface CheckBoxProperties {
 		required?: boolean;
+	}
+
+	/**
+	 * A property to be displayed in the PropertiesContainerComponent
+	 */
+	export interface DisplayProperty {
+		/**
+		 * The name of the property to display
+		 */
+		displayName: string;
+		/**
+		 * The value of the property to display
+		 */
+		value: string;
+	}
+
+	/**
+	 * Component to display a list of property values.
+	 */
+	export interface PropertiesContainerComponent extends Component, PropertiesContainerComponentProperties {
+
+	}
+
+	/**
+	 * Properties for configuring a PropertiesContainerComponent
+	 */
+	export interface PropertiesContainerComponentProperties {
+		/**
+		 * The properties to display
+		 */
+		displayProperties?: DisplayProperty[];
+		/**
+		 * Whether the component is currently loading
+		 */
+		loading?: boolean;
 	}
 
 	export namespace nb {
