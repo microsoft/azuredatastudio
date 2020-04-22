@@ -29,7 +29,5 @@ export abstract class BasePage {
 	/**
 	 * This method is called when the user is leaving the page.
 	 */
-	public async onPageLeave(): Promise<boolean> {
-		return true;
-	}
+	public async abstract onPageLeave(): Promise<boolean>;
 }
