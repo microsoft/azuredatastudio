@@ -7,12 +7,14 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import AccountStore from 'sql/platform/accounts/common/accountStore';
 import { EventVerifierSingle } from 'sql/base/test/common/event';
+import { ConsoleLogService } from 'vs/platform/log/common/log';
 
+const consoleLogService = new ConsoleLogService;
 suite('Account Store Tests', () => {
 	test('AddOrUpdate - Uninitialized memento', () => {
 		// Setup: Create account store w/o initialized memento
 		let memento: { [key: string]: azdata.Account[] } = {};
-		let as = new AccountStore(memento);
+		let as = new AccountStore(memento, consoleLogService);
 
 		// If: I add an account to the store
 		return as.addOrUpdate(account1)
@@ -34,7 +36,7 @@ suite('Account Store Tests', () => {
 		// Setup: Create account store with initialized memento with accounts
 		let memento: { [key: string]: azdata.Account[] } = {};
 		memento[AccountStore.MEMENTO_KEY] = [];
-		let as = new AccountStore(memento);
+		let as = new AccountStore(memento, consoleLogService);
 
 		// If: I add an account to the store
 		return as.addOrUpdate(account1)
@@ -55,7 +57,7 @@ suite('Account Store Tests', () => {
 	test('AddOrUpdate - Updates account', () => {
 		// Setup: Create account store with initialized memento with accounts
 		let memento = getTestMemento();
-		let as = new AccountStore(memento);
+		let as = new AccountStore(memento, consoleLogService);
 
 		// If: I add an account to the store that already exists
 		let param = <azdata.Account>{
@@ -82,7 +84,7 @@ suite('Account Store Tests', () => {
 	test('GetAccountsByProvider - Uninitialized memento', () => {
 		// Setup: Create account store w/o initialized memento
 		let memento = {};
-		let as = new AccountStore(memento);
+		let as = new AccountStore(memento, consoleLogService);
 
 		// If: I get accounts by provider
 		return as.getAccountsByProvider('azure')
@@ -101,7 +103,7 @@ suite('Account Store Tests', () => {
 		// Setup: Create account store with initialized memento with accounts
 		let memento: { [key: string]: azdata.Account[] } = {};
 		memento[AccountStore.MEMENTO_KEY] = [];
-		let as = new AccountStore(memento);
+		let as = new AccountStore(memento, consoleLogService);
 
 		// If: I get accounts when there aren't any accounts
 		return as.getAccountsByProvider('azure')
@@ -115,7 +117,7 @@ suite('Account Store Tests', () => {
 	test('GetAccountsByProvider - Accounts, but no accounts for provider', () => {
 		// Setup: Create account store with initialized memento with accounts
 		let memento = getTestMemento();
-		let as = new AccountStore(memento);
+		let as = new AccountStore(memento, consoleLogService);
 
 		// If: I get accounts by provider that doesn't have accounts
 		return as.getAccountsByProvider('cloudycloud')
@@ -129,7 +131,7 @@ suite('Account Store Tests', () => {
 	test('GetAccountsByProvider - Accounts for provider', () => {
 		// Setup: Create account store with initialized memento with accounts
 		let memento = getTestMemento();
-		let as = new AccountStore(memento);
+		let as = new AccountStore(memento, consoleLogService);
 
 		// If: I get accounts by provider that has accounts
 		return as.getAccountsByProvider('azure')
@@ -145,7 +147,7 @@ suite('Account Store Tests', () => {
 	test('GetAllAccounts - Uninitialized memento', () => {
 		// Setup: Create account store w/o initialized memento
 		let memento = {};
-		let as = new AccountStore(memento);
+		let as = new AccountStore(memento, consoleLogService);
 
 		// If: I get accounts
 		return as.getAllAccounts()
@@ -164,7 +166,7 @@ suite('Account Store Tests', () => {
 		// Setup: Create account store with initialized memento with accounts
 		let memento: { [key: string]: azdata.Account[] } = {};
 		memento[AccountStore.MEMENTO_KEY] = [];
-		let as = new AccountStore(memento);
+		let as = new AccountStore(memento, consoleLogService);
 
 		// If: I get accounts when there aren't any accounts
 		return as.getAllAccounts()
@@ -178,7 +180,7 @@ suite('Account Store Tests', () => {
 	test('GetAllAccounts - Accounts', () => {
 		// Setup: Create account store with initialized memento with accounts
 		let memento = getTestMemento();
-		let as = new AccountStore(memento);
+		let as = new AccountStore(memento, consoleLogService);
 
 		// If: I get accounts
 		return as.getAllAccounts()
@@ -194,7 +196,7 @@ suite('Account Store Tests', () => {
 	test('Remove - Uninitialized menento', () => {
 		// Setup: Create account store w/o initialized memento
 		let memento: { [key: string]: azdata.Account[] } = {};
-		let as = new AccountStore(memento);
+		let as = new AccountStore(memento, consoleLogService);
 
 		// If: I remove an account when there's an uninitialized memento
 		return as.remove(account1.key)
@@ -213,7 +215,7 @@ suite('Account Store Tests', () => {
 		// Setup: Create account store with initialized memento with accounts
 		let memento: { [key: string]: azdata.Account[] } = {};
 		memento[AccountStore.MEMENTO_KEY] = [];
-		let as = new AccountStore(memento);
+		let as = new AccountStore(memento, consoleLogService);
 
 		// If: I remove an account that doesn't exist
 		return as.remove({ providerId: 'cloudyCloud', accountId: 'testyTest' })
@@ -231,7 +233,7 @@ suite('Account Store Tests', () => {
 	test('Remove - Account exists', () => {
 		// Setup: Create account store with initialized memento with accounts
 		let memento = getTestMemento();
-		let as = new AccountStore(memento);
+		let as = new AccountStore(memento, consoleLogService);
 
 		// If: I remove an account that does exist
 		return as.remove(account1.key)
@@ -251,7 +253,7 @@ suite('Account Store Tests', () => {
 		// Setup:
 		// ... Create account store w/o initialized memento
 		let memento: { [key: string]: azdata.Account[] } = {};
-		let as = new AccountStore(memento);
+		let as = new AccountStore(memento, consoleLogService);
 
 		// ... Create a callback that we can verify was called
 		let updateCallback = new EventVerifierSingle<azdata.Account>();
@@ -276,7 +278,7 @@ suite('Account Store Tests', () => {
 		// Setup: Create account store with initialized memento with accounts
 		let memento: { [key: string]: azdata.Account[] } = {};
 		memento[AccountStore.MEMENTO_KEY] = [];
-		let as = new AccountStore(memento);
+		let as = new AccountStore(memento, consoleLogService);
 
 		// ... Create a callback that we can verify was called
 		let updateCallback = new EventVerifierSingle<azdata.Account>();
@@ -300,7 +302,7 @@ suite('Account Store Tests', () => {
 	test('Update - Account exists', () => {
 		// Setup: Create account store with initialized memento with accounts
 		let memento = getTestMemento();
-		let as = new AccountStore(memento);
+		let as = new AccountStore(memento, consoleLogService);
 
 		// ... Create a callback to update the account
 		let newDisplayName = 'Display Name Changed!';
@@ -327,6 +329,19 @@ suite('Account Store Tests', () => {
 			});
 	});
 
+	test('Remove - Deprecated Account', () => {
+		let memento = getTestMemento();
+		memento[AccountStore.MEMENTO_KEY].push(deprecatedAccount1, deprecatedAccount2);
+		let as = new AccountStore(memento, consoleLogService);
+		// We know that we have 4 accounts now
+		assert.equal(memento[AccountStore.MEMENTO_KEY].length, 4);
+
+		return as.getAllAccounts().then(accounts => {
+			// After pruning we will have 2 accounts
+			assert.equal(accounts.length, 2);
+		});
+	});
+
 	// TODO: Test to make sure operations occur sequentially
 });
 
@@ -351,6 +366,32 @@ const account2 = <azdata.Account>{
 	},
 	displayInfo: {
 		displayName: 'Test Account 2',
+		accountType: 'test',
+		contextualDisplayName: 'Azure Account'
+	},
+	isStale: false
+};
+
+const deprecatedAccount1 = <azdata.Account>{
+	key: {
+		providerId: 'azurePublicCloud',
+		accountId: 'testDeprecatedAccount1'
+	},
+	displayInfo: {
+		displayName: 'Test Deprecated Account',
+		accountType: 'test',
+		contextualDisplayName: 'Azure Account'
+	},
+	isStale: false
+};
+
+const deprecatedAccount2 = <azdata.Account>{
+	key: {
+		providerId: 'azurePublicCloud',
+		accountId: 'testDeprecatedAccount2'
+	},
+	displayInfo: {
+		displayName: 'Test Deprecated Account 2',
 		accountType: 'test',
 		contextualDisplayName: 'Azure Account'
 	},
