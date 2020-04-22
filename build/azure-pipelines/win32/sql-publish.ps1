@@ -26,6 +26,12 @@ $UserUploadName = "azuredatastudio-windows-user-setup-$Version"
 
 $assetPlatform = "win32-x64"
 
+If (-NOT ($Quality -eq "stable")) {
+	$ZipUploadName = "$ZipUploadName-$Quality"
+	$SetupUploadName = "$SetupUploadName-$Quality"
+	$UserUploadName = "$UserUploadName-$Quality"
+}
+
 node $sourcesDir/build/azure-pipelines/common/publish.js $Quality "$assetPlatform-archive" archive "$ZipUploadName.zip" $Version true $Zip $CommitId
 
 node $sourcesDir/build/azure-pipelines/common/publish.js $Quality "$assetPlatform" setup "$SetupUploadName.exe" $Version true $SystemExe $CommitId
