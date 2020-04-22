@@ -70,7 +70,7 @@ export default class AccountStore implements IAccountStore {
 							return false;
 						}
 						// Returns true if the account isn't from a deprecated provider
-						return !this.deprecatedProviders.includes(account.key.providerId);
+						return !this.deprecatedProviders.includes(providerKey);
 					});
 				} catch (ex) {
 					this.logService.error(ex);
