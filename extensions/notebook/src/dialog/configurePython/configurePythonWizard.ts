@@ -3,25 +3,53 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import { ConfigurePythonPage } from './configurePythonPage';
 import { ConfigurePathPage } from './configurePathPage';
 import { PickPackagesPage } from './pickPackagesPage';
+import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
+import * as utils from '../../common/utils';
+import { promises as fs } from 'fs';
+import { Deferred } from '../../common/promise';
+import { PythonPathInfo, PythonPathLookup } from '../pythonPathLookup';
+import { ApiWrapper } from '../../common/apiWrapper';
 
 const localize = nls.loadMessageBundle();
 
 export interface ConfigurePythonModel {
 	kernelName: string;
+	pythonLocation: string;
+	useExistingInstall: boolean;
+	usingCustomPath: boolean;
+	pythonPathsPromise: Promise<PythonPathInfo[]>;
+	wizard: azdata.window.Wizard;
 }
 
 export class ConfigurePythonWizard {
+	private readonly InvalidLocationMsg = localize('configurePython.invalidLocationMsg', "The specified install location is invalid.");
+	private readonly PythonNotFoundMsg = localize('configurePython.pythonNotFoundMsg', "No python installation was found at the specified location.");
+
 	private wizard: azdata.window.Wizard;
 	private model: ConfigurePythonModel;
 
+	private setupComplete: Deferred<void>;
+	private pythonPathsPromise: Promise<PythonPathInfo[]>;
+	private usingCustomPath: boolean;
+
+	constructor(private apiWrapper: ApiWrapper, private jupyterInstallation: JupyterServerInstallation) {
+		this.setupComplete = new Deferred<void>();
+		this.pythonPathsPromise = (new PythonPathLookup()).getSuggestions();
+		this.usingCustomPath = false;
+	}
+
 	public async start(kernelName: string, ...args: any[]) {
-		this.model = { kernelName: kernelName };
+		this.model = <ConfigurePythonModel>{
+			kernelName: kernelName,
+			usingCustomPath: this.usingCustomPath,
+			pythonPathsPromise: this.pythonPathsPromise,
+			wizard: this.wizard
+		};
 
 		let pages: Map<number, ConfigurePythonPage> = new Map<number, ConfigurePythonPage>();
 
@@ -31,7 +59,7 @@ export class ConfigurePythonWizard {
 
 		let configurePathPage: ConfigurePathPage;
 		page0.registerContent(async (view) => {
-			configurePathPage = new ConfigurePathPage(page0, this.model, view);
+			configurePathPage = new ConfigurePathPage(this.apiWrapper, page0, this.model, view);
 			pages.set(0, configurePathPage);
 			await configurePathPage.start().then(() => {
 				configurePathPage.onPageEnter();
@@ -40,7 +68,7 @@ export class ConfigurePythonWizard {
 
 		let pickPackagesPage: PickPackagesPage;
 		page1.registerContent(async (view) => {
-			pickPackagesPage = new PickPackagesPage(page1, this.model, view);
+			pickPackagesPage = new PickPackagesPage(this.apiWrapper, page1, this.model, view);
 			pages.set(1, pickPackagesPage);
 			await pickPackagesPage.start();
 		});
@@ -112,8 +140,61 @@ export class ConfigurePythonWizard {
 	}
 
 	private async handlePackageInstall(): Promise<boolean> {
-		vscode.window.showInformationMessage('Install method not implemented.');
-		return false;
+		let pythonLocation = this.model.pythonLocation;
+		if (!pythonLocation || pythonLocation.length === 0) {
+			this.showErrorMessage(this.InvalidLocationMsg);
+			return false;
+		}
+
+		let useExistingPython = this.model.useExistingInstall;
+		try {
+			let isValid = await this.isFileValid(pythonLocation);
+			if (!isValid) {
+				return false;
+			}
+
+			if (useExistingPython) {
+				let exePath = JupyterServerInstallation.getPythonExePath(pythonLocation, true);
+				let pythonExists = await utils.exists(exePath);
+				if (!pythonExists) {
+					this.showErrorMessage(this.PythonNotFoundMsg);
+					return false;
+				}
+			}
+		} catch (err) {
+			this.showErrorMessage(utils.getErrorMessage(err));
+			return false;
+		}
+
+		// Don't wait on installation, since there's currently no Cancel functionality
+		this.jupyterInstallation.startInstallProcess(false, { installPath: pythonLocation, existingPython: useExistingPython })
+			.then(() => {
+				this.setupComplete.resolve();
+			})
+			.catch(err => {
+				this.setupComplete.reject(utils.getErrorMessage(err));
+			});
+
+		return true;
+	}
+
+	private async isFileValid(pythonLocation: string): Promise<boolean> {
+		let self = this;
+		try {
+			const stats = await fs.stat(pythonLocation);
+			if (stats.isFile()) {
+				self.showErrorMessage(self.InvalidLocationMsg);
+				return false;
+			}
+		} catch (err) {
+			// Ignore error if folder doesn't exist, since it will be
+			// created during installation
+			if (err.code !== 'ENOENT') {
+				self.showErrorMessage(err.message);
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private showTaskComplete() {
