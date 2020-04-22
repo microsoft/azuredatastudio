@@ -113,6 +113,7 @@ steps:
 
     node build/azure-pipelines/common/copyArtifacts.js
   displayName: Write Version Information
+  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
