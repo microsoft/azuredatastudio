@@ -34,6 +34,11 @@ describe('Predict Wizard', () => {
 		let testContext = createContext();
 
 		let view = new PredictWizard(testContext.apiWrapper.object, '');
+		view.importTable = {
+			databaseName: 'db',
+			tableName: 'tb',
+			schema: 'dbo'
+		};
 		await view.open();
 		let accounts: azdata.Account[] = [
 			{
@@ -79,7 +84,12 @@ describe('Predict Wizard', () => {
 			{
 				id: 1,
 				artifactName: 'model',
-				title: 'model'
+				title: 'model',
+				table: {
+					databaseName: 'db',
+					tableName: 'tb',
+					schema: 'dbo'
+				}
 			}
 		];
 		const dbNames: string[] = [

@@ -11,7 +11,6 @@ import * as fs from 'fs';
 import * as constants from '../common/constants';
 import { promisify } from 'util';
 import { ApiWrapper } from './apiWrapper';
-import { Config } from '../configurations/config';
 
 export async function execCommandOnTempFile<T>(content: string, command: (filePath: string) => Promise<T>): Promise<T> {
 	let tempFilePath: string = '';
@@ -221,21 +220,21 @@ export function getScriptWithDBChange(currentDb: string, databaseName: string, s
  * Returns full name of model registration table
  * @param config config
  */
-export function getRegisteredModelsThreePartsName(config: Config) {
-	const dbName = doubleEscapeSingleBrackets(config.registeredModelDatabaseName);
-	const schema = doubleEscapeSingleBrackets(config.registeredModelTableSchemaName);
-	const tableName = doubleEscapeSingleBrackets(config.registeredModelTableName);
-	return `[${dbName}].[${schema}].[${tableName}]`;
+export function getRegisteredModelsThreePartsName(db: string, table: string, schema: string) {
+	const dbName = doubleEscapeSingleBrackets(db);
+	const schemaName = doubleEscapeSingleBrackets(schema);
+	const tableName = doubleEscapeSingleBrackets(table);
+	return `[${dbName}].[${schemaName}].[${tableName}]`;
 }
 
 /**
  * Returns full name of model registration table
  * @param config config object
  */
-export function getRegisteredModelsTowPartsName(config: Config) {
-	const schema = doubleEscapeSingleBrackets(config.registeredModelTableSchemaName);
-	const tableName = doubleEscapeSingleBrackets(config.registeredModelTableName);
-	return `[${schema}].[${tableName}]`;
+export function getRegisteredModelsTwoPartsName(table: string, schema: string) {
+	const schemaName = doubleEscapeSingleBrackets(schema);
+	const tableName = doubleEscapeSingleBrackets(table);
+	return `[${schemaName}].[${tableName}]`;
 }
 
 /**

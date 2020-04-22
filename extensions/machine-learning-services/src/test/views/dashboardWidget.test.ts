@@ -34,6 +34,6 @@ describe('Dashboard widget', () => {
 		const dashboard = new DashboardWidget(testContext.apiWrapper.object, '');
 		dashboard.register();
 		testContext.onClick.fire(undefined);
-		testContext.apiWrapper.verify(x => x.executeCommand(TypeMoq.It.isAny()), TypeMoq.Times.atMostOnce());
+		testContext.apiWrapper.verify(x => x.executeCommand(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 	});
 });
