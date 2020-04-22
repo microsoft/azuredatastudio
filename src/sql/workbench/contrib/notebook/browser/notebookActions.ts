@@ -209,6 +209,7 @@ export class CollapseCellsAction extends ToggleableAction {
 	}
 }
 
+const ShowAllKernelsConfigName = 'notebook.showAllKernels';
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	private _showAllKernels: boolean = false;
@@ -226,7 +227,7 @@ export class KernelsDropdown extends SelectBox {
 		this.onDidSelect(e => this.doChangeKernel(e.selected));
 		this.getAllKernelConfigValue();
 		this._register(this._configurationSerivce.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration('notebook.showAllKernels')) {
+			if (e.affectsConfiguration(ShowAllKernelsConfigName)) {
 				this.getAllKernelConfigValue();
 			}
 		}));
@@ -269,7 +270,7 @@ export class KernelsDropdown extends SelectBox {
 	}
 
 	private getAllKernelConfigValue(): void {
-		this._showAllKernels = !!this._configurationSerivce.getValue('notebook.showAllKernels');
+		this._showAllKernels = !!this._configurationSerivce.getValue(ShowAllKernelsConfigName);
 	}
 }
 
