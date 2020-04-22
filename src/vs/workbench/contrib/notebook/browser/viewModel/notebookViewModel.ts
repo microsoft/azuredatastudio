@@ -321,12 +321,13 @@ export class NotebookViewModel extends Disposable implements EditorFoldingStateD
 
 		if (updateHiddenAreas || k < this._hiddenRanges.length) {
 			this._hiddenRanges = newHiddenAreas;
-			this._viewCells.forEach(cell => {
-				if (cell.cellKind === CellKind.Markdown) {
-					cell.triggerfoldingStateChange();
-				}
-			});
 		}
+
+		this._viewCells.forEach(cell => {
+			if (cell.cellKind === CellKind.Markdown) {
+				cell.triggerfoldingStateChange();
+			}
+		});
 	}
 
 	getHiddenRanges() {
@@ -748,8 +749,8 @@ export type CellViewModel = CodeCellViewModel | MarkdownCellViewModel;
 
 export function createCellViewModel(instantiationService: IInstantiationService, notebookViewModel: NotebookViewModel, cell: NotebookCellTextModel) {
 	if (cell.cellKind === CellKind.Code) {
-		return instantiationService.createInstance(CodeCellViewModel, notebookViewModel.viewType, notebookViewModel.handle, cell, notebookViewModel.layoutInfo);
+		return instantiationService.createInstance(CodeCellViewModel, notebookViewModel.viewType, notebookViewModel.handle, cell, notebookViewModel.layoutInfo, notebookViewModel.eventDispatcher);
 	} else {
-		return instantiationService.createInstance(MarkdownCellViewModel, notebookViewModel.viewType, notebookViewModel.handle, cell, notebookViewModel.layoutInfo, notebookViewModel);
+		return instantiationService.createInstance(MarkdownCellViewModel, notebookViewModel.viewType, notebookViewModel.handle, cell, notebookViewModel.layoutInfo, notebookViewModel, notebookViewModel.eventDispatcher);
 	}
 }
