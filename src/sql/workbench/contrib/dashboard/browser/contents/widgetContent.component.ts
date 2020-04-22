@@ -76,7 +76,7 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 	@Input() private widgets: WidgetConfig[];
 	@Input() private originalConfig: WidgetConfig[];
 	@Input() private context: string;
-	@Input() private scrollContent = true;
+	@Input() private scrollContent = false;
 
 	private _scrollableElement: ScrollableElement;
 
