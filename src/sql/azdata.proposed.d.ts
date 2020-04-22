@@ -309,7 +309,7 @@ declare module 'azdata' {
 	/**
 	 * A property to be displayed in the PropertiesContainerComponent
 	 */
-	export interface DisplayProperty {
+	export interface PropertiesContainerItem {
 		/**
 		 * The name of the property to display
 		 */
@@ -334,7 +334,7 @@ declare module 'azdata' {
 		/**
 		 * The properties to display
 		 */
-		displayProperties?: DisplayProperty[];
+		items?: PropertiesContainerItem[];
 		/**
 		 * Whether the component is currently loading
 		 */

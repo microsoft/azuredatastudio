@@ -55,11 +55,11 @@ export default class PropertiesContainerComponent extends ComponentBase implemen
 	}
 
 	public get displayProperties(): DisplayProperty[] {
-		return this.getPropertyOrDefault<azdata.PropertiesContainerComponentProperties, azdata.DisplayProperty[]>((props) => props.displayProperties, []);
+		return this.getPropertyOrDefault<azdata.PropertiesContainerComponentProperties, azdata.PropertiesContainerItem[]>((props) => props.displayProperties, []);
 	}
 
-	public set displayProperties(newValue: azdata.DisplayProperty[]) {
-		this.setPropertyFromUI<azdata.PropertiesContainerComponentProperties, azdata.DisplayProperty[]>((props, value) => props.displayProperties = value, newValue);
+	public set displayProperties(newValue: azdata.PropertiesContainerItem[]) {
+		this.setPropertyFromUI<azdata.PropertiesContainerComponentProperties, azdata.PropertiesContainerItem[]>((props, value) => props.displayProperties = value, newValue);
 		this._propertiesContainer.displayProperties = newValue;
 	}
 }
