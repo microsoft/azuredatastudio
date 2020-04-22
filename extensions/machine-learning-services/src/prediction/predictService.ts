@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import { ApiWrapper } from '../common/apiWrapper';
 import { QueryRunner } from '../common/queryRunner';
 import * as utils from '../common/utils';
-import { RegisteredModel } from '../modelManagement/interfaces';
+import { ImportedModel } from '../modelManagement/interfaces';
 import { PredictParameters, PredictColumn, DatabaseTable, TableColumn } from '../prediction/interfaces';
 
 /**
@@ -42,7 +42,7 @@ export class PredictService {
 	 */
 	public async generatePredictScript(
 		predictParams: PredictParameters,
-		registeredModel: RegisteredModel | undefined,
+		registeredModel: ImportedModel | undefined,
 		filePath: string | undefined
 	): Promise<string> {
 		let connection = await this.getCurrentConnection();

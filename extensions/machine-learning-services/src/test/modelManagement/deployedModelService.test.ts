@@ -11,7 +11,7 @@ import * as should from 'should';
 import { Config } from '../../configurations/config';
 import { DeployedModelService } from '../../modelManagement/deployedModelService';
 import { QueryRunner } from '../../common/queryRunner';
-import { RegisteredModel } from '../../modelManagement/interfaces';
+import { ImportedModel } from '../../modelManagement/interfaces';
 import { ModelPythonClient } from '../../modelManagement/modelPythonClient';
 import * as path from 'path';
 import * as os from 'os';
@@ -19,6 +19,7 @@ import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as fs from 'fs';
 import { ModelConfigRecent } from '../../modelManagement/modelConfigRecent';
 import { DatabaseTable } from '../../prediction/interfaces';
+import * as queries from '../../modelManagement/queries';
 
 interface TestContext {
 
@@ -70,11 +71,10 @@ describe('DeployedModelService', () => {
 		const testContext = createContext();
 		const connection = new azdata.connection.ConnectionProfile();
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
-		const expected: RegisteredModel[] = [
+		const expected: ImportedModel[] = [
 			{
 				id: 1,
-				artifactName: 'name1',
-				title: 'title1',
+				modelName: 'name1',
 				description: 'desc1',
 				created: '2018-01-01',
 				version: '1.1',
@@ -171,11 +171,10 @@ describe('DeployedModelService', () => {
 		const tempFilePath = path.join(os.tmpdir(), `ads_ml_temp_${UUID.generateUuid()}`);
 		await fs.promises.writeFile(tempFilePath, 'test');
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
-		const model: RegisteredModel =
+		const model: ImportedModel =
 		{
 			id: 1,
-			artifactName: 'name1',
-			title: 'title1',
+			modelName: 'name1',
 			description: 'desc1',
 			created: '2018-01-01',
 			version: '1.1',
@@ -213,11 +212,10 @@ describe('DeployedModelService', () => {
 		const testContext = createContext();
 		const connection = new azdata.connection.ConnectionProfile();
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
-		const model: RegisteredModel =
+		const model: ImportedModel =
 		{
 			id: 1,
-			artifactName: 'name1',
-			title: 'title1',
+			modelName: 'name1',
 			description: 'desc1',
 			created: '2018-01-01',
 			version: '1.1',
@@ -273,7 +271,7 @@ describe('DeployedModelService', () => {
 			testContext.modelClient.object,
 			testContext.recentModels.object);
 
-		testContext.queryRunner.setup(x => x.runWithDatabaseChange(TypeMoq.It.isAny(), TypeMoq.It.is(x => x.indexOf('Insert into') > 0), TypeMoq.It.isAny())).returns(() => {
+		testContext.queryRunner.setup(x => x.runWithDatabaseChange(TypeMoq.It.isAny(), TypeMoq.It.is(x => x.indexOf('INSERT INTO') > 0), TypeMoq.It.isAny())).returns(() => {
 			deployed = true;
 			return Promise.resolve(result);
 		});
@@ -298,12 +296,6 @@ describe('DeployedModelService', () => {
 
 	it('getConfigureQuery should escape db name', async function (): Promise<void> {
 		const testContext = createContext();
-		let service = new DeployedModelService(
-			testContext.apiWrapper.object,
-			testContext.config.object,
-			testContext.queryRunner.object,
-			testContext.modelClient.object,
-			testContext.recentModels.object);
 
 		testContext.importTable.databaseName = 'd[]b';
 		testContext.importTable.tableName = 'ta[b]le';
@@ -351,18 +343,12 @@ describe('DeployedModelService', () => {
 		ALTER TABLE [dbo].[ta[[b]]le] ADD  CONSTRAINT [CONSTRAINT_NAME]  DEFAULT (getdate()) FOR [created]
 		END
 	`;
-		const actual = service.getConfigureTableQuery(testContext.importTable);
+		const actual = queries.getConfigureTableQuery(testContext.importTable);
 		should.equal(actual.indexOf(expected) >= 0, true, `actual: ${actual} \n expected: ${expected}`);
 	});
 
 	it('getDeployedModelsQuery should escape db name', async function (): Promise<void> {
 		const testContext = createContext();
-		let service = new DeployedModelService(
-			testContext.apiWrapper.object,
-			testContext.config.object,
-			testContext.queryRunner.object,
-			testContext.modelClient.object,
-			testContext.recentModels.object);
 		testContext.importTable.databaseName = 'd[]b';
 		testContext.importTable.tableName = 'ta[b]le';
 		testContext.importTable.schema = 'dbo';
@@ -370,64 +356,49 @@ describe('DeployedModelService', () => {
 		SELECT artifact_id, artifact_name, name, description, version, created
 		FROM [d[[]]b].[dbo].[ta[[b]]le]
 		WHERE artifact_name not like 'MLmodel' and artifact_name not like 'conda.yaml'
-		Order by artifact_id
+		ORDER BY artifact_id
 		`;
-		const actual = service.getDeployedModelsQuery(testContext.importTable);
+		const actual = queries.getDeployedModelsQuery(testContext.importTable);
 		should.deepEqual(expected, actual);
 	});
 
 	it('getInsertModelQuery should escape db name', async function (): Promise<void> {
 		const testContext = createContext();
-		const model: RegisteredModel =
+		const model: ImportedModel =
 		{
 			id: 1,
-			artifactName: 'name1',
-			title: 'title1',
+			modelName: 'name1',
 			description: 'desc1',
 			created: '2018-01-01',
 			version: '1.1',
 			table: testContext.importTable
 		};
 
-		let service = new DeployedModelService(
-			testContext.apiWrapper.object,
-			testContext.config.object,
-			testContext.queryRunner.object,
-			testContext.modelClient.object,
-			testContext.recentModels.object);
-
 		const expected = `
-		Insert into [dbo].[tb]
+		INSERT INTO [dbo].[tb]
 		(artifact_name, artifact_content, name, version, description)
-		values (
+		VALUES (
 			'name1',
 			,
 			'title1',
 			'1.1',
 			'desc1')`;
-		const actual = service.getInsertModelQuery(model, testContext.importTable);
-		should.equal(actual.indexOf(expected) > 0, true);
+		const actual = queries.getInsertModelQuery(model, testContext.importTable);
+		should.equal(actual.indexOf(expected) > 0, true, `actual: ${actual} \n expected: ${expected}`);
 	});
 
 	it('getModelContentQuery should escape db name', async function (): Promise<void> {
 		const testContext = createContext();
-		const model: RegisteredModel =
+		const model: ImportedModel =
 		{
 			id: 1,
-			artifactName: 'name1',
-			title: 'title1',
+			modelName: 'name1',
 			description: 'desc1',
 			created: '2018-01-01',
 			version: '1.1',
 			table: testContext.importTable
 		};
 
-		let service = new DeployedModelService(
-			testContext.apiWrapper.object,
-			testContext.config.object,
-			testContext.queryRunner.object,
-			testContext.modelClient.object,
-			testContext.recentModels.object);
 		model.table = {
 			databaseName: 'd[]b', tableName: 'ta[b]le', schema: 'dbo'
 		};
@@ -436,7 +407,7 @@ describe('DeployedModelService', () => {
 		FROM [d[[]]b].[dbo].[ta[[b]]le]
 		WHERE artifact_id = 1;
 		`;
-		const actual = service.getModelContentQuery(model);
-		should.deepEqual(actual, expected);
+		const actual = queries.getModelContentQuery(model);
+		should.deepEqual(actual, expected, `actual: ${actual} \n expected: ${expected}`);
 	});
 });

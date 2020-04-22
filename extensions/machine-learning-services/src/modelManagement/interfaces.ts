@@ -47,11 +47,10 @@ export type WorkspacesModelsResponse = ListWorkspaceModelsResult & {
 };
 
 /**
- * An interface representing registered model
+ * An interface representing imported model
  */
-export interface RegisteredModel extends RegisteredModelDetails {
+export interface ImportedModel extends ImportedModelDetails {
 	id: number;
-	artifactName: string;
 	content?: string;
 	table: DatabaseTable;
 }
@@ -67,14 +66,19 @@ export interface ModelParameters {
 }
 
 /**
- * An interface representing registered model
+ * An interface representing imported model
  */
-export interface RegisteredModelDetails {
-	title: string;
+export interface ImportedModelDetails {
+	modelName: string;
 	created?: string;
+	deploymentTime?: string;
 	version?: string;
 	description?: string;
 	fileName?: string;
+	framework?: string;
+	frameworkVersion?: string;
+	runId?: string;
+	deployedBy?: string;
 }
 
 /**

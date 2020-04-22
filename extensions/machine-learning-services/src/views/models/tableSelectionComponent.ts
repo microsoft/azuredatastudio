@@ -168,7 +168,7 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 					this._selectedTableName = this.getTableFullName(selectedTable);
 					this._tables.value = this.getTableFullName(selectedTable);
 				} else {
-					this._selectedTableName = this.getTableFullName(this._tableNames[0]);
+					this._selectedTableName = this.getTableFullName(this.importTable);
 				}
 			} else {
 				this._selectedTableName = this.getTableFullName(this._tableNames[0]);

@@ -8,7 +8,7 @@ import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import 'mocha';
 import { createContext } from './utils';
-import { RegisteredModel, ModelParameters } from '../../../modelManagement/interfaces';
+import { ImportedModel, ModelParameters } from '../../../modelManagement/interfaces';
 import { azureResource } from '../../../typings/azure-resource';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { WorkspaceModel } from '../../../modelManagement/interfaces';
@@ -55,11 +55,10 @@ const models: WorkspaceModel[] = [
 		name: 'model'
 	}
 ];
-const localModels: RegisteredModel[] = [
+const localModels: ImportedModel[] = [
 	{
 		id: 1,
-		artifactName: 'model',
-		title: 'model',
+		modelName: 'model',
 		table: {
 			databaseName: 'db',
 			tableName: 'tb',
