@@ -70,21 +70,21 @@ export class ConfigurePathPage extends ConfigurePythonPage {
 		return true;
 	}
 
-	public onPageEnter(): Promise<boolean> {
-		return Promise.resolve(true);
+	public async onPageEnter(): Promise<boolean> {
+		return true;
 	}
 
-	public onPageLeave(): Promise<boolean> {
+	public async onPageLeave(): Promise<boolean> {
 		let pythonLocation = (this.pythonLocationDropdown.value as azdata.CategoryValue).name;
 		if (!pythonLocation || pythonLocation.length === 0) {
 			this.instance.showErrorMessage(this.instance.InvalidLocationMsg);
-			return Promise.resolve(false);
+			return false;
 		}
 
 		this.model.pythonLocation = pythonLocation;
 		this.model.useExistingPython = !!this.existingInstallButton.checked;
 
-		return Promise.resolve(true);
+		return true;
 	}
 
 	public setupNavigationValidator(): void {

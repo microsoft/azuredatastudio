@@ -29,7 +29,7 @@ export abstract class ConfigurePythonPage {
 	/**
 	 * This method is called when the user is leaving the page.
 	 */
-	async onPageLeave(): Promise<boolean> {
+	public async onPageLeave(): Promise<boolean> {
 		return true;
 	}
 

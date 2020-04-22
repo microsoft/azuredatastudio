@@ -6,16 +6,22 @@
 import { ConfigurePythonPage } from './configurePythonPage';
 
 export class PickPackagesPage extends ConfigurePythonPage {
-	public start(): Promise<boolean> {
-		throw new Error('Method not implemented.');
+
+	public async start(): Promise<boolean> {
+		return true;
 	}
-	public onPageEnter(): Promise<boolean> {
-		throw new Error('Method not implemented.');
+
+	public async onPageEnter(): Promise<boolean> {
+		return true;
 	}
-	onPageLeave(): Promise<boolean> {
-		throw new Error('Method not implemented.');
+
+	public async onPageLeave(): Promise<boolean> {
+		return true;
 	}
+
 	public setupNavigationValidator(): void {
-		throw new Error('Method not implemented.');
+		this.instance.registerNavigationValidator(() => {
+			return true;
+		});
 	}
 }
