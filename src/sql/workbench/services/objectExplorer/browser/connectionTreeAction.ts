@@ -97,7 +97,7 @@ export class EditConnectionAction extends Action {
 		this.class = 'edit-server-action';
 	}
 
-	public async run(element: ConnectionProfileGroup): Promise<boolean> {
+	public async run(): Promise<boolean> {
 		if (!this._connectionProfile) {
 			return false;
 		}

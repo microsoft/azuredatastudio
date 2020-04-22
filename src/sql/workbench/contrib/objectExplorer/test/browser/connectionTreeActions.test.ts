@@ -8,7 +8,7 @@ import * as assert from 'assert';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import {
-	RefreshAction, AddServerAction, DeleteConnectionAction, DisconnectConnectionAction,
+	RefreshAction, EditConnectionAction, AddServerAction, DeleteConnectionAction, DisconnectConnectionAction,
 	ActiveConnectionsFilterAction, RecentConnectionsFilterAction
 }
 	from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
@@ -527,4 +527,32 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 	});
 
+	test('EditConnectionAction - test if show connection dialog is called', () => {
+		let connectionManagementService = createConnectionManagementService(true, undefined);
+
+		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'Test',
+			savePassword: false,
+			groupFullName: 'testGroup',
+			serverName: 'testServerName',
+			databaseName: 'testDatabaseName',
+			authenticationType: 'integrated',
+			password: 'test',
+			userName: 'testUsername',
+			groupId: undefined,
+			providerName: mssqlProviderName,
+			options: {},
+			saveProfile: true,
+			id: 'testId'
+		});
+
+		let connectionAction: EditConnectionAction = new EditConnectionAction(EditConnectionAction.ID,
+			EditConnectionAction.LABEL,
+			connection,
+			connectionManagementService.object);
+
+		return connectionAction.run().then((value) => {
+			connectionManagementService.verify(x => x.showConnectionDialog(undefined, undefined, TypeMoq.It.isAny()), TypeMoq.Times.once());
+		});
+	});
 });
