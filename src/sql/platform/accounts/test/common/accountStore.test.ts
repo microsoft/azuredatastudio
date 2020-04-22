@@ -333,8 +333,11 @@ suite('Account Store Tests', () => {
 		let memento = getTestMemento();
 		memento[AccountStore.MEMENTO_KEY].push(deprecatedAccount1, deprecatedAccount2);
 		let as = new AccountStore(memento, consoleLogService);
+		// We know that we have 4 accounts now
+		assert.equal(memento[AccountStore.MEMENTO_KEY].length, 4);
 
 		return as.getAllAccounts().then(accounts => {
+			// After pruning we will have 2 accounts
 			assert.equal(accounts.length, 2);
 		});
 	});
