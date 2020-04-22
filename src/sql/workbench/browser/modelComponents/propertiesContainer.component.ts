@@ -13,10 +13,6 @@ import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBa
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { PropertiesContainer, DisplayProperty } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
 
-export interface DisplayPropertyConfig {
-	displayName: string;
-}
-
 @Component({
 	selector: `modelview-properties-container`,
 	template: `
