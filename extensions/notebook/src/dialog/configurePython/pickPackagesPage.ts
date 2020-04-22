@@ -15,9 +15,6 @@ export class PickPackagesPage extends ConfigurePythonPage {
 	onPageLeave(): Promise<boolean> {
 		throw new Error('Method not implemented.');
 	}
-	public cleanup(): Promise<boolean> {
-		throw new Error('Method not implemented.');
-	}
 	public setupNavigationValidator(): void {
 		throw new Error('Method not implemented.');
 	}

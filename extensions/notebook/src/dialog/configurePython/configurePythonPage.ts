@@ -4,12 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { ConfigurePythonModel } from './configurePythonWizard';
+import { ConfigurePythonModel, ConfigurePythonWizard } from './configurePythonWizard';
 import { ApiWrapper } from '../../common/apiWrapper';
 
 export abstract class ConfigurePythonPage {
 
 	constructor(protected readonly apiWrapper: ApiWrapper,
+		protected readonly instance: ConfigurePythonWizard,
 		protected readonly wizardPage: azdata.window.WizardPage,
 		protected readonly model: ConfigurePythonModel,
 		protected readonly view: azdata.ModelView) {
@@ -29,13 +30,6 @@ export abstract class ConfigurePythonPage {
 	 * This method is called when the user is leaving the page.
 	 */
 	async onPageLeave(): Promise<boolean> {
-		return true;
-	}
-
-	/**
-	 * Override this method to cleanup what you don't need cached in the page.
-	 */
-	public async cleanup(): Promise<boolean> {
 		return true;
 	}
 

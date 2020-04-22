@@ -20,15 +20,14 @@ const localize = nls.loadMessageBundle();
 export interface ConfigurePythonModel {
 	kernelName: string;
 	pythonLocation: string;
-	useExistingInstall: boolean;
+	useExistingPython: boolean;
 	usingCustomPath: boolean;
 	pythonPathsPromise: Promise<PythonPathInfo[]>;
-	wizard: azdata.window.Wizard;
 }
 
 export class ConfigurePythonWizard {
 	private readonly InstallButtonText = localize('configurePython.okButtonText', "Install");
-	private readonly InvalidLocationMsg = localize('configurePython.invalidLocationMsg', "The specified install location is invalid.");
+	public readonly InvalidLocationMsg = localize('configurePython.invalidLocationMsg', "The specified install location is invalid.");
 	private readonly PythonNotFoundMsg = localize('configurePython.pythonNotFoundMsg', "No python installation was found at the specified location.");
 
 	private wizard: azdata.window.Wizard;
@@ -48,8 +47,7 @@ export class ConfigurePythonWizard {
 		this.model = <ConfigurePythonModel>{
 			kernelName: kernelName,
 			usingCustomPath: this.usingCustomPath,
-			pythonPathsPromise: this.pythonPathsPromise,
-			wizard: this.wizard
+			pythonPathsPromise: this.pythonPathsPromise
 		};
 
 		let pages: Map<number, ConfigurePythonPage> = new Map<number, ConfigurePythonPage>();
@@ -60,7 +58,7 @@ export class ConfigurePythonWizard {
 
 		let configurePathPage: ConfigurePathPage;
 		page0.registerContent(async (view) => {
-			configurePathPage = new ConfigurePathPage(this.apiWrapper, page0, this.model, view);
+			configurePathPage = new ConfigurePathPage(this.apiWrapper, this, page0, this.model, view);
 			pages.set(0, configurePathPage);
 			await configurePathPage.start().then(() => {
 				configurePathPage.onPageEnter();
@@ -69,7 +67,7 @@ export class ConfigurePythonWizard {
 
 		let pickPackagesPage: PickPackagesPage;
 		page1.registerContent(async (view) => {
-			pickPackagesPage = new PickPackagesPage(this.apiWrapper, page1, this.model, view);
+			pickPackagesPage = new PickPackagesPage(this.apiWrapper, this, page1, this.model, view);
 			pages.set(1, pickPackagesPage);
 			await pickPackagesPage.start();
 		});
@@ -151,12 +149,7 @@ export class ConfigurePythonWizard {
 
 	private async handlePackageInstall(): Promise<boolean> {
 		let pythonLocation = this.model.pythonLocation;
-		if (!pythonLocation || pythonLocation.length === 0) {
-			this.showErrorMessage(this.InvalidLocationMsg);
-			return false;
-		}
-
-		let useExistingPython = this.model.useExistingInstall;
+		let useExistingPython = this.model.useExistingPython;
 		try {
 			let isValid = await this.isFileValid(pythonLocation);
 			if (!isValid) {

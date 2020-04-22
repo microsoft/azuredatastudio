@@ -71,19 +71,26 @@ export class ConfigurePathPage extends ConfigurePythonPage {
 	}
 
 	public onPageEnter(): Promise<boolean> {
-		throw new Error('Method not implemented.');
+		return Promise.resolve(true);
 	}
 
-	onPageLeave(): Promise<boolean> {
-		throw new Error('Method not implemented.');
-	}
+	public onPageLeave(): Promise<boolean> {
+		let pythonLocation = (this.pythonLocationDropdown.value as azdata.CategoryValue).name;
+		if (!pythonLocation || pythonLocation.length === 0) {
+			this.instance.showErrorMessage(this.instance.InvalidLocationMsg);
+			return Promise.resolve(false);
+		}
 
-	public cleanup(): Promise<boolean> {
-		throw new Error('Method not implemented.');
+		this.model.pythonLocation = pythonLocation;
+		this.model.useExistingPython = !!this.existingInstallButton.checked;
+
+		return Promise.resolve(true);
 	}
 
 	public setupNavigationValidator(): void {
-		throw new Error('Method not implemented.');
+		this.instance.registerNavigationValidator(() => {
+			return true;
+		});
 	}
 
 	private async updatePythonPathsDropdown(useExistingPython: boolean): Promise<void> {
@@ -136,7 +143,7 @@ export class ConfigurePathPage extends ConfigurePythonPage {
 			this.existingInstallButton.checked = false;
 			this.updatePythonPathsDropdown(false)
 				.catch(err => {
-					this.showErrorMessage(utils.getErrorMessage(err));
+					this.instance.showErrorMessage(utils.getErrorMessage(err));
 				});
 		});
 
@@ -150,7 +157,7 @@ export class ConfigurePathPage extends ConfigurePythonPage {
 			this.newInstallButton.checked = false;
 			this.updatePythonPathsDropdown(true)
 				.catch(err => {
-					this.showErrorMessage(utils.getErrorMessage(err));
+					this.instance.showErrorMessage(utils.getErrorMessage(err));
 				});
 		});
 	}
@@ -185,12 +192,5 @@ export class ConfigurePathPage extends ConfigurePythonPage {
 				values: existingValues
 			});
 		}
-	}
-
-	private showErrorMessage(message: string): void {
-		this.model.wizard.message = {
-			text: message,
-			level: azdata.window.MessageLevel.Error
-		};
 	}
 }
