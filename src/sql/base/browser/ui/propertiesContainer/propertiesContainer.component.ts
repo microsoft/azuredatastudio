@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./media/propertiesContainer';
 
-import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef } from '@angular/core';
+import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef, OnDestroy } from '@angular/core';
 import { EventType, addDisposableListener } from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -32,7 +32,7 @@ const verticalPropertyHeight = 46;
 	selector: 'properties-container',
 	templateUrl: decodeURI(require.toUrl('./propertiesContainer.component.html'))
 })
-export class PropertiesContainer extends Disposable implements OnInit {
+export class PropertiesContainer extends Disposable implements OnInit, OnDestroy {
 	public gridDisplayLayout = GridDisplayLayout.twoColumns;
 	public propertyLayout = PropertyLayoutDirection.row;
 	public loadingMessage: string = nls.localize('loadingProperties', "Loading properties");
@@ -52,6 +52,10 @@ export class PropertiesContainer extends Disposable implements OnInit {
 	ngOnInit() {
 		this._register(addDisposableListener(window, EventType.RESIZE, () => this.layoutDisplayProperties()));
 		this._changeRef.detectChanges();
+	}
+
+	ngOnDestroy() {
+		this.dispose();
 	}
 
 	private layoutDisplayProperties(): void {
