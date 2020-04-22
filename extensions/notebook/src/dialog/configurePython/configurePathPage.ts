@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { ConfigurePythonPage } from './configurePythonPage';
+import { BasePage } from './configurePythonPage';
 import * as nls from 'vscode-nls';
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
 import { PythonPathInfo } from '../pythonPathLookup';
@@ -13,7 +13,7 @@ import * as utils from '../../common/utils';
 
 const localize = nls.loadMessageBundle();
 
-export class ConfigurePathPage extends ConfigurePythonPage {
+export class ConfigurePathPage extends BasePage {
 	private readonly BrowseButtonText = localize('configurePython.browseButtonText', "Browse");
 	private readonly LocationTextBoxTitle = localize('configurePython.locationTextBoxText', "Python Install Location");
 	private readonly SelectFileLabel = localize('configurePython.selectFileLabel', "Select");

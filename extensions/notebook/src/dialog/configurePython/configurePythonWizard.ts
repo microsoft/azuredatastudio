@@ -5,7 +5,7 @@
 
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
-import { ConfigurePythonPage } from './configurePythonPage';
+import { BasePage } from './configurePythonPage';
 import { ConfigurePathPage } from './configurePathPage';
 import { PickPackagesPage } from './pickPackagesPage';
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
@@ -50,7 +50,7 @@ export class ConfigurePythonWizard {
 			pythonPathsPromise: this.pythonPathsPromise
 		};
 
-		let pages: Map<number, ConfigurePythonPage> = new Map<number, ConfigurePythonPage>();
+		let pages: Map<number, BasePage> = new Map<number, BasePage>();
 
 		this.wizard = azdata.window.createWizard(localize('configurePython.wizardName', 'Configure Python to run kernel ({0})', kernelName));
 		let page0 = azdata.window.createWizardPage(localize('configurePython.page0Name', 'Configure Python Runtime'));

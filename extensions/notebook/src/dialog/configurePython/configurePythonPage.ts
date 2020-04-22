@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import { ConfigurePythonModel, ConfigurePythonWizard } from './configurePythonWizard';
 import { ApiWrapper } from '../../common/apiWrapper';
 
-export abstract class ConfigurePythonPage {
+export abstract class BasePage {
 
 	constructor(protected readonly apiWrapper: ApiWrapper,
 		protected readonly instance: ConfigurePythonWizard,

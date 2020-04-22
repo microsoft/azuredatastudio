@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ConfigurePythonPage } from './configurePythonPage';
+import { BasePage } from './configurePythonPage';
 
-export class PickPackagesPage extends ConfigurePythonPage {
+export class PickPackagesPage extends BasePage {
 
 	public async start(): Promise<boolean> {
 		return true;
