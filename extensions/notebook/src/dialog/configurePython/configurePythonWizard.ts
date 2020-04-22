@@ -27,6 +27,7 @@ export interface ConfigurePythonModel {
 }
 
 export class ConfigurePythonWizard {
+	private readonly InstallButtonText = localize('configurePython.okButtonText', "Install");
 	private readonly InvalidLocationMsg = localize('configurePython.invalidLocationMsg', "The specified install location is invalid.");
 	private readonly PythonNotFoundMsg = localize('configurePython.pythonNotFoundMsg', "No python installation was found at the specified location.");
 
@@ -71,6 +72,15 @@ export class ConfigurePythonWizard {
 			pickPackagesPage = new PickPackagesPage(this.apiWrapper, page1, this.model, view);
 			pages.set(1, pickPackagesPage);
 			await pickPackagesPage.start();
+		});
+
+		this.wizard.doneButton.label = this.InstallButtonText;
+		this.wizard.cancelButton.onClick(() => {
+			if (rejectOnCancel) {
+				this.setupComplete.reject(localize('configurePython.pythonInstallDeclined', "Python installation was declined."));
+			} else {
+				this.setupComplete.resolve();
+			}
 		});
 
 		this.wizard.onPageChanged(async info => {
