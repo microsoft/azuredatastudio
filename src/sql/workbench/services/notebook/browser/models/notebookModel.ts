@@ -619,7 +619,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 		}
 
-		this._language = language;
+		this._language = language.toLowerCase();
 	}
 
 	public changeKernel(displayName: string): void {
