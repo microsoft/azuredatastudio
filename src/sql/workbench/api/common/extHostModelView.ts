@@ -1760,11 +1760,11 @@ class PropertiesContainerComponentWrapper extends ComponentWrapper implements az
 		this.properties = {};
 	}
 
-	public get displayProperties(): azdata.DisplayProperty[] {
-		return this.properties['displayProperties'];
+	public get propertyItems(): azdata.PropertiesContainerItem[] {
+		return this.properties['propertyItems'];
 	}
-	public set displayProperties(v: azdata.DisplayProperty[]) {
-		this.setProperty('displayProperties', v);
+	public set propertyItems(v: azdata.PropertiesContainerItem[]) {
+		this.setProperty('propertyItems', v);
 	}
 
 	public get loading(): boolean {

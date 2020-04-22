@@ -334,7 +334,7 @@ declare module 'azdata' {
 		/**
 		 * The properties to display
 		 */
-		items?: PropertiesContainerItem[];
+		propertyItems?: PropertiesContainerItem[];
 		/**
 		 * Whether the component is currently loading
 		 */
