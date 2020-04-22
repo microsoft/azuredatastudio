@@ -6,6 +6,10 @@
 	margin-top: 5px;
 }
 
+.notebookEditor .taskbarSeparator {
+	margin: 0 16px;
+}
+
 .notebookEditor .editor-toolbar {
 	border-bottom-style: solid;
 	border-width: 0px 0px 1px 0px;
@@ -44,6 +48,10 @@
 	font-size: 13px;
 	height: 21px;
 }
+.notebookEditor .actions-container .action-item .notebook-button.masked {
+	background-size: 16px;
+	margin-right: 8px;
+}
 
 .notebookEditor .labelOnLeftContainer {
 	min-width: 100px;
@@ -54,10 +62,17 @@
 	vertical-align: bottom;
 }
 
+.notebookEditor .carbon-taskbar.monaco-toolbar .monaco-select-box {
+	font-size: inherit;
+	border-radius: 0;
+	padding: 6px 22px 6px 6px;
+}
+.notebookEditor .labelOnLeftContainer {
+	display: flex;
+	align-items: center;
+}
 
-
-
-.notebookEditor .notebook-button.icon-trusted {
+/* .notebookEditor .notebook-button.icon-trusted {
 	background-image: url("./media/light/trusted.svg");
 }
 
@@ -73,34 +88,34 @@
 .vs-dark .notebookEditor .notebook-button.icon-notTrusted,
 .hc-black .notebookEditor .notebook-button.icon-notTrusted {
 	background-image: url("./media/dark/nottrusted_inverse.svg");
-}
+} */
 
-.notebookEditor .notebook-button.icon-show-cells {
+/* .notebookEditor .notebook-button.icon-show-cells {
 	background-image: url("./media/light/show_code.svg");
 }
 
 .vs-dark .notebookEditor .notebook-button.icon-show-cells,
 .hc-black .notebookEditor .notebook-button.icon-show-cells {
 	background-image: url("./media/dark/show_code_inverse.svg");
-}
+} */
 
-.notebookEditor .notebook-button.icon-hide-cells {
+/* .notebookEditor .notebook-button.icon-hide-cells {
 	background-image: url("./media/light/hide_code.svg");
 }
 
 .vs-dark .notebookEditor .notebook-button.icon-hide-cells,
 .hc-black .notebookEditor .notebook-button.icon-hide-cells {
 	background-image: url("./media/dark/hide_code_inverse.svg");
-}
+} */
 
-.notebookEditor .notebook-button.icon-clear-results {
+/* .notebookEditor .notebook-button.icon-clear-results {
 	background-image: url("./media/light/clear_results.svg");
 }
 
 .vs-dark .notebookEditor .notebook-button.icon-clear-results,
 .hc-black .notebookEditor .notebook-button.icon-clear-results {
 	background-image: url("./media/dark/clear_results_inverse.svg");
-}
+} */
 
 .moreActions .action-label.codicon.toggle-more {
 	height: 20px;

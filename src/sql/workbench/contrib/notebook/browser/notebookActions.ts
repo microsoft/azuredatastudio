@@ -58,13 +58,50 @@ export class AddCellAction extends Action {
 	}
 }
 
-// Action to clear outputs of all code cells.
-export class ClearAllOutputsAction extends Action {
-	constructor(
-		id: string, label: string, cssClass: string
-	) {
-		super(id, label, cssClass);
+export interface ITooltipState {
+	label: string;
+	baseClass: string;
+	iconClass: string;
+	maskedIconClass: string;
+	shouldToggleTooltip?: boolean;
+}
+export abstract class TooltipFromLabelAction extends Action {
+
+	constructor(id: string, protected state: ITooltipState) {
+		super(id, '');
+		this.updateLabelAndIcon();
 	}
+
+	private updateLabelAndIcon() {
+		if (this.state.shouldToggleTooltip) {
+			this.tooltip = this.state.label;
+		} else {
+			this.label = this.state.label;
+		}
+		let classes = this.state.baseClass ? `${this.state.baseClass} ${this.state.iconClass} ` : '';
+		if (this.state.shouldToggleTooltip) {
+			classes += this.state.maskedIconClass;
+		}
+		this.class = classes;
+	}
+}
+// Action to clear outputs of all code cells.
+export class ClearAllOutputsAction extends TooltipFromLabelAction {
+	private static readonly label = localize('clearResults', "Clear Results");
+	private static readonly baseClass = 'notebook-button';
+	private static readonly iconClass = 'icon-clear-results';
+	private static readonly maskedIconClass = 'masked';
+
+	constructor(id: string, toggleTooltip: boolean) {
+		super(id, {
+			label: ClearAllOutputsAction.label,
+			baseClass: ClearAllOutputsAction.baseClass,
+			iconClass: ClearAllOutputsAction.iconClass,
+			maskedIconClass: ClearAllOutputsAction.maskedIconClass,
+			shouldToggleTooltip: toggleTooltip
+		});
+	}
+
 	public run(context: INotebookEditor): Promise<boolean> {
 		return context.clearAllOutputs();
 	}
@@ -77,6 +114,7 @@ export interface IToggleableState {
 	toggleOnLabel: string;
 	toggleOffLabel: string;
 	toggleOffClass: string;
+	maskedIconClass: string;
 	isOn: boolean;
 }
 
@@ -93,7 +131,16 @@ export abstract class ToggleableAction extends Action {
 		} else {
 			this.label = this.state.isOn ? this.state.toggleOnLabel : this.state.toggleOffLabel;
 		}
-		let classes = this.state.baseClass ? `${this.state.baseClass} ` : '';
+
+		let classes: string = '';
+
+		if (this.state.shouldToggleTooltip) {
+			//mask
+			classes = this.state.baseClass ? `${this.state.baseClass} ${this.state.maskedIconClass} ` : '';
+		} else {
+			//no mask
+			classes = this.state.baseClass ? `${this.state.baseClass} ` : '';
+		}
 		classes += this.state.isOn ? this.state.toggleOnClass : this.state.toggleOffClass;
 		this.class = classes;
 	}
@@ -109,13 +156,12 @@ export class TrustedAction extends ToggleableAction {
 	private static readonly trustedLabel = localize('trustLabel', "Trusted");
 	private static readonly notTrustedLabel = localize('untrustLabel', "Not Trusted");
 	private static readonly baseClass = 'notebook-button';
-	private static readonly trustedCssClass = 'icon-trusted';
-	private static readonly notTrustedCssClass = 'icon-notTrusted';
-
-	// Properties
+	private static readonly trustedCssClass = 'icon-shield';
+	private static readonly notTrustedCssClass = 'icon-shield';
+	private static readonly maskedIconClass = 'masked';
 
 	constructor(
-		id: string
+		id: string, toggleTooltip: boolean
 	) {
 		super(id, {
 			baseClass: TrustedAction.baseClass,
@@ -123,6 +169,8 @@ export class TrustedAction extends ToggleableAction {
 			toggleOnClass: TrustedAction.trustedCssClass,
 			toggleOffLabel: TrustedAction.notTrustedLabel,
 			toggleOffClass: TrustedAction.notTrustedCssClass,
+			maskedIconClass: TrustedAction.maskedIconClass,
+			shouldToggleTooltip: toggleTooltip,
 			isOn: false
 		});
 	}
@@ -171,16 +219,19 @@ export class CollapseCellsAction extends ToggleableAction {
 	private static readonly collapseCells = localize('collapseAllCells', "Collapse Cells");
 	private static readonly expandCells = localize('expandAllCells', "Expand Cells");
 	private static readonly baseClass = 'notebook-button';
-	private static readonly collapseCssClass = 'icon-hide-cells';
-	private static readonly expandCssClass = 'icon-show-cells';
+	private static readonly collapseCssClass = 'icon-collapse-cells';
+	private static readonly expandCssClass = 'icon-expand-cells';
+	private static readonly maskedIconClass = 'masked';
 
-	constructor(id: string) {
+	constructor(id: string, toggleTooltip: boolean) {
 		super(id, {
 			baseClass: CollapseCellsAction.baseClass,
 			toggleOnLabel: CollapseCellsAction.expandCells,
 			toggleOnClass: CollapseCellsAction.expandCssClass,
 			toggleOffLabel: CollapseCellsAction.collapseCells,
 			toggleOffClass: CollapseCellsAction.collapseCssClass,
+			maskedIconClass: CollapseCellsAction.maskedIconClass,
+			shouldToggleTooltip: toggleTooltip,
 			isOn: false
 		});
 	}
