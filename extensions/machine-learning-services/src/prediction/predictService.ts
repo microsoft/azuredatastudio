@@ -10,7 +10,6 @@ import { QueryRunner } from '../common/queryRunner';
 import * as utils from '../common/utils';
 import { RegisteredModel } from '../modelManagement/interfaces';
 import { PredictParameters, PredictColumn, DatabaseTable, TableColumn } from '../prediction/interfaces';
-import { Config } from '../configurations/config';
 
 /**
  * Service to make prediction
@@ -22,8 +21,7 @@ export class PredictService {
 	 */
 	constructor(
 		private _apiWrapper: ApiWrapper,
-		private _queryRunner: QueryRunner,
-		private _config: Config) {
+		private _queryRunner: QueryRunner) {
 	}
 
 	/**
@@ -54,7 +52,8 @@ export class PredictService {
 				registeredModel.id,
 				predictParams.inputColumns || [],
 				predictParams.outputColumns || [],
-				predictParams);
+				predictParams,
+				registeredModel.table);
 		} else if (filePath) {
 			let modelBytes = await utils.readFileInHex(filePath || '');
 			query = this.getPredictScriptWithModelBytes(modelBytes, predictParams.inputColumns || [],
@@ -142,18 +141,20 @@ WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_CATALOG='${utils.doubleEscapeSingleQuo
 		modelId: number,
 		columns: PredictColumn[],
 		outputColumns: PredictColumn[],
-		databaseNameTable: DatabaseTable): string {
+		sourceTable: DatabaseTable,
+		importTable: DatabaseTable): string {
+		const threePartTableName = utils.getRegisteredModelsThreePartsName(importTable.databaseName || '', importTable.tableName || '', importTable.schema || '');
 		return `
 DECLARE @model VARBINARY(max) = (
 	SELECT artifact_content
-	FROM ${utils.getRegisteredModelsThreePartsName(this._config)}
+	FROM ${threePartTableName}
 	WHERE artifact_id = ${modelId}
 );
 WITH predict_input
 AS (
 	SELECT TOP 1000
 	${this.getInputColumnNames(columns, 'pi')}
-	FROM [${utils.doubleEscapeSingleBrackets(databaseNameTable.databaseName)}].[${databaseNameTable.schema}].[${utils.doubleEscapeSingleBrackets(databaseNameTable.tableName)}] as pi
+	FROM [${utils.doubleEscapeSingleBrackets(sourceTable.databaseName)}].[${sourceTable.schema}].[${utils.doubleEscapeSingleBrackets(sourceTable.tableName)}] as pi
 )
 SELECT
 ${this.getPredictColumnNames(columns, 'predict_input')}, ${this.getInputColumnNames(outputColumns, 'p')}

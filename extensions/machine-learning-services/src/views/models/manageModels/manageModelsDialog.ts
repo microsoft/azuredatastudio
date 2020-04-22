@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CurrentModelsPage } from './currentModelsPage';
+import { CurrentModelsComponent } from './currentModelsComponent';
 
 import { ModelViewBase, RegisterModelEventName } from '../modelViewBase';
 import * as constants from '../../../common/constants';
@@ -13,7 +13,7 @@ import { DialogView } from '../../dialogView';
 /**
  * Dialog to render registered model views
  */
-export class RegisteredModelsDialog extends ModelViewBase {
+export class ManageModelsDialog extends ModelViewBase {
 
 	constructor(
 		apiWrapper: ApiWrapper,
@@ -22,18 +22,18 @@ export class RegisteredModelsDialog extends ModelViewBase {
 		this.dialogView = new DialogView(this._apiWrapper);
 	}
 	public dialogView: DialogView;
-	public currentLanguagesTab: CurrentModelsPage | undefined;
+	public currentLanguagesTab: CurrentModelsComponent | undefined;
 
 	/**
 	 * Opens a dialog to manage packages used by notebooks.
 	 */
 	public open(): void {
 
-		this.currentLanguagesTab = new CurrentModelsPage(this._apiWrapper, this);
+		this.currentLanguagesTab = new CurrentModelsComponent(this._apiWrapper, this);
 
 		let registerModelButton = this._apiWrapper.createButton(constants.importModelTitle);
 		registerModelButton.onClick(async () => {
-			await this.sendDataRequest(RegisterModelEventName);
+			await this.sendDataRequest(RegisterModelEventName, this.currentLanguagesTab?.modelTable?.importTable);
 		});
 
 		let dialog = this.dialogView.createDialog(constants.registerModelTitle, [this.currentLanguagesTab]);
