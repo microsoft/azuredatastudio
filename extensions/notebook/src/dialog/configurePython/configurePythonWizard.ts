@@ -43,7 +43,7 @@ export class ConfigurePythonWizard {
 		this.usingCustomPath = false;
 	}
 
-	public async start(kernelName: string, ...args: any[]) {
+	public async start(kernelName: string, rejectOnCancel: boolean = false, ...args: any[]) {
 		this.model = <ConfigurePythonModel>{
 			kernelName: kernelName,
 			usingCustomPath: this.usingCustomPath,

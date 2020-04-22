@@ -22,7 +22,7 @@ import { ApiWrapper } from '../common/apiWrapper';
 import { LocalJupyterServerManager, ServerInstanceFactory } from './jupyterServerManager';
 import { NotebookCompletionItemProvider } from '../intellisense/completionItemProvider';
 import { JupyterNotebookProvider } from './jupyterNotebookProvider';
-import { ConfigurePythonDialog } from '../dialog/configurePython/configurePythonDialog';
+import { ConfigurePythonWizard } from '../dialog/configurePython/configurePythonWizard';
 import CodeAdapter from '../prompts/adapter';
 import { ManagePackagesDialog } from '../dialog/managePackages/managePackagesDialog';
 import { IPackageManageProvider } from '../types';
@@ -250,8 +250,8 @@ export class JupyterController implements vscode.Disposable {
 	}
 
 	public doConfigurePython(jupyterInstaller: JupyterServerInstallation): void {
-		let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, jupyterInstaller);
-		pythonDialog.showDialog().catch((err: any) => {
+		let pythonWizard = new ConfigurePythonWizard(this.apiWrapper, jupyterInstaller);
+		pythonWizard.start(undefined).catch((err: any) => {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
 		});
 	}

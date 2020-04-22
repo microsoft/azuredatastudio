@@ -17,7 +17,7 @@ import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import { OutputChannel, ConfigurationTarget, window } from 'vscode';
 import { Deferred } from '../common/promise';
-import { ConfigurePythonDialog } from '../dialog/configurePython/configurePythonDialog';
+import { ConfigurePythonWizard } from '../dialog/configurePython/configurePythonWizard';
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 
@@ -428,8 +428,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	 */
 	public async promptForPythonInstall(): Promise<void> {
 		if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
-			let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this);
-			return pythonDialog.showDialog(true);
+			let pythonWizard = new ConfigurePythonWizard(this.apiWrapper, this);
+			return pythonWizard.start(undefined, true);
 		}
 	}
 
