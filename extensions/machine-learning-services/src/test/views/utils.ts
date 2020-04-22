@@ -31,8 +31,18 @@ export function createViewContext(): ViewTestContext {
 	let button: azdata.ButtonComponent = Object.assign({}, componentBase, {
 		onDidClick: onClick.event
 	});
+	let link: azdata.HyperlinkComponent = Object.assign({}, componentBase, {
+		onDidClick: onClick.event,
+		label: '',
+		url: ''
+	});
 	let radioButton: azdata.RadioButtonComponent = Object.assign({}, componentBase, {
+		checked: true,
 		onDidClick: onClick.event
+	});
+	let checkbox: azdata.CheckBoxComponent = Object.assign({}, componentBase, {
+		checked: true,
+		onChanged: onClick.event
 	});
 	let container = {
 		clearItems: () => { },
@@ -47,19 +57,32 @@ export function createViewContext(): ViewTestContext {
 	});
 	let flex: azdata.FlexContainer = Object.assign({}, componentBase, container, {
 	});
+	let div: azdata.DivContainer = Object.assign({}, componentBase, container, {
+		onDidClick: onClick.event
+	});
 
 	let buttonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent> = {
 		component: () => button,
 		withProperties: () => buttonBuilder,
 		withValidation: () => buttonBuilder
 	};
+	let hyperLinkBuilder: azdata.ComponentBuilder<azdata.HyperlinkComponent> = {
+		component: () => link,
+		withProperties: () => hyperLinkBuilder,
+		withValidation: () => hyperLinkBuilder
+	};
 	let radioButtonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent> = {
 		component: () => radioButton,
 		withProperties: () => radioButtonBuilder,
 		withValidation: () => radioButtonBuilder
 	};
+	let checkBoxBuilder: azdata.ComponentBuilder<azdata.CheckBoxComponent> = {
+		component: () => checkbox,
+		withProperties: () => checkBoxBuilder,
+		withValidation: () => checkBoxBuilder
+	};
 	let inputBox: () => azdata.InputBoxComponent = () => Object.assign({}, componentBase, {
-		onTextChanged: undefined!,
+		onTextChanged: onClick.event!,
 		onEnterKeyPressed: undefined!,
 		value: ''
 	});
@@ -83,6 +106,12 @@ export function createViewContext(): ViewTestContext {
 	let loadingComponent: () => azdata.LoadingComponent = () => Object.assign({}, componentBase, {
 		loading: false,
 		component: undefined!
+	});
+
+	let card: () => azdata.CardComponent = () => Object.assign({}, componentBase, {
+		label: '',
+		onDidActionClick: new vscode.EventEmitter<azdata.ActionDescriptor>().event,
+		onCardSelectedChanged: onClick.event
 	});
 
 	let declarativeTableBuilder: azdata.ComponentBuilder<azdata.DeclarativeTableComponent> = {
@@ -118,6 +147,13 @@ export function createViewContext(): ViewTestContext {
 		withItems: () => flexBuilder,
 		withLayout: () => flexBuilder
 	});
+	let divBuilder: azdata.DivBuilder = Object.assign({}, {
+		component: () => div,
+		withProperties: () => divBuilder,
+		withValidation: () => divBuilder,
+		withItems: () => divBuilder,
+		withLayout: () => divBuilder
+	});
 
 	let inputBoxBuilder: azdata.ComponentBuilder<azdata.InputBoxComponent> = {
 		component: () => {
@@ -127,6 +163,15 @@ export function createViewContext(): ViewTestContext {
 		withProperties: () => inputBoxBuilder,
 		withValidation: () => inputBoxBuilder
 	};
+	let cardBuilder: azdata.ComponentBuilder<azdata.CardComponent> = {
+		component: () => {
+			let r = card();
+			return r;
+		},
+		withProperties: () => cardBuilder,
+		withValidation: () => cardBuilder
+	};
+
 	let imageBuilder: azdata.ComponentBuilder<azdata.ImageComponent> = {
 		component: () => {
 			let r = image();
@@ -155,13 +200,13 @@ export function createViewContext(): ViewTestContext {
 		modelBuilder: {
 			radioCardGroup: undefined!,
 			navContainer: undefined!,
-			divContainer: undefined!,
+			divContainer: () => divBuilder,
 			flexContainer: () => flexBuilder,
 			splitViewContainer: undefined!,
 			dom: undefined!,
-			card: undefined!,
+			card: () => cardBuilder,
 			inputBox: () => inputBoxBuilder,
-			checkBox: undefined!,
+			checkBox: () => checkBoxBuilder!,
 			radioButton: () => radioButtonBuilder,
 			webView: undefined!,
 			editor: undefined!,
@@ -181,7 +226,7 @@ export function createViewContext(): ViewTestContext {
 			toolbarContainer: undefined!,
 			loadingComponent: () => loadingBuilder,
 			fileBrowserTree: undefined!,
-			hyperlink: undefined!,
+			hyperlink: () => hyperLinkBuilder,
 			tabbedPanel: undefined!,
 			separator: undefined!
 		}
@@ -270,6 +315,13 @@ export function createViewContext(): ViewTestContext {
 	apiWrapper.setup(x => x.createWizardPage(TypeMoq.It.isAny())).returns(() => wizardPage);
 	apiWrapper.setup(x => x.createModelViewDialog(TypeMoq.It.isAny())).returns(() => dialog);
 	apiWrapper.setup(x => x.openDialog(TypeMoq.It.isAny())).returns(() => { });
+	apiWrapper.setup(x => x.registerWidget(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async (id, handler) => {
+		if (id) {
+			return await handler(view);
+		} else {
+			Promise.reject();
+		}
+	});
 
 	return {
 		apiWrapper: apiWrapper,

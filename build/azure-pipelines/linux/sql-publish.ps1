@@ -18,19 +18,22 @@ $Arch = "x64"
 $PlatformLinux = "linux-$Arch"
 $TarballFilename = "azuredatastudio-linux-$Arch.tar.gz"
 $TarballPath = "$artifactsDir\linux\archive\$TarballFilename"
+$TarballUploadName = "azuredatastudio-linux-$Version"
 
-node $sourcesDir\build\azure-pipelines\common\publish.js $Quality $PlatformLinux archive-unsigned $TarballFilename $Version true $TarballPath $CommitId
+node $sourcesDir\build\azure-pipelines\common\publish.js $Quality $PlatformLinux archive-unsigned "$TarballUploadName.tar.gz" $Version true $TarballPath $CommitId
 
 # Publish DEB
 $PlatformDeb = "linux-deb-$Arch"
 $DebFilename = "$(Get-ChildItem -File -Name $artifactsDir\linux\deb\amd64\deb\*.deb)"
 $DebPath = "$artifactsDir\linux\deb\amd64\deb\$DebFilename"
+$DebUploadName = "azuredatastudio-linux-$Version"
 
-node $sourcesDir\build\azure-pipelines\common\publish.js $Quality $PlatformDeb package $DebFilename $Version true $DebPath $CommitId
+node $sourcesDir\build\azure-pipelines\common\publish.js $Quality $PlatformDeb package "$DebUploadName.deb" $Version true $DebPath $CommitId
 
 # Publish RPM
 $PlatformRpm = "linux-rpm-$Arch"
 $RpmFilename = "$(Get-ChildItem -File -Name $artifactsDir\linux\rpm\x86_64\*.rpm)"
 $RpmPath = "$artifactsDir\linux\rpm\x86_64\$RpmFilename"
+$RpmUploadName = "azuredatastudio-linux-$Version"
 
-node $sourcesDir\build\azure-pipelines\common\publish.js $Quality $PlatformRpm package $RpmFilename $Version true $RpmPath $CommitId
+node $sourcesDir\build\azure-pipelines\common\publish.js $Quality $PlatformRpm package "$RpmUploadName.rpm" $Version true $RpmPath $CommitId

@@ -87,12 +87,6 @@ steps:
 
   - script: |
       set -e
-      yarn gulp install-sqltoolsservice
-      yarn gulp install-ssmsmin
-    displayName: Install extension binaries
-
-  - script: |
-      set -e
       yarn gulp vscode-linux-x64-min-ci
       yarn gulp vscode-reh-linux-x64-min-ci
       yarn gulp vscode-reh-web-linux-x64-min-ci

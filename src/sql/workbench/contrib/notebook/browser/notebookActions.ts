@@ -21,7 +21,7 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
-import { IFindNotebookController } from 'sql/workbench/contrib/notebook/find/notebookFindWidget';
+import { IFindNotebookController } from 'sql/workbench/contrib/notebook/browser/find/notebookFindWidget';
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';

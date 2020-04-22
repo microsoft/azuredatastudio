@@ -183,9 +183,30 @@ export class QueryRunner {
 		try {
 			return await this.runQuery(connection, query);
 		} catch (error) {
-			console.log(error);
+			//console.log(error);
 			return undefined;
 		}
+	}
+
+	/**
+	 * Executes the query but doesn't fail it is fails
+	 * @param connection SQL connection
+	 * @param query query to run
+	 */
+	public async runWithDatabaseChange(connection: azdata.connection.ConnectionProfile, query: string, queryDb: string): Promise<azdata.SimpleExecuteResult | undefined> {
+		if (connection) {
+			try {
+				return await this.runQuery(connection, `
+				USE [${utils.doubleEscapeSingleBrackets(queryDb)}]
+				${query}`);
+			} catch (error) {
+				console.log(error);
+			}
+			finally {
+				this.safeRunQuery(connection, `USE [${utils.doubleEscapeSingleBrackets(connection.databaseName || 'master')}]`);
+			}
+		}
+		return undefined;
 	}
 }
 

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { INextIterator, ArrayIterator } from 'vs/base/common/iterator';
+import { ArrayNavigator, INavigator } from 'vs/base/common/navigator';
 import { Item } from './treeModel';
 
 export interface IViewItem {
@@ -23,7 +23,7 @@ export class HeightMap {
 		return !last ? 0 : last.top + last.height;
 	}
 
-	onInsertItems(iterator: INextIterator<Item>, afterItemId: string | null = null): number | undefined {
+	onInsertItems(iterator: INavigator<Item>, afterItemId: string | null = null): number | undefined {
 		let item: Item | null = null;
 		let viewItem: IViewItem;
 		let i: number, j: number;
@@ -81,7 +81,7 @@ export class HeightMap {
 	}
 
 	// Contiguous items
-	onRemoveItems(iterator: INextIterator<string>): void {
+	onRemoveItems(iterator: INavigator<string>): void {
 		let itemId: string | null = null;
 		let viewItem: IViewItem;
 		let startIndex: number | null = null;
@@ -126,11 +126,11 @@ export class HeightMap {
 
 	onRefreshItemSet(items: Item[]): void {
 		let sortedItems = items.sort((a, b) => this.indexes[a.id] - this.indexes[b.id]);
-		this.onRefreshItems(new ArrayIterator(sortedItems));
+		this.onRefreshItems(new ArrayNavigator(sortedItems));
 	}
 
 	// Ordered, but not necessarily contiguous items
-	onRefreshItems(iterator: INextIterator<Item>): void {
+	onRefreshItems(iterator: INavigator<Item>): void {
 		let item: Item | null = null;
 		let viewItem: IViewItem;
 		let newHeight: number;

@@ -31,7 +31,7 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
-import { NotebookFindModel } from 'sql/workbench/contrib/notebook/find/notebookFindModel';
+import { NotebookFindModel } from 'sql/workbench/contrib/notebook/browser/find/notebookFindModel';
 import { onUnexpectedError } from 'vs/base/common/errors';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
@@ -300,7 +300,7 @@ export abstract class NotebookInput extends EditorInput {
 
 	private async setTrustForNewEditor(newInput: IEditorInput | undefined): Promise<void> {
 		let model = this._model.getNotebookModel();
-		if (model?.trustedMode && newInput?.resource !== this.resource) {
+		if (model?.trustedMode && newInput && newInput.resource !== this.resource) {
 			await this.notebookService.serializeNotebookStateChange(newInput.resource, NotebookChangeType.Saved, undefined, true);
 		}
 	}

@@ -7,21 +7,25 @@ import * as azdata from 'azdata';
 import * as should from 'should';
 import 'mocha';
 import { createContext } from './utils';
-import { ListModelsEventName, ListAccountsEventName, ListSubscriptionsEventName, ListGroupsEventName, ListWorkspacesEventName, ListAzureModelsEventName } from '../../../views/models/modelViewBase';
+import { ListModelsEventName, ListAccountsEventName, ListSubscriptionsEventName, ListGroupsEventName, ListWorkspacesEventName, ListAzureModelsEventName, ModelSourceType, ListDatabaseNamesEventName, ListTableNamesEventName } from '../../../views/models/modelViewBase';
 import { RegisteredModel } from '../../../modelManagement/interfaces';
 import { azureResource } from '../../../typings/azure-resource';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { ViewBase } from '../../../views/viewBase';
 import { WorkspaceModel } from '../../../modelManagement/interfaces';
-import { RegisterModelWizard } from '../../../views/models/registerModels/registerModelWizard';
+import { ImportModelWizard } from '../../../views/models/manageModels/importModelWizard';
 
 describe('Register Model Wizard', () => {
 	it('Should create view components successfully ', async function (): Promise<void> {
 		let testContext = createContext();
 
-		let view = new RegisterModelWizard(testContext.apiWrapper.object, '');
+		let view = new ImportModelWizard(testContext.apiWrapper.object, '');
+		view.importTable = {
+			databaseName: 'db',
+			tableName: 'table',
+			schema: 'dbo'
+		};
 		await view.open();
-		await view.refresh();
 		should.notEqual(view.wizardView, undefined);
 		should.notEqual(view.modelSourcePage, undefined);
 	});
@@ -29,7 +33,12 @@ describe('Register Model Wizard', () => {
 	it('Should load data successfully ', async function (): Promise<void> {
 		let testContext = createContext();
 
-		let view = new RegisterModelWizard(testContext.apiWrapper.object, '');
+		let view = new ImportModelWizard(testContext.apiWrapper.object, '');
+		view.importTable = {
+			databaseName: 'db',
+			tableName: 'tb',
+			schema: 'dbo'
+		};
 		await view.open();
 		let accounts: azdata.Account[] = [
 			{
@@ -75,11 +84,26 @@ describe('Register Model Wizard', () => {
 			{
 				id: 1,
 				artifactName: 'model',
-				title: 'model'
+				title: 'model',
+				table: {
+					databaseName: 'db',
+					tableName: 'tb',
+					schema: 'dbo'
+				}
 			}
 		];
 		view.on(ListModelsEventName, () => {
 			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListModelsEventName), { data: localModels });
+		});
+		view.on(ListDatabaseNamesEventName, () => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListDatabaseNamesEventName), { data: [
+				'db', 'db1'
+			] });
+		});
+		view.on(ListTableNamesEventName, () => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListTableNamesEventName), { data: [
+				'tb', 'tb1'
+			] });
 		});
 		view.on(ListAccountsEventName, () => {
 			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListAccountsEventName), { data: accounts });
@@ -97,6 +121,10 @@ describe('Register Model Wizard', () => {
 		view.on(ListAzureModelsEventName, () => {
 			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListAzureModelsEventName), { data: models });
 		});
+
+		if (view.modelBrowsePage) {
+			view.modelBrowsePage.modelSourceType = ModelSourceType.Azure;
+		}
 		await view.refresh();
 		should.notEqual(view.azureModelsComponent?.data ,undefined);
 		should.notEqual(view.localModelsComponent?.data, undefined);

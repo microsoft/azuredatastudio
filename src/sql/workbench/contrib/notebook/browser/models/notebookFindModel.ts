@@ -5,7 +5,7 @@
 
 import { Event } from 'vs/base/common/event';
 import { IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
-import { NotebookFindMatch } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
+import { NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/find/notebookFindDecorations';
 import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 
 export interface INotebookFindModel {

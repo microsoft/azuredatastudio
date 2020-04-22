@@ -13,6 +13,7 @@ import { FlexLayout, FlexItemLayout } from 'azdata';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { convertSize } from 'sql/base/browser/dom';
 
 export class FlexItem {
 	constructor(public descriptor: IComponentDescriptor, public config: FlexItemLayout) { }
@@ -69,8 +70,8 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 		this._alignContent = layout.alignContent ? layout.alignContent : '';
 		this._textAlign = layout.textAlign ? layout.textAlign : '';
 		this._position = layout.position ? layout.position : '';
-		this._height = this.convertSize(layout.height);
-		this._width = this.convertSize(layout.width);
+		this._height = convertSize(layout.height);
+		this._width = convertSize(layout.width);
 		this._flexWrap = layout.flexWrap ? layout.flexWrap : '';
 
 		this.layout();

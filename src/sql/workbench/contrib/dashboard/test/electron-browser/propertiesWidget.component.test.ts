@@ -16,6 +16,7 @@ import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { NullLogService } from 'vs/platform/log/common/log';
+import { DisplayProperty } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
 
 class TestChangeDetectorRef extends ChangeDetectorRef {
 	reattach(): void {
@@ -98,15 +99,15 @@ suite('Dashboard Properties Widget Tests', () => {
 			}
 		};
 
-		let testComponent = new PropertiesWidgetComponent(dashboardService.object, new TestChangeDetectorRef(), undefined, widgetConfig, testLogService, undefined);
+		let testComponent = new PropertiesWidgetComponent(dashboardService.object, new TestChangeDetectorRef(), undefined, widgetConfig, testLogService);
 
 		return new Promise(resolve => {
 			// because config parsing is done async we need to put our asserts on the thread stack
 			setImmediate(() => {
-				// because properties is private we need to do some work arounds to access it.
-				assert.equal((<any>testComponent).properties.length, 1);
-				assert.equal((<any>testComponent).properties[0].displayName, 'Test');
-				assert.equal((<any>testComponent).properties[0].value, 'Test Property');
+				const displayProperties: DisplayProperty[] = (testComponent as any).parseProperties(databaseInfo);
+				assert.equal(displayProperties.length, 1);
+				assert.equal(displayProperties[0].displayName, 'Test');
+				assert.equal(displayProperties[0].value, 'Test Property');
 				resolve();
 			});
 		});

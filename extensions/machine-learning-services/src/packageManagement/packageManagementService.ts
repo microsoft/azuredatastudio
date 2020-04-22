@@ -30,28 +30,6 @@ export class PackageManagementService {
 	}
 
 	/**
-	 * Opens ODBC driver documents
-	 */
-	public async openOdbcDriverDocuments(): Promise<boolean> {
-		if (utils.isWindows()) {
-			return await this._apiWrapper.openExternal(vscode.Uri.parse(constants.odbcDriverWindowsDocuments));
-		} else {
-			return await this._apiWrapper.openExternal(vscode.Uri.parse(constants.odbcDriverLinuxDocuments));
-		}
-	}
-
-	/**
-	 * Opens install MLS documents
-	 */
-	public async openInstallDocuments(): Promise<boolean> {
-		if (utils.isWindows()) {
-			return await this._apiWrapper.openExternal(vscode.Uri.parse(constants.installMlsWindowsDocs));
-		} else {
-			return await this._apiWrapper.openExternal(vscode.Uri.parse(constants.installMlsLinuxDocs));
-		}
-	}
-
-	/**
 	 * Returns true if mls is installed in the give SQL server instance
 	 */
 	public async isMachineLearningServiceEnabled(connection: azdata.connection.ConnectionProfile): Promise<boolean> {

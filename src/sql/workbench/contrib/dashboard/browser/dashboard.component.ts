@@ -15,6 +15,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import * as themeColors from 'vs/workbench/common/theme';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 
 export const DASHBOARD_SELECTOR: string = 'dashboard-component';
 
@@ -47,7 +48,8 @@ export class DashboardComponent extends AngularDisposable implements OnInit {
 
 	private updateTheme(theme: IColorTheme): void {
 		const headerEl = <HTMLElement>this.header.nativeElement;
-		headerEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
+		const highContrastBorder = theme.getColor(contrastBorder);
+		headerEl.style.borderBottomColor = highContrastBorder ? highContrastBorder.toString() : theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 		headerEl.style.borderBottomWidth = '1px';
 		headerEl.style.borderBottomStyle = 'solid';
 	}

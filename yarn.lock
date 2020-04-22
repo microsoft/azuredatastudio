@@ -6443,10 +6443,10 @@ node-pre-gyp@^0.10.0:
     semver "^5.3.0"
     tar "^4"
 
-node-pty@^0.10.0-beta2:
-  version "0.10.0-beta2"
-  resolved "https://registry.yarnpkg.com/node-pty/-/node-pty-0.10.0-beta2.tgz#6fd0d2fbbe881869e4e19795a05c557ac958da81"
-  integrity sha512-IU2lzlPUZ+gKG7pHJjzBHpnuwPTxWGgT3iyQicZfdL7dwLvP5cm00QxavAXCInBmRkOMhvM4aBSKvfzqQnCDBA==
+node-pty@0.10.0-beta7:
+  version "0.10.0-beta7"
+  resolved "https://registry.yarnpkg.com/node-pty/-/node-pty-0.10.0-beta7.tgz#7e383b2d1fe2f34509b57187f5a9a6ff90c46111"
+  integrity sha512-oC2VyIz9YaIvv6lWjAPZbUzmhLW1ouFmxOogNRNQrKeUzUi2yM/QRmybs+dW/Mhd3V89Yh61Ml0J5yuWiMIBbw==
   dependencies:
     nan "^2.14.0"
 
@@ -7186,10 +7186,10 @@ plist@^3.0.1:
     xmlbuilder "^9.0.7"
     xmldom "0.1.x"
 
-plotly.js-dist@^1.48.3:
-  version "1.48.3"
-  resolved "https://registry.yarnpkg.com/plotly.js-dist/-/plotly.js-dist-1.48.3.tgz#b160b2d080ad87720121c9119f28036f35a301dc"
-  integrity sha512-Ocy2WWjzh4Ofk293AgTvP0ga053nTV7TvUbYEzmq1E9Eh7wc6HCPBxo55YcZThHw3hVycEnhktLQK94en1bYSw==
+plotly.js-dist-min@^1.53.0:
+  version "1.53.0"
+  resolved "https://registry.yarnpkg.com/plotly.js-dist-min/-/plotly.js-dist-min-1.53.0.tgz#bcec2c0ce0c64ea8d7a261213540669a8cc166e9"
+  integrity sha512-tcNz8PmtUL9NfN7gGhMf5TuNt5x20dig+biFLvFH9uFT1kD2Erq5p058QNV2A+vLULTlESlJvVzR9hwpdPMUrw==
 
 plugin-error@0.1.2, plugin-error@^0.1.2:
   version "0.1.2"
@@ -8564,9 +8564,9 @@ slice-ansi@^2.0.0, slice-ansi@^2.1.0:
     astral-regex "^1.0.0"
     is-fullwidth-code-point "^2.0.0"
 
-"slickgrid@github:anthonydresser/SlickGrid#2.3.32":
-  version "2.3.32"
-  resolved "https://codeload.github.com/anthonydresser/SlickGrid/tar.gz/3909801b6c5de2b92147eeb474e8082df95b7098"
+"slickgrid@github:anthonydresser/SlickGrid#2.3.33":
+  version "2.3.33"
+  resolved "https://codeload.github.com/anthonydresser/SlickGrid/tar.gz/7555f28a55a6663469b716dcd288bb35179a8ffd"
 
 smart-buffer@4.0.2:
   version "4.0.2"

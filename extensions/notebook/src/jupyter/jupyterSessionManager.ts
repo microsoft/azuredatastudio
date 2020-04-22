@@ -351,15 +351,6 @@ export class JupyterSession implements nb.ISession {
 				}
 			}
 
-			// To set ADS context for Kqlmagic
-			allCode += `%set_env KQLMAGIC_NOTEBOOK_APP=AzureDataStudio${EOL}`;
-
-			// Enable silent mode for perf improvement of reload command.
-			allCode += `%set_env KQLMAGIC_LOAD_MODE=silent${EOL}`;
-
-			// Add and register Kqlmagic to the python kernel
-			allCode += `%reload_ext Kqlmagic`;
-
 			let future = this.sessionImpl.kernel.requestExecute({
 				code: allCode,
 				silent: true,

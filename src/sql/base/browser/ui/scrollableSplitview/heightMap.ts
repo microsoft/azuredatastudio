@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { INextIterator } from 'vs/base/common/iterator';
+import { INavigator } from 'vs/base/common/navigator';
 
 export interface IView {
 	id?: string;
@@ -31,7 +31,7 @@ export class HeightMap {
 		return !last ? 0 : last.top + last.height;
 	}
 
-	public onInsertItems(iterator: INextIterator<IViewItem>, afterItemId: string | null = null): number | undefined {
+	public onInsertItems(iterator: INavigator<IViewItem>, afterItemId: string | null = null): number | undefined {
 		let viewItem: IViewItem | null = null;
 		let i: number, j: number;
 		let totalSize: number;
@@ -89,7 +89,7 @@ export class HeightMap {
 	}
 
 	// Contiguous items
-	public onRemoveItems(iterator: INextIterator<string>): void {
+	public onRemoveItems(iterator: INavigator<string>): void {
 		let itemId: string | null = null;
 		let viewItem: IViewItem;
 		let startIndex: number | null = null;

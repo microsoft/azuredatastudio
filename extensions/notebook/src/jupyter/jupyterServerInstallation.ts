@@ -97,9 +97,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}, {
 			name: 'powershell-kernel',
 			version: '0.1.3'
-		}, {
-			name: 'Kqlmagic',
-			version: '0.1.109'
 		}
 	];
 
@@ -628,7 +625,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let versionSpecifier = useMinVersion ? '>=' : '==';
 		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
 		let condaExe = this.getCondaExePath();
-		let cmd = `"${condaExe}" install -y ${packagesStr}`;
+		let cmd = `"${condaExe}" install -c conda-forge -y ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
 

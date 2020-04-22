@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 
 import { nb, ServerInfo } from 'azdata';
-import { getHostAndPortFromEndpoint, isStream, getProvidersForFileName, asyncForEach, clusterEndpointsProperty, getClusterEndpoints, RawEndpoint, IEndpoint, getStandardKernelsForProvider, IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
+import { getHostAndPortFromEndpoint, isStream, getProvidersForFileName, asyncForEach, clusterEndpointsProperty, getClusterEndpoints, RawEndpoint, IEndpoint, getStandardKernelsForProvider, IStandardKernelWithProvider, rewriteUrlUsingRegex } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { INotebookService, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
@@ -203,5 +203,17 @@ suite('notebookUtils', function (): void {
 		result = getHostAndPortFromEndpoint('localhost:1433');
 		assert.strictEqual(result.host, '');
 		assert.strictEqual(result.port, undefined);
+	});
+
+	test('rewriteUrlUsingRegex Test', async function (): Promise<void> {
+		// Give a URL that should be rewritten
+		let html = '<a target="_blank" href="https://sparkhead-0.sparkhead-svc:8090/proxy/application_1/“>Link</a>';
+		let result = rewriteUrlUsingRegex(/(https?:\/\/sparkhead.*\/proxy)(.*)/g, html, '1.1.1.1', ':999', '/gateway/default/yarn/proxy');
+		assert.strictEqual(result, '<a target="_blank" href="https://1.1.1.1:999/gateway/default/yarn/proxy/application_1/“>Link</a>', 'Target URL does not match after substitution');
+
+		// Give a URL that should not be rewritten
+		html = '<a target="_blank" href="https://storage-0-0.storage-0-svc.mssql-cluster.svc.cluster.local:8044/node/containerlogs/container_7/root“>Link</a>';
+		result = rewriteUrlUsingRegex(/(https?:\/\/sparkhead.*\/proxy)(.*)/g, html, '1.1.1.1', ':999', '/gateway/default/yarn/proxy');
+		assert.strictEqual(result, '<a target="_blank" href="https://storage-0-0.storage-0-svc.mssql-cluster.svc.cluster.local:8044/node/containerlogs/container_7/root“>Link</a>', 'Target URL should not have been edited');
 	});
 });

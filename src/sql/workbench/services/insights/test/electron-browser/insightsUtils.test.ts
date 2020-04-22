@@ -179,9 +179,8 @@ suite('Insights Utils tests', function () {
 		const environmentService = new MockWorkbenchEnvironmentService({ TEST_PATH: queryFileDir });
 
 		// Create mock window service with env variable containing test folder for resolution
-		const configurationResolverService = new TestConfigurationResolverService(environmentService.userEnv,
+		const configurationResolverService = new TestConfigurationResolverService({ getExecPath: () => undefined }, environmentService.userEnv,
 			undefined,
-			environmentService,
 			undefined,
 			undefined,
 			undefined,
@@ -209,9 +208,8 @@ suite('Insights Utils tests', function () {
 		const environmentService = new MockWorkbenchEnvironmentService({ TEST_PATH: queryFileDir });
 
 		// Create mock window service with env variable containing test folder for resolution
-		const configurationResolverService = new TestConfigurationResolverService(environmentService.userEnv,
+		const configurationResolverService = new TestConfigurationResolverService({ getExecPath: () => undefined }, environmentService.userEnv,
 			undefined,
-			environmentService,
 			undefined,
 			undefined,
 			undefined,
