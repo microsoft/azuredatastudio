@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import { BasePage } from './configurePythonPage';
 import { ConfigurePathPage } from './configurePathPage';
 import { PickPackagesPage } from './pickPackagesPage';
-import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
+import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
 import * as utils from '../../common/utils';
 import { promises as fs } from 'fs';
 import { Deferred } from '../../common/promise';
@@ -23,6 +23,7 @@ export interface ConfigurePythonModel {
 	useExistingPython: boolean;
 	usingCustomPath: boolean;
 	pythonPathsPromise: Promise<PythonPathInfo[]>;
+	packagesToInstall: PythonPkgDetails[];
 }
 
 export class ConfigurePythonWizard {
