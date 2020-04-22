@@ -416,9 +416,9 @@ export class CustomTreeView extends Disposable implements ITreeView {
 			accessibilityProvider: {
 				getAriaLabel(element: ITreeItem): string {
 					return element.label ? element.label.label : '';
-				}
+				},
+				getWidgetAriaLabel: () => this.title
 			},
-			ariaLabel: this.title,
 			keyboardNavigationLabelProvider: {
 				getKeyboardNavigationLabel: (item: ITreeItem) => {
 					return item.label ? item.label.label : (item.resourceUri ? basename(URI.revive(item.resourceUri)) : undefined);
