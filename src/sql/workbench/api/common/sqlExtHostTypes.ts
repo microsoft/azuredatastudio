@@ -837,6 +837,13 @@ export enum TabOrientation {
 	Horizontal = 'horizontal'
 }
 
+export enum MatcherStrategy {
+	DEFAULT_MATCHER,
+	AZURE_COMPAT,
+	ID,
+	CUSTOM
+}
+
 export interface TabbedPanelLayout {
 	orientation: TabOrientation;
 	showIcon: boolean;

@@ -95,7 +95,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 					return validity;
 				};
-			case azdata.MatcherStrategy.DEFAULT:
+			case azdata.MatcherStrategy.DEFAULT_MATCHER:
 			// fall through
 			default:
 				return ConnectionProfile.DefaultMatcher;
