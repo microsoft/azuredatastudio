@@ -36,7 +36,7 @@ export class WizardView extends MainViewBase {
 	public addWizardPage(page: IPageView, index: number): void {
 		if (this._wizard) {
 			const currentPage = this._wizard.currentPage;
-			if (currentPage < index) {
+			if (page && currentPage < index) {
 				this.addPage(page, index);
 				this._wizard.removePage(index);
 				this.createWizardPage(page.title || '', page);
@@ -114,7 +114,7 @@ export class WizardView extends MainViewBase {
 	public async refresh(): Promise<void> {
 		for (let index = 0; index < this._pages.length; index++) {
 			const page = this._pages[index];
-			if (this._wizard?.pages[index].title !== page.title) {
+			if (this._wizard?.pages[index]?.title !== page.title) {
 				this.addWizardPage(page, index);
 			}
 		}

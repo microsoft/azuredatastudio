@@ -77,7 +77,12 @@ describe('DeployedModelService', () => {
 				modelName: 'name1',
 				description: 'desc1',
 				created: '2018-01-01',
+				deploymentTime: '2018-01-01',
 				version: '1.1',
+				framework: 'onnx',
+				frameworkVersion: '1',
+				deployedBy: '1',
+				runId: 'run1',
 				table: testContext.importTable
 
 			}
@@ -98,11 +103,6 @@ describe('DeployedModelService', () => {
 						invariantCultureDisplayValue: ''
 					},
 					{
-						displayValue: 'title1',
-						isNull: false,
-						invariantCultureDisplayValue: ''
-					},
-					{
 						displayValue: 'desc1',
 						isNull: false,
 						invariantCultureDisplayValue: ''
@@ -116,6 +116,31 @@ describe('DeployedModelService', () => {
 						displayValue: '2018-01-01',
 						isNull: false,
 						invariantCultureDisplayValue: ''
+					},
+					{
+						displayValue: 'onnx',
+						isNull: false,
+						invariantCultureDisplayValue: ''
+					},
+					{
+						displayValue: '1',
+						isNull: false,
+						invariantCultureDisplayValue: ''
+					},
+					{
+						displayValue: '2018-01-01',
+						isNull: false,
+						invariantCultureDisplayValue: ''
+					},
+					{
+						displayValue: '1',
+						isNull: false,
+						invariantCultureDisplayValue: ''
+					},
+					{
+						displayValue: 'run1',
+						isNull: false,
+						invariantCultureDisplayValue: ''
 					}
 				]
 			]
@@ -127,9 +152,6 @@ describe('DeployedModelService', () => {
 			testContext.modelClient.object,
 			testContext.recentModels.object);
 		testContext.queryRunner.setup(x => x.safeRunQuery(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(result));
-
-		testContext.config.setup(x => x.registeredModelDatabaseName).returns(() => 'db');
-		testContext.config.setup(x => x.registeredModelTableName).returns(() => 'table');
 		const actual = await service.getDeployedModels(testContext.importTable);
 		should.deepEqual(actual, expected);
 	});
@@ -177,7 +199,12 @@ describe('DeployedModelService', () => {
 			modelName: 'name1',
 			description: 'desc1',
 			created: '2018-01-01',
+			deploymentTime: '2018-01-01',
 			version: '1.1',
+			framework: 'onnx',
+			frameworkVersion: '1',
+			deployedBy: '1',
+			runId: 'run1',
 			table: testContext.importTable
 		};
 		const result = {
@@ -218,40 +245,66 @@ describe('DeployedModelService', () => {
 			modelName: 'name1',
 			description: 'desc1',
 			created: '2018-01-01',
+			deploymentTime: '2018-01-01',
 			version: '1.1',
+			framework: 'onnx',
+			frameworkVersion: '1',
+			deployedBy: '1',
+			runId: 'run1',
 			table: testContext.importTable
+
 		};
 		const row = [
-			{
-				displayValue: '1',
-				isNull: false,
-				invariantCultureDisplayValue: ''
-			},
-			{
-				displayValue: 'name1',
-				isNull: false,
-				invariantCultureDisplayValue: ''
-			},
-			{
-				displayValue: 'title1',
-				isNull: false,
-				invariantCultureDisplayValue: ''
-			},
-			{
-				displayValue: 'desc1',
-				isNull: false,
-				invariantCultureDisplayValue: ''
-			},
-			{
-				displayValue: '1.1',
-				isNull: false,
-				invariantCultureDisplayValue: ''
-			},
-			{
-				displayValue: '2018-01-01',
-				isNull: false,
-				invariantCultureDisplayValue: ''
-			}
+				{
+					displayValue: '1',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				},
+				{
+					displayValue: 'name1',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				},
+				{
+					displayValue: 'desc1',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				},
+				{
+					displayValue: '1.1',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				},
+				{
+					displayValue: '2018-01-01',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				},
+				{
+					displayValue: 'onnx',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				},
+				{
+					displayValue: '1',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				},
+				{
+					displayValue: '2018-01-01',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				},
+				{
+					displayValue: '1',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				},
+				{
+					displayValue: 'run1',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				}
 		];
 		const result = {
 			rowCount: 1,
@@ -301,46 +354,31 @@ describe('DeployedModelService', () => {
 		testContext.importTable.tableName = 'ta[b]le';
 		testContext.importTable.schema = 'dbo';
 		const expected = `
-		IF EXISTS
+		IF NOT EXISTS
 			(  SELECT t.name, s.name
 				FROM sys.tables t join sys.schemas s on t.schema_id=t.schema_id
 				WHERE t.name = 'ta[b]le'
 				AND s.name = 'dbo'
 			)
 		BEGIN
-			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[ta[[b]]le]') AND NAME='artifact_name')
-				ALTER TABLE [dbo].[ta[[b]]le] ADD [artifact_name] [varchar](256) NOT NULL
-			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[ta[[b]]le]') AND NAME='artifact_content')
-				ALTER TABLE [dbo].[ta[[b]]le] ADD [artifact_content] [varbinary](max) NOT NULL
-			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[ta[[b]]le]') AND NAME='name')
-				ALTER TABLE [dbo].[ta[[b]]le] ADD [name] [varchar](256) NULL
-			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[ta[[b]]le]') AND NAME='version')
-				ALTER TABLE [dbo].[ta[[b]]le] ADD [version] [varchar](256) NULL
-			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[ta[[b]]le]') AND NAME='created')
-			BEGIN
-				ALTER TABLE [dbo].[ta[[b]]le] ADD [created] [datetime] NULL
-				ALTER TABLE [dbo].[ta[[b]]le] ADD CONSTRAINT CONSTRAINT_NAME DEFAULT GETDATE() FOR created
-			END
-			IF NOT EXISTS (SELECT * FROM syscolumns WHERE ID=OBJECT_ID('[dbo].[ta[[b]]le]') AND NAME='description')
-				ALTER TABLE [dbo].[ta[[b]]le] ADD [description] [varchar](256) NULL
-		END
-		Else
-		BEGIN
 		CREATE TABLE [dbo].[ta[[b]]le](
-			[artifact_id] [int] IDENTITY(1,1) NOT NULL,
-			[artifact_name] [varchar](256) NOT NULL,
-			[artifact_content] [varbinary](max) NOT NULL,
-			[artifact_initial_size] [bigint] NULL,
-			[name] [varchar](256) NULL,
-			[version] [varchar](256) NULL,
-			[created] [datetime] NULL,
-			[description] [varchar](256) NULL,
-		CONSTRAINT [ta[[b]]le_artifact_pk] PRIMARY KEY CLUSTERED
+			[model_id] [int] IDENTITY(1,1) NOT NULL,
+			[model_name] [varchar](256) NOT NULL,
+			[model_framework] [varchar](256) NULL,
+			[model_framework_version] [varchar](256) NULL,
+			[model] [varbinary](max) NOT NULL,
+			[model_version] [varchar](256) NULL,
+			[model_creation_time] [datetime2] NULL,
+			[model_deployment_time] [datetime2] NULL,
+			[deployed_by] [int] NULL,
+			[model_description] [varchar](256) NULL,
+			[run_id] [varchar](256) NULL,
+		CONSTRAINT [ta[[b]]le_models_pk] PRIMARY KEY CLUSTERED
 		(
-			[artifact_id] ASC
+			[model_id] ASC
 		)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 		) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-		ALTER TABLE [dbo].[ta[[b]]le] ADD  CONSTRAINT [CONSTRAINT_NAME]  DEFAULT (getdate()) FOR [created]
+		ALTER TABLE [dbo].[ta[[b]]le] ADD  CONSTRAINT [ta[[b]]le_deployment_time]  DEFAULT (getdate()) FOR [model_deployment_time]
 		END
 	`;
 		const actual = queries.getConfigureTableQuery(testContext.importTable);
@@ -353,10 +391,10 @@ describe('DeployedModelService', () => {
 		testContext.importTable.tableName = 'ta[b]le';
 		testContext.importTable.schema = 'dbo';
 		const expected = `
-		SELECT artifact_id, artifact_name, name, description, version, created
+		SELECT model_id, model_name, model_description, model_version, model_creation_time, model_framework, model_framework_version, model_deployment_time, deployed_by, run_id
 		FROM [d[[]]b].[dbo].[ta[[b]]le]
-		WHERE artifact_name not like 'MLmodel' and artifact_name not like 'conda.yaml'
-		ORDER BY artifact_id
+		WHERE model_name not like 'MLmodel' and model_name not like 'conda.yaml'
+		ORDER BY model_id
 		`;
 		const actual = queries.getDeployedModelsQuery(testContext.importTable);
 		should.deepEqual(expected, actual);
@@ -374,17 +412,19 @@ describe('DeployedModelService', () => {
 			table: testContext.importTable
 		};
 
-		const expected = `
-		INSERT INTO [dbo].[tb]
-		(artifact_name, artifact_content, name, version, description)
+		const expected = `INSERT INTO [dbo].[tb]
+		(model_name, model, model_version, model_description, model_creation_time, model_framework, model_framework_version, run_id)
 		VALUES (
 			'name1',
 			,
-			'title1',
 			'1.1',
-			'desc1')`;
+			'desc1',
+			'2018-01-01',
+			'',
+			'',
+			'')`;
 		const actual = queries.getInsertModelQuery(model, testContext.importTable);
-		should.equal(actual.indexOf(expected) > 0, true, `actual: ${actual} \n expected: ${expected}`);
+		should.equal(actual.indexOf(expected) >= 0, true, `actual: ${actual} \n expected: ${expected}`);
 	});
 
 	it('getModelContentQuery should escape db name', async function (): Promise<void> {
@@ -403,9 +443,9 @@ describe('DeployedModelService', () => {
 			databaseName: 'd[]b', tableName: 'ta[b]le', schema: 'dbo'
 		};
 		const expected = `
-		SELECT artifact_content
+		SELECT model
 		FROM [d[[]]b].[dbo].[ta[[b]]le]
-		WHERE artifact_id = 1;
+		WHERE model_id = 1;
 		`;
 		const actual = queries.getModelContentQuery(model);
 		should.deepEqual(actual, expected, `actual: ${actual} \n expected: ${expected}`);

@@ -67,7 +67,7 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
 		this.removeComponents(formBuilder);
-		if (this.azureFilterComponent && this.azureFilterComponent.data && this.azureFilterComponent.data.account) {
+		if (this.azureFilterComponent?.data?.account) {
 			this.addAzureComponents(formBuilder);
 		} else {
 			this.addAzureSignInComponents(formBuilder);
