@@ -15,7 +15,7 @@ import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
-import { PropertiesContainer, DisplayProperty } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
+import { PropertiesContainer, PropertyItem } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
 
 export interface PropertiesConfig {
@@ -82,9 +82,9 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		this._connection = this._bootstrap.connectionManagementService.connectionInfo;
 		this.setLoadingStatus(true);
 		this._register(subscriptionToDisposable(this._bootstrap.adminService.databaseInfo.subscribe(databaseInfo => {
-			const displayProperties = this.parseProperties(databaseInfo);
+			const propertyItems = this.parseProperties(databaseInfo);
 			if (this._inited) {
-				this._propertiesContainer.displayProperties = displayProperties;
+				this._propertiesContainer.propertyItems = propertyItems;
 				this._changeRef.detectChanges();
 			} else {
 				this.logService.info('Database properties successfully retrieved but component not initialized yet');
@@ -96,7 +96,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		})));
 	}
 
-	private parseProperties(databaseInfo?: DatabaseInfo): DisplayProperty[] {
+	private parseProperties(databaseInfo?: DatabaseInfo): PropertyItem[] {
 		const provider = this._config.provider;
 
 		let propertyArray: Array<Property>;

@@ -19,7 +19,7 @@ enum PropertyLayoutDirection {
 	column = 'columnLayout'
 }
 
-export interface DisplayProperty {
+export interface PropertyItem {
 	displayName: string;
 	value: string;
 }
@@ -40,7 +40,7 @@ export class PropertiesContainer extends Disposable implements OnInit, OnDestroy
 	public height: number;
 
 	private _loading: boolean = true;
-	private _displayProperties: DisplayProperty[] = [];
+	private _propertyItems: PropertyItem[] = [];
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -50,7 +50,7 @@ export class PropertiesContainer extends Disposable implements OnInit, OnDestroy
 	}
 
 	ngOnInit() {
-		this._register(addDisposableListener(window, EventType.RESIZE, () => this.layoutDisplayProperties()));
+		this._register(addDisposableListener(window, EventType.RESIZE, () => this.layoutPropertyItems()));
 		this._changeRef.detectChanges();
 	}
 
@@ -58,7 +58,7 @@ export class PropertiesContainer extends Disposable implements OnInit, OnDestroy
 		this.dispose();
 	}
 
-	private layoutDisplayProperties(): void {
+	private layoutPropertyItems(): void {
 		// Reflow:
 		// 2 columns w/ horizontal alignment : 1366px and above
 		// 2 columns w/ vertical alignment : 1024 - 1365px
@@ -67,28 +67,28 @@ export class PropertiesContainer extends Disposable implements OnInit, OnDestroy
 			if (window.innerWidth >= 1366) {
 				this.gridDisplayLayout = GridDisplayLayout.twoColumns;
 				this.propertyLayout = PropertyLayoutDirection.row;
-				this.height = Math.ceil(this.displayProperties.length / 2) * horizontalPropertyHeight + collapseHeight;
+				this.height = Math.ceil(this.propertyItems.length / 2) * horizontalPropertyHeight + collapseHeight;
 			} else if (window.innerWidth < 1366 && window.innerWidth >= 1024) {
 				this.gridDisplayLayout = GridDisplayLayout.twoColumns;
 				this.propertyLayout = PropertyLayoutDirection.column;
-				this.height = Math.ceil(this.displayProperties.length / 2) * verticalPropertyHeight + collapseHeight;
+				this.height = Math.ceil(this.propertyItems.length / 2) * verticalPropertyHeight + collapseHeight;
 			} else if (window.innerWidth < 1024) {
 				this.gridDisplayLayout = GridDisplayLayout.oneColumn;
 				this.propertyLayout = PropertyLayoutDirection.column;
-				this.height = this.displayProperties.length * verticalPropertyHeight + collapseHeight;
+				this.height = this.propertyItems.length * verticalPropertyHeight + collapseHeight;
 			}
 
 			this._changeRef.detectChanges();
 		}
 	}
 
-	public set displayProperties(displayProperties: DisplayProperty[]) {
-		this._displayProperties = displayProperties;
-		this.layoutDisplayProperties();
+	public set propertyItems(propertyItems: PropertyItem[]) {
+		this._propertyItems = propertyItems;
+		this.layoutPropertyItems();
 	}
 
-	public get displayProperties(): DisplayProperty[] {
-		return this._displayProperties;
+	public get propertyItems(): PropertyItem[] {
+		return this._propertyItems;
 	}
 
 	public set loading(loading: boolean) {
