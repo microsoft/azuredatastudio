@@ -441,6 +441,40 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
+	test('changing URI for connection should not create new connection', () => {
+		let profile = connectionProfile;
+		profile.id = '1';
+		let uri1 = 'test_uri1';
+		//let uri2 = 'test_uri2';
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri1
+				},
+				querySelection: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: true
+			},
+			saveTheConnection: false,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+
+		return connect(uri1, options, true, profile).then(result => {
+			assert.equal(result.connected, true);
+			assert.equal(connectionManagementService.getConnectionUriFromId(profile.id), uri1);
+			//return connect(uri2, options, true, profile);
+		});
+	});
+
 	test('failed firewall rule should open the firewall rule dialog', () => {
 		handleFirewallRuleResult.canHandleFirewallRule = true;
 		resolveHandleFirewallRuleDialog = true;

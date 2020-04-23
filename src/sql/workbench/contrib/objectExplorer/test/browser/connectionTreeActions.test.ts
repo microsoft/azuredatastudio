@@ -68,7 +68,7 @@ suite('SQL Connection Tree Action tests', () => {
 		connectionManagementService.setup(x => x.deleteConnectionGroup(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 		connectionManagementService.setup(x => x.deleteConnection(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => profileToReturn);
-
+		connectionManagementService.setup(x => x.showEditConnectionDialog(TypeMoq.It.isAny())).returns(() => new Promise<void>((resolve, reject) => resolve()));
 		return connectionManagementService;
 	}
 
