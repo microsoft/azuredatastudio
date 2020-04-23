@@ -231,8 +231,8 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			return;
 		}
 		// Ensure connection is saved to the Connections list, then open connection dialog
-		let connectionProfile = Object.assign({}, treeItem.payload, { saveProfile: true });
-		const conn = await appContext.apiWrapper.openConnectionDialog(undefined, connectionProfile, { saveConnection: true, showDashboard: true });
+		let connectionProfile = Object.assign({}, treeItem.payload, { saveProfile: false });
+		const conn = await appContext.apiWrapper.openConnectionDialog(undefined, connectionProfile, { saveConnection: false, showDashboard: true });
 		if (conn) {
 			appContext.apiWrapper.executeCommand('workbench.view.connections');
 		}
