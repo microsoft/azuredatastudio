@@ -160,12 +160,6 @@ steps:
       popd
     displayName: 'Archive'
 
-  - task: PublishPipelineArtifact@0
-    displayName: 'Publish SelfSigned'
-    inputs:
-      artifactName: darwin-selfsigned
-      targetPath: $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
-
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning'
     inputs:
@@ -193,13 +187,6 @@ steps:
     displayName: Clean Archive
     condition: and(succeeded(), eq(variables['signed'], true))
 
-  - task: PublishPipelineArtifact@0
-    displayName: 'Publish Signed'
-    inputs:
-      artifactName: darwin-signed
-      targetPath: $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
-    condition: and(succeeded(), eq(variables['signed'], true))
-
   - task: EsrpCodeSigning@1
     displayName: 'ESRP Notarization'
     inputs:
@@ -220,13 +207,6 @@ steps:
           }
         ]
       SessionTimeout: 120
-    condition: and(succeeded(), eq(variables['signed'], true))
-
-  - task: PublishPipelineArtifact@0
-    displayName: 'Publish Notarized'
-    inputs:
-      artifactName: darwin-notarized
-      targetPath: $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
     condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |

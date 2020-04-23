@@ -14,15 +14,17 @@ import { WizardView } from '../../wizardView';
 import { ModelSourcePage } from '../modelSourcePage';
 import { ModelDetailsPage } from '../modelDetailsPage';
 import { ModelBrowsePage } from '../modelBrowsePage';
+import { ModelImportLocationPage } from './modelmportLocationPage';
 
 /**
  * Wizard to register a model
  */
-export class RegisterModelWizard extends ModelViewBase {
+export class ImportModelWizard extends ModelViewBase {
 
 	public modelSourcePage: ModelSourcePage | undefined;
 	public modelBrowsePage: ModelBrowsePage | undefined;
 	public modelDetailsPage: ModelDetailsPage | undefined;
+	public modelImportTargetPage: ModelImportLocationPage | undefined;
 	public wizardView: WizardView | undefined;
 	private _parentView: ModelViewBase | undefined;
 
@@ -41,9 +43,10 @@ export class RegisterModelWizard extends ModelViewBase {
 		this.modelSourcePage = new ModelSourcePage(this._apiWrapper, this);
 		this.modelDetailsPage = new ModelDetailsPage(this._apiWrapper, this);
 		this.modelBrowsePage = new ModelBrowsePage(this._apiWrapper, this);
+		this.modelImportTargetPage = new ModelImportLocationPage(this._apiWrapper, this);
 		this.wizardView = new WizardView(this._apiWrapper);
 
-		let wizard = this.wizardView.createWizard(constants.registerModelTitle, [this.modelSourcePage, this.modelBrowsePage, this.modelDetailsPage]);
+		let wizard = this.wizardView.createWizard(constants.registerModelTitle, [this.modelImportTargetPage, this.modelSourcePage, this.modelBrowsePage, this.modelDetailsPage]);
 
 		this.mainViewPanel = wizard;
 		wizard.doneButton.label = constants.azureRegisterModel;
@@ -61,7 +64,8 @@ export class RegisterModelWizard extends ModelViewBase {
 				wizard.cancelButton.enabled = true;
 				wizard.backButton.enabled = true;
 				if (this._parentView) {
-					await this._parentView?.refresh();
+					this._parentView.importTable = this.importTable;
+					await this._parentView.refresh();
 				}
 				return result;
 
@@ -87,10 +91,11 @@ export class RegisterModelWizard extends ModelViewBase {
 	private async registerModel(): Promise<boolean> {
 		try {
 			if (this.modelResources && this.localModelsComponent && this.modelResources.data === ModelSourceType.Local) {
-				await this.registerLocalModel(this.modelsViewData);
+				await this.importLocalModel(this.modelsViewData);
 			} else {
-				await this.registerAzureModel(this.modelsViewData);
+				await this.importAzureModel(this.modelsViewData);
 			}
+			await this.storeImportConfigTable();
 			this.showInfoMessage(constants.modelRegisteredSuccessfully);
 			return true;
 		} catch (error) {
