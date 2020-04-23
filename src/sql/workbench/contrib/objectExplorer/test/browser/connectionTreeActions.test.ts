@@ -552,7 +552,7 @@ suite('SQL Connection Tree Action tests', () => {
 			connectionManagementService.object);
 
 		return connectionAction.run().then((value) => {
-			connectionManagementService.verify(x => x.showConnectionDialog(undefined, undefined, TypeMoq.It.isAny()), TypeMoq.Times.once());
+			connectionManagementService.verify(x => x.showEditConnectionDialog(TypeMoq.It.isAny()), TypeMoq.Times.once());
 		});
 	});
 });
