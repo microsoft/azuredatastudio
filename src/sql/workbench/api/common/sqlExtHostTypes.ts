@@ -838,10 +838,10 @@ export enum TabOrientation {
 }
 
 export enum MatcherStrategy {
-	DEFAULT_MATCHER,
-	AZURE_COMPAT,
-	ID,
-	CUSTOM
+	DEFAULT_MATCHER = 0,
+	AZURE_COMPAT = 1,
+	ID = 2,
+	CUSTOM = 99
 }
 
 export interface TabbedPanelLayout {

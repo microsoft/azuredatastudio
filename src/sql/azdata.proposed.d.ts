@@ -115,10 +115,10 @@ declare module 'azdata' {
 	}
 
 	export enum MatcherStrategy {
-		DEFAULT_MATCHER,
-		AZURE_COMPAT, // Used by the azure pane
-		ID, // Only checks IDs
-		CUSTOM
+		DEFAULT_MATCHER = 0,
+		AZURE_COMPAT = 1, // Used by the azure pane
+		ID = 2, // Only checks IDs
+		CUSTOM = 99
 	}
 
 	/*
