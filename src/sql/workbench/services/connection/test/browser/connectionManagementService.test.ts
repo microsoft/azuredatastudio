@@ -102,7 +102,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(none));
 
 		connectionStore.setup(x => x.addRecentConnection(TypeMoq.It.isAny())).returns(() => Promise.resolve());
-		connectionStore.setup(x => x.saveProfile(TypeMoq.It.isAny())).returns(() => Promise.resolve(connectionProfile));
+		connectionStore.setup(x => x.saveProfile(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny())).returns(() => Promise.resolve(connectionProfile));
 		workbenchEditorService.setup(x => x.openEditor(undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is<IConnectionProfile>(
 			c => c.serverName === connectionProfile.serverName))).returns(() => Promise.resolve({ profile: connectionProfile, savedCred: true }));
@@ -204,7 +204,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		if (options) {
 			if (options.saveTheConnection) {
-				connectionStore.verify(x => x.saveProfile(TypeMoq.It.isAny()), TypeMoq.Times.once());
+				connectionStore.verify(x => x.saveProfile(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny()), TypeMoq.Times.once());
 			}
 			if (options.showDashboard) {
 				workbenchEditorService.verify(x => x.openEditor(undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
@@ -294,8 +294,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
-	/* alma1  4/22/20 test skipped as saveProfile is no longer returned as a promise in connectionManagementService*/
-	test.skip('connect should save profile given options with saveProfile set to true', () => {
+	test('connect should save profile given options with saveProfile set to true', () => {
 		let uri: string = 'Editor Uri';
 		let options: IConnectionCompletionOptions = {
 			params: undefined,
@@ -334,8 +333,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	// 	});
 	// });
 
-	/* alma1  4/22/20 test skipped as saveProfile is no longer returned as a promise in connectionManagementService*/
-	test.skip('connect should pass the params in options to onConnectSuccess callback', () => {
+	test('connect should pass the params in options to onConnectSuccess callback', () => {
 		let uri: string = 'Editor Uri';
 		let paramsInOnConnectSuccess: INewConnectionParams;
 		let options: IConnectionCompletionOptions = {
@@ -360,7 +358,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		return connect(uri, options).then(() => {
+		return connect(uri, options).then((result) => {
 			verifyOptions(options);
 			assert.notEqual(paramsInOnConnectSuccess, undefined);
 			assert.equal(paramsInOnConnectSuccess.connectionType, options.params.connectionType);
