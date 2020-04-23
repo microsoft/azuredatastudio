@@ -11,7 +11,7 @@ import {
 import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
-import { PropertiesContainer, DisplayProperty } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
+import { PropertiesContainer, PropertyItem } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
 
 @Component({
 	selector: `modelview-properties-container`,
@@ -41,15 +41,15 @@ export default class PropertiesContainerComponent extends ComponentBase implemen
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this._propertiesContainer.displayProperties = this.displayProperties;
+		this._propertiesContainer.propertyItems = this.propertyItems;
 	}
 
-	public get displayProperties(): DisplayProperty[] {
-		return this.getPropertyOrDefault<azdata.PropertiesContainerComponentProperties, azdata.PropertiesContainerItem[]>((props) => props.displayProperties, []);
+	public get propertyItems(): PropertyItem[] {
+		return this.getPropertyOrDefault<azdata.PropertiesContainerComponentProperties, azdata.PropertiesContainerItem[]>((props) => props.propertyItems, []);
 	}
 
-	public set displayProperties(newValue: azdata.PropertiesContainerItem[]) {
-		this.setPropertyFromUI<azdata.PropertiesContainerComponentProperties, azdata.PropertiesContainerItem[]>((props, value) => props.displayProperties = value, newValue);
-		this._propertiesContainer.displayProperties = newValue;
+	public set propertyItems(newValue: azdata.PropertiesContainerItem[]) {
+		this.setPropertyFromUI<azdata.PropertiesContainerComponentProperties, azdata.PropertiesContainerItem[]>((props, value) => props.propertyItems = value, newValue);
+		this._propertiesContainer.propertyItems = newValue;
 	}
 }
