@@ -42,11 +42,13 @@ export const gradientTwo = registerColor('gradientTwo', { light: gradientTwoColo
 export const gradientBackground = registerColor('gradientBackground', { light: '#fff', dark: 'transparent', hc: 'transparent' }, nls.localize('gradientBackground', "The background color for the banner image gradient"));
 
 // --- Notebook Colors
+export const notebookToolbarIcon = registerColor('notebook.notebookToolbarIcon', { light: '#0078D4', dark: '#3AA0F3', hc: '#FFFFFF' }, nls.localize('notebook.notebookToolbarIcon', "Notebook: Markdown toolbar background"));
+
 export const toolbarBackground = registerColor('notebook.toolbarBackground', { light: '#F5F5F5', dark: '#252423', hc: '#000000' }, nls.localize('notebook.toolbarBackground', "Notebook: Markdown toolbar background"));
 export const toolbarIcon = registerColor('notebook.toolbarIcon', { light: '#323130', dark: '#FFFFFe', hc: '#FFFFFe' }, nls.localize('notebook.toolbarIcon', "Notebook: Markdown toolbar icons"));
 export const toolbarBottomBorder = registerColor('notebook.toolbarBottomBorder', { light: '#D4D4D4', dark: '#323130', hc: '#E86E58' }, nls.localize('notebook.toolbarBottomBorder', "Notebook: Markdown toolbar bottom border"));
 // Notebook: All cells
-export const cellBorder = registerColor('notebook.cellBorder', { light: '#0078D4', dark: '#0078D4', hc: '#E86E58' }, nls.localize('notebook.cellBorder', "Notebook: Active cell border"));
+export const cellBorder = registerColor('notebook.cellBorder', { light: '#0078D4', dark: '#3AA0F3', hc: '#E86E58' }, nls.localize('notebook.cellBorder', "Notebook: Active cell border"));
 // Notebook: Markdown cell
 export const markdownEditorBackground = registerColor('notebook.markdownEditorBackground', { light: '#FFFFFe', dark: '#1B1A19', hc: '#000000' }, nls.localize('notebook.markdownEditorBackground', "Notebook: Markdown editor background"));
 export const splitBorder = registerColor('notebook.splitBorder', { light: '#E6E6E6', dark: '#323130', hc: '#872412' }, nls.localize('notebook.splitBorder', "Notebook: Border between Markdown editor and preview"));

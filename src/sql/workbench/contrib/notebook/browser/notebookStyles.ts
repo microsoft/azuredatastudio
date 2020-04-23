@@ -8,7 +8,7 @@ import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/
 import { SIDE_BAR_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
 import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, editorBackground, lighten } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
-import { cellBorder, markdownEditorBackground, splitBorder, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder } from 'sql/platform/theme/common/colorRegistry';
+import { cellBorder, notebookToolbarIcon, markdownEditorBackground, splitBorder, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder } from 'sql/platform/theme/common/colorRegistry';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
@@ -207,6 +207,11 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			${getBareResultsGridInfoStyles(rawOptions)}
 		}`);
 
+		//Notebook toolbar masked icons
+		const notebookToolbarIconColor = theme.getColor(notebookToolbarIcon);
+		if (notebookToolbarIconColor) {
+			collector.addRule(`.notebookEditor .notebook-button.masked { background-color: ${notebookToolbarIconColor};}`);
+		}
 
 		// Cell border
 		const cellBorderColor = theme.getColor(cellBorder);
