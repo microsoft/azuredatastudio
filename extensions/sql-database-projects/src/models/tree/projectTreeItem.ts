@@ -20,7 +20,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	project: Project;
 
 	constructor(project: Project) {
-		super(vscode.Uri.parse(path.basename(project.projectFile)), undefined);
+		super(vscode.Uri.parse(path.basename(project.projectFilePath)), undefined);
 
 		this.project = project;
 		this.dataSourceNode = new DataSourcesTreeItem(this);
@@ -57,16 +57,16 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 			switch (entry.type) {
 				case EntryType.File:
-					newNode = new fileTree.FileNode(entry.uri, parentNode);
+					newNode = new fileTree.FileNode(entry.fsUri, parentNode);
 					break;
 				case EntryType.Folder:
-					newNode = new fileTree.FolderNode(entry.uri, parentNode);
+					newNode = new fileTree.FolderNode(entry.fsUri, parentNode);
 					break;
 				default:
 					throw new Error(`Unknown EntryType: '${entry.type}'`);
 			}
 
-			parentNode.fileChildren[path.basename(entry.uri.path)] = newNode;
+			parentNode.fileChildren[path.basename(entry.fsUri.path)] = newNode;
 		}
 	}
 
@@ -74,7 +74,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	 * Gets the immediate parent tree node for an entry in a project file
 	 */
 	private getEntryParentNode(entry: ProjectEntry): fileTree.FolderNode | ProjectRootTreeItem {
-		const relativePathParts = utils.trimChars(utils.trimUri(vscode.Uri.file(this.project.projectFile), entry.uri), '/').split('/').slice(0, -1); // remove the last part because we only care about the parent
+		const relativePathParts = utils.trimChars(utils.trimUri(vscode.Uri.file(this.project.projectFilePath), entry.fsUri), '/').split('/').slice(0, -1); // remove the last part because we only care about the parent
 
 		if (relativePathParts.length === 0) {
 			return this; // if nothing left after trimming the entry itself, must been root
@@ -84,7 +84,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 		for (const part of relativePathParts) {
 			if (current.fileChildren[part] === undefined) {
-				current.fileChildren[part] = new fileTree.FolderNode(vscode.Uri.file(path.join(path.dirname(this.project.projectFile), part)), current);
+				current.fileChildren[part] = new fileTree.FolderNode(vscode.Uri.file(path.join(path.dirname(this.project.projectFilePath), part)), current);
 			}
 
 			if (current.fileChildren[part] instanceof fileTree.FileNode) {

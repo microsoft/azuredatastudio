@@ -165,6 +165,10 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		this._actionbar.pull(this._actionbar.length() - 1);
 	}
 
+	public get component(): IDashboardWidget {
+		return this._component;
+	}
+
 	private loadWidget(): void {
 		if (Object.keys(this._config.widget).length !== 1) {
 			this.logService.error('Exactly 1 widget must be defined per space');

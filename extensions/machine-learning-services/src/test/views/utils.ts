@@ -31,6 +31,11 @@ export function createViewContext(): ViewTestContext {
 	let button: azdata.ButtonComponent = Object.assign({}, componentBase, {
 		onDidClick: onClick.event
 	});
+	let link: azdata.HyperlinkComponent = Object.assign({}, componentBase, {
+		onDidClick: onClick.event,
+		label: '',
+		url: ''
+	});
 	let radioButton: azdata.RadioButtonComponent = Object.assign({}, componentBase, {
 		checked: true,
 		onDidClick: onClick.event
@@ -61,6 +66,11 @@ export function createViewContext(): ViewTestContext {
 		withProperties: () => buttonBuilder,
 		withValidation: () => buttonBuilder
 	};
+	let hyperLinkBuilder: azdata.ComponentBuilder<azdata.HyperlinkComponent> = {
+		component: () => link,
+		withProperties: () => hyperLinkBuilder,
+		withValidation: () => hyperLinkBuilder
+	};
 	let radioButtonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent> = {
 		component: () => radioButton,
 		withProperties: () => radioButtonBuilder,
@@ -72,7 +82,7 @@ export function createViewContext(): ViewTestContext {
 		withValidation: () => checkBoxBuilder
 	};
 	let inputBox: () => azdata.InputBoxComponent = () => Object.assign({}, componentBase, {
-		onTextChanged: undefined!,
+		onTextChanged: onClick.event!,
 		onEnterKeyPressed: undefined!,
 		value: ''
 	});
@@ -216,9 +226,10 @@ export function createViewContext(): ViewTestContext {
 			toolbarContainer: undefined!,
 			loadingComponent: () => loadingBuilder,
 			fileBrowserTree: undefined!,
-			hyperlink: undefined!,
+			hyperlink: () => hyperLinkBuilder,
 			tabbedPanel: undefined!,
-			separator: undefined!
+			separator: undefined!,
+			propertiesContainer: undefined!
 		}
 	};
 	let tab: azdata.window.DialogTab = {

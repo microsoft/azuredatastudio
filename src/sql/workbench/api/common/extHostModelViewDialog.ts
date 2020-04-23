@@ -13,6 +13,7 @@ import * as azdata from 'azdata';
 
 import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostModelViewShape, ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { TabOrientation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 const DONE_LABEL = nls.localize('dialogDoneLabel', "Done");
 const CANCEL_LABEL = nls.localize('dialogCancelLabel', "Cancel");
@@ -481,7 +482,7 @@ class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
 			const dashboardTabs = await handler(view);
 			const tabs = this.createTabs(dashboardTabs, view);
 			this._tabbedPanel = view.modelBuilder.tabbedPanel().withTabs(tabs).withLayout({
-				orientation: 'vertical',
+				orientation: TabOrientation.Vertical,
 				showIcon: this._options?.showIcon ?? true,
 				alwaysShowTabs: this._options?.alwaysShowTabs ?? false
 			}).component();

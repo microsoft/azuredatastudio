@@ -369,7 +369,7 @@ export class DashboardWidget {
 				light: this.asAbsolutePath('images/makePredictions.svg'),
 			},
 			link: '',
-			command: constants.mlImportModelCommand
+			command: constants.mlManageModelsCommand
 		};
 		const importModelsButton = this.createTaskButton(view, importMetadata);
 		const notebookMetadata: IActionMetadata = {

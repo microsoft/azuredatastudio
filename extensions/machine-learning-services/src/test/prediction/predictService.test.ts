@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import { ApiWrapper } from '../../common/apiWrapper';
 import * as TypeMoq from 'typemoq';
 import * as should from 'should';
-import { Config } from '../../configurations/config';
 import { PredictService } from '../../prediction/predictService';
 import { QueryRunner } from '../../common/queryRunner';
 import { RegisteredModel } from '../../modelManagement/interfaces';
@@ -22,7 +21,7 @@ import * as fs from 'fs';
 interface TestContext {
 
 	apiWrapper: TypeMoq.IMock<ApiWrapper>;
-	config: TypeMoq.IMock<Config>;
+	importTable: DatabaseTable;
 	queryRunner: TypeMoq.IMock<QueryRunner>;
 }
 
@@ -30,7 +29,11 @@ function createContext(): TestContext {
 
 	return {
 		apiWrapper: TypeMoq.Mock.ofType(ApiWrapper),
-		config: TypeMoq.Mock.ofType(Config),
+		importTable: {
+			databaseName: 'db',
+			tableName: 'tb',
+			schema: 'dbo'
+		},
 		queryRunner: TypeMoq.Mock.ofType(QueryRunner)
 	};
 }
@@ -49,8 +52,7 @@ describe('PredictService', () => {
 
 		let service = new PredictService(
 			testContext.apiWrapper.object,
-			testContext.queryRunner.object,
-			testContext.config.object);
+			testContext.queryRunner.object);
 		const actual = await service.getDatabaseList();
 		should.deepEqual(actual, expected);
 	});
@@ -102,8 +104,7 @@ describe('PredictService', () => {
 		testContext.queryRunner.setup(x => x.safeRunQuery(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(result));
 		let service = new PredictService(
 			testContext.apiWrapper.object,
-			testContext.queryRunner.object,
-			testContext.config.object);
+			testContext.queryRunner.object);
 		const actual = await service.getTableList('db1');
 		should.deepEqual(actual, expected);
 	});
@@ -160,8 +161,7 @@ describe('PredictService', () => {
 		testContext.queryRunner.setup(x => x.safeRunQuery(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(result));
 		let service = new PredictService(
 			testContext.apiWrapper.object,
-			testContext.queryRunner.object,
-			testContext.config.object);
+			testContext.queryRunner.object);
 		const actual = await service.getTableColumnsList(table);
 		should.deepEqual(actual, expected);
 	});
@@ -201,13 +201,13 @@ describe('PredictService', () => {
 			title: 'title1',
 			description: 'desc1',
 			created: '2018-01-01',
-			version: '1.1'
+			version: '1.1',
+			table: testContext.importTable
 		};
 
 		let service = new PredictService(
 			testContext.apiWrapper.object,
-			testContext.queryRunner.object,
-			testContext.config.object);
+			testContext.queryRunner.object);
 
 		const document: vscode.TextDocument = {
 			uri: vscode.Uri.parse('file:///usr/home'),
@@ -270,8 +270,7 @@ describe('PredictService', () => {
 
 		let service = new PredictService(
 			testContext.apiWrapper.object,
-			testContext.queryRunner.object,
-			testContext.config.object);
+			testContext.queryRunner.object);
 
 		const document: vscode.TextDocument = {
 			uri: vscode.Uri.parse('file:///usr/home'),

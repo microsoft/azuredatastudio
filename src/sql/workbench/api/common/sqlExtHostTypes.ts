@@ -175,7 +175,8 @@ export enum ModelComponentTypes {
 	Image,
 	RadioCardGroup,
 	TabbedPanel,
-	Separator
+	Separator,
+	PropertiesContainer
 }
 
 export enum ColumnSizingMode {
@@ -835,7 +836,6 @@ export enum TabOrientation {
 	Vertical = 'vertical',
 	Horizontal = 'horizontal'
 }
-
 
 export interface TabbedPanelLayout {
 	orientation: TabOrientation;
