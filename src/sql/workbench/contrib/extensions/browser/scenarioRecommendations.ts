@@ -62,69 +62,63 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 		if (scenarioType === visualizerExtensions) {
 			recommendationMessage = localize('VisualizerExtensionsRecommended', "Azure Data Studio has extension recommendations for data visualization.\nOnce installed, you can select the Visualizer icon to visualize your query results.");
 		}
+		// eslint-disable-next-line @typescript-eslint/no-floating-promises
 		Promise.all([this.getRecommendedExtensionsByScenario(scenarioType), this.extensionManagementService.getInstalled(ExtensionType.User)]).then(([recommendations, localExtensions]) => {
 			if (!recommendations.every(rec => { return localExtensions.findIndex(local => local.identifier.id.toLocaleLowerCase() === rec.extensionId.toLocaleLowerCase()) !== -1; })) {
-				return new Promise<void>(c => {
-					this.notificationService.prompt(
-						Severity.Info,
-						recommendationMessage,
-						[{
-							label: localize('installAll', "Install All"),
-							run: () => {
-								this.adsTelemetryService.sendActionEvent(
-									TelemetryKeys.TelemetryView.ExtensionRecommendationDialog,
-									TelemetryKeys.TelemetryAction.Click,
-									'InstallButton',
-									visualizerExtensionNotificationService
-								);
-								const installAllAction = this.instantiationService.createInstance(InstallRecommendedExtensionsByScenarioAction, scenarioType, recommendations);
-								installAllAction.run();
-								installAllAction.dispose();
-							}
-						}, {
-							label: localize('showRecommendations', "Show Recommendations"),
-							run: () => {
-								this.adsTelemetryService.sendActionEvent(
-									TelemetryKeys.TelemetryView.ExtensionRecommendationDialog,
-									TelemetryKeys.TelemetryAction.Click,
-									'ShowRecommendationsButton',
-									visualizerExtensionNotificationService
-								);
-								const showAction = this.instantiationService.createInstance(ShowRecommendedExtensionsByScenarioAction, scenarioType);
-								showAction.run();
-								showAction.dispose();
-								c(undefined);
-							}
-						}, {
-							label: choiceNever,
-							isSecondary: true,
-							run: () => {
-								this.adsTelemetryService.sendActionEvent(
-									TelemetryKeys.TelemetryView.ExtensionRecommendationDialog,
-									TelemetryKeys.TelemetryAction.Click,
-									'NeverShowAgainButton',
-									visualizerExtensionNotificationService
-								);
-								this.storageService.store(storageKey, true, StorageScope.GLOBAL);
-								c(undefined);
-							}
-						}],
-						{
-							sticky: true,
-							onCancel: () => {
-								this.adsTelemetryService.sendActionEvent(
-									TelemetryKeys.TelemetryView.ExtensionRecommendationDialog,
-									TelemetryKeys.TelemetryAction.Click,
-									'CancelButton',
-									visualizerExtensionNotificationService
-								);
-								c(undefined);
-							}
+				this.notificationService.prompt(
+					Severity.Info,
+					recommendationMessage,
+					[{
+						label: localize('installAll', "Install All"),
+						run: () => {
+							this.adsTelemetryService.sendActionEvent(
+								TelemetryKeys.TelemetryView.ExtensionRecommendationDialog,
+								TelemetryKeys.TelemetryAction.Click,
+								'InstallButton',
+								visualizerExtensionNotificationService
+							);
+							const installAllAction = this.instantiationService.createInstance(InstallRecommendedExtensionsByScenarioAction, scenarioType, recommendations);
+							installAllAction.run();
+							installAllAction.dispose();
 						}
-					);
-				});
-			} else {
-				return Promise.resolve();
+					}, {
+						label: localize('showRecommendations', "Show Recommendations"),
+						run: () => {
+							this.adsTelemetryService.sendActionEvent(
+								TelemetryKeys.TelemetryView.ExtensionRecommendationDialog,
+								TelemetryKeys.TelemetryAction.Click,
+								'ShowRecommendationsButton',
+								visualizerExtensionNotificationService
+							);
+							const showAction = this.instantiationService.createInstance(ShowRecommendedExtensionsByScenarioAction, scenarioType);
+							showAction.run();
+							showAction.dispose();
+						}
+					}, {
+						label: choiceNever,
+						isSecondary: true,
+						run: () => {
+							this.adsTelemetryService.sendActionEvent(
+								TelemetryKeys.TelemetryView.ExtensionRecommendationDialog,
+								TelemetryKeys.TelemetryAction.Click,
+								'NeverShowAgainButton',
+								visualizerExtensionNotificationService
+							);
+							this.storageService.store(storageKey, true, StorageScope.GLOBAL);
+						}
+					}],
+					{
+						sticky: true,
+						onCancel: () => {
+							this.adsTelemetryService.sendActionEvent(
+								TelemetryKeys.TelemetryView.ExtensionRecommendationDialog,
+								TelemetryKeys.TelemetryAction.Click,
+								'CancelButton',
+								visualizerExtensionNotificationService
+							);
+						}
+					}
+				);
 			}
 		});
 	}
