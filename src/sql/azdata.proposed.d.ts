@@ -335,10 +335,6 @@ declare module 'azdata' {
 		 * The properties to display
 		 */
 		propertyItems?: PropertiesContainerItem[];
-		/**
-		 * Whether the component is currently loading
-		 */
-		loading?: boolean;
 	}
 
 	export namespace nb {

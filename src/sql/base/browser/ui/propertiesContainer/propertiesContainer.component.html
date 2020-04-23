@@ -4,8 +4,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<loading-spinner [loading]="loading" [loadingMessage]="loadingMessage"
-	[loadingCompletedMessage]="loadingCompletedMessage"></loading-spinner>
 <div class="grid-container {{gridDisplayLayout}}" style="position: absolute; height: 100%; width: 100%;" [style.display]="_loading ? 'none':'grid'">
 	<ng-template ngFor let-item [ngForOf]="displayProperties">
 		<div class="property {{propertyLayout}}" style="display:flex">

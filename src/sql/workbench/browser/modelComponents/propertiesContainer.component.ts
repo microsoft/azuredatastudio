@@ -42,16 +42,6 @@ export default class PropertiesContainerComponent extends ComponentBase implemen
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._propertiesContainer.displayProperties = this.displayProperties;
-		this._propertiesContainer.loading = this.loading;
-	}
-
-	public get loading(): boolean {
-		return this.getPropertyOrDefault<azdata.PropertiesContainerComponentProperties, boolean>((props) => props.loading, true);
-	}
-
-	public set loading(newValue: boolean) {
-		this.setPropertyFromUI<azdata.PropertiesContainerComponentProperties, boolean>((props, value) => props.loading = value, newValue);
-		this._propertiesContainer.loading = newValue;
 	}
 
 	public get displayProperties(): DisplayProperty[] {
