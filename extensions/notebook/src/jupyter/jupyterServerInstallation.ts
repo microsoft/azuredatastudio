@@ -799,6 +799,33 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		return undefined;
 	}
+
+	public static getRequiredPackagesForKernel(kernelName: string): PythonPkgDetails[] {
+		let packages = [{
+			name: 'jupyter',
+			version: '1.0.0'
+		}];
+		switch (kernelName) {
+			case 'Python 3':
+			case 'SQL':
+				break;
+			case 'PySpark':
+				packages.push({
+					name: 'sparkmagic',
+					version: '0.12.9'
+				});
+				break;
+			case 'Powershell':
+				packages.push({
+					name: 'powershell-kernel',
+					version: '0.1.3'
+				});
+				break;
+			default:
+				throw new Error(localize('msgUnsupportedKernel', "Could not retrieve packages for unsupported kernel {0}", kernelName));
+		}
+		return packages;
+	}
 }
 
 export interface PythonPkgDetails {
