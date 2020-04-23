@@ -31,6 +31,8 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public isDisconnecting: boolean = false;
 
+	private matcher: typeof ConnectionProfile.DefaultMatcher;
+
 	public constructor(
 		capabilitiesService: ICapabilitiesService,
 		model: string | azdata.IConnectionProfile) {
@@ -43,6 +45,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			this._id = model.id;
 			this.azureTenantId = model.azureTenantId;
 			this.azureAccount = model.azureAccount;
+			this.matcher = this.getMatcherStrategyMethod(model);
 			if (this.capabilitiesService && model.providerName) {
 				let capabilities = this.capabilitiesService.getCapabilities(model.providerName);
 				if (capabilities && capabilities.connection && capabilities.connection.connectionOptions) {
@@ -69,18 +72,53 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		this.options['databaseDisplayName'] = this.databaseName;
 	}
 
-	public matches(other: interfaces.IConnectionProfile): boolean {
-		return other
-			&& this.providerName === other.providerName
-			&& this.nullCheckEqualsIgnoreCase(this.serverName, other.serverName)
-			&& this.nullCheckEqualsIgnoreCase(this.databaseName, other.databaseName)
-			&& this.nullCheckEqualsIgnoreCase(this.userName, other.userName)
-			&& this.nullCheckEqualsIgnoreCase(this.options['databaseDisplayName'], other.options['databaseDisplayName'])
-			&& this.authenticationType === other.authenticationType
-			&& this.groupId === other.groupId;
+	private getMatcherStrategyMethod(connectionProfile: azdata.IConnectionProfile): typeof ConnectionProfile.DefaultMatcher {
+		switch (connectionProfile.matcherStrategy) {
+			case azdata.MatcherStrategy.ID:
+				return (a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile): boolean => {
+					return a && b && a.id === b.id;
+				};
+			case azdata.MatcherStrategy.AZURE_COMPAT:
+				return (a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile): boolean => {
+					return a && b
+						&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.serverName, b.serverName)
+						&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.databaseName, b.databaseName);
+				};
+			case azdata.MatcherStrategy.CUSTOM:
+				return (a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile): boolean => {
+					let validity = !!a && !!b;
+					const keys = a.customMatcherStrategy ?? [];
+
+					keys.forEach(key => {
+						validity = validity && ConnectionProfile.nullCheckEqualsIgnoreCase(a[key], b[key]);
+					});
+
+					return validity;
+				};
+			case azdata.MatcherStrategy.DEFAULT:
+			// fall through
+			default:
+				return ConnectionProfile.DefaultMatcher;
+		}
 	}
 
-	private nullCheckEqualsIgnoreCase(a: string, b: string) {
+
+	public static DefaultMatcher(a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile): boolean {
+		return a && b
+			&& a.providerName === b.providerName
+			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.serverName, b.serverName)
+			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.databaseName, b.databaseName)
+			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.userName, b.userName)
+			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.options['databaseDisplayName'], b.options['databaseDisplayName'])
+			&& a.authenticationType === b.authenticationType
+			&& a.groupId === b.groupId;
+	}
+
+	public matches(other: interfaces.IConnectionProfile): boolean {
+		return this.matcher(this, other);
+	}
+
+	private static nullCheckEqualsIgnoreCase(a: string, b: string) {
 		let bothNull: boolean = !a && !b;
 		return bothNull ? bothNull : equalsIgnoreCase(a, b);
 	}

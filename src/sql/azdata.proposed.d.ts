@@ -110,6 +110,15 @@ declare module 'azdata' {
 	 */
 	export interface IConnectionProfile extends ConnectionInfo {
 		azureAccount?: string;
+		matcherStrategy?: MatcherStrategy;
+		customMatcherStrategy?: string[]; // List of keys to match the value of, this will only be read with CUSTOM matcher strategy
+	}
+
+	export enum MatcherStrategy {
+		DEFAULT,
+		AZURE_COMPAT, // Used by the azure pane
+		ID, // Only checks IDs
+		CUSTOM
 	}
 
 	/*
