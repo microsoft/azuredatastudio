@@ -38,6 +38,7 @@ export function projectAlreadyExists(name: string, path: string) { return locali
 
 // Project script types
 
+export const folderFriendlyName = localize('folderFriendlyName', "Folder");
 export const scriptFriendlyName = localize('scriptFriendlyName', "Script");
 export const tableFriendlyName = localize('tableFriendlyName', "Table");
 export const viewFriendlyName = localize('viewFriendlyName', "View");
