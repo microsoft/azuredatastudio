@@ -4,9 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/loadingComponent';
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, Inject, forwardRef, ElementRef } from '@angular/core';
 import * as nls from 'vs/nls';
 import { status } from 'vs/base/browser/ui/aria/aria';
+import * as DOM from 'vs/base/browser/dom';
 
 const DefaultLoadingMessage = nls.localize('loadingMessage', "Loading");
 const DefaultLoadingCompletedMessage = nls.localize('loadingCompletedMessage', "Loading completed");
@@ -14,12 +15,16 @@ const DefaultLoadingCompletedMessage = nls.localize('loadingCompletedMessage', "
 @Component({
 	selector: 'loading-spinner',
 	template: `
-		<div class="loading-spinner-container" *ngIf="loading">
+		<div class="loading-spinner-container">
 			<div class="loading-spinner codicon in-progress" *ngIf="loading" [title]="_loadingMessage" #spinnerElement></div>
 		</div>
 	`
 })
 export default class LoadingSpinner implements OnChanges {
+
+	constructor(
+		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
+	) { }
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if (changes.loading !== undefined) {
@@ -34,6 +39,10 @@ export default class LoadingSpinner implements OnChanges {
 
 	get _loadingCompletedMessage(): string {
 		return this.loadingCompletedMessage ? this.loadingCompletedMessage : DefaultLoadingCompletedMessage;
+	}
+
+	public get height(): number {
+		return DOM.getTotalHeight(<HTMLElement>this._el.nativeElement);
 	}
 
 	@Input()

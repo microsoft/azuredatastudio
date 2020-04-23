@@ -90,7 +90,8 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 
 	public getHeight(): number {
 		if (this._propertiesClass && (<PropertiesWidgetComponent>this._propertiesClass.component).height) {
-			this.height = (<PropertiesWidgetComponent>this._propertiesClass.component).height;
+			// Give a little extra room on the bottom or the properties are cut off by the collapse bar
+			this.height = (<PropertiesWidgetComponent>this._propertiesClass.component).height + 20;
 		}
 
 		return this.height;
