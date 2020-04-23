@@ -170,24 +170,21 @@ class BrowserMain extends Disposable {
 							viewletId = `workbench.view.extension.${container.id}`;
 					}
 
-					order = container.order ?? (order + 1);
-					const state: SideBarActivityState = {
-						id: viewletId,
-						order: order,
-						pinned: true,
-						visible: true
-					};
-
 					if (container.active) {
 						storageService.store('workbench.sidebar.activeviewletid', viewletId, StorageScope.WORKSPACE);
-					} else {
-						if ((<any>container).visible !== undefined) { // {{SQL CARBON EDIT}} strict-null-checks
-							state.pinned = (<any>container).visible; // {{SQL CARBON EDIT}} strict-null-checks
-							state.visible = (<any>container).visible; // {{SQL CARBON EDIT}} strict-null-checks
-						}
 					}
 
-					sidebarState.push(state);
+					if (container.order !== undefined || (container.active === undefined && (<any>container).visible !== undefined)) { // {{SQL CARBON EDIT}} strict-null-checks
+						order = container.order ?? (order + 1);
+						const state: SideBarActivityState = {
+							id: viewletId,
+							order: order,
+							pinned: (container.active || (<any>container).visible) ?? true, // {{SQL CARBON EDIT}} strict-null-checks
+							visible: (container.active || (<any>container).visible) ?? true // {{SQL CARBON EDIT}} strict-null-checks
+						};
+
+						sidebarState.push(state);
+					}
 
 					if (container.views !== undefined) {
 						const viewsState: { id: string, isHidden?: boolean, order?: number }[] = [];
@@ -215,7 +212,9 @@ class BrowserMain extends Disposable {
 					}
 				}
 
-				storageService.store('workbench.activity.pinnedViewlets2', JSON.stringify(sidebarState), StorageScope.GLOBAL);
+				if (sidebarState.length) {
+					storageService.store('workbench.activity.pinnedViewlets2', JSON.stringify(sidebarState), StorageScope.GLOBAL);
+				}
 			}
 		}
 
@@ -264,28 +263,27 @@ class BrowserMain extends Disposable {
 							continue;
 					}
 
-					order = container.order ?? (order + 1);
-					const state: PanelActivityState = {
-						id: panelId,
-						name: name,
-						order: order,
-						pinned: true,
-						visible: true
-					};
-
 					if (container.active) {
 						storageService.store('workbench.panelpart.activepanelid', panelId, StorageScope.WORKSPACE);
-					} else {
-						if ((<any>container).visible !== undefined) { // {{SQL CARBON EDIT}} strict-null-checks
-							state.pinned = (<any>container).visible; // {{SQL CARBON EDIT}} strict-null-checks
-							state.visible = (<any>container).visible; // {{SQL CARBON EDIT}} strict-null-checks
-						}
 					}
 
-					panelState.push(state);
+					if (container.order !== undefined || (container.active === undefined && (<any>container).visible !== undefined)) { // {{SQL CARBON EDIT}} strict-null-checks
+						order = container.order ?? (order + 1);
+						const state: PanelActivityState = {
+							id: panelId,
+							name: name,
+							order: order,
+							pinned: (container.active || (<any>container).visible) ?? true, // {{SQL CARBON EDIT}} strict-null-checks
+							visible: (container.active || (<any>container).visible) ?? true // {{SQL CARBON EDIT}} strict-null-checks
+						};
+
+						panelState.push(state);
+					}
 				}
 
-				storageService.store('workbench.panel.pinnedPanels', JSON.stringify(panelState), StorageScope.GLOBAL);
+				if (panelState.length) {
+					storageService.store('workbench.panel.pinnedPanels', JSON.stringify(panelState), StorageScope.GLOBAL);
+				}
 			}
 		}
 	}
