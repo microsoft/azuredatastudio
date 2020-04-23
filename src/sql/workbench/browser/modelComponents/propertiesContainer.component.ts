@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/propertiesContainer';
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
 	ViewChild, ElementRef, OnDestroy

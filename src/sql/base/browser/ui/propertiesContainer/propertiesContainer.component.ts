@@ -2,6 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
+import 'vs/css!./media/propertiesContainer';
 import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef, OnDestroy } from '@angular/core';
 import { EventType, addDisposableListener } from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
