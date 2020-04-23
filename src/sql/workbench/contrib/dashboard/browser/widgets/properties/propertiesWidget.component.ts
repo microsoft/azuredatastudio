@@ -52,10 +52,14 @@ const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.Da
 
 @Component({
 	selector: 'properties-widget',
-	template: '<properties-container></properties-container>'
+	template: `
+	<loading-spinner [loading]="_loading" [loadingMessage]="loadingMessage" [loadingCompletedMessage]="loadingCompletedMessage"></loading-spinner>
+	<properties-container></properties-container>`
 })
 export class PropertiesWidgetComponent extends DashboardWidget implements IDashboardWidget, OnInit {
 	@ViewChild(PropertiesContainer) private _propertiesContainer: PropertiesContainer;
+	public loadingMessage: string = nls.localize('loadingProperties', "Loading properties");
+	public loadingCompletedMessage: string = nls.localize('loadingPropertiesCompleted', "Loading properties completed");
 	private _connection: ConnectionManagementInfo;
 
 	constructor(
@@ -243,13 +247,6 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			val = defaultVal;
 		}
 		return val;
-	}
-
-	protected setLoadingStatus(loading: boolean): void {
-		super.setLoadingStatus(loading);
-		if (this._inited) {
-			this._propertiesContainer.loading = loading;
-		}
 	}
 
 	public get height(): number {
