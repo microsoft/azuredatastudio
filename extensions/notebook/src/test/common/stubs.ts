@@ -12,6 +12,7 @@ export class MockExtensionContext implements vscode.ExtensionContext {
 	workspaceState: vscode.Memento;
 	globalState: vscode.Memento;
 	extensionPath: string;
+	extensionUri: vscode.Uri;
 	asAbsolutePath(relativePath: string): string {
 		return relativePath;
 	}
