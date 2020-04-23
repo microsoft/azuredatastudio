@@ -822,7 +822,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				});
 				break;
 			default:
-				throw new Error(localize('msgUnsupportedKernel', "Could not retrieve packages for unsupported kernel {0}", kernelName));
+				return undefined;
 		}
 		return packages;
 	}
