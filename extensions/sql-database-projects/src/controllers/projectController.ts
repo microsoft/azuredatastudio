@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
-import * as templateMap from '../templates/templateMap';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
@@ -115,7 +114,7 @@ export class ProjectsController {
 
 	public async addFolderPrompt(treeNode: BaseProjectTreeItem) {
 		const project = this.getProjectContextFromTreeNode(treeNode);
-		const newFolderName = await this.promptForNewObjectName(new templateMap.ProjectScriptType(templateMap.folder, 'Folder', ''), project);
+		const newFolderName = await this.promptForNewObjectName(new templates.ProjectScriptType(templates.folder, constants.folderFriendlyName, ''), project);
 
 		if (!newFolderName) {
 			return; // user cancelled
@@ -134,7 +133,7 @@ export class ProjectsController {
 		if (!itemTypeName) {
 			let itemFriendlyNames: string[] = [];
 
-			for (const itemType of templateMap.projectScriptTypes) {
+			for (const itemType of templates.projectScriptTypes()) {
 				itemFriendlyNames.push(itemType.friendlyName);
 			}
 
@@ -147,7 +146,7 @@ export class ProjectsController {
 			}
 		}
 
-		const itemType = templateMap.projectScriptTypeMap[itemTypeName.toLocaleLowerCase()];
+		const itemType = templates.projectScriptTypeMap()[itemTypeName.toLocaleLowerCase()];
 		const itemObjectName = await this.promptForNewObjectName(itemType, project);
 
 		if (!itemObjectName) {
@@ -198,7 +197,7 @@ export class ProjectsController {
 		}
 	}
 
-	private async promptForNewObjectName(itemType: templateMap.ProjectScriptType, _project: Project): Promise<string | undefined> {
+	private async promptForNewObjectName(itemType: templates.ProjectScriptType, _project: Project): Promise<string | undefined> {
 		// TODO: ask project for suggested name that doesn't conflict
 		const suggestedName = itemType.friendlyName.replace(new RegExp('\s', 'g'), '') + '1';
 
