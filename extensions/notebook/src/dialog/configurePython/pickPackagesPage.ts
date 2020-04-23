@@ -17,7 +17,14 @@ export class PickPackagesPage extends BasePage {
 
 	public async start(): Promise<boolean> {
 		this.kernelLabel = this.view.modelBuilder.text().component();
-		this.requiredPackagesTable = this.view.modelBuilder.table().component();
+		this.requiredPackagesTable = this.view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+			columns: [
+				localize('configurePython.pkgNameColumn', "Name"),
+				localize('configurePython.pkgVersionColumn', "Version")
+			],
+			data: [[]],
+			width: '400px'
+		}).component();
 		this.optionalDependencies = this.view.modelBuilder.text().component();
 		let formModel = this.view.modelBuilder.formContainer()
 			.withFormItems([{
@@ -42,12 +49,12 @@ export class PickPackagesPage extends BasePage {
 		let requiredPackages = JupyterServerInstallation.getRequiredPackagesForKernel(this.model.kernelName);
 		if (!requiredPackages) {
 			this.instance.showErrorMessage(localize('msgUnsupportedKernel', "Could not retrieve packages for unsupported kernel {0}", this.model.kernelName));
+			await this.requiredPackagesTable.updateProperties({ data: [['-', '-']] });
 			return false;
 		}
 		let packageData = requiredPackages.map(pkg => [pkg.name, pkg.version]);
 		await this.requiredPackagesTable.updateProperties({
-			data: packageData,
-			columns: ['Name', 'Minimum Version Required']
+			data: packageData
 		});
 
 		await this.optionalDependencies.updateProperties({
