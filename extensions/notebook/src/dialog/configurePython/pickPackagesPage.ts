@@ -11,12 +11,19 @@ import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallati
 const localize = nls.loadMessageBundle();
 
 export class PickPackagesPage extends BasePage {
-	private kernelLabel: azdata.TextComponent;
+	private kernelDropdown: azdata.DropDownComponent;
 	private requiredPackagesTable: azdata.DeclarativeTableComponent;
-	private optionalDependencies: azdata.TextComponent;
 
 	public async start(): Promise<boolean> {
-		this.kernelLabel = this.view.modelBuilder.text().component();
+		let dropdownValues = ['Python 3', 'PySpark', 'Spark | Scala', 'Spark | R', 'PowerShell'];
+		this.kernelDropdown = this.view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+			value: dropdownValues[0],
+			values: dropdownValues
+		}).component();
+		this.kernelDropdown.onValueChanged(value => {
+			this.updateRequiredPackages(value.selected);
+		});
+
 		this.requiredPackagesTable = this.view.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			columns: [{
 				displayName: localize('configurePython.pkgNameColumn', "Name"),
@@ -31,43 +38,37 @@ export class PickPackagesPage extends BasePage {
 			}],
 			data: [[]]
 		}).component();
-		this.optionalDependencies = this.view.modelBuilder.text().component();
+
 		let formModel = this.view.modelBuilder.formContainer()
 			.withFormItems([{
-				component: this.kernelLabel,
+				component: this.kernelDropdown,
 				title: localize('configurePython.kernelLabel', "Kernel")
 			}, {
 				component: this.requiredPackagesTable,
 				title: localize('configurePython.requiredDependencies', "Install required kernel dependencies")
-			}, {
-				component: this.optionalDependencies,
-				title: localize('configurePython.optionalDependencies', "Install optional dependencies")
 			}]).component();
 		await this.view.initializeModel(formModel);
 		return true;
 	}
 
 	public async onPageEnter(): Promise<boolean> {
-		await this.kernelLabel.updateProperties({
-			value: this.model.kernelName
-		});
-
-		let requiredPackages = JupyterServerInstallation.getRequiredPackagesForKernel(this.model.kernelName);
-		if (!requiredPackages) {
-			this.instance.showErrorMessage(localize('msgUnsupportedKernel', "Could not retrieve packages for unsupported kernel {0}", this.model.kernelName));
-			await this.requiredPackagesTable.updateProperties({ data: [['-', '-']] });
-			return false;
-		}
-		let packageData = requiredPackages.map(pkg => [pkg.name, pkg.version]);
-		this.requiredPackagesTable.data = packageData;
-
-		await this.optionalDependencies.updateProperties({
-			value: 'Test'
-		});
+		this.kernelDropdown.value = this.model.kernelName;
+		this.updateRequiredPackages(this.model.kernelName);
 		return true;
 	}
 
 	public async onPageLeave(): Promise<boolean> {
 		return true;
+	}
+
+	private updateRequiredPackages(kernelName: string): void {
+		let requiredPackages = JupyterServerInstallation.getRequiredPackagesForKernel(kernelName);
+		if (requiredPackages) {
+			let packageData = requiredPackages.map(pkg => [pkg.name, pkg.version]);
+			this.requiredPackagesTable.data = packageData;
+		} else {
+			this.instance.showErrorMessage(localize('msgUnsupportedKernel', "Could not retrieve packages for unsupported kernel {0}", kernelName));
+			this.requiredPackagesTable.data = [['-', '-']];
+		}
 	}
 }
