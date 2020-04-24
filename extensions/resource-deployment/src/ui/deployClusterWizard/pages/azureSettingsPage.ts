@@ -12,7 +12,7 @@ import { WizardPageBase } from '../../wizardPageBase';
 import { createSection, InputComponents, setModelValues, Validator, getDropdownComponent, MissingRequiredInformationErrorMessage, InputFieldComponent } from '../../modelViewUtils';
 import { SubscriptionId_VariableName, ResourceGroup_VariableName, Location_VariableName, AksName_VariableName, VMCount_VariableName, VMSize_VariableName } from '../constants';
 const localize = nls.loadMessageBundle();
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 	private inputComponents: InputComponents = {};
 

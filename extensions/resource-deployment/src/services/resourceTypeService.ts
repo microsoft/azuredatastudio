@@ -209,24 +209,27 @@ export class ResourceTypeService implements IResourceTypeService {
 	private getProvider(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined {
 		for (let i = 0; i < resourceType.providers.length; i++) {
 			const provider = resourceType.providers[i];
+			if (provider.when === undefined || provider.when.toString().toLowerCase() === 'true') {
+				return provider;
+			} else {
+				const expected = provider.when.replace(' ', '').split('&&').sort();
+				let actual: string[] = [];
+				selectedOptions.forEach(option => {
+					actual.push(`${option.option}=${option.value}`);
+				});
+				actual = actual.sort();
 
-			const expected = provider.when.replace(' ', '').split('&&').sort();
-			let actual: string[] = [];
-			selectedOptions.forEach(option => {
-				actual.push(`${option.option}=${option.value}`);
-			});
-			actual = actual.sort();
-
-			if (actual.length === expected.length) {
-				let matches = true;
-				for (let j = 0; j < actual.length; j++) {
-					if (actual[j] !== expected[j]) {
-						matches = false;
-						break;
+				if (actual.length === expected.length) {
+					let matches = true;
+					for (let j = 0; j < actual.length; j++) {
+						if (actual[j] !== expected[j]) {
+							matches = false;
+							break;
+						}
 					}
-				}
-				if (matches) {
-					return provider;
+					if (matches) {
+						return provider;
+					}
 				}
 			}
 		}

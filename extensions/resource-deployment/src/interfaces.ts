@@ -117,6 +117,7 @@ export interface WizardInfoBase extends SharedFieldAttributes {
 	title: string;
 	pages: NotebookWizardPageInfo[];
 	summaryPage: NotebookWizardPageInfo;
+	generateSummaryPage: boolean;
 }
 
 export interface NotebookWizardPageInfo extends PageInfoBase {
@@ -154,6 +155,7 @@ export interface DialogTabInfo extends PageInfoBase {
 
 export interface PageInfoBase extends SharedFieldAttributes {
 	title: string;
+	isSummaryPage?: boolean;
 	sections: SectionInfo[];
 }
 
@@ -202,6 +204,10 @@ export interface FieldInfo extends SubFieldInfo, SharedFieldAttributes {
 	editable?: boolean; // for editable drop-down,
 	enabled?: boolean;
 }
+
+export interface KubeClusterContextFieldInfo extends FieldInfo {
+	configFileVariableName?: string;
+}
 export interface AzureAccountFieldInfo extends AzureLocationsFieldInfo {
 	subscriptionVariableName?: string;
 	resourceGroupVariableName?: string;
@@ -209,6 +215,7 @@ export interface AzureAccountFieldInfo extends AzureLocationsFieldInfo {
 
 export interface AzureLocationsFieldInfo extends FieldInfo {
 	locationVariableName?: string;
+	displayLocationVariableName?: string;
 	locations?: string[]
 }
 
@@ -240,7 +247,7 @@ export enum FieldType {
 	AzureAccount = 'azure_account',
 	AzureLocations = 'azure_locations',
 	FilePicker = 'file_picker',
-	KubeConfigClusterPicker = 'kube_config_cluster_picker'
+	KubeClusterContextPicker = 'kube_cluster_context_picker'
 }
 
 export interface NotebookInfo {

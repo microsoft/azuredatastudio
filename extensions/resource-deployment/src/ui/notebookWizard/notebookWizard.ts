@@ -65,7 +65,9 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardMod
 		for (let pageIndex: number = 0; pageIndex < this.wizardInfo.pages.length; pageIndex++) {
 			pages.push(new NotebookWizardPage(this, pageIndex));
 		}
-		pages.push(new NotebookWizardSummaryPage(this));
+		if (this.wizardInfo.generateSummaryPage) {
+			pages.push(new NotebookWizardSummaryPage(this));
+		}
 		return pages;
 	}
 }
