@@ -14,7 +14,7 @@ import { WizardView } from '../../wizardView';
 import { ModelSourcePage } from '../modelSourcePage';
 import { ModelDetailsPage } from '../modelDetailsPage';
 import { ModelBrowsePage } from '../modelBrowsePage';
-import { ModelImportLocationPage } from './modelmportLocationPage';
+import { ModelImportLocationPage } from './modelImportLocationPage';
 
 /**
  * Wizard to register a model
