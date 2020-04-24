@@ -5,12 +5,11 @@
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import * as dom from 'vs/base/browser/dom';
 
 import { MarkdownTextTransformer, MarkdownButtonType } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { TestLifecycleService, TestEnvironmentService, TestAccessibilityService, TestTextResourceConfigurationService, TestEditorGroupsService, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestLifecycleService, TestEnvironmentService, TestAccessibilityService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
@@ -26,89 +25,56 @@ import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
-import { NotebookEditorStub, CellEditorProviderStub } from 'sql/workbench/contrib/notebook/test/stubs';
-import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
-import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtils';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
-import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IEditor } from 'vs/editor/common/editorCommon';
+import { TestNotebookEditor } from 'sql/workbench/contrib/notebook/test/browser/testEditorsAndProviders.test';
 
-class TestNotebookEditor extends NotebookEditorStub {
-	constructor(private _cellGuid?: string, private _instantiationService?: IInstantiationService) {
-		super();
-	}
-	cellEditors: CellEditorProviderStub[] = [new TestCellEditorProvider(this._cellGuid, this._instantiationService)];
-}
 
-class TestCellEditorProvider extends CellEditorProviderStub {
-	private _editor: QueryTextEditor;
-	private _cellGuid: string;
-	constructor(cellGuid: string, instantiationService?: IInstantiationService) {
-		super();
-		let div = dom.$('div', undefined, dom.$('span', { id: 'demospan' }));
-		let firstChild = div.firstChild as HTMLElement;
-
-		this._editor = new QueryTextEditor(
-			NullTelemetryService,
-			instantiationService,
-			new TestStorageService(),
-			new TestTextResourceConfigurationService(),
-			new TestThemeService(),
-			new TestEditorGroupsService(),
-			new TestEditorService(),
-			new TestConfigurationService()
-		);
-		this._editor.create(firstChild);
-		this._cellGuid = cellGuid;
-	}
-	cellGuid(): string {
-		return this._cellGuid;
-	}
-	getEditor(): QueryTextEditor {
-		return this._editor;
-	}
-}
 
 suite('MarkdownTextTransformer', () => {
-	let mockNotebookService: TypeMoq.Mock<INotebookService>;
-	const dialogService = new TestDialogService();
-	const notificationService = new TestNotificationService();
-	const undoRedoService = new UndoRedoService(dialogService, notificationService);
-	const instantiationService = new TestInstantiationService();
+	let markdownTextTransformer: MarkdownTextTransformer;
+	let widget: IEditor;
+	let textModel: TextModel;
 
-	instantiationService.stub(IAccessibilityService, new TestAccessibilityService());
-	instantiationService.stub(IContextKeyService, new MockContextKeyService());
-	instantiationService.stub(ICodeEditorService, new TestCodeEditorService());
-	instantiationService.stub(IThemeService, new TestThemeService());
-	instantiationService.stub(IEnvironmentService, TestEnvironmentService);
-	instantiationService.stub(IStorageService, new TestStorageService());
+	setup(() => {
+		let mockNotebookService: TypeMoq.Mock<INotebookService>;
+		const dialogService = new TestDialogService();
+		const notificationService = new TestNotificationService();
+		const undoRedoService = new UndoRedoService(dialogService, notificationService);
+		const instantiationService = new TestInstantiationService();
 
-	mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, new TestLifecycleService(), undefined, undefined, undefined, instantiationService, new MockContextKeyService(),
-		undefined, undefined, undefined, undefined, undefined, undefined, TestEnvironmentService);
+		instantiationService.stub(IAccessibilityService, new TestAccessibilityService());
+		instantiationService.stub(IContextKeyService, new MockContextKeyService());
+		instantiationService.stub(ICodeEditorService, new TestCodeEditorService());
+		instantiationService.stub(IThemeService, new TestThemeService());
+		instantiationService.stub(IEnvironmentService, TestEnvironmentService);
+		instantiationService.stub(IStorageService, new TestStorageService());
 
-	let cellModel = new CellModel(undefined, undefined, mockNotebookService.object);
-	let markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel);
-	let notebookEditor = new TestNotebookEditor(cellModel.cellGuid, instantiationService);
-	markdownTextTransformer.notebookEditor = notebookEditor;
-	mockNotebookService.setup(s => s.findNotebookEditor(TypeMoq.It.isAny())).returns(() => notebookEditor);
+		mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, new TestLifecycleService(), undefined, undefined, undefined, instantiationService, new MockContextKeyService(),
+			undefined, undefined, undefined, undefined, undefined, undefined, TestEnvironmentService);
 
-	let editor = notebookEditor.cellEditors[0].getEditor();
-	assert(!isUndefinedOrNull(editor), 'editor is undefined');
+		let cellModel = new CellModel(undefined, undefined, mockNotebookService.object);
+		let notebookEditor = new TestNotebookEditor(cellModel.cellGuid, instantiationService);
+		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel, notebookEditor);
+		mockNotebookService.setup(s => s.findNotebookEditor(TypeMoq.It.isAny())).returns(() => notebookEditor);
 
-	let widget = editor.getControl();
-	assert(!isUndefinedOrNull(widget), 'widget is undefined');
+		let editor = notebookEditor.cellEditors[0].getEditor();
+		assert(!isUndefinedOrNull(editor), 'editor is undefined');
 
-	// Create new text model
-	let textModel = new TextModel('', { isForSimpleWidget: true, defaultEOL: DefaultEndOfLine.LF, detectIndentation: true, indentSize: 0, insertSpaces: false, largeFileOptimizations: false, tabSize: 4, trimAutoWhitespace: false }, null, undefined, undoRedoService);
+		widget = editor.getControl();
+		assert(!isUndefinedOrNull(widget), 'widget is undefined');
 
-	// Couple widget with newly created text model
-	widget.setModel(textModel);
+		// Create new text model
+		textModel = new TextModel('', { isForSimpleWidget: true, defaultEOL: DefaultEndOfLine.LF, detectIndentation: true, indentSize: 0, insertSpaces: false, largeFileOptimizations: false, tabSize: 4, trimAutoWhitespace: false }, null, undefined, undoRedoService);
 
-	// let textModel = widget.getModel() as TextModel;
-	assert(!isUndefinedOrNull(widget.getModel()), 'Text model is undefined');
+		// Couple widget with newly created text model
+		widget.setModel(textModel);
 
+		// let textModel = widget.getModel() as TextModel;
+		assert(!isUndefinedOrNull(widget.getModel()), 'Text model is undefined');
+	});
 
 	test('Transform text with no previous selection', () => {
 		testWithNoSelection(MarkdownButtonType.BOLD, '****', true);
@@ -162,7 +128,7 @@ suite('MarkdownTextTransformer', () => {
 		testWithMultipleLinesSelected(MarkdownButtonType.IMAGE, '![Multi\nLines\nSelected]()');
 	});
 
-	function testWithNoSelection(type: MarkdownButtonType, expectedValue: string, setValue = false) {
+	function testWithNoSelection(type: MarkdownButtonType, expectedValue: string, setValue = false): void {
 		if (setValue) {
 			textModel.setValue('');
 		}
@@ -170,7 +136,7 @@ suite('MarkdownTextTransformer', () => {
 		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with no selection failed`);
 	}
 
-	function testWithSingleWordSelected(type: MarkdownButtonType, expectedValue: string) {
+	function testWithSingleWordSelected(type: MarkdownButtonType, expectedValue: string): void {
 		let value = 'WORD';
 		textModel.setValue(value);
 		widget.setSelection({ startColumn: 1, startLineNumber: 1, endColumn: 5, endLineNumber: 1 });
@@ -179,7 +145,7 @@ suite('MarkdownTextTransformer', () => {
 		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with single word selection failed`);
 	}
 
-	function testWithMultipleWordsSelected(type: MarkdownButtonType, expectedValue: string) {
+	function testWithMultipleWordsSelected(type: MarkdownButtonType, expectedValue: string): void {
 		let value = 'Multi Words';
 		textModel.setValue(value);
 		widget.setSelection({ startColumn: 1, startLineNumber: 1, endColumn: 12, endLineNumber: 1 });
@@ -188,7 +154,7 @@ suite('MarkdownTextTransformer', () => {
 		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with multiple word selection failed`);
 	}
 
-	function testWithMultipleLinesSelected(type: MarkdownButtonType, expectedValue: string) {
+	function testWithMultipleLinesSelected(type: MarkdownButtonType, expectedValue: string): void {
 		let value = 'Multi\nLines\nSelected';
 		textModel.setValue(value);
 		widget.setSelection({ startColumn: 1, startLineNumber: 1, endColumn: 9, endLineNumber: 3 });

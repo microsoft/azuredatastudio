@@ -46,9 +46,11 @@ export class TransformMarkdownAction extends Action {
 
 export class MarkdownTextTransformer {
 
-	constructor(private _notebookService: INotebookService, private _cellModel: ICellModel) { }
+	constructor(private _notebookService: INotebookService, private _cellModel: ICellModel, private _notebookEditor?: INotebookEditor) { }
 
-	public notebookEditor: INotebookEditor;
+	public get notebookEditor(): INotebookEditor {
+		return this._notebookEditor;
+	}
 
 	public transformText(type: MarkdownButtonType): void {
 		let editorControl = this.getEditorControl();
@@ -202,12 +204,12 @@ export class MarkdownTextTransformer {
 	}
 
 	private getEditorControl(): CodeEditorWidget | undefined {
-		if (!this.notebookEditor) {
-			this.notebookEditor = this._notebookService.findNotebookEditor(this._cellModel.notebookModel.notebookUri);
+		if (!this._notebookEditor) {
+			this._notebookEditor = this._notebookService.findNotebookEditor(this._cellModel.notebookModel.notebookUri);
 		}
-		if (this.notebookEditor?.cellEditors?.length > 0) {
+		if (this._notebookEditor?.cellEditors?.length > 0) {
 			// Find cell editor provider via cell guid
-			let cellEditorProvider = this.notebookEditor.cellEditors.find(e => e.cellGuid() === this._cellModel.cellGuid);
+			let cellEditorProvider = this._notebookEditor.cellEditors.find(e => e.cellGuid() === this._cellModel.cellGuid);
 			if (cellEditorProvider) {
 				let editor = cellEditorProvider.getEditor() as QueryTextEditor;
 				if (editor) {
