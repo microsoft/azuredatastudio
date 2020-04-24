@@ -29,7 +29,7 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { IEditorGroupView } from 'vs/workbench/browser/parts/editor/editor';
 import { EditorOptions, IEditorCloseEvent, IEditorMemento } from 'vs/workbench/common/editor';
 import { CELL_MARGIN, CELL_RUN_GUTTER, EDITOR_TOP_MARGIN, EDITOR_TOP_PADDING, EDITOR_BOTTOM_PADDING } from 'vs/workbench/contrib/notebook/browser/constants';
-import { CellEditState, CellFocusMode, ICellRange, ICellViewModel, INotebookCellList, INotebookEditor, INotebookEditorMouseEvent, NotebookLayoutInfo, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_EDITOR_EXECUTING_NOTEBOOK, NOTEBOOK_EDITOR_FOCUSED, INotebookEditorContribution } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { CellEditState, CellFocusMode, ICellRange, ICellViewModel, INotebookCellList, INotebookEditor, INotebookEditorMouseEvent, NotebookLayoutInfo, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_EDITOR_EXECUTING_NOTEBOOK, NOTEBOOK_EDITOR_FOCUSED, INotebookEditorContribution, NOTEBOOK_EDITOR_RUNNABLE } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { NotebookEditorInput, NotebookEditorModel } from 'vs/workbench/contrib/notebook/browser/notebookEditorInput';
 import { INotebookService } from 'vs/workbench/contrib/notebook/browser/notebookService';
 import { NotebookCellList } from 'vs/workbench/contrib/notebook/browser/view/notebookCellList';
@@ -106,6 +106,7 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 	private dimension: DOM.Dimension | null = null;
 	private editorFocus: IContextKey<boolean> | null = null;
 	private editorEditable: IContextKey<boolean> | null = null;
+	private editorRunnable: IContextKey<boolean> | null = null;
 	private editorExecutingNotebook: IContextKey<boolean> | null = null;
 	private outputRenderer: OutputRenderer;
 	protected readonly _contributions: { [key: string]: INotebookEditorContribution; };
@@ -182,6 +183,8 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 
 		this.editorEditable = NOTEBOOK_EDITOR_EDITABLE.bindTo(this.contextKeyService);
 		this.editorEditable.set(true);
+		this.editorRunnable = NOTEBOOK_EDITOR_RUNNABLE.bindTo(this.contextKeyService);
+		this.editorRunnable.set(true);
 		this.editorExecutingNotebook = NOTEBOOK_EDITOR_EXECUTING_NOTEBOOK.bindTo(this.contextKeyService);
 
 		const contributions = NotebookEditorExtensionsRegistry.getEditorContributions();
@@ -408,6 +411,12 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 		this.list?.clear();
 	}
 
+	private updateForMetadata(): void {
+		this.editorEditable?.set(!!this.viewModel!.metadata?.editable);
+		this.editorRunnable?.set(!!this.viewModel!.metadata?.runnable);
+		DOM.toggleClass(this.getDomNode(), 'notebook-editor-editable', !!this.viewModel!.metadata?.editable);
+	}
+
 	private async attachModel(input: NotebookEditorInput, model: NotebookEditorModel) {
 		if (!this.webview) {
 			this.webview = this.instantiationService.createInstance(BackLayerWebView, this);
@@ -418,11 +427,11 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 
 		this.eventDispatcher = new NotebookEventDispatcher();
 		this.viewModel = this.instantiationService.createInstance(NotebookViewModel, input.viewType!, model, this.eventDispatcher, this.getLayoutInfo());
-		this.editorEditable?.set(!!this.viewModel.metadata?.editable);
 		this.eventDispatcher.emit([new NotebookLayoutChangedEvent({ width: true, fontInfo: true }, this.getLayoutInfo())]);
 
+		this.updateForMetadata();
 		this.localStore.add(this.eventDispatcher.onDidChangeMetadata((e) => {
-			this.editorEditable?.set(e.source.editable);
+			this.updateForMetadata();
 		}));
 
 		// restore view states, including contributions
@@ -688,7 +697,11 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 		return new Promise(resolve => { r = resolve; });
 	}
 
-	insertNotebookCell(cell: ICellViewModel | undefined, type: CellKind, direction: 'above' | 'below' = 'above', initialText: string = ''): CellViewModel {
+	insertNotebookCell(cell: ICellViewModel | undefined, type: CellKind, direction: 'above' | 'below' = 'above', initialText: string = ''): CellViewModel | null {
+		if (!this.notebookViewModel!.metadata.editable) {
+			return null;
+		}
+
 		const newLanguages = this.notebookViewModel!.languages;
 		const language = newLanguages && newLanguages.length ? newLanguages[0] : 'markdown';
 		const index = cell ? this.notebookViewModel!.getCellIndex(cell) : 0;
@@ -705,6 +718,10 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 	}
 
 	async deleteNotebookCell(cell: ICellViewModel): Promise<boolean> {
+		if (!this.notebookViewModel!.metadata.editable) {
+			return false;
+		}
+
 		(cell as CellViewModel).save();
 		const index = this.notebookViewModel!.getCellIndex(cell);
 		this.notebookViewModel!.deleteCell(index, true);
@@ -712,6 +729,10 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 	}
 
 	async moveCellDown(cell: ICellViewModel): Promise<boolean> {
+		if (!this.notebookViewModel!.metadata.editable) {
+			return false;
+		}
+
 		const index = this.notebookViewModel!.getCellIndex(cell);
 		if (index === this.notebookViewModel!.length - 1) {
 			return false;
@@ -722,6 +743,10 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 	}
 
 	async moveCellUp(cell: ICellViewModel): Promise<boolean> {
+		if (!this.notebookViewModel!.metadata.editable) {
+			return false;
+		}
+
 		const index = this.notebookViewModel!.getCellIndex(cell);
 		if (index === 0) {
 			return false;
@@ -732,6 +757,10 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 	}
 
 	async moveCell(cell: ICellViewModel, relativeToCell: ICellViewModel, direction: 'above' | 'below'): Promise<boolean> {
+		if (!this.notebookViewModel!.metadata.editable) {
+			return false;
+		}
+
 		if (cell === relativeToCell) {
 			return false;
 		}
@@ -758,6 +787,10 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 	}
 
 	editNotebookCell(cell: CellViewModel): void {
+		if (!cell.getEvaluatedMetadata(this.notebookViewModel!.metadata).editable) {
+			return;
+		}
+
 		cell.editState = CellEditState.Editing;
 
 		this.renderedEditors.get(cell)?.focus();
@@ -788,6 +821,10 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 	}
 
 	async executeNotebook(): Promise<void> {
+		if (!this.notebookViewModel!.metadata.runnable) {
+			return;
+		}
+
 		// return this.progressService.showWhile(this._executeNotebook());
 		return this._executeNotebook();
 	}
@@ -824,6 +861,10 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 	}
 
 	async executeNotebookCell(cell: ICellViewModel): Promise<void> {
+		if (!cell.getEvaluatedMetadata(this.notebookViewModel!.metadata).runnable) {
+			return;
+		}
+
 		const tokenSource = new CancellationTokenSource();
 		try {
 			this._executeNotebookCell(cell, tokenSource);
