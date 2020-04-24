@@ -23,7 +23,6 @@ import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
-import { PropertiesWidgetComponent } from 'sql/workbench/contrib/dashboard/browser/widgets/properties/propertiesWidget.component';
 
 @Component({
 	selector: 'dashboard-home-container',
@@ -46,8 +45,6 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 	@ViewChild('propertiesClass') private _propertiesClass: DashboardWidgetWrapper;
 	@ViewChild('propertiesContainer') private _propertiesContainer: ElementRef;
 	@ViewChild(ScrollableDirective) private _scrollable: ScrollableDirective;
-
-	private height = 75; // default initial height
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
