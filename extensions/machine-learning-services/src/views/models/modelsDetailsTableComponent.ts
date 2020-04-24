@@ -12,7 +12,7 @@ import { IDataComponent } from '../interfaces';
 /**
  * View to pick local models file
  */
-export class ModelDetailsComponent extends ModelViewBase implements IDataComponent<ModelViewData[]> {
+export class ModelsDetailsTableComponent extends ModelViewBase implements IDataComponent<ModelViewData[]> {
 	private _table: azdata.DeclarativeTableComponent | undefined;
 
 	/**
@@ -127,7 +127,7 @@ export class ModelDetailsComponent extends ModelViewBase implements IDataCompone
 	private createTableRow(model: ModelViewData | undefined): any[] {
 		if (this._modelBuilder && model && model.modelDetails) {
 			const nameComponent = this._modelBuilder.inputBox().withProperties({
-				value: model.modelDetails.title,
+				value: model.modelDetails.modelName,
 				width: this.componentMaxLength - 100,
 				required: true
 			}).component();
@@ -142,7 +142,7 @@ export class ModelDetailsComponent extends ModelViewBase implements IDataCompone
 			});
 			nameComponent.onTextChanged(() => {
 				if (model.modelDetails) {
-					model.modelDetails.title = nameComponent.value || '';
+					model.modelDetails.modelName = nameComponent.value || '';
 				}
 			});
 			let deleteButton = this._modelBuilder.button().withProperties({
