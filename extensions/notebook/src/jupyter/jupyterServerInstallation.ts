@@ -817,7 +817,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 					version: '0.12.9'
 				});
 				break;
-			case 'Powershell':
+			case 'PowerShell':
 				packages.push({
 					name: 'powershell-kernel',
 					version: '0.1.3'
