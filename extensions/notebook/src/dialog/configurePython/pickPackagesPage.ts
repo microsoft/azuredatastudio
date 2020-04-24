@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { BasePage } from './configurePythonPage';
+import { BasePage } from './basePage';
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
 
 const localize = nls.loadMessageBundle();

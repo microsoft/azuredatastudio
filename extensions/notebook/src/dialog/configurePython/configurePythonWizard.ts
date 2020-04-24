@@ -5,7 +5,7 @@
 
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
-import { BasePage } from './configurePythonPage';
+import { BasePage } from './basePage';
 import { ConfigurePathPage } from './configurePathPage';
 import { PickPackagesPage } from './pickPackagesPage';
 import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
