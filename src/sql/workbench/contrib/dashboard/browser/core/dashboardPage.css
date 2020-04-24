@@ -32,6 +32,10 @@ dashboard-page .default-tab-icon {
 	background-image: url("media/default.svg");
 }
 
+dashboard-page .databases-tab-icon {
+	background-image: url("media/database.svg");
+}
+
 dashboard-page .actions-container .action-item .action-label{
 	padding-left: 20px;
 	padding-right: 5px;

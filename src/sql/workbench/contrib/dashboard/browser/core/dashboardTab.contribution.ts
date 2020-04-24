@@ -17,7 +17,7 @@ import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/workbench
 import { values } from 'vs/base/common/collections';
 import { IUserFriendlyIcon } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { isValidIcon, createCSSRuleForIcon } from 'sql/workbench/contrib/dashboard/browser/dashboardIconUtil';
-import { IDashboardTabGroup } from 'sql/workbench/services/dashboard/browser/common/interfaces';
+import { IDashboardTabGroup, IDashboardTab } from 'sql/workbench/services/dashboard/browser/common/interfaces';
 
 export interface IDashboardTabContrib {
 	id: string;
@@ -265,3 +265,35 @@ const PredefinedTabGroups: IDashboardTabGroup[] = [
 ];
 
 PredefinedTabGroups.forEach(tabGroup => registerTabGroup(tabGroup));
+
+/**
+ * Common Tabs
+ */
+const CommonTabs: IDashboardTab[] = [
+	{
+		id: 'databasesTab',
+		description: localize('databasesTabDescription', "databases tab"),
+		provider: 'MSSQL',
+		title: localize('databasesTabTitle', "Databases"),
+		when: 'dashboardContext == \'server\' && !mssql:iscloud && mssql:engineedition != 11',
+		group: 'home',
+		iconClass: 'databases-tab-icon',
+		publisher: undefined,
+		container: {
+			'widgets-container': [
+				{
+					name: localize('databasesWidgetTitle', "Search"),
+					gridItemConfig: {
+						sizex: 3,
+						sizey: 3
+					},
+					widget: {
+						'explorer-widget': {}
+					}
+				}
+			]
+		}
+	}
+];
+
+CommonTabs.forEach(tab => registerTab(tab));
