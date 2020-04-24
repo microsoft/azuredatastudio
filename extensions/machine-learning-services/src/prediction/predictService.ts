@@ -146,9 +146,9 @@ WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_CATALOG='${utils.doubleEscapeSingleQuo
 		const threePartTableName = utils.getRegisteredModelsThreePartsName(importTable.databaseName || '', importTable.tableName || '', importTable.schema || '');
 		return `
 DECLARE @model VARBINARY(max) = (
-	SELECT artifact_content
+	SELECT model
 	FROM ${threePartTableName}
-	WHERE artifact_id = ${modelId}
+	WHERE model_id = ${modelId}
 );
 WITH predict_input
 AS (
