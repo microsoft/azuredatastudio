@@ -14,7 +14,7 @@ import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { WorkspaceModel } from '../../../modelManagement/interfaces';
 import { ModelManagementController } from '../../../views/models/modelManagementController';
 import { DatabaseTable, TableColumn } from '../../../prediction/interfaces';
-import { EditModelEventName, DeleteModelEventName, UpdateModelEventName } from '../../../views/models/modelViewBase';
+import { DeleteModelEventName, UpdateModelEventName } from '../../../views/models/modelViewBase';
 import { EditModelDialog } from '../../../views/models/manageModels/editModelDialog';
 
 const accounts: azdata.Account[] = [
