@@ -9,9 +9,9 @@ import * as constants from '../../../common/constants';
 import { ModelViewBase } from '../modelViewBase';
 import { CurrentModelsTable } from './currentModelsTable';
 import { ApiWrapper } from '../../../common/apiWrapper';
-import { IPageView } from '../../interfaces';
+import { IPageView, IComponentSettings } from '../../interfaces';
 import { TableSelectionComponent } from '../tableSelectionComponent';
-import { RegisteredModel } from '../../../modelManagement/interfaces';
+import { ImportedModel } from '../../../modelManagement/interfaces';
 
 /**
  * View to render current registered models
@@ -27,7 +27,7 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 	 * @param apiWrapper Creates new view
 	 * @param parent page parent
 	 */
-	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _multiSelect: boolean = false) {
+	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _settings: IComponentSettings) {
 		super(apiWrapper, parent.root, parent);
 	}
 
@@ -41,7 +41,7 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 		this._tableSelectionComponent.onSelectedChanged(async () => {
 			await this.onTableSelected();
 		});
-		this._dataTable = new CurrentModelsTable(this._apiWrapper, this, this._multiSelect);
+		this._dataTable = new CurrentModelsTable(this._apiWrapper, this, this._settings);
 		this._dataTable.registerComponent(modelBuilder);
 		this._tableComponent = this._dataTable.component;
 
@@ -102,7 +102,7 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 		}
 	}
 
-	public get data(): RegisteredModel[] | undefined {
+	public get data(): ImportedModel[] | undefined {
 		return this._dataTable?.data;
 	}
 
