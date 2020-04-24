@@ -3,6 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+properties-container {
+	display: block;
+}
+
+properties-container .grid-container {
+	width: 100%;
+	display: grid;
+}
+
+properties-container .property {
+	display:flex;
+}
+
 properties-container .twoColumns.grid-container {
 	grid-template-columns: 50% 50%;
 }
