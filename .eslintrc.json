@@ -486,7 +486,7 @@
                     "**/{vs,sql}/workbench/api/**/common/**",
                     "vs/workbench/contrib/files/common/editors/fileEditorInput", // this should be fine, it only accesses constants from contrib
                     "vscode-textmate",
-                    "vscode-oniguruma-wasm"
+                    "vscode-oniguruma"
                 ]
             },
             {
@@ -521,7 +521,7 @@
                     "sanitize-html",
                     "@angular/*",
                     "rxjs/**",
-                    "vscode-oniguruma-wasm"
+                    "vscode-oniguruma"
                 ]
             },
             {
