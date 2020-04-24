@@ -40,6 +40,12 @@ export class OverflowActionBar extends ActionBar {
 			}
 		}));
 
+		this._register(DOM.addDisposableListener(window, DOM.EventType.MOUSE_MOVE, e => {
+			if (this._actionsList) {
+				this.resizeToolbar();
+			}
+		}));
+
 		this._overflow = document.createElement('ul');
 		this._overflow.id = 'overflow';
 		this._overflow.className = 'overflow';
