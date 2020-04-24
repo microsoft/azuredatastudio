@@ -44,7 +44,6 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 	private async onTableSelected(): Promise<void> {
 		if (this.tableSelectionComponent?.data) {
 			this.importTable = this.tableSelectionComponent?.data;
-			//this.sendRequest(StoreImportTableEventName, this.importTable);
 		}
 	}
 

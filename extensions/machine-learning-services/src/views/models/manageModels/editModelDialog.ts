@@ -3,43 +3,55 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CurrentModelsComponent } from './currentModelsComponent';
-
-import { ModelViewBase, RegisterModelEventName } from '../modelViewBase';
+import { ModelViewBase, UpdateModelEventName } from '../modelViewBase';
 import * as constants from '../../../common/constants';
 import { ApiWrapper } from '../../../common/apiWrapper';
 import { DialogView } from '../../dialogView';
+import { ModelDetailsEditPage } from './modelDetailsEditPage';
+import { ImportedModel } from '../../../modelManagement/interfaces';
 
 /**
  * Dialog to render registered model views
  */
-export class ManageModelsDialog extends ModelViewBase {
+export class EditModelDialog extends ModelViewBase {
 
 	constructor(
 		apiWrapper: ApiWrapper,
-		root: string) {
+		root: string,
+		private _parentView: ModelViewBase | undefined,
+		private _model: ImportedModel) {
 		super(apiWrapper, root);
 		this.dialogView = new DialogView(this._apiWrapper);
 	}
 	public dialogView: DialogView;
-	public currentLanguagesTab: CurrentModelsComponent | undefined;
+	public editModelPage: ModelDetailsEditPage | undefined;
 
 	/**
-	 * Opens a dialog to manage packages used by notebooks.
+	 * Opens a dialog to edit models.
 	 */
 	public open(): void {
 
-		this.currentLanguagesTab = new CurrentModelsComponent(this._apiWrapper, this, {
-			editable: true,
-			selectable: false
-		});
+		this.editModelPage = new ModelDetailsEditPage(this._apiWrapper, this, this._model);
 
-		let registerModelButton = this._apiWrapper.createButton(constants.importModelTitle);
+		let registerModelButton = this._apiWrapper.createButton(constants.extLangSaveButtonText);
 		registerModelButton.onClick(async () => {
-			await this.sendDataRequest(RegisterModelEventName, this.currentLanguagesTab?.modelTable?.importTable);
+			if (this.editModelPage) {
+				const valid = await this.editModelPage.validate();
+				if (valid) {
+					try {
+						await this.sendDataRequest(UpdateModelEventName, this.editModelPage?.data);
+						this.showInfoMessage(constants.modelUpdatedSuccessfully);
+						if (this._parentView) {
+							await this._parentView.refresh();
+						}
+					} catch (error) {
+						this.showInfoMessage(`${constants.modelUpdateFailedError} ${constants.getErrorMessage(error)}`);
+					}
+				}
+			}
 		});
 
-		let dialog = this.dialogView.createDialog(constants.registerModelTitle, [this.currentLanguagesTab]);
+		let dialog = this.dialogView.createDialog(constants.editModelTitle, [this.editModelPage]);
 		dialog.customButtons = [registerModelButton];
 		this.mainViewPanel = dialog;
 		dialog.okButton.hidden = true;

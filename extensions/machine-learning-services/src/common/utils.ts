@@ -8,7 +8,7 @@ import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs';
-import * as constants from '../common/constants';
+import * as constants from './constants';
 import { promisify } from 'util';
 import { ApiWrapper } from './apiWrapper';
 

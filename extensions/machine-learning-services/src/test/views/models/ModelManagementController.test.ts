@@ -8,12 +8,14 @@ import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import 'mocha';
 import { createContext } from './utils';
-import { RegisteredModel, ModelParameters } from '../../../modelManagement/interfaces';
+import { ImportedModel, ModelParameters } from '../../../modelManagement/interfaces';
 import { azureResource } from '../../../typings/azure-resource';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { WorkspaceModel } from '../../../modelManagement/interfaces';
 import { ModelManagementController } from '../../../views/models/modelManagementController';
 import { DatabaseTable, TableColumn } from '../../../prediction/interfaces';
+import { DeleteModelEventName, UpdateModelEventName } from '../../../views/models/modelViewBase';
+import { EditModelDialog } from '../../../views/models/manageModels/editModelDialog';
 
 const accounts: azdata.Account[] = [
 	{
@@ -55,11 +57,10 @@ const models: WorkspaceModel[] = [
 		name: 'model'
 	}
 ];
-const localModels: RegisteredModel[] = [
+const localModels: ImportedModel[] = [
 	{
 		id: 1,
-		artifactName: 'model',
-		title: 'model',
+		modelName: 'model',
 		table: {
 			databaseName: 'db',
 			tableName: 'tb',
@@ -165,6 +166,37 @@ describe('Model Controller', () => {
 		testContext.deployModelService.setup(x => x.downloadModel(TypeMoq.It.isAny())).returns(() => Promise.resolve('file'));
 
 		const view = await controller.predictModel();
+		should.notEqual(view, undefined);
+	});
+
+	it('Should open edit model dialog successfully ', async function (): Promise<void> {
+		let testContext = createContext();
+		testContext.deployModelService.setup(x => x.updateModel(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+		testContext.deployModelService.setup(x => x.deleteModel(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+
+		let controller = new ModelManagementController(testContext.apiWrapper.object, '', testContext.azureModelService.object, testContext.deployModelService.object, testContext.predictService.object);
+		const model: ImportedModel =
+		{
+			id: 1,
+			modelName: 'name1',
+			description: 'desc1',
+			created: '2018-01-01',
+			version: '1.1',
+			table: {
+				databaseName: 'db',
+				tableName: 'tb',
+				schema: 'dbo'
+			}
+		};
+		const view = <EditModelDialog>await controller.editModel(model);
+		should.notEqual(view?.editModelPage, undefined);
+		if (view.editModelPage) {
+			view.editModelPage.sendRequest(UpdateModelEventName, model);
+			view.editModelPage.sendRequest(DeleteModelEventName, model);
+		}
+		testContext.deployModelService.verify(x => x.updateModel(model), TypeMoq.Times.atLeastOnce());
+		testContext.deployModelService.verify(x => x.deleteModel(model), TypeMoq.Times.atLeastOnce());
+
 		should.notEqual(view, undefined);
 	});
 });

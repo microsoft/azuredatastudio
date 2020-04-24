@@ -43,7 +43,7 @@ export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDat
 				connectionName: undefined,
 				serverName: databaseServer.fullName,
 				databaseName: databaseServer.defaultDatabaseName,
-				userName: '',
+				userName: databaseServer.loginName,
 				password: '',
 				authenticationType: 'SqlLogin',
 				savePassword: true,
