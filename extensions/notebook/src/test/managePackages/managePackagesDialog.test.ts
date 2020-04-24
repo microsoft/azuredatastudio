@@ -281,7 +281,8 @@ describe('Manage Package Dialog', () => {
 				fileBrowserTree: undefined!,
 				hyperlink: undefined!,
 				tabbedPanel: undefined!,
-				separator: undefined!
+				separator: undefined!,
+				propertiesContainer: undefined!
 			}
 		};
 

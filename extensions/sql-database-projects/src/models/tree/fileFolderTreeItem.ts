@@ -50,7 +50,17 @@ export class FileNode extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		return new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.None);
+		const treeItem = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.None);
+
+		treeItem.command = {
+			title: 'Open file',
+			command: 'vscode.open',
+			arguments: [this.fileSystemUri]
+		};
+
+		treeItem.contextValue = 'File';
+
+		return treeItem;
 	}
 }
 
@@ -58,7 +68,7 @@ export class FileNode extends BaseProjectTreeItem {
  * Converts a full filesystem URI to a project-relative URI that's compatible with the project tree
  */
 function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootTreeItem): vscode.Uri {
-	const projBaseDir = path.dirname(projectNode.project.projectFile);
+	const projBaseDir = path.dirname(projectNode.project.projectFilePath);
 	let localUri = '';
 
 	if (fileSystemUri.fsPath.startsWith(projBaseDir)) {

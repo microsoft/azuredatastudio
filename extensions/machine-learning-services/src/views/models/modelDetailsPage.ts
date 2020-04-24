@@ -8,7 +8,7 @@ import { ModelViewBase, ModelViewData } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 import * as constants from '../../common/constants';
 import { IPageView, IDataComponent } from '../interfaces';
-import { ModelDetailsComponent } from './modelDetailsComponent';
+import { ModelsDetailsTableComponent } from './modelsDetailsTableComponent';
 
 /**
  * View to pick model details
@@ -17,7 +17,7 @@ export class ModelDetailsPage extends ModelViewBase implements IPageView, IDataC
 
 	private _form: azdata.FormContainer | undefined;
 	private _formBuilder: azdata.FormBuilder | undefined;
-	public modelDetails: ModelDetailsComponent | undefined;
+	public modelDetails: ModelsDetailsTableComponent | undefined;
 
 	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase) {
 		super(apiWrapper, parent.root, parent);
@@ -30,7 +30,7 @@ export class ModelDetailsPage extends ModelViewBase implements IPageView, IDataC
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 
 		this._formBuilder = modelBuilder.formContainer();
-		this.modelDetails = new ModelDetailsComponent(this._apiWrapper, modelBuilder, this);
+		this.modelDetails = new ModelsDetailsTableComponent(this._apiWrapper, modelBuilder, this);
 		this.modelDetails.registerComponent(modelBuilder);
 		this.modelDetails.addComponents(this._formBuilder);
 		this.refresh();
@@ -73,7 +73,7 @@ export class ModelDetailsPage extends ModelViewBase implements IPageView, IDataC
 	}
 
 	public validate(): Promise<boolean> {
-		if (this.data && this.data.length > 0 && !this.data.find(x => !x.modelDetails?.title)) {
+		if (this.data && this.data.length > 0 && !this.data.find(x => !x.modelDetails?.modelName)) {
 			return Promise.resolve(true);
 		} else {
 			this.showErrorMessage(constants.modelNameRequiredError);

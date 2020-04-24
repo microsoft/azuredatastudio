@@ -92,55 +92,54 @@ async function createModel(context: ExtensionContext, outputChannel: OutputChann
 	return model;
 }
 
-// {{SQL CARBON EDIT}} - Comment out function that is unused due to our edit below
-// async function isGitRepository(folder: WorkspaceFolder): Promise<boolean> {
-// 	if (folder.uri.scheme !== 'file') {
-// 		return false;
-// 	}
+/* {{SQL CARBON EDIT}} - Comment out function that is unused due to our edit below
+async function isGitRepository(folder: WorkspaceFolder): Promise<boolean> {
+	if (folder.uri.scheme !== 'file') {
+		return false;
+	}
 
-// 	const dotGit = path.join(folder.uri.fsPath, '.git');
+	const dotGit = path.join(folder.uri.fsPath, '.git');
 
-// 	try {
-// 		const dotGitStat = await new Promise<fs.Stats>((c, e) => fs.stat(dotGit, (err, stat) => err ? e(err) : c(stat)));
-// 		return dotGitStat.isDirectory();
-// 	} catch (err) {
-// 		return false;
-// 	}
-// }
+	try {
+		const dotGitStat = await new Promise<fs.Stats>((c, e) => fs.stat(dotGit, (err, stat) => err ? e(err) : c(stat)));
+		return dotGitStat.isDirectory();
+	} catch (err) {
+		return false;
+	}
+}
 
-// {{SQL CARBON EDIT}} - Comment out function that is unused due to our edit below
-// async function warnAboutMissingGit(): Promise<void> {
-// 	const config = workspace.getConfiguration('git');
-// 	const shouldIgnore = config.get<boolean>('ignoreMissingGitWarning') === true;
+async function warnAboutMissingGit(): Promise<void> {
+	const config = workspace.getConfiguration('git');
+	const shouldIgnore = config.get<boolean>('ignoreMissingGitWarning') === true;
 
-// 	if (shouldIgnore) {
-// 		return;
-// 	}
+	if (shouldIgnore) {
+		return;
+	}
 
-// 	if (!workspace.workspaceFolders) {
-// 		return;
-// 	}
+	if (!workspace.workspaceFolders) {
+		return;
+	}
 
-// 	const areGitRepositories = await Promise.all(workspace.workspaceFolders.map(isGitRepository));
+	const areGitRepositories = await Promise.all(workspace.workspaceFolders.map(isGitRepository));
 
-// 	if (areGitRepositories.every(isGitRepository => !isGitRepository)) {
-// 		return;
-// 	}
+	if (areGitRepositories.every(isGitRepository => !isGitRepository)) {
+		return;
+	}
 
-// 	const download = localize('downloadgit', "Download Git");
-// 	const neverShowAgain = localize('neverShowAgain', "Don't Show Again");
-// 	const choice = await window.showWarningMessage(
-// 		localize('notfound', "Git not found. Install it or configure it using the 'git.path' setting."),
-// 		download,
-// 		neverShowAgain
-// 	);
+	const download = localize('downloadgit', "Download Git");
+	const neverShowAgain = localize('neverShowAgain', "Don't Show Again");
+	const choice = await window.showWarningMessage(
+		localize('notfound', "Git not found. Install it or configure it using the 'git.path' setting."),
+		download,
+		neverShowAgain
+	);
 
-// 	if (choice === download) {
-// 		commands.executeCommand('vscode.open', Uri.parse('https://git-scm.com/'));
-// 	} else if (choice === neverShowAgain) {
-// 		await config.update('ignoreMissingGitWarning', true, true);
-// 	}
-// }
+	if (choice === download) {
+		commands.executeCommand('vscode.open', Uri.parse('https://git-scm.com/'));
+	} else if (choice === neverShowAgain) {
+		await config.update('ignoreMissingGitWarning', true, true);
+	}
+}*/
 
 export async function activate(context: ExtensionContext): Promise<GitExtension> {
 	const disposables: Disposable[] = [];
@@ -174,9 +173,8 @@ export async function activate(context: ExtensionContext): Promise<GitExtension>
 			throw err;
 		}
 
-		// {{SQL CARBON EDIT}} turn-off Git missing prompt
-		// console.warn(err.message);
-		// outputChannel.appendLine(err.message);
+		// console.warn(err.message); {{SQL CARBON EDIT}} turn-off Git missing prompt
+		// outputChannel.appendLine(err.message); {{SQL CARBON EDIT}} turn-off Git missing prompt
 
 		commands.executeCommand('setContext', 'git.missing', true);
 		// warnAboutMissingGit(); {{SQL CARBON EDIT}} turn-off Git missing prompt
@@ -187,36 +185,31 @@ export async function activate(context: ExtensionContext): Promise<GitExtension>
 
 // {{SQL CARBON EDIT}} - Rename info to _info to prevent error due to unused variable
 async function checkGitVersion(_info: IGit): Promise<void> {
+	return; /* {{SQL CARBON EDIT}} return immediately
 
-	// {{SQL CARBON EDIT}}
-	// remove Git version check for azuredatastudio
+	const config = workspace.getConfiguration('git');
+	const shouldIgnore = config.get<boolean>('ignoreLegacyWarning') === true;
 
-	return;
+	if (shouldIgnore) {
+		return;
+	}
 
-	// const config = workspace.getConfiguration('git');
-	// const shouldIgnore = config.get<boolean>('ignoreLegacyWarning') === true;
+	if (!/^[01]/.test(info.version)) {
+		return;
+	}
 
-	// if (shouldIgnore) {
-	// 	return;
-	// }
+	const update = localize('updateGit', "Update Git");
+	const neverShowAgain = localize('neverShowAgain', "Don't Show Again");
 
-	// if (!/^[01]/.test(info.version)) {
-	// 	return;
-	// }
+	const choice = await window.showWarningMessage(
+		localize('git20', "You seem to have git {0} installed. Code works best with git >= 2", info.version),
+		update,
+		neverShowAgain
+	);
 
-	// const update = localize('updateGit', "Update Git");
-	// const neverShowAgain = localize('neverShowAgain', "Don't Show Again");
-
-	// const choice = await window.showWarningMessage(
-	// 	localize('git20', "You seem to have git {0} installed. Code works best with git >= 2", info.version),
-	// 	update,
-	// 	neverShowAgain
-	// );
-
-	// if (choice === update) {
-	// 	commands.executeCommand('vscode.open', Uri.parse('https://git-scm.com/'));
-	// } else if (choice === neverShowAgain) {
-	// 	await config.update('ignoreLegacyWarning', true, true);
-	// }
-	// {{SQL CARBON EDIT}} - End
+	if (choice === update) {
+		commands.executeCommand('vscode.open', Uri.parse('https://git-scm.com/'));
+	} else if (choice === neverShowAgain) {
+		await config.update('ignoreLegacyWarning', true, true);
+	}*/
 }

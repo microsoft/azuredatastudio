@@ -129,6 +129,7 @@ declare module 'azdata' {
 		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent>;
 		tabbedPanel(): TabbedPanelComponentBuilder;
 		separator(): ComponentBuilder<SeparatorComponent>;
+		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent>;
 	}
 
 	export interface RadioCard {
@@ -231,19 +232,19 @@ declare module 'azdata' {
 	 */
 	export interface TabbedPanelLayout {
 		/**
-		 * Tab orientation
+		 * Tab orientation. Default horizontal.
 		 */
-		orientation: TabOrientation;
+		orientation?: TabOrientation;
 
 		/**
-		 * Whether to show the tab icon
+		 * Whether to show the tab icon. Default false.
 		 */
-		showIcon: boolean;
+		showIcon?: boolean;
 
 		/**
-		 * Whether to show the tab navigation pane even when there is only one tab
+		 * Whether to show the tab navigation pane even when there is only one tab. Default false.
 		 */
-		alwaysShowTabs: boolean;
+		alwaysShowTabs?: boolean;
 	}
 
 	/**
@@ -289,12 +290,12 @@ declare module 'azdata' {
 	/**
 	 * Builder for TabbedPannelComponent
 	 */
-	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, any, any> {
+	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any> {
 		/**
 		 * Add the tabs to the component
 		 * @param tabs tabs/tab groups to be added
 		 */
-		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, any, any>;
+		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any>;
 	}
 
 	export interface InputBoxProperties extends ComponentProperties {
@@ -303,6 +304,37 @@ declare module 'azdata' {
 
 	export interface CheckBoxProperties {
 		required?: boolean;
+	}
+
+	/**
+	 * A property to be displayed in the PropertiesContainerComponent
+	 */
+	export interface PropertiesContainerItem {
+		/**
+		 * The name of the property to display
+		 */
+		displayName: string;
+		/**
+		 * The value of the property to display
+		 */
+		value: string;
+	}
+
+	/**
+	 * Component to display a list of property values.
+	 */
+	export interface PropertiesContainerComponent extends Component, PropertiesContainerComponentProperties {
+
+	}
+
+	/**
+	 * Properties for configuring a PropertiesContainerComponent
+	 */
+	export interface PropertiesContainerComponentProperties {
+		/**
+		 * The properties to display
+		 */
+		propertyItems?: PropertiesContainerItem[];
 	}
 
 	export namespace nb {

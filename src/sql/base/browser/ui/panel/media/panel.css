@@ -198,6 +198,7 @@ panel {
 	background-repeat: no-repeat;
 	background-size: 9px 9px;
 	align-self: center;
+	cursor: pointer;
 }
 
 .vs .tabbedPanel .tab-action.collapse {

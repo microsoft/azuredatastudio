@@ -288,7 +288,7 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 				error = err;
 				reject(error);
 			});
-			writeStream.on('finish', (location) => {
+			writeStream.on('finish', () => {
 				if (!error) {
 					resolve(vscode.Uri.file(localPath));
 				}

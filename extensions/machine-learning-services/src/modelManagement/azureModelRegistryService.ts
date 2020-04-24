@@ -134,6 +134,10 @@ export class AzureModelRegistryService {
 		this._modelClient = value;
 	}
 
+	public async signInToAzure(): Promise<void> {
+		await this._apiWrapper.executeCommand(constants.signInToAzureCommand);
+	}
+
 	/**
 	 * Execute the background task to download the artifact
 	 */

@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 .editDataGridPanel.slickgridContainer {
-	height: 447px;
-	width: 632px;
+	height: 100%;
+	width: 100%;
 }
 
 

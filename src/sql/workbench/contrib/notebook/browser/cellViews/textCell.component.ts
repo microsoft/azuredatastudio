@@ -27,10 +27,10 @@ import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/ce
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
 import { NotebookRange, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
-
 
 @Component({
 	selector: TEXT_SELECTOR,
@@ -88,11 +88,13 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private _hover: boolean;
 	private markdownRenderer: NotebookMarkdownRenderer;
 	private markdownResult: IMarkdownRenderResult;
+	public previewFeaturesEnabled: boolean = false;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
 		super();
 		this.isEditMode = true;
@@ -102,6 +104,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (this.markdownResult) {
 				this.markdownResult.dispose();
 			}
+		}));
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
+			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		}));
 	}
 
@@ -135,6 +140,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	ngOnInit() {
+		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this._cellToggleMoreActions.onInit(this.moreActionsElementRef, this.model, this.cellModel);
@@ -308,9 +314,13 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		for (let element of hostElem.children) {
 			if (element.nodeName.toLowerCase() === 'table') {
 				// add table header and table rows.
-				children.push(element.children[0]);
-				for (let trow of element.children[1].children) {
-					children.push(trow);
+				if (element.children.length > 0) {
+					children.push(element.children[0]);
+					if (element.children.length > 1) {
+						for (let trow of element.children[1].children) {
+							children.push(trow);
+						}
+					}
 				}
 			} else if (element.children.length > 1) {
 				children = children.concat(this.getChildren(element));

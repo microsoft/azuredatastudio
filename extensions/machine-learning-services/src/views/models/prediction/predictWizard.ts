@@ -13,7 +13,7 @@ import * as constants from '../../../common/constants';
 import { WizardView } from '../../wizardView';
 import { ModelSourcePage } from '../modelSourcePage';
 import { ColumnsSelectionPage } from './columnsSelectionPage';
-import { RegisteredModel } from '../../../modelManagement/interfaces';
+import { ImportedModel } from '../../../modelManagement/interfaces';
 import { ModelArtifact } from './modelArtifact';
 import { ModelBrowsePage } from '../modelBrowsePage';
 
@@ -116,7 +116,7 @@ export class PredictWizard extends ModelViewBase {
 		} else if (this.modelResources && this.azureModelsComponent && this.modelResources.data === ModelSourceType.Azure) {
 			return await this.azureModelsComponent.getDownloadedModel();
 		} else if (this.modelBrowsePage && this.modelBrowsePage.registeredModelsComponent) {
-			return await this.modelBrowsePage.registeredModelsComponent.getDownloadedModel();
+			return await this.modelBrowsePage.registeredModelsComponent.modelTable?.getDownloadedModel();
 		}
 		return undefined;
 	}
@@ -124,7 +124,7 @@ export class PredictWizard extends ModelViewBase {
 	private async predict(): Promise<boolean> {
 		try {
 			let modelFilePath: string | undefined;
-			let registeredModel: RegisteredModel | undefined = undefined;
+			let registeredModel: ImportedModel | undefined = undefined;
 			if (this.modelResources && this.modelResources.data && this.modelResources.data === ModelSourceType.RegisteredModels
 				&& this.modelBrowsePage && this.modelBrowsePage.registeredModelsComponent) {
 				const data = this.modelBrowsePage?.registeredModelsComponent?.data;

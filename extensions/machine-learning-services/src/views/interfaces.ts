@@ -34,4 +34,10 @@ export interface AzureModelResource extends AzureWorkspaceResource {
 	model?: WorkspaceModel;
 }
 
+export interface IComponentSettings {
+	multiSelect?: boolean;
+	editable?: boolean;
+	selectable?: boolean;
+}
+
 
