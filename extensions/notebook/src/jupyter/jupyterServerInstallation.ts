@@ -807,7 +807,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}];
 		switch (kernelName) {
 			case 'Python 3':
-			case 'SQL':
 				break;
 			case 'PySpark':
 			case 'Spark | Scala':
@@ -815,6 +814,12 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				packages.push({
 					name: 'sparkmagic',
 					version: '0.12.9'
+				}, {
+					name: 'pandas',
+					version: '0.24.2'
+				}, {
+					name: 'prose-codeaccelerator',
+					version: '1.3.0'
 				});
 				break;
 			case 'PowerShell':
