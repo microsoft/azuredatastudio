@@ -316,10 +316,10 @@ export class ExtensionEditor extends BaseEditor {
 	}
 
 	async setInput(input: ExtensionsInput, options: EditorOptions | undefined, token: CancellationToken): Promise<void> {
+		await super.setInput(input, options, token);
 		if (this.template) {
 			await this.updateTemplate(input, this.template, !!options?.preserveFocus);
 		}
-		return super.setInput(input, options, token);
 	}
 
 	private async updateTemplate(input: ExtensionsInput, template: IExtensionEditorTemplate, preserveFocus: boolean): Promise<void> {
@@ -499,7 +499,7 @@ export class ExtensionEditor extends BaseEditor {
 			ignoreAction.enabled = true;
 			template.subtext.textContent = extRecommendations[extension.identifier.id.toLowerCase()].reasonText;
 			show(template.subtextContainer);
-		} else if (this.extensionRecommendationsService.getAllIgnoredRecommendations().global.indexOf(extension.identifier.id.toLowerCase()) !== -1) {
+		} else if (this.extensionRecommendationsService.getIgnoredRecommendations().indexOf(extension.identifier.id.toLowerCase()) !== -1) {
 			undoIgnoreAction.enabled = true;
 			template.subtext.textContent = localize('recommendationHasBeenIgnored', "You have chosen not to receive recommendations for this extension.");
 			show(template.subtextContainer);
