@@ -102,7 +102,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(none));
 
 		connectionStore.setup(x => x.addRecentConnection(TypeMoq.It.isAny())).returns(() => Promise.resolve());
-		connectionStore.setup(x => x.saveProfile(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny())).returns(() => Promise.resolve(connectionProfile));
+		connectionStore.setup(x => x.saveProfile(TypeMoq.It.isAny(), TypeMoq.It.is(x => true), TypeMoq.It.is(x => true))).returns(() => Promise.resolve(connectionProfile));
 		workbenchEditorService.setup(x => x.openEditor(undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is<IConnectionProfile>(
 			c => c.serverName === connectionProfile.serverName))).returns(() => Promise.resolve({ profile: connectionProfile, savedCred: true }));
@@ -204,7 +204,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		if (options) {
 			if (options.saveTheConnection) {
-				connectionStore.verify(x => x.saveProfile(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny()), TypeMoq.Times.once());
+				connectionStore.verify(x => x.saveProfile(TypeMoq.It.isAny(), TypeMoq.It.is(x => true), TypeMoq.It.is(x => true)), TypeMoq.Times.once());
 			}
 			if (options.showDashboard) {
 				workbenchEditorService.verify(x => x.openEditor(undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
@@ -441,39 +441,39 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
-	// test('changing URI for connection should not create new connection', () => {
-	// 	let profile = connectionProfile;
-	// 	profile.id = '1';
-	// 	let uri1 = 'test_uri1';
-	// 	//let uri2 = 'test_uri2';
-	// 	let options: IConnectionCompletionOptions = {
-	// 		params: {
-	// 			connectionType: ConnectionType.editor,
-	// 			input: {
-	// 				onConnectSuccess: undefined,
-	// 				onConnectReject: undefined,
-	// 				onConnectStart: undefined,
-	// 				onDisconnect: undefined,
-	// 				onConnectCanceled: undefined,
-	// 				uri: uri1
-	// 			},
-	// 			querySelection: undefined,
-	// 			runQueryOnCompletion: RunQueryOnConnectionMode.none,
-	// 			isEditConnection: true
-	// 		},
-	// 		saveTheConnection: false,
-	// 		showDashboard: false,
-	// 		showConnectionDialogOnError: true,
-	// 		showFirewallRuleOnError: true
-	// 	};
+	test.skip('changing URI for connection should not create new connection', () => {
+		let profile = connectionProfile;
+		profile.id = '1';
+		let uri1 = 'test_uri1';
+		//let uri2 = 'test_uri2';
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri1
+				},
+				querySelection: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: true
+			},
+			saveTheConnection: false,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
 
 
-	// 	return connect(uri1, options, true, profile).then(result => {
-	// 		assert.equal(result.connected, true);
-	// 		assert.equal(connectionManagementService.getConnectionUriFromId(profile.id), uri1);
-	// 		//return connect(uri2, options, true, profile);
-	// 	});
-	// });
+		return connect(uri1, options, true, profile).then(result => {
+			assert.equal(result.connected, true);
+			assert.equal(connectionManagementService.getConnectionUriFromId(profile.id), uri1);
+			//return connect(uri2, options, true, profile);
+		});
+	});
 
 	test('failed firewall rule should open the firewall rule dialog', () => {
 		handleFirewallRuleResult.canHandleFirewallRule = true;
