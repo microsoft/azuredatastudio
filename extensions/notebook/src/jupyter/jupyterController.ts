@@ -30,6 +30,7 @@ import { LocalPipPackageManageProvider } from './localPipPackageManageProvider';
 import { LocalCondaPackageManageProvider } from './localCondaPackageManageProvider';
 import { ManagePackagesDialogModel, ManagePackageDialogOptions } from '../dialog/managePackages/managePackagesDialogModel';
 import { PiPyClient } from './pipyClient';
+import { ConfigurePythonDialog } from '../dialog/configurePython/configurePythonDialog';
 
 let untitledCounter = 0;
 
@@ -250,10 +251,18 @@ export class JupyterController implements vscode.Disposable {
 	}
 
 	public doConfigurePython(jupyterInstaller: JupyterServerInstallation): void {
-		let pythonWizard = new ConfigurePythonWizard(this.apiWrapper, jupyterInstaller);
-		pythonWizard.start('Python 3').catch((err: any) => {
-			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
-		});
+		let enablePreviewFeatures = this.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
+		if (enablePreviewFeatures) {
+			let pythonWizard = new ConfigurePythonWizard(this.apiWrapper, jupyterInstaller);
+			pythonWizard.start('Python 3').catch((err: any) => {
+				this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+			});
+		} else {
+			let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, jupyterInstaller);
+			pythonDialog.showDialog().catch((err: any) => {
+				this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+			});
+		}
 	}
 
 	public get jupyterInstallation() {

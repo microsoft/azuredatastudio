@@ -20,6 +20,7 @@ import { Deferred } from '../common/promise';
 import { ConfigurePythonWizard } from '../dialog/configurePython/configurePythonWizard';
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
+import { ConfigurePythonDialog } from '../dialog/configurePython/configurePythonDialog';
 
 const localize = nls.loadMessageBundle();
 const msgInstallPkgProgress = localize('msgInstallPkgProgress', "Notebook dependencies installation is in progress");
@@ -428,8 +429,14 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	 */
 	public async promptForPythonInstall(kernelDisplayName: string): Promise<void> {
 		if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
-			let pythonWizard = new ConfigurePythonWizard(this.apiWrapper, this);
-			return pythonWizard.start(kernelDisplayName, true);
+			let enablePreviewFeatures = this.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
+			if (enablePreviewFeatures) {
+				let pythonWizard = new ConfigurePythonWizard(this.apiWrapper, this);
+				return pythonWizard.start(kernelDisplayName, true);
+			} else {
+				let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this);
+				return pythonDialog.showDialog(true);
+			}
 		}
 	}
 
