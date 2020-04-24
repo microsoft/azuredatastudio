@@ -239,11 +239,6 @@ number-is-nan@^1.0.0:
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
   integrity sha1-CXtgK1NCKlIsGvuHkDGDNpQaAR0=
 
-onigasm-umd@2.2.5:
-  version "2.2.5"
-  resolved "https://registry.yarnpkg.com/onigasm-umd/-/onigasm-umd-2.2.5.tgz#f104247334a543accd3f8d641a4d99b3d908d6a1"
-  integrity sha512-R3qD7hq6i2bBklF+QyjqZl/G4fe7GwtukI28YLH2vuiatqx52tb9vpg2sxwemKc3nF76SgkeyOKJLchBmTm0Aw==
-
 oniguruma@^7.2.0:
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/oniguruma/-/oniguruma-7.2.0.tgz#c9a59c1ea7b9fe67e237a02e02139b638856f3af"
@@ -354,6 +349,11 @@ util-deprecate@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=
+
+vscode-oniguruma-wasm@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/vscode-oniguruma-wasm/-/vscode-oniguruma-wasm-1.1.0.tgz#9959396aa20ffe570f1b3a4d51d37ce94b73943d"
+  integrity sha512-VbJJ8lx0YFnPI7Zu+EKNYuw02NFTobKKqxZjfxnQz9AGKN3wl8D+bB748zC9DRoEX4vgWd5NYdMvdfA9zT2tCw==
 
 vscode-textmate@4.4.0:
   version "4.4.0"
