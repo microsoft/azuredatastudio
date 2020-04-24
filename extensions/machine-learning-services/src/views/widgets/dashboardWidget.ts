@@ -42,10 +42,11 @@ export class DashboardWidget {
 				CSSStyles: {
 					'background-image': `url(${vscode.Uri.file(this.asAbsolutePath('images/background.svg'))})`,
 					'background-repeat': 'no-repeat',
-					'background-position': 'top',
+					'background-position': 'bottom',
 					'width': `${maxWidth}px`,
-					'height': '130px',
-					'background-size': `${maxWidth}px ${headerMaxHeight}px`
+					'height': '230px',
+					'background-size': `${maxWidth}px ${headerMaxHeight}px`,
+					'margin-bottom': '-90px'
 				}
 			});
 			container.addItem(tasksContainer, {
@@ -78,7 +79,7 @@ export class DashboardWidget {
 		const header = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: maxWidth,
-			height: headerMaxHeight,
+			height: headerMaxHeight
 		}).component();
 		const titleComponent = view.modelBuilder.text().withProperties({
 			value: constants.dashboardTitle,
@@ -101,7 +102,7 @@ export class DashboardWidget {
 		header.addItems([titleComponent, descComponent], {
 			CSSStyles: {
 				'width': `${maxWidth}px`,
-				'padding': '10px'
+				'padding': '5px'
 			}
 		});
 
@@ -150,16 +151,22 @@ export class DashboardWidget {
 		}).component();
 		const video1Container = this.createVideoLink(view, {
 			iconPath: { light: 'images/video1.svg', dark: 'images/video1.svg' },
-			description: 'Visualize data using SandDance',
-			link: 'https://www.youtube.com/watch?v=e305wTAoLZs'
+			description: 'Artificial intelligence and machine learning with SQL Server 2019',
+			link: 'https://www.youtube.com/watch?v=sE99cSoFOHs'
 		});
 		videosContainer.addItem(video1Container);
 		const video2Container = this.createVideoLink(view, {
 			iconPath: { light: 'images/video2.svg', dark: 'images/video2.svg' },
-			description: 'How to make the best out of Microsoft Azure'
+			description: 'SQL Server Machine Learning Services',
+			link: 'https://www.youtube.com/watch?v=R4GCBoxADyQ'
 		});
 		videosContainer.addItem(video2Container);
-
+		const video3Container = this.createVideoLink(view, {
+			iconPath: { light: 'images/video2.svg', dark: 'images/video2.svg' },
+			description: 'Introduction to Azure Data Studio Notebooks',
+			link: 'https://www.youtube.com/watch?v=Nt4kIHQ0IOc'
+		});
+		videosContainer.addItem(video3Container);
 		linksContainer.addItems([titleComponent], {
 			CSSStyles: {
 				'padding': '0px',
@@ -175,7 +182,8 @@ export class DashboardWidget {
 				'padding-right': '5px',
 				'padding-top': '10px',
 				'height': '10px',
-				'margin': '0px'
+				'margin': '0px',
+				'flex-wrap': 'wrap'
 			}
 		});
 		return linksContainer;
@@ -239,30 +247,29 @@ export class DashboardWidget {
 				'margin': '0px'
 			}
 		}).component();
-		let mlsLink: string;
-		if (utils.isWindows()) {
-			mlsLink = constants.installMlsWindowsDocs;
-		} else {
-			mlsLink = constants.installMlsLinuxDocs;
-		}
-		const mlsDocs = this.createLink(view, {
-			title: constants.mlsInstallMlsDocTitle,
-			description: constants.mlsInstallMlsDocDesc,
-			link: mlsLink
+		const sqlMlDocs = this.createLink(view, {
+			title: constants.sqlMlDocTitle,
+			description: constants.sqlMlDocDesc,
+			link: constants.mlDocLink
 		});
-		let odbcLink: string;
-		if (utils.isWindows()) {
-			odbcLink = constants.odbcDriverWindowsDocuments;
-		} else {
-			odbcLink = constants.odbcDriverLinuxDocuments;
-		}
+		const sqlMlsDocs = this.createLink(view, {
+			title: constants.sqlMlsDocTitle,
+			description: constants.sqlMlsDocDesc,
+			link: constants.mlsDocLink
+		});
+		const sqlMlsAzureDocs = this.createLink(view, {
+			title: constants.sqlMlsAzureDocTitle,
+			description: constants.sqlMlsAzureDocDesc,
+			link: constants.mlsAzureDocLink
+		});
+
 		const rdbcDocs = this.createLink(view, {
 			title: constants.mlsInstallOdbcDocTitle,
 			description: constants.mlsInstallOdbcDocDesc,
-			link: odbcLink
+			link: utils.isWindows() ? constants.odbcDriverWindowsDocuments : constants.odbcDriverLinuxDocuments
 		});
 
-		linksContainer.addItems([titleComponent, mlsDocs, rdbcDocs], {
+		linksContainer.addItems([titleComponent, sqlMlDocs, sqlMlsDocs, sqlMlsAzureDocs, rdbcDocs], {
 			CSSStyles: {
 				'padding': '10px'
 			}
@@ -290,7 +297,7 @@ export class DashboardWidget {
 		}).component();
 		const linkContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
-			width: maxWidth,
+			width: maxWidth + 10,
 			justifyContent: 'flex-start'
 		}).component();
 		const linkComponent = view.modelBuilder.hyperlink().withProperties({
@@ -316,7 +323,7 @@ export class DashboardWidget {
 			CSSStyles: {
 				'padding': '0px',
 				'padding-right': '5px',
-				'height': '10px',
+				//'height': '10px',
 				'margin': '0px'
 			}
 		});
@@ -365,8 +372,8 @@ export class DashboardWidget {
 			title: constants.importModelTitle,
 			description: constants.importModelDesc,
 			iconPath: {
-				dark: this.asAbsolutePath('images/makePredictions.svg'),
-				light: this.asAbsolutePath('images/makePredictions.svg'),
+				dark: this.asAbsolutePath('images/manageModels.svg'),
+				light: this.asAbsolutePath('images/manageModels.svg'),
 			},
 			link: '',
 			command: constants.mlImportModelCommand

@@ -6,7 +6,6 @@
 import * as vscode from 'vscode';
 
 import * as nbExtensionApis from '../typings/notebookServices';
-import * as mssql from '../../../mssql';
 import { PackageManager } from '../packageManagement/packageManager';
 import * as constants from '../common/constants';
 import { ApiWrapper } from '../common/apiWrapper';
@@ -15,8 +14,6 @@ import { ProcessService } from '../common/processService';
 import { Config } from '../configurations/config';
 import { PackageManagementService } from '../packageManagement/packageManagementService';
 import { HttpClient } from '../common/httpClient';
-import { LanguageController } from '../views/externalLanguages/languageController';
-import { LanguageService } from '../externalLanguage/languageService';
 import { ModelManagementController } from '../views/models/modelManagementController';
 import { DeployedModelService } from '../modelManagement/deployedModelService';
 import { AzureModelRegistryService } from '../modelManagement/azureModelRegistryService';
@@ -73,18 +70,6 @@ export default class MainController implements vscode.Disposable {
 		}
 	}
 
-	/**
-	 * Returns an instance of Server Installation from notebook extension
-	 */
-	private async getLanguageExtensionService(): Promise<mssql.ILanguageExtensionService> {
-		let mssqlExtension = this._apiWrapper.getExtension(mssql.extension.name)?.exports as mssql.IExtension;
-		if (mssqlExtension) {
-			return (mssqlExtension.languageExtension);
-		} else {
-			throw new Error(constants.mssqlExtensionNotLoaded);
-		}
-	}
-
 	private async initialize(): Promise<void> {
 
 		this._outputChannel.show(true);
@@ -98,9 +83,6 @@ export default class MainController implements vscode.Disposable {
 
 		// External Languages
 		//
-		let mssqlService = await this.getLanguageExtensionService();
-		let languagesModel = new LanguageService(this._apiWrapper, mssqlService);
-		let languageController = new LanguageController(this._apiWrapper, this._rootPath, languagesModel);
 		let modelImporter = new ModelPythonClient(this._outputChannel, this._apiWrapper, this._processService, this._config, packageManager);
 
 		// Model Management
@@ -114,9 +96,6 @@ export default class MainController implements vscode.Disposable {
 		let dashboardWidget = new DashboardWidget(this._apiWrapper, this._rootPath);
 		dashboardWidget.register();
 
-		this._apiWrapper.registerCommand(constants.mlManageLanguagesCommand, (async () => {
-			await languageController.manageLanguages();
-		}));
 		this._apiWrapper.registerCommand(constants.mlManageModelsCommand, (async () => {
 			await modelManagementController.manageRegisteredModels();
 		}));
@@ -131,9 +110,6 @@ export default class MainController implements vscode.Disposable {
 		}));
 		this._apiWrapper.registerTaskHandler(constants.mlManagePackagesCommand, async () => {
 			await packageManager.managePackages();
-		});
-		this._apiWrapper.registerTaskHandler(constants.mlManageLanguagesCommand, async () => {
-			await languageController.manageLanguages();
 		});
 		this._apiWrapper.registerTaskHandler(constants.mlManageModelsCommand, async () => {
 			await modelManagementController.manageRegisteredModels();
