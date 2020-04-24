@@ -805,7 +805,7 @@ export interface ExtHostNotebookShape {
 	$handleNotebookClosed(notebookUri: UriComponents): void;
 
 	// Server Manager APIs
-	$doStartServer(managerHandle: number): Thenable<void>;
+	$doStartServer(managerHandle: number, kernelSpec: azdata.nb.IKernelSpec): Thenable<void>;
 	$doStopServer(managerHandle: number): Thenable<void>;
 
 	// Content Manager APIs

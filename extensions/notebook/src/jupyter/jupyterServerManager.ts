@@ -56,16 +56,15 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		return this.options && this.options.jupyterInstallation;
 	}
 
-	public async startServer(): Promise<void> {
+	public async startServer(kernelSpec: nb.IKernelSpec): Promise<void> {
 		try {
 			if (!this._jupyterServer) {
-				this._jupyterServer = await this.doStartServer();
+				this._jupyterServer = await this.doStartServer(kernelSpec);
 				this.options.extensionContext.subscriptions.push(this);
 				let partialSettings = LocalJupyterServerManager.getLocalConnectionSettings(this._jupyterServer.uri);
 				this._serverSettings = partialSettings;
 				this._onServerStarted.fire();
 			}
-
 		} catch (error) {
 			// this is caught and notified up the stack, no longer showing a message here
 			throw error;
@@ -107,9 +106,9 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		return this.options.documentPath;
 	}
 
-	private async doStartServer(): Promise<IServerInstance> { // We can't find or create servers until the installation is complete
+	private async doStartServer(kernelSpec: nb.IKernelSpec): Promise<IServerInstance> { // We can't find or create servers until the installation is complete
 		let installation = this.options.jupyterInstallation;
-		await installation.promptForPythonInstall();
+		await installation.promptForPythonInstall(kernelSpec.display_name);
 		await installation.promptForPackageUpgrade();
 		this._apiWrapper.setCommandContext(CommandContext.NotebookPythonInstalled, true);
 

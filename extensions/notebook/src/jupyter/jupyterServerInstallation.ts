@@ -426,10 +426,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	/**
 	 * Opens a dialog for configuring the installation path for the Notebook Python dependencies.
 	 */
-	public async promptForPythonInstall(): Promise<void> {
+	public async promptForPythonInstall(kernelDisplayName: string): Promise<void> {
 		if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
 			let pythonWizard = new ConfigurePythonWizard(this.apiWrapper, this);
-			return pythonWizard.start('Python 3', true);
+			return pythonWizard.start(kernelDisplayName, true);
 		}
 	}
 
