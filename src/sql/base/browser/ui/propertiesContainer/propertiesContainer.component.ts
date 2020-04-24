@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/propertiesContainer';
-import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef, OnDestroy } from '@angular/core';
+import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
 import * as DOM from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
 
@@ -33,8 +33,7 @@ export class PropertiesContainer extends Disposable implements OnInit, OnDestroy
 	private _propertyItems: PropertyItem[] = [];
 
 	constructor(
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
 	) {
 		super();
 	}
@@ -74,9 +73,5 @@ export class PropertiesContainer extends Disposable implements OnInit, OnDestroy
 
 	public get propertyItems(): PropertyItem[] {
 		return this._propertyItems;
-	}
-
-	public get height(): number {
-		return DOM.getTotalHeight(<HTMLElement>this._el.nativeElement);
 	}
 }

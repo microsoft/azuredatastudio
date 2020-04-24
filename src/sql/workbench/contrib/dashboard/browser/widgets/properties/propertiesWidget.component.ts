@@ -16,7 +16,6 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { PropertiesContainer, PropertyItem } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
-import LoadingSpinner from 'sql/base/browser/ui/loadingSpinner/loadingSpinner.component';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
@@ -54,11 +53,10 @@ const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.Da
 	selector: 'properties-widget',
 	template: `
 	<loading-spinner *ngIf="_loading" [loading]="_loading" [loadingMessage]="loadingMessage" [loadingCompletedMessage]="loadingCompletedMessage"></loading-spinner>
-	<properties-container></properties-container>`
+	<properties-container [style.display]="_loading ? 'none' : ''"></properties-container>`
 })
 export class PropertiesWidgetComponent extends DashboardWidget implements IDashboardWidget, OnInit {
 	@ViewChild(PropertiesContainer) private _propertiesContainer: PropertiesContainer;
-	@ViewChild(LoadingSpinner) private _loadingSpinner: LoadingSpinner;
 	public loadingMessage: string = nls.localize('loadingProperties', "Loading properties");
 	public loadingCompletedMessage: string = nls.localize('loadingPropertiesCompleted', "Loading properties completed");
 	private _connection: ConnectionManagementInfo;
@@ -244,9 +242,5 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			val = defaultVal;
 		}
 		return val;
-	}
-
-	public get height(): number {
-		return (this._propertiesContainer.height || this._loadingSpinner.height) + 25;
 	}
 }

@@ -32,8 +32,7 @@ import { PropertiesWidgetComponent } from 'sql/workbench/contrib/dashboard/brows
 		<div class="fullsize" style="display: flex; flex-direction: column">
 			<div scrollable [horizontalScroll]="${ScrollbarVisibility.Hidden}" [verticalScroll]="${ScrollbarVisibility.Auto}">
 				<div #propertiesContainer>
-					<dashboard-widget-wrapper #propertiesClass *ngIf="properties" [collapsable]="true" [bottomCollapse]="true" [toggleMore]="false" [_config]="properties"
-						class="properties" [style.height.px]="_propertiesClass?.collapsed ? '30' : getHeight()">
+					<dashboard-widget-wrapper #propertiesClass *ngIf="properties" [collapsable]="true" [bottomCollapse]="true" [toggleMore]="false" [_config]="properties" class="properties">
 					</dashboard-widget-wrapper>
 				</div>
 				<widget-content style="flex: 1" [scrollContent]="false" [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
@@ -86,15 +85,6 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
 			this._cd.detectChanges();
 		}));
-	}
-
-	public getHeight(): number {
-		if (this._propertiesClass && (<PropertiesWidgetComponent>this._propertiesClass.component).height) {
-			// Give a little extra room on the bottom or the properties are cut off by the collapse bar
-			this.height = (<PropertiesWidgetComponent>this._propertiesClass.component).height + 20;
-		}
-
-		return this.height;
 	}
 
 	public layout() {
