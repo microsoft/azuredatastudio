@@ -12,18 +12,24 @@ const localize = nls.loadMessageBundle();
 
 export class PickPackagesPage extends BasePage {
 	private kernelLabel: azdata.TextComponent;
-	private requiredPackagesTable: azdata.TableComponent;
+	private requiredPackagesTable: azdata.DeclarativeTableComponent;
 	private optionalDependencies: azdata.TextComponent;
 
 	public async start(): Promise<boolean> {
 		this.kernelLabel = this.view.modelBuilder.text().component();
-		this.requiredPackagesTable = this.view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
-			columns: [
-				localize('configurePython.pkgNameColumn', "Name"),
-				localize('configurePython.pkgVersionColumn', "Version")
-			],
-			data: [[]],
-			width: '400px'
+		this.requiredPackagesTable = this.view.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+			columns: [{
+				displayName: localize('configurePython.pkgNameColumn', "Name"),
+				valueType: azdata.DeclarativeDataType.string,
+				isReadOnly: true,
+				width: '200px'
+			}, {
+				displayName: localize('configurePython.pkgVersionColumn', "Version"),
+				valueType: azdata.DeclarativeDataType.string,
+				isReadOnly: true,
+				width: '200px'
+			}],
+			data: [[]]
 		}).component();
 		this.optionalDependencies = this.view.modelBuilder.text().component();
 		let formModel = this.view.modelBuilder.formContainer()
@@ -53,9 +59,7 @@ export class PickPackagesPage extends BasePage {
 			return false;
 		}
 		let packageData = requiredPackages.map(pkg => [pkg.name, pkg.version]);
-		await this.requiredPackagesTable.updateProperties({
-			data: packageData
-		});
+		this.requiredPackagesTable.data = packageData;
 
 		await this.optionalDependencies.updateProperties({
 			value: 'Test'
