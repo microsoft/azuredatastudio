@@ -254,7 +254,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 			}
 			nameInput.value = column;
 
-			this._parameters.push({ columnName: column.name, paramName: name });
+			this._parameters.push({ columnName: column.name, paramName: name, paramType: modelParameter.type });
 
 			nameInput.onValueChanged(() => {
 				const selectedColumn = nameInput.value;

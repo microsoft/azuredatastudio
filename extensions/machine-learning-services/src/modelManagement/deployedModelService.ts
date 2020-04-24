@@ -61,12 +61,19 @@ export class DeployedModelService {
 	 */
 	public async downloadModel(model: ImportedModel): Promise<string> {
 		let connection = await this.getCurrentConnection();
+		let fileContent: string = '';
 		if (connection) {
 			const query = queries.getModelContentQuery(model);
 			let result = await this._queryRunner.safeRunQuery(connection, query);
 			if (result && result.rows && result.rows.length > 0) {
-				const content = result.rows[0][0].displayValue;
-				return await utils.writeFileFromHex(content);
+				for (let index = 0; index < result.rows[0].length; index++) {
+					const column = result.rows[0][index];
+					let content = column.displayValue;
+					content = content.startsWith('0x') || content.startsWith('0X') ? content.substr(2) : content;
+					fileContent = fileContent + content;
+				}
+
+				return await utils.writeFileFromHex(fileContent);
 			} else {
 				throw Error(constants.invalidModelToSelectError);
 			}
@@ -209,6 +216,7 @@ export class DeployedModelService {
 			deploymentTime: row[7].displayValue,
 			deployedBy: row[8].displayValue,
 			runId: row[9].displayValue,
+			contentLength: +row[10].displayValue,
 			table: table
 		};
 	}

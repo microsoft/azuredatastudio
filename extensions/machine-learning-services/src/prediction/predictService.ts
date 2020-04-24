@@ -157,7 +157,7 @@ AS (
 	FROM [${utils.doubleEscapeSingleBrackets(sourceTable.databaseName)}].[${sourceTable.schema}].[${utils.doubleEscapeSingleBrackets(sourceTable.tableName)}] as pi
 )
 SELECT
-${this.getPredictColumnNames(columns, 'predict_input')}, ${this.getInputColumnNames(outputColumns, 'p')}
+${this.getPredictColumnNames(columns, 'predict_input')}, ${this.getPredictInputColumnNames(outputColumns, 'p')}
 FROM PREDICT(MODEL = @model, DATA = predict_input)
 WITH (
 	${this.getOutputParameters(outputColumns)}
@@ -187,6 +187,13 @@ WITH (
 	}
 
 	private getInputColumnNames(columns: PredictColumn[], tableName: string) {
+		return columns.map(c => {
+			let columnName = c.dataType !== c.paramType ? `cast(${tableName}.${c.columnName} as ${c.paramType})` : `${tableName}.${c.columnName}`;
+			return `${columnName} AS ${c.paramName}`;
+		}).join(',\n');
+	}
+
+	private getPredictInputColumnNames(columns: PredictColumn[], tableName: string) {
 		return columns.map(c => {
 			return this.getColumnName(tableName, c.paramName || '', c.columnName);
 		}).join(',\n');

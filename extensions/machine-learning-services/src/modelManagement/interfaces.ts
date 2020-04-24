@@ -52,6 +52,7 @@ export type WorkspacesModelsResponse = ListWorkspaceModelsResult & {
 export interface ImportedModel extends ImportedModelDetails {
 	id: number;
 	content?: string;
+	contentLength?: number;
 	table: DatabaseTable;
 }
 
