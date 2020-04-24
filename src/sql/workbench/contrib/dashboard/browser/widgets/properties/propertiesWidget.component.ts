@@ -16,7 +16,6 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { PropertiesContainer, PropertyItem } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
-import { convertSizeToNumber } from 'sql/base/browser/dom';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
@@ -53,8 +52,8 @@ const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.Da
 @Component({
 	selector: 'properties-widget',
 	template: `
-	<loading-spinner [loading]="_loading" [loadingMessage]="loadingMessage" [loadingCompletedMessage]="loadingCompletedMessage"></loading-spinner>
-	<properties-container></properties-container>`
+	<loading-spinner *ngIf="_loading" [loading]="_loading" [loadingMessage]="loadingMessage" [loadingCompletedMessage]="loadingCompletedMessage"></loading-spinner>
+	<properties-container [style.display]="_loading ? 'none' : ''"></properties-container>`
 })
 export class PropertiesWidgetComponent extends DashboardWidget implements IDashboardWidget, OnInit {
 	@ViewChild(PropertiesContainer) private _propertiesContainer: PropertiesContainer;
@@ -207,10 +206,6 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 				value: propertyObject
 			};
 		});
-
-		if (this._inited) {
-			this._changeRef.detectChanges();
-		}
 	}
 
 	private getConditionResult(item: FlavorProperties, conditionItem: ConditionProperties): boolean {
@@ -247,9 +242,5 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			val = defaultVal;
 		}
 		return val;
-	}
-
-	public get height(): number {
-		return convertSizeToNumber(this._propertiesContainer.height);
 	}
 }
