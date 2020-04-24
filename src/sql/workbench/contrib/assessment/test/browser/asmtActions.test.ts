@@ -32,7 +32,7 @@ class AssessmentTestViewComponent implements IAssessmentComponent {
 	appendResults(result: azdata.AssessmentResult, method: AssessmentType) { }
 	stopProgress(mode: AssessmentType) { return undefined; }
 	resultItems: azdata.AssessmentResultItem[];
-	isActive: boolean;
+	isActive: boolean = true;
 }
 
 class OpenerServiceStub implements IOpenerService {
