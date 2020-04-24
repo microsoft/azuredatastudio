@@ -429,7 +429,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	public async promptForPythonInstall(): Promise<void> {
 		if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
 			let pythonWizard = new ConfigurePythonWizard(this.apiWrapper, this);
-			return pythonWizard.start(undefined, true);
+			return pythonWizard.start('Python 3', true);
 		}
 	}
 
@@ -810,6 +810,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			case 'SQL':
 				break;
 			case 'PySpark':
+			case 'Spark | Scala':
+			case 'Spark | R':
 				packages.push({
 					name: 'sparkmagic',
 					version: '0.12.9'

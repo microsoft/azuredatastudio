@@ -251,7 +251,7 @@ export class JupyterController implements vscode.Disposable {
 
 	public doConfigurePython(jupyterInstaller: JupyterServerInstallation): void {
 		let pythonWizard = new ConfigurePythonWizard(this.apiWrapper, jupyterInstaller);
-		pythonWizard.start(undefined).catch((err: any) => {
+		pythonWizard.start('Python 3').catch((err: any) => {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
 		});
 	}
