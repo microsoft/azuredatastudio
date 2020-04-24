@@ -44,7 +44,7 @@ export class ConfigurePythonWizard {
 		this.usingCustomPath = false;
 	}
 
-	public async start(kernelName: string, rejectOnCancel: boolean = false, ...args: any[]) {
+	public async start(kernelName: string, rejectOnCancel: boolean = false, ...args: any[]): Promise<void> {
 		this.model = <ConfigurePythonModel>{
 			kernelName: kernelName,
 			usingCustomPath: this.usingCustomPath,
@@ -119,6 +119,8 @@ export class ConfigurePythonWizard {
 		this.wizard.pages = [page0, page1];
 
 		this.wizard.open();
+
+		return this.setupComplete.promise;
 	}
 
 	public showErrorMessage(errorMsg: string) {
