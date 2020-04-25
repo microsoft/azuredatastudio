@@ -15,6 +15,7 @@
   "activationEvents": [
     "onCommand:sqlDatabaseProjects.new",
     "onCommand:sqlDatabaseProjects.open",
+    "onCommand:sqlDatabaseProjects.importDatabase",
     "workspaceContains:**/*.sqlproj"
   ],
   "main": "./out/extension",
@@ -71,6 +72,11 @@
         "command": "sqlDatabaseProjects.newFolder",
         "title": "%sqlDatabaseProjects.newFolder%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.importDatabase",
+        "title": "%sqlDatabaseProjects.importDatabase%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -108,6 +114,9 @@
         {
           "command": "sqlDatabaseProjects.newFolder",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.importDatabase"
         }
       ],
       "view/item/context": [
@@ -138,6 +147,10 @@
         {
           "command": "sqlDatabaseProjects.newFolder",
           "when": "view == sqlDatabaseProjectsView"
+        },
+        {
+          "command": "sqlDatabaseProjects.importDatabase",
+          "when": "view == sqlDatabaseProjectsView"
         }
       ]
     },
@@ -149,7 +162,14 @@
           "when": ""
         }
       ]
-    }
+    },
+    "objectExplorer/item/context": [
+      {
+        "command": "sqlDatabaseProjects.importDatabase",
+        "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
+        "group": "export"
+      }
+    ]
   },
   "dependencies": {
     "vscode-languageclient": "^5.3.0-next.1",

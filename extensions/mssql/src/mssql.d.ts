@@ -354,6 +354,7 @@ export interface ExtractParams {
 	applicationName: string;
 	applicationVersion: string;
 	ownerUri: string;
+	extractTarget?: azdata.ExtractTarget;
 	taskExecutionMode: azdata.TaskExecutionMode;
 }
 

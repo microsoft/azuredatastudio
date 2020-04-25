@@ -12,5 +12,7 @@
 	"sqlDatabaseProjects.newView": "Add View",
 	"sqlDatabaseProjects.newStoredProcedure": "Add Stored Procedure",
 	"sqlDatabaseProjects.newItem": "Add Item...",
-	"sqlDatabaseProjects.newFolder": "Add Folder"
+	"sqlDatabaseProjects.newFolder": "Add Folder",
+
+	"sqlDatabaseProjects.importDatabase": "Import New Database Project"
 }

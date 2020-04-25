@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import * as path from 'path';
 import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
@@ -106,6 +107,60 @@ export class ProjectsController {
 		return newProjFilePath;
 	}
 
+	/**
+	 * Imports a new SQL database project from the existing database,
+	 * prompting the user for a name, file path location and extract target
+	 */
+	public async importNewDatabaseProject(context: any): Promise<void> {
+		let profile = context ? <azdata.IConnectionProfile>context.connectionProfile : undefined;
+		if (profile) {
+			//this.model.serverId = profile.id;
+			//this.model.database = profile.databaseName;
+		}
+		try {
+			let newProjName = await vscode.window.showInputBox({
+				prompt: constants.newDatabaseProjectName,
+				value: `DatabaseProject${this.projects.length + 1}`
+				// TODO: Smarter way to suggest a name.  Easy if we prompt for location first, but that feels odd...
+			});
+
+			if (!newProjName) {
+				// TODO: is this case considered an intentional cancellation (shouldn't warn) or an error case (should warn)?
+				vscode.window.showErrorMessage(constants.projectNameRequired);
+				return;
+			}
+
+			let selectionResult = await vscode.window.showOpenDialog({
+				canSelectFiles: false,
+				canSelectFolders: true,
+				canSelectMany: false,
+				defaultUri: vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri : undefined
+			});
+
+			if (!selectionResult) {
+				vscode.window.showErrorMessage(constants.projectLocationRequired);
+				return;
+			}
+
+			// TODO: what if the selected folder is outside the workspace?
+
+			const newProjFolderUri = (selectionResult as vscode.Uri[])[0];
+			console.log(newProjFolderUri.fsPath);
+			const newProjFilePath = await this.createNewProject(newProjName as string, newProjFolderUri as vscode.Uri);
+			await this.openProject(vscode.Uri.file(newProjFilePath));
+		}
+		catch (err) {
+			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
+	/*private async getService(): Promise<mssql.ISchemaCompareService> {
+		if (isNullOrUndefined(this.schemaCompareService)) {
+			this.schemaCompareService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
+		}
+		return this.schemaCompareService;
+	}
+*/
 	public closeProject(treeNode: BaseProjectTreeItem) {
 		const project = this.getProjectContextFromTreeNode(treeNode);
 		this.projects = this.projects.filter((e) => { return e !== project; });
