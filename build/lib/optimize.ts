@@ -81,12 +81,7 @@ function loader(src: string, bundledFileHeader: string, bundleLoader: boolean): 
 					this.emit('data', data);
 				}
 			}))
-			.pipe(util.loadSourcemaps())
 			.pipe(concat('vs/loader.js'))
-			.pipe(es.mapSync<FileSourceMap, FileSourceMap>(function (f) {
-				f.sourceMap.sourceRoot = util.toFileUri(path.join(REPO_ROOT_PATH, 'src'));
-				return f;
-			}))
 	);
 }
 
