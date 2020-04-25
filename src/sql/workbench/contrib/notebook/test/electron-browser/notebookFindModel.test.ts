@@ -110,18 +110,18 @@ suite('Notebook Find Model', function (): void {
 		await initNotebookModel(expectedNotebookContent);
 	});
 
-	test('Should set notebook model on intitalize', async function (): Promise<void> {
+	test('Should set notebook model on initialize', async function (): Promise<void> {
 		//initialize find
 		let notebookFindModel = new NotebookFindModel(model);
 		assert.equal(notebookFindModel.notebookModel, model, 'Failed to set notebook model');
 	});
 
-	test('Should have no decorations on intitalize', async function (): Promise<void> {
+	test('Should have no decorations on initialize', async function (): Promise<void> {
 		//initialize find
 		let notebookFindModel = new NotebookFindModel(model);
-		assert.equal(notebookFindModel.findDecorations, undefined, 'findDecorations should be undefined on intialize');
-		assert.equal(notebookFindModel.getPosition(), undefined, 'currentMatch should be undefined on intialize');
-		assert.equal(notebookFindModel.getLastPosition(), undefined, 'previousMatch should be undefined on intialize');
+		assert.equal(notebookFindModel.findDecorations, undefined, 'findDecorations should be undefined on initialize');
+		assert.equal(notebookFindModel.getPosition(), undefined, 'currentMatch should be undefined on initialize');
+		assert.equal(notebookFindModel.getLastPosition(), undefined, 'previousMatch should be undefined on initialize');
 	});
 
 	test('Should find results in the notebook', async function (): Promise<void> {
@@ -133,8 +133,8 @@ suite('Notebook Find Model', function (): void {
 		await notebookFindModel.find('markdown', false, false, max_find_count);
 
 		assert(notebookFindModel.findMatches, 'Find in notebook failed.');
-		assert.equal(notebookFindModel.findMatches.length, 2, 'Find couldnt find all occurrences');
-		assert.equal(notebookFindModel.findArray.length, 2, 'Find couldnt find all occurrences');
+		assert.equal(notebookFindModel.findMatches.length, 2, 'Find could not find all occurrences');
+		assert.equal(notebookFindModel.findArray.length, 2, 'Find could not find all occurrences');
 	});
 
 	test('Should not find results in the notebook', async function (): Promise<void> {
@@ -395,13 +395,13 @@ suite('Notebook Find Model', function (): void {
 		let notebookFindModel = new NotebookFindModel(model);
 		await notebookFindModel.find('insert', false, false, max_find_count);
 
-		assert.equal(notebookFindModel.getFindIndex(), 1, 'Failed to get the correct index');
+		assert.equal(notebookFindModel.getFindIndex(), 1, 'Failed to get the correct find index');
 
 		notebookFindModel.findNext();
-		assert.equal(notebookFindModel.getFindIndex(), 2, 'Failed to get the correct index');
+		assert.equal(notebookFindModel.getFindIndex(), 2, 'Failed to get the correct find index');
 
 		notebookFindModel.findPrevious();
-		assert.equal(notebookFindModel.getFindIndex(), 1, 'Failed to get the correct index');
+		assert.equal(notebookFindModel.getFindIndex(), 1, 'Failed to get the correct find index');
 	});
 
 	test('Should clear results on clear', async function (): Promise<void> {
