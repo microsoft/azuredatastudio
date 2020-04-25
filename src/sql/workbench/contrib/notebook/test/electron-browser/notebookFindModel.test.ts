@@ -135,6 +135,7 @@ suite('Notebook Find Model', function (): void {
 		assert(notebookFindModel.findMatches, 'Find in notebook failed.');
 		assert.equal(notebookFindModel.findMatches.length, 2, 'Find could not find all occurrences');
 		assert.equal(notebookFindModel.findArray.length, 2, 'Find could not find all occurrences');
+		assert.equal(notebookFindModel.getFindCount(), 2, 'Find count do not match find results');
 	});
 
 	test('Should not find results in the notebook', async function (): Promise<void> {
