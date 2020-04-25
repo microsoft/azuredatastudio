@@ -71,10 +71,17 @@ export class Project {
 	 * @param relativeFilePath Relative path of the file
 	 * @param contents Contents to be written to the new file
 	 */
-	public async addScriptItem(relativeFilePath: string, contents: string): Promise<ProjectEntry> {
+	public async addScriptItem(relativeFilePath: string, contents?: string): Promise<ProjectEntry> {
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
-		await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
-		await fs.writeFile(absoluteFilePath, contents);
+
+		if (contents) {
+			await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
+			await fs.writeFile(absoluteFilePath, contents);
+
+		}
+		else {
+			// check that file actually exists
+		}
 
 		const fileEntry = this.createProjectEntry(relativeFilePath, EntryType.File);
 		this.files.push(fileEntry);

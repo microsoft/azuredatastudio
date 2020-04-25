@@ -19,6 +19,7 @@
 	"sqlDatabaseProjects.newItem": "Add Item...",
 	"sqlDatabaseProjects.newFolder": "Add Folder",
 
+	"sqlDatabaseProjects.importDatabase": "Import New Database Project",
 
 	"sqlDatabaseProjects.Settings": "Database Projects",
 	"sqlDatabaseProjects.netCoreInstallLocation": "Full Path to .Net Core SDK on the machine."

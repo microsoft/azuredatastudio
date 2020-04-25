@@ -1833,6 +1833,15 @@ declare module 'azdata' {
 		executeAndScript = 2,
 	}
 
+	export enum ExtractTarget {
+		DacPac = 0,
+		File = 1,
+		Flat = 2,
+		ObjectType = 3,
+		Schema = 4,
+		SchemaObjectType = 5
+	}
+
 	export interface ListTasksParams {
 		listActiveTasksOnly: boolean;
 	}

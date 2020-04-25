@@ -15,6 +15,7 @@
   "activationEvents": [
     "onCommand:sqlDatabaseProjects.new",
     "onCommand:sqlDatabaseProjects.open",
+    "onCommand:sqlDatabaseProjects.importDatabase",
     "workspaceContains:**/*.sqlproj"
   ],
   "main": "./out/extension",
@@ -236,7 +237,14 @@
           "when": ""
         }
       ]
-    }
+    },
+    "objectExplorer/item/context": [
+      {
+        "command": "sqlDatabaseProjects.importDatabase",
+        "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
+        "group": "export"
+      }
+    ]
   },
   "dependencies": {
     "vscode-languageclient": "^5.3.0-next.1",

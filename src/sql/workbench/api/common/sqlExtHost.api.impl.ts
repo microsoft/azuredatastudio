@@ -525,6 +525,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				MetadataType: sqlExtHostTypes.MetadataType,
 				TaskStatus: sqlExtHostTypes.TaskStatus,
 				TaskExecutionMode: sqlExtHostTypes.TaskExecutionMode,
+				ExtractTarget: sqlExtHostTypes.ExtractTarget,
 				ScriptOperation: sqlExtHostTypes.ScriptOperation,
 				WeekDays: sqlExtHostTypes.WeekDays,
 				NotifyMethods: sqlExtHostTypes.NotifyMethods,

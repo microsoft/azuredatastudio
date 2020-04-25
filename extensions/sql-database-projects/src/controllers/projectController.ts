@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as path from 'path';
 import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
@@ -10,7 +11,7 @@ import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
 
-import { Uri, QuickPickItem } from 'vscode';
+import { Uri, QuickPickItem, WorkspaceFolder } from 'vscode';
 import { ApiWrapper } from '../common/apiWrapper';
 import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
@@ -107,6 +108,60 @@ export class ProjectsController {
 		return newProjFilePath;
 	}
 
+	/**
+	 * Imports a new SQL database project from the existing database,
+	 * prompting the user for a name, file path location and extract target
+	 */
+	public async importNewDatabaseProject(context: any): Promise<void> {
+		let profile = context ? <azdata.IConnectionProfile>context.connectionProfile : undefined;
+		if (profile) {
+			//this.model.serverId = profile.id;
+			//this.model.database = profile.databaseName;
+		}
+		try {
+
+			let newProjName = await this.apiWrapper.showInputBox({
+				prompt: constants.newDatabaseProjectName,
+				value: `DatabaseProject${this.projects.length + 1}`
+			});
+
+			if (!newProjName) {
+				// TODO: is this case considered an intentional cancellation (shouldn't warn) or an error case (should warn)?
+				this.apiWrapper.showErrorMessage(constants.projectNameRequired);
+				return;
+			}
+
+			let selectionResult = await this.apiWrapper.showOpenDialog({
+				canSelectFiles: false,
+				canSelectFolders: true,
+				canSelectMany: false,
+				defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined
+			});
+
+			if (!selectionResult) {
+				this.apiWrapper.showErrorMessage(constants.projectLocationRequired);
+				return;
+			}
+
+			// TODO: what if the selected folder is outside the workspace?
+
+			const newProjFolderUri = (selectionResult as Uri[])[0];
+			console.log(newProjFolderUri.fsPath);
+			const newProjFilePath = await this.createNewProject(newProjName as string, newProjFolderUri as Uri);
+			await this.openProject(Uri.file(newProjFilePath));
+		}
+		catch (err) {
+			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
+	/*private async getService(): Promise<mssql.ISchemaCompareService> {
+		if (isNullOrUndefined(this.schemaCompareService)) {
+			this.schemaCompareService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
+		}
+		return this.schemaCompareService;
+	}
+*/
 	public closeProject(treeNode: BaseProjectTreeItem) {
 		const project = this.getProjectContextFromTreeNode(treeNode);
 		this.projects = this.projects.filter((e) => { return e !== project; });
