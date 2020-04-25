@@ -3,7 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Uri, SourceControlInputBox, Event, CancellationToken } from 'vscode';
+import { Uri, Event, Disposable, ProviderResult } from 'vscode';
+export { ProviderResult } from 'vscode';
 
 export interface Git {
 	readonly path: string;
@@ -189,6 +190,19 @@ export interface Repository {
 	commit(message: string, opts?: CommitOptions): Promise<void>;
 }
 
+export interface RemoteSource {
+	readonly name: string;
+	readonly description?: string;
+	readonly url: string | string[];
+}
+
+export interface RemoteSourceProvider {
+	readonly name: string;
+	readonly icon?: string; // codicon name
+	readonly supportsQuery?: boolean;
+	getRemoteSources(query?: string): ProviderResult<RemoteSource[]>;
+}
+
 export type APIState = 'uninitialized' | 'initialized';
 
 export interface API {
@@ -201,6 +215,7 @@ export interface API {
 
 	toGitUri(uri: Uri, ref: string): Uri;
 	getRepository(uri: Uri): Repository | null;
+	registerRemoteSourceProvider(provider: RemoteSourceProvider): Disposable;
 }
 
 export interface GitExtension {

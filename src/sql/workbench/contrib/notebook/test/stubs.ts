@@ -16,6 +16,7 @@ import { NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/find/n
 import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { URI } from 'vs/base/common/uri';
+import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo) {
@@ -633,6 +634,66 @@ export class NodeStub implements Node {
 		throw new Error('Method not implemented.');
 	}
 	removeEventListener(type: string, callback: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void {
+		throw new Error('Method not implemented.');
+	}
+}
+
+export class NotebookEditorStub implements INotebookEditor {
+	notebookParams: INotebookParams;
+	id: string;
+	cells?: ICellModel[];
+	cellEditors: CellEditorProviderStub[];
+	modelReady: Promise<INotebookModel>;
+	model: INotebookModel;
+	isDirty(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	isActive(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	isVisible(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	executeEdits(edits: ISingleNotebookEditOperation[]): boolean {
+		throw new Error('Method not implemented.');
+	}
+	runCell(cell: ICellModel): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+	runAllCells(startCell?: ICellModel, endCell?: ICellModel): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+	clearOutput(cell: ICellModel): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+	clearAllOutputs(): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+	getSections(): INotebookSection[] {
+		throw new Error('Method not implemented.');
+	}
+	navigateToSection(sectionId: string): void {
+		throw new Error('Method not implemented.');
+	}
+	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
+		throw new Error('Method not implemented.');
+	}
+	addCell(cellType: CellType, index?: number, event?: UIEvent) {
+		throw new Error('Method not implemented.');
+	}
+}
+
+export class CellEditorProviderStub implements ICellEditorProvider {
+	hasEditor(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	cellGuid(): string {
+		throw new Error('Method not implemented.');
+	}
+	getEditor(): QueryTextEditor {
+		throw new Error('Method not implemented.');
+	}
+	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
 		throw new Error('Method not implemented.');
 	}
 }

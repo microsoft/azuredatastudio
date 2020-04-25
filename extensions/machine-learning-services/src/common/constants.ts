@@ -20,6 +20,7 @@ export const extensionOutputChannel = 'Machine Learning';
 export const notebookExtensionName = 'Microsoft.notebook';
 export const azureSubscriptionsCommand = 'azure.accounts.getSubscriptions';
 export const azureResourceGroupsCommand = 'azure.accounts.getResourceGroups';
+export const signInToAzureCommand = 'azure.resource.signin';
 
 // Tasks, commands
 //
@@ -56,6 +57,10 @@ export const externalScriptsIsRequiredError = localize('mls.externalScriptsIsReq
 export function confirmInstallPythonPackages(packages: string): string {
 	return localize('mls.installDependencies.confirmInstallPythonPackages'
 		, "The following Python packages are required to install: {0}. Are you sure you want to install?", packages);
+}
+export function confirmDeleteModel(modelName: string): string {
+	return localize('models.confirmDeleteModel'
+		, "Are you sure you want to delete model '{0}?", modelName);
 }
 export const installDependenciesPackages = localize('mls.installDependencies.packages', "Installing required packages ...");
 export const installDependenciesPackagesAlreadyInstalled = localize('mls.installDependencies.packagesAlreadyInstalled', "Required packages are already installed.");
@@ -114,14 +119,20 @@ export const extLangSelectedPath = localize('extLang.selectedPath', "Selected Pa
 export const extLangInstallFailedError = localize('extLang.installFailedError', "Failed to install language");
 export const extLangUpdateFailedError = localize('extLang.updateFailedError', "Failed to update language");
 
-export const modelArtifactName = localize('models.artifactName', "Artifact Name");
+export const modelUpdateFailedError = localize('models.modelUpdateFailedError', "Failed to update the model");
+export const databaseName = localize('databaseName', "Database name");
+export const tableName = localize('tableName', "Table name");
 export const modelName = localize('models.name', "Name");
 export const modelFileName = localize('models.fileName', "File");
 export const modelDescription = localize('models.description', "Description");
-export const modelCreated = localize('models.created', "Date Created");
+export const modelCreated = localize('models.created', "Date created");
+export const modelDeployed = localize('models.deployed', "Date deployed");
+export const modelFramework = localize('models.framework', "Framework");
+export const modelFrameworkVersion = localize('models.frameworkVersion', "Framework version");
 export const modelVersion = localize('models.version', "Version");
 export const browseModels = localize('models.browseButton', "...");
 export const azureAccount = localize('models.azureAccount', "Azure account");
+export const azureSignIn = localize('models.azureSignIn', "Sign in to Azure");
 export const columnDatabase = localize('predict.columnDatabase', "Target database");
 export const columnTable = localize('predict.columnTable', "Target table");
 export const inputColumns = localize('predict.inputColumns', "Model input mapping");
@@ -140,32 +151,41 @@ export const azureModelsTitle = localize('models.azureModelsTitle', "Azure model
 export const localModelsTitle = localize('models.localModelsTitle', "Local models");
 export const modelSourcesTitle = localize('models.modelSourcesTitle', "Source location");
 export const modelSourcePageTitle = localize('models.modelSourcePageTitle', "Where is your model located?");
+export const modelImportTargetPageTitle = localize('models.modelImportTargetPageTitle', "Where do you want import models to?");
 export const columnSelectionPageTitle = localize('models.columnSelectionPageTitle', "Map predictions target data to model input");
 export const modelDetailsPageTitle = localize('models.modelDetailsPageTitle', "Enter model details");
 export const modelLocalSourceTitle = localize('models.modelLocalSourceTitle', "Source file");
 export const currentModelsTitle = localize('models.currentModelsTitle', "Models");
 export const azureRegisterModel = localize('models.azureRegisterModel', "Deploy");
 export const predictModel = localize('models.predictModel', "Predict");
-export const registerModelTitle = localize('models.RegisterWizard', "Deployed models");
+export const registerModelTitle = localize('models.RegisterWizard', "Import models");
 export const importModelTitle = localize('models.importModelTitle', "Import models");
+export const editModelTitle = localize('models.editModelTitle', "Edit model");
 export const importModelDesc = localize('models.importModelDesc', "Build, import and expose a machine learning model");
 export const makePredictionTitle = localize('models.makePredictionTitle', "Make predictions");
 export const makePredictionDesc = localize('models.makePredictionDesc', "Generates a predicted value or scores using a managed model");
 export const createNotebookTitle = localize('models.createNotebookTitle', "Create notebook");
 export const createNotebookDesc = localize('models.createNotebookDesc', "Run experiments and create models");
 export const modelRegisteredSuccessfully = localize('models.modelRegisteredSuccessfully', "Model registered successfully");
+export const modelUpdatedSuccessfully = localize('models.modelUpdatedSuccessfully', "Model updated successfully");
 export const modelFailedToRegister = localize('models.modelFailedToRegistered', "Model failed to register");
 export const localModelSource = localize('models.localModelSource', "File upload");
+export const localModelPageTitle = localize('models.localModelPageTitle', "Upload model file");
 export const azureModelSource = localize('models.azureModelSource', "Azure Machine Learning");
+export const azureModelPageTitle = localize('models.azureModelPageTitle', "Import from Azure Machine Learning");
+export const importedModelsPageTitle = localize('models.importedModelsPageTitle', "Select imported model");
 export const registeredModelsSource = localize('models.registeredModelsSource', "Imported models");
 export const downloadModelMsgTaskName = localize('models.downloadModelMsgTaskName', "Downloading Model from Azure");
 export const invalidAzureResourceError = localize('models.invalidAzureResourceError', "Invalid Azure resource");
 export const invalidModelToRegisterError = localize('models.invalidModelToRegisterError', "Invalid model to register");
 export const invalidModelToPredictError = localize('models.invalidModelToPredictError', "Invalid model to predict");
 export const invalidModelToSelectError = localize('models.invalidModelToSelectError', "Please select a valid model");
+export const invalidModelImportTargetError = localize('models.invalidModelImportTargetError', "Please select a valid table");
 export const modelNameRequiredError = localize('models.modelNameRequiredError', "Model name is required.");
 export const updateModelFailedError = localize('models.updateModelFailedError', "Failed to update the model");
 export function importModelFailedError(modelName: string | undefined, filePath: string | undefined): string { return localize('models.importModelFailedError', "Failed to register the model: {0} ,file: {1}", modelName || '', filePath || ''); }
+export function invalidImportTableError(databaseName: string | undefined, tableName: string | undefined): string { return localize('models.invalidImportTableError', "Invalid table for importing models. database name: {0} ,table name: {1}", databaseName || '', tableName || ''); }
+export function invalidImportTableSchemaError(databaseName: string | undefined, tableName: string | undefined): string { return localize('models.invalidImportTableSchemaError', "Table schema is not supported for model import. database name: {0} ,table name: {1}", databaseName || '', tableName || ''); }
 
 export const loadModelParameterFailedError = localize('models.loadModelParameterFailedError', "Failed to load model parameters'");
 export const unsupportedModelParameterType = localize('models.unsupportedModelParameterType', "unsupported");

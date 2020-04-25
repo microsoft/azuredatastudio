@@ -138,7 +138,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	@debounce(1500)
 	async fireBookRefresh(book: BookModel): Promise<void> {
 		await book.initializeContents().then(() => {
-			this._onDidChangeTreeData.fire();
+			this._onDidChangeTreeData.fire(undefined);
 		});
 	}
 
@@ -154,7 +154,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				if (this.currentBook === deletedBook) {
 					this.currentBook = this.books.length > 0 ? this.books[this.books.length - 1] : undefined;
 				}
-				this._onDidChangeTreeData.fire();
+				this._onDidChangeTreeData.fire(undefined);
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.closeBookError(book.root, e instanceof Error ? e.message : e));
@@ -313,7 +313,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					if (untitledBookIndex > -1) {
 						this.books.splice(untitledBookIndex, 1);
 						this.currentBook = undefined;
-						this._onDidChangeTreeData.fire();
+						this._onDidChangeTreeData.fire(undefined);
 						vscode.commands.executeCommand('bookTreeView.openBook', destinationUri.fsPath, false, undefined);
 					}
 				}
@@ -322,11 +322,20 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	public async searchJupyterBooks(treeItem?: BookTreeItem): Promise<void> {
-		if (this.currentBook && this.currentBook.bookPath) {
-			let folderToSearch = this.currentBook.bookPath;
-			if (treeItem && treeItem.uri) {
-				folderToSearch = path.join(folderToSearch, Content, path.dirname(treeItem.uri));
+		let folderToSearch: string;
+		if (treeItem && treeItem.book.type !== BookTreeItemType.Notebook) {
+			if (treeItem.uri) {
+				folderToSearch = path.join(treeItem.root, Content, path.dirname(treeItem.uri));
+			} else {
+				folderToSearch = path.join(treeItem.root, Content);
 			}
+		} else if (this.currentBook && !this.currentBook.isNotebook) {
+			folderToSearch = path.join(this.currentBook.bookPath, Content);
+		} else {
+			vscode.window.showErrorMessage(loc.noBooksSelectedError);
+		}
+
+		if (folderToSearch) {
 			let filesToIncludeFiltered = path.join(folderToSearch, '**', '*.md') + ',' + path.join(folderToSearch, '**', '*.ipynb');
 			vscode.commands.executeCommand('workbench.action.findInFiles', { filesToInclude: filesToIncludeFiltered, query: '' });
 		}

@@ -175,7 +175,8 @@ export enum ModelComponentTypes {
 	Image,
 	RadioCardGroup,
 	TabbedPanel,
-	Separator
+	Separator,
+	PropertiesContainer
 }
 
 export enum ColumnSizingMode {

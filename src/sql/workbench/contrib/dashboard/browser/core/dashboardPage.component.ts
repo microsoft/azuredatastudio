@@ -53,7 +53,6 @@ import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 
-
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 const homeTabGroupId = 'home';
 
@@ -87,6 +86,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 	static tabName = new RawContextKey<string>('tabName', undefined);
 	private _tabName: IContextKey<string>;
+	public containerOverflowStyle: string;
 
 	// a set of config modifiers
 	private readonly _configModifiers: Array<(item: Array<WidgetConfig>, collection: IConfigModifierCollection, context: string) => Array<WidgetConfig>> = [
@@ -539,6 +539,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		} else { // hide toolbar
 			this.showToolbar = false;
 		}
+
+		// control-host container has its own scroll management
+		const newTab = this.tabs.find(t => t.id === tab.identifier);
+		this.containerOverflowStyle = newTab && this.getContentType(newTab) === 'controlhost-container' ? 'initial' : 'auto';
 
 		this._cd.detectChanges();
 	}

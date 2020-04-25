@@ -33,7 +33,7 @@ describe('Dashboard widget', () => {
 		let testContext = createContext();
 		const dashboard = new DashboardWidget(testContext.apiWrapper.object, '');
 		dashboard.register();
-		testContext.onClick.fire();
-		testContext.apiWrapper.verify(x => x.executeCommand(TypeMoq.It.isAny()), TypeMoq.Times.atMostOnce());
+		testContext.onClick.fire(undefined);
+		testContext.apiWrapper.verify(x => x.executeCommand(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 	});
 });

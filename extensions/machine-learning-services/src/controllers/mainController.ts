@@ -20,6 +20,7 @@ import { AzureModelRegistryService } from '../modelManagement/azureModelRegistry
 import { ModelPythonClient } from '../modelManagement/modelPythonClient';
 import { PredictService } from '../prediction/predictService';
 import { DashboardWidget } from '../views/widgets/dashboardWidget';
+import { ModelConfigRecent } from '../modelManagement/modelConfigRecent';
 
 /**
  * The main controller class that initializes the extension
@@ -84,12 +85,13 @@ export default class MainController implements vscode.Disposable {
 		// External Languages
 		//
 		let modelImporter = new ModelPythonClient(this._outputChannel, this._apiWrapper, this._processService, this._config, packageManager);
+		let modelRecentService = new ModelConfigRecent(this._context.globalState);
 
 		// Model Management
 		//
-		let registeredModelService = new DeployedModelService(this._apiWrapper, this._config, this._queryRunner, modelImporter);
+		let registeredModelService = new DeployedModelService(this._apiWrapper, this._config, this._queryRunner, modelImporter, modelRecentService);
 		let azureModelsService = new AzureModelRegistryService(this._apiWrapper, this._config, this.httpClient, this._outputChannel);
-		let predictService = new PredictService(this._apiWrapper, this._queryRunner, this._config);
+		let predictService = new PredictService(this._apiWrapper, this._queryRunner);
 		let modelManagementController = new ModelManagementController(this._apiWrapper, this._rootPath,
 			azureModelsService, registeredModelService, predictService);
 
@@ -100,7 +102,7 @@ export default class MainController implements vscode.Disposable {
 			await modelManagementController.manageRegisteredModels();
 		}));
 		this._apiWrapper.registerCommand(constants.mlImportModelCommand, (async () => {
-			await modelManagementController.registerModel();
+			await modelManagementController.registerModel(undefined);
 		}));
 		this._apiWrapper.registerCommand(constants.mlsPredictModelCommand, (async () => {
 			await modelManagementController.predictModel();
@@ -110,15 +112,6 @@ export default class MainController implements vscode.Disposable {
 		}));
 		this._apiWrapper.registerTaskHandler(constants.mlManagePackagesCommand, async () => {
 			await packageManager.managePackages();
-		});
-		this._apiWrapper.registerTaskHandler(constants.mlManageModelsCommand, async () => {
-			await modelManagementController.manageRegisteredModels();
-		});
-		this._apiWrapper.registerTaskHandler(constants.mlImportModelCommand, async () => {
-			await modelManagementController.registerModel();
-		});
-		this._apiWrapper.registerTaskHandler(constants.mlsPredictModelCommand, async () => {
-			await modelManagementController.predictModel();
 		});
 	}
 

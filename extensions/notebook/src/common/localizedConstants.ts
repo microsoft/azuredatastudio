@@ -26,6 +26,7 @@ export const msgBookAlreadyTrusted = localize('msgBookAlreadyTrusted', "Book is 
 export const msgBookUntrusted = localize('msgBookUntrusted', "Book is no longer trusted in this workspace");
 export const msgBookAlreadyUntrusted = localize('msgBookAlreadyUntrusted', "Book is already untrusted in this workspace.");
 export const missingTocError = localize('bookInitializeFailed', "Failed to find a Table of Contents file in the specified book.");
+export const noBooksSelectedError = localize('noBooksSelected', "No books are currently selected in the viewlet.");
 
 export function missingFileError(title: string): string { return localize('missingFileError', "Missing file : {0}", title); }
 export function invalidTocFileError(): string { return localize('InvalidError.tocFile', "Invalid toc file"); }
