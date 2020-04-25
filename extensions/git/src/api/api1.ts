@@ -183,6 +183,10 @@ export class ApiRepository implements Repository {
 		return this._repository.removeRemote(name);
 	}
 
+	renameRemote(name: string, newName: string): Promise<void> {
+		return this._repository.renameRemote(name, newName);
+	}
+
 	fetch(remote?: string | undefined, ref?: string | undefined, depth?: number | undefined): Promise<void> {
 		return this._repository.fetch(remote, ref, depth);
 	}
@@ -246,6 +250,13 @@ export class ApiImpl implements API {
 	getRepository(uri: Uri): Repository | null {
 		const result = this._model.getRepository(uri);
 		return result ? new ApiRepository(result) : null;
+	}
+
+	async init(root: Uri): Promise<Repository | null> {
+		const path = root.fsPath;
+		await this._model.git.init(path);
+		await this._model.openRepository(path);
+		return this.getRepository(root) || null;
 	}
 
 	registerRemoteSourceProvider(provider: RemoteSourceProvider): Disposable {
