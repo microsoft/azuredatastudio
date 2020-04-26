@@ -274,7 +274,7 @@ suite('Notebook Find Model', function (): void {
 		await notebookFindModel.find('insert', false, false, max_find_count);
 
 		assert(notebookFindModel.findMatches, 'Find in notebook failed.');
-		assert.equal(notebookFindModel.findMatches.length, 3, 'Find couldnt find all occurances');
+		assert.equal(notebookFindModel.findMatches.length, 3, 'Find couldnt find all occurrences');
 
 		await notebookFindModel.find('insert', true, false, max_find_count);
 		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed to apply match case while searching');
@@ -413,7 +413,7 @@ suite('Notebook Find Model', function (): void {
 		let notebookFindModel = new NotebookFindModel(model);
 		await notebookFindModel.find('insert', false, false, max_find_count);
 
-		assert.equal(notebookFindModel.findMatches.length, 3, 'Failed to find all occurances');
+		assert.equal(notebookFindModel.findMatches.length, 3, 'Failed to find all occurrences');
 
 		notebookFindModel.clearFind();
 		assert.equal(notebookFindModel.findMatches.length, 0, 'Failed to clear find results');
