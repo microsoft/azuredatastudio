@@ -24,7 +24,7 @@ registry.registerWorkbenchAction(
 		OpenNotebookExplorerViewletAction,
 		OpenNotebookExplorerViewletAction.ID,
 		OpenNotebookExplorerViewletAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_D }),
+		{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_B }),
 	'View: Show Notebook Explorer',
 	localize('notebookExplorer.view', "View")
 );
