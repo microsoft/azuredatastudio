@@ -124,6 +124,8 @@ export class MenuId {
 	static readonly DataExplorerAction = new MenuId('DataExplorerAction'); // {{SQL CARBON EDIT}}
 	static readonly ExplorerWidgetContext = new MenuId('ExplorerWidgetContext'); // {{SQL CARBON EDIT}}
 	static readonly DashboardToolbar = new MenuId('DashboardToolbar'); // {{SQL CARBON EDIT}}
+	static readonly NotebookExplorerContext = new MenuId('NotebookExplorerContext'); // {{SQL CARBON EDIT}}
+	static readonly NotebookExplorerAction = new MenuId('NotebookExplorerAction'); // {{SQL CARBON EDIT}}
 	static readonly TimelineItemContext = new MenuId('TimelineItemContext');
 	static readonly TimelineTitle = new MenuId('TimelineTitle');
 	static readonly TimelineTitleContext = new MenuId('TimelineTitleContext');

@@ -88,7 +88,7 @@ export class NotebookExplorerViewlet extends Viewlet {
 export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 	private root: HTMLElement;
 
-	private dataSourcesBox: HTMLElement;
+	private notebookSourcesBox: HTMLElement;
 
 	constructor(
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
@@ -111,9 +111,9 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		addClass(parent, 'notebookExplorer-viewlet');
 		this.root = parent;
 
-		this.dataSourcesBox = append(this.root, $('.dataSources'));
+		this.notebookSourcesBox = append(this.root, $('.notebookSources'));
 
-		return super.create(this.dataSourcesBox);
+		return super.create(this.notebookSourcesBox);
 	}
 
 	public updateStyles(): void {
@@ -133,7 +133,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 
 	getSecondaryActions(): IAction[] {
-		let menu = this.menuService.createMenu(MenuId.DataExplorerAction, this.contextKeyService);
+		let menu = this.menuService.createMenu(MenuId.NotebookExplorerAction, this.contextKeyService);
 		let actions = [];
 		menu.getActions({}).forEach(group => {
 			if (group[0] === 'secondary') {

@@ -351,6 +351,12 @@
           "when": "false"
         }
       ],
+      "notebookExplorer/action": [
+        {
+          "command": "notebook.command.createBook",
+          "group": "secondary"
+        }
+      ],
       "touchBar": [
         {
           "command": "notebook.command.runactivecell",
@@ -412,8 +418,8 @@
           "group": "navigation"
         },
         {
-          "command": "notebook.command.createBook",
-          "when": "view == bookTreeView"
+          "command": "books.sqlserver2019",
+          "when": "view == unsavedBookTreeView"
         },
         {
           "command": "notebook.command.openNotebookFolder",
