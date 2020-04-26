@@ -249,6 +249,18 @@
         "path": "./syntaxes/notebook.tmLanguage.json"
       }
     ],
+    "notebookExplorer": {
+			"books-explorer": [
+        {
+          "id": "bookTreeView",
+          "name": "%title.SavedBooks%"
+        },
+        {
+          "id": "unsavedBookTreeView",
+          "name": "%title.UnsavedBooks%"
+        }
+      ]
+		},
     "menus": {
       "commandPalette": [
         {
@@ -505,27 +517,6 @@
           "name": "powershell",
           "displayName": "PowerShell",
           "connectionProviderIds": []
-        }
-      ]
-    },
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "books-explorer",
-          "title": "Notebooks",
-          "icon": "resources/dark/JupyterBook_2.svg"
-        }
-      ]
-    },
-    "views": {
-      "books-explorer": [
-        {
-          "id": "bookTreeView",
-          "name": "%title.SavedBooks%"
-        },
-        {
-          "id": "unsavedBookTreeView",
-          "name": "%title.UnsavedBooks%"
         }
       ]
     }
