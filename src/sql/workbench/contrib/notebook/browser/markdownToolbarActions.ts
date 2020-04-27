@@ -46,8 +46,11 @@ export class TransformMarkdownAction extends Action {
 
 export class MarkdownTextTransformer {
 
-	private _notebookEditor: INotebookEditor;
-	constructor(private _notebookService: INotebookService, private _cellModel: ICellModel) { }
+	constructor(private _notebookService: INotebookService, private _cellModel: ICellModel, private _notebookEditor?: INotebookEditor) { }
+
+	public get notebookEditor(): INotebookEditor {
+		return this._notebookEditor;
+	}
 
 	public transformText(type: MarkdownButtonType): void {
 		let editorControl = this.getEditorControl();

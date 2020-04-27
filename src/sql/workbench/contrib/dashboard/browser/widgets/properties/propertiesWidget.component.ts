@@ -15,8 +15,7 @@ import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
-import { PropertiesContainer, DisplayProperty } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
-import { convertSizeToNumber } from 'sql/base/browser/dom';
+import { PropertiesContainer, PropertyItem } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
@@ -52,10 +51,14 @@ const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.Da
 
 @Component({
 	selector: 'properties-widget',
-	template: '<properties-container></properties-container>'
+	template: `
+	<loading-spinner *ngIf="_loading" [loading]="_loading" [loadingMessage]="loadingMessage" [loadingCompletedMessage]="loadingCompletedMessage"></loading-spinner>
+	<properties-container [style.display]="_loading ? 'none' : ''"></properties-container>`
 })
 export class PropertiesWidgetComponent extends DashboardWidget implements IDashboardWidget, OnInit {
 	@ViewChild(PropertiesContainer) private _propertiesContainer: PropertiesContainer;
+	public loadingMessage: string = nls.localize('loadingProperties', "Loading properties");
+	public loadingCompletedMessage: string = nls.localize('loadingPropertiesCompleted', "Loading properties completed");
 	private _connection: ConnectionManagementInfo;
 
 	constructor(
@@ -82,9 +85,9 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		this._connection = this._bootstrap.connectionManagementService.connectionInfo;
 		this.setLoadingStatus(true);
 		this._register(subscriptionToDisposable(this._bootstrap.adminService.databaseInfo.subscribe(databaseInfo => {
-			const displayProperties = this.parseProperties(databaseInfo);
+			const propertyItems = this.parseProperties(databaseInfo);
 			if (this._inited) {
-				this._propertiesContainer.displayProperties = displayProperties;
+				this._propertiesContainer.propertyItems = propertyItems;
 				this._changeRef.detectChanges();
 			} else {
 				this.logService.info('Database properties successfully retrieved but component not initialized yet');
@@ -96,7 +99,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		})));
 	}
 
-	private parseProperties(databaseInfo?: DatabaseInfo): DisplayProperty[] {
+	private parseProperties(databaseInfo?: DatabaseInfo): PropertyItem[] {
 		const provider = this._config.provider;
 
 		let propertyArray: Array<Property>;
@@ -203,10 +206,6 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 				value: propertyObject
 			};
 		});
-
-		if (this._inited) {
-			this._changeRef.detectChanges();
-		}
 	}
 
 	private getConditionResult(item: FlavorProperties, conditionItem: ConditionProperties): boolean {
@@ -243,16 +242,5 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			val = defaultVal;
 		}
 		return val;
-	}
-
-	protected setLoadingStatus(loading: boolean): void {
-		super.setLoadingStatus(loading);
-		if (this._inited) {
-			this._propertiesContainer.loading = loading;
-		}
-	}
-
-	public get height(): number {
-		return convertSizeToNumber(this._propertiesContainer.height);
 	}
 }

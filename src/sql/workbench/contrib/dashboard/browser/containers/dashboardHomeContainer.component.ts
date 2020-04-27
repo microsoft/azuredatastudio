@@ -14,26 +14,22 @@ import { DashboardServiceInterface } from 'sql/workbench/contrib/dashboard/brows
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { AngularEventType, IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { DashboardWidgetWrapper } from 'sql/workbench/contrib/dashboard/browser/contents/dashboardWidgetWrapper.component';
-import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
-import { PropertiesWidgetComponent } from 'sql/workbench/contrib/dashboard/browser/widgets/properties/propertiesWidget.component';
 
 @Component({
 	selector: 'dashboard-home-container',
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => DashboardHomeContainer) }],
 	template: `
 		<div class="fullsize" style="display: flex; flex-direction: column">
-			<div scrollable [horizontalScroll]="${ScrollbarVisibility.Hidden}" [verticalScroll]="${ScrollbarVisibility.Auto}">
+			<div>
 				<div #propertiesContainer>
-					<dashboard-widget-wrapper #propertiesClass *ngIf="properties" [collapsable]="true" [bottomCollapse]="true" [toggleMore]="false" [_config]="properties"
-						class="properties" [style.height.px]="_propertiesClass?.collapsed ? '30' : getHeight()">
+					<dashboard-widget-wrapper #propertiesClass *ngIf="properties" [collapsable]="true" [bottomCollapse]="true" [toggleMore]="false" [_config]="properties" class="properties">
 					</dashboard-widget-wrapper>
 				</div>
 				<widget-content style="flex: 1" [scrollContent]="false" [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
@@ -46,9 +42,6 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 	@Input() private properties: WidgetConfig;
 	@ViewChild('propertiesClass') private _propertiesClass: DashboardWidgetWrapper;
 	@ViewChild('propertiesContainer') private _propertiesContainer: ElementRef;
-	@ViewChild(ScrollableDirective) private _scrollable: ScrollableDirective;
-
-	private height = 75; // default initial height
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
@@ -86,21 +79,6 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
 			this._cd.detectChanges();
 		}));
-	}
-
-	public getHeight(): number {
-		if (this._propertiesClass && (<PropertiesWidgetComponent>this._propertiesClass.component).height) {
-			this.height = (<PropertiesWidgetComponent>this._propertiesClass.component).height;
-		}
-
-		return this.height;
-	}
-
-	public layout() {
-		super.layout();
-		if (this._scrollable) {
-			this._scrollable.layout();
-		}
 	}
 
 	private updateTheme(theme: IColorTheme): void {
