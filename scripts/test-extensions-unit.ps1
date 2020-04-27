@@ -16,7 +16,7 @@ $extensions = @(
 	"cms",
 	"dacpac",
 	"schema-compare",
-	"mssql",
+	#"mssql",
 	"notebook",
 	"resource-deployment",
 	"machine-learning-services",
