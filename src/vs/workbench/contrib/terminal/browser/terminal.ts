@@ -112,6 +112,13 @@ export interface ITerminalService {
 	getActiveOrCreateInstance(): ITerminalInstance;
 	splitInstance(instance: ITerminalInstance, shell?: IShellLaunchConfig): ITerminalInstance | null;
 
+	/**
+	 * Perform an action with the active terminal instance, if the terminal does
+	 * not exist the callback will not be called.
+	 * @param callback The callback that fires with the active terminal
+	 */
+	doWithActiveInstance<T>(callback: (terminal: ITerminalInstance) => T): T | void;
+
 	getActiveTab(): ITerminalTab | null;
 	setActiveTabToNext(): void;
 	setActiveTabToPrevious(): void;
@@ -312,6 +319,11 @@ export interface ITerminalInstance {
 	readonly navigationMode: INavigationMode | undefined;
 
 	/**
+	 * Shows the environment information hover if the widget exists.
+	 */
+	showEnvironmentInfoHover(): void;
+
+	/**
 	 * Dispose the terminal instance, removing it from the panel/service and freeing up resources.
 	 *
 	 * @param immediate Whether the kill should be immediate or not. Immediate should only be used
@@ -463,6 +475,12 @@ export interface ITerminalInstance {
 	 * @param shell The new launch configuration.
 	 */
 	reuseTerminal(shell: IShellLaunchConfig): void;
+
+	/**
+	 * Relaunches the terminal, killing it and reusing the launch config used initially. Any
+	 * environment variable changes will be recalculated when this happens.
+	 */
+	relaunch(): void;
 
 	/**
 	 * Sets the title of the terminal instance.

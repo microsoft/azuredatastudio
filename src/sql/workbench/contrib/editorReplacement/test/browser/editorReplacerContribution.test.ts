@@ -194,7 +194,7 @@ class MockEditorService extends TestEditorService {
 	fireOpenEditor(editor: IEditorInput, options: IEditorOptions | ITextEditorOptions | undefined, group: IEditorGroup) {
 		for (const handler of this.overridenOpens) {
 			let response: IOpenEditorOverride | undefined;
-			if (response = handler(editor, options, group)) {
+			if (response = handler.open(editor, options, group)) {
 				return response;
 			}
 		}
