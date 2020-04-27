@@ -454,7 +454,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			return this._installCompletion.promise;
 		}
 
-		let requiredPackages = JupyterServerInstallation.getRequiredPackagesForKernel(kernelName);
+		let requiredPackages: PythonPkgDetails[];
+		let enablePreviewFeatures = this.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
+		if (enablePreviewFeatures) {
+			requiredPackages = JupyterServerInstallation.getRequiredPackagesForKernel(kernelName);
+		}
 
 		this._installInProgress = true;
 		this._installCompletion = new Deferred<void>();
