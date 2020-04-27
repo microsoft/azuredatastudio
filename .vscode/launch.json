@@ -16,6 +16,7 @@
 			"request": "attach",
 			"name": "Attach to Extension Host",
 			"port": 5870,
+			"timeout": 80000,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			]
@@ -64,6 +65,7 @@
 			"type": "chrome",
 			"request": "attach",
 			"name": "Attach to azuredatastudio",
+			"timeout": 50000,
 			"port": 9222
 		},
 		{

@@ -33,24 +33,12 @@ export class Model {
 	}
 
 	public setEnvironmentVariables(): void {
-		this.keys().filter(propertyName => propertyName.startsWith(NoteBookEnvironmentVariablePrefix)).forEach(propertyName => {
+		Object.keys(this.propValueObject).filter(propertyName => propertyName.startsWith(NoteBookEnvironmentVariablePrefix)).forEach(propertyName => {
 			const value = this.getStringValue(propertyName);
 			if (value !== undefined && value !== '') {
 				process.env[propertyName] = value;
 			}
 			process.env[propertyName] = value === undefined ? '' : value;
 		});
-	}
-
-	public expandVariableValues(input:string): string {
-		this.keys().forEach(propertyName => {
-			const value = this.getStringValue(propertyName);
-			input = input.replace(`\$\(${propertyName}\)`, value === undefined ? '' : value);
-		});
-		return input;
-	}
-
-	public keys(): string[] {
-		return Object.keys(this.propValueObject);
 	}
 }
