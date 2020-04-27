@@ -121,11 +121,28 @@ export class DashboardWidget {
 		footerContainer.addItem(linksContainer);
 		footerContainer.addItem(videoLinksContainer, {
 			CSSStyles: {
-				'padding-left': '50px',
+				'padding-left': '45px',
 			}
 		});
 
 		return footerContainer;
+	}
+
+	private createVideoLinkContainers(view: azdata.ModelView, links: IActionMetadata[]): azdata.Component {
+		const maxWidth = 400;
+		const videosContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'row',
+			width: maxWidth,
+			height: '300px',
+		}).component();
+
+		links.forEach(link => {
+			const videoContainer = this.createVideoLink(view, link);
+
+			videosContainer.addItem(videoContainer);
+		});
+
+		return videosContainer;
 	}
 
 	private createVideoLinks(view: azdata.ModelView): azdata.Component {
@@ -144,29 +161,14 @@ export class DashboardWidget {
 				'margin': '0px'
 			}
 		}).component();
-		const videosContainer = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'row',
-			width: maxWidth,
-			height: '500px',
-		}).component();
-		const video1Container = this.createVideoLink(view, {
-			iconPath: { light: 'images/video1.svg', dark: 'images/video1.svg' },
-			description: 'Artificial intelligence and machine learning with SQL Server 2019',
-			link: 'https://www.youtube.com/watch?v=sE99cSoFOHs'
-		});
-		videosContainer.addItem(video1Container);
-		const video2Container = this.createVideoLink(view, {
-			iconPath: { light: 'images/video2.svg', dark: 'images/video2.svg' },
-			description: 'SQL Server Machine Learning Services',
-			link: 'https://www.youtube.com/watch?v=R4GCBoxADyQ'
-		});
-		videosContainer.addItem(video2Container);
-		const video3Container = this.createVideoLink(view, {
-			iconPath: { light: 'images/video2.svg', dark: 'images/video2.svg' },
-			description: 'Introduction to Azure Data Studio Notebooks',
-			link: 'https://www.youtube.com/watch?v=Nt4kIHQ0IOc'
-		});
-		videosContainer.addItem(video3Container);
+		const viewPanelStyle = {
+			'padding': '0px',
+			'padding-right': '5px',
+			'padding-top': '20px',
+			'height': '200px',
+			'margin': '0px'
+		};
+
 		linksContainer.addItems([titleComponent], {
 			CSSStyles: {
 				'padding': '0px',
@@ -176,25 +178,42 @@ export class DashboardWidget {
 				'margin': '0px'
 			}
 		});
-		linksContainer.addItems([videosContainer], {
-			CSSStyles: {
-				'padding': '0px',
-				'padding-right': '5px',
-				'padding-top': '10px',
-				'height': '10px',
-				'margin': '0px',
-				'flex-wrap': 'wrap'
+		const videosContainer = this.createVideoLinkContainers(view, [
+			{
+				iconPath: { light: 'images/video1.svg', dark: 'images/video1.svg' },
+				description: 'Artificial intelligence and machine learning with SQL Server 2019',
+				link: 'https://www.youtube.com/watch?v=sE99cSoFOHs'
+			},
+			{
+				iconPath: { light: 'images/video2.svg', dark: 'images/video2.svg' },
+				description: 'SQL Server Machine Learning Services',
+				link: 'https://www.youtube.com/watch?v=R4GCBoxADyQ'
 			}
+		]);
+
+		linksContainer.addItem(videosContainer, {
+			CSSStyles: viewPanelStyle
+		});
+
+		const moreVideosContainer = this.createVideoLinkContainers(view, [
+			{
+				iconPath: { light: 'images/video2.svg', dark: 'images/video2.svg' },
+				description: 'Introduction to Azure Data Studio Notebooks',
+				link: 'https://www.youtube.com/watch?v=Nt4kIHQ0IOc'
+			}
+		]);
+		linksContainer.addItems([moreVideosContainer], {
+			CSSStyles: viewPanelStyle
 		});
 		return linksContainer;
 	}
 
 	private createVideoLink(view: azdata.ModelView, linkMetaData: IActionMetadata): azdata.Component {
-		const maxWidth = 200;
+		const maxWidth = 150;
 		const videosContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: maxWidth,
-			height: '200px',
+			height: maxWidth,
 			justifyContent: 'flex-start'
 		}).component();
 		const video1Container = view.modelBuilder.divContainer().withProperties({
@@ -204,7 +223,7 @@ export class DashboardWidget {
 		}).component();
 		const descriptionComponent = view.modelBuilder.text().withProperties({
 			value: linkMetaData.description,
-			width: '200px',
+			width: maxWidth,
 			height: '50px',
 			CSSStyles: {
 				//'color': '#605E5C',
@@ -222,9 +241,9 @@ export class DashboardWidget {
 				'background-image': `url(${vscode.Uri.file(this.asAbsolutePath(<string>linkMetaData.iconPath?.light || ''))})`,
 				'background-repeat': 'no-repeat',
 				'background-position': 'top',
-				'width': `150px`,
+				'width': `${maxWidth}px`,
 				'height': '110px',
-				'background-size': `150px 120px`
+				'background-size': `{maxWidth}px 120px`
 			}
 		});
 		videosContainer.addItem(descriptionComponent);
