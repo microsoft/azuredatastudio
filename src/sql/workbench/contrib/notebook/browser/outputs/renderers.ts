@@ -5,7 +5,6 @@
 
 import { default as AnsiUp } from 'ansi_up';
 import { IRenderMime } from 'sql/workbench/services/notebook/browser/outputs/renderMimeInterfaces';
-import { URLExt } from 'sql/workbench/contrib/notebook/common/models/url';
 import { URI } from 'vs/base/common/uri';
 
 
@@ -645,7 +644,7 @@ namespace Private {
 		if (path && path.length > 0) {
 			isLocal = resolver && resolver.isLocal
 				? resolver.isLocal(path)
-				: URLExt.isLocal(path);
+				: !!URI.parse(path).scheme;
 		} else {
 			// Empty string, so default to local
 			isLocal = true;
