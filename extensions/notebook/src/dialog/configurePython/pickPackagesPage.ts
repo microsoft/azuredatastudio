@@ -66,9 +66,11 @@ export class PickPackagesPage extends BasePage {
 		if (requiredPackages) {
 			let packageData = requiredPackages.map(pkg => [pkg.name, pkg.version]);
 			this.requiredPackagesTable.data = packageData;
+			this.model.packagesToInstall = requiredPackages;
 		} else {
 			this.instance.showErrorMessage(localize('msgUnsupportedKernel', "Could not retrieve packages for unsupported kernel {0}", kernelName));
 			this.requiredPackagesTable.data = [['-', '-']];
+			this.model.packagesToInstall = undefined;
 		}
 	}
 }
