@@ -277,7 +277,7 @@ const CommonTabs: IDashboardTab[] = [
 		title: localize('databasesTabTitle', "Databases"),
 		when: 'dashboardContext == \'server\' && !mssql:iscloud && mssql:engineedition != 11',
 		group: 'home',
-		iconClass: 'databases-tab-icon',
+		iconClass: 'database-colored',
 		publisher: undefined,
 		container: {
 			'widgets-container': [
