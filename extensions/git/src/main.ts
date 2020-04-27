@@ -10,7 +10,6 @@ import { ExtensionContext, workspace, window, Disposable, commands, OutputChanne
 import { findGit, Git, IGit } from './git';
 import { Model } from './model';
 import { CommandCenter } from './commands';
-import { GitContentProvider } from './contentProvider';
 import { GitFileSystemProvider } from './fileSystemProvider';
 import { GitDecorations } from './decorationProvider';
 import { Askpass } from './askpass';
@@ -23,6 +22,7 @@ import { GitExtensionImpl } from './api/extension';
 // import * as fs from 'fs';
 import { createIPCServer, IIPCServer } from './ipc/ipcServer';
 import { GitTimelineProvider } from './timelineProvider';
+import { registerAPICommands } from './api/api1';
 
 const deactivateTasks: { (): Promise<any>; }[] = [];
 
@@ -80,7 +80,6 @@ async function createModel(context: ExtensionContext, outputChannel: OutputChann
 
 	disposables.push(
 		new CommandCenter(git, model, outputChannel, telemetryReporter),
-		new GitContentProvider(model),
 		new GitFileSystemProvider(model),
 		new GitDecorations(model),
 		new GitProtocolHandler(),
@@ -141,7 +140,7 @@ async function warnAboutMissingGit(): Promise<void> {
 	}
 }*/
 
-export async function activate(context: ExtensionContext): Promise<GitExtension> {
+export async function _activate(context: ExtensionContext): Promise<GitExtension> {
 	const disposables: Disposable[] = [];
 	context.subscriptions.push(new Disposable(() => Disposable.from(...disposables).dispose()));
 
@@ -183,9 +182,18 @@ export async function activate(context: ExtensionContext): Promise<GitExtension>
 	}
 }
 
-// {{SQL CARBON EDIT}} - Rename info to _info to prevent error due to unused variable
-async function checkGitVersion(_info: IGit): Promise<void> {
+export async function activate(context: ExtensionContext): Promise<GitExtension> {
+	const result = await _activate(context);
+	context.subscriptions.push(registerAPICommands(result));
+	return result;
+}
+
+async function checkGitVersion(_info: IGit): Promise<void> { // {{SQL CARBON EDIT}} - Rename info to _info to prevent error due to unused variable
 	return; /* {{SQL CARBON EDIT}} return immediately
+
+	/*const config = workspace.getConfiguration('git');
+	const shouldIgnore = config.get<boolean>('ignoreLegacyWarning') === true;
+
 
 	const config = workspace.getConfiguration('git');
 	const shouldIgnore = config.get<boolean>('ignoreLegacyWarning') === true;

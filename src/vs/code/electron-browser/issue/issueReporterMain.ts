@@ -8,7 +8,8 @@ import * as os from 'os';
 import * as browser from 'vs/base/browser/browser';
 import { $ } from 'vs/base/browser/dom';
 import { Button } from 'vs/base/browser/ui/button/button';
-import { CodiconLabel } from 'vs/base/browser/ui/codiconLabel/codiconLabel';
+import 'vs/base/browser/ui/codicons/codiconStyles'; // make sure codicon css is loaded
+import { CodiconLabel } from 'vs/base/browser/ui/codicons/codiconLabel';
 import * as collections from 'vs/base/common/collections';
 import { debounce } from 'vs/base/common/decorators';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -715,7 +716,7 @@ export class IssueReporter extends Disposable {
 		type IssueReporterSearchError = {
 			message: string;
 		};
-		this.telemetryService.publicLog2<IssueReporterSearchError, IssueReporterSearchErrorClassification>('issueReporterSearchError', { message: error.message });
+		this.telemetryService.publicLog2<IssueReporterSearchError, IssueReporterSearchErrorClassification>('issueReporterSearchError', { message: error.message }, true);
 	}
 
 	private setUpTypes(): void {
