@@ -53,20 +53,8 @@ export class NotebookExplorerViewletViewsContribution implements IWorkbenchContr
 
 	private registerViews(): void {
 		let viewDescriptors = [];
-		//viewDescriptors.push(this.createObjectExplorerViewDescriptor());
 		Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews(viewDescriptors, NOTEBOOK_VIEW_CONTAINER);
 	}
-
-	/* private createObjectExplorerViewDescriptor(): IViewDescriptor {
-		return {
-			id: NotebookViewletPanel.ID,
-			name: localize('notebookExplorer.notebooks', "Notebooks"),
-			ctorDescriptor: new SyncDescriptor(NotebookViewletPanel),
-			weight: 100,
-			canToggleVisibility: true,
-			order: 0
-		};
-	} */
 }
 
 export class NotebookExplorerViewlet extends Viewlet {
