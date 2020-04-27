@@ -96,7 +96,7 @@
         "id": "server-reports-tempdb-tab",
         "title": "TempDB",
         "group": "monitoring",
-        "description": "",
+        "description": "TempDB reports",
         "icon": {
           "light": "./out/src/media/tempdb.svg",
           "dark": "./out/src/media/tempdb_inverse.svg"
