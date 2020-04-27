@@ -1,7 +1,7 @@
 # Change Log
 
 ## Version 1.17.0
-* Release date: April 23, 2020
+* Release date: April 27, 2020
 * Release status: General Availability
 * New Welcome Page
 * New Notebook features
