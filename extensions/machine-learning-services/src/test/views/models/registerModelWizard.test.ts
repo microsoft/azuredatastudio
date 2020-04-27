@@ -8,7 +8,7 @@ import * as should from 'should';
 import 'mocha';
 import { createContext } from './utils';
 import { ListModelsEventName, ListAccountsEventName, ListSubscriptionsEventName, ListGroupsEventName, ListWorkspacesEventName, ListAzureModelsEventName, ModelSourceType, ListDatabaseNamesEventName, ListTableNamesEventName } from '../../../views/models/modelViewBase';
-import { RegisteredModel } from '../../../modelManagement/interfaces';
+import { ImportedModel } from '../../../modelManagement/interfaces';
 import { azureResource } from '../../../typings/azure-resource';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { ViewBase } from '../../../views/viewBase';
@@ -80,11 +80,10 @@ describe('Register Model Wizard', () => {
 				name: 'model'
 			}
 		];
-		let localModels: RegisteredModel[] = [
+		let localModels: ImportedModel[] = [
 			{
 				id: 1,
-				artifactName: 'model',
-				title: 'model',
+				modelName: 'model',
 				table: {
 					databaseName: 'db',
 					tableName: 'tb',

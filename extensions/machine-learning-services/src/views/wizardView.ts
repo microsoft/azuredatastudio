@@ -35,13 +35,14 @@ export class WizardView extends MainViewBase {
 	 */
 	public addWizardPage(page: IPageView, index: number): void {
 		if (this._wizard) {
-			this.addPage(page, index);
-			this._wizard.removePage(index);
-			if (!page.viewPanel) {
+			const currentPage = this._wizard.currentPage;
+			if (page && currentPage < index) {
+				this.addPage(page, index);
+				this._wizard.removePage(index);
 				this.createWizardPage(page.title || '', page);
+				this._wizard.addPage(<azdata.window.WizardPage>page.viewPanel, index);
+				this._wizard.setCurrentPage(currentPage);
 			}
-			this._wizard.addPage(<azdata.window.WizardPage>page.viewPanel, index);
-			this._wizard.setCurrentPage(index);
 		}
 	}
 
@@ -108,5 +109,15 @@ export class WizardView extends MainViewBase {
 
 	public get wizard(): azdata.window.Wizard | undefined {
 		return this._wizard;
+	}
+
+	public async refresh(): Promise<void> {
+		for (let index = 0; index < this._pages.length; index++) {
+			const page = this._pages[index];
+			if (this._wizard?.pages[index]?.title !== page.title) {
+				this.addWizardPage(page, index);
+			}
+		}
+		await super.refresh();
 	}
 }

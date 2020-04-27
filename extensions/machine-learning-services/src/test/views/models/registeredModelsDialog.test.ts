@@ -8,7 +8,7 @@ import 'mocha';
 import { createContext } from './utils';
 import { ManageModelsDialog } from '../../../views/models/manageModels/manageModelsDialog';
 import { ListModelsEventName } from '../../../views/models/modelViewBase';
-import { RegisteredModel } from '../../../modelManagement/interfaces';
+import { ImportedModel } from '../../../modelManagement/interfaces';
 import { ViewBase } from '../../../views/viewBase';
 
 describe('Registered Models Dialog', () => {
@@ -27,11 +27,10 @@ describe('Registered Models Dialog', () => {
 
 		let view = new ManageModelsDialog(testContext.apiWrapper.object, '');
 		view.open();
-		let models: RegisteredModel[] = [
+		let models: ImportedModel[] = [
 			{
 				id: 1,
-				artifactName: 'model',
-				title: '',
+				modelName: 'model',
 				table: {
 					databaseName: 'db',
 					tableName: 'tb',

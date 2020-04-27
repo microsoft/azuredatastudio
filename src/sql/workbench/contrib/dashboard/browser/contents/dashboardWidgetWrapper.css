@@ -40,15 +40,16 @@ dashboard-widget-wrapper .noTitle {
 }
 
 dashboard-widget-wrapper .actionbar {
-	flex: 0 0 auto;
 	align-self: end;
 }
 
 dashboard-widget-wrapper .bottomActionbar {
-	flex: 0 0 auto;
 	align-self: center;
-	margin-top: -27px;
 	display: none;
+}
+
+dashboard-widget-wrapper .bottomActionbar.collapsed {
+	margin-top: -27px;
 }
 
 dashboard-widget-wrapper .bottomActionbar .actions-container .action-item a.action-label.codicon-chevron-up {

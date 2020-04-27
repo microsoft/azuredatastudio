@@ -29,7 +29,10 @@ export class ManageModelsDialog extends ModelViewBase {
 	 */
 	public open(): void {
 
-		this.currentLanguagesTab = new CurrentModelsComponent(this._apiWrapper, this);
+		this.currentLanguagesTab = new CurrentModelsComponent(this._apiWrapper, this, {
+			editable: true,
+			selectable: false
+		});
 
 		let registerModelButton = this._apiWrapper.createButton(constants.importModelTitle);
 		registerModelButton.onClick(async () => {

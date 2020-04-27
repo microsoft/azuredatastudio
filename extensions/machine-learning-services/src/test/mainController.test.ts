@@ -68,7 +68,8 @@ function createContext(): TestContext {
 			packageJSON: '',
 			extensionKind: vscode.ExtensionKind.UI,
 			exports: extensionApi,
-			activate: () => {return Promise.resolve();}
+			activate: () => {return Promise.resolve();},
+			extensionUri: vscode.Uri.parse('')
 		},
 		apiWrapper: TypeMoq.Mock.ofType(ApiWrapper),
 		queryRunner: TypeMoq.Mock.ofType(QueryRunner),
@@ -88,7 +89,8 @@ function createContext(): TestContext {
 			asAbsolutePath: () => {return '';},
 			storagePath: '',
 			globalStoragePath: '',
-			logPath: ''
+			logPath: '',
+			extensionUri: vscode.Uri.parse('')
 		},
 		outputChannel: {
 			name: '',
@@ -106,7 +108,8 @@ function createContext(): TestContext {
 			packageJSON: {},
 			extensionKind: vscode.ExtensionKind.UI,
 			exports: {},
-			activate: () => { return Promise.resolve(); }
+			activate: () => { return Promise.resolve(); },
+			extensionUri: vscode.Uri.parse('')
 		},
 		workspaceConfig: {
 			get: () => {return 'value';},

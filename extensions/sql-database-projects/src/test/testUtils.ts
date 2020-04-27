@@ -8,6 +8,23 @@ import * as os from 'os';
 import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
+import should = require('should');
+import { AssertionError } from 'assert';
+
+export function shouldThrowSpecificError(block: Function, expectedMessage: string) {
+	let succeeded = false;
+	try {
+		block();
+		succeeded = true;
+	}
+	catch (err) {
+		should(err.message).equal(expectedMessage);
+	}
+
+	if (succeeded) {
+		throw new AssertionError({ message: 'Operation succeeded, but expected failure with exception: "' + expectedMessage + '"' });
+	}
+}
 
 export async function createTestSqlProj(contents: string, folderPath?: string): Promise<string> {
 	return await createTestFile(contents, 'TestProject.sqlproj', folderPath);

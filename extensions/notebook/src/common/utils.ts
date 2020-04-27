@@ -177,7 +177,7 @@ export function comparePackageVersions(first: string, second: string): number {
 	return 0;
 }
 
-export function sortPackageVersions(versions: string[], ascending: boolean = true) {
+export function sortPackageVersions(versions: string[], ascending: boolean = true): string[] {
 	return versions.sort((first, second) => {
 		let compareResult = comparePackageVersions(first, second);
 		if (ascending) {
@@ -186,14 +186,6 @@ export function sortPackageVersions(versions: string[], ascending: boolean = tru
 			return compareResult * -1;
 		}
 	});
-}
-
-// PRIVATE HELPERS /////////////////////////////////////////////////////////
-function outputDataChunk(data: string | Buffer, outputChannel: vscode.OutputChannel, header: string): void {
-	data.toString().split(/\r?\n/)
-		.forEach(line => {
-			outputChannel.appendLine(header + line);
-		});
 }
 
 export function isEditorTitleFree(title: string): boolean {
@@ -272,6 +264,14 @@ export function debounce(delay: number): Function {
 			this[timerKey] = setTimeout(() => fn.apply(this, args), delay);
 		};
 	});
+}
+
+// PRIVATE HELPERS /////////////////////////////////////////////////////////
+function outputDataChunk(data: string | Buffer, outputChannel: vscode.OutputChannel, header: string): void {
+	data.toString().split(/\r?\n/)
+		.forEach(line => {
+			outputChannel.appendLine(header + line);
+		});
 }
 
 function decorate(decorator: (fn: Function, key: string) => Function): Function {

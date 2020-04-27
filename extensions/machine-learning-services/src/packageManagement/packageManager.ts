@@ -179,8 +179,8 @@ export class PackageManager {
 			let cmd = `"${this.pythonExecutable}" -m pip list --format=json`;
 			let packagesInfo = await this._processService.executeBufferedCommand(cmd, undefined);
 			let packagesResult: nbExtensionApis.IPackageDetails[] = [];
-			if (packagesInfo) {
-				packagesResult = <nbExtensionApis.IPackageDetails[]>JSON.parse(packagesInfo);
+			if (packagesInfo && packagesInfo.indexOf(']') > 0) {
+				packagesResult = <nbExtensionApis.IPackageDetails[]>JSON.parse(packagesInfo.substr(0, packagesInfo.indexOf(']') + 1));
 			}
 			return packagesResult;
 		}
