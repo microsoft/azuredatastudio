@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import { BasePage } from './basePage';
 import { ConfigurePathPage } from './configurePathPage';
 import { PickPackagesPage } from './pickPackagesPage';
-import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
+import { JupyterServerInstallation, PythonPkgDetails, PythonInstallSettings } from '../../jupyter/jupyterServerInstallation';
 import * as utils from '../../common/utils';
 import { promises as fs } from 'fs';
 import { Deferred } from '../../common/promise';
@@ -165,7 +165,12 @@ export class ConfigurePythonWizard {
 		}
 
 		// Don't wait on installation, since there's currently no Cancel functionality
-		this.jupyterInstallation.startInstallProcess(false, { installPath: pythonLocation, existingPython: useExistingPython })
+		let installSettings: PythonInstallSettings = {
+			installPath: pythonLocation,
+			existingPython: useExistingPython,
+			specificPackages: this.model.packagesToInstall
+		};
+		this.jupyterInstallation.startInstallProcess(false, installSettings)
 			.then(() => {
 				this.setupComplete.resolve();
 			})

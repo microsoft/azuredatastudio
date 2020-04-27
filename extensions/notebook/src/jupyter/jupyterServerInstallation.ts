@@ -40,10 +40,15 @@ function msgDependenciesInstallationFailed(errorMessage: string): string { retur
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 function msgPackageRetrievalFailed(errorMessage: string): string { return localize('msgPackageRetrievalFailed', "Encountered an error when trying to retrieve list of installed packages: {0}", errorMessage); }
 
+export interface PythonInstallSettings {
+	installPath: string;
+	existingPython: boolean;
+	specificPackages?: PythonPkgDetails[];
+}
 export interface IJupyterServerInstallation {
 	installCondaPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void>;
 	configurePackagePaths(): Promise<void>;
-	startInstallProcess(forceInstall: boolean, installSettings?: { installPath: string, existingPython: boolean }): Promise<void>;
+	startInstallProcess(forceInstall: boolean, installSettings?: PythonInstallSettings): Promise<void>;
 	getInstalledPipPackages(): Promise<PythonPkgDetails[]>;
 	getInstalledCondaPackages(): Promise<PythonPkgDetails[]>;
 	uninstallCondaPackages(packages: PythonPkgDetails[]): Promise<void>;
@@ -123,7 +128,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 	}
 
-	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean): Promise<void> {
+	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
 		if (!(await utils.exists(this._pythonExecutable)) || forceInstall || this._usingExistingPython) {
 			window.showInformationMessage(msgInstallPkgStart);
 
@@ -135,7 +140,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
 
 				if (this._usingExistingPython) {
-					await this.upgradePythonPackages(false, forceInstall);
+					await this.upgradePythonPackages(false, forceInstall, specificPackages);
 				} else {
 					await this.installOfflinePipDependencies();
 				}
@@ -360,7 +365,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	 * @param installSettings Optional parameter that specifies where to install python, and whether the install targets an existing python install.
 	 * The previous python path (or the default) is used if a new path is not specified.
 	 */
-	public async startInstallProcess(forceInstall: boolean, installSettings?: { installPath: string, existingPython: boolean }): Promise<void> {
+	public async startInstallProcess(forceInstall: boolean, installSettings?: PythonInstallSettings): Promise<void> {
 		let isPythonRunning: boolean;
 		if (installSettings) {
 			isPythonRunning = await this.isPythonRunning(installSettings.installPath, installSettings.existingPython);
@@ -399,7 +404,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				description: msgTaskName,
 				isCancelable: false,
 				operation: op => {
-					this.installDependencies(op, forceInstall)
+					this.installDependencies(op, forceInstall, installSettings?.specificPackages)
 						.then(async () => {
 							await updateConfig();
 							this._installCompletion.resolve();
@@ -443,7 +448,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	/**
 	 * Prompts user to upgrade certain python packages if they're below the minimum expected version.
 	 */
-	public async promptForPackageUpgrade(): Promise<void> {
+	public async promptForPackageUpgrade(specificPackages?: PythonPkgDetails[]): Promise<void> {
 		if (this._installInProgress) {
 			this.apiWrapper.showInfoMessage(msgWaitingForInstall);
 			return this._installCompletion.promise;
@@ -451,7 +456,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		this._installInProgress = true;
 		this._installCompletion = new Deferred<void>();
-		this.upgradePythonPackages(true, false)
+		this.upgradePythonPackages(true, false, specificPackages)
 			.then(() => {
 				this._installCompletion.resolve();
 				this._installInProgress = false;
@@ -464,15 +469,25 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		return this._installCompletion.promise;
 	}
 
-	private async upgradePythonPackages(promptForUpgrade: boolean, forceInstall: boolean): Promise<void> {
+	private async upgradePythonPackages(promptForUpgrade: boolean, forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
 		let expectedCondaPackages: PythonPkgDetails[];
 		let expectedPipPackages: PythonPkgDetails[];
 		if (this._usingConda) {
-			expectedCondaPackages = this._expectedCondaPackages;
-			expectedPipPackages = this._expectedCondaPipPackages;
+			if (specificPackages) {
+				expectedCondaPackages = specificPackages;
+				expectedPipPackages = [];
+			} else {
+				expectedCondaPackages = this._expectedCondaPackages;
+				expectedPipPackages = this._expectedCondaPipPackages;
+			}
 		} else {
-			expectedCondaPackages = [];
-			expectedPipPackages = this._expectedPythonPackages;
+			if (specificPackages) {
+				expectedCondaPackages = [];
+				expectedPipPackages = specificPackages;
+			} else {
+				expectedCondaPackages = [];
+				expectedPipPackages = this._expectedPythonPackages;
+			}
 		}
 
 		let condaPackagesToInstall: PythonPkgDetails[];
