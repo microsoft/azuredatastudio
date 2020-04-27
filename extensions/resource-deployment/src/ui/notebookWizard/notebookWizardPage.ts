@@ -33,7 +33,6 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 			wizardInfo: this.wizard.wizardInfo,
 			pageInfo: this.pageInfo,
 			page: this.pageObject,
-			model: this.wizard.model,
 			onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 				self.wizard.registerDisposable(disposable);
 			},
@@ -56,7 +55,6 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 	}
 
 	public onEnter() {
-		
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };
 			if (pcInfo.newPage > pcInfo.lastPage) {
