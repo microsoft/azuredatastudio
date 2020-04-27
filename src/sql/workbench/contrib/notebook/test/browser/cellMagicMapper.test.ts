@@ -35,7 +35,7 @@ suite('Cell Magic Mapper', function (): void {
 		assert.equal(magic, undefined, 'cell magic should not exist when magic name and kernel is empty string');
 
 		magic = cellMagicMapper.toLanguageMagic('magicName', 'kernel1');
-		assert.equal(magic, undefined, 'cell magic should not exist whenmagic name and kernel strings are not empty');
+		assert.equal(magic, undefined, 'cell magic should not exist when magic name and kernel strings are not empty');
 
 		magic = cellMagicMapper.toLanguageMagic(undefined, undefined);
 		assert.equal(magic, undefined, 'cell magic should not exist when magic name and kernel strings are undefined');
