@@ -596,9 +596,15 @@ declare module 'azdata' {
 		fileGroupInfoOptions: ServiceOption[];
 	}
 
+	export interface DatabaseDetail {
+		name: string;
+		[key: string]: string;
+	}
+
 	// List Databases Request ----------------------------------------------------------------------
 	export interface ListDatabasesResult {
 		databaseNames: Array<string>;
+		databases?: Array<DatabaseDetail>;
 	}
 
 	/**
@@ -725,7 +731,7 @@ declare module 'azdata' {
 	export interface MetadataProvider extends DataProvider {
 		getMetadata(connectionUri: string): Thenable<ProviderMetadata>;
 
-		getDatabases(connectionUri: string): Thenable<string[]>;
+		getDatabases(connectionUri: string): Thenable<string[] | DatabaseDetail[]>;
 
 		getTableInfo(connectionUri: string, metadata: ObjectMetadata): Thenable<ColumnMetadata[]>;
 

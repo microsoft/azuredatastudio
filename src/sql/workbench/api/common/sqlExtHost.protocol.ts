@@ -113,7 +113,7 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$getMetadata(handle: number, connectionUri: string): Thenable<azdata.ProviderMetadata> { throw ni(); }
 
-	$getDatabases(handle: number, connectionUri: string): Thenable<string[]> { throw ni(); }
+	$getDatabases(handle: number, connectionUri: string): Thenable<string[] | azdata.DatabaseDetail[]> { throw ni(); }
 
 	$getTableInfo(handle: number, connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[]> { throw ni(); }
 

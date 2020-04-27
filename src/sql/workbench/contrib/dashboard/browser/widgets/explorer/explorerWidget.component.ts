@@ -27,6 +27,7 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { ObjectMetadataWrapper } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/objectMetadataWrapper';
 import { status, alert } from 'vs/base/browser/ui/aria/aria';
+import { isStringArray } from 'vs/base/common/types';
 
 @Component({
 	selector: 'explorer-widget',
@@ -131,10 +132,13 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			)));
 		} else {
 			const currentProfile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
-			this._register(subscriptionToDisposable(this._bootstrap.metadataService.databaseNames.subscribe(
+			this._register(subscriptionToDisposable(this._bootstrap.metadataService.databases.subscribe(
 				data => {
 					// Handle the case where there is no metadata service
 					data = data || [];
+					if (!isStringArray(data)) {
+						data = data.map(item => item.name);
+					}
 					const profileData = data.map(d => {
 						const profile = new ConnectionProfile(this.capabilitiesService, currentProfile);
 						profile.databaseName = d;
