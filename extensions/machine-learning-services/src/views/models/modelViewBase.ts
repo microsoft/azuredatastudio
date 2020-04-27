@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import { azureResource } from '../../typings/azure-resource';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { ViewBase } from '../viewBase';
-import { RegisteredModel, WorkspaceModel, RegisteredModelDetails, ModelParameters } from '../../modelManagement/interfaces';
+import { ImportedModel, WorkspaceModel, ImportedModelDetails, ModelParameters } from '../../modelManagement/interfaces';
 import { PredictParameters, DatabaseTable, TableColumn } from '../../prediction/interfaces';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { AzureWorkspaceResource, AzureModelResource } from '../interfaces';
@@ -18,11 +18,11 @@ export interface AzureResourceEventArgs extends AzureWorkspaceResource {
 }
 
 export interface RegisterModelEventArgs extends AzureWorkspaceResource {
-	details?: RegisteredModelDetails
+	details?: ImportedModelDetails
 }
 
 export interface PredictModelEventArgs extends PredictParameters {
-	model?: RegisteredModel;
+	model?: ImportedModel;
 	filePath?: string;
 }
 
@@ -35,8 +35,8 @@ export enum ModelSourceType {
 
 export interface ModelViewData {
 	modelFile?: string;
-	modelData: AzureModelResource | string | RegisteredModel;
-	modelDetails?: RegisteredModelDetails;
+	modelData: AzureModelResource | string | ImportedModel;
+	modelDetails?: ImportedModelDetails;
 	targetImportTable?: DatabaseTable;
 }
 
@@ -57,10 +57,14 @@ export const DownloadAzureModelEventName = 'downloadAzureLocalModel';
 export const DownloadRegisteredModelEventName = 'downloadRegisteredModel';
 export const PredictModelEventName = 'predictModel';
 export const RegisterModelEventName = 'registerModel';
+export const EditModelEventName = 'editModel';
+export const UpdateModelEventName = 'updateModel';
+export const DeleteModelEventName = 'deleteModel';
 export const SourceModelSelectedEventName = 'sourceModelSelected';
 export const LoadModelParametersEventName = 'loadModelParameters';
 export const StoreImportTableEventName = 'storeImportTable';
 export const VerifyImportTableEventName = 'verifyImportTable';
+export const SignInToAzureEventName = 'signInToAzure';
 
 /**
  * Base class for all model management views
@@ -94,7 +98,11 @@ export abstract class ModelViewBase extends ViewBase {
 			DownloadRegisteredModelEventName,
 			LoadModelParametersEventName,
 			StoreImportTableEventName,
-			VerifyImportTableEventName]);
+			VerifyImportTableEventName,
+			EditModelEventName,
+			UpdateModelEventName,
+			DeleteModelEventName,
+			SignInToAzureEventName]);
 	}
 
 	/**
@@ -115,7 +123,7 @@ export abstract class ModelViewBase extends ViewBase {
 	/**
 	 * list registered models
 	 */
-	public async listModels(table: DatabaseTable): Promise<RegisteredModel[]> {
+	public async listModels(table: DatabaseTable): Promise<ImportedModel[]> {
 		return await this.sendDataRequest(ListModelsEventName, table);
 	}
 
@@ -170,7 +178,7 @@ export abstract class ModelViewBase extends ViewBase {
 	 * downloads registered model
 	 * @param model model to download
 	 */
-	public async downloadRegisteredModel(model: RegisteredModel | undefined): Promise<string> {
+	public async downloadRegisteredModel(model: ImportedModel | undefined): Promise<string> {
 		return await this.sendDataRequest(DownloadRegisteredModelEventName, model);
 	}
 
@@ -215,7 +223,7 @@ export abstract class ModelViewBase extends ViewBase {
 	 * registers azure model
 	 * @param args azure resource
 	 */
-	public async generatePredictScript(model: RegisteredModel | undefined, filePath: string | undefined, params: PredictParameters | undefined): Promise<void> {
+	public async generatePredictScript(model: ImportedModel | undefined, filePath: string | undefined, params: PredictParameters | undefined): Promise<void> {
 		const args: PredictModelEventArgs = Object.assign({}, params, {
 			model: model,
 			filePath: filePath,
