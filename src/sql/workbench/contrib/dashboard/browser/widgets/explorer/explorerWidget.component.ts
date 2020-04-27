@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/explorerWidget';
 
 import { Component, Inject, forwardRef, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
@@ -47,11 +46,6 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	private _treeDataSource = new ExplorerDataSource();
 	private _treeFilter = new ExplorerFilter();
 
-	private _inited = false;
-	public loading: boolean = false;
-	public loadingMessage: string;
-	public loadingCompletedMessage: string;
-
 	@ViewChild('input') private _inputContainer: ElementRef;
 	@ViewChild('table') private _tableContainer: ElementRef;
 
@@ -64,11 +58,11 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(IContextViewService) private readonly contextViewService: IContextViewService,
 		@Inject(IInstantiationService) private readonly instantiationService: IInstantiationService,
 		@Inject(ICapabilitiesService) private readonly capabilitiesService: ICapabilitiesService,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private readonly _cd: ChangeDetectorRef
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
 	) {
-		super();
-		this.loadingMessage = this._config.context === 'database' ? nls.localize('loadingObjects', "loading objects") : nls.localize('loadingDatabases', "loading databases");
-		this.loadingCompletedMessage = this._config.context === 'database' ? nls.localize('loadingObjectsCompleted', "loading objects completed.") : nls.localize('loadingDatabasesCompleted', "loading databases completed.");
+		super(changeRef);
+		this._loadingMessage = this._config.context === 'database' ? nls.localize('loadingObjects', "loading objects") : nls.localize('loadingDatabases', "loading databases");
+		this._loadingCompletedMessage = this._config.context === 'database' ? nls.localize('loadingObjectsCompleted', "loading objects completed.") : nls.localize('loadingDatabasesCompleted', "loading databases completed.");
 		this.init();
 	}
 
@@ -164,14 +158,6 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	public layout(): void {
 		if (this._inited) {
 			this._tree.layout(getContentHeight(this._tableContainer.nativeElement));
-		}
-	}
-
-	private setLoadingStatus(loading: boolean): void {
-		this.loading = loading;
-
-		if (this._inited) {
-			this._cd.detectChanges();
 		}
 	}
 

@@ -116,7 +116,7 @@ describe('Package Manager', () => {
 
 	it('installDependencies Should install packages that are not already installed', async function (): Promise<void> {
 		let testContext = createContext();
-		//let packagesInstalled = false;
+		let packagesInstalled = false;
 		let installedPackages = `[
 			{"name":"pymssql","version":"2.1.4"}
 		]`;
@@ -128,15 +128,67 @@ describe('Package Manager', () => {
 		});
 		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command) => {
 			if (command.indexOf('pip install') > 0) {
-				//packagesInstalled = true;
+				packagesInstalled = true;
 			}
 			return Promise.resolve(installedPackages);
 		});
 
 		let packageManager = createPackageManager(testContext);
 		await packageManager.installDependencies();
-		//should.equal(testContext.getOpStatus(), azdata.TaskStatus.Succeeded);
-		//should.equal(packagesInstalled, true);
+		should.equal(testContext.getOpStatus(), azdata.TaskStatus.Succeeded);
+		should.equal(packagesInstalled, true);
+	});
+
+	it('installDependencies Should not install packages if runtime is disabled in setting', async function (): Promise<void> {
+		let testContext = createContext();
+		testContext.config.setup(x => x.rEnabled).returns(() => false);
+		testContext.config.setup(x => x.pythonEnabled).returns(() => false);
+		let packagesInstalled = false;
+		let installedPackages = `[
+			{"name":"pymssql","version":"2.1.4"}
+		]`;
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			label: 'Yes'
+		}));
+		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
+			operationInfo.operation(testContext.op);
+		});
+		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command) => {
+			if (command.indexOf('pip install') > 0 || command.indexOf('install.packages') > 0) {
+				packagesInstalled = true;
+			}
+			return Promise.resolve(installedPackages);
+		});
+
+		let packageManager = createPackageManager(testContext);
+		await packageManager.installDependencies();
+		should.equal(testContext.getOpStatus(), azdata.TaskStatus.Succeeded);
+		should.equal(packagesInstalled, false);
+	});
+
+	it('installDependencies Should install packages that have older version installed', async function (): Promise<void> {
+		let testContext = createContext();
+		let packagesInstalled = false;
+		let installedPackages = `[
+			{"name":"sqlmlutils","version":"0.1.1"}
+		]`;
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			label: 'Yes'
+		}));
+		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
+			operationInfo.operation(testContext.op);
+		});
+		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command) => {
+			if (command.indexOf('pip install') > 0) {
+				packagesInstalled = true;
+			}
+			return Promise.resolve(installedPackages);
+		});
+
+		let packageManager = createPackageManager(testContext);
+		await packageManager.installDependencies();
+		should.equal(testContext.getOpStatus(), azdata.TaskStatus.Succeeded);
+		should.equal(packagesInstalled, true);
 	});
 
 	it('installDependencies Should install packages if list packages fails', async function (): Promise<void> {
@@ -197,7 +249,7 @@ describe('Package Manager', () => {
 			{ name: 'pymssql', version: '2.1.4' },
 			{ name: 'sqlmlutils', version: '' }
 		]);
-		testContext.config.setup(x => x.requiredSqlPythonPackages).returns( () => [
+		testContext.config.setup(x => x.requiredSqlRPackages).returns( () => [
 			{ name: 'RODBCext', repository: 'https://cran.microsoft.com' },
 			{ name: 'sqlmlutils', fileName: 'sqlmlutils_0.7.1.zip', downloadUrl: 'https://github.com/microsoft/sqlmlutils/blob/master/R/dist/sqlmlutils_0.7.1.zip?raw=true'}
 		]);

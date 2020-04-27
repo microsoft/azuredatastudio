@@ -17,6 +17,7 @@ import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/workbench
 import { values } from 'vs/base/common/collections';
 import { IUserFriendlyIcon } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { isValidIcon, createCSSRuleForIcon } from 'sql/workbench/contrib/dashboard/browser/dashboardIconUtil';
+import { IDashboardTabGroup, IDashboardTab } from 'sql/workbench/services/dashboard/browser/common/interfaces';
 
 export interface IDashboardTabContrib {
 	id: string;
@@ -237,3 +238,62 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 		}
 	}
 });
+
+/**
+ * Predefined tab groups
+ */
+const PredefinedTabGroups: IDashboardTabGroup[] = [
+	{
+		id: 'administration',
+		title: localize('administrationTabGroup', "Administration")
+	}, {
+		id: 'monitoring',
+		title: localize('monitoringTabGroup', "Monitoring")
+	}, {
+		id: 'performance',
+		title: localize('performanceTabGroup', "Performance")
+	}, {
+		id: 'security',
+		title: localize('securityTabGroup', "Security")
+	}, {
+		id: 'troubleshooting',
+		title: localize('troubleshootingTabGroup', "Troubleshooting")
+	}, {
+		id: 'settings',
+		title: localize('settingsTabGroup', "Settings")
+	}
+];
+
+PredefinedTabGroups.forEach(tabGroup => registerTabGroup(tabGroup));
+
+/**
+ * Common Tabs
+ */
+const CommonTabs: IDashboardTab[] = [
+	{
+		id: 'databasesTab',
+		description: localize('databasesTabDescription', "databases tab"),
+		provider: 'MSSQL',
+		title: localize('databasesTabTitle', "Databases"),
+		when: 'dashboardContext == \'server\' && !mssql:iscloud && mssql:engineedition != 11',
+		group: 'home',
+		iconClass: 'database-colored',
+		publisher: undefined,
+		container: {
+			'widgets-container': [
+				{
+					name: localize('databasesWidgetTitle', "Search"),
+					gridItemConfig: {
+						sizex: 3,
+						sizey: 3
+					},
+					widget: {
+						'explorer-widget': {}
+					}
+				}
+			]
+		}
+	}
+];
+
+CommonTabs.forEach(tab => registerTab(tab));

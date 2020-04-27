@@ -2,12 +2,8 @@
 	"sqlPackageManagement": {
 		"requiredPythonPackages": [
 			{
-				"name": "pymssql",
-				"version": "2.1.4"
-			},
-			{
 				"name": "sqlmlutils",
-				"version": ""
+				"version": "1.0.0"
 			}
 		],
 		"requiredRPackages": [

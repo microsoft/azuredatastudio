@@ -16,7 +16,8 @@
   ],
   "scripts": {
     "compile": "gulp compile-extension:mssql-client",
-    "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
+    "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json",
+    "postinstall": "node ./build/postinstall.js"
   },
   "contributes": {
     "commands": [
@@ -443,6 +444,7 @@
         "description": "%tab.bigDataClusterDescription%",
         "provider": "MSSQL",
         "title": "%title.bigDataCluster%",
+        "group": "monitoring",
         "when": "connectionProvider == 'MSSQL' && mssql:iscluster && dashboardContext == 'server'",
         "container": {
           "grid-container": [
@@ -481,32 +483,6 @@
                 "modelview": {
                   "id": "books-widget"
                 }
-              }
-            }
-          ]
-        }
-      },
-      {
-        "id": "mssql-databases",
-        "description": "%mssql.tabs.databases%",
-        "provider": "*",
-        "title": "%mssql.tabs.databases%",
-        "when": "dashboardContext == 'server'",
-        "group": "home",
-        "icon": {
-          "light": "resources/light/database.svg",
-          "dark": "resources/dark/database_inverse.svg"
-        },
-        "container": {
-          "widgets-container": [
-            {
-              "name": "%explorer-widget-title%",
-              "gridItemConfig": {
-                "sizex": 3,
-                "sizey": 3
-              },
-              "widget": {
-                "explorer-widget": {}
               }
             }
           ]
@@ -1059,13 +1035,13 @@
     }
   },
   "dependencies": {
+    "ads-kerberos": "^1.1.3",
     "buffer-stream-reader": "^0.1.1",
     "bytes": "^3.1.0",
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.0.0",
     "error-ex": "^1.3.2",
     "figures": "^2.0.0",
     "find-remove": "1.2.1",
-    "kerberos": "^1.1.3",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
     "service-downloader": "0.2.1",
@@ -1079,7 +1055,6 @@
   "devDependencies": {
     "@types/bytes": "^3.0.0",
     "@types/chai": "^4.2.11",
-    "@types/kerberos": "^1.1.0",
     "@types/mocha": "^7.0.2",
     "@types/request": "^2.48.2",
     "@types/request-promise": "^4.1.44",
@@ -1087,7 +1062,9 @@
     "@types/through2": "^2.0.34",
     "chai": "^4.2.0",
     "mocha": "^7.1.1",
+    "mocha-junit-reporter": "^1.17.0",
+    "mocha-multi-reporters": "^1.1.7",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.6"
   }
 }

@@ -5,6 +5,7 @@
 
 import * as msRest from '@azure/ms-rest-js';
 import { Resource } from '@azure/arm-machinelearningservices/esm/models';
+import { DatabaseTable } from '../prediction/interfaces';
 
 /**
  * An interface representing ListWorkspaceModelResult.
@@ -46,11 +47,12 @@ export type WorkspacesModelsResponse = ListWorkspaceModelsResult & {
 };
 
 /**
- * An interface representing registered model
+ * An interface representing imported model
  */
-export interface RegisteredModel extends RegisteredModelDetails {
+export interface ImportedModel extends ImportedModelDetails {
 	id: number;
-	artifactName: string;
+	content?: string;
+	table: DatabaseTable;
 }
 
 export interface ModelParameter {
@@ -64,13 +66,19 @@ export interface ModelParameters {
 }
 
 /**
- * An interface representing registered model
+ * An interface representing imported model
  */
-export interface RegisteredModelDetails {
-	title: string;
+export interface ImportedModelDetails {
+	modelName: string;
 	created?: string;
+	deploymentTime?: string;
 	version?: string;
 	description?: string;
+	fileName?: string;
+	framework?: string;
+	frameworkVersion?: string;
+	runId?: string;
+	deployedBy?: string;
 }
 
 /**
@@ -230,3 +238,4 @@ export interface ArtifactAPIGetArtifactContentInformation2OptionalParams extends
 	 */
 	accountName?: string;
 }
+

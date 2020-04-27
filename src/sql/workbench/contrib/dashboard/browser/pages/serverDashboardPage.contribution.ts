@@ -93,6 +93,16 @@ const defaultVal = [
 		widget: {
 			'all-database-size-server-insight': null
 		}
+	}, {
+		name: nls.localize('explorerWidgetsTitle', "Search"),
+		gridItemConfig: {
+			sizex: 2,
+			sizey: 2
+		},
+		when: 'connectionProvider != \'MSSQL\' || mssql:engineedition == 11 || mssql:iscloud',
+		widget: {
+			'explorer-widget': {}
+		}
 	}
 ];
 

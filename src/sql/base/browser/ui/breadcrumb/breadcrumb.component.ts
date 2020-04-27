@@ -16,7 +16,7 @@ import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 @Component({
 	selector: 'breadcrumb',
 	template: `
-				<span style="display: flex; flex-flow: row; align-items: center; margin: 10px">
+				<span class="breadcrumb-container">
 					<ng-template ngFor let-item let-first="first" let-last="last" [ngForOf]="menuItems">
 						<span style="padding: 5px; display: flex; align-items: center">
 							<span *ngIf="item.icon" class="codicon" style="display: inline-block; margin-right: 5px" [ngClass]="item.icon"></span>

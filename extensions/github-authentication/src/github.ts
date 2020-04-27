@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import * as uuid from 'uuid';
 import { keychain } from './common/keychain';
 import { GitHubServer } from './githubServer';
 import Logger from './common/logger';
@@ -12,9 +13,24 @@ export const onDidChangeSessions = new vscode.EventEmitter<vscode.Authentication
 
 interface SessionData {
 	id: string;
+	account?: {
+		displayName: string;
+		id: string;
+	}
+	scopes: string[];
+	accessToken: string;
+}
+
+// TODO remove
+interface OldSessionData {
+	id: string;
 	accountName: string;
 	scopes: string[];
 	accessToken: string;
+}
+
+function isOldSessionData(x: any): x is OldSessionData {
+	return !!x.accountName;
 }
 
 export class GitHubAuthenticationProvider {
@@ -67,15 +83,34 @@ export class GitHubAuthenticationProvider {
 		const storedSessions = await keychain.getToken();
 		if (storedSessions) {
 			try {
-				const sessionData: SessionData[] = JSON.parse(storedSessions);
-				return sessionData.map(session => {
-					return {
-						id: session.id,
-						accountName: session.accountName,
-						scopes: session.scopes,
-						getAccessToken: () => Promise.resolve(session.accessToken)
-					};
+				const sessionData: (SessionData | OldSessionData)[] = JSON.parse(storedSessions);
+				const sessionPromises = sessionData.map(async (session: SessionData | OldSessionData): Promise<vscode.AuthenticationSession | undefined> => {
+					try {
+						const needsUserInfo = isOldSessionData(session) || !session.account;
+						let userInfo: { id: string, accountName: string };
+						if (needsUserInfo) {
+							userInfo = await this._githubServer.getUserInfo(session.accessToken);
+						}
+
+						return {
+							id: session.id,
+							account: {
+								displayName: isOldSessionData(session)
+									? session.accountName
+									: session.account?.displayName ?? userInfo!.accountName,
+								id: isOldSessionData(session)
+									? userInfo!.id
+									: session.account?.id ?? userInfo!.id
+							},
+							scopes: session.scopes,
+							getAccessToken: () => Promise.resolve(session.accessToken)
+						};
+					} catch (e) {
+						return undefined;
+					}
 				});
+
+				return (await Promise.all(sessionPromises)).filter((x: vscode.AuthenticationSession | undefined): x is vscode.AuthenticationSession => !!x);
 			} catch (e) {
 				Logger.error(`Error reading sessions: ${e}`);
 			}
@@ -89,7 +124,7 @@ export class GitHubAuthenticationProvider {
 			const resolvedAccessToken = await session.getAccessToken();
 			return {
 				id: session.id,
-				accountName: session.accountName,
+				account: session.account,
 				scopes: session.scopes,
 				accessToken: resolvedAccessToken
 			};
@@ -122,9 +157,12 @@ export class GitHubAuthenticationProvider {
 	private async tokenToSession(token: string, scopes: string[]): Promise<vscode.AuthenticationSession> {
 		const userInfo = await this._githubServer.getUserInfo(token);
 		return {
-			id: userInfo.id,
+			id: uuid(),
 			getAccessToken: () => Promise.resolve(token),
-			accountName: userInfo.accountName,
+			account: {
+				displayName: userInfo.accountName,
+				id: userInfo.id
+			},
 			scopes: scopes
 		};
 	}
@@ -136,7 +174,7 @@ export class GitHubAuthenticationProvider {
 			this._sessions.push(session);
 		}
 
-		this.storeSessions();
+		await this.storeSessions();
 	}
 
 	public async logout(id: string) {
@@ -144,9 +182,13 @@ export class GitHubAuthenticationProvider {
 		if (sessionIndex > -1) {
 			const session = this._sessions.splice(sessionIndex, 1)[0];
 			const token = await session.getAccessToken();
-			await this._githubServer.revokeToken(token);
+			try {
+				await this._githubServer.revokeToken(token);
+			} catch (_) {
+				// ignore, should still remove from keychain
+			}
 		}
 
-		this.storeSessions();
+		await this.storeSessions();
 	}
 }

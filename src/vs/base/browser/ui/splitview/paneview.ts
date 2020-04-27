@@ -31,6 +31,7 @@ export interface IPaneStyles {
 	headerForeground?: Color;
 	headerBackground?: Color;
 	headerBorder?: Color;
+	leftBorder?: Color;
 }
 
 /**
@@ -235,6 +236,7 @@ export abstract class Pane extends Disposable implements IView {
 		const height = this._orientation === Orientation.VERTICAL ? size - headerSize : this.orthogonalSize - headerSize;
 
 		if (this.isExpanded()) {
+			toggleClass(this.body, 'wide', width >= 600);
 			this.layoutBody(height, width);
 			this.expandedSize = size;
 		}
@@ -242,6 +244,8 @@ export abstract class Pane extends Disposable implements IView {
 
 	style(styles: IPaneStyles): void {
 		this.styles = styles;
+
+		this.element.style.borderLeft = this.styles.leftBorder && this.orientation === Orientation.HORIZONTAL ? `1px solid ${this.styles.leftBorder}` : '';
 
 		if (!this.header) {
 			return;
@@ -261,7 +265,7 @@ export abstract class Pane extends Disposable implements IView {
 
 		this.header.style.color = this.styles.headerForeground ? this.styles.headerForeground.toString() : '';
 		this.header.style.backgroundColor = this.styles.headerBackground ? this.styles.headerBackground.toString() : '';
-		this.header.style.borderTop = this.styles.headerBorder ? `1px solid ${this.styles.headerBorder}` : '';
+		this.header.style.borderTop = this.styles.headerBorder && this.orientation === Orientation.VERTICAL ? `1px solid ${this.styles.headerBorder}` : '';
 		this._dropBackground = this.styles.dropBackground;
 	}
 

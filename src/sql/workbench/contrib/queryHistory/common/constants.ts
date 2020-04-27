@@ -6,4 +6,5 @@
 /**
  * Query History panel id
  */
-export const QUERY_HISTORY_PANEL_ID = 'workbench.panel.queryHistory';
+export const QUERY_HISTORY_CONTAINER_ID = 'workbench.panel.queryHistory';
+export const QUERY_HISTORY_VIEW_ID = 'workbench.panel.queryHistory.view';

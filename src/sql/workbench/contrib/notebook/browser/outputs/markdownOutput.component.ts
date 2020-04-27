@@ -3,10 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!../cellViews/textCell';
-import 'vs/css!../cellViews/media/markdown';
-import 'vs/css!../cellViews/media/highlight';
-
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild } from '@angular/core';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IMimeComponent } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRegistry';

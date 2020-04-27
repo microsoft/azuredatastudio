@@ -5,16 +5,19 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnDestroy, ViewChild } from '@angular/core';
 import { NavigationBarLayout, PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { TabType } from 'sql/base/browser/ui/panel/tab.component';
-// eslint-disable-next-line code-import-patterns
-import { TabOrientation, TabbedPanelLayout } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import 'vs/css!./media/tabbedPanel';
+import { IUserFriendlyIcon, createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
+import { TabbedPanelLayout } from 'azdata';
 
 export interface TabConfig {
 	title: string;
 	id?: string;
 	group: string;
+	icon?: IUserFriendlyIcon;
 }
 
 interface Tab {
@@ -22,6 +25,15 @@ interface Tab {
 	content?: IComponentDescriptor;
 	id?: string;
 	type: TabType;
+	iconClass?: string;
+}
+
+/**
+ * Defines the tab orientation of TabbedPanelComponent
+ */
+export enum TabOrientation {
+	Vertical = 'vertical',
+	Horizontal = 'horizontal'
 }
 
 @Component({
@@ -37,7 +49,9 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
+	) {
 		super(changeRef, el);
 	}
 
@@ -46,6 +60,7 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 	}
 
 	ngAfterViewInit(): void {
+		this._register(attachTabbedPanelStyler(this._panel, this.themeService));
 	}
 
 	ngOnDestroy(): void {
@@ -54,9 +69,9 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 
 	setLayout(layout: TabbedPanelLayout): void {
 		this._panel.options = {
-			showTabsWhenOne: true,
-			layout: layout.orientation === TabOrientation.Horizontal ? NavigationBarLayout.horizontal : NavigationBarLayout.vertical,
-			showIcon: false
+			alwaysShowTabs: layout.alwaysShowTabs ?? false,
+			layout: (layout.orientation ?? TabOrientation.Horizontal) === TabOrientation.Horizontal ? NavigationBarLayout.horizontal : NavigationBarLayout.vertical,
+			showIcon: layout.showIcon ?? false
 		};
 	}
 
@@ -86,11 +101,24 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 					title: item.config.title,
 					id: item.config.id,
 					content: item.descriptor,
+					iconClass: item.config.icon ? createIconCssClass(item.config.icon) : undefined,
 					type: 'tab'
 				});
 			}
 			this._itemIndexToProcess = this.items.length;
 		}
 		return this._tabs;
+	}
+
+	onItemsUpdated(): void {
+		if (this.items.length === 0) {
+			this._itemIndexToProcess = 0;
+			this._tabs = [];
+		}
+
+		const firstTabIndex = this._tabs.findIndex(tab => tab.type === 'tab');
+		if (firstTabIndex >= 0) {
+			this._panel.selectTab(firstTabIndex);
+		}
 	}
 }

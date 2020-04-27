@@ -30,28 +30,6 @@ export class PackageManagementService {
 	}
 
 	/**
-	 * Opens ODBC driver documents
-	 */
-	public async openOdbcDriverDocuments(): Promise<boolean> {
-		if (utils.isWindows()) {
-			return await this._apiWrapper.openExternal(vscode.Uri.parse(constants.odbcDriverWindowsDocuments));
-		} else {
-			return await this._apiWrapper.openExternal(vscode.Uri.parse(constants.odbcDriverLinuxDocuments));
-		}
-	}
-
-	/**
-	 * Opens install MLS documents
-	 */
-	public async openInstallDocuments(): Promise<boolean> {
-		if (utils.isWindows()) {
-			return await this._apiWrapper.openExternal(vscode.Uri.parse(constants.installMlsWindowsDocs));
-		} else {
-			return await this._apiWrapper.openExternal(vscode.Uri.parse(constants.installMlsLinuxDocs));
-		}
-	}
-
-	/**
 	 * Returns true if mls is installed in the give SQL server instance
 	 */
 	public async isMachineLearningServiceEnabled(connection: azdata.connection.ConnectionProfile): Promise<boolean> {
@@ -103,15 +81,15 @@ export class PackageManagementService {
 	 * Returns python packages installed in SQL server instance
 	 * @param connection SQL Connection
 	 */
-	public async getPythonPackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
-		return this._queryRunner.getPythonPackages(connection);
+	public async getPythonPackages(connection: azdata.connection.ConnectionProfile, databaseName: string): Promise<nbExtensionApis.IPackageDetails[]> {
+		return this._queryRunner.getPythonPackages(connection, databaseName);
 	}
 
 	/**
 	 * Returns python packages installed in SQL server instance
 	 * @param connection SQL Connection
 	 */
-	public async getRPackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
-		return this._queryRunner.getRPackages(connection);
+	public async getRPackages(connection: azdata.connection.ConnectionProfile, databaseName: string): Promise<nbExtensionApis.IPackageDetails[]> {
+		return this._queryRunner.getRPackages(connection, databaseName);
 	}
 }

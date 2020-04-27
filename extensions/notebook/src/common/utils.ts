@@ -177,7 +177,7 @@ export function comparePackageVersions(first: string, second: string): number {
 	return 0;
 }
 
-export function sortPackageVersions(versions: string[], ascending: boolean = true) {
+export function sortPackageVersions(versions: string[], ascending: boolean = true): string[] {
 	return versions.sort((first, second) => {
 		let compareResult = comparePackageVersions(first, second);
 		if (ascending) {
@@ -186,14 +186,6 @@ export function sortPackageVersions(versions: string[], ascending: boolean = tru
 			return compareResult * -1;
 		}
 	});
-}
-
-// PRIVATE HELPERS /////////////////////////////////////////////////////////
-function outputDataChunk(data: string | Buffer, outputChannel: vscode.OutputChannel, header: string): void {
-	data.toString().split(/\r?\n/)
-		.forEach(line => {
-			outputChannel.appendLine(header + line);
-		});
 }
 
 export function isEditorTitleFree(title: string): boolean {
@@ -261,4 +253,44 @@ export function getIgnoreSslVerificationConfigSetting(): boolean {
 		console.error(`Unexpected error retrieving ${bdcConfigSectionName}.${ignoreSslConfigName} setting : ${error}`);
 	}
 	return true;
+}
+
+export function debounce(delay: number): Function {
+	return decorate((fn, key) => {
+		const timerKey = `$debounce$${key}`;
+
+		return function (this: any, ...args: any[]) {
+			clearTimeout(this[timerKey]);
+			this[timerKey] = setTimeout(() => fn.apply(this, args), delay);
+		};
+	});
+}
+
+// PRIVATE HELPERS /////////////////////////////////////////////////////////
+function outputDataChunk(data: string | Buffer, outputChannel: vscode.OutputChannel, header: string): void {
+	data.toString().split(/\r?\n/)
+		.forEach(line => {
+			outputChannel.appendLine(header + line);
+		});
+}
+
+function decorate(decorator: (fn: Function, key: string) => Function): Function {
+	return (_target: any, key: string, descriptor: any) => {
+		let fnKey: string | null = null;
+		let fn: Function | null = null;
+
+		if (typeof descriptor.value === 'function') {
+			fnKey = 'value';
+			fn = descriptor.value;
+		} else if (typeof descriptor.get === 'function') {
+			fnKey = 'get';
+			fn = descriptor.get;
+		}
+
+		if (!fn || !fnKey) {
+			throw new Error('not supported');
+		}
+
+		descriptor[fnKey] = decorator(fn, key);
+	};
 }

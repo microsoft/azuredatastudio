@@ -9,10 +9,10 @@ import 'mocha';
 import { createContext } from './utils';
 import {
 	ListModelsEventName, ListAccountsEventName, ListSubscriptionsEventName, ListGroupsEventName, ListWorkspacesEventName,
-	ListAzureModelsEventName, ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, LoadModelParametersEventName, DownloadAzureModelEventName, DownloadRegisteredModelEventName
+	ListAzureModelsEventName, ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, LoadModelParametersEventName, DownloadAzureModelEventName, DownloadRegisteredModelEventName, ModelSourceType
 }
 	from '../../../views/models/modelViewBase';
-import { RegisteredModel, ModelParameters } from '../../../modelManagement/interfaces';
+import { ImportedModel, ModelParameters } from '../../../modelManagement/interfaces';
 import { azureResource } from '../../../typings/azure-resource';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { ViewBase } from '../../../views/viewBase';
@@ -34,6 +34,11 @@ describe('Predict Wizard', () => {
 		let testContext = createContext();
 
 		let view = new PredictWizard(testContext.apiWrapper.object, '');
+		view.importTable = {
+			databaseName: 'db',
+			tableName: 'tb',
+			schema: 'dbo'
+		};
 		await view.open();
 		let accounts: azdata.Account[] = [
 			{
@@ -75,11 +80,15 @@ describe('Predict Wizard', () => {
 				name: 'model'
 			}
 		];
-		let localModels: RegisteredModel[] = [
+		let localModels: ImportedModel[] = [
 			{
 				id: 1,
-				artifactName: 'model',
-				title: 'model'
+				modelName: 'model',
+				table: {
+					databaseName: 'db',
+					tableName: 'tb',
+					schema: 'dbo'
+				}
 			}
 		];
 		const dbNames: string[] = [
@@ -164,9 +173,25 @@ describe('Predict Wizard', () => {
 		view.on(DownloadRegisteredModelEventName, () => {
 			view.sendCallbackRequest(ViewBase.getCallbackEventName(DownloadRegisteredModelEventName), { data: 'path' });
 		});
+		if (view.modelBrowsePage) {
+			view.modelBrowsePage.modelSourceType = ModelSourceType.Azure;
+		}
 		await view.refresh();
 		should.notEqual(view.azureModelsComponent?.data, undefined);
+
+		if (view.modelBrowsePage) {
+			view.modelBrowsePage.modelSourceType = ModelSourceType.RegisteredModels;
+		}
+		await view.refresh();
+		testContext.onClick.fire(undefined);
+
+		should.equal(view.modelSourcePage?.data, ModelSourceType.RegisteredModels);
 		should.notEqual(view.localModelsComponent?.data, undefined);
+		should.notEqual(view.modelBrowsePage?.registeredModelsComponent?.data, undefined);
+		if (view.modelBrowsePage?.registeredModelsComponent?.data) {
+			should.equal(view.modelBrowsePage.registeredModelsComponent.data.length, 1);
+		}
+
 
 		should.notEqual(await view.getModelFileName(), undefined);
 		await view.columnsSelectionPage?.onEnter();

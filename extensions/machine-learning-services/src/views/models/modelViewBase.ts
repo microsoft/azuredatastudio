@@ -8,29 +8,36 @@ import * as azdata from 'azdata';
 import { azureResource } from '../../typings/azure-resource';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { ViewBase } from '../viewBase';
-import { RegisteredModel, WorkspaceModel, RegisteredModelDetails, ModelParameters } from '../../modelManagement/interfaces';
+import { ImportedModel, WorkspaceModel, ImportedModelDetails, ModelParameters } from '../../modelManagement/interfaces';
 import { PredictParameters, DatabaseTable, TableColumn } from '../../prediction/interfaces';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { AzureWorkspaceResource, AzureModelResource } from '../interfaces';
+
 
 export interface AzureResourceEventArgs extends AzureWorkspaceResource {
 }
 
 export interface RegisterModelEventArgs extends AzureWorkspaceResource {
-	details?: RegisteredModelDetails
-}
-
-export interface RegisterAzureModelEventArgs extends AzureModelResource, RegisterModelEventArgs {
-	model?: WorkspaceModel;
+	details?: ImportedModelDetails
 }
 
 export interface PredictModelEventArgs extends PredictParameters {
-	model?: RegisteredModel;
+	model?: ImportedModel;
 	filePath?: string;
 }
 
-export interface RegisterLocalModelEventArgs extends RegisterModelEventArgs {
-	filePath?: string;
+
+export enum ModelSourceType {
+	Local,
+	Azure,
+	RegisteredModels
+}
+
+export interface ModelViewData {
+	modelFile?: string;
+	modelData: AzureModelResource | string | ImportedModel;
+	modelDetails?: ImportedModelDetails;
+	targetImportTable?: DatabaseTable;
 }
 
 // Event names
@@ -50,13 +57,23 @@ export const DownloadAzureModelEventName = 'downloadAzureLocalModel';
 export const DownloadRegisteredModelEventName = 'downloadRegisteredModel';
 export const PredictModelEventName = 'predictModel';
 export const RegisterModelEventName = 'registerModel';
+export const EditModelEventName = 'editModel';
+export const UpdateModelEventName = 'updateModel';
+export const DeleteModelEventName = 'deleteModel';
 export const SourceModelSelectedEventName = 'sourceModelSelected';
 export const LoadModelParametersEventName = 'loadModelParameters';
+export const StoreImportTableEventName = 'storeImportTable';
+export const VerifyImportTableEventName = 'verifyImportTable';
+export const SignInToAzureEventName = 'signInToAzure';
 
 /**
  * Base class for all model management views
  */
 export abstract class ModelViewBase extends ViewBase {
+
+	private _modelSourceType: ModelSourceType = ModelSourceType.Local;
+	private _modelsViewData: ModelViewData[] = [];
+	private _importTable: DatabaseTable | undefined;
 
 	constructor(apiWrapper: ApiWrapper, root?: string, parent?: ModelViewBase) {
 		super(apiWrapper, root, parent);
@@ -79,7 +96,13 @@ export abstract class ModelViewBase extends ViewBase {
 			PredictModelEventName,
 			DownloadAzureModelEventName,
 			DownloadRegisteredModelEventName,
-			LoadModelParametersEventName]);
+			LoadModelParametersEventName,
+			StoreImportTableEventName,
+			VerifyImportTableEventName,
+			EditModelEventName,
+			UpdateModelEventName,
+			DeleteModelEventName,
+			SignInToAzureEventName]);
 	}
 
 	/**
@@ -100,8 +123,8 @@ export abstract class ModelViewBase extends ViewBase {
 	/**
 	 * list registered models
 	 */
-	public async listModels(): Promise<RegisteredModel[]> {
-		return await this.sendDataRequest(ListModelsEventName);
+	public async listModels(table: DatabaseTable): Promise<ImportedModel[]> {
+		return await this.sendDataRequest(ListModelsEventName, table);
 	}
 
 	/**
@@ -147,19 +170,15 @@ export abstract class ModelViewBase extends ViewBase {
 	 * registers local model
 	 * @param localFilePath local file path
 	 */
-	public async registerLocalModel(localFilePath: string | undefined, details: RegisteredModelDetails | undefined): Promise<void> {
-		const args: RegisterLocalModelEventArgs = {
-			filePath: localFilePath,
-			details: details
-		};
-		return await this.sendDataRequest(RegisterLocalModelEventName, args);
+	public async importLocalModel(models: ModelViewData[]): Promise<void> {
+		return await this.sendDataRequest(RegisterLocalModelEventName, models);
 	}
 
 	/**
 	 * downloads registered model
 	 * @param model model to download
 	 */
-	public async downloadRegisteredModel(model: RegisteredModel | undefined): Promise<string> {
+	public async downloadRegisteredModel(model: ImportedModel | undefined): Promise<string> {
 		return await this.sendDataRequest(DownloadRegisteredModelEventName, model);
 	}
 
@@ -182,18 +201,29 @@ export abstract class ModelViewBase extends ViewBase {
 	 * registers azure model
 	 * @param args azure resource
 	 */
-	public async registerAzureModel(resource: AzureModelResource | undefined, details: RegisteredModelDetails | undefined): Promise<void> {
-		const args: RegisterAzureModelEventArgs = Object.assign({}, resource, {
-			details: details
-		});
-		return await this.sendDataRequest(RegisterAzureModelEventName, args);
+	public async importAzureModel(models: ModelViewData[]): Promise<void> {
+		return await this.sendDataRequest(RegisterAzureModelEventName, models);
+	}
+
+	/**
+	 * Stores the name of the table as recent config table for importing models
+	 */
+	public async storeImportConfigTable(): Promise<void> {
+		await this.sendRequest(StoreImportTableEventName, this.importTable);
+	}
+
+	/**
+	 * Verifies if table is valid to import models to
+	 */
+	public async verifyImportConfigTable(table: DatabaseTable): Promise<boolean> {
+		return await this.sendDataRequest(VerifyImportTableEventName, table);
 	}
 
 	/**
 	 * registers azure model
 	 * @param args azure resource
 	 */
-	public async generatePredictScript(model: RegisteredModel | undefined, filePath: string | undefined, params: PredictParameters | undefined): Promise<void> {
+	public async generatePredictScript(model: ImportedModel | undefined, filePath: string | undefined, params: PredictParameters | undefined): Promise<void> {
 		const args: PredictModelEventArgs = Object.assign({}, params, {
 			model: model,
 			filePath: filePath,
@@ -213,6 +243,72 @@ export abstract class ModelViewBase extends ViewBase {
 			subscription: subscription
 		};
 		return await this.sendDataRequest(ListGroupsEventName, args);
+	}
+
+	/**
+	 * Sets model source type
+	 */
+	public set modelSourceType(value: ModelSourceType) {
+		if (this.parent) {
+			this.parent.modelSourceType = value;
+		} else {
+			this._modelSourceType = value;
+		}
+	}
+
+	/**
+	 * Returns model source type
+	 */
+	public get modelSourceType(): ModelSourceType {
+		if (this.parent) {
+			return this.parent.modelSourceType;
+		} else {
+			return this._modelSourceType;
+		}
+	}
+
+	/**
+	 * Sets model data
+	 */
+	public set modelsViewData(value: ModelViewData[]) {
+		if (this.parent) {
+			this.parent.modelsViewData = value;
+		} else {
+			this._modelsViewData = value;
+		}
+	}
+
+	/**
+	 * Returns model data
+	 */
+	public get modelsViewData(): ModelViewData[] {
+		if (this.parent) {
+			return this.parent.modelsViewData;
+		} else {
+			return this._modelsViewData;
+		}
+	}
+
+	/**
+	 * Sets import table
+	 */
+	public set importTable(value: DatabaseTable | undefined) {
+		if (this.parent) {
+			this.parent.importTable = value;
+		} else {
+			this._importTable = value;
+		}
+	}
+
+	/**
+	 * Returns import table
+	 */
+	public get importTable(): DatabaseTable | undefined {
+		if (this.parent) {
+			return this.parent.importTable;
+		} else {
+			return this._importTable;
+		}
 	}
 
 	/**
