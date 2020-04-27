@@ -7,7 +7,7 @@
 }
 
 .notebookEditor .taskbarSeparator {
-	margin: 0 16px;
+	margin: 0 16px 0 -8px;
 }
 
 .notebookEditor .editor-toolbar {
@@ -43,20 +43,23 @@
 	text-align: center;
 	cursor: pointer;
 	padding-left: 18px;
-	background-size: 13px;
+	background-size: 16px;
 	margin-right: 20px;
 	font-size: 13px;
 	height: 21px;
 }
 .notebookEditor .actions-container .action-item .notebook-button.masked {
-	margin-right: 8px;
+	margin-right: 0;
 	width: 16px;
+}
+.notebookEditor .actions-container .action-item:last-child {
+	margin-right: 12px;
 }
 
 .notebookEditor .labelOnLeftContainer {
 	min-width: 100px;
 	max-width: 250px;
-	margin-right: 20px;
+	margin-right: 14px;
 	font-size: 13px;
 	text-align: center;
 	vertical-align: bottom;

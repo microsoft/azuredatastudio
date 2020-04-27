@@ -8,7 +8,7 @@ import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/
 import { SIDE_BAR_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
 import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, editorBackground, lighten } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
-import { cellBorder, notebookToolbarIcon, markdownEditorBackground, splitBorder, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder } from 'sql/platform/theme/common/colorRegistry';
+import { cellBorder, notebookToolbarIcon, notebookToolbarLines, dropdownArrow, markdownEditorBackground, splitBorder, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder } from 'sql/platform/theme/common/colorRegistry';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
@@ -211,6 +211,15 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		const notebookToolbarIconColor = theme.getColor(notebookToolbarIcon);
 		if (notebookToolbarIconColor) {
 			collector.addRule(`.notebookEditor .notebook-button.masked { background-color: ${notebookToolbarIconColor};}`);
+		}
+		const notebookToolbarLinesColor = theme.getColor(notebookToolbarLines);
+		if (notebookToolbarLinesColor) {
+			//collector.addRule(`.notebookEditor .notebook-button. { border-color: ${notebookToolbarLinesColor};}`);
+		}
+
+		const dropdownArrowColor = theme.getColor(dropdownArrow);
+		if (dropdownArrowColor) {
+			collector.addRule(`.monaco-workbench .notebookEditor .select-container:after { color: ${dropdownArrowColor};}`);
 		}
 
 		// Cell border

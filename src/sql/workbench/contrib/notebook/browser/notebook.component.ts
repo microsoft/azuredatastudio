@@ -395,16 +395,19 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	protected initActionBar(): void {
-		let kernelContainer = document.createElement('div');
+		let kernelContainer = document.createElement('li');
 		let kernelDropdown = new KernelsDropdown(kernelContainer, this.contextViewService, this.modelReady);
 		kernelDropdown.render(kernelContainer);
 		attachSelectBoxStyler(kernelDropdown, this.themeService);
 
-		let attachToContainer = document.createElement('div');
+		let attachToContainer = document.createElement('li');
 		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
 			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
 		attachToDropdown.render(attachToContainer);
 		attachSelectBoxStyler(attachToDropdown, this.themeService);
+
+		let spacerElement = document.createElement('li');
+		spacerElement.style.marginLeft = 'auto';
 
 		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Cell"), 'notebook-button codicon new-blue');
 		addCodeCellButton.cellType = CellTypes.Code;
@@ -430,6 +433,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			{ element: Taskbar.createTaskbarSeparator() },
 			{ element: attachToContainer },
 			{ element: kernelContainer },
+			{ element: spacerElement },
 			{ action: collapseCellsAction },
 			{ action: clearResultsButton },
 			{ action: this._trustedAction },

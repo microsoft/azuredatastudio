@@ -114,7 +114,7 @@ export interface IToggleableState {
 	toggleOnLabel: string;
 	toggleOffLabel: string;
 	toggleOffClass: string;
-	maskedIconClass: string;
+	maskedIconClass?: string;
 	isOn: boolean;
 }
 
@@ -134,7 +134,7 @@ export abstract class ToggleableAction extends Action {
 
 		let classes: string = '';
 
-		if (this.state.shouldToggleTooltip) {
+		if (this.state.shouldToggleTooltip && this.state.maskedIconClass) {
 			//mask
 			classes = this.state.baseClass ? `${this.state.baseClass} ${this.state.maskedIconClass} ` : '';
 		} else {
