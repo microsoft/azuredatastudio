@@ -200,6 +200,7 @@ export interface FieldInfo extends SubFieldInfo, SharedFieldAttributes {
 	description?: string;
 	fontStyle?: FontStyle;
 	labelFontWeight?: FontWeight;
+	textFontWeight?: FontWeight;
 	links?: azdata.LinkArea[];
 	editable?: boolean; // for editable drop-down,
 	enabled?: boolean;

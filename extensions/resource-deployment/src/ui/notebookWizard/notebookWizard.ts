@@ -4,19 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-
 import { INotebookService } from '../../services/notebookService';
+import { Model } from '../model';
 import { WizardBase } from '../wizardBase';
 import { WizardPageBase } from '../wizardPageBase';
 import { DeploymentType, NotebookWizardInfo } from './../../interfaces';
 import { IPlatformService } from './../../services/platformService';
-import { NotebookWizardModel } from './notebookWizardModel';
 import { NotebookWizardPage } from './notebookWizardPage';
 import { NotebookWizardSummaryPage } from './notebookWizardSummaryPage';
 
 const localize = nls.loadMessageBundle();
 
-export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardModel> {
+export class NotebookWizard extends WizardBase<NotebookWizard, Model> {
 
 	public get notebookService(): INotebookService {
 		return this._notebookService;
@@ -31,7 +30,7 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardMod
 	}
 
 	constructor(private _wizardInfo: NotebookWizardInfo, private _notebookService: INotebookService, private _platformService: IPlatformService) {
-		super(_wizardInfo.title, new NotebookWizardModel());
+		super(_wizardInfo.title, new Model());
 		this.wizardObject.doneButton.label = _wizardInfo.actionText || this.wizardObject.doneButton.label;
 	}
 
@@ -52,7 +51,7 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardMod
 	protected onOk(): void {
 		this.model.setEnvironmentVariables();
 		if (this.wizardInfo.runNotebook) {
-			this.platformService.backgroundExecuteNotebook(this.wizardInfo.taskName, this.wizardInfo.notebook, this.notebookService, 'deploy');
+			this.notebookService.backgroundExecuteNotebook(this.wizardInfo.taskName, this.wizardInfo.notebook, 'deploy', this.platformService);
 		} else {
 			this.notebookService.launchNotebook(this.wizardInfo.notebook).then(() => { }, (error) => {
 				vscode.window.showErrorMessage(error);

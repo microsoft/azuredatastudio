@@ -42,7 +42,7 @@ export class Model {
 		});
 	}
 
-	public interpolateVariables(input:string): string {
+	public expandVariableValues(input:string): string {
 		this.keys().forEach(propertyName => {
 			const value = this.getStringValue(propertyName);
 			input = input.replace(`\$\(${propertyName}\)`, value === undefined ? '' : value);

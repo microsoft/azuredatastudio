@@ -87,6 +87,6 @@ export class DeploymentInputDialog extends DialogBase {
 	}
 
 	private executeNotebook(notebookDialogInfo: NotebookBasedDialogInfo): void {
-		this.platformService.backgroundExecuteNotebook(notebookDialogInfo.taskName, notebookDialogInfo.notebook, this.notebookService, 'deploy');
+		this.notebookService.backgroundExecuteNotebook(notebookDialogInfo.taskName, notebookDialogInfo.notebook, 'deploy', this.platformService);
 	}
 }

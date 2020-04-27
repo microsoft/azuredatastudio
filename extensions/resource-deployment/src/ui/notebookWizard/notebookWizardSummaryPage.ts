@@ -18,7 +18,7 @@ export class NotebookWizardSummaryPage extends WizardPageBase<NotebookWizard> {
 	private view!: azdata.ModelView;
 
 	constructor(wizard: NotebookWizard) {
-		super(localize('notebookWizard.summaryPageTitle', "Review your configuration"), localize('notebookWizard.summaryPageDescription', ""), wizard);
+		super(localize('notebookWizard.summaryPageTitle', "Review your configuration"), '', wizard);
 	}
 
 	public initialize(): void {

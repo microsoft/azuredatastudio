@@ -35,6 +35,10 @@ export function getCheckboxComponent(name: string, inputComponents: InputCompone
 	return <azdata.CheckBoxComponent>inputComponents[name].component;
 }
 
+export function getTextComponent(name: string, inputComponents: InputComponents): azdata.TextComponent {
+	return <azdata.TextComponent>inputComponents[name].component;
+}
+
 export const DefaultInputComponentWidth = '400px';
 export const DefaultLabelComponentWidth = '200px';
 
@@ -75,7 +79,6 @@ interface AzureAccountFieldContext extends FieldContext {
 
 interface CreateContext {
 	container: azdata.window.Dialog | azdata.window.Wizard;
-	model?: Model;
 	onNewValidatorCreated: (validator: Validator) => void;
 	onNewDisposableCreated: (disposable: vscode.Disposable) => void;
 	onNewInputComponentCreated: (name: string, component: InputFieldComponent, inputValueTransformer?: InputValueTransformer) => void;
@@ -185,8 +188,7 @@ export function initializeWizardPage(context: WizardPageContext): void {
 				onNewDisposableCreated: context.onNewDisposableCreated,
 				onNewInputComponentCreated: context.onNewInputComponentCreated,
 				onNewValidatorCreated: context.onNewValidatorCreated,
-				sectionInfo: sectionInfo,
-				model:  context.model
+				sectionInfo: sectionInfo
 			});
 		});
 		const formBuilder = view.modelBuilder.formContainer().withFormItems(
@@ -236,7 +238,6 @@ function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component
 			onNewValidatorCreated: context.onNewValidatorCreated,
 			fieldInfo: fieldInfo,
 			container: context.container,
-			model: context.model,
 			components: components
 		});
 		if (spaceBetweenFields && i < fieldInfoArray.length - 1) {
@@ -450,11 +451,8 @@ function processPasswordField(context: FieldContext): void {
 
 function processReadonlyTextField(context: FieldContext): void {
 	let defaultValue = context.fieldInfo.defaultValue || '';
-	if (context.model && defaultValue && defaultValue.match(/\$[(].*[)]/g)) {
-		defaultValue = context.model.interpolateVariables(defaultValue);
-	}
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
-	const text = createLabel(context.view, { text: defaultValue, description: '', required: false, width: context.fieldInfo.inputWidth, fontStyle: context.fieldInfo.fontStyle, links: context.fieldInfo.links });
+	const text = createLabel(context.view, { text: defaultValue, description: '', required: false, width: context.fieldInfo.inputWidth, fontWeight: context.fieldInfo.textFontWeight, fontStyle: context.fieldInfo.fontStyle, links: context.fieldInfo.links });
 	addLabelInputPairToContainer(context.view, context.components, label, text, context.fieldInfo.labelPosition);
 }
 
