@@ -21,6 +21,8 @@ import { resultsErrorColor } from 'sql/platform/theme/common/colors';
 import { MessagePanelState } from 'sql/workbench/common/editor/query/messagePanelState';
 import { CachedListVirtualDelegate } from 'vs/base/browser/ui/list/list';
 import { FuzzyScore } from 'vs/base/common/filters';
+import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
+import { localize } from 'vs/nls';
 
 export interface IResultMessageIntern {
 	id?: string;
@@ -56,6 +58,17 @@ const TemplateIds = {
 	ERROR: 'error'
 };
 
+export class ReplAccessibilityProvider implements IListAccessibilityProvider<IResultMessageIntern> {
+
+	getWidgetAriaLabel(): string {
+		return localize('debugConsole', "Debug Console");
+	}
+
+	getAriaLabel(element: IResultMessageIntern): string {
+		return element.message;
+	}
+}
+
 export class MessagePanel extends Disposable {
 	private model = new Model();
 	private container = $('.message-tree');
@@ -83,6 +96,7 @@ export class MessagePanel extends Disposable {
 			],
 			new MessageDataSource(),
 			{
+				accessibilityProvider: new ReplAccessibilityProvider(),
 				mouseSupport: false,
 				setRowLineHeight: false,
 				supportDynamicHeights: true
