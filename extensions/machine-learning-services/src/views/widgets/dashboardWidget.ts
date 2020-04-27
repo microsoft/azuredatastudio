@@ -85,7 +85,6 @@ export class DashboardWidget {
 			value: constants.dashboardTitle,
 			CSSStyles: {
 				'font-size': '36px',
-				//'color': '#333333',
 				'font-weight': 'bold',
 				'margin': '0px'
 			}
@@ -94,7 +93,6 @@ export class DashboardWidget {
 			value: constants.dashboardDesc,
 			CSSStyles: {
 				'font-size': '14px',
-				//'color': '#888888',
 				'font-weight': 'bold',
 				'margin': '0px'
 			}
@@ -202,10 +200,82 @@ export class DashboardWidget {
 				link: 'https://www.youtube.com/watch?v=Nt4kIHQ0IOc'
 			}
 		]);
-		linksContainer.addItems([moreVideosContainer], {
-			CSSStyles: viewPanelStyle
-		});
+
+		this.addShowMorePanel(view, linksContainer, moreVideosContainer, { 'padding-left': '5px' }, viewPanelStyle);
 		return linksContainer;
+	}
+
+	private addShowMorePanel(view: azdata.ModelView, parentPanel: azdata.FlexContainer, morePanel: azdata.Component, moreButtonStyle: { [key: string]: string }, morePanelStyle: { [key: string]: string }): azdata.Component {
+		const maxWidth = 100;
+		const linkContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'row',
+			width: maxWidth + 10,
+			justifyContent: 'flex-start'
+		}).component();
+		const showMoreComponent = view.modelBuilder.hyperlink().withProperties({
+			label: constants.showMoreTitle
+		}).component();
+		const image = view.modelBuilder.image().withProperties({
+			width: '10px',
+			height: '10px',
+			iconPath: {
+				dark: this.asAbsolutePath('images/dark/showMore_inverse.svg'),
+				light: this.asAbsolutePath('images/light/showMore.svg'),
+			},
+			iconHeight: '10px',
+			iconWidth: '10px'
+		}).component();
+		showMoreComponent.onDidClick(() => {
+			let showMore = showMoreComponent.label === constants.showMoreTitle;
+			if (showMore) {
+				showMoreComponent.label = constants.showLessTitle;
+				image.iconPath = {
+					dark: this.asAbsolutePath('images/dark/showLess_inverse.svg'),
+					light: this.asAbsolutePath('images/light/showLess.svg'),
+				};
+				parentPanel.addItem(morePanel, {
+					CSSStyles: morePanelStyle
+				});
+			} else {
+				showMoreComponent.label = constants.showMoreTitle;
+				parentPanel.removeItem(morePanel);
+				image.iconPath = {
+					dark: this.asAbsolutePath('images/dark/showMore_inverse.svg'),
+					light: this.asAbsolutePath('images/light/showMore.svg'),
+				};
+			}
+			showMore = !showMore;
+		});
+		linkContainer.addItem(showMoreComponent, {
+			CSSStyles: Object.assign({}, moreButtonStyle, {
+				'font-size': '12px',
+				'margin': '0px',
+				'color': '#006ab1',
+				'padding-right': '5px'
+			}
+			)
+		});
+		linkContainer.addItem(image, {
+			CSSStyles: {
+				'padding': '0px',
+				'padding-right': '5px',
+				'padding-top': '5px',
+				'height': '10px',
+				'margin': '0px'
+			}
+		});
+
+		parentPanel.addItem(linkContainer, {
+			CSSStyles: {
+				'padding': '0px',
+				'padding-right': '5px',
+				'padding-top': '10px',
+				'height': '10px',
+				'margin': '0px'
+			}
+		});
+
+		return showMoreComponent;
 	}
 
 	private createVideoLink(view: azdata.ModelView, linkMetaData: IActionMetadata): azdata.Component {
@@ -226,7 +296,6 @@ export class DashboardWidget {
 			width: maxWidth,
 			height: '50px',
 			CSSStyles: {
-				//'color': '#605E5C',
 				'font-size': '12px',
 				'margin': '0px'
 			}
@@ -261,38 +330,46 @@ export class DashboardWidget {
 			value: constants.dashboardLinksTitle,
 			CSSStyles: {
 				'font-size': '18px',
-				//'color': '#323130',
 				'font-weight': 'bold',
 				'margin': '0px'
 			}
 		}).component();
-		const sqlMlDocs = this.createLink(view, {
+
+		const links = [{
 			title: constants.sqlMlDocTitle,
 			description: constants.sqlMlDocDesc,
 			link: constants.mlDocLink
-		});
-		const sqlMlsDocs = this.createLink(view, {
+		}, {
 			title: constants.sqlMlsDocTitle,
 			description: constants.sqlMlsDocDesc,
 			link: constants.mlsDocLink
-		});
-		const sqlMlsAzureDocs = this.createLink(view, {
+		},
+		{
 			title: constants.sqlMlsAzureDocTitle,
 			description: constants.sqlMlsAzureDocDesc,
 			link: constants.mlsAzureDocLink
-		});
+		}];
 
-		const rdbcDocs = this.createLink(view, {
+		const moreLink = {
 			title: constants.mlsInstallOdbcDocTitle,
 			description: constants.mlsInstallOdbcDocDesc,
 			link: utils.isWindows() ? constants.odbcDriverWindowsDocuments : constants.odbcDriverLinuxDocuments
-		});
+		};
+		const styles = {
+			'padding': '10px'
+		};
 
-		linksContainer.addItems([titleComponent, sqlMlDocs, sqlMlsDocs, sqlMlsAzureDocs, rdbcDocs], {
+		linksContainer.addItem(titleComponent, {
 			CSSStyles: {
 				'padding': '10px'
 			}
 		});
+
+		linksContainer.addItems(links.map(l => this.createLink(view, l)), {
+			CSSStyles: styles
+		});
+
+		this.addShowMorePanel(view, linksContainer, this.createLink(view, moreLink), { 'padding-left': '10px' }, styles);
 		return linksContainer;
 	}
 
@@ -309,7 +386,6 @@ export class DashboardWidget {
 			value: linkMetaData.description,
 			width: maxWidth,
 			CSSStyles: {
-				//'color': '#605E5C',
 				'font-size': '12px',
 				'margin': '0px'
 			}
@@ -323,7 +399,6 @@ export class DashboardWidget {
 			label: linkMetaData.title,
 			url: linkMetaData.link,
 			CSSStyles: {
-				'color': '#3794ff',
 				'font-size': '14px',
 				'margin': '0px'
 			}
@@ -342,8 +417,8 @@ export class DashboardWidget {
 			CSSStyles: {
 				'padding': '0px',
 				'padding-right': '5px',
-				//'height': '10px',
-				'margin': '0px'
+				'margin': '0px',
+				'color': '#006ab1'
 			}
 		});
 		linkContainer.addItem(image, {
@@ -444,7 +519,6 @@ export class DashboardWidget {
 			value: taskMetaData.title,
 			CSSStyles: {
 				'font-size': '14px',
-				//'color': '#323130',
 				'font-weight': 'bold',
 				'margin': '0px'
 			}
@@ -452,19 +526,13 @@ export class DashboardWidget {
 		const descriptionComponent = view.modelBuilder.text().withProperties({
 			value: taskMetaData.description,
 			CSSStyles: {
-				//'color': '#605E5C',
 				'font-size': '13px',
 				'margin': '0px'
 			}
 		}).component();
 		const linkComponent = view.modelBuilder.hyperlink().withProperties({
 			label: constants.learnMoreTitle,
-			url: taskMetaData.link,
-			CSSStyles: {
-				//'background-color': '#F2F2F2',
-				'color': '#3794ff',
-				'margin': '0px'
-			}
+			url: taskMetaData.link
 		}).component();
 		const image = view.modelBuilder.image().withProperties({
 			width: '20px',
@@ -478,7 +546,8 @@ export class DashboardWidget {
 				'padding': '0px',
 				'padding-bottom': '5px',
 				'width': '180px',
-				'margin': '0px'
+				'margin': '0px',
+				'color': '#006ab1'
 			}
 		});
 		iconContainer.addItem(image, {
@@ -495,7 +564,6 @@ export class DashboardWidget {
 		});
 		mainContainer.addItems([iconContainer], {
 			CSSStyles: {
-				//'background-color': '#f4f4f4',
 				'padding': '10px',
 				'border-radius': '5px',
 				'border-color': '#f2f2f2',
