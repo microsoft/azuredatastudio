@@ -448,15 +448,17 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	/**
 	 * Prompts user to upgrade certain python packages if they're below the minimum expected version.
 	 */
-	public async promptForPackageUpgrade(specificPackages?: PythonPkgDetails[]): Promise<void> {
+	public async promptForPackageUpgrade(kernelName: string): Promise<void> {
 		if (this._installInProgress) {
 			this.apiWrapper.showInfoMessage(msgWaitingForInstall);
 			return this._installCompletion.promise;
 		}
 
+		let requiredPackages = JupyterServerInstallation.getRequiredPackagesForKernel(kernelName);
+
 		this._installInProgress = true;
 		this._installCompletion = new Deferred<void>();
-		this.upgradePythonPackages(true, false, specificPackages)
+		this.upgradePythonPackages(true, false, requiredPackages)
 			.then(() => {
 				this._installCompletion.resolve();
 				this._installInProgress = false;
