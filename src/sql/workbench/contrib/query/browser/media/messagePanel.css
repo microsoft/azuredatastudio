@@ -82,3 +82,23 @@
 .message-tree .evaluation-result > .annotation::before  {
 	content: '';
 }
+
+.message-tree .time-stamp {
+	width: 100px;
+	display: inline-block;
+}
+
+.message-tree .message,
+.message-tree .batch-start,
+.message-tree .error-message {
+	display: inline-block;
+}
+
+.message-tree .batch-start {
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.message-tree .batch-start:hover {
+	color: red;
+}
