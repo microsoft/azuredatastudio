@@ -3,10 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDataTreeViewState } from 'vs/base/browser/ui/tree/dataTree';
+export interface IMessageTreeState {
+	readonly focus: string[];
+	readonly selection: string[];
+	readonly expanded: string[];
+	readonly scrollTop: number;
+}
 
 export class MessagePanelState {
-	public viewState?: IDataTreeViewState;
+	public viewState?: IMessageTreeState;
 
 	dispose() {
 
