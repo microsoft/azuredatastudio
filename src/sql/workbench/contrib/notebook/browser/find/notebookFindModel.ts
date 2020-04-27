@@ -612,17 +612,6 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		return cellSrc.replace(/(?:__|[*#])|\[(.*?)\]\(.*?\)/gm, '$1');
 	}
 
-	// remove /n's to calculate the line number to locate the correct element
-	cleanUpCellSource(cellValue: string | string[]): string | string[] {
-		let trimmedCellSrc: string[] = [];
-		if (cellValue instanceof Array) {
-			trimmedCellSrc = cellValue.filter(c => c !== '\n' && c !== '\r\n' && c.indexOf('|-') === -1);
-		} else {
-			return cellValue;
-		}
-		return trimmedCellSrc;
-	}
-
 	clearFind(): void {
 		this._findArray = new Array<NotebookRange>();
 		this._findIndex = 0;
