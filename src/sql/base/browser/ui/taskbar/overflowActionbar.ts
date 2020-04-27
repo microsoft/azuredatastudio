@@ -40,6 +40,13 @@ export class OverflowActionBar extends ActionBar {
 			}
 		}));
 
+		// Needed so that toolbar gets resized properly with split views
+		this._register(DOM.addDisposableListener(window, DOM.EventType.MOUSE_MOVE, e => {
+			if (this._actionsList) {
+				this.resizeToolbar();
+			}
+		}));
+
 		this._overflow = document.createElement('ul');
 		this._overflow.id = 'overflow';
 		this._overflow.className = 'overflow';

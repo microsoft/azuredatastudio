@@ -183,7 +183,7 @@ describe('Predict Wizard', () => {
 			view.modelBrowsePage.modelSourceType = ModelSourceType.RegisteredModels;
 		}
 		await view.refresh();
-		testContext.onClick.fire();
+		testContext.onClick.fire(undefined);
 
 		should.equal(view.modelSourcePage?.data, ModelSourceType.RegisteredModels);
 		should.notEqual(view.localModelsComponent?.data, undefined);

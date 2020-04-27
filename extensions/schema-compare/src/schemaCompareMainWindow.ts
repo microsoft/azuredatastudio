@@ -953,7 +953,7 @@ export class SchemaCompareMainWindow {
 		});
 	}
 
-	private async  constructEndpointInfo(endpoint: mssql.SchemaCompareEndpointInfo, caller: string): Promise<mssql.SchemaCompareEndpointInfo> {
+	private async constructEndpointInfo(endpoint: mssql.SchemaCompareEndpointInfo, caller: string): Promise<mssql.SchemaCompareEndpointInfo> {
 		let ownerUri;
 		let endpointInfo;
 		if (endpoint && endpoint.endpointType === mssql.SchemaCompareEndpointType.Database) {
