@@ -173,7 +173,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 
 		if (this._table) {
 			if (this._forInput) {
-				const columns = await this.listColumnNames(table);
+				let columns = await this.listColumnNames(table);
 				if (modelParameters?.inputs && columns) {
 					tableData = tableData.concat(modelParameters.inputs.map(input => this.createInputTableRow(input, columns)));
 				}
@@ -242,7 +242,11 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 
 	private createInputTableRow(modelParameter: ModelParameter, columns: TableColumn[] | undefined): any[] {
 		if (this._modelBuilder && columns) {
-			const values = columns.map(c => { return { name: c.columnName, displayName: `${c.columnName}(${c.dataType})` }; });
+
+			let values = columns.map(c => { return { name: c.columnName, displayName: `${c.columnName}(${c.dataType})` }; });
+			if (columns.length > 0 && columns[0].columnName !== constants.selectColumnTitle) {
+				values = [{ displayName: constants.selectColumnTitle, name: '' }].concat(values);
+			}
 			let nameInput = this._modelBuilder.dropDown().withProperties({
 				values: values,
 				width: this.componentMaxLength
