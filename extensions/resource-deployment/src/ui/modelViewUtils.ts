@@ -466,11 +466,7 @@ function processCheckboxField(context: FieldContext): void {
  * A File Picker field consists of a text field and a browse button that allows a user to pick a file system file.
  * @param context The context to use to create the field
  */
-function processFilePickerField(context: FieldContext): void {
-	createFilePicker(context);
-}
-
-function createFilePicker(context: FieldContext, defaultFilePath?: string): { input: azdata.InputBoxComponent, browseButton: azdata.ButtonComponent } {
+function processFilePickerField(context: FieldContext, defaultFilePath?: string): { input: azdata.InputBoxComponent, browseButton: azdata.ButtonComponent } {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
 	const input = createTextInput(context.view, {
 		defaultValue: defaultFilePath || context.fieldInfo.defaultValue || '',
@@ -525,7 +521,7 @@ function processKubeConfigClusterPickerField(context: KubeClusterContextFieldCon
 			required: true
 		}
 	};
-	const filePicker = createFilePicker(filePickerContext, getDefaultKubeConfigPath());
+	const filePicker = processFilePickerField(filePickerContext, getDefaultKubeConfigPath());
 	context.fieldInfo.subFields = context.fieldInfo.subFields || [];
 	context.fieldInfo.subFields!.push({
 		label: filePickerContext.fieldInfo.label,
@@ -533,21 +529,28 @@ function processKubeConfigClusterPickerField(context: KubeClusterContextFieldCon
 	});
 	context.onNewInputComponentCreated(KubeConfigFilePath_VariableName, filePicker.input);
 	const getClusterContexts = async () => {
-		let currentClusterContext = '';
-		const clusterContexts: string[] = (await getKubeConfigClusterContexts(filePicker.input.value!)).map(kubeClusterContext => {
-			if (kubeClusterContext.isCurrentContext) {
-				currentClusterContext = kubeClusterContext.name;
+		try {
+			let currentClusterContext = '';
+			const clusterContexts: string[] = (await getKubeConfigClusterContexts(filePicker.input.value!)).map(kubeClusterContext => {
+				if (kubeClusterContext.isCurrentContext) {
+					currentClusterContext = kubeClusterContext.name;
+				}
+				return kubeClusterContext.name;
+			});
+			if (clusterContexts.length === 0) {
+				throw Error(localize('kubeConfigClusterPicker.clusterContextNotFoundText', "No cluster context information found"));
 			}
-			return kubeClusterContext.name;
-		});
-		return { values: clusterContexts, defaultValue: currentClusterContext };
+			return { values: clusterContexts, defaultValue: currentClusterContext };
+		} catch (e) {
+			throw Error(localize('kubeConfigClusterPicker.errorLoadingClustersText', "An error ocurred while loading or parsing the config file:{0}, error is:{1}", filePicker.input.value, getErrorMessage(e)));
+		}
 	};
 
-	const errorLoadingClustersContexts = () => localize('kubeConfigClusterPicker.errorLoadingClustersText', "No cluster information is found in the config file:{0} or an error ocurred while loading the config file:{0}", filePicker.input.value);
-	createRadioOptions(context, errorLoadingClustersContexts, getClusterContexts)
+
+	createRadioOptions(context, getClusterContexts)
 		.then(clusterContextOptions => {
 			filePicker.input.onTextChanged(async () => {
-				await loadOrReloadRadioOptions(context, clusterContextOptions.optionsList, clusterContextOptions.loader, getClusterContexts, errorLoadingClustersContexts);
+				await loadOrReloadRadioOptions(context, clusterContextOptions.optionsList, clusterContextOptions.loader, getClusterContexts);
 			});
 		}).catch(error => {
 			console.log(`failed to create radio options, Error: ${error}`);
@@ -557,55 +560,48 @@ function processKubeConfigClusterPickerField(context: KubeClusterContextFieldCon
 function processRadioOptionsTypeField(context: FieldContext) {
 	createRadioOptions(context);
 }
-async function createRadioOptions(context: FieldContext, getClusterContextNotFoundErrorMessage?: () => string, getRadioButtonInfo?: (() => Promise<{ values: string[] | azdata.CategoryValue[], defaultValue: string }>))
+async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: (() => Promise<{ values: string[] | azdata.CategoryValue[], defaultValue: string }>))
 	: Promise<{ optionsList: azdata.DivContainer, loader: azdata.LoadingComponent }> {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
 	const optionsList = context.view!.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
 	const radioOptionsLoadingComponent = context.view!.modelBuilder.loadingComponent().withItem(optionsList).component();
 	addLabelInputPairToContainer(context.view, context.components, label, radioOptionsLoadingComponent, LabelPosition.Left);
-	await loadOrReloadRadioOptions(context, optionsList, radioOptionsLoadingComponent, getRadioButtonInfo, getClusterContextNotFoundErrorMessage!);
+	await loadOrReloadRadioOptions(context, optionsList, radioOptionsLoadingComponent, getRadioButtonInfo);
 	return { optionsList: optionsList, loader: radioOptionsLoadingComponent };
 }
 
-async function loadOrReloadRadioOptions(context: FieldContext, optionsList: azdata.DivContainer, radioOptionsLoadingComponent: azdata.LoadingComponent, getRadioButtonInfo: (() => Promise<{ values: string[] | azdata.CategoryValue[]; defaultValue: string; }>) | undefined, getClusterContextNotFoundErrorMessage: () => string): Promise<void> {
+async function loadOrReloadRadioOptions(context: FieldContext, optionsList: azdata.DivContainer, radioOptionsLoadingComponent: azdata.LoadingComponent, getRadioButtonInfo: (() => Promise<{ values: string[] | azdata.CategoryValue[]; defaultValue: string; }>) | undefined): Promise<void> {
 	radioOptionsLoadingComponent.loading = true;
 	optionsList.clearItems();
 	let options: (string[] | azdata.CategoryValue[]) = context.fieldInfo.options!;
 	let defaultValue: string = context.fieldInfo.defaultValue!;
-	let errorMessage = (getClusterContextNotFoundErrorMessage && getClusterContextNotFoundErrorMessage()) || localize('radioOptions.errorLoadingRadioOptions', "No options found or an error ocurred while loading the options");
 	if (getRadioButtonInfo) {
 		try {
 			const radioButtonsInfo = await getRadioButtonInfo();
 			options = radioButtonsInfo.values;
 			defaultValue = radioButtonsInfo.defaultValue;
+			options.forEach((op: string | azdata.CategoryValue) => {
+				const option: azdata.CategoryValue = (typeof op === 'string') ? { name: op, displayName: op } : op as azdata.CategoryValue;
+				const radioOption = context.view!.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
+					label: option.displayName,
+					checked: option.displayName === defaultValue,
+					name: option.name,
+				}).component();
+				if (radioOption.checked) {
+					context.onNewInputComponentCreated(context.fieldInfo.variableName!, radioOption);
+				}
+				context.onNewDisposableCreated(radioOption.onDidClick(() => {
+					// reset checked status of all remaining radioButtons
+					optionsList.items.filter(otherOption => otherOption !== radioOption).forEach(otherOption => (otherOption as azdata.RadioButtonComponent).checked = false);
+					context.onNewInputComponentCreated(context.fieldInfo.variableName!, radioOption!);
+				}));
+				optionsList.addItem(radioOption);
+			});
 		}
 		catch (e) {
-			errorMessage = `${errorMessage}\n\t\tError:${getErrorMessage(e)}`;
-			options = [];
+			const errorLoadingRadioOptionsLabel = context.view!.modelBuilder.text().withProperties({ value: getErrorMessage(e) }).component();
+			optionsList.addItem(errorLoadingRadioOptionsLabel);
 		}
-	}
-
-	if (options && options.length > 0) {
-		options.forEach((op: string | azdata.CategoryValue) => {
-			const option: azdata.CategoryValue = (typeof op === 'string') ? { name: op, displayName: op } : op as azdata.CategoryValue;
-			const radioOption = context.view!.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
-				label: option.displayName,
-				checked: option.displayName === defaultValue,
-				name: option.name,
-			}).component();
-			if (radioOption.checked) {
-				context.onNewInputComponentCreated(context.fieldInfo.variableName!, radioOption);
-			}
-			context.onNewDisposableCreated(radioOption.onDidClick(() => {
-				// reset checked status of all remaining radioButtons
-				optionsList.items.filter(otherOption => otherOption !== radioOption).forEach(otherOption => (otherOption as azdata.RadioButtonComponent).checked = false);
-				context.onNewInputComponentCreated(context.fieldInfo.variableName!, radioOption!);
-			}));
-			optionsList.addItem(radioOption);
-		});
-	} else {
-		const errorLoadingRadioOptionsLabel = context.view!.modelBuilder.text().withProperties({ value: errorMessage }).component();
-		optionsList.addItem(errorLoadingRadioOptionsLabel);
 	}
 	radioOptionsLoadingComponent.loading = false;
 }
