@@ -441,11 +441,11 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
-	test.skip('changing URI for connection should not create new connection', () => {
+	test('EditConnection: Connecting a different URI with same profile should not change profile ID.', () => {
 		let profile = connectionProfile;
-		profile.id = '1';
+		profile.id = '0451';
 		let uri1 = 'test_uri1';
-		//let uri2 = 'test_uri2';
+		let uri2 = 'test_uri2';
 		let options: IConnectionCompletionOptions = {
 			params: {
 				connectionType: ConnectionType.editor,
@@ -459,19 +459,23 @@ suite('SQL ConnectionManagementService tests', () => {
 				},
 				querySelection: undefined,
 				runQueryOnCompletion: RunQueryOnConnectionMode.none,
-				isEditConnection: true
+				isEditConnection: false
 			},
-			saveTheConnection: false,
+			saveTheConnection: true,
 			showDashboard: false,
 			showConnectionDialogOnError: true,
 			showFirewallRuleOnError: true
 		};
 
-
 		return connect(uri1, options, true, profile).then(result => {
 			assert.equal(result.connected, true);
-			assert.equal(connectionManagementService.getConnectionUriFromId(profile.id), uri1);
-			//return connect(uri2, options, true, profile);
+			options.params.isEditConnection = true;
+			return connect(uri2, options, true, profile).then(result => {
+				assert.equal(result.connected, true);
+				let uri1info = connectionManagementService.getConnectionInfo(uri1);
+				let uri2info = connectionManagementService.getConnectionInfo(uri2);
+				assert.equal(uri1info.connectionProfile.id, uri2info.connectionProfile.id);
+			});
 		});
 	});
 
