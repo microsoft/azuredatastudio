@@ -37,9 +37,11 @@ suite('MarkdownTextTransformer', () => {
 	let markdownTextTransformer: MarkdownTextTransformer;
 	let widget: IEditor;
 	let textModel: TextModel;
+	let notebookEditor: TestNotebookEditor;
+	let mockNotebookService: TypeMoq.Mock<INotebookService>;
+	let cellModel: CellModel;
 
 	setup(() => {
-		let mockNotebookService: TypeMoq.Mock<INotebookService>;
 		const dialogService = new TestDialogService();
 		const notificationService = new TestNotificationService();
 		const undoRedoService = new UndoRedoService(dialogService, notificationService);
@@ -55,8 +57,8 @@ suite('MarkdownTextTransformer', () => {
 		mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, new TestLifecycleService(), undefined, undefined, undefined, instantiationService, new MockContextKeyService(),
 			undefined, undefined, undefined, undefined, undefined, undefined, TestEnvironmentService);
 
-		let cellModel = new CellModel(undefined, undefined, mockNotebookService.object);
-		let notebookEditor = new TestNotebookEditor(cellModel.cellGuid, instantiationService);
+		cellModel = new CellModel(undefined, undefined, mockNotebookService.object);
+		notebookEditor = new TestNotebookEditor(cellModel.cellGuid, instantiationService);
 		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel, notebookEditor);
 		mockNotebookService.setup(s => s.findNotebookEditor(TypeMoq.It.isAny())).returns(() => notebookEditor);
 
@@ -81,8 +83,8 @@ suite('MarkdownTextTransformer', () => {
 		testWithNoSelection(MarkdownButtonType.BOLD, '');
 		testWithNoSelection(MarkdownButtonType.ITALIC, '__', true);
 		testWithNoSelection(MarkdownButtonType.ITALIC, '');
-		// testWithNoSelection(MarkdownButtonType.CODE, '```\n\n```', true);
-		// testWithNoSelection(MarkdownButtonType.CODE, '\n');
+		testWithNoSelection(MarkdownButtonType.CODE, '```\n\n```', true);
+		testWithNoSelection(MarkdownButtonType.CODE, '');
 		testWithNoSelection(MarkdownButtonType.HIGHLIGHT, '<mark></mark>', true);
 		testWithNoSelection(MarkdownButtonType.HIGHLIGHT, '');
 		testWithNoSelection(MarkdownButtonType.LINK, '[]()', true);
@@ -126,6 +128,17 @@ suite('MarkdownTextTransformer', () => {
 		testWithMultipleLinesSelected(MarkdownButtonType.UNORDERED_LIST, '- Multi\n- Lines\n- Selected');
 		testWithMultipleLinesSelected(MarkdownButtonType.ORDERED_LIST, '1. Multi\n1. Lines\n1. Selected');
 		testWithMultipleLinesSelected(MarkdownButtonType.IMAGE, '![Multi\nLines\nSelected]()');
+	});
+
+	test('Ensure notebook editor returns expected object', () => {
+		assert.deepEqual(notebookEditor, markdownTextTransformer.notebookEditor, 'Notebook editor does not match expected value');
+		// Set markdown text transformer to not have a notebook editor passed in
+		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel);
+		assert.equal(markdownTextTransformer.notebookEditor, undefined, 'No notebook editor should be returned');
+		// Even after text is attempted to be transformed, there should be no editor, and therefore nothing on the text model
+		markdownTextTransformer.transformText(MarkdownButtonType.BOLD);
+		assert.equal(markdownTextTransformer.notebookEditor, undefined, 'Notebook model does not have a valid uri, so no editor should be returned');
+		assert.equal(textModel.getValue(), '', 'No text should exist on the textModel');
 	});
 
 	function testWithNoSelection(type: MarkdownButtonType, expectedValue: string, setValue = false): void {
