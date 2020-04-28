@@ -25,15 +25,23 @@ export default class MainController extends ControllerBase {
 	public deactivate(): void {
 	}
 
-	public activate(): Promise<boolean> {
-		const outputChannel = vscode.window.createOutputChannel(constants.serviceName);
-		new ServiceClient(outputChannel).startService(this._context);
-
-		managerInstance.onRegisteredApi<FlatFileProvider>(ApiType.FlatFileProvider)(provider => {
-			this.initializeFlatFileProvider(provider);
+	public async activate(): Promise<boolean> {
+		return new Promise<boolean>(async (resolve) => {
+			try {
+				/*
+				Registering the command before downloading the file to avoid the command not found error.
+				*/
+				managerInstance.onRegisteredApi<FlatFileProvider>(ApiType.FlatFileProvider)(provider => {
+					this.initializeFlatFileProvider(provider);
+					resolve(true);
+				});
+				const outputChannel = vscode.window.createOutputChannel(constants.serviceName);
+				await new ServiceClient(outputChannel).startService(this._context);
+			} catch (error) {
+				console.log(error);
+				resolve(false);
+			}
 		});
-
-		return Promise.resolve(true);
 	}
 
 	private initializeFlatFileProvider(provider: FlatFileProvider) {
