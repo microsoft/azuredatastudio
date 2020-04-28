@@ -37,7 +37,7 @@
 }
 
 .notebookEditor .actions-container .action-item .notebook-button {
-	display: inline-block;
+	display: flex;
 	width: 100%;
 	padding: 0px;
 	text-align: center;
@@ -48,12 +48,16 @@
 	font-size: 13px;
 	height: 21px;
 }
+.notebookEditor .actions-container .action-item .notebook-button.masked-pseudo {
+	padding-left: 23px;
+}
 .notebookEditor .actions-container .action-item .notebook-button.masked {
 	margin-right: 0;
+	padding-left: 18px;
 	width: 16px;
 }
 .notebookEditor .actions-container .action-item:last-child {
-	margin-right: 12px;
+	margin-right: 23px;
 }
 
 .notebookEditor .labelOnLeftContainer {
@@ -68,7 +72,7 @@
 .notebookEditor .carbon-taskbar.monaco-toolbar .monaco-select-box {
 	font-size: inherit;
 	border-radius: 0;
-	padding: 6px 22px 6px 6px;
+	padding: 3px 22px 3px 6px;
 }
 .notebookEditor .labelOnLeftContainer {
 	display: flex;

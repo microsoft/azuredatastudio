@@ -442,18 +442,30 @@ Includes non-masked style declarations. */
 .vs .codicon.start-outline {
 	background-image: url('start-outline.svg');
 }
-.codicon.masked.pseudo.start-outline:after {
+
+
+/* Masked element inside pseudo element */
+.masked-pseudo {
+	background-image: none!important;
+}
+.masked-pseudo:after {
 	content: '';
 	display: block;
-	height: 20px;
-	width: 20px;
-	position: absolute;
-	top:0;
+	height: 16px;
 	left: 0;
-	background-image: none;
+	position: absolute;
+	top: 28%;
+	width: 16px;
+}
+.masked-pseudo.add-new:after {
+	-webkit-mask-image: url('new.svg');
+	mask-image: url('new.svg');
+}
+.masked-pseudo.start-outline:after {
 	-webkit-mask-image: url('start-outline.svg');
 	mask-image: url('start-outline.svg');
 }
+
 
 .cell-tool-close {
 	background-image: url('close-blue.svg');

@@ -211,6 +211,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		const notebookToolbarIconColor = theme.getColor(notebookToolbarIcon);
 		if (notebookToolbarIconColor) {
 			collector.addRule(`.notebookEditor .notebook-button.masked { background-color: ${notebookToolbarIconColor};}`);
+			collector.addRule(`.notebookEditor .notebook-button.masked-pseudo:after { background-color: ${notebookToolbarIconColor};}`);
 		}
 		const notebookToolbarLinesColor = theme.getColor(notebookToolbarLines);
 		if (notebookToolbarLinesColor) {

@@ -409,13 +409,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let spacerElement = document.createElement('li');
 		spacerElement.style.marginLeft = 'auto';
 
-		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Cell"), 'notebook-button codicon new-blue');
-		addCodeCellButton.cellType = CellTypes.Code;
+		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Cell"), 'notebook-button masked-pseudo add-new');
+		// addCodeCellButton.cellType = CellTypes.Code;
 
 		// let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Text"), 'notebook-button icon-add');
 		// addTextCellButton.cellType = CellTypes.Markdown;
 
-		this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run all"), 'notebook-button codicon start-outline');
+		this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run all"), 'notebook-button masked-pseudo start-outline');
 
 		let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', true);
 
