@@ -10,6 +10,7 @@ import { BasicAuth } from './controller/auth';
 import { PostgresDashboard } from './ui/dashboards/postgres/postgresDashboard';
 import { ControllerModel } from './models/controllerModel';
 import { PostgresModel } from './models/postgresModel';
+import { MiaaDashboard } from './ui/dashboards/miaa/miaaDashboard';
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	IconPathHelper.setExtensionContext(context);
@@ -31,6 +32,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
 	vscode.commands.registerCommand('arc.manageMiaa', async () => {
 
+		await new MiaaDashboard('MIAA').showDashboard();
 	});
 }
 
