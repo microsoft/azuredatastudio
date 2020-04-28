@@ -87,7 +87,7 @@ export class NotebookExplorerContainerExtensionHandler implements IWorkbenchCont
 
 					let container = this.viewContainersRegistry.get(VIEWLET_ID);
 					if (!container) {
-						collector.warn(localize('ViewsContainerDoesnotExist', "View container '{0}' does not exist and all views registered to it will be added to 'Data Explorer'.", entry.key));
+						collector.warn(localize('ViewsContainerDoesnotExist', "View container '{0}' does not exist and all views registered to it will be added to 'Notebook Explorer'.", entry.key));
 						container = this.viewContainersRegistry.get(VIEWLET_ID);
 					}
 					const registeredViews = Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getViews(container);

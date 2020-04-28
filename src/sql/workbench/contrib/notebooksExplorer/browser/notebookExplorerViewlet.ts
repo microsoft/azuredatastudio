@@ -144,6 +144,6 @@ export const NOTEBOOK_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(View
 	name: localize('notebookexplorer.name', "Notebooks"),
 	ctorDescriptor: new SyncDescriptor(NotebookExplorerViewPaneContainer),
 	icon: 'notebookExplorer',
-	order: 0,
+	order: 6,
 	storageId: `${VIEWLET_ID}.state`
 }, ViewContainerLocation.Sidebar);

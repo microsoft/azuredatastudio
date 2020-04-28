@@ -76,7 +76,7 @@ actionRegistry.registerWorkbenchAction(
 	NewNotebookAction.LABEL
 );
 
-const DE_NEW_NOTEBOOK_COMMAND_ID = 'notebookExplorer.newNotebook';
+const DE_NEW_NOTEBOOK_COMMAND_ID = 'dataExplorer.newNotebook';
 // New Notebook
 CommandsRegistry.registerCommand({
 	id: DE_NEW_NOTEBOOK_COMMAND_ID,
