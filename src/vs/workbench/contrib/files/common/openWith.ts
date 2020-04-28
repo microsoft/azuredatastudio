@@ -35,12 +35,12 @@ export async function openEditorWith(
 ): Promise<IEditorPane | undefined> {
 	const resource = input.resource;
 	if (!resource) {
-		return;
+		return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 	}
 
 	const allEditorOverrides = getAllAvailableEditors(input, resource, options, group, editorService);
 	if (!allEditorOverrides.length) {
-		return;
+		return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 	}
 
 	const overrideToUse = typeof id === 'string' && allEditorOverrides.find(([_, entry]) => entry.id === id);
@@ -127,7 +127,7 @@ export function getAllAvailableEditors(
 			{
 				open: (input: IEditorInput, options: IEditorOptions | ITextEditorOptions | undefined, group: IEditorGroup) => {
 					if (!input.resource) {
-						return;
+						return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 					}
 
 					const fileEditorInput = editorService.createEditorInput({ resource: input.resource, forceFile: true });
