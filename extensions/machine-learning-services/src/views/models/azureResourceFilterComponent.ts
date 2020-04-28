@@ -140,10 +140,15 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 	 */
 	public async loadData(): Promise<void> {
 		this._azureAccounts = await this.listAzureAccounts();
-		if (this._azureAccounts && this._azureAccounts.length > 0) {
-			let values = this._azureAccounts.map(a => { return { displayName: a.displayInfo.displayName, name: a.key.accountId }; });
-			this._accounts.values = values;
-			this._accounts.value = values[0];
+		if (this._azureAccounts) {
+			if (this._azureAccounts.length > 0) {
+				let values = this._azureAccounts.map(a => { return { displayName: a.displayInfo.displayName, name: a.key.accountId }; });
+				this._accounts.values = values;
+				this._accounts.value = values[0];
+			} else {
+				this._accounts.values = [];
+				this._accounts.value = undefined;
+			}
 		}
 		await this.onAccountSelected();
 	}
@@ -157,30 +162,45 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 
 	private async onAccountSelected(): Promise<void> {
 		this._azureSubscriptions = await this.listAzureSubscriptions(this.account);
-		if (this._azureSubscriptions && this._azureSubscriptions.length > 0) {
-			let values = this._azureSubscriptions.map(s => { return { displayName: s.name, name: s.id }; });
-			this._subscriptions.values = values;
-			this._subscriptions.value = values[0];
+		if (this._azureSubscriptions) {
+			if (this._azureSubscriptions.length > 0) {
+				let values = this._azureSubscriptions.map(s => { return { displayName: s.name, name: s.id }; });
+				this._subscriptions.values = values;
+				this._subscriptions.value = values[0];
+			} else {
+				this._subscriptions.values = [];
+				this._subscriptions.value = undefined;
+			}
 		}
 		await this.onSubscriptionSelected();
 	}
 
 	private async onSubscriptionSelected(): Promise<void> {
 		this._azureGroups = await this.listAzureGroups(this.account, this.subscription);
-		if (this._azureGroups && this._azureGroups.length > 0) {
-			let values = this._azureGroups.map(s => { return { displayName: s.name, name: s.id }; });
-			this._groups.values = values;
-			this._groups.value = values[0];
+		if (this._azureGroups) {
+			if (this._azureGroups.length > 0) {
+				let values = this._azureGroups.map(s => { return { displayName: s.name, name: s.id }; });
+				this._groups.values = values;
+				this._groups.value = values[0];
+			} else {
+				this._groups.values = [];
+				this._groups.value = undefined;
+			}
 		}
 		await this.onGroupSelected();
 	}
 
 	private async onGroupSelected(): Promise<void> {
 		this._azureWorkspaces = await this.listWorkspaces(this.account, this.subscription, this.group);
-		if (this._azureWorkspaces && this._azureWorkspaces.length > 0) {
-			let values = this._azureWorkspaces.map(s => { return { displayName: s.name || '', name: s.id || '' }; });
-			this._workspaces.values = values;
-			this._workspaces.value = values[0];
+		if (this._azureWorkspaces) {
+			if (this._azureWorkspaces.length > 0) {
+				let values = this._azureWorkspaces.map(s => { return { displayName: s.name || '', name: s.id || '' }; });
+				this._workspaces.values = values;
+				this._workspaces.value = values[0];
+			} else {
+				this._workspaces.values = [];
+				this._workspaces.value = undefined;
+			}
 		}
 		this.onWorkspaceSelectedChanged();
 	}

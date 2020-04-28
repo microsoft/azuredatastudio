@@ -18,6 +18,7 @@ export interface ListWorkspaceModelsResult extends Array<WorkspaceModel> {
  */
 export interface WorkspaceModel extends Resource {
 	framework?: string;
+	description?: string;
 	frameworkVersion?: string;
 	createdBy?: string;
 	createdTime?: string;

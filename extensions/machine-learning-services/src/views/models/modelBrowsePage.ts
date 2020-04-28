@@ -173,6 +173,7 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 							fileName: x.model?.name,
 							framework: x.model?.framework,
 							frameworkVersion: x.model?.frameworkVersion,
+							description: x.model?.description,
 							created: x.model?.createdTime
 						},
 						targetImportTable: this.importTable
