@@ -28,13 +28,15 @@ export default class MainController extends ControllerBase {
 	public async activate(): Promise<boolean> {
 		return new Promise<boolean>(async (resolve) => {
 			const outputChannel = vscode.window.createOutputChannel(constants.serviceName);
-			await new ServiceClient(outputChannel).startService(this._context);
 			managerInstance.onRegisteredApi<FlatFileProvider>(ApiType.FlatFileProvider)(provider => {
 				this.initializeFlatFileProvider(provider);
 				resolve(true);
 			});
+			await new ServiceClient(outputChannel).startService(this._context);
 		});
 	}
+
+
 
 	private initializeFlatFileProvider(provider: FlatFileProvider) {
 		azdata.tasks.registerTask('flatFileImport.start', (profile: azdata.IConnectionProfile, ...args: any[]) => new FlatFileWizard(provider).start(profile, args));
