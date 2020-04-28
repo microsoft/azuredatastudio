@@ -19,7 +19,7 @@ interface IActionMetadata {
 }
 
 const maxWidth = 800;
-const headerMaxHeight = 200;
+const headerMaxHeight = 300;
 export class DashboardWidget {
 
 	/**
@@ -44,9 +44,9 @@ export class DashboardWidget {
 					'background-repeat': 'no-repeat',
 					'background-position': 'bottom',
 					'width': `${maxWidth}px`,
-					'height': '230px',
+					'height': '330px',
 					'background-size': `${maxWidth}px ${headerMaxHeight}px`,
-					'margin-bottom': '-90px'
+					'margin-bottom': '-60px'
 				}
 			});
 			container.addItem(tasksContainer, {
