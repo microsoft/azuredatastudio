@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as should from 'should';
 import * as path from 'path';
@@ -199,11 +198,11 @@ describe('BookTreeViewProviderTests', function () {
 			it('should set notebooks trusted to true on trustBook', async () => {
 				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
 				let bookTrustManager: BookTrustManager = new BookTrustManager(bookTreeViewProvider.books, appContext.apiWrapper);
-				let isTrusted = bookTrustManager.isNotebookTrustedByDefault(notebook1Path);
+				let isTrusted = bookTrustManager.isNotebookTrustedByDefault(vscode.Uri.file(notebook1Path).fsPath);
 				should(isTrusted).equal(false, 'Notebook should not be trusted by default');
 
 				bookTreeViewProvider.trustBook(bookTreeViewProvider.currentBook.bookItems[0]);
-				isTrusted = bookTrustManager.isNotebookTrustedByDefault(notebook1Path);
+				isTrusted = bookTrustManager.isNotebookTrustedByDefault(vscode.Uri.file(notebook1Path).fsPath);
 				should(isTrusted).equal(true, 'Failed to set trust on trustBook');
 
 			});
@@ -212,11 +211,10 @@ describe('BookTreeViewProviderTests', function () {
 				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
 				let notebook2Path = path.join(rootFolderPath, 'Book', 'content', 'notebook2.ipynb');
 				let notebook3Path = path.join(rootFolderPath, 'Book', 'content', 'notebook3.ipynb');
-				let result: azdata.nb.NavigationResult;
-				await bookTreeViewProvider.currentBook.getNavigation(vscode.Uri.file(notebook2Path)).then(navigationResult => { result = navigationResult;});
+				const result = await bookTreeViewProvider.currentBook.getNavigation(vscode.Uri.file(notebook2Path));
 				should(result.hasNavigation).be.true('getNavigation failed to get previous and next urls');
-				should(result.next.fsPath).equal(notebook3Path, 'getNavigation failed to get the next url');
-				should(result.previous.fsPath).equal(notebook1Path, 'getNavigation failed to get the previous url');
+				should(result.next.fsPath).equal(vscode.Uri.file(notebook3Path).fsPath, 'getNavigation failed to get the next url');
+				should(result.previous.fsPath).equal(vscode.Uri.file(notebook1Path).fsPath, 'getNavigation failed to get the previous url');
 
 			});
 
@@ -264,7 +262,7 @@ describe('BookTreeViewProviderTests', function () {
 		it('should ignore toc.yml files not in _data folder', async () => {
 			await bookTreeViewProvider.currentBook.loadTableOfContentFiles(rootFolderPath);
 			let path = bookTreeViewProvider.currentBook.tableOfContentsPath;
-			should(path.toLocaleLowerCase()).equal(tableOfContentsFile.replace(/\\/g, '/').toLocaleLowerCase());
+			should(vscode.Uri.file(path).fsPath).equal(vscode.Uri.file(tableOfContentsFile).fsPath);
 		});
 
 		this.afterAll(async function (): Promise<void> {

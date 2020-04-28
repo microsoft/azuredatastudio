@@ -11,6 +11,7 @@ import { IDataComponent } from '../../interfaces';
 import { PredictColumn, PredictInputParameters, DatabaseTable } from '../../../prediction/interfaces';
 import { ModelParameters } from '../../../modelManagement/interfaces';
 import { ColumnsTable } from './columnsTable';
+import { TableSelectionComponent } from '../tableSelectionComponent';
 
 /**
  * View to render filters to pick an azure resource
@@ -18,14 +19,10 @@ import { ColumnsTable } from './columnsTable';
 export class InputColumnsComponent extends ModelViewBase implements IDataComponent<PredictInputParameters> {
 
 	private _form: azdata.FormContainer | undefined;
-	private _databases: azdata.DropDownComponent | undefined;
-	private _tables: azdata.DropDownComponent | undefined;
+	private _tableSelectionComponent: TableSelectionComponent | undefined;
 	private _columns: ColumnsTable | undefined;
-	private _dbNames: string[] = [];
-	private _tableNames: DatabaseTable[] = [];
 	private _modelParameters: ModelParameters | undefined;
-	private _dbTableComponent: azdata.FlexContainer | undefined;
-	private tableMaxLength = this.componentMaxLength * 2 + 70;
+
 	/**
 	 * Creates a new view
 	 */
@@ -38,53 +35,15 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 	 * @param modelBuilder model builder
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
-		this._databases = modelBuilder.dropDown().withProperties({
-			width: this.componentMaxLength
-		}).component();
-		this._tables = modelBuilder.dropDown().withProperties({
-			width: this.componentMaxLength
-		}).component();
-		this._columns = new ColumnsTable(this._apiWrapper, modelBuilder, this);
-
-		this._databases.onValueChanged(async () => {
-			await this.onDatabaseSelected();
-		});
-
-		this._tables.onValueChanged(async () => {
+		this._tableSelectionComponent = new TableSelectionComponent(this._apiWrapper, this, false);
+		this._tableSelectionComponent.registerComponent(modelBuilder);
+		this._tableSelectionComponent.onSelectedChanged(async () => {
 			await this.onTableSelected();
 		});
 
-
-		const databaseForm = modelBuilder.formContainer().withFormItems([{
-			title: constants.columnDatabase,
-			component: this._databases
-		}]).withLayout({
-			padding: '0px'
-		}).component();
-		const tableForm = modelBuilder.formContainer().withFormItems([{
-			title: constants.columnTable,
-			component: this._tables
-		}]).withLayout({
-			padding: '0px'
-		}).component();
-		this._dbTableComponent = modelBuilder.flexContainer().withItems([
-			databaseForm,
-			tableForm
-		], {
-			flex: '0 0 auto',
-			CSSStyles: {
-				'align-items': 'flex-start'
-			}
-		}).withLayout({
-			flexFlow: 'row',
-			justifyContent: 'space-between',
-			width: this.tableMaxLength
-		}).component();
+		this._columns = new ColumnsTable(this._apiWrapper, modelBuilder, this);
 
 		this._form = modelBuilder.formContainer().withFormItems([{
-			title: '',
-			component: this._dbTableComponent
-		}, {
 			title: constants.inputColumns,
 			component: this._columns.component
 		}]).component();
@@ -92,10 +51,10 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 	}
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
-		if (this._columns && this._dbTableComponent) {
+		if (this._columns && this._tableSelectionComponent && this._tableSelectionComponent.component) {
 			formBuilder.addFormItems([{
 				title: '',
-				component: this._dbTableComponent
+				component: this._tableSelectionComponent.component
 			}, {
 				title: constants.inputColumns,
 				component: this._columns.component
@@ -104,10 +63,10 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 	}
 
 	public removeComponents(formBuilder: azdata.FormBuilder) {
-		if (this._columns && this._dbTableComponent) {
+		if (this._columns && this._tableSelectionComponent && this._tableSelectionComponent.component) {
 			formBuilder.removeFormItem({
 				title: '',
-				component: this._dbTableComponent
+				component: this._tableSelectionComponent.component
 			});
 			formBuilder.removeFormItem({
 				title: constants.inputColumns,
@@ -136,12 +95,9 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 	 * loads data in the components
 	 */
 	public async loadData(): Promise<void> {
-		this._dbNames = await this.listDatabaseNames();
-		if (this._databases && this._dbNames && this._dbNames.length > 0) {
-			this._databases.values = this._dbNames;
-			this._databases.value = this._dbNames[0];
+		if (this._tableSelectionComponent) {
+			this._tableSelectionComponent.refresh();
 		}
-		await this.onDatabaseSelected();
 	}
 
 	public set modelParameters(value: ModelParameters) {
@@ -167,31 +123,14 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 		await this.loadData();
 	}
 
-	private async onDatabaseSelected(): Promise<void> {
-		this._tableNames = await this.listTableNames(this.databaseName || '');
-		if (this._tables && this._tableNames && this._tableNames.length > 0) {
-			this._tables.values = this._tableNames.map(t => this.getTableFullName(t));
-			this._tables.value = this.getTableFullName(this._tableNames[0]);
-		}
-		await this.onTableSelected();
-	}
-
-	private getTableFullName(table: DatabaseTable): string {
-		return `${table.schema}.${table.tableName}`;
-	}
-
 	private async onTableSelected(): Promise<void> {
 		this._columns?.loadInputs(this._modelParameters, this.databaseTable);
 	}
 
-	private get databaseName(): string | undefined {
-		return <string>this._databases?.value;
-	}
-
 	private get databaseTable(): DatabaseTable {
-		let selectedItem = this._tableNames.find(x => this.getTableFullName(x) === this._tables?.value);
+		let selectedItem = this._tableSelectionComponent?.data;
 		return {
-			databaseName: this.databaseName,
+			databaseName: selectedItem?.databaseName,
 			tableName: selectedItem?.tableName,
 			schema: selectedItem?.schema
 		};

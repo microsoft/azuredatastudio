@@ -35,13 +35,14 @@ export class WizardView extends MainViewBase {
 	 */
 	public addWizardPage(page: IPageView, index: number): void {
 		if (this._wizard) {
-			this.addPage(page, index);
-			this._wizard.removePage(index);
-			if (!page.viewPanel) {
+			const currentPage = this._wizard.currentPage;
+			if (page && currentPage < index) {
+				this.addPage(page, index);
+				this._wizard.removePage(index);
 				this.createWizardPage(page.title || '', page);
+				this._wizard.addPage(<azdata.window.WizardPage>page.viewPanel, index);
+				this._wizard.setCurrentPage(currentPage);
 			}
-			this._wizard.addPage(<azdata.window.WizardPage>page.viewPanel, index);
-			this._wizard.setCurrentPage(index);
 		}
 	}
 
@@ -75,7 +76,7 @@ export class WizardView extends MainViewBase {
 	}
 
 	public async validate(pageInfo: azdata.window.WizardPageChangeInfo): Promise<boolean> {
-		if (pageInfo.lastPage !== undefined) {
+		if (pageInfo?.lastPage !== undefined) {
 			let idxLast = pageInfo.lastPage;
 			let lastPage = this._pages[idxLast];
 			if (lastPage && lastPage.validate) {
@@ -86,20 +87,37 @@ export class WizardView extends MainViewBase {
 	}
 
 	private async onWizardPageChanged(pageInfo: azdata.window.WizardPageChangeInfo) {
-		let idxLast = pageInfo.lastPage;
-		let lastPage = this._pages[idxLast];
-		if (lastPage && lastPage.onLeave) {
-			await lastPage.onLeave();
+		if (pageInfo?.lastPage !== undefined) {
+			let idxLast = pageInfo.lastPage;
+			let lastPage = this._pages[idxLast];
+			if (lastPage && lastPage.onLeave) {
+				await lastPage.onLeave();
+			}
 		}
 
-		let idx = pageInfo.newPage;
-		let page = this._pages[idx];
-		if (page && page.onEnter) {
-			await page.onEnter();
+		if (pageInfo?.newPage !== undefined) {
+			let idx = pageInfo.newPage;
+			let page = this._pages[idx];
+			if (page && page.onEnter) {
+				if (this._wizard && this._wizard.pages.length > idx) {
+					this._wizard.pages[idx].title = page.title;
+				}
+				await page.onEnter();
+			}
 		}
 	}
 
 	public get wizard(): azdata.window.Wizard | undefined {
 		return this._wizard;
+	}
+
+	public async refresh(): Promise<void> {
+		for (let index = 0; index < this._pages.length; index++) {
+			const page = this._pages[index];
+			if (this._wizard?.pages[index]?.title !== page.title) {
+				this.addWizardPage(page, index);
+			}
+		}
+		await super.refresh();
 	}
 }

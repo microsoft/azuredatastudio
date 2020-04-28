@@ -10,8 +10,8 @@ import * as constants from '../../common/constants';
 import { IPageView, IDataComponent } from '../interfaces';
 import { LocalModelsComponent } from './localModelsComponent';
 import { AzureModelsComponent } from './azureModelsComponent';
-import { CurrentModelsTable } from './registerModels/currentModelsTable';
 import * as utils from '../../common/utils';
+import { CurrentModelsComponent } from './manageModels/currentModelsComponent';
 
 /**
  * View to pick model source
@@ -19,10 +19,11 @@ import * as utils from '../../common/utils';
 export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataComponent<ModelViewData[]> {
 
 	private _form: azdata.FormContainer | undefined;
+	private _title: string = constants.localModelPageTitle;
 	private _formBuilder: azdata.FormBuilder | undefined;
 	public localModelsComponent: LocalModelsComponent | undefined;
 	public azureModelsComponent: AzureModelsComponent | undefined;
-	public registeredModelsComponent: CurrentModelsTable | undefined;
+	public registeredModelsComponent: CurrentModelsComponent | undefined;
 
 	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _multiSelect: boolean = true) {
 		super(apiWrapper, parent.root, parent);
@@ -39,7 +40,11 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 		this.localModelsComponent.registerComponent(modelBuilder);
 		this.azureModelsComponent = new AzureModelsComponent(this._apiWrapper, this, this._multiSelect);
 		this.azureModelsComponent.registerComponent(modelBuilder);
-		this.registeredModelsComponent = new CurrentModelsTable(this._apiWrapper, this, this._multiSelect);
+		this.registeredModelsComponent = new CurrentModelsComponent(this._apiWrapper, this, {
+			selectable: true,
+			multiSelect: this._multiSelect,
+			editable: false
+		});
 		this.registeredModelsComponent.registerComponent(modelBuilder);
 		this.refresh();
 		this._form = this._formBuilder.component();
@@ -88,8 +93,21 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 					this.registeredModelsComponent.addComponents(this._formBuilder);
 					await this.registeredModelsComponent.refresh();
 				}
-
 			}
+		}
+		this.loadTitle();
+	}
+
+	private loadTitle(): void {
+		if (this.modelSourceType === ModelSourceType.Local) {
+			this._title = constants.localModelPageTitle;
+		} else if (this.modelSourceType === ModelSourceType.Azure) {
+			this._title = constants.azureModelPageTitle;
+
+		} else if (this.modelSourceType === ModelSourceType.RegisteredModels) {
+			this._title = constants.importedModelsPageTitle;
+		} else {
+			this._title = constants.modelSourcePageTitle;
 		}
 	}
 
@@ -97,7 +115,8 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 	 * Returns page title
 	 */
 	public get title(): string {
-		return constants.modelSourcePageTitle;
+		this.loadTitle();
+		return this._title;
 	}
 
 	public validate(): Promise<boolean> {
@@ -117,6 +136,10 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 		return Promise.resolve(validated);
 	}
 
+	public onEnter(): Promise<void> {
+		return Promise.resolve();
+	}
+
 	public async onLeave(): Promise<void> {
 		this.modelsViewData = [];
 		if (this.modelSourceType === ModelSourceType.Local && this.localModelsComponent) {
@@ -126,9 +149,10 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 					return {
 						modelData: x,
 						modelDetails: {
-							title: fileName,
+							modelName: fileName,
 							fileName: fileName
-						}
+						},
+						targetImportTable: this.importTable
 					};
 				});
 			}
@@ -145,9 +169,13 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 							model: x.model
 						},
 						modelDetails: {
-							title: x.model?.name || '',
-							fileName: x.model?.name
-						}
+							modelName: x.model?.name || '',
+							fileName: x.model?.name,
+							framework: x.model?.framework,
+							frameworkVersion: x.model?.frameworkVersion,
+							created: x.model?.createdTime
+						},
+						targetImportTable: this.importTable
 					};
 				});
 			}
@@ -158,8 +186,9 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 					return {
 						modelData: x,
 						modelDetails: {
-							title: ''
-						}
+							modelName: ''
+						},
+						targetImportTable: this.importTable
 					};
 				});
 			}

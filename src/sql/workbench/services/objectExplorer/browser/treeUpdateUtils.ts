@@ -203,7 +203,7 @@ export class TreeUpdateUtils {
 	 * @param connectionManagementService Connection management service instance
 	 * @param objectExplorerService Object explorer service instance
 	 */
-	public static async  connectAndCreateOeSession(connection: IConnectionProfile, options: IConnectionCompletionOptions,
+	public static async connectAndCreateOeSession(connection: IConnectionProfile, options: IConnectionCompletionOptions,
 		connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, tree: ITree): Promise<boolean> {
 		const connectedConnection = await TreeUpdateUtils.connectIfNotConnected(connection, options, connectionManagementService, tree);
 		if (connectedConnection) {

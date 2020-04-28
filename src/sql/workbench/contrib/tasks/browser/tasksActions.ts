@@ -8,7 +8,7 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { ToggleViewAction } from 'vs/workbench/browser/actions/layoutActions';
 import { IViewsService, IViewDescriptorService } from 'vs/workbench/common/views';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { TASKS_PANEL_ID } from 'sql/workbench/contrib/tasks/common/tasks';
+import { TASKS_VIEW_ID } from 'sql/workbench/contrib/tasks/common/tasks';
 
 export class ToggleTasksAction extends ToggleViewAction {
 
@@ -22,6 +22,6 @@ export class ToggleTasksAction extends ToggleViewAction {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService
 	) {
-		super(id, label, TASKS_PANEL_ID, viewsService, viewDescriptorService, contextKeyService, layoutService);
+		super(id, label, TASKS_VIEW_ID, viewsService, viewDescriptorService, contextKeyService, layoutService);
 	}
 }

@@ -10,11 +10,13 @@ import { AzureResourceFilterComponent } from './azureResourceFilterComponent';
 import { AzureModelsTable } from './azureModelsTable';
 import { IDataComponent, AzureModelResource } from '../interfaces';
 import { ModelArtifact } from './prediction/modelArtifact';
+import { AzureSignInComponent } from './azureSignInComponent';
 
 export class AzureModelsComponent extends ModelViewBase implements IDataComponent<AzureModelResource[]> {
 
 	public azureModelsTable: AzureModelsTable | undefined;
 	public azureFilterComponent: AzureResourceFilterComponent | undefined;
+	public azureSignInComponent: AzureSignInComponent | undefined;
 
 	private _loader: azdata.LoadingComponent | undefined;
 	private _form: azdata.FormContainer | undefined;
@@ -34,6 +36,7 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		this.azureFilterComponent = new AzureResourceFilterComponent(this._apiWrapper, modelBuilder, this);
 		this.azureModelsTable = new AzureModelsTable(this._apiWrapper, modelBuilder, this, this._multiSelect);
+		this.azureSignInComponent = new AzureSignInComponent(this._apiWrapper, modelBuilder, this);
 		this._loader = modelBuilder.loadingComponent()
 			.withItem(this.azureModelsTable.component)
 			.withProperties({
@@ -63,6 +66,20 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 	}
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
+		this.removeComponents(formBuilder);
+		if (this.azureFilterComponent?.data?.account) {
+			this.addAzureComponents(formBuilder);
+		} else {
+			this.addAzureSignInComponents(formBuilder);
+		}
+	}
+
+	public removeComponents(formBuilder: azdata.FormBuilder) {
+		this.removeAzureComponents(formBuilder);
+		this.removeAzureSignInComponents(formBuilder);
+	}
+
+	private addAzureComponents(formBuilder: azdata.FormBuilder) {
 		if (this.azureFilterComponent && this._loader) {
 			this.azureFilterComponent.addComponents(formBuilder);
 
@@ -73,13 +90,25 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 		}
 	}
 
-	public removeComponents(formBuilder: azdata.FormBuilder) {
+	private removeAzureComponents(formBuilder: azdata.FormBuilder) {
 		if (this.azureFilterComponent && this._loader) {
 			this.azureFilterComponent.removeComponents(formBuilder);
 			formBuilder.removeFormItem({
 				title: '',
 				component: this._loader
 			});
+		}
+	}
+
+	private addAzureSignInComponents(formBuilder: azdata.FormBuilder) {
+		if (this.azureSignInComponent) {
+			this.azureSignInComponent.addComponents(formBuilder);
+		}
+	}
+
+	private removeAzureSignInComponents(formBuilder: azdata.FormBuilder) {
+		if (this.azureSignInComponent) {
+			this.azureSignInComponent.removeComponents(formBuilder);
 		}
 	}
 

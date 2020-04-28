@@ -411,7 +411,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.MetadataProvider>(handle).getMetadata(connectionUri);
 	}
 
-	public $getDatabases(handle: number, connectionUri: string): Thenable<string[]> {
+	public $getDatabases(handle: number, connectionUri: string): Thenable<string[] | azdata.DatabaseInfo[]> {
 		return this._resolveProvider<azdata.MetadataProvider>(handle).getDatabases(connectionUri);
 	}
 

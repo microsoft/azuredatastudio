@@ -129,6 +129,7 @@ declare module 'azdata' {
 		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent>;
 		tabbedPanel(): TabbedPanelComponentBuilder;
 		separator(): ComponentBuilder<SeparatorComponent>;
+		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent>;
 	}
 
 	export interface RadioCard {
@@ -305,6 +306,37 @@ declare module 'azdata' {
 		required?: boolean;
 	}
 
+	/**
+	 * A property to be displayed in the PropertiesContainerComponent
+	 */
+	export interface PropertiesContainerItem {
+		/**
+		 * The name of the property to display
+		 */
+		displayName: string;
+		/**
+		 * The value of the property to display
+		 */
+		value: string;
+	}
+
+	/**
+	 * Component to display a list of property values.
+	 */
+	export interface PropertiesContainerComponent extends Component, PropertiesContainerComponentProperties {
+
+	}
+
+	/**
+	 * Properties for configuring a PropertiesContainerComponent
+	 */
+	export interface PropertiesContainerComponentProperties {
+		/**
+		 * The properties to display
+		 */
+		propertyItems?: PropertiesContainerItem[];
+	}
+
 	export namespace nb {
 		/**
 		 * An event that is emitted when the active Notebook editor is changed.
@@ -351,6 +383,10 @@ declare module 'azdata' {
 		 * Whether to show the tab navigation pane even when there is only one tab, default is false
 		 */
 		alwaysShowTabs?: boolean;
+	}
+
+	export interface TaskInfo {
+		targetLocation?: string;
 	}
 }
 
