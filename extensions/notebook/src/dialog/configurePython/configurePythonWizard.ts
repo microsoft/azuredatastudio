@@ -115,9 +115,7 @@ export class ConfigurePythonWizard {
 		});
 
 		this.wizard.generateScriptButton.hidden = true;
-
 		this.wizard.pages = [page0, page1];
-
 		this.wizard.open();
 
 		return this.setupComplete.promise;
