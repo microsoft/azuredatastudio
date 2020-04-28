@@ -6,20 +6,21 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../../../common/constants';
-import { ModelViewBase } from '../modelViewBase';
+import { ModelViewBase, DeleteModelEventName, EditModelEventName } from '../modelViewBase';
 import { ApiWrapper } from '../../../common/apiWrapper';
-import { RegisteredModel } from '../../../modelManagement/interfaces';
-import { IDataComponent } from '../../interfaces';
+import { ImportedModel } from '../../../modelManagement/interfaces';
+import { IDataComponent, IComponentSettings } from '../../interfaces';
 import { ModelArtifact } from '../prediction/modelArtifact';
+import * as utils from '../../../common/utils';
 
 /**
  * View to render registered models table
  */
-export class CurrentModelsTable extends ModelViewBase implements IDataComponent<RegisteredModel[]> {
+export class CurrentModelsTable extends ModelViewBase implements IDataComponent<ImportedModel[]> {
 
 	private _table: azdata.DeclarativeTableComponent | undefined;
 	private _modelBuilder: azdata.ModelBuilder | undefined;
-	private _selectedModel: RegisteredModel[] = [];
+	private _selectedModel: ImportedModel[] = [];
 	private _loader: azdata.LoadingComponent | undefined;
 	private _downloadedFile: ModelArtifact | undefined;
 	private _onModelSelectionChanged: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
@@ -28,7 +29,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	/**
 	 * Creates new view
 	 */
-	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _multiSelect: boolean = true) {
+	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _settings: IComponentSettings) {
 		super(apiWrapper, parent.root, parent);
 	}
 
@@ -38,62 +39,66 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		this._modelBuilder = modelBuilder;
+		let columns = [
+			{ // Name
+				displayName: constants.modelName,
+				ariaLabel: constants.modelName,
+				valueType: azdata.DeclarativeDataType.string,
+				isReadOnly: true,
+				width: 150,
+				headerCssStyles: {
+					...constants.cssStyles.tableHeader
+				},
+				rowCssStyles: {
+					...constants.cssStyles.tableRow
+				},
+			},
+			{ // Created
+				displayName: constants.modelCreated,
+				ariaLabel: constants.modelCreated,
+				valueType: azdata.DeclarativeDataType.string,
+				isReadOnly: true,
+				width: 150,
+				headerCssStyles: {
+					...constants.cssStyles.tableHeader
+				},
+				rowCssStyles: {
+					...constants.cssStyles.tableRow
+				},
+			},
+			{ // Action
+				displayName: '',
+				valueType: azdata.DeclarativeDataType.component,
+				isReadOnly: true,
+				width: 50,
+				headerCssStyles: {
+					...constants.cssStyles.tableHeader
+				},
+				rowCssStyles: {
+					...constants.cssStyles.tableRow
+				},
+			}
+		];
+		if (this._settings.editable) {
+			columns.push(
+				{ // Action
+					displayName: '',
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: true,
+					width: 50,
+					headerCssStyles: {
+						...constants.cssStyles.tableHeader
+					},
+					rowCssStyles: {
+						...constants.cssStyles.tableRow
+					},
+				}
+			);
+		}
 		this._table = modelBuilder.declarativeTable()
 			.withProperties<azdata.DeclarativeTableProperties>(
 				{
-					columns: [
-						{ // Artifact name
-							displayName: constants.modelArtifactName,
-							ariaLabel: constants.modelArtifactName,
-							valueType: azdata.DeclarativeDataType.string,
-							isReadOnly: true,
-							width: 150,
-							headerCssStyles: {
-								...constants.cssStyles.tableHeader
-							},
-							rowCssStyles: {
-								...constants.cssStyles.tableRow
-							},
-						},
-						{ // Name
-							displayName: constants.modelName,
-							ariaLabel: constants.modelName,
-							valueType: azdata.DeclarativeDataType.string,
-							isReadOnly: true,
-							width: 150,
-							headerCssStyles: {
-								...constants.cssStyles.tableHeader
-							},
-							rowCssStyles: {
-								...constants.cssStyles.tableRow
-							},
-						},
-						{ // Created
-							displayName: constants.modelCreated,
-							ariaLabel: constants.modelCreated,
-							valueType: azdata.DeclarativeDataType.string,
-							isReadOnly: true,
-							width: 150,
-							headerCssStyles: {
-								...constants.cssStyles.tableHeader
-							},
-							rowCssStyles: {
-								...constants.cssStyles.tableRow
-							},
-						},
-						{ // Action
-							displayName: '',
-							valueType: azdata.DeclarativeDataType.component,
-							isReadOnly: true,
-							width: 50,
-							headerCssStyles: {
-								...constants.cssStyles.tableHeader
-							},
-							rowCssStyles: {
-								...constants.cssStyles.tableRow
-							},
-						}
-					],
+					columns: columns,
 					data: [],
 					ariaLabel: constants.mlsConfigTitle
 				})
@@ -132,7 +137,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	public async loadData(): Promise<void> {
 		await this.onLoading();
 		if (this._table) {
-			let models: RegisteredModel[] | undefined;
+			let models: ImportedModel[] | undefined;
 
 			if (this.importTable) {
 				models = await this.listModels(this.importTable);
@@ -163,11 +168,28 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 		}
 	}
 
-	private createTableRow(model: RegisteredModel): any[] {
+	private createTableRow(model: ImportedModel): any[] {
+		let row: any[] = [model.modelName, model.created];
 		if (this._modelBuilder) {
-			let selectModelButton: azdata.Component;
+			const selectButton = this.createSelectButton(model);
+			if (selectButton) {
+				row.push(selectButton);
+			}
+			const editButtons = this.createEditButtons(model);
+			if (editButtons && editButtons.length > 0) {
+				row = row.concat(editButtons);
+			}
+		}
+
+		return row;
+	}
+
+	private createSelectButton(model: ImportedModel): azdata.Component | undefined {
+		let selectModelButton: azdata.Component | undefined = undefined;
+		if (this._modelBuilder && this._settings.selectable) {
+
 			let onSelectItem = (checked: boolean) => {
-				if (!this._multiSelect) {
+				if (!this._settings.multiSelect) {
 					this._selectedModel = [];
 				}
 				const foundItem = this._selectedModel.find(x => x === model);
@@ -178,7 +200,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 				}
 				this.onModelSelected();
 			};
-			if (this._multiSelect) {
+			if (this._settings.multiSelect) {
 				const checkbox = this._modelBuilder.checkBox().withProperties({
 					name: 'amlModel',
 					value: model.id,
@@ -203,11 +225,53 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 				});
 				selectModelButton = radioButton;
 			}
-
-			return [model.artifactName, model.title, model.created, selectModelButton];
 		}
+		return selectModelButton;
+	}
 
-		return [];
+	private createEditButtons(model: ImportedModel): azdata.Component[] | undefined {
+		let dropButton: azdata.ButtonComponent | undefined = undefined;
+		let editButton: azdata.ButtonComponent | undefined = undefined;
+		if (this._modelBuilder && this._settings.editable) {
+			dropButton = this._modelBuilder.button().withProperties({
+				label: '',
+				title: constants.deleteTitle,
+				iconPath: {
+					dark: this.asAbsolutePath('images/dark/delete_inverse.svg'),
+					light: this.asAbsolutePath('images/light/delete.svg')
+				},
+				width: 15,
+				height: 15
+			}).component();
+			dropButton.onDidClick(async () => {
+				try {
+					const confirm = await utils.promptConfirm(constants.confirmDeleteModel(model.modelName), this._apiWrapper);
+					if (confirm) {
+						await this.sendDataRequest(DeleteModelEventName, model);
+						if (this.parent) {
+							await this.parent?.refresh();
+						}
+					}
+				} catch (error) {
+					this.showErrorMessage(`${constants.updateModelFailedError} ${constants.getErrorMessage(error)}`);
+				}
+			});
+
+			editButton = this._modelBuilder.button().withProperties({
+				label: '',
+				title: constants.deleteTitle,
+				iconPath: {
+					dark: this.asAbsolutePath('images/dark/edit_inverse.svg'),
+					light: this.asAbsolutePath('images/light/edit.svg')
+				},
+				width: 15,
+				height: 15
+			}).component();
+			editButton.onDidClick(async () => {
+				await this.sendDataRequest(EditModelEventName, model);
+			});
+		}
+		return editButton && dropButton ? [editButton, dropButton] : undefined;
 	}
 
 	private async onModelSelected(): Promise<void> {
@@ -221,7 +285,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	/**
 	 * Returns selected data
 	 */
-	public get data(): RegisteredModel[] | undefined {
+	public get data(): ImportedModel[] | undefined {
 		return this._selectedModel;
 	}
 
