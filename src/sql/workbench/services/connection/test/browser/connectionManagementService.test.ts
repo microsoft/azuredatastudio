@@ -441,6 +441,43 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
+	test('EditConnection: Changing connection profile name for same URI should persist after edit', () => {
+		let profile = connectionProfile;
+		let uri1 = 'test_uri1';
+		let newname = 'connection renamed';
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri1,
+				},
+				querySelection: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		return connect(uri1, options, true, profile).then(result => {
+			assert.equal(result.connected, true);
+			let newProfile = connectionProfile;
+			newProfile.connectionName = newname;
+			options.params.isEditConnection = true;
+			return connect(uri1, options, true, profile).then(result => {
+				assert.equal(result.connected, true);
+				assert.equal(connectionManagementService.getConnectionProfile(uri1).connectionName, newname);
+			});
+		});
+	});
+
 	test('EditConnection: Connecting a different URI with same profile should not change profile ID.', () => {
 		let profile = connectionProfile;
 		profile.id = '0451';
@@ -478,6 +515,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			});
 		});
 	});
+
 
 	test('failed firewall rule should open the firewall rule dialog', () => {
 		handleFirewallRuleResult.canHandleFirewallRule = true;
