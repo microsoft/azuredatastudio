@@ -10,7 +10,7 @@ import * as TypeMoq from 'typemoq';
 import * as should from 'should';
 import { PredictService } from '../../prediction/predictService';
 import { QueryRunner } from '../../common/queryRunner';
-import { RegisteredModel } from '../../modelManagement/interfaces';
+import { ImportedModel } from '../../modelManagement/interfaces';
 import { PredictParameters, DatabaseTable, TableColumn } from '../../prediction/interfaces';
 import * as path from 'path';
 import * as os from 'os';
@@ -194,11 +194,10 @@ describe('PredictService', () => {
 			tableName: '',
 			schema: ''
 		};
-		const model: RegisteredModel =
+		const model: ImportedModel =
 		{
 			id: 1,
-			artifactName: 'name1',
-			title: 'title1',
+			modelName: 'name1',
 			description: 'desc1',
 			created: '2018-01-01',
 			version: '1.1',

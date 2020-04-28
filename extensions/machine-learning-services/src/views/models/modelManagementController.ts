@@ -9,7 +9,7 @@ import { azureResource } from '../../typings/azure-resource';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { AzureModelRegistryService } from '../../modelManagement/azureModelRegistryService';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
-import { RegisteredModel, WorkspaceModel, ModelParameters } from '../../modelManagement/interfaces';
+import { ImportedModel, WorkspaceModel, ModelParameters } from '../../modelManagement/interfaces';
 import { PredictParameters, DatabaseTable, TableColumn } from '../../prediction/interfaces';
 import { DeployedModelService } from '../../modelManagement/deployedModelService';
 import { ManageModelsDialog } from './manageModels/manageModelsDialog';
@@ -17,7 +17,7 @@ import {
 	AzureResourceEventArgs, ListAzureModelsEventName, ListSubscriptionsEventName, ListModelsEventName, ListWorkspacesEventName,
 	ListGroupsEventName, ListAccountsEventName, RegisterLocalModelEventName, RegisterAzureModelEventName,
 	ModelViewBase, SourceModelSelectedEventName, RegisterModelEventName, DownloadAzureModelEventName,
-	ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, PredictModelEventName, PredictModelEventArgs, DownloadRegisteredModelEventName, LoadModelParametersEventName, ModelSourceType, ModelViewData, StoreImportTableEventName, VerifyImportTableEventName
+	ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, PredictModelEventName, PredictModelEventArgs, DownloadRegisteredModelEventName, LoadModelParametersEventName, ModelSourceType, ModelViewData, StoreImportTableEventName, VerifyImportTableEventName, EditModelEventName, UpdateModelEventName, DeleteModelEventName, SignInToAzureEventName
 } from './modelViewBase';
 import { ControllerBase } from '../controllerBase';
 import { ImportModelWizard } from './manageModels/importModelWizard';
@@ -26,6 +26,7 @@ import * as constants from '../../common/constants';
 import { PredictWizard } from './prediction/predictWizard';
 import { AzureModelResource } from '../interfaces';
 import { PredictService } from '../../prediction/predictService';
+import { EditModelDialog } from './manageModels/editModelDialog';
 
 /**
  * Model management UI controller
@@ -61,6 +62,24 @@ export class ModelManagementController extends ControllerBase {
 		} else {
 			view.importTable = await controller._registeredModelService.getRecentImportTable();
 		}
+
+		controller.registerEvents(view);
+
+		// Open view
+		//
+		await view.open();
+		await view.refresh();
+		return view;
+	}
+
+	/**
+	 * Opens the dialog to edit model
+	 */
+	public async editModel(model: ImportedModel, parent?: ModelViewBase, controller?: ModelManagementController, apiWrapper?: ApiWrapper, root?: string): Promise<ModelViewBase> {
+		controller = controller || this;
+		apiWrapper = apiWrapper || this._apiWrapper;
+		root = root || this._root;
+		let view = new EditModelDialog(apiWrapper, root, parent, model);
 
 		controller.registerEvents(view);
 
@@ -136,6 +155,18 @@ export class ModelManagementController extends ControllerBase {
 			const importTable = <DatabaseTable>args;
 			await this.executeAction(view, RegisterModelEventName, this.registerModel, importTable, view, this, this._apiWrapper, this._root);
 		});
+		view.on(EditModelEventName, async (args) => {
+			const model = <ImportedModel>args;
+			await this.executeAction(view, EditModelEventName, this.editModel, model, view, this, this._apiWrapper, this._root);
+		});
+		view.on(UpdateModelEventName, async (args) => {
+			const model = <ImportedModel>args;
+			await this.executeAction(view, UpdateModelEventName, this.updateModel, this._registeredModelService, model);
+		});
+		view.on(DeleteModelEventName, async (args) => {
+			const model = <ImportedModel>args;
+			await this.executeAction(view, DeleteModelEventName, this.deleteModel, this._registeredModelService, model);
+		});
 		view.on(RegisterAzureModelEventName, async (arg) => {
 			let models = <ModelViewData[]>arg;
 			await this.executeAction(view, RegisterAzureModelEventName, this.registerAzureModel, this._amlService, this._registeredModelService,
@@ -164,7 +195,7 @@ export class ModelManagementController extends ControllerBase {
 				predictArgs, predictArgs.model, predictArgs.filePath);
 		});
 		view.on(DownloadRegisteredModelEventName, async (arg) => {
-			let model = <RegisteredModel>arg;
+			let model = <ImportedModel>arg;
 			await this.executeAction(view, DownloadRegisteredModelEventName, this.downloadRegisteredModel, this._registeredModelService,
 				model);
 		});
@@ -178,9 +209,13 @@ export class ModelManagementController extends ControllerBase {
 			await this.executeAction(view, VerifyImportTableEventName, this.verifyImportTable, this._registeredModelService,
 				importTable);
 		});
-		view.on(SourceModelSelectedEventName, (arg) => {
+		view.on(SourceModelSelectedEventName, async (arg) => {
 			view.modelSourceType = <ModelSourceType>arg;
-			view.refresh();
+			await view.refresh();
+		});
+		view.on(SignInToAzureEventName, async () => {
+			await this.executeAction(view, SignInToAzureEventName, this.signInToAzure, this._amlService);
+			await view.refresh();
 		});
 	}
 
@@ -206,6 +241,10 @@ export class ModelManagementController extends ControllerBase {
 		return view;
 	}
 
+	private async signInToAzure(service: AzureModelRegistryService): Promise<void> {
+		return await service.signInToAzure();
+	}
+
 	private async getAzureAccounts(service: AzureModelRegistryService): Promise<azdata.Account[]> {
 		return await service.getAccounts();
 	}
@@ -225,7 +264,7 @@ export class ModelManagementController extends ControllerBase {
 		return await service.getWorkspaces(account, subscription, group);
 	}
 
-	private async getRegisteredModels(registeredModelService: DeployedModelService, table: DatabaseTable): Promise<RegisteredModel[]> {
+	private async getRegisteredModels(registeredModelService: DeployedModelService, table: DatabaseTable): Promise<ImportedModel[]> {
 		return registeredModelService.getDeployedModels(table);
 	}
 
@@ -253,6 +292,22 @@ export class ModelManagementController extends ControllerBase {
 					throw Error(constants.invalidModelToRegisterError);
 				}
 			}));
+		} else {
+			throw Error(constants.invalidModelToRegisterError);
+		}
+	}
+
+	private async updateModel(service: DeployedModelService, model: ImportedModel | undefined): Promise<void> {
+		if (model) {
+			await service.updateModel(model);
+		} else {
+			throw Error(constants.invalidModelToRegisterError);
+		}
+	}
+
+	private async deleteModel(service: DeployedModelService, model: ImportedModel | undefined): Promise<void> {
+		if (model) {
+			await service.deleteModel(model);
 		} else {
 			throw Error(constants.invalidModelToRegisterError);
 		}
@@ -306,7 +361,7 @@ export class ModelManagementController extends ControllerBase {
 	private async generatePredictScript(
 		predictService: PredictService,
 		predictParams: PredictParameters,
-		registeredModel: RegisteredModel | undefined,
+		registeredModel: ImportedModel | undefined,
 		filePath: string | undefined
 	): Promise<string> {
 		if (!predictParams) {
@@ -334,7 +389,7 @@ export class ModelManagementController extends ControllerBase {
 
 	private async downloadRegisteredModel(
 		registeredModelService: DeployedModelService,
-		model: RegisteredModel | undefined): Promise<string> {
+		model: ImportedModel | undefined): Promise<string> {
 		if (!model) {
 			throw Error(constants.invalidModelToPredictError);
 		}
