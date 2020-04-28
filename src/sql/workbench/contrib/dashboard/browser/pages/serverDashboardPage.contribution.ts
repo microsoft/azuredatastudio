@@ -99,7 +99,7 @@ const defaultVal = [
 			sizex: 2,
 			sizey: 2
 		},
-		when: 'mssql:engineedition == 11 || mssql:iscloud',
+		when: 'connectionProvider != \'MSSQL\' || mssql:engineedition == 11 || mssql:iscloud',
 		widget: {
 			'explorer-widget': {}
 		}
