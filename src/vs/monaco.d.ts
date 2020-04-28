@@ -3279,6 +3279,10 @@ declare namespace monaco.editor {
 		 */
 		autoFindInSelection?: 'never' | 'always' | 'multiline';
 		addExtraSpaceOnTop?: boolean;
+		/**
+		 * Controls whether the search automatically restarts from the beginning (or the end) when no further matches can be found
+		 */
+		loop?: boolean;
 	}
 
 	export type EditorFindOptions = Readonly<Required<IEditorFindOptions>>;
@@ -5640,6 +5644,12 @@ declare namespace monaco.languages {
 		 * The parameters of this signature.
 		 */
 		parameters: ParameterInformation[];
+		/**
+		 * Index of the active parameter.
+		 *
+		 * If provided, this is used in place of `SignatureHelp.activeSignature`.
+		 */
+		activeParameter?: number;
 	}
 
 	/**
