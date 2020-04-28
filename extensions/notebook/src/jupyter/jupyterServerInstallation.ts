@@ -834,11 +834,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			version: '1.0.0'
 		}];
 		switch (kernelName) {
-			case 'Python 3':
+			case constants.python3DisplayName:
 				break;
-			case 'PySpark':
-			case 'Spark | Scala':
-			case 'Spark | R':
+			case constants.pysparkDisplayName:
+			case constants.sparkScalaDisplayName:
+			case constants.sparkRDisplayName:
 				packages.push({
 					name: 'sparkmagic',
 					version: '0.12.9'
@@ -850,7 +850,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 					version: '1.3.0'
 				});
 				break;
-			case 'PowerShell':
+			case constants.powershellDisplayName:
 				packages.push({
 					name: 'powershell-kernel',
 					version: '0.1.3'

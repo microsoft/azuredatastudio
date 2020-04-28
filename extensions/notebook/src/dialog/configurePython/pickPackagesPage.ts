@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { BasePage } from './basePage';
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
+import { python3DisplayName, pysparkDisplayName, sparkScalaDisplayName, sparkRDisplayName, powershellDisplayName } from '../../common/constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -15,7 +16,7 @@ export class PickPackagesPage extends BasePage {
 	private requiredPackagesTable: azdata.DeclarativeTableComponent;
 
 	public async start(): Promise<boolean> {
-		let dropdownValues = ['Python 3', 'PySpark', 'Spark | Scala', 'Spark | R', 'PowerShell'];
+		let dropdownValues = [python3DisplayName, pysparkDisplayName, sparkScalaDisplayName, sparkRDisplayName, powershellDisplayName];
 		this.kernelDropdown = this.view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 			value: dropdownValues[0],
 			values: dropdownValues
