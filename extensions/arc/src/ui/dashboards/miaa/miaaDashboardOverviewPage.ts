@@ -22,6 +22,10 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		return 'miaa-overview';
 	}
 
+	public get icon(): { dark: string, light: string } {
+		return IconPathHelper.properties;
+	}
+
 	public get container(): azdata.Component {
 		return this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'This is a test' }).component();
 	}
