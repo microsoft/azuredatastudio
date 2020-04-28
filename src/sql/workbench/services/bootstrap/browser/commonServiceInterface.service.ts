@@ -19,7 +19,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
 
-import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult, DatabaseDetail } from 'azdata';
+import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'azdata';
 
 /* VS imports */
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -36,7 +36,7 @@ export class SingleConnectionMetadataService {
 		return Observable.fromPromise(this._metadataService.getMetadata(this._uri));
 	}
 
-	get databases(): Observable<string[] | DatabaseDetail[]> {
+	get databases(): Observable<string[] | DatabaseInfo[]> {
 		return Observable.fromPromise(this._metadataService.getDatabases(this._uri));
 	}
 }

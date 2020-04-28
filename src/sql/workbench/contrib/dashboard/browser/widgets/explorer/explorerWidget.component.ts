@@ -137,7 +137,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 					// Handle the case where there is no metadata service
 					data = data || [];
 					if (!isStringArray(data)) {
-						data = data.map(item => item.name);
+						data = data.map(item => item.options['name'] as string);
 					}
 					const profileData = data.map(d => {
 						const profile = new ConnectionProfile(this.capabilitiesService, currentProfile);
