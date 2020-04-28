@@ -24,7 +24,7 @@ class DivItem {
 
 @Component({
 	template: `
-		<div #divContainer *ngIf="items" class="divContainer" [style.height]="height" [style.width]="width" [style.display]="display" (keyup)="onKey($event)" [attr.role]="ariaRole" [attr.aria-selected]="ariaSelected">
+		<div #divContainer *ngIf="items" class="divContainer" [ngStyle]="CSSStyles" [style.height]="height" [style.width]="width" [style.display]="display" (keyup)="onKey($event)" [attr.role]="ariaRole" [attr.aria-selected]="ariaSelected">
 			<div *ngFor="let item of items" [style.order]="getItemOrder(item)" [ngStyle]="getItemStyles(item)">
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
