@@ -46,7 +46,7 @@ export class PickPackagesPage extends BasePage {
 				title: localize('configurePython.kernelLabel', "Kernel")
 			}, {
 				component: this.requiredPackagesTable,
-				title: localize('configurePython.requiredDependencies', "Install required kernel dependencies")
+				title: localize('configurePython.requiredDependencies', "Required kernel dependencies")
 			}]).component();
 		await this.view.initializeModel(formModel);
 		return true;
