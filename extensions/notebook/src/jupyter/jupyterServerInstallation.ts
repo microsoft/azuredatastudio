@@ -478,22 +478,16 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private async upgradePythonPackages(promptForUpgrade: boolean, forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
 		let expectedCondaPackages: PythonPkgDetails[];
 		let expectedPipPackages: PythonPkgDetails[];
-		if (this._usingConda) {
-			if (specificPackages) {
-				expectedCondaPackages = specificPackages;
-				expectedPipPackages = [];
-			} else {
-				expectedCondaPackages = this._expectedCondaPackages;
-				expectedPipPackages = this._expectedCondaPipPackages;
-			}
+		if (specificPackages) {
+			// Always install generic packages with pip, since conda may not have them.
+			expectedCondaPackages = [];
+			expectedPipPackages = specificPackages;
+		} else if (this._usingConda) {
+			expectedCondaPackages = this._expectedCondaPackages;
+			expectedPipPackages = this._expectedCondaPipPackages;
 		} else {
-			if (specificPackages) {
-				expectedCondaPackages = [];
-				expectedPipPackages = specificPackages;
-			} else {
-				expectedCondaPackages = [];
-				expectedPipPackages = this._expectedPythonPackages;
-			}
+			expectedCondaPackages = [];
+			expectedPipPackages = this._expectedPythonPackages;
 		}
 
 		let condaPackagesToInstall: PythonPkgDetails[];
@@ -537,7 +531,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			if (promptForUpgrade) {
 				doUpgrade = await this._prompter.promptSingle<boolean>(<IQuestion>{
 					type: QuestionTypes.confirm,
-					message: localize('confirmPackageUpgrade', "Some installed python packages need to be upgraded. Would you like to upgrade them now?"),
+					message: localize('confirmPackageUpgrade', "Some required python packages need to be installed. Would you like to install them now?"),
 					default: true
 				});
 			} else {
