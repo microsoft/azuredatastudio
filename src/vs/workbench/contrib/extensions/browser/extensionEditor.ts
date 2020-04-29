@@ -399,8 +399,8 @@ export class ExtensionEditor extends BaseEditor {
 			}
 			this.transientDisposables.add(this.onClick(template.publisher, () => {
 				this.viewletService.openViewlet(VIEWLET_ID, true)
-					.then(viewlet => viewlet?.getViewPaneContainer())
-					.then((viewlet: IExtensionsViewPaneContainer) => {
+					.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
+					.then(viewlet => {
 						viewlet.search(`publisher:"${extension.publisherDisplayName}"`);
 					});
 			}));

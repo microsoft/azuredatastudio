@@ -410,11 +410,11 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		const aligner = new Aligner(this.themeService);
 		const renderer = this.instantiationService.createInstance(TreeRenderer, this.id, treeMenus, this.treeLabels, actionViewItemProvider, aligner);
 
-		this.tree = this._register(this.instantiationService.createInstance(WorkbenchAsyncDataTree, 'SqlCustomView', this.treeContainer, new CustomTreeDelegate(), [renderer],
+		this.tree = <WorkbenchAsyncDataTree<ITreeItem, ITreeItem, FuzzyScore>>this._register(this.instantiationService.createInstance(WorkbenchAsyncDataTree, 'SqlCustomView', this.treeContainer, new CustomTreeDelegate(), [renderer],
 			dataSource, {
 			identityProvider: new CustomViewIdentityProvider(),
 			accessibilityProvider: {
-				getAriaLabel(element: ITreeItem): string {
+				getAriaLabel(element: ITreeItem): string | null {
 					return element.label ? element.label.label : '';
 				},
 				getWidgetAriaLabel: () => this.title
@@ -428,8 +428,8 @@ export class CustomTreeView extends Disposable implements ITreeView {
 			collapseByDefault: (e: ITreeItem): boolean => {
 				return e.collapsibleState !== TreeItemCollapsibleState.Expanded;
 			},
-			multipleSelectionSupport: this.canSelectMany,
-		}) as WorkbenchAsyncDataTree<ITreeItem, ITreeItem, FuzzyScore>);
+			multipleSelectionSupport: this.canSelectMany
+		}));
 		aligner.tree = this.tree;
 		const actionRunner = new MultipleSelectionActionRunner(() => this.tree!.getSelection());
 		renderer.actionRunner = actionRunner;

@@ -220,8 +220,8 @@ export class InsightsDialogView extends Modal {
 		const itemsHeaderTitle = nls.localize("insights.dialog.items", "Items");
 		const itemsDetailHeaderTitle = nls.localize("insights.dialog.itemDetails", "Item Details");
 
-		this._topTableData = new TableDataView();
-		this._bottomTableData = new TableDataView();
+		this._topTableData = new TableDataView<ListResource>();
+		this._bottomTableData = new TableDataView<ListResource>();
 		let topTableView = this._instantiationService.createInstance(InsightTableView, this._topColumns, this._topTableData, { forceFitColumns: true }, { id: 'insights.top', title: itemsHeaderTitle }) as InsightTableView<ListResource>;
 		topTableView.render();
 		attachPanelStyler(topTableView, this._themeService);
@@ -275,8 +275,8 @@ export class InsightsDialogView extends Modal {
 		this._register(attachTableStyler(this._topTable, this._themeService));
 		this._register(attachTableStyler(this._bottomTable, this._themeService));
 
-		this._topTable.grid.onKeyDown.subscribe((e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
+		this._topTable.grid.onKeyDown.subscribe(e => {
+			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
 			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				topTableView.focus();
 				e.stopImmediatePropagation();
@@ -286,8 +286,8 @@ export class InsightsDialogView extends Modal {
 			}
 		});
 
-		this._bottomTable.grid.onKeyDown.subscribe((e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
+		this._bottomTable.grid.onKeyDown.subscribe(e => {
+			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
 			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				bottomTableView.focus();
 				e.stopImmediatePropagation();
