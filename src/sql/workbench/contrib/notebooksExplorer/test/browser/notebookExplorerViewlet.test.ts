@@ -22,6 +22,7 @@ suite('Notebook Explorer Viewlet', () => {
 		public layout(dimension: any): void {
 			throw new Error('Method not implemented.');
 		}
+
 	}
 
 	test('ViewletDescriptor API', function () {
@@ -42,7 +43,7 @@ suite('Notebook Explorer Viewlet', () => {
 		assert.strictEqual(d.name, 'name');
 	});
 
-	test('Notebook Explorer Viewlet extension point and registration', function () {
+	test('NotebookExplorer Viewlet extension point and registration', function () {
 		assert(Types.isFunction(Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).registerViewlet));
 		assert(Types.isFunction(Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlet));
 		assert(Types.isFunction(Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlets));
@@ -54,6 +55,20 @@ suite('Notebook Explorer Viewlet', () => {
 		assert(d === retrieved);
 		let newCount = Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlets().length;
 		assert.equal(oldCount + 1, newCount);
+	});
+
+	test('NotebookExplorer Viewlet extension point should not register duplicate viewlets', function () {
+		let v1 = ViewletDescriptor.create(NotebookExplorerTestViewlet, 'notebookExplorer-test-id', 'name');
+		Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).registerViewlet(v1);
+		let oldCount = Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlets().length;
+
+		let v1Duplicate = ViewletDescriptor.create(NotebookExplorerTestViewlet, 'notebookExplorer-test-id', 'name');
+		// Shouldn't register the duplicate.
+		Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).registerViewlet(v1Duplicate);
+
+		let newCount = Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlets().length;
+		assert.equal(oldCount, newCount, 'Duplicate registration of views.');
+
 	});
 
 });

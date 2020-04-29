@@ -43,7 +43,7 @@ const viewDescriptor: IJSONSchema = {
 };
 
 const notebookExplorerContribution: IJSONSchema = {
-	description: localize('extension.contributes.notebookExplorer', "Contributes views to the editor"),
+	description: localize('extension.contributes.notebookExplorer', "Contributes views to the Notebook Explorer"),
 	type: 'object',
 	properties: {
 		'notebookExplorer': {

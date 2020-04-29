@@ -141,7 +141,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 
 export const NOTEBOOK_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
-	name: localize('notebookexplorer.name', "Notebooks"),
+	name: localize('notebookExplorer.name', "Notebooks"),
 	ctorDescriptor: new SyncDescriptor(NotebookExplorerViewPaneContainer),
 	icon: 'notebookExplorer',
 	order: 6,
