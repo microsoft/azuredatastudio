@@ -210,10 +210,11 @@ export class CollapseCellsAction extends ToggleableAction {
 }
 
 const ShowAllKernelsConfigName = 'notebook.showAllKernels';
+const WorkbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	private _showAllKernels: boolean = false;
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationSerivce: IConfigurationService) {
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService) {
 		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false, ariaLabel: kernelLabel } as ISelectBoxOptionsWithLabel);
 
 		if (modelReady) {
@@ -226,8 +227,8 @@ export class KernelsDropdown extends SelectBox {
 
 		this.onDidSelect(e => this.doChangeKernel(e.selected));
 		this.getAllKernelConfigValue();
-		this._register(this._configurationSerivce.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration(ShowAllKernelsConfigName)) {
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration(ShowAllKernelsConfigName) || e.affectsConfiguration(WorkbenchPreviewConfigName)) {
 				this.getAllKernelConfigValue();
 			}
 		}));
@@ -276,7 +277,7 @@ export class KernelsDropdown extends SelectBox {
 	}
 
 	private getAllKernelConfigValue(): void {
-		this._showAllKernels = !!this._configurationSerivce.getValue(ShowAllKernelsConfigName);
+		this._showAllKernels = !!this._configurationService.getValue(ShowAllKernelsConfigName) && !!this._configurationService.getValue(WorkbenchPreviewConfigName);
 	}
 }
 

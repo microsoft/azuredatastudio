@@ -464,7 +464,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public async startSession(manager: INotebookManager, displayName?: string, setErrorStateOnFail?: boolean): Promise<void> {
 		if (displayName && this._standardKernels) {
 			let standardKernel = find(this._standardKernels, kernel => kernel.displayName === displayName);
-			this._defaultKernel = { name: standardKernel.name, display_name: standardKernel.displayName };
+			if (standardKernel) {
+				this._defaultKernel = { name: standardKernel.name, display_name: standardKernel.displayName };
+			}
 		}
 		if (this._defaultKernel) {
 			let clientSession = this._notebookOptions.factory.createClientSession({
@@ -623,6 +625,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			} else if (language.toLowerCase() === 'ipython') {
 				// Special case ipython because in many cases this is defined as the code mirror mode for python notebooks
 				language = 'python';
+			} else if (language.toLowerCase() === 'c#') {
+				language = 'cs';
 			}
 		}
 

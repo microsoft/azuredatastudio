@@ -205,7 +205,7 @@ configurationRegistry.registerConfiguration({
 		'notebook.showAllKernels': {
 			'type': 'boolean',
 			'default': false,
-			'description': localize('notebook.showAllKernels', "(Experimental) show all kernels for the current notebook provider.")
+			'description': localize('notebook.showAllKernels', "(Preview) show all kernels for the current notebook provider.")
 		}
 	}
 });
