@@ -98,21 +98,21 @@ asmtview-component .asmtview-grid .slick-cell.error-row {
 	margin-left: 5px;
 }
 
-.vs .action-label.codicon.exportAsScriptIcon {
+.vs asmtview-component .action-label.codicon.exportAsScriptIcon {
 	background-image: url("newquery.svg");
 }
 
-.vs-dark .action-label.codicon.exportAsScriptIcon,
-.hc-black .action-label.codicon.exportAsScriptIcon {
+.vs-dark asmtview-component .action-label.codicon.exportAsScriptIcon,
+.hc-black asmtview-component .action-label.codicon.exportAsScriptIcon {
 	background-image: url("newquery_inverse.svg");
 }
 
-.vs .action-label.codicon.asmt-learnmore {
+.vs asmtview-component .action-label.codicon.asmt-learnmore {
 	background-image: url("configuredashboard.svg");
 }
 
-.vs-dark .action-label.codicon.asmt-learnmore,
-.hc-black .action-label.codicon.asmt-learnmore {
+.vs-dark asmtview-component .action-label.codicon.asmt-learnmore,
+.hc-black asmtview-component .action-label.codicon.asmt-learnmore {
 	background-image: url("configuredashboard_inverse.svg");
 }
 

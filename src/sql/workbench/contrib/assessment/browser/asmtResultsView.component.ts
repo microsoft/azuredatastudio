@@ -37,11 +37,13 @@ import { IAction } from 'vs/base/common/actions';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { escape } from 'sql/base/common/strings';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { AssessmentType, TELEMETRY_VIEW, TARGET_ICON_CLASS } from 'sql/workbench/contrib/assessment/common/consts';
+import { AssessmentType, TARGET_ICON_CLASS } from 'sql/workbench/contrib/assessment/common/consts';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 import * as themeColors from 'vs/workbench/common/theme';
 import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
+import { SqlAssessmentTelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
+
 export const ASMTRESULTSVIEW_SELECTOR: string = 'asmt-results-view-component';
 export const ROW_HEIGHT: number = 25;
 export const ACTIONBAR_PADDING: number = 10;
@@ -149,7 +151,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 	ngOnInit(): void {
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._asmtViewComponent;
-		this._telemetryService.sendViewEvent(TELEMETRY_VIEW);
+		this._telemetryService.sendViewEvent(SqlAssessmentTelemetryView);
 	}
 
 	ngOnDestroy(): void {

@@ -71,3 +71,5 @@ export enum TelemetryAction {
 	Click = 'Click',
 	Open = 'Open'
 }
+// Sql Assessment View
+export const SqlAssessmentTelemetryView = 'SqlAssessmentTab';

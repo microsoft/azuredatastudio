@@ -6,11 +6,7 @@
 		"lib": [
 			"es6", "es2015.promise"
 		],
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
-		"moduleResolution": "node",
-		"strict": true,
-		"noUnusedParameters": true
+		"moduleResolution": "node"
 	},
 	"exclude": [
 		"node_modules"

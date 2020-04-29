@@ -26,19 +26,31 @@ import { OpenerServiceStub } from 'sql/platform/opener/common/openerServiceStub'
 /**
  * Class to test Assessment Management Actions
  */
+
+let assessmentResultItems: azdata.AssessmentResultItem[] = [
+	<azdata.AssessmentResultItem>{ checkId: 'check1' },
+	<azdata.AssessmentResultItem>{ checkId: 'check2' },
+	<azdata.AssessmentResultItem>{ checkId: 'check3' }
+];
+
 class AssessmentTestViewComponent implements IAssessmentComponent {
 	showProgress(mode: AssessmentType) { return undefined; }
 	showInitialResults(result: azdata.AssessmentResult, method: AssessmentType) { return undefined; }
 	appendResults(result: azdata.AssessmentResult, method: AssessmentType) { }
 	stopProgress(mode: AssessmentType) { return undefined; }
-	resultItems: azdata.AssessmentResultItem[];
+	resultItems: azdata.AssessmentResultItem[] = assessmentResultItems;
 	isActive: boolean = true;
 }
 
 let mockAssessmentService: TypeMoq.Mock<AssessmentService>;
 let mockAsmtViewComponent: TypeMoq.Mock<IAssessmentComponent>;
 
-let assessmentResult: azdata.AssessmentResult;
+let assessmentResult: azdata.AssessmentResult = {
+	success: true,
+	errorMessage: '',
+	apiVersion: '',
+	items: assessmentResultItems
+};
 
 // Tests
 suite('Assessment Actions', () => {
@@ -88,10 +100,10 @@ suite('Assessment Actions', () => {
 		assert.ok(result, 'Get Server Rules action should succeed');
 		mockAsmtViewComponent.verify(s => s.showProgress(AssessmentType.AvailableRules), TypeMoq.Times.once());
 		mockAssessmentService.verify(s => s.getAssessmentItems(TypeMoq.It.isAny(), AssessmentTargetType.Server), TypeMoq.Times.once());
-		mockAsmtViewComponent.verify(s => s.showInitialResults(assessmentResult, AssessmentType.AvailableRules), TypeMoq.Times.once());
+		mockAsmtViewComponent.verify(s => s.showInitialResults(TypeMoq.It.isAny(), AssessmentType.AvailableRules), TypeMoq.Times.once());
 		// should be executed for every db in database list
 		mockAssessmentService.verify(s => s.getAssessmentItems(TypeMoq.It.isAny(), AssessmentTargetType.Database), TypeMoq.Times.exactly(dbListResult.databaseNames.length));
-		mockAsmtViewComponent.verify(s => s.appendResults(assessmentResult, AssessmentType.AvailableRules), TypeMoq.Times.exactly(dbListResult.databaseNames.length));
+		mockAsmtViewComponent.verify(s => s.appendResults(TypeMoq.It.isAny(), AssessmentType.AvailableRules), TypeMoq.Times.exactly(dbListResult.databaseNames.length));
 
 		mockAsmtViewComponent.verify(s => s.stopProgress(AssessmentType.AvailableRules), TypeMoq.Times.once());
 	});
@@ -112,10 +124,10 @@ suite('Assessment Actions', () => {
 		assert.ok(result, 'Invoke Server Assessment action should succeed');
 		mockAsmtViewComponent.verify(s => s.showProgress(AssessmentType.InvokeAssessment), TypeMoq.Times.once());
 		mockAssessmentService.verify(s => s.assessmentInvoke(TypeMoq.It.isAny(), AssessmentTargetType.Server), TypeMoq.Times.once());
-		mockAsmtViewComponent.verify(s => s.showInitialResults(assessmentResult, AssessmentType.InvokeAssessment), TypeMoq.Times.once());
+		mockAsmtViewComponent.verify(s => s.showInitialResults(TypeMoq.It.isAny(), AssessmentType.InvokeAssessment), TypeMoq.Times.once());
 		// should be executed for every db in database list
 		mockAssessmentService.verify(s => s.assessmentInvoke(TypeMoq.It.isAny(), AssessmentTargetType.Database), TypeMoq.Times.exactly(dbListResult.databaseNames.length));
-		mockAsmtViewComponent.verify(s => s.appendResults(assessmentResult, AssessmentType.InvokeAssessment), TypeMoq.Times.exactly(dbListResult.databaseNames.length));
+		mockAsmtViewComponent.verify(s => s.appendResults(TypeMoq.It.isAny(), AssessmentType.InvokeAssessment), TypeMoq.Times.exactly(dbListResult.databaseNames.length));
 
 		mockAsmtViewComponent.verify(s => s.stopProgress(AssessmentType.InvokeAssessment), TypeMoq.Times.once());
 	});
@@ -127,7 +139,7 @@ suite('Assessment Actions', () => {
 		let result = await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
 		assert.ok(result, 'Get Assessment Database action should succeed');
 		mockAsmtViewComponent.verify(s => s.showProgress(AssessmentType.AvailableRules), TypeMoq.Times.once());
-		mockAsmtViewComponent.verify(s => s.showInitialResults(assessmentResult, AssessmentType.AvailableRules), TypeMoq.Times.once());
+		mockAsmtViewComponent.verify(s => s.showInitialResults(TypeMoq.It.isAny(), AssessmentType.AvailableRules), TypeMoq.Times.once());
 		mockAsmtViewComponent.verify(s => s.stopProgress(AssessmentType.AvailableRules), TypeMoq.Times.once());
 		mockAssessmentService.verify(s => s.getAssessmentItems(TypeMoq.It.isAny(), AssessmentTargetType.Database), TypeMoq.Times.once());
 
@@ -140,7 +152,7 @@ suite('Assessment Actions', () => {
 		let result = await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
 		assert.ok(result, 'Invoke Database Assessment action should succeed');
 		mockAsmtViewComponent.verify(s => s.showProgress(AssessmentType.InvokeAssessment), TypeMoq.Times.once());
-		mockAsmtViewComponent.verify(s => s.showInitialResults(assessmentResult, AssessmentType.InvokeAssessment), TypeMoq.Times.once());
+		mockAsmtViewComponent.verify(s => s.showInitialResults(TypeMoq.It.isAny(), AssessmentType.InvokeAssessment), TypeMoq.Times.once());
 		mockAsmtViewComponent.verify(s => s.stopProgress(AssessmentType.InvokeAssessment), TypeMoq.Times.once());
 		mockAssessmentService.verify(s => s.assessmentInvoke(TypeMoq.It.isAny(), AssessmentTargetType.Database), TypeMoq.Times.once());
 
@@ -153,7 +165,7 @@ suite('Assessment Actions', () => {
 
 		let result = await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
 		assert.ok(result, 'Generate Script action should succeed');
-		mockAssessmentService.verify(s => s.generateAssessmentScript(TypeMoq.It.isAnyString(), mockAsmtViewComponent.object.resultItems), TypeMoq.Times.once());
+		mockAssessmentService.verify(s => s.generateAssessmentScript(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
 	test('Samples Link Action', async () => {

@@ -1,5 +1,0 @@
-{
-	"displayName": "SQL Server Assessment",
-	"description": "SQL Server Assessment for Azure Data Studio provides a mechanism to evaluate the configuration of SQL Server for best practices.",
-	"dashboard.tabName": "Assessment"
-}

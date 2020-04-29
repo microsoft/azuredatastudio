@@ -594,7 +594,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onSessionStopped(handle: number, response: azdata.ProfilerSessionStoppedParams): void;
 	$onProfilerSessionCreated(handle: number, response: azdata.ProfilerSessionCreatedParams): void;
 	$onJobDataUpdated(handle: Number): void;
-	$registerAssessmentServicesProvider(providerId: string, handle: number): Promise<any>;
+	$registerSqlAssessmentServicesProvider(providerId: string, handle: number): Promise<any>;
 
 	/**
 	 * Callback when a session has completed initialization

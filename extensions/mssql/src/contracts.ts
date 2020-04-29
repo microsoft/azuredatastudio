@@ -675,6 +675,7 @@ export namespace SchemaCompareCancellationRequest {
 // ------------------------------- <Schema Compare> -----------------------------
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 // ------------------------------- <Sql Assessment> -----------------------------
 
 export interface SqlAssessmentParams {
@@ -686,13 +687,16 @@ export interface GenerateSqlAssessmentScriptParams {
 	items: mssql.SqlAssessmentResultItem[];
 =======
 // ------------------------------- <Assessment> -----------------------------
+=======
+// ------------------------------- <Sql Assessment> -----------------------------
+>>>>>>> recent PR comments
 
-export interface AssessmentParams {
+export interface SqlAssessmentParams {
 	ownerUri: string;
 	targetType: number
 }
 
-export interface GenerateAssessmentScriptParams {
+export interface GenerateSqlAssessmentScriptParams {
 	items: azdata.AssessmentResultItem[];
 >>>>>>> Assessment core extension
 	taskExecutionMode: azdata.TaskExecutionMode;
@@ -700,6 +704,7 @@ export interface GenerateAssessmentScriptParams {
 	targetDatabaseName: string;
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 export namespace SqlAssessmentInvokeRequest {
 	export const type = new RequestType<SqlAssessmentParams, mssql.SqlAssessmentResult, void, void>('assessment/invoke');
@@ -718,18 +723,26 @@ export namespace GenerateSqlAssessmentScriptRequest {
 =======
 export namespace AssessmentInvokeRequest {
 	export const type = new RequestType<AssessmentParams, azdata.AssessmentResult, void, void>('assessment/invoke');
+=======
+export namespace SqlAssessmentInvokeRequest {
+	export const type = new RequestType<SqlAssessmentParams, azdata.AssessmentResult, void, void>('assessment/invoke');
+>>>>>>> recent PR comments
 }
 
-export namespace GetAssessmentItemsRequest {
-	export const type = new RequestType<AssessmentParams, azdata.AssessmentResult, void, void>('assessment/getAssessmentItems');
+export namespace GetSqlAssessmentItemsRequest {
+	export const type = new RequestType<SqlAssessmentParams, azdata.AssessmentResult, void, void>('assessment/getAssessmentItems');
 }
 
-export namespace GenerateAssessmentScriptRequest {
-	export const type = new RequestType<GenerateAssessmentScriptParams, azdata.ResultStatus, void, void>('assessment/generateScript');
+export namespace GenerateSqlAssessmentScriptRequest {
+	export const type = new RequestType<GenerateSqlAssessmentScriptParams, azdata.ResultStatus, void, void>('assessment/generateScript');
 }
 
+<<<<<<< HEAD
 // ------------------------------- <Assessment> -----------------------------
 >>>>>>> Assessment core extension
+=======
+// ------------------------------- <Sql Assessment> -----------------------------
+>>>>>>> recent PR comments
 
 // ------------------------------- <Serialization> -----------------------------
 export namespace SerializeDataStartRequest {

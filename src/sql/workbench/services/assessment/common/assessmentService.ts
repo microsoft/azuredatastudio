@@ -15,7 +15,7 @@ export class AssessmentService implements IAssessmentService {
 	private _onDidChange = new Emitter<void>();
 	public readonly onDidChange: Event<void> = this._onDidChange.event;
 
-	private _providers: { [handle: string]: azdata.AssessmentServicesProvider; } = Object.create(null);
+	private _providers: { [handle: string]: azdata.SqlAssessmentServicesProvider; } = Object.create(null);
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService
 	) {
@@ -40,11 +40,11 @@ export class AssessmentService implements IAssessmentService {
 		});
 	}
 
-	public registerProvider(providerId: string, provider: azdata.AssessmentServicesProvider): void {
+	public registerProvider(providerId: string, provider: azdata.SqlAssessmentServicesProvider): void {
 		this._providers[providerId] = provider;
 	}
 
-	private _runAction<T>(uri: string, action: (handler: azdata.AssessmentServicesProvider) => Thenable<T>): Thenable<T> {
+	private _runAction<T>(uri: string, action: (handler: azdata.SqlAssessmentServicesProvider) => Thenable<T>): Thenable<T> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
 
 		if (!providerId) {

@@ -449,9 +449,9 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		return undefined;
 	}
 
-	public $registerAssessmentServicesProvider(providerId: string, handle: number): Promise<any> {
+	public $registerSqlAssessmentServicesProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
-		this._assessmentService.registerProvider(providerId, <azdata.AssessmentServicesProvider>{
+		this._assessmentService.registerProvider(providerId, <azdata.SqlAssessmentServicesProvider>{
 			providerId: providerId,
 			assessmentInvoke(connectionUri: string, targetType: number): Thenable<azdata.AssessmentResult> {
 				return self._proxy.$assessmentInvoke(handle, connectionUri, targetType);

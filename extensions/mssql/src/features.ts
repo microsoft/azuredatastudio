@@ -853,13 +853,13 @@ export class SerializationFeature extends SqlOpsFeature<undefined> {
 	}
 }
 
-export class AssessmentServicesFeature extends SqlOpsFeature<undefined> {
+export class SqlAssessmentServicesFeature extends SqlOpsFeature<undefined> {
 	private static readonly messagesTypes: RPCMessageType[] = [
-		contracts.AssessmentInvokeRequest.type,
-		contracts.GetAssessmentItemsRequest.type
+		contracts.SqlAssessmentInvokeRequest.type,
+		contracts.GetSqlAssessmentItemsRequest.type
 	];
 	constructor(client: SqlOpsDataClient) {
-		super(client, AssessmentServicesFeature.messagesTypes);
+		super(client, SqlAssessmentServicesFeature.messagesTypes);
 	}
 
 	public fillClientCapabilities(capabilities: ClientCapabilities): void {
@@ -876,39 +876,39 @@ export class AssessmentServicesFeature extends SqlOpsFeature<undefined> {
 		const client = this._client;
 
 		let assessmentInvoke = (ownerUri: string, targetType: number): Thenable<azdata.AssessmentResult> => {
-			let params: contracts.AssessmentParams = { ownerUri: ownerUri, targetType: targetType };
-			return client.sendRequest(contracts.AssessmentInvokeRequest.type, params).then(
+			let params: contracts.SqlAssessmentParams = { ownerUri: ownerUri, targetType: targetType };
+			return client.sendRequest(contracts.SqlAssessmentInvokeRequest.type, params).then(
 				r => r,
 				e => {
-					client.logFailedRequest(contracts.AssessmentInvokeRequest.type, e);
+					client.logFailedRequest(contracts.SqlAssessmentInvokeRequest.type, e);
 					return Promise.resolve(undefined);
 				}
 			);
 		};
 
 		let getAssessmentItems = (ownerUri: string, targetType: number): Thenable<azdata.AssessmentResult> => {
-			let params: contracts.AssessmentParams = { ownerUri: ownerUri, targetType: targetType };
-			return client.sendRequest(contracts.GetAssessmentItemsRequest.type, params).then(
+			let params: contracts.SqlAssessmentParams = { ownerUri: ownerUri, targetType: targetType };
+			return client.sendRequest(contracts.GetSqlAssessmentItemsRequest.type, params).then(
 				r => r,
 				e => {
-					client.logFailedRequest(contracts.GetAssessmentItemsRequest.type, e);
+					client.logFailedRequest(contracts.GetSqlAssessmentItemsRequest.type, e);
 					return Promise.resolve(undefined);
 				}
 			);
 		};
 
 		let generateAssessmentScript = (items: azdata.AssessmentResultItem[]): Thenable<azdata.AssessmentResult> => {
-			let params: contracts.GenerateAssessmentScriptParams = { items: items, taskExecutionMode: azdata.TaskExecutionMode.script, targetServerName: '', targetDatabaseName: '' };
-			return client.sendRequest(contracts.GenerateAssessmentScriptRequest.type, params).then(
+			let params: contracts.GenerateSqlAssessmentScriptParams = { items: items, taskExecutionMode: azdata.TaskExecutionMode.script, targetServerName: '', targetDatabaseName: '' };
+			return client.sendRequest(contracts.GenerateSqlAssessmentScriptRequest.type, params).then(
 				r => r,
 				e => {
-					client.logFailedRequest(contracts.GenerateAssessmentScriptRequest.type, e);
+					client.logFailedRequest(contracts.GenerateSqlAssessmentScriptRequest.type, e);
 					return Promise.resolve(undefined);
 				}
 			);
 		};
 
-		return azdata.dataprotocol.registerAssessmentServicesProvider({
+		return azdata.dataprotocol.registerSqlAssessmentServicesProvider({
 			providerId: client.providerId,
 			assessmentInvoke,
 			getAssessmentItems,

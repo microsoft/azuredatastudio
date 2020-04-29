@@ -19,4 +19,4 @@ export const TARGET_ICON_CLASS: { [targetType: number]: string } = {
 };
 
 
-export const TELEMETRY_VIEW = 'AssessmentTab';
+

@@ -12,7 +12,7 @@ export const IAssessmentService = createDecorator<IAssessmentService>(SERVICE_ID
 
 export interface IAssessmentService {
 	_serviceBrand: undefined;
-	registerProvider(providerId: string, provider: azdata.AssessmentServicesProvider): void;
+	registerProvider(providerId: string, provider: azdata.SqlAssessmentServicesProvider): void;
 	getAssessmentItems(connectionUri: string, targetType: number): Thenable<azdata.AssessmentResult>;
 	assessmentInvoke(connectionUri: string, targetType: number): Thenable<azdata.AssessmentResult>;
 	generateAssessmentScript(connectionUri: string, items: azdata.AssessmentResultItem[]): Thenable<azdata.ResultStatus>;

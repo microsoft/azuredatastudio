@@ -41,7 +41,7 @@ declare module 'azdata' {
 
 		export function registerCapabilitiesServiceProvider(provider: CapabilitiesProvider): vscode.Disposable;
 
-		export function registerAssessmentServicesProvider(provider: AssessmentServicesProvider): vscode.Disposable;
+		export function registerSqlAssessmentServicesProvider(provider: SqlAssessmentServicesProvider): vscode.Disposable;
 
 		/**
 		 * Get the provider corresponding to the given provider ID and type
@@ -1825,7 +1825,7 @@ declare module 'azdata' {
 		apiVersion: string;
 	}
 
-	export interface AssessmentServicesProvider extends DataProvider {
+	export interface SqlAssessmentServicesProvider extends DataProvider {
 		assessmentInvoke(ownerUri: string, targetType: number): Thenable<AssessmentResult>;
 		getAssessmentItems(ownerUri: string, targetType: number): Thenable<AssessmentResult>;
 		generateAssessmentScript(items: AssessmentResultItem[]): Thenable<ResultStatus>;
@@ -4134,7 +4134,7 @@ declare module 'azdata' {
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 		IconProvider = 'IconProvider',
 		SerializationProvider = 'SerializationProvider',
-		AssessmentServicesProvider = 'AssessmentServicesProvider'
+		SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider'
 	}
 
 	/**
