@@ -84,7 +84,7 @@ const usGovAzureSettings: ProviderSettings = {
 			},
 			sqlResource: {
 				id: 'sql',
-				endpoint: 'https://database.usgovcloudapi.net',
+				endpoint: 'https://database.usgovcloudapi.net/',
 				azureResourceId: AzureResource.Sql
 			},
 			ossRdbmsResource: {
