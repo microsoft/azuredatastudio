@@ -464,7 +464,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public async startSession(manager: INotebookManager, displayName?: string, setErrorStateOnFail?: boolean): Promise<void> {
 		if (displayName && this._standardKernels) {
 			let standardKernel = find(this._standardKernels, kernel => kernel.displayName === displayName);
-			this._defaultKernel = { name: standardKernel.name, display_name: standardKernel.displayName };
+			if (standardKernel) {
+				this._defaultKernel = { name: standardKernel.name, display_name: standardKernel.displayName };
+			}
 		}
 		if (this._defaultKernel) {
 			let clientSession = this._notebookOptions.factory.createClientSession({
@@ -519,6 +521,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let provider = this._kernelDisplayNameToNotebookProviderIds.get(this._savedKernelInfo.display_name);
 			if (provider && provider !== this._providerId) {
 				this._providerId = provider;
+			} else if (!provider) {
+				this.notebookOptions.notebookManagers.forEach(m => {
+					if (m.providerId !== SQL_NOTEBOOK_PROVIDER) {
+						// We don't know which provider it is before that provider is chosen to query its specs. Choosing the "last" one registered.
+						this._providerId = m.providerId;
+					}
+				});
 			}
 			this._defaultKernel = this._savedKernelInfo;
 		} else if (this._defaultKernel) {
@@ -616,10 +625,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			} else if (language.toLowerCase() === 'ipython') {
 				// Special case ipython because in many cases this is defined as the code mirror mode for python notebooks
 				language = 'python';
+			} else if (language.toLowerCase() === 'c#') {
+				language = 'cs';
 			}
 		}
 
-		this._language = language;
+		this._language = language.toLowerCase();
 	}
 
 	public changeKernel(displayName: string): void {
@@ -750,7 +761,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	private getKernelSpecFromDisplayName(displayName: string): nb.IKernelSpec {
-		displayName = this.sanitizeDisplayName(displayName);
 		let kernel: nb.IKernelSpec = find(this.specs.kernels, k => k.display_name.toLowerCase() === displayName.toLowerCase());
 		if (!kernel) {
 			return undefined; // undefined is handled gracefully in the session to default to the default kernel
@@ -762,7 +772,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private sanitizeSavedKernelInfo() {
 		if (this._savedKernelInfo) {
-			let displayName = this.sanitizeDisplayName(this._savedKernelInfo.display_name);
+			let displayName = this._savedKernelInfo.display_name;
 
 			if (this._savedKernelInfo.display_name !== displayName) {
 				this._savedKernelInfo.display_name = displayName;
@@ -843,21 +853,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	/**
-	 * Sanitizes display name to remove IP address in order to fairly compare kernels
-	 * In some notebooks, display name is in the format <kernel> (<ip address>)
-	 * example: PySpark (25.23.32.4)
-	 * @param displayName Display Name for the kernel
-	 */
-	public sanitizeDisplayName(displayName: string): string {
-		let name = displayName;
-		if (name) {
-			let index = name.indexOf('(');
-			name = (index > -1) ? name.substr(0, index - 1).trim() : name;
-		}
-		return name;
-	}
-
 	private async updateKernelInfo(kernel: nb.IKernel): Promise<void> {
 		if (kernel) {
 			try {
@@ -911,6 +906,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let providerId = this._kernelDisplayNameToNotebookProviderIds.get(displayName);
 			if (alwaysReturnId || (!this._oldKernel || this._oldKernel.name !== standardKernel.name)) {
 				return providerId;
+			}
+		} else {
+			if (this.notebookManagers?.length) {
+				return this.notebookManagers.map(m => m.providerId).find(p => p !== DEFAULT_NOTEBOOK_PROVIDER && p !== SQL_NOTEBOOK_PROVIDER);
 			}
 		}
 		return undefined;
