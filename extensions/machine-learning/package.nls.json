@@ -1,6 +1,6 @@
 {
-	"displayName": "SQL Machine Learning",
-	"description": "SQL Machine Learning",
+	"displayName": "Machine Learning",
+	"description": "Machine Learning",
 	"title.tasks": "Tasks",
 	"title.documents": "Documents",
 	"title.configurations": "Configurations",
@@ -10,10 +10,10 @@
 	"mls.command.predictModel": "Make prediction",
 	"mls.command.manageModels": "Manage models",
 	"mls.command.importModel": "Import model",
-	"mls.configuration.title": "SQL Machine Learning Configurations",
-	"mls.pythonPath.description": "Local path to a preexisting Python installation used by SQL Machine Learning.",
+	"mls.configuration.title": "Machine Learning Configurations",
+	"mls.pythonPath.description": "Local path to a preexisting Python installation used by Machine Learning.",
 	"mls.enablePython.description": "Enable Python package management.",
 	"mls.enableR.description": "Enable R package management.",
-	"mls.rPath.description": "Local path to a preexisting R installation used by SQL Machine Learning.",
-	"mls.command.dependencies": "Install SQL Machine Learning Dependencies"
+	"mls.rPath.description": "Local path to a preexisting R installation used by Machine Learning.",
+	"mls.command.dependencies": "Install Machine Learning Dependencies"
 }
