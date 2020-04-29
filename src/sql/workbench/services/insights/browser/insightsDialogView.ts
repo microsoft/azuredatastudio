@@ -52,16 +52,16 @@ const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
 const iconClass = 'codicon';
 
-class InsightTableView<T> extends ViewPane {
-	private _table: Table<T>;
-	public get table(): Table<T> {
+class InsightTableView extends ViewPane {
+	private _table: Table<ListResource>;
+	public get table(): Table<ListResource> {
 		return this._table;
 	}
 
 	constructor(
-		private columns: Slick.Column<T>[],
-		private data: IDisposableDataProvider<T> | Array<T>,
-		private tableOptions: Slick.GridOptions<T>,
+		private columns: Slick.Column<ListResource>[],
+		private data: IDisposableDataProvider<ListResource> | Array<ListResource>,
+		private tableOptions: Slick.GridOptions<ListResource>,
 		options: IViewPaneOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
@@ -222,12 +222,12 @@ export class InsightsDialogView extends Modal {
 
 		this._topTableData = new TableDataView<ListResource>();
 		this._bottomTableData = new TableDataView<ListResource>();
-		let topTableView = this._instantiationService.createInstance(InsightTableView, this._topColumns, this._topTableData, { forceFitColumns: true }, { id: 'insights.top', title: itemsHeaderTitle }) as InsightTableView<ListResource>;
+		let topTableView = this._instantiationService.createInstance(InsightTableView, this._topColumns, this._topTableData, { forceFitColumns: true }, { id: 'insights.top', title: itemsHeaderTitle });
 		topTableView.render();
 		attachPanelStyler(topTableView, this._themeService);
 		this._topTable = topTableView.table;
 		this._topTable.setSelectionModel(new RowSelectionModel<ListResource>());
-		let bottomTableView = this._instantiationService.createInstance(InsightTableView, this._bottomColumns, this._bottomTableData, { forceFitColumns: true }, { id: 'insights.bottom', title: itemsDetailHeaderTitle }) as InsightTableView<ListResource>;
+		let bottomTableView = this._instantiationService.createInstance(InsightTableView, this._bottomColumns, this._bottomTableData, { forceFitColumns: true }, { id: 'insights.bottom', title: itemsDetailHeaderTitle });
 		bottomTableView.render();
 		attachPanelStyler(bottomTableView, this._themeService);
 		this._bottomTable = bottomTableView.table;
