@@ -15,7 +15,7 @@ jobs:
           ref: master
           path: ./actions
       - name: Install Actions
-        run: npm install --production --prefix ./actions
+        run: npm install --production --prefix ./actions/build/actions
 
       - name: Run Port Labeler
         uses: ./actions/auto-labeler
