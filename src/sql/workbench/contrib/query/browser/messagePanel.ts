@@ -16,13 +16,22 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { WorkbenchDataTree } from 'vs/platform/list/browser/listService';
 import { isArray, isString } from 'vs/base/common/types';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { $, Dimension, createStyleSheet } from 'vs/base/browser/dom';
+import { $, Dimension, createStyleSheet, addStandardDisposableGenericMouseDownListner } from 'vs/base/browser/dom';
 import { resultsErrorColor } from 'sql/platform/theme/common/colors';
 import { MessagePanelState } from 'sql/workbench/common/editor/query/messagePanelState';
 import { CachedListVirtualDelegate } from 'vs/base/browser/ui/list/list';
 import { FuzzyScore } from 'vs/base/common/filters';
 import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
 import { localize } from 'vs/nls';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IAction, Action } from 'vs/base/common/actions';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
+import { URI } from 'vs/base/common/uri';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export interface IResultMessageIntern {
 	id?: string;
@@ -49,6 +58,7 @@ interface IMessageTemplate {
 
 interface IBatchTemplate extends IMessageTemplate {
 	timeStamp: HTMLElement;
+	disposable: DisposableStore;
 }
 
 const TemplateIds = {
@@ -81,7 +91,10 @@ export class MessagePanel extends Disposable {
 
 	constructor(
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IThemeService private readonly themeService: IThemeService
+		@IThemeService private readonly themeService: IThemeService,
+		@IContextMenuService private readonly contextMenuService: IContextMenuService,
+		@IClipboardService private readonly clipboardService: IClipboardService,
+		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super();
 		this.tree = <WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>>instantiationService.createInstance(
@@ -92,7 +105,7 @@ export class MessagePanel extends Disposable {
 			[
 				new MessageRenderer(),
 				new ErrorMessageRenderer(),
-				new BatchMessageRenderer()
+				instantiationService.createInstance(BatchMessageRenderer)
 			],
 			new MessageDataSource(),
 			{
@@ -110,8 +123,41 @@ export class MessagePanel extends Disposable {
 		this.applyStyles(this.themeService.getColorTheme());
 	}
 
-	private onContextMenu(e: ITreeContextMenuEvent<IResultMessageIntern>): void {
-		//
+	private onContextMenu(event: ITreeContextMenuEvent<IResultMessageIntern>): void {
+		// Prevent native context menu from showing up
+		const actions: IAction[] = [];
+		actions.push(new Action('messagePanel.copy', localize('copy', "Copy"), undefined, true, async () => {
+			const nativeSelection = window.getSelection();
+			if (nativeSelection) {
+				await this.clipboardService.writeText(nativeSelection.toString());
+			}
+			return Promise.resolve();
+		}));
+		actions.push(new Action('workbench.queryEditor.messages.action.copyAll', localize('copyAll', "Copy All"), undefined, true, async () => {
+			await this.clipboardService.writeText(this.getVisibleContent());
+			return Promise.resolve();
+		}));
+
+		this.contextMenuService.showContextMenu({
+			getAnchor: () => event.anchor,
+			getActions: () => actions
+		});
+	}
+
+	getVisibleContent(): string {
+		let text = '';
+		const lineDelimiter = this.textResourcePropertiesService.getEOL(URI.parse(`queryEditor:messagePanel`));
+		const traverseAndAppend = (node: ITreeNode<IResultMessageIntern, FuzzyScore>) => {
+			node.children.forEach(child => {
+				text += child.element.message.trimRight() + lineDelimiter;
+				if (!child.collapsed && child.children.length) {
+					traverseAndAppend(child);
+				}
+			});
+		};
+		traverseAndAppend(this.tree.getNode());
+
+		return removeAnsiEscapeCodes(text);
 	}
 
 	public render(container: HTMLElement): void {
@@ -251,22 +297,33 @@ class ErrorMessageRenderer implements ITreeRenderer<IResultMessageIntern, void, 
 class BatchMessageRenderer implements ITreeRenderer<IResultMessageIntern, void, IBatchTemplate> {
 	public readonly templateId = TemplateIds.BATCH;
 
+	constructor(@IEditorService private readonly editorService: IEditorService) { }
+
 	renderTemplate(container: HTMLElement): IBatchTemplate {
 		const timeStamp = $('.time-stamp');
 		container.append(timeStamp);
 		const message = $('.batch-start');
 		message.style.whiteSpace = 'pre';
 		container.append(message);
-		return { message, timeStamp };
+		return { message, timeStamp, disposable: new DisposableStore() };
 	}
 
 	renderElement(node: ITreeNode<IResultMessageIntern, void>, index: number, templateData: IBatchTemplate): void {
-		let data = templateData as IBatchTemplate;
 		if (isString(node.element.time)) {
 			node.element.time = new Date(node.element.time!);
 		}
-		data.timeStamp.innerText = (node.element.time as Date).toLocaleTimeString();
-		data.message.innerText = node.element.message;
+		templateData.timeStamp.innerText = (node.element.time as Date).toLocaleTimeString();
+		templateData.message.innerText = node.element.message;
+		if (node.element.selection) {
+			const selection = { endColumn: node.element.selection.endColumn + 1, endLineNumber: node.element.selection.endLine + 1, startColumn: node.element.selection.startColumn + 1, startLineNumber: node.element.selection.startLine + 1 };
+			templateData.disposable.add(addStandardDisposableGenericMouseDownListner(templateData.message, () => {
+				let editor = this.editorService.activeEditorPane as QueryEditor;
+				const codeEditor = <ICodeEditor>editor.getControl();
+				codeEditor.focus();
+				codeEditor.setSelection(selection);
+				codeEditor.revealRangeInCenterIfOutsideViewport(selection);
+			}));
+		}
 	}
 
 	disposeTemplate(templateData: IMessageTemplate | IBatchTemplate): void {
