@@ -53,10 +53,13 @@ export class AddCellAction extends Action {
 				//Add Cell after current selected cell.
 				let notebookcomponent = context as NotebookComponent;
 				let id = notebookcomponent.activeCellId;
-				let index = context.cells.length;
-				if (id) {
-					index = context.cells.findIndex(cell => cell.id === id);
-					index = index + 1;
+				let index = 0;
+				if (context && context.cells) {
+					index = context.cells.length;
+					if (id) {
+						index = context.cells.findIndex(cell => cell.id === id);
+						index = index + 1;
+					}
 				}
 				context.addCell(this.cellType, index);
 				resolve(true);
