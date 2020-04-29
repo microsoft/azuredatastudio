@@ -2320,6 +2320,11 @@ declare module 'azdata' {
 		displayName: string;
 
 		/**
+		 * Display language id of provider
+		 */
+		languageId: string;
+
+		/**
 		 * Optional settings that identify an instantiation of a provider
 		 */
 		settings?: {};
@@ -2336,6 +2341,7 @@ declare module 'azdata' {
 	 * Represents a provider of resource
 	 */
 	export interface ResourceProvider {
+		providerLanguageId: string;
 		createFirewallRule(account: Account, firewallruleInfo: FirewallRuleInfo): Thenable<CreateFirewallRuleResponse>;
 		handleFirewallRule(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<HandleFirewallRuleResponse>;
 	}

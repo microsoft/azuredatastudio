@@ -824,7 +824,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			this._onConnectRequestSent.fire();
 
 			// TODO make this generic enough to handle non-SQL languages too
-			this.doChangeLanguageFlavor(uri, 'sql', connection.providerName);
+			this.doChangeLanguageFlavor(uri, this._resourceProviderService._providers[connection.providerName].providerLanguageId, connection.providerName);
 			return true;
 		});
 	}

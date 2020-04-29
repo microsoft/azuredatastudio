@@ -8,6 +8,7 @@ import { EditDataInput } from 'sql/workbench/browser/editData/editDataInput';
 import { IConnectableInput } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
+import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -27,6 +28,7 @@ export class QueryEditorService implements IQueryEditorService {
 	public _serviceBrand: undefined;
 
 	constructor(
+		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
 		@IUntitledTextEditorService private _untitledEditorService: IUntitledTextEditorService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
@@ -47,7 +49,7 @@ export class QueryEditorService implements IQueryEditorService {
 				let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 				// Create a sql document pane with accoutrements
-				const fileInput = this._editorService.createInput({ forceUntitled: true, resource: docUri, mode: 'sql' }) as UntitledTextEditorInput;
+				const fileInput = this._editorService.createInput({ forceUntitled: true, resource: docUri, mode: this._resourceProviderService._providers[connectionProviderName].providerLanguageId }) as UntitledTextEditorInput;
 				let untitledEditorModel = await fileInput.resolve() as UntitledTextEditorModel;
 				if (sqlContent) {
 					untitledEditorModel.textEditorModel.setValue(sqlContent);

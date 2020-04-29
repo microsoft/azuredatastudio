@@ -8,6 +8,8 @@ import { IHandleFirewallRuleResult, IResourceProviderService } from 'sql/workben
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 export class TestResourceProvider implements IResourceProviderService {
+	_providers: { [handle: string]: azdata.ResourceProvider; } = Object.create(null);
+
 	_serviceBrand: undefined;
 
 	registerProvider(providerId: string, provider: azdata.ResourceProvider): void {

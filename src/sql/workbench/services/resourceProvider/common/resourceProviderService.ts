@@ -22,6 +22,11 @@ export interface IResourceProviderService {
 	_serviceBrand: undefined;
 
 	/**
+	 * Information about a resource provider
+	 */
+	_providers: { [handle: string]: azdata.ResourceProvider; }
+
+	/**
 	 * Register a resource provider
 	 */
 	registerProvider(providerId: string, provider: azdata.ResourceProvider): void;

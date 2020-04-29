@@ -37,6 +37,7 @@ class FireWallFeature extends SqlOpsFeature<any> {
 
 	protected registerProvider(options: any): Disposable {
 		const client = this._client;
+		const languageId = 'sql'; // This should be same as the language identifier in package.json
 
 		let createFirewallRule = (account: azdata.Account, firewallruleInfo: azdata.FirewallRuleInfo): Thenable<azdata.CreateFirewallRuleResponse> => {
 			return client.sendRequest(CreateFirewallRuleRequest.type, asCreateFirewallRuleParams(account, firewallruleInfo));
@@ -49,11 +50,13 @@ class FireWallFeature extends SqlOpsFeature<any> {
 
 		return azdata.resources.registerResourceProvider({
 			displayName: 'Azure SQL Resource Provider', // TODO Localize
-			id: 'Microsoft.Azure.SQL.ResourceProvider',
+			id: 'MSSQL', // This should be same as the name/providerId in package.json of extension
+			languageId: languageId,
 			settings: {
 
 			}
 		}, {
+			providerLanguageId: languageId,
 			handleFirewallRule,
 			createFirewallRule
 		});

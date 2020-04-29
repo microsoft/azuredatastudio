@@ -17,7 +17,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 export class ResourceProviderService implements IResourceProviderService {
 
 	public _serviceBrand: undefined;
-	private _providers: { [handle: string]: azdata.ResourceProvider; } = Object.create(null);
+	public _providers: { [handle: string]: azdata.ResourceProvider; } = Object.create(null);
 	private _firewallRuleDialogController: FirewallRuleDialogController;
 
 	constructor(

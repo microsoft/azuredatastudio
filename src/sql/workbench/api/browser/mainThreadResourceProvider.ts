@@ -37,6 +37,7 @@ export class MainThreadResourceProvider extends Disposable implements MainThread
 
 		// Create the account provider that interfaces with the extension via the proxy and register it
 		let resourceProvider: azdata.ResourceProvider = {
+			providerLanguageId: providerMetadata.languageId,
 			createFirewallRule(account: azdata.Account, firewallruleInfo: azdata.FirewallRuleInfo): Thenable<azdata.CreateFirewallRuleResponse> {
 				return self._proxy.$createFirewallRule(handle, account, firewallruleInfo);
 			},
