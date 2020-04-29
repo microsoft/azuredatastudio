@@ -18,7 +18,7 @@ import { InputBox, IInputOptions } from 'vs/base/browser/ui/inputbox/inputBox';
 import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
 import * as nls from 'vs/nls';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import { getContentHeight } from 'vs/base/browser/dom';
+import * as DOM from 'vs/base/browser/dom';
 import { Delayer } from 'vs/base/common/async';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -28,6 +28,7 @@ import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { ObjectMetadataWrapper } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/objectMetadataWrapper';
 import { status, alert } from 'vs/base/browser/ui/aria/aria';
 import { isStringArray } from 'vs/base/common/types';
+import { debounce } from 'vs/base/common/decorators';
 
 @Component({
 	selector: 'explorer-widget',
@@ -105,11 +106,14 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
 		}, { horizontalScrollMode: ScrollbarVisibility.Auto });
-		this._tree.layout(getContentHeight(this._tableContainer.nativeElement));
+		this._tree.layout(DOM.getContentHeight(this._tableContainer.nativeElement));
 		this._register(this._input);
 		this._register(attachInputBoxStyler(this._input, this.themeService));
 		this._register(this._tree);
 		this._register(attachListStyler(this._tree, this.themeService));
+		this._register(DOM.addDisposableListener(window, DOM.EventType.MOUSE_MOVE, e => {
+			this.layout();
+		}));
 	}
 
 	private init(): void {
@@ -159,14 +163,19 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		this.init();
 	}
 
+	@debounce(100)
 	public layout(): void {
 		if (this._inited) {
-			this._tree.layout(getContentHeight(this._tableContainer.nativeElement));
+			this._tree.layout(DOM.getContentHeight(this._tableContainer.nativeElement));
 		}
 	}
 
 	private showErrorMessage(message: string): void {
 		(<HTMLElement>this._el.nativeElement).innerText = message;
 		alert(message);
+	}
+
+	public getContentHeight(): string {
+		return `calc(100% - ${this._input.height}px)`;
 	}
 }

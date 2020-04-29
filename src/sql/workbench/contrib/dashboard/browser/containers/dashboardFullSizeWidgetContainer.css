@@ -1,0 +1,18 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+dashboard-full-size-widget-container,
+.full-size-widget-container {
+	height: 100%;
+	width: 100%;
+}
+
+.full-size-widget-container .widgetHeader {
+	display: none;
+}
+
+.full-size-widget-container dashboard-widget-wrapper {
+	border: 0px !important;
+}

@@ -280,18 +280,11 @@ const CommonTabs: IDashboardTab[] = [
 		iconClass: 'database-colored',
 		publisher: undefined,
 		container: {
-			'widgets-container': [
-				{
-					name: localize('databasesWidgetTitle', "Search"),
-					gridItemConfig: {
-						sizex: 3,
-						sizey: 3
-					},
-					widget: {
-						'explorer-widget': {}
-					}
+			'full-size-widget-container': {
+				widget: {
+					'explorer-widget': {}
 				}
-			]
+			}
 		}
 	}
 ];

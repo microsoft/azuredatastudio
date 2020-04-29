@@ -24,6 +24,7 @@ import { SingleConnectionManagementService } from 'sql/workbench/services/bootst
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ILogService } from 'vs/platform/log/common/log';
 import { find } from 'vs/base/common/arrays';
+import { FULLSIZE_WIDGET_CONTAINER } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardFullSizeWidgetContainer.contribution';
 
 const dashboardcontainerRegistry = Registry.as<IDashboardContainerRegistry>(DashboardContainerExtensions.dashboardContainerContributions);
 const containerTypes = [
@@ -32,7 +33,8 @@ const containerTypes = [
 	WEBVIEW_CONTAINER,
 	MODELVIEW_CONTAINER,
 	CONTROLHOST_CONTAINER,
-	NAV_SECTION
+	NAV_SECTION,
+	FULLSIZE_WIDGET_CONTAINER
 ];
 
 /**

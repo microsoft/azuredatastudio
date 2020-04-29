@@ -30,6 +30,8 @@
 					</dashboard-grid-container>
 					<dashboard-error-container *ngIf="getContentType(tab) === 'error-container'" [tab]="tab">
 					</dashboard-error-container>
+					<dashboard-full-size-widget-container *ngIf="getContentType(tab) === 'full-size-widget-container'" [tab]="tab">
+					</dashboard-full-size-widget-container>
 				</ng-template>
 			</ng-template>
 		</tab>

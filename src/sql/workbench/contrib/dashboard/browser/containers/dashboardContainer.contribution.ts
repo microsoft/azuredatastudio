@@ -15,6 +15,7 @@ import { WEBVIEW_CONTAINER } from 'sql/workbench/contrib/dashboard/browser/conta
 import { values } from 'vs/base/common/collections';
 import { find } from 'vs/base/common/arrays';
 import { NavSectionConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
+import { validateFullSizeWidgetContainerContribution, FULLSIZE_WIDGET_CONTAINER } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardFullSizeWidgetContainer.contribution';
 
 const containerTypes = [
 	WIDGETS_CONTAINER,
@@ -93,6 +94,9 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardContainerContrib | IDashboar
 				break;
 			case NAV_SECTION:
 				result = validateNavSectionContributionAndRegisterIcon(extension, containerValue);
+				break;
+			case FULLSIZE_WIDGET_CONTAINER:
+				result = validateFullSizeWidgetContainerContribution(extension, containerValue);
 				break;
 		}
 

@@ -52,6 +52,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
+import { FULLSIZE_WIDGET_CONTAINER } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardFullSizeWidgetContainer.contribution';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 const homeTabGroupId = 'home';
@@ -533,7 +534,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	public handleTabChange(tab: TabComponent): void {
 		this._tabName.set(tab.identifier);
 		const tabContent = this.tabContents.get(tab.identifier);
-		if (tab.identifier === this.homeTabId || tabContent === WIDGETS_CONTAINER || tabContent === GRID_CONTAINER || tabContent === NAV_SECTION) {
+		if (tab.identifier === this.homeTabId || tabContent === WIDGETS_CONTAINER || tabContent === GRID_CONTAINER || tabContent === NAV_SECTION || tabContent === FULLSIZE_WIDGET_CONTAINER) {
 			this.showToolbar = true;
 			this.createToolbar(this.toolbarContainer.nativeElement, tab.identifier);
 		} else { // hide toolbar
