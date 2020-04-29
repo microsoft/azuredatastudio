@@ -6,7 +6,7 @@
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { ResourceMap } from 'vs/base/common/map';
 import { parse } from 'vs/base/common/marshalling';
-import { basename } from 'vs/base/common/resources';
+import { basename, isEqual } from 'vs/base/common/resources';
 import { assertType } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import { ITextModel } from 'vs/editor/common/model';
@@ -164,6 +164,12 @@ export class NotebookContribution implements IWorkbenchContribution {
 		}
 
 		if (id === undefined) {
+			const existingEditors = group.editors.filter(editor => editor.resource && isEqual(editor.resource, resource) && !(editor instanceof NotebookEditorInput));
+
+			if (existingEditors.length) {
+				return undefined;
+			}
+
 			const userAssociatedEditors = this.getUserAssociatedEditors(resource);
 			const notebookEditor = userAssociatedEditors.filter(association => this.notebookService.getContributedNotebookProvider(association.viewType));
 
@@ -190,8 +196,11 @@ export class NotebookContribution implements IWorkbenchContribution {
 				const info = id === undefined ? infos[0] : (infos.find(info => info.id === id) || infos[0]);
 				// cell-uri -> open (container) notebook
 				const name = basename(data.notebook);
-				const input = NotebookEditorInput.getOrCreate(this.instantiationService, data.notebook, name, info.id);
-				this._resourceMapping.set(resource, input);
+				let input = this._resourceMapping.get(data.notebook);
+				if (!input || input.isDisposed()) {
+					input = NotebookEditorInput.getOrCreate(this.instantiationService, data.notebook, name, info.id);
+					this._resourceMapping.set(data.notebook, input);
+				}
 				return { override: this.editorService.openEditor(input, new NotebookEditorOptions({ ...options, forceReload: true, cellOptions: { resource, options } }), group) };
 			}
 		}
