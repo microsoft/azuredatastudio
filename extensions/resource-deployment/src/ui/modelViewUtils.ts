@@ -20,8 +20,8 @@ const localize = nls.loadMessageBundle();
 
 export type Validator = () => { valid: boolean, message: string };
 export type InputValueTransformer = (inputValue: string) => string;
-export type InputFieldComponent = azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | azdata.RadioButtonComponent;
-export type InputComponents = { [s: string]: { component: InputFieldComponent; inputValueTransformer?: InputValueTransformer } };
+export type InputComponent = azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | azdata.RadioButtonComponent;
+export type InputComponents = { [s: string]: { component: InputComponent; inputValueTransformer?: InputValueTransformer } };
 
 export function getInputBoxComponent(name: string, inputComponents: InputComponents): azdata.InputBoxComponent {
 	return <azdata.InputBoxComponent>inputComponents[name].component;
@@ -91,7 +91,7 @@ interface CreateContext {
 	container: azdata.window.Dialog | azdata.window.Wizard;
 	onNewValidatorCreated: (validator: Validator) => void;
 	onNewDisposableCreated: (disposable: vscode.Disposable) => void;
-	onNewInputComponentCreated: (name: string, component: InputFieldComponent, inputValueTransformer?: InputValueTransformer) => void;
+	onNewInputComponentCreated: (name: string, component: InputComponent, inputValueTransformer?: InputValueTransformer) => void;
 }
 
 export function createTextInput(view: azdata.ModelView, inputInfo: { defaultValue?: string, ariaLabel: string, required?: boolean, placeHolder?: string, width?: string, enabled?: boolean }): azdata.InputBoxComponent {
