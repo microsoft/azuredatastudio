@@ -35,7 +35,7 @@ const publicAzureSettings: ProviderSettings = {
 			},
 			sqlResource: {
 				id: 'sql',
-				endpoint: 'https://database.windows.net',
+				endpoint: 'https://database.windows.net/',
 				azureResourceId: AzureResource.Sql
 			},
 			ossRdbmsResource: {
