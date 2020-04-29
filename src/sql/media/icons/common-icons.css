@@ -451,11 +451,17 @@ Includes non-masked style declarations. */
 .masked-pseudo:after {
 	content: '';
 	display: block;
-	height: 16px;
+	height: 23px;
 	left: 0;
 	position: absolute;
-	top: 28%;
-	width: 16px;
+	top: 2px;
+	width: 30px;
+	-webkit-mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-position: center;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: 50% 100%;
+	mask-size: 50% 100%;
 }
 .masked-pseudo.add-new:after {
 	-webkit-mask-image: url('new.svg');
