@@ -16,7 +16,7 @@ export const rLPackagedFolderName = 'r_packages';
 
 export const mlEnableMlsCommand = 'mls.command.enableMls';
 export const mlDisableMlsCommand = 'mls.command.disableMls';
-export const extensionOutputChannel = 'SQL Machine Learning';
+export const extensionOutputChannel = 'Machine Learning';
 export const notebookExtensionName = 'Microsoft.notebook';
 export const azureSubscriptionsCommand = 'azure.accounts.getSubscriptions';
 export const azureResourceGroupsCommand = 'azure.accounts.getResourceGroups';
@@ -189,13 +189,19 @@ export function invalidImportTableSchemaError(databaseName: string | undefined, 
 
 export const loadModelParameterFailedError = localize('models.loadModelParameterFailedError', "Failed to load model parameters'");
 export const unsupportedModelParameterType = localize('models.unsupportedModelParameterType', "unsupported");
-export const dashboardTitle = localize('dashboardTitle', "SQL ML");
-export const dashboardDesc = localize('dashboardDesc', "Machine learning for SQL databases");
+export const dashboardTitle = localize('dashboardTitle', "Machine Learning");
+export const dashboardDesc = localize('dashboardDesc', "Machine Learning for SQL Databases");
 export const dashboardLinksTitle = localize('dashboardLinksTitle', "Useful links");
 export const dashboardVideoLinksTitle = localize('dashboardVideoLinksTitle', "Video tutorials");
+export const showMoreTitle = localize('showMoreTitle', "Show more");
+export const showLessTitle = localize('showLessTitle', "Show less");
 export const learnMoreTitle = localize('learnMoreTitle', "Learn more");
-export const mlsInstallMlsDocTitle = localize('mlsInstallMlsDocTitle', "Install SQL Server Machine Learning Services");
-export const mlsInstallMlsDocDesc = localize('mlsInstallMlsDocDesc', "This document guides you in the installation of SQL Server Machine Learning Services. Python and R scripts can be executed in-database using Machine Learning Services.");
+export const sqlMlDocTitle = localize('sqlMlDocTitle', "SQL machine learning documentation");
+export const sqlMlDocDesc = localize('sqlMlDocDesc', "Learn how to use machine learning in SQL Server and SQL on Azure, to run Python and R scripts on relational data.");
+export const sqlMlsDocTitle = localize('sqlMlsDocTitle', "SQL Server Machine Learning Services (Python and R)");
+export const sqlMlsDocDesc = localize('sqlMlsDocDesc', "Get started with Machine Learning Services on SQL Server and how to install it on Windows and Linux.");
+export const sqlMlsAzureDocTitle = localize('sqlMlsAzureDocTitle', "Machine Learning Services in Azure SQL Managed Instance (preview)");
+export const sqlMlsAzureDocDesc = localize('sqlMlsAzureDocDesc', "Get started with Machine Learning Services in Azure SQL Managed Instances.");
 export const mlsInstallOdbcDocTitle = localize('mlsInstallObdcDocTitle', "Install the Microsoft ODBC driver for SQL Server");
 export const mlsInstallOdbcDocDesc = localize('mlsInstallOdbcDocDesc', "This document explains how to install the Microsoft ODBC Driver for SQL Server.");
 
@@ -204,7 +210,9 @@ export const mlsInstallOdbcDocDesc = localize('mlsInstallOdbcDocDesc', "This doc
 export const mlsDocuments = 'https://docs.microsoft.com/sql/advanced-analytics/?view=sql-server-ver15';
 export const odbcDriverWindowsDocuments = 'https://docs.microsoft.com/sql/connect/odbc/windows/microsoft-odbc-driver-for-sql-server-on-windows?view=sql-server-ver15';
 export const odbcDriverLinuxDocuments = 'https://docs.microsoft.com/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver15';
-export const installMlsLinuxDocs = 'https://docs.microsoft.com/sql/linux/sql-server-linux-setup-machine-learning?toc=%2fsql%2fadvanced-analytics%2ftoc.json&view=sql-server-ver15';
+export const mlDocLink = 'https://docs.microsoft.com/sql/machine-learning/';
+export const mlsDocLink = 'https://docs.microsoft.com/sql/machine-learning/what-is-sql-server-machine-learning';
+export const mlsAzureDocLink = 'https://docs.microsoft.com/azure/sql-database/sql-database-managed-instance-machine-learning-services-overview';
 export const installMlsWindowsDocs = 'https://docs.microsoft.com/sql/advanced-analytics/install/sql-machine-learning-services-windows-install?view=sql-server-ver15';
 
 // CSS Styles

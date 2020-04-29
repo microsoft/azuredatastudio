@@ -197,6 +197,19 @@ configurationRegistry.registerConfiguration({
 	}
 });
 
+configurationRegistry.registerConfiguration({
+	'id': 'notebook',
+	'title': 'Notebook',
+	'type': 'object',
+	'properties': {
+		'notebook.showAllKernels': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('notebook.showAllKernels', "(Preview) show all kernels for the current notebook provider.")
+		}
+	}
+});
+
 /* *************** Output components *************** */
 // Note: most existing types use the same component to render. In order to
 // preserve correct rank order, we register it once for each different rank of

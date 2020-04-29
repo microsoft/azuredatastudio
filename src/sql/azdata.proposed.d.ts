@@ -384,5 +384,9 @@ declare module 'azdata' {
 		 */
 		alwaysShowTabs?: boolean;
 	}
+
+	export interface TaskInfo {
+		targetLocation?: string;
+	}
 }
 
