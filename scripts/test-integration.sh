@@ -53,7 +53,7 @@ fi
 # "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX $ROOT/extensions/emmet/out/test/test-fixtures --extensionDevelopmentPath=$ROOT/extensions/emmet --extensionTestsPath=$ROOT/extensions/emmet/out/test --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions  --user-data-dir=$VSCODEUSERDATADIR
 # "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX $(mktemp -d 2>/dev/null) --enable-proposed-api=vscode.git --extensionDevelopmentPath=$ROOT/extensions/git --extensionTestsPath=$ROOT/extensions/git/out/test --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions --user-data-dir=$VSCODEUSERDATADIR
 
-"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX $ROOT/extensions/azurecore/test-fixtures --extensionDevelopmentPath=$ROOT/extensions/azurecore --extensionTestsPath=$ROOT/extensions/azurecore/out/test --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions --skip-getting-started --user-data-dir=$VSCODEUSERDATADIR
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX $ROOT/extensions/azurecore/test-fixtures --extensionDevelopmentPath=$ROOT/extensions/azurecore --extensionTestsPath=$ROOT/extensions/azurecore/out/test --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions --user-data-dir=$VSCODEUSERDATADIR
 
 # Tests in commonJS
 cd $ROOT/extensions/css-language-features/server && $ROOT/scripts/node-electron.sh test/index.js
