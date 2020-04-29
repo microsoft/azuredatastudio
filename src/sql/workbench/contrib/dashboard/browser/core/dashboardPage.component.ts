@@ -49,9 +49,10 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { NAV_SECTION } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardNavSection.contribution';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
-import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { DASHBOARD_BORDER, EDITOR_PANE_BACKGROUND, TOOLBAR_OVERFLOW_SHADOW } from 'vs/workbench/common/theme';
+import { IColorTheme, registerThemingParticipant, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
+import { focusBorder } from 'vs/platform/theme/common/colorRegistry';
 import { FULLSIZE_WIDGET_CONTAINER } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardFullSizeWidgetContainer.contribution';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
@@ -205,7 +206,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	private createToolbar(parentElement: HTMLElement, tabId: string): void {
 		// clear out toolbar
 		DOM.clearNode(parentElement);
-		this.toolbar = this._register(new Taskbar(parentElement, { actionViewItemProvider: action => this.createActionItemProvider(action as Action) }, true));
+		this.toolbar = this._register(new Taskbar(parentElement, {
+			actionViewItemProvider: action => this.createActionItemProvider(action as Action),
+			collapseOverflow: true
+		}));
 		let content = [];
 		content = this.getToolbarContent(tabId);
 		if (tabId === this.homeTabId) {
@@ -563,3 +567,35 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		return this.showToolbar ? `calc(100% - ${(<HTMLElement>this.toolbarContainer.nativeElement).clientHeight}px)` : '100%';
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const overflowBackground = theme.getColor(EDITOR_PANE_BACKGROUND);
+	if (overflowBackground) {
+		collector.addRule(`dashboard-page .carbon-taskbar .overflow {
+			background-color: ${overflowBackground};
+		}`);
+	}
+
+	const overflowShadow = theme.getColor(TOOLBAR_OVERFLOW_SHADOW);
+	if (overflowShadow) {
+		collector.addRule(`dashboard-page .carbon-taskbar .overflow {
+			box-shadow: 0px 4px 4px ${overflowShadow};
+		}`);
+	}
+
+	const border = theme.getColor(DASHBOARD_BORDER);
+	if (border) {
+		collector.addRule(`dashboard-page .carbon-taskbar .overflow {
+			border: 1px solid ${border};
+		}`);
+	}
+
+	const activeOutline = theme.getColor(focusBorder);
+	if (activeOutline) {
+		collector.addRule(`dashboard-page .carbon-taskbar .overflow li.focused {
+			outline: 1px solid;
+			outline-offset: -3px;
+			outline-color: ${activeOutline}
+		}`);
+	}
+});
