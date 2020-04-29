@@ -750,6 +750,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return defaultProvider && this._providers.has(defaultProvider) ? defaultProvider : undefined;
 	}
 
+	/* Gets language id of a provider if it exists */
+	private getLanguageIdIfExists(providerName: string) {
+		if (this._resourceProviderService._providers[providerName].providerLanguageId) {
+			return this._resourceProviderService._providers[providerName].providerLanguageId;
+		}
+
+		return 'sql';	// To support existing extensions which use MSSQL as provider but language id may be undefined.
+	}
+
 	/**
 	 * Previously, the only resource available for AAD access tokens was for Azure SQL / SQL Server.
 	 * Use that as a default if the provider extension does not configure a different one. If one is
@@ -824,7 +833,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			this._onConnectRequestSent.fire();
 
 			// TODO make this generic enough to handle non-SQL languages too
-			this.doChangeLanguageFlavor(uri, this._resourceProviderService._providers[connection.providerName].providerLanguageId, connection.providerName);
+			this.doChangeLanguageFlavor(uri, this.getLanguageIdIfExists(connection.providerName), connection.providerName);
 			return true;
 		});
 	}

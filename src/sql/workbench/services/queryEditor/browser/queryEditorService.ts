@@ -41,6 +41,7 @@ export class QueryEditorService implements IQueryEditorService {
 	/**
 	 * Creates new untitled document for SQL query and opens in new editor tab
 	 */
+	//TODOKusto: Change the name here to reflect non SQL query editor.
 	public newSqlEditor(sqlContent?: string, connectionProviderName?: string, isDirty?: boolean, objectName?: string): Promise<IConnectableInput> {
 		return new Promise<IConnectableInput>(async (resolve, reject) => {
 			try {
@@ -49,7 +50,7 @@ export class QueryEditorService implements IQueryEditorService {
 				let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 				// Create a sql document pane with accoutrements
-				const fileInput = this._editorService.createInput({ forceUntitled: true, resource: docUri, mode: this._resourceProviderService._providers[connectionProviderName].providerLanguageId }) as UntitledTextEditorInput;
+				const fileInput = this._editorService.createInput({ forceUntitled: true, resource: docUri, mode: this.getLanguageIdIfExists(connectionProviderName) }) as UntitledTextEditorInput;
 				let untitledEditorModel = await fileInput.resolve() as UntitledTextEditorModel;
 				if (sqlContent) {
 					untitledEditorModel.textEditorModel.setValue(sqlContent);
@@ -101,6 +102,15 @@ export class QueryEditorService implements IQueryEditorService {
 	}
 
 	////// Private functions
+	/* Gets language id of a provider if it exists */
+	private getLanguageIdIfExists(providerName: string) {
+		if (this._resourceProviderService._providers[providerName].providerLanguageId) {
+			return this._resourceProviderService._providers[providerName].providerLanguageId;
+		}
+
+		return 'sql';	// To support existing extensions which use MSSQL as provider but language id may be undefined.
+	}
+
 	private createUntitledSqlFilePath(providerName: string): Promise<string> {
 		if (providerName === 'MSSQL') {
 			return this.createPrefixedSqlFilePath('SQLQuery');
