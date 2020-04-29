@@ -269,8 +269,18 @@ export class FileConfigPage extends ImportPage {
 		let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 		let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this.model.server.providerName, azdata.DataProviderType.QueryProvider);
 
-		const escapedQuotedDb = this.databaseDropdown.value ? `[${(<azdata.CategoryValue>this.databaseDropdown.value).name.replace(/]/g, ']]')}].` : '';
-		const query = `SELECT name FROM ${escapedQuotedDb}sys.schemas`;
+		let currentServer = await azdata.connection.getServerInfo(this.model.server.connectionId);
+
+		let query: string;
+
+		// Azure SQL server doesn't support use statements.
+		if (currentServer.isCloud) {
+			query = `SELECT name FROM sys.schemas`;
+		}
+		else {
+			const escapedQuotedDb = this.databaseDropdown.value ? `[${(<azdata.CategoryValue>this.databaseDropdown.value).name.replace(/]/g, ']]')}].` : '';
+			query = `SELECT name FROM ${escapedQuotedDb}sys.schemas`;
+		}
 
 		let results = await queryProvider.runQueryAndReturn(connectionUri, query);
 
