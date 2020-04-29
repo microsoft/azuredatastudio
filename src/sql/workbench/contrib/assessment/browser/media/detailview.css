@@ -3,37 +3,36 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.detailView-toggle {
+.asmtview-grid .grid-canvas>.ui-widget-content.slick-row .detailView-toggle {
 	display: inline-block;
 	cursor: pointer;
 }
 
-.dynamic-cell-detail {
+.asmtview-grid .grid-canvas>.ui-widget-content.slick-row .dynamic-cell-detail {
 	z-index: 101;
 	position: absolute;
-	background-color: #dae5e8;
 	margin: 0;
 	padding: 0;
 	width: 100%;
 	overflow: auto;
 }
 
-.vs-dark .dynamic-cell-detail,
-.hc-black .dynamic-cell-detail {
-	background-color: #383232;
-}
 
-.dynamic-cell-detail> :first-child {
+.asmtview-grid .grid-canvas>.ui-widget-content.slick-row .dynamic-cell-detail> :first-child {
 	vertical-align: middle;
 	line-height: 13px;
+	padding: 10px;
+	margin-left: 20px;
 }
 
-.dynamic-cell-detail>.detail-container {
+.asmtview-grid .grid-canvas>.ui-widget-content.slick-row .dynamic-cell-detail>.detail-container {
 	overflow: auto;
 	display: block !important;
+	max-height: 100px !important;
+	line-height: 20px;
 }
 
-.dynamic-cell-detail>.detail-container>div,
-.dynamic-cell-detail>.detail-container>div>span {
+.asmtview-grid .grid-canvas>.ui-widget-content.slick-row .dynamic-cell-detail>.detail-container>div,
+.asmtview-grid .grid-canvas>.ui-widget-content.slick-row .dynamic-cell-detail>.detail-container>div>span {
 	white-space: normal;
 }

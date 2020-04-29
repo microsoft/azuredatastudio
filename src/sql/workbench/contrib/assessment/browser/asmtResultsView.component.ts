@@ -18,10 +18,12 @@ import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { find } from 'vs/base/common/arrays';
 import { RowDetailView, ExtendedItem } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import {
+	IAssessmentComponent,
 	IAsmtActionInfo,
 	AsmtServerSelectItemsAction,
 	AsmtServerInvokeItemsAction,
@@ -29,30 +31,27 @@ import {
 	AsmtDatabaseInvokeItemsAction,
 	AsmtExportAsScriptAction,
 	AsmtSamplesLinkAction
-} from 'sql/workbench/contrib/assessment/browser/asmtActions';
+} from 'sql/workbench/contrib/assessment/common/asmtActions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IAction } from 'vs/base/common/actions';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { escape } from 'sql/base/common/strings';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { AssessmentType, AssessmentTargetType, TELEMETRY_VIEW_EVENT } from 'sql/workbench/contrib/assessment/browser/consts';
-
-
+import { AssessmentType, TELEMETRY_VIEW, TARGET_ICON_CLASS } from 'sql/workbench/contrib/assessment/common/consts';
+import { ILogService } from 'vs/platform/log/common/log';
+import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
+import * as themeColors from 'vs/workbench/common/theme';
+import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 export const ASMTRESULTSVIEW_SELECTOR: string = 'asmt-results-view-component';
 export const ROW_HEIGHT: number = 25;
 export const ACTIONBAR_PADDING: number = 10;
 
 const PLACEHOLDER_LABEL = nls.localize('asmt.NoResultsInitial', "Nothing to show. Invoke assessment to get results");
-const PLACEHOLDER_NO_RESULTS_LABEL = nls.localize('asmt.TargetComplient', "is totally compliant with the best practices. Good job!");
 const COLUMN_MESSAGE_ID: string = 'message';
 
 const COLUMN_MESSAGE_TITLE: { [mode: number]: string } = {
 	[AssessmentType.AvailableRules]: nls.localize('asmt.column.displayName', "Display Name"),
 	[AssessmentType.InvokeAssessment]: nls.localize('asmt.column.message', "Message"),
-};
-const TARGET_ICON_CLASS: { [targetType: number]: string } = {
-	[AssessmentTargetType.Database]: 'defaultDatabaseIcon',
-	[AssessmentTargetType.Server]: 'defaultServerIcon'
 };
 
 enum AssessmentResultItemKind {
@@ -66,17 +65,6 @@ const KIND_CLASS: { [kind: number]: string } = {
 	[AssessmentResultItemKind.Warning]: 'warning-val',
 	[AssessmentResultItemKind.RealResult]: ''
 };
-
-
-export interface IAssessmentComponent {
-	showProgress(mode: AssessmentType): any;
-	showInitialResults(result: azdata.AssessmentResult, method: AssessmentType): any;
-	appendResults(result: azdata.AssessmentResult, method: AssessmentType): any;
-	stopProgress(mode: AssessmentType): any;
-	resultItems: azdata.AssessmentResultItem[];
-	isActive: boolean;
-}
-
 
 @Component({
 	selector: ASMTRESULTSVIEW_SELECTOR,
@@ -123,7 +111,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 	private isServerMode: boolean;
 	private rowDetail: RowDetailView<Slick.SlickData>;
 	private exportActionItem: IAction;
-	private gridPlaceholder: JQuery<HTMLElement>;
+	private placeholderElem: HTMLElement;
 	private placeholderNoResultsLabel: string;
 	private spinner: { [mode: number]: HTMLElement } = Object.create(null);
 	private lastInvokedResults: azdata.AssessmentResultItem[];
@@ -135,10 +123,12 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => AsmtViewComponent)) private _asmtViewComponent: AsmtViewComponent,
-		@Inject(IWorkbenchThemeService) private _themeService: IWorkbenchThemeService,
+		@Inject(IWorkbenchThemeService) private readonly _themeService: IWorkbenchThemeService,
+		@Inject(IWorkbenchLayoutService) private readonly layoutService: IWorkbenchLayoutService,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService,
-		@Inject(IAdsTelemetryService) private _telemetryService: IAdsTelemetryService
+		@Inject(IAdsTelemetryService) private _telemetryService: IAdsTelemetryService,
+		@Inject(ILogService) protected _logService: ILogService
 	) {
 		super();
 		let self = this;
@@ -147,20 +137,19 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		this.isServerMode = !profile.databaseName || Utils.isMaster(profile);
 
 		if (this.isServerMode) {
-			this.placeholderNoResultsLabel = `${nls.localize('instance', "Instance")} ${profile.serverName} ${PLACEHOLDER_NO_RESULTS_LABEL}`;
+			this.placeholderNoResultsLabel = nls.localize('asmt.TargetInstanceComplient', "Instance {0} is totally compliant with the best practices. Good job!", profile.serverName);
 		} else {
-			this.placeholderNoResultsLabel = `${nls.localize('database', "Database")} ${profile.databaseName} ${PLACEHOLDER_NO_RESULTS_LABEL}`;
+			this.placeholderNoResultsLabel = nls.localize('asmt.TargetDatabaseComplient', "Database {0} is totally compliant with the best practices. Good job!", profile.databaseName);
 		}
 
-		_dashboardService.onLayout((d) => {
-			self.layout();
-		});
+		this._register(_dashboardService.onLayout(d => self.layout()));
+		this._register(_themeService.onDidColorThemeChange(this._updateStyles, this));
 	}
 
 	ngOnInit(): void {
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._asmtViewComponent;
-		this._telemetryService.sendViewEvent(TELEMETRY_VIEW_EVENT);
+		this._telemetryService.sendViewEvent(TELEMETRY_VIEW);
 	}
 
 	ngOnDestroy(): void {
@@ -191,19 +180,19 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 	}
 
 	public layout(): void {
-		let asmtViewToolbar = jQuery(`${ASMTRESULTSVIEW_SELECTOR} .asmt-actionbar-container`).get(0);
-		let statusBar = jQuery('.part.statusbar').get(0);
-
-		if (asmtViewToolbar && statusBar) {
-			let toolbarBottom = asmtViewToolbar.getBoundingClientRect().bottom + ACTIONBAR_PADDING;
+		let statusBar = this.layoutService.getContainer(Parts.STATUSBAR_PART);
+		if (dom.isInDOM(this.actionBarContainer.nativeElement) && dom.isInDOM(statusBar)) {
+			let toolbarBottom = this.actionBarContainer.nativeElement.getBoundingClientRect().bottom + ACTIONBAR_PADDING;
 			let statusTop = statusBar.getBoundingClientRect().top;
 			this._table.layout(new dom.Dimension(
 				dom.getContentWidth(this._gridEl.nativeElement),
 				statusTop - toolbarBottom));
 
 			let gridCanvasWidth = this._table.grid.getCanvasNode().clientWidth;
-			this.gridPlaceholder.css('left', `${((gridCanvasWidth - this.gridPlaceholder.width()) / 2).toString()}px`);
+			let placeholderWidth = dom.getDomNodePagePosition(this.placeholderElem).width;
+			dom.position(this.placeholderElem, null, null, null, (gridCanvasWidth - placeholderWidth) / 2, 'relative');
 
+			this._updateStyles(this._themeService.getColorTheme());
 		}
 	}
 
@@ -321,38 +310,38 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		filterPlugin['getAllFilterValues'] = this.getAllFilterValues;
 		filterPlugin['getFilterValuesByInput'] = this.getFilterValuesByInput;
 
-		jQuery(this._gridEl.nativeElement).empty();
-		jQuery(this.actionBarContainer.nativeElement).empty();
+		dom.clearNode(this._gridEl.nativeElement);
+		dom.clearNode(this.actionBarContainer.nativeElement);
 
 
 		if (this.isServerMode) {
 			this.initActionBar(
-				this._instantiationService.createInstance(AsmtServerInvokeItemsAction),
-				this._instantiationService.createInstance(AsmtServerSelectItemsAction));
+				this._register(this._instantiationService.createInstance(AsmtServerInvokeItemsAction)),
+				this._register(this._instantiationService.createInstance(AsmtServerSelectItemsAction)));
 		} else {
-			let databaseSelectAsmt = this._instantiationService.createInstance(AsmtDatabaseSelectItemsAction);
-			let databaseInvokeAsmt = this._instantiationService.createInstance(AsmtDatabaseInvokeItemsAction);
-			this.initActionBar(databaseInvokeAsmt, databaseSelectAsmt);
-
 			let connectionInfo = this._commonService.connectionManagementService.connectionInfo;
-			databaseSelectAsmt.label = `${AsmtDatabaseSelectItemsAction.LABEL} ${nls.localize('for', "for")} ${connectionInfo.connectionProfile.databaseName}`;
-			databaseInvokeAsmt.label = `${AsmtDatabaseInvokeItemsAction.LABEL} ${nls.localize('for', "for")} ${connectionInfo.connectionProfile.databaseName}`;
+			let databaseSelectAsmt = this._register(this._instantiationService.createInstance(AsmtDatabaseSelectItemsAction, connectionInfo.connectionProfile.databaseName));
+			let databaseInvokeAsmt = this._register(this._instantiationService.createInstance(AsmtDatabaseInvokeItemsAction, connectionInfo.connectionProfile.databaseName));
+			this.initActionBar(databaseInvokeAsmt, databaseSelectAsmt);
 		}
 
-		this._table = new Table(this._gridEl.nativeElement, { columns }, options);
+		this._table = this._register(new Table(this._gridEl.nativeElement, { columns }, options));
 		this._table.grid.setData(this.dataView, true);
 		this._table.registerPlugin(<any>this.rowDetail);
 		this._table.registerPlugin(filterPlugin);
 
-		this.gridPlaceholder = jQuery(this._table.grid.getCanvasNode()).html('<span class=\'placeholder\'></span>').find('.placeholder');
-		this.gridPlaceholder.text(PLACEHOLDER_LABEL);
+
+		this.placeholderElem = document.createElement('span');
+		this.placeholderElem.className = 'placeholder';
+		this.placeholderElem.innerText = PLACEHOLDER_LABEL;
+		dom.append(this._table.grid.getCanvasNode(), this.placeholderElem);
 	}
 
 	private initActionBar(invokeAction: IAction, selectAction: IAction) {
-		this.exportActionItem = this._instantiationService.createInstance(AsmtExportAsScriptAction);
+		this.exportActionItem = this._register(this._instantiationService.createInstance(AsmtExportAsScriptAction));
 
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
-		this._actionBar = new Taskbar(taskbar);
+		this._actionBar = this._register(new Taskbar(taskbar));
 		this.spinner[AssessmentType.InvokeAssessment] = Taskbar.createTaskbarSpinner();
 		this.spinner[AssessmentType.AvailableRules] = Taskbar.createTaskbarSpinner();
 
@@ -403,9 +392,9 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		this.exportActionItem.enabled = (results.length > 0 && method === AssessmentType.InvokeAssessment);
 
 		if (results.length > 0) {
-			this.gridPlaceholder.hide();
+			dom.hide(this.placeholderElem);
 		} else {
-			this.gridPlaceholder.text(this.placeholderNoResultsLabel);
+			this.placeholderElem.innerText = this.placeholderNoResultsLabel;
 		}
 	}
 
@@ -474,7 +463,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 
 	private wrapByKind(kind: AssessmentResultItemKind, element: string): string {
 		if (kind !== AssessmentResultItemKind.RealResult) {
-			return `<span class='${KIND_CLASS[kind]}'>${element}</span>`;
+			return `<span class='excl ${KIND_CLASS[kind]}'>${element}</span>`;
 		}
 		return element;
 	}
@@ -518,7 +507,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 			const bottomMargin = 5;
 			html.push('<div class="detailView-toggle collapse"></div></div>');
 
-			html.push(`<div id='cellDetailView_${dataContext.id}' class='dynamic-cell-detail' `);   //apply custom css to detail
+			html.push(`<div id='cellDetailView_${dataContext.id}' class='dynamic-cell-detail dynamic-cell-detail-color' `);   //apply custom css to detail
 			html.push(`style=\'height:${dataContext._height}px;`); //set total height of padding
 			html.push(`top:${rowHeight}px'>`);             //shift detail below 1st row
 			html.push(`<div id='detailViewContainer_${dataContext.id}"'  class='detail-container' style='max-height:${(dataContext._height! - rowHeight + bottomMargin)}px'>`); //sub ctr for custom styling
@@ -613,5 +602,24 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		}
 
 		return seen.sort((v) => { return v; });
+	}
+
+	private _updateStyles(theme: IColorTheme): void {
+		this.actionBarContainer.nativeElement.style.borderTopColor = theme.getColor(themeColors.DASHBOARD_BORDER, true).toString();
+		let tableStyle: ITableStyles = {
+			tableHeaderBackground: theme.getColor(themeColors.PANEL_BACKGROUND)
+		};
+		this._table.style(tableStyle);
+		const rowExclSelector = '.asmtview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row';
+		dom.removeCSSRulesContainingSelector(`${rowExclSelector} .${KIND_CLASS[AssessmentResultItemKind.Error]}`);
+		dom.createCSSRule(`${rowExclSelector} .${KIND_CLASS[AssessmentResultItemKind.Error]}`, `color: ${theme.getColor(themeColors.NOTIFICATIONS_ERROR_ICON_FOREGROUND).toString()}`);
+
+		dom.removeCSSRulesContainingSelector(`${rowExclSelector} .${KIND_CLASS[AssessmentResultItemKind.Warning]}`);
+		dom.createCSSRule(`${rowExclSelector} .${KIND_CLASS[AssessmentResultItemKind.Warning]}`, `color: ${theme.getColor(themeColors.NOTIFICATIONS_WARNING_ICON_FOREGROUND).toString()}`);
+
+		const detailRowSelector = '.asmtview-grid .grid-canvas > .ui-widget-content.slick-row .dynamic-cell-detail-color';
+		dom.removeCSSRulesContainingSelector(detailRowSelector);
+		dom.createCSSRule(detailRowSelector, `background-color: ${theme.getColor(themeColors.EDITOR_GROUP_HEADER_TABS_BACKGROUND).toString()}`);
+
 	}
 }

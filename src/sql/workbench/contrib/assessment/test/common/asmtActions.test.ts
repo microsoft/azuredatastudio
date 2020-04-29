@@ -5,24 +5,24 @@
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { IAssessmentComponent } from 'sql/workbench/contrib/assessment/browser/asmtResultsView.component';
-import { AssessmentType, AssessmentTargetType } from 'sql/workbench/contrib/assessment/browser/consts';
+import { AssessmentType, AssessmentTargetType } from 'sql/workbench/contrib/assessment/common/consts';
 import {
+	IAssessmentComponent,
 	AsmtServerInvokeItemsAction,
 	AsmtServerSelectItemsAction,
 	AsmtExportAsScriptAction,
 	AsmtSamplesLinkAction,
 	AsmtDatabaseInvokeItemsAction,
 	AsmtDatabaseSelectItemsAction
-} from 'sql/workbench/contrib/assessment/browser/asmtActions';
+} from 'sql/workbench/contrib/assessment/common/asmtActions';
 import { AssessmentService } from 'sql/workbench/services/assessment/common/assessmentService';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
-import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { OpenerServiceStub } from 'sql/platform/opener/common/openerServiceStub';
 /**
  * Class to test Assessment Management Actions
  */
@@ -35,22 +35,10 @@ class AssessmentTestViewComponent implements IAssessmentComponent {
 	isActive: boolean = true;
 }
 
-class OpenerServiceStub implements IOpenerService {
-	_serviceBrand: undefined;
-	registerOpener() { return undefined; }
-	registerValidator() { return undefined; }
-	registerExternalUriResolver() { return undefined; }
-	setExternalOpener() { return undefined; }
-	async open(resource: URI | string, options?: any): Promise<boolean> { return Promise.resolve(true); }
-	async resolveExternalUri(uri: any) { return undefined; }
-}
-
 let mockAssessmentService: TypeMoq.Mock<AssessmentService>;
 let mockAsmtViewComponent: TypeMoq.Mock<IAssessmentComponent>;
 
 let assessmentResult: azdata.AssessmentResult;
-
-
 
 // Tests
 suite('Assessment Actions', () => {
@@ -70,9 +58,6 @@ suite('Assessment Actions', () => {
 			errorMessage: null
 		};
 		mockAssessmentService.setup(s => s.generateAssessmentScript(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => Promise.resolve(resultStatus));
-
-
-
 	});
 
 	function createConnectionManagementService(dbListResult: azdata.ListDatabasesResult): TypeMoq.Mock<IConnectionManagementService> {
@@ -89,8 +74,6 @@ suite('Assessment Actions', () => {
 	}
 
 	test('Get Server Assessment Items Action', async () => {
-		mockAssessmentService.reset();
-		mockAsmtViewComponent.reset();
 		const dbListResult: azdata.ListDatabasesResult = {
 			databaseNames: ['db1', 'db2']
 		};
@@ -115,8 +98,6 @@ suite('Assessment Actions', () => {
 
 
 	test('Invoke Server Assessment Action', async () => {
-		mockAssessmentService.reset();
-		mockAsmtViewComponent.reset();
 		const dbListResult: azdata.ListDatabasesResult = {
 			databaseNames: ['db1', 'db2']
 		};
@@ -140,11 +121,8 @@ suite('Assessment Actions', () => {
 	});
 
 	test('Get Assessment Items Database Action', async () => {
-		mockAssessmentService.reset();
-		mockAsmtViewComponent.reset();
-		const action = new AsmtDatabaseSelectItemsAction(mockAssessmentService.object, new NullAdsTelemetryService());
+		const action = new AsmtDatabaseSelectItemsAction('databaseName', mockAssessmentService.object, new NullAdsTelemetryService());
 		assert.equal(action.id, AsmtDatabaseSelectItemsAction.ID, 'Get Database Rules id action mismatch');
-		assert.equal(action.label, AsmtDatabaseSelectItemsAction.LABEL, 'Get Database Rules label action mismatch');
 
 		let result = await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
 		assert.ok(result, 'Get Assessment Database action should succeed');
@@ -156,12 +134,8 @@ suite('Assessment Actions', () => {
 	});
 
 	test('Invoke Database Assessment Action', async () => {
-		mockAssessmentService.reset();
-		mockAsmtViewComponent.reset();
-
-		const action = new AsmtDatabaseInvokeItemsAction(mockAssessmentService.object, new NullAdsTelemetryService());
+		const action = new AsmtDatabaseInvokeItemsAction('databaseName', mockAssessmentService.object, new NullAdsTelemetryService());
 		assert.equal(action.id, AsmtDatabaseInvokeItemsAction.ID, 'Invoke Database Assessment id action mismatch');
-		assert.equal(action.label, AsmtDatabaseInvokeItemsAction.LABEL, 'Invoke Database Assessment label action mismatch');
 
 		let result = await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
 		assert.ok(result, 'Invoke Database Assessment action should succeed');

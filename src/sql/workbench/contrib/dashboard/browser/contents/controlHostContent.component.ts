@@ -40,13 +40,8 @@ export class ControlHostContent {
 	}
 
 	public layout(): void {
-		if (this._agentViewComponent !== undefined) {
-			this._agentViewComponent.layout();
-		}
-		if (this._asmtViewComponent !== undefined) {
-			this._asmtViewComponent.layout();
-		}
-
+		this._agentViewComponent?.layout();
+		this._asmtViewComponent?.layout();
 	}
 
 	public get id(): string {

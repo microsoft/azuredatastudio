@@ -5,15 +5,25 @@
 
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
-import { IAssessmentComponent } from 'sql/workbench/contrib/assessment/browser/asmtResultsView.component';
+
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
-import { AssessmentResult } from 'azdata';
+import { AssessmentResult, AssessmentResultItem } from 'azdata';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { AssessmentType, AssessmentTargetType, TELEMETRY_VIEW_EVENT } from 'sql/workbench/contrib/assessment/browser/consts';
+import { AssessmentType, AssessmentTargetType, TELEMETRY_VIEW, TARGET_ICON_CLASS } from 'sql/workbench/contrib/assessment/common/consts';
+
+export interface IAssessmentComponent {
+	showProgress(mode: AssessmentType): any;
+	showInitialResults(result: AssessmentResult, method: AssessmentType): any;
+	appendResults(result: AssessmentResult, method: AssessmentType): any;
+	stopProgress(mode: AssessmentType): any;
+	resultItems: AssessmentResultItem[];
+	isActive: boolean;
+}
+
 
 export class IAsmtActionInfo {
 	ownerUri?: string;
@@ -32,12 +42,12 @@ abstract class AsmtServerAction extends Action {
 		@ILogService protected _logService: ILogService,
 		@IAdsTelemetryService protected _telemetryService: IAdsTelemetryService
 	) {
-		super(id, label, 'defaultServerIcon');
+		super(id, label, TARGET_ICON_CLASS[AssessmentTargetType.Server]);
 	}
 
 	public run(context: IAsmtActionInfo): Promise<boolean> {
 		return new Promise<boolean>(async (resolve, reject) => {
-			this._telemetryService.sendActionEvent(TELEMETRY_VIEW_EVENT, this.id);
+			this._telemetryService.sendActionEvent(TELEMETRY_VIEW, this.id);
 			if (context) {
 				if (context.component) {
 					context.component.showProgress(this.asmtType);
@@ -79,7 +89,7 @@ abstract class AsmtServerAction extends Action {
 
 export class AsmtServerSelectItemsAction extends AsmtServerAction {
 	public static ID = 'asmtaction.server.getitems';
-	public static LABEL = nls.localize(AsmtServerSelectItemsAction.ID, "View applicable rules");
+	public static LABEL = nls.localize('asmtaction.server.getitems', "View applicable rules");
 
 	constructor(
 		@IConnectionManagementService _connectionManagement: IConnectionManagementService,
@@ -104,18 +114,20 @@ export class AsmtServerSelectItemsAction extends AsmtServerAction {
 
 export class AsmtDatabaseSelectItemsAction extends Action {
 	public static ID = 'asmtaction.database.getitems';
-	public static LABEL = nls.localize(AsmtDatabaseSelectItemsAction.ID, "View applicable rules");
 
 	constructor(
+		databaseName: string,
 		@IAssessmentService private _assessmentService: IAssessmentService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
-		super(AsmtDatabaseSelectItemsAction.ID, AsmtDatabaseSelectItemsAction.LABEL, 'defaultDatabaseIcon');
+		super(AsmtDatabaseSelectItemsAction.ID,
+			nls.localize('asmtaction.database.getitems', "View applicable rules for {0}", databaseName),
+			TARGET_ICON_CLASS[AssessmentTargetType.Database]);
 	}
 
 	public run(context: IAsmtActionInfo): Promise<boolean> {
 		return new Promise<boolean>(async (resolve, reject) => {
-			this._telemetryService.sendActionEvent(TELEMETRY_VIEW_EVENT, this.id);
+			this._telemetryService.sendActionEvent(TELEMETRY_VIEW, this.id);
 			if (context) {
 				if (context.component) {
 					context.component.showProgress(AssessmentType.AvailableRules);
@@ -134,7 +146,7 @@ export class AsmtDatabaseSelectItemsAction extends Action {
 
 export class AsmtServerInvokeItemsAction extends AsmtServerAction {
 	public static ID = 'asmtaction.server.invokeitems';
-	public static LABEL = nls.localize(AsmtServerInvokeItemsAction.ID, "Invoke Assessment");
+	public static LABEL = nls.localize('asmtaction.server.invokeitems', "Invoke Assessment");
 
 	constructor(
 		@IConnectionManagementService _connectionManagement: IConnectionManagementService,
@@ -156,18 +168,20 @@ export class AsmtServerInvokeItemsAction extends AsmtServerAction {
 
 export class AsmtDatabaseInvokeItemsAction extends Action {
 	public static ID = 'asmtaction.database.invokeitems';
-	public static LABEL = nls.localize(AsmtDatabaseInvokeItemsAction.ID, "Invoke Assessment");
 
 	constructor(
+		databaseName: string,
 		@IAssessmentService private _assessmentService: IAssessmentService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
-		super(AsmtDatabaseInvokeItemsAction.ID, AsmtDatabaseInvokeItemsAction.LABEL, 'defaultDatabaseIcon');
+		super(AsmtDatabaseInvokeItemsAction.ID,
+			nls.localize('asmtaction.database.invokeitems', "Invoke Assessment for {0}", databaseName),
+			TARGET_ICON_CLASS[AssessmentTargetType.Database]);
 	}
 
 	public run(context: IAsmtActionInfo): Promise<boolean> {
 		return new Promise<boolean>(async (resolve, reject) => {
-			this._telemetryService.sendActionEvent(TELEMETRY_VIEW_EVENT, this.id);
+			this._telemetryService.sendActionEvent(TELEMETRY_VIEW, this.id);
 			if (context) {
 				if (context.component) {
 					context.component.showProgress(AssessmentType.InvokeAssessment);
@@ -185,7 +199,7 @@ export class AsmtDatabaseInvokeItemsAction extends Action {
 
 export class AsmtExportAsScriptAction extends Action {
 	public static ID = 'asmtaction.exportasscript';
-	public static LABEL = nls.localize(AsmtExportAsScriptAction.ID, "Export As Script");
+	public static LABEL = nls.localize('asmtaction.exportasscript', "Export As Script");
 
 	constructor(
 		@IAssessmentService private _assessmentService: IAssessmentService,
@@ -196,7 +210,7 @@ export class AsmtExportAsScriptAction extends Action {
 
 	public run(context: IAsmtActionInfo): Promise<boolean> {
 		return new Promise<boolean>(async (resolve, reject) => {
-			this._telemetryService.sendActionEvent(TELEMETRY_VIEW_EVENT, this.id);
+			this._telemetryService.sendActionEvent(TELEMETRY_VIEW, AsmtExportAsScriptAction.ID);
 			if (context) {
 				if (context.component) {
 					await this._assessmentService.generateAssessmentScript(context.ownerUri, context.component.resultItems);
@@ -211,7 +225,7 @@ export class AsmtExportAsScriptAction extends Action {
 
 export class AsmtSamplesLinkAction extends Action {
 	public static readonly ID = 'asmtaction.showsamples';
-	public static readonly LABEL = nls.localize(AsmtSamplesLinkAction.ID, "View all rules and learn more on GitHub");
+	public static readonly LABEL = nls.localize('asmtaction.showsamples', "View all rules and learn more on GitHub");
 	public static readonly ICON = 'asmt-learnmore';
 	private static readonly configHelpUri = 'https://aka.ms/sql-assessment-api';
 
@@ -224,7 +238,7 @@ export class AsmtSamplesLinkAction extends Action {
 	}
 
 	public run(): Promise<boolean> {
-		this._telemetryService.sendActionEvent(TELEMETRY_VIEW_EVENT, this.id);
+		this._telemetryService.sendActionEvent(TELEMETRY_VIEW, AsmtSamplesLinkAction.ID);
 		return this._openerService.open(URI.parse(AsmtSamplesLinkAction.configHelpUri));
 	}
 }

@@ -13,4 +13,10 @@ export enum AssessmentType {
 	InvokeAssessment = 2
 }
 
-export const TELEMETRY_VIEW_EVENT = 'Asmt.View';
+export const TARGET_ICON_CLASS: { [targetType: number]: string } = {
+	[AssessmentTargetType.Database]: 'database',
+	[AssessmentTargetType.Server]: 'server-page'
+};
+
+
+export const TELEMETRY_VIEW = 'AssessmentTab';

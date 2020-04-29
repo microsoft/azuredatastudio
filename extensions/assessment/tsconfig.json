@@ -9,8 +9,8 @@
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"moduleResolution": "node",
-		"strict": false,
-		"noUnusedParameters": false
+		"strict": true,
+		"noUnusedParameters": true
 	},
 	"exclude": [
 		"node_modules"
