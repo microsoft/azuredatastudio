@@ -68,10 +68,10 @@ const TemplateIds = {
 	ERROR: 'error'
 };
 
-export class ReplAccessibilityProvider implements IListAccessibilityProvider<IResultMessageIntern> {
+export class AccessibilityProvider implements IListAccessibilityProvider<IResultMessageIntern> {
 
 	getWidgetAriaLabel(): string {
-		return localize('debugConsole', "Debug Console");
+		return localize('messagePanel', "Message Panel");
 	}
 
 	getAriaLabel(element: IResultMessageIntern): string {
@@ -109,7 +109,7 @@ export class MessagePanel extends Disposable {
 			],
 			new MessageDataSource(),
 			{
-				accessibilityProvider: new ReplAccessibilityProvider(),
+				accessibilityProvider: new AccessibilityProvider(),
 				mouseSupport: false,
 				setRowLineHeight: false,
 				supportDynamicHeights: true
