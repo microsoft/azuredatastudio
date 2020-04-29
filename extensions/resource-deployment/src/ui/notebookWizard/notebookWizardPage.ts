@@ -11,8 +11,6 @@ import { initializeWizardPage, InputComponents, InputFieldComponent, setModelVal
 import { WizardPageBase } from '../wizardPageBase';
 import { NotebookWizard } from './notebookWizard';
 
-
-
 const localize = nls.loadMessageBundle();
 
 export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
