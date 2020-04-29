@@ -109,15 +109,11 @@ steps:
 
     VERSION=$(node -p "require(\"./package.json\").version")
 
-    if [ "$VSCODE_QUALITY" != "stable" ]
-    then
-      VERSION="$VERSION-$VSCODE_QUALITY"
-    fi
-
     echo -e "{  \"version\": \"$VERSION\", \"quality\": \"$VSCODE_QUALITY\", \"commit\": \"$BUILD_SOURCEVERSION\" }" > ".build/version.json"
 
     node build/azure-pipelines/common/copyArtifacts.js
   displayName: Write Version Information
+  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'

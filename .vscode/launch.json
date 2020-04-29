@@ -14,18 +14,26 @@
 		{
 			"type": "node",
 			"request": "attach",
+			"restart": true,
 			"name": "Attach to Extension Host",
+			"timeout": 30000,
 			"port": 5870,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
-			]
+			],
+			"presentation": {
+				"hidden": true
+			}
 		},
 		{
-			"type": "chrome",
+			"type": "pwa-chrome",
 			"request": "attach",
 			"name": "Attach to Shared Process",
 			"port": 9222,
-			"urlFilter": "*"
+			"urlFilter": "*sharedProcess.html*",
+			"presentation": {
+				"hidden": true
+			}
 		},
 		{
 			"type": "node",
@@ -68,9 +76,10 @@
 			"port": 9222
 		},
 		{
-			"type": "chrome",
+			"type": "pwa-chrome",
 			"request": "launch",
 			"name": "Launch azuredatastudio",
+			"browserLaunchLocation": "workspace",
 			"windows": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
 			},
@@ -98,25 +107,7 @@
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			],
-		},
-		{
-			"type": "node",
-			"request": "launch",
-			"name": "Launch ADS (Main Process)",
-			"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
-			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat",
-			},
-			"runtimeArgs": [
-				"--no-cached-data"
-			],
-			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
-			],
-			"presentation": {
-				"group": "2_launch",
-				"order": 1
-			}
+			"browserLaunchLocation": "workspace"
 		},
 		{
 			"type": "chrome",
@@ -151,7 +142,7 @@
 				"web"
 			],
 			"presentation": {
-				"group": "2_launch",
+				"group": "0_vscode",
 				"order": 2
 			}
 		},
@@ -162,7 +153,7 @@
 			"url": "http://localhost:8080",
 			"preLaunchTask": "Run web",
 			"presentation": {
-				"group": "2_launch",
+				"group": "0_vscode",
 				"order": 3
 			}
 		},
@@ -271,13 +262,15 @@
 			]
 		},
 		{
-			"name": "Debug azuredatastudio Main and Renderer",
+			"name": "Azure Data Studio",
 			"configurations": [
 				"Launch azuredatastudio",
-				"Attach to Main Process"
+				"Attach to Main Process",
+				"Attach to Extension Host",
+				"Attach to Shared Process",
 			],
 			"presentation": {
-				"group": "1_vscode",
+				"group": "0_vscode",
 				"order": 1
 			}
 		},

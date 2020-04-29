@@ -108,6 +108,11 @@ export class JupyterSessionManager implements nb.SessionManager {
 			// TODO add more info to kernels
 			return kernel;
 		});
+
+		// For now, need to remove PySpark3, as it's been deprecated
+		// May want to have a formalized deprecated kernels mechanism in the future
+		kernels = kernels.filter(k => k.name !== 'pyspark3kernel');
+
 		let allKernels: nb.IAllKernels = {
 			defaultKernel: specs.default,
 			kernels: kernels
@@ -343,6 +348,11 @@ export class JupyterSession implements nb.ISession {
 			}
 			for (let i = 0; i < Object.keys(process.env).length; i++) {
 				let key = Object.keys(process.env)[i];
+				// DOTNET_ROOT gets set as part of the liveshare experience, but confuses the dotnet interactive kernel
+				// Not setting this environment variable for notebooks removes this issue
+				if (key.toLowerCase() === 'dotnet_root') {
+					continue;
+				}
 				if (key.toLowerCase() === 'path' && this._pythonEnvVarPath) {
 					allCode += `%set_env ${key}=${this._pythonEnvVarPath}${EOL}`;
 				} else {
