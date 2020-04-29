@@ -19,7 +19,7 @@ interface IActionMetadata {
 }
 
 const maxWidth = 800;
-const headerMaxHeight = 200;
+const headerMaxHeight = 300;
 export class DashboardWidget {
 
 	/**
@@ -42,10 +42,11 @@ export class DashboardWidget {
 				CSSStyles: {
 					'background-image': `url(${vscode.Uri.file(this.asAbsolutePath('images/background.svg'))})`,
 					'background-repeat': 'no-repeat',
-					'background-position': 'top',
+					'background-position': 'bottom',
 					'width': `${maxWidth}px`,
-					'height': '130px',
-					'background-size': `${maxWidth}px ${headerMaxHeight}px`
+					'height': '330px',
+					'background-size': `${maxWidth}px ${headerMaxHeight}px`,
+					'margin-bottom': '-60px'
 				}
 			});
 			container.addItem(tasksContainer, {
@@ -78,13 +79,12 @@ export class DashboardWidget {
 		const header = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: maxWidth,
-			height: headerMaxHeight,
+			height: headerMaxHeight
 		}).component();
 		const titleComponent = view.modelBuilder.text().withProperties({
 			value: constants.dashboardTitle,
 			CSSStyles: {
 				'font-size': '36px',
-				//'color': '#333333',
 				'font-weight': 'bold',
 				'margin': '0px'
 			}
@@ -93,7 +93,6 @@ export class DashboardWidget {
 			value: constants.dashboardDesc,
 			CSSStyles: {
 				'font-size': '14px',
-				//'color': '#888888',
 				'font-weight': 'bold',
 				'margin': '0px'
 			}
@@ -101,7 +100,7 @@ export class DashboardWidget {
 		header.addItems([titleComponent, descComponent], {
 			CSSStyles: {
 				'width': `${maxWidth}px`,
-				'padding': '10px'
+				'padding': '5px'
 			}
 		});
 
@@ -120,11 +119,28 @@ export class DashboardWidget {
 		footerContainer.addItem(linksContainer);
 		footerContainer.addItem(videoLinksContainer, {
 			CSSStyles: {
-				'padding-left': '50px',
+				'padding-left': '45px',
 			}
 		});
 
 		return footerContainer;
+	}
+
+	private createVideoLinkContainers(view: azdata.ModelView, links: IActionMetadata[]): azdata.Component {
+		const maxWidth = 400;
+		const videosContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'row',
+			width: maxWidth,
+			height: '300px',
+		}).component();
+
+		links.forEach(link => {
+			const videoContainer = this.createVideoLink(view, link);
+
+			videosContainer.addItem(videoContainer);
+		});
+
+		return videosContainer;
 	}
 
 	private createVideoLinks(view: azdata.ModelView): azdata.Component {
@@ -143,22 +159,13 @@ export class DashboardWidget {
 				'margin': '0px'
 			}
 		}).component();
-		const videosContainer = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'row',
-			width: maxWidth,
-			height: '500px',
-		}).component();
-		const video1Container = this.createVideoLink(view, {
-			iconPath: { light: 'images/video1.svg', dark: 'images/video1.svg' },
-			description: 'Visualize data using SandDance',
-			link: 'https://www.youtube.com/watch?v=e305wTAoLZs'
-		});
-		videosContainer.addItem(video1Container);
-		const video2Container = this.createVideoLink(view, {
-			iconPath: { light: 'images/video2.svg', dark: 'images/video2.svg' },
-			description: 'How to make the best out of Microsoft Azure'
-		});
-		videosContainer.addItem(video2Container);
+		const viewPanelStyle = {
+			'padding': '0px',
+			'padding-right': '5px',
+			'padding-top': '20px',
+			'height': '200px',
+			'margin': '0px'
+		};
 
 		linksContainer.addItems([titleComponent], {
 			CSSStyles: {
@@ -169,7 +176,96 @@ export class DashboardWidget {
 				'margin': '0px'
 			}
 		});
-		linksContainer.addItems([videosContainer], {
+		const videosContainer = this.createVideoLinkContainers(view, [
+			{
+				iconPath: { light: 'images/video1.svg', dark: 'images/video1.svg' },
+				description: 'Artificial intelligence and machine learning with SQL Server 2019',
+				link: 'https://www.youtube.com/watch?v=sE99cSoFOHs'
+			},
+			{
+				iconPath: { light: 'images/video2.svg', dark: 'images/video2.svg' },
+				description: 'SQL Server Machine Learning Services',
+				link: 'https://www.youtube.com/watch?v=R4GCBoxADyQ'
+			}
+		]);
+
+		linksContainer.addItem(videosContainer, {
+			CSSStyles: viewPanelStyle
+		});
+
+		const moreVideosContainer = this.createVideoLinkContainers(view, [
+			{
+				iconPath: { light: 'images/video2.svg', dark: 'images/video2.svg' },
+				description: 'Introduction to Azure Data Studio Notebooks',
+				link: 'https://www.youtube.com/watch?v=Nt4kIHQ0IOc'
+			}
+		]);
+
+		this.addShowMorePanel(view, linksContainer, moreVideosContainer, { 'padding-left': '5px' }, viewPanelStyle);
+		return linksContainer;
+	}
+
+	private addShowMorePanel(view: azdata.ModelView, parentPanel: azdata.FlexContainer, morePanel: azdata.Component, moreButtonStyle: { [key: string]: string }, morePanelStyle: { [key: string]: string }): azdata.Component {
+		const maxWidth = 100;
+		const linkContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'row',
+			width: maxWidth + 10,
+			justifyContent: 'flex-start'
+		}).component();
+		const showMoreComponent = view.modelBuilder.hyperlink().withProperties({
+			label: constants.showMoreTitle
+		}).component();
+		const image = view.modelBuilder.image().withProperties({
+			width: '10px',
+			height: '10px',
+			iconPath: {
+				dark: this.asAbsolutePath('images/dark/showMore_inverse.svg'),
+				light: this.asAbsolutePath('images/light/showMore.svg'),
+			},
+			iconHeight: '10px',
+			iconWidth: '10px'
+		}).component();
+		showMoreComponent.onDidClick(() => {
+			let showMore = showMoreComponent.label === constants.showMoreTitle;
+			if (showMore) {
+				showMoreComponent.label = constants.showLessTitle;
+				image.iconPath = {
+					dark: this.asAbsolutePath('images/dark/showLess_inverse.svg'),
+					light: this.asAbsolutePath('images/light/showLess.svg'),
+				};
+				parentPanel.addItem(morePanel, {
+					CSSStyles: morePanelStyle
+				});
+			} else {
+				showMoreComponent.label = constants.showMoreTitle;
+				parentPanel.removeItem(morePanel);
+				image.iconPath = {
+					dark: this.asAbsolutePath('images/dark/showMore_inverse.svg'),
+					light: this.asAbsolutePath('images/light/showMore.svg'),
+				};
+			}
+			showMore = !showMore;
+		});
+		linkContainer.addItem(showMoreComponent, {
+			CSSStyles: Object.assign({}, moreButtonStyle, {
+				'font-size': '12px',
+				'margin': '0px',
+				'color': '#006ab1',
+				'padding-right': '5px'
+			}
+			)
+		});
+		linkContainer.addItem(image, {
+			CSSStyles: {
+				'padding': '0px',
+				'padding-right': '5px',
+				'padding-top': '5px',
+				'height': '10px',
+				'margin': '0px'
+			}
+		});
+
+		parentPanel.addItem(linkContainer, {
 			CSSStyles: {
 				'padding': '0px',
 				'padding-right': '5px',
@@ -178,15 +274,16 @@ export class DashboardWidget {
 				'margin': '0px'
 			}
 		});
-		return linksContainer;
+
+		return showMoreComponent;
 	}
 
 	private createVideoLink(view: azdata.ModelView, linkMetaData: IActionMetadata): azdata.Component {
-		const maxWidth = 200;
+		const maxWidth = 150;
 		const videosContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: maxWidth,
-			height: '200px',
+			height: maxWidth,
 			justifyContent: 'flex-start'
 		}).component();
 		const video1Container = view.modelBuilder.divContainer().withProperties({
@@ -196,10 +293,9 @@ export class DashboardWidget {
 		}).component();
 		const descriptionComponent = view.modelBuilder.text().withProperties({
 			value: linkMetaData.description,
-			width: '200px',
+			width: maxWidth,
 			height: '50px',
 			CSSStyles: {
-				//'color': '#605E5C',
 				'font-size': '12px',
 				'margin': '0px'
 			}
@@ -214,9 +310,9 @@ export class DashboardWidget {
 				'background-image': `url(${vscode.Uri.file(this.asAbsolutePath(<string>linkMetaData.iconPath?.light || ''))})`,
 				'background-repeat': 'no-repeat',
 				'background-position': 'top',
-				'width': `150px`,
+				'width': `${maxWidth}px`,
 				'height': '110px',
-				'background-size': `150px 120px`
+				'background-size': `{maxWidth}px 120px`
 			}
 		});
 		videosContainer.addItem(descriptionComponent);
@@ -234,39 +330,46 @@ export class DashboardWidget {
 			value: constants.dashboardLinksTitle,
 			CSSStyles: {
 				'font-size': '18px',
-				//'color': '#323130',
 				'font-weight': 'bold',
 				'margin': '0px'
 			}
 		}).component();
-		let mlsLink: string;
-		if (utils.isWindows()) {
-			mlsLink = constants.installMlsWindowsDocs;
-		} else {
-			mlsLink = constants.installMlsLinuxDocs;
-		}
-		const mlsDocs = this.createLink(view, {
-			title: constants.mlsInstallMlsDocTitle,
-			description: constants.mlsInstallMlsDocDesc,
-			link: mlsLink
-		});
-		let odbcLink: string;
-		if (utils.isWindows()) {
-			odbcLink = constants.odbcDriverWindowsDocuments;
-		} else {
-			odbcLink = constants.odbcDriverLinuxDocuments;
-		}
-		const rdbcDocs = this.createLink(view, {
+
+		const links = [{
+			title: constants.sqlMlDocTitle,
+			description: constants.sqlMlDocDesc,
+			link: constants.mlDocLink
+		}, {
+			title: constants.sqlMlsDocTitle,
+			description: constants.sqlMlsDocDesc,
+			link: constants.mlsDocLink
+		},
+		{
+			title: constants.sqlMlsAzureDocTitle,
+			description: constants.sqlMlsAzureDocDesc,
+			link: constants.mlsAzureDocLink
+		}];
+
+		const moreLink = {
 			title: constants.mlsInstallOdbcDocTitle,
 			description: constants.mlsInstallOdbcDocDesc,
-			link: odbcLink
-		});
+			link: utils.isWindows() ? constants.odbcDriverWindowsDocuments : constants.odbcDriverLinuxDocuments
+		};
+		const styles = {
+			'padding': '10px'
+		};
 
-		linksContainer.addItems([titleComponent, mlsDocs, rdbcDocs], {
+		linksContainer.addItem(titleComponent, {
 			CSSStyles: {
 				'padding': '10px'
 			}
 		});
+
+		linksContainer.addItems(links.map(l => this.createLink(view, l)), {
+			CSSStyles: styles
+		});
+
+		this.addShowMorePanel(view, linksContainer, this.createLink(view, moreLink), { 'padding-left': '10px' }, styles);
 		return linksContainer;
 	}
 
@@ -283,21 +386,19 @@ export class DashboardWidget {
 			value: linkMetaData.description,
 			width: maxWidth,
 			CSSStyles: {
-				//'color': '#605E5C',
 				'font-size': '12px',
 				'margin': '0px'
 			}
 		}).component();
 		const linkContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
-			width: maxWidth,
+			width: maxWidth + 10,
 			justifyContent: 'flex-start'
 		}).component();
 		const linkComponent = view.modelBuilder.hyperlink().withProperties({
 			label: linkMetaData.title,
 			url: linkMetaData.link,
 			CSSStyles: {
-				'color': '#3794ff',
 				'font-size': '14px',
 				'margin': '0px'
 			}
@@ -316,8 +417,8 @@ export class DashboardWidget {
 			CSSStyles: {
 				'padding': '0px',
 				'padding-right': '5px',
-				'height': '10px',
-				'margin': '0px'
+				'margin': '0px',
+				'color': '#006ab1'
 			}
 		});
 		linkContainer.addItem(image, {
@@ -365,8 +466,8 @@ export class DashboardWidget {
 			title: constants.importModelTitle,
 			description: constants.importModelDesc,
 			iconPath: {
-				dark: this.asAbsolutePath('images/makePredictions.svg'),
-				light: this.asAbsolutePath('images/makePredictions.svg'),
+				dark: this.asAbsolutePath('images/manageModels.svg'),
+				light: this.asAbsolutePath('images/manageModels.svg'),
 			},
 			link: '',
 			command: constants.mlManageModelsCommand
@@ -418,7 +519,6 @@ export class DashboardWidget {
 			value: taskMetaData.title,
 			CSSStyles: {
 				'font-size': '14px',
-				//'color': '#323130',
 				'font-weight': 'bold',
 				'margin': '0px'
 			}
@@ -426,19 +526,13 @@ export class DashboardWidget {
 		const descriptionComponent = view.modelBuilder.text().withProperties({
 			value: taskMetaData.description,
 			CSSStyles: {
-				//'color': '#605E5C',
 				'font-size': '13px',
 				'margin': '0px'
 			}
 		}).component();
 		const linkComponent = view.modelBuilder.hyperlink().withProperties({
 			label: constants.learnMoreTitle,
-			url: taskMetaData.link,
-			CSSStyles: {
-				//'background-color': '#F2F2F2',
-				'color': '#3794ff',
-				'margin': '0px'
-			}
+			url: taskMetaData.link
 		}).component();
 		const image = view.modelBuilder.image().withProperties({
 			width: '20px',
@@ -452,7 +546,8 @@ export class DashboardWidget {
 				'padding': '0px',
 				'padding-bottom': '5px',
 				'width': '180px',
-				'margin': '0px'
+				'margin': '0px',
+				'color': '#006ab1'
 			}
 		});
 		iconContainer.addItem(image, {
@@ -469,7 +564,6 @@ export class DashboardWidget {
 		});
 		mainContainer.addItems([iconContainer], {
 			CSSStyles: {
-				//'background-color': '#f4f4f4',
 				'padding': '10px',
 				'border-radius': '5px',
 				'border-color': '#f2f2f2',

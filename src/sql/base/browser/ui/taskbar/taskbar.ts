@@ -25,6 +25,10 @@ export interface ITaskbarContent {
 	element?: HTMLElement;
 }
 
+export interface ITaskbarOptions extends IToolBarOptions {
+	collapseOverflow?: boolean
+}
+
 /**
  * A widget that combines an action bar for actions. This class was needed because we
  * want the ability to use the custom QueryActionBar in order to display other HTML
@@ -34,14 +38,14 @@ export class Taskbar {
 	private options: IToolBarOptions;
 	private actionBar: ActionBar;
 
-	constructor(container: HTMLElement, options: IToolBarOptions = { orientation: ActionsOrientation.HORIZONTAL }, collapseOverflow: boolean = false) {
+	constructor(container: HTMLElement, options: ITaskbarOptions = { orientation: ActionsOrientation.HORIZONTAL }) {
 		this.options = options;
 
 		let element = document.createElement('div');
 		element.className = 'monaco-toolbar carbon-taskbar';
 		container.appendChild(element);
 
-		if (collapseOverflow) {
+		if (options.collapseOverflow) {
 			this.actionBar = new OverflowActionBar(
 				element,
 				{
