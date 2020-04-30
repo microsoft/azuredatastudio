@@ -168,7 +168,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 			iconClass = createCSSRuleForIcon(icon, extension);
 		}
 		if (result) {
-			registerTab({ description, title, container, provider, when, id, alwaysShow, publisher, isHomeTab, group, iconClass, preview: extension.description.preview });
+			registerTab({ description, title, container, provider, when, id, alwaysShow, publisher, isHomeTab, group, iconClass });
 		}
 	}
 

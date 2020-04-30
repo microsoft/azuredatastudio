@@ -300,10 +300,11 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 		this.loadNewTabs(allTabs.filter((tab) => tab.group === homeTabGroupId));
 
-		// If preview features are disabled filter out contributions from preview extensions
+		// If preview features are disabled only show the home tab since extension-contributed tabs
+		// are still under preview
 		const extensionTabsEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!extensionTabsEnabled) {
-			allTabs = allTabs.filter(tab => !tab.preview);
+			allTabs = [];
 		}
 
 		// Load tab setting configs
