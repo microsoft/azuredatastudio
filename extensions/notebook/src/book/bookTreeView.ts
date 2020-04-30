@@ -112,7 +112,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				await this.createAndAddBookModel(bookPath, !!isNotebook);
 				let bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
 				this.currentBook = this.books.find(book => book.bookPath === bookPath);
-				bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
+				if (this._bookViewer.visible) {
+					bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
+				}
 			}
 
 			if (showPreview) {
