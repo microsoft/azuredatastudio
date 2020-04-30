@@ -14,22 +14,29 @@ import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { values } from 'vs/base/common/collections';
+import { DashboardWidgetWrapper } from 'sql/workbench/contrib/dashboard/browser/contents/dashboardWidgetWrapper.component';
 
 @Component({
 	selector: 'dashboard-widget-container',
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => DashboardWidgetContainer) }],
 	template: `
-		<widget-content [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
-		</widget-content>
+		<div class="fullsize">
+			<widget-content *ngIf="!_fullSizeWidget" [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
+			</widget-content>
+			<dashboard-widget-wrapper *ngIf="_fullSizeWidget" [_config]="_fullSizeWidget">
+			</dashboard-widget-wrapper>
+		</div>
 	`
 })
 export class DashboardWidgetContainer extends DashboardTab implements AfterContentInit {
 	@Input() protected tab: TabConfig;
 	protected widgets: WidgetConfig[];
 	private _onResize = new Emitter<void>();
+	private _fullSizeWidget: WidgetConfig;
 	public readonly onResize: Event<void> = this._onResize.event;
 
 	@ViewChild(WidgetContent) protected _widgetContent: WidgetContent;
+	@ViewChild(DashboardWidgetWrapper) protected _widgetWrapper: DashboardWidgetWrapper;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef
@@ -40,14 +47,17 @@ export class DashboardWidgetContainer extends DashboardTab implements AfterConte
 	ngOnInit() {
 		if (this.tab.container) {
 			this.widgets = values(this.tab.container)[0];
+			this._fullSizeWidget = this.widgets.find(w => w.fullSize === true);
 			this._cd.detectChanges();
 		}
 	}
 
 	ngAfterContentInit(): void {
-		this._register(this._widgetContent.onResize(() => {
-			this._onResize.fire();
-		}));
+		if (!this._fullSizeWidget) {
+			this._register(this._widgetContent.onResize(() => {
+				this._onResize.fire();
+			}));
+		}
 	}
 
 	public get id(): string {
@@ -59,14 +69,22 @@ export class DashboardWidgetContainer extends DashboardTab implements AfterConte
 	}
 
 	public layout() {
-		this._widgetContent.layout();
+		if (!this._fullSizeWidget) {
+			this._widgetContent.layout();
+		}
 	}
 
 	public refresh(): void {
-		this._widgetContent.refresh();
+		if (this._fullSizeWidget) {
+			this._widgetWrapper.refresh();
+		} else {
+			this._widgetContent.refresh();
+		}
 	}
 
 	public enableEdit(): void {
-		this._widgetContent.enableEdit();
+		if (!this._fullSizeWidget) {
+			this._widgetContent.enableEdit();
+		}
 	}
 }
