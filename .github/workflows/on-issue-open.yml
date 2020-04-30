@@ -1,0 +1,23 @@
+name: On Issue Open
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Actions
+        uses: actions/checkout@v2
+        with:
+          repository: 'microsoft/azuredatastudio'
+          ref: master
+          path: ./actions
+      - name: Install Actions
+        run: npm install --production --prefix ./actions
+
+      - name: Run CopyCat
+        uses: ./actions/copycat
+        with:
+          owner: anthonydresser
+          repo: testissues
