@@ -4,13 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { EOL } from 'os';
 import * as path from 'path';
 import { isString } from 'util';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { IPlatformService } from './platformService';
 import { NotebookInfo } from '../interfaces';
-import { getErrorMessage, getDateTimeString } from '../utils';
+import { getDateTimeString, getErrorMessage } from '../utils';
+import { IPlatformService } from './platformService';
 const localize = nls.loadMessageBundle();
 
 export interface Notebook {
@@ -36,6 +37,7 @@ export interface INotebookService {
 	launchNotebookWithContent(title: string, content: string): Thenable<azdata.nb.NotebookEditor>;
 	getNotebook(notebook: string | NotebookInfo): Promise<Notebook>;
 	executeNotebook(notebook: any, env?: NodeJS.ProcessEnv): Promise<NotebookExecutionResult>;
+	backgroundExecuteNotebook(taskName: string | undefined, notebookInfo: string | NotebookInfo, tempNoteBookPrefix: string, platformService: IPlatformService): void;
 }
 
 export class NotebookService implements INotebookService {
@@ -105,6 +107,43 @@ export class NotebookService implements INotebookService {
 			this.platformService.deleteFile(notebookFullPath);
 			this.platformService.deleteFile(outputFullPath);
 		}
+	}
+
+	public backgroundExecuteNotebook(taskName: string | undefined, notebookInfo: string | NotebookInfo, tempNotebookPrefix: string, platformService: IPlatformService): void {
+		azdata.tasks.startBackgroundOperation({
+			displayName: taskName!,
+			description: taskName!,
+			isCancelable: false,
+			operation: async op => {
+				op.updateStatus(azdata.TaskStatus.InProgress);
+				const notebook = await this.getNotebook(notebookInfo);
+				const result = await this.executeNotebook(notebook);
+				if (result.succeeded) {
+					op.updateStatus(azdata.TaskStatus.Succeeded);
+				} else {
+					op.updateStatus(azdata.TaskStatus.Failed, result.errorMessage);
+					if (result.outputNotebook) {
+						const viewErrorDetail = localize('resourceDeployment.ViewErrorDetail', "View error detail");
+						const taskFailedMessage = localize('resourceDeployment.BackgroundExecutionFailed', "The task \"{0}\" has failed.", taskName);
+						const selectedOption = await vscode.window.showErrorMessage(taskFailedMessage, viewErrorDetail);
+						platformService.logToOutputChannel(taskFailedMessage);
+						if (selectedOption === viewErrorDetail) {
+							try {
+								this.launchNotebookWithContent(`${tempNotebookPrefix}-${getDateTimeString()}`, result.outputNotebook);
+							} catch (error) {
+								const launchNotebookError = localize('resourceDeployment.FailedToOpenNotebook', "An error occurred launching the output notebook. {1}{2}.", EOL, getErrorMessage(error));
+								platformService.logToOutputChannel(launchNotebookError);
+								vscode.window.showErrorMessage(launchNotebookError);
+							}
+						}
+					} else {
+						const errorMessage = localize('resourceDeployment.TaskFailedWithNoOutputNotebook', "The task \"{0}\" failed and no output Notebook was generated.", taskName);
+						platformService.logToOutputChannel(errorMessage);
+						vscode.window.showErrorMessage(errorMessage);
+					}
+				}
+			}
+		});
 	}
 
 	async getNotebookFullPath(notebook: string | NotebookInfo): Promise<string> {

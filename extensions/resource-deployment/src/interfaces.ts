@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
@@ -40,8 +41,12 @@ export interface DialogDeploymentProvider extends DeploymentProviderBase {
 	dialog: DialogInfo;
 }
 
-export interface WizardDeploymentProvider extends DeploymentProviderBase {
-	wizard: WizardInfo;
+export interface BdcWizardDeploymentProvider extends DeploymentProviderBase {
+	bdcWizard: WizardInfo;
+}
+
+export interface NotebookWizardDeploymentProvider extends DeploymentProviderBase {
+	notebookWizard: NotebookWizardInfo;
 }
 
 export interface NotebookDeploymentProvider extends DeploymentProviderBase {
@@ -64,8 +69,12 @@ export function instanceOfDialogDeploymentProvider(obj: any): obj is DialogDeplo
 	return obj && 'dialog' in obj;
 }
 
-export function instanceOfWizardDeploymentProvider(obj: any): obj is WizardDeploymentProvider {
-	return obj && 'wizard' in obj;
+export function instanceOfWizardDeploymentProvider(obj: any): obj is BdcWizardDeploymentProvider {
+	return obj && 'bdcWizard' in obj;
+}
+
+export function instanceOfNotebookWizardDeploymentProvider(obj: any): obj is NotebookWizardDeploymentProvider {
+	return obj && 'notebookWizard' in obj;
 }
 
 export function instanceOfNotebookDeploymentProvider(obj: any): obj is NotebookDeploymentProvider {
@@ -89,13 +98,31 @@ export interface DeploymentProviderBase {
 	when: string;
 }
 
-export type DeploymentProvider = DialogDeploymentProvider | WizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider;
+export type DeploymentProvider = DialogDeploymentProvider | BdcWizardDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider;
 
 export interface WizardInfo {
 	notebook: string | NotebookInfo;
 	type: BdcDeploymentType;
 }
 
+export interface NotebookWizardInfo extends WizardInfoBase {
+	notebook: string | NotebookInfo;
+}
+
+export interface WizardInfoBase extends SharedFieldAttributes {
+	taskName?: string;
+	type?: DeploymentType;
+	runNotebook?: boolean;
+	actionText?: string;
+	title: string;
+	pages: NotebookWizardPageInfo[];
+	summaryPage: NotebookWizardPageInfo;
+	generateSummaryPage: boolean;
+}
+
+export interface NotebookWizardPageInfo extends PageInfoBase {
+	description?: string;
+}
 export interface NotebookBasedDialogInfo extends DialogInfoBase {
 	notebook: string | NotebookInfo;
 	runNotebook?: boolean;
@@ -123,20 +150,24 @@ export interface DialogInfoBase {
 	actionText?: string;
 }
 
-export interface DialogTabInfo {
-	title: string;
-	sections: SectionInfo[];
-	labelWidth?: string;
-	inputWidth?: string;
+export interface DialogTabInfo extends PageInfoBase {
 }
 
-export interface SectionInfo {
+export interface PageInfoBase extends SharedFieldAttributes {
 	title: string;
-	fields?: FieldInfo[]; // Use this if the dialog is not wide. All fields will be displayed in one column, label will be placed on top of the input component.
-	rows?: RowInfo[]; // Use this for wide dialog or wizard. label will be placed to the left of the input component.
+	isSummaryPage?: boolean;
+	sections: SectionInfo[];
+}
+
+export interface SharedFieldAttributes {
 	labelWidth?: string;
 	inputWidth?: string;
 	labelPosition?: LabelPosition; // Default value is top
+}
+export interface SectionInfo extends SharedFieldAttributes {
+	title?: string;
+	fields?: FieldInfo[]; // Use this if the dialog is not wide. All fields will be displayed in one column, label will be placed on top of the input component.
+	rows?: RowInfo[]; // Use this for wide dialog or wizard. label will be placed to the left of the input component.
 	collapsible?: boolean;
 	collapsed?: boolean;
 	spaceBetweenFields?: string;
@@ -146,9 +177,13 @@ export interface RowInfo {
 	fields: FieldInfo[];
 }
 
-export interface FieldInfo {
+export interface SubFieldInfo {
 	label: string;
 	variableName?: string;
+}
+
+export interface FieldInfo extends SubFieldInfo, SharedFieldAttributes {
+	subFields?: SubFieldInfo[];
 	type: FieldType;
 	defaultValue?: string;
 	confirmationRequired?: boolean;
@@ -162,21 +197,26 @@ export interface FieldInfo {
 	options?: string[] | azdata.CategoryValue[];
 	placeHolder?: string;
 	userName?: string; // needed for sql server's password complexity requirement check, password can not include the login name.
-	labelWidth?: string;
-	inputWidth?: string;
 	description?: string;
-	labelPosition?: LabelPosition; // overwrite the labelPosition of SectionInfo.
 	fontStyle?: FontStyle;
 	labelFontWeight?: FontWeight;
+	textFontWeight?: FontWeight;
 	links?: azdata.LinkArea[];
-	editable?: boolean; // for editable dropdown,
+	editable?: boolean; // for editable drop-down,
 	enabled?: boolean;
 }
 
-export interface AzureAccountFieldInfo extends FieldInfo {
+export interface KubeClusterContextFieldInfo extends FieldInfo {
+	configFileVariableName?: string;
+}
+export interface AzureAccountFieldInfo extends AzureLocationsFieldInfo {
 	subscriptionVariableName?: string;
 	resourceGroupVariableName?: string;
+}
+
+export interface AzureLocationsFieldInfo extends FieldInfo {
 	locationVariableName?: string;
+	displayLocationVariableName?: string;
 	locations?: string[]
 }
 
@@ -202,9 +242,13 @@ export enum FieldType {
 	SQLPassword = 'sql_password',
 	Password = 'password',
 	Options = 'options',
+	RadioOptions = 'radio_options',
 	ReadonlyText = 'readonly_text',
 	Checkbox = 'checkbox',
-	AzureAccount = 'azure_account'
+	AzureAccount = 'azure_account',
+	AzureLocations = 'azure_locations',
+	FilePicker = 'file_picker',
+	KubeClusterContextPicker = 'kube_cluster_context_picker'
 }
 
 export interface NotebookInfo {
@@ -277,6 +321,12 @@ export const enum BdcDeploymentType {
 	ExistingAKS = 'existing-aks',
 	ExistingKubeAdm = 'existing-kubeadm'
 }
+
+export const enum ArcDeploymentType {
+	NewControlPlane = 'new-control-plane'
+}
+
+export type DeploymentType = ArcDeploymentType | BdcDeploymentType;
 
 export interface Command {
 	command: string;

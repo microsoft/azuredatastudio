@@ -16,6 +16,7 @@ import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IStorageKeysSyncRegistryService } from 'vs/platform/userDataSync/common/storageKeys';
 
 interface AllowedExtension {
 	id: string;
@@ -62,7 +63,8 @@ export class MainThreadAuthenticationProvider extends Disposable {
 		private readonly _proxy: ExtHostAuthenticationShape,
 		public readonly id: string,
 		public readonly displayName: string,
-		private readonly notificationService: INotificationService
+		private readonly notificationService: INotificationService,
+		private readonly storageKeysSyncRegistryService: IStorageKeysSyncRegistryService
 	) {
 		super();
 	}
@@ -147,6 +149,8 @@ export class MainThreadAuthenticationProvider extends Disposable {
 			},
 			order: 3
 		});
+
+		this.storageKeysSyncRegistryService.registerStorageKey({ key: `${this.id}-${session.account.displayName}`, version: 1 });
 
 		const manageCommand = CommandsRegistry.registerCommand({
 			id: `configureSessions${session.id}`,
@@ -285,14 +289,15 @@ export class MainThreadAuthentication extends Disposable implements MainThreadAu
 		@IAuthenticationService private readonly authenticationService: IAuthenticationService,
 		@IDialogService private readonly dialogService: IDialogService,
 		@IStorageService private readonly storageService: IStorageService,
-		@INotificationService private readonly notificationService: INotificationService
+		@INotificationService private readonly notificationService: INotificationService,
+		@IStorageKeysSyncRegistryService private readonly storageKeysSyncRegistryService: IStorageKeysSyncRegistryService
 	) {
 		super();
 		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostAuthentication);
 	}
 
 	async $registerAuthenticationProvider(id: string, displayName: string): Promise<void> {
-		const provider = new MainThreadAuthenticationProvider(this._proxy, id, displayName, this.notificationService);
+		const provider = new MainThreadAuthenticationProvider(this._proxy, id, displayName, this.notificationService, this.storageKeysSyncRegistryService);
 		await provider.initialize();
 		this.authenticationService.registerAuthenticationProvider(id, provider);
 	}
@@ -316,14 +321,14 @@ export class MainThreadAuthentication extends Disposable implements MainThreadAu
 
 		const { choice } = await this.dialogService.show(
 			Severity.Info,
-			nls.localize('confirmAuthenticationAccess', "The extension '{0}' is trying to access authentication information for the {1} account '{2}'.", extensionName, providerName, accountName),
-			[nls.localize('cancel', "Cancel"), nls.localize('allow', "Allow")],
+			nls.localize('confirmAuthenticationAccess', "The extension '{0}' wants to access the {1} account '{2}'.", extensionName, providerName, accountName),
+			[nls.localize('allow', "Allow"), nls.localize('cancel', "Cancel")],
 			{
-				cancelId: 0
+				cancelId: 1
 			}
 		);
 
-		const allow = choice === 1;
+		const allow = choice === 0;
 		if (allow) {
 			allowList.push({ id: extensionId, name: extensionName });
 			this.storageService.store(`${providerId}-${accountName}`, JSON.stringify(allowList), StorageScope.GLOBAL);
@@ -336,13 +341,13 @@ export class MainThreadAuthentication extends Disposable implements MainThreadAu
 		const { choice } = await this.dialogService.show(
 			Severity.Info,
 			nls.localize('confirmLogin', "The extension '{0}' wants to sign in using {1}.", extensionName, providerName),
-			[nls.localize('cancel', "Cancel"), nls.localize('allow', "Allow")],
+			[nls.localize('allow', "Allow"), nls.localize('cancel', "Cancel")],
 			{
-				cancelId: 0
+				cancelId: 1
 			}
 		);
 
-		return choice === 1;
+		return choice === 0;
 	}
 
 	async $setTrustedExtension(providerId: string, accountName: string, extensionId: string, extensionName: string): Promise<void> {

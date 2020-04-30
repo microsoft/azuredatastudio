@@ -34,7 +34,7 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { timeout } from 'vs/base/common/async';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { indexOfPath } from 'vs/base/common/extpath';
-import { DEFAULT_CUSTOM_EDITOR, updateViewTypeSchema, editorAssociationsConfigurationNode } from 'vs/workbench/services/editor/browser/editorAssociationsSetting';
+import { DEFAULT_CUSTOM_EDITOR, updateViewTypeSchema, editorAssociationsConfigurationNode } from 'vs/workbench/services/editor/common/editorAssociationsSetting';
 import { Extensions as ConfigurationExtensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry';
 
 type CachedEditorInput = ResourceEditorInput | IFileEditorInput | UntitledTextEditorInput;
@@ -480,10 +480,10 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		return toDisposable(() => remove());
 	}
 
-	getEditorOverrides(editorInput: IEditorInput, options: IEditorOptions | undefined, group: IEditorGroup | undefined): [IOpenEditorOverrideHandler, IOpenEditorOverrideEntry][] {
+	getEditorOverrides(resource: URI, options: IEditorOptions | undefined, group: IEditorGroup | undefined): [IOpenEditorOverrideHandler, IOpenEditorOverrideEntry][] {
 		const ret = [];
 		for (const handler of this.openEditorHandlers) {
-			const handlers = handler.getEditorOverrides ? handler.getEditorOverrides(editorInput, options, group).map(val => { return [handler, val] as [IOpenEditorOverrideHandler, IOpenEditorOverrideEntry]; }) : [];
+			const handlers = handler.getEditorOverrides ? handler.getEditorOverrides(resource, options, group).map(val => { return [handler, val] as [IOpenEditorOverrideHandler, IOpenEditorOverrideEntry]; }) : [];
 			ret.push(...handlers);
 		}
 
@@ -1165,8 +1165,8 @@ export class DelegatingEditorService implements IEditorService {
 		@IEditorService private editorService: EditorService
 	) { }
 
-	getEditorOverrides(editorInput: IEditorInput, options: IEditorOptions | undefined, group: IEditorGroup | undefined) {
-		return [];
+	getEditorOverrides(resource: URI, options: IEditorOptions | undefined, group: IEditorGroup | undefined) {
+		return this.editorService.getEditorOverrides(resource, options, group);
 	}
 
 	openEditor(editor: IEditorInput, options?: IEditorOptions | ITextEditorOptions, group?: OpenInEditorGroup): Promise<IEditorPane | undefined>;

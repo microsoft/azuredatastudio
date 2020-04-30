@@ -13,11 +13,13 @@ import * as nls from 'vscode-nls';
 import { INotebookService } from './notebookService';
 import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
-import { ResourceType, ResourceTypeOption, NotebookInfo, DeploymentProvider, instanceOfWizardDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfNotebookDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfNotebookBasedDialogInfo } from '../interfaces';
+import { ResourceType, ResourceTypeOption, NotebookInfo, DeploymentProvider, instanceOfWizardDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfNotebookDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookWizardDeploymentProvider } from '../interfaces';
 import { DeployClusterWizard } from '../ui/deployClusterWizard/deployClusterWizard';
 import { DeploymentInputDialog } from '../ui/deploymentInputDialog';
+
 import { KubeService } from './kubeService';
 import { AzdataService } from './azdataService';
+import { NotebookWizard } from '../ui/notebookWizard/notebookWizard';
 const localize = nls.loadMessageBundle();
 
 export interface IResourceTypeService {
@@ -66,8 +68,11 @@ export class ResourceTypeService implements IResourceTypeService {
 			} else if (instanceOfDialogDeploymentProvider(provider) && instanceOfNotebookBasedDialogInfo(provider.dialog)) {
 				this.updateNotebookPath(provider.dialog, extensionPath);
 			}
-			else if ('wizard' in provider) {
-				this.updateNotebookPath(provider.wizard, extensionPath);
+			else if ('bdcWizard' in provider) {
+				this.updateNotebookPath(provider.bdcWizard, extensionPath);
+			}
+			else if ('notebookWizard' in provider) {
+				this.updateNotebookPath(provider.notebookWizard, extensionPath);
 			}
 		});
 	}
@@ -168,6 +173,7 @@ export class ResourceTypeService implements IResourceTypeService {
 			resourceType.providers.forEach(provider => {
 				const providerPositionInfo = `${positionInfo}, provider index: ${providerIndex} `;
 				if (!instanceOfWizardDeploymentProvider(provider)
+					&& !instanceOfNotebookWizardDeploymentProvider(provider)
 					&& !instanceOfDialogDeploymentProvider(provider)
 					&& !instanceOfNotebookDeploymentProvider(provider)
 					&& !instanceOfDownloadDeploymentProvider(provider)
@@ -203,24 +209,27 @@ export class ResourceTypeService implements IResourceTypeService {
 	private getProvider(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined {
 		for (let i = 0; i < resourceType.providers.length; i++) {
 			const provider = resourceType.providers[i];
+			if (provider.when === undefined || provider.when.toString().toLowerCase() === 'true') {
+				return provider;
+			} else {
+				const expected = provider.when.replace(' ', '').split('&&').sort();
+				let actual: string[] = [];
+				selectedOptions.forEach(option => {
+					actual.push(`${option.option}=${option.value}`);
+				});
+				actual = actual.sort();
 
-			const expected = provider.when.replace(' ', '').split('&&').sort();
-			let actual: string[] = [];
-			selectedOptions.forEach(option => {
-				actual.push(`${option.option}=${option.value}`);
-			});
-			actual = actual.sort();
-
-			if (actual.length === expected.length) {
-				let matches = true;
-				for (let j = 0; j < actual.length; j++) {
-					if (actual[j] !== expected[j]) {
-						matches = false;
-						break;
+				if (actual.length === expected.length) {
+					let matches = true;
+					for (let j = 0; j < actual.length; j++) {
+						if (actual[j] !== expected[j]) {
+							matches = false;
+							break;
+						}
 					}
-				}
-				if (matches) {
-					return provider;
+					if (matches) {
+						return provider;
+					}
 				}
 			}
 		}
@@ -230,7 +239,10 @@ export class ResourceTypeService implements IResourceTypeService {
 	public startDeployment(provider: DeploymentProvider): void {
 		const self = this;
 		if (instanceOfWizardDeploymentProvider(provider)) {
-			const wizard = new DeployClusterWizard(provider.wizard, new KubeService(), new AzdataService(this.platformService), this.notebookService);
+			const wizard = new DeployClusterWizard(provider.bdcWizard, new KubeService(), new AzdataService(this.platformService), this.notebookService);
+			wizard.open();
+		} else if (instanceOfNotebookWizardDeploymentProvider(provider)) {
+			const wizard = new NotebookWizard(provider.notebookWizard, this.notebookService, this.platformService);
 			wizard.open();
 		} else if (instanceOfDialogDeploymentProvider(provider)) {
 			const dialog = new DeploymentInputDialog(this.notebookService, this.platformService, provider.dialog);

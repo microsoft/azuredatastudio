@@ -5,6 +5,7 @@
 
 .monaco-workbench .part.activitybar {
 	width: 48px;
+	height: 100%;
 }
 
 .monaco-workbench .activitybar > .content {
@@ -17,7 +18,7 @@
 /*
  * Fix menu jumping and background inheritance in Safari
  */
-.monaco-workbench .activitybar > .content {
+.monaco-workbench.safari .activitybar > .content {
 	position: absolute;
 	background-color: inherit;
 }
