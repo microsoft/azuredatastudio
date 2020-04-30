@@ -293,7 +293,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		columnDef.formatter = (row, cell, value, columnDef, dataContext) => this.detailSelectionFormatter(row, cell, value, columnDef, dataContext as ExtendedItem<Slick.SlickData>);
 		columns.unshift(columnDef);
 
-		let filterPlugin = new HeaderFilter<{ inlineFilters: false }>();
+		let filterPlugin = new HeaderFilter<Slick.SlickData>();
 		this._register(attachButtonStyler(filterPlugin, this._themeService));
 		this.filterPlugin = filterPlugin;
 		this.filterPlugin.onFilterApplied.subscribe((e, args) => {
