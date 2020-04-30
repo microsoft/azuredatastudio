@@ -8,6 +8,7 @@ import { mixin } from 'sql/base/common/objects';
 import * as types from 'vs/base/common/types';
 import { IInsightOptions, InsightType, ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
 import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
+import { BrandedService } from 'vs/platform/instantiation/common/instantiation';
 
 export interface IPointDataSet {
 	data: Array<{ x: number | string, y: number }>;
@@ -42,6 +43,6 @@ export interface IInsight {
 }
 
 export interface IInsightCtor {
-	new(container: HTMLElement, options: IInsightOptions, ...services: { _serviceBrand: undefined; }[]): IInsight;
+	new <Services extends BrandedService[]>(container: HTMLElement, options: IInsightOptions, ...services: Services): IInsight;
 	readonly types: Array<InsightType | ChartType>;
 }

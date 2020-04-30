@@ -395,7 +395,7 @@ export class ProfilerEditor extends BaseEditor {
 			this._detailTable.updateRowCount();
 		});
 
-		const detailTableCopyKeybind = new CopyKeybind();
+		const detailTableCopyKeybind = new CopyKeybind<IDetailData>();
 		detailTableCopyKeybind.onCopy((ranges: Slick.Range[]) => {
 			// we always only get 1 item in the ranges
 			if (ranges && ranges.length === 1) {
