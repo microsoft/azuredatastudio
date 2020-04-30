@@ -45,6 +45,8 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}}
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
+import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IEditorOptions } from 'vs/platform/editor/common/editor';
 
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
@@ -60,13 +62,13 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 		@IFileService fileService: IFileService,
 		@IWorkspaceContextService contextService: IWorkspaceContextService,
 		@ILifecycleService lifecycleService: ILifecycleService,
+		@IEditorService editorGroupsService: IEditorGroupsService,
 		@ICommandService private readonly commandService: ICommandService,
 	) {
 		const enabled = isWelcomePageEnabled(configurationService, contextService);
 		if (enabled && lifecycleService.startupKind !== StartupKind.ReloadedWindow) {
 			backupFileService.hasBackups().then(hasBackups => {
-				const activeEditor = editorService.activeEditor;
-				if (!activeEditor && !hasBackups) {
+				if (!editorGroupsService.willRestoreEditors && !hasBackups) {
 					const openWithReadme = configurationService.getValue(configurationKey) === 'readme';
 					if (openWithReadme) {
 						return Promise.all(contextService.getWorkspace().folders.map(folder => {
@@ -98,7 +100,18 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 								return undefined;
 							});
 					} else {
-						return instantiationService.createInstance(WelcomePage).openEditor();
+						let options: IEditorOptions;
+						let editor = editorService.activeEditor;
+						if (editor) {
+							// Ensure that the welcome editor won't get opened more than once
+							if (editor.getTypeId() === welcomeInputTypeId || editorService.editors.some(e => e.getTypeId() === welcomeInputTypeId)) {
+								return undefined;
+							}
+							options = { pinned: false, index: 0 };
+						} else {
+							options = { pinned: false };
+						}
+						return instantiationService.createInstance(WelcomePage).openEditor(options);
 					}
 				}
 				return undefined;
@@ -289,8 +302,8 @@ class WelcomePage extends Disposable {
 		});
 	}
 
-	public openEditor() {
-		return this.editorService.openEditor(this.editorInput, { pinned: false });
+	public openEditor(options: IEditorOptions = { pinned: false }) {
+		return this.editorService.openEditor(this.editorInput, options);
 	}
 
 	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>): void {

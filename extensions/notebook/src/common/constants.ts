@@ -56,5 +56,5 @@ export enum PythonPkgType {
 }
 
 export const pythonWindowsInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2110625';
-export const pythonMacInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2110525';
+export const pythonMacInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2128152';
 export const pythonLinuxInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2110524';
