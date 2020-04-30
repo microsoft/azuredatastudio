@@ -856,6 +856,21 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 					version: '0.1.3'
 				});
 				break;
+			case constants.allKernelsName:
+				packages.push({
+					name: 'sparkmagic',
+					version: '0.12.9'
+				}, {
+					name: 'pandas',
+					version: '0.24.2'
+				}, {
+					name: 'prose-codeaccelerator',
+					version: '1.3.0'
+				}, {
+					name: 'powershell-kernel',
+					version: '0.1.3'
+				});
+				break;
 			default:
 				return undefined;
 		}

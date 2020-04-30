@@ -39,6 +39,7 @@ export const pysparkDisplayName = 'PySpark';
 export const sparkScalaDisplayName = 'Spark | Scala';
 export const sparkRDisplayName = 'Spark | R';
 export const powershellDisplayName = 'PowerShell';
+export const allKernelsName = 'All Kernels';
 
 export const visitedNotebooksMementoKey = 'notebooks.visited';
 
