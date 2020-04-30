@@ -72,7 +72,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	private _pythonInstallationPath: string;
 	private _pythonExecutable: string;
-	private _pythonPackageDir: string;
 	private _usingExistingPython: boolean;
 	private _usingConda: boolean;
 
@@ -282,12 +281,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let pythonSourcePath = this._usingExistingPython
 			? this._pythonInstallationPath
 			: path.join(this._pythonInstallationPath, constants.pythonBundleVersion);
-
-		if (this._usingExistingPython) {
-			this._pythonPackageDir = undefined;
-		} else {
-			this._pythonPackageDir = path.join(pythonSourcePath, 'offlinePackages');
-		}
 
 		// Update python paths and properties to reference user's local python.
 		let pythonBinPathSuffix = process.platform === constants.winPlatform ? '' : 'bin';
@@ -657,32 +650,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let packagesStr = packages.map(pkg => `"${pkg.name}==${pkg.version}"`).join(' ');
 		let cmd = `"${condaExe}" uninstall -y ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
-	}
-
-	private async installOfflinePipDependencies(): Promise<void> {
-		// Skip this step if using existing python, since this is for our provided package
-		if (!this._usingExistingPython && process.platform === constants.winPlatform) {
-			this.outputChannel.show(true);
-			this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
-
-			let requirements = path.join(this._pythonPackageDir, 'requirements.txt');
-			let installJupyterCommand = `"${this._pythonExecutable}" -m pip install --no-index -r "${requirements}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
-			await this.executeStreamedCommand(installJupyterCommand);
-
-			// Force reinstall pip to update shebangs in pip*.exe files
-			installJupyterCommand = `"${this._pythonExecutable}" -m pip install --force-reinstall --no-index pip --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
-			await this.executeStreamedCommand(installJupyterCommand);
-
-			fs.remove(this._pythonPackageDir, (err: Error) => {
-				if (err) {
-					this.outputChannel.appendLine(err.message);
-				}
-			});
-
-			this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
-		} else {
-			return Promise.resolve();
-		}
 	}
 
 	public async executeStreamedCommand(command: string): Promise<void> {
