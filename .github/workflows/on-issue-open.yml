@@ -14,10 +14,10 @@ jobs:
           ref: master
           path: ./actions
       - name: Install Actions
-        run: npm install --production --prefix ./actions
+        run: npm install --production --prefix ./actions/build/actions
 
       - name: Run CopyCat
-        uses: ./actions/copycat
+        uses: ./actions/build/actions/copycat
         with:
           owner: anthonydresser
           repo: testissues
