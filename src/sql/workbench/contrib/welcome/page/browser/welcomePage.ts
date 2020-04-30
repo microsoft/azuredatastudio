@@ -46,6 +46,7 @@ import { IProductService } from 'vs/platform/product/common/productService';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { joinPath } from 'vs/base/common/resources';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { addStandardDisposableListener, EventHelper } from 'vs/base/browser/dom';
 
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
@@ -321,23 +322,21 @@ class WelcomePage extends Disposable {
 	}
 
 	private createWidePreviewToolTip() {
-		const previewLink = document.querySelector('#tool_tip_container_wide');
-		const tooltip = document.querySelector('#tooltip_text_wide');
+		const previewLink = document.querySelector('#tool_tip_container_wide') as HTMLElement;
+		const tooltip = document.querySelector('#tooltip_text_wide') as HTMLElement;
 		const previewModalBody = document.querySelector('.preview_tooltip_body') as HTMLElement;
 		const previewModalHeader = document.querySelector('.preview_tooltip_header') as HTMLElement;
 
-		previewLink.addEventListener('mouseover', () => {
+		addStandardDisposableListener(previewLink, 'mouseover', () => {
 			tooltip.setAttribute('aria-hidden', 'true');
 			tooltip.classList.toggle('show');
 		});
-		previewLink.addEventListener('mouseout', () => {
+		addStandardDisposableListener(previewLink, 'mouseout', () => {
 			tooltip.setAttribute('aria-hidden', 'false');
 			tooltip.classList.remove('show');
 		});
 
-		previewLink.addEventListener('keydown', (e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
-
+		addStandardDisposableListener(previewLink, 'keydown', event => {
 			if (event.equals(KeyCode.Escape)) {
 				if (tooltip.classList.contains('show')) {
 					tooltip.setAttribute('aria-hidden', 'true');
@@ -351,9 +350,7 @@ class WelcomePage extends Disposable {
 			}
 		});
 
-		tooltip.addEventListener('keydown', (e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
-
+		addStandardDisposableListener(tooltip, 'keydown', event => {
 			if (event.equals(KeyCode.Escape)) {
 				if (tooltip.classList.contains('show')) {
 					tooltip.setAttribute('aria-hidden', 'true');
@@ -361,8 +358,8 @@ class WelcomePage extends Disposable {
 				}
 			}
 			else if (event.equals(KeyCode.Tab)) {
-				e.preventDefault();
-				if (e.target === previewModalBody) {
+				EventHelper.stop(event);
+				if (event.target === previewModalBody) {
 					previewModalHeader.focus();
 				} else {
 					previewModalBody.focus();
@@ -381,15 +378,14 @@ class WelcomePage extends Disposable {
 	}
 
 	private createDropDown() {
-		const dropdownBtn = document.querySelector('#dropdown_btn');
+		const dropdownBtn = document.querySelector('#dropdown_btn') as HTMLElement;
 		const dropdown = document.querySelector('#dropdown') as HTMLInputElement;
 
-		dropdownBtn.addEventListener('click', () => {
+		addStandardDisposableListener(dropdownBtn, 'click', () => {
 			dropdown.classList.toggle('show');
 		});
 
-		dropdownBtn.addEventListener('keydown', (e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
+		addStandardDisposableListener(dropdownBtn, 'keydown', event => {
 			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 				const dropdownFirstElement = document.querySelector('#dropdown').firstElementChild.children[0] as HTMLInputElement;
 				dropdown.classList.toggle('show');
@@ -397,8 +393,7 @@ class WelcomePage extends Disposable {
 			}
 		});
 
-		dropdown.addEventListener('keydown', (e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
+		addStandardDisposableListener(dropdown, 'keydown', event => {
 			if (event.equals(KeyCode.Escape)) {
 				if (dropdown.classList.contains('show')) {
 					dropdown.classList.remove('show');
@@ -427,16 +422,15 @@ class WelcomePage extends Disposable {
 			}
 		});
 
-		dropdown.addEventListener('keydown', function (e: KeyboardEvent) {
+		addStandardDisposableListener(dropdown, 'keydown', event => {
 			const dropdownLastElement = document.querySelector('#dropdown').lastElementChild.children[0] as HTMLInputElement;
 			const dropdownFirstElement = document.querySelector('#dropdown').firstElementChild.children[0] as HTMLInputElement;
-			let event = new StandardKeyboardEvent(e);
 			if (event.equals(KeyCode.Tab)) {
-				e.preventDefault();
+				EventHelper.stop(event);
 				return;
 			}
 			else if (event.equals(KeyCode.UpArrow) || event.equals(KeyCode.LeftArrow)) {
-				if (e.target === dropdownFirstElement) {
+				if (event.target === dropdownFirstElement) {
 					dropdownLastElement.focus();
 				} else {
 					const movePrev = <HTMLElement>document.querySelector('.move:focus').parentElement.previousElementSibling.children[0] as HTMLElement;
@@ -444,7 +438,7 @@ class WelcomePage extends Disposable {
 				}
 			}
 			else if (event.equals(KeyCode.DownArrow) || event.equals(KeyCode.RightArrow)) {
-				if (e.target === dropdownLastElement) {
+				if (event.target === dropdownLastElement) {
 					dropdownFirstElement.focus();
 				} else {
 					const moveNext = <HTMLElement>document.querySelector('.move:focus').parentElement.nextElementSibling.children[0] as HTMLElement;
