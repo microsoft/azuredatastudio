@@ -115,6 +115,7 @@ export class MessagePanel extends Disposable {
 				supportDynamicHeights: true
 			});
 		this._register(this.tree.onContextMenu(e => this.onContextMenu(e)));
+		this._register(this.tree.onDidScroll(() => this.state.viewState = this.tree.getViewState()));
 		this.tree.setInput(this.model);
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
@@ -212,6 +213,7 @@ export class MessagePanel extends Disposable {
 
 	public set state(val: MessagePanelState) {
 		this._state = val;
+		this.tree.setInput(this.model, val.viewState);
 	}
 
 	public get state(): MessagePanelState {
