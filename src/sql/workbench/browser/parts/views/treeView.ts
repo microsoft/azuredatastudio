@@ -192,6 +192,7 @@ export class TreeView extends Disposable implements ITreeView {
 		this._register(this.themeService.onDidColorThemeChange(() => this.doRefresh([this.root]) /** soft refresh **/));
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('explorer.decorations')) {
+				// eslint-ignore-next-line @typescript-eslint/no-floating-promises
 				this.doRefresh([this.root]); /** soft refresh **/
 			}
 		}));
@@ -263,6 +264,7 @@ export class TreeView extends Disposable implements ITreeView {
 				this._register(this._dataProvider.onDidChangeEmpty(() => this._onDidChangeWelcomeState.fire()));
 			}
 			this.updateMessage();
+			// eslint-ignore-next-line @typescript-eslint/no-floating-promises
 			this.refresh();
 		} else {
 			this._dataProvider = undefined;
@@ -386,6 +388,7 @@ export class TreeView extends Disposable implements ITreeView {
 			}
 
 			if (this.isVisible && this.elementsToRefresh.length) {
+				// eslint-ignore-next-line @typescript-eslint/no-floating-promises
 				this.doRefresh(this.elementsToRefresh);
 				this.elementsToRefresh = [];
 			}
