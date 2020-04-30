@@ -32,4 +32,9 @@ export interface PackageConfigModel {
 	 * Package file name if package has download url
 	 */
 	fileName?: string;
+
+	/**
+	 * Package platform (Windows, Mac, Linux)
+	 */
+	platform?: string;
 }

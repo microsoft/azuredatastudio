@@ -5,7 +5,6 @@
 
 loading-spinner {
 	width: 100%;
-	display: inline-block;
 }
 
 loading-spinner .loading-spinner-container {

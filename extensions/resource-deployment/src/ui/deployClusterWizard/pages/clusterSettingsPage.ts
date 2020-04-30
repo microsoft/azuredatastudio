@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { SectionInfo, FieldType, LabelPosition } from '../../../interfaces';
-import { createSection, InputComponents, setModelValues, Validator, getInputBoxComponent, isValidSQLPassword, getInvalidSQLPasswordMessage, getPasswordMismatchMessage } from '../../modelViewUtils';
+import { createSection, InputComponents, setModelValues, Validator, getInputBoxComponent, isValidSQLPassword, getInvalidSQLPasswordMessage, getPasswordMismatchMessage, InputComponent } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 import { EOL } from 'os';
@@ -197,7 +197,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent): void => {
+				onNewInputComponentCreated: (name: string, component: InputComponent): void => {
 					self.inputComponents[name] = { component: component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
@@ -211,7 +211,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent): void => {
+				onNewInputComponentCreated: (name: string, component: InputComponent): void => {
 					self.inputComponents[name] = { component: component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
@@ -225,7 +225,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent): void => {
+				onNewInputComponentCreated: (name: string, component: InputComponent): void => {
 					self.inputComponents[name] = { component: component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {

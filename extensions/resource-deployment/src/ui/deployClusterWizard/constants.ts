@@ -69,4 +69,3 @@ export const DockerRegistry_VariableName = 'AZDATA_NB_VAR_BDC_REGISTRY';
 export const DockerImageTag_VariableName = 'AZDATA_NB_VAR_BDC_DOCKER_IMAGE_TAG';
 export const DockerUsername_VariableName = 'AZDATA_NB_VAR_BDC_DOCKER_USERNAME';
 export const DockerPassword_VariableName = 'AZDATA_NB_VAR_BDC_DOCKER_PASSWORD';
-export const ToolsInstallPath = 'AZDATA_NB_VAR_TOOLS_INSTALLATION_PATH';
