@@ -57,6 +57,14 @@ export function generateDashboardWidgetSchema(type?: 'database' | 'server', exte
 				properties: schemas,
 				minItems: 1,
 				maxItems: 1
+			},
+			showTitle: {
+				type: 'boolean',
+				description: localize('azdata.extension.contributes.widget.showTitle', "Whether to show the title of the widget, default value is true")
+			},
+			fullSize: {
+				type: 'boolean',
+				description: localize('azdata.extension.contributes.widget.fullSize', "Whether the widget is a full size widget, works only when the container type is widgets-container. When this value is true, all other widgets will be ignored. Default value is false.")
 			}
 		}
 	};
