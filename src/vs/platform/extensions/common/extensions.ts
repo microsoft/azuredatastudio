@@ -246,8 +246,7 @@ export interface IExtensionDescription extends IExtensionManifest {
 	readonly isUnderDevelopment: boolean;
 	readonly extensionLocation: URI;
 	enableProposedApi?: boolean;
-	// {{ SQL CARBON EDIT }}
-	readonly forceReload?: boolean;
+	readonly forceReload?: boolean; // {{ SQL CARBON EDIT }}
 }
 
 export function isLanguagePackExtension(manifest: IExtensionManifest): boolean {
