@@ -163,7 +163,6 @@
     }
   },
   "dependencies": {
-    "linux-release-info": "^2.0.0",
     "vscode-languageclient": "^5.3.0-next.1",
     "vscode-nls": "^3.2.1",
     "xmldom": "^0.3.0"
