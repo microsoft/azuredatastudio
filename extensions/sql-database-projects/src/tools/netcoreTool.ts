@@ -56,8 +56,10 @@ export class NetCoreTool {
 	}
 
 	private get defaultnonWindowsLocation(): string | undefined {
-		const macPath = path.join('/usr/local/share/dotnet');
-		return fs.existsSync(macPath) ? macPath : undefined;
+		const defaultNonWindowsInstallLocation = '/usr/local/share'; //default folder for net core sdk
+		return this.getDotnetPathIfPresent(defaultNonWindowsInstallLocation) ||
+			this.getDotnetPathIfPresent(os.homedir()) ||
+			undefined;
 	}
 
 	private get defaultWindowsLocation(): string | undefined {
