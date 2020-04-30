@@ -1826,9 +1826,9 @@ declare module 'azdata' {
 	}
 
 	export interface SqlAssessmentServicesProvider extends DataProvider {
-		assessmentInvoke(ownerUri: string, targetType: number): Thenable<AssessmentResult>;
-		getAssessmentItems(ownerUri: string, targetType: number): Thenable<AssessmentResult>;
-		generateAssessmentScript(items: AssessmentResultItem[]): Thenable<ResultStatus>;
+		assessmentInvoke(ownerUri: string, targetType: number): Promise<AssessmentResult>;
+		getAssessmentItems(ownerUri: string, targetType: number): Promise<AssessmentResult>;
+		generateAssessmentScript(items: AssessmentResultItem[]): Promise<ResultStatus>;
 	}
 
 	// DacFx interfaces  -----------------------------------------------------------------------

@@ -74,10 +74,10 @@ abstract class AsmtServerAction extends Action {
 
 			context.component.stopProgress(this.asmtType);
 
-			return Promise.resolve(true);
+			return true;
 		}
 
-		return Promise.resolve(false);
+		return false;
 	}
 
 	abstract getServerItems(ownerUri: string): Thenable<AssessmentResult>;
@@ -130,9 +130,9 @@ export class AsmtDatabaseSelectItemsAction extends Action {
 			let dbAsmtResults = await this._assessmentService.getAssessmentItems(context.ownerUri, AssessmentTargetType.Database);
 			context.component.showInitialResults(dbAsmtResults, AssessmentType.AvailableRules);
 			context.component.stopProgress(AssessmentType.AvailableRules);
-			return Promise.resolve(true);
+			return true;
 		}
-		return Promise.resolve(false);
+		return false;
 	}
 }
 
@@ -179,9 +179,9 @@ export class AsmtDatabaseInvokeItemsAction extends Action {
 			let dbAsmtResults = await this._assessmentService.assessmentInvoke(context.ownerUri, AssessmentTargetType.Database);
 			context.component.showInitialResults(dbAsmtResults, AssessmentType.InvokeAssessment);
 			context.component.stopProgress(AssessmentType.InvokeAssessment);
-			return Promise.resolve(true);
+			return true;
 		}
-		return Promise.resolve(false);
+		return false;
 	}
 }
 
@@ -200,9 +200,9 @@ export class AsmtExportAsScriptAction extends Action {
 		this._telemetryService.sendActionEvent(SqlAssessmentTelemetryView, AsmtExportAsScriptAction.ID);
 		if (context && context.component && context.component.resultItems) {
 			await this._assessmentService.generateAssessmentScript(context.ownerUri, context.component.resultItems);
-			return Promise.resolve(true);
+			return true;
 		}
-		return Promise.resolve(false);
+		return false;
 	}
 }
 
@@ -220,7 +220,7 @@ export class AsmtSamplesLinkAction extends Action {
 		super(AsmtSamplesLinkAction.ID, AsmtSamplesLinkAction.LABEL, AsmtSamplesLinkAction.ICON);
 	}
 
-	public run(): Promise<boolean> {
+	public async run(): Promise<boolean> {
 		this._telemetryService.sendActionEvent(SqlAssessmentTelemetryView, AsmtSamplesLinkAction.ID);
 		return this._openerService.open(URI.parse(AsmtSamplesLinkAction.configHelpUri));
 	}

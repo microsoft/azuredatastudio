@@ -875,37 +875,40 @@ export class SqlAssessmentServicesFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		let assessmentInvoke = (ownerUri: string, targetType: number): Thenable<azdata.AssessmentResult> => {
+		let assessmentInvoke = async (ownerUri: string, targetType: number): Promise<azdata.AssessmentResult> => {
 			let params: contracts.SqlAssessmentParams = { ownerUri: ownerUri, targetType: targetType };
-			return client.sendRequest(contracts.SqlAssessmentInvokeRequest.type, params).then(
-				r => r,
-				e => {
-					client.logFailedRequest(contracts.SqlAssessmentInvokeRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
+			try {
+				return client.sendRequest(contracts.SqlAssessmentInvokeRequest.type, params);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.SqlAssessmentInvokeRequest.type, e);
+			}
+
+			return undefined;
 		};
 
-		let getAssessmentItems = (ownerUri: string, targetType: number): Thenable<azdata.AssessmentResult> => {
+		let getAssessmentItems = async (ownerUri: string, targetType: number): Promise<azdata.AssessmentResult> => {
 			let params: contracts.SqlAssessmentParams = { ownerUri: ownerUri, targetType: targetType };
-			return client.sendRequest(contracts.GetSqlAssessmentItemsRequest.type, params).then(
-				r => r,
-				e => {
-					client.logFailedRequest(contracts.GetSqlAssessmentItemsRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
+			try {
+				return client.sendRequest(contracts.GetSqlAssessmentItemsRequest.type, params);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.GetSqlAssessmentItemsRequest.type, e);
+			}
+
+			return undefined;
 		};
 
-		let generateAssessmentScript = (items: azdata.AssessmentResultItem[]): Thenable<azdata.AssessmentResult> => {
+		let generateAssessmentScript = async (items: azdata.AssessmentResultItem[]): Promise<azdata.ResultStatus> => {
 			let params: contracts.GenerateSqlAssessmentScriptParams = { items: items, taskExecutionMode: azdata.TaskExecutionMode.script, targetServerName: '', targetDatabaseName: '' };
-			return client.sendRequest(contracts.GenerateSqlAssessmentScriptRequest.type, params).then(
-				r => r,
-				e => {
-					client.logFailedRequest(contracts.GenerateSqlAssessmentScriptRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
+			try {
+				return client.sendRequest(contracts.GenerateSqlAssessmentScriptRequest.type, params);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.GenerateSqlAssessmentScriptRequest.type, e);
+			}
+
+			return undefined;
 		};
 
 		return azdata.dataprotocol.registerSqlAssessmentServicesProvider({
