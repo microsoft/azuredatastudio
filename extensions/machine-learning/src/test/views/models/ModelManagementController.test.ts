@@ -161,12 +161,23 @@ describe('Model Controller', () => {
 		testContext.azureModelService.setup(x => x.getWorkspaces(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(workspaces));
 		testContext.azureModelService.setup(x => x.getModels(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(models));
 		testContext.predictService.setup(x => x.getTableColumnsList(TypeMoq.It.isAny())).returns(() => Promise.resolve(columnNames));
+		testContext.predictService.setup(x => x.serverSupportOnnxModel()).returns(() => Promise.resolve(true));
 		testContext.deployModelService.setup(x => x.loadModelParameters(TypeMoq.It.isAny())).returns(() => Promise.resolve(modelParameters));
 		testContext.azureModelService.setup(x => x.downloadModel(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('file'));
 		testContext.deployModelService.setup(x => x.downloadModel(TypeMoq.It.isAny())).returns(() => Promise.resolve('file'));
 
 		const view = await controller.predictModel();
 		should.notEqual(view, undefined);
+	});
+
+	it('Should show error message if onnx is not supported ', async function (): Promise<void> {
+		let testContext = createContext();
+		let controller = new ModelManagementController(testContext.apiWrapper.object, '', testContext.azureModelService.object, testContext.deployModelService.object, testContext.predictService.object);
+		testContext.predictService.setup(x => x.serverSupportOnnxModel()).returns(() => Promise.resolve(false));
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns(() => Promise.resolve(''));
+		const view = await controller.predictModel();
+		should.equal(view, undefined);
+		testContext.apiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
 	it('Should open edit model dialog successfully ', async function (): Promise<void> {

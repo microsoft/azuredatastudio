@@ -30,6 +30,7 @@ export const mlManageModelsCommand = 'mls.command.manageModels';
 export const mlImportModelCommand = 'mls.command.importModel';
 export const mlManagePackagesCommand = 'mls.command.managePackages';
 export const mlsDependenciesCommand = 'mls.command.dependencies';
+export const mlsEnableExternalScriptCommand = 'mls.command.enableExternalScript';
 export const notebookCommandNew = 'notebook.command.new';
 
 // Configurations
@@ -45,7 +46,7 @@ export const rPathConfigKey = 'rPath';
 //
 export const msgYes = localize('msgYes', "Yes");
 export const msgNo = localize('msgNo', "No");
-export const managePackageCommandError = localize('mls.managePackages.error', "Either no connection is available or the server does not have external script enabled.");
+export const managePackageCommandError = localize('mls.managePackages.error', "Package management is not supported for the server. Make sure you have Python or R installed.");
 export function taskFailedError(taskName: string, err: string): string { return localize('mls.taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
 export const installPackageMngDependenciesMsgTaskName = localize('mls.installPackageMngDependencies.msgTaskName', "Installing package management dependencies");
 export const installModelMngDependenciesMsgTaskName = localize('mls.installModelMngDependencies.msgTaskName', "Installing model management dependencies");

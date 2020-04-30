@@ -93,23 +93,29 @@ export class ModelManagementController extends ControllerBase {
 	/**
 	 * Opens the wizard for prediction
 	 */
-	public async predictModel(): Promise<ModelViewBase> {
+	public async predictModel(): Promise<ModelViewBase | undefined> {
 
-		let view = new PredictWizard(this._apiWrapper, this._root);
-		view.importTable = await this._registeredModelService.getRecentImportTable();
+		const onnxSupported = await this._predictService.serverSupportOnnxModel();
+		if (onnxSupported) {
+			let view = new PredictWizard(this._apiWrapper, this._root);
+			view.importTable = await this._registeredModelService.getRecentImportTable();
 
-		this.registerEvents(view);
-		view.on(LoadModelParametersEventName, async () => {
-			const modelArtifact = await view.getModelFileName();
-			await this.executeAction(view, LoadModelParametersEventName, this.loadModelParameters, this._registeredModelService,
-				modelArtifact?.filePath);
-		});
+			this.registerEvents(view);
+			view.on(LoadModelParametersEventName, async () => {
+				const modelArtifact = await view.getModelFileName();
+				await this.executeAction(view, LoadModelParametersEventName, this.loadModelParameters, this._registeredModelService,
+					modelArtifact?.filePath);
+			});
 
-		// Open view
-		//
-		await view.open();
-		await view.refresh();
-		return view;
+			// Open view
+			//
+			await view.open();
+			await view.refresh();
+			return view;
+		} else {
+			this._apiWrapper.showErrorMessage('ONNX is not supported in current server');
+			return undefined;
+		}
 	}
 
 

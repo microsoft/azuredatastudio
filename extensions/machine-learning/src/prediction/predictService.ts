@@ -35,6 +35,17 @@ export class PredictService {
 		return [];
 	}
 
+	public async serverSupportOnnxModel(): Promise<boolean> {
+		let connection = await this.getCurrentConnection();
+		if (connection) {
+			const serverInfo = await this._apiWrapper.getServerInfo(connection.connectionId);
+			// Right now only SQL Database Edge support Onnx
+			//
+			return serverInfo && serverInfo.engineEditionId === 9;
+		}
+		return false;
+	}
+
 	/**
 	 * Generates prediction script given model info and predict parameters
 	 * @param predictParams predict parameters

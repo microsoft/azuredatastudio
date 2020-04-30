@@ -110,6 +110,9 @@ export default class MainController implements vscode.Disposable {
 		this._apiWrapper.registerCommand(constants.mlsDependenciesCommand, (async () => {
 			await packageManager.installDependencies();
 		}));
+		this._apiWrapper.registerCommand(constants.mlsEnableExternalScriptCommand, (async () => {
+			await packageManager.enableExternalScript();
+		}));
 		this._apiWrapper.registerTaskHandler(constants.mlManagePackagesCommand, async () => {
 			await packageManager.managePackages();
 		});

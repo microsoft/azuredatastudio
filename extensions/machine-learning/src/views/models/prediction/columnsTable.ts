@@ -234,7 +234,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 					selectedRow.columnName = displayNameInput.value || name;
 				}
 			});
-			return [`${name}(${modelParameter.type ? modelParameter.type : constants.unsupportedModelParameterType})`, displayNameInput, nameInput];
+			return [`${name}(${modelParameter.originalType ? modelParameter.originalType : constants.unsupportedModelParameterType})`, displayNameInput, nameInput];
 		}
 
 		return [];
@@ -256,9 +256,26 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 			if (!column) {
 				column = values[0];
 			}
+			const currentColumn = columns.find(x => x.columnName === column?.name);
 			nameInput.value = column;
 
 			this._parameters.push({ columnName: column.name, paramName: name, paramType: modelParameter.type });
+			const inputContainer = this._modelBuilder.flexContainer().withLayout({
+				flexFlow: 'row',
+				width: this.componentMaxLength + 20,
+				justifyContent: 'flex-start'
+			}).component();
+			const warningButton = this.createWarningButton();
+			warningButton.onDidClick(() => {
+			});
+
+			const css = {
+				'padding': '0px',
+				'padding-right': '5px',
+				//'padding-top': '5px',
+				//'height': '10px',
+				'margin': '0px'
+			};
 
 			nameInput.onValueChanged(() => {
 				const selectedColumn = nameInput.value;
@@ -268,12 +285,32 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				if (selectedRow) {
 					selectedRow.columnName = value || '';
 				}
+
+				const currentColumn = columns.find(x => x.columnName === value);
+				if (currentColumn && modelParameter.type === currentColumn?.dataType) {
+					inputContainer.removeItem(warningButton);
+				} else {
+					inputContainer.addItem(warningButton, {
+						CSSStyles: css
+					});
+				}
 			});
+
 			const label = this._modelBuilder.inputBox().withProperties({
-				value: `${name}(${modelParameter.type ? modelParameter.type : constants.unsupportedModelParameterType})`,
+				value: `${name}(${modelParameter.originalType ? modelParameter.originalType : constants.unsupportedModelParameterType})`,
 				enabled: false,
 				width: this.componentMaxLength
 			}).component();
+
+
+			inputContainer.addItem(label, {
+				CSSStyles: css
+			});
+			if (currentColumn && modelParameter.type !== currentColumn?.dataType) {
+				inputContainer.addItem(warningButton, {
+					CSSStyles: css
+				});
+			}
 			const image = this._modelBuilder.image().withProperties({
 				width: 50,
 				height: 50,
@@ -285,10 +322,51 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				iconHeight: 20,
 				title: 'maps'
 			}).component();
-			return [nameInput, image, label];
+			return [nameInput, image, inputContainer];
 		}
 
 		return [];
+	}
+
+	/*
+	private createWarningInfo(): azdata.Component {
+		const warningInfo = this._modelBuilder.text().withProperties({
+			value: 'The data type of the source table column does not match the required input field’s type.'
+		}).component();
+		const warningTitle = this._modelBuilder.text().withProperties({
+			value: 'Differences in data type'
+		}).component();
+		const warningDiv = this._modelBuilder.flexContainer().withItems([
+			warningTitle,
+			warningInfo
+		], {
+			CSSStyles: {
+				'padding-bottom': '10px'
+			}
+		}).withLayout({
+			flexFlow: 'column',
+			justifyContent: 'flex-start',
+			width: 200,
+			height: 100
+
+		}).component();
+		return warningDiv;
+	}
+	*/
+
+	private createWarningButton(): azdata.ButtonComponent {
+		const warningButton = this._modelBuilder.button().withProperties({
+			width: '10px',
+			height: '10px',
+			iconPath: {
+				dark: this.asAbsolutePath('images/dark/warning_notification_inverse.svg'),
+				light: this.asAbsolutePath('images/light/warning_notification.svg'),
+			},
+			iconHeight: '10px',
+			iconWidth: '10px'
+		}).component();
+
+		return warningButton;
 	}
 
 	/**

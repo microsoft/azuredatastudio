@@ -61,6 +61,9 @@ export class ModelPythonClient {
 			'import json',
 			`onnx_model_path = '${modelFolderPath}'`,
 			`onnx_model = onnx.load_model(onnx_model_path)`,
+			`type_list = ['undefined',
+			'float', 'uint8', 'int8', 'uint16', 'int16', 'int32', 'int64', 'string', 'bool', 'double',
+			'uint32', 'uint64', 'complex64', 'complex128', 'bfloat16']`,
 			`type_map = {
 				onnx.TensorProto.DataType.FLOAT: 'real',
 				onnx.TensorProto.DataType.UINT8: 'tinyint',
@@ -76,13 +79,14 @@ export class ModelPythonClient {
 			`def addParameters(list, paramType):
 			for id, p in enumerate(list):
 				p_type = ''
-
-				if p.type.tensor_type.elem_type in type_map:
-					p_type = type_map[p.type.tensor_type.elem_type]
-
+				value = p.type.tensor_type.elem_type
+				if value in type_map:
+					p_type = type_map[value]
+				name = type_list[value]
 				parameters[paramType].append({
 					'name': p.name,
-					'type': p_type
+					'type': p_type,
+					'originalType': name
 				})`,
 
 			'addParameters(onnx_model.graph.input, "inputs")',

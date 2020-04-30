@@ -60,6 +60,7 @@ export interface ImportedModel extends ImportedModelDetails {
 export interface ModelParameter {
 	name: string;
 	type: string;
+	originalType?: string;
 }
 
 export interface ModelParameters {

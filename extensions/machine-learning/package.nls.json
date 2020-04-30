@@ -15,5 +15,6 @@
 	"mls.enablePython.description": "Enable Python package management.",
 	"mls.enableR.description": "Enable R package management.",
 	"mls.rPath.description": "Local path to a preexisting R installation used by Machine Learning.",
-	"mls.command.dependencies": "Install Machine Learning Dependencies"
+	"mls.command.dependencies": "Install Machine Learning Dependencies",
+	"mls.command.enableExternalScript": "Enable External script"
 }
