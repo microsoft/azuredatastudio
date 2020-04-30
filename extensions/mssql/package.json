@@ -366,6 +366,34 @@
               "displayName": "%onprem.serverProperties.osVersion%",
               "value": "osVersion"
             }
+          ],
+          "databasesListProperties": [
+            {
+              "displayName": "%databasesListProperties.name%",
+              "value": "name",
+              "widthWeight": 50
+            },
+            {
+              "displayName": "%databasesListProperties.state%",
+              "value": "state",
+              "widthWeight": 10
+            },
+            {
+              "displayName": "%databasesListProperties.size%",
+              "value": "sizeInMB",
+              "widthWeight": 10
+            },
+            {
+              "displayName": "%databasesListProperties.lastBackup%",
+              "value": "lastBackup",
+              "widthWeight": 30
+            }
+          ],
+          "objectsListProperties": [
+            {
+              "displayName": "%objectsListProperties.name%",
+              "value": "name"
+            }
           ]
         },
         {
@@ -404,6 +432,29 @@
               "displayName": "%cloud.serverProperties.serverEdition%",
               "value": "serverEdition"
             }
+          ],
+          "databasesListProperties": [
+            {
+              "displayName": "%databasesListProperties.name%",
+              "value": "name",
+              "widthWeight": 60
+            },
+            {
+              "displayName": "%databasesListProperties.state%",
+              "value": "state",
+              "widthWeight": 20
+            },
+            {
+              "displayName": "%databasesListProperties.size%",
+              "value": "sizeInMB",
+              "widthWeight": 20
+            }
+          ],
+          "objectsListProperties": [
+            {
+              "displayName": "%objectsListProperties.name%",
+              "value": "name"
+            }
           ]
         },
         {
@@ -433,6 +484,29 @@
             {
               "displayName": "%cloud.serverProperties.serverEdition%",
               "value": "serverEdition"
+            }
+          ],
+          "databasesListProperties": [
+            {
+              "displayName": "%databasesListProperties.name%",
+              "value": "name",
+              "widthWeight": 60
+            },
+            {
+              "displayName": "%databasesListProperties.state%",
+              "value": "state",
+              "widthWeight": 20
+            },
+            {
+              "displayName": "%databasesListProperties.size%",
+              "value": "sizeInMB",
+              "widthWeight": 20
+            }
+          ],
+          "objectsListProperties": [
+            {
+              "displayName": "%objectsListProperties.name%",
+              "value": "name"
             }
           ]
         }

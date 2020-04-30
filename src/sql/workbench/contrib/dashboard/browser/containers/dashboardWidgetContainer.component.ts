@@ -71,6 +71,8 @@ export class DashboardWidgetContainer extends DashboardTab implements AfterConte
 	public layout() {
 		if (!this._fullSizeWidget) {
 			this._widgetContent.layout();
+		} else {
+			this._widgetWrapper.layout();
 		}
 	}
 

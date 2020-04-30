@@ -6,28 +6,32 @@
 import 'vs/css!./media/explorerWidget';
 
 import { Component, Inject, forwardRef, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
-
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
-import { ExplorerFilter, ExplorerRenderer, ExplorerDataSource, ExplorerController, ExplorerModel } from './explorerTree';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-
+//import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+//import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { InputBox, IInputOptions } from 'vs/base/browser/ui/inputbox/inputBox';
-import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import * as nls from 'vs/nls';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import { getContentHeight } from 'vs/base/browser/dom';
+//import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
 import { Delayer } from 'vs/base/common/async';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { ObjectMetadataWrapper } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/objectMetadataWrapper';
 import { status, alert } from 'vs/base/browser/ui/aria/aria';
 import { isStringArray } from 'vs/base/common/types';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
+import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
+import { Table } from 'sql/base/browser/ui/table/table';
+import { DatabaseInfo } from 'azdata';
+import { getFlavor, ListViewProperty } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
+import { ILogService } from 'vs/platform/log/common/log';
+import * as DOM from 'vs/base/browser/dom';
+import { debounce } from 'vs/base/common/decorators';
+
+const NameProperty: string = 'name';
+const NamePropertyDisplayText: string = nls.localize('dashboard.explorer.namePropertyDisplayValue', "Name");
 
 @Component({
 	selector: 'explorer-widget',
@@ -35,30 +39,21 @@ import { isStringArray } from 'vs/base/common/types';
 })
 export class ExplorerWidget extends DashboardWidget implements IDashboardWidget, OnInit {
 	private _input: InputBox;
-	private _tree: Tree;
+	private _table: Table<Slick.SlickData>;
 	private _filterDelayer = new Delayer<void>(200);
-	private _treeController = this.instantiationService.createInstance(ExplorerController,
-		this._bootstrap.getUnderlyingUri(),
-		this._bootstrap.connectionManagementService,
-		this._router,
-		this._bootstrap
-	);
-	private _treeRenderer = new ExplorerRenderer();
-	private _treeDataSource = new ExplorerDataSource();
-	private _treeFilter = new ExplorerFilter();
+	private _propertyList: ListViewProperty[];
 
 	@ViewChild('input') private _inputContainer: ElementRef;
 	@ViewChild('table') private _tableContainer: ElementRef;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private readonly _bootstrap: CommonServiceInterface,
-		@Inject(forwardRef(() => Router)) private readonly _router: Router,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
 		@Inject(forwardRef(() => ElementRef)) private readonly _el: ElementRef,
 		@Inject(IWorkbenchThemeService) private readonly themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private readonly contextViewService: IContextViewService,
-		@Inject(IInstantiationService) private readonly instantiationService: IInstantiationService,
-		@Inject(ICapabilitiesService) private readonly capabilitiesService: ICapabilitiesService,
+		@Inject(ILogService) private readonly logService: ILogService,
+		//@Inject(ICapabilitiesService) private readonly capabilitiesService: ICapabilitiesService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
 	) {
 		super(changeRef);
@@ -79,15 +74,9 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
 		this._register(this._input.onDidChange(e => {
 			this._filterDelayer.trigger(async () => {
-				this._treeFilter.filterString = e;
-				await this._tree.refresh();
-				const navigator = this._tree.getNavigator();
-				let item = navigator.next();
-				let count = 0;
-				while (item) {
-					count++;
-					item = navigator.next();
-				}
+				// this._treeFilter.filterString = e;
+				// await this._tree.refresh();
+				const count = this._table.getData().getLength();
 				let message: string;
 				if (count === 0) {
 					message = nls.localize('explorerSearchNoMatchResultMessage', "No matching item found");
@@ -99,17 +88,15 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 				status(message);
 			});
 		}));
-		this._tree = new Tree(this._tableContainer.nativeElement, {
-			controller: this._treeController,
-			dataSource: this._treeDataSource,
-			filter: this._treeFilter,
-			renderer: this._treeRenderer
-		}, { horizontalScrollMode: ScrollbarVisibility.Auto });
-		this._tree.layout(getContentHeight(this._tableContainer.nativeElement));
+		this._table = new Table(this._tableContainer.nativeElement, undefined, { forceFitColumns: true });
+		this._table.setSelectionModel(new RowSelectionModel());
 		this._register(this._input);
 		this._register(attachInputBoxStyler(this._input, this.themeService));
-		this._register(this._tree);
-		this._register(attachListStyler(this._tree, this.themeService));
+		this._register(this._table);
+		this._register(attachTableStyler(this._table, this.themeService));
+		this._register(DOM.addDisposableListener(window, DOM.EventType.MOUSE_MOVE, e => {
+			this.handleSizeChangeEvent();
+		}));
 	}
 
 	private init(): void {
@@ -121,8 +108,22 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 					if (data) {
 						const objectData = ObjectMetadataWrapper.createFromObjectMetadata(data.objectMetadata);
 						objectData.sort(ObjectMetadataWrapper.sort);
-						this._treeDataSource.data = objectData;
-						this._tree.setInput(new ExplorerModel());
+						const columns = ['name', 'type'];
+						this._table.columns = columns.map(column => {
+							return <Slick.Column<Slick.SlickData>>{
+								id: column,
+								field: column,
+								name: column,
+								sortable: true
+							};
+						});
+						this._table.setData(objectData.map(obj => {
+							return {
+								name: obj.name,
+								type: obj.metadataTypeName
+							};
+						}));
+						this._table.updateRowCount();
 						this.setLoadingStatus(false);
 					}
 				},
@@ -131,21 +132,36 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 				}
 			)));
 		} else {
-			const currentProfile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
+			const serverInfo = this._bootstrap.connectionManagementService.connectionInfo.serverInfo;
 			this._register(subscriptionToDisposable(this._bootstrap.metadataService.databases.subscribe(
 				data => {
 					// Handle the case where there is no metadata service
 					data = data || [];
-					if (!isStringArray(data)) {
-						data = data.map(item => item.options['name'] as string);
+					if (isStringArray(data)) {
+						data = data.map(item => {
+							const dbInfo: DatabaseInfo = { options: {} };
+							dbInfo.options[NameProperty] = item;
+							return dbInfo;
+						});
 					}
-					const profileData = data.map(d => {
-						const profile = new ConnectionProfile(this.capabilitiesService, currentProfile);
-						profile.databaseName = d;
-						return profile;
-					});
-					this._treeDataSource.data = profileData;
-					this._tree.setInput(new ExplorerModel());
+					// const profileData = data.map(d => {
+					// 	const profile = new ConnectionProfile(this.capabilitiesService, currentProfile);
+					// 	profile.databaseName = d.options['name'];
+					// 	return profile;
+					// });
+					const flavor = getFlavor(serverInfo, this.logService, this._bootstrap.connectionManagementService.connectionInfo.providerId);
+					if (flavor) {
+						this._propertyList = flavor.databasesListProperties;
+					} else {
+						this._propertyList = [{
+							displayName: NamePropertyDisplayText,
+							value: NameProperty
+						}];
+					}
+					const tableData = data.map(item => item.options);
+					this._table.columns = this.columnDefinitions;
+					this._table.setData(tableData);
+					this._table.updateRowCount();
 					this.setLoadingStatus(false);
 				},
 				error => {
@@ -160,13 +176,50 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	}
 
 	public layout(): void {
+		this.setTableDimension();
 		if (this._inited) {
-			this._tree.layout(getContentHeight(this._tableContainer.nativeElement));
+			this._table.columns = this.columnDefinitions;
 		}
+	}
+
+	@debounce(100)
+	private handleSizeChangeEvent(): void {
+		this.setTableDimension();
+	}
+
+	private setTableDimension(): void {
+		if (this._inited) {
+			this._table.layout(new DOM.Dimension(
+				DOM.getContentWidth(this._tableContainer.nativeElement),
+				DOM.getContentHeight(this._tableContainer.nativeElement)));
+		}
+	}
+
+	private get columnDefinitions(): Slick.Column<Slick.SlickData>[] {
+		const initialWidth = DOM.getContentWidth(this._tableContainer.nativeElement);
+		let totalColumnWidthWeight: number = 0;
+		this._propertyList.forEach(p => {
+			if (p.widthWeight) {
+				totalColumnWidthWeight += p.widthWeight;
+			}
+		});
+		return this._propertyList.map(property => {
+			return <Slick.Column<Slick.SlickData>>{
+				id: property.value,
+				field: property.value,
+				name: property.displayName,
+				sortable: false,
+				width: property.widthWeight ? initialWidth * (property.widthWeight / totalColumnWidthWeight) : undefined
+			};
+		});
 	}
 
 	private showErrorMessage(message: string): void {
 		(<HTMLElement>this._el.nativeElement).innerText = message;
 		alert(message);
+	}
+
+	public getTableHeight(): string {
+		return `calc(100% - ${this._input.height}px)`;
 	}
 }
