@@ -15,7 +15,7 @@ import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeServic
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { WorkbenchDataTree } from 'vs/platform/list/browser/listService';
 import { isArray, isString } from 'vs/base/common/types';
-import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { Disposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import { $, Dimension, createStyleSheet, addStandardDisposableGenericMouseDownListner } from 'vs/base/browser/dom';
 import { resultsErrorColor } from 'sql/platform/theme/common/colors';
 import { MessagePanelState } from 'sql/workbench/common/editor/query/messagePanelState';
@@ -326,7 +326,8 @@ class BatchMessageRenderer implements ITreeRenderer<IResultMessageIntern, void, 
 		}
 	}
 
-	disposeTemplate(templateData: IMessageTemplate | IBatchTemplate): void {
+	disposeTemplate(templateData: IBatchTemplate): void {
+		dispose(templateData.disposable);
 	}
 }
 
