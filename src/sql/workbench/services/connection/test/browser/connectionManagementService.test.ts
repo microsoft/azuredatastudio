@@ -441,7 +441,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
-	test('Changing connection profile name for same URI should persist after edit', () => {
+	test('Edit Connection - Changing connection profile name for same URI should persist after edit', () => {
 		let profile = connectionProfile;
 		let uri1 = 'test_uri1';
 		let newname = 'connection renamed';
@@ -478,7 +478,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
-	test('Connecting a different URI with same profile via edit should not change profile ID.', () => {
+	test('Edit Connection - Connecting a different URI with same profile via edit should not change profile ID.', () => {
 		let profile = connectionProfile;
 		profile.id = '0451';
 		let uri1 = 'test_uri1';

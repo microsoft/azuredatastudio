@@ -229,19 +229,20 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Opens the edit connection dialog
 	 * @param model the existing connection profile to edit on.
 	 */
-	public showEditConnectionDialog(model: interfaces.IConnectionProfile): Promise<void> {
+	public async showEditConnectionDialog(model: interfaces.IConnectionProfile): Promise<void> {
 		if (!model) {
-			return Promise.reject();
+			throw new Error('Connection Profile is undefined');
 		}
 		let params = {
 			connectionType: ConnectionType.default,
 			isEditConnection: true
 		};
 
-		return this._connectionDialogService.showDialog(this, params, model).catch(dialogError => {
+		try {
+			return await this._connectionDialogService.showDialog(this, params, model);
+		} catch (dialogError) {
 			this._logService.warn('failed to open the connection dialog. error: ' + dialogError);
-			throw dialogError;
-		});
+		}
 	}
 
 	/**
@@ -559,7 +560,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions) {
+	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {
 		let connectionManagementInfo = this._connectionStatusManager.findConnection(uri);
 		if (options.showDashboard) {
 			this.showDashboardForConnectionManagementInfo(connectionManagementInfo.connectionProfile);
@@ -906,8 +907,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	private async saveToSettings(id: string, connection: interfaces.IConnectionProfile, matcher?: interfaces.ProfileMatcher): Promise<string> {
 		const savedProfile = await this._connectionStore.saveProfile(connection, undefined, matcher);
-		let newId = this._connectionStatusManager.updateConnectionProfile(savedProfile, id);
-		return newId;
+		return this._connectionStatusManager.updateConnectionProfile(savedProfile, id);
 	}
 
 	/**

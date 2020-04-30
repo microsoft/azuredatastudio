@@ -185,7 +185,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 					profile.savePassword = true;
 				}
 
-
 				this.handleDefaultOnConnect(params, profile).catch(err => onUnexpectedError(err));
 			} else {
 				profile.serverName = trim(profile.serverName);
@@ -378,9 +377,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 		let newProfile = new ConnectionProfile(this._capabilitiesService, model || providerName);
 		newProfile.saveProfile = true;
-		if (model && !model.id) {
-			newProfile.generateNewId();
-		}
+		newProfile.generateNewId();
 		// If connecting from a query editor set "save connection" to false
 		if (this._params && this._params.input && this._params.connectionType === ConnectionType.editor) {
 			newProfile.saveProfile = false;

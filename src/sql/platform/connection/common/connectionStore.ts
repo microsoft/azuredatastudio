@@ -24,7 +24,6 @@ const CRED_ID_PREFIX = 'id:';
 const CRED_ITEMTYPE_PREFIX = 'itemtype:';
 const CRED_PROFILE_USER = 'Profile';
 
-
 /**
  * Manages the connections list including saved profiles and the most recently used connections
  *
