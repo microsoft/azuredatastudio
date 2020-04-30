@@ -458,7 +458,7 @@ export abstract class ViewPane extends Pane implements IView {
 
 				if (linkedText.nodes.length === 1 && typeof linkedText.nodes[0] !== 'string') {
 					const node = linkedText.nodes[0];
-					const button = new Button(this.viewWelcomeContainer, { title: node.title });
+					const button = new Button(this.viewWelcomeContainer, { title: node.title, supportCodicons: true });
 					button.label = node.label;
 					button.onDidClick(_ => {
 						this.telemetryService.publicLog2<{ viewId: string, uri: string }, WelcomeActionClassification>('views.welcomeAction', { viewId: this.id, uri: node.href });
@@ -878,8 +878,8 @@ export class ViewPaneContainer extends Component implements IViewPaneContainer {
 		}));
 
 		this._register(this.onDidSashChange(() => this.saveViewSizes()));
-		this.viewContainerModel.onDidAddVisibleViewDescriptors(added => this.onDidAddViewDescriptors(added));
-		this.viewContainerModel.onDidRemoveVisibleViewDescriptors(removed => this.onDidRemoveViewDescriptors(removed));
+		this._register(this.viewContainerModel.onDidAddVisibleViewDescriptors(added => this.onDidAddViewDescriptors(added)));
+		this._register(this.viewContainerModel.onDidRemoveVisibleViewDescriptors(removed => this.onDidRemoveViewDescriptors(removed)));
 		const addedViews: IAddedViewDescriptorRef[] = this.viewContainerModel.visibleViewDescriptors.map((viewDescriptor, index) => {
 			const size = this.viewContainerModel.getSize(viewDescriptor.id);
 			const collapsed = this.viewContainerModel.isCollapsed(viewDescriptor.id);
@@ -1140,15 +1140,17 @@ export class ViewPaneContainer extends Component implements IViewPaneContainer {
 		});
 	}
 
-	openView(id: string, focus?: boolean): IView {
+	openView(id: string, focus?: boolean): IView | undefined {
 		let view = this.getView(id);
 		if (!view) {
 			this.toggleViewVisibility(id);
 		}
-		view = this.getView(id)!;
-		view.setExpanded(true);
-		if (focus) {
-			view.focus();
+		view = this.getView(id);
+		if (view) {
+			view.setExpanded(true);
+			if (focus) {
+				view.focus();
+			}
 		}
 		return view;
 	}
@@ -1199,17 +1201,19 @@ export class ViewPaneContainer extends Component implements IViewPaneContainer {
 			panesToRemove.push(this.panes[index]);
 		}
 		this.removePanes(panesToRemove);
-		dispose(panesToRemove);
 	}
 
 	protected toggleViewVisibility(viewId: string): void {
-		const visible = !this.viewContainerModel.isVisible(viewId);
-		type ViewsToggleVisibilityClassification = {
-			viewId: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-			visible: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-		};
-		this.telemetryService.publicLog2<{ viewId: String, visible: boolean }, ViewsToggleVisibilityClassification>('views.toggleVisibility', { viewId, visible });
-		this.viewContainerModel.setVisible(viewId, visible);
+		// Check if view is active
+		if (this.viewContainerModel.activeViewDescriptors.some(viewDescriptor => viewDescriptor.id === viewId)) {
+			const visible = !this.viewContainerModel.isVisible(viewId);
+			type ViewsToggleVisibilityClassification = {
+				viewId: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
+				visible: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
+			};
+			this.telemetryService.publicLog2<{ viewId: String, visible: boolean }, ViewsToggleVisibilityClassification>('views.toggleVisibility', { viewId, visible });
+			this.viewContainerModel.setVisible(viewId, visible);
+		}
 	}
 
 	private addPane(pane: ViewPane, size: number, index = this.paneItems.length - 1): void {
@@ -1234,8 +1238,8 @@ export class ViewPaneContainer extends Component implements IViewPaneContainer {
 			leftBorder: PANEL_BORDER,
 			dropBackground: SIDE_BAR_DRAG_AND_DROP_BACKGROUND
 		}, pane);
-		const disposable = combinedDisposable(onDidFocus, onDidChangeTitleArea, paneStyler, onDidChange, onDidChangeVisibility);
-		const paneItem: IViewPaneItem = { pane: pane, disposable };
+		const disposable = combinedDisposable(pane, onDidFocus, onDidChangeTitleArea, paneStyler, onDidChange, onDidChangeVisibility);
+		const paneItem: IViewPaneItem = { pane, disposable };
 
 		this.paneItems.splice(index, 0, paneItem);
 		assertIsDefined(this.paneview).addPane(pane, size, index);

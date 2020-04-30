@@ -1,0 +1,12 @@
+name: 'PR Labeler'
+description: 'Automatically add a Label to a PR'
+inputs:
+  token:
+    description: GitHub token with issue, comment, and label read/write permissions
+    default: ${{ github.token }}
+  label:
+    description: Github label to add to the PR
+    required: true
+runs:
+  using: 'node12'
+  main: 'index.js'

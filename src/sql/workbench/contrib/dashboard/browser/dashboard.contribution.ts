@@ -57,7 +57,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	when: ContextKeyExpr.or(ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Server')), ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Database')))
 });
 
-const dashboardEditorDescriptor = new EditorDescriptor(
+const dashboardEditorDescriptor = EditorDescriptor.create(
 	DashboardEditor,
 	DashboardEditor.ID,
 	localize('dashboard.editor.label', "Dashboard")
