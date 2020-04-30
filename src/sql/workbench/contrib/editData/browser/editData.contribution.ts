@@ -12,7 +12,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 
 // Editor
-const editDataEditorDescriptor = new EditorDescriptor(
+const editDataEditorDescriptor = EditorDescriptor.create(
 	EditDataEditor,
 	EditDataEditor.ID,
 	'EditData'
@@ -22,7 +22,7 @@ Registry.as<IEditorRegistry>(Extensions.Editors)
 	.registerEditor(editDataEditorDescriptor, [new SyncDescriptor(EditDataInput)]);
 
 // Editor
-const editDataResultsEditorDescriptor = new EditorDescriptor(
+const editDataResultsEditorDescriptor = EditorDescriptor.create(
 	EditDataResultsEditor,
 	EditDataResultsEditor.ID,
 	'EditDataResults'

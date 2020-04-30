@@ -6,12 +6,13 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeployClusterWizard } from '../deployClusterWizard';
-import { SectionInfo, FieldType, LabelPosition } from '../../../interfaces';
+import { FieldType, LabelPosition, SectionInfo } from '../../../interfaces';
+import { createSection, getDropdownComponent, InputComponents, InputComponent, setModelValues, Validator } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
-import { createSection, InputComponents, setModelValues, Validator, getDropdownComponent, MissingRequiredInformationErrorMessage } from '../../modelViewUtils';
-import { SubscriptionId_VariableName, ResourceGroup_VariableName, Location_VariableName, AksName_VariableName, VMCount_VariableName, VMSize_VariableName } from '../constants';
+import { AksName_VariableName, Location_VariableName, ResourceGroup_VariableName, SubscriptionId_VariableName, VMCount_VariableName, VMSize_VariableName } from '../constants';
+import { DeployClusterWizard } from '../deployClusterWizard';
 const localize = nls.loadMessageBundle();
+const MissingRequiredInformationErrorMessage = localize('deployCluster.MissingRequiredInfoError', "Please fill out the required fields marked with red asterisks.");
 
 export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 	private inputComponents: InputComponents = {};
@@ -136,7 +137,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, component: azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent): void => {
+				onNewInputComponentCreated: (name: string, component: InputComponent): void => {
 					self.inputComponents[name] = { component: component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {

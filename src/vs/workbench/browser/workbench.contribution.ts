@@ -32,6 +32,11 @@ import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuratio
 				'description': nls.localize('showEditorTabs', "Controls whether opened editors should show in tabs or not."),
 				'default': true
 			},
+			'workbench.editor.scrollToSwitchTabs': {
+				'type': 'boolean',
+				'description': nls.localize({ comment: ['This is the description for a setting. Values surrounded by single quotes are not to be translated.'], key: 'scrollToSwitchTabs' }, "Controls wether scrolling over tabs will open them or not. By default tabs will only reveal upon scrolling, but not open. You can press and hold the Shift-key while scrolling to change this behaviour for that duration."),
+				'default': false
+			},
 			'workbench.editor.highlightModifiedTabs': {
 				'type': 'boolean',
 				'description': nls.localize('highlightModifiedTabs', "Controls whether a top border is drawn on modified (dirty) editor tabs or not."),

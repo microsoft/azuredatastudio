@@ -237,7 +237,7 @@
         ],
         "providers": [
           {
-            "wizard": {
+            "bdcWizard": {
               "type": "new-aks",
               "notebook": "%bdc-2019-aks-notebook%"
             },
@@ -257,7 +257,7 @@
             "when": "target=new-aks&&version=bdc2019"
           },
           {
-            "wizard": {
+            "bdcWizard": {
               "type": "existing-aks",
               "notebook": "%bdc-2019-existing-aks-notebook%"
             },
@@ -272,7 +272,7 @@
             "when": "target=existing-aks&&version=bdc2019"
           },
           {
-            "wizard": {
+            "bdcWizard": {
               "type": "existing-kubeadm",
               "notebook": "%bdc-2019-existing-kubeadm-notebook%"
             },
@@ -362,9 +362,6 @@
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
-  },
-  "resolutions": {
-      "esprima": "^4.0.0"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.6"
   }
 }

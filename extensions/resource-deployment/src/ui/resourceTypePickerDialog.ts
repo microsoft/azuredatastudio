@@ -173,24 +173,26 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 		this._optionsContainer.clearItems();
 		this._optionDropDownMap.clear();
-		resourceType.options.forEach(option => {
-			const optionLabel = this._view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-				value: option.displayName
-			}).component();
-			optionLabel.width = '150px';
+		if (resourceType.options) {
+			resourceType.options.forEach(option => {
+				const optionLabel = this._view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+					value: option.displayName
+				}).component();
+				optionLabel.width = '150px';
 
-			const optionSelectBox = this._view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
-				values: option.values,
-				value: option.values[0],
-				width: '300px',
-				ariaLabel: option.displayName
-			}).component();
+				const optionSelectBox = this._view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+					values: option.values,
+					value: option.values[0],
+					width: '300px',
+					ariaLabel: option.displayName
+				}).component();
 
-			this._toDispose.push(optionSelectBox.onValueChanged(() => { this.updateToolsDisplayTable(); }));
-			this._optionDropDownMap.set(option.name, optionSelectBox);
-			const row = this._view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-			this._optionsContainer.addItem(row);
-		});
+				this._toDispose.push(optionSelectBox.onValueChanged(() => { this.updateToolsDisplayTable(); }));
+				this._optionDropDownMap.set(option.name, optionSelectBox);
+				const row = this._view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+				this._optionsContainer.addItem(row);
+			});
+		}
 		this.updateToolsDisplayTable();
 	}
 
@@ -206,6 +208,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		}
 		this._installToolButton.hidden = true;
 		if (this.toolRequirements.length === 0) {
+			this._toolsLoadingComponent.loading = false;
 			this._dialogObject.okButton.enabled = true;
 			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
 			this._tools = [];

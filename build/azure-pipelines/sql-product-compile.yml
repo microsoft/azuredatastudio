@@ -104,6 +104,20 @@ steps:
   displayName: Compile
   condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
 
+- script: |
+    set -e
+
+    VERSION=$(node -p "require(\"./package.json\").version")
+
+    echo -e "{  \"version\": \"$VERSION\", \"quality\": \"$VSCODE_QUALITY\", \"commit\": \"$BUILD_SOURCEVERSION\" }" > ".build/version.json"
+
+    node build/azure-pipelines/common/copyArtifacts.js
+  displayName: Write Version Information
+  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+
 - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
   inputs:
     keyfile: 'build/.cachesalt, .build/commit, .build/quality'

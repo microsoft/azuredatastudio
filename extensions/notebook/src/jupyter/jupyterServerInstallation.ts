@@ -332,6 +332,12 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let env = Object.assign({}, process.env);
 		delete env['Path']; // Delete extra 'Path' variable for Windows, just in case.
 		env['PATH'] = this.pythonEnvVarPath;
+
+		// We don't want Jupyter to know about DOTNET_ROOT, as it's been modified by the liveshare experience
+		// Without this, won't be able to find the ASP.NET bits
+		if (process.env['DOTNET_ROOT']) {
+			delete env['DOTNET_ROOT'];
+		}
 		this.execOptions = {
 			env: env
 		};
@@ -625,7 +631,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let versionSpecifier = useMinVersion ? '>=' : '==';
 		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
 		let condaExe = this.getCondaExePath();
-		let cmd = `"${condaExe}" install -y ${packagesStr}`;
+		let cmd = `"${condaExe}" install -c conda-forge -y ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
 

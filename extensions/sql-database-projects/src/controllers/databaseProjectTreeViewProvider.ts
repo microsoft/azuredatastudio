@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 
-import { BaseProjectTreeItem, MessageTreeItem } from '../models/tree/baseTreeItem';
+import { BaseProjectTreeItem, MessageTreeItem, SpacerTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { Project } from '../models/project';
 
@@ -39,19 +39,23 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		return element.children;
 	}
 
+	/**
+	 * Constructs a new set of root nodes from a list of Projects
+	 * @param projects List of Projects
+	 */
 	public load(projects: Project[]) {
-		if (projects.length === 0) {
-			vscode.window.showErrorMessage(constants.noSqlProjFiles);
-			return;
-		}
-
 		let newRoots: BaseProjectTreeItem[] = [];
 
 		for (const proj of projects) {
 			newRoots.push(new ProjectRootTreeItem(proj));
+			newRoots.push(SpacerTreeItem);
+		}
+
+		if (newRoots[newRoots.length - 1] === SpacerTreeItem) {
+			newRoots.pop(); // get rid of the trailing SpacerTreeItem
 		}
 
 		this.roots = newRoots;
-		this._onDidChangeTreeData.fire();
+		this._onDidChangeTreeData.fire(undefined);
 	}
 }

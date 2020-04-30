@@ -28,7 +28,6 @@ const REPO_ROOT_PATH = path.join(__dirname, '../..');
 function log(prefix, message) {
     fancyLog(ansiColors.cyan('[' + prefix + ']'), message);
 }
-// {{SQL CARBON EDIT}}
 function loaderConfig(emptyPaths) {
     const result = {
         paths: {
@@ -70,12 +69,7 @@ function loader(src, bundledFileHeader, bundleLoader) {
             this.emit('data', data);
         }
     }))
-        .pipe(util.loadSourcemaps())
-        .pipe(concat('vs/loader.js'))
-        .pipe(es.mapSync(function (f) {
-        f.sourceMap.sourceRoot = util.toFileUri(path.join(REPO_ROOT_PATH, 'src'));
-        return f;
-    })));
+        .pipe(concat('vs/loader.js')));
 }
 function toConcatStream(src, bundledFileHeader, sources, dest) {
     const useSourcemaps = /\.js$/.test(dest) && !/\.nls\.js$/.test(dest);

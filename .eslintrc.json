@@ -485,7 +485,8 @@
                     "**/{vs,sql}/workbench/services/**/common/**",
                     "**/{vs,sql}/workbench/api/**/common/**",
                     "vs/workbench/contrib/files/common/editors/fileEditorInput", // this should be fine, it only accesses constants from contrib
-                    "vscode-textmate"
+                    "vscode-textmate",
+                    "vscode-oniguruma"
                 ]
             },
             {
@@ -519,7 +520,8 @@
                     "onigasm-umd",
                     "sanitize-html",
                     "@angular/*",
-                    "rxjs/**"
+                    "rxjs/**",
+                    "vscode-oniguruma"
                 ]
             },
             {
@@ -641,7 +643,7 @@
 					"rxjs/**",
 					"ng2-charts",
 					"chart.js",
-					"plotly.js-dist",
+					"plotly.js-dist-min",
 					"angular2-grid",
 					"html-query-plan"
                 ]

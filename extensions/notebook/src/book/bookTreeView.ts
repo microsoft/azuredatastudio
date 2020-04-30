@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as constants from '../common/constants';
-import * as fsw from 'fs';
 import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
@@ -19,6 +18,7 @@ import * as loc from '../common/localizedConstants';
 import { ApiWrapper } from '../common/apiWrapper';
 import * as glob from 'fast-glob';
 import { isNullOrUndefined } from 'util';
+import { debounce } from '../common/utils';
 
 const Content = 'content';
 
@@ -79,15 +79,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	trustBook(bookTreeItem?: BookTreeItem): void {
 		let bookPathToTrust = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath;
-
 		if (bookPathToTrust) {
-
 			let trustChanged = this._bookTrustManager.setBookAsTrusted(bookPathToTrust);
-
 			if (trustChanged) {
-
 				let notebookDocuments = this._apiWrapper.getNotebookDocuments();
-
 				if (notebookDocuments) {
 					// update trust state of opened items
 					notebookDocuments.forEach(document => {
@@ -114,7 +109,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			if (existingBook?.bookItems.length > 0) {
 				this.currentBook = existingBook;
 			} else {
-				await this.createAndAddBookModel(bookPath, isNotebook);
+				await this.createAndAddBookModel(bookPath, !!isNotebook);
 				let bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
 				this.currentBook = this.books.find(book => book.bookPath === bookPath);
 				bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
@@ -126,19 +121,25 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 			// add file watcher on toc file.
 			if (!isNotebook) {
-				fsw.watch(path.join(this.currentBook.bookPath, '_data', 'toc.yml'), async (event, filename) => {
-					if (event === 'change') {
-						let changedBook = this.books.find(book => book.bookPath === bookPath);
-						await changedBook.initializeContents().then(() => {
-							this._onDidChangeTreeData.fire(changedBook.bookItems[0]);
-						});
-						this._onDidChangeTreeData.fire();
+				fs.watchFile(path.join(bookPath, '_data', 'toc.yml'), async (curr, prev) => {
+					if (curr.mtime > prev.mtime) {
+						let book = this.books.find(book => book.bookPath === bookPath);
+						if (book) {
+							this.fireBookRefresh(book);
+						}
 					}
 				});
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
 		}
+	}
+
+	@debounce(1500)
+	async fireBookRefresh(book: BookModel): Promise<void> {
+		await book.initializeContents().then(() => {
+			this._onDidChangeTreeData.fire(undefined);
+		});
 	}
 
 	async closeBook(book: BookTreeItem): Promise<void> {
@@ -153,14 +154,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				if (this.currentBook === deletedBook) {
 					this.currentBook = this.books.length > 0 ? this.books[this.books.length - 1] : undefined;
 				}
-				this._onDidChangeTreeData.fire();
+				this._onDidChangeTreeData.fire(undefined);
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.closeBookError(book.root, e instanceof Error ? e.message : e));
 		} finally {
 			// remove watch on toc file.
 			if (deletedBook && !deletedBook.isNotebook) {
-				fsw.unwatchFile(path.join(deletedBook.bookPath, '_data', 'toc.yml'));
+				fs.unwatchFile(path.join(deletedBook.bookPath, '_data', 'toc.yml'));
 			}
 		}
 	}
@@ -312,7 +313,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					if (untitledBookIndex > -1) {
 						this.books.splice(untitledBookIndex, 1);
 						this.currentBook = undefined;
-						this._onDidChangeTreeData.fire();
+						this._onDidChangeTreeData.fire(undefined);
 						vscode.commands.executeCommand('bookTreeView.openBook', destinationUri.fsPath, false, undefined);
 					}
 				}
@@ -321,11 +322,20 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	public async searchJupyterBooks(treeItem?: BookTreeItem): Promise<void> {
-		if (this.currentBook && this.currentBook.bookPath) {
-			let folderToSearch = this.currentBook.bookPath;
-			if (treeItem && treeItem.uri) {
-				folderToSearch = path.join(folderToSearch, Content, path.dirname(treeItem.uri));
+		let folderToSearch: string;
+		if (treeItem && treeItem.book.type !== BookTreeItemType.Notebook) {
+			if (treeItem.uri) {
+				folderToSearch = path.join(treeItem.root, Content, path.dirname(treeItem.uri));
+			} else {
+				folderToSearch = path.join(treeItem.root, Content);
 			}
+		} else if (this.currentBook && !this.currentBook.isNotebook) {
+			folderToSearch = path.join(this.currentBook.bookPath, Content);
+		} else {
+			vscode.window.showErrorMessage(loc.noBooksSelectedError);
+		}
+
+		if (folderToSearch) {
 			let filesToIncludeFiltered = path.join(folderToSearch, '**', '*.md') + ',' + path.join(folderToSearch, '**', '*.ipynb');
 			vscode.commands.executeCommand('workbench.action.findInFiles', { filesToInclude: filesToIncludeFiltered, query: '' });
 		}
@@ -364,7 +374,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	private async loadNotebooksInFolder(folderPath: string) {
+	public async loadNotebooksInFolder(folderPath: string) {
 		let bookCollection = await this.getNotebooksInTree(folderPath);
 		for (let i = 0; i < bookCollection.bookPaths.length; i++) {
 			await this.openBook(bookCollection.bookPaths[i], undefined, false);
@@ -450,7 +460,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
 		if (element) {
 			let parentPath;
@@ -481,7 +490,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 		return untitledFileName;
 	}
-
 
 	//Confirmation message dialog
 	private async confirmReplace(): Promise<boolean> {

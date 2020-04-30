@@ -86,7 +86,7 @@ export class ChartView extends Disposable implements IPanelView {
 	public readonly onOptionsChange: Event<IInsightOptions> = this._onOptionsChange.event;
 
 	constructor(
-		private readonly _renderOptionsInline: boolean,
+		private readonly _isQueryEditorChart: boolean,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IThemeService private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -102,15 +102,15 @@ export class ChartView extends Disposable implements IPanelView {
 		this.typeControls = DOM.$('div.type-controls');
 		this.optionsControl.appendChild(this.typeControls);
 
-		this._createInsightAction = this._instantiationService.createInstance(CreateInsightAction);
 		this._copyAction = this._instantiationService.createInstance(CopyAction);
 		this._saveAction = this._instantiationService.createInstance(SaveImageAction);
 
-		if (this._renderOptionsInline) {
+		if (this._isQueryEditorChart) {
+			this._createInsightAction = this._instantiationService.createInstance(CreateInsightAction);
 			this.taskbar.setContent([{ action: this._createInsightAction }]);
 		} else {
 			this._configureChartAction = this._instantiationService.createInstance(ConfigureChartAction, this);
-			this.taskbar.setContent([{ action: this._createInsightAction }, { action: this._configureChartAction }]);
+			this.taskbar.setContent([{ action: this._configureChartAction }]);
 		}
 
 		const self = this;
@@ -177,7 +177,7 @@ export class ChartView extends Disposable implements IPanelView {
 			this.container.appendChild(this.taskbarContainer);
 			this.container.appendChild(this.chartingContainer);
 			this.chartingContainer.appendChild(this.insightContainer);
-			if (this._renderOptionsInline) {
+			if (this._isQueryEditorChart) {
 				this.chartingContainer.appendChild(this.optionsControl);
 			}
 			this.insight = new Insight(this.insightContainer, this._options, this._instantiationService);
@@ -301,14 +301,15 @@ export class ChartView extends Disposable implements IPanelView {
 		if (this.insight && this.insight.isCopyable) {
 			this.taskbar.context = { insight: this.insight.insight, options: this._options };
 			actions = [
-				{ action: this._createInsightAction },
 				{ action: this._copyAction },
 				{ action: this._saveAction }
 			];
 		} else {
-			actions = [{ action: this._createInsightAction }];
+			actions = [];
 		}
-		if (!this._renderOptionsInline) {
+		if (this._isQueryEditorChart) {
+			actions.unshift({ action: this._createInsightAction });
+		} else {
 			actions.push({ action: this._configureChartAction });
 		}
 		this.taskbar.setContent(actions);

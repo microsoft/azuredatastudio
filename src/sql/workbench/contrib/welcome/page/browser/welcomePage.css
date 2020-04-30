@@ -3,113 +3,153 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+.ads_homepage .xs {
+	display: block
+}
+
+.SM.ads_homepage .xs {
+	display: none
+}
+
+.ads_homepage .sm {
+	display: none
+}
+
+.SM.ads_homepage .sm {
+	display: block
+}
+
 .ads_homepage .ads_grid {
 	display: grid;
 	grid-gap: 16px;
-	grid-row-gap: 16px;
+	grid-row-gap: 16px
 }
 
 .ads_homepage .ads_grid.grip_gap_50 {
-	grid-gap: 50px;
+	grid-gap: 50px
 }
 
 .ads_homepage {
-	font-family: Segoe UI, Frutiger, Frutiger Linotype, Dejavu Sans, Helvetica Neue, Arial, sans-serif;
+	font-family: Segoe UI, Frutiger, Frutiger Linotype, Dejavu Sans, Helvetica Neue, Arial, sans-serif
 }
 
 .ads_homepage h1, .ads_homepage h2, .ads_homepage h3, .ads_homepage h4, .ads_homepage h5, .ads_homepage p {
-	margin: 0;
+	margin: 0
 }
 
 .ads_homepage h1 {
 	font-size: 3em;
-	font-weight: normal;
+	line-height: 1em;
+	font-weight: 400
 }
 
 .ads_homepage h2 {
 	font-size: 1.5em;
-	font-weight: 600;
+	font-weight: 600
 }
 
 .ads_homepage h3 {
 	font-size: 1.16em;
-	font-weight: 600;
+	font-weight: 600
 }
 
 .ads_homepage h4 {
-	font-weight: 600;
+	font-weight: 600
 }
 
 .ads_homepage p {
-	font-size: 1em;
+	font-size: 1em
 }
 
 .ads_homepage a {
-	text-decoration: none;
+	text-decoration: none
 }
 
 .ads_homepage .content:not(.extensions) {
-	margin: 8px 0;
+	margin: 8px 0
 }
 
 .ads_homepage .flex {
-	display: flex;
+	display: flex
 }
 
 .ads_homepage .flex.flex_d_column {
-	flex-direction: column;
+	flex-direction: column
 }
 
 .ads_homepage .flex.flex_d_row {
-	flex-direction: row;
+	flex-direction: row
 }
 
 .ads_homepage .flex.flex_wrap {
-	flex-wrap: wrap;
+	flex-wrap: wrap
 }
 
 .ads_homepage .flex.flex_j_center {
-	justify-content: center;
+	justify-content: center
 }
 
 .ads_homepage .flex.flex_j_evenly {
-	justify-content: space-evenly;
+	justify-content: space-evenly
 }
 
 .ads_homepage .flex.flex_j_end {
-	justify-content: flex-end;
+	justify-content: flex-end
 }
 
 .ads_homepage .flex.flex_a_center {
-	align-items: center;
+	align-items: center
 }
 
 .ads_homepage .flex.flex_a_start {
-	align-items: flex-start;
+	align-items: flex-start
 }
 
 .ads_homepage .flex.flex_j_between {
-	justify-content: space-between;
+	justify-content: space-between
 }
 
 .ads_homepage .a_self_end {
-	align-self: flex-end;
+	align-self: flex-end
+}
+
+.ads_homepage.XS .caption_container {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start
+}
+
+.ads_homepage.XS:not(.SM) .caption {
+	font-size: 2.7em;
+	line-height: 1em;
+	margin-bottom: 0
+}
+
+.ads_homepage.XS .title {
+	width: auto
+}
+
+.ads_homepage.XS:not(.SM) .title {
+	width: 100%
 }
 
 .ads_homepage .btn_container {
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
+	justify-content: space-between
 }
 
-@media only screen and (min-width: 480px) {
-	.ads_homepage .btn_container {
-		flex-direction: row;
-		justify-content: flex-start;
-	}
+.ads_homepage.SM .btn_container {
+	flex-direction: row;
+	justify-content: flex-start
 }
 
-.ads_homepage .btn {
+.ads_homepage.XS:not(.SM) .btn_container div {
+	width: 100%;
+	width: 100%;
+}
+
+.ads_homepage.XS:not(.SM) .btn {
 	box-sizing: border-box;
 	width: 100%;
 	height: 34px;
@@ -122,49 +162,62 @@
 	justify-content: center;
 	text-align: center;
 	text-decoration: none;
-	margin: 10px 0;
+	margin: 10px 0
+}
+
+.ads_homepage.SM .btn {
+	box-sizing: border-box;
+	width: 100%;
+	height: 34px;
+	padding-top: 1px;
+	font-size: 1.08em;
+	line-height: 29px;
+	border-radius: 2px;
+	display: flex;
+	align-content: center;
+	justify-content: center;
+	text-align: center;
+	text-decoration: none;
+	margin: 10px 0
 }
 
 .ads_homepage .btn span {
-	display: block;
+	display: block
 }
 
-@media only screen and (max-width: 389px) {
-	.ads_homepage .btn {
-		line-height: 27px;
-	}
+.ads_homepage.XS .btn {
+	line-height: 27px
 }
 
-@media only screen and (min-width: 480px) {
-	.ads_homepage .btn {
-		margin: 0 8px 0 0;
-		width: 77px;
-		height: 25px;
-		line-height: 18px;
-	}
-	.mac .ads_homepage .dropdown.btn {
-		line-height: 1.6em;
-	}
+.ads_homepage.XS .btn {
+	margin: 0 8px 0 0;
+	width: 77px;
+	height: 25px;
+	line-height: 18px
+}
+
+.mac .ads_homepage.XS .dropdown.btn {
+	line-height: 1.6em
 }
 
 .ads_homepage .btn_primary {
-	border: 1px solid;
+	border: 1px solid
 }
 
 .ads_homepage .btn_primary:hover {
-	cursor: pointer;
+	cursor: pointer
 }
 
 .ads_homepage .btn_secondary:hover {
-	cursor: pointer;
+	cursor: pointer
 }
 
 .ads_homepage .btn_secondary {
-	line-height: 1.6em;
+	line-height: 1.6em
 }
 
 .ads_homepage #dropdown_btn:focus {
-	outline: 1px solid;
+	outline: 1px solid
 }
 
 .ads_homepage .dropdown-content {
@@ -173,30 +226,30 @@
 	display: none;
 	box-sizing: border-box;
 	list-style: none;
-	padding: 8px 0px 8px 0;
+	padding: 8px 0 8px 0;
 	margin: 0;
 	width: 16em;
-	position: absolute;
+	position: absolute
 }
 
 .ads_homepage .dropdown-content li a {
-	font-size: 1.1em;
+	font-size: 1.1em
 }
 
 .ads_homepage .dropdown-content li a {
 	display: block;
 	width: 69%;
 	height: 100%;
-	padding: 5px 20px;
+	padding: 5px 20px
 }
 
 .dropdown-content.show {
 	position: absolute;
-	display: block;
+	display: block
 }
 
-.ads_homepage .btn.dropdown ul li:hover>ul, .ads_homepage .btn.dropdown ul li ul:hover {
-	z-index: 9;
+.ads_homepage .btn.dropdown ul li ul:hover, .ads_homepage .btn.dropdown ul li:hover>ul {
+	z-index: 9
 }
 
 .ads_homepage .btn.dropdown ul li ul li a {
@@ -205,40 +258,40 @@
 	clear: both;
 	font-size: 1.16em;
 	text-align: left;
-	border: 1px solid;
+	border: 1px solid
 }
 
 .ads_homepage .dropdown_nav {
-	position: relative;
+	position: relative
 }
 
 .ads_homepage .btn.dropdown ul li ul a {
-	text-decoration: none;
+	text-decoration: none
 }
 
 .ads_homepage .dropdown-content li a {
 	width: 86%;
 	padding: 6px 0 6px 28px;
-	display: block;
+	display: block
 }
 
 .ads_homepage .btn:disabled {
 	width: auto;
 	height: 24px;
 	padding: 4px 16px;
-	border: 0 !important;
+	border: 0!important
 }
 
 .ads_homepage .btn:disabled:hover {
-	cursor: default;
+	cursor: default
 }
 
 .ads_homepage .preview_link {
-	padding: 4px;
+	padding: 4px
 }
 
 .ads_homepage .preview_link i {
-	margin-right: 4px;
+	margin-right: 4px
 }
 
 .ads_homepage .preview_text {
@@ -247,30 +300,30 @@
 	align-items: center;
 	position: relative;
 	top: 25px;
-	margin-right: 15px;
+	margin-right: 15px
 }
 
 .ads_homepage #tool_tip_container_wide {
-	display: none;
+	display: none
 }
 
 .ads_homepage #tool_tip_container_narrow {
 	display: block;
 	bottom: 13px;
 	position: relative;
-	cursor: pointer;
+	cursor: pointer
 }
 
-@media only screen and (min-width: 1024px) {
-	.ads_homepage .preview_text {
-		margin-right: 0;
-	}
-	.ads_homepage #tool_tip_container_wide {
-		display: block;
-	}
-	.ads_homepage #tool_tip_container_narrow {
-		display: none;
-	}
+.ads_homepage.XL .preview_text {
+	margin-right: 0
+}
+
+.ads_homepage.XL #tool_tip_container_wide {
+	display: block
+}
+
+.ads_homepage.XL #tool_tip_container_narrow {
+	display: none
 }
 
 .ads_homepage .tool_tip .tool_tip_text {
@@ -278,17 +331,16 @@
 	visibility: hidden;
 	padding: 10px 15px;
 	z-index: 1;
-	top: 150%;
 	right: -72px;
 	text-align: center;
 	border-radius: 6px;
 	position: absolute;
-	box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.14);
-	border-radius: 2px;
+	box-shadow: 0 3px 8px rgba(0, 0, 0, .14);
+	border-radius: 2px
 }
 
 .ads_homepage .tool_tip {
-	position: relative;
+	position: relative
 }
 
 .ads_homepage .tool_tip .tool_tip_text:after {
@@ -299,15 +351,15 @@
 	z-index: 9;
 	margin-left: -10px;
 	border-width: 5px;
-	border-style: solid;
+	border-style: solid
 }
 
 .ads_homepage #tool_tip_container_wide .tool_tip_text.show {
-	visibility: visible;
+	visibility: visible
 }
 
 .ads_homepage .tool_tip .tool_tip_text h3 {
-	margin-bottom: 10px;
+	margin-bottom: 10px
 }
 
 .ads_homepage .modal {
@@ -319,11 +371,11 @@
 	top: 0;
 	width: 100%;
 	height: 100%;
-	overflow: auto;
+	overflow: auto
 }
 
 .ads_homepage .modal.show {
-	display: block;
+	display: block
 }
 
 .ads_homepage .modal_content {
@@ -332,36 +384,35 @@
 	width: 80%;
 	max-width: 372px;
 	height: 116px;
-	background: #FFFFFF;
 	border-radius: 2px;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	position: relative;
-	border: 1px solid;
+	border: 1px solid
 }
 
 .ads_homepage .modal_content h3 {
-	margin-bottom: 8px;
+	margin-bottom: 8px
 }
 
 .ads_homepage .close_icon {
 	position: absolute;
 	right: 13px;
 	top: 4px;
-	font-size: 1.33em;
+	font-size: 1.33em
 }
 
-.ads_homepage .close_icon:hover, .ads_homepage .close_icon:focus {
+.ads_homepage .close_icon:focus, .ads_homepage .close_icon:hover {
 	text-decoration: none;
-	cursor: pointer;
+	cursor: pointer
 }
 
 .ads_homepage .preview_text p {
 	position: relative;
 	display: inline-block;
 	font-size: 1.08em;
-	bottom: 2px;
+	bottom: 2px
 }
 
 .ads_homepage .icon_info {
@@ -369,17 +420,17 @@
 	width: 12px;
 	height: 12px;
 	margin-left: 6px;
-	-webkit-mask: url('../../media/info.svg') no-repeat;
+	-webkit-mask: url(../../media/info.svg) no-repeat;
 	-webkit-mask-size: 12px 12px;
-	mask: url('../../media/info.svg') no-repeat;
-	mask-size: 12px 12px;
+	mask: url(../../media/info.svg) no-repeat;
+	mask-size: 12px 12px
 }
 
 .ads_homepage .icon_arrow_down {
 	position: relative;
 	height: 20px;
 	width: 18px;
-	display: inline-block;
+	display: inline-block
 }
 
 .ads_homepage .icon_arrow_down:before {
@@ -392,22 +443,18 @@
 	display: inline-block;
 	width: 11px;
 	height: 6px;
-	content: "\eab6";
+	content: "";
 	transform: rotate(90deg);
-	bottom: 10px;
-	margin: auto;
-}
-
-.mac .ads_homepage .icon_arrow_down:before {
-	position: absolute;
-	bottom: 8px;
+	top: -1px;
+	bottom: 5px;
+	margin: auto
 }
 
 .ads_homepage .icon_arrow_right {
 	position: relative;
 	height: 16px;
 	width: 16px;
-	display: inline-block;
+	display: inline-block
 }
 
 .ads_homepage .icon_arrow_right:before {
@@ -420,11 +467,11 @@
 	display: inline-block;
 	width: 11px;
 	height: 6px;
-	content: "\ea9c";
+	content: "";
 	top: 1px;
 	bottom: 5px;
 	margin: auto;
-	left: 5px;
+	left: 5px
 }
 
 .ads_homepage .icon_link {
@@ -432,19 +479,19 @@
 	width: 11px;
 	height: 11px;
 	margin-left: 4px;
-	-webkit-mask: url('../../media/link_icon.svg') no-repeat;
+	-webkit-mask: url(../../media/link_icon.svg) no-repeat;
 	-webkit-mask-size: 11px 11px;
-	mask: url('../../media/link_icon.svg') no-repeat;
+	mask: url(../../media/link_icon.svg) no-repeat;
 	mask-size: 11px 11px;
 	height: 11px;
-	width: 11px;
+	width: 11px
 }
 
 .ads_homepage .icon_arrow_down_dark {
 	position: relative;
 	height: 20px;
 	width: 22px;
-	display: inline-block;
+	display: inline-block
 }
 
 .ads_homepage .icon_arrow_down_dark:before {
@@ -457,16 +504,16 @@
 	display: inline-block;
 	width: 11px;
 	height: 6px;
-	content: "\eab6";
+	content: "";
 	transform: rotate(90deg);
 	top: 14px;
 	bottom: 5px;
 	margin: auto;
-	left: 8px;
+	left: 8px
 }
 
 .ads_homepage .dropdown_navigation {
-	position: relative;
+	position: relative
 }
 
 .ads_homepage .dropdown_text {
@@ -474,297 +521,279 @@
 	justify-content: center;
 	align-items: center;
 	text-decoration: none;
+	padding-top: 1px
 }
 
 .ads_homepage .showOnStartup {
-	margin-top: 10px;
+	margin-top: 10px
+}
+
+.ads_homepage .showOnStartup label {
+	position: relative;
+	bottom: 3px
 }
 
 .ads_homepage .showOnStartup input {
 	width: 15px;
-	height: 15px;
+	height: 15px
 }
 
 .ads_homepage .link {
-	text-decoration: none;
+	text-decoration: none
 }
 
 .ads_homepage .link_learn_more {
-	line-height: 27px;
+	line-height: 27px
 }
 
 .ads_homepage .link:hover {
 	text-decoration: underline;
-	cursor: pointer;
+	cursor: pointer
 }
 
-@media only screen and (min-width: 640px) {
-	.ads_homepage .extension_pack_container {
-		grid-template-columns: repeat(2, 1fr);
-	}
+.ads_homepage.LG .extension_pack_container {
+	grid-template-columns: repeat(2, 1fr)
 }
 
-@media only screen and (min-width: 1365px) {
-	.ads_homepage .extension_pack_container {
-		grid-template-columns: repeat(8, 1fr)
-	}
+.ads_homepage.XS.SM.MD.LG.XL .extension_pack_container {
+	grid-template-columns: repeat(8, 1fr)
 }
 
 .ads_homepage .extension_pack {
-	grid-column: 1 / span 2;
+	grid-column: 1/span 2
 }
 
-@media only screen and (min-width: 640px) {
-	.ads_homepage .extension_pack {
-		grid-template-columns: repeat(2, 1fr);
-	}
+.ads_homepage.LG .extension_pack {
+	grid-template-columns: repeat(2, 1fr)
 }
 
-@media only screen and (min-width: 1365px) {
-	.ads_homepage .extension_pack {
-		grid-column: 1 / span 4;
-		grid-row: 1 / span 4;
-	}
+.ads_homepage.XS.SM.MD.LG.XL .extension_pack {
+	grid-column: 1/span 4;
+	grid-row: 1/span 4
 }
 
 .ads_homepage .tile:not(.extension):not(.extension_pack) {
 	border: 1px solid;
-	border-radius: 4px;
+	border-radius: 4px
 }
 
 .ads_homepage .tile.extension_pack {
 	border: 1px solid;
-	border-radius: 4px;
+	border-radius: 4px
 }
 
 .ads_homepage .extension_list {
-	grid-column: 1 / span 2;
+	grid-column: 1/span 2
 }
 
-@media only screen and (min-width: 1365px) {
-	.ads_homepage .extension_list {
-		grid-column: 5 / span 4;
-		grid-row: 1 / span 4;
-	}
+.ads_homepage.XS.SM.MD.LG.XL .extension_list {
+	grid-column: 5/span 4;
+	grid-row: 1/span 4
 }
 
-.ads_homepage .extension_pack_extension_list_header, .ads_homepage .extension_header {
+.ads_homepage .extension_header, .ads_homepage .extension_pack_extension_list_header {
 	font-weight: 600;
-	font-size: 1.33em;
+	font-size: 1.33em
 }
 
 .ads_homepage .tile {
-	transition: all 0.5s ease;
-	border-radius: 4px;
+	transition: all .5s ease;
+	border-radius: 4px
 }
 
 .ads_homepage .tile:hover:not(.no_hover) {
-	cursor: pointer;
+	cursor: pointer
 }
 
 .ads_homepage .link:active {
-	text-decoration: underline;
+	text-decoration: underline
 }
 
 .ads_homepage .content {
-	padding: 25px 2% 0;
+	padding: 25px 2% 0
 }
 
-@media only screen and (min-width: 480px) {
-	.ads_homepage .content {
-		padding: 25px 4% 0;
-	}
+.ads_homepage.MD .content {
+	padding: 25px 4% 0
 }
 
-@media only screen and (min-width: 640px) {
-	.ads_homepage .content {
-		padding: 25px 6% 0;
-	}
+.ads_homepage.LG .content {
+	padding: 25px 6% 0
 }
 
-@media only screen and (min-width: 1024px) {
-	.ads_homepage .content {
-		padding: 25px 8% 0;
-	}
+.ads_homepage.XL .content {
+	padding: 25px 8% 0
 }
 
 .ads_homepage .text_container {
-	padding: 15px 15px;
+	padding: 15px 15px
 }
 
 .ads_homepage .gradient {
-	background-size: cover;
+	background-size: cover
 }
 
-@media only screen and (min-width: 480px) {
-	s .ads_homepage .gradient {
-		padding: 25px 4% 0;
-	}
+.ads_homepage.MD .gradient {
+	padding: 25px 4% 0
 }
 
-@media only screen and (min-width: 640px) {
-	.ads_homepage .gradient {
-		padding: 25px 6% 0;
-	}
+.ads_homepage.LG .gradient {
+	padding: 25px 6% 0
 }
 
-@media only screen and (min-width: 1024px) {
-	.ads_homepage .gradient {
-		padding: 0 8% 0;
-	}
+.ads_homepage.XL .gradient {
+	padding: 0 8% 0
 }
 
 .ads_homepage_section h2 {
-	margin-bottom: 16px;
+	margin-bottom: 16px
 }
 
 .ads_homepage_section.hero {
 	background-size: 1128px 467px;
 	background-repeat: no-repeat;
-	background-image: url('../../media/homeBanner_icon.svg');
+	background-image: url(../../media/homeBanner_icon.svg);
 	background-repeat: no-repeat;
-	background-position: 5px 0;
+	background-position: 160px 0;
 	background-size: cover;
-	background-repeat: no-repeat;
+	background-repeat: no-repeat
 }
 
-.vs-dark .ads_homepage_section.hero, .hc-black .ads_homepage_section.hero {
+.hc-black .ads_homepage_section.hero, .vs-dark .ads_homepage_section.hero {
 	background-size: 1128px 467px;
 	background-repeat: no-repeat;
-	background-image: url('../../media/homeBanner_icon_dark.svg');
+	background-image: url(../../media/homeBanner_icon_dark.svg);
 	background-repeat: no-repeat;
-	background-position: 5px 0;
+	background-position: 160px 0;
 	background-size: cover;
+	background-repeat: no-repeat
+}
+
+.ads_homepage.LG .ads_homepage_section.hero {
+	background-size: contain;
 	background-repeat: no-repeat;
+	background-image: url(../../media/homeBanner_icon.svg);
+	background-position: 94% -54px
 }
 
-@media only screen and (min-width: 640px) {
-	.ads_homepage_section.hero {
-		background-size: contain;
-		background-repeat: no-repeat;
-		background-image: url('../../media/homeBanner_icon.svg');
-		background-position: 300px -54px;
-	}
+.ads_homepage.XL .ads_homepage_section.hero {
+	background-size: 597px;
+	background-repeat: no-repeat;
+	background-image: url(../../media/homeBanner_icon.svg);
+	background-position: 94% -54px
 }
 
-@media only screen and (min-width: 1365px) {
-	.ads_homepage_section.hero {
-		background-size: 597px;
-		background-repeat: no-repeat;
-		background-image: url('../../media/homeBanner_icon.svg');
-		background-position: 94% -54px;
-	}
-}
-
-@media only screen and (min-width: 640px) {
-	.vs-dark .ads_homepage_section.hero, .hc-black .ads_homepage_section.hero {
-		background-size: contain;
-		background-repeat: no-repeat;
-		background-image: url('../../media/homeBanner_icon_dark.svg');
-		background-position: 300px 0px;
-	}
-}
-
-@media only screen and (min-width: 1024px) {
-	.vs-dark .ads_homepage_section.hero, .hc-black .ads_homepage_section.hero {
-		background-size: 597px;
-		background-repeat: no-repeat;
-		background-image: url('../../media/homeBanner_icon_dark.svg');
-		background-position: 94% 0px;
-	}
+.hc-black .ads_homepage.LG .ads_homepage_section.hero, .vs-dark .ads_homepage.LG .ads_homepage_section.hero {
+	background-size: 597px;
+	background-repeat: no-repeat;
+	background-image: url(../../media/homeBanner_icon_dark.svg);
+	background-position: 94% 0
 }
 
 .ads_homepage .resources_container {
-	grid-column: 1 / span 1;
+	grid-column: 1/span 1
 }
 
-@media only screen and (min-width: 1024px) {
-	.ads_homepage .resources_container {
-		grid-column: 1 / span 7;
-	}
+.ads_homepage.XL .resources_container {
+	grid-column: 1/span 7
 }
 
 .ads_homepage .resources_container .tabs {
 	display: flex;
-	flex-wrap: wrap;
+	flex-wrap: wrap
 }
 
 .ads_homepage .resources_container .input {
 	position: absolute;
-	opacity: 0;
+	opacity: 0
 }
 
 .ads_homepage .resources_container .label {
 	width: 100%;
 	padding: 10px;
 	cursor: pointer;
-	font-weight: bold;
+	font-weight: 700;
 	font-size: 1.16em;
-	transition: background 0.1s, color 0.1s;
+	transition: background .1s, color .1s
 }
 
 .ads_homepage .getting_started_container {
-	grid-column: 1 / span 1;
+	grid-column: 1/span 1
 }
 
-@media only screen and (min-width: 1024px) {
-	.ads_homepage .getting_started_container {
-		grid-column: 9 / span 6;
-	}
+.ads_homepage.XL .getting_started_container {
+	grid-column: 9/span 6
 }
 
 .ads_homepage .header {
-	padding: 0 10px 20px;
+	padding: 0 10px 20px
 }
 
 .ads_homepage .header_top_nav {
 	margin: 0 0 30px;
-	padding-top: 30px;
+	padding-top: 30px
 }
 
-@media only screen and (min-width: 1365px) {
-	.ads_homepage .header_top_nav {
-		margin-bottom: 117px;
-		padding-top: 69px;
-	}
+.ads_homepage .header_top_nav .flex {
+	align-items: center;
+	justify-content: flex-start
+}
+
+.ads_homepage.XS.SM.MD.LG.XL .header_top_nav {
+	margin-bottom: 117px;
+	padding-top: 69px
 }
 
 .ads_homepage .header_top_nav h1 {
-	margin: 0 0 20px;
+	margin: 0 0 20px
+}
+
+.ads_homepage.XS:not(.SM) .header_top_nav h1 {
+	font-size: 2.6em;
+	line-height: 1em
 }
 
 .ads_homepage .header_top_nav .icon {
 	width: 92px;
 	height: 92px;
-	background-image: url('../../media/dataStudioIcon.svg');
-	background-size: 92px;
+	background-image: url(../../media/dataStudioIcon.svg);
+	background-size: contain;
 	margin-right: 20px;
+	background-repeat: no-repeat
+}
+
+.ads_homepage.XS:not(.SM) .header_top_nav .icon {
+	background-image: url(../../media/dataStudioIcon.svg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	width: 73px;
+	min-width: 73px;
+	height: 69px;
+	background-image: url(../../media/dataStudioIcon.svg);
+	background-size: contain;
+	margin-right: 10px
 }
 
 .ads_homepage .header_bottom_nav {
-	margin-top: 35px;
+	margin-top: 35px
 }
 
 .ads_homepage .header_bottom_nav_tiles {
-	grid-template-columns: repeat(2, 1fr);
+	grid-template-columns: repeat(2, 1fr)
 }
 
-@media only screen and (min-width: 1365px) {
-	.ads_homepage .header_bottom_nav_tiles {
-		grid-template-columns: repeat(4, 1fr);
-	}
+.ads_homepage.XS.SM.MD.LG.XL .header_bottom_nav_tiles {
+	grid-template-columns: repeat(4, 1fr)
 }
 
-@media only screen and (min-width: 1024px) {
-	.ads_homepage .header_bottom_nav {
-		margin-top: 112px;
-	}
+.ads_homepage.XL .header_bottom_nav {
+	margin-top: 112px
 }
 
 .ads_homepage .header_bottom_nav_tile {
 	position: relative;
 	height: 160px;
-	padding: 10px 20px 10px 10px;
+	padding: 10px 10px 10px 10px;
 	text-align: center;
 	display: flex;
 	flex-direction: column;
@@ -772,48 +801,50 @@
 	align-items: center;
 	border: 1px solid;
 	border-radius: 4px;
-	transition: all 0.5s ease;
-	margin: 0;
+	transition: all .5s ease;
+	margin: 0
 }
 
-.vs-dark .ads_homepage .header_bottom_nav_tile, .hc-black .ads_homepage .header_bottom_nav_tile {
+.hc-black .ads_homepage .header_bottom_nav_tile, .vs-dark .ads_homepage .header_bottom_nav_tile {
 	border: 1px solid;
-	border-radius: 4px;
+	border-radius: 4px
 }
 
-@media only screen and (max-width: 389px) {
-	.ads_homepage .header_bottom_nav_tile {
-		height: 185px;
-	}
+.ads_homepage.XS .header_bottom_nav_tile {
+	height: 200px
 }
 
-@media only screen and (min-width: 640px) {
-	.ads_homepage .header_bottom_nav_tile {
-		height: 100px;
-		padding-left: 25%;
-		text-align: left;
-		justify-content: center;
-		align-items: baseline;
-	}
+.ads_homepage.SM .header_bottom_nav_tile {
+	height: 145px
+}
+
+.ads_homepage.LG .header_bottom_nav_tile {
+	padding: 10px 20px 10px 10px
+}
+
+.ads_homepage.LG .header_bottom_nav_tile {
+	height: 100px;
+	padding-left: 25%;
+	text-align: left;
+	justify-content: center;
+	align-items: baseline
 }
 
 .ads_homepage .header_bottom_nav_tile h3 {
-	margin: 16px 0 4px;
+	margin: 16px 0 4px
 }
 
-@media only screen and (min-width: 640px) {
-	.ads_homepage .header_bottom_nav_tile h3 {
-		margin: 0;
-	}
+.ads_homepage.LG .header_bottom_nav_tile h3 {
+	margin: 0
 }
 
 .ads_homepage a.link_show_all {
 	font-size: 1.16em;
-	padding-top: 7px;
+	padding-top: 7px
 }
 
 .monaco-workbench .part.editor>.content .ads_homepage a.header_bottom_nav_tile_link {
-	text-decoration: none;
+	text-decoration: none
 }
 
 .ads_homepage .header_bottom_nav_tile .icon {
@@ -822,99 +853,100 @@
 	position: absolute;
 	right: 0;
 	bottom: 20px;
-	left: 0px;
-	margin: auto;
+	left: 0;
+	margin: auto
 }
 
-@media only screen and (min-width: 640px) {
-	.ads_homepage .header_bottom_nav_tile .icon {
-		position: absolute;
-		right: 75%;
-		bottom: 0;
-		top: 0;
-	}
+.ads_homepage.LG .header_bottom_nav_tile .icon {
+	position: absolute;
+	right: 75%;
+	bottom: 0;
+	top: 0
 }
 
 .ads_homepage .header_bottom_nav_tile .icon.connection {
-	background-image: url('../../media/createConnectionIcon.svg');
+	background-image: url(../../media/createConnectionIcon.svg);
 	background-size: contain;
-	background-repeat: no-repeat;
+	background-repeat: no-repeat
 }
 
 .ads_homepage .header_bottom_nav_tile .icon.query {
-	background-image: url('../../media/databaseIcon.svg');
+	background-image: url(../../media/databaseIcon.svg);
 	background-size: contain;
-	background-repeat: no-repeat;
+	background-repeat: no-repeat
 }
 
 .ads_homepage .header_bottom_nav_tile .icon.notebook {
-	background-image: url('../../media/notebookIcon.svg');
+	background-image: url(../../media/notebookIcon.svg);
 	background-size: contain;
-	background-repeat: no-repeat;
+	background-repeat: no-repeat
 }
 
 .ads_homepage .header_bottom_nav_tile .icon.server {
-	background-image: url('../../media/serverIcon.svg');
+	background-image: url(../../media/serverIcon.svg);
 	background-size: contain;
-	background-repeat: no-repeat;
+	background-repeat: no-repeat
 }
 
 .ads_homepage .middle_section {
-	grid-template-columns: 1fr;
+	grid-template-columns: 1fr
 }
 
-@media only screen and (min-width: 1024px) {
-	.ads_homepage .middle_section {
-		grid-template-columns: repeat(12, 1fr);
-	}
+.ads_homepage.XL .middle_section {
+	grid-template-columns: repeat(12, 1fr)
 }
 
 .ads_homepage .resources_container .input:focus+.label {
-	z-index: 1;
+	z-index: 1
 }
 
 .ads_homepage .resources_container .input:checked+.label {
-	border-bottom: 3px solid;
+	border-bottom: 3px solid
 }
 
-.vs-dark .ads_homepage .resources_container .input:checked+.label, .hc-black .ads_homepage .resources_container .input:checked+.label {
-	border-bottom: 3px solid;
+.hc-black .ads_homepage .resources_container .input:checked+.label, .vs-dark .ads_homepage .resources_container .input:checked+.label {
+	border-bottom: 3px solid
 }
 
 .ads_homepage .resources_container .label {
-	font-weight: 600;
+	font-weight: 600
 }
 
-@media (min-width: 600px) {
-	.ads_homepage .resources_container .label {
-		width: auto;
-	}
+.ads_homepage.LG .resources_container .label {
+	width: auto
+}
+
+.ads_homepage.XS:not(.SM) .resources_container .panel {
+	padding-top: 0
 }
 
 .ads_homepage .resources_container .panel {
 	display: none;
-	padding: 20px 20px 20px 0;
+	padding: 20px 20px 20px 0
 }
 
-@media (min-width: 600px) {
-	.ads_homepage .resources_container .panel {
-		order: 99;
-	}
+.ads_homepage.LG .resources_container .panel {
+	order: 99
 }
 
 .ads_homepage .resources_container .input:checked+.label+.panel {
 	display: block;
-	width: 100%;
+	width: 100%
 }
 
 .ads_homepage .ads_homepage_section .history .list, .ads_homepage .ads_homepage_section .pinned .list {
 	list-style-type: none;
 	padding: 0;
-	margin-top: 0;
+	margin-top: 0
 }
 
 .ads_homepage .ads_homepage_section .history .list_header, .ads_homepage .ads_homepage_section .pinned .list_header {
-	padding: 0 0 2px 11px;
+	padding: 0 0 2px 11px
+}
+
+.ads_homepage.XS:not(.SM) .ads_homepage_section .pinned .list_header, .ads_homepage.XS:not(.SM) .ads_homepage_section .history .list_header {
+	padding: 0 0 2px 41px;
+	line-height: 1em
 }
 
 .ads_homepage .ads_homepage_section .history .list li:not(.moreRecent), .ads_homepage .ads_homepage_section .history .list_header_container, .ads_homepage .ads_homepage_section .pinned .list li:not(.moreRecent), .ads_homepage .ads_homepage_section .pinned .list_header_container {
@@ -927,104 +959,200 @@
 	position: relative;
 	justify-content: flex-end;
 	align-items: center;
-	text-decoration: none;
+	text-decoration: none
+}
+
+.ads_homepage.XS:not(.SM) .ads_homepage_section .history .list_header_container {
+	display: flex;
+	flex-direction: column;
+	padding: 15px;
+	align-items: flex-start
 }
 
 .ads_homepage .ads_homepage_section .history .list_header_container .list_header_last_opened {
-	margin-left: auto;
+	margin-left: auto
+}
+
+.ads_homepage.XS:not(.SM) .ads_homepage_section .history .list_header_container .list_header_last_opened {
+	margin-left: 0;
+	padding: 0 0 2px 41px
 }
 
 .ads_homepage .ads_homepage_section .history .detail {
-	margin-left: auto;
+	margin-left: auto
+}
+
+.ads_homepage.XS:not(.SM) .ads_homepage_section .history .detail {
+	margin-left: 0;
+	padding: 0 0 2px 41px
 }
 
 .ads_homepage .ads_homepage_section .history .list li:not(.moreRecent) a, .ads_homepage .ads_homepage_section .pinned .list li:not(.moreRecent) a {
-	padding: 0 0 2px 11px;
+	padding: 0 0 2px 11px
+}
+
+.ads_homepage .ads_homepage_section .pinned .list li:not(.moreRecent) a, .ads_homepage.XS:not(.SM) .ads_homepage_section .history .list li:not(.moreRecent) a {
+	padding: 0 0 2px 41px
 }
 
 .ads_homepage .ads_homepage_section .history .list li:not(.moreRecent) i, .ads_homepage .ads_homepage_section .pinned .list li i, .ads_homepage .icon_document {
-	-webkit-mask: url('../../media/icon_file_document.svg') no-repeat;
+	-webkit-mask: url(../../media/icon_file_document.svg) no-repeat;
 	-webkit-mask-size: 13px 16px;
-	mask: url('../../media/icon_file_document.svg') no-repeat;
+	mask: url(../../media/icon_file_document.svg) no-repeat;
 	mask-size: 13px 16px;
 	height: 16px;
-	width: 16px;
+	width: 16px
 }
 
-.ads_homepage .ads_homepage_section .history .list li:not(.moreRecent) i[title$='.ipynb'], .ads_homepage .ads_homepage_section .pinned .list li:not(.moreRecent) i[title$='.ipynb'] {
-	-webkit-mask: url('../../media/icon_file_ipynb.svg') no-repeat;
+.ads_homepage .ads_homepage_section .history .list li:not(.moreRecent) i[title$=".ipynb"], .ads_homepage .ads_homepage_section .pinned .list li:not(.moreRecent) i[title$=".ipynb"] {
+	-webkit-mask: url(../../media/icon_file_ipynb.svg) no-repeat;
 	-webkit-mask-size: 13px 16px;
-	mask: url('../../media/icon_file_ipynb.svg') no-repeat;
+	mask: url(../../media/icon_file_ipynb.svg) no-repeat;
 	mask-size: 13px 16px;
 	height: 16px;
-	width: 16px;
+	width: 16px
 }
 
-.ads_homepage .ads_homepage_section .history .list li:not(.moreRecent) i[title$='.sql'], .ads_homepage .ads_homepage_section .pinned .list li:not(.moreRecent) i[title$='.sql'] {
-	-webkit-mask: url('../../media/icon_file_sql.svg') no-repeat;
+.ads_homepage .ads_homepage_section .history .list li:not(.moreRecent) i[title$=".sql"], .ads_homepage .ads_homepage_section .pinned .list li:not(.moreRecent) i[title$=".sql"] {
+	-webkit-mask: url(../../media/icon_file_sql.svg) no-repeat;
 	-webkit-mask-size: 13px 16px;
-	mask: url('../../media/icon_file_sql.svg') no-repeat;
+	mask: url(../../media/icon_file_sql.svg) no-repeat;
 	mask-size: 13px 16px;
 	height: 16px;
-	width: 16px;
+	width: 16px
 }
 
-.ads_homepage .ads_homepage_section .history .list li:not(.moreRecent) i[title$='.csv'], .ads_homepage .ads_homepage_section .pinned .list li:not(.moreRecent) a[title$='.csv'] {
-	-webkit-mask: url('../../media/icon_file_csv.svg') no-repeat;
+.ads_homepage .ads_homepage_section .history .list li:not(.moreRecent) i[title$=".csv"], .ads_homepage .ads_homepage_section .pinned .list li:not(.moreRecent) a[title$=".csv"] {
+	-webkit-mask: url(../../media/icon_file_csv.svg) no-repeat;
 	-webkit-mask-size: 13px 16px;
-	mask: url('../../media/icon_file_csv.svg') no-repeat;
+	mask: url(../../media/icon_file_csv.svg) no-repeat;
 	mask-size: 13px 16px;
 	height: 16px;
-	width: 16px;
+	width: 16px
+}
+
+.ads_homepage.XS:not(.SM) .ads_homepage_section .history .list li:not(.moreRecent) i, .ads_homepage.XS:not(.SM) .ads_homepage_section .pinned .list li i, .ads_homepage.XS:not(.SM) .icon_document {
+	-webkit-mask: url(../../media/icon_file_document.svg) no-repeat;
+	-webkit-mask-size: 20px 23px;
+	mask: url(../../media/icon_file_document.svg) no-repeat;
+	mask-size: 20px 23px;
+	min-height: 29px;
+	min-width: 21px;
+	display: inline-block;
+	position: absolute;
+	top: 16px;
+	bottom: 0;
+	margin: auto
+}
+
+.ads_homepage.XS:not(.SM) .ads_homepage_section .history .list li:not(.moreRecent) i[title$=".ipynb"], .ads_homepage.XS:not(.SM) .ads_homepage_section .pinned .list li:not(.moreRecent) i[title$=".ipynb"] {
+	-webkit-mask: url(../../media/icon_file_ipynb.svg) no-repeat;
+	-webkit-mask-size: 20px 23px;
+	mask: url(../../media/icon_file_ipynb.svg) no-repeat;
+	mask-size: 20px 23px;
+	min-height: 29px;
+	min-width: 21px;
+	display: inline-block;
+	position: absolute;
+	top: 16px;
+	bottom: 0;
+	margin: auto
+}
+
+.ads_homepage.XS:not(.SM) .ads_homepage_section .history .list li:not(.moreRecent) i[title$=".sql"], .ads_homepage.XS:not(.SM) .ads_homepage_section .pinned .list li:not(.moreRecent) i[title$=".sql"] {
+	-webkit-mask: url(../../media/icon_file_sql.svg) no-repeat;
+	-webkit-mask-size: 20px 23px;
+	mask: url(../../media/icon_file_sql.svg) no-repeat;
+	mask-size: 20px 23px;
+	min-height: 29px;
+	min-width: 21px;
+	display: inline-block;
+	position: absolute;
+	top: 16px;
+	bottom: 0;
+	margin: auto
+}
+
+.ads_homepage.XS:not(.SM) .ads_homepage_section .history .list li:not(.moreRecent) i[title$=".csv"], .ads_homepage.XS:not(.SM) .ads_homepage_section .pinned .list li:not(.moreRecent) a[title$=".csv"] {
+	-webkit-mask: url(../../media/icon_file_csv.svg) no-repeat;
+	-webkit-mask-size: 20px 23px;
+	mask: url(../../media/icon_file_csv.svg) no-repeat;
+	mask-size: 20px 23px;
+	min-height: 29px;
+	min-width: 21px;
+	display: inline-block;
+	position: absolute;
+	top: 16px;
+	bottom: 0;
+	margin: auto
+}
+
+.ads_homepage.XS:not(.SM) .ads_homepage_section .history .list li {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: flex-start;
+	padding: 15px;
+	padding-top: 10px
 }
 
 .ads_homepage .ads_homepage_section .history .moreRecent_list {
 	list-style-type: none;
 	padding: 0;
-	margin: 0;
+	margin: 0
 }
 
 .ads_homepage .ads_homepage_section .history .moreRecent_list li.moreRecent {
 	display: flex;
 	align-items: center;
-	margin-top: 10px;
+	margin-top: 10px
 }
 
 .ads_homepage .ads_homepage_section .history .moreRecent_list li.moreRecent a {
-	text-decoration: none;
+	text-decoration: none
 }
 
 .ads_homepage .ads_homepage_section .links .link_header {
 	font-size: 1.16em;
-	margin-bottom: 4px;
+	margin-bottom: 4px
 }
 
 .ads_homepage .ads_homepage_section .links p {
-	margin-bottom: 16px;
+	margin-bottom: 16px
+}
+
+.ads_homepage.XS .ads_homepage_section .links .flex_container_video {
+	display: flex;
+	flex-direction: column
+}
+
+.ads_homepage.SM .ads_homepage_section .links .flex_container_video {
+	display: flex;
+	flex-direction: row
 }
 
 .ads_homepage .ads_homepage_section .links .videos_container {
 	margin-bottom: 20px;
 	display: flex;
-	flex-direction: column;
+	flex-direction: column
 }
 
 .ads_homepage .ads_homepage_section .links .videos_container_video {
-	margin-right: 16px;
+	margin-right: 16px
 }
 
 .ads_homepage .ads_homepage_section .links .videos_container .video {
 	display: block;
 	width: 100%;
-	height: 100%;
+	height: 100%
 }
 
 .ads_homepage .ads_homepage_section .links .videos_container .video img {
-	max-width: 100%;
+	max-width: 100%
 }
 
 .ads_homepage .extensions .row {
-	padding-bottom: 35px;
+	padding-bottom: 35px
 }
 
 .ads_homepage .extension {
@@ -1032,44 +1160,42 @@
 	height: 100%;
 	justify-content: flex-start;
 	margin-bottom: 5px;
-	background: transparent;
+	background: 0 0
 }
 
 .ads_homepage .extension .extension_inner {
-	padding: 15px;
+	padding: 15px
 }
 
 .ads_homepage .extension_pack_header {
 	font-weight: 600;
 	font-size: 2.33em;
 	z-index: 9;
-	margin-bottom: 10px;
+	margin-bottom: 10px
 }
 
 .ads_homepage .extension_pack_body {
 	line-height: 1.5em;
 	font-size: 1.33em;
-	z-index: 9;
+	z-index: 9
 }
 
-@media only screen and (min-width: 700px) {
-	.ads_homepage .extension_pack_body {
-		font-size: 1.5em;
-		line-height: 1.2em;
-	}
+.ads_homepage.LG .extension_pack_body {
+	font-size: 1.5em;
+	line-height: 1.2em
 }
 
 .ads_homepage .extension_pack {
-	grid-gap: 0;
+	grid-gap: 0
 }
 
 .ads_homepage .extension_pack_btn_container {
 	padding: 17px 0 23px;
-	width: 100%;
+	width: 100%
 }
 
 .ads_homepage .extension_pack_description {
-	background: url('../../media/extension_pack_img.png');
+	background: url(../../media/extension_pack_img.svg);
 	background-size: cover;
 	background-position: center;
 	position: relative;
@@ -1080,154 +1206,156 @@
 	align-items: flex-start;
 	padding: 39px 20px 20px;
 	border-top-left-radius: 5px;
-	border-bottom-left-radius: 5px;
+	border-bottom-left-radius: 5px
 }
 
 .ads_homepage .extension_pack {
-	border-radius: 5px;
+	border-radius: 5px
 }
 
 .ads_homepage .extension_pack_description:before {
-	content: '';
+	content: "";
 	position: absolute;
 	top: 0;
 	right: 0;
 	bottom: 0;
 	left: 0;
 	border-top-left-radius: 5px;
-	border-bottom-left-radius: 5px;
+	border-bottom-left-radius: 5px
 }
 
 .ads_homepage .extension_pack_description_grid_container {
-	height: 100%;
+	height: 100%
 }
 
 .ads_homepage .extension_pack_description .text_container {
 	text-align: center;
-	padding: 20px;
+	padding: 20px
 }
 
 .ads_homepage .extension_pack .text_container .icon {
-	margin-bottom: 10px;
+	margin-bottom: 10px
 }
 
 .ads_homepage .extension_pack .text_container h2 {
-	margin-bottom: 10px;
+	margin-bottom: 10px
 }
 
 .ads_homepage .extension .img_container {
-	margin-right: 22px;
+	margin-right: 22px
 }
 
 .ads_homepage .extension .icon, .ads_homepage .extensions .img_container .icon {
 	width: 50px;
-	margin: auto;
+	margin: auto
 }
 
 .ads_homepage .extension_pack .extension_pack_extensions {
 	padding: 0 25px 0 35px;
-	background: transparent;
+	background: 0 0
 }
 
 .ads_homepage .extension_pack .extension_pack_extensions .btn_secondary {
-	line-height: 1.25em;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	line-height: 1.25em
 }
 
 .ads_homepage .extension_pack .extension_pack_extension_container {
-	padding: 8px 0;
+	padding: 8px 0
 }
 
 .ads_homepage .extension_pack .extension_pack_extension_container:first-of-type {
-	padding: 24px 0 8px;
+	padding: 24px 0 8px
 }
 
 .ads_homepage .extension_pack .extension_pack_extension_container .description h4 {
-	font-size: 1.33em;
+	font-size: 1.33em
 }
 
 .ads_homepage .extension_pack .extension_pack_extension_container .icon {
 	width: 36px;
 	height: 36px;
-	margin-right: 14px;
+	margin-right: 14px
 }
 
 .monaco-workbench .part.editor>.content .ads_homepage .extensions .extensions_tile_link {
-	text-decoration: none;
+	text-decoration: none
 }
 
 .monaco-workbench .part.editor>.content .welcomePage .ads_homepage a {
 	text-decoration: none;
-	font-weight: normal;
+	font-weight: 400
 }
 
 .monaco-workbench .part.editor>.content .welcomePage.emptyRecent .splash .recent .list {
-	display: none;
+	display: none
 }
 
 .monaco-workbench .part.editor>.content .welcomePage .splash .recent .none {
-	display: none;
+	display: none
 }
 
 .monaco-workbench .part.editor>.content .welcomePage.emptyRecent .splash .recent .none {
 	margin-top: 15px;
-	display: block;
+	display: block
 }
 
 .monaco-workbench .part.editor>.content .welcomePage .enabledExtension {
-	display: none;
+	display: none
 }
 
 .monaco-workbench .part.editor>.content .welcomePage .extensionPack {
 	display: flex;
-	justify-content: flex-end;
+	justify-content: flex-end
 }
 
 .monaco-workbench .part.editor>.content .welcomePage .installExtension.installed {
-	display: initial;
+	display: initial
 }
 
 .monaco-workbench .part.editor>.content .welcomePage .commands .item button .enabledExtension {
-	display: none;
+	display: none
 }
 
 .file-icons-enabled .show-file-icons .az_data_welcome_page-name-file-icon.file-icon::before {
-	/* {{SQL CARBON EDIT}} We use azdata welcome page */
-	content: ' ';
-	background-image: url('../../media/code-icon.svg');
+	content: " ";
+	background-image: url(../../media/code-icon.svg)
 }
 
-.monaco-workbench .part.editor>.content .welcomePage .mac_only, .monaco-workbench .part.editor>.content .welcomePage .windows_only, .monaco-workbench .part.editor>.content .welcomePage .linux_only {
-	display: none;
+.monaco-workbench .part.editor>.content .welcomePage .linux_only, .monaco-workbench .part.editor>.content .welcomePage .mac_only, .monaco-workbench .part.editor>.content .welcomePage .windows_only {
+	display: none
 }
 
 .monaco-workbench.mac .part.editor>.content .welcomePage .mac_only {
-	display: block;
+	display: block
 }
 
 .monaco-workbench.windows .part.editor>.content .welcomePage .windows_only {
-	display: block;
+	display: block
 }
 
 .monaco-workbench.linux .part.editor>.content .welcomePage .linux_only {
-	display: block;
+	display: block
 }
 
 .monaco-workbench.mac .part.editor>.content .welcomePage li.mac-only {
-	display: list-item;
+	display: list-item
 }
 
 .monaco-workbench.windows .part.editor>.content .welcomePage li.windows_only {
-	display: list-item;
+	display: list-item
 }
 
 .monaco-workbench.linux .part.editor>.content .welcomePage li.linux_only {
-	display: list-item;
+	display: list-item
 }
 
 .monaco-workbench .part.editor>.content .welcomePage .installExtension.installed {
-	display: none;
+	display: none
 }
 
 .monaco-workbench .part.editor>.content .welcomePage .enabledExtension.installed {
-	display: inline;
+	display: inline
 }

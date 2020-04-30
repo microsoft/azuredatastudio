@@ -411,6 +411,26 @@
         "category": "Git"
       }
     ],
+    "keybindings": [
+      {
+        "command": "git.stageSelectedRanges",
+        "key": "ctrl+k ctrl+alt+s",
+        "mac": "cmd+k cmd+alt+s",
+        "when": "isInDiffEditor"
+      },
+      {
+        "command": "git.unstageSelectedRanges",
+        "key": "ctrl+k ctrl+u",
+        "mac": "cmd+k cmd+u",
+        "when": "isInDiffEditor"
+      },
+      {
+        "command": "git.revertSelectedRanges",
+        "key": "ctrl+k ctrl+r",
+        "mac": "cmd+k cmd+r",
+        "when": "isInDiffEditor"
+      }
+    ],
     "menus": {
       "commandPalette": [
         {
@@ -587,10 +607,6 @@
         },
         {
           "command": "git.pullRebase",
-          "when": "config.git.enabled && !git.missing && gitOpenRepositoryCount != 0"
-        },
-        {
-          "command": "git.pullFrom",
           "when": "config.git.enabled && !git.missing && gitOpenRepositoryCount != 0"
         },
         {
@@ -1643,6 +1659,24 @@
           "default": "mixed",
           "description": "%config.untrackedChanges%",
           "scope": "resource"
+        },
+        "git.showCommitInput": {
+          "type": "boolean",
+          "scope": "resource",
+          "default": true,
+          "description": "%config.showCommitInput%"
+        },
+        "git.terminalAuthentication": {
+          "type": "boolean",
+          "scope": "resource",
+          "default": true,
+          "description": "%config.terminalAuthentication%"
+        },
+        "git.githubAuthentication": {
+          "type": "boolean",
+          "scope": "resource",
+          "default": true,
+          "description": "%config.githubAuthentication%"
         }
       }
     },
@@ -1755,6 +1789,7 @@
           "ignore"
         ],
         "filenames": [
+          ".gitignore_global",
           ".gitignore"
         ],
         "configuration": "./languages/ignore.language-configuration.json"
