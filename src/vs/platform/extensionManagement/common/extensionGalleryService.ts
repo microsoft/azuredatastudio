@@ -13,7 +13,6 @@ import { IRequestService, asJson, asText } from 'vs/platform/request/common/requ
 import { IRequestOptions, IRequestContext, IHeaders } from 'vs/base/parts/request/common/request';
 import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { generateUuid } from 'vs/base/common/uuid';
 import { values } from 'vs/base/common/map';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration'; // {{SQL CARBON EDIT}}
 import { CancellationToken } from 'vs/base/common/cancellation';
@@ -21,7 +20,6 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IExtensionManifest, ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}} add imports
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
-import { joinPath } from 'vs/base/common/resources';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { find } from 'vs/base/common/arrays';
@@ -704,9 +702,8 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		});
 	}
 
-	download(extension: IGalleryExtension, location: URI, operation: InstallOperation): Promise<URI> {
+	download(extension: IGalleryExtension, location: URI, operation: InstallOperation): Promise<void> {
 		this.logService.trace('ExtensionGalleryService#download', extension.identifier.id);
-		const zip = joinPath(location, generateUuid());
 		const data = getGalleryExtensionTelemetryData(extension);
 		const startTime = new Date().getTime();
 		/* __GDPR__
@@ -728,9 +725,8 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		} : extension.assets.download;
 
 		return this.getAsset(downloadAsset)
-			.then(context => this.fileService.writeFile(zip, context.stream))
-			.then(() => log(new Date().getTime() - startTime))
-			.then(() => zip);
+			.then(context => this.fileService.writeFile(location, context.stream))
+			.then(() => log(new Date().getTime() - startTime));
 	}
 
 	getReadme(extension: IGalleryExtension, token: CancellationToken): Promise<string> {
