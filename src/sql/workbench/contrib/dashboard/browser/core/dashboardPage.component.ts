@@ -107,7 +107,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		return this.dashboardService.scopedContextKeyService;
 	}
 
-	private readonly _gridModifiers: Array<(item: Array<WidgetConfig>, originalConfig: Array<WidgetConfig>) => Array<WidgetConfig>> = [
+	private readonly _gridModifiers: Array<(item: Array<WidgetConfig>, originalConfig?: Array<WidgetConfig>) => Array<WidgetConfig>> = [
 		dashboardHelper.validateGridConfig
 	];
 

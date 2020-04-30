@@ -22,7 +22,7 @@ export const CONTEXT_CUSTOM_EDITORS = new RawContextKey<string>('customEditors',
 export const CONTEXT_FOCUSED_CUSTOM_EDITOR_IS_EDITABLE = new RawContextKey<boolean>('focusedCustomEditorIsEditable', false);
 
 export interface CustomEditorCapabilities {
-	readonly supportsMultipleEditorsPerResource?: boolean;
+	readonly supportsMultipleEditorsPerDocument?: boolean;
 }
 
 export interface ICustomEditorService {
@@ -56,6 +56,7 @@ export interface ICustomEditorModelManager {
 export interface ICustomEditorModel extends IDisposable {
 	readonly viewType: string;
 	readonly resource: URI;
+	readonly backupId: string | undefined;
 
 	isReadonly(): boolean;
 
