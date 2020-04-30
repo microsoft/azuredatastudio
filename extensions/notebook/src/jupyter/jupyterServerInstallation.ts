@@ -138,12 +138,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 			try {
 				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
-
-				if (this._usingExistingPython) {
-					await this.upgradePythonPackages(false, forceInstall, specificPackages);
-				} else {
-					await this.installOfflinePipDependencies();
-				}
+				await this.upgradePythonPackages(false, forceInstall, specificPackages);
 			} catch (err) {
 				this.outputChannel.appendLine(msgDependenciesInstallationFailed(utils.getErrorMessage(err)));
 				throw err;
