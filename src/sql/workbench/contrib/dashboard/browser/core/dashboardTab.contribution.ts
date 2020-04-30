@@ -282,7 +282,6 @@ const CommonTabs: IDashboardTab[] = [
 		container: {
 			'widgets-container': [
 				{
-					name: localize('databasesWidgetTitle', "Search"),
 					widget: {
 						'explorer-widget': {}
 					},
