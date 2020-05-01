@@ -37,6 +37,11 @@ cd $ROOT
 echo VSCODEUSERDATADIR=$VSCODEUSERDATADIR
 echo VSCODEEXTDIR=$VSCODEEXTDIR
 
+# Skip Python install tests by default due to flakiness
+if [[ "$SKIP_PYTHON_INSTALL_TEST" == "" ]]; then
+	export SKIP_PYTHON_INSTALL_TEST=1
+fi
+
 if [[ "$SKIP_PYTHON_INSTALL_TEST" == "1" ]]; then
 	echo Skipping Python installation tests.
 else

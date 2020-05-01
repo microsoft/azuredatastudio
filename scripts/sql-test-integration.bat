@@ -37,6 +37,10 @@ if "%ADS_TEST_GREP%" == "" (
 	set ADS_TEST_GREP=@UNSTABLE@
 	SET ADS_TEST_INVERT_GREP=1
 )
+:: Default to skipping Python install tests
+if "%SKIP_PYTHON_INSTALL_TEST%" == "" (
+	set SKIP_PYTHON_INSTALL_TEST=1
+)
 
 if "%SKIP_PYTHON_INSTALL_TEST%" == "1" (
 	echo Skipping Python installation tests.
