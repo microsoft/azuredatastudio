@@ -149,18 +149,19 @@ export class FileConfigPage extends ImportPage {
 			return false;
 		}
 
-		let serverDefaultDatabase = this.model.server.options.database;
+		let defaultServerDatabase = this.model.server.options.database;
 
 		let values: any[];
 		try {
 			values = await this.getDatabaseValues();
 		} catch (error) {
 			// This code is used in case of contained databases when the query will return an error.
-			values = [{ displayName: serverDefaultDatabase, name: serverDefaultDatabase }];
+			console.log(error);
+			values = [{ displayName: defaultServerDatabase, name: defaultServerDatabase }];
 			this.databaseDropdown.editable = false;
 		}
 
-		this.model.database = serverDefaultDatabase;
+		this.model.database = defaultServerDatabase;
 
 		this.databaseDropdown.updateProperties({
 			values: values
@@ -282,13 +283,9 @@ export class FileConfigPage extends ImportPage {
 		this.schemaLoader.loading = true;
 
 		let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
-		let connection = await azdata.connection.getConnection(connectionUri);
-		connection.databaseName = this.model.database;
-
 		let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this.model.server.providerName, azdata.DataProviderType.QueryProvider);
 
-		const escapedQuotedDb = this.databaseDropdown.value ? `[${(<azdata.CategoryValue>this.databaseDropdown.value).name.replace(/]/g, ']]')}].` : '';
-		let query = `SELECT name FROM ${escapedQuotedDb}sys.schemas`;
+		const query = `SELECT name FROM sys.schemas`;
 
 		let results = await queryProvider.runQueryAndReturn(connectionUri, query);
 
