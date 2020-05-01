@@ -243,48 +243,52 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	private updateTheme(theme: IColorTheme): void {
 		const el = <HTMLElement>this._ref.nativeElement;
 		const headerEl: HTMLElement = this.header.nativeElement;
-		let borderColor = theme.getColor(themeColors.DASHBOARD_BORDER);
-		let backgroundColor = theme.getColor(colors.editorBackground, true);
-		const foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
-		const border = theme.getColor(colors.contrastBorder, true);
-
-		if (this._config.background_color) {
-			backgroundColor = theme.getColor(this._config.background_color);
-		}
-
-		if (this._config.border === 'none') {
-			borderColor = undefined;
-		}
-
-		if (backgroundColor) {
-			el.style.backgroundColor = backgroundColor.toString();
-		}
-
-		if (foregroundColor) {
-			el.style.color = foregroundColor.toString();
-		}
-
-		let borderString = undefined;
-		if (border) {
-			borderString = border.toString();
-			el.style.borderColor = borderString;
-			el.style.borderWidth = '1px';
-			el.style.borderStyle = 'solid';
-		} else if (borderColor) {
-			borderString = borderColor;
-			el.style.border = '1px solid ' + borderColor;
+		if (this._config.showTitle === false) {
+			headerEl.style.display = 'none';
 		} else {
-			el.style.border = 'none';
-		}
+			let borderColor = theme.getColor(themeColors.DASHBOARD_BORDER);
+			let backgroundColor = theme.getColor(colors.editorBackground, true);
+			const foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
+			const border = theme.getColor(colors.contrastBorder, true);
 
-		if (this._config.fontSize) {
-			headerEl.style.fontSize = this._config.fontSize;
-		}
-		if (this._config.fontWeight) {
-			headerEl.style.fontWeight = this._config.fontWeight;
-		}
-		if (this._config.padding) {
-			headerEl.style.padding = this._config.padding;
+			if (this._config.background_color) {
+				backgroundColor = theme.getColor(this._config.background_color);
+			}
+
+			if (this._config.border === 'none') {
+				borderColor = undefined;
+			}
+
+			if (backgroundColor) {
+				el.style.backgroundColor = backgroundColor.toString();
+			}
+
+			if (foregroundColor) {
+				el.style.color = foregroundColor.toString();
+			}
+
+			let borderString = undefined;
+			if (border) {
+				borderString = border.toString();
+				el.style.borderColor = borderString;
+				el.style.borderWidth = '1px';
+				el.style.borderStyle = 'solid';
+			} else if (borderColor) {
+				borderString = borderColor;
+				el.style.border = '1px solid ' + borderColor;
+			} else {
+				el.style.border = 'none';
+			}
+
+			if (this._config.fontSize) {
+				headerEl.style.fontSize = this._config.fontSize;
+			}
+			if (this._config.fontWeight) {
+				headerEl.style.fontWeight = this._config.fontWeight;
+			}
+			if (this._config.padding) {
+				headerEl.style.padding = this._config.padding;
+			}
 		}
 	}
 }

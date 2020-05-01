@@ -284,11 +284,12 @@ const CommonTabs: IDashboardTab[] = [
 				{
 					gridItemConfig: {
 						sizex: 3,
-						sizey: 3
+						sizey: 2
 					},
 					widget: {
 						'explorer-widget': {}
-					}
+					},
+					showTitle: false
 				}
 			]
 		}
