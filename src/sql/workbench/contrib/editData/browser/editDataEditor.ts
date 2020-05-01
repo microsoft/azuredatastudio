@@ -21,7 +21,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
-import { Action } from 'vs/base/common/actions';
+import { IAction } from 'vs/base/common/actions';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { IEditorDescriptorService } from 'sql/workbench/services/queryEditor/browser/editorDescriptorService';
 import {
@@ -321,7 +321,7 @@ export class EditDataEditor extends BaseEditor {
 		// Create QueryTaskbar
 		this._taskbarContainer = DOM.append(parentElement, DOM.$('div'));
 		this._taskbar = new Taskbar(this._taskbarContainer, {
-			actionViewItemProvider: (action: Action) => this._getChangeMaxRowsAction(action)
+			actionViewItemProvider: (action: IAction) => this._getChangeMaxRowsAction(action)
 		});
 
 		// Create Actions for the toolbar
@@ -352,7 +352,7 @@ export class EditDataEditor extends BaseEditor {
 	/**
 	 * Gets the IActionItem for the list of row number drop down
 	 */
-	private _getChangeMaxRowsAction(action: Action): IActionViewItem {
+	private _getChangeMaxRowsAction(action: IAction): IActionViewItem {
 		let actionID = ChangeMaxRowsAction.ID;
 		if (action.id === actionID) {
 			if (!this._changeMaxRowsActionItem) {
