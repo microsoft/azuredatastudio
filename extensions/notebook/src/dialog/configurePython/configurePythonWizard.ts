@@ -44,7 +44,7 @@ export class ConfigurePythonWizard {
 		this.usingCustomPath = false;
 	}
 
-	public async start(kernelName: string, rejectOnCancel: boolean = false, ...args: any[]): Promise<void> {
+	public async start(kernelName?: string, rejectOnCancel?: boolean, ...args: any[]): Promise<void> {
 		this.model = <ConfigurePythonModel>{
 			kernelName: kernelName,
 			usingCustomPath: this.usingCustomPath,
@@ -53,7 +53,13 @@ export class ConfigurePythonWizard {
 
 		let pages: Map<number, BasePage> = new Map<number, BasePage>();
 
-		this.wizard = azdata.window.createWizard(localize('configurePython.wizardName', 'Configure Python to run kernel ({0})', kernelName));
+		let wizardTitle: string;
+		if (kernelName) {
+			wizardTitle = localize('configurePython.wizardNameWithKernel', 'Configure Python to run {0} kernel', kernelName);
+		} else {
+			wizardTitle = localize('configurePython.wizardNameWithoutKernel', 'Configure Python to run kernels');
+		}
+		this.wizard = azdata.window.createWizard(wizardTitle);
 		let page0 = azdata.window.createWizardPage(localize('configurePython.page0Name', 'Configure Python Runtime'));
 		let page1 = azdata.window.createWizardPage(localize('configurePython.page1Name', 'Install Dependencies'));
 

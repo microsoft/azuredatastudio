@@ -8,22 +8,31 @@ import * as nls from 'vscode-nls';
 import { BasePage } from './basePage';
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
 import { python3DisplayName, pysparkDisplayName, sparkScalaDisplayName, sparkRDisplayName, powershellDisplayName, allKernelsName } from '../../common/constants';
+import { getDropdownValue } from '../../common/utils';
 
 const localize = nls.loadMessageBundle();
 
 export class PickPackagesPage extends BasePage {
-	private kernelDropdown: azdata.DropDownComponent;
+	private kernelLabel: azdata.TextComponent | undefined;
+	private kernelDropdown: azdata.DropDownComponent | undefined;
 	private requiredPackagesTable: azdata.DeclarativeTableComponent;
 
 	public async start(): Promise<boolean> {
-		let dropdownValues = [python3DisplayName, pysparkDisplayName, sparkScalaDisplayName, sparkRDisplayName, powershellDisplayName, allKernelsName];
-		this.kernelDropdown = this.view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
-			value: dropdownValues[0],
-			values: dropdownValues
-		}).component();
-		this.kernelDropdown.onValueChanged(value => {
-			this.updateRequiredPackages(value.selected);
-		});
+		if (this.model.kernelName) {
+			// Wizard was started for a specific kernel, so don't populate any other options
+			this.kernelLabel = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+				value: this.model.kernelName
+			}).component();
+		} else {
+			let dropdownValues = [python3DisplayName, pysparkDisplayName, sparkScalaDisplayName, sparkRDisplayName, powershellDisplayName, allKernelsName];
+			this.kernelDropdown = this.view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+				value: dropdownValues[0],
+				values: dropdownValues
+			}).component();
+			this.kernelDropdown.onValueChanged(value => {
+				this.updateRequiredPackages(value.selected);
+			});
+		}
 
 		this.requiredPackagesTable = this.view.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			columns: [{
@@ -42,7 +51,7 @@ export class PickPackagesPage extends BasePage {
 
 		let formModel = this.view.modelBuilder.formContainer()
 			.withFormItems([{
-				component: this.kernelDropdown,
+				component: this.kernelDropdown ?? this.kernelLabel,
 				title: localize('configurePython.kernelLabel', "Kernel")
 			}, {
 				component: this.requiredPackagesTable,
@@ -53,7 +62,13 @@ export class PickPackagesPage extends BasePage {
 	}
 
 	public async onPageEnter(): Promise<boolean> {
-		this.kernelDropdown.value = this.model.kernelName;
+		if (this.kernelDropdown) {
+			if (this.model.kernelName) {
+				this.kernelDropdown.value = this.model.kernelName;
+			} else {
+				this.model.kernelName = getDropdownValue(this.kernelDropdown);
+			}
+		}
 		this.updateRequiredPackages(this.model.kernelName);
 		return true;
 	}
