@@ -1329,14 +1329,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.2.5",
-							"lastUpdated": "3/19/2020",
+							"version": "0.2.6",
+							"lastUpdated": "5/1/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/postgresql/azuredatastudio-postgresql-0.2.5.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/postgresql/azuredatastudio-postgresql-0.2.6.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1366,7 +1366,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.8.0"
+									"value": ">=1.16.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
