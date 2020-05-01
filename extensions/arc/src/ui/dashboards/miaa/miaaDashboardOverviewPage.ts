@@ -7,11 +7,18 @@ import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { IconPathHelper } from '../../../constants';
+import { ControllerModel } from '../../../models/controllerModel';
+import { resourceTypeToDisplayName } from '../../../common/utils';
 
 export class MiaaDashboardOverviewPage extends DashboardPage {
 
-	constructor(modelView: azdata.ModelView) {
+	private _arcResourcesTable: azdata.DeclarativeTableComponent;
+
+	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel) {
 		super(modelView);
+		this.refresh().catch(e => {
+			console.log(e);
+		});
 	}
 
 	public get title(): string {
@@ -24,6 +31,11 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 	public get icon(): { dark: string, light: string } {
 		return IconPathHelper.properties;
+	}
+
+	protected async refresh(): Promise<void> {
+		await this._controllerModel.refresh();
+		this._arcResourcesTable.data = this._controllerModel.registrations().map(r => [r.instanceName, resourceTypeToDisplayName(r.instanceType), r.vCores]);
 	}
 
 	public get container(): azdata.Component {
@@ -78,12 +90,8 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			}
 		});
 
-		const arcResourcesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
-			data: [
-				['postgresArc', 'PostgreSQL Server group - Azure Arc', '2 nodes, 4 vCores / 32 GiB RAM, 0.5 TiB storage'],
-				['managedInstanceArc', 'SQL instance - Azure Arc', 'General Purpose Gen5 (32 GB, 4 vCores)'],
-				['contosoInstanceArc', 'SQL instance - Azure Arc', 'General Purpose Gen5 (32 GB, 4 vCores)']
-			],
+		this._arcResourcesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+			data: [],
 			columns: [
 				{
 					displayName: loc.name,
@@ -107,7 +115,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		}).component();
 
 		const arcResourcesTableContainer = this.modelView.modelBuilder.divContainer()
-			.withItems([arcResourcesTable])
+			.withItems([this._arcResourcesTable])
 			.component();
 
 		rootContainer.addItem(arcResourcesTableContainer);
