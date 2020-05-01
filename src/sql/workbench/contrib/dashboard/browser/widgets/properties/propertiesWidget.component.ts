@@ -10,13 +10,13 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import { Property, PropertiesConfig, getFlavor } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 
 import { DatabaseInfo, ServerInfo } from 'azdata';
+import * as types from 'vs/base/common/types';
 import * as nls from 'vs/nls';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { PropertiesContainer, PropertyItem } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { PROPERTIES_CONTAINER_PROPERTY_NAME, PROPERTIES_CONTAINER_PROPERTY_VALUE } from 'vs/workbench/common/theme';
-import { isUndefinedOrNull } from 'vs/base/common/types';
 
 @Component({
 	selector: 'properties-widget',
@@ -79,7 +79,9 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			propertyArray = config.properties;
 		} else {
 			const flavor = getFlavor(this._connection.serverInfo, this.logService, provider as string);
-
+			if (!flavor) {
+				return [];
+			}
 			// determine what context we should be pulling from
 			if (this._config.context === 'database') {
 				if (!Array.isArray(flavor.databaseProperties)) {
@@ -135,7 +137,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		if (infoObject) {
 			val = infoObject[propertyValue];
 		}
-		if (isUndefinedOrNull(val)) {
+		if (types.isUndefinedOrNull(val)) {
 			val = defaultVal;
 		}
 		return val;
