@@ -1481,6 +1481,9 @@ export async function pathsToEditors(paths: IPathData[] | undefined, fileService
 		}
 
 		const exists = (typeof path.exists === 'boolean') ? path.exists : await fileService.exists(resource);
+		if (!exists && path.openOnlyIfExists) {
+			return undefined; // {{SQL CARBON EDIT}} @anthonydresser revert after strictnullchecks
+		}
 
 		const options: ITextEditorOptions = (exists && typeof path.lineNumber === 'number') ? {
 			selection: {
