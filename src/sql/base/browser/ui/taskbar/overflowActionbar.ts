@@ -86,16 +86,19 @@ export class OverflowActionBar extends ActionBar {
 			}
 		} else if (this._overflow?.hasChildNodes() && width > this._previousWidth) { // uncollapse actions if there is space for it
 			while (width === fullWidth && this._overflow.hasChildNodes()) {
-				// move placeholder in this._items
-				let placeHolderItem = this._items.splice(this._actionsList.childNodes.length - 1, 1);
-				this._items.splice(this._actionsList.childNodes.length, 0, placeHolderItem[0]);
-
 				let item = this._overflow.removeChild(this._overflow.firstChild);
 				// change role back to button when it's in the toolbar
 				if ((<HTMLElement>item).className !== 'taskbarSeparator') {
 					(<HTMLElement>item.firstChild).setAttribute('role', 'button');
 				}
 				this._actionsList.insertBefore(item, this._actionsList.lastChild);
+
+				// move placeholder in this._items if item isn't a separator
+				if (!(<HTMLElement>item).classList.contains('taskbarSeparator')) {
+					let placeHolderIndex = this._items.findIndex(i => i === undefined);
+					let placeHolderItem = this._items.splice(placeHolderIndex, 1);
+					this._items.splice(placeHolderIndex + 1, 0, placeHolderItem[0]);
+				}
 
 				// if the action was too wide, collapse it again
 				if (this._actionsList.scrollWidth > this._actionsList.offsetWidth) {
@@ -112,14 +115,17 @@ export class OverflowActionBar extends ActionBar {
 	}
 
 	private collapseItem(): void {
-		// move placeholder in this._items
-		let placeHolderItem = this._items.splice(this._actionsList.childNodes.length - 1, 1);
-		this._items.splice(this._actionsList.childNodes.length - 2, 0, placeHolderItem[0]);
-
 		let index = this._actionsList.childNodes.length - 2; // remove the last toolbar action before the more actions '...'
 		let item = this._actionsList.removeChild(this._actionsList.childNodes[index]);
 		this._overflow.insertBefore(item, this._overflow.firstChild);
 		this._register(DOM.addDisposableListener(item, DOM.EventType.CLICK, (e => { this.hideOverflowDisplay(); })));
+
+		// move placeholder in this._items if item isn't a separator
+		if (!(<HTMLElement>item).classList.contains('taskbarSeparator')) {
+			let placeHolderIndex = this._items.findIndex(i => i === undefined);
+			let placeHolderItem = this._items.splice(placeHolderIndex, 1);
+			this._items.splice(placeHolderIndex - 1, 0, placeHolderItem[0]);
+		}
 
 		// change role to menuItem when it's in the overflow
 		if ((<HTMLElement>this._overflow.firstChild).className !== 'taskbarSeparator') {
@@ -188,10 +194,23 @@ export class OverflowActionBar extends ActionBar {
 	private moreElementOnClick(event: MouseEvent | StandardKeyboardEvent): void {
 		this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block';
 		if (this._overflow.style.display === 'block') {
-			this._focusedItem = this._actionsList.childElementCount;
+			// set focus to the first element in the overflow
+			// separators aren't focusable so we don't want to include them when calculating the focused item index
+			this._focusedItem = this._actionsList.childElementCount - this.getActionListSeparatorCount();
 			this.updateFocus();
 		}
 		DOM.EventHelper.stop(event, true);
+	}
+
+	private getActionListSeparatorCount(): number {
+		let count = 0;
+		for (let i = 0; i < this._actionsList.children.length; i++) {
+			if (this._actionsList.children[i].className.includes('taskbarSeparator')) {
+				count++;
+			}
+		}
+
+		return count;
 	}
 
 	private hideOverflowDisplay(): void {
