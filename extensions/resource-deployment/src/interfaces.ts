@@ -163,6 +163,8 @@ export interface SharedFieldAttributes {
 	labelWidth?: string;
 	inputWidth?: string;
 	labelPosition?: LabelPosition; // Default value is top
+	rowWidth?: string;
+	rowHeight?: string;
 }
 export interface SectionInfo extends SharedFieldAttributes {
 	title?: string;
@@ -244,6 +246,7 @@ export enum FieldType {
 	Options = 'options',
 	RadioOptions = 'radio_options',
 	ReadonlyText = 'readonly_text',
+	SummaryText = 'summary_text',
 	Checkbox = 'checkbox',
 	AzureAccount = 'azure_account',
 	AzureLocations = 'azure_locations',

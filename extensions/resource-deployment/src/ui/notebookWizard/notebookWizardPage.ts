@@ -7,7 +7,7 @@ import { EOL } from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { NotebookWizardPageInfo } from '../../interfaces';
-import { initializeWizardPage, InputComponents, InputComponent, setModelValues, Validator } from '../modelViewUtils';
+import { initializeWizardPage, InputComponents, InputComponent, setModelValues, Validator, getTextComponent } from '../modelViewUtils';
 import { WizardPageBase } from '../wizardPageBase';
 import { NotebookWizard } from './notebookWizard';
 
@@ -15,6 +15,7 @@ const localize = nls.loadMessageBundle();
 
 export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 	private inputComponents: InputComponents = {};
+	private inputComponentOriginalValues!: Map<string, string>;
 
 	protected get pageInfo(): NotebookWizardPageInfo {
 		return this.wizard.wizardInfo.pages[this._pageIndex];
@@ -22,27 +23,36 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 
 	constructor(wizard: NotebookWizard, private _pageIndex: number) {
 		super(wizard.wizardInfo.pages[_pageIndex].title, wizard.wizardInfo.pages[_pageIndex].description || '', wizard);
+		if (this.pageInfo.isSummaryPage) {
+			this.inputComponentOriginalValues = new Map<string, string>();
+		}
 	}
 
 	public initialize(): void {
-		const self = this;
 		initializeWizardPage({
 			container: this.wizard.wizardObject,
 			wizardInfo: this.wizard.wizardInfo,
 			pageInfo: this.pageInfo,
 			page: this.pageObject,
 			onNewDisposableCreated: (disposable: vscode.Disposable): void => {
-				self.wizard.registerDisposable(disposable);
+				this.wizard.registerDisposable(disposable);
 			},
 			onNewInputComponentCreated: (name: string, component: InputComponent): void => {
-				self.inputComponents[name] = { component: component };
+				if (name) {
+					this.inputComponents[name] = { component: component };
+					if (this.pageInfo.isSummaryPage) {
+						const input = component as azdata.TextComponent;
+						if (input && 'value' in input) {
+							this.inputComponentOriginalValues.set(name, input.value!);
+						}
+					}
+				}
 			},
 			onNewValidatorCreated: (validator: Validator): void => {
-				self.validators.push(validator);
+				this.validators.push(validator);
 			}
 		});
 	}
-
 
 	public onLeave() {
 		setModelValues(this.inputComponents, this.wizard.model);
@@ -53,6 +63,15 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 	}
 
 	public onEnter() {
+		console.log(`NotebookWizardPage -> onEnter -> this._pageIndex`, this._pageIndex);
+		if (this.pageInfo.isSummaryPage) {
+			this.inputComponentOriginalValues.forEach((originalValue: string, name: string) => {
+				const textComponent = getTextComponent(name, this.inputComponents);
+				if (textComponent && textComponent.value && textComponent.value.match(/\$[(].*[)]/g)) {
+					textComponent.value! = this.wizard.model.interpolateVariableValues(originalValue);
+				}
+			});
+		}
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };
 			if (pcInfo.newPage > pcInfo.lastPage) {

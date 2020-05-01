@@ -41,4 +41,15 @@ export class Model {
 			process.env[propertyName] = value === undefined ? '' : value;
 		});
 	}
+
+	public interpolateVariableValues(inputValue: string): string {
+		Object.keys(this.propValueObject)
+			.filter(propertyName => propertyName.startsWith(NoteBookEnvironmentVariablePrefix))
+			.forEach(propertyName => {
+				const value = this.getStringValue(propertyName) || '';
+				const re: RegExp = new RegExp(`\\\$\\\(${propertyName}\\\)`, 'gi');
+				inputValue = inputValue.replace(re, value);
+			});
+		return inputValue;
+	}
 }

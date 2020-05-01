@@ -20,7 +20,7 @@ const localize = nls.loadMessageBundle();
 
 export type Validator = () => { valid: boolean, message: string };
 export type InputValueTransformer = (inputValue: string) => string;
-export type InputComponent = azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | azdata.RadioButtonComponent;
+export type InputComponent = azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | azdata.RadioButtonComponent;
 export type InputComponents = { [s: string]: { component: InputComponent; inputValueTransformer?: InputValueTransformer } };
 
 export function getInputBoxComponent(name: string, inputComponents: InputComponents): azdata.InputBoxComponent {
@@ -41,6 +41,8 @@ export function getTextComponent(name: string, inputComponents: InputComponents)
 
 export const DefaultInputComponentWidth = '400px';
 export const DefaultLabelComponentWidth = '200px';
+export const DefaultRowWidth = undefined;
+export const DefaultRowHeight = undefined;
 
 export interface DialogContext extends CreateContext {
 	dialogInfo: DialogInfoBase;
@@ -73,6 +75,11 @@ interface FilePickerInputs {
 interface RadioOptionsInputs {
 	optionsList: azdata.DivContainer;
 	loader: azdata.LoadingComponent;
+}
+
+interface ReadOnlyFieldInputs {
+	label: azdata.TextComponent;
+	text: azdata.TextComponent;
 }
 
 interface KubeClusterContextFieldContext extends FieldContext {
@@ -159,6 +166,8 @@ export function initializeDialog(dialogContext: DialogContext): void {
 			const sections = tabInfo.sections.map(sectionInfo => {
 				sectionInfo.inputWidth = sectionInfo.inputWidth || tabInfo.inputWidth || DefaultInputComponentWidth;
 				sectionInfo.labelWidth = sectionInfo.labelWidth || tabInfo.labelWidth || DefaultLabelComponentWidth;
+				sectionInfo.rowWidth = sectionInfo.rowWidth || tabInfo.rowWidth || DefaultRowWidth;
+				sectionInfo.rowHeight = sectionInfo.rowHeight || tabInfo.rowHeight || DefaultRowHeight;
 				sectionInfo.labelPosition = sectionInfo.labelPosition || tabInfo.labelPosition;
 				return createSection({
 					sectionInfo: sectionInfo,
@@ -191,6 +200,8 @@ export function initializeWizardPage(context: WizardPageContext): void {
 		const sections = context.pageInfo.sections.map(sectionInfo => {
 			sectionInfo.inputWidth = sectionInfo.inputWidth || context.pageInfo.inputWidth || context.wizardInfo.inputWidth || DefaultInputComponentWidth;
 			sectionInfo.labelWidth = sectionInfo.labelWidth || context.pageInfo.labelWidth || context.wizardInfo.labelWidth || DefaultLabelComponentWidth;
+			sectionInfo.rowWidth = sectionInfo.rowWidth || context.pageInfo.rowWidth || context.wizardInfo.rowWidth || DefaultRowWidth;
+			sectionInfo.rowHeight = sectionInfo.rowHeight || context.pageInfo.rowHeight || context.wizardInfo.rowHeight || DefaultRowHeight;
 			sectionInfo.labelPosition = sectionInfo.labelPosition || context.pageInfo.labelPosition || context.wizardInfo.labelPosition;
 			return createSection({
 				view: view,
@@ -217,13 +228,17 @@ export function createSection(context: SectionContext): azdata.GroupContainer {
 	const components: azdata.Component[] = [];
 	context.sectionInfo.inputWidth = context.sectionInfo.inputWidth || DefaultInputComponentWidth;
 	context.sectionInfo.labelWidth = context.sectionInfo.labelWidth || DefaultLabelComponentWidth;
+	context.sectionInfo.rowWidth = context.sectionInfo.rowWidth || DefaultRowWidth;
+	context.sectionInfo.rowHeight = context.sectionInfo.rowHeight || DefaultRowHeight;
+	context.sectionInfo.inputWidth = context.sectionInfo.inputWidth || DefaultInputComponentWidth;
+	context.sectionInfo.labelWidth = context.sectionInfo.labelWidth || DefaultLabelComponentWidth;
 	if (context.sectionInfo.fields) {
 		processFields(context.sectionInfo.fields, components, context);
 	} else if (context.sectionInfo.rows) {
 		context.sectionInfo.rows.forEach(rowInfo => {
 			const rowItems: azdata.Component[] = [];
 			processFields(rowInfo.fields, rowItems, context, context.sectionInfo.spaceBetweenFields || '50px');
-			const row = createFlexContainer(context.view, rowItems);
+			const row = createFlexContainer(context.view, rowItems, true, context.sectionInfo.rowWidth, context.sectionInfo.rowHeight);
 			components.push(row);
 		});
 	}
@@ -240,6 +255,8 @@ function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component
 		const fieldInfo = fieldInfoArray[i];
 		fieldInfo.labelWidth = fieldInfo.labelWidth || context.sectionInfo.labelWidth;
 		fieldInfo.inputWidth = fieldInfo.inputWidth || context.sectionInfo.inputWidth;
+		fieldInfo.rowWidth = fieldInfo.rowWidth || context.sectionInfo.rowWidth;
+		fieldInfo.rowHeight = fieldInfo.rowHeight || context.sectionInfo.rowHeight;
 		fieldInfo.labelPosition = fieldInfo.labelPosition === undefined ? context.sectionInfo.labelPosition : fieldInfo.labelPosition;
 		processField({
 			view: context.view,
@@ -256,24 +273,32 @@ function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component
 	}
 }
 
-export function createFlexContainer(view: azdata.ModelView, items: azdata.Component[], rowLayout: boolean = true): azdata.FlexContainer {
+export function createFlexContainer(view: azdata.ModelView, items: azdata.Component[], rowLayout: boolean = true, width?: string | number, height?: string | number): azdata.FlexContainer {
 	const flexFlow = rowLayout ? 'row' : 'column';
 	const alignItems = rowLayout ? 'center' : undefined;
-	const itemsStyle = rowLayout ? { CSSStyles: { 'margin-right': '5px' } } : {};
-	return view.modelBuilder.flexContainer().withItems(items, itemsStyle).withLayout({ flexFlow: flexFlow, alignItems: alignItems }).component();
+	const itemsStyle = rowLayout ? { CSSStyles: { 'margin-right': '5px', } } : {};
+	const flexLayout: azdata.FlexLayout = { flexFlow: flexFlow, alignItems: alignItems };
+	if (height) {
+		flexLayout.height = height;
+	}
+	if (width) {
+		flexLayout.width = width;
+	}
+	let flexBuilder = view.modelBuilder.flexContainer().withItems(items, itemsStyle).withLayout(flexLayout);
+	return flexBuilder.component();
 }
 
 export function createGroupContainer(view: azdata.ModelView, items: azdata.Component[], layout: azdata.GroupLayout): azdata.GroupContainer {
 	return view.modelBuilder.groupContainer().withItems(items).withLayout(layout).component();
 }
 
-function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata.Component[], label: azdata.Component, input: azdata.Component, labelPosition?: LabelPosition, additionalComponents?: azdata.Component[]) {
+function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata.Component[], label: azdata.Component, input: azdata.Component, fieldInfo: FieldInfo, additionalComponents?: azdata.Component[]) {
 	const inputs = [label, input];
 	if (additionalComponents && additionalComponents.length > 0) {
 		inputs.push(...additionalComponents);
 	}
-	if (labelPosition && labelPosition === LabelPosition.Left) {
-		const row = createFlexContainer(view, inputs);
+	if (fieldInfo.labelPosition && fieldInfo.labelPosition === LabelPosition.Left) {
+		const row = createFlexContainer(view, inputs, true, fieldInfo.rowWidth, fieldInfo.rowHeight);
 		components.push(row);
 	} else {
 		components.push(...inputs);
@@ -303,6 +328,9 @@ function processField(context: FieldContext): void {
 			break;
 		case FieldType.ReadonlyText:
 			processReadonlyTextField(context);
+			break;
+		case FieldType.SummaryText:
+			processSummaryTextField(context);
 			break;
 		case FieldType.Checkbox:
 			processCheckboxField(context);
@@ -335,7 +363,7 @@ function processOptionsTypeField(context: FieldContext): void {
 		label: context.fieldInfo.label
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, dropdown);
-	addLabelInputPairToContainer(context.view, context.components, label, dropdown, context.fieldInfo.labelPosition);
+	addLabelInputPairToContainer(context.view, context.components, label, dropdown, context.fieldInfo);
 }
 
 function processDateTimeTextField(context: FieldContext): void {
@@ -350,7 +378,7 @@ function processDateTimeTextField(context: FieldContext): void {
 	}).component();
 	input.width = context.fieldInfo.inputWidth;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
-	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelPosition);
+	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo);
 }
 
 function processNumberField(context: FieldContext): void {
@@ -365,7 +393,7 @@ function processNumberField(context: FieldContext): void {
 		placeHolder: context.fieldInfo.placeHolder
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
-	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelPosition);
+	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo);
 }
 
 function processTextField(context: FieldContext): void {
@@ -379,7 +407,7 @@ function processTextField(context: FieldContext): void {
 		enabled: context.fieldInfo.enabled
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
-	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelPosition);
+	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo);
 
 	if (context.fieldInfo.textValidationRequired) {
 		let validationRegex: RegExp = new RegExp(context.fieldInfo.textValidationRegex!);
@@ -413,7 +441,7 @@ function processPasswordField(context: FieldContext): void {
 		width: context.fieldInfo.inputWidth
 	}).component();
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, passwordInput);
-	addLabelInputPairToContainer(context.view, context.components, passwordLabel, passwordInput, context.fieldInfo.labelPosition);
+	addLabelInputPairToContainer(context.view, context.components, passwordLabel, passwordInput, context.fieldInfo);
 
 	if (context.fieldInfo.type === FieldType.SQLPassword) {
 		const invalidPasswordMessage = getInvalidSQLPasswordMessage(context.fieldInfo.label);
@@ -438,7 +466,7 @@ function processPasswordField(context: FieldContext): void {
 			width: context.fieldInfo.inputWidth
 		}).component();
 
-		addLabelInputPairToContainer(context.view, context.components, confirmPasswordLabel, confirmPasswordInput, context.fieldInfo.labelPosition);
+		addLabelInputPairToContainer(context.view, context.components, confirmPasswordLabel, confirmPasswordInput, context.fieldInfo);
 		context.onNewValidatorCreated((): { valid: boolean, message: string } => {
 			const passwordMatches = passwordInput.value === confirmPasswordInput.value;
 			return { valid: passwordMatches, message: passwordNotMatchMessage };
@@ -459,11 +487,17 @@ function processPasswordField(context: FieldContext): void {
 	}
 }
 
-function processReadonlyTextField(context: FieldContext): void {
+function processReadonlyTextField(context: FieldContext): ReadOnlyFieldInputs {
 	let defaultValue = context.fieldInfo.defaultValue || '';
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
 	const text = createLabel(context.view, { text: defaultValue, description: '', required: false, width: context.fieldInfo.inputWidth, fontWeight: context.fieldInfo.textFontWeight, fontStyle: context.fieldInfo.fontStyle, links: context.fieldInfo.links });
-	addLabelInputPairToContainer(context.view, context.components, label, text, context.fieldInfo.labelPosition);
+	addLabelInputPairToContainer(context.view, context.components, label, text, context.fieldInfo);
+	return { label: label, text: text };
+}
+
+function processSummaryTextField(context: FieldContext): void {
+	const readOnlyField = processReadonlyTextField(context);
+	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, readOnlyField.text);
 }
 
 function processCheckboxField(context: FieldContext): void {
@@ -506,7 +540,8 @@ function processFilePickerField(context: FieldContext, defaultFilePath?: string)
 		let fileUri = fileUris[0];
 		input.value = fileUri.fsPath;
 	}));
-	addLabelInputPairToContainer(context.view, context.components, label, input, LabelPosition.Left, [browseFileButton]);
+	context.fieldInfo.labelPosition = LabelPosition.Left;
+	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo, [browseFileButton]);
 	return { input: input, browseButton: browseFileButton };
 }
 
@@ -575,7 +610,8 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
 	const optionsList = context.view!.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
 	const radioOptionsLoadingComponent = context.view!.modelBuilder.loadingComponent().withItem(optionsList).component();
-	addLabelInputPairToContainer(context.view, context.components, label, radioOptionsLoadingComponent, LabelPosition.Left);
+	context.fieldInfo.labelPosition = LabelPosition.Left;
+	addLabelInputPairToContainer(context.view, context.components, label, radioOptionsLoadingComponent, context.fieldInfo);
 	await loadOrReloadRadioOptions(context, optionsList, radioOptionsLoadingComponent, getRadioButtonInfo);
 	return { optionsList: optionsList, loader: radioOptionsLoadingComponent };
 }
@@ -660,7 +696,7 @@ function createAzureAccountDropdown(context: AzureAccountFieldContext): azdata.D
 		label: loc.account
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, accountDropdown);
-	addLabelInputPairToContainer(context.view, context.components, label, accountDropdown, context.fieldInfo.labelPosition);
+	addLabelInputPairToContainer(context.view, context.components, label, accountDropdown, context.fieldInfo);
 	return accountDropdown;
 }
 
@@ -686,7 +722,7 @@ function createAzureSubscriptionDropdown(
 	context.onNewInputComponentCreated(context.fieldInfo.subscriptionVariableName!, subscriptionDropdown, (inputValue: string) => {
 		return subscriptionValueToSubscriptionMap.get(inputValue)?.id || inputValue;
 	});
-	addLabelInputPairToContainer(context.view, context.components, label, subscriptionDropdown, context.fieldInfo.labelPosition);
+	addLabelInputPairToContainer(context.view, context.components, label, subscriptionDropdown, context.fieldInfo);
 	return subscriptionDropdown;
 }
 
@@ -755,7 +791,7 @@ function createAzureResourceGroupsDropdown(
 		variableName: context.fieldInfo.resourceGroupVariableName
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.resourceGroupVariableName!, resourceGroupDropdown);
-	addLabelInputPairToContainer(context.view, context.components, label, resourceGroupDropdown, context.fieldInfo.labelPosition);
+	addLabelInputPairToContainer(context.view, context.components, label, resourceGroupDropdown, context.fieldInfo);
 	subscriptionDropdown.onValueChanged(selectedItem => {
 		const selectedAccount = !accountDropdown || !accountDropdown.value ? undefined : accountValueToAccountMap.get(accountDropdown.value.toString());
 		const selectedSubscription = subscriptionValueToSubscriptionMap.get(selectedItem.selected);
@@ -832,7 +868,7 @@ function processAzureLocationsField(context: AzureLocationsFieldContext): azdata
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, locationDropdown, (inputValue: string) => {
 		return knownAzureLocationNameMappings.get(inputValue) || inputValue;
 	});
-	addLabelInputPairToContainer(context.view, context.components, label, locationDropdown, context.fieldInfo.labelPosition);
+	addLabelInputPairToContainer(context.view, context.components, label, locationDropdown, context.fieldInfo);
 	return locationDropdown;
 }
 
