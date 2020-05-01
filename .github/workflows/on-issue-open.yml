@@ -19,5 +19,6 @@ jobs:
       - name: Run CopyCat
         uses: ./actions/build/actions/copycat
         with:
+          token: ${{secrets.TRIAGE_PAT}}
           owner: anthonydresser
           repo: testissues
