@@ -25,7 +25,7 @@ export class PostgresPropertiesPage extends PostgresDashboardPage {
 		return this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Properties' }).component();
 	}
 
-	protected get toolbarContainer(): azdata.ToolbarContainer {
+	protected get toolbarContainer(): azdata.ToolbarContainer | undefined {
 		return undefined;
 	}
 }

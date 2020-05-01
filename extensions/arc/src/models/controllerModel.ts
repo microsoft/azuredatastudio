@@ -10,9 +10,9 @@ export class ControllerModel {
 	private _endpointsRouter: EndpointsRouterApi;
 	private _tokenRouter: TokenRouterApi;
 	private _registrationRouter: RegistrationRouterApi;
-	private _endpoints: EndpointModel[];
-	private _controllerNamespace: string;
-	private _registrations: RegistrationResponse[];
+	private _endpoints!: EndpointModel[];
+	private _controllerNamespace!: string;
+	private _registrations!: RegistrationResponse[];
 
 	constructor(controllerUrl: string, auth: Authentication) {
 		this._endpointsRouter = new EndpointsRouterApi(controllerUrl);
@@ -31,7 +31,7 @@ export class ControllerModel {
 				this._endpoints = response.body;
 			}),
 			this._tokenRouter.apiV1TokenPost().then(async response => {
-				this._controllerNamespace = response.body.namespace;
+				this._controllerNamespace = response.body.namespace!;
 			})
 		]).then(async _ => {
 			this._registrations = (await this._registrationRouter.apiV1RegistrationListResourcesNsGet(this._controllerNamespace)).body;
@@ -42,7 +42,7 @@ export class ControllerModel {
 		return this._endpoints;
 	}
 
-	public endpoint(name: string): EndpointModel {
+	public endpoint(name: string): EndpointModel | undefined {
 		return this._endpoints.find(e => e.name === name);
 	}
 
@@ -54,10 +54,10 @@ export class ControllerModel {
 		return this._registrations;
 	}
 
-	public registration(type: string, namespace: string, name: string): RegistrationResponse {
+	public registration(type: string, namespace: string, name: string): RegistrationResponse | undefined {
 		return this._registrations.find(r => {
 			// Resources deployed outside the controller's namespace are named in the format 'namespace_name'
-			let instanceName: string = r.instanceName;
+			let instanceName = r.instanceName!;
 			const parts: string[] = instanceName.split('_');
 			if (parts.length === 2) {
 				instanceName = parts[1];

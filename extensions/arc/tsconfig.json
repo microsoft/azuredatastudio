@@ -6,8 +6,7 @@
 		"lib": [
 			"es6",
 			"es2015.promise"
-		],
-		"strict": false
+		]
 	},
 	"include": [
 		"src/**/*"

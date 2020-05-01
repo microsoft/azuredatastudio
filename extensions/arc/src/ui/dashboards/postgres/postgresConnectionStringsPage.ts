@@ -25,7 +25,7 @@ export class PostgresConnectionStringsPage extends PostgresDashboardPage {
 		return this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Connection strings' }).component();
 	}
 
-	protected get toolbarContainer(): azdata.ToolbarContainer {
+	protected get toolbarContainer(): azdata.ToolbarContainer | undefined {
 		return undefined;
 	}
 }

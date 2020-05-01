@@ -24,82 +24,34 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 	}
 
 	protected get container(): azdata.Component {
+		const root = this.modelView.modelBuilder.divContainer().component();
 		const overview = this.modelView.modelBuilder.divContainer().component();
-		const essentials = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-		const leftEssentials = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-		const rightEssentials = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-		const essentialColumns = this.modelView.modelBuilder.flexContainer().withItems([leftEssentials, rightEssentials], { flex: '1', CSSStyles: { 'padding': '0px 15px', 'overflow': 'hidden' } }).component();
-		essentials.addItem(essentialColumns);
-		overview.addItem(essentials);
+		root.addItem(overview, { CSSStyles: { 'margin': '10px' } });
 
-		// Collapse essentials button
-		const collapse = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({ iconPath: IconPathHelper.collapseUp, width: '10px', height: '10px' }).component();
-		essentials.addItem(collapse, { CSSStyles: { 'margin-left': 'auto', 'margin-right': 'auto' } });
-		collapse.onDidClick(async () => {
-			if (essentialColumns.display === undefined) {
-				essentialColumns.display = 'none';
-				collapse.iconPath = IconPathHelper.collapseDown;
-			} else {
-				essentialColumns.display = undefined;
-				collapse.iconPath = IconPathHelper.collapseUp;
-			}
-		});
-
-		const headerCSS = { ...cssStyles.text, 'font-weight': '400', 'margin-block-start': '8px', 'margin-block-end': '0px' };
-		const textCSS = { ...cssStyles.text, 'font-weight': '500', 'margin-block-start': '0px', 'margin-block-end': '0px' };
-
-		// Left essentials
 		const registration = this.controllerModel.registration('postgres', this.databaseModel.namespace(), this.databaseModel.name());
-		leftEssentials.addItems([
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Name', CSSStyles: headerCSS }).component(),
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this.databaseModel.name(), CSSStyles: textCSS }).component(),
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Resource group', CSSStyles: headerCSS }).component(),
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: registration?.resourceGroupName ?? 'None', CSSStyles: textCSS }).component(),
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Status', CSSStyles: headerCSS }).component(),
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this.databaseModel.service().status.state, CSSStyles: textCSS }).component(),
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Data controller', CSSStyles: headerCSS }).component(),
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this.controllerModel.controllerNamespace(), CSSStyles: textCSS }).component(),
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Subscription', CSSStyles: headerCSS }).component(),
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: registration?.subscriptionId ?? 'None', CSSStyles: textCSS }).component()]);
-
-		// Right essentials
-		// Connection string
-		const pgConnString = `postgresql://postgres:${this.databaseModel.password()}@${this.databaseModel.endpoint()}`;
-		const endpointLink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
-			url: pgConnString, label: pgConnString, CSSStyles: {
-				...cssStyles.hyperlink, 'display': 'inline-block', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis'
-			}
+		const essentials = this.modelView.modelBuilder.propertiesContainer().withProperties<azdata.PropertiesContainerComponentProperties>({
+			propertyItems: [
+				{ displayName: 'Name', value: this.databaseModel.name() },
+				{ displayName: 'Server group type', value: 'Azure Database for PostgreSQL - Azure Arc' },
+				{ displayName: 'Resource group', value: registration?.resourceGroupName ?? 'None' },
+				{ displayName: 'Coordinator endpoint', value: `postgresql://postgres:${this.databaseModel.password()}@${this.databaseModel.endpoint()}` },
+				{ displayName: 'Status', value: this.databaseModel.service().status!.state },
+				{ displayName: 'Admin username', value: 'postgres' },
+				{ displayName: 'Data controller', value: this.controllerModel.controllerNamespace() },
+				{ displayName: 'Node configuration', value: this.databaseModel.configuration() },
+				{ displayName: 'Subscription', value: registration?.subscriptionId ?? 'None' },
+				{ displayName: 'PostgreSQL version', value: this.databaseModel.service().spec.engine.version!.toString() }
+			]
 		}).component();
-		const endpointDiv = this.modelView.modelBuilder.divContainer().component();
-		endpointDiv.addItem(endpointLink, { CSSStyles: { 'display': 'inline-block', 'max-width': 'calc(100% - 20px)', 'padding-right': '5px' } });
-
-		// Button to copy the connection string
-		const endpointCopy = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({ iconPath: IconPathHelper.copy, width: '15px', height: '15px' }).component();
-		endpointDiv.addItem(endpointCopy, { CSSStyles: { 'display': 'inline-block' } });
-		endpointCopy.onDidClick(async () => {
-			vscode.env.clipboard.writeText(pgConnString);
-			vscode.window.showInformationMessage('Coordinator endpoint copied to clipboard');
-		});
-
-		rightEssentials.addItems([
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Server group type', CSSStyles: headerCSS }).component(),
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Azure Database for PostgreSQL - Azure Arc', CSSStyles: textCSS }).component(),
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Coordinator endpoint', CSSStyles: headerCSS }).component(),
-			endpointDiv,
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Admin username', CSSStyles: headerCSS }).component(),
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'postgres', CSSStyles: textCSS }).component(),
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Node configuration', CSSStyles: headerCSS }).component(),
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this.databaseModel.configuration(), CSSStyles: textCSS }).component(),
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'PostgreSQL version', CSSStyles: headerCSS }).component(),
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this.databaseModel.service().spec.engine.version.toString(), CSSStyles: textCSS }).component()]);
+		overview.addItem(essentials, { CSSStyles: cssStyles.text });
 
 		// Service endpoints
-		const titleCSS = { ...cssStyles.text, 'font-weight': 'bold', 'font-size': '14px', 'margin-left': '10px', 'margin-block-start': '0', 'margin-block-end': '0' };
+		const titleCSS = { ...cssStyles.text, 'font-weight': 'bold', 'font-size': '14px', 'margin-block-start': '2em', 'margin-block-end': '0' };
 		overview.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Service endpoints', CSSStyles: titleCSS }).component());
 
 		const kibanaQuery = `kubernetes_namespace:"${this.databaseModel.namespace()}" and cluster_name:"${this.databaseModel.name()}"`;
-		const kibanaUrl = `${this.controllerModel.endpoint('logsui').endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
-		const grafanaUrl = `${this.controllerModel.endpoint('metricsui').endpoint}/d/postgres-metrics?var-Namespace=${this.databaseModel.namespace()}&var-Name=${this.databaseModel.name()}`;
+		const kibanaUrl = `${this.controllerModel.endpoint('logsui')?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
+		const grafanaUrl = `${this.controllerModel.endpoint('metricsui')?.endpoint}/d/postgres-metrics?var-Namespace=${this.databaseModel.namespace()}&var-Name=${this.databaseModel.name()}`;
 
 		const kibanaLink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: kibanaUrl, url: kibanaUrl, CSSStyles: cssStyles.hyperlink }).component();
 		const grafanaLink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: grafanaUrl, url: grafanaUrl, CSSStyles: cssStyles.hyperlink }).component();
@@ -142,7 +94,7 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 				['Kibana Dashboard', kibanaLink, 'Dashboard for viewing logs'],
 				['Grafana Dashboard', grafanaLink, 'Dashboard for viewing metrics']]
 		}).component();
-		overview.addItem(endpointsTable, { CSSStyles: { 'margin-left': '10px', 'margin-right': '10px' } });
+		overview.addItem(endpointsTable);
 
 		// Server group nodes
 		overview.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Server group nodes', CSSStyles: titleCSS }).component());
@@ -185,8 +137,8 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 				i === 0 ? this.databaseModel.endpoint() : `${this.databaseModel.name()}-${i}.${this.databaseModel.name()}-svc.${this.databaseModel.namespace()}.svc.cluster.local`]);
 		}
 
-		overview.addItem(nodesTable, { CSSStyles: { 'margin-left': '10px', 'margin-right': '10px', 'margin-bottom': '20px' } });
-		return overview;
+		overview.addItem(nodesTable, { CSSStyles: { 'margin-bottom': '20px' } });
+		return root;
 	}
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
@@ -197,10 +149,13 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 		}).component();
 
 		newDatabaseButton.onDidClick(async () => {
-			const name: string = await vscode.window.showInputBox({ prompt: 'Database name' });
+			const name = await vscode.window.showInputBox({ prompt: 'Database name' });
+			if (name === undefined) { return; }
 			let db: DuskyObjectModelsDatabase = { name: name }; // TODO support other options (sharded, owner)
-			this.databaseModel.createDatabase(db);
-			vscode.window.showInformationMessage(`Database '${db.name}' created`);
+			await this.databaseModel.createDatabase(db)
+				.then(db => vscode.window.showInformationMessage(`Database '${db.name}' created`))
+				.catch(error => vscode.window.showErrorMessage(
+					`Failed to create database '${db.name}'. ${error instanceof Error ? error.message : error}`));
 		});
 
 		// Reset password
@@ -210,13 +165,15 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 		}).component();
 
 		resetPasswordButton.onDidClick(async () => {
-			const password: string = await vscode.window.showInputBox({ prompt: 'New password', password: true });
-			this.databaseModel.update(s => {
-				if (s.arc === undefined) { s.arc = new DuskyObjectModelsDatabaseServiceArcPayload(); }
+			const password = await vscode.window.showInputBox({ prompt: 'New password', password: true });
+			if (password === undefined) { return; }
+			await this.databaseModel.update(s => {
+				s.arc = s.arc ?? new DuskyObjectModelsDatabaseServiceArcPayload();
 				s.arc.servicePassword = password;
-			});
-
-			vscode.window.showInformationMessage(`Password reset for service '${this.databaseModel.namespace()}.${this.databaseModel.name()}'`);
+			})
+				.then(_ => vscode.window.showInformationMessage(`Password reset for service '${this.databaseModel.fullName()}'`))
+				.catch(error => vscode.window.showErrorMessage(
+					`Failed to reset password for service '${this.databaseModel.fullName()}'. ${error instanceof Error ? error.message : error}`));
 		});
 
 		// Delete service
@@ -226,20 +183,32 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 		}).component();
 
 		deleteButton.onDidClick(async () => {
-			const response: string = await vscode.window.showQuickPick(['Yes', 'No'], {
-				placeHolder: `Delete service '${this.databaseModel.namespace()}.${this.databaseModel.name()}'?`
+			const response = await vscode.window.showQuickPick(['Yes', 'No'], {
+				placeHolder: `Delete service '${this.databaseModel.fullName()}'?`
 			});
 			if (response === 'Yes') {
-				this.databaseModel.delete();
-				vscode.window.showInformationMessage(`Service '${this.databaseModel.namespace()}.${this.databaseModel.name()}' deleted`);
+				await this.databaseModel.delete()
+					.then(_ => vscode.window.showInformationMessage(`Service '${this.databaseModel.fullName()}' deleted`))
+					.catch(error => vscode.window.showErrorMessage(
+						`Failed to delete service '${this.databaseModel.fullName()}'. ${error instanceof Error ? error.message : error}`));
 			}
 		});
 
-		// TODO implement click
+		// Open in Azure portal
 		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: 'Open in Azure portal',
 			iconPath: IconPathHelper.openInTab
 		}).component();
+
+		openInAzurePortalButton.onDidClick(async () => {
+			const r = this.controllerModel.registration('postgres', this.databaseModel.namespace(), this.databaseModel.name());
+			if (r === undefined) {
+				vscode.window.showErrorMessage(`Could not find Azure resource for '${this.databaseModel.fullName()}'`);
+			} else {
+				vscode.env.openExternal(vscode.Uri.parse(
+					`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/postgresInstances/${r.instanceName}`));
+			}
+		});
 
 		// TODO implement click
 		const feedbackButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({

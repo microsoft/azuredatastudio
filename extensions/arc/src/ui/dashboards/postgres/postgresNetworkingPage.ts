@@ -25,7 +25,7 @@ export class PostgresNetworkingPage extends PostgresDashboardPage {
 		return this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Networking' }).component();
 	}
 
-	protected get toolbarContainer(): azdata.ToolbarContainer {
+	protected get toolbarContainer(): azdata.ToolbarContainer | undefined {
 		return undefined;
 	}
 }

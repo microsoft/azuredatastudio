@@ -8,22 +8,27 @@ import { Authentication } from '../controller/auth';
 
 export class PostgresModel {
 	private _databaseRouter: DatabaseRouterApi;
-	private _service: DuskyObjectModelsDatabaseService;
-	private _password: string;
+	private _service!: DuskyObjectModelsDatabaseService;
+	private _password!: string;
 
 	constructor(controllerUrl: string, auth: Authentication, private _namespace: string, private _name: string) {
 		this._databaseRouter = new DatabaseRouterApi(controllerUrl);
 		this._databaseRouter.setDefaultAuthentication(auth);
 	}
 
-	/** Returns the Kubernetes namespace of the service */
+	/** Returns the service's Kubernetes namespace */
 	public namespace(): string {
 		return this._namespace;
 	}
 
-	/** Returns the name of the service */
+	/** Returns the service's name */
 	public name(): string {
 		return this._name;
+	}
+
+	/** Returns the service's fully qualified name in the format namespace.name */
+	public fullName(): string {
+		return `${this._namespace}.${this._name}`;
 	}
 
 	/** Returns the service's spec */
@@ -83,10 +88,10 @@ export class PostgresModel {
 
 	/** Returns the ip:port of the service */
 	public endpoint(): string {
-		const externalIp = this._service.status.externalIP;
-		const internalIp = this._service.status.internalIP;
-		const externalPort = this._service.status.externalPort;
-		const internalPort = this._service.status.internalPort;
+		const externalIp = this._service.status!.externalIP;
+		const internalIp = this._service.status!.internalIP;
+		const externalPort = this._service.status!.externalPort;
+		const internalPort = this._service.status!.internalPort;
 
 		let ip = '0.0.0.0';
 		if (externalIp) {
@@ -107,24 +112,24 @@ export class PostgresModel {
 	/** Returns the service's configuration e.g. '3 nodes, 1.5 vCores, 1GiB RAM, 2GiB storage per node' */
 	public configuration(): string {
 		const nodes = this.numNodes();
-		const cpuLimit = this.formatCores(this._service.spec.scheduling?.resources.limits?.['cpu']);
-		const ramLimit = this.formatMemory(this._service.spec.scheduling?.resources.limits?.['memory']);
-		const cpuRequest = this.formatCores(this._service.spec.scheduling?.resources.requests?.['cpu']);
-		const ramRequest = this.formatMemory(this._service.spec.scheduling?.resources.requests?.['memory']);
-		const storage = this.formatMemory(this._service.spec.storage.volumeSize);
+		const cpuLimit = this._service.spec.scheduling?.resources?.limits?.['cpu'];
+		const ramLimit = this._service.spec.scheduling?.resources?.limits?.['memory'];
+		const cpuRequest = this._service.spec.scheduling?.resources?.requests?.['cpu'];
+		const ramRequest = this._service.spec.scheduling?.resources?.requests?.['memory'];
+		const storage = this._service.spec.storage.volumeSize;
 
 		// Prefer limits if they're provided, otherwise use requests if they're provided
 		let nodeConfiguration = `${nodes} node`;
 		if (nodes > 1) { nodeConfiguration += 's'; }
 		if (cpuLimit) {
-			nodeConfiguration += `, ${cpuLimit} vCores`;
+			nodeConfiguration += `, ${this.formatCores(cpuLimit)} vCores`;
 		} else if (cpuRequest) {
-			nodeConfiguration += `, ${cpuRequest} vCores`;
+			nodeConfiguration += `, ${this.formatCores(cpuRequest)} vCores`;
 		}
 		if (ramLimit) {
-			nodeConfiguration += `, ${ramLimit} RAM`;
+			nodeConfiguration += `, ${this.formatMemory(ramLimit)} RAM`;
 		} else if (ramRequest) {
-			nodeConfiguration += `, ${ramRequest} RAM`;
+			nodeConfiguration += `, ${this.formatMemory(ramRequest)} RAM`;
 		}
 		if (storage) { nodeConfiguration += `, ${storage} storage per node`; }
 		return nodeConfiguration;
