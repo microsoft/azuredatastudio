@@ -57,8 +57,8 @@ export class ProsePreviewPage extends ImportPage {
 			},
 			{
 				component: this.table,
-				title: '',
-				actions: [this.refresh]
+				title: ''
+				//actions: [this.refresh]  Removing this button until it makes sense (Issue #6611)
 			}
 		]).component();
 
