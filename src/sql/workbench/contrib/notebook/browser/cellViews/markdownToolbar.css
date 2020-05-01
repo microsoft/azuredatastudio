@@ -48,6 +48,10 @@
 	-webkit-mask-size: 60% 100%;
 	mask-size: 60% 100%;
 }
+.markdown-toolbar li a.codicon.underline {
+	-webkit-mask-size: 60% 100%;
+	mask-size: 60% 100%;
+}
 .markdown-toolbar li a.codicon.highlight {
 	-webkit-mask-size: 65% 100%;
 	mask-size: 65% 100%;

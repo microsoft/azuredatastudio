@@ -7,9 +7,11 @@ import * as azdata from 'azdata';
 
 import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
+import * as DOM from 'vs/base/browser/dom';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
 
+import { Dropdown, DropdownMenu, IDropdownMenuOptions } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IConnectionManagementService, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -27,15 +29,38 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IContextMenuProvider } from 'vs/base/browser/ui/dropdown/dropdown';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
 const attachToLabel: string = localize('AttachTo', "Attach to ");
-const kernelLabel: string = localize('Kernel', "Language ");
+const kernelLabel: string = localize('Kernel', "Kernel ");
 const msgLoadingContexts = localize('loadingContexts', "Loading contexts...");
 const msgChangeConnection = localize('changeConnection', "Change Connection");
 const msgSelectConnection = localize('selectConnection', "Select Connection");
 const msgLocalHost = localize('localhost', "localhost");
+
+
+export class AddButtonMenu extends Dropdown {
+
+	constructor(
+		container: HTMLElement,
+		contextViewProvider: IContextViewProvider,
+		contextMenuProvider: IContextMenuProvider,
+		label: string,
+		labelCssClass: string,
+		menuItems: Array<string>
+	) {
+		super(container, { label, labelCssClass, contextViewProvider, contextMenuProvider, menuItems });
+
+		//this.setMenuItems(container, {contextMenuProvider, labelCssClass, menuItems});
+	}
+
+	private setMenuItems(el: HTMLElement, options: IDropdownMenuOptions): void {
+		let dropdownMenu = new DropdownMenu(el, options);
+
+	}
+}
 
 // Action to add a cell to notebook based on cell type(code/markdown).
 export class AddCellAction extends Action {

@@ -332,6 +332,10 @@ Includes non-masked style declarations. */
 	-webkit-mask-image: url('toolbar-italic.svg');
 	mask-image: url('toolbar-italic.svg');
 }
+.codicon.underline {
+	-webkit-mask-image: url('toolbar-underline.svg');
+	mask-image: url('toolbar-underline.svg');
+}
 .codicon.highlight {
 	-webkit-mask-image: url('toolbar-highlight.svg');
 	mask-image: url('toolbar-highlight.svg');
@@ -470,6 +474,15 @@ Includes non-masked style declarations. */
 .masked-pseudo.start-outline:after {
 	-webkit-mask-image: url('start-outline.svg');
 	mask-image: url('start-outline.svg');
+}
+
+.masked-pseudo.code:after {
+	-webkit-mask-image: url('code.svg');
+	mask-image: url('code.svg');
+}
+.masked-pseudo.markdown:after {
+	-webkit-mask-image: url('markdown.svg');
+	mask-image: url('markdown.svg');
 }
 
 

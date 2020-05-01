@@ -140,6 +140,8 @@ export class MarkdownTextTransformer {
 				return '**';
 			case MarkdownButtonType.ITALIC:
 				return '_';
+			case MarkdownButtonType.UNDERLINE:
+				return '<u>';
 			case MarkdownButtonType.CODE:
 				return '```\n';
 			case MarkdownButtonType.LINK:
@@ -163,6 +165,8 @@ export class MarkdownTextTransformer {
 				return '**';
 			case MarkdownButtonType.ITALIC:
 				return '_';
+			case MarkdownButtonType.UNDERLINE:
+				return '</u>';
 			case MarkdownButtonType.CODE:
 				return '\n```';
 			case MarkdownButtonType.LINK:
@@ -332,6 +336,7 @@ export class MarkdownTextTransformer {
 export enum MarkdownButtonType {
 	BOLD,
 	ITALIC,
+	UNDERLINE,
 	CODE,
 	HIGHLIGHT,
 	LINK,

@@ -31,7 +31,7 @@ import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/n
 import { Deferred } from 'sql/base/common/promise';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddButtonMenu, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -409,8 +409,21 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let spacerElement = document.createElement('li');
 		spacerElement.style.marginLeft = 'auto';
 
-		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Cell"), 'notebook-button masked-pseudo add-new');
-		// addCodeCellButton.cellType = CellTypes.Code;
+		//  new
+		let addButtonMenuContainer: HTMLElement = DOM.$('li.action-item'); addButtonMenuContainer.setAttribute('role', 'presentation');
+		let menuItems: Array<string> = ['one', 'two'];
+		let buttonMenu = new AddButtonMenu(
+			addButtonMenuContainer,
+			this.contextViewService,
+			this.contextMenuService,
+			localize('addCell', "Cell"),
+			'notebook-button masked-pseudo add-new',
+			menuItems
+		);
+		// /new
+
+		//let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Cell"), 'notebook-button masked-pseudo add-new');
+		//addCodeCellButton.cellType = CellTypes.Code;
 
 		// let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Text"), 'notebook-button icon-add');
 		// addTextCellButton.cellType = CellTypes.Markdown;
@@ -428,7 +441,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
 		this._actionBar.context = this;
 		this._actionBar.setContent([
-			{ action: addCodeCellButton },
+			{ element: addButtonMenuContainer },
 			{ action: this._runAllCellsAction },
 			{ element: Taskbar.createTaskbarSeparator() },
 			{ element: attachToContainer },
