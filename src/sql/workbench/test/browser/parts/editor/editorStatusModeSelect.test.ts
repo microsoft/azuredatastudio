@@ -28,6 +28,9 @@ import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQue
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { EditorType } from 'vs/editor/common/editorCommon';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 
 const languageAssociations = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -103,6 +106,22 @@ suite('set mode', () => {
 		await instantiationService.invokeFunction(setMode, modeSupport, activeEditor, 'sql');
 		assert(stub.calledOnce);
 		assert(stub.calledWithExactly('sql'));
+	});
+
+	test('does show error if mode change happens on a dirty file', async () => {
+		const instantiationService = workbenchInstantiationService();
+		const editorService = new MockEditorService(instantiationService, 'plaintext');
+		const errorStub = sinon.stub();
+		instantiationService.stub(IEditorService, editorService);
+		instantiationService.stub(INotificationService, TestNotificationService);
+		(instantiationService as TestInstantiationService).stub(INotificationService, 'error', errorStub);
+		const stub = sinon.stub();
+		const modeSupport = { setMode: stub };
+		const activeEditor = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.txt'), undefined, 'plaintext');
+		sinon.stub(activeEditor, 'isDirty', () => true);
+		await instantiationService.invokeFunction(setMode, modeSupport, activeEditor, 'sql');
+		assert(stub.notCalled);
+		assert(errorStub.calledOnce);
 	});
 });
 
