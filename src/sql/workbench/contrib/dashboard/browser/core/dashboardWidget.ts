@@ -34,8 +34,6 @@ export interface WidgetConfig {
 	fontSize?: string;
 	fontWeight?: string;
 	padding?: string;
-	showTitle?: boolean;
-	fullSize?: boolean;
 }
 
 export interface TabConfig extends IDashboardTab {
