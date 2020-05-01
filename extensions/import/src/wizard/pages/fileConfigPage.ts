@@ -124,6 +124,9 @@ export class FileConfigPage extends ImportPage {
 		this.databaseDropdown.onValueChanged(async (db) => {
 			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
 			//this.populateTableNames();
+			let connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(this.model.server.providerName, azdata.DataProviderType.ConnectionProvider);
+			let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+			connectionProvider.changeDatabase(connectionUri, this.model.database);
 			this.populateSchemaDropdown();
 		});
 
@@ -146,13 +149,24 @@ export class FileConfigPage extends ImportPage {
 			return false;
 		}
 
-		let values = await this.getDatabaseValues();
+		let serverDefaultDatabase = this.model.server.options.database;
 
-		this.model.database = values[0].name;
+		let values: any[];
+		try {
+			values = await this.getDatabaseValues();
+		} catch (error) {
+			// This code is used in case of contained databases when the query will return an error.
+			values = [{ displayName: serverDefaultDatabase, name: serverDefaultDatabase }];
+			this.databaseDropdown.editable = false;
+		}
+
+		this.model.database = serverDefaultDatabase;
 
 		this.databaseDropdown.updateProperties({
 			values: values
 		});
+
+		this.databaseDropdown.value = { displayName: this.model.database, name: this.model.database };
 		this.databaseLoader.loading = false;
 
 		return true;
@@ -266,21 +280,15 @@ export class FileConfigPage extends ImportPage {
 
 	private async populateSchemaDropdown(): Promise<boolean> {
 		this.schemaLoader.loading = true;
+
 		let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+		let connection = await azdata.connection.getConnection(connectionUri);
+		connection.databaseName = this.model.database;
+
 		let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this.model.server.providerName, azdata.DataProviderType.QueryProvider);
 
-		let currentServer = await azdata.connection.getServerInfo(this.model.server.connectionId);
-
-		let query: string;
-
-		// Azure SQL server doesn't support use statements.
-		if (currentServer.isCloud) {
-			query = `SELECT name FROM sys.schemas`;
-		}
-		else {
-			const escapedQuotedDb = this.databaseDropdown.value ? `[${(<azdata.CategoryValue>this.databaseDropdown.value).name.replace(/]/g, ']]')}].` : '';
-			query = `SELECT name FROM ${escapedQuotedDb}sys.schemas`;
-		}
+		const escapedQuotedDb = this.databaseDropdown.value ? `[${(<azdata.CategoryValue>this.databaseDropdown.value).name.replace(/]/g, ']]')}].` : '';
+		let query = `SELECT name FROM ${escapedQuotedDb}sys.schemas`;
 
 		let results = await queryProvider.runQueryAndReturn(connectionUri, query);
 
