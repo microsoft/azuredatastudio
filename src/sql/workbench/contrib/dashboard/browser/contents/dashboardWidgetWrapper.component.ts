@@ -243,7 +243,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	private updateTheme(theme: IColorTheme): void {
 		const el = <HTMLElement>this._ref.nativeElement;
 		const headerEl: HTMLElement = this.header.nativeElement;
-		if (this._config.showTitle === false) {
+		if (this._config.showHeader === false) {
 			headerEl.style.display = 'none';
 		} else {
 			let borderColor = theme.getColor(themeColors.DASHBOARD_BORDER);

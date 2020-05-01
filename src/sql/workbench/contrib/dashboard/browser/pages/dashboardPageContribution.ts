@@ -58,9 +58,9 @@ export function generateDashboardWidgetSchema(type?: 'database' | 'server', exte
 				minItems: 1,
 				maxItems: 1
 			},
-			showTitle: {
+			showHeader: {
 				type: 'boolean',
-				description: localize('azdata.extension.contributes.widget.showTitle', "Whether to show the title of the widget, default value is true")
+				description: localize('azdata.extension.contributes.widget.showHeader', "Whether to show the header of the widget, default value is true")
 			}
 		}
 	};

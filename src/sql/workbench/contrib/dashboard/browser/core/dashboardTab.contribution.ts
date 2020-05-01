@@ -289,7 +289,7 @@ const CommonTabs: IDashboardTab[] = [
 					widget: {
 						'explorer-widget': {}
 					},
-					showTitle: false
+					showHeader: false
 				}
 			]
 		}
