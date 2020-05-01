@@ -57,18 +57,16 @@ export class ConfigurePythonWizard {
 		let page0 = azdata.window.createWizardPage(localize('configurePython.page0Name', 'Configure Python Runtime'));
 		let page1 = azdata.window.createWizardPage(localize('configurePython.page1Name', 'Install Dependencies'));
 
-		let configurePathPage: ConfigurePathPage;
 		page0.registerContent(async (view) => {
-			configurePathPage = new ConfigurePathPage(this.apiWrapper, this, page0, this.model, view);
+			let configurePathPage = new ConfigurePathPage(this.apiWrapper, this, page0, this.model, view);
 			pages.set(0, configurePathPage);
 			await configurePathPage.start().then(() => {
 				configurePathPage.onPageEnter();
 			});
 		});
 
-		let pickPackagesPage: PickPackagesPage;
 		page1.registerContent(async (view) => {
-			pickPackagesPage = new PickPackagesPage(this.apiWrapper, this, page1, this.model, view);
+			let pickPackagesPage = new PickPackagesPage(this.apiWrapper, this, page1, this.model, view);
 			pages.set(1, pickPackagesPage);
 			await pickPackagesPage.start();
 		});
