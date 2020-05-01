@@ -28,7 +28,7 @@ import { DatabaseInfo } from 'azdata';
 import { getFlavor, ListViewProperty } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 import { ILogService } from 'vs/platform/log/common/log';
 import * as DOM from 'vs/base/browser/dom';
-import { debounce } from 'vs/base/common/decorators';
+import { iconFormatter } from 'sql/base/browser/ui/table/formatters';
 
 const NameProperty: string = 'name';
 const NamePropertyDisplayText: string = nls.localize('dashboard.explorer.namePropertyDisplayValue', "Name");
@@ -88,11 +88,8 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 				status(message);
 			});
 		}));
-		this._table = new Table(this._tableContainer.nativeElement, undefined, { forceFitColumns: true });
+		this._table = new Table(this._tableContainer.nativeElement, undefined, { forceFitColumns: true, rowHeight: 35 });
 		this._table.setSelectionModel(new RowSelectionModel());
-		this._register(DOM.addDisposableListener(window, DOM.EventType.MOUSE_MOVE, e => {
-			this.handleSizeChangeEvent();
-		}));
 		this._register(this._input);
 		this._register(attachInputBoxStyler(this._input, this.themeService));
 		this._register(this._table);
@@ -141,6 +138,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 							return dbInfo;
 						});
 					}
+
 					// const profileData = data.map(d => {
 					// 	const profile = new ConnectionProfile(this.capabilitiesService, currentProfile);
 					// 	profile.databaseName = d.options['name'];
@@ -148,8 +146,17 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 					// });
 					if (flavor && flavor.databasesListProperties) {
 						this._propertyList = flavor.databasesListProperties;
+					} else {
+						this._propertyList = [{
+							displayName: NamePropertyDisplayText,
+							value: NameProperty,
+							widthWeight: 80
+						}];
 					}
 					const tableData = data.map(item => item.options);
+					tableData.forEach(item => {
+						item['iconClass'] = 'database-colored';
+					});
 					this.updateTable(tableData);
 				},
 				error => {
@@ -171,7 +178,16 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 				totalColumnWidthWeight += p.widthWeight;
 			}
 		});
-		return this._propertyList.map(property => {
+		const columns: Slick.Column<Slick.SlickData>[] = [];
+		columns.push({
+			id: 'icon',
+			field: 'iconClass',
+			resizable: false,
+			name: '',
+			formatter: iconFormatter,
+			width: 40
+		});
+		columns.push(...this._propertyList.map(property => {
 			return <Slick.Column<Slick.SlickData>>{
 				id: property.value,
 				field: property.value,
@@ -179,12 +195,16 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 				sortable: false,
 				width: property.widthWeight ? initialWidth * (property.widthWeight / totalColumnWidthWeight) : undefined
 			};
-		});
+		}));
+
+		return columns;
 	}
 
 	public layout(): void {
-		this.setTableDimension();
 		if (this._inited) {
+			this._table.layout(new DOM.Dimension(
+				DOM.getContentWidth(this._tableContainer.nativeElement),
+				DOM.getContentHeight(this._tableContainer.nativeElement)));
 			this._table.columns = this.columnDefinitions;
 		}
 	}
@@ -196,22 +216,6 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		this.setLoadingStatus(false);
 	}
 
-	@debounce(100)
-	private handleSizeChangeEvent(): void {
-		try {
-			this.setTableDimension();
-		} catch {
-			// There could be some race condition between these events and disposal process, the error can be ignored
-		}
-	}
-
-	private setTableDimension(): void {
-		if (this._inited) {
-			this._table.layout(new DOM.Dimension(
-				DOM.getContentWidth(this._tableContainer.nativeElement),
-				DOM.getContentHeight(this._tableContainer.nativeElement)));
-		}
-	}
 
 	private showErrorMessage(message: string): void {
 		(<HTMLElement>this._el.nativeElement).innerText = message;

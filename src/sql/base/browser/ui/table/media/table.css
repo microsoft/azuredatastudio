@@ -162,3 +162,11 @@
 .hc-black .slick-header-menu {
 	color: #FFFFFF;
 }
+
+.slick-icon-column {
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 16px 16px;
+	width: 20px;
+	height: 20px;
+}

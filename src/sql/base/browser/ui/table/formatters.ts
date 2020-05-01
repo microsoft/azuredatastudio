@@ -69,6 +69,13 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 }
 
 /**
+ * Format icon class text to icon
+ */
+export function iconFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
+	return `<div class="codicon slick-icon-column ${value}"></div>`;
+}
+
+/**
  * Provide slick grid cell with encoded ariaLabel and plain text.
  * text will be escaped by the textFormatter and ariaLabel will be consumed by slickgrid directly.
  */

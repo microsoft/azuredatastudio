@@ -371,7 +371,7 @@
             {
               "displayName": "%databasesListProperties.name%",
               "value": "name",
-              "widthWeight": 50
+              "widthWeight": 60
             },
             {
               "displayName": "%databasesListProperties.state%",
@@ -386,7 +386,7 @@
             {
               "displayName": "%databasesListProperties.lastBackup%",
               "value": "lastBackup",
-              "widthWeight": 30
+              "widthWeight": 20
             }
           ]
         },
