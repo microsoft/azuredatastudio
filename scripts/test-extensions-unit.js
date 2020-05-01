@@ -3,14 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-const argv = require('minimist')(process.argv.slice(2));
 const execSync = require('child_process').execSync;
 const tmp = require('tmp');
 const fs = require('fs-extra');
 const path = require('path');
 const os = require('os');
 
-let extensions = [
+const extensionList = [
 	'admin-tool-ext-win',
 	'agent',
 	'azurecore',
@@ -23,27 +22,11 @@ let extensions = [
 	'machine-learning-services',
 	'sql-database-projects'];
 
-// validate args
-
-if (argv._.length > 0) {
-	let unrecognized = [];
-
-	for (const ext of argv._) {
-		if (!extensions.includes(ext)) {
-			unrecognized.push(ext);
-		}
-	}
-
-	if (unrecognized.length > 0) {
-		throw new Error(`Unrecognized extension(s): ${unrecognized.join(', ')}.\nValid inputs are: ${extensions.join(', ')}`);
-	}
-	else {
-		extensions = argv._;
-	}
-}
-else {
-	console.log(`No extensions specified.  Defaulting to all (${extensions.length}).`);
-}
+let argv = require('yargs')
+	.command('$0 [extensions...]')
+	.choices('extensions', extensionList)
+	.default('extensions', extensionList)
+	.strict().help().wrap(null).version(false).argv;
 
 // set up environment
 
@@ -58,7 +41,7 @@ if (!process.env.INTEGRATION_TEST_ELECTRON_PATH) {
 	console.log('Running unit tests out of sources.');
 }
 else {
-	for (const ext of extensions) {
+	for (const ext of argv.extensions) {
 		console.log(execSync(`yarn gulp compile-extension:${ext}`, { encoding: 'utf-8' }));
 	}
 
@@ -74,7 +57,7 @@ if (!process.env.ADS_TEST_GREP) {
 
 // execute tests
 
-for (const ext of extensions) {
+for (const ext of argv.extensions) {
 	console.log('*'.repeat(ext.length + 23));
 	console.log(`*** starting ${ext} tests ***`);
 	console.log('*'.repeat(ext.length + 23));
