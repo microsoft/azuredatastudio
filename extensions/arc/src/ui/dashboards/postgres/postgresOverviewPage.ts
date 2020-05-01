@@ -31,15 +31,15 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 		const registration = this.controllerModel.registration('postgres', this.databaseModel.namespace(), this.databaseModel.name());
 		const essentials = this.modelView.modelBuilder.propertiesContainer().withProperties<azdata.PropertiesContainerComponentProperties>({
 			propertyItems: [
-				{ displayName: 'Name', value: this.databaseModel.name() },
+				{ displayName: loc.name, value: this.databaseModel.name() },
 				{ displayName: 'Server group type', value: 'Azure Database for PostgreSQL - Azure Arc' },
-				{ displayName: 'Resource group', value: registration?.resourceGroupName ?? 'None' },
+				{ displayName: loc.resourceGroup, value: registration?.resourceGroupName ?? 'None' },
 				{ displayName: 'Coordinator endpoint', value: `postgresql://postgres:${this.databaseModel.password()}@${this.databaseModel.endpoint()}` },
 				{ displayName: 'Status', value: this.databaseModel.service().status!.state },
 				{ displayName: 'Admin username', value: 'postgres' },
 				{ displayName: 'Data controller', value: this.controllerModel.controllerNamespace() },
 				{ displayName: 'Node configuration', value: this.databaseModel.configuration() },
-				{ displayName: 'Subscription', value: registration?.subscriptionId ?? 'None' },
+				{ displayName: loc.subscriptionId, value: registration?.subscriptionId ?? 'None' },
 				{ displayName: 'PostgreSQL version', value: this.databaseModel.service().spec.engine.version!.toString() }
 			]
 		}).component();
@@ -160,7 +160,7 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 
 		// Reset password
 		const resetPasswordButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: 'Reset Password',
+			label: loc.resetPassword,
 			iconPath: IconPathHelper.edit
 		}).component();
 
@@ -178,7 +178,7 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 
 		// Delete service
 		const deleteButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: 'Delete',
+			label: loc.deleteText,
 			iconPath: IconPathHelper.delete
 		}).component();
 
@@ -196,7 +196,7 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 
 		// Open in Azure portal
 		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: 'Open in Azure portal',
+			label: loc.openInAzurePortal,
 			iconPath: IconPathHelper.openInTab
 		}).component();
 
