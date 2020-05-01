@@ -28,6 +28,7 @@ export class OverflowActionBar extends ActionBar {
 	private _overflow: HTMLElement;
 	private _moreItemElement: HTMLElement;
 	private _moreActionsElement: HTMLElement;
+	private _previousWidth: number;
 
 	constructor(container: HTMLElement, options: IActionBarOptions = defaultOptions) {
 		super(container, options);
@@ -83,7 +84,7 @@ export class OverflowActionBar extends ActionBar {
 					break;
 				}
 			}
-		} else if (this._overflow?.hasChildNodes()) { // uncollapse actions if there is space for it
+		} else if (this._overflow?.hasChildNodes() && width > this._previousWidth) { // uncollapse actions if there is space for it
 			while (width === fullWidth && this._overflow.hasChildNodes()) {
 				// move placeholder in this._items
 				let placeHolderItem = this._items.splice(this._actionsList.childNodes.length - 1, 1);
@@ -106,6 +107,8 @@ export class OverflowActionBar extends ActionBar {
 				}
 			}
 		}
+
+		this._previousWidth = width;
 	}
 
 	private collapseItem(): void {
