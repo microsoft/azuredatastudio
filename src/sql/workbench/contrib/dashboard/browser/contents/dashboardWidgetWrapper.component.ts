@@ -122,23 +122,35 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			this.loadWidget();
 		}
 		this._changeref.detectChanges();
-		this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
-		this._bottomActionbar = new ActionBar(this._bottomActionbarRef.nativeElement);
-		if (this._actions) {
-			if (this.collapsable) {
-				this._collapseAction = this.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed);
-				if (this.bottomCollapse) {
-					this._bottomActionbar.push(this._collapseAction, { icon: true, label: false });
-					this._bottomActionbarRef.nativeElement.style.display = 'block';
-				} else {
-					this._actionbar.push(this._collapseAction, { icon: true, label: false });
-				}
+		this._collapseAction = this.collapsable ? this.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed) : undefined;
+
+		// top action bar
+		if (this.showActionBar) {
+			this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
+			if (this.collapsable && !this.bottomCollapse) {
+				this._actionbar.push(this._collapseAction, { icon: true, label: false });
 			}
-			if (this.toggleMore) {
+
+			if (this._actions && this.toggleMore) {
 				this._actionbar.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions as Array<IAction>, this._component.actionsContext), { icon: true, label: false });
 			}
 		}
+
+		// bottom action bar
+		if (this.showBottomActionBar) {
+			this._bottomActionbar = new ActionBar(this._bottomActionbarRef.nativeElement);
+			this._bottomActionbar.push(this._collapseAction, { icon: true, label: false });
+		}
+
 		this.layout();
+	}
+
+	private get showActionBar(): boolean {
+		return !this._config.hideHeader && ((this.collapsable && !this.bottomCollapse) || (this._actions && this.toggleMore));
+	}
+
+	private get showBottomActionBar(): boolean {
+		return this.collapsable && this.bottomCollapse;
 	}
 
 	public refresh(): void {
@@ -241,11 +253,9 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	}
 
 	private updateTheme(theme: IColorTheme): void {
-		const el = <HTMLElement>this._ref.nativeElement;
-		const headerEl: HTMLElement = this.header.nativeElement;
-		if (this._config.showHeader === false) {
-			headerEl.style.display = 'none';
-		} else {
+		if (!this._config.hideHeader) {
+			const el = <HTMLElement>this._ref.nativeElement;
+			const headerEl: HTMLElement = this.header.nativeElement;
 			let borderColor = theme.getColor(themeColors.DASHBOARD_BORDER);
 			let backgroundColor = theme.getColor(colors.editorBackground, true);
 			const foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
