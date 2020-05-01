@@ -5,14 +5,10 @@
 
 import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { QueryEditor } from './queryEditor';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
-import { isWindows } from 'vs/base/common/platform';
-import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
@@ -33,11 +29,6 @@ export interface IGridActionContext {
 	selectionModel?: CellSelectionModel<any>;
 	batchId: number;
 	resultId: number;
-}
-
-export interface IMessagesActionContext {
-	selection: Selection;
-	tree: ITree;
 }
 
 function mapForNumberColumn(ranges: Slick.Range[]): Slick.Range[] {
@@ -129,49 +120,6 @@ export class SelectAllGridAction extends Action {
 	public run(context: IGridActionContext): Promise<boolean> {
 		context.selectionModel.setSelectedRanges([new Slick.Range(0, 0, context.table.getData().getLength() - 1, context.table.columns.length - 1)]);
 		return Promise.resolve(true);
-	}
-}
-
-export class CopyMessagesAction extends Action {
-	public static ID = 'grid.messages.copy';
-	public static LABEL = localize('copyMessages', "Copy");
-
-	constructor(
-		@IClipboardService private clipboardService: IClipboardService
-	) {
-		super(CopyMessagesAction.ID, CopyMessagesAction.LABEL);
-	}
-
-	public run(context: IMessagesActionContext): Promise<boolean> {
-		this.clipboardService.writeText(context.selection.toString());
-		return Promise.resolve(true);
-	}
-}
-
-const lineDelimiter = isWindows ? '\r\n' : '\n';
-export class CopyAllMessagesAction extends Action {
-	public static ID = 'grid.messages.copyAll';
-	public static LABEL = localize('copyAll', "Copy All");
-
-	constructor(
-		private tree: ITree,
-		@IClipboardService private clipboardService: IClipboardService) {
-		super(CopyAllMessagesAction.ID, CopyAllMessagesAction.LABEL);
-	}
-
-	public run(): Promise<any> {
-		let text = '';
-		const navigator = this.tree.getNavigator();
-		// skip first navigator element - the root node
-		while (navigator.next()) {
-			if (text) {
-				text += lineDelimiter;
-			}
-			text += (navigator.current()).message;
-		}
-
-		this.clipboardService.writeText(removeAnsiEscapeCodes(text));
-		return Promise.resolve(null);
 	}
 }
 

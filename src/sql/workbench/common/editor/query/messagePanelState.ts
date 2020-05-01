@@ -3,8 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+export interface IMessageTreeState {
+	readonly focus: string[];
+	readonly selection: string[];
+	readonly expanded: string[];
+	readonly scrollTop: number;
+}
+
 export class MessagePanelState {
-	public scrollPosition?: number;
+	public viewState?: IMessageTreeState;
 
 	dispose() {
 

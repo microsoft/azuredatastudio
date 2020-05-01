@@ -67,7 +67,6 @@ export class PackageManager {
 	 */
 	public async managePackages(): Promise<void> {
 		try {
-			await this.enableExternalScript();
 
 			// Only execute the command if there's a valid connection with ml configuration enabled
 			//
@@ -129,7 +128,8 @@ export class PackageManager {
 		}
 
 		await utils.createFolder(utils.getRPackagesFolderPath(this._rootFolder));
-		await Promise.all(this._config.requiredSqlRPackages.map(x => this.installRPackage(x)));
+		const packages = this._config.requiredSqlRPackages.filter(p => !p.platform || p.platform === process.platform);
+		await Promise.all(packages.map(x => this.installRPackage(x)));
 	}
 
 	/**
