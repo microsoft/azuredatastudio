@@ -41,7 +41,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	private _input: InputBox;
 	private _table: Table<Slick.SlickData>;
 	private _filterDelayer = new Delayer<void>(200);
-	private _propertyList: ListViewProperty[];
+	private _propertyList: ListViewProperty[] = [];
 
 	@ViewChild('input') private _inputContainer: ElementRef;
 	@ViewChild('table') private _tableContainer: ElementRef;
@@ -90,41 +90,39 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		}));
 		this._table = new Table(this._tableContainer.nativeElement, undefined, { forceFitColumns: true });
 		this._table.setSelectionModel(new RowSelectionModel());
+		this._register(DOM.addDisposableListener(window, DOM.EventType.MOUSE_MOVE, e => {
+			this.handleSizeChangeEvent();
+		}));
 		this._register(this._input);
 		this._register(attachInputBoxStyler(this._input, this.themeService));
 		this._register(this._table);
 		this._register(attachTableStyler(this._table, this.themeService));
-		this._register(DOM.addDisposableListener(window, DOM.EventType.MOUSE_MOVE, e => {
-			this.handleSizeChangeEvent();
-		}));
 	}
 
 	private init(): void {
 		this.setLoadingStatus(true);
-
+		const serverInfo = this._bootstrap.connectionManagementService.connectionInfo.serverInfo;
+		const flavor = getFlavor(serverInfo, this.logService, this._bootstrap.connectionManagementService.connectionInfo.providerId);
 		if (this._config.context === 'database') {
 			this._register(subscriptionToDisposable(this._bootstrap.metadataService.metadata.subscribe(
 				data => {
 					if (data) {
+						if (flavor && flavor.objectsListProperties) {
+							this._propertyList = flavor.objectsListProperties;
+						} else {
+							this._propertyList = [{
+								displayName: NamePropertyDisplayText,
+								value: NameProperty,
+								widthWeight: 80
+							}, {
+								displayName: nls.localize('dashboard.explorer.objectTypeDisplayValue', "Type"),
+								value: 'metadataTypeName',
+								widthWeight: 20
+							}];
+						}
 						const objectData = ObjectMetadataWrapper.createFromObjectMetadata(data.objectMetadata);
 						objectData.sort(ObjectMetadataWrapper.sort);
-						const columns = ['name', 'type'];
-						this._table.columns = columns.map(column => {
-							return <Slick.Column<Slick.SlickData>>{
-								id: column,
-								field: column,
-								name: column,
-								sortable: true
-							};
-						});
-						this._table.setData(objectData.map(obj => {
-							return {
-								name: obj.name,
-								type: obj.metadataTypeName
-							};
-						}));
-						this._table.updateRowCount();
-						this.setLoadingStatus(false);
+						this.updateTable(objectData);
 					}
 				},
 				error => {
@@ -132,7 +130,6 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 				}
 			)));
 		} else {
-			const serverInfo = this._bootstrap.connectionManagementService.connectionInfo.serverInfo;
 			this._register(subscriptionToDisposable(this._bootstrap.metadataService.databases.subscribe(
 				data => {
 					// Handle the case where there is no metadata service
@@ -149,20 +146,11 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 					// 	profile.databaseName = d.options['name'];
 					// 	return profile;
 					// });
-					const flavor = getFlavor(serverInfo, this.logService, this._bootstrap.connectionManagementService.connectionInfo.providerId);
-					if (flavor) {
+					if (flavor && flavor.databasesListProperties) {
 						this._propertyList = flavor.databasesListProperties;
-					} else {
-						this._propertyList = [{
-							displayName: NamePropertyDisplayText,
-							value: NameProperty
-						}];
 					}
 					const tableData = data.map(item => item.options);
-					this._table.columns = this.columnDefinitions;
-					this._table.setData(tableData);
-					this._table.updateRowCount();
-					this.setLoadingStatus(false);
+					this.updateTable(tableData);
 				},
 				error => {
 					this.showErrorMessage(nls.localize('dashboard.explorer.databaseError', "Unable to load databases"));
@@ -173,26 +161,6 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 
 	public refresh(): void {
 		this.init();
-	}
-
-	public layout(): void {
-		this.setTableDimension();
-		if (this._inited) {
-			this._table.columns = this.columnDefinitions;
-		}
-	}
-
-	@debounce(100)
-	private handleSizeChangeEvent(): void {
-		this.setTableDimension();
-	}
-
-	private setTableDimension(): void {
-		if (this._inited) {
-			this._table.layout(new DOM.Dimension(
-				DOM.getContentWidth(this._tableContainer.nativeElement),
-				DOM.getContentHeight(this._tableContainer.nativeElement)));
-		}
 	}
 
 	private get columnDefinitions(): Slick.Column<Slick.SlickData>[] {
@@ -212,6 +180,37 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 				width: property.widthWeight ? initialWidth * (property.widthWeight / totalColumnWidthWeight) : undefined
 			};
 		});
+	}
+
+	public layout(): void {
+		this.setTableDimension();
+		if (this._inited) {
+			this._table.columns = this.columnDefinitions;
+		}
+	}
+
+	private updateTable(data: object[]): void {
+		this._table.columns = this.columnDefinitions;
+		this._table.setData(data);
+		this._table.updateRowCount();
+		this.setLoadingStatus(false);
+	}
+
+	@debounce(100)
+	private handleSizeChangeEvent(): void {
+		try {
+			this.setTableDimension();
+		} catch {
+			// There could be some race condition between these events and disposal process, the error can be ignored
+		}
+	}
+
+	private setTableDimension(): void {
+		if (this._inited) {
+			this._table.layout(new DOM.Dimension(
+				DOM.getContentWidth(this._tableContainer.nativeElement),
+				DOM.getContentHeight(this._tableContainer.nativeElement)));
+		}
 	}
 
 	private showErrorMessage(message: string): void {

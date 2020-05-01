@@ -388,12 +388,6 @@
               "value": "lastBackup",
               "widthWeight": 30
             }
-          ],
-          "objectsListProperties": [
-            {
-              "displayName": "%objectsListProperties.name%",
-              "value": "name"
-            }
           ]
         },
         {
@@ -449,12 +443,6 @@
               "value": "sizeInMB",
               "widthWeight": 20
             }
-          ],
-          "objectsListProperties": [
-            {
-              "displayName": "%objectsListProperties.name%",
-              "value": "name"
-            }
           ]
         },
         {
@@ -501,12 +489,6 @@
               "displayName": "%databasesListProperties.size%",
               "value": "sizeInMB",
               "widthWeight": 20
-            }
-          ],
-          "objectsListProperties": [
-            {
-              "displayName": "%objectsListProperties.name%",
-              "value": "name"
             }
           ]
         }
