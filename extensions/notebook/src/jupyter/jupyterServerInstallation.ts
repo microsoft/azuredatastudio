@@ -528,6 +528,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 					message: localize('confirmPackageUpgrade', "Some required python packages need to be installed. Would you like to install them now?"),
 					default: true
 				});
+				if (!doUpgrade) {
+					throw new Error(localize('configurePython.packageInstallDeclined', "Package installation was declined."));
+				}
 			} else {
 				doUpgrade = true;
 			}
