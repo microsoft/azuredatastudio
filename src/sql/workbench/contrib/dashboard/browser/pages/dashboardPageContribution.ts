@@ -57,6 +57,10 @@ export function generateDashboardWidgetSchema(type?: 'database' | 'server', exte
 				properties: schemas,
 				minItems: 1,
 				maxItems: 1
+			},
+			showTitle: {
+				type: 'boolean',
+				description: localize('azdata.extension.contributes.widget.showTitle', "Whether to show the title of the widget, default value is true")
 			}
 		}
 	};
