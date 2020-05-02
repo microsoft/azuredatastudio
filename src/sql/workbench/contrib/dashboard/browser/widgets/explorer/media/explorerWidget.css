@@ -13,3 +13,8 @@ explorer-widget .list-row {
 	align-items: center;
 	margin-left: -33px;
 }
+
+.explorer-widget .slick-cell,
+.explorer-widget .slick-header-column {
+	border-right-style: none;
+}

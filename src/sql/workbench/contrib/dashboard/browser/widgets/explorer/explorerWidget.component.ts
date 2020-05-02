@@ -22,16 +22,19 @@ import { ObjectMetadataWrapper } from 'sql/workbench/contrib/dashboard/browser/w
 import { status, alert } from 'vs/base/browser/ui/aria/aria';
 import { isStringArray } from 'vs/base/common/types';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
-import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { DatabaseInfo } from 'azdata';
 import { getFlavor, ListViewProperty } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 import { ILogService } from 'vs/platform/log/common/log';
 import * as DOM from 'vs/base/browser/dom';
-import { iconFormatter } from 'sql/base/browser/ui/table/formatters';
+import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
+import { IconColumnDefinition, IconFormatter } from 'sql/base/browser/ui/table/plugins/iconColumn';
+import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 
 const NameProperty: string = 'name';
 const NamePropertyDisplayText: string = nls.localize('dashboard.explorer.namePropertyDisplayValue', "Name");
+const IconClassProperty: string = 'iconClass';
+const IconTitleProperty: string = 'iconTitle';
 
 @Component({
 	selector: 'explorer-widget',
@@ -42,6 +45,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	private _table: Table<Slick.SlickData>;
 	private _filterDelayer = new Delayer<void>(200);
 	private _propertyList: ListViewProperty[] = [];
+	private _actionsColumn: ButtonColumn<Slick.SlickData>;
 
 	@ViewChild('input') private _inputContainer: ElementRef;
 	@ViewChild('table') private _tableContainer: ElementRef;
@@ -89,7 +93,16 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			});
 		}));
 		this._table = new Table(this._tableContainer.nativeElement, undefined, { forceFitColumns: true, rowHeight: 35 });
-		this._table.setSelectionModel(new RowSelectionModel());
+		this._table.setSelectionModel(new CellSelectionModel());
+		this._actionsColumn = new ButtonColumn<Slick.SlickData>({
+			id: 'actions',
+			iconCssClass: 'toggle-more',
+			title: 'show actions',
+			width: 40
+		});
+		this._table.registerPlugin(this._actionsColumn);
+		this._register(this._actionsColumn.onClick((item) => {
+		}));
 		this._register(this._input);
 		this._register(attachInputBoxStyler(this._input, this.themeService));
 		this._register(this._table);
@@ -155,7 +168,8 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 					}
 					const tableData = data.map(item => item.options);
 					tableData.forEach(item => {
-						item['iconClass'] = 'database-colored';
+						item[IconClassProperty] = 'database-colored';
+						item[IconTitleProperty] = nls.localize('dashboard.explorer.objectType.database', "Database");
 					});
 					this.updateTable(tableData);
 				},
@@ -178,16 +192,8 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 				totalColumnWidthWeight += p.widthWeight;
 			}
 		});
-		const columns: Slick.Column<Slick.SlickData>[] = [];
-		columns.push({
-			id: 'icon',
-			field: 'iconClass',
-			resizable: false,
-			name: '',
-			formatter: iconFormatter,
-			width: 40
-		});
-		columns.push(...this._propertyList.map(property => {
+
+		const columns: Slick.Column<Slick.SlickData>[] = this._propertyList.map(property => {
 			return <Slick.Column<Slick.SlickData>>{
 				id: property.value,
 				field: property.value,
@@ -195,7 +201,20 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 				sortable: false,
 				width: property.widthWeight ? initialWidth * (property.widthWeight / totalColumnWidthWeight) : undefined
 			};
-		}));
+		});
+
+		columns.unshift(<IconColumnDefinition<Slick.SlickData>>{
+			id: 'icon',
+			field: IconTitleProperty,
+			resizable: false,
+			name: '',
+			formatter: IconFormatter,
+			width: 40,
+			selectable: false,
+			iconCssClassField: IconClassProperty
+		});
+
+		columns.push(this._actionsColumn.definition);
 
 		return columns;
 	}
