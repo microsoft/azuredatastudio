@@ -40,11 +40,6 @@ export interface IQueryMessage {
 	range?: IRange;
 }
 
-export interface QueryExecuteMessageParams {
-	message: IResultMessage;
-	ownerUri: string;
-}
-
 export interface IResultMessage {
 	batchId?: number;
 	isError: boolean;
@@ -60,11 +55,6 @@ export interface QueryExecuteSubsetParams {
 	rowsCount: number;
 }
 
-export interface QueryExecuteSubsetResult {
-	message: string;
-	resultSubset: ResultSetSubset;
-}
-
 export interface ResultSetSubset {
 	rowCount: number;
 	rows: ICellValue[][];
@@ -72,5 +62,5 @@ export interface ResultSetSubset {
 
 export interface ICellValue {
 	displayValue: string;
-	isNull: boolean;
+	isNull?: boolean;
 }

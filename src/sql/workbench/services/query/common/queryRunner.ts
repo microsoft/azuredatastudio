@@ -25,7 +25,7 @@ import { getErrorMessage } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { find } from 'vs/base/common/arrays';
 import { IRange, Range } from 'vs/editor/common/core/range';
-import { BatchSummary, IQueryMessage, ResultSetSummary, QueryExecuteMessageParams, QueryExecuteSubsetResult, QueryExecuteSubsetParams, CompleteBatchSummary } from './query';
+import { BatchSummary, IQueryMessage, ResultSetSummary, QueryExecuteSubsetParams, CompleteBatchSummary, IResultMessage, ResultSetSubset } from './query';
 
 /*
 * Query Runner class which handles running a query, reports the results to the content manager,
@@ -65,8 +65,8 @@ export default class QueryRunner extends Disposable {
 	private readonly _onBatchStart = this._register(new Emitter<BatchSummary>());
 	public readonly onBatchStart: Event<BatchSummary> = this._onBatchStart.event;
 
-	private readonly _onBatchEnd = this._register(new Emitter<BatchSummary>());
-	public readonly onBatchEnd: Event<BatchSummary> = this._onBatchEnd.event;
+	private readonly _onBatchEnd = this._register(new Emitter<CompleteBatchSummary>());
+	public readonly onBatchEnd: Event<CompleteBatchSummary> = this._onBatchEnd.event;
 
 	private readonly _onQueryPlanAvailable = this._register(new Emitter<IQueryPlanInfo>());
 	public readonly onQueryPlanAvailable = this._onQueryPlanAvailable.event;
@@ -210,12 +210,9 @@ export default class QueryRunner extends Disposable {
 			error = error.message;
 		}
 		let message = nls.localize('query.ExecutionFailedError', "Execution failed due to an unexpected error: {0}\t{1}", eol, error);
-		this.handleMessage([<QueryExecuteMessageParams>{
-			ownerUri: this.uri,
-			message: {
-				isError: true,
-				message: message
-			}
+		this.handleMessage([{
+			isError: true,
+			message: message
 		}]);
 		this.handleQueryComplete();
 	}
@@ -223,7 +220,7 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Handle a QueryComplete from the service layer
 	 */
-	public handleQueryComplete(batchSummaries?: BatchSummary[]): void {
+	public handleQueryComplete(batchSummaries?: CompleteBatchSummary[]): void {
 		// this also isn't exact but its the best we can do
 		this._queryEndTime = new Date();
 
@@ -325,8 +322,8 @@ export default class QueryRunner extends Disposable {
 				this._isQueryPlan = true;
 
 				this.getQueryRows(0, 1, resultSet.batchId, resultSet.id).then(e => {
-					if (e.resultSubset.rows) {
-						this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
+					if (e.rows) {
+						this._planXml.resolve(e.rows[0][0].displayValue);
 					}
 				}).catch((e) => this.logService.error(e));
 			}
@@ -351,9 +348,9 @@ export default class QueryRunner extends Disposable {
 				this._isQueryPlan = true;
 				this.getQueryRows(0, 1, resultSet.batchId, resultSet.id).then(e => {
 
-					if (e.resultSubset.rows) {
-						let planXmlString = e.resultSubset.rows[0][0].displayValue;
-						this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
+					if (e.rows) {
+						let planXmlString = e.rows[0][0].displayValue;
+						this._planXml.resolve(e.rows[0][0].displayValue);
 						// fire query plan available event if execution is completed
 						if (resultSet.complete) {
 							this._onQueryPlanAvailable.fire({
@@ -376,8 +373,7 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Handle a Mssage from the service layer
 	 */
-	public handleMessage(messagesObj: QueryExecuteMessageParams[]): void {
-		const messages = messagesObj.map(m => m.message);
+	public handleMessage(messages: IResultMessage[]): void {
 		this._messages.push(...messages);
 
 		// Send the message to the results pane
@@ -387,7 +383,7 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Get more data rows from the current resultSets from the service layer
 	 */
-	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number): Promise<QueryExecuteSubsetResult> {
+	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number): Promise<ResultSetSubset> {
 		let rowData: QueryExecuteSubsetParams = <QueryExecuteSubsetParams>{
 			ownerUri: this.uri,
 			resultSetIndex: resultSetIndex,
@@ -496,7 +492,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 	) {
 	}
 
-	getRowData(rowStart: number, numberOfRows: number): Promise<QueryExecuteSubsetResult> {
+	getRowData(rowStart: number, numberOfRows: number): Promise<ResultSetSubset> {
 		return this.queryRunner.getQueryRows(rowStart, numberOfRows, this.batchId, this.resultSetId);
 	}
 

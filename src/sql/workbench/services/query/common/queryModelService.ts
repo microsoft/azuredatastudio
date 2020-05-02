@@ -134,7 +134,7 @@ export class QueryModelService implements IQueryModelService {
 	public getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Promise<ResultSetSubset | undefined> {
 		if (this._queryInfoMap.has(uri)) {
 			return this._getQueryInfo(uri)!.queryRunner!.getQueryRows(rowStart, numberOfRows, batchId, resultId).then(results => {
-				return results.resultSubset;
+				return results;
 			});
 		} else {
 			return Promise.resolve(undefined);

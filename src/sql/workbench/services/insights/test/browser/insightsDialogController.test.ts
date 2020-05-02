@@ -5,13 +5,12 @@
 
 import { InsightsDialogController } from 'sql/workbench/services/insights/browser/insightsDialogController';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { IQueryMessage, BatchSummary, IColumn } from 'sql/workbench/services/query/common/query';
+import { IQueryMessage, BatchSummary, IColumn, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 
-import * as azdata from 'azdata';
 import { equal } from 'assert';
 import { Mock, MockBehavior, It } from 'typemoq';
 import { Emitter } from 'vs/base/common/event';
@@ -130,11 +129,9 @@ function getPrimedQueryRunner(data: string[][], columns: string[]): IPrimedQuery
 	});
 
 	querymock.setup(x => x.getQueryRows(It.isAnyNumber(), It.isAnyNumber(), It.isAnyNumber(), It.isAnyNumber()))
-		.returns(x => Promise.resolve(<azdata.QueryExecuteSubsetResult>{
-			resultSubset: <azdata.ResultSetSubset>{
-				rowCount: data.length,
-				rows: data.map(r => r.map(c => { return { displayValue: c }; }))
-			}
+		.returns(x => Promise.resolve(<ResultSetSubset>{
+			rowCount: data.length,
+			rows: data.map(r => r.map(c => { return { displayValue: c }; }))
 		}));
 
 	querymock.setup(x => x.runQuery(It.isAnyString())).returns(x => Promise.resolve());

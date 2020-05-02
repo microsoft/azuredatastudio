@@ -9,6 +9,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import * as azdata from 'azdata';
 import { IRange } from 'vs/editor/common/core/range';
+import { ResultSetSubset } from 'sql/workbench/services/query/common/query';
 
 export class TestQueryManagementService implements IQueryManagementService {
 	_serviceBrand: undefined;
@@ -43,7 +44,7 @@ export class TestQueryManagementService implements IQueryManagementService {
 	parseSyntax(ownerUri: string, query: string): Promise<azdata.SyntaxParseResult> {
 		throw new Error('Method not implemented.');
 	}
-	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<azdata.QueryExecuteSubsetResult> {
+	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<ResultSetSubset> {
 		throw new Error('Method not implemented.');
 	}
 	disposeQuery(ownerUri: string): Promise<void> {

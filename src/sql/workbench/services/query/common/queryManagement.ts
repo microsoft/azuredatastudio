@@ -15,6 +15,7 @@ import { assign } from 'vs/base/common/objects';
 import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import EditQueryRunner from 'sql/workbench/services/editData/common/editQueryRunner';
 import { IRange, Range } from 'vs/editor/common/core/range';
+import { ResultSetSubset } from 'sql/workbench/services/query/common/query';
 
 export const SERVICE_ID = 'queryManagementService';
 
@@ -45,7 +46,7 @@ export interface IQueryManagementService {
 	runQueryString(ownerUri: string, queryString: string): Promise<void>;
 	runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult>;
 	parseSyntax(ownerUri: string, query: string): Promise<azdata.SyntaxParseResult>;
-	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<azdata.QueryExecuteSubsetResult>;
+	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<ResultSetSubset>;
 	disposeQuery(ownerUri: string): Promise<void>;
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult>;
 	setQueryExecutionOptions(uri: string, options: azdata.QueryExecutionOptions): Promise<void>;
@@ -248,9 +249,9 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<azdata.QueryExecuteSubsetResult> {
+	public async getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<ResultSetSubset> {
 		return this._runAction(rowData.ownerUri, (runner) => {
-			return runner.getQueryRows(rowData);
+			return runner.getQueryRows(rowData).then(r => r.resultSubset);
 		});
 	}
 
@@ -306,7 +307,7 @@ export class QueryManagementService implements IQueryManagementService {
 	public onMessage(messagesMap: Map<string, azdata.QueryExecuteMessageParams[]>): void {
 		for (const [uri, messages] of messagesMap) {
 			this._notify(uri, (runner: QueryRunner) => {
-				runner.handleMessage(messages);
+				runner.handleMessage(messages.map(m => m.message));
 			});
 		}
 	}

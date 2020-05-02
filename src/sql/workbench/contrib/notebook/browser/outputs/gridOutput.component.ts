@@ -14,7 +14,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
-import { ICellValue, ResultSetSummary, QueryExecuteSubsetResult } from 'sql/workbench/services/query/common/query';
+import { ICellValue, ResultSetSummary, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
@@ -216,7 +216,7 @@ class DataResourceTable extends GridTableBase<any> {
 		gridDataProvider.getRowData(0, rowCount).then(result => {
 			let range = new Slick.Range(0, 0, rowCount - 1, columnCount - 1);
 			let columns = gridDataProvider.getColumnHeaders(range);
-			this._chart.setData(result.resultSubset.rows, columns);
+			this._chart.setData(result.rows, columns);
 		});
 	}
 
@@ -257,17 +257,14 @@ class DataResourceDataProvider implements IGridDataProvider {
 		});
 	}
 
-	getRowData(rowStart: number, numberOfRows: number): Thenable<QueryExecuteSubsetResult> {
+	getRowData(rowStart: number, numberOfRows: number): Thenable<ResultSetSubset> {
 		let rowEnd = rowStart + numberOfRows;
 		if (rowEnd > this.rows.length) {
 			rowEnd = this.rows.length;
 		}
-		let resultSubset: QueryExecuteSubsetResult = {
-			message: undefined,
-			resultSubset: {
-				rowCount: rowEnd - rowStart,
-				rows: this.rows.slice(rowStart, rowEnd)
-			}
+		let resultSubset: ResultSetSubset = {
+			rowCount: rowEnd - rowStart,
+			rows: this.rows.slice(rowStart, rowEnd)
 		};
 		return Promise.resolve(resultSubset);
 	}

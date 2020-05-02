@@ -586,7 +586,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		// handle if a showplan link was clicked
 		if (column && (column.isXml || column.isJson)) {
 			this.gridDataProvider.getRowData(event.cell.row, 1).then(async d => {
-				let value = d.resultSubset.rows[0][event.cell.cell - 1];
+				let value = d.rows[0][event.cell.cell - 1];
 				let content = value.displayValue;
 
 				const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
@@ -654,10 +654,10 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	private loadData(offset: number, count: number): Thenable<T[]> {
 		return this.gridDataProvider.getRowData(offset, count).then(response => {
-			if (!response.resultSubset) {
+			if (!response) {
 				return [];
 			}
-			return response.resultSubset.rows.map(r => {
+			return response.rows.map(r => {
 				let dataWithSchema = {};
 				// skip the first column since its a number column
 				for (let i = 1; i < this.columns.length; i++) {

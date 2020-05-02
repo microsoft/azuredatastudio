@@ -6,7 +6,7 @@
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { IColumn, ICellValue, QueryExecuteSubsetResult } from 'sql/workbench/services/query/common/query';
+import { IColumn, ICellValue, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { resolveQueryFilePath } from '../common/insightsUtils';
@@ -159,13 +159,13 @@ export class InsightsDialogController {
 			) {
 				let resultset = batch.resultSetSummaries[0];
 				this._columns = resultset.columnInfo;
-				let rows: QueryExecuteSubsetResult;
+				let rows: ResultSetSubset;
 				try {
 					rows = await this._queryRunner.getQueryRows(0, resultset.rowCount, batch.id, resultset.id);
 				} catch (e) {
 					return Promise.reject(e);
 				}
-				this._rows = rows.resultSubset.rows;
+				this._rows = rows.rows;
 				this.updateModel();
 			}
 		}
