@@ -86,19 +86,7 @@ export class OverflowActionBar extends ActionBar {
 			}
 		} else if (this._overflow?.hasChildNodes() && width > this._previousWidth) { // uncollapse actions if there is space for it
 			while (width === fullWidth && this._overflow.hasChildNodes()) {
-				let item = this._overflow.removeChild(this._overflow.firstChild);
-				// change role back to button when it's in the toolbar
-				if ((<HTMLElement>item).className !== 'taskbarSeparator') {
-					(<HTMLElement>item.firstChild).setAttribute('role', 'button');
-				}
-				this._actionsList.insertBefore(item, this._actionsList.lastChild);
-
-				// move placeholder in this._items if item isn't a separator
-				if (!(<HTMLElement>item).classList.contains('taskbarSeparator')) {
-					let placeHolderIndex = this._items.findIndex(i => i === undefined);
-					let placeHolderItem = this._items.splice(placeHolderIndex, 1);
-					this._items.splice(placeHolderIndex + 1, 0, placeHolderItem[0]);
-				}
+				this.restoreItem();
 
 				// if the action was too wide, collapse it again
 				if (this._actionsList.scrollWidth > this._actionsList.offsetWidth) {
@@ -114,7 +102,7 @@ export class OverflowActionBar extends ActionBar {
 		this._previousWidth = width;
 	}
 
-	private collapseItem(): void {
+	public collapseItem(): void {
 		let index = this._actionsList.childNodes.length - 2; // remove the last toolbar action before the more actions '...'
 		let item = this._actionsList.removeChild(this._actionsList.childNodes[index]);
 		this._overflow.insertBefore(item, this._overflow.firstChild);
@@ -133,7 +121,23 @@ export class OverflowActionBar extends ActionBar {
 		}
 	}
 
-	private createMoreItemElement(): void {
+	public restoreItem(): void {
+		let item = this._overflow.removeChild(this._overflow.firstChild);
+		// change role back to button when it's in the toolbar
+		if ((<HTMLElement>item).className !== 'taskbarSeparator') {
+			(<HTMLElement>item.firstChild).setAttribute('role', 'button');
+		}
+		this._actionsList.insertBefore(item, this._actionsList.lastChild);
+
+		// move placeholder in this._items if item isn't a separator
+		if (!(<HTMLElement>item).classList.contains('taskbarSeparator')) {
+			let placeHolderIndex = this._items.findIndex(i => i === undefined);
+			let placeHolderItem = this._items.splice(placeHolderIndex, 1);
+			this._items.splice(placeHolderIndex + 1, 0, placeHolderItem[0]);
+		}
+	}
+
+	public createMoreItemElement(): void {
 		this._moreItemElement = document.createElement('li');
 		this._moreItemElement.className = 'action-item more';
 		this._moreItemElement.setAttribute('role', 'presentation');
@@ -191,7 +195,7 @@ export class OverflowActionBar extends ActionBar {
 		this._items.push(undefined); // add place holder for more item element
 	}
 
-	private moreElementOnClick(event: MouseEvent | StandardKeyboardEvent): void {
+	public moreElementOnClick(event: MouseEvent | StandardKeyboardEvent): void {
 		this._overflow.style.display = this._overflow.style.display === 'block' ? 'none' : 'block';
 		if (this._overflow.style.display === 'block') {
 			// set focus to the first element in the overflow
@@ -203,14 +207,7 @@ export class OverflowActionBar extends ActionBar {
 	}
 
 	private getActionListSeparatorCount(): number {
-		let count = 0;
-		for (let i = 0; i < this._actionsList.children.length; i++) {
-			if (this._actionsList.children[i].className.includes('taskbarSeparator')) {
-				count++;
-			}
-		}
-
-		return count;
+		return Array.from(this._actionsList.children).filter(c => c.className.includes('taskbarSeparator')).length;
 	}
 
 	private hideOverflowDisplay(): void {
@@ -351,5 +348,21 @@ export class OverflowActionBar extends ActionBar {
 	public run(action: IAction, context?: any): Promise<any> {
 		this.hideOverflowDisplay();
 		return this._actionRunner.run(action, context);
+	}
+
+	public get actionsList(): HTMLElement {
+		return this._actionsList;
+	}
+
+	public get items(): IActionViewItem[] {
+		return this._items;
+	}
+
+	public get overflow(): HTMLElement {
+		return this._overflow;
+	}
+
+	public get focusedItem(): number {
+		return this._focusedItem;
 	}
 }
