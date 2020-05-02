@@ -415,7 +415,7 @@ export abstract class GridParentComponent extends Disposable {
 		return (gridIndex: number) => {
 			self.activeGrid = gridIndex;
 			let grid = self.table;
-			grid.setActive();
+			grid.setActiveCell(0, 1);
 			grid.setSelectedRows(true);
 		};
 	}
