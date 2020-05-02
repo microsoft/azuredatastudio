@@ -6,7 +6,7 @@
 import * as assert from 'assert';
 import * as sinon from 'sinon';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { BatchSummary, ResultSetSummary, IResultMessage, IQueryMessage, ResultSetSubset, CompleteBatchSummary } from 'sql/workbench/services/query/common/query';
+import { BatchSummary, ResultSetSummary, IResultMessage, ResultSetSubset, CompleteBatchSummary } from 'sql/workbench/services/query/common/query';
 import { URI } from 'vs/base/common/uri';
 import { workbenchInstantiationService } from 'sql/workbench/test/workbenchTestServices';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
@@ -24,7 +24,7 @@ suite('Query Runner', () => {
 		assert(!runner.isExecuting);
 		assert(!runner.hasCompleted);
 		// start query
-		const queryStartPromise = new Promise(r => Event.once(runner.onQueryStart)(() => r()));
+		const queryStartPromise = Event.toPromise(runner.onQueryStart);
 		const rangeSelection = { endColumn: 1, endLineNumber: 1, startColumn: 1, startLineNumber: 1 };
 		await runner.runQuery(rangeSelection);
 		assert(runQueryStub.calledOnce);
@@ -35,31 +35,23 @@ suite('Query Runner', () => {
 		assert(!runner.hasCompleted);
 		// start batch
 		const batch: BatchSummary = { id: 0, hasError: false, range: rangeSelection, resultSetSummaries: [], executionStart: '' };
-		const batchStartPromise = new Promise<BatchSummary>(r => Event.once(runner.onBatchStart)(b => r(b)));
-		runner.handleBatchStart(batch);
-		const returnBatch = await batchStartPromise;
+		const returnBatch = await trigger(batch, arg => runner.handleBatchStart(arg), runner.onBatchStart);
 		assert.deepEqual(returnBatch, batch);
 		// we expect the query runner to create a message sense we sent a selection
 		assert(runner.messages.length === 1);
 		// start result set
 		const result1: ResultSetSummary = { batchId: 0, id: 0, complete: false, rowCount: 0, columnInfo: [{ columnName: 'column' }] };
-		const resultPromise = new Promise<ResultSetSummary>(r => Event.once(runner.onResultSet)(b => r(b)));
-		runner.handleResultSetAvailable(result1);
-		const returnResult = await resultPromise;
+		const returnResult = await trigger(result1, arg => runner.handleResultSetAvailable(arg), runner.onResultSet);
 		assert.deepEqual(returnResult, result1);
 		assert.deepEqual(runner.batchSets[0].resultSetSummaries[0], result1);
 		// update result set
 		const result1Update: ResultSetSummary = { batchId: 0, id: 0, complete: true, rowCount: 100, columnInfo: [{ columnName: 'column' }] };
-		const resultUpdatePromise = new Promise<ResultSetSummary>(r => Event.once(runner.onResultSetUpdate)(b => r(b)));
-		runner.handleResultSetUpdated(result1Update);
-		const returnResultUpdate = await resultUpdatePromise;
+		const returnResultUpdate = await trigger(result1Update, arg => runner.handleResultSetUpdated(arg), runner.onResultSetUpdate);
 		assert.deepEqual(returnResultUpdate, result1Update);
 		assert.deepEqual(runner.batchSets[0].resultSetSummaries[0], result1Update);
 		// post message
 		const message: IResultMessage = { message: 'some message', isError: false, batchId: 0 };
-		const messagePromise = new Promise<IQueryMessage[]>(r => Event.once(runner.onMessage)(b => r(b)));
-		runner.handleMessage([message]);
-		const messageReturn = await messagePromise;
+		const messageReturn = await trigger([message], arg => runner.handleMessage(arg), runner.onMessage);
 		assert.deepEqual(messageReturn[0], message);
 		assert.deepEqual(runner.messages[1], message);
 		// get query rows
@@ -71,16 +63,18 @@ suite('Query Runner', () => {
 		assert.deepStrictEqual(resultReturn, rowResults);
 		// batch complete
 		const batchComplete: CompleteBatchSummary = { ...batch, executionEnd: 'endstring', executionElapsed: 'elapsedstring' };
-		const batchCompletePromise = new Promise<CompleteBatchSummary>(r => Event.once(runner.onBatchEnd)(b => r(b)));
-		runner.handleBatchComplete(batchComplete);
-		const batchCompleteReturn = await batchCompletePromise;
+		const batchCompleteReturn = await trigger(batchComplete, arg => runner.handleBatchComplete(arg), runner.onBatchEnd);
 		assert.deepStrictEqual(batchCompleteReturn, batchComplete);
 		// query complete
-		const queryCompletePromise = new Promise<string>(r => Event.once(runner.onQueryEnd)(b => r(b)));
-		runner.handleQueryComplete([batchComplete]);
-		await queryCompletePromise;
+		await trigger([batchComplete], arg => runner.handleQueryComplete(arg), runner.onQueryEnd);
 		assert(!runner.isExecuting);
 		assert(runner.hasCompleted);
 		await runner.disposeQuery();
 	});
 });
+
+function trigger<T, V = T>(arg: T, func: (arg: T) => void, event: Event<V>): Promise<V> {
+	const promise = Event.toPromise(event);
+	func(arg);
+	return promise;
+}
