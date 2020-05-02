@@ -438,7 +438,7 @@ export abstract class GridParentComponent extends Disposable {
 		}
 		setTimeout(() => {
 			self.resizeGrids();
-			self.table.setActive();
+			self.table.setActiveCell(0, 1);
 		});
 	}
 
