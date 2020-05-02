@@ -140,7 +140,7 @@ export class QueryManagementService implements IQueryManagementService {
 	// Handles logic to run the given handlerCallback at the appropriate time. If the given runner is
 	// undefined, the handlerCallback is put on the _handlerCallbackQueue to be run once the runner is set
 	// public for testing only
-	private enqueueOrRun(handlerCallback: (runnerParam: QueryRunner) => void, runner: QueryRunner): void {
+	private enqueueOrRun(handlerCallback: (runnerParam: QueryRunner) => void, runner?: QueryRunner): void {
 		if (runner === undefined) {
 			this._handlerCallbackQueue.push(handlerCallback);
 		} else {
@@ -150,7 +150,7 @@ export class QueryManagementService implements IQueryManagementService {
 
 	private _notify(ownerUri: string, sendNotification: (runner: QueryRunner | EditQueryRunner) => void): void {
 		let runner = this._queryRunners.get(ownerUri);
-		this.enqueueOrRun(sendNotification, runner!);
+		this.enqueueOrRun(sendNotification, runner);
 	}
 
 	public addQueryRequestHandler(queryType: string, handler: IQueryRequestHandler): IDisposable {
