@@ -349,7 +349,7 @@ suite('SQL ConnectionManagementService tests', () => {
 					onConnectCanceled: undefined,
 					uri: uri
 				},
-				querySelection: undefined,
+				queryRange: undefined,
 				runQueryOnCompletion: RunQueryOnConnectionMode.none
 			},
 			saveTheConnection: true,
@@ -629,7 +629,7 @@ suite('SQL ConnectionManagementService tests', () => {
 					onConnectCanceled: undefined,
 					uri: uri
 				},
-				querySelection: undefined,
+				queryRange: undefined,
 				runQueryOnCompletion: RunQueryOnConnectionMode.none
 			},
 			saveTheConnection: true,

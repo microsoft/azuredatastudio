@@ -11,6 +11,8 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
+// eslint-disable-next-line code-import-patterns
+import { IRange } from 'vs/editor/common/core/range';
 
 /**
  * Options for the actions that could happen after connecting is complete
@@ -297,7 +299,7 @@ export interface INewConnectionParams {
 	connectionType: ConnectionType;
 	input?: IConnectableInput;
 	runQueryOnCompletion?: RunQueryOnConnectionMode;
-	querySelection?: azdata.ISelectionData;
+	queryRange?: IRange;
 	showDashboard?: boolean;
 	providers?: string[];
 }

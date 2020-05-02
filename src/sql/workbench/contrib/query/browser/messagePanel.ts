@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/messagePanel';
-import QueryRunner, { IQueryMessage } from 'sql/workbench/services/query/common/queryRunner';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
+import { IQueryMessage } from 'sql/workbench/services/query/common/query';
 
 import { ISelectionData } from 'azdata';
 

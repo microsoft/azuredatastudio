@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { InsightsDialogController } from 'sql/workbench/services/insights/browser/insightsDialogController';
-import QueryRunner, { IQueryMessage } from 'sql/workbench/services/query/common/queryRunner';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
+import { IQueryMessage, BatchSummary, IColumn } from 'sql/workbench/services/query/common/query';
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
@@ -114,12 +115,12 @@ function getPrimedQueryRunner(data: string[][], columns: string[]): IPrimedQuery
 	querymock.setup(x => x.onQueryEnd).returns(x => emitter.event);
 	querymock.setup(x => x.onMessage).returns(x => new Emitter<[IQueryMessage]>().event);
 	querymock.setup(x => x.batchSets).returns(x => {
-		return <Array<azdata.BatchSummary>>[
+		return <Array<BatchSummary>>[
 			{
 				id: 0,
 				resultSetSummaries: [
 					{
-						columnInfo: <Array<azdata.IDbColumn>>columns.map(c => { return { columnName: c }; }),
+						columnInfo: <Array<IColumn>>columns.map(c => { return { columnName: c }; }),
 						id: 0,
 						rowCount: data.length
 					}

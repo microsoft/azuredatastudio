@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import * as types from 'vs/base/common/types';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
+import { QueryExecuteSubsetResult } from 'sql/workbench/services/query/common/query';
 
 export interface IGridDataProvider {
 
@@ -14,7 +14,7 @@ export interface IGridDataProvider {
 	 * @param rowStart 0-indexed start row to retrieve data from
 	 * @param numberOfRows total number of rows of data to retrieve
 	 */
-	getRowData(rowStart: number, numberOfRows: number): Thenable<azdata.QueryExecuteSubsetResult>;
+	getRowData(rowStart: number, numberOfRows: number): Thenable<QueryExecuteSubsetResult>;
 
 	/**
 	 * Sends a copy request to copy data to the clipboard

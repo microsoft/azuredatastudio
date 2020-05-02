@@ -3,9 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage, ResultSetSummary } from 'azdata';
+import { nb, IResultMessage } from 'azdata';
 import { localize } from 'vs/nls';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
+import { QueryExecuteSubsetResult, BatchSummary, ResultSetSummary, IColumn } from 'sql/workbench/services/query/common/query';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
@@ -343,7 +344,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		this._register(queryRunner.onMessage(messages => {
 			// TODO handle showing a messages output (should be updated with all messages, only changing 1 output in total)
 			for (const message of messages) {
-				if (this._future && isUndefinedOrNull(message.selection)) {
+				if (this._future && isUndefinedOrNull(message.range)) {
 					this._future.handleMessage(message);
 				}
 			}
@@ -560,7 +561,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		// no-op
 	}
 
-	private convertToDataResource(columns: IDbColumn[], subsetResult: QueryExecuteSubsetResult): IDataResource {
+	private convertToDataResource(columns: IColumn[], subsetResult: QueryExecuteSubsetResult): IDataResource {
 		let columnsResources: IDataResourceSchema[] = [];
 		columns.forEach(column => {
 			columnsResources.push({ name: escape(column.columnName) });
@@ -579,7 +580,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		};
 	}
 
-	private convertToHtmlTable(columns: IDbColumn[], d: QueryExecuteSubsetResult): string[] {
+	private convertToHtmlTable(columns: IColumn[], d: QueryExecuteSubsetResult): string[] {
 		// Adding 3 for <table>, column title rows, </table>
 		let htmlStringArr: string[] = new Array(d.resultSubset.rowCount + 3);
 		htmlStringArr[0] = '<table>';
