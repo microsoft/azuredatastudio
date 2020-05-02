@@ -148,7 +148,7 @@ export class QueryManagementService implements IQueryManagementService {
 		}
 	}
 
-	private _notify(ownerUri: string, sendNotification: (runner: QueryRunner) => void): void {
+	private _notify(ownerUri: string, sendNotification: (runner: QueryRunner | EditQueryRunner) => void): void {
 		let runner = this._queryRunners.get(ownerUri);
 		this.enqueueOrRun(sendNotification, runner!);
 	}
@@ -319,8 +319,8 @@ export class QueryManagementService implements IQueryManagementService {
 	}
 
 	public onEditSessionReady(ownerUri: string, success: boolean, message: string): void {
-		this._notify(ownerUri, (runner: EditQueryRunner) => {
-			runner.handleEditSessionReady(ownerUri, success, message);
+		this._notify(ownerUri, runner => {
+			(runner as EditQueryRunner).handleEditSessionReady(ownerUri, success, message);
 		});
 	}
 
