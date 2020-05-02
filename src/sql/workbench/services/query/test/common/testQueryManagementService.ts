@@ -47,8 +47,8 @@ export class TestQueryManagementService implements IQueryManagementService {
 	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<ResultSetSubset> {
 		throw new Error('Method not implemented.');
 	}
-	disposeQuery(ownerUri: string): Promise<void> {
-		throw new Error('Method not implemented.');
+	async disposeQuery(ownerUri: string): Promise<void> {
+		return;
 	}
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult> {
 		throw new Error('Method not implemented.');
