@@ -38,18 +38,24 @@ export class FlatFileWizard {
 
 		let pages: Map<number, ImportPage> = new Map<number, ImportPage>();
 
-		let connectionId = (await azdata.connection.getCurrentConnection())?.connectionId ??
-			(await azdata.connection.openConnectionDialog(['MSSQL']))?.connectionId;
+		let currentConnection = await azdata.connection.getCurrentConnection();
 
-		if ((await azdata.connection.getCurrentConnection()).providerId !== 'MSSQL') {
-			vscode.window.showErrorMessage(localize('import.needSQLConnection', "The import extension currently support Microsoft SQL databases only. Please connect to a Microsoft SQL database before using this wizard."));
-			return;
+		let connectionId: string;
+
+		if (!currentConnection) {
+			connectionId = (await azdata.connection.openConnectionDialog(['MSSQL'])).connectionId;
+			if (!connectionId) {
+				vscode.window.showErrorMessage(localize('import.needConnection', "Please connect to a server before using this wizard."));
+				return;
+			}
+		} else {
+			if (currentConnection.providerId !== 'MSSQL') {
+				vscode.window.showErrorMessage(localize('import.needSQLConnection', "The import extension currently support Microsoft SQL databases only. Please connect to a Microsoft SQL database before using this wizard."));
+				return;
+			}
+			connectionId = currentConnection.providerId;
 		}
 
-		if (!connectionId) {
-			vscode.window.showErrorMessage(localize('import.needConnection', "Please connect to a server before using this wizard."));
-			return;
-		}
 
 		model.serverId = connectionId;
 
