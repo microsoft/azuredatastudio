@@ -27,14 +27,15 @@ import { DatabaseInfo } from 'azdata';
 import { getFlavor, ListViewProperty } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 import { ILogService } from 'vs/platform/log/common/log';
 import * as DOM from 'vs/base/browser/dom';
-import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
-import { IconColumnDefinition, IconFormatter } from 'sql/base/browser/ui/table/plugins/iconColumn';
+import { TextWidthIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
+import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 
 const NameProperty: string = 'name';
 const NamePropertyDisplayText: string = nls.localize('dashboard.explorer.namePropertyDisplayValue', "Name");
 const IconClassProperty: string = 'iconClass';
 const IconTitleProperty: string = 'iconTitle';
+const ShowActionsText: string = nls.localize('dashboard.explorer.actions', "Show Actions");
 
 @Component({
 	selector: 'explorer-widget',
@@ -46,6 +47,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	private _filterDelayer = new Delayer<void>(200);
 	private _propertyList: ListViewProperty[] = [];
 	private _actionsColumn: ButtonColumn<Slick.SlickData>;
+	//private _typeIconColumn: IconColumn<Slick.SlickData>;
 
 	@ViewChild('input') private _inputContainer: ElementRef;
 	@ViewChild('table') private _tableContainer: ElementRef;
@@ -93,11 +95,11 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			});
 		}));
 		this._table = new Table(this._tableContainer.nativeElement, undefined, { forceFitColumns: true, rowHeight: 35 });
-		this._table.setSelectionModel(new CellSelectionModel());
+		this._table.setSelectionModel(new RowSelectionModel());
 		this._actionsColumn = new ButtonColumn<Slick.SlickData>({
 			id: 'actions',
 			iconCssClass: 'toggle-more',
-			title: 'show actions',
+			title: ShowActionsText,
 			width: 40
 		});
 		this._table.registerPlugin(this._actionsColumn);
@@ -194,26 +196,28 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		});
 
 		const columns: Slick.Column<Slick.SlickData>[] = this._propertyList.map(property => {
-			return <Slick.Column<Slick.SlickData>>{
-				id: property.value,
-				field: property.value,
-				name: property.displayName,
-				sortable: false,
-				width: property.widthWeight ? initialWidth * (property.widthWeight / totalColumnWidthWeight) : undefined
-			};
+			const columnWidth = property.widthWeight ? initialWidth * (property.widthWeight / totalColumnWidthWeight) : undefined;
+
+			if (property.value === NameProperty) {
+				const nameColumn = new TextWidthIconColumn({
+					id: property.value,
+					iconCssClassField: IconClassProperty,
+					width: columnWidth,
+					field: property.value,
+					name: property.displayName
+				});
+				return nameColumn.definition;
+			} else {
+				return <Slick.Column<Slick.SlickData>>{
+					id: property.value,
+					field: property.value,
+					name: property.displayName,
+					width: columnWidth
+				};
+			}
 		});
 
-		columns.unshift(<IconColumnDefinition<Slick.SlickData>>{
-			id: 'icon',
-			field: IconTitleProperty,
-			resizable: false,
-			name: '',
-			formatter: IconFormatter,
-			width: 40,
-			selectable: false,
-			iconCssClassField: IconClassProperty
-		});
-
+		//columns.unshift(this._typeIconColumn.definition);
 		columns.push(this._actionsColumn.definition);
 
 		return columns;

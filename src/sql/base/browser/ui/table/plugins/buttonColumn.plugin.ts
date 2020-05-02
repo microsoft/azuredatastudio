@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IconColumnDefinition } from 'sql/base/browser/ui/table/plugins/iconColumn';
+import { TextWithIconColumnDefinition } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
 import { Emitter } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
-export interface ButtonColumnDefinition<T extends Slick.SlickData> extends IconColumnDefinition<T> {
+export interface ButtonColumnDefinition<T extends Slick.SlickData> extends TextWithIconColumnDefinition<T> {
 }
 
 export interface ButtonColumnOptions {
@@ -28,24 +28,24 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 	public onClick = this._onClick.event;
 
 
-	constructor(options: ButtonColumnOptions) {
+	constructor(private options: ButtonColumnOptions) {
 		this._definition = {
 			id: options.id,
 			resizable: false,
 			name: '',
-			formatter: this.formatter,
+			formatter: (row: number, cell: number, value: any, columnDef: TextWithIconColumnDefinition<Slick.SlickData>, dataContext: Slick.SlickData): string => {
+				return this.formatter(row, cell, value, columnDef, dataContext);
+			},
 			width: options.width,
 			selectable: false,
 			iconCssClassField: options.iconCssClass
 		};
-
 	}
 
 	public init(grid: Slick.Grid<T>): void {
 		this._grid = grid;
 		this._handler.subscribe(grid.onClick, (e: DOMEvent, args: Slick.OnClickEventArgs<T>) => this.handleClick(args));
 		this._handler.subscribe(grid.onKeyDown, (e: DOMEvent, args: Slick.OnKeyDownEventArgs<T>) => this.handleKeyboardEvent(e as KeyboardEvent, args));
-
 	}
 
 	public destroy(): void {
@@ -78,9 +78,7 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 		return this._grid.getColumns()[columnIndex].id === this.definition.id;
 	}
 
-	private formatter(row: number, cell: number, value: any, columnDef: IconColumnDefinition<Slick.SlickData>, dataContext: Slick.SlickData): string {
-		return `<div class="codicon slick-icon-column slick-button-column ${columnDef.iconCssClassField}"></div>`;
+	private formatter(row: number, cell: number, value: any, columnDef: TextWithIconColumnDefinition<Slick.SlickData>, dataContext: Slick.SlickData): string {
+		return `<div class="codicon slick-button-cell-content ${columnDef.iconCssClassField}" aria-label="${this.options.title}"></div>`;
 	}
 }
-
-

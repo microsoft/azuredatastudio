@@ -14,7 +14,6 @@ explorer-widget .list-row {
 	margin-left: -33px;
 }
 
-.explorer-widget .slick-cell,
-.explorer-widget .slick-header-column {
+.explorer-widget .slick-cell {
 	border-right-style: none;
 }
