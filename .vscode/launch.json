@@ -79,7 +79,6 @@
 			"type": "pwa-chrome",
 			"request": "launch",
 			"name": "Launch azuredatastudio",
-			"browserLaunchLocation": "workspace",
 			"windows": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
 			},

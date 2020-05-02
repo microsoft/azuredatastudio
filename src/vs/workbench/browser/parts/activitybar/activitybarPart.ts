@@ -73,7 +73,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 	_serviceBrand: undefined;
 
 	private static readonly ACTION_HEIGHT = 48;
-	private static readonly PINNED_VIEWLETS = 'workbench.activity.pinnedViewlets2';
+	static readonly PINNED_VIEWLETS = 'workbench.activity.pinnedViewlets2';
 	private static readonly PLACEHOLDER_VIEWLETS = 'workbench.activity.placeholderViewlets';
 
 	//#region IView
@@ -86,6 +86,9 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 	//#endregion
 
 	private content: HTMLElement | undefined;
+
+	private homeBar: ActionBar | undefined;
+	private homeBarContainer: HTMLElement | undefined;
 
 	private menuBar: CustomMenubarControl | undefined;
 	private menuBarContainer: HTMLElement | undefined;
@@ -155,7 +158,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 				(id: string, focus?: boolean) => this.viewletService.openViewlet(id, focus),
 				(from: string, to: string, before?: Before2D) => this.compositeBar.move(from, to, before?.verticallyBefore)
 			),
-			compositeSize: 50,
+			compositeSize: 52,
 			colors: (theme: IColorTheme) => this.getActivitybarItemColors(theme),
 			overflowActionSize: ActivitybarPart.ACTION_HEIGHT
 		}));
@@ -353,20 +356,24 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 	}
 
 	private createHomeBar(command: string, title: string, icon: Codicon): void {
-		const homeBarContainer = document.createElement('div');
-		homeBarContainer.setAttribute('aria-label', nls.localize('homeIndicator', "Home"));
-		homeBarContainer.setAttribute('role', 'toolbar');
-		addClass(homeBarContainer, 'home-bar');
+		this.homeBarContainer = document.createElement('div');
+		this.homeBarContainer.setAttribute('aria-label', nls.localize('homeIndicator', "Home"));
+		this.homeBarContainer.setAttribute('role', 'toolbar');
+		addClass(this.homeBarContainer, 'home-bar');
 
-		const homeActionBar = this._register(new ActionBar(homeBarContainer, {
+		this.homeBar = this._register(new ActionBar(this.homeBarContainer, {
 			orientation: ActionsOrientation.VERTICAL,
 			animated: false
 		}));
 
-		homeActionBar.push(this._register(this.instantiationService.createInstance(HomeAction, command, title, icon)), { icon: true, label: false });
+		const homeBarIconBadge = document.createElement('div');
+		addClass(homeBarIconBadge, 'home-bar-icon-badge');
+		this.homeBarContainer.appendChild(homeBarIconBadge);
+
+		this.homeBar.push(this._register(this.instantiationService.createInstance(HomeAction, command, title, icon)), { icon: true, label: false });
 
 		const content = assertIsDefined(this.content);
-		content.prepend(homeBarContainer);
+		content.prepend(this.homeBarContainer);
 	}
 
 	updateStyles(): void {
@@ -421,7 +428,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 		this.globalActivityAction = new ActivityAction({
 			id: 'workbench.actions.manage',
 			name: nls.localize('manage', "Manage"),
-			cssClass: Codicon.gear.classNames
+			cssClass: Codicon.settingsGear.classNames
 		});
 
 		if (getUserDataSyncStore(this.productService, this.configurationService)) {
@@ -582,11 +589,14 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 
 		// Layout composite bar
 		let availableHeight = contentAreaSize.height;
-		if (this.globalActivityActionBar) {
-			availableHeight -= (this.globalActivityActionBar.viewItems.length * ActivitybarPart.ACTION_HEIGHT); // adjust height for global actions showing
+		if (this.homeBarContainer) {
+			availableHeight -= this.homeBarContainer.clientHeight;
 		}
 		if (this.menuBarContainer) {
 			availableHeight -= this.menuBarContainer.clientHeight;
+		}
+		if (this.globalActivityActionBar) {
+			availableHeight -= (this.globalActivityActionBar.viewItems.length * ActivitybarPart.ACTION_HEIGHT); // adjust height for global actions showing
 		}
 		this.compositeBar.layout(new Dimension(width, availableHeight));
 	}
@@ -640,10 +650,11 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 				for (const { when } of viewContainerModel.allViewDescriptors) {
 					views.push({ when: when ? when.serialize() : undefined });
 				}
+				const cacheIcon = URI.isUri(viewContainerModel.icon) ? viewContainerModel.icon.scheme === Schemas.file : true;
 				state.push({
 					id: compositeItem.id,
 					name: viewContainerModel.title,
-					icon: URI.isUri(viewContainerModel.icon) && viewContainerModel.icon.scheme === Schemas.file ? viewContainerModel.icon : viewContainerModel.icon,
+					icon: cacheIcon ? viewContainerModel.icon : undefined,
 					views,
 					pinned: compositeItem.pinned,
 					order: compositeItem.order,

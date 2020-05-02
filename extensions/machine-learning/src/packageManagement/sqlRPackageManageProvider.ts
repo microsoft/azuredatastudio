@@ -75,7 +75,7 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 			let scripts: string[] = [
 				'formals(quit)$save <- formals(q)$save <- "no"',
 				'library(sqlmlutils)',
-				`connection <- connectionInfo(${connectionParts})`,
+				`connection <- connectionInfo(driver= "ODBC Driver 17 for SQL Server", ${connectionParts})`,
 				`r = getOption("repos")`,
 				`r["CRAN"] = "${this._config.rPackagesRepository}"`,
 				`options(repos = r)`,
