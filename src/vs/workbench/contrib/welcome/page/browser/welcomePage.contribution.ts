@@ -57,7 +57,7 @@ class WelcomeContributions {
 			Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions)
 				.registerWorkbenchAction(SyncActionDescriptor.create(WelcomePageAction2, WelcomePageAction2.ID, WelcomePageAction2.LABEL), 'Help: Welcome', localize('help', "Help"));
 
-			Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).registerEditorInputFactory(WelcomeInputFactory2.ID, WelcomeInputFactory2);								
+			Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).registerEditorInputFactory(WelcomeInputFactory2.ID, WelcomeInputFactory2);
 		}
 	}
 }
