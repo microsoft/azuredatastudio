@@ -9,8 +9,7 @@ import * as vscode from 'vscode';
 import { NetCoreTool, DBProjectConfigurationKey, NetCoreInstallLocationKey, NextCoreNonWindowsDefaultPath } from '../tools/netcoreTool';
 import { isNullOrUndefined } from 'util';
 
-
-describe('NetCoreTool: project controller operations', function (): void {
+describe('NetCoreTool: Net core install popup tests', function (): void {
 
 	it('settings value should override default paths', async function (): Promise<void> {
 		try {
