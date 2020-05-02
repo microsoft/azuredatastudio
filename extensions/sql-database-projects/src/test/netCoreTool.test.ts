@@ -4,20 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as should from 'should';
-import * as path from 'path';
 import * as os from 'os';
 import * as vscode from 'vscode';
-import * as baselines from './baselines/baselines';
-import * as templates from '../templates/templates';
-import { NetCoreTool, DBProjectConfigurationKey, NetCoreInstallLocationKey } from '../tools/netcoreTool';
+import { NetCoreTool, DBProjectConfigurationKey, NetCoreInstallLocationKey, NextCoreNonWindowsDefaultPath } from '../tools/netcoreTool';
 import { isNullOrUndefined } from 'util';
 
 
-describe('ProjectsController: project controller operations', function (): void {
-	before(async function (): Promise<void> {
-		await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
-		await baselines.loadBaselines();
-	});
+describe('NetCoreTool: project controller operations', function (): void {
 
 	it('settings value should override default paths', async function (): Promise<void> {
 		try {
@@ -38,12 +31,14 @@ describe('ProjectsController: project controller operations', function (): void 
 		netcoreTool.findOrInstallNetCore();
 
 		if (os.platform() === 'win32') {
+			// check that path should start with c:\program files
 			let result = isNullOrUndefined(netcoreTool.netcoreInstallLocation) || netcoreTool.netcoreInstallLocation.toLowerCase().startsWith('c:\\program files');
 			should(result).true('dotnet is either not present or in pogramfiles by default');
 		}
 
 		if (os.platform() === 'linux' || os.platform() === 'darwin') {
-			let result = isNullOrUndefined(netcoreTool.netcoreInstallLocation) || netcoreTool.netcoreInstallLocation.toLowerCase().startsWith('/usr/local/share');
+			//check that path should start with /usr/local/share
+			let result = isNullOrUndefined(netcoreTool.netcoreInstallLocation) || netcoreTool.netcoreInstallLocation.toLowerCase().startsWith(NextCoreNonWindowsDefaultPath);
 			should(result).true('dotnet is either not present or in /usr/local/share by default');
 		}
 	});

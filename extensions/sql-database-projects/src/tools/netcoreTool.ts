@@ -13,6 +13,7 @@ const localize = nls.loadMessageBundle();
 
 export const DBProjectConfigurationKey: string = 'sqlDatabaseProjects';
 export const NetCoreInstallLocationKey: string = 'netCoreSDKLocation';
+export const NextCoreNonWindowsDefaultPath = '/usr/local/share';
 export const NetCoreInstallationConfirmation: string = localize('sqlDatabaseProjects.NetCoreInstallationConfirmation', "The .NET Core SDK cannnot be located. Project build will not work. Please install the same or update the .Net Core SDK location in settings if already installed.");
 export const UpdateNetCoreLocation: string = localize('sqlDatabaseProjects.UpdateNetCoreLocation', "Update .Net Core location");
 export const InstallNetCore: string = localize('sqlDatabaseProjects.InstallNetCore', "Install .Net Core SDK");
@@ -56,7 +57,7 @@ export class NetCoreTool {
 	}
 
 	private get defaultnonWindowsLocation(): string | undefined {
-		const defaultNonWindowsInstallLocation = '/usr/local/share'; //default folder for net core sdk
+		const defaultNonWindowsInstallLocation = NextCoreNonWindowsDefaultPath; //default folder for net core sdk
 		return this.getDotnetPathIfPresent(defaultNonWindowsInstallLocation) ||
 			this.getDotnetPathIfPresent(os.homedir()) ||
 			undefined;
