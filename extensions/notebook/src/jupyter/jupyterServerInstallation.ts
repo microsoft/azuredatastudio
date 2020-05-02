@@ -109,6 +109,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private readonly _expectedCondaPipPackages = this._commonPipPackages;
 	private readonly _expectedCondaPackages: PythonPkgDetails[];
 
+	private _kernelSetupCache: Map<string, boolean>;
+
 	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
 		this.extensionPath = extensionPath;
 		this.outputChannel = outputChannel;
@@ -125,6 +127,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		} else {
 			this._expectedCondaPackages = this._commonPackages;
 		}
+
+		this._kernelSetupCache = new Map<string, boolean>();
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
@@ -451,6 +455,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let requiredPackages: PythonPkgDetails[];
 		let enablePreviewFeatures = this.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
 		if (enablePreviewFeatures) {
+			if (this._kernelSetupCache.get(kernelName)) {
+				return;
+			}
 			requiredPackages = JupyterServerInstallation.getRequiredPackagesForKernel(kernelName);
 		}
 
@@ -460,6 +467,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			.then(() => {
 				this._installCompletion.resolve();
 				this._installInProgress = false;
+				this._kernelSetupCache.set(kernelName, true);
 			})
 			.catch(err => {
 				let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
