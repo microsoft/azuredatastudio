@@ -19,12 +19,15 @@ export interface ResultSetSummary {
 	complete: boolean;
 }
 
-export interface BatchSummary {
-	hasError: boolean;
+export interface BatchStartSummary {
 	id: number;
-	range: IRange;
-	resultSetSummaries: ResultSetSummary[];
 	executionStart: string;
+	range?: IRange;
+}
+
+export interface BatchSummary extends BatchStartSummary {
+	hasError: boolean;
+	resultSetSummaries: ResultSetSummary[];
 }
 
 export interface CompleteBatchSummary extends BatchSummary {

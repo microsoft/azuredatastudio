@@ -71,6 +71,155 @@ suite('Query Runner', () => {
 		assert(runner.hasCompleted);
 		await runner.disposeQuery();
 	});
+
+	test('does handle inital query failure', async () => {
+		const instantiationService = workbenchInstantiationService();
+		const uri = URI.parse('test:uri').toString();
+		const runner = instantiationService.createInstance(QueryRunner, uri);
+		const runQueryStub = sinon.stub().returns(Promise.reject(new Error('some error')));
+		(instantiationService as TestInstantiationService).stub(IQueryManagementService, 'runQuery', runQueryStub);
+		assert(!runner.isExecuting);
+		assert(!runner.hasCompleted);
+		// start query
+		const queryCompletePromise = Event.toPromise(runner.onQueryEnd);
+		const rangeSelection = { endColumn: 1, endLineNumber: 1, startColumn: 1, startLineNumber: 1 };
+		await runner.runQuery(rangeSelection);
+		await queryCompletePromise;
+		assert(runQueryStub.calledOnce);
+		assert(runQueryStub.calledWithExactly(uri, rangeSelection, undefined));
+		assert(runner.messages.length === 2);
+		assert(runner.messages[0].message.includes('some error'));
+		assert(runner.messages[0].isError);
+	});
+
+	test('does handle cancel query', async () => {
+		const instantiationService = workbenchInstantiationService();
+		const uri = URI.parse('test:uri').toString();
+		const runner = instantiationService.createInstance(QueryRunner, uri);
+		assert(!runner.isExecuting);
+		// start query
+		const rangeSelection = { endColumn: 1, endLineNumber: 1, startColumn: 1, startLineNumber: 1 };
+		await runner.runQuery(rangeSelection);
+		assert(runner.isExecuting);
+		// cancel query
+		const cancelQueryStub = sinon.stub().returns(Promise.resolve());
+		(instantiationService as TestInstantiationService).stub(IQueryManagementService, 'cancelQuery', cancelQueryStub);
+		await runner.cancelQuery();
+		assert(cancelQueryStub.calledOnce);
+		await trigger([], () => runner.handleQueryComplete(), runner.onQueryEnd);
+		assert(!runner.isExecuting);
+	});
+
+	test('does handle query plan in inital data set', async () => {
+		const instantiationService = workbenchInstantiationService();
+		const uri = URI.parse('test:uri').toString();
+		const runner = instantiationService.createInstance(QueryRunner, uri);
+		const runQueryStub = sinon.stub().returns(Promise.resolve());
+		(instantiationService as TestInstantiationService).stub(IQueryManagementService, 'runQuery', runQueryStub);
+		await runner.runQuery(undefined, { displayEstimatedQueryPlan: true });
+		assert(runQueryStub.calledOnce);
+		assert(runQueryStub.calledWithExactly(uri, undefined, { displayEstimatedQueryPlan: true }));
+		const xmlPlan = 'xml plan';
+		const getRowsStub = sinon.stub().returns(Promise.resolve({ rowCount: 1, rows: [[{ displayValue: xmlPlan }]] } as ResultSetSubset));
+		(instantiationService as TestInstantiationService).stub(IQueryManagementService, 'getQueryRows', getRowsStub);
+		runner.handleBatchStart({ id: 0, executionStart: '' });
+		runner.handleResultSetAvailable({ id: 0, batchId: 0, complete: true, rowCount: 1, columnInfo: [{ columnName: 'Microsoft SQL Server 2005 XML Showplan' }] });
+		const plan = await runner.planXml;
+		assert(getRowsStub.calledOnce);
+		assert.equal(plan, xmlPlan);
+		assert(runner.isQueryPlan);
+	});
+
+	test('does handle query plan in update', async () => {
+		const instantiationService = workbenchInstantiationService();
+		const uri = URI.parse('test:uri').toString();
+		const runner = instantiationService.createInstance(QueryRunner, uri);
+		const runQueryStub = sinon.stub().returns(Promise.resolve());
+		(instantiationService as TestInstantiationService).stub(IQueryManagementService, 'runQuery', runQueryStub);
+		await runner.runQuery(undefined, { displayEstimatedQueryPlan: true });
+		assert(runQueryStub.calledOnce);
+		assert(runQueryStub.calledWithExactly(uri, undefined, { displayEstimatedQueryPlan: true }));
+		runner.handleBatchStart({ id: 0, executionStart: '' });
+		runner.handleResultSetAvailable({ id: 0, batchId: 0, complete: false, rowCount: 0, columnInfo: [{ columnName: 'Microsoft SQL Server 2005 XML Showplan' }] });
+		const xmlPlan = 'xml plan';
+		const getRowsStub = sinon.stub().returns(Promise.resolve({ rowCount: 1, rows: [[{ displayValue: xmlPlan }]] } as ResultSetSubset));
+		(instantiationService as TestInstantiationService).stub(IQueryManagementService, 'getQueryRows', getRowsStub);
+		runner.handleResultSetUpdated({ id: 0, batchId: 0, complete: true, rowCount: 1, columnInfo: [{ columnName: 'Microsoft SQL Server 2005 XML Showplan' }] });
+		const plan = await runner.planXml;
+		assert(getRowsStub.calledOnce);
+		assert.equal(plan, xmlPlan);
+		assert(runner.isQueryPlan);
+	});
+
+	test('does run query string', async () => {
+		const instantiationService = workbenchInstantiationService();
+		const uri = URI.parse('test:uri').toString();
+		const runner = instantiationService.createInstance(QueryRunner, uri);
+		const runQueryStringStub = sinon.stub().returns(Promise.resolve());
+		(instantiationService as TestInstantiationService).stub(IQueryManagementService, 'runQueryString', runQueryStringStub);
+		assert(!runner.isExecuting);
+		assert(!runner.hasCompleted);
+		// start query
+		await runner.runQuery('some query');
+		assert(runQueryStringStub.calledOnce);
+		assert(runQueryStringStub.calledWithExactly(uri, 'some query'));
+		assert(runner.isExecuting);
+	});
+
+	test('does handle run query string error', async () => {
+		const instantiationService = workbenchInstantiationService();
+		const uri = URI.parse('test:uri').toString();
+		const runner = instantiationService.createInstance(QueryRunner, uri);
+		const runQueryStringStub = sinon.stub().returns(Promise.reject(new Error('some error')));
+		(instantiationService as TestInstantiationService).stub(IQueryManagementService, 'runQueryString', runQueryStringStub);
+		assert(!runner.isExecuting);
+		assert(!runner.hasCompleted);
+		// start query
+		const queryCompletePromise = Event.toPromise(runner.onQueryEnd);
+		await runner.runQuery('some query');
+		await queryCompletePromise;
+		assert(runQueryStringStub.calledOnce);
+		assert(runQueryStringStub.calledWithExactly(uri, 'some query'));
+		assert(runner.messages.length === 2);
+		assert(runner.messages[0].message.includes('some error'));
+		assert(runner.messages[0].isError);
+	});
+
+	test('does run query statement', async () => {
+		const instantiationService = workbenchInstantiationService();
+		const uri = URI.parse('test:uri').toString();
+		const runner = instantiationService.createInstance(QueryRunner, uri);
+		const runQueryStatementStub = sinon.stub().returns(Promise.resolve());
+		(instantiationService as TestInstantiationService).stub(IQueryManagementService, 'runQueryStatement', runQueryStatementStub);
+		assert(!runner.isExecuting);
+		assert(!runner.hasCompleted);
+		// start query
+		const rangeSelection = { endColumn: 1, endLineNumber: 1, startColumn: 1, startLineNumber: 1 };
+		await runner.runQueryStatement(rangeSelection);
+		assert(runQueryStatementStub.calledOnce);
+		assert(runQueryStatementStub.calledWithExactly(uri, rangeSelection.startLineNumber, rangeSelection.startColumn));
+		assert(runner.isExecuting);
+	});
+
+	test('does handle run query statement error', async () => {
+		const instantiationService = workbenchInstantiationService();
+		const uri = URI.parse('test:uri').toString();
+		const runner = instantiationService.createInstance(QueryRunner, uri);
+		const runQueryStatementStub = sinon.stub().returns(Promise.reject(new Error('some error')));
+		(instantiationService as TestInstantiationService).stub(IQueryManagementService, 'runQueryStatement', runQueryStatementStub);
+		assert(!runner.isExecuting);
+		assert(!runner.hasCompleted);
+		// start query
+		const queryCompletePromise = Event.toPromise(runner.onQueryEnd);
+		const rangeSelection = { endColumn: 1, endLineNumber: 1, startColumn: 1, startLineNumber: 1 };
+		await runner.runQueryStatement(rangeSelection);
+		await queryCompletePromise;
+		assert(runQueryStatementStub.calledOnce);
+		assert(runQueryStatementStub.calledWithExactly(uri, rangeSelection.startLineNumber, rangeSelection.startColumn));
+		assert(runner.messages.length === 2);
+		assert(runner.messages[0].message.includes('some error'));
+		assert(runner.messages[0].isError);
+	});
 });
 
 function trigger<T, V = T>(arg: T, func: (arg: T) => void, event: Event<V>): Promise<V> {

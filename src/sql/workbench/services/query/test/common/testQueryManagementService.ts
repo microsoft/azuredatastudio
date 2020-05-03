@@ -26,11 +26,11 @@ export class TestQueryManagementService implements IQueryManagementService {
 	registerRunner(runner: QueryRunner, uri: string): void {
 		return;
 	}
-	cancelQuery(ownerUri: string): Promise<azdata.QueryCancelResult> {
-		throw new Error('Method not implemented.');
+	async cancelQuery(ownerUri: string): Promise<azdata.QueryCancelResult> {
+		return { messages: undefined };
 	}
-	runQuery(ownerUri: string, range: IRange, runOptions?: ExecutionPlanOptions): Promise<void> {
-		throw new Error('Method not implemented.');
+	async runQuery(ownerUri: string, range: IRange, runOptions?: ExecutionPlanOptions): Promise<void> {
+		return;
 	}
 	runQueryStatement(ownerUri: string, line: number, column: number): Promise<void> {
 		throw new Error('Method not implemented.');

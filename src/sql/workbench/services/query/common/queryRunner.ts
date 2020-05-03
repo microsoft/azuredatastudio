@@ -25,7 +25,7 @@ import { getErrorMessage } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { find } from 'vs/base/common/arrays';
 import { IRange, Range } from 'vs/editor/common/core/range';
-import { BatchSummary, IQueryMessage, ResultSetSummary, QueryExecuteSubsetParams, CompleteBatchSummary, IResultMessage, ResultSetSubset } from './query';
+import { BatchSummary, IQueryMessage, ResultSetSummary, QueryExecuteSubsetParams, CompleteBatchSummary, IResultMessage, ResultSetSubset, BatchStartSummary } from './query';
 
 /*
 * Query Runner class which handles running a query, reports the results to the content manager,
@@ -62,8 +62,8 @@ export default class QueryRunner extends Disposable {
 	private readonly _onQueryEnd = this._register(new Emitter<string>());
 	public get onQueryEnd(): Event<string> { return this._onQueryEnd.event; }
 
-	private readonly _onBatchStart = this._register(new Emitter<BatchSummary>());
-	public readonly onBatchStart: Event<BatchSummary> = this._onBatchStart.event;
+	private readonly _onBatchStart = this._register(new Emitter<BatchStartSummary>());
+	public readonly onBatchStart: Event<BatchStartSummary> = this._onBatchStart.event;
 
 	private readonly _onBatchEnd = this._register(new Emitter<CompleteBatchSummary>());
 	public readonly onBatchEnd: Event<CompleteBatchSummary> = this._onBatchEnd.event;
@@ -252,23 +252,20 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Handle a BatchStart from the service layer
 	 */
-	public handleBatchStart(batch: BatchSummary): void {
+	public handleBatchStart(batch: BatchStartSummary): void {
 		// Recalculate the start and end lines, relative to the result line offset
 		if (batch.range) {
 			batch.range = new Range(batch.range.startLineNumber + this._resultLineOffset, batch.range.startColumn + this._resultColumnOffset, batch.range.endLineNumber + this._resultLineOffset, batch.range.endColumn + this._resultColumnOffset);
 		}
 
-		// Set the result sets as an empty array so that as result sets complete we can add to the list
-		batch.resultSetSummaries = [];
-
 		// Store the batch
-		this._batchSets[batch.id] = batch;
+		this._batchSets[batch.id] = { ...batch, resultSetSummaries: [], hasError: false };
 
-		let message = {
+		let message: IQueryMessage = {
 			// account for index by 1
-			message: nls.localize('query.message.startQuery', "Started executing query at Line {0}", batch.range.startLineNumber),
+			message: batch.range ? nls.localize('query.message.startQueryWithRange', "Started executing query at Line {0}", batch.range.startLineNumber) : nls.localize('query.message.startQuery', "Started executing batch {0}", batch.id),
 			time: batch.executionStart,
-			selection: batch.range,
+			range: batch.range,
 			isError: false
 		};
 		this._messages.push(message);
@@ -318,7 +315,7 @@ export default class QueryRunner extends Disposable {
 			// handle getting queryPlanxml if we need too
 			// check if this result has show plan, this needs work, it won't work for any other provider
 			let hasShowPlan = !!find(resultSet.columnInfo, e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
-			if (hasShowPlan) {
+			if (hasShowPlan && resultSet.rowCount > 0) {
 				this._isQueryPlan = true;
 
 				this.getQueryRows(0, 1, resultSet.batchId, resultSet.id).then(e => {

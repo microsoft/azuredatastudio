@@ -16,6 +16,7 @@ import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/te
 import EditQueryRunner from 'sql/workbench/services/editData/common/editQueryRunner';
 import { IRange, Range } from 'vs/editor/common/core/range';
 import { ResultSetSubset } from 'sql/workbench/services/query/common/query';
+import { isUndefined } from 'vs/base/common/types';
 
 export const SERVICE_ID = 'queryManagementService';
 
@@ -216,7 +217,7 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public runQuery(ownerUri: string, range: IRange, runOptions?: ExecutionPlanOptions): Promise<void> {
+	public runQuery(ownerUri: string, range?: IRange, runOptions?: ExecutionPlanOptions): Promise<void> {
 		this.addTelemetry(TelemetryKeys.RunQuery, ownerUri, runOptions);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQuery(ownerUri, rangeToSelectionData(range), runOptions);
@@ -226,7 +227,7 @@ export class QueryManagementService implements IQueryManagementService {
 	public runQueryStatement(ownerUri: string, line: number, column: number): Promise<void> {
 		this.addTelemetry(TelemetryKeys.RunQueryStatement, ownerUri);
 		return this._runAction(ownerUri, (runner) => {
-			return runner.runQueryStatement(ownerUri, line, column);
+			return runner.runQueryStatement(ownerUri, line - 1, column - 1); // we are taking in a vscode IRange which is 1 indexed, but our api expected a 0 index
 		});
 	}
 
@@ -374,10 +375,10 @@ export class QueryManagementService implements IQueryManagementService {
 	}
 }
 
-function selectionDataToRange(selection: azdata.ISelectionData): IRange {
-	return new Range(selection.startLine + 1, selection.startColumn + 1, selection.endLine + 1, selection.endColumn + 1);
+function selectionDataToRange(selection?: azdata.ISelectionData): IRange | undefined {
+	return isUndefined(selection) ? undefined : new Range(selection.startLine + 1, selection.startColumn + 1, selection.endLine + 1, selection.endColumn + 1);
 }
 
-function rangeToSelectionData(range: IRange): azdata.ISelectionData {
-	return { startLine: range.startLineNumber - 1, startColumn: range.startColumn - 1, endLine: range.endLineNumber - 1, endColumn: range.endColumn - 1 };
+function rangeToSelectionData(range?: IRange): azdata.ISelectionData | undefined {
+	return isUndefined(range) ? undefined : { startLine: range.startLineNumber - 1, startColumn: range.startColumn - 1, endLine: range.endLineNumber - 1, endColumn: range.endColumn - 1 };
 }
