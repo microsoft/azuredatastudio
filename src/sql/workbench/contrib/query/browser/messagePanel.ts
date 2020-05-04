@@ -18,8 +18,7 @@ import { isArray, isString } from 'vs/base/common/types';
 import { Disposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import { $, Dimension, createStyleSheet, addStandardDisposableGenericMouseDownListner } from 'vs/base/browser/dom';
 import { resultsErrorColor } from 'sql/platform/theme/common/colors';
-import { MessagePanelState } from 'sql/workbench/common/editor/query/messagePanelState';
-import { CachedListVirtualDelegate } from 'vs/base/browser/ui/list/list';
+import { CachedListVirtualDelegate, IIdentityProvider } from 'vs/base/browser/ui/list/list';
 import { FuzzyScore } from 'vs/base/common/filters';
 import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
 import { localize } from 'vs/nls';
@@ -32,6 +31,7 @@ import { URI } from 'vs/base/common/uri';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IDataTreeViewState } from 'vs/base/browser/ui/tree/dataTree';
 
 export interface IResultMessageIntern {
 	id?: string;
@@ -40,6 +40,7 @@ export interface IResultMessageIntern {
 	time?: string | Date;
 	message: string;
 	selection?: ISelectionData;
+
 }
 
 export interface IMessagePanelMessage {
@@ -79,13 +80,20 @@ export class AccessibilityProvider implements IListAccessibilityProvider<IResult
 	}
 }
 
+class IdentityProvider implements IIdentityProvider<IResultMessageIntern> {
+	getId(element: IResultMessageIntern): { toString(): string; } {
+		return () => element.id;
+	}
+}
+
 export class MessagePanel extends Disposable {
 	private model = new Model();
 	private container = $('.message-tree');
 	private styleElement = createStyleSheet(this.container);
 
 	private queryRunnerDisposables = this._register(new DisposableStore());
-	private _state: MessagePanelState | undefined;
+	private _treeStates = new Map<string, IDataTreeViewState>();
+	private currenturi: string;
 
 	private tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>;
 
@@ -112,10 +120,10 @@ export class MessagePanel extends Disposable {
 				accessibilityProvider: new AccessibilityProvider(),
 				mouseSupport: false,
 				setRowLineHeight: false,
-				supportDynamicHeights: true
+				supportDynamicHeights: true,
+				identityProvider: new IdentityProvider()
 			});
 		this._register(this.tree.onContextMenu(e => this.onContextMenu(e)));
-		this._register(this.tree.onDidScroll(() => this.state.viewState = this.tree.getViewState()));
 		this.tree.setInput(this.model);
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
@@ -175,20 +183,28 @@ export class MessagePanel extends Disposable {
 	}
 
 	public set queryRunner(runner: QueryRunner) {
+		if (this.currenturi) {
+			this._treeStates.set(this.currenturi, this.tree.getViewState());
+		}
 		this.queryRunnerDisposables.clear();
 		this.reset();
+		this.currenturi = runner.uri;
 		this.queryRunnerDisposables.add(runner.onQueryStart(() => this.reset()));
 		this.queryRunnerDisposables.add(runner.onMessage(e => this.onMessage(e)));
-		this.onMessage(runner.messages);
+		this.onMessage(runner.messages, true);
 	}
 
-	private onMessage(message: IQueryMessage | IQueryMessage[]) {
+	private onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
 		if (isArray(message)) {
 			this.model.messages.push(...message);
 		} else {
 			this.model.messages.push(message);
 		}
-		this.tree.updateChildren();
+		if (setInput) {
+			this.tree.setInput(this.model, this._treeStates.get(this.currenturi));
+		} else {
+			this.tree.updateChildren();
+		}
 	}
 
 	private applyStyles(theme: IColorTheme): void {
@@ -206,18 +222,8 @@ export class MessagePanel extends Disposable {
 
 	private reset() {
 		this.model.messages = [];
-		this._state = undefined;
 		this.model.totalExecuteMessage = undefined;
 		this.tree.updateChildren();
-	}
-
-	public set state(val: MessagePanelState) {
-		this._state = val;
-		this.tree.setInput(this.model, val.viewState);
-	}
-
-	public get state(): MessagePanelState {
-		return this._state;
 	}
 
 	public clear() {
