@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { BasePage } from './basePage';
-import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
+import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
 import { python3DisplayName, pysparkDisplayName, sparkScalaDisplayName, sparkRDisplayName, powershellDisplayName, allKernelsName } from '../../common/constants';
 import { getDropdownValue } from '../../common/utils';
 
@@ -18,7 +18,13 @@ export class PickPackagesPage extends BasePage {
 	private requiredPackagesTable: azdata.DeclarativeTableComponent;
 	private packageTableSpinner: azdata.LoadingComponent;
 
+	private installedPackagesPromise: Promise<PythonPkgDetails[]>;
+	private installedPackages: PythonPkgDetails[];
+
 	public async start(): Promise<boolean> {
+		// Start retrieving installed packages now to save time loading the package table later
+		this.installedPackagesPromise = this.model.installation.getInstalledPipPackages();
+
 		if (this.model.kernelName) {
 			// Wizard was started for a specific kernel, so don't populate any other options
 			this.kernelLabel = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
@@ -98,8 +104,10 @@ export class PickPackagesPage extends BasePage {
 			});
 
 			// For each required package, check if there is another version of that package already installed
-			let installedPackages = await this.model.installation.getInstalledPipPackages();
-			installedPackages.forEach(pkg => {
+			if (!this.installedPackages) {
+				this.installedPackages = await this.installedPackagesPromise;
+			}
+			this.installedPackages.forEach(pkg => {
 				let info = pkgVersionMap.get(pkg.name);
 				if (info) {
 					info.currentVersion = pkg.version;
