@@ -9,14 +9,12 @@ import { EditorInput } from 'vs/workbench/common/editor';
 import { TopOperationsState } from 'sql/workbench/common/editor/query/topOperationsState';
 import { ChartState } from 'sql/workbench/common/editor/query/chartState';
 import { QueryPlanState } from 'sql/workbench/common/editor/query/queryPlanState';
-import { MessagePanelState } from 'sql/workbench/common/editor/query/messagePanelState';
 import { GridPanelState } from 'sql/workbench/common/editor/query/gridTableState';
 import { QueryModelViewState } from 'sql/workbench/common/editor/query/modelViewState';
 import { URI } from 'vs/base/common/uri';
 
 export class ResultsViewState {
 	public readonly gridPanelState: GridPanelState = new GridPanelState();
-	public readonly messagePanelState: MessagePanelState = new MessagePanelState();
 	public readonly chartState: ChartState = new ChartState();
 	public readonly queryPlanState: QueryPlanState = new QueryPlanState();
 	public readonly topOperationsState = new TopOperationsState();
@@ -27,7 +25,6 @@ export class ResultsViewState {
 
 	dispose() {
 		this.gridPanelState.dispose();
-		this.messagePanelState.dispose();
 		this.chartState.dispose();
 		this.queryPlanState.dispose();
 		this.dynamicModelViewTabsState.forEach((state: QueryModelViewState, identifier: string) => {
