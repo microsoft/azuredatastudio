@@ -32,22 +32,22 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 		const essentials = this.modelView.modelBuilder.propertiesContainer().withProperties<azdata.PropertiesContainerComponentProperties>({
 			propertyItems: [
 				{ displayName: loc.name, value: this.databaseModel.name() },
-				{ displayName: 'Server group type', value: 'Azure Database for PostgreSQL - Azure Arc' },
+				{ displayName: loc.serverGroupType, value: loc.postgresArcProductName },
 				{ displayName: loc.resourceGroup, value: registration?.resourceGroupName ?? 'None' },
-				{ displayName: 'Coordinator endpoint', value: `postgresql://postgres:${this.databaseModel.password()}@${this.databaseModel.endpoint()}` },
-				{ displayName: 'Status', value: this.databaseModel.service().status!.state },
-				{ displayName: 'Admin username', value: 'postgres' },
-				{ displayName: 'Data controller', value: this.controllerModel.controllerNamespace() },
-				{ displayName: 'Node configuration', value: this.databaseModel.configuration() },
+				{ displayName: loc.coordinatorEndpoint, value: `postgresql://postgres:${this.databaseModel.password()}@${this.databaseModel.endpoint()}` },
+				{ displayName: loc.status, value: this.databaseModel.service().status!.state },
+				{ displayName: loc.postgresAdminUsername, value: 'postgres' },
+				{ displayName: loc.dataController, value: this.controllerModel.controllerNamespace() },
+				{ displayName: loc.nodeConfiguration, value: this.databaseModel.configuration() },
 				{ displayName: loc.subscriptionId, value: registration?.subscriptionId ?? 'None' },
-				{ displayName: 'PostgreSQL version', value: this.databaseModel.service().spec.engine.version!.toString() }
+				{ displayName: loc.postgresVersion, value: this.databaseModel.service().spec.engine.version!.toString() }
 			]
 		}).component();
 		overview.addItem(essentials, { CSSStyles: cssStyles.text });
 
 		// Service endpoints
 		const titleCSS = { ...cssStyles.text, 'font-weight': 'bold', 'font-size': '14px', 'margin-block-start': '2em', 'margin-block-end': '0' };
-		overview.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Service endpoints', CSSStyles: titleCSS }).component());
+		overview.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.serviceEndpoints, CSSStyles: titleCSS }).component());
 
 		const kibanaQuery = `kubernetes_namespace:"${this.databaseModel.namespace()}" and cluster_name:"${this.databaseModel.name()}"`;
 		const kibanaUrl = `${this.controllerModel.endpoint('logsui')?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
@@ -60,7 +60,7 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 			width: '100%',
 			columns: [
 				{
-					displayName: 'Name',
+					displayName: loc.name,
 					valueType: azdata.DeclarativeDataType.string,
 					isReadOnly: true,
 					width: '20%',
@@ -68,7 +68,7 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				},
 				{
-					displayName: 'Endpoint',
+					displayName: loc.endpoint,
 					valueType: azdata.DeclarativeDataType.component,
 					isReadOnly: true,
 					width: '50%',
@@ -82,7 +82,7 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 					}
 				},
 				{
-					displayName: 'Description',
+					displayName: loc.description,
 					valueType: azdata.DeclarativeDataType.string,
 					isReadOnly: true,
 					width: '30%',
@@ -91,18 +91,18 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 				}
 			],
 			data: [
-				['Kibana Dashboard', kibanaLink, 'Dashboard for viewing logs'],
-				['Grafana Dashboard', grafanaLink, 'Dashboard for viewing metrics']]
+				[loc.kibanaDashboard, kibanaLink, loc.kibanaDashboardDescription],
+				[loc.grafanaDashboard, grafanaLink, loc.grafanaDashboardDescription]]
 		}).component();
 		overview.addItem(endpointsTable);
 
 		// Server group nodes
-		overview.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Server group nodes', CSSStyles: titleCSS }).component());
+		overview.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.serverGroupNodes, CSSStyles: titleCSS }).component());
 		const nodesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
 			columns: [
 				{
-					displayName: 'Name',
+					displayName: loc.name,
 					valueType: azdata.DeclarativeDataType.string,
 					isReadOnly: true,
 					width: '30%',
@@ -110,7 +110,7 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				},
 				{
-					displayName: 'Type',
+					displayName: loc.type,
 					valueType: azdata.DeclarativeDataType.string,
 					isReadOnly: true,
 					width: '25%',
@@ -118,7 +118,7 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				},
 				{
-					displayName: 'Fully qualified domain',
+					displayName: loc.fullyQualifiedDomain,
 					valueType: azdata.DeclarativeDataType.string,
 					isReadOnly: true,
 					width: '45%',
@@ -133,7 +133,7 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 		for (let i = 0; i < nodes; i++) {
 			nodesTable.data.push([
 				`${this.databaseModel.name()}-${i}`,
-				i === 0 ? 'Coordinator' : 'Worker',
+				i === 0 ? loc.coordinatorEndpoint : loc.worker,
 				i === 0 ? this.databaseModel.endpoint() : `${this.databaseModel.name()}-${i}.${this.databaseModel.name()}-svc.${this.databaseModel.namespace()}.svc.cluster.local`]);
 		}
 
@@ -144,18 +144,17 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 	protected get toolbarContainer(): azdata.ToolbarContainer {
 		// New database
 		const newDatabaseButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: 'New Database',
+			label: loc.newDatabase,
 			iconPath: IconPathHelper.add
 		}).component();
 
 		newDatabaseButton.onDidClick(async () => {
-			const name = await vscode.window.showInputBox({ prompt: 'Database name' });
+			const name = await vscode.window.showInputBox({ prompt: loc.databaseName });
 			if (name === undefined) { return; }
 			let db: DuskyObjectModelsDatabase = { name: name }; // TODO support other options (sharded, owner)
 			await this.databaseModel.createDatabase(db)
-				.then(db => vscode.window.showInformationMessage(`Database '${db.name}' created`))
-				.catch(error => vscode.window.showErrorMessage(
-					`Failed to create database '${db.name}'. ${error instanceof Error ? error.message : error}`));
+				.then(db => vscode.window.showInformationMessage(loc.databaseCreated(db.name)))
+				.catch(error => vscode.window.showErrorMessage(loc.databaseCreationFailed(db.name, error)));
 		});
 
 		// Reset password
@@ -165,15 +164,14 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 		}).component();
 
 		resetPasswordButton.onDidClick(async () => {
-			const password = await vscode.window.showInputBox({ prompt: 'New password', password: true });
+			const password = await vscode.window.showInputBox({ prompt: loc.newPassword, password: true });
 			if (password === undefined) { return; }
 			await this.databaseModel.update(s => {
 				s.arc = s.arc ?? new DuskyObjectModelsDatabaseServiceArcPayload();
 				s.arc.servicePassword = password;
 			})
-				.then(_ => vscode.window.showInformationMessage(`Password reset for service '${this.databaseModel.fullName()}'`))
-				.catch(error => vscode.window.showErrorMessage(
-					`Failed to reset password for service '${this.databaseModel.fullName()}'. ${error instanceof Error ? error.message : error}`));
+				.then(_ => vscode.window.showInformationMessage(loc.passwordReset(this.databaseModel.fullName())))
+				.catch(error => vscode.window.showErrorMessage(loc.passwordResetFailed(this.databaseModel.fullName(), error)));
 		});
 
 		// Delete service
@@ -183,14 +181,13 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 		}).component();
 
 		deleteButton.onDidClick(async () => {
-			const response = await vscode.window.showQuickPick(['Yes', 'No'], {
-				placeHolder: `Delete service '${this.databaseModel.fullName()}'?`
+			const response = await vscode.window.showQuickPick([loc.yes, loc.no], {
+				placeHolder: loc.deleteServicePrompt(this.databaseModel.fullName())
 			});
-			if (response === 'Yes') {
+			if (response === loc.yes) {
 				await this.databaseModel.delete()
-					.then(_ => vscode.window.showInformationMessage(`Service '${this.databaseModel.fullName()}' deleted`))
-					.catch(error => vscode.window.showErrorMessage(
-						`Failed to delete service '${this.databaseModel.fullName()}'. ${error instanceof Error ? error.message : error}`));
+					.then(_ => vscode.window.showInformationMessage(loc.serviceDeleted(this.databaseModel.fullName())))
+					.catch(error => vscode.window.showErrorMessage(loc.serviceDeletionFailed(this.databaseModel.fullName(), error)));
 			}
 		});
 
@@ -203,7 +200,7 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 		openInAzurePortalButton.onDidClick(async () => {
 			const r = this.controllerModel.registration('postgres', this.databaseModel.namespace(), this.databaseModel.name());
 			if (r === undefined) {
-				vscode.window.showErrorMessage(`Could not find Azure resource for '${this.databaseModel.fullName()}'`);
+				vscode.window.showErrorMessage(loc.couldNotFindAzureResource(this.databaseModel.fullName()));
 			} else {
 				vscode.env.openExternal(vscode.Uri.parse(
 					`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/postgresInstances/${r.instanceName}`));
@@ -212,7 +209,7 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 
 		// TODO implement click
 		const feedbackButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: 'Feedback',
+			label: loc.feedback,
 			iconPath: IconPathHelper.heart
 		}).component();
 

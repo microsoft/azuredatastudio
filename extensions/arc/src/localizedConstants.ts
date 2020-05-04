@@ -30,6 +30,42 @@ export const adminUsername = localize('arc.adminUsername', "Data controller admi
 export const host = localize('arc.host', "Host");
 export const name = localize('arc.name', "Name");
 export const type = localize('arc.type', "Type");
+export const status = localize('arc.status', "Status");
+export const dataController = localize('arc.dataController', 'Data controller');
+export const kibanaDashboard = localize('arc.kibanaDashboard', 'Kibana Dashboard');
+export const grafanaDashboard = localize('arc.grafanaDashboard', 'Grafana Dashboard');
+export const kibanaDashboardDescription = localize('arc.kibanaDashboardDescription', 'Dashboard for viewing logs');
+export const grafanaDashboardDescription = localize('arc.grafanaDashboardDescription', 'Dashboard for viewing metrics');
+export const serviceEndpoints = localize('arc.serviceEndpoints', 'Service endpoints');
+export const endpoint = localize('arc.endpoint', 'Endpoint');
+export const description = localize('arc.description', 'Description');
+export const yes = localize('arc.yes', 'Yes');
+export const no = localize('arc.no', 'No');
+export const feedback = localize('arc.feedback', 'Feedback');
+
+export const coordinatorEndpoint = localize('arc.coordinatorEndpoint', 'Coordinator endpoint');
+export const postgresAdminUsername = localize('arc.postgresAdminUsername', 'Admin username');
+export const nodeConfiguration = localize('arc.nodeConfiguration', 'Node configuration');
+export const postgresVersion = localize('arc.postgresVersion', 'PostgreSQL version');
+export const serverGroupType = localize('arc.serverGroupType', 'Server group type');
+export const serverGroupNodes = localize('arc.serverGroupNodes', 'Server group nodes');
+export const fullyQualifiedDomain = localize('arc.fullyQualifiedDomain', 'Fully qualified domain');
+export const postgresArcProductName = localize('arc.postgresArcProductName', 'Azure Database for PostgreSQL - Azure Arc');
+export const coordinator = localize('arc.coordinator', 'Coordinator');
+export const worker = localize('arc.worker', 'Worker');
+export const newDatabase = localize('arc.newDatabase', 'New Database');
+export const databaseName = localize('arc.databaseName', 'Database name');
+export const newPassword = localize('arc.newPassword', 'New password');
+
+export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database '{0}' created", name); }
+export function databaseCreationFailed(name: string, error: any): string { return localize('arc.databaseCreationFailed', "Failed to create database '{0}'. {1}", name, (error instanceof Error ? error.message : error)); }
+export function passwordReset(name: string): string { return localize('arc.passwordReset', "Password reset for service '{0}'", name); }
+export function passwordResetFailed(name: string, error: any): string { return localize('arc.passwordResetFailed', "Failed to reset password for service '{0}'. {1}", name, (error instanceof Error ? error.message : error)); }
+export function deleteServicePrompt(name: string): string { return localize('arc.deleteServicePrompt', "Delete service '{0}'?", name); }
+export function serviceDeleted(name: string): string { return localize('arc.serviceDeleted', "Service '{0}' deleted", name); }
+export function serviceDeletionFailed(name: string, error: any): string { return localize('arc.serviceDeletionFailed', "Failed to delete service '{0}'. {1}", name, (error instanceof Error ? error.message : error)); }
+export function couldNotFindAzureResource(name: string): string { return localize('arc.couldNotFindAzureResource', "Could not find Azure resource for '{0}'", name); }
+
 
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
 
