@@ -33,7 +33,24 @@ let expectedNotebookContent: nb.INotebookContents = {
 	nbformat: 4,
 	nbformat_minor: 2
 };
+
+let expectedNotebookContentMarkdown: nb.INotebookContents = {
+	cells: [{
+		cell_type: CellTypes.Markdown,
+		source: '# Header 1'
+	}],
+	metadata: {
+		kernelspec: {
+			name: 'mssql',
+			language: 'sql'
+		}
+	},
+	nbformat: 4,
+	nbformat_minor: 2
+};
+
 let notebookContentString = JSON.stringify(expectedNotebookContent);
+let markdownNotebookContent = JSON.stringify(expectedNotebookContentMarkdown);
 
 function verifyMatchesExpectedNotebook(notebook: nb.INotebookContents): void {
 	assert.equal(notebook.cells.length, 1, 'Expected 1 cell');
@@ -134,9 +151,27 @@ suite('Local Content Manager', function (): void {
 	test('Should create a new empty notebook if content is undefined', async function (): Promise<void> {
 		// verify that when loading content from an empty string or undefined, a new notebook is created.
 		let content = await contentManager.loadFromContentString('');
+		assert.equal(content.metadata, undefined);
+		assert.equal(content.cells, undefined);
 		assert.equal(content.cells.length, 0);
+		assert.equal(content.nbformat, 4);
+		assert.equal(content.nbformat_minor, 2);
 
 		content = await contentManager.loadFromContentString(undefined);
+		assert.equal(content.metadata, undefined);
+		assert.equal(content.cells, undefined);
 		assert.equal(content.cells.length, 0);
+		assert.equal(content.nbformat, 4);
+		assert.equal(content.nbformat_minor, 2);
+	});
+
+	test('Should create a markdown cell', async function (): Promise<void> {
+		let notebook = await contentManager.loadFromContentString(markdownNotebookContent);
+		assert.equal(notebook.cells.length, 1);
+		assert.equal(notebook.cells[0].cell_type, CellTypes.Markdown);
+		assert.equal(notebook.cells[0].source, expectedNotebookContentMarkdown.cells[0].source);
+		assert.equal(notebook.metadata.kernelspec.name, expectedNotebookContentMarkdown.metadata.kernelspec.name);
+		assert.equal(notebook.nbformat, expectedNotebookContentMarkdown.nbformat);
+		assert.equal(notebook.nbformat_minor, expectedNotebookContentMarkdown.nbformat_minor);
 	});
 });
