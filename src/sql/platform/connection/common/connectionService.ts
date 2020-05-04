@@ -45,9 +45,15 @@ export interface IConnectionProfile {
 	options: { [name: string]: any };
 }
 
+export type SerializableType = string | number | boolean | null | ISerializableObject;
+
+export interface ISerializableObject {
+	[key: string]: SerializableType | SerializableType[];
+}
+
 export interface IConnectionProvider {
 	readonly id: string;
-	connect(connectionUri: string, options: { [name: string]: any }): Promise<boolean>;
+	connect(connectionUri: string, options: ISerializableObject): Promise<boolean>;
 	disconnect(connectionUri: string): Promise<boolean>;
 	cancelConnect(connectionUri: string): Promise<boolean>;
 	readonly onDidConnectionComplete: Event<IProviderConnectionCompleteEvent>;

@@ -58,16 +58,16 @@ export interface IQueryService {
 }
 
 export interface IResultMessage {
-	message: string;
-	isError?: boolean;
+	readonly message: string;
+	readonly isError?: boolean;
 }
 
 export interface IResultSetSummary {
-	id: number;
-	batchId: number;
-	rowCount: number;
-	columns: ReadonlyArray<IColumn>;
-	completed: boolean;
+	readonly id: number;
+	readonly batchId: number;
+	readonly rowCount: number;
+	readonly columns: ReadonlyArray<IColumn>;
+	readonly completed: boolean;
 }
 
 interface IResultSetInternal {
@@ -86,13 +86,13 @@ export interface IResultSet extends IResultSetInternal {
 }
 
 export interface IFetchResponse {
-	rowCount: number;
-	rows: Array<Array<any>>;
+	readonly rowCount: number;
+	readonly rows: ReadonlyArray<ReadonlyArray<string>>;
 }
 
 export interface IColumn {
-	title: string;
-	type: ColumnType;
+	readonly title: string;
+	readonly type: ColumnType;
 }
 
 export enum ColumnType {
