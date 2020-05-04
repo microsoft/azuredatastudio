@@ -16,6 +16,7 @@ export class PickPackagesPage extends BasePage {
 	private kernelLabel: azdata.TextComponent | undefined;
 	private kernelDropdown: azdata.DropDownComponent | undefined;
 	private requiredPackagesTable: azdata.DeclarativeTableComponent;
+	private packageTableSpinner: azdata.LoadingComponent;
 
 	public async start(): Promise<boolean> {
 		if (this.model.kernelName) {
@@ -29,8 +30,8 @@ export class PickPackagesPage extends BasePage {
 				value: dropdownValues[0],
 				values: dropdownValues
 			}).component();
-			this.kernelDropdown.onValueChanged(value => {
-				this.updateRequiredPackages(value.selected);
+			this.kernelDropdown.onValueChanged(async value => {
+				await this.updateRequiredPackages(value.selected);
 			});
 		}
 
@@ -41,7 +42,12 @@ export class PickPackagesPage extends BasePage {
 				isReadOnly: true,
 				width: '200px'
 			}, {
-				displayName: localize('configurePython.pkgVersionColumn', "Version"),
+				displayName: localize('configurePython.existingVersionColumn', "Existing Version"),
+				valueType: azdata.DeclarativeDataType.string,
+				isReadOnly: true,
+				width: '200px'
+			}, {
+				displayName: localize('configurePython.requiredVersionColumn', "Required Version"),
 				valueType: azdata.DeclarativeDataType.string,
 				isReadOnly: true,
 				width: '200px'
@@ -49,13 +55,15 @@ export class PickPackagesPage extends BasePage {
 			data: [[]]
 		}).component();
 
+		this.packageTableSpinner = this.view.modelBuilder.loadingComponent().withItem(this.requiredPackagesTable).component();
+
 		let formModel = this.view.modelBuilder.formContainer()
 			.withFormItems([{
 				component: this.kernelDropdown ?? this.kernelLabel,
 				title: localize('configurePython.kernelLabel', "Kernel")
 			}, {
-				component: this.requiredPackagesTable,
-				title: localize('configurePython.requiredDependencies', "Required kernel dependencies")
+				component: this.packageTableSpinner,
+				title: localize('configurePython.requiredDependencies', "Install required kernel dependencies")
 			}]).component();
 		await this.view.initializeModel(formModel);
 		return true;
@@ -69,7 +77,7 @@ export class PickPackagesPage extends BasePage {
 				this.model.kernelName = getDropdownValue(this.kernelDropdown);
 			}
 		}
-		this.updateRequiredPackages(this.model.kernelName);
+		await this.updateRequiredPackages(this.model.kernelName);
 		return true;
 	}
 
@@ -77,16 +85,41 @@ export class PickPackagesPage extends BasePage {
 		return true;
 	}
 
-	private updateRequiredPackages(kernelName: string): void {
-		let requiredPackages = JupyterServerInstallation.getRequiredPackagesForKernel(kernelName);
-		if (requiredPackages) {
-			let packageData = requiredPackages.map(pkg => [pkg.name, pkg.version]);
-			this.requiredPackagesTable.data = packageData;
-			this.model.packagesToInstall = requiredPackages;
-		} else {
-			this.instance.showErrorMessage(localize('msgUnsupportedKernel', "Could not retrieve packages for unsupported kernel {0}", kernelName));
-			this.requiredPackagesTable.data = [['-', '-']];
-			this.model.packagesToInstall = undefined;
+	private async updateRequiredPackages(kernelName: string): Promise<void> {
+		this.packageTableSpinner.loading = true;
+		try {
+			let pkgVersionMap = new Map<string, { currentVersion: string, newVersion: string }>();
+
+			// Fetch list of required packages for the specified kernel
+			let requiredPackages = JupyterServerInstallation.getRequiredPackagesForKernel(kernelName);
+			requiredPackages.forEach(pkg => {
+				pkgVersionMap.set(pkg.name, { currentVersion: undefined, newVersion: pkg.version });
+			});
+
+			// For each required package, check if there is another version of that package already installed
+			let installedPackages = await this.model.installation.getInstalledPipPackages();
+			installedPackages.forEach(pkg => {
+				let info = pkgVersionMap.get(pkg.name);
+				if (info) {
+					info.currentVersion = pkg.version;
+					pkgVersionMap.set(pkg.name, info);
+				}
+			});
+
+			if (pkgVersionMap.size > 0) {
+				let packageData = [];
+				for (let [key, value] of pkgVersionMap.entries()) {
+					packageData.push([key, value.currentVersion ?? '-', value.newVersion]);
+				}
+				this.requiredPackagesTable.data = packageData;
+				this.model.packagesToInstall = requiredPackages;
+			} else {
+				this.instance.showErrorMessage(localize('msgUnsupportedKernel', "Could not retrieve packages for unsupported kernel {0}", kernelName));
+				this.requiredPackagesTable.data = [['-', '-', '-']];
+				this.model.packagesToInstall = undefined;
+			}
+		} finally {
+			this.packageTableSpinner.loading = false;
 		}
 	}
 }

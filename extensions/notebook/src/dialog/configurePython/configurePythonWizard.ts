@@ -24,6 +24,7 @@ export interface ConfigurePythonModel {
 	usingCustomPath: boolean;
 	pythonPathsPromise: Promise<PythonPathInfo[]>;
 	packagesToInstall: PythonPkgDetails[];
+	installation: JupyterServerInstallation;
 }
 
 export class ConfigurePythonWizard {
@@ -48,7 +49,8 @@ export class ConfigurePythonWizard {
 		this.model = <ConfigurePythonModel>{
 			kernelName: kernelName,
 			usingCustomPath: this.usingCustomPath,
-			pythonPathsPromise: this.pythonPathsPromise
+			pythonPathsPromise: this.pythonPathsPromise,
+			installation: this.jupyterInstallation
 		};
 
 		let pages: Map<number, BasePage> = new Map<number, BasePage>();
