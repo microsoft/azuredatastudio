@@ -8,7 +8,7 @@ import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/
 import { SIDE_BAR_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
 import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, editorBackground, lighten } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
-import { cellBorder, notebookToolbarIcon, notebookToolbarSelectBorder, notebookToolbarLines, buttonMenuArrow, dropdownArrow, markdownEditorBackground, splitBorder, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder } from 'sql/platform/theme/common/colorRegistry';
+import { cellBorder, notebookToolbarIcon, notebookToolbarSelectBorder, notebookToolbarSelectBackground, notebookToolbarLines, buttonMenuArrow, dropdownArrow, markdownEditorBackground, splitBorder, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder } from 'sql/platform/theme/common/colorRegistry';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
@@ -215,8 +215,11 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		}
 		const notebookToolbarSelectBorderColor = theme.getColor(notebookToolbarSelectBorder);
 		if (notebookToolbarSelectBorderColor) {
-			// This ois being overridden by another theme.
-			collector.addRule(`.notebookEditor .editor-toolbar .select-container select { border-color: ${notebookToolbarSelectBorderColor};}`);
+			//collector.addRule(`.notebookEditor .editor-toolbar .select-container select { border-color: ${notebookToolbarSelectBorderColor};}`);
+		}
+		const notebookToolbarSelectBackgroundColor = theme.getColor(notebookToolbarSelectBackground);
+		if (notebookToolbarSelectBackgroundColor) {
+			//collector.addRule(`.notebookEditor .editor-toolbar .select-container select { background-color: ${notebookToolbarSelectBackgroundColor};}`);
 		}
 		const notebookToolbarLinesColor = theme.getColor(notebookToolbarLines);
 		if (notebookToolbarLinesColor) {
