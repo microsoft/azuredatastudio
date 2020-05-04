@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
@@ -11,6 +10,8 @@ import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
 
+import { Uri, QuickPickItem } from 'vscode';
+import { ApiWrapper } from '../common/apiWrapper';
 import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { promises as fs } from 'fs';
@@ -26,7 +27,7 @@ export class ProjectsController {
 
 	projects: Project[] = [];
 
-	constructor(projTreeViewProvider: SqlDatabaseProjectTreeViewProvider) {
+	constructor(private apiWrapper: ApiWrapper, projTreeViewProvider: SqlDatabaseProjectTreeViewProvider) {
 		this.projectTreeViewProvider = projTreeViewProvider;
 	}
 
@@ -35,10 +36,10 @@ export class ProjectsController {
 		this.projectTreeViewProvider.load(this.projects);
 	}
 
-	public async openProject(projectFile: vscode.Uri): Promise<Project> {
+	public async openProject(projectFile: Uri): Promise<Project> {
 		for (const proj of this.projects) {
 			if (proj.projectFilePath === projectFile.fsPath) {
-				vscode.window.showInformationMessage(constants.projectAlreadyOpened(projectFile.fsPath));
+				this.apiWrapper.showInformationMessage(constants.projectAlreadyOpened(projectFile.fsPath));
 				return proj;
 			}
 		}
@@ -69,7 +70,7 @@ export class ProjectsController {
 		return newProject;
 	}
 
-	public async createNewProject(newProjName: string, folderUri: vscode.Uri, projectGuid?: string): Promise<string> {
+	public async createNewProject(newProjName: string, folderUri: Uri, projectGuid?: string): Promise<string> {
 		if (projectGuid && !UUID.isUUID(projectGuid)) {
 			throw new Error(`Specified GUID is invalid: '${projectGuid}'`);
 		}
@@ -131,15 +132,15 @@ export class ProjectsController {
 		const project = this.getProjectContextFromTreeNode(treeNode);
 
 		if (!itemTypeName) {
-			let itemFriendlyNames: string[] = [];
+			const items: QuickPickItem[] = [];
 
 			for (const itemType of templates.projectScriptTypes()) {
-				itemFriendlyNames.push(itemType.friendlyName);
+				items.push({ label: itemType.friendlyName });
 			}
 
-			itemTypeName = await vscode.window.showQuickPick(itemFriendlyNames, {
+			itemTypeName = (await this.apiWrapper.showQuickPick(items, {
 				canPickMany: false
-			});
+			}))?.label;
 
 			if (!itemTypeName) {
 				return; // user cancelled
@@ -160,7 +161,7 @@ export class ProjectsController {
 
 		const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
 
-		vscode.commands.executeCommand('vscode.open', newEntry.fsUri);
+		this.apiWrapper.executeCommand('vscode.open', newEntry.fsUri);
 
 		this.refreshProjectsTree();
 	}
@@ -201,7 +202,7 @@ export class ProjectsController {
 		// TODO: ask project for suggested name that doesn't conflict
 		const suggestedName = itemType.friendlyName.replace(new RegExp('\s', 'g'), '') + '1';
 
-		const itemObjectName = await vscode.window.showInputBox({
+		const itemObjectName = await this.apiWrapper.showInputBox({
 			prompt: constants.newObjectNamePrompt(itemType.friendlyName),
 			value: suggestedName,
 		});

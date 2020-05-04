@@ -14,15 +14,19 @@ import * as testUtils from './testUtils';
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
+import { createContext, TestContext } from './testContext';
+
+let testContext: TestContext;
 
 describe('ProjectsController: project controller operations', function (): void {
-	before(async function () : Promise<void> {
+	before(async function (): Promise<void> {
+		testContext = createContext();
 		await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
 		await baselines.loadBaselines();
 	});
 
 	it('Should create new sqlproj file with correct values', async function (): Promise<void> {
-		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
 		const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
 
 		const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
@@ -38,7 +42,7 @@ describe('ProjectsController: project controller operations', function (): void 
 		const sqlProjPath = await testUtils.createTestSqlProj(baselines.openProjectFileBaseline, folderPath);
 		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
 
-		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
 
 		const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
 
