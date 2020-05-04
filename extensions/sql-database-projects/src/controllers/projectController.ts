@@ -112,6 +112,21 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 	}
 
+	public async build(treeNode: BaseProjectTreeItem) {
+		const project = this.getProjectContextFromTreeNode(treeNode);
+		await vscode.window.showErrorMessage(`Build not yet implemented: ${project.projectFilePath}`); // TODO
+	}
+
+	public async deploy(treeNode: BaseProjectTreeItem) {
+		const project = this.getProjectContextFromTreeNode(treeNode);
+		await vscode.window.showErrorMessage(`Deploy not yet implemented: ${project.projectFilePath}`); // TODO
+	}
+
+	public async import(treeNode: BaseProjectTreeItem) {
+		const project = this.getProjectContextFromTreeNode(treeNode);
+		await vscode.window.showErrorMessage(`Import not yet implemented: ${project.projectFilePath}`); // TODO
+	}
+
 	public async addFolderPrompt(treeNode: BaseProjectTreeItem) {
 		const project = this.getProjectContextFromTreeNode(treeNode);
 		const newFolderName = await this.promptForNewObjectName(new templates.ProjectScriptType(templates.folder, constants.folderFriendlyName, ''), project);
