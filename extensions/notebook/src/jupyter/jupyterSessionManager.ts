@@ -234,12 +234,17 @@ export class JupyterSession implements nb.ISession {
 	}
 
 	public async changeKernel(kernelInfo: nb.IKernelSpec): Promise<nb.IKernel> {
+		if (this._installation) {
+			try {
+				await this._installation.promptForPackageUpgrade(kernelInfo.display_name);
+			} catch (err) {
+				// Have to swallow the error here to prevent hangs when changing back to the old kernel.
+				return this._kernel;
+			}
+		}
 		// For now, Jupyter implementation handles disposal etc. so we can just
 		// null out our kernel and let the changeKernel call handle this
 		this._kernel = undefined;
-		if (this._installation) {
-			await this._installation.promptForPackageUpgrade(kernelInfo.display_name);
-		}
 		// For now, just using name. It's unclear how we'd know the ID
 		let options: Partial<Kernel.IModel> = {
 			name: kernelInfo.name
