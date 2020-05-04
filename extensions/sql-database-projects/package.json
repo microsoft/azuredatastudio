@@ -71,6 +71,11 @@
         "command": "sqlDatabaseProjects.newFolder",
         "title": "%sqlDatabaseProjects.newFolder%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.deploy",
+        "title": "%sqlDatabaseProjects.deploy%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -137,6 +142,9 @@
         },
         {
           "command": "sqlDatabaseProjects.newFolder",
+          "when": "view == sqlDatabaseProjectsView"
+        }, {
+          "command": "sqlDatabaseProjects.deploy",
           "when": "view == sqlDatabaseProjectsView"
         }
       ]
