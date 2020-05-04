@@ -79,6 +79,6 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 	}
 
 	private formatter(row: number, cell: number, value: any, columnDef: TextWithIconColumnDefinition<Slick.SlickData>, dataContext: Slick.SlickData): string {
-		return `<div class="codicon slick-button-cell-content ${columnDef.iconCssClassField}" aria-label="${this.options.title}"></div>`;
+		return `<div class="codicon icon slick-button-cell-content ${columnDef.iconCssClassField}" aria-label="${this.options.title}"></div>`;
 	}
 }

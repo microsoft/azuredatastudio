@@ -30,11 +30,11 @@ import * as DOM from 'vs/base/browser/dom';
 import { TextWidthIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
+import { MetadataType } from 'sql/platform/connection/common/connectionManagement';
 
 const NameProperty: string = 'name';
 const NamePropertyDisplayText: string = nls.localize('dashboard.explorer.namePropertyDisplayValue', "Name");
 const IconClassProperty: string = 'iconClass';
-const IconTitleProperty: string = 'iconTitle';
 const ShowActionsText: string = nls.localize('dashboard.explorer.actions', "Show Actions");
 
 @Component({
@@ -134,6 +134,24 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 						}
 						const objectData = ObjectMetadataWrapper.createFromObjectMetadata(data.objectMetadata);
 						objectData.sort(ObjectMetadataWrapper.sort);
+						objectData.forEach(item => {
+							let iconClass: string;
+							switch (item.metadataType) {
+								case MetadataType.Function:
+									iconClass = 'scalarvaluedfunction';
+									break;
+								case MetadataType.SProc:
+									iconClass = 'storedprocedure';
+									break;
+								case MetadataType.Table:
+									iconClass = 'table';
+									break;
+								case MetadataType.View:
+									iconClass = 'view';
+									break;
+							}
+							item[IconClassProperty] = iconClass;
+						});
 						this.updateTable(objectData);
 					}
 				},
@@ -171,7 +189,6 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 					const tableData = data.map(item => item.options);
 					tableData.forEach(item => {
 						item[IconClassProperty] = 'database-colored';
-						item[IconTitleProperty] = nls.localize('dashboard.explorer.objectType.database', "Database");
 					});
 					this.updateTable(tableData);
 				},
