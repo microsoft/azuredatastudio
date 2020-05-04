@@ -67,7 +67,7 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 		if (this.pageInfo.isSummaryPage) {
 			this.inputComponentOriginalValues.forEach((originalValue: string, name: string) => {
 				const textComponent = getTextComponent(name, this.inputComponents);
-				if (textComponent && textComponent.value && textComponent.value.match(/\$[(].*[)]/g)) {
+				if (textComponent && textComponent.value && originalValue.match(/\$\(.*\)/g)) {
 					textComponent.value! = this.wizard.model.interpolateVariableValues(originalValue);
 				}
 			});

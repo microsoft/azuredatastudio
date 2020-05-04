@@ -6,7 +6,7 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 
 import { SubFieldInfo, FieldType, FontWeight, LabelPosition, SectionInfo } from '../../interfaces';
-import { createSection, DefaultInputComponentWidth, DefaultLabelComponentWidth } from '../modelViewUtils';
+import { createSection, DefaultInputWidth, DefaultLabelWidth, DefaultRowAlignItems } from '../modelViewUtils';
 import { WizardPageBase } from '../wizardPageBase';
 import { NotebookWizard } from './notebookWizard';
 
@@ -39,15 +39,21 @@ export class NotebookWizardSummaryPage extends WizardPageBase<NotebookWizard> {
 		});
 		this.formItems = [];
 
-		const inputWidth = this.wizard.wizardInfo.inputWidth || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.inputWidth) || DefaultInputComponentWidth;
-		const labelWidth = this.wizard.wizardInfo.labelWidth || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.labelWidth) || DefaultLabelComponentWidth;
+		const rowWidth = this.wizard.wizardInfo.inputWidth || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.inputWidth) || DefaultInputWidth;
+		const rowHeight = this.wizard.wizardInfo.inputWidth || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.inputWidth) || DefaultInputWidth;
+		const rowAlignItems = this.wizard.wizardInfo.rowAlignItems || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.rowAlignItems) || DefaultRowAlignItems;
+		const labelWidth = this.wizard.wizardInfo.labelWidth || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.labelWidth) || DefaultLabelWidth;
 		const labelPosition = this.wizard.wizardInfo.labelPosition || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.labelPosition) || LabelPosition.Left;
+		const inputWidth = this.wizard.wizardInfo.inputWidth || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.inputWidth) || DefaultInputWidth;
 
 		this.wizard.wizardInfo.pages.forEach(pageInfo => {
 			const summarySectionInfo: SectionInfo = {
 				labelPosition: labelPosition,
 				labelWidth: labelWidth,
 				inputWidth: inputWidth,
+				rowWidth: rowWidth,
+				rowHeight: rowHeight,
+				rowAlignItems: rowAlignItems,
 				title: '',
 				rows: []
 			};

@@ -39,8 +39,9 @@ export function getTextComponent(name: string, inputComponents: InputComponents)
 	return <azdata.TextComponent>inputComponents[name].component;
 }
 
-export const DefaultInputComponentWidth = '400px';
-export const DefaultLabelComponentWidth = '200px';
+export const DefaultInputWidth = '400px';
+export const DefaultLabelWidth = '200px';
+export const DefaultRowAlignItems = undefined;
 export const DefaultRowWidth = undefined;
 export const DefaultRowHeight = undefined;
 
@@ -164,8 +165,9 @@ export function initializeDialog(dialogContext: DialogContext): void {
 		const tab = azdata.window.createTab(tabInfo.title);
 		tab.registerContent((view: azdata.ModelView) => {
 			const sections = tabInfo.sections.map(sectionInfo => {
-				sectionInfo.inputWidth = sectionInfo.inputWidth || tabInfo.inputWidth || DefaultInputComponentWidth;
-				sectionInfo.labelWidth = sectionInfo.labelWidth || tabInfo.labelWidth || DefaultLabelComponentWidth;
+				sectionInfo.inputWidth = sectionInfo.inputWidth || tabInfo.inputWidth || DefaultInputWidth;
+				sectionInfo.labelWidth = sectionInfo.labelWidth || tabInfo.labelWidth || DefaultLabelWidth;
+				sectionInfo.rowAlignItems = sectionInfo.rowAlignItems || tabInfo.rowAlignItems || DefaultRowAlignItems;
 				sectionInfo.rowWidth = sectionInfo.rowWidth || tabInfo.rowWidth || DefaultRowWidth;
 				sectionInfo.rowHeight = sectionInfo.rowHeight || tabInfo.rowHeight || DefaultRowHeight;
 				sectionInfo.labelPosition = sectionInfo.labelPosition || tabInfo.labelPosition;
@@ -198,8 +200,9 @@ export function initializeDialog(dialogContext: DialogContext): void {
 export function initializeWizardPage(context: WizardPageContext): void {
 	context.page.registerContent((view: azdata.ModelView) => {
 		const sections = context.pageInfo.sections.map(sectionInfo => {
-			sectionInfo.inputWidth = sectionInfo.inputWidth || context.pageInfo.inputWidth || context.wizardInfo.inputWidth || DefaultInputComponentWidth;
-			sectionInfo.labelWidth = sectionInfo.labelWidth || context.pageInfo.labelWidth || context.wizardInfo.labelWidth || DefaultLabelComponentWidth;
+			sectionInfo.inputWidth = sectionInfo.inputWidth || context.pageInfo.inputWidth || context.wizardInfo.inputWidth || DefaultInputWidth;
+			sectionInfo.labelWidth = sectionInfo.labelWidth || context.pageInfo.labelWidth || context.wizardInfo.labelWidth || DefaultLabelWidth;
+			sectionInfo.rowAlignItems = sectionInfo.rowAlignItems || context.pageInfo.rowAlignItems || DefaultRowAlignItems;
 			sectionInfo.rowWidth = sectionInfo.rowWidth || context.pageInfo.rowWidth || context.wizardInfo.rowWidth || DefaultRowWidth;
 			sectionInfo.rowHeight = sectionInfo.rowHeight || context.pageInfo.rowHeight || context.wizardInfo.rowHeight || DefaultRowHeight;
 			sectionInfo.labelPosition = sectionInfo.labelPosition || context.pageInfo.labelPosition || context.wizardInfo.labelPosition;
@@ -226,19 +229,20 @@ export function initializeWizardPage(context: WizardPageContext): void {
 
 export function createSection(context: SectionContext): azdata.GroupContainer {
 	const components: azdata.Component[] = [];
-	context.sectionInfo.inputWidth = context.sectionInfo.inputWidth || DefaultInputComponentWidth;
-	context.sectionInfo.labelWidth = context.sectionInfo.labelWidth || DefaultLabelComponentWidth;
+	context.sectionInfo.inputWidth = context.sectionInfo.inputWidth || DefaultInputWidth;
+	context.sectionInfo.labelWidth = context.sectionInfo.labelWidth || DefaultLabelWidth;
+	context.sectionInfo.rowAlignItems = context.sectionInfo.rowAlignItems || DefaultRowAlignItems;
 	context.sectionInfo.rowWidth = context.sectionInfo.rowWidth || DefaultRowWidth;
 	context.sectionInfo.rowHeight = context.sectionInfo.rowHeight || DefaultRowHeight;
-	context.sectionInfo.inputWidth = context.sectionInfo.inputWidth || DefaultInputComponentWidth;
-	context.sectionInfo.labelWidth = context.sectionInfo.labelWidth || DefaultLabelComponentWidth;
+	context.sectionInfo.inputWidth = context.sectionInfo.inputWidth || DefaultInputWidth;
+	context.sectionInfo.labelWidth = context.sectionInfo.labelWidth || DefaultLabelWidth;
 	if (context.sectionInfo.fields) {
 		processFields(context.sectionInfo.fields, components, context);
 	} else if (context.sectionInfo.rows) {
 		context.sectionInfo.rows.forEach(rowInfo => {
 			const rowItems: azdata.Component[] = [];
 			processFields(rowInfo.fields, rowItems, context, context.sectionInfo.spaceBetweenFields || '50px');
-			const row = createFlexContainer(context.view, rowItems, true, context.sectionInfo.rowWidth, context.sectionInfo.rowHeight);
+			const row = createFlexContainer(context.view, rowItems, true, context.sectionInfo.rowWidth, context.sectionInfo.rowHeight, context.sectionInfo.rowAlignItems);
 			components.push(row);
 		});
 	}
@@ -255,6 +259,7 @@ function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component
 		const fieldInfo = fieldInfoArray[i];
 		fieldInfo.labelWidth = fieldInfo.labelWidth || context.sectionInfo.labelWidth;
 		fieldInfo.inputWidth = fieldInfo.inputWidth || context.sectionInfo.inputWidth;
+		fieldInfo.rowAlignItems = fieldInfo.rowAlignItems || context.sectionInfo.rowAlignItems;
 		fieldInfo.rowWidth = fieldInfo.rowWidth || context.sectionInfo.rowWidth;
 		fieldInfo.rowHeight = fieldInfo.rowHeight || context.sectionInfo.rowHeight;
 		fieldInfo.labelPosition = fieldInfo.labelPosition === undefined ? context.sectionInfo.labelPosition : fieldInfo.labelPosition;
@@ -273,16 +278,19 @@ function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component
 	}
 }
 
-export function createFlexContainer(view: azdata.ModelView, items: azdata.Component[], rowLayout: boolean = true, width?: string | number, height?: string | number): azdata.FlexContainer {
+export function createFlexContainer(view: azdata.ModelView, items: azdata.Component[], rowLayout: boolean = true, width?: string | number, height?: string | number, alignItems?: azdata.AlignItemsType): azdata.FlexContainer {
 	const flexFlow = rowLayout ? 'row' : 'column';
-	const alignItems = rowLayout ? 'center' : undefined;
+	alignItems = alignItems || (rowLayout ? 'center' : undefined);
 	const itemsStyle = rowLayout ? { CSSStyles: { 'margin-right': '5px', } } : {};
-	const flexLayout: azdata.FlexLayout = { flexFlow: flexFlow, alignItems: alignItems };
+	const flexLayout: azdata.FlexLayout = { flexFlow: flexFlow};
 	if (height) {
 		flexLayout.height = height;
 	}
 	if (width) {
 		flexLayout.width = width;
+	}
+	if(alignItems) {
+		flexLayout.alignItems = alignItems;
 	}
 	let flexBuilder = view.modelBuilder.flexContainer().withItems(items, itemsStyle).withLayout(flexLayout);
 	return flexBuilder.component();
@@ -298,7 +306,7 @@ function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata
 		inputs.push(...additionalComponents);
 	}
 	if (fieldInfo.labelPosition && fieldInfo.labelPosition === LabelPosition.Left) {
-		const row = createFlexContainer(view, inputs, true, fieldInfo.rowWidth, fieldInfo.rowHeight);
+		const row = createFlexContainer(view, inputs, true, fieldInfo.rowWidth, fieldInfo.rowHeight, fieldInfo.rowAlignItems);
 		components.push(row);
 	} else {
 		components.push(...inputs);
@@ -607,18 +615,21 @@ async function processRadioOptionsTypeField(context: FieldContext): Promise<Radi
 
 async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: (() => Promise<{ values: string[] | azdata.CategoryValue[], defaultValue: string }>))
 	: Promise<RadioOptionsInputs> {
+	if (context.fieldInfo.rowAlignItems === undefined) {
+		context.fieldInfo.rowAlignItems = 'flex-start'; // by default align the items to the top.
+	}
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
-	const optionsList = context.view!.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
-	const radioOptionsLoadingComponent = context.view!.modelBuilder.loadingComponent().withItem(optionsList).component();
+	const optionsListContainer = context.view!.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
+	const radioOptionsLoadingComponent = context.view!.modelBuilder.loadingComponent().withItem(optionsListContainer).component();
 	context.fieldInfo.labelPosition = LabelPosition.Left;
 	addLabelInputPairToContainer(context.view, context.components, label, radioOptionsLoadingComponent, context.fieldInfo);
-	await loadOrReloadRadioOptions(context, optionsList, radioOptionsLoadingComponent, getRadioButtonInfo);
-	return { optionsList: optionsList, loader: radioOptionsLoadingComponent };
+	await loadOrReloadRadioOptions(context, optionsListContainer, radioOptionsLoadingComponent, getRadioButtonInfo);
+	return { optionsList: optionsListContainer, loader: radioOptionsLoadingComponent };
 }
 
-async function loadOrReloadRadioOptions(context: FieldContext, optionsList: azdata.DivContainer, radioOptionsLoadingComponent: azdata.LoadingComponent, getRadioButtonInfo: (() => Promise<{ values: string[] | azdata.CategoryValue[]; defaultValue: string; }>) | undefined): Promise<void> {
+async function loadOrReloadRadioOptions(context: FieldContext, optionsListContainer: azdata.DivContainer, radioOptionsLoadingComponent: azdata.LoadingComponent, getRadioButtonInfo: (() => Promise<{ values: string[] | azdata.CategoryValue[]; defaultValue: string; }>) | undefined): Promise<void> {
 	radioOptionsLoadingComponent.loading = true;
-	optionsList.clearItems();
+	optionsListContainer.clearItems();
 	let options: (string[] | azdata.CategoryValue[]) = context.fieldInfo.options!;
 	let defaultValue: string = context.fieldInfo.defaultValue!;
 	try {
@@ -639,15 +650,15 @@ async function loadOrReloadRadioOptions(context: FieldContext, optionsList: azda
 			}
 			context.onNewDisposableCreated(radioOption.onDidClick(() => {
 				// reset checked status of all remaining radioButtons
-				optionsList.items.filter(otherOption => otherOption !== radioOption).forEach(otherOption => (otherOption as azdata.RadioButtonComponent).checked = false);
+				optionsListContainer.items.filter(otherOption => otherOption !== radioOption).forEach(otherOption => (otherOption as azdata.RadioButtonComponent).checked = false);
 				context.onNewInputComponentCreated(context.fieldInfo.variableName!, radioOption!);
 			}));
-			optionsList.addItem(radioOption);
+			optionsListContainer.addItem(radioOption);
 		});
 	}
 	catch (e) {
 		const errorLoadingRadioOptionsLabel = context.view!.modelBuilder.text().withProperties({ value: getErrorMessage(e) }).component();
-		optionsList.addItem(errorLoadingRadioOptionsLabel);
+		optionsListContainer.addItem(errorLoadingRadioOptionsLabel);
 	}
 	radioOptionsLoadingComponent.loading = false;
 }

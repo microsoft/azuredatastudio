@@ -109,7 +109,7 @@ export interface NotebookWizardInfo extends WizardInfoBase {
 	notebook: string | NotebookInfo;
 }
 
-export interface WizardInfoBase extends SharedFieldAttributes {
+export interface WizardInfoBase extends InheritableAttributes {
 	taskName?: string;
 	type?: DeploymentType;
 	runNotebook?: boolean;
@@ -153,20 +153,21 @@ export interface DialogInfoBase {
 export interface DialogTabInfo extends PageInfoBase {
 }
 
-export interface PageInfoBase extends SharedFieldAttributes {
+export interface PageInfoBase extends InheritableAttributes {
 	title: string;
 	isSummaryPage?: boolean;
 	sections: SectionInfo[];
 }
 
-export interface SharedFieldAttributes {
+export interface InheritableAttributes {
 	labelWidth?: string;
 	inputWidth?: string;
 	labelPosition?: LabelPosition; // Default value is top
 	rowWidth?: string;
 	rowHeight?: string;
+	rowAlignItems?: azdata.AlignItemsType;
 }
-export interface SectionInfo extends SharedFieldAttributes {
+export interface SectionInfo extends InheritableAttributes {
 	title?: string;
 	fields?: FieldInfo[]; // Use this if the dialog is not wide. All fields will be displayed in one column, label will be placed on top of the input component.
 	rows?: RowInfo[]; // Use this for wide dialog or wizard. label will be placed to the left of the input component.
@@ -184,7 +185,7 @@ export interface SubFieldInfo {
 	variableName?: string;
 }
 
-export interface FieldInfo extends SubFieldInfo, SharedFieldAttributes {
+export interface FieldInfo extends SubFieldInfo, InheritableAttributes {
 	subFields?: SubFieldInfo[];
 	type: FieldType;
 	defaultValue?: string;
