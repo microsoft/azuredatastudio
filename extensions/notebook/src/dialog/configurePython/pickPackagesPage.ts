@@ -28,7 +28,8 @@ export class PickPackagesPage extends BasePage {
 			let dropdownValues = [python3DisplayName, pysparkDisplayName, sparkScalaDisplayName, sparkRDisplayName, powershellDisplayName, allKernelsName];
 			this.kernelDropdown = this.view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 				value: dropdownValues[0],
-				values: dropdownValues
+				values: dropdownValues,
+				width: '300px'
 			}).component();
 			this.kernelDropdown.onValueChanged(async value => {
 				await this.updateRequiredPackages(value.selected);
