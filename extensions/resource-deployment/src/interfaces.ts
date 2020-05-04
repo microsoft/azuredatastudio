@@ -201,6 +201,7 @@ export interface FieldInfo extends SubFieldInfo, InheritableAttributes {
 	placeHolder?: string;
 	userName?: string; // needed for sql server's password complexity requirement check, password can not include the login name.
 	description?: string;
+	labelColor?: string;
 	fontStyle?: FontStyle;
 	labelFontWeight?: FontWeight;
 	textFontWeight?: FontWeight;
