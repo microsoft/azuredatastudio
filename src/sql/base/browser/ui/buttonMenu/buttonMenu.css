@@ -4,11 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 .monaco-dropdown {
-	height: 100%;
+	height: auto;
 	padding: 0;
 }
 
 .monaco-dropdown > .dropdown-label {
 	cursor: pointer;
-	height: 100%;
+}
+.masked-pseudo-after.dropdown-arrow:after {
+	right: -2px;
+	width: 20px;
 }

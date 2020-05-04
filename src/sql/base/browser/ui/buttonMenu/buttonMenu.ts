@@ -8,7 +8,7 @@ import { Gesture, EventType as GestureEventType } from 'vs/base/browser/touch';
 import { ActionRunner, IAction, IActionRunner } from 'vs/base/common/actions';
 import { BaseActionViewItem, IActionViewItemProvider } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { IContextViewProvider, IAnchor, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
+import { AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import { IMenuOptions } from 'vs/base/browser/ui/menu/menu';
 import { ResolvedKeybinding, KeyCode } from 'vs/base/common/keyCodes';
 import { EventHelper, EventType, removeClass, addClass, append, $, addDisposableListener, addClasses } from 'vs/base/browser/dom';
@@ -20,11 +20,8 @@ export interface ILabelRenderer {
 }
 
 export interface IBaseDropdownOptions {
-	labelCssClass: string;
 	label?: string;
 	labelRenderer?: ILabelRenderer;
-	contextMenuProvider: IContextMenuProvider,
-	menuItems?: Array<string>
 }
 
 export class BaseDropdown extends ActionRunner {
@@ -39,7 +36,7 @@ export class BaseDropdown extends ActionRunner {
 
 		this._element = append(container, $('.monaco-dropdown'));
 
-		this._label = append(this._element, $('.dropdown-label ' + options.labelCssClass));
+		this._label = append(this._element, $('.dropdown-label'));
 
 		let labelRenderer = options.labelRenderer;
 		if (!labelRenderer) {
@@ -140,60 +137,6 @@ export class BaseDropdown extends ActionRunner {
 	}
 }
 
-export interface IDropdownOptions extends IBaseDropdownOptions {
-	contextViewProvider: IContextViewProvider;
-}
-
-export class Dropdown extends BaseDropdown {
-	private contextViewProvider: IContextViewProvider;
-
-	constructor(container: HTMLElement, options: IDropdownOptions) {
-		super(container, options);
-
-		this.contextViewProvider = options.contextViewProvider;
-	}
-
-	show(): void {
-		super.show();
-
-		addClass(this.element, 'active');
-
-		this.contextViewProvider.showContextView({
-			getAnchor: () => this.getAnchor(),
-
-			render: (container) => {
-				return this.renderContents(container);
-			},
-
-			onDOMEvent: (e, activeElement) => {
-				this.onEvent(e, activeElement);
-			},
-
-			onHide: () => this.onHide()
-		});
-	}
-
-	protected getAnchor(): HTMLElement | IAnchor {
-		return this.element;
-	}
-
-	protected onHide(): void {
-		removeClass(this.element, 'active');
-	}
-
-	hide(): void {
-		super.hide();
-
-		if (this.contextViewProvider) {
-			this.contextViewProvider.hideContextView();
-		}
-	}
-
-	protected renderContents(container: HTMLElement): IDisposable | null {
-		return null;
-	}
-}
-
 export interface IContextMenuProvider {
 	showContextMenu(delegate: IContextMenuDelegate): void;
 }
@@ -276,15 +219,24 @@ export class DropdownMenu extends BaseDropdown {
 export class DropdownMenuActionViewItem extends BaseActionViewItem {
 	private menuActionsOrProvider: ReadonlyArray<IAction> | IActionProvider;
 	private dropdownMenu: DropdownMenu | undefined;
+	private menuLabel?: string | undefined;
 	private contextMenuProvider: IContextMenuProvider;
 	private actionViewItemProvider?: IActionViewItemProvider;
 	private keybindings?: (action: IAction) => ResolvedKeybinding | undefined;
-	private clazz: string | undefined;
+	private cssClass: string | undefined;
 	private anchorAlignmentProvider: (() => AnchorAlignment) | undefined;
 
-	constructor(action: IAction, menuActions: ReadonlyArray<IAction>, contextMenuProvider: IContextMenuProvider, actionViewItemProvider: IActionViewItemProvider | undefined, actionRunner: IActionRunner, keybindings: ((action: IAction) => ResolvedKeybinding | undefined) | undefined, clazz: string | undefined, anchorAlignmentProvider?: () => AnchorAlignment);
-	constructor(action: IAction, actionProvider: IActionProvider, contextMenuProvider: IContextMenuProvider, actionViewItemProvider: IActionViewItemProvider | undefined, actionRunner: IActionRunner, keybindings: ((action: IAction) => ResolvedKeybinding) | undefined, clazz: string | undefined, anchorAlignmentProvider?: () => AnchorAlignment);
-	constructor(action: IAction, menuActionsOrProvider: ReadonlyArray<IAction> | IActionProvider, contextMenuProvider: IContextMenuProvider, actionViewItemProvider: IActionViewItemProvider | undefined, actionRunner: IActionRunner, keybindings: ((action: IAction) => ResolvedKeybinding | undefined) | undefined, clazz: string | undefined, anchorAlignmentProvider?: () => AnchorAlignment) {
+	constructor(
+		action: IAction,
+		menuActionsOrProvider: ReadonlyArray<IAction> | IActionProvider,
+		contextMenuProvider: IContextMenuProvider,
+		actionViewItemProvider: IActionViewItemProvider | undefined,
+		actionRunner: IActionRunner,
+		keybindings: ((action: IAction) => ResolvedKeybinding | undefined) | undefined,
+		cssClass: string | undefined,
+		menuLabel: string | undefined,
+		anchorAlignmentProvider?: () => AnchorAlignment) {
+
 		super(null, action);
 
 		this.menuActionsOrProvider = menuActionsOrProvider;
@@ -292,15 +244,19 @@ export class DropdownMenuActionViewItem extends BaseActionViewItem {
 		this.actionViewItemProvider = actionViewItemProvider;
 		this.actionRunner = actionRunner;
 		this.keybindings = keybindings;
-		this.clazz = clazz;
+		this.cssClass = cssClass;
+		this.menuLabel = menuLabel;
 		this.anchorAlignmentProvider = anchorAlignmentProvider;
 	}
 
 	render(container: HTMLElement): void {
 		const labelRenderer: ILabelRenderer = (el: HTMLElement): IDisposable | null => {
-			this.element = append(el, $('a.action-label.codicon')); // todo@aeschli: remove codicon, should come through `this.clazz`
-			if (this.clazz) {
-				addClasses(this.element, this.clazz);
+			this.element = append(el, $('a.action-label'));
+			if (this.cssClass) {
+				addClasses(this.element, this.cssClass);
+			}
+			if (this.menuLabel) {
+				this.element.innerText = this.menuLabel;
 			}
 
 			this.element.tabIndex = 0;
@@ -324,7 +280,6 @@ export class DropdownMenuActionViewItem extends BaseActionViewItem {
 		}
 
 		this.dropdownMenu = this._register(new DropdownMenu(container, options));
-
 		this.dropdownMenu.menuOptions = {
 			actionViewItemProvider: this.actionViewItemProvider,
 			actionRunner: this.actionRunner,

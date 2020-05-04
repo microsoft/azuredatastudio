@@ -42,11 +42,11 @@ export const gradientTwo = registerColor('gradientTwo', { light: gradientTwoColo
 export const gradientBackground = registerColor('gradientBackground', { light: '#fff', dark: 'transparent', hc: 'transparent' }, nls.localize('gradientBackground', "The background color for the banner image gradient"));
 
 // --- Notebook Colors
-export const notebookToolbarIcon = registerColor('notebook.notebookToolbarIcon', { light: '#0078D4', dark: '#3AA0F3', hc: '#FFFFFF' }, nls.localize('notebook.notebookToolbarIcon', "Notebook: Main toolbar icon color"));
-
-export const notebookToolbarLines = registerColor('notebook.notebookToolbarLines', { light: '#A5A5A5', dark: '#8A8886', hc: '#2B56F2' }, nls.localize('notebook.notebookToolbarLines', "Notebook: Main toolbar bottom border, dropdown border and separator colors"));
-
-export const dropdownArrow = registerColor('notebook.dropdownArrow', { light: '#A5A5A5', dark: '#FFFFFF', hc: '#FFFFFF' }, nls.localize('notebook.dropdownArrow', "Notebook: Main toolbar dropdown arrow color"));
+export const notebookToolbarIcon = registerColor('notebook.notebookToolbarIcon', { light: '#0078D4', dark: '#3AA0F3', hc: '#FFFFFF' }, nls.localize('notebook.notebookToolbarIcon', "Notebook: Main toolbar icons"));
+export const notebookToolbarSelectBorder = registerColor('notebook.notebookToolbarSelectBorder', { light: '#A5A5A5', dark: '#8A8886', hc: '#2B56F2' }, nls.localize('notebook.notebookToolbarSelectBorder', "Notebook: Main toolbar select box border"));
+export const notebookToolbarLines = registerColor('notebook.notebookToolbarLines', { light: '#D6D6D6', dark: '#323130', hc: '#2B56F2' }, nls.localize('notebook.notebookToolbarLines', "Notebook: Main toolbar bottom border and separator"));
+export const dropdownArrow = registerColor('notebook.dropdownArrow', { light: '#A5A5A5', dark: '#FFFFFF', hc: '#FFFFFF' }, nls.localize('notebook.dropdownArrow', "Notebook: Main toolbar dropdown arrow"));
+export const buttonMenuArrow = registerColor('notebook.buttonMenuArrow', { light: '#000000', dark: '#FFFFFF', hc: '#FFFFFF' }, nls.localize('notebook.buttonMenuArrow', "Notebook: Main toolbar custom buttonMenu dropdown arrow"));
 
 export const toolbarBackground = registerColor('notebook.toolbarBackground', { light: '#F5F5F5', dark: '#252423', hc: '#000000' }, nls.localize('notebook.toolbarBackground', "Notebook: Markdown toolbar background"));
 export const toolbarIcon = registerColor('notebook.toolbarIcon', { light: '#323130', dark: '#FFFFFe', hc: '#FFFFFe' }, nls.localize('notebook.toolbarIcon', "Notebook: Markdown toolbar icons"));

@@ -452,14 +452,11 @@ Includes non-masked style declarations. */
 .masked-pseudo {
 	background-image: none!important;
 }
-.masked-pseudo:after {
+.masked-pseudo:before,
+.masked-pseudo-after:after {
 	content: '';
 	display: block;
-	height: 23px;
-	left: 0;
 	position: absolute;
-	top: 2px;
-	width: 30px;
 	-webkit-mask-position: center;
 	-webkit-mask-repeat: no-repeat;
 	mask-position: center;
@@ -467,20 +464,37 @@ Includes non-masked style declarations. */
 	-webkit-mask-size: 50% 100%;
 	mask-size: 50% 100%;
 }
-.masked-pseudo.add-new:after {
+.masked-pseudo:before {
+	height: 23px;
+	left: 0;
+	top: 2px;
+	width: 30px;
+}
+.masked-pseudo-after:after {
+	height: 23px;
+	right: 0;
+	top: 2px;
+	width: 30px;
+}
+.masked-pseudo-after.dropdown-arrow:after {
+	background-image: none;
+	-webkit-mask-image: url('chevron_down.svg');
+	mask-image: url('chevron_down.svg');
+}
+.masked-pseudo.add-new:before {
 	-webkit-mask-image: url('new.svg');
 	mask-image: url('new.svg');
 }
-.masked-pseudo.start-outline:after {
+.masked-pseudo.start-outline:before {
 	-webkit-mask-image: url('start-outline.svg');
 	mask-image: url('start-outline.svg');
 }
 
-.masked-pseudo.code:after {
+.masked-pseudo.code:before {
 	-webkit-mask-image: url('code.svg');
 	mask-image: url('code.svg');
 }
-.masked-pseudo.markdown:after {
+.masked-pseudo.markdown:before {
 	-webkit-mask-image: url('markdown.svg');
 	mask-image: url('markdown.svg');
 }
