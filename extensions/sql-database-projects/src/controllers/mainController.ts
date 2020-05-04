@@ -15,6 +15,7 @@ import { getErrorMessage } from '../common/utils';
 import { ProjectsController } from './projectController';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { NetCoreTool } from '../tools/netcoreTool';
+import { Project } from '../models/project';
 
 const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
 
@@ -92,7 +93,7 @@ export default class MainController implements Disposable {
 	/**
 	 * Creates a new SQL database project from a template, prompting the user for a name and location
 	 */
-	public async createNewProject(): Promise<void> {
+	public async createNewProject(): Promise<Project | undefined> {
 		try {
 			let newProjName = await this.apiWrapper.showInputBox({
 				prompt: constants.newDatabaseProjectName,
@@ -103,7 +104,7 @@ export default class MainController implements Disposable {
 			if (!newProjName) {
 				// TODO: is this case considered an intentional cancellation (shouldn't warn) or an error case (should warn)?
 				this.apiWrapper.showErrorMessage(constants.projectNameRequired);
-				return;
+				return undefined;
 			}
 
 			let selectionResult = await this.apiWrapper.showOpenDialog({
@@ -115,18 +116,18 @@ export default class MainController implements Disposable {
 
 			if (!selectionResult) {
 				this.apiWrapper.showErrorMessage(constants.projectLocationRequired);
-				return;
+				return undefined;
 			}
 
 			// TODO: what if the selected folder is outside the workspace?
 
 			const newProjFolderUri = (selectionResult as Uri[])[0];
-			console.log(newProjFolderUri.fsPath);
 			const newProjFilePath = await this.projectsController.createNewProject(newProjName as string, newProjFolderUri as Uri);
-			await this.projectsController.openProject(Uri.file(newProjFilePath));
+			return this.projectsController.openProject(Uri.file(newProjFilePath));
 		}
 		catch (err) {
 			this.apiWrapper.showErrorMessage(getErrorMessage(err));
+			return undefined;
 		}
 	}
 
