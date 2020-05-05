@@ -1,5 +1,22 @@
 # Change Log
 
+## Version 1.17.1
+* Release date: April 29, 2020
+* Release status: General Availability
+* Hotfix for https://github.com/microsoft/azuredatastudio/milestone/54?closed=1
+
+## Version 1.17.0
+* Release date: April 27, 2020
+* Release status: General Availability
+* New Welcome Page
+* New Notebook features
+    * New Markdown editor toolbar
+    * Books viewlet now works with notebooks
+* Improved dashboard
+* Always encrypted support
+* Accessibility bugs
+* VS Code merge
+
 ## Version 1.16.0
 * Release date: March 18, 2020
 * Release status: General Availability

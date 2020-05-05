@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+		"target": "es2019",
+		"strict": true,
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"removeComments": false,
+		"resolveJsonModule": true,
+		"lib": [
+			"es2020"
+		],
+	},
+	"include": [
+		"./**/*.ts"
+	],
+	"exclude": [
+		"node_modules"
+	]
+}

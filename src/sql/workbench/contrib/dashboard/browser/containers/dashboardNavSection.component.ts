@@ -48,7 +48,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 		dashboardHelper.filterConfigs
 	];
 
-	private readonly _gridModifiers: Array<(item: Array<WidgetConfig>, originalConfig: Array<WidgetConfig>) => Array<WidgetConfig>> = [
+	private readonly _gridModifiers: Array<(item: Array<WidgetConfig>, originalConfig?: Array<WidgetConfig>) => Array<WidgetConfig>> = [
 		dashboardHelper.validateGridConfig
 	];
 

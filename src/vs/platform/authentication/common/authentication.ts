@@ -46,13 +46,14 @@ export class AuthenticationTokenService extends Disposable implements IAuthentic
 	}
 
 	async setToken(token: IUserDataSyncAuthToken | undefined): Promise<void> {
-		if (token && this._token ? token.token !== this._token.token && token.authenticationProviderId !== this._token.authenticationProviderId : token !== this._token) {
+		if (token && this._token ? token.token !== this._token.token || token.authenticationProviderId !== this._token.authenticationProviderId : token !== this._token) {
 			this._token = token;
 			this._onDidChangeToken.fire(token);
 		}
 	}
 
 	sendTokenFailed(): void {
+		this.setToken(undefined);
 		this._onTokenFailed.fire();
 	}
 }

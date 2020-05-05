@@ -11,12 +11,12 @@ echo %VSCODEEXTENSIONSDIR%
 
 :: Figure out which Electron to use for running tests
 if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
-	:: Run out of sources: no need to compile as code.sh takes care of it
+	:: Run out of sources: no need to compile as code.bat takes care of it
 	set INTEGRATION_TEST_ELECTRON_PATH=.\scripts\code.bat
 
-	echo "Running integration tests out of sources."
+	echo "Running unit tests out of sources."
 ) else (
-	:: Run from a built: need to compile all test extensions
+	:: Run from a build: need to compile all test extensions
 	call yarn gulp compile-extension:admin-tool-ext-win
 	call yarn gulp compile-extension:agent
 	call yarn gulp compile-extension:azurecore
@@ -26,15 +26,15 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 	call yarn gulp compile-extension:mssql
 	call yarn gulp compile-extension:notebook
 	call yarn gulp compile-extension:resource-deployment
-	call yarn gulp compile-extension:machine-learning-services
+	call yarn gulp compile-extension:machine-learning
 	call yarn gulp compile-extension:sql-database-projects
 
-	echo "Running integration tests with '%INTEGRATION_TEST_ELECTRON_PATH%' as build."
+	echo "Running unit tests with '%INTEGRATION_TEST_ELECTRON_PATH%' as build."
 )
 
 :: Default to only running stable tests if test grep isn't set
 if "%ADS_TEST_GREP%" == "" (
-	echo Running stable tests only
+	echo "Running stable tests only"
 	set ADS_TEST_GREP=@UNSTABLE@
 	SET ADS_TEST_INVERT_GREP=1
 )
@@ -82,9 +82,9 @@ echo ******************************************
 call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\resource-deployment --extensionTestsPath=%~dp0\..\extensions\resource-deployment\out\test --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
 
 echo *******************************
-echo *** starting machine-learning-services tests ***
+echo *** starting machine-learning tests ***
 echo *******************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\machine-learning-services --extensionTestsPath=%~dp0\..\extensions\machine-learning-services\out\test --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
+call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\machine-learning --extensionTestsPath=%~dp0\..\extensions\machine-learning\out\test --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
 
 REM echo ******************************************
 REM echo *** starting mssql tests ***

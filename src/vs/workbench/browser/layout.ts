@@ -23,7 +23,7 @@ import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { ITitleService } from 'vs/workbench/services/title/common/titleService';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { LifecyclePhase, StartupKind, ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
-import { MenuBarVisibility, getTitleBarStyle, getMenuBarVisibility } from 'vs/platform/windows/common/windows';
+import { MenuBarVisibility, getTitleBarStyle, getMenuBarVisibility, IPath } from 'vs/platform/windows/common/windows';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IEditor } from 'vs/editor/common/editorCommon';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
@@ -41,8 +41,10 @@ import { INotificationService, NotificationsFilter } from 'vs/platform/notificat
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { WINDOW_ACTIVE_BORDER, WINDOW_INACTIVE_BORDER } from 'vs/workbench/common/theme';
 import { LineNumbersType } from 'vs/editor/common/config/editorOptions';
+import { ActivitybarPart } from 'vs/workbench/browser/parts/activitybar/activitybarPart';
+import { URI } from 'vs/base/common/uri';
 
-enum Settings {
+export enum Settings {
 	ACTIVITYBAR_VISIBLE = 'workbench.activityBar.visible',
 	STATUSBAR_VISIBLE = 'workbench.statusBar.visible',
 
@@ -50,6 +52,7 @@ enum Settings {
 	PANEL_POSITION = 'workbench.panel.defaultLocation',
 
 	ZEN_MODE_RESTORE = 'zenMode.restore',
+	WORKSPACE_FIRST_OPEN = 'workbench.workspaceFirstOpen'
 }
 
 enum Storage {
@@ -80,6 +83,21 @@ enum Classes {
 	STATUSBAR_HIDDEN = 'nostatusbar',
 	FULLSCREEN = 'fullscreen',
 	WINDOW_BORDER = 'border'
+}
+
+interface PanelActivityState {
+	id: string;
+	name?: string;
+	pinned: boolean;
+	order: number;
+	visible: boolean;
+}
+
+interface SideBarActivityState {
+	id: string;
+	pinned: boolean;
+	order: number;
+	visible: boolean;
 }
 
 export abstract class Layout extends Disposable implements IWorkbenchLayoutService {
@@ -450,6 +468,7 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 	}
 
 	private initLayoutState(lifecycleService: ILifecycleService, fileService: IFileService): void {
+		this.applyDefaultLayout(this.environmentService, this.storageService);
 
 		// Fullscreen
 		this.state.fullscreen = isFullscreen();
@@ -471,7 +490,7 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 
 			// Only restore last viewlet if window was reloaded or we are in development mode
 			let viewletToRestore: string;
-			if (!this.environmentService.isBuilt || lifecycleService.startupKind === StartupKind.ReloadedWindow) {
+			if (!this.environmentService.isBuilt || lifecycleService.startupKind === StartupKind.ReloadedWindow || isWeb) {
 				viewletToRestore = this.storageService.get(SidebarPart.activeViewletSettingsKey, StorageScope.WORKSPACE, this.viewletService.getDefaultViewletId());
 			} else {
 				viewletToRestore = this.viewletService.getDefaultViewletId();
@@ -527,18 +546,186 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 
 	}
 
+	private applyDefaultLayout(environmentService: IWorkbenchEnvironmentService, storageService: IStorageService) {
+		const defaultLayout = environmentService.options?.defaultLayout;
+		if (!defaultLayout) {
+			return;
+		}
+
+		const firstOpen = storageService.getBoolean(Settings.WORKSPACE_FIRST_OPEN, StorageScope.WORKSPACE);
+		if (!firstOpen) {
+			return;
+		}
+
+		const { sidebar } = defaultLayout;
+		if (sidebar) {
+			if (sidebar.visible !== undefined) {
+				if (sidebar.visible) {
+					storageService.remove(Storage.SIDEBAR_HIDDEN, StorageScope.WORKSPACE);
+				} else {
+					storageService.store(Storage.SIDEBAR_HIDDEN, true, StorageScope.WORKSPACE);
+				}
+			}
+
+			if (sidebar.containers?.length) {
+				const sidebarState: SideBarActivityState[] = [];
+
+				let order = -1;
+				for (const container of sidebar.containers.sort((a, b) => (a.order ?? 1) - (b.order ?? 1))) {
+					let viewletId;
+					switch (container.id) {
+						case 'explorer':
+							viewletId = 'workbench.view.explorer';
+							break;
+						case 'run':
+							viewletId = 'workbench.view.debug';
+							break;
+						case 'scm':
+							viewletId = 'workbench.view.scm';
+							break;
+						case 'search':
+							viewletId = 'workbench.view.search';
+							break;
+						case 'extensions':
+							viewletId = 'workbench.view.extensions';
+							break;
+						case 'remote':
+							viewletId = 'workbench.view.remote';
+							break;
+						default:
+							viewletId = `workbench.view.extension.${container.id}`;
+					}
+
+					if (container.active) {
+						storageService.store(SidebarPart.activeViewletSettingsKey, viewletId, StorageScope.WORKSPACE);
+					}
+
+					if (container.order !== undefined || (container.active === undefined && (<any>container).visible !== undefined)) { // {{SQL CARBON EDIT}} strict-null-checks
+						order = container.order ?? (order + 1);
+						const state: SideBarActivityState = {
+							id: viewletId,
+							order: order,
+							pinned: (container.active || (<any>container).visible) ?? true, // {{SQL CARBON EDIT}} strict-null-checks
+							visible: (container.active || (<any>container).visible) ?? true // {{SQL CARBON EDIT}} strict-null-checks
+						};
+
+						sidebarState.push(state);
+					}
+
+					if (container.views !== undefined) {
+						const viewsState: { id: string, isHidden?: boolean, order?: number }[] = [];
+						const viewsWorkspaceState: { [id: string]: { collapsed: boolean, isHidden?: boolean, size?: number } } = {};
+
+						for (const view of container.views) {
+							if (view.order !== undefined || view.visible !== undefined) {
+								viewsState.push({
+									id: view.id,
+									isHidden: view.visible === undefined ? undefined : !view.visible,
+									order: view.order === undefined ? undefined : view.order
+								});
+							}
+
+							if (view.collapsed !== undefined) {
+								viewsWorkspaceState[view.id] = {
+									collapsed: view.collapsed,
+									isHidden: view.visible === undefined ? undefined : !view.visible,
+								};
+							}
+						}
+
+						storageService.store(`${viewletId}.state.hidden`, JSON.stringify(viewsState), StorageScope.GLOBAL);
+						storageService.store(`${viewletId}.state`, JSON.stringify(viewsWorkspaceState), StorageScope.WORKSPACE);
+					}
+				}
+
+				if (sidebarState.length) {
+					storageService.store(ActivitybarPart.PINNED_VIEWLETS, JSON.stringify(sidebarState), StorageScope.GLOBAL);
+				}
+			}
+		}
+
+		const { panel } = defaultLayout;
+		if (panel) {
+			if (panel.visible !== undefined) {
+				if (panel.visible) {
+					storageService.store(Storage.PANEL_HIDDEN, false, StorageScope.WORKSPACE);
+				} else {
+					storageService.remove(Storage.PANEL_HIDDEN, StorageScope.WORKSPACE);
+				}
+			}
+
+			if (panel.containers?.length) {
+				const panelState: PanelActivityState[] = [];
+
+				let order = -1;
+				for (const container of panel.containers.sort((a, b) => (a.order ?? 1) - (b.order ?? 1))) {
+					let name;
+					let panelId = container.id;
+					switch (panelId) {
+						case 'terminal':
+							name = 'Terminal';
+							panelId = 'workbench.panel.terminal';
+							break;
+						case 'debug':
+							name = 'Debug Console';
+							panelId = 'workbench.panel.repl';
+							break;
+						case 'problems':
+							name = 'Problems';
+							panelId = 'workbench.panel.markers';
+							break;
+						case 'output':
+							name = 'Output';
+							panelId = 'workbench.panel.output';
+							break;
+						case 'comments':
+							name = 'Comments';
+							panelId = 'workbench.panel.comments';
+							break;
+						case 'refactor':
+							name = 'Refactor Preview';
+							panelId = 'refactorPreview';
+							break;
+						default:
+							continue;
+					}
+
+					if (container.active) {
+						storageService.store(PanelPart.activePanelSettingsKey, panelId, StorageScope.WORKSPACE);
+					}
+
+					if (container.order !== undefined || (container.active === undefined && (<any>container).visible !== undefined)) { // {{SQL CARBON EDIT}} strict-null-checks
+						order = container.order ?? (order + 1);
+						const state: PanelActivityState = {
+							id: panelId,
+							name: name,
+							order: order,
+							pinned: (container.active || (<any>container).visible) ?? true, // {{SQL CARBON EDIT}} strict-null-checks
+							visible: (container.active || (<any>container).visible) ?? true // {{SQL CARBON EDIT}} strict-null-checks
+						};
+
+						panelState.push(state);
+					}
+				}
+
+				if (panelState.length) {
+					storageService.store(PanelPart.PINNED_PANELS, JSON.stringify(panelState), StorageScope.GLOBAL);
+				}
+			}
+		}
+	}
+
 	private resolveEditorsToOpen(fileService: IFileService): Promise<IResourceEditorInputType[]> | IResourceEditorInputType[] {
-		const configuration = this.environmentService.configuration;
-		const hasInitialFilesToOpen = this.hasInitialFilesToOpen();
+		const initialFilesToOpen = this.getInitialFilesToOpen();
 
 		// Only restore editors if we are not instructed to open files initially
-		this.state.editor.restoreEditors = !hasInitialFilesToOpen;
+		this.state.editor.restoreEditors = initialFilesToOpen === undefined;
 
 		// Files to open, diff or create
-		if (hasInitialFilesToOpen) {
+		if (initialFilesToOpen !== undefined) {
 
 			// Files to diff is exclusive
-			return pathsToEditors(configuration.filesToDiff, fileService).then(filesToDiff => {
+			return pathsToEditors(initialFilesToOpen.filesToDiff, fileService).then(filesToDiff => {
 				if (filesToDiff?.length === 2) {
 					return [{
 						leftResource: filesToDiff[0].resource,
@@ -549,7 +736,7 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 				}
 
 				// Otherwise: Open/Create files
-				return pathsToEditors(configuration.filesToOpenOrCreate, fileService);
+				return pathsToEditors(initialFilesToOpen.filesToOpenOrCreate, fileService);
 			});
 		}
 
@@ -571,13 +758,37 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 		return [];
 	}
 
-	private hasInitialFilesToOpen(): boolean {
-		const configuration = this.environmentService.configuration;
+	private _openedDefaultEditors: boolean = false;
+	get openedDefaultEditors() {
+		return this._openedDefaultEditors;
+	}
 
-		return !!(
-			(configuration.filesToOpenOrCreate && configuration.filesToOpenOrCreate.length > 0) ||
-			(configuration.filesToDiff && configuration.filesToDiff.length > 0)
-		);
+	private getInitialFilesToOpen(): { filesToOpenOrCreate?: IPath[], filesToDiff?: IPath[] } | undefined {
+		const defaultLayout = this.environmentService.options?.defaultLayout;
+		if (defaultLayout?.editors?.length && this.storageService.getBoolean(Settings.WORKSPACE_FIRST_OPEN, StorageScope.WORKSPACE)) {
+			this._openedDefaultEditors = true;
+
+			return {
+				filesToOpenOrCreate: defaultLayout.editors
+					.map<IPath>(f => {
+						// Support the old path+scheme api until embedders can migrate
+						if ('path' in f && 'scheme' in f) {
+							return { fileUri: URI.file((f as any).path).with({ scheme: (f as any).scheme }) };
+						}
+						return { fileUri: URI.revive(f.uri), openOnlyIfExists: f.openOnlyIfExists };
+					})
+			};
+		}
+
+		const configuration = this.environmentService.configuration;
+		if (configuration.filesToOpenOrCreate || configuration.filesToDiff) {
+			return {
+				filesToOpenOrCreate: configuration.filesToOpenOrCreate,
+				filesToDiff: configuration.filesToDiff
+			};
+		}
+
+		return undefined;
 	}
 
 	private updatePanelPosition() {

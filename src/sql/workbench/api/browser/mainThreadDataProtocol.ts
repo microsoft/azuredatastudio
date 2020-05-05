@@ -210,7 +210,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			getMetadata(connectionUri: string): Thenable<azdata.ProviderMetadata> {
 				return self._proxy.$getMetadata(handle, connectionUri);
 			},
-			getDatabases(connectionUri: string): Thenable<string[]> {
+			getDatabases(connectionUri: string): Thenable<string[] | azdata.DatabaseInfo[]> {
 				return self._proxy.$getDatabases(handle, connectionUri);
 			},
 			getTableInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[]> {
