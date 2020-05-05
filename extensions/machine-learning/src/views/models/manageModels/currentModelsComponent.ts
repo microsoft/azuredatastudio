@@ -36,8 +36,8 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 	 * @param modelBuilder register the components
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
-		this._tableSelectionComponent = new TableSelectionComponent(this._apiWrapper, this, false);
-		this._tableSelectionComponent.registerComponent(modelBuilder);
+		this._tableSelectionComponent = new TableSelectionComponent(this._apiWrapper, this, { editable: false, preSelected: true });
+		this._tableSelectionComponent.registerComponent(modelBuilder, constants.databaseName, constants.tableName);
 		this._tableSelectionComponent.onSelectedChanged(async () => {
 			await this.onTableSelected();
 		});

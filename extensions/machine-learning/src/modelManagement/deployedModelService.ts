@@ -177,6 +177,13 @@ export class DeployedModelService {
 		}
 	}
 
+	/**
+	 * Installs the dependencies required for model management
+	 */
+	public async installDependencies(): Promise<void> {
+		await this._modelClient.installDependencies();
+	}
+
 	public async getRecentImportTable(): Promise<DatabaseTable> {
 		let connection = await this.getCurrentConnection();
 		let table: DatabaseTable | undefined;

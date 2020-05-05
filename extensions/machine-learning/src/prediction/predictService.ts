@@ -35,6 +35,9 @@ export class PredictService {
 		return [];
 	}
 
+	/**
+	 * Returns true if server supports ONNX
+	 */
 	public async serverSupportOnnxModel(): Promise<boolean> {
 		let connection = await this.getCurrentConnection();
 		if (connection) {
@@ -197,9 +200,15 @@ WITH (
 `;
 	}
 
+	private getEscapedColumnName(tableName: string, columnName: string): string {
+		return `[${utils.doubleEscapeSingleBrackets(tableName)}].[${utils.doubleEscapeSingleBrackets(columnName)}]`;
+	}
 	private getInputColumnNames(columns: PredictColumn[], tableName: string) {
+
 		return columns.map(c => {
-			let columnName = c.dataType !== c.paramType ? `cast(${tableName}.${c.columnName} as ${c.paramType})` : `${tableName}.${c.columnName}`;
+			const column = this.getEscapedColumnName(tableName, c.columnName);
+			let columnName = c.dataType !== c.paramType ? `cast(${column} as ${c.paramType})`
+				: `${column}`;
 			return `${columnName} AS ${c.paramName}`;
 		}).join(',\n');
 	}
@@ -217,12 +226,15 @@ WITH (
 	}
 
 	private getColumnName(tableName: string, columnName: string, displayName: string) {
-		return columnName && columnName !== displayName ? `${tableName}.${columnName} AS ${displayName}` : `${tableName}.${columnName}`;
+		const column = this.getEscapedColumnName(tableName, columnName);
+		return columnName && columnName !== displayName ?
+			`${column} AS [${utils.doubleEscapeSingleBrackets(displayName)}]` : column;
 	}
 
 	private getPredictColumnNames(columns: PredictColumn[], tableName: string) {
 		return columns.map(c => {
-			return c.paramName ? `${tableName}.${c.paramName}` : `${tableName}.${c.columnName}`;
+			return c.paramName ? `${this.getEscapedColumnName(tableName, c.paramName)}`
+				: `${this.getEscapedColumnName(tableName, c.columnName)}`;
 		}).join(',\n');
 	}
 

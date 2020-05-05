@@ -39,7 +39,7 @@ export class ModelPythonClient {
 	/**
 	 * Installs dependencies for python client
 	 */
-	private async installDependencies(): Promise<void> {
+	public async installDependencies(): Promise<void> {
 		await utils.executeTasks(this._apiWrapper, constants.installModelMngDependenciesMsgTaskName, [
 			this._packageManager.installRequiredPythonPackages(this._config.modelsRequiredPythonPackages)], true);
 	}
@@ -49,7 +49,6 @@ export class ModelPythonClient {
 	 * @param modelPath Loads model parameters
 	 */
 	public async loadModelParameters(modelPath: string): Promise<ModelParameters> {
-		await this.installDependencies();
 		return await this.executeModelParametersScripts(modelPath);
 	}
 

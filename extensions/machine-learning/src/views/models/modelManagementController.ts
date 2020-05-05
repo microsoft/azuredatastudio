@@ -40,7 +40,7 @@ export class ModelManagementController extends ControllerBase {
 		apiWrapper: ApiWrapper,
 		private _root: string,
 		private _amlService: AzureModelRegistryService,
-		private _registeredModelService: DeployedModelService,
+		private _deployedModelService: DeployedModelService,
 		private _predictService: PredictService) {
 		super(apiWrapper);
 	}
@@ -60,7 +60,7 @@ export class ModelManagementController extends ControllerBase {
 		if (importTable) {
 			view.importTable = importTable;
 		} else {
-			view.importTable = await controller._registeredModelService.getRecentImportTable();
+			view.importTable = await controller._deployedModelService.getRecentImportTable();
 		}
 
 		controller.registerEvents(view);
@@ -97,13 +97,14 @@ export class ModelManagementController extends ControllerBase {
 
 		const onnxSupported = await this._predictService.serverSupportOnnxModel();
 		if (onnxSupported) {
+			await this._deployedModelService.installDependencies();
 			let view = new PredictWizard(this._apiWrapper, this._root);
-			view.importTable = await this._registeredModelService.getRecentImportTable();
+			view.importTable = await this._deployedModelService.getRecentImportTable();
 
 			this.registerEvents(view);
 			view.on(LoadModelParametersEventName, async () => {
 				const modelArtifact = await view.getModelFileName();
-				await this.executeAction(view, LoadModelParametersEventName, this.loadModelParameters, this._registeredModelService,
+				await this.executeAction(view, LoadModelParametersEventName, this.loadModelParameters, this._deployedModelService,
 					modelArtifact?.filePath);
 			});
 
@@ -113,7 +114,7 @@ export class ModelManagementController extends ControllerBase {
 			await view.refresh();
 			return view;
 		} else {
-			this._apiWrapper.showErrorMessage('ONNX is not supported in current server');
+			this._apiWrapper.showErrorMessage(constants.onnxNotSupportedError);
 			return undefined;
 		}
 	}
@@ -150,11 +151,11 @@ export class ModelManagementController extends ControllerBase {
 		});
 		view.on(ListModelsEventName, async (args) => {
 			const table = <DatabaseTable>args;
-			await this.executeAction(view, ListModelsEventName, this.getRegisteredModels, this._registeredModelService, table);
+			await this.executeAction(view, ListModelsEventName, this.getRegisteredModels, this._deployedModelService, table);
 		});
 		view.on(RegisterLocalModelEventName, async (arg) => {
 			let models = <ModelViewData[]>arg;
-			await this.executeAction(view, RegisterLocalModelEventName, this.registerLocalModel, this._registeredModelService, models);
+			await this.executeAction(view, RegisterLocalModelEventName, this.registerLocalModel, this._deployedModelService, models);
 			view.refresh();
 		});
 		view.on(RegisterModelEventName, async (args) => {
@@ -167,15 +168,15 @@ export class ModelManagementController extends ControllerBase {
 		});
 		view.on(UpdateModelEventName, async (args) => {
 			const model = <ImportedModel>args;
-			await this.executeAction(view, UpdateModelEventName, this.updateModel, this._registeredModelService, model);
+			await this.executeAction(view, UpdateModelEventName, this.updateModel, this._deployedModelService, model);
 		});
 		view.on(DeleteModelEventName, async (args) => {
 			const model = <ImportedModel>args;
-			await this.executeAction(view, DeleteModelEventName, this.deleteModel, this._registeredModelService, model);
+			await this.executeAction(view, DeleteModelEventName, this.deleteModel, this._deployedModelService, model);
 		});
 		view.on(RegisterAzureModelEventName, async (arg) => {
 			let models = <ModelViewData[]>arg;
-			await this.executeAction(view, RegisterAzureModelEventName, this.registerAzureModel, this._amlService, this._registeredModelService,
+			await this.executeAction(view, RegisterAzureModelEventName, this.registerAzureModel, this._amlService, this._deployedModelService,
 				models);
 		});
 		view.on(DownloadAzureModelEventName, async (arg) => {
@@ -202,17 +203,17 @@ export class ModelManagementController extends ControllerBase {
 		});
 		view.on(DownloadRegisteredModelEventName, async (arg) => {
 			let model = <ImportedModel>arg;
-			await this.executeAction(view, DownloadRegisteredModelEventName, this.downloadRegisteredModel, this._registeredModelService,
+			await this.executeAction(view, DownloadRegisteredModelEventName, this.downloadRegisteredModel, this._deployedModelService,
 				model);
 		});
 		view.on(StoreImportTableEventName, async (arg) => {
 			let importTable = <DatabaseTable>arg;
-			await this.executeAction(view, StoreImportTableEventName, this.storeImportTable, this._registeredModelService,
+			await this.executeAction(view, StoreImportTableEventName, this.storeImportTable, this._deployedModelService,
 				importTable);
 		});
 		view.on(VerifyImportTableEventName, async (arg) => {
 			let importTable = <DatabaseTable>arg;
-			await this.executeAction(view, VerifyImportTableEventName, this.verifyImportTable, this._registeredModelService,
+			await this.executeAction(view, VerifyImportTableEventName, this.verifyImportTable, this._deployedModelService,
 				importTable);
 		});
 		view.on(SourceModelSelectedEventName, async (arg) => {
@@ -234,7 +235,7 @@ export class ModelManagementController extends ControllerBase {
 		if (importTable) {
 			view.importTable = importTable;
 		} else {
-			view.importTable = await this._registeredModelService.getRecentImportTable();
+			view.importTable = await this._deployedModelService.getRecentImportTable();
 		}
 
 		// Register events

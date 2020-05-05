@@ -506,7 +506,7 @@ export class DashboardWidget {
 		const iconContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 			width: maxWidth,
-			height: maxHeight - 20,
+			height: maxHeight - 23,
 			alignItems: 'flex-start'
 		}).component();
 		const labelsContainer = view.modelBuilder.flexContainer().withLayout({

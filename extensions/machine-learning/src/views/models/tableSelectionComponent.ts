@@ -7,10 +7,14 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
-import * as constants from '../../common/constants';
 import { IDataComponent } from '../interfaces';
 import { DatabaseTable } from '../../prediction/interfaces';
+import * as constants from '../../common/constants';
 
+export interface ITableSelectionSettings {
+	editable: boolean,
+	preSelected: boolean
+}
 /**
  * View to render filters to pick an azure resource
  */
@@ -30,7 +34,7 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	/**
 	 * Creates a new view
 	 */
-	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _editable: boolean) {
+	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _settings: ITableSelectionSettings) {
 		super(apiWrapper, parent.root, parent);
 	}
 
@@ -38,16 +42,16 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	 * Register components
 	 * @param modelBuilder model builder
 	 */
-	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
+	public registerComponent(modelBuilder: azdata.ModelBuilder, databaseTitle: string, tableTitle: string): azdata.Component {
 		this._databases = modelBuilder.dropDown().withProperties({
 			width: this.componentMaxLength,
-			editable: this._editable,
-			fireOnTextChange: this._editable
+			editable: this._settings.editable,
+			fireOnTextChange: this._settings.editable
 		}).component();
 		this._tables = modelBuilder.dropDown().withProperties({
 			width: this.componentMaxLength,
-			editable: this._editable,
-			fireOnTextChange: this._editable
+			editable: this._settings.editable,
+			fireOnTextChange: this._settings.editable
 		}).component();
 
 		this._databases.onValueChanged(async () => {
@@ -58,21 +62,21 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 			// There's an issue with dropdown doesn't set the value in editable mode. this is the workaround
 
 			if (this._tables && value) {
-				this._selectedTableName = this._editable ? value : value.selected;
+				this._selectedTableName = this._settings.editable ? value : value.selected;
 			}
 			await this.onTableSelected();
 		});
 
 		const databaseForm = modelBuilder.formContainer().withFormItems([{
-			title: constants.columnDatabase,
+			title: databaseTitle,
 			component: this._databases,
-		}]).withLayout({
+		}], { info: databaseTitle }).withLayout({
 			padding: '0px'
 		}).component();
 		const tableForm = modelBuilder.formContainer().withFormItems([{
-			title: constants.columnTable,
+			title: tableTitle,
 			component: this._tables
-		}]).withLayout({
+		}], { info: tableTitle }).withLayout({
 			padding: '0px'
 		}).component();
 		this._dbTableComponent = modelBuilder.flexContainer().withItems([
@@ -97,27 +101,21 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	}
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
-		if (this._databases && this._tables) {
+		if (this._dbTableComponent) {
 			formBuilder.addFormItems([{
-				title: constants.databaseName,
-				component: this._databases
-			}, {
-				title: constants.tableName,
-				component: this._tables
+				title: '',
+				component: this._dbTableComponent
 			}]);
 		}
 	}
 
 	public removeComponents(formBuilder: azdata.FormBuilder) {
-		if (this._databases && this._tables) {
+		if (this._dbTableComponent) {
 			formBuilder.removeFormItem({
-				title: constants.databaseName,
-				component: this._databases
+				title: '',
+				component: this._dbTableComponent
 			});
-			formBuilder.removeFormItem({
-				title: constants.tableName,
-				component: this._tables
-			});
+
 		}
 	}
 
@@ -140,13 +138,19 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	 */
 	public async loadData(): Promise<void> {
 		this._dbNames = await this.listDatabaseNames();
-		if (this._databases && this._dbNames && this._dbNames.length > 0) {
-			this._databases.values = this._dbNames;
-			if (this.importTable) {
+		let dbNames = this._dbNames;
+		if (!this._settings.preSelected && !this._dbNames.find(x => x === constants.selectDatabaseTitle)) {
+			dbNames = [constants.selectDatabaseTitle].concat(this._dbNames);
+		}
+		if (this._databases && dbNames && dbNames.length > 0) {
+			this._databases.values = dbNames;
+
+			if (this.importTable && this._settings.preSelected) {
 				this._databases.value = this.importTable.databaseName;
 			} else {
-				this._databases.value = this._dbNames[0];
+				this._databases.value = dbNames[0];
 			}
+
 		}
 		await this.onDatabaseSelected();
 	}
@@ -160,18 +164,25 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 
 	private async onDatabaseSelected(): Promise<void> {
 		this._tableNames = await this.listTableNames(this.databaseName || '');
-		if (this._tables && this._tableNames && this._tableNames.length > 0) {
-			this._tables.values = this._tableNames.map(t => this.getTableFullName(t));
+		let tableNames = this._tableNames;
+
+		if (this._tableNames && !this._settings.preSelected && !this._tableNames.find(x => x.tableName === constants.selectTableTitle)) {
+			const firstRow: DatabaseTable = { tableName: constants.selectTableTitle, databaseName: '', schema: '' };
+			tableNames = [firstRow].concat(this._tableNames);
+		}
+
+		if (this._tables && tableNames && tableNames.length > 0) {
+			this._tables.values = tableNames.map(t => this.getTableFullName(t));
 			if (this.importTable) {
-				const selectedTable = this._tableNames.find(t => t.tableName === this.importTable?.tableName && t.schema === this.importTable?.schema);
+				const selectedTable = tableNames.find(t => t.tableName === this.importTable?.tableName && t.schema === this.importTable?.schema);
 				if (selectedTable) {
 					this._selectedTableName = this.getTableFullName(selectedTable);
 					this._tables.value = this.getTableFullName(selectedTable);
 				} else {
-					this._selectedTableName = this._editable ? this.getTableFullName(this.importTable) : this.getTableFullName(this._tableNames[0]);
+					this._selectedTableName = this._settings.editable ? this.getTableFullName(this.importTable) : this.getTableFullName(tableNames[0]);
 				}
 			} else {
-				this._selectedTableName = this.getTableFullName(this._tableNames[0]);
+				this._selectedTableName = this.getTableFullName(tableNames[0]);
 			}
 			this._tables.value = this._selectedTableName;
 		} else if (this._tables) {
@@ -182,7 +193,7 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	}
 
 	private getTableFullName(table: DatabaseTable): string {
-		return `${table.schema}.${table.tableName}`;
+		return table.tableName === constants.selectTableTitle ? table.tableName : `${table.schema}.${table.tableName}`;
 	}
 
 	private async onTableSelected(): Promise<void> {

@@ -59,6 +59,7 @@ export class PackageManagementService {
 		let current = await this._queryRunner.isMachineLearningServiceEnabled(connection);
 
 		if (current) {
+			this._apiWrapper.showInfoMessage(constants.mlsEnabledMessage);
 			return current;
 		}
 		let confirmed = await utils.promptConfirm(constants.confirmEnableExternalScripts, this._apiWrapper);

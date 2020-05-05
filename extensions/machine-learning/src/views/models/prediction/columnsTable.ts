@@ -173,7 +173,12 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 
 		if (this._table) {
 			if (this._forInput) {
-				let columns = await this.listColumnNames(table);
+				let columns: TableColumn[];
+				try {
+					columns = await this.listColumnNames(table);
+				} catch {
+					columns = [];
+				}
 				if (modelParameters?.inputs && columns) {
 					tableData = tableData.concat(modelParameters.inputs.map(input => this.createInputTableRow(input, columns)));
 				}
@@ -212,6 +217,10 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 			const dataType = dataTypes.find(x => x === modelParameter.type);
 			if (dataType) {
 				nameInput.value = dataType;
+			} else {
+				// Output type not supported
+				//
+				modelParameter.type = dataTypes[0];
 			}
 			this._parameters.push({ columnName: name, paramName: name, dataType: modelParameter.type });
 
@@ -254,12 +263,14 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 			const name = modelParameter.name;
 			let column = values.find(x => x.name === modelParameter.name);
 			if (!column) {
-				column = values[0];
+				column = values.length > 0 ? values[0] : undefined;
 			}
 			const currentColumn = columns.find(x => x.columnName === column?.name);
 			nameInput.value = column;
 
-			this._parameters.push({ columnName: column.name, paramName: name, paramType: modelParameter.type });
+			if (column) {
+				this._parameters.push({ columnName: column.name, paramName: name, paramType: modelParameter.type });
+			}
 			const inputContainer = this._modelBuilder.flexContainer().withLayout({
 				flexFlow: 'row',
 				width: this.componentMaxLength + 20,
@@ -270,10 +281,8 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 			});
 
 			const css = {
-				'padding': '0px',
+				'padding-top': '5px',
 				'padding-right': '5px',
-				//'padding-top': '5px',
-				//'height': '10px',
 				'margin': '0px'
 			};
 
@@ -304,7 +313,11 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 
 
 			inputContainer.addItem(label, {
-				CSSStyles: css
+				CSSStyles: {
+					'padding': '0px',
+					'padding-right': '5px',
+					'margin': '0px'
+				}
 			});
 			if (currentColumn && modelParameter.type !== currentColumn?.dataType) {
 				inputContainer.addItem(warningButton, {
@@ -328,36 +341,11 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 		return [];
 	}
 
-	/*
-	private createWarningInfo(): azdata.Component {
-		const warningInfo = this._modelBuilder.text().withProperties({
-			value: 'The data type of the source table column does not match the required input field’s type.'
-		}).component();
-		const warningTitle = this._modelBuilder.text().withProperties({
-			value: 'Differences in data type'
-		}).component();
-		const warningDiv = this._modelBuilder.flexContainer().withItems([
-			warningTitle,
-			warningInfo
-		], {
-			CSSStyles: {
-				'padding-bottom': '10px'
-			}
-		}).withLayout({
-			flexFlow: 'column',
-			justifyContent: 'flex-start',
-			width: 200,
-			height: 100
-
-		}).component();
-		return warningDiv;
-	}
-	*/
-
 	private createWarningButton(): azdata.ButtonComponent {
 		const warningButton = this._modelBuilder.button().withProperties({
 			width: '10px',
 			height: '10px',
+			title: constants.columnDataTypeMismatchWarning,
 			iconPath: {
 				dark: this.asAbsolutePath('images/dark/warning_notification_inverse.svg'),
 				light: this.asAbsolutePath('images/light/warning_notification.svg'),
