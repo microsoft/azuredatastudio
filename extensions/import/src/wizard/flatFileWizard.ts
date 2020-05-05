@@ -50,10 +50,10 @@ export class FlatFileWizard {
 			}
 		} else {
 			if (currentConnection.providerId !== 'MSSQL') {
-				vscode.window.showErrorMessage(localize('import.needSQLConnection', "The import extension currently support Microsoft SQL databases only. Please connect to a Microsoft SQL database before using this wizard."));
+				vscode.window.showErrorMessage(localize('import.needSQLConnection', "SQL Server Import extension does not support this type of connection"));
 				return;
 			}
-			connectionId = currentConnection.providerId;
+			connectionId = currentConnection.connectionId;
 		}
 
 
