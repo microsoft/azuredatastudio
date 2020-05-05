@@ -13,5 +13,9 @@
 	"sqlDatabaseProjects.newView": "Add View",
 	"sqlDatabaseProjects.newStoredProcedure": "Add Stored Procedure",
 	"sqlDatabaseProjects.newItem": "Add Item...",
-	"sqlDatabaseProjects.newFolder": "Add Folder"
+	"sqlDatabaseProjects.newFolder": "Add Folder",
+
+
+	"sqlDatabaseProjects.Settings": "Database Projects",
+	"sqlDatabaseProjects.netCoreInstallLocation": "Full Path to .Net Core SDK on the machine."
 }

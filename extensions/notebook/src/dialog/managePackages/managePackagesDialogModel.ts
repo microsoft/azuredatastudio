@@ -133,7 +133,7 @@ export class ManagePackagesDialogModel {
 	 * Returns the default location
 	 */
 	public get defaultLocation(): string | undefined {
-		return this.options.defaultLocation || this.targetLocationTypes.length > 0 ? this.targetLocationTypes[0] : undefined;
+		return this.options.defaultLocation || (this.targetLocationTypes.length > 0 ? this.targetLocationTypes[0] : undefined);
 	}
 
 	/**

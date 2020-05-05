@@ -12,6 +12,7 @@ import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewPro
 import { getErrorMessage } from '../common/utils';
 import { ProjectsController } from './projectController';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
+import { NetCoreTool } from '../tools/netcoreTool';
 
 const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
 
@@ -22,10 +23,12 @@ export default class MainController implements vscode.Disposable {
 	protected _context: vscode.ExtensionContext;
 	protected dbProjectTreeViewProvider: SqlDatabaseProjectTreeViewProvider = new SqlDatabaseProjectTreeViewProvider();
 	protected projectsController: ProjectsController;
+	protected netcoreTool: NetCoreTool;
 
 	public constructor(context: vscode.ExtensionContext) {
 		this._context = context;
 		this.projectsController = new ProjectsController(this.dbProjectTreeViewProvider);
+		this.netcoreTool = new NetCoreTool();
 	}
 
 	public get extensionContext(): vscode.ExtensionContext {
@@ -57,6 +60,9 @@ export default class MainController implements vscode.Disposable {
 		this.extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(SQL_DATABASE_PROJECTS_VIEW_ID, this.dbProjectTreeViewProvider));
 
 		await templates.loadTemplates(path.join(this._context.extensionPath, 'resources', 'templates'));
+
+		// ensure .net core is installed
+		this.netcoreTool.findOrInstallNetCore();
 	}
 
 	/**
