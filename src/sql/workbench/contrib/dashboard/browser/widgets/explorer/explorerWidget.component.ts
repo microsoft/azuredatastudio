@@ -3,28 +3,29 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/explorerWidget';
-
-import { Component, Inject, forwardRef, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
-import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
-//import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-//import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { InputBox, IInputOptions } from 'vs/base/browser/ui/inputbox/inputBox';
-import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
-import * as nls from 'vs/nls';
-//import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
-import { Delayer } from 'vs/base/common/async';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
-import { ObjectMetadataWrapper } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/objectMetadataWrapper';
-import { alert } from 'vs/base/browser/ui/aria/aria';
-import { isStringArray } from 'vs/base/common/types';
+import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { DatabaseInfo } from 'azdata';
+import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
+import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { getFlavor } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
+import { ConnectionProfilePropertyName, ExplorerTable, NameProperty } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTable';
+import { ObjectMetadataWrapper } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/objectMetadataWrapper';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
+import { alert } from 'vs/base/browser/ui/aria/aria';
+import { IInputOptions, InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
+import { Delayer } from 'vs/base/common/async';
+import { assign } from 'vs/base/common/objects';
+import { isStringArray } from 'vs/base/common/types';
+import 'vs/css!./media/explorerWidget';
+import * as nls from 'vs/nls';
+import { IMenuService } from 'vs/platform/actions/common/actions';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ExplorerTable, NameProperty } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTable';
+import { IEditorProgressService } from 'vs/platform/progress/common/progress';
+import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 @Component({
 	selector: 'explorer-widget',
@@ -40,12 +41,16 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private readonly _bootstrap: CommonServiceInterface,
+		@Inject(forwardRef(() => Router)) private readonly _router: Router,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
 		@Inject(forwardRef(() => ElementRef)) private readonly _el: ElementRef,
 		@Inject(IWorkbenchThemeService) private readonly themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private readonly contextViewService: IContextViewService,
 		@Inject(ILogService) private readonly logService: ILogService,
-		//@Inject(ICapabilitiesService) private readonly capabilitiesService: ICapabilitiesService,
+		@Inject(IContextMenuService) private readonly contextMenuService: IContextMenuService,
+		@Inject(IMenuService) private readonly menuService: IMenuService,
+		@Inject(IContextKeyService) private readonly contextKeyService: IContextKeyService,
+		@Inject(IEditorProgressService) private readonly progressService: IEditorProgressService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
 	) {
 		super(changeRef);
@@ -66,7 +71,16 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
 		const serverInfo = this._bootstrap.connectionManagementService.connectionInfo.serverInfo;
 		const flavorProperties = getFlavor(serverInfo, this.logService, this._bootstrap.connectionManagementService.connectionInfo.providerId);
-		this._table = new ExplorerTable(this._tableContainer.nativeElement, this.themeService, this._config.context, flavorProperties);
+		this._table = new ExplorerTable(this._tableContainer.nativeElement,
+			this._router,
+			this._config.context,
+			flavorProperties,
+			this._bootstrap,
+			this.themeService,
+			this.contextMenuService,
+			this.menuService,
+			this.contextKeyService,
+			this.progressService);
 		this._register(this._input);
 		this._register(attachInputBoxStyler(this._input, this.themeService));
 		this._register(this._table);
@@ -106,12 +120,14 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 						});
 					}
 
-					// const profileData = data.map(d => {
-					// 	const profile = new ConnectionProfile(this.capabilitiesService, currentProfile);
-					// 	profile.databaseName = d.options['name'];
-					// 	return profile;
-					// });
-					this.updateTable(data.map(item => item.options));
+					const currentProfile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
+					this.updateTable(data.map(d => {
+						const item = assign({}, d.options);
+						const profile = currentProfile.toIConnectionProfile();
+						profile.databaseName = d.options[NameProperty];
+						item[ConnectionProfilePropertyName] = profile;
+						return item;
+					}));
 				},
 				error => {
 					this.showErrorMessage(nls.localize('dashboard.explorer.databaseError', "Unable to load databases"));

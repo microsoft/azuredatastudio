@@ -3,20 +3,34 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Table } from 'sql/base/browser/ui/table/table';
-import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
+import { Router } from '@angular/router';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
-import * as nls from 'vs/nls';
-import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { status } from 'vs/base/browser/ui/aria/aria';
-import * as DOM from 'vs/base/browser/dom';
-import { ObjectListViewProperty, FlavorProperties } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
+import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { TextWidthIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
+import { Table } from 'sql/base/browser/ui/table/table';
+import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { MetadataType } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
+import { BaseActionContext, ManageActionContext } from 'sql/workbench/browser/actions';
+import { FlavorProperties, ObjectListViewProperty } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
+import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
+import { ObjectMetadataWrapper } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/objectMetadataWrapper';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
+import * as DOM from 'vs/base/browser/dom';
+import { status } from 'vs/base/browser/ui/aria/aria';
+import { IAction } from 'vs/base/common/actions';
+import { onUnexpectedError } from 'vs/base/common/errors';
 import { Disposable } from 'vs/base/common/lifecycle';
+import * as nls from 'vs/nls';
+import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IEditorProgressService } from 'vs/platform/progress/common/progress';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
+export const ConnectionProfilePropertyName: string = 'connection_profile';
 export const NameProperty: string = 'name';
 const IconClassProperty: string = 'iconClass';
 const NamePropertyDisplayText: string = nls.localize('dashboard.explorer.namePropertyDisplayValue', "Name");
@@ -26,12 +40,22 @@ const ShowActionsText: string = nls.localize('dashboard.explorer.actions', "Show
  * Table for explorer widget
  */
 export class ExplorerTable extends Disposable {
+	private readonly contextKey = new ItemContextKey(this.contextKeyService);
 	private _table: Table<Slick.SlickData>;
 	private _view: TableDataView<Slick.SlickData>;
 	private _actionsColumn: ButtonColumn<Slick.SlickData>;
 	private _filterStr: string;
 
-	constructor(private parentElement: HTMLElement, themeService: IThemeService, private context: string, private flavorProperties: FlavorProperties) {
+	constructor(private parentElement: HTMLElement,
+		private router: Router,
+		private context: string,
+		private flavorProperties: FlavorProperties,
+		private readonly bootStrapService: CommonServiceInterface,
+		themeService: IThemeService,
+		private readonly contextMenuService: IContextMenuService,
+		private readonly menuService: IMenuService,
+		private readonly contextKeyService: IContextKeyService,
+		private readonly progressService: IEditorProgressService) {
 		super();
 		this._table = new Table<Slick.SlickData>(parentElement, undefined, { forceFitColumns: true, rowHeight: 35 });
 		this._table.setSelectionModel(new RowSelectionModel());
@@ -42,7 +66,18 @@ export class ExplorerTable extends Disposable {
 			width: 40
 		});
 		this._table.registerPlugin(this._actionsColumn);
-		this._register(this._actionsColumn.onClick((item) => {
+		this._register(this._actionsColumn.onClick((args) => {
+			this.showContextMenu(args.item, args.position);
+		}));
+		this._register(this._table.onContextMenu((e) => {
+			if (e.cell) {
+				this.showContextMenu(this._view.getItem(e.cell.row), e.anchor);
+			}
+		}));
+		this._register(this._table.onDoubleClick((e) => {
+			if (e.cell) {
+				this.handleDoubleClick(this._view.getItem(e.cell.row));
+			}
 		}));
 		this._register(attachTableStyler(this._table, themeService));
 		this._view = new TableDataView<Slick.SlickData>(undefined, undefined, undefined, (data: Slick.SlickData[]): Slick.SlickData[] => {
@@ -56,6 +91,51 @@ export class ExplorerTable extends Disposable {
 			this._table.grid.invalidateAllRows();
 			this._table.updateRowCount();
 		}));
+	}
+
+	private showContextMenu(item: Slick.SlickData, anchor: HTMLElement | { x: number, y: number }): void {
+		const dataContext = (item instanceof ObjectMetadataWrapper) ? item : item[ConnectionProfilePropertyName] as ConnectionProfile;
+
+		this.contextKey.set({
+			resource: dataContext,
+			providerName: this.bootStrapService.connectionManagementService.connectionInfo.providerId,
+			isCloud: this.bootStrapService.connectionManagementService.connectionInfo.serverInfo.isCloud,
+			engineEdition: this.bootStrapService.connectionManagementService.connectionInfo.serverInfo.engineEditionId
+		});
+
+		let context: ManageActionContext | BaseActionContext;
+
+		if (dataContext instanceof ObjectMetadataWrapper) {
+			context = {
+				object: dataContext,
+				profile: this.bootStrapService.connectionManagementService.connectionInfo.connectionProfile
+			};
+		} else {
+			context = {
+				profile: dataContext,
+				uri: this.bootStrapService.getUnderlyingUri()
+			};
+		}
+
+		const menu = this.menuService.createMenu(MenuId.ExplorerWidgetContext, this.contextKeyService);
+		const primary: IAction[] = [];
+		const secondary: IAction[] = [];
+		const result = { primary, secondary };
+		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, this.contextMenuService, g => g === 'inline');
+
+		this.contextMenuService.showContextMenu({
+			getAnchor: () => anchor,
+			getActions: () => result.secondary,
+			getActionsContext: () => context
+		});
+	}
+
+	private handleDoubleClick(item: Slick.SlickData): void {
+		if (this.context === 'server') {
+			this.progressService.showWhile(this.bootStrapService.connectionManagementService.changeDatabase(item[NameProperty]).then(result => {
+				this.router.navigate(['database-dashboard']).catch(onUnexpectedError);
+			}));
+		}
 	}
 
 	public filter(filterStr: string): void {

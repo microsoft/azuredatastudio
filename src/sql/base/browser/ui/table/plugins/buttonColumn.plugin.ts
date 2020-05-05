@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TextWithIconColumnDefinition } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Emitter } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export interface ButtonColumnDefinition<T extends Slick.SlickData> extends TextWithIconColumnDefinition<T> {
 }
@@ -18,15 +18,17 @@ export interface ButtonColumnOptions {
 	id?: string;
 }
 
+export interface ButtonClickEventArgs<T extends Slick.SlickData> {
+	item: T;
+	position: { x: number, y: number };
+}
 
 export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> {
 	private _handler = new Slick.EventHandler();
 	private _definition: ButtonColumnDefinition<T>;
 	private _grid: Slick.Grid<T>;
-	private _onClick = new Emitter<T>();
-
+	private _onClick = new Emitter<ButtonClickEventArgs<T>>();
 	public onClick = this._onClick.event;
-
 
 	constructor(private options: ButtonColumnOptions) {
 		this._definition = {
@@ -54,7 +56,8 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 
 	private handleClick(args: Slick.OnClickEventArgs<T>): void {
 		if (this.shouldFireClickEvent(args.cell)) {
-			this.fireClickEvent(args.row);
+			this._grid.setActiveCell(args.row, args.cell);
+			this.fireClickEvent();
 		}
 	}
 
@@ -62,7 +65,8 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 		let event = new StandardKeyboardEvent(e);
 		if ((event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) && this.shouldFireClickEvent(args.cell)) {
 			event.stopPropagation();
-			this.fireClickEvent(args.row);
+			event.preventDefault();
+			this.fireClickEvent();
 		}
 	}
 
@@ -70,8 +74,18 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 		return this._definition;
 	}
 
-	private fireClickEvent(rowIndex: number): void {
-		this._onClick.fire(this._grid.getDataItem(rowIndex));
+	private fireClickEvent(): void {
+		const activeCell = this._grid.getActiveCell();
+		const activeCellPosition = this._grid.getActiveCellPosition();
+		if (activeCell && activeCellPosition) {
+			this._onClick.fire({
+				item: this._grid.getDataItem(activeCell.row),
+				position: {
+					x: (activeCellPosition.left + activeCellPosition.right) / 2,
+					y: (activeCellPosition.bottom + activeCellPosition.top) / 2
+				}
+			});
+		}
 	}
 
 	private shouldFireClickEvent(columnIndex: number): boolean {
