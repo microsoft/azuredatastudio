@@ -51,11 +51,11 @@ export default class MainController implements Disposable {
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.open', async () => { await this.openProjectFromFile(); });
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.close', (node: BaseProjectTreeItem) => { this.projectsController.closeProject(node); });
 
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.newScript', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPrompt(node, templates.script); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.newTable', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPrompt(node, templates.table); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.newView', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPrompt(node, templates.view); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.newStoredProcedure', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPrompt(node, templates.storedProcedure); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.newItem', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPrompt(node); });
+		this.apiWrapper.registerCommand('sqlDatabaseProjects.newScript', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.script); });
+		this.apiWrapper.registerCommand('sqlDatabaseProjects.newTable', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.table); });
+		this.apiWrapper.registerCommand('sqlDatabaseProjects.newView', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.view); });
+		this.apiWrapper.registerCommand('sqlDatabaseProjects.newStoredProcedure', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.storedProcedure); });
+		this.apiWrapper.registerCommand('sqlDatabaseProjects.newItem', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node); });
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.newFolder', async (node: BaseProjectTreeItem) => { await this.projectsController.addFolderPrompt(node); });
 
 		// init view

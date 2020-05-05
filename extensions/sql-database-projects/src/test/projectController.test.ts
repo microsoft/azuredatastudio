@@ -7,6 +7,7 @@ import * as should from 'should';
 import * as path from 'path';
 import * as os from 'os';
 import * as vscode from 'vscode';
+import * as TypeMoq from 'typemoq';
 import * as baselines from './baselines/baselines';
 import * as templates from '../templates/templates';
 import * as testUtils from './testUtils';
@@ -15,6 +16,7 @@ import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProje
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
 import { createContext, TestContext } from './testContext';
+import { Project } from '../models/project';
 
 let testContext: TestContext;
 
@@ -48,5 +50,20 @@ describe('ProjectsController: project controller operations', function (): void 
 
 		should(project.files.length).equal(9); // detailed sqlproj tests in their own test file
 		should(project.dataSources.length).equal(2); // detailed datasources tests in their own test file
+	});
+
+	it('Should return silently when no object name provided', async function (): Promise<void> {
+		for (const name of ['', '    ', undefined]) {
+			testContext.apiWrapper.reset();
+			testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(name));
+			testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { console.log('we throwin'); throw new Error(s); });
+
+			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+			const project = new Project('FakePath');
+
+			should(project.files.length).equal(0);
+			await projController.addItemPrompt(new Project('FakePath'), '', templates.script);
+			should(project.files.length).equal(0, 'Expected to return without throwing an exception or adding a file when an empty/undefined name is provided.');
+		}
 	});
 });

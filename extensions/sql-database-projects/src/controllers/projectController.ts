@@ -44,15 +44,16 @@ export class ProjectsController {
 			}
 		}
 
-		// Read project file
 		const newProject = new Project(projectFile.fsPath);
-		await newProject.readProjFile();
-		this.projects.push(newProject);
-
-		// Read datasources.json (if present)
-		const dataSourcesFilePath = path.join(path.dirname(projectFile.fsPath), constants.dataSourcesFileName);
 
 		try {
+			// Read project file
+			await newProject.readProjFile();
+			this.projects.push(newProject);
+
+			// Read datasources.json (if present)
+			const dataSourcesFilePath = path.join(path.dirname(projectFile.fsPath), constants.dataSourcesFileName);
+
 			newProject.dataSources = await dataSources.load(dataSourcesFilePath);
 		}
 		catch (err) {
@@ -120,16 +121,18 @@ export class ProjectsController {
 			return; // user cancelled
 		}
 
-		const relativeFolderPath = this.prependContextPath(treeNode, newFolderName);
+		const relativeFolderPath = path.join(this.getRelativePath(treeNode), newFolderName);
 
 		await project.addFolderItem(relativeFolderPath);
 
 		this.refreshProjectsTree();
 	}
 
-	public async addItemPrompt(treeNode: BaseProjectTreeItem, itemTypeName?: string) {
-		const project = this.getProjectContextFromTreeNode(treeNode);
+	public async addItemPromptFromNode(treeNode: BaseProjectTreeItem, itemTypeName?: string) {
+		await this.addItemPrompt(this.getProjectContextFromTreeNode(treeNode), this.getRelativePath(treeNode), itemTypeName);
+	}
 
+	public async addItemPrompt(project: Project, relativePath: string, itemTypeName?: string) {
 		if (!itemTypeName) {
 			const items: QuickPickItem[] = [];
 
@@ -147,7 +150,9 @@ export class ProjectsController {
 		}
 
 		const itemType = templates.projectScriptTypeMap()[itemTypeName.toLocaleLowerCase()];
-		const itemObjectName = await this.promptForNewObjectName(itemType, project);
+		let itemObjectName = await this.promptForNewObjectName(itemType, project);
+
+		itemObjectName = itemObjectName?.trim();
 
 		if (!itemObjectName) {
 			return; // user cancelled
@@ -156,7 +161,7 @@ export class ProjectsController {
 		// TODO: file already exists?
 
 		const newFileText = this.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName });
-		const relativeFilePath = this.prependContextPath(treeNode, itemObjectName + '.sql');
+		const relativeFilePath = path.join(relativePath, itemObjectName + '.sql');
 
 		const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
 
@@ -209,13 +214,8 @@ export class ProjectsController {
 		return itemObjectName;
 	}
 
-	private prependContextPath(treeNode: BaseProjectTreeItem, objectName: string): string {
-		if (treeNode instanceof FolderNode) {
-			return path.join(utils.trimUri(treeNode.root.uri, treeNode.uri), objectName);
-		}
-		else {
-			return objectName;
-		}
+	private getRelativePath(treeNode: BaseProjectTreeItem): string {
+		return treeNode instanceof FolderNode ? utils.trimUri(treeNode.root.uri, treeNode.uri) : '';
 	}
 
 	//#endregion
