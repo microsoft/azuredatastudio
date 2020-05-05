@@ -31,8 +31,8 @@ export interface FlavorProperties {
 	conditions?: Array<ConditionProperties>;
 	databaseProperties: Array<Property>;
 	serverProperties: Array<Property>;
-	databasesListProperties?: Array<ListViewProperty>;
-	objectsListProperties?: Array<ListViewProperty>;
+	databasesListProperties?: Array<ObjectListViewProperty>;
+	objectsListProperties?: Array<ObjectListViewProperty>;
 }
 
 export interface ConditionProperties {
@@ -53,7 +53,7 @@ export interface Property {
 	default?: string;
 }
 
-export interface ListViewProperty extends Property {
+export interface ObjectListViewProperty extends Property {
 	widthWeight?: number;
 }
 

@@ -19,23 +19,12 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { ObjectMetadataWrapper } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/objectMetadataWrapper';
-import { status, alert } from 'vs/base/browser/ui/aria/aria';
+import { alert } from 'vs/base/browser/ui/aria/aria';
 import { isStringArray } from 'vs/base/common/types';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
-import { Table } from 'sql/base/browser/ui/table/table';
 import { DatabaseInfo } from 'azdata';
-import { getFlavor, ListViewProperty } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
+import { getFlavor } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 import { ILogService } from 'vs/platform/log/common/log';
-import * as DOM from 'vs/base/browser/dom';
-import { TextWidthIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
-import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
-import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
-import { MetadataType } from 'sql/platform/connection/common/connectionManagement';
-
-const NameProperty: string = 'name';
-const NamePropertyDisplayText: string = nls.localize('dashboard.explorer.namePropertyDisplayValue', "Name");
-const IconClassProperty: string = 'iconClass';
-const ShowActionsText: string = nls.localize('dashboard.explorer.actions', "Show Actions");
+import { ExplorerTable, NameProperty } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTable';
 
 @Component({
 	selector: 'explorer-widget',
@@ -43,11 +32,8 @@ const ShowActionsText: string = nls.localize('dashboard.explorer.actions', "Show
 })
 export class ExplorerWidget extends DashboardWidget implements IDashboardWidget, OnInit {
 	private _input: InputBox;
-	private _table: Table<Slick.SlickData>;
+	private _table: ExplorerTable;
 	private _filterDelayer = new Delayer<void>(200);
-	private _propertyList: ListViewProperty[] = [];
-	private _actionsColumn: ButtonColumn<Slick.SlickData>;
-	//private _typeIconColumn: IconColumn<Slick.SlickData>;
 
 	@ViewChild('input') private _inputContainer: ElementRef;
 	@ViewChild('table') private _tableContainer: ElementRef;
@@ -71,87 +57,35 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	ngOnInit() {
 		this._inited = true;
 
-		const placeholderLabel = this._config.context === 'database' ? nls.localize('seachObjects', "Search by name of type (a:, t:, v:, f:, or sp:)") : nls.localize('searchDatabases', "Search databases");
+		const placeholderLabel = this._config.context === 'database' ? nls.localize('seachObjects', "Search by name of type (t:, v:, f:, or sp:)") : nls.localize('searchDatabases', "Search databases");
 
 		const inputOptions: IInputOptions = {
 			placeholder: placeholderLabel,
 			ariaLabel: placeholderLabel
 		};
 		this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
-		this._register(this._input.onDidChange(e => {
-			this._filterDelayer.trigger(async () => {
-				// this._treeFilter.filterString = e;
-				// await this._tree.refresh();
-				const count = this._table.getData().getLength();
-				let message: string;
-				if (count === 0) {
-					message = nls.localize('explorerSearchNoMatchResultMessage', "No matching item found");
-				} else if (count === 1) {
-					message = nls.localize('explorerSearchSingleMatchResultMessage', "Filtered search list to 1 item");
-				} else {
-					message = nls.localize('explorerSearchMatchResultMessage', "Filtered search list to {0} items", count);
-				}
-				status(message);
-			});
-		}));
-		this._table = new Table(this._tableContainer.nativeElement, undefined, { forceFitColumns: true, rowHeight: 35 });
-		this._table.setSelectionModel(new RowSelectionModel());
-		this._actionsColumn = new ButtonColumn<Slick.SlickData>({
-			id: 'actions',
-			iconCssClass: 'toggle-more',
-			title: ShowActionsText,
-			width: 40
-		});
-		this._table.registerPlugin(this._actionsColumn);
-		this._register(this._actionsColumn.onClick((item) => {
-		}));
+		const serverInfo = this._bootstrap.connectionManagementService.connectionInfo.serverInfo;
+		const flavorProperties = getFlavor(serverInfo, this.logService, this._bootstrap.connectionManagementService.connectionInfo.providerId);
+		this._table = new ExplorerTable(this._tableContainer.nativeElement, this.themeService, this._config.context, flavorProperties);
 		this._register(this._input);
 		this._register(attachInputBoxStyler(this._input, this.themeService));
 		this._register(this._table);
-		this._register(attachTableStyler(this._table, this.themeService));
+		this._register(this._input.onDidChange(e => {
+			this._filterDelayer.trigger(async () => {
+				this._table.filter(e);
+			});
+		}));
 	}
 
 	private init(): void {
 		this.setLoadingStatus(true);
-		const serverInfo = this._bootstrap.connectionManagementService.connectionInfo.serverInfo;
-		const flavor = getFlavor(serverInfo, this.logService, this._bootstrap.connectionManagementService.connectionInfo.providerId);
 		if (this._config.context === 'database') {
 			this._register(subscriptionToDisposable(this._bootstrap.metadataService.metadata.subscribe(
 				data => {
 					if (data) {
-						if (flavor && flavor.objectsListProperties) {
-							this._propertyList = flavor.objectsListProperties;
-						} else {
-							this._propertyList = [{
-								displayName: NamePropertyDisplayText,
-								value: NameProperty,
-								widthWeight: 80
-							}, {
-								displayName: nls.localize('dashboard.explorer.objectTypeDisplayValue', "Type"),
-								value: 'metadataTypeName',
-								widthWeight: 20
-							}];
-						}
+
 						const objectData = ObjectMetadataWrapper.createFromObjectMetadata(data.objectMetadata);
 						objectData.sort(ObjectMetadataWrapper.sort);
-						objectData.forEach(item => {
-							let iconClass: string;
-							switch (item.metadataType) {
-								case MetadataType.Function:
-									iconClass = 'scalarvaluedfunction';
-									break;
-								case MetadataType.SProc:
-									iconClass = 'storedprocedure';
-									break;
-								case MetadataType.Table:
-									iconClass = 'table';
-									break;
-								case MetadataType.View:
-									iconClass = 'view';
-									break;
-							}
-							item[IconClassProperty] = iconClass;
-						});
 						this.updateTable(objectData);
 					}
 				},
@@ -177,20 +111,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 					// 	profile.databaseName = d.options['name'];
 					// 	return profile;
 					// });
-					if (flavor && flavor.databasesListProperties) {
-						this._propertyList = flavor.databasesListProperties;
-					} else {
-						this._propertyList = [{
-							displayName: NamePropertyDisplayText,
-							value: NameProperty,
-							widthWeight: 80
-						}];
-					}
-					const tableData = data.map(item => item.options);
-					tableData.forEach(item => {
-						item[IconClassProperty] = 'database-colored';
-					});
-					this.updateTable(tableData);
+					this.updateTable(data.map(item => item.options));
 				},
 				error => {
 					this.showErrorMessage(nls.localize('dashboard.explorer.databaseError', "Unable to load databases"));
@@ -199,63 +120,21 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		}
 	}
 
-	public refresh(): void {
-		this.init();
+	private updateTable(data: Slick.SlickData[]) {
+		this._table.setData(data);
+		this.setLoadingStatus(false);
 	}
 
-	private get columnDefinitions(): Slick.Column<Slick.SlickData>[] {
-		const initialWidth = DOM.getContentWidth(this._tableContainer.nativeElement);
-		let totalColumnWidthWeight: number = 0;
-		this._propertyList.forEach(p => {
-			if (p.widthWeight) {
-				totalColumnWidthWeight += p.widthWeight;
-			}
-		});
-
-		const columns: Slick.Column<Slick.SlickData>[] = this._propertyList.map(property => {
-			const columnWidth = property.widthWeight ? initialWidth * (property.widthWeight / totalColumnWidthWeight) : undefined;
-
-			if (property.value === NameProperty) {
-				const nameColumn = new TextWidthIconColumn({
-					id: property.value,
-					iconCssClassField: IconClassProperty,
-					width: columnWidth,
-					field: property.value,
-					name: property.displayName
-				});
-				return nameColumn.definition;
-			} else {
-				return <Slick.Column<Slick.SlickData>>{
-					id: property.value,
-					field: property.value,
-					name: property.displayName,
-					width: columnWidth
-				};
-			}
-		});
-
-		//columns.unshift(this._typeIconColumn.definition);
-		columns.push(this._actionsColumn.definition);
-
-		return columns;
+	public refresh(): void {
+		this._input.inputElement.value = '';
+		this.init();
 	}
 
 	public layout(): void {
 		if (this._inited) {
-			this._table.layout(new DOM.Dimension(
-				DOM.getContentWidth(this._tableContainer.nativeElement),
-				DOM.getContentHeight(this._tableContainer.nativeElement)));
-			this._table.columns = this.columnDefinitions;
+			this._table.layout();
 		}
 	}
-
-	private updateTable(data: object[]): void {
-		this._table.columns = this.columnDefinitions;
-		this._table.setData(data);
-		this._table.updateRowCount();
-		this.setLoadingStatus(false);
-	}
-
 
 	private showErrorMessage(message: string): void {
 		(<HTMLElement>this._el.nativeElement).innerText = message;
