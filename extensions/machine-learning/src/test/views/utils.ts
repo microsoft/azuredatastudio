@@ -239,7 +239,7 @@ export function createViewContext(): ViewTestContext {
 			try {
 				await handler(view);
 			} catch (err) {
-				throw err;
+				console.log(err);
 			}
 		},
 		onValidityChanged: undefined!,
@@ -304,7 +304,7 @@ export function createViewContext(): ViewTestContext {
 			try {
 				await handler(view);
 			} catch (err) {
-				throw err;
+				console.log(err);
 			}
 		},
 		modelView: undefined!,

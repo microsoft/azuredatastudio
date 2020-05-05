@@ -115,7 +115,8 @@ const modelParameters: ModelParameters = {
 };
 describe('Model Controller', () => {
 
-	it('Should open deploy model wizard successfully ', async function (): Promise<void> {
+
+	it('Should open import model wizard successfully ', async function (): Promise<void> {
 		let testContext = createContext();
 
 
@@ -125,16 +126,24 @@ describe('Model Controller', () => {
 			tableName: 'table',
 			schema: 'dbo'
 		}));
+		testContext.deployModelService.setup(x => x.storeRecentImportTable(TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		testContext.deployModelService.setup(x => x.getDeployedModels(TypeMoq.It.isAny())).returns(() => Promise.resolve(localModels));
+		testContext.deployModelService.setup(x => x.verifyConfigTable(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
+		testContext.deployModelService.setup(x => x.deployLocalModel(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
+		testContext.deployModelService.setup(x => x.updateModel(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+		testContext.deployModelService.setup(x => x.deleteModel(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+		testContext.deployModelService.setup(x => x.downloadModel(TypeMoq.It.isAny())).returns(() => Promise.resolve('path'));
 		testContext.predictService.setup(x => x.getDatabaseList()).returns(() => Promise.resolve(dbNames));
 		testContext.predictService.setup(x => x.getTableList(TypeMoq.It.isAny())).returns(() => Promise.resolve(tableNames));
 		testContext.azureModelService.setup(x => x.getAccounts()).returns(() => Promise.resolve(accounts));
+		testContext.azureModelService.setup(x => x.signInToAzure()).returns(() => Promise.resolve());
 		testContext.azureModelService.setup(x => x.getSubscriptions(TypeMoq.It.isAny())).returns(() => Promise.resolve(subscriptions));
 		testContext.azureModelService.setup(x => x.getGroups(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(groups));
 		testContext.azureModelService.setup(x => x.getWorkspaces(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(workspaces));
 		testContext.azureModelService.setup(x => x.getModels(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(models));
+		testContext.azureModelService.setup(x => x.downloadModel(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('path'));
 
-		const view = await controller.registerModel(undefined);
+		const view = await controller.importModel(undefined);
 		should.notEqual(view, undefined);
 	});
 
@@ -163,12 +172,15 @@ describe('Model Controller', () => {
 		testContext.predictService.setup(x => x.getTableColumnsList(TypeMoq.It.isAny())).returns(() => Promise.resolve(columnNames));
 		testContext.predictService.setup(x => x.serverSupportOnnxModel()).returns(() => Promise.resolve(true));
 		testContext.deployModelService.setup(x => x.loadModelParameters(TypeMoq.It.isAny())).returns(() => Promise.resolve(modelParameters));
+		testContext.deployModelService.setup(x => x.verifyConfigTable(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
+		testContext.deployModelService.setup(x => x.installDependencies()).returns(() => Promise.resolve());
 		testContext.azureModelService.setup(x => x.downloadModel(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('file'));
 		testContext.deployModelService.setup(x => x.downloadModel(TypeMoq.It.isAny())).returns(() => Promise.resolve('file'));
 
 		const view = await controller.predictModel();
 		should.notEqual(view, undefined);
 	});
+
 
 	it('Should show error message if onnx is not supported ', async function (): Promise<void> {
 		let testContext = createContext();
@@ -210,4 +222,5 @@ describe('Model Controller', () => {
 
 		should.notEqual(view, undefined);
 	});
+
 });

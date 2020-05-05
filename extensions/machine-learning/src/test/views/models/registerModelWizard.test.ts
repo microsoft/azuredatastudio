@@ -7,24 +7,78 @@ import * as azdata from 'azdata';
 import * as should from 'should';
 import 'mocha';
 import { createContext } from './utils';
-import { ListModelsEventName, ListAccountsEventName, ListSubscriptionsEventName, ListGroupsEventName, ListWorkspacesEventName, ListAzureModelsEventName, ModelSourceType, ListDatabaseNamesEventName, ListTableNamesEventName } from '../../../views/models/modelViewBase';
+import { ListModelsEventName, ListAccountsEventName, ListSubscriptionsEventName, ListGroupsEventName, ListWorkspacesEventName, ListAzureModelsEventName, ModelSourceType, ListDatabaseNamesEventName, ListTableNamesEventName, VerifyImportTableEventName } from '../../../views/models/modelViewBase';
 import { ImportedModel } from '../../../modelManagement/interfaces';
 import { azureResource } from '../../../typings/azure-resource';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { ViewBase } from '../../../views/viewBase';
 import { WorkspaceModel } from '../../../modelManagement/interfaces';
 import { ImportModelWizard } from '../../../views/models/manageModels/importModelWizard';
+import { DatabaseTable } from '../../../prediction/interfaces';
 
+let accounts: azdata.Account[] = [
+	{
+		key: {
+			accountId: '1',
+			providerId: ''
+		},
+		displayInfo: {
+			displayName: 'account',
+			userId: '',
+			accountType: '',
+			contextualDisplayName: ''
+		},
+		isStale: false,
+		properties: []
+	}
+];
+let subscriptions: azureResource.AzureResourceSubscription[] = [
+	{
+		name: 'subscription',
+		id: '2'
+	}
+];
+let groups: azureResource.AzureResourceResourceGroup[] = [
+	{
+		name: 'group',
+		id: '3'
+	}
+];
+let workspaces: Workspace[] = [
+	{
+		name: 'workspace',
+		id: '4'
+	}
+];
+let models: WorkspaceModel[] = [
+	{
+		id: '5',
+		name: 'model'
+	}
+];
+let localModels: ImportedModel[] = [
+	{
+		id: 1,
+		modelName: 'model',
+		table: {
+			databaseName: 'db',
+			tableName: 'tb',
+			schema: 'dbo'
+		}
+	}
+];
+
+let importTable: DatabaseTable = {
+	databaseName: 'db',
+	tableName: 'tb',
+	schema: 'dbo'
+};
 describe('Register Model Wizard', () => {
 	it('Should create view components successfully ', async function (): Promise<void> {
 		let testContext = createContext();
 
 		let view = new ImportModelWizard(testContext.apiWrapper.object, '');
-		view.importTable = {
-			databaseName: 'db',
-			tableName: 'table',
-			schema: 'dbo'
-		};
+		view.importTable = importTable;
 		await view.open();
 		should.notEqual(view.wizardView, undefined);
 		should.notEqual(view.modelSourcePage, undefined);
@@ -34,63 +88,19 @@ describe('Register Model Wizard', () => {
 		let testContext = createContext();
 
 		let view = new ImportModelWizard(testContext.apiWrapper.object, '');
-		view.importTable = {
-			databaseName: 'db',
-			tableName: 'tb',
-			schema: 'dbo'
-		};
+		view.importTable = importTable;
 		await view.open();
-		let accounts: azdata.Account[] = [
-			{
-				key: {
-					accountId: '1',
-					providerId: ''
-				},
-				displayInfo: {
-					displayName: 'account',
-					userId: '',
-					accountType: '',
-					contextualDisplayName: ''
-				},
-				isStale: false,
-				properties: []
-			}
-		];
-		let subscriptions: azureResource.AzureResourceSubscription[] = [
-			{
-				name: 'subscription',
-				id: '2'
-			}
-		];
-		let groups: azureResource.AzureResourceResourceGroup[] = [
-			{
-				name: 'group',
-				id: '3'
-			}
-		];
-		let workspaces: Workspace[] = [
-			{
-				name: 'workspace',
-				id: '4'
-			}
-		];
-		let models: WorkspaceModel[] = [
-			{
-				id: '5',
-				name: 'model'
-			}
-		];
-		let localModels: ImportedModel[] = [
-			{
-				id: 1,
-				modelName: 'model',
-				table: {
-					databaseName: 'db',
-					tableName: 'tb',
-					schema: 'dbo'
-				}
-			}
-		];
+		setEvents(view);
+
+		if (view.modelBrowsePage) {
+			view.modelBrowsePage.modelSourceType = ModelSourceType.Azure;
+		}
+		await view.refresh();
+		should.notEqual(view.azureModelsComponent?.data ,undefined);
+		should.notEqual(view.localModelsComponent?.data, undefined);
+	});
+
+	function setEvents(view: ImportModelWizard): void {
 		view.on(ListModelsEventName, () => {
 			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListModelsEventName), { data: localModels });
 		});
@@ -120,12 +130,8 @@ describe('Register Model Wizard', () => {
 		view.on(ListAzureModelsEventName, () => {
 			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListAzureModelsEventName), { data: models });
 		});
-
-		if (view.modelBrowsePage) {
-			view.modelBrowsePage.modelSourceType = ModelSourceType.Azure;
-		}
-		await view.refresh();
-		should.notEqual(view.azureModelsComponent?.data ,undefined);
-		should.notEqual(view.localModelsComponent?.data, undefined);
-	});
+		view.on(VerifyImportTableEventName, () => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(VerifyImportTableEventName), { data: view.importTable });
+		});
+	}
 });

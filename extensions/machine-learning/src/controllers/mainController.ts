@@ -102,7 +102,7 @@ export default class MainController implements vscode.Disposable {
 			await modelManagementController.manageRegisteredModels();
 		}));
 		this._apiWrapper.registerCommand(constants.mlImportModelCommand, (async () => {
-			await modelManagementController.registerModel(undefined);
+			await modelManagementController.importModel(undefined);
 		}));
 		this._apiWrapper.registerCommand(constants.mlsPredictModelCommand, (async () => {
 			await modelManagementController.predictModel();

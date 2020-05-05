@@ -9,7 +9,7 @@ import 'mocha';
 import { createContext } from './utils';
 import {
 	ListModelsEventName, ListAccountsEventName, ListSubscriptionsEventName, ListGroupsEventName, ListWorkspacesEventName,
-	ListAzureModelsEventName, ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, LoadModelParametersEventName, DownloadAzureModelEventName, DownloadRegisteredModelEventName, ModelSourceType
+	ListAzureModelsEventName, ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, LoadModelParametersEventName, DownloadAzureModelEventName, DownloadRegisteredModelEventName, ModelSourceType, VerifyImportTableEventName
 }
 	from '../../../views/models/modelViewBase';
 import { ImportedModel, ModelParameters } from '../../../modelManagement/interfaces';
@@ -172,6 +172,9 @@ describe('Predict Wizard', () => {
 		});
 		view.on(DownloadRegisteredModelEventName, () => {
 			view.sendCallbackRequest(ViewBase.getCallbackEventName(DownloadRegisteredModelEventName), { data: 'path' });
+		});
+		view.on(VerifyImportTableEventName, () => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(VerifyImportTableEventName), { data: view.importTable });
 		});
 		if (view.modelBrowsePage) {
 			view.modelBrowsePage.modelSourceType = ModelSourceType.Azure;

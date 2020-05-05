@@ -46,13 +46,13 @@ export class ModelManagementController extends ControllerBase {
 	}
 
 	/**
-	 * Opens the dialog for model registration
+	 * Opens the dialog for model import
 	 * @param parent parent if the view is opened from another view
 	 * @param controller controller
 	 * @param apiWrapper apiWrapper
 	 * @param root root folder path
 	 */
-	public async registerModel(importTable: DatabaseTable | undefined, parent?: ModelViewBase, controller?: ModelManagementController, apiWrapper?: ApiWrapper, root?: string): Promise<ModelViewBase> {
+	public async importModel(importTable: DatabaseTable | undefined, parent?: ModelViewBase, controller?: ModelManagementController, apiWrapper?: ApiWrapper, root?: string): Promise<ModelViewBase> {
 		controller = controller || this;
 		apiWrapper = apiWrapper || this._apiWrapper;
 		root = root || this._root;
@@ -64,6 +64,9 @@ export class ModelManagementController extends ControllerBase {
 		}
 
 		controller.registerEvents(view);
+		if (view.modelSourcePage?.data) {
+			view.modelSourceType = view.modelSourcePage?.data;
+		}
 
 		// Open view
 		//
@@ -160,7 +163,7 @@ export class ModelManagementController extends ControllerBase {
 		});
 		view.on(RegisterModelEventName, async (args) => {
 			const importTable = <DatabaseTable>args;
-			await this.executeAction(view, RegisterModelEventName, this.registerModel, importTable, view, this, this._apiWrapper, this._root);
+			await this.executeAction(view, RegisterModelEventName, this.importModel, importTable, view, this, this._apiWrapper, this._root);
 		});
 		view.on(EditModelEventName, async (args) => {
 			const model = <ImportedModel>args;
