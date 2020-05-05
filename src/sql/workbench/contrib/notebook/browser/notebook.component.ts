@@ -436,7 +436,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			addCodeCellButton,
 			[addCodeCellButton, addTextCellButton],
 			this.contextMenuService,
-			this.actionItemProvider,
+			undefined,
 			this._actionBar.actionRunner,
 			undefined,
 			'codicon notebook-button masked-pseudo masked-pseudo-after add-new dropdown-arrow',
