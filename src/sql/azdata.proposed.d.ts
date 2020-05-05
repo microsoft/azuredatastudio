@@ -213,14 +213,14 @@ declare module 'azdata' {
 		onTabChanged: vscode.Event<string>;
 
 		/**
-		 * update the tabs.
-		 * @param tabs new tabs
+		 * Sets the tabs for this dashboard, clearing out any existing ones first
+		 * @param tabs The tabs to set
 		 */
 		setTabs(tabs: (Tab | TabGroup)[]): void;
 
 		/**
-		 * Adds new tabs to the panel
-		 * @param tabs The new tabs to add
+		 * Adds the specified tabs to the end of the existing tab list
+		 * @param tabs The tabs to add
 		 */
 		addTabs(tabs: (Tab | TabGroup)[]): void;
 	}
@@ -352,9 +352,24 @@ declare module 'azdata' {
 
 	export namespace window {
 		export interface ModelViewDashboard {
+			/**
+			 *  Registers the initial set of tabs to populate the dashboard with
+			 * @param handler
+			 */
 			registerTabs(handler: (view: ModelView) => Thenable<(DashboardTab | DashboardTabGroup)[]>): void;
+			/**
+			 * Opens the dashboard editor
+			 */
 			open(): Thenable<void>;
+			/**
+			 * Sets the tabs for this dashboard, clearing out any existing ones first
+			 * @param tabs The tabs to set
+			 */
 			setTabs(tabs: (DashboardTab | DashboardTabGroup)[]): void;
+			/**
+			 * Adds the specified tabs to the end of the existing tab list
+			 * @param tabs The tabs to add
+			 */
 			addTabs(tabs: (DashboardTab | DashboardTabGroup)[]): void;
 		}
 
