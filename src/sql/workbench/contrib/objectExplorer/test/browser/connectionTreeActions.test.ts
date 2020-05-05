@@ -31,9 +31,10 @@ import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/t
 import { UNSAVED_GROUP_ID, mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { $ } from 'vs/base/browser/dom';
 import { OEManageConnectionAction } from 'sql/workbench/contrib/dashboard/browser/dashboardActions';
-import { IViewsService, IView } from 'vs/workbench/common/views';
+import { IViewsService, IView, ViewContainerLocation, ViewContainer } from 'vs/workbench/common/views';
 import { ConsoleLogService } from 'vs/platform/log/common/log';
 import { IProgressIndicator } from 'vs/platform/progress/common/progress';
+import { IPaneComposite } from 'vs/workbench/common/panecomposite';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -110,6 +111,19 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 
 		const viewsService = new class implements IViewsService {
+			onDidChangeViewContainerVisibility: Event<{ id: string; visible: boolean; location: ViewContainerLocation; }>;
+			isViewContainerVisible(id: string): boolean {
+				throw new Error('Method not implemented.');
+			}
+			openViewContainer(id: string, focus?: boolean): Promise<IPaneComposite> {
+				throw new Error('Method not implemented.');
+			}
+			closeViewContainer(id: string): void {
+				throw new Error('Method not implemented.');
+			}
+			getVisibleViewContainer(location: ViewContainerLocation): ViewContainer {
+				throw new Error('Method not implemented.');
+			}
 			getProgressIndicator(id: string): IProgressIndicator {
 				throw new Error('Method not implemented.');
 			}
