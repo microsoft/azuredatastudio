@@ -111,6 +111,9 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 
 		const viewsService = new class implements IViewsService {
+			getViewProgressIndicator(id: string): IProgressIndicator {
+				throw new Error('Method not implemented.');
+			}
 			onDidChangeViewContainerVisibility: Event<{ id: string; visible: boolean; location: ViewContainerLocation; }>;
 			isViewContainerVisible(id: string): boolean {
 				throw new Error('Method not implemented.');
