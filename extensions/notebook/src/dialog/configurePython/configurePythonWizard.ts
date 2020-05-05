@@ -127,18 +127,14 @@ export class ConfigurePythonWizard {
 		return this.setupComplete.promise;
 	}
 
+	public async close(): Promise<void> {
+		await this.wizard.close();
+	}
+
 	public showErrorMessage(errorMsg: string) {
-		this.showStatusMessage(errorMsg, azdata.window.MessageLevel.Error);
-	}
-
-	public showInfoMessage(infoMsg: string) {
-		this.showStatusMessage(infoMsg, azdata.window.MessageLevel.Information);
-	}
-
-	private showStatusMessage(message: string, level: azdata.window.MessageLevel) {
 		this.wizard.message = <azdata.window.DialogMessage>{
-			text: message,
-			level: level
+			text: errorMsg,
+			level: azdata.window.MessageLevel.Error
 		};
 	}
 
