@@ -292,7 +292,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this._pythonExecutable = JupyterServerInstallation.getPythonExePath(this._pythonInstallationPath, this._usingExistingPython);
 		this.pythonBinPath = path.join(pythonSourcePath, pythonBinPathSuffix);
 
-		this._usingConda = this.checkCondaExists();
+		this._usingConda = this.isCondaInstalled();
 
 		// Store paths to python libraries required to run jupyter.
 		this.pythonEnvVarPath = process.env['PATH'];
@@ -590,6 +590,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public async getInstalledPipPackages(): Promise<PythonPkgDetails[]> {
+		if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
+			return [];
+		}
+
 		try {
 			let cmd = `"${this.pythonExecutable}" -m pip list --format=json`;
 			let packagesInfo = await this.executeBufferedCommand(cmd);
@@ -623,6 +627,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public async getInstalledCondaPackages(): Promise<PythonPkgDetails[]> {
+		if (!this.isCondaInstalled()) {
+			return [];
+		}
+
 		try {
 			let condaExe = this.getCondaExePath();
 			let cmd = `"${condaExe}" list --json`;
@@ -691,7 +699,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		return this._usingConda;
 	}
 
-	private checkCondaExists(): boolean {
+	private isCondaInstalled(): boolean {
 		if (!this._usingExistingPython) {
 			return false;
 		}
