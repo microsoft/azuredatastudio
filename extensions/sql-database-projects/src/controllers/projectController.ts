@@ -17,19 +17,24 @@ import { promises as fs } from 'fs';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
+import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
+import { BuildHelper } from '../tools/buildHelper';
 
 /**
  * Controller for managing project lifecycle
  */
 export class ProjectsController {
 	private projectTreeViewProvider: SqlDatabaseProjectTreeViewProvider;
+	private netCoreTool: NetCoreTool;
+	private buildHelper: BuildHelper;
 
 	projects: Project[] = [];
 
-	constructor(projTreeViewProvider: SqlDatabaseProjectTreeViewProvider) {
+	constructor(projTreeViewProvider: SqlDatabaseProjectTreeViewProvider, context?: vscode.ExtensionContext) {
 		this.projectTreeViewProvider = projTreeViewProvider;
+		this.netCoreTool = new NetCoreTool();
+		this.buildHelper = new BuildHelper(context);
 	}
-
 
 	public refreshProjectsTree() {
 		this.projectTreeViewProvider.load(this.projects);
@@ -163,6 +168,30 @@ export class ProjectsController {
 		vscode.commands.executeCommand('vscode.open', newEntry.fsUri);
 
 		this.refreshProjectsTree();
+	}
+
+	public async buildProject(treeNode: BaseProjectTreeItem): Promise<Boolean> {
+		// Check .net core installation
+		if (!this.netCoreTool.findOrInstallNetCore()) {
+			return false;
+		}
+
+		// Check mssql extension for project dlls (tracking issue #10273)
+		if (!this.buildHelper.extensionBuildDirPath) {
+			await this.buildHelper.createBuildDirFolder();
+		}
+
+		const project = this.getProjectContextFromTreeNode(treeNode);
+
+		let options: DotNetCommandOptions = {
+			commandTitle: 'Build',
+			workingDirectory: project.projectFolderPath,
+			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath)
+		};
+
+		await this.netCoreTool.runDotnetCommand(options);
+
+		return true;
 	}
 
 	//#region Helper methods
