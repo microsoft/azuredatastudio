@@ -3196,7 +3196,7 @@
 					},
 					"versions": [
 						{
-							"version": "1.0.0",
+							"version": "0.1.0",
 							"lastUpdated": "05/05/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
@@ -3248,7 +3248,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 54
+							"count": 55
 						}
 					]
 				}
