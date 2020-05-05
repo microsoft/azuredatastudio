@@ -355,7 +355,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	private updateModelServerCapabilities(model: IConnectionProfile) {
-
 		if (this._model) {
 			this._model.dispose();
 		}
