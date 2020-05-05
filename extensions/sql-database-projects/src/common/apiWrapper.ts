@@ -79,7 +79,7 @@ export class ApiWrapper {
 		return vscode.workspace.getConfiguration(section, resource);
 	}
 
-	public get workspaceFolders(): readonly vscode.WorkspaceFolder[] | undefined {
+	public workspaceFolders(): readonly vscode.WorkspaceFolder[] | undefined {
 		return vscode.workspace.workspaceFolders;
 	}
 

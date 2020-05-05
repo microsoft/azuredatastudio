@@ -58,7 +58,6 @@ export class ProjectsController {
 		catch (err) {
 			if (err instanceof dataSources.NoDataSourcesFileError) {
 				// TODO: prompt to create new datasources.json; for now, swallow
-				console.log(`No ${constants.dataSourcesFileName} file found.`);
 			}
 			else {
 				throw err;

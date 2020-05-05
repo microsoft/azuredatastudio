@@ -8,7 +8,7 @@ import * as constants from '../common/constants';
 import * as path from 'path';
 
 
-import { Uri, Disposable, ExtensionContext } from 'vscode';
+import { Uri, Disposable, ExtensionContext, WorkspaceFolder } from 'vscode';
 import { ApiWrapper } from '../common/apiWrapper';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { getErrorMessage } from '../common/utils';
@@ -101,6 +101,8 @@ export default class MainController implements Disposable {
 				// TODO: Smarter way to suggest a name.  Easy if we prompt for location first, but that feels odd...
 			});
 
+			newProjName = newProjName?.trim();
+
 			if (!newProjName) {
 				// TODO: is this case considered an intentional cancellation (shouldn't warn) or an error case (should warn)?
 				this.apiWrapper.showErrorMessage(constants.projectNameRequired);
@@ -111,7 +113,7 @@ export default class MainController implements Disposable {
 				canSelectFiles: false,
 				canSelectFolders: true,
 				canSelectMany: false,
-				defaultUri: this.apiWrapper.workspaceFolders ? this.apiWrapper.workspaceFolders[0].uri : undefined
+				defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined
 			});
 
 			if (!selectionResult) {
