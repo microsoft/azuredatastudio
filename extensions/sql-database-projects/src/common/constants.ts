@@ -25,11 +25,16 @@ export const deployDialogOkButtonText = localize('deployDialogOkButtonText', "De
 export const cancelButtonText = localize('cancelButtonText', "Cancel");
 export const targetDatabaseSettings = localize('targetDatabaseSettings', "Target Database Settings");
 export const databaseNameLabel = localize('databaseNameLabel', "Database");
-export const deployScriptNameLabel: string = localize('deployScriptName', "Deploy script name");
-export const generateScriptButtonText: string = localize('generateScriptButtonText', "Generate Script");
-export const targetConnectionLabel: string = localize('targetConnectionLabel', "Target Connection");
-export const selectConnectionButtonText: string = localize('selectConnectionButtonText', "Select Connection");
-export const clearButtonText: string = localize('clearButtonText', "Clear");
+export const deployScriptNameLabel = localize('deployScriptName', "Deploy script name");
+export const generateScriptButtonText = localize('generateScriptButtonText', "Generate Script");
+export const targetConnectionLabel = localize('targetConnectionLabel', "Target Connection");
+export const editConnectionButtonText = localize('editConnectionButtonText', "Edit");
+export const clearButtonText = localize('clearButtonText', "Clear");
+export const dataSourceRadioButtonLabel = localize('dataSourceRadioButtonLabel', "Data sources");
+export const connectionRadioButtonLabel = localize('connectionRadioButtonLabel', "Connections");
+export const selectConnectionRadioButtonsTitle = localize('selectconnectionRadioButtonsTitle', "Specify connection from:");
+export const noDataSourcesText = localize('noDataSourcesText', "No data sources");
+export const dataSourceDropdownTitle = localize('dataSourceDropdownTitle', "Data source");
 
 // Error messages
 
