@@ -520,6 +520,9 @@ Includes non-masked style declarations. */
 	background-image: url('ellipsis-blue.svg');
 }
 
+.database-colored.codicon {
+	background-image: url("database_colored.svg");
+}
 
 
 .small {

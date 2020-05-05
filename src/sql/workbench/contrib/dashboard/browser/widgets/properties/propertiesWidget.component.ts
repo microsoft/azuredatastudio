@@ -16,6 +16,8 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { PropertiesContainer, PropertyItem } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
+import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { PROPERTIES_CONTAINER_PROPERTY_NAME, PROPERTIES_CONTAINER_PROPERTY_VALUE } from 'vs/workbench/common/theme';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
@@ -244,3 +246,22 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		return val;
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+
+	const propertyNameColor = theme.getColor(PROPERTIES_CONTAINER_PROPERTY_NAME);
+	if (propertyNameColor) {
+		collector.addRule(`
+		properties-widget .propertyName,
+		properties-widget .splitter {
+			color: ${propertyNameColor}
+		}`);
+	}
+
+	const propertyValueColor = theme.getColor(PROPERTIES_CONTAINER_PROPERTY_VALUE);
+	if (propertyValueColor) {
+		collector.addRule(`properties-widget .propertyValue {
+			color: ${propertyValueColor}
+		}`);
+	}
+});

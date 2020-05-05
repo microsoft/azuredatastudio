@@ -323,7 +323,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private table: Table<T>;
 	private actionBar: ActionBar;
 	private container = document.createElement('div');
-	private selectionModel = new CellSelectionModel();
+	private selectionModel = new CellSelectionModel<T>();
 	private styles: ITableStyles;
 	private currentHeight: number;
 	private dataProvider: AsyncDataProvider<T>;
@@ -461,7 +461,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			this.renderGridDataRowsRange(startIndex, count);
 		});
 		this.rowNumberColumn = new RowNumberColumn({ numberOfRows: this.resultSet.rowCount });
-		let copyHandler = new CopyKeybind();
+		let copyHandler = new CopyKeybind<T>();
 		copyHandler.onCopy(e => {
 			new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false).run(this.generateContext());
 		});

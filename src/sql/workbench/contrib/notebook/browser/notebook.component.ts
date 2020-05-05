@@ -397,7 +397,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	protected initActionBar(): void {
 		let kernelContainer = document.createElement('li');
-		let kernelDropdown = new KernelsDropdown(kernelContainer, this.contextViewService, this.modelReady);
+		let kernelDropdown = this.instantiationService.createInstance(KernelsDropdown, kernelContainer, this.contextViewService, this.modelReady);
 		kernelDropdown.render(kernelContainer);
 		attachSelectBoxStyler(kernelDropdown, this.themeService);
 

@@ -48,7 +48,7 @@ export class StatusUpdater extends lifecycle.Disposable implements ext.IWorkbenc
 		lifecycle.dispose(this.badgeHandle);
 		let numOfInProgressTask: number = this.taskService.getNumberOfInProgressTasks();
 		let badge: NumberBadge = new NumberBadge(numOfInProgressTask, n => localize('inProgressTasksChangesBadge', "{0} in progress tasks", n));
-		this.badgeHandle = this.activityBarService.showActivity(TASKS_CONTAINER_ID, badge, 'taskhistory-viewlet-label');
+		this.badgeHandle = this.activityBarService.showViewContainerActivity(TASKS_CONTAINER_ID, { badge, clazz: 'taskhistory-viewlet-label' });
 	}
 
 	public getId(): string {
