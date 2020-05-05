@@ -2,13 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { nb } from 'azdata';
 import { localize } from 'vs/nls';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
 
-const runNotebookDisabled = localize('runNotebookDisabled', "Cannot run cells as no kernel has been configured");
 const noKernel: string = localize('noKernel', "No Kernel");
+const runNotebookDisabled = localize('runNotebookDisabled', "Cannot run cells as no kernel has been configured");
 
 let noKernelSpec: nb.IKernelSpec = ({
 	name: noKernel,
