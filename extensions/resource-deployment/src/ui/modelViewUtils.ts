@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import * as azurecore from '../../../azurecore/src/azurecore';
 import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
-import { AzureAccountFieldInfo, AzureLocationsFieldInfo, DialogInfoBase, FieldInfo, FieldType, FontStyle, FontWeight, LabelPosition, PageInfoBase, SectionInfo, KubeClusterContextFieldInfo } from '../interfaces';
+import { AzureAccountFieldInfo, AzureLocationsFieldInfo, DialogInfoBase, FieldInfo, FieldType, FontStyle, FontWeight, LabelPosition, PageInfoBase, SectionInfo, KubeClusterContextFieldInfo, CSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
 import { getDateTimeString, getErrorMessage } from '../utils';
@@ -80,7 +80,7 @@ interface RadioOptionsInputs {
 
 interface ReadOnlyFieldInputs {
 	label: azdata.TextComponent;
-	text: azdata.TextComponent;
+	text?: azdata.TextComponent;
 }
 
 interface KubeClusterContextFieldContext extends FieldContext {
@@ -114,8 +114,12 @@ export function createTextInput(view: azdata.ModelView, inputInfo: { defaultValu
 	}).component();
 }
 
-export function createLabel(view: azdata.ModelView, info: { text: string, description?: string, required?: boolean, width?: string, fontStyle?: FontStyle, fontWeight?: FontWeight, links?: azdata.LinkArea[], color?: string }): azdata.TextComponent {
-	const cssStyles: { [key: string]: string } = { 'font-style': info.fontStyle || 'normal', 'font-weight': info.fontWeight || 'normal' };
+export function createLabel(view: azdata.ModelView, info: { text: string, description?: string, required?: boolean, width?: string, fontStyle?: FontStyle, fontWeight?: FontWeight, links?: azdata.LinkArea[], color?: string, cssStyles?: CSSStyles }): azdata.TextComponent {
+	let cssStyles: CSSStyles = { 'font-style': info.fontStyle || 'normal', 'font-weight': info.fontWeight || 'normal'};
+	if (info.cssStyles !== undefined) {
+		cssStyles = Object.assign(info.cssStyles, cssStyles);
+	}
+
 	if (info.color !== undefined) {
 		cssStyles['color'] = info.color;
 	}
@@ -245,7 +249,7 @@ export function createSection(context: SectionContext): azdata.GroupContainer {
 	} else if (context.sectionInfo.rows) {
 		context.sectionInfo.rows.forEach(rowInfo => {
 			const rowItems: azdata.Component[] = [];
-			processFields(rowInfo.fields, rowItems, context, context.sectionInfo.spaceBetweenFields || '50px');
+			processFields(rowInfo.fields, rowItems, context, context.sectionInfo.spaceBetweenFields === undefined ? '50px' : context.sectionInfo.spaceBetweenFields);
 			const row = createFlexContainer(context.view, rowItems, true, context.sectionInfo.rowWidth, context.sectionInfo.rowHeight, context.sectionInfo.rowAlignItems);
 			components.push(row);
 		});
@@ -304,12 +308,15 @@ export function createGroupContainer(view: azdata.ModelView, items: azdata.Compo
 	return view.modelBuilder.groupContainer().withItems(items).withLayout(layout).component();
 }
 
-function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata.Component[], label: azdata.Component, input: azdata.Component, fieldInfo: FieldInfo, additionalComponents?: azdata.Component[]) {
-	const inputs = [label, input];
+function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata.Component[], label: azdata.Component, input: azdata.Component | undefined, fieldInfo: FieldInfo, additionalComponents?: azdata.Component[]) {
+	const inputs: azdata.Component[] = [label];
+	if (input !== undefined) {
+		inputs.push(input);
+	}
 	if (additionalComponents && additionalComponents.length > 0) {
 		inputs.push(...additionalComponents);
 	}
-	if (fieldInfo.labelPosition && fieldInfo.labelPosition === LabelPosition.Left) {
+	if (inputs.length > 0 && fieldInfo.labelPosition && fieldInfo.labelPosition === LabelPosition.Left) {
 		const row = createFlexContainer(view, inputs, true, fieldInfo.rowWidth, fieldInfo.rowHeight, fieldInfo.rowAlignItems);
 		components.push(row);
 	} else {
@@ -359,13 +366,16 @@ function processField(context: FieldContext): void {
 		case FieldType.KubeClusterContextPicker:
 			processKubeConfigClusterPickerField(context);
 			break;
+		case FieldType.LinkedText:
+			processLinkedTextField(context);
+			break;
 		default:
 			throw new Error(localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", context.fieldInfo.type));
 	}
 }
 
 function processOptionsTypeField(context: FieldContext): void {
-	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor });
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor, cssStyles: context.fieldInfo.labelCSSStyles });
 	const dropdown = createDropdown(context.view, {
 		values: context.fieldInfo.options,
 		defaultValue: context.fieldInfo.defaultValue,
@@ -379,7 +389,7 @@ function processOptionsTypeField(context: FieldContext): void {
 }
 
 function processDateTimeTextField(context: FieldContext): void {
-	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor });
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor, cssStyles: context.fieldInfo.labelCSSStyles });
 	const defaultValue = context.fieldInfo.defaultValue + getDateTimeString();
 	const input = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		value: defaultValue,
@@ -394,7 +404,7 @@ function processDateTimeTextField(context: FieldContext): void {
 }
 
 function processNumberField(context: FieldContext): void {
-	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor });
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor, cssStyles: context.fieldInfo.labelCSSStyles });
 	const input = createNumberInput(context.view, {
 		defaultValue: context.fieldInfo.defaultValue,
 		ariaLabel: context.fieldInfo.label,
@@ -409,7 +419,7 @@ function processNumberField(context: FieldContext): void {
 }
 
 function processTextField(context: FieldContext): void {
-	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor });
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor, cssStyles: context.fieldInfo.labelCSSStyles });
 	const input = createTextInput(context.view, {
 		defaultValue: context.fieldInfo.defaultValue,
 		ariaLabel: context.fieldInfo.label,
@@ -444,7 +454,7 @@ function processTextField(context: FieldContext): void {
 }
 
 function processPasswordField(context: FieldContext): void {
-	const passwordLabel = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor });
+	const passwordLabel = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor, cssStyles: context.fieldInfo.labelCSSStyles });
 	const passwordInput = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		ariaLabel: context.fieldInfo.label,
 		inputType: 'password',
@@ -470,7 +480,7 @@ function processPasswordField(context: FieldContext): void {
 
 	if (context.fieldInfo.confirmationRequired) {
 		const passwordNotMatchMessage = getPasswordMismatchMessage(context.fieldInfo.label);
-		const confirmPasswordLabel = createLabel(context.view, { text: context.fieldInfo.confirmationLabel!, required: true, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor });
+		const confirmPasswordLabel = createLabel(context.view, { text: context.fieldInfo.confirmationLabel!, required: true, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor, cssStyles: context.fieldInfo.labelCSSStyles });
 		const confirmPasswordInput = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: context.fieldInfo.confirmationLabel,
 			inputType: 'password',
@@ -500,16 +510,33 @@ function processPasswordField(context: FieldContext): void {
 }
 
 function processReadonlyTextField(context: FieldContext): ReadOnlyFieldInputs {
-	let defaultValue = context.fieldInfo.defaultValue || '';
-	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor });
-	const text = createLabel(context.view, { text: defaultValue, description: '', required: false, width: context.fieldInfo.inputWidth, fontWeight: context.fieldInfo.textFontWeight, fontStyle: context.fieldInfo.fontStyle, links: context.fieldInfo.links });
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor, cssStyles: context.fieldInfo.labelCSSStyles });
+	const text = context.fieldInfo.defaultValue !== undefined
+		? createLabel(context.view, { text: context.fieldInfo.defaultValue, description: '', required: false, width: context.fieldInfo.inputWidth, fontWeight: context.fieldInfo.textFontWeight, fontStyle: context.fieldInfo.fontStyle, links: context.fieldInfo.links })
+		: undefined;
 	addLabelInputPairToContainer(context.view, context.components, label, text, context.fieldInfo);
 	return { label: label, text: text };
 }
 
+
+
+/**
+ * creates a text component that has text that contains hyperlinks. The context.fieldInfo.label contains {0},{1} ...
+ * placeholder where contents of link array object are placed with that portion interpolated as a clickable link.
+ *
+ * @param context - the FieldContext object using which the field gets created
+ */
+function processLinkedTextField(context: FieldContext): azdata.TextComponent {
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor, links: context.fieldInfo.links, cssStyles: context.fieldInfo.labelCSSStyles });
+	context.components.push(label);
+	return label;
+}
+
 function processSummaryTextField(context: FieldContext): void {
 	const readOnlyField = processReadonlyTextField(context);
-	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, readOnlyField.text);
+	if (readOnlyField.text) {
+		context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, readOnlyField.text);
+	}
 }
 
 function processCheckboxField(context: FieldContext): void {
@@ -523,7 +550,7 @@ function processCheckboxField(context: FieldContext): void {
  * @param context The context to use to create the field
  */
 function processFilePickerField(context: FieldContext, defaultFilePath?: string): FilePickerInputs {
-	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor });
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor, cssStyles: context.fieldInfo.labelCSSStyles });
 	const input = createTextInput(context.view, {
 		defaultValue: defaultFilePath || context.fieldInfo.defaultValue || '',
 		ariaLabel: context.fieldInfo.label,
@@ -622,7 +649,7 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 	if (context.fieldInfo.rowAlignItems === undefined) {
 		context.fieldInfo.rowAlignItems = 'flex-start'; // by default align the items to the top.
 	}
-	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor });
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight, color: context.fieldInfo.labelColor, cssStyles: context.fieldInfo.labelCSSStyles });
 	const optionsListContainer = context.view!.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
 	const radioOptionsLoadingComponent = context.view!.modelBuilder.loadingComponent().withItem(optionsListContainer).component();
 	context.fieldInfo.labelPosition = LabelPosition.Left;
@@ -703,7 +730,8 @@ function createAzureAccountDropdown(context: AzureAccountFieldContext): azdata.D
 		required: context.fieldInfo.required,
 		width: context.fieldInfo.labelWidth,
 		fontWeight: context.fieldInfo.labelFontWeight,
-		color: context.fieldInfo.labelColor
+		color: context.fieldInfo.labelColor,
+		cssStyles: context.fieldInfo.labelCSSStyles
 	});
 	const accountDropdown = createDropdown(context.view, {
 		width: context.fieldInfo.inputWidth,
@@ -724,11 +752,12 @@ function createAzureSubscriptionDropdown(
 		required: context.fieldInfo.required,
 		width: context.fieldInfo.labelWidth,
 		fontWeight: context.fieldInfo.labelFontWeight,
-		color: context.fieldInfo.labelColor
+		color: context.fieldInfo.labelColor,
+		cssStyles: context.fieldInfo.labelCSSStyles
 	});
 	const subscriptionDropdown = createDropdown(context.view, {
 		width: context.fieldInfo.inputWidth,
-		editable: false,
+		editable: true,
 		required: context.fieldInfo.required,
 		label: loc.subscription
 	});
@@ -796,11 +825,12 @@ function createAzureResourceGroupsDropdown(
 		required: context.fieldInfo.required,
 		width: context.fieldInfo.labelWidth,
 		fontWeight: context.fieldInfo.labelFontWeight,
-		color: context.fieldInfo.labelColor
+		color: context.fieldInfo.labelColor,
+		cssStyles: context.fieldInfo.labelCSSStyles
 	});
 	const resourceGroupDropdown = createDropdown(context.view, {
 		width: context.fieldInfo.inputWidth,
-		editable: false,
+		editable: true,
 		required: context.fieldInfo.required,
 		label: loc.resourceGroup
 	});
@@ -858,7 +888,8 @@ function processAzureLocationsField(context: AzureLocationsFieldContext): azdata
 		required: context.fieldInfo.required,
 		width: context.fieldInfo.labelWidth,
 		fontWeight: context.fieldInfo.labelFontWeight,
-		color: context.fieldInfo.labelColor
+		color: context.fieldInfo.labelColor,
+		cssStyles: context.fieldInfo.labelCSSStyles
 	});
 	const locationDropdown = createDropdown(context.view, {
 		width: context.fieldInfo.inputWidth,

@@ -159,6 +159,10 @@ export interface PageInfoBase extends InheritableAttributes {
 	sections: SectionInfo[];
 }
 
+export type CSSStyles = {
+	[key: string]: string;
+};
+
 export interface InheritableAttributes {
 	labelWidth?: string;
 	inputWidth?: string;
@@ -202,6 +206,7 @@ export interface FieldInfo extends SubFieldInfo, InheritableAttributes {
 	userName?: string; // needed for sql server's password complexity requirement check, password can not include the login name.
 	description?: string;
 	labelColor?: string;
+	labelCSSStyles?: CSSStyles;
 	fontStyle?: FontStyle;
 	labelFontWeight?: FontWeight;
 	textFontWeight?: FontWeight;
@@ -253,7 +258,8 @@ export enum FieldType {
 	AzureAccount = 'azure_account',
 	AzureLocations = 'azure_locations',
 	FilePicker = 'file_picker',
-	KubeClusterContextPicker = 'kube_cluster_context_picker'
+	KubeClusterContextPicker = 'kube_cluster_context_picker',
+	LinkedText = 'linked_text'
 }
 
 export interface NotebookInfo {
