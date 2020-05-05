@@ -208,7 +208,7 @@ export class ProjectsController {
 			return (treeNode.root as ProjectRootTreeItem).project;
 		}
 		else {
-			throw new Error('"Add item" command invoked from unexpected location: ' + treeNode.uri.path);
+			throw new Error('Unable to establish project context.  Command invoked from unexpected location: ' + treeNode.uri.path);
 		}
 	}
 
