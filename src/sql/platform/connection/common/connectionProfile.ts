@@ -69,23 +69,18 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		this.options['databaseDisplayName'] = this.databaseName;
 	}
 
-	public static matchesProfile(a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile): boolean {
-		return a && b
-			&& a.providerName === b.providerName
-			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.serverName, b.serverName)
-			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.databaseName, b.databaseName)
-			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.userName, b.userName)
-			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.options['databaseDisplayName'], b.options['databaseDisplayName'])
-			&& a.authenticationType === b.authenticationType
-			&& a.groupId === b.groupId;
-	}
-
 	public matches(other: interfaces.IConnectionProfile): boolean {
-		return ConnectionProfile.matchesProfile(this, other);
-
+		return other
+			&& this.providerName === other.providerName
+			&& this.nullCheckEqualsIgnoreCase(this.serverName, other.serverName)
+			&& this.nullCheckEqualsIgnoreCase(this.databaseName, other.databaseName)
+			&& this.nullCheckEqualsIgnoreCase(this.userName, other.userName)
+			&& this.nullCheckEqualsIgnoreCase(this.options['databaseDisplayName'], other.options['databaseDisplayName'])
+			&& this.authenticationType === other.authenticationType
+			&& this.groupId === other.groupId;
 	}
 
-	private static nullCheckEqualsIgnoreCase(a: string, b: string) {
+	private nullCheckEqualsIgnoreCase(a: string, b: string) {
 		let bothNull: boolean = !a && !b;
 		return bothNull ? bothNull : equalsIgnoreCase(a, b);
 	}

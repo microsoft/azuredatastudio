@@ -8,7 +8,7 @@ import * as assert from 'assert';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import {
-	RefreshAction, EditConnectionAction, AddServerAction, DeleteConnectionAction, DisconnectConnectionAction,
+	RefreshAction, AddServerAction, DeleteConnectionAction, DisconnectConnectionAction,
 	ActiveConnectionsFilterAction, RecentConnectionsFilterAction
 }
 	from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
@@ -68,7 +68,7 @@ suite('SQL Connection Tree Action tests', () => {
 		connectionManagementService.setup(x => x.deleteConnectionGroup(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 		connectionManagementService.setup(x => x.deleteConnection(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => profileToReturn);
-		connectionManagementService.setup(x => x.showEditConnectionDialog(TypeMoq.It.isAny())).returns(() => new Promise<void>((resolve, reject) => resolve()));
+
 		return connectionManagementService;
 	}
 
@@ -527,32 +527,4 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 	});
 
-	test('EditConnectionAction - test if show connection dialog is called', () => {
-		let connectionManagementService = createConnectionManagementService(true, undefined);
-
-		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
-			connectionName: 'Test',
-			savePassword: false,
-			groupFullName: 'testGroup',
-			serverName: 'testServerName',
-			databaseName: 'testDatabaseName',
-			authenticationType: 'integrated',
-			password: 'test',
-			userName: 'testUsername',
-			groupId: undefined,
-			providerName: mssqlProviderName,
-			options: {},
-			saveProfile: true,
-			id: 'testId'
-		});
-
-		let connectionAction: EditConnectionAction = new EditConnectionAction(EditConnectionAction.ID,
-			EditConnectionAction.LABEL,
-			connection,
-			connectionManagementService.object);
-
-		return connectionAction.run().then((value) => {
-			connectionManagementService.verify(x => x.showEditConnectionDialog(TypeMoq.It.isAny()), TypeMoq.Times.once());
-		});
-	});
 });
