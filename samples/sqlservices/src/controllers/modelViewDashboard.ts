@@ -72,11 +72,11 @@ export async function openModelViewDashboard(context: vscode.ExtensionContext): 
 
 
 		addTabButton.onDidClick(() => {
-			tabbedPanel.updateTabs([nestedTab1, nestedTab2, nestedTab3]);
+			tabbedPanel.setTabs([nestedTab1, nestedTab2, nestedTab3]);
 		});
 
 		removeTabButton.onDidClick(() => {
-			tabbedPanel.updateTabs([nestedTab1, nestedTab3]);
+			tabbedPanel.setTabs([nestedTab1, nestedTab3]);
 		});
 
 		const settingsTab: azdata.DashboardTab = {
@@ -103,7 +103,7 @@ export async function openModelViewDashboard(context: vscode.ExtensionContext): 
 			icon: context.asAbsolutePath('images/default.svg')
 		};
 		button.onDidClick(() => {
-			dashboard.updateTabs([homeTab, databasesTab, securityTabGroup]);
+			dashboard.setTabs([homeTab, databasesTab, securityTabGroup]);
 		});
 
 		return [

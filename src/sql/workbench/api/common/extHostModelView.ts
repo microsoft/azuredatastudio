@@ -1740,8 +1740,12 @@ class TabbedPanelComponentWrapper extends ComponentWrapper implements azdata.Tab
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<string>());
 	}
-	updateTabs(tabs: (azdata.Tab | azdata.TabGroup)[]): void {
+	setTabs(tabs: (azdata.Tab | azdata.TabGroup)[]): void {
 		this.clearItems();
+		this.addTabs(tabs);
+	}
+
+	addTabs(tabs: (azdata.Tab | azdata.TabGroup)[]): void {
 		const itemConfigs = createFromTabs(tabs);
 		itemConfigs.forEach(itemConfig => {
 			this.addItem(itemConfig.component, itemConfig.config);

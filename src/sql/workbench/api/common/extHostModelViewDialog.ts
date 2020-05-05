@@ -468,12 +468,20 @@ class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
 	) {
 	}
 
-	updateTabs(tabs: (azdata.DashboardTab | azdata.DashboardTabGroup)[]): void {
+	setTabs(tabs: (azdata.DashboardTab | azdata.DashboardTabGroup)[]): void {
 		if (this._tabbedPanel === undefined || this._view === undefined) {
 			throw new Error(nls.localize('dashboardNotInitialized', "Tabs are not initialized"));
 		}
 
-		this._tabbedPanel.updateTabs(this.createTabs(tabs, this._view));
+		this._tabbedPanel.setTabs(this.createTabs(tabs, this._view));
+	}
+
+	addTabs(tabs: (azdata.DashboardTab | azdata.DashboardTabGroup)[]): void {
+		if (this._tabbedPanel === undefined || this._view === undefined) {
+			throw new Error(nls.localize('dashboardNotInitialized', "Tabs are not initialized"));
+		}
+
+		this._tabbedPanel.addTabs(this.createTabs(tabs, this._view));
 	}
 
 	registerTabs(handler: (view: azdata.ModelView) => Thenable<(azdata.DashboardTab | azdata.DashboardTabGroup)[]>): void {
