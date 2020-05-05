@@ -17,19 +17,19 @@ interface DataSourceDropdownValue extends azdata.CategoryValue {
 
 export class DeployDatabaseDialog {
 	public dialog: azdata.window.Dialog;
-	private deployTab: azdata.window.DialogTab;
-	private targetConnectionTextBox: azdata.InputBoxComponent;
-	private targetConnectionFormComponent: azdata.FormComponent;
-	private dataSourcesFormComponent: azdata.FormComponent;
-	private dataSourcesDropDown: azdata.DropDownComponent;
-	private targetDatabaseTextBox: azdata.InputBoxComponent;
-	private deployScriptNameTextBox: azdata.InputBoxComponent;
-	private connectionsRadioButton: azdata.RadioButtonComponent;
-	private dataSourcesRadioButton: azdata.RadioButtonComponent;
-	private formBuilder: azdata.FormBuilder;
+	public deployTab: azdata.window.DialogTab;
+	private targetConnectionTextBox: azdata.InputBoxComponent | undefined;
+	private targetConnectionFormComponent: azdata.FormComponent | undefined;
+	private dataSourcesFormComponent: azdata.FormComponent | undefined;
+	private dataSourcesDropDown: azdata.DropDownComponent | undefined;
+	private targetDatabaseTextBox: azdata.InputBoxComponent | undefined;
+	private deployScriptNameTextBox: azdata.InputBoxComponent | undefined;
+	private connectionsRadioButton: azdata.RadioButtonComponent | undefined;
+	private dataSourcesRadioButton: azdata.RadioButtonComponent | undefined;
+	private formBuilder: azdata.FormBuilder | undefined;
 
-	private connection: azdata.connection.ConnectionProfile;
-	private connectionIsDataSource: boolean;
+	private connection: azdata.connection.ConnectionProfile | undefined;
+	private connectionIsDataSource: boolean | undefined;
 
 	constructor(private project: Project) {
 		this.dialog = azdata.window.createModelViewDialog(constants.deployDialogName);
@@ -46,7 +46,7 @@ export class DeployDatabaseDialog {
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
 
-		let generateScriptButton = azdata.window.createButton(constants.generateScriptButtonText);
+		let generateScriptButton: azdata.window.Button = azdata.window.createButton(constants.generateScriptButtonText);
 		generateScriptButton.onClick(async () => await this.generateScript());
 		generateScriptButton.enabled = false;
 
@@ -57,7 +57,7 @@ export class DeployDatabaseDialog {
 	}
 
 
-	private initializeDialog() {
+	private initializeDialog(): void {
 		this.initializeDeployTab();
 		this.dialog.content = [this.deployTab];
 	}
@@ -149,10 +149,10 @@ export class DeployDatabaseDialog {
 
 		this.connectionsRadioButton.checked = true;
 		this.connectionsRadioButton.onDidClick(async () => {
-			this.formBuilder.removeFormItem(this.dataSourcesFormComponent);
-			this.formBuilder.insertFormItem(this.targetConnectionFormComponent, 2);
+			this.formBuilder!.removeFormItem(<azdata.FormComponent>this.dataSourcesFormComponent);
+			this.formBuilder!.insertFormItem(<azdata.FormComponent>this.targetConnectionFormComponent, 2);
 			this.connectionIsDataSource = false;
-			this.targetDatabaseTextBox.value = this.getDefaultDatabaseName();
+			this.targetDatabaseTextBox!.value = this.getDefaultDatabaseName();
 		});
 
 		this.dataSourcesRadioButton = view.modelBuilder.radioButton()
@@ -162,14 +162,14 @@ export class DeployDatabaseDialog {
 			}).component();
 
 		this.dataSourcesRadioButton.onDidClick(async () => {
-			this.formBuilder.removeFormItem(this.targetConnectionFormComponent);
-			this.formBuilder.insertFormItem(this.dataSourcesFormComponent, 2);
+			this.formBuilder!.removeFormItem(<azdata.FormComponent>this.targetConnectionFormComponent);
+			this.formBuilder!.insertFormItem(<azdata.FormComponent>this.dataSourcesFormComponent, 2);
 			this.connectionIsDataSource = true;
 
 			this.setDatabaseToSelectedDataSourceDatabase();
 		});
 
-		let flexRadioButtonsModel = view.modelBuilder.flexContainer()
+		let flexRadioButtonsModel: azdata.FlexContainer = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withItems([this.connectionsRadioButton, this.dataSourcesRadioButton])
 			.withProperties({ ariaRole: 'radiogroup' })
@@ -189,8 +189,8 @@ export class DeployDatabaseDialog {
 			this.tryEnableGenerateScriptAndOkButtons();
 		});
 
-		let editConnectionButton = this.createEditConnectionButton(view);
-		let clearButton = this.createClearButton(view);
+		let editConnectionButton: azdata.Component = this.createEditConnectionButton(view);
+		let clearButton: azdata.Component = this.createClearButton(view);
 
 		return {
 			title: constants.targetConnectionLabel,
@@ -203,9 +203,9 @@ export class DeployDatabaseDialog {
 		let dataSourcesValues: DataSourceDropdownValue[] = [];
 
 		this.project.dataSources.forEach(dataSource => {
-			const dbName = (dataSource as SqlConnectionDataSource).getSetting('Initial Catalog');
-			const connectionString = (dataSource as SqlConnectionDataSource).connectionString;
-			const displayName = `${dataSource.name}  (${connectionString})`;
+			const dbName: string = (dataSource as SqlConnectionDataSource).getSetting('Initial Catalog');
+			const connectionString: string = (dataSource as SqlConnectionDataSource).connectionString;
+			const displayName: string = `${dataSource.name}  (${connectionString})`;
 			dataSourcesValues.push({
 				displayName: displayName,
 				name: dataSource.name,
@@ -230,14 +230,14 @@ export class DeployDatabaseDialog {
 		};
 	}
 
-	private setDatabaseToSelectedDataSourceDatabase() {
-		if ((<DataSourceDropdownValue>this.dataSourcesDropDown.value).database) {
-			this.targetDatabaseTextBox.value = (<DataSourceDropdownValue>this.dataSourcesDropDown.value).database;
+	private setDatabaseToSelectedDataSourceDatabase(): void {
+		if ((<DataSourceDropdownValue>this.dataSourcesDropDown!.value).database) {
+			this.targetDatabaseTextBox!.value = (<DataSourceDropdownValue>this.dataSourcesDropDown!.value).database;
 		}
 	}
 
 	private createEditConnectionButton(view: azdata.ModelView): azdata.Component {
-		let editConnectionButton = view.modelBuilder.button().withProperties({
+		let editConnectionButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
 			label: constants.editConnectionButtonText,
 			title: constants.editConnectionButtonText,
 			ariaLabel: constants.editConnectionButtonText
@@ -245,11 +245,11 @@ export class DeployDatabaseDialog {
 
 		editConnectionButton.onDidClick(async () => {
 			this.connection = <azdata.connection.ConnectionProfile><any>await azdata.connection.openConnectionDialog();
-			this.targetConnectionTextBox.value = await azdata.connection.getConnectionString(this.connection.connectionId, false);
+			this.targetConnectionTextBox!.value = await azdata.connection.getConnectionString(this.connection.connectionId, false);
 
 			// change the database inputbox value to the connection's database if there is one
 			if (this.connection.options.database) {
-				this.targetDatabaseTextBox.value = this.connection.options.database;
+				this.targetDatabaseTextBox!.value = this.connection.options.database;
 			}
 		});
 
@@ -257,14 +257,14 @@ export class DeployDatabaseDialog {
 	}
 
 	private createClearButton(view: azdata.ModelView): azdata.Component {
-		let clearButton = view.modelBuilder.button().withProperties({
+		let clearButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
 			label: constants.clearButtonText,
 			title: constants.clearButtonText,
 			ariaLabel: constants.clearButtonText
 		}).component();
 
 		clearButton.onDidClick(() => {
-			this.targetConnectionTextBox.value = '';
+			this.targetConnectionTextBox!.value = '';
 		});
 
 		return clearButton;
@@ -272,8 +272,8 @@ export class DeployDatabaseDialog {
 
 	// only enable Generate Script button if all fields are filled
 	private tryEnableGenerateScriptAndOkButtons(): void {
-		if (this.targetConnectionTextBox.value && this.targetDatabaseTextBox.value && this.deployScriptNameTextBox.value
-			|| this.connectionIsDataSource && this.targetDatabaseTextBox.value && this.deployScriptNameTextBox.value) {
+		if (this.targetConnectionTextBox!.value && this.targetDatabaseTextBox!.value && this.deployScriptNameTextBox!.value
+			|| this.connectionIsDataSource && this.targetDatabaseTextBox!.value && this.deployScriptNameTextBox!.value) {
 			this.dialog.okButton.enabled = true;
 			this.dialog.customButtons[0].enabled = true;
 		} else {
