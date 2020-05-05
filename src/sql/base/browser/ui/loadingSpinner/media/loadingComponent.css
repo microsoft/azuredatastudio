@@ -3,6 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+loading-spinner {
+	width: 100%;
+}
+
 loading-spinner .loading-spinner-container {
 	display: flex;
 	flex-direction: row;

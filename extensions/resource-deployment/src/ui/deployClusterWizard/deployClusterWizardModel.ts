@@ -10,7 +10,7 @@ import { KubeCtlToolName } from '../../services/tools/kubeCtlTool';
 import { getRuntimeBinaryPathEnvironmentVariableName } from '../../utils';
 import { Model } from '../model';
 import * as VariableNames from './constants';
-
+import { ToolsInstallPath } from './../../constants';
 
 export class DeployClusterWizardModel extends Model {
 	constructor(public deploymentTarget: BdcDeploymentType) {
@@ -167,7 +167,7 @@ export class DeployClusterWizardModel extends Model {
 		}
 		const kubeCtlEnvVarName: string = getRuntimeBinaryPathEnvironmentVariableName(KubeCtlToolName);
 		statements.push(`os.environ["${kubeCtlEnvVarName}"] = "${this.escapeForNotebookCodeCell(process.env[kubeCtlEnvVarName]!)}"`);
-		statements.push(`os.environ["PATH"] = os.environ["PATH"] + "${delimiter}" + "${this.escapeForNotebookCodeCell(process.env[VariableNames.ToolsInstallPath]!)}"`);
+		statements.push(`os.environ["PATH"] = os.environ["PATH"] + "${delimiter}" + "${this.escapeForNotebookCodeCell(process.env[ToolsInstallPath]!)}"`);
 		statements.push(`print('Variables have been set successfully.')`);
 		return statements.map(line => line + EOL);
 	}

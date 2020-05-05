@@ -5,17 +5,17 @@
  *--------------------------------------------------------------------------------------------*/
 -->
 <div class="widgetWrapper">
-	<div #header>
+	<div #header *ngIf="!_config.hideHeader">
 		<div class="widgetHeader">
 			<span *ngIf="_config.icon" [ngClass]="['icon', _config.icon]"></span>
 			<span *ngIf="_config.name && _showTitle" class="widgetTitle">{{_config.name}}</span>
 			<span *ngIf="!_config.name" class="noTitle"></span>
-			<span #actionbar class="actionbar"></span>
+			<span *ngIf="showActionBar" #actionbar class="actionbar"></span>
 		</div>
 	</div>
 	<ng-template [ngIf]="!collapsed">
 		<ng-template component-host>
 		</ng-template>
 	</ng-template>
-	<span #bottomActionbar class="bottomActionbar"></span>
+	<span #bottomActionbar *ngIf="showBottomActionBar" class="bottomActionbar {{collapsed ? 'collapsed' : ''}}"></span>
 </div>

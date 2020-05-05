@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./media/propertiesContainer';
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
 	ViewChild, ElementRef, OnDestroy
@@ -12,6 +13,8 @@ import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { PropertiesContainer, PropertyItem } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
+import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { PROPERTIES_CONTAINER_PROPERTY_NAME, PROPERTIES_CONTAINER_PROPERTY_VALUE } from 'vs/workbench/common/theme';
 
 @Component({
 	selector: `modelview-properties-container`,
@@ -53,3 +56,22 @@ export default class PropertiesContainerComponent extends ComponentBase implemen
 		this._propertiesContainer.propertyItems = newValue;
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+
+	const propertyNameColor = theme.getColor(PROPERTIES_CONTAINER_PROPERTY_NAME);
+	if (propertyNameColor) {
+		collector.addRule(`
+		modelview-properties-container .propertyName,
+		modelview-properties-container .splitter {
+			color: ${propertyNameColor}
+		}`);
+	}
+
+	const propertyValueColor = theme.getColor(PROPERTIES_CONTAINER_PROPERTY_VALUE);
+	if (propertyValueColor) {
+		collector.addRule(`modelview-properties-container .propertyValue {
+			color: ${propertyValueColor}
+		}`);
+	}
+});

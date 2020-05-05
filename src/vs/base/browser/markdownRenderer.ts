@@ -197,8 +197,8 @@ export function renderMarkdown(markdown: IMarkdownString, options: MarkdownRende
 
 	const renderedMarkdown = marked.parse(
 		markdown.supportThemeIcons
-			? markdownEscapeEscapedCodicons(markdown.value)
-			: markdown.value,
+			? markdownEscapeEscapedCodicons(markdown.value || '')
+			: (markdown.value || ''),
 		markedOptions
 	);
 
@@ -209,7 +209,10 @@ export function renderMarkdown(markdown: IMarkdownString, options: MarkdownRende
 			'iframe': ['allowfullscreen', 'frameborder', 'src'],
 			'img': ['src', 'title', 'alt', 'width', 'height'],
 			'div': ['class', 'data-code'],
-			'span': ['class']
+			'span': ['class'],
+			// https://github.com/microsoft/vscode/issues/95937
+			'th': ['align'],
+			'td': ['align']
 		}
 	});
 

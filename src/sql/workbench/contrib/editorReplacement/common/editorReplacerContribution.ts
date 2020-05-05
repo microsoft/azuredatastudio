@@ -27,7 +27,9 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 		@IEditorService private readonly editorService: IEditorService,
 		@IModeService private readonly modeService: IModeService
 	) {
-		this.editorOpeningListener = this.editorService.overrideOpenEditor((editor, options, group) => this.onEditorOpening(editor, options, group));
+		this.editorOpeningListener = this.editorService.overrideOpenEditor({
+			open: (editor, options, group) => this.onEditorOpening(editor, options, group)
+		});
 	}
 
 	private onEditorOpening(editor: IEditorInput, options: IEditorOptions | ITextEditorOptions | undefined, group: IEditorGroup): IOpenEditorOverride | undefined {

@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { SectionInfo, FieldType } from '../../../interfaces';
-import { Validator, InputComponents, createSection, createGroupContainer, createLabel, createFlexContainer, createTextInput, createNumberInput, setModelValues, getInputBoxComponent, getCheckboxComponent, getDropdownComponent } from '../../modelViewUtils';
+import { Validator, InputComponents, InputComponent, createSection, createGroupContainer, createLabel, createFlexContainer, createTextInput, createNumberInput, setModelValues, getInputBoxComponent, getCheckboxComponent, getDropdownComponent } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 import { AuthenticationMode } from '../deployClusterWizardModel';
@@ -123,7 +123,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 						this.wizard.registerDisposable(disposable);
 					},
-					onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent): void => {
+					onNewInputComponentCreated: (name: string, component: InputComponent): void => {
 						this.inputComponents[name] = { component: component };
 					},
 					onNewValidatorCreated: (validator: Validator): void => {

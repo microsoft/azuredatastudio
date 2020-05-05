@@ -31,7 +31,7 @@ describe('Manage Packages', () => {
 		should.throws(() => { new ManagePackagesDialogModel(jupyterServerInstallation, providers); }, 'Invalid list of package manager providers');
 	});
 
-	it('Should not throw exception given undefined options', async function (): Promise<void> {
+	it('Should have expected behavior given undefined options', async function (): Promise<void> {
 		let testContext = createContext();
 		testContext.provider.listPackages = () => {
 			return Promise.resolve(undefined);
@@ -39,8 +39,33 @@ describe('Manage Packages', () => {
 		let provider = createProvider(testContext);
 		let providers = new Map<string, IPackageManageProvider>();
 		providers.set(provider.providerId, provider);
+		const model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, undefined);
+		should.equal(model.currentPackageType, undefined, 'Current Package Type expected to be undefined');
+		should.deepEqual(model.options, { defaultLocation: undefined, defaultProviderId: undefined }, 'Options should be default options');
+		should.deepEqual(model.packageManageProviders, providers, 'Package Manage Providers should exist');
+		should.equal(model.currentPackageManageProvider, undefined, 'Current Package Manage Provider should be undefined');
+		should.equal(model.currentPackageType, undefined, 'Current Package Type should be undefined');
+		should.deepEqual(model.targetLocationTypes, [], 'Target Location Types should be an empty array');
+		should.equal(model.defaultLocation, undefined, 'Default Location should be undefined');
+		should.equal(model.defaultProviderId, provider.providerId, 'Default Provider ID should be correct');
+		should.deepEqual(model.getPackageTypes(), [], 'Undefined location should return empty array when calling getPackageTypes');
+		should.deepEqual(model.getPackageTypes('location1'), [],'Valid location should return empty array when calling getPackageTypes');
+		should.equal(model.getDefaultPackageType(), undefined, 'Default Package Type should be undefined');
+		should.deepEqual(await model.listPackages(), [], 'Packages list should be empty');
+		await should(model.installPackages([])).rejected();
+		await should(model.uninstallPackages([])).rejected();
+		should.equal(await model.getLocations(), undefined, 'Get Locations should be undefined before provider is set');
+		should(model.getPackageOverview('package')).rejected();
 
-		should.doesNotThrow(() => { new ManagePackagesDialogModel(jupyterServerInstallation, providers, undefined); });
+		// Change provider and then retest functions which throw without valid provider
+		model.changeProvider(provider.providerId);
+
+		await should(model.installPackages([])).resolved();
+		await should(model.uninstallPackages([])).resolved();
+		should.deepEqual(await model.getLocations(), await provider.getLocations(), 'Get Locations should be valid after provider is set');
+		should(model.getPackageOverview('p1')).resolved();
+		model.changeLocation('location1');
+
 	});
 
 	it('Init should throw exception given invalid default location', async function (): Promise<void> {
@@ -82,7 +107,7 @@ describe('Manage Packages', () => {
 		should.equal(model.defaultProviderId, provider.providerId);
 	});
 
-	it('Init should set default provider Id given valid options', async function (): Promise<void> {
+	it('Init should have expected defaults given valid options', async function (): Promise<void> {
 		let testContext1 = createContext();
 		testContext1.provider.providerId = 'providerId1';
 		testContext1.provider.packageTarget = {
@@ -108,6 +133,9 @@ describe('Manage Packages', () => {
 		await model.init();
 		should.equal(model.defaultLocation, testContext2.provider.packageTarget.location);
 		should.equal(model.defaultProviderId, testContext2.provider.providerId);
+		should.equal(model.getDefaultPackageType().packageType, testContext2.provider.packageTarget.packageType);
+		should.equal(model.currentPackageType, testContext2.provider.packageTarget.packageType);
+		should.equal(model.jupyterInstallation, jupyterServerInstallation);
 	});
 
 	it('Should create a cache for multiple providers successfully', async function (): Promise<void> {
@@ -168,6 +196,36 @@ describe('Manage Packages', () => {
 
 		await model.init();
 		should.equal(model.defaultLocation, testContext1.provider.packageTarget.location);
+		should.deepEqual(model.getPackageTypes('location1'), [{providerId: 'providerId1', packageType: 'package-type1'}]);
+	});
+
+	it('Should set default location to one set in given options', async function (): Promise<void> {
+		let testContext1 = createContext();
+		testContext1.provider.providerId = 'providerId1';
+		testContext1.provider.packageTarget = {
+			location: 'location1',
+			packageType: 'package-type1'
+		};
+
+		let testContext2 = createContext();
+		testContext2.provider.providerId = 'providerId2';
+		testContext2.provider.packageTarget = {
+			location: 'location1',
+			packageType: 'package-type2'
+		};
+		testContext2.provider.canUseProvider = () => { return Promise.resolve(false); };
+
+		let providers = new Map<string, IPackageManageProvider>();
+		providers.set(testContext1.provider.providerId, createProvider(testContext1));
+		providers.set(testContext2.provider.providerId, createProvider(testContext2));
+
+		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, {
+			defaultLocation: testContext2.provider.packageTarget.location,
+			defaultProviderId: testContext2.provider.providerId
+		});
+
+		await model.init();
+		should.equal(model.defaultLocation, testContext2.provider.packageTarget.location);
 		should.deepEqual(model.getPackageTypes('location1'), [{providerId: 'providerId1', packageType: 'package-type1'}]);
 	});
 
@@ -247,7 +305,7 @@ describe('Manage Packages', () => {
 		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, undefined);
 
 		should.equal(model.currentPackageManageProvider, undefined);
-		await should(model.listPackages()).rejected();
+		await should(model.listPackages()).resolvedWith([]);
 		await should(model.installPackages(TypeMoq.It.isAny())).rejected();
 		await should(model.uninstallPackages(TypeMoq.It.isAny())).rejected();
 	});

@@ -172,11 +172,13 @@ export class ProfilerEditor extends BaseEditor {
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
 
 		if (editorService) {
-			editorService.overrideOpenEditor((editor, options, group) => {
-				if (this.isVisible() && (editor !== this.input || group !== this.group)) {
-					this.saveEditorViewState();
+			editorService.overrideOpenEditor({
+				open: (editor, options, group) => {
+					if (this.isVisible() && (editor !== this.input || group !== this.group)) {
+						this.saveEditorViewState();
+					}
+					return {};
 				}
-				return {};
 			});
 		}
 	}
@@ -393,7 +395,7 @@ export class ProfilerEditor extends BaseEditor {
 			this._detailTable.updateRowCount();
 		});
 
-		const detailTableCopyKeybind = new CopyKeybind();
+		const detailTableCopyKeybind = new CopyKeybind<IDetailData>();
 		detailTableCopyKeybind.onCopy((ranges: Slick.Range[]) => {
 			// we always only get 1 item in the ranges
 			if (ranges && ranges.length === 1) {
@@ -502,7 +504,8 @@ export class ProfilerEditor extends BaseEditor {
 					seedSearchStringFromSelection: (controller.getState().searchString.length === 0),
 					shouldFocus: FindStartFocusAction.FocusFindInput,
 					shouldAnimate: true,
-					updateSearchScope: false
+					updateSearchScope: false,
+					loop: true
 				});
 			}
 		} else {

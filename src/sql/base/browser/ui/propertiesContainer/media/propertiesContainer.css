@@ -3,6 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+properties-container {
+	display: block;
+}
+
+properties-container .grid-container {
+	width: 100%;
+	display: grid;
+}
+
+properties-container .property {
+	display:flex;
+}
+
 properties-container .twoColumns.grid-container {
 	grid-template-columns: 50% 50%;
 }
@@ -15,14 +28,17 @@ properties-container .columnLayout.property {
 	flex-direction: column;
 }
 
-properties-container .propertyName {
+properties-container .propertyName,
+properties-container .splitter {
 	opacity: 0.6;
 	font-size: 12px;
 	flex: 0 0 auto
 }
 
 .vs-dark properties-container .propertyName,
-.hc-black properties-container .propertyName {
+.hc-black properties-container .propertyName,
+.vs-dark properties-container .splitter,
+.hc-black properties-container .splitter {
 	opacity: 1;
 }
 

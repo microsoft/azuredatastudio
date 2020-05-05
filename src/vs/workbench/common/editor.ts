@@ -32,6 +32,7 @@ import { IFilesConfigurationService, AutoSaveMode } from 'vs/workbench/services/
 export const DirtyWorkingCopiesContext = new RawContextKey<boolean>('dirtyWorkingCopies', false);
 export const ActiveEditorContext = new RawContextKey<string | null>('activeEditor', null);
 export const ActiveEditorIsReadonlyContext = new RawContextKey<boolean>('activeEditorIsReadonly', false);
+export const ActiveEditorAvailableEditorIdsContext = new RawContextKey<string>('activeEditorAvailableEditorIds', '');
 export const EditorsVisibleContext = new RawContextKey<boolean>('editorIsOpen', false);
 export const EditorPinnedContext = new RawContextKey<boolean>('editorPinned', false);
 export const EditorGroupActiveEditorDirtyContext = new RawContextKey<boolean>('groupActiveEditorDirty', false);
@@ -68,6 +69,11 @@ export interface IEditorPane extends IComposite {
 	 * The assigned input of this editor.
 	 */
 	readonly input: IEditorInput | undefined;
+
+	/**
+	 * The assigned options of the editor.
+	 */
+	readonly options: EditorOptions | undefined;
 
 	/**
 	 * The assigned group this editor is showing in.
@@ -1298,6 +1304,7 @@ export interface IWorkbenchEditorConfiguration {
 
 interface IEditorPartConfiguration {
 	showTabs?: boolean;
+	scrollToSwitchTabs?: boolean;
 	highlightModifiedTabs?: boolean;
 	tabCloseButton?: 'left' | 'right' | 'off';
 	tabSizing?: 'fit' | 'shrink';
@@ -1474,6 +1481,9 @@ export async function pathsToEditors(paths: IPathData[] | undefined, fileService
 		}
 
 		const exists = (typeof path.exists === 'boolean') ? path.exists : await fileService.exists(resource);
+		if (!exists && path.openOnlyIfExists) {
+			return undefined; // {{SQL CARBON EDIT}} @anthonydresser revert after strictnullchecks
+		}
 
 		const options: ITextEditorOptions = (exists && typeof path.lineNumber === 'number') ? {
 			selection: {
