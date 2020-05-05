@@ -254,18 +254,20 @@ export class ExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 }
 
+const viewContainerRegistry = Registry.as<IViewContainersRegistry>(Extensions.ViewContainersRegistry);
+
 /**
  * Explorer viewlet container.
  */
-export const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(Extensions.ViewContainersRegistry).registerViewContainer({
+export const VIEW_CONTAINER: ViewContainer = viewContainerRegistry.registerViewContainer({
 	id: VIEWLET_ID,
 	name: localize('explore', "Explorer"),
 	ctorDescriptor: new SyncDescriptor(ExplorerViewPaneContainer),
 	storageId: 'workbench.explorer.views.state',
 	icon: Codicon.files.classNames,
 	alwaysUseContainerInfo: true,
-	order: 10 // {{SQL CARBON EDIT}}
-}, ViewContainerLocation.Sidebar);
+	order: 10 // {{SQL CARBON EDIT}} change order
+}, ViewContainerLocation.Sidebar); // {{SQL CARBON EDIT}} not default
 
 const viewsRegistry = Registry.as<IViewsRegistry>(Extensions.ViewsRegistry);
 viewsRegistry.registerViewWelcomeContent(EmptyView.ID, {
