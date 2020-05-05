@@ -589,13 +589,17 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 	}
 
-	public async getInstalledPipPackages(): Promise<PythonPkgDetails[]> {
-		if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
+	public async getInstalledPipPackages(pythonExePath?: string): Promise<PythonPkgDetails[]> {
+		if (pythonExePath) {
+			if (!fs.existsSync(pythonExePath)) {
+				return [];
+			}
+		} else if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
 			return [];
 		}
 
 		try {
-			let cmd = `"${this.pythonExecutable}" -m pip list --format=json`;
+			let cmd = `"${pythonExePath ?? this.pythonExecutable}" -m pip list --format=json`;
 			let packagesInfo = await this.executeBufferedCommand(cmd);
 			let packagesResult: PythonPkgDetails[] = [];
 			if (packagesInfo) {

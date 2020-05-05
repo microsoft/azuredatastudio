@@ -22,9 +22,6 @@ export class PickPackagesPage extends BasePage {
 	private installedPackages: PythonPkgDetails[];
 
 	public async start(): Promise<boolean> {
-		// Start retrieving installed packages now to save time loading the package table later
-		this.installedPackagesPromise = this.model.installation.getInstalledPipPackages();
-
 		if (this.model.kernelName) {
 			// Wizard was started for a specific kernel, so don't populate any other options
 			this.kernelLabel = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
@@ -77,6 +74,10 @@ export class PickPackagesPage extends BasePage {
 	}
 
 	public async onPageEnter(): Promise<boolean> {
+		let pythonExe = JupyterServerInstallation.getPythonExePath(this.model.pythonLocation, this.model.useExistingPython);
+		this.installedPackagesPromise = this.model.installation.getInstalledPipPackages(pythonExe);
+		this.installedPackages = undefined;
+
 		if (this.kernelDropdown) {
 			if (this.model.kernelName) {
 				this.kernelDropdown.value = this.model.kernelName;
