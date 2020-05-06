@@ -58,7 +58,8 @@ export class ConfigurePythonWizard {
 			kernelName: kernelName,
 			usingCustomPath: this.usingCustomPath,
 			pythonPathsPromise: this.pythonPathsPromise,
-			installation: this.jupyterInstallation
+			installation: this.jupyterInstallation,
+			useExistingPython: JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper)
 		};
 
 		let pages: Map<number, BasePage> = new Map<number, BasePage>();

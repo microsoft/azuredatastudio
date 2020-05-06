@@ -21,6 +21,7 @@ describe('Configure Python Wizard', function () {
 
 	beforeEach(() => {
 		let mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation);
+		mockInstall.setup(i => i.getInstalledPipPackages(TypeMoq.It.isAnyString())).returns(() => Promise.resolve([]));
 		testInstallation = mockInstall.object;
 
 		let mockWizard = TypeMoq.Mock.ofType(ConfigurePythonWizard);
@@ -61,10 +62,12 @@ describe('Configure Python Wizard', function () {
 	});
 
 	it('Configure Path Page test', async () => {
+		let testPythonLocation = '/not/a/real/path';
 		let model = <ConfigurePythonModel>{
+			useExistingPython: true,
 			usingCustomPath: false,
 			pythonPathsPromise: Promise.resolve([{
-				installDir: '/not/a/real/path',
+				installDir: testPythonLocation,
 				version: '4000'
 			}])
 		};
@@ -76,6 +79,10 @@ describe('Configure Python Wizard', function () {
 
 		// First page, so onPageEnter should do nothing
 		should(await configurePathPage.onPageEnter()).be.true();
+
+		should(await configurePathPage.onPageLeave()).be.true();
+		should(model.useExistingPython).be.true();
+		should(model.pythonLocation).be.equal(testPythonLocation);
 	});
 
 	it('Pick Packages Page test', async () => {
@@ -93,6 +100,9 @@ describe('Configure Python Wizard', function () {
 
 		// Last page, so onPageLeave should do nothing
 		should(await pickPackagesPage.onPageLeave()).be.true();
+
+		should(await pickPackagesPage.onPageEnter()).be.true();
+		should(model.packagesToInstall).be.deepEqual(JupyterServerInstallation.getRequiredPackagesForKernel(model.kernelName));
 	});
 });
 

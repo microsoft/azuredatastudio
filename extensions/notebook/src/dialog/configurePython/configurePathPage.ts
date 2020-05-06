@@ -45,8 +45,7 @@ export class ConfigurePathPage extends BasePage {
 			}).component();
 		this.browseButton.onDidClick(() => this.handleBrowse());
 
-		let useExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
-		this.createInstallRadioButtons(this.view.modelBuilder, useExistingPython);
+		this.createInstallRadioButtons(this.view.modelBuilder, this.model.useExistingPython);
 
 		let formModel = this.view.modelBuilder.formContainer()
 			.withFormItems([{
@@ -65,7 +64,7 @@ export class ConfigurePathPage extends BasePage {
 
 		await this.view.initializeModel(formModel);
 
-		await this.updatePythonPathsDropdown(useExistingPython);
+		await this.updatePythonPathsDropdown(this.model.useExistingPython);
 
 		return true;
 	}
