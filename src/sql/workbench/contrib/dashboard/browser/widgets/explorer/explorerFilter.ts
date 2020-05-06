@@ -3,11 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ObjectListViewProperty } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 import { MetadataType } from 'sql/platform/connection/common/connectionManagement';
 
 export class ExplorerFilter {
-	constructor(private context: string, private propertyList: ObjectListViewProperty[]) {
+	constructor(private context: string, private targetProperties: string[]) {
 	}
 
 	public filter(filterString: string, data: Slick.SlickData[]): Slick.SlickData[] {
@@ -44,10 +43,10 @@ export class ExplorerFilter {
 				if (metadataType !== undefined && item.metadataType !== metadataType) {
 					return false;
 				}
-				const keys = this.propertyList.map(property => property.value);
+
 				let match = false;
-				for (let i = 0; i < keys.length; i++) {
-					const property = keys[i];
+				for (let i = 0; i < this.targetProperties.length; i++) {
+					const property = this.targetProperties[i];
 					const val = item[property];
 					if (item[property] && typeof val === 'string' &&
 						val.toLowerCase().indexOf(filterString.toLowerCase()) !== -1) {

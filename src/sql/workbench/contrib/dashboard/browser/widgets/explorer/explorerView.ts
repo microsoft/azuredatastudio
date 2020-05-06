@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { MetadataType } from 'sql/platform/connection/common/connectionManagement';
-import { FlavorProperties } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
+import { FlavorProperties, ObjectListViewProperty } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 import * as nls from 'vs/nls';
 
 export const NameProperty: string = 'name';
@@ -14,10 +14,10 @@ export class ExplorerView {
 	constructor(private context: string) {
 	}
 
-	public getPropertyList(flavorProperties: FlavorProperties) {
+	public getPropertyList(flavorProperties: FlavorProperties): ObjectListViewProperty[] {
 		let propertyList;
 		if (this.context === 'database') {
-			if (flavorProperties && flavorProperties.objectsListProperties) {
+			if (flavorProperties && flavorProperties.objectsListProperties && flavorProperties.objectsListProperties.length > 0) {
 				propertyList = flavorProperties.objectsListProperties;
 			} else {
 				propertyList = [{
@@ -35,7 +35,7 @@ export class ExplorerView {
 				}];
 			}
 		} else {
-			if (flavorProperties && flavorProperties.databasesListProperties) {
+			if (flavorProperties && flavorProperties.databasesListProperties && flavorProperties.databasesListProperties.length > 0) {
 				propertyList = flavorProperties.databasesListProperties;
 			} else {
 				propertyList = [{

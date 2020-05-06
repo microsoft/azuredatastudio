@@ -70,7 +70,7 @@ export class ExplorerTable extends Disposable {
 		});
 		const connectionInfo = this.bootStrapService.connectionManagementService.connectionInfo;
 		this._displayProperties = this._explorerView.getPropertyList(getFlavor(connectionInfo.serverInfo, this.logService, connectionInfo.providerId));
-		const explorerFilter = new ExplorerFilter(this.context, this._displayProperties);
+		const explorerFilter = new ExplorerFilter(this.context, this._displayProperties.map(p => p.value));
 		this._table.registerPlugin(this._actionsColumn);
 		this._register(this._actionsColumn.onClick((args) => {
 			this.showContextMenu(args.item, args.position);
