@@ -3,15 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.monaco-dropdown {
+.monaco-dropdown.button-menu {
 	height: auto;
 	padding: 0;
 }
-
-.monaco-dropdown > .dropdown-label {
+.monaco-dropdown > .dropdown-label .button-menu {
 	cursor: pointer;
 }
-.masked-pseudo-after.dropdown-arrow:after {
+.button-menu.masked-pseudo-after.dropdown-arrow:after {
 	right: -2px;
 	width: 20px;
 }

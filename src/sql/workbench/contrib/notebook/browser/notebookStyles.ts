@@ -213,14 +213,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			collector.addRule(`.notebookEditor .notebook-button.masked { background-color: ${notebookToolbarIconColor};}`);
 			collector.addRule(`.notebookEditor .notebook-button.masked-pseudo:before { background-color: ${notebookToolbarIconColor};}`);
 		}
-		const notebookToolbarSelectBorderColor = theme.getColor(notebookToolbarSelectBorder);
-		if (notebookToolbarSelectBorderColor) {
-			//collector.addRule(`.notebookEditor .editor-toolbar .select-container select { border-color: ${notebookToolbarSelectBorderColor};}`);
-		}
-		const notebookToolbarSelectBackgroundColor = theme.getColor(notebookToolbarSelectBackground);
-		if (notebookToolbarSelectBackgroundColor) {
-			//collector.addRule(`.notebookEditor .editor-toolbar .select-container select { background-color: ${notebookToolbarSelectBackgroundColor};}`);
-		}
 		const notebookToolbarLinesColor = theme.getColor(notebookToolbarLines);
 		if (notebookToolbarLinesColor) {
 			collector.addRule(`.notebookEditor .editor-toolbar.actionbar-container { border-bottom-color: ${notebookToolbarLinesColor}!important;}`);

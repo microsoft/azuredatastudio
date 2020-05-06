@@ -413,7 +413,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Code cell"), 'notebook-button masked-pseudo code');
 		addCodeCellButton.cellType = CellTypes.Code;
 
-		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Markdown cell"), 'notebook-button masked-pseudo markdowm');
+		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Markdown cell"), 'notebook-button masked-pseudo markdown');
 		addTextCellButton.cellType = CellTypes.Markdown;
 
 

@@ -72,7 +72,7 @@
 .notebookEditor .carbon-taskbar.monaco-toolbar .monaco-select-box {
 	font-size: inherit;
 	border-radius: 0;
-	padding: 3px 22px 3px 6px;
+	padding: 3px 22px 3px 6px !important;
 }
 .notebookEditor .labelOnLeftContainer {
 	display: flex;
