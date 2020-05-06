@@ -23,13 +23,11 @@ const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
  * The main controller class that initializes the extension
  */
 export default class MainController implements Disposable {
-	//protected _context: vscode.ExtensionContext;
 	protected dbProjectTreeViewProvider: SqlDatabaseProjectTreeViewProvider = new SqlDatabaseProjectTreeViewProvider();
 	protected projectsController: ProjectsController;
 	protected netcoreTool: NetCoreTool;
 
 	public constructor(private context: ExtensionContext, private apiWrapper: ApiWrapper) {
-		//this._context = context;
 		this.projectsController = new ProjectsController(apiWrapper, this.dbProjectTreeViewProvider);
 		this.netcoreTool = new NetCoreTool();
 	}
