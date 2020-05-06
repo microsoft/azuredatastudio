@@ -47,25 +47,18 @@ export class AddCellAction extends Action {
 	) {
 		super(id, label, cssClass);
 	}
-	public run(context: INotebookEditor): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			try {
-				//Add Cell after current selected cell.
-				let notebookcomponent = context as NotebookComponent;
-				let id = notebookcomponent.activeCellId;
-				let index = undefined;
-				if (context && context.cells) {
-					if (id) {
-						index = context.cells.findIndex(cell => cell.id === id);
-						index = index + 1;
-					}
-				}
-				context.addCell(this.cellType, index);
-				resolve(true);
-			} catch (e) {
-				reject(e);
+	public async run(context: INotebookEditor): Promise<any> {
+		//Add Cell after current selected cell.
+		let notebookcomponent = context as NotebookComponent;
+		let id = notebookcomponent.activeCellId;
+		let index = 0;
+		if (context && context.cells) {
+			if (id) {
+				index = context.cells.findIndex(cell => cell.id === id);
+				index = index + 1;
 			}
-		});
+		}
+		context.addCell(this.cellType, index);
 	}
 }
 
