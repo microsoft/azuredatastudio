@@ -122,10 +122,12 @@ export class DeployDatabaseDialog {
 
 	private async deploy(): Promise<void> {
 		// TODO: hook up with build and deploy
+		// if target connection is a data source, have to check if already connected or if connection dialog needs to be opened
 	}
 
 	private async generateScript(): Promise<void> {
 		// TODO: hook up with build and generate script
+		// if target connection is a data source, have to check if already connected or if connection dialog needs to be opened
 		azdata.window.closeDialog(this.dialog);
 	}
 
@@ -204,8 +206,7 @@ export class DeployDatabaseDialog {
 
 		this.project.dataSources.forEach(dataSource => {
 			const dbName: string = (dataSource as SqlConnectionDataSource).getSetting('Initial Catalog');
-			const connectionString: string = (dataSource as SqlConnectionDataSource).connectionString;
-			const displayName: string = `${dataSource.name}  (${connectionString})`;
+			const displayName: string = `${dataSource.name}`;
 			dataSourcesValues.push({
 				displayName: displayName,
 				name: dataSource.name,
@@ -245,7 +246,13 @@ export class DeployDatabaseDialog {
 
 		editConnectionButton.onDidClick(async () => {
 			this.connection = <azdata.connection.ConnectionProfile><any>await azdata.connection.openConnectionDialog();
-			this.targetConnectionTextBox!.value = await azdata.connection.getConnectionString(this.connection.connectionId, false);
+
+			// show connection name if there is one, otherwise show connection string
+			if (this.connection.options['connectionName']) {
+				this.targetConnectionTextBox!.value = this.connection.options['connectionName'];
+			} else {
+				this.targetConnectionTextBox!.value = await azdata.connection.getConnectionString(this.connection.connectionId, false);
+			}
 
 			// change the database inputbox value to the connection's database if there is one
 			if (this.connection.options.database) {
