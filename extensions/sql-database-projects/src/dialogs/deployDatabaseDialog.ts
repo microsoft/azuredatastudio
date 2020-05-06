@@ -36,7 +36,7 @@ export class DeployDatabaseDialog {
 		this.deployTab = azdata.window.createTab(constants.deployDialogName);
 	}
 
-	public async openDialog(): Promise<void> {
+	public openDialog(): void {
 		this.initializeDialog();
 		this.dialog.okButton.label = constants.deployDialogOkButtonText;
 		this.dialog.okButton.enabled = false;
