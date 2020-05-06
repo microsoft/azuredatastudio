@@ -10,7 +10,7 @@ export interface TextWithIconColumnDefinition<T extends Slick.SlickData> extends
 	iconCssClassField?: string;
 }
 
-export interface TextWidthIconColumnOptions {
+export interface TextWithIconColumnOptions {
 	iconCssClassField?: string;
 	field?: string;
 	width?: number;
@@ -19,11 +19,11 @@ export interface TextWidthIconColumnOptions {
 	name?: string;
 }
 
-export class TextWidthIconColumn<T extends Slick.SlickData> {
+export class TextWithIconColumn<T extends Slick.SlickData> {
 
 	private _definition: TextWithIconColumnDefinition<T>;
 
-	constructor(options: TextWidthIconColumnOptions) {
+	constructor(options: TextWithIconColumnOptions) {
 		this._definition = {
 			id: options.id,
 			field: options.field,
@@ -35,8 +35,9 @@ export class TextWidthIconColumn<T extends Slick.SlickData> {
 			cssClass: 'slick-icon-cell'
 		};
 	}
-	private formatter(row: number, cell: number, value: any, columnDef: TextWithIconColumnDefinition<Slick.SlickData>, dataContext: Slick.SlickData): string {
-		return `<div class="icon codicon slick-icon-cell-content ${dataContext[columnDef.iconCssClassField]}">${value}</div>`;
+	private formatter(row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string {
+		const iconColumn = columnDef as TextWithIconColumnDefinition<T>;
+		return `<div class="icon codicon slick-icon-cell-content ${dataContext[iconColumn.iconCssClassField]}">${value}</div>`;
 	}
 
 	public get definition(): TextWithIconColumnDefinition<T> {

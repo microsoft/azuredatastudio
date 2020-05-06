@@ -35,7 +35,7 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 			id: options.id,
 			resizable: false,
 			name: '',
-			formatter: (row: number, cell: number, value: any, columnDef: TextWithIconColumnDefinition<Slick.SlickData>, dataContext: Slick.SlickData): string => {
+			formatter: (row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string => {
 				return this.formatter(row, cell, value, columnDef, dataContext);
 			},
 			width: options.width,
@@ -92,7 +92,8 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 		return this._grid.getColumns()[columnIndex].id === this.definition.id;
 	}
 
-	private formatter(row: number, cell: number, value: any, columnDef: TextWithIconColumnDefinition<Slick.SlickData>, dataContext: Slick.SlickData): string {
-		return `<div class="codicon icon slick-button-cell-content ${columnDef.iconCssClassField}" aria-label="${this.options.title}"></div>`;
+	private formatter(row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string {
+		const buttonColumn = columnDef as ButtonColumnDefinition<T>;
+		return `<div class="codicon icon slick-button-cell-content ${buttonColumn.iconCssClassField}" aria-label="${this.options.title}"></div>`;
 	}
 }

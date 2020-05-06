@@ -6,7 +6,7 @@
 import { Router } from '@angular/router';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
-import { TextWidthIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
+import { TextWithIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
@@ -190,7 +190,7 @@ export class ExplorerTable extends Disposable {
 		const columns: Slick.Column<Slick.SlickData>[] = this._displayProperties.map(property => {
 			const columnWidth = property.widthWeight ? totalWidth * (property.widthWeight / totalColumnWidthWeight) : undefined;
 			if (property.value === NameProperty) {
-				const nameColumn = new TextWidthIconColumn({
+				const nameColumn = new TextWithIconColumn({
 					id: property.value,
 					iconCssClassField: IconClassProperty,
 					width: columnWidth,
