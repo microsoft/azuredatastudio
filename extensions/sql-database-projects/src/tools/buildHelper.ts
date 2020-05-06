@@ -5,10 +5,10 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { promises as fs } from 'fs';
+import { promises as fs, existsSync } from 'fs';
 import * as utils from '../common/utils';
 
-const buildDirectory = 'BuildDiectory';
+const buildDirectory = 'BuildDirectory';
 const buildFiles: string[] = [
 	'Microsoft.Data.SqlClient.dll',
 	'Microsoft.Data.Tools.Schema.Sql.dll',
@@ -22,49 +22,64 @@ const buildFiles: string[] = [
 	'Microsoft.Data.Tools.Schema.SqlTasks.targets'
 ];
 
-
 export class BuildHelper {
 
-	private extensionDir: string = '';
-	private extenionBuildDir: string = '';
+	private extensionDir: string;
+	private extensionBuildDir: string;
+	private initialized: boolean = false;
 
-	constructor(context?: vscode.ExtensionContext) {
-		this.extensionDir = context ? context.extensionPath : '';
+	constructor() {
+		this.extensionDir = vscode.extensions.getExtension('Microsoft.sql-database-projects')?.extensionPath ?? '';
+		this.extensionBuildDir = path.join(this.extensionDir, buildDirectory);
 	}
 
 	// create build dlls directory
 	// this should not be required. temporary solution for issue #10273
 	public async createBuildDirFolder(): Promise<void> {
-		const extensionBuildDir = path.join(this.extensionDir, buildDirectory);
-		await fs.rmdir(extensionBuildDir);
+
+		if (this.initialized) {
+			return;
+		}
+
+		if (!existsSync(this.extensionBuildDir)) {
+			await fs.mkdir(this.extensionBuildDir);
+		}
 
 		const buildfilesPath = await this.getBuildDirPathFromMssqlTools();
 
-		fs.mkdir(extensionBuildDir);
 		buildFiles.forEach(async (fileName) => {
-			await fs.copyFile(path.join(buildfilesPath, fileName), path.join(extensionBuildDir, fileName));
+			if (existsSync(path.join(buildfilesPath, fileName))) {
+				await fs.copyFile(path.join(buildfilesPath, fileName), path.join(this.extensionBuildDir, fileName));
+			}
 		});
 
-		this.extenionBuildDir = extensionBuildDir;
+		this.initialized = true;
 	}
 
 	// get mssql sqltoolsservice path
 	private async getBuildDirPathFromMssqlTools(): Promise<string> {
 		const mssqlConfigDir = path.join(this.extensionDir, '..', 'mssql');
-		const rawConfig = await fs.readFile(path.join(mssqlConfigDir, 'config.json'));
-		const config = JSON.parse(rawConfig.toString());
-		const installDir = config.installDirectory?.replace('{#version#}', config.version).replace('{#platform#}', 'Windows');
-		return path.join(mssqlConfigDir, installDir);
+
+		if (existsSync(path.join(mssqlConfigDir, 'config.json'))) {
+			const rawConfig = await fs.readFile(path.join(mssqlConfigDir, 'config.json'));
+			const config = JSON.parse(rawConfig.toString());
+			const installDir = config.installDirectory?.replace('{#version#}', config.version).replace('{#platform#}', 'Windows');
+			return path.join(mssqlConfigDir, installDir);
+		}
+		else {
+			throw new Error(`Could not get mssql extension's install location at ${mssqlConfigDir}`);
+
+		}
 	}
 
 	public get extensionBuildDirPath(): string {
-		return this.extenionBuildDir;
+		return this.extensionBuildDir;
 	}
 
 	public constructBuildArguments(projectPath: string, buildDirPath: string): string {
 		projectPath = utils.getSafePath(projectPath);
 		buildDirPath = utils.getSafePath(buildDirPath);
-		return ' build ' + projectPath + ` /p:NetCoreBuild=true /p:NetCoreBuildPath=${buildDirPath}`;
+		return ' build ' + projectPath + ` /p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath}`;
 	}
 }
 

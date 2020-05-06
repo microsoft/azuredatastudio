@@ -27,7 +27,7 @@ export default class MainController implements vscode.Disposable {
 
 	public constructor(context: vscode.ExtensionContext) {
 		this._context = context;
-		this.projectsController = new ProjectsController(this.dbProjectTreeViewProvider, context);
+		this.projectsController = new ProjectsController(this.dbProjectTreeViewProvider);
 		this.netcoreTool = new NetCoreTool();
 	}
 

@@ -30,10 +30,10 @@ export class ProjectsController {
 
 	projects: Project[] = [];
 
-	constructor(projTreeViewProvider: SqlDatabaseProjectTreeViewProvider, context?: vscode.ExtensionContext) {
+	constructor(projTreeViewProvider: SqlDatabaseProjectTreeViewProvider) {
 		this.projectTreeViewProvider = projTreeViewProvider;
 		this.netCoreTool = new NetCoreTool();
-		this.buildHelper = new BuildHelper(context);
+		this.buildHelper = new BuildHelper();
 	}
 
 	public refreshProjectsTree() {
@@ -171,15 +171,9 @@ export class ProjectsController {
 	}
 
 	public async buildProject(treeNode: BaseProjectTreeItem): Promise<Boolean> {
-		// Check .net core installation
-		if (!this.netCoreTool.findOrInstallNetCore()) {
-			return false;
-		}
 
 		// Check mssql extension for project dlls (tracking issue #10273)
-		if (!this.buildHelper.extensionBuildDirPath) {
-			await this.buildHelper.createBuildDirFolder();
-		}
+		await this.buildHelper.createBuildDirFolder();
 
 		const project = this.getProjectContextFromTreeNode(treeNode);
 

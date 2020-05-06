@@ -56,7 +56,7 @@ export class NetCoreTool {
 		});
 	}
 
-	public get isNetCoreInstallationPresent(): Boolean {
+	private get isNetCoreInstallationPresent(): Boolean {
 		return (!isNullOrUndefined(this.netcoreInstallLocation) && fs.existsSync(this.netcoreInstallLocation));
 	}
 
@@ -95,6 +95,10 @@ export class NetCoreTool {
 	public async runDotnetCommand(options: DotNetCommandOptions): Promise<string> {
 		if (options && options.commandTitle !== undefined && options.commandTitle !== null) {
 			this._outputChannel.appendLine(`\t[ ${options.commandTitle} ]`);
+		}
+
+		if (!this.findOrInstallNetCore()) {
+			throw new Error(NetCoreInstallationConfirmation);
 		}
 
 		const dotnetPath = utils.getSafePath(path.join(this.netcoreInstallLocation, dotnet));
