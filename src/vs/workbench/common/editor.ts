@@ -1477,12 +1477,12 @@ export async function pathsToEditors(paths: IPathData[] | undefined, fileService
 	const editors = await Promise.all(paths.map(async path => {
 		const resource = URI.revive(path.fileUri);
 		if (!resource || !fileService.canHandleResource(resource)) {
-			return undefined; // {{SQL CARBON EDIT}} @anthonydresser revert after strictnullchecks
+			return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-checks
 		}
 
 		const exists = (typeof path.exists === 'boolean') ? path.exists : await fileService.exists(resource);
 		if (!exists && path.openOnlyIfExists) {
-			return undefined; // {{SQL CARBON EDIT}} @anthonydresser revert after strictnullchecks
+			return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-checks
 		}
 
 		const options: ITextEditorOptions = (exists && typeof path.lineNumber === 'number') ? {

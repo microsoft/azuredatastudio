@@ -522,6 +522,11 @@ const registryProperties: { [path: string]: IConfigurationPropertySchema; } = {
 		'type': 'boolean',
 		'default': true,
 		'description': localize('mssql.query.ansiNulls', "Enable SET ANSI_NULLS")
+	},
+	'mssql.query.alwaysEncryptedParameterization': {
+		'type': 'boolean',
+		'default': false,
+		'description': localize('mssql.query.alwaysEncryptedParameterization', "Enable Parameterization for Always Encrypted")
 	}
 };
 

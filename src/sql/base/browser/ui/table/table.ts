@@ -230,10 +230,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._grid.setActiveCell(row, cell);
 	}
 
-	setActive(): void {
-		this._grid.setActiveCell(0, 1);
-	}
-
 	get activeCell(): Slick.Cell | null {
 		return this._grid.getActiveCell();
 	}
