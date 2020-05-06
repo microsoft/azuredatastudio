@@ -8,8 +8,8 @@ import { Router } from '@angular/router';
 import { DatabaseInfo } from 'azdata';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
-import { getFlavor } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
-import { ConnectionProfilePropertyName, ExplorerTable, NameProperty } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTable';
+import { ConnectionProfilePropertyName, ExplorerTable } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTable';
+import { NameProperty } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerView';
 import { ObjectMetadataWrapper } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/objectMetadataWrapper';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { alert } from 'vs/base/browser/ui/aria/aria';
@@ -69,18 +69,16 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			ariaLabel: placeholderLabel
 		};
 		this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
-		const serverInfo = this._bootstrap.connectionManagementService.connectionInfo.serverInfo;
-		const flavorProperties = getFlavor(serverInfo, this.logService, this._bootstrap.connectionManagementService.connectionInfo.providerId);
 		this._table = new ExplorerTable(this._tableContainer.nativeElement,
 			this._router,
 			this._config.context,
-			flavorProperties,
 			this._bootstrap,
 			this.themeService,
 			this.contextMenuService,
 			this.menuService,
 			this.contextKeyService,
-			this.progressService);
+			this.progressService,
+			this.logService);
 		this._register(this._input);
 		this._register(attachInputBoxStyler(this._input, this.themeService));
 		this._register(this._table);

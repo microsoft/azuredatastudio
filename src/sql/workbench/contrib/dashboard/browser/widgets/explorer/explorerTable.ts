@@ -9,12 +9,13 @@ import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectio
 import { TextWidthIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { MetadataType } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { BaseActionContext, ManageActionContext } from 'sql/workbench/browser/actions';
-import { FlavorProperties, ObjectListViewProperty } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
+import { getFlavor, ObjectListViewProperty } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
+import { ExplorerFilter } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerFilter';
+import { ExplorerView, NameProperty } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerView';
 import { ObjectMetadataWrapper } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/objectMetadataWrapper';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import * as DOM from 'vs/base/browser/dom';
@@ -27,14 +28,13 @@ import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/m
 import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { ILogService } from 'vs/platform/log/common/log';
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
-export const ConnectionProfilePropertyName: string = 'connection_profile';
-export const NameProperty: string = 'name';
-const IconClassProperty: string = 'iconClass';
-const NamePropertyDisplayText: string = nls.localize('dashboard.explorer.namePropertyDisplayValue', "Name");
 const ShowActionsText: string = nls.localize('dashboard.explorer.actions', "Show Actions");
+const IconClassProperty: string = 'iconClass';
+export const ConnectionProfilePropertyName: string = 'connection_profile';
 
 /**
  * Table for explorer widget
@@ -45,18 +45,21 @@ export class ExplorerTable extends Disposable {
 	private _view: TableDataView<Slick.SlickData>;
 	private _actionsColumn: ButtonColumn<Slick.SlickData>;
 	private _filterStr: string;
+	private _explorerView: ExplorerView;
+	private _displayProperties: ObjectListViewProperty[];
 
 	constructor(private parentElement: HTMLElement,
-		private router: Router,
-		private context: string,
-		private flavorProperties: FlavorProperties,
+		private readonly router: Router,
+		private readonly context: string,
 		private readonly bootStrapService: CommonServiceInterface,
-		themeService: IThemeService,
+		readonly themeService: IThemeService,
 		private readonly contextMenuService: IContextMenuService,
 		private readonly menuService: IMenuService,
 		private readonly contextKeyService: IContextKeyService,
-		private readonly progressService: IEditorProgressService) {
+		private readonly progressService: IEditorProgressService,
+		private readonly logService: ILogService) {
 		super();
+		this._explorerView = new ExplorerView(this.context);
 		this._table = new Table<Slick.SlickData>(parentElement, undefined, { forceFitColumns: true, rowHeight: 35 });
 		this._table.setSelectionModel(new RowSelectionModel());
 		this._actionsColumn = new ButtonColumn<Slick.SlickData>({
@@ -65,6 +68,9 @@ export class ExplorerTable extends Disposable {
 			title: ShowActionsText,
 			width: 40
 		});
+		const connectionInfo = this.bootStrapService.connectionManagementService.connectionInfo;
+		this._displayProperties = this._explorerView.getPropertyList(getFlavor(connectionInfo.serverInfo, this.logService, connectionInfo.providerId));
+		const explorerFilter = new ExplorerFilter(this.context, this._displayProperties);
 		this._table.registerPlugin(this._actionsColumn);
 		this._register(this._actionsColumn.onClick((args) => {
 			this.showContextMenu(args.item, args.position);
@@ -81,7 +87,7 @@ export class ExplorerTable extends Disposable {
 		}));
 		this._register(attachTableStyler(this._table, themeService));
 		this._view = new TableDataView<Slick.SlickData>(undefined, undefined, undefined, (data: Slick.SlickData[]): Slick.SlickData[] => {
-			return this.filterItems(this._filterStr, data);
+			return explorerFilter.filter(this._filterStr, data);
 		});
 		this._register(this._view);
 		this._register(this._view.onRowCountChange(() => {
@@ -165,48 +171,23 @@ export class ExplorerTable extends Disposable {
 		this._table.columns = this.columnDefinitions;
 		this._view.clear();
 		this._view.clearFilter();
-		this.setIconClassForData(items);
+		items.forEach(item => {
+			item[IconClassProperty] = this._explorerView.getIconClass(item);
+		});
 		this._table.setData(this._view);
 		this._view.push(items);
-	}
-
-	private setIconClassForData(items: Slick.SlickData[]): void {
-		if (this.context === 'database') {
-			items.forEach(item => {
-				let iconClass: string;
-				switch (item.metadataType) {
-					case MetadataType.Function:
-						iconClass = 'scalarvaluedfunction';
-						break;
-					case MetadataType.SProc:
-						iconClass = 'storedprocedure';
-						break;
-					case MetadataType.Table:
-						iconClass = 'table';
-						break;
-					case MetadataType.View:
-						iconClass = 'view';
-						break;
-				}
-				item[IconClassProperty] = iconClass;
-			});
-		} else {
-			items.forEach(item => {
-				item[IconClassProperty] = 'database-colored';
-			});
-		}
 	}
 
 	private get columnDefinitions(): Slick.Column<Slick.SlickData>[] {
 		const totalWidth = DOM.getContentWidth(this.parentElement);
 		let totalColumnWidthWeight: number = 0;
-		this.propertyList.forEach(p => {
+		this._displayProperties.forEach(p => {
 			if (p.widthWeight) {
 				totalColumnWidthWeight += p.widthWeight;
 			}
 		});
 
-		const columns: Slick.Column<Slick.SlickData>[] = this.propertyList.map(property => {
+		const columns: Slick.Column<Slick.SlickData>[] = this._displayProperties.map(property => {
 			const columnWidth = property.widthWeight ? totalWidth * (property.widthWeight / totalColumnWidthWeight) : undefined;
 			if (property.value === NameProperty) {
 				const nameColumn = new TextWidthIconColumn({
@@ -228,93 +209,6 @@ export class ExplorerTable extends Disposable {
 		});
 		columns.push(this._actionsColumn.definition);
 		return columns;
-	}
-
-	private get propertyList(): ObjectListViewProperty[] {
-		let propertyList;
-		if (this.context === 'database') {
-			if (this.flavorProperties && this.flavorProperties.objectsListProperties) {
-				propertyList = this.flavorProperties.objectsListProperties;
-			} else {
-				propertyList = [{
-					displayName: NamePropertyDisplayText,
-					value: NameProperty,
-					widthWeight: 60
-				}, {
-					displayName: nls.localize('dashboard.explorer.schemaDisplayValue', "Schema"),
-					value: 'schema',
-					widthWeight: 20
-				}, {
-					displayName: nls.localize('dashboard.explorer.objectTypeDisplayValue', "Type"),
-					value: 'metadataTypeName',
-					widthWeight: 20
-				}];
-			}
-		} else {
-			if (this.flavorProperties && this.flavorProperties.databasesListProperties) {
-				propertyList = this.flavorProperties.databasesListProperties;
-			} else {
-				propertyList = [{
-					displayName: NamePropertyDisplayText,
-					value: NameProperty,
-					widthWeight: 80
-				}];
-			}
-		}
-
-		return propertyList;
-	}
-
-	private filterItems(filterString: string, data: Slick.SlickData[]): Slick.SlickData[] {
-		if (filterString) {
-			let metadataType: MetadataType;
-			if (this.context === 'database' && filterString.indexOf(':') > -1) {
-				const filterArray = filterString.split(':');
-
-				if (filterArray.length > 2) {
-					filterString = filterArray.slice(1, filterArray.length - 1).join(':');
-				} else {
-					filterString = filterArray[1];
-				}
-
-				switch (filterArray[0].toLowerCase()) {
-					case 'v':
-						metadataType = MetadataType.View;
-						break;
-					case 't':
-						metadataType = MetadataType.Table;
-						break;
-					case 'sp':
-						metadataType = MetadataType.SProc;
-						break;
-					case 'f':
-						metadataType = MetadataType.Function;
-						break;
-					default:
-						break;
-				}
-			}
-
-			return data.filter((item: Slick.SlickData) => {
-				if (metadataType !== undefined && item.metadataType !== metadataType) {
-					return false;
-				}
-				const keys = this.propertyList.map(property => property.value);
-				let match = false;
-				for (let i = 0; i < keys.length; i++) {
-					const property = keys[i];
-					const val = item[property];
-					if (item[property] && typeof val === 'string' &&
-						val.toLowerCase().indexOf(filterString.toLowerCase()) !== -1) {
-						match = true;
-						break;
-					}
-				}
-				return match;
-			});
-		} else {
-			return data;
-		}
 	}
 }
 
