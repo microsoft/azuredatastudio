@@ -257,6 +257,9 @@ export class JupyterController implements vscode.Disposable {
 			pythonWizard.start().catch((err: any) => {
 				this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
 			});
+			pythonWizard.setupComplete.catch((err: any) => {
+				this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+			});
 		} else {
 			let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, jupyterInstaller);
 			pythonDialog.showDialog().catch((err: any) => {

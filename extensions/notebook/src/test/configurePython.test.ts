@@ -30,22 +30,34 @@ describe('Configure Python Wizard', function () {
 		viewContext = createViewContext();
 	});
 
-	afterEach(() => {
-
-	});
-
 	it('Start wizard test', async () => {
 		let wizard = new ConfigurePythonWizard(apiWrapper, testInstallation);
-		let setupComplete = wizard.start();
+		await wizard.start();
 		await wizard.close();
-		await setupComplete;
 	});
 
 	it('Reject setup on cancel test', async () => {
 		let wizard = new ConfigurePythonWizard(apiWrapper, testInstallation);
-		let setupComplete = wizard.start(undefined, true);
+		await wizard.start(undefined, true);
 		await wizard.close();
-		await should(setupComplete).be.rejected();
+		await should(wizard.setupComplete).be.rejected();
+	});
+
+	it('Error message test', async () => {
+		let wizard = new ConfigurePythonWizard(apiWrapper, testInstallation);
+		await wizard.start();
+
+		should(wizard.wizard.message).be.undefined();
+
+		let testMsg = 'Test message';
+		wizard.showErrorMessage(testMsg);
+		should(wizard.wizard.message.text).be.equal(testMsg);
+		should(wizard.wizard.message.level).be.equal(azdata.window.MessageLevel.Error);
+
+		wizard.clearStatusMessage();
+		should(wizard.wizard.message).be.undefined();
+
+		await wizard.close();
 	});
 
 	it('Configure Path Page test', async () => {

@@ -435,7 +435,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			let enablePreviewFeatures = this.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
 			if (enablePreviewFeatures) {
 				let pythonWizard = new ConfigurePythonWizard(this.apiWrapper, this);
-				return pythonWizard.start(kernelDisplayName, true);
+				await pythonWizard.start(kernelDisplayName, true);
+				return pythonWizard.setupComplete;
 			} else {
 				let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this);
 				return pythonDialog.showDialog(true);

@@ -32,17 +32,25 @@ export class ConfigurePythonWizard {
 	public readonly InvalidLocationMsg = localize('configurePython.invalidLocationMsg', "The specified install location is invalid.");
 	private readonly PythonNotFoundMsg = localize('configurePython.pythonNotFoundMsg', "No python installation was found at the specified location.");
 
-	private wizard: azdata.window.Wizard;
+	private _wizard: azdata.window.Wizard;
 	private model: ConfigurePythonModel;
 
-	private setupComplete: Deferred<void>;
+	private _setupComplete: Deferred<void>;
 	private pythonPathsPromise: Promise<PythonPathInfo[]>;
 	private usingCustomPath: boolean;
 
 	constructor(private apiWrapper: ApiWrapper, private jupyterInstallation: JupyterServerInstallation) {
-		this.setupComplete = new Deferred<void>();
+		this._setupComplete = new Deferred<void>();
 		this.pythonPathsPromise = (new PythonPathLookup()).getSuggestions();
 		this.usingCustomPath = false;
+	}
+
+	public get wizard(): azdata.window.Wizard {
+		return this._wizard;
+	}
+
+	public get setupComplete(): Promise<void> {
+		return this._setupComplete.promise;
 	}
 
 	public async start(kernelName?: string, rejectOnCancel?: boolean, ...args: any[]): Promise<void> {
@@ -61,7 +69,7 @@ export class ConfigurePythonWizard {
 		} else {
 			wizardTitle = localize('configurePython.wizardNameWithoutKernel', 'Configure Python to run kernels');
 		}
-		this.wizard = azdata.window.createWizard(wizardTitle);
+		this._wizard = azdata.window.createWizard(wizardTitle);
 		let page0 = azdata.window.createWizardPage(localize('configurePython.page0Name', 'Configure Python Runtime'));
 		let page1 = azdata.window.createWizardPage(localize('configurePython.page1Name', 'Install Dependencies'));
 
@@ -79,23 +87,23 @@ export class ConfigurePythonWizard {
 			await pickPackagesPage.start();
 		});
 
-		this.wizard.doneButton.label = this.InstallButtonText;
-		this.wizard.cancelButton.onClick(() => {
+		this._wizard.doneButton.label = this.InstallButtonText;
+		this._wizard.cancelButton.onClick(() => {
 			if (rejectOnCancel) {
-				this.setupComplete.reject(localize('configurePython.pythonInstallDeclined', "Python installation was declined."));
+				this._setupComplete.reject(localize('configurePython.pythonInstallDeclined', "Python installation was declined."));
 			} else {
-				this.setupComplete.resolve();
+				this._setupComplete.resolve();
 			}
 		});
 
-		this.wizard.onPageChanged(async info => {
+		this._wizard.onPageChanged(async info => {
 			let newPage = pages.get(info.newPage);
 			if (newPage) {
 				await newPage.onPageEnter();
 			}
 		});
 
-		this.wizard.registerNavigationValidator(async (info) => {
+		this._wizard.registerNavigationValidator(async (info) => {
 			let lastPage = pages.get(info.lastPage);
 			let newPage = pages.get(info.newPage);
 
@@ -120,26 +128,24 @@ export class ConfigurePythonWizard {
 			return true;
 		});
 
-		this.wizard.generateScriptButton.hidden = true;
-		this.wizard.pages = [page0, page1];
-		this.wizard.open();
-
-		return this.setupComplete.promise;
+		this._wizard.generateScriptButton.hidden = true;
+		this._wizard.pages = [page0, page1];
+		this._wizard.open();
 	}
 
 	public async close(): Promise<void> {
-		await this.wizard.close();
+		await this._wizard.close();
 	}
 
 	public showErrorMessage(errorMsg: string) {
-		this.wizard.message = <azdata.window.DialogMessage>{
+		this._wizard.message = <azdata.window.DialogMessage>{
 			text: errorMsg,
 			level: azdata.window.MessageLevel.Error
 		};
 	}
 
 	public clearStatusMessage() {
-		this.wizard.message = undefined;
+		this._wizard.message = undefined;
 	}
 
 	private async handlePackageInstall(): Promise<boolean> {
@@ -172,10 +178,10 @@ export class ConfigurePythonWizard {
 		};
 		this.jupyterInstallation.startInstallProcess(false, installSettings)
 			.then(() => {
-				this.setupComplete.resolve();
+				this._setupComplete.resolve();
 			})
 			.catch(err => {
-				this.setupComplete.reject(utils.getErrorMessage(err));
+				this._setupComplete.reject(utils.getErrorMessage(err));
 			});
 
 		return true;
@@ -201,7 +207,7 @@ export class ConfigurePythonWizard {
 	}
 
 	private showTaskComplete() {
-		this.wizard.registerOperation({
+		this._wizard.registerOperation({
 			connection: undefined,
 			displayName: localize('tableFromFile.taskLabel', 'Create External Table'),
 			description: undefined,
