@@ -292,6 +292,7 @@ export class SchemaCompareOptionsDialog {
 			this.optionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold', 'height': '30px' } });
 			this.optionsFlexBuilder.addItem(this.descriptionText, { CSSStyles: { 'padding': '4px', 'margin-right': '10px', 'overflow': 'scroll', 'height': '10vh' } });
 			await view.initializeModel(this.optionsFlexBuilder);
+			this.optionsTable.focus();
 		});
 	}
 

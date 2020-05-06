@@ -1,7 +1,25 @@
 {
+	"title.projectsView": "Projects",
+
 	"sqlDatabaseProjects.displayName": "Database Projects",
 	"sqlDatabaseProjects.description": "Design and deploy SQL database schemas",
 	"sqlDatabaseProjects.new": "New Database Project",
 	"sqlDatabaseProjects.open": "Open Database Project",
-	"title.projectsView": "SQL Database Projects"
+	"sqlDatabaseProjects.close": "Close Database Project",
+	"sqlDatabaseProjects.build": "Build",
+	"sqlDatabaseProjects.deploy": "Deploy",
+	"sqlDatabaseProjects.import": "Import",
+	"sqlDatabaseProjects.properties": "Properties",
+	"sqlDatabaseProjects.schemaCompare": "Schema Compare",
+
+	"sqlDatabaseProjects.newScript": "Add Script",
+	"sqlDatabaseProjects.newTable": "Add Table",
+	"sqlDatabaseProjects.newView": "Add View",
+	"sqlDatabaseProjects.newStoredProcedure": "Add Stored Procedure",
+	"sqlDatabaseProjects.newItem": "Add Item...",
+	"sqlDatabaseProjects.newFolder": "Add Folder",
+
+
+	"sqlDatabaseProjects.Settings": "Database Projects",
+	"sqlDatabaseProjects.netCoreInstallLocation": "Full Path to .Net Core SDK on the machine."
 }

@@ -8,6 +8,11 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IUserDataSyncLogService, IUserDataSyncService, SyncStatus, IUserDataAutoSyncService, UserDataSyncError, UserDataSyncErrorCode, IUserDataSyncEnablementService } from 'vs/platform/userDataSync/common/userDataSync';
 import { IAuthenticationTokenService } from 'vs/platform/authentication/common/authentication';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+
+type AutoSyncTriggerClassification = {
+	source: { classification: 'SystemMetaData', purpose: 'FeatureInsight', isMeasurement: true };
+};
 
 export class UserDataAutoSyncService extends Disposable implements IUserDataAutoSyncService {
 
@@ -25,6 +30,7 @@ export class UserDataAutoSyncService extends Disposable implements IUserDataAuto
 		@IUserDataSyncService private readonly userDataSyncService: IUserDataSyncService,
 		@IUserDataSyncLogService private readonly logService: IUserDataSyncLogService,
 		@IAuthenticationTokenService private readonly authTokenService: IAuthenticationTokenService,
+		@ITelemetryService private readonly telemetryService: ITelemetryService,
 	) {
 		super();
 		this.updateEnablement(false, true);
@@ -32,11 +38,11 @@ export class UserDataAutoSyncService extends Disposable implements IUserDataAuto
 		this._register(Event.any<any>(authTokenService.onDidChangeToken)(() => this.updateEnablement(true, true)));
 		this._register(Event.any<any>(userDataSyncService.onDidChangeStatus)(() => this.updateEnablement(true, true)));
 		this._register(this.userDataSyncEnablementService.onDidChangeEnablement(() => this.updateEnablement(true, false)));
-		this._register(this.userDataSyncEnablementService.onDidChangeResourceEnablement(() => this.triggerAutoSync()));
+		this._register(this.userDataSyncEnablementService.onDidChangeResourceEnablement(() => this.triggerAutoSync(['resourceEnablement'])));
 	}
 
 	private async updateEnablement(stopIfDisabled: boolean, auto: boolean): Promise<void> {
-		const enabled = await this.isAutoSyncEnabled();
+		const { enabled, reason } = await this.isAutoSyncEnabled();
 		if (this.enabled === enabled) {
 			return;
 		}
@@ -50,7 +56,7 @@ export class UserDataAutoSyncService extends Disposable implements IUserDataAuto
 			this.resetFailures();
 			if (stopIfDisabled) {
 				this.userDataSyncService.stop();
-				this.logService.info('Auto Sync: stopped.');
+				this.logService.info('Auto Sync: stopped because', reason);
 			}
 		}
 
@@ -89,17 +95,26 @@ export class UserDataAutoSyncService extends Disposable implements IUserDataAuto
 		}
 	}
 
-	private async isAutoSyncEnabled(): Promise<boolean> {
-		return this.userDataSyncEnablementService.isEnabled()
-			&& this.userDataSyncService.status !== SyncStatus.Uninitialized
-			&& !!(await this.authTokenService.getToken());
+	private async isAutoSyncEnabled(): Promise<{ enabled: boolean, reason?: string }> {
+		if (!this.userDataSyncEnablementService.isEnabled()) {
+			return { enabled: false, reason: 'sync is disabled' };
+		}
+		if (this.userDataSyncService.status === SyncStatus.Uninitialized) {
+			return { enabled: false, reason: 'sync is not initialized' };
+		}
+		const token = await this.authTokenService.getToken();
+		if (!token) {
+			return { enabled: false, reason: 'token is not avaialable' };
+		}
+		return { enabled: true };
 	}
 
 	private resetFailures(): void {
 		this.successiveFailures = 0;
 	}
 
-	async triggerAutoSync(): Promise<void> {
+	async triggerAutoSync(sources: string[]): Promise<void> {
+		sources.forEach(source => this.telemetryService.publicLog2<{ source: string }, AutoSyncTriggerClassification>('sync/triggerAutoSync', { source }));
 		if (this.enabled) {
 			return this.syncDelayer.trigger(() => {
 				this.logService.info('Auto Sync: Triggered.');

@@ -14,8 +14,9 @@ import { IConnectionManagementService, IConnectableInput, INewConnectionParams, 
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
-import { ISelectionData, ExecutionPlanOptions } from 'azdata';
+import { ExecutionPlanOptions } from 'azdata';
 import { startsWith } from 'vs/base/common/strings';
+import { IRange } from 'vs/editor/common/core/range';
 
 const MAX_SIZE = 13;
 
@@ -172,7 +173,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	// Description is shown beside the tab name in the combobox of open editors
 	public getDescription(): string { return this._description; }
 	public supportsSplitEditor(): boolean { return false; }
-	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<boolean> {
+	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<void> {
 		return this._text.revert(group, options);
 	}
 
@@ -193,10 +194,6 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public isDirty(): boolean { return this._text.isDirty(); }
 	public get resource(): URI { return this._text.resource; }
 
-	public matchInputInstanceType(inputType: any): boolean {
-		return (this._text instanceof inputType);
-	}
-
 	public getName(longForm?: boolean): string {
 		if (this.configurationService.getValue('sql.showConnectionInfoInTitle')) {
 			let profile = this.connectionManagementService.getConnectionProfile(this.uri);
@@ -213,9 +210,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			} else {
 				title += localize('disconnected', "disconnected");
 			}
-			return this._text.getName() + (longForm ? (' - ' + title) : ` - ${trimTitle(title)}`);
+			return this.text.getName() + (longForm ? (' - ' + title) : ` - ${trimTitle(title)}`);
 		} else {
-			return this._text.getName();
+			return this.text.getName();
 		}
 	}
 
@@ -233,13 +230,13 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	// State update funtions
-	public runQuery(selection?: ISelectionData, executePlanOptions?: ExecutionPlanOptions): void {
-		this.queryModelService.runQuery(this.uri, selection, executePlanOptions);
+	public runQuery(range?: IRange, executePlanOptions?: ExecutionPlanOptions): void {
+		this.queryModelService.runQuery(this.uri, range, executePlanOptions);
 		this.state.executing = true;
 	}
 
-	public runQueryStatement(selection?: ISelectionData): void {
-		this.queryModelService.runQueryStatement(this.uri, selection);
+	public runQueryStatement(range?: IRange): void {
+		this.queryModelService.runQueryStatement(this.uri, range);
 		this.state.executing = true;
 	}
 
@@ -273,15 +270,15 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 		let isRunningQuery = this.queryModelService.isRunningQuery(this.uri);
 		if (!isRunningQuery && params && params.runQueryOnCompletion) {
-			let selection: ISelectionData | undefined = params ? params.querySelection : undefined;
+			let range: IRange | undefined = params ? params.queryRange : undefined;
 			if (params.runQueryOnCompletion === RunQueryOnConnectionMode.executeCurrentQuery) {
-				this.runQueryStatement(selection);
+				this.runQueryStatement(range);
 			} else if (params.runQueryOnCompletion === RunQueryOnConnectionMode.executeQuery) {
-				this.runQuery(selection);
+				this.runQuery(range);
 			} else if (params.runQueryOnCompletion === RunQueryOnConnectionMode.estimatedQueryPlan) {
-				this.runQuery(selection, { displayEstimatedQueryPlan: true });
+				this.runQuery(range, { displayEstimatedQueryPlan: true });
 			} else if (params.runQueryOnCompletion === RunQueryOnConnectionMode.actualQueryPlan) {
-				this.runQuery(selection, { displayActualQueryPlan: true });
+				this.runQuery(range, { displayActualQueryPlan: true });
 			}
 		}
 		this._onDidChangeLabel.fire();
@@ -289,7 +286,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	public onDisconnect(): void {
 		this.state.connected = false;
-		this._onDidChangeLabel.fire();
+		if (!this.isDisposed()) {
+			this._onDidChangeLabel.fire();
+		}
 	}
 
 	public onRunQuery(): void {
@@ -309,10 +308,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	public dispose() {
+		super.dispose(); // we want to dispose first so that for future logic we know we are disposed
 		this.queryModelService.disposeQuery(this.uri);
 		this.connectionManagementService.disconnectEditor(this, true);
-
-		super.dispose();
 	}
 
 	public get isSharedSession(): boolean {

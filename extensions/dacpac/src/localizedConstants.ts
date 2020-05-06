@@ -54,6 +54,7 @@ export const exportText = localize('dacFx.export', "Export");
 export const generateScript = localize('dacFx.generateScriptButton', "Generate Script");
 export const generatingScriptMessage = localize('dacfx.scriptGeneratingMessage', "You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.");
 export const defaultText = localize('dacfx.default', "default");
+export const deployPlanTableTitle = localize('dacfx.deployPlanTableTitle', "Deploy plan operations");
 
 // Error messages
 export const databaseNameExistsErrorMessage = localize('dacfx.databaseNameExistsErrorMessage', "A database with the same name already exists on the instance of SQL Server");

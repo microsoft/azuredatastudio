@@ -10,7 +10,6 @@ import { ExtensionContext, workspace, window, Disposable, commands, OutputChanne
 import { findGit, Git, IGit } from './git';
 import { Model } from './model';
 import { CommandCenter } from './commands';
-import { GitContentProvider } from './contentProvider';
 import { GitFileSystemProvider } from './fileSystemProvider';
 import { GitDecorations } from './decorationProvider';
 import { Askpass } from './askpass';
@@ -21,8 +20,10 @@ import { GitProtocolHandler } from './protocolHandler';
 import { GitExtensionImpl } from './api/extension';
 // import * as path from 'path';
 // import * as fs from 'fs';
-import { createIPCServer, IIPCServer } from './ipc/ipcServer';
 import { GitTimelineProvider } from './timelineProvider';
+import { registerAPICommands } from './api/api1';
+import { GithubCredentialProviderManager } from './github';
+import { TerminalEnvironmentManager } from './terminal';
 
 const deactivateTasks: { (): Promise<any>; }[] = [];
 
@@ -36,27 +37,18 @@ async function createModel(context: ExtensionContext, outputChannel: OutputChann
 	const pathHint = workspace.getConfiguration('git').get<string>('path');
 	const info = await findGit(pathHint, path => outputChannel.appendLine(localize('looking', "Looking for git in: {0}", path)));
 
-	let env: any = {};
-	let ipc: IIPCServer | undefined;
+	const askpass = await Askpass.create(outputChannel, context.storagePath);
+	disposables.push(askpass);
 
-	try {
-		ipc = await createIPCServer();
-		disposables.push(ipc);
-		env = { ...env, ...ipc.getEnv() };
-	} catch {
-		// noop
-	}
+	const env = askpass.getEnv();
+	const terminalEnvironmentManager = new TerminalEnvironmentManager(context, env);
+	disposables.push(terminalEnvironmentManager);
 
-	if (ipc) {
-		const askpass = new Askpass(ipc);
-		disposables.push(askpass);
-		env = { ...env, ...askpass.getEnv() };
-	} else {
-		env = { ...env, ...Askpass.getDisabledEnv() };
-	}
+	const githubCredentialProviderManager = new GithubCredentialProviderManager(askpass);
+	context.subscriptions.push(githubCredentialProviderManager);
 
 	const git = new Git({ gitPath: info.path, version: info.version, env });
-	const model = new Model(git, context.globalState, outputChannel);
+	const model = new Model(git, askpass, context.globalState, outputChannel);
 	disposables.push(model);
 
 	const onRepository = () => commands.executeCommand('setContext', 'gitOpenRepositoryCount', `${model.repositories.length}`);
@@ -80,7 +72,6 @@ async function createModel(context: ExtensionContext, outputChannel: OutputChann
 
 	disposables.push(
 		new CommandCenter(git, model, outputChannel, telemetryReporter),
-		new GitContentProvider(model),
 		new GitFileSystemProvider(model),
 		new GitDecorations(model),
 		new GitProtocolHandler(),
@@ -92,57 +83,56 @@ async function createModel(context: ExtensionContext, outputChannel: OutputChann
 	return model;
 }
 
-// {{SQL CARBON EDIT}} - Comment out function that is unused due to our edit below
-// async function isGitRepository(folder: WorkspaceFolder): Promise<boolean> {
-// 	if (folder.uri.scheme !== 'file') {
-// 		return false;
-// 	}
+/* {{SQL CARBON EDIT}} - Comment out function that is unused due to our edit below
+async function isGitRepository(folder: WorkspaceFolder): Promise<boolean> {
+	if (folder.uri.scheme !== 'file') {
+		return false;
+	}
 
-// 	const dotGit = path.join(folder.uri.fsPath, '.git');
+	const dotGit = path.join(folder.uri.fsPath, '.git');
 
-// 	try {
-// 		const dotGitStat = await new Promise<fs.Stats>((c, e) => fs.stat(dotGit, (err, stat) => err ? e(err) : c(stat)));
-// 		return dotGitStat.isDirectory();
-// 	} catch (err) {
-// 		return false;
-// 	}
-// }
+	try {
+		const dotGitStat = await new Promise<fs.Stats>((c, e) => fs.stat(dotGit, (err, stat) => err ? e(err) : c(stat)));
+		return dotGitStat.isDirectory();
+	} catch (err) {
+		return false;
+	}
+}
 
-// {{SQL CARBON EDIT}} - Comment out function that is unused due to our edit below
-// async function warnAboutMissingGit(): Promise<void> {
-// 	const config = workspace.getConfiguration('git');
-// 	const shouldIgnore = config.get<boolean>('ignoreMissingGitWarning') === true;
+async function warnAboutMissingGit(): Promise<void> {
+	const config = workspace.getConfiguration('git');
+	const shouldIgnore = config.get<boolean>('ignoreMissingGitWarning') === true;
 
-// 	if (shouldIgnore) {
-// 		return;
-// 	}
+	if (shouldIgnore) {
+		return;
+	}
 
-// 	if (!workspace.workspaceFolders) {
-// 		return;
-// 	}
+	if (!workspace.workspaceFolders) {
+		return;
+	}
 
-// 	const areGitRepositories = await Promise.all(workspace.workspaceFolders.map(isGitRepository));
+	const areGitRepositories = await Promise.all(workspace.workspaceFolders.map(isGitRepository));
 
-// 	if (areGitRepositories.every(isGitRepository => !isGitRepository)) {
-// 		return;
-// 	}
+	if (areGitRepositories.every(isGitRepository => !isGitRepository)) {
+		return;
+	}
 
-// 	const download = localize('downloadgit', "Download Git");
-// 	const neverShowAgain = localize('neverShowAgain', "Don't Show Again");
-// 	const choice = await window.showWarningMessage(
-// 		localize('notfound', "Git not found. Install it or configure it using the 'git.path' setting."),
-// 		download,
-// 		neverShowAgain
-// 	);
+	const download = localize('downloadgit', "Download Git");
+	const neverShowAgain = localize('neverShowAgain', "Don't Show Again");
+	const choice = await window.showWarningMessage(
+		localize('notfound', "Git not found. Install it or configure it using the 'git.path' setting."),
+		download,
+		neverShowAgain
+	);
 
-// 	if (choice === download) {
-// 		commands.executeCommand('vscode.open', Uri.parse('https://git-scm.com/'));
-// 	} else if (choice === neverShowAgain) {
-// 		await config.update('ignoreMissingGitWarning', true, true);
-// 	}
-// }
+	if (choice === download) {
+		commands.executeCommand('vscode.open', Uri.parse('https://git-scm.com/'));
+	} else if (choice === neverShowAgain) {
+		await config.update('ignoreMissingGitWarning', true, true);
+	}
+}*/
 
-export async function activate(context: ExtensionContext): Promise<GitExtension> {
+export async function _activate(context: ExtensionContext): Promise<GitExtension> {
 	const disposables: Disposable[] = [];
 	context.subscriptions.push(new Disposable(() => Disposable.from(...disposables).dispose()));
 
@@ -174,9 +164,8 @@ export async function activate(context: ExtensionContext): Promise<GitExtension>
 			throw err;
 		}
 
-		// {{SQL CARBON EDIT}} turn-off Git missing prompt
-		// console.warn(err.message);
-		// outputChannel.appendLine(err.message);
+		// console.warn(err.message); {{SQL CARBON EDIT}} turn-off Git missing prompt
+		// outputChannel.appendLine(err.message); {{SQL CARBON EDIT}} turn-off Git missing prompt
 
 		commands.executeCommand('setContext', 'git.missing', true);
 		// warnAboutMissingGit(); {{SQL CARBON EDIT}} turn-off Git missing prompt
@@ -185,38 +174,42 @@ export async function activate(context: ExtensionContext): Promise<GitExtension>
 	}
 }
 
-// {{SQL CARBON EDIT}} - Rename info to _info to prevent error due to unused variable
-async function checkGitVersion(_info: IGit): Promise<void> {
+export async function activate(context: ExtensionContext): Promise<GitExtension> {
+	const result = await _activate(context);
+	context.subscriptions.push(registerAPICommands(result));
+	return result;
+}
 
-	// {{SQL CARBON EDIT}}
-	// remove Git version check for azuredatastudio
+async function checkGitVersion(_info: IGit): Promise<void> { // {{SQL CARBON EDIT}} - Rename info to _info to prevent error due to unused variable
+	return; /* {{SQL CARBON EDIT}} return immediately
 
-	return;
+	/*const config = workspace.getConfiguration('git');
+	const shouldIgnore = config.get<boolean>('ignoreLegacyWarning') === true;
 
-	// const config = workspace.getConfiguration('git');
-	// const shouldIgnore = config.get<boolean>('ignoreLegacyWarning') === true;
 
-	// if (shouldIgnore) {
-	// 	return;
-	// }
+	const config = workspace.getConfiguration('git');
+	const shouldIgnore = config.get<boolean>('ignoreLegacyWarning') === true;
 
-	// if (!/^[01]/.test(info.version)) {
-	// 	return;
-	// }
+	if (shouldIgnore) {
+		return;
+	}
 
-	// const update = localize('updateGit', "Update Git");
-	// const neverShowAgain = localize('neverShowAgain', "Don't Show Again");
+	if (!/^[01]/.test(info.version)) {
+		return;
+	}
 
-	// const choice = await window.showWarningMessage(
-	// 	localize('git20', "You seem to have git {0} installed. Code works best with git >= 2", info.version),
-	// 	update,
-	// 	neverShowAgain
-	// );
+	const update = localize('updateGit', "Update Git");
+	const neverShowAgain = localize('neverShowAgain', "Don't Show Again");
 
-	// if (choice === update) {
-	// 	commands.executeCommand('vscode.open', Uri.parse('https://git-scm.com/'));
-	// } else if (choice === neverShowAgain) {
-	// 	await config.update('ignoreLegacyWarning', true, true);
-	// }
-	// {{SQL CARBON EDIT}} - End
+	const choice = await window.showWarningMessage(
+		localize('git20', "You seem to have git {0} installed. Code works best with git >= 2", info.version),
+		update,
+		neverShowAgain
+	);
+
+	if (choice === update) {
+		commands.executeCommand('vscode.open', Uri.parse('https://git-scm.com/'));
+	} else if (choice === neverShowAgain) {
+		await config.update('ignoreLegacyWarning', true, true);
+	}*/
 }

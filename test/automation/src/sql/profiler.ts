@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Code } from '../code';
-import { QuickOpen } from '../quickopen';
+import { QuickAccess } from '../quickaccess';
 import { waitForNewDialog, clickDialogButton } from './sqlutils';
 
 const NEW_SESSION_DIALOG_TITLE: string = 'Start New Profiler Session';
 
 export class Profiler {
 
-	constructor(private code: Code, private quickopen: QuickOpen) { }
+	constructor(private code: Code, private quickopen: QuickAccess) { }
 
 	async launchProfiler(): Promise<void> {
 		await this.quickopen.runCommand('Profiler: Launch Profiler');

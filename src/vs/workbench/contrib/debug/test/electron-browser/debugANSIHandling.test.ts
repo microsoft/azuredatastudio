@@ -12,11 +12,12 @@ import { workbenchInstantiationService } from 'vs/workbench/test/browser/workben
 import { LinkDetector } from 'vs/workbench/contrib/debug/browser/linkDetector';
 import { Color, RGBA } from 'vs/base/common/color';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { TestThemeService, TestTheme } from 'vs/platform/theme/test/common/testThemeService';
+import { TestThemeService, TestColorTheme } from 'vs/platform/theme/test/common/testThemeService';
 import { ansiColorMap } from 'vs/workbench/contrib/terminal/common/terminalColorRegistry';
 import { DebugModel } from 'vs/workbench/contrib/debug/common/debugModel';
 import { DebugSession } from 'vs/workbench/contrib/debug/browser/debugSession';
 import { NullOpenerService } from 'vs/platform/opener/common/opener';
+import { createMockDebugModel } from 'vs/workbench/contrib/debug/test/common/mockDebug';
 
 suite.skip('Debug - ANSI Handling', () => {
 
@@ -29,8 +30,8 @@ suite.skip('Debug - ANSI Handling', () => {
 	 * Instantiate services for use by the functions being tested.
 	 */
 	setup(() => {
-		model = new DebugModel([], [], [], [], [], <any>{ isDirty: (e: any) => false });
-		session = new DebugSession({ resolved: { name: 'test', type: 'node', request: 'launch' }, unresolved: undefined }, undefined!, model, undefined, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, NullOpenerService, undefined!, undefined!);
+		model = createMockDebugModel();
+		session = new DebugSession(generateUuid(), { resolved: { name: 'test', type: 'node', request: 'launch' }, unresolved: undefined }, undefined!, model, undefined, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, NullOpenerService, undefined!, undefined!);
 
 		const instantiationService: TestInstantiationService = <TestInstantiationService>workbenchInstantiationService();
 		linkDetector = instantiationService.createInstance(LinkDetector);
@@ -39,7 +40,7 @@ suite.skip('Debug - ANSI Handling', () => {
 		for (let color in ansiColorMap) {
 			colors[color] = <any>ansiColorMap[color].defaults.dark;
 		}
-		const testTheme = new TestTheme(colors);
+		const testTheme = new TestColorTheme(colors);
 		themeService = new TestThemeService(testTheme);
 	});
 

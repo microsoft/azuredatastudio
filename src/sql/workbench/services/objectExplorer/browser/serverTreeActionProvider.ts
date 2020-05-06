@@ -4,13 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import {
-	DisconnectConnectionAction, AddServerAction,
+	DisconnectConnectionAction, AddServerAction, EditConnectionAction,
 	DeleteConnectionAction, RefreshAction, EditServerGroupAction
 } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
@@ -31,7 +30,7 @@ import { firstIndex, find } from 'vs/base/common/arrays';
 /**
  *  Provides actions for the server tree elements
  */
-export class ServerTreeActionProvider extends ContributableActionProvider {
+export class ServerTreeActionProvider {
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -40,7 +39,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		@IMenuService private menuService: IMenuService,
 		@IContextKeyService private _contextKeyService: IContextKeyService
 	) {
-		super();
 	}
 
 	public hasActions(tree: ITree, element: any): boolean {
@@ -131,6 +129,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		if (this._connectionManagementService.isProfileConnected(context.profile)) {
 			actions.push(this._instantiationService.createInstance(DisconnectConnectionAction, DisconnectConnectionAction.ID, DisconnectConnectionAction.LABEL, context.profile));
 		}
+		actions.push(this._instantiationService.createInstance(EditConnectionAction, EditConnectionAction.ID, EditConnectionAction.LABEL, context.profile));
 		actions.push(this._instantiationService.createInstance(DeleteConnectionAction, DeleteConnectionAction.ID, DeleteConnectionAction.DELETE_CONNECTION_LABEL, context.profile));
 
 		// Contribute refresh action for scriptable objects via contribution

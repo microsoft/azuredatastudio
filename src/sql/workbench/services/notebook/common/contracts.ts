@@ -45,5 +45,6 @@ export enum NotebookChangeType {
 	Saved,
 	CellExecuted,
 	CellInputVisibilityChanged,
-	CellOutputCleared
+	CellOutputCleared,
+	CellMetadataUpdated
 }

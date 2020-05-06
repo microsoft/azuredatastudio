@@ -5,8 +5,6 @@
 
 import { Emitter, Event } from 'vs/base/common/event';
 
-import { ISelectionData } from 'azdata';
-
 import {
 	IConnectionParams,
 	INewConnectionParams,
@@ -23,7 +21,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { TestStorageService, TestFileService, workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestFileService, workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
@@ -33,6 +31,8 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
+import { IRange } from 'vs/editor/common/core/range';
 
 suite('SQL QueryAction Tests', () => {
 
@@ -221,9 +221,9 @@ suite('SQL QueryAction Tests', () => {
 		let countCalledShowDialog: number = 0;
 		let countCalledRunQuery: number = 0;
 		let showDialogConnectionParams: INewConnectionParams = undefined;
-		let runQuerySelection: ISelectionData = undefined;
-		let selectionToReturnInGetSelection: ISelectionData = undefined;
-		let predefinedSelection: ISelectionData = { startLine: 1, startColumn: 2, endLine: 3, endColumn: 4 };
+		let runQuerySelection: IRange = undefined;
+		let selectionToReturnInGetSelection: IRange = undefined;
+		let predefinedSelection: IRange = { startLineNumber: 1, startColumn: 2, endLineNumber: 3, endColumn: 4 };
 
 		// ... Mock "getSelection" in QueryEditor
 		const workbenchinstantiationService = workbenchInstantiationService();
@@ -233,11 +233,11 @@ suite('SQL QueryAction Tests', () => {
 
 		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Loose, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		queryInput.setup(x => x.uri).returns(() => testUri);
-		queryInput.setup(x => x.runQuery(TypeMoq.It.isAny())).callback((selection: ISelectionData) => {
+		queryInput.setup(x => x.runQuery(TypeMoq.It.isAny())).callback((selection: IRange) => {
 			runQuerySelection = selection;
 			countCalledRunQuery++;
 		});
-		queryInput.setup(x => x.runQuery(undefined)).callback((selection: ISelectionData) => {
+		queryInput.setup(x => x.runQuery(undefined)).callback((selection: IRange) => {
 			runQuerySelection = selection;
 			countCalledRunQuery++;
 		});
@@ -276,7 +276,7 @@ suite('SQL QueryAction Tests', () => {
 		assert.equal(countCalledShowDialog, 1, 'run should call showDialog');
 		assert.equal(countCalledRunQuery, 0, 'run should not call runQuery');
 		assert.equal(showDialogConnectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
-		assert.equal(showDialogConnectionParams.querySelection, undefined, 'querySelection should be undefined');
+		assert.equal(showDialogConnectionParams.queryRange, undefined, 'querySelection should be undefined');
 
 		////// If I call run on RunQueryAction while disconnected and with a defined selection
 		isConnected = false;
@@ -287,11 +287,11 @@ suite('SQL QueryAction Tests', () => {
 		assert.equal(countCalledShowDialog, 2, 'run should call showDialog again');
 		assert.equal(countCalledRunQuery, 0, 'run should not call runQuery');
 		assert.equal(showDialogConnectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
-		assert.notEqual(showDialogConnectionParams.querySelection, undefined, 'There should not be an undefined selection in runQuery');
-		assert.equal(showDialogConnectionParams.querySelection.startLine, selectionToReturnInGetSelection.startLine, 'startLine should match');
-		assert.equal(showDialogConnectionParams.querySelection.startColumn, selectionToReturnInGetSelection.startColumn, 'startColumn should match');
-		assert.equal(showDialogConnectionParams.querySelection.endLine, selectionToReturnInGetSelection.endLine, 'endLine should match');
-		assert.equal(showDialogConnectionParams.querySelection.endColumn, selectionToReturnInGetSelection.endColumn, 'endColumn should match');
+		assert.notEqual(showDialogConnectionParams.queryRange, undefined, 'There should not be an undefined selection in runQuery');
+		assert.equal(showDialogConnectionParams.queryRange.startLineNumber, selectionToReturnInGetSelection.startLineNumber, 'startLine should match');
+		assert.equal(showDialogConnectionParams.queryRange.startColumn, selectionToReturnInGetSelection.startColumn, 'startColumn should match');
+		assert.equal(showDialogConnectionParams.queryRange.endLineNumber, selectionToReturnInGetSelection.endLineNumber, 'endLine should match');
+		assert.equal(showDialogConnectionParams.queryRange.endColumn, selectionToReturnInGetSelection.endColumn, 'endColumn should match');
 
 		////// If I call run on RunQueryAction while connected and with an undefined selection
 		isConnected = true;
@@ -312,9 +312,9 @@ suite('SQL QueryAction Tests', () => {
 		assert.equal(countCalledShowDialog, 2, 'run should not call showDialog');
 		assert.equal(countCalledRunQuery, 2, 'run should call runQuery again');
 		assert.notEqual(runQuerySelection, undefined, 'There should not be an undefined selection in runQuery');
-		assert.equal(runQuerySelection.startLine, selectionToReturnInGetSelection.startLine, 'startLine should match');
+		assert.equal(runQuerySelection.startLineNumber, selectionToReturnInGetSelection.startLineNumber, 'startLine should match');
 		assert.equal(runQuerySelection.startColumn, selectionToReturnInGetSelection.startColumn, 'startColumn should match');
-		assert.equal(runQuerySelection.endLine, selectionToReturnInGetSelection.endLine, 'endLine should match');
+		assert.equal(runQuerySelection.endLineNumber, selectionToReturnInGetSelection.endLineNumber, 'endLine should match');
 		assert.equal(runQuerySelection.endColumn, selectionToReturnInGetSelection.endColumn, 'endColumn should match');
 	});
 

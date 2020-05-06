@@ -36,6 +36,9 @@
 
 	"title.showLogFile": "Show Log File",
 
+	"mssql.disabled": "Disabled",
+	"mssql.enabled": "Enabled",
+
 	"mssql.configuration.title": "MSSQL configuration",
 	"mssql.query.displayBitAsNumber": "Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'",
 	"mssql.query.maxXmlCharsToStore": "Number of XML characters to store after running a query",
@@ -137,5 +140,10 @@
 	"mssql.connectionOptions.packetSize.displayName": "Packet size",
 	"mssql.connectionOptions.packetSize.description": "Size in bytes of the network packets used to communicate with an instance of SQL Server",
 	"mssql.connectionOptions.typeSystemVersion.displayName": "Type system version",
-	"mssql.connectionOptions.typeSystemVersion.description": "Indicates which server type system then provider will expose through the DataReader"
+	"mssql.connectionOptions.typeSystemVersion.description": "Indicates which server type system the provider will expose through the DataReader",
+	"databasesListProperties.name": "Name",
+	"databasesListProperties.status": "Status",
+	"databasesListProperties.size": "Size (MB)",
+	"databasesListProperties.lastBackup": "Last backup",
+	"objectsListProperties.name": "Name"
 }

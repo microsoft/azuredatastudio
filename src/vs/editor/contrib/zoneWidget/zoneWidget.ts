@@ -214,13 +214,13 @@ export abstract class ZoneWidget implements IHorizontalSashLayoutProvider {
 
 	create(): void {
 
-		dom.addClass(this.domNode, 'zone-widget');
+		this.domNode.classList.add('zone-widget');
 		if (this.options.className) {
-			dom.addClass(this.domNode, this.options.className);
+			this.domNode.classList.add(this.options.className);
 		}
 
 		this.container = document.createElement('div');
-		dom.addClass(this.container, 'zone-widget-container');
+		this.container.classList.add('zone-widget-container');
 		this.domNode.appendChild(this.container);
 		if (this.options.showArrow) {
 			this._arrow = new Arrow(this.editor);
@@ -360,10 +360,8 @@ export abstract class ZoneWidget implements IHorizontalSashLayoutProvider {
 		const lineHeight = this.editor.getOption(EditorOption.lineHeight);
 
 		// adjust heightInLines to viewport
-		const maxHeightInLines = (this.editor.getLayoutInfo().height / lineHeight) * 0.8;
-		if (heightInLines >= maxHeightInLines) {
-			heightInLines = maxHeightInLines;
-		}
+		const maxHeightInLines = Math.max(12, (this.editor.getLayoutInfo().height / lineHeight) * 0.8);
+		heightInLines = Math.min(heightInLines, maxHeightInLines);
 
 		let arrowHeight = 0;
 		let frameThickness = 0;

@@ -134,8 +134,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							isReadOnly: true,
 							width: 25,
 							headerCssStyles: {
-								'border': 'none',
-								'background-color': '#FFFFFF'
+								'border': 'none'
 							},
 							rowCssStyles: {
 								'border-top': 'solid 1px #ccc',
@@ -151,7 +150,6 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							width: 175,
 							headerCssStyles: {
 								'border': 'none',
-								'background-color': '#FFFFFF',
 								...cssStyles.tableHeader
 							},
 							rowCssStyles: {
@@ -168,7 +166,6 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							width: 150,
 							headerCssStyles: {
 								'border': 'none',
-								'background-color': '#FFFFFF',
 								...cssStyles.tableHeader
 							},
 							rowCssStyles: {
@@ -185,7 +182,6 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							width: 100,
 							headerCssStyles: {
 								'border': 'none',
-								'background-color': '#FFFFFF',
 								'text-align': 'left',
 								...cssStyles.tableHeader
 							},
@@ -204,7 +200,6 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							width: 150,
 							headerCssStyles: {
 								'border': 'none',
-								'background-color': '#FFFFFF'
 							},
 							rowCssStyles: {
 								'border-top': 'solid 1px #ccc',
@@ -262,7 +257,6 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							width: 200,
 							headerCssStyles: {
 								'border': 'none',
-								'background-color': '#FFFFFF',
 								...cssStyles.tableHeader
 							},
 							rowCssStyles: {
@@ -279,7 +273,6 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							width: 350,
 							headerCssStyles: {
 								'border': 'none',
-								'background-color': '#FFFFFF',
 								...cssStyles.tableHeader
 							},
 							rowCssStyles: {
@@ -299,7 +292,6 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							width: 50,
 							headerCssStyles: {
 								'border': 'none',
-								'background-color': '#FFFFFF'
 							},
 							rowCssStyles: {
 								'border-top': 'solid 1px #ccc',

@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import { EditorGroup, ISerializedEditorGroup, EditorCloseEvent } from 'vs/workbench/common/editor/editorGroup';
 import { Extensions as EditorExtensions, IEditorInputFactoryRegistry, EditorInput, IFileEditorInput, IEditorInputFactory, CloseDirection, EditorsOrder } from 'vs/workbench/common/editor';
 import { URI } from 'vs/base/common/uri';
-import { TestLifecycleService, TestContextService, TestStorageService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestLifecycleService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -21,6 +21,7 @@ import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtil
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { TestContextService, TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 
 function inst(): IInstantiationService {
 	let inst = new TestInstantiationService();
@@ -144,11 +145,18 @@ interface ISerializedTestInput {
 
 class TestEditorInputFactory implements IEditorInputFactory {
 
+	static disableSerialize = false;
+	static disableDeserialize = false;
+
 	canSerialize(editorInput: EditorInput): boolean {
 		return true;
 	}
 
-	serialize(editorInput: EditorInput): string {
+	serialize(editorInput: EditorInput): string | undefined {
+		if (TestEditorInputFactory.disableSerialize) {
+			return undefined;
+		}
+
 		let testEditorInput = <TestEditorInput>editorInput;
 		let testInput: ISerializedTestInput = {
 			id: testEditorInput.id
@@ -157,7 +165,11 @@ class TestEditorInputFactory implements IEditorInputFactory {
 		return JSON.stringify(testInput);
 	}
 
-	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): EditorInput {
+	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): EditorInput | undefined {
+		if (TestEditorInputFactory.disableDeserialize) {
+			return undefined;
+		}
+
 		let testInput: ISerializedTestInput = JSON.parse(serializedEditorInput);
 
 		return new TestEditorInput(testInput.id);
@@ -169,6 +181,9 @@ suite('Workbench editor groups', () => {
 	let disposables: IDisposable[] = [];
 
 	setup(() => {
+		TestEditorInputFactory.disableSerialize = false;
+		TestEditorInputFactory.disableDeserialize = false;
+
 		disposables.push(Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).registerEditorInputFactory('testEditorInputForGroups', TestEditorInputFactory));
 	});
 
@@ -295,18 +310,40 @@ suite('Workbench editor groups', () => {
 		const input2 = input();
 		const input3 = input();
 
-		// Pinned and Active
+		// Case 1: inputs can be serialized and deserialized
+
 		group.openEditor(input1, { pinned: true, active: true });
 		group.openEditor(input2, { pinned: true, active: true });
 		group.openEditor(input3, { pinned: false, active: true });
 
-		const deserialized = createGroup(group.serialize());
+		let deserialized = createGroup(group.serialize());
 		assert.equal(group.id, deserialized.id);
 		assert.equal(deserialized.count, 3);
+		assert.equal(deserialized.getEditors(EditorsOrder.SEQUENTIAL).length, 3);
+		assert.equal(deserialized.getEditors(EditorsOrder.MOST_RECENTLY_ACTIVE).length, 3);
 		assert.equal(deserialized.isPinned(input1), true);
 		assert.equal(deserialized.isPinned(input2), true);
 		assert.equal(deserialized.isPinned(input3), false);
 		assert.equal(deserialized.isActive(input3), true);
+
+		// Case 2: inputs cannot be serialized
+		TestEditorInputFactory.disableSerialize = true;
+
+		deserialized = createGroup(group.serialize());
+		assert.equal(group.id, deserialized.id);
+		assert.equal(deserialized.count, 0);
+		assert.equal(deserialized.getEditors(EditorsOrder.SEQUENTIAL).length, 0);
+		assert.equal(deserialized.getEditors(EditorsOrder.MOST_RECENTLY_ACTIVE).length, 0);
+
+		// Case 3: inputs cannot be deserialized
+		TestEditorInputFactory.disableSerialize = false;
+		TestEditorInputFactory.disableDeserialize = true;
+
+		deserialized = createGroup(group.serialize());
+		assert.equal(group.id, deserialized.id);
+		assert.equal(deserialized.count, 0);
+		assert.equal(deserialized.getEditors(EditorsOrder.SEQUENTIAL).length, 0);
+		assert.equal(deserialized.getEditors(EditorsOrder.MOST_RECENTLY_ACTIVE).length, 0);
 	});
 
 	test('One Editor', function () {

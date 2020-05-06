@@ -12,21 +12,20 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IViewsService } from 'vs/workbench/common/views';
-import { getSearchView } from 'vs/workbench/contrib/search/browser/searchActions';
 import { SearchResult } from 'vs/workbench/contrib/search/common/searchModel';
 import * as Constants from 'vs/workbench/contrib/searchEditor/browser/constants';
 import { SearchEditor } from 'vs/workbench/contrib/searchEditor/browser/searchEditor';
 import { getOrMakeSearchEditorInput, SearchEditorInput } from 'vs/workbench/contrib/searchEditor/browser/searchEditorInput';
 import { serializeSearchResultForEditor } from 'vs/workbench/contrib/searchEditor/browser/searchEditorSerialization';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService, SIDE_GROUP, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { ISearchConfigurationProperties } from 'vs/workbench/services/search/common/search';
+import { searchNewEditorIcon } from 'vs/workbench/contrib/search/browser/searchIcons';
 
 export const toggleSearchEditorCaseSensitiveCommand = (accessor: ServicesAccessor) => {
 	const editorService = accessor.get(IEditorService);
 	const input = editorService.activeEditor;
 	if (input instanceof SearchEditorInput) {
-		(editorService.activeControl as SearchEditor).toggleCaseSensitive();
+		(editorService.activeEditorPane as SearchEditor).toggleCaseSensitive();
 	}
 };
 
@@ -34,7 +33,7 @@ export const toggleSearchEditorWholeWordCommand = (accessor: ServicesAccessor) =
 	const editorService = accessor.get(IEditorService);
 	const input = editorService.activeEditor;
 	if (input instanceof SearchEditorInput) {
-		(editorService.activeControl as SearchEditor).toggleWholeWords();
+		(editorService.activeEditorPane as SearchEditor).toggleWholeWords();
 	}
 };
 
@@ -42,7 +41,7 @@ export const toggleSearchEditorRegexCommand = (accessor: ServicesAccessor) => {
 	const editorService = accessor.get(IEditorService);
 	const input = editorService.activeEditor;
 	if (input instanceof SearchEditorInput) {
-		(editorService.activeControl as SearchEditor).toggleRegex();
+		(editorService.activeEditorPane as SearchEditor).toggleRegex();
 	}
 };
 
@@ -50,10 +49,25 @@ export const toggleSearchEditorContextLinesCommand = (accessor: ServicesAccessor
 	const editorService = accessor.get(IEditorService);
 	const input = editorService.activeEditor;
 	if (input instanceof SearchEditorInput) {
-		(editorService.activeControl as SearchEditor).toggleContextLines();
+		(editorService.activeEditorPane as SearchEditor).toggleContextLines();
 	}
 };
 
+export const modifySearchEditorContextLinesCommand = (accessor: ServicesAccessor, increase: boolean) => {
+	const editorService = accessor.get(IEditorService);
+	const input = editorService.activeEditor;
+	if (input instanceof SearchEditorInput) {
+		(editorService.activeEditorPane as SearchEditor).modifyContextLines(increase);
+	}
+};
+
+export const selectAllSearchEditorMatchesCommand = (accessor: ServicesAccessor) => {
+	const editorService = accessor.get(IEditorService);
+	const input = editorService.activeEditor;
+	if (input instanceof SearchEditorInput) {
+		(editorService.activeEditorPane as SearchEditor).focusAllResults();
+	}
+};
 
 export class OpenSearchEditorAction extends Action {
 
@@ -63,7 +77,7 @@ export class OpenSearchEditorAction extends Action {
 	constructor(id: string, label: string,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 	) {
-		super(id, label, 'codicon-new-file');
+		super(id, label, searchNewEditorIcon.classNames);
 	}
 
 	update() {
@@ -79,68 +93,39 @@ export class OpenSearchEditorAction extends Action {
 	}
 }
 
-export class OpenResultsInEditorAction extends Action {
-
-	static readonly ID: string = Constants.OpenInEditorCommandId;
-	static readonly LABEL = localize('search.openResultsInEditor', "Open Results in Editor");
-
-	constructor(id: string, label: string,
-		@IViewsService private viewsService: IViewsService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService,
-	) {
-		super(id, label, 'codicon-go-to-file');
-	}
-
-	get enabled(): boolean {
-		const searchView = getSearchView(this.viewsService);
-		return !!searchView && searchView.hasSearchResults();
-	}
-
-	update() {
-		this._setEnabled(this.enabled);
-	}
-
-	async run() {
-		const searchView = getSearchView(this.viewsService);
-		if (searchView) {
-			await this.instantiationService.invokeFunction(createEditorFromSearchResult, searchView.searchResult, searchView.searchIncludePattern.getValue(), searchView.searchExcludePattern.getValue());
-		}
-	}
-}
-
-const openNewSearchEditor =
-	async (accessor: ServicesAccessor) => {
+export const openNewSearchEditor =
+	async (accessor: ServicesAccessor, toSide = false) => {
 		const editorService = accessor.get(IEditorService);
 		const telemetryService = accessor.get(ITelemetryService);
 		const instantiationService = accessor.get(IInstantiationService);
 		const configurationService = accessor.get(IConfigurationService);
 
-		const activeEditor = editorService.activeTextEditorWidget;
+		const activeEditorControl = editorService.activeTextEditorControl;
 		let activeModel: ICodeEditor | undefined;
 		let selected = '';
-		if (activeEditor) {
-			if (isDiffEditor(activeEditor)) {
-				if (activeEditor.getOriginalEditor().hasTextFocus()) {
-					activeModel = activeEditor.getOriginalEditor();
+		if (activeEditorControl) {
+			if (isDiffEditor(activeEditorControl)) {
+				if (activeEditorControl.getOriginalEditor().hasTextFocus()) {
+					activeModel = activeEditorControl.getOriginalEditor();
 				} else {
-					activeModel = activeEditor.getModifiedEditor();
+					activeModel = activeEditorControl.getModifiedEditor();
 				}
 			} else {
-				activeModel = activeEditor as ICodeEditor;
+				activeModel = activeEditorControl as ICodeEditor;
 			}
 			const selection = activeModel?.getSelection();
 			selected = (selection && activeModel?.getModel()?.getValueInRange(selection)) ?? '';
 		} else {
 			if (editorService.activeEditor instanceof SearchEditorInput) {
-				const active = editorService.activeControl as SearchEditor;
+				const active = editorService.activeEditorPane as SearchEditor;
 				selected = active.getSelected();
 			}
 		}
 
 		telemetryService.publicLog2('searchEditor/openNewSearchEditor');
 
-		const input = instantiationService.invokeFunction(getOrMakeSearchEditorInput, { config: { query: selected } });
-		const editor = await editorService.openEditor(input, { pinned: true }) as SearchEditor;
+		const input = instantiationService.invokeFunction(getOrMakeSearchEditorInput, { config: { query: selected }, text: '' });
+		const editor = await editorService.openEditor(input, { pinned: true }, toSide ? SIDE_GROUP : ACTIVE_GROUP) as SearchEditor;
 
 		if (selected && configurationService.getValue<ISearchConfigurationProperties>('search').searchOnType) {
 			editor.triggerSearch();
@@ -164,9 +149,9 @@ export const createEditorFromSearchResult =
 
 		const labelFormatter = (uri: URI): string => labelService.getUriLabel(uri, { relative: true });
 
-		const { text, matchRanges } = serializeSearchResultForEditor(searchResult, rawIncludePattern, rawExcludePattern, 0, labelFormatter, true);
+		const { text, matchRanges, config } = serializeSearchResultForEditor(searchResult, rawIncludePattern, rawExcludePattern, 0, labelFormatter);
 
-		const input = instantiationService.invokeFunction(getOrMakeSearchEditorInput, { text });
+		const input = instantiationService.invokeFunction(getOrMakeSearchEditorInput, { text, config });
 		await editorService.openEditor(input, { pinned: true });
 		input.setMatchRanges(matchRanges);
 	};

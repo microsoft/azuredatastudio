@@ -34,7 +34,7 @@
 	"gettingStartedUrl": "https://go.microsoft.com/fwlink/?linkid=862039",
 	"releaseNotesUrl": "https://go.microsoft.com/fwlink/?linkid=875578",
 	"documentationUrl": "https://go.microsoft.com/fwlink/?linkid=862277",
-	"vscodeVersion": "1.42.0",
+	"vscodeVersion": "1.45.0",
 	"commit": "9ca6200018fc206d67a47229f991901a8a453781",
 	"date": "2017-12-15T12:00:00.000Z",
 	"recommendedExtensions": [
@@ -60,28 +60,17 @@
 		]
 	},
 	"extensionAllowedProposedApi": [
-		"ms-vscode.references-view",
-		"ms-vsliveshare.vsliveshare",
-		"ms-vsliveshare.cloudenv",
-		"ms-vsliveshare.cloudenv-explorer",
-		"GitHub.vscode-pull-request-github",
-		"GitHub.vscode-pull-request-github-insiders",
-		"Microsoft.vscode-nmake-tools",
-		"ms-vscode-remote.remote-containers",
-		"ms-vscode-remote.remote-containers-nightly",
-		"ms-vscode-remote.remote-ssh",
-		"ms-vscode-remote.remote-ssh-nightly",
-		"ms-vscode-remote.remote-ssh-edit",
-		"ms-vscode-remote.remote-ssh-edit-nightly",
-		"ms-vscode-remote.remote-ssh-explorer",
-		"ms-vscode-remote.remote-ssh-explorer-nightly",
-		"ms-vscode-remote.remote-wsl",
-		"ms-vscode-remote.remote-wsl-nightly",
-		"ms-vscode-remote.vscode-remote-extensionpack",
-		"ms-vscode-remote.vscode-remote-extensionpack-nightly",
-		"ms-azuretools.vscode-docker"
+		"ms-vscode.vscode-js-profile-table",
+		"ms-vscode.references-view"
 	],
 	"extensionsGallery": {
 		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"
-	}
+	},
+	"builtInExtensions": [
+		{
+			"name": "Microsoft.sqlservernotebook",
+			"version": "0.3.6",
+			"repo": "https://github.com/Microsoft/azuredatastudio"
+		}
+	]
 }

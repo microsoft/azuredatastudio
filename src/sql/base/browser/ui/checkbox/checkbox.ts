@@ -100,6 +100,14 @@ export class Checkbox extends Widget {
 		return this._el.getAttribute('aria-label');
 	}
 
+	public set required(val: boolean) {
+		this._el.required = val;
+	}
+
+	public get required(): boolean {
+		return this._el.required;
+	}
+
 	public focus(): void {
 		this._el.focus();
 	}

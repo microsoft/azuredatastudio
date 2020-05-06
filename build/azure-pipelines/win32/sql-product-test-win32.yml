@@ -19,6 +19,9 @@ steps:
     buildType: 'current'
     targetPath: '$(Build.SourcesDirectory)\.build'
     artifactName: drop
+    itemPattern: |
+     drop/extensions/**
+     drop/win32-x64/**
 
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
@@ -47,7 +50,7 @@ steps:
     $AppProductJson = Get-Content -Raw -Path "$AppRoot\resources\app\product.json" | ConvertFrom-Json
     $AppNameShort = $AppProductJson.nameShort
     exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; $env:INTEGRATION_TEST_CLI_PATH = "$AppRoot\bin\$AppNameShort"; .\scripts\sql-test-integration.bat }
-  continueOnError: true
+  continueOnError: false
   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
   displayName: Run stable tests
   env:

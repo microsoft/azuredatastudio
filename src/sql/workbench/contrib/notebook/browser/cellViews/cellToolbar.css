@@ -1,0 +1,47 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+cell-toolbar-component {
+	position: absolute;
+	left: 25px;
+	top: -21px;
+}
+
+cell-toolbar-component ul {
+	display: inline-block;
+	list-style: none;
+	margin: 0;
+	padding: 5px 10px 0 10px;
+}
+
+cell-toolbar-component li {
+	display: inline-block;
+	margin-right: 4px;
+	text-align: center;
+}
+
+cell-toolbar-component li:last-child {
+	margin-right: 0;
+}
+
+cell-toolbar-component li a {
+	background: 50% 50% no-repeat;
+	display: block;
+	height: 16px;
+	width: 16px;
+}
+
+cell-toolbar-component li div {
+	background: 50% 50% no-repeat;
+	height: 16px;
+	width: 16px;
+}
+
+cell-toolbar-component .offscreen {
+	height: 1px;
+	text-indent: -999999px;
+	margin-top: -1px;
+	position: absolute;
+}

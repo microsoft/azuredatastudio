@@ -4,30 +4,33 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { QUERY_HISTORY_PANEL_ID } from 'sql/workbench/contrib/queryHistory/common/constants';
+import { QUERY_HISTORY_VIEW_ID } from 'sql/workbench/contrib/queryHistory/common/constants';
 import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { Action } from 'vs/base/common/actions';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
-import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
-import { TogglePanelAction } from 'vs/workbench/browser/panel';
 import { localize } from 'vs/nls';
 import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
 import { QueryHistoryNode } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryNode';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IViewsService, IViewDescriptorService } from 'vs/workbench/common/views';
+import { ToggleViewAction } from 'vs/workbench/browser/actions/layoutActions';
 
-export class ToggleQueryHistoryAction extends TogglePanelAction {
+export class ToggleQueryHistoryAction extends ToggleViewAction {
 
 	public static readonly ID = 'workbench.action.tasks.toggleQueryHistory';
 	public static readonly LABEL = localize('toggleQueryHistory', "Toggle Query History");
 
 	constructor(
 		id: string, label: string,
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
-		@IPanelService panelService: IPanelService,
+		@IViewsService viewsService: IViewsService,
+		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService
 	) {
-		super(id, label, QUERY_HISTORY_PANEL_ID, panelService, layoutService);
+		super(id, label, QUERY_HISTORY_VIEW_ID, viewsService, viewDescriptorService, contextKeyService, layoutService);
 	}
 }
 

@@ -6,3 +6,55 @@
 dashboard-widget-wrapper .action-label {
 	padding: 7px;
 }
+
+dashboard-widget-wrapper .widgetWrapper {
+	display: flex;
+	flex-flow: column;
+	overflow: hidden;
+	height: 100%;
+	width: 100%;
+}
+
+dashboard-widget-wrapper .widgetHeader {
+	display: flex;
+	flex: 0 0;
+	padding: 3px 0 3px 0;
+	font-weight: 600;
+	font-size: 14px;
+	line-height: 20px;
+}
+
+dashboard-widget-wrapper .widgetHeader .icon {
+	display: inline-block;
+	padding: 10px;
+	margin-left: 5px;
+}
+
+dashboard-widget-wrapper .widgetTitle {
+	margin-left: 5px;
+	flex: 1 1;
+}
+
+dashboard-widget-wrapper .noTitle {
+	flex:1 1;
+}
+
+dashboard-widget-wrapper .actionbar {
+	align-self: end;
+}
+
+dashboard-widget-wrapper .bottomActionbar {
+	align-self: center;
+}
+
+dashboard-widget-wrapper .bottomActionbar.collapsed {
+	margin-top: -27px;
+}
+
+dashboard-widget-wrapper .bottomActionbar .actions-container .action-item a.action-label.codicon-chevron-up {
+	padding-left: 5px;
+}
+
+dashboard-widget-wrapper .bottomActionbar .actions-container .action-item a.action-label.codicon-chevron-down {
+	padding-left: 5px;
+}

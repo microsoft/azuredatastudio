@@ -50,6 +50,7 @@ import { find } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
 import { assign } from 'vs/base/common/objects';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -90,7 +91,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@ILogService private _logService: ILogService,
 		@IStorageService private _storageService: IStorageService,
-		@IEnvironmentService private _environmentService: IEnvironmentService
+		@IEnvironmentService private _environmentService: IEnvironmentService,
+		@IExtensionService private readonly extensionService: IExtensionService
 	) {
 		super();
 
@@ -221,6 +223,26 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			this._logService.warn('failed to open the connection dialog. error: ' + dialogError);
 			throw dialogError;
 		});
+	}
+
+	/**
+	 * Opens the edit connection dialog
+	 * @param model the existing connection profile to edit on.
+	 */
+	public async showEditConnectionDialog(model: interfaces.IConnectionProfile): Promise<void> {
+		if (!model) {
+			throw new Error('Connection Profile is undefined');
+		}
+		let params = {
+			connectionType: ConnectionType.default,
+			isEditConnection: true
+		};
+
+		try {
+			return await this._connectionDialogService.showDialog(this, params, model);
+		} catch (dialogError) {
+			this._logService.warn('failed to open the connection dialog. error: ' + dialogError);
+		}
 	}
 
 	/**
@@ -418,6 +440,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		connection.options['groupId'] = connection.groupId;
 		connection.options['databaseDisplayName'] = connection.databaseName;
 
+		let isEdit = options?.params?.isEditConnection ?? false;
+
 		if (!uri) {
 			uri = Utils.generateUri(connection);
 		}
@@ -457,8 +481,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				if (callbacks.onConnectSuccess) {
 					callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
 				}
-				if (options.saveTheConnection) {
-					await this.saveToSettings(uri, connection).then(value => {
+				if (options.saveTheConnection || isEdit) {
+					let matcher: interfaces.ProfileMatcher;
+					if (isEdit) {
+						matcher = (a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile) => {
+							return a.id === b.id;
+						};
+					}
+
+					await this.saveToSettings(uri, connection, matcher).then(value => {
 						this._onAddConnectionProfile.fire(connection);
 						this.doActionsAfterConnectionComplete(value, options);
 					});
@@ -527,7 +558,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions, ) {
+	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {
 		let connectionManagementInfo = this._connectionStatusManager.findConnection(uri);
 		if (options.showDashboard) {
 			this.showDashboardForConnectionManagementInfo(connectionManagementInfo.connectionProfile);
@@ -780,9 +811,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			return true;
 		}
 		let azureResource = this.getAzureResourceForConnection(connection);
-		let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
+		let accounts = (await this._accountManagementService.getAccounts()).filter(a => a.key.providerId.startsWith('azure'));
 		if (accounts && accounts.length > 0) {
-			let accountName = (connection.authenticationType !== Constants.azureMFA) ? connection.azureAccount : connection.userName;
+			let accountName = (connection.authenticationType === Constants.azureMFA) ? connection.azureAccount : connection.userName;
 			let account = find(accounts, account => account.key.accountId === accountName);
 			if (account) {
 				if (account.isStale) {
@@ -818,6 +849,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let connectionInfo = assign({}, {
 			options: connection.options
 		});
+
+		await this.extensionService.activateByEvent(`onConnect:${connection.providerName}`);
 
 		return this._providers.get(connection.providerName).onReady.then((provider) => {
 			provider.connect(uri, connectionInfo);
@@ -869,11 +902,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private saveToSettings(id: string, connection: interfaces.IConnectionProfile): Promise<string> {
-		return this._connectionStore.saveProfile(connection).then(savedProfile => {
-			let newId = this._connectionStatusManager.updateConnectionProfile(savedProfile, id);
-			return newId;
-		});
+
+	private async saveToSettings(id: string, connection: interfaces.IConnectionProfile, matcher?: interfaces.ProfileMatcher): Promise<string> {
+		const savedProfile = await this._connectionStore.saveProfile(connection, undefined, matcher);
+		return this._connectionStatusManager.updateConnectionProfile(savedProfile, id);
 	}
 
 	/**

@@ -12,9 +12,8 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IThemeService, ITheme, registerThemingParticipant, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { IThemeService, IColorTheme, registerThemingParticipant, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { TerminalFindWidget } from 'vs/workbench/contrib/terminal/browser/terminalFindWidget';
-import { editorHoverBackground, editorHoverBorder, editorHoverForeground } from 'vs/platform/theme/common/colorRegistry';
 import { KillTerminalAction, SwitchTerminalAction, SwitchTerminalActionViewItem, CopyTerminalSelectionAction, TerminalPasteAction, ClearTerminalAction, SelectAllTerminalAction, CreateNewTerminalAction, SplitTerminalAction } from 'vs/workbench/contrib/terminal/browser/terminalActions';
 import { StandardMouseEvent } from 'vs/base/browser/mouseEvent';
 import { URI } from 'vs/base/common/uri';
@@ -29,6 +28,8 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { PANEL_BACKGROUND, SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+import { Orientation } from 'vs/base/browser/ui/sash/sash';
 
 const FIND_FOCUS_CLASS = 'find-focused';
 
@@ -41,6 +42,8 @@ export class TerminalViewPane extends ViewPane {
 	private _parentDomElement: HTMLElement | undefined;
 	private _terminalContainer: HTMLElement | undefined;
 	private _findWidget: TerminalFindWidget | undefined;
+	private _splitTerminalAction: IAction | undefined;
+	private _bodyDimensions: { width: number, height: number } = { width: 0, height: 0 };
 
 	constructor(
 		options: IViewPaneOptions,
@@ -61,6 +64,7 @@ export class TerminalViewPane extends ViewPane {
 	}
 
 	protected renderBody(container: HTMLElement): void {
+		super.renderBody(container);
 		this._parentDomElement = container;
 		dom.addClass(this._parentDomElement, 'integrated-terminal');
 		this._fontStyleElement = document.createElement('style');
@@ -79,12 +83,8 @@ export class TerminalViewPane extends ViewPane {
 
 		this._terminalService.setContainers(container, this._terminalContainer);
 
-		this._register(this.themeService.onThemeChange(theme => this._updateTheme(theme)));
+		this._register(this.themeService.onDidColorThemeChange(theme => this._updateTheme(theme)));
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration('terminal.integrated') || e.affectsConfiguration('editor.fontFamily')) {
-				this._updateFont();
-			}
-
 			if (e.affectsConfiguration('terminal.integrated.fontFamily') || e.affectsConfiguration('editor.fontFamily')) {
 				const configHelper = this._terminalService.configHelper;
 				if (!configHelper.configFontIsMonospace()) {
@@ -96,7 +96,6 @@ export class TerminalViewPane extends ViewPane {
 				}
 			}
 		}));
-		this._updateFont();
 		this._updateTheme();
 
 		this._register(this.onDidChangeBodyVisibility(visible => {
@@ -105,28 +104,37 @@ export class TerminalViewPane extends ViewPane {
 				if (!hadTerminals) {
 					this._terminalService.createTerminal();
 				}
-				this._updateFont();
 				this._updateTheme();
 				if (hadTerminals) {
 					this._terminalService.getActiveTab()?.setVisible(visible);
+				} else {
+					this.layoutBody(this._bodyDimensions.height, this._bodyDimensions.width);
 				}
 			}
 		}));
 
 		// Force another layout (first is setContainers) since config has changed
-		this.layoutBody(this._terminalContainer.offsetWidth, this._terminalContainer.offsetHeight);
+		this.layoutBody(this._terminalContainer.offsetHeight, this._terminalContainer.offsetWidth);
 	}
 
 	protected layoutBody(height: number, width: number): void {
+		super.layoutBody(height, width);
+		this._bodyDimensions.width = width;
+		this._bodyDimensions.height = height;
 		this._terminalService.terminalTabs.forEach(t => t.layout(width, height));
+		// Update orientation of split button icon
+		if (this._splitTerminalAction) {
+			this._splitTerminalAction.class = this.orientation === Orientation.HORIZONTAL ? SplitTerminalAction.HORIZONTAL_CLASS : SplitTerminalAction.VERTICAL_CLASS;
+		}
 	}
 
 	public getActions(): IAction[] {
 		if (!this._actions) {
+			this._splitTerminalAction = this._instantiationService.createInstance(SplitTerminalAction, SplitTerminalAction.ID, SplitTerminalAction.LABEL);
 			this._actions = [
 				this._instantiationService.createInstance(SwitchTerminalAction, SwitchTerminalAction.ID, SwitchTerminalAction.LABEL),
 				this._instantiationService.createInstance(CreateNewTerminalAction, CreateNewTerminalAction.ID, CreateNewTerminalAction.SHORT_LABEL),
-				this._instantiationService.createInstance(SplitTerminalAction, SplitTerminalAction.ID, SplitTerminalAction.LABEL),
+				this._splitTerminalAction,
 				this._instantiationService.createInstance(KillTerminalAction, KillTerminalAction.ID, KillTerminalAction.PANEL_LABEL)
 			];
 			this._actions.forEach(a => {
@@ -231,6 +239,13 @@ export class TerminalViewPane extends ViewPane {
 					if (!terminal) {
 						return;
 					}
+
+					// copyPaste: Shift+right click should open context menu
+					if (rightClickBehavior === 'copyPaste' && event.shiftKey) {
+						this._openContextMenu(event);
+						return;
+					}
+
 					if (rightClickBehavior === 'copyPaste' && terminal.hasSelection()) {
 						await terminal.copySelection();
 						terminal.clearSelection();
@@ -252,13 +267,7 @@ export class TerminalViewPane extends ViewPane {
 		}));
 		this._register(dom.addDisposableListener(parentDomElement, 'contextmenu', (event: MouseEvent) => {
 			if (!this._cancelContextMenu) {
-				const standardEvent = new StandardMouseEvent(event);
-				const anchor: { x: number, y: number } = { x: standardEvent.posx, y: standardEvent.posy };
-				this._contextMenuService.showContextMenu({
-					getAnchor: () => anchor,
-					getActions: () => this._getContextMenuActions(),
-					getActionsContext: () => this._parentDomElement
-				});
+				this._openContextMenu(event);
 			}
 			event.preventDefault();
 			event.stopImmediatePropagation();
@@ -300,51 +309,42 @@ export class TerminalViewPane extends ViewPane {
 				if (terminal) {
 					const preparedPath = await this._terminalService.preparePathForTerminalAsync(path, terminal.shellLaunchConfig.executable, terminal.title, terminal.shellType);
 					terminal.sendText(preparedPath, false);
+					terminal.focus();
 				}
 			}
 		}));
 	}
 
-	private _updateTheme(theme?: ITheme): void {
+	private _openContextMenu(event: MouseEvent): void {
+		const standardEvent = new StandardMouseEvent(event);
+		const anchor: { x: number, y: number } = { x: standardEvent.posx, y: standardEvent.posy };
+		this._contextMenuService.showContextMenu({
+			getAnchor: () => anchor,
+			getActions: () => this._getContextMenuActions(),
+			getActionsContext: () => this._parentDomElement
+		});
+	}
+
+	private _updateTheme(theme?: IColorTheme): void {
 		if (!theme) {
-			theme = this.themeService.getTheme();
+			theme = this.themeService.getColorTheme();
 		}
 
 		if (this._findWidget) {
 			this._findWidget.updateTheme(theme);
 		}
 	}
-
-	private _updateFont(): void {
-		if (this._terminalService.terminalInstances.length === 0 || !this._parentDomElement) {
-			return;
-		}
-		// TODO: Can we support ligatures?
-		// dom.toggleClass(this._parentDomElement, 'enable-ligatures', this._terminalService.configHelper.config.fontLigatures);
-		this.layoutBody(this._parentDomElement.offsetWidth, this._parentDomElement.offsetHeight);
-	}
 }
 
-registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
-	const backgroundColor = theme.getColor(TERMINAL_BACKGROUND_COLOR);
-	collector.addRule(`.monaco-workbench .pane-body.integrated-terminal .terminal-outer-container { background-color: ${backgroundColor ? backgroundColor.toString() : ''}; }`);
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const panelBackgroundColor = theme.getColor(TERMINAL_BACKGROUND_COLOR) || theme.getColor(PANEL_BACKGROUND);
+	collector.addRule(`.monaco-workbench .part.panel .pane-body.integrated-terminal .terminal-outer-container { background-color: ${panelBackgroundColor ? panelBackgroundColor.toString() : ''}; }`);
+
+	const sidebarBackgroundColor = theme.getColor(TERMINAL_BACKGROUND_COLOR) || theme.getColor(SIDE_BAR_BACKGROUND);
+	collector.addRule(`.monaco-workbench .part.sidebar .pane-body.integrated-terminal .terminal-outer-container { background-color: ${sidebarBackgroundColor ? sidebarBackgroundColor.toString() : ''}; }`);
 
 	const borderColor = theme.getColor(TERMINAL_BORDER_COLOR);
 	if (borderColor) {
 		collector.addRule(`.monaco-workbench .pane-body.integrated-terminal .split-view-view:not(:first-child) { border-color: ${borderColor.toString()}; }`);
-	}
-
-	// Borrow the editor's hover background for now
-	const hoverBackground = theme.getColor(editorHoverBackground);
-	if (hoverBackground) {
-		collector.addRule(`.monaco-workbench .pane-body.integrated-terminal .terminal-message-widget { background-color: ${hoverBackground}; }`);
-	}
-	const hoverBorder = theme.getColor(editorHoverBorder);
-	if (hoverBorder) {
-		collector.addRule(`.monaco-workbench .pane-body.integrated-terminal .terminal-message-widget { border: 1px solid ${hoverBorder}; }`);
-	}
-	const hoverForeground = theme.getColor(editorHoverForeground);
-	if (hoverForeground) {
-		collector.addRule(`.monaco-workbench .pane-body.integrated-terminal .terminal-message-widget { color: ${hoverForeground}; }`);
 	}
 });

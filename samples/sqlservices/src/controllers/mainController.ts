@@ -12,6 +12,7 @@ import SplitPropertiesPanel from './splitPropertiesPanel';
 import * as fs from 'fs';
 import * as path from 'path';
 import { TreeNode, TreeDataProvider } from './treeDataProvider';
+import * as dashboard from './modelViewDashboard';
 
 /**
  * The main controller class that initializes the extension
@@ -70,6 +71,10 @@ export default class MainController implements vscode.Disposable {
 
 		vscode.commands.registerCommand('sqlservices.openWizard', () => {
 			this.openWizard();
+		});
+
+		vscode.commands.registerCommand('sqlservices.openModelViewDashboard', () => {
+			dashboard.openModelViewDashboard(this.context);
 		});
 
 		return Promise.resolve(true);

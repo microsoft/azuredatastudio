@@ -74,8 +74,8 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 		this.statusItem = this._register(
 			this.statusbarService.addEntry({
 				text: nls.localize('changeProvider', "Change SQL language provider"),
+				ariaLabel: nls.localize('changeProvider', "Change SQL language provider"),
 				command: 'sql.action.editor.changeProvider'
-
 			},
 				SqlFlavorStatusbarItem.ID,
 				nls.localize('status.query.flavor', "SQL Language Flavor"),
@@ -96,12 +96,12 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 	}
 
 	private _onEditorClosed(event: IEditorCloseEvent): void {
-		let uri = event.editor.resource.toString();
+		let uri = event.editor.resource?.toString();
 		if (uri && uri in this._sqlStatusEditors) {
 			// If active editor is being closed, hide the query status.
-			let activeEditor = this.editorService.activeControl;
+			let activeEditor = this.editorService.activeEditorPane;
 			if (activeEditor) {
-				let currentUri = activeEditor.input.resource.toString();
+				let currentUri = activeEditor.input.resource?.toString();
 				if (uri === currentUri) {
 					this.hide();
 				}
@@ -112,9 +112,9 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 	}
 
 	private _onEditorsChanged(): void {
-		let activeEditor = this.editorService.activeControl;
+		let activeEditor = this.editorService.activeEditorPane;
 		if (activeEditor) {
-			let uri = activeEditor.input.resource.toString();
+			let uri = activeEditor.input.resource?.toString();
 
 			// Show active editor's language flavor	status
 			if (uri) {
@@ -143,9 +143,9 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 
 	// Show/hide query status for active editor
 	private _showStatus(uri: string): void {
-		let activeEditor = this.editorService.activeControl;
+		let activeEditor = this.editorService.activeEditorPane;
 		if (activeEditor) {
-			let currentUri = activeEditor.input.resource.toString();
+			let currentUri = activeEditor.input.resource?.toString();
 			if (uri === currentUri) {
 				let flavor: SqlProviderEntry = this._sqlStatusEditors[uri];
 				if (flavor) {
@@ -161,6 +161,7 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 	private updateFlavorElement(text: string): void {
 		const props: IStatusbarEntry = {
 			text,
+			ariaLabel: text,
 			command: 'sql.action.editor.changeProvider'
 		};
 
@@ -185,8 +186,8 @@ export class ChangeFlavorAction extends Action {
 	}
 
 	public run(): Promise<any> {
-		let activeEditor = this._editorService.activeControl;
-		let currentUri = activeEditor?.input.resource.toString();
+		let activeEditor = this._editorService.activeEditorPane;
+		let currentUri = activeEditor?.input.resource?.toString();
 		if (this._connectionManagementService.isConnected(currentUri)) {
 			let currentProvider = this._connectionManagementService.getProviderIdFromUri(currentUri);
 			return this._showMessage(Severity.Info, nls.localize('alreadyConnected',
@@ -206,7 +207,7 @@ export class ChangeFlavorAction extends Action {
 
 		return this._quickInputService.pick(providerOptions, { placeHolder: nls.localize('pickSqlProvider', "Select SQL Language Provider") }).then(provider => {
 			if (provider) {
-				let activeEditor = this._editorService.activeControl.getControl();
+				let activeEditor = this._editorService.activeEditorPane.getControl();
 				const editorWidget = getCodeEditor(activeEditor);
 				if (editorWidget) {
 					if (currentUri) {

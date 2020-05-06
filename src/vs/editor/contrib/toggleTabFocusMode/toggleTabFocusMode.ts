@@ -5,7 +5,7 @@
 
 import * as nls from 'vs/nls';
 import { alert } from 'vs/base/browser/ui/aria/aria';
-import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { KeyCode, KeyMod, KeyChord } from 'vs/base/common/keyCodes';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { EditorAction, ServicesAccessor, registerEditorAction } from 'vs/editor/browser/editorExtensions';
 import { TabFocus } from 'vs/editor/common/config/commonEditorConfig';
@@ -23,7 +23,7 @@ export class ToggleTabFocusModeAction extends EditorAction {
 			precondition: undefined,
 			kbOpts: {
 				kbExpr: null,
-				primary: KeyMod.CtrlCmd | KeyCode.KEY_M,
+				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_M), // {{SQL CARBON EDIT}} We use Ctrl+M already so move this to an unused binding
 				mac: { primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_M },
 				weight: KeybindingWeight.EditorContrib
 			}

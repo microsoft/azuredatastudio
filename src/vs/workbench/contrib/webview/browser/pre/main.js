@@ -114,6 +114,10 @@
 		height: 10px;
 	}
 
+	::-webkit-scrollbar-corner {
+		background-color: var(--vscode-editor-background);
+	}
+
 	::-webkit-scrollbar-thumb {
 		background-color: var(--vscode-scrollbarSlider-background);
 	}
@@ -125,10 +129,11 @@
 	}`;
 
 	/**
+	 * @param {boolean} allowMultipleAPIAcquire
 	 * @param {*} [state]
 	 * @return {string}
 	 */
-	function getVsCodeApiScript(state) {
+	function getVsCodeApiScript(allowMultipleAPIAcquire, state) {
 		return `
 			const acquireVsCodeApi = (function() {
 				const originalPostMessage = window.parent.postMessage.bind(window.parent);
@@ -138,7 +143,7 @@
 				let state = ${state ? `JSON.parse(${JSON.stringify(state)})` : undefined};
 
 				return () => {
-					if (acquired) {
+					if (acquired && !${allowMultipleAPIAcquire}) {
 						throw new Error('An instance of the VS Code API has already been acquired');
 					}
 					acquired = true;
@@ -192,8 +197,21 @@
 			}
 
 			if (initData.styles) {
+				const documentStyle = document.documentElement.style;
+
+				// Remove stale properties
+				for (let i = documentStyle.length - 1; i >= 0; i--) {
+					const property = documentStyle[i];
+
+					// Don't remove properties that the webview might have added separately
+					if (property && property.startsWith('--vscode-')) {
+						documentStyle.removeProperty(property);
+					}
+				}
+
+				// Re-add new properties
 				for (const variable of Object.keys(initData.styles)) {
-					document.documentElement.style.setProperty(`--${variable}`, initData.styles[variable]);
+					documentStyle.setProperty(`--${variable}`, initData.styles[variable]);
 				}
 			}
 		};
@@ -325,7 +343,7 @@
 			if (options.allowScripts) {
 				const defaultScript = newDocument.createElement('script');
 				defaultScript.id = '_vscodeApiScript';
-				defaultScript.textContent = getVsCodeApiScript(data.state);
+				defaultScript.textContent = getVsCodeApiScript(options.allowMultipleAPIAcquire, data.state);
 				newDocument.head.prepend(defaultScript);
 			}
 

@@ -31,7 +31,7 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
-import { NotebookFindModel } from 'sql/workbench/contrib/notebook/find/notebookFindModel';
+import { NotebookFindModel } from 'sql/workbench/contrib/notebook/browser/find/notebookFindModel';
 import { onUnexpectedError } from 'vs/base/common/errors';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
@@ -231,7 +231,7 @@ export abstract class NotebookInput extends EditorInput {
 		return this._textInput;
 	}
 
-	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<boolean> {
+	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<void> {
 		return this._textInput.revert(group, options);
 	}
 
@@ -299,8 +299,8 @@ export abstract class NotebookInput extends EditorInput {
 	}
 
 	private async setTrustForNewEditor(newInput: IEditorInput | undefined): Promise<void> {
-		let isTrusted = this._model.getNotebookModel().trustedMode;
-		if (isTrusted && newInput && newInput.resource !== this.resource) {
+		let model = this._model.getNotebookModel();
+		if (model?.trustedMode && newInput && newInput.resource !== this.resource) {
 			await this.notebookService.serializeNotebookStateChange(newInput.resource, NotebookChangeType.Saved, undefined, true);
 		}
 	}

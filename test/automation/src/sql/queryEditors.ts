@@ -4,30 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Editors } from '../editors';
-import { QuickOpen } from '../quickopen';
 import { Code } from '../code';
-import * as path from 'path';
 
 export class QueryEditors extends Editors {
 
 	constructor(
-		private vsCode: Code,
-		private quickopen: QuickOpen
+		private vsCode: Code
 	) {
 		super(vsCode);
-	}
-
-	/**
-	 * Opens the specified file - this correctly handles SQL files which are opened in a Query Editor window
-	 * @param filePath The full path of the file to open.
-	 */
-	async openFile(filePath: string): Promise<void> {
-		await this.quickopen.openQuickOpen(filePath);
-
-		const fileBaseName = path.basename(filePath);
-		await this.quickopen.waitForQuickOpenElements(names => names[0] === fileBaseName);
-		await this.vsCode.dispatchKeybinding('enter');
-		await this.waitForEditorFocus(fileBaseName);
 	}
 
 	/**
@@ -40,7 +24,6 @@ export class QueryEditors extends Editors {
 		// For now assume all opened tabs are disconnected until we have a need to open connected tabs
 		await this.vsCode.waitForElement(`.tabs-container div.tab.active${isDirty ? '.dirty' : ''}[aria-selected="true"][aria-label="${fileName} - disconnected, tab"]`);
 	}
-
 
 	/**
 	 * Waits for an active Query Editor for the specified file to have focus. This is a modification of the editors.waitForEditorFocus

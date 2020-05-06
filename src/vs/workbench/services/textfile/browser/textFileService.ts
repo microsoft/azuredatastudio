@@ -31,7 +31,7 @@ import { ITextModelService, IResolvedTextEditorModel } from 'vs/editor/common/se
 import { BaseTextEditorModel } from 'vs/workbench/common/editor/textEditorModel';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 import { suggestFilename } from 'vs/base/common/mime';
-import { IRemotePathService } from 'vs/workbench/services/path/common/remotePathService';
+import { IPathService } from 'vs/workbench/services/path/common/pathService';
 import { isValidBasename } from 'vs/base/common/extpath';
 import { IWorkingCopyFileService } from 'vs/workbench/services/workingCopy/common/workingCopyFileService';
 
@@ -68,7 +68,7 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 		@IFilesConfigurationService protected readonly filesConfigurationService: IFilesConfigurationService,
 		@ITextModelService private readonly textModelService: ITextModelService,
 		@ICodeEditorService private readonly codeEditorService: ICodeEditorService,
-		@IRemotePathService private readonly remotePathService: IRemotePathService,
+		@IPathService private readonly pathService: IPathService,
 		@IWorkingCopyFileService private readonly workingCopyFileService: IWorkingCopyFileService
 	) {
 		super();
@@ -435,14 +435,14 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 
 		// Try to place where last active file was if any
 		// Otherwise fallback to user home
-		return joinPath(this.fileDialogService.defaultFilePath() || (await this.remotePathService.userHome), suggestedFilename);
+		return joinPath(this.fileDialogService.defaultFilePath() || (await this.pathService.userHome), suggestedFilename);
 	}
 
 	//#endregion
 
 	//#region revert
 
-	async revert(resource: URI, options?: IRevertOptions): Promise<boolean> {
+	async revert(resource: URI, options?: IRevertOptions): Promise<void> {
 
 		// Untitled
 		if (resource.scheme === Schemas.untitled) {
@@ -450,17 +450,15 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 			if (model) {
 				return model.revert(options);
 			}
-
-			return false;
 		}
 
 		// File
-		const model = this.files.get(resource);
-		if (model && (model.isDirty() || options?.force)) {
-			return model.revert(options);
+		else {
+			const model = this.files.get(resource);
+			if (model && (model.isDirty() || options?.force)) {
+				return model.revert(options);
+			}
 		}
-
-		return false;
 	}
 
 	//#endregion

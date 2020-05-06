@@ -28,12 +28,14 @@ import * as TypeMoq from 'typemoq';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
-import { TestStorageService, TestEnvironmentService, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestEnvironmentService, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { assign } from 'vs/base/common/objects';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
+import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 
 suite('SQL ConnectionManagementService tests', () => {
 
@@ -100,7 +102,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(none));
 
 		connectionStore.setup(x => x.addRecentConnection(TypeMoq.It.isAny())).returns(() => Promise.resolve());
-		connectionStore.setup(x => x.saveProfile(TypeMoq.It.isAny())).returns(() => Promise.resolve(connectionProfile));
+		connectionStore.setup(x => x.saveProfile(TypeMoq.It.isAny(), TypeMoq.It.is(x => true), TypeMoq.It.is(x => true))).returns(() => Promise.resolve(connectionProfile));
 		workbenchEditorService.setup(x => x.openEditor(undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is<IConnectionProfile>(
 			c => c.serverName === connectionProfile.serverName))).returns(() => Promise.resolve({ profile: connectionProfile, savedCred: true }));
@@ -163,7 +165,8 @@ suite('SQL ConnectionManagementService tests', () => {
 			accountManagementService.object,
 			new NullLogService(), // ILogService
 			undefined, // IStorageService
-			TestEnvironmentService
+			TestEnvironmentService,
+			getBasicExtensionService()
 		);
 		return connectionManagementService;
 	}
@@ -201,7 +204,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		if (options) {
 			if (options.saveTheConnection) {
-				connectionStore.verify(x => x.saveProfile(TypeMoq.It.isAny()), TypeMoq.Times.once());
+				connectionStore.verify(x => x.saveProfile(TypeMoq.It.isAny(), TypeMoq.It.is(x => true), TypeMoq.It.is(x => true)), TypeMoq.Times.once());
 			}
 			if (options.showDashboard) {
 				workbenchEditorService.verify(x => x.openEditor(undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
@@ -346,7 +349,7 @@ suite('SQL ConnectionManagementService tests', () => {
 					onConnectCanceled: undefined,
 					uri: uri
 				},
-				querySelection: undefined,
+				queryRange: undefined,
 				runQueryOnCompletion: RunQueryOnConnectionMode.none
 			},
 			saveTheConnection: true,
@@ -355,7 +358,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		return connect(uri, options).then(() => {
+		return connect(uri, options).then((result) => {
 			verifyOptions(options);
 			assert.notEqual(paramsInOnConnectSuccess, undefined);
 			assert.equal(paramsInOnConnectSuccess.connectionType, options.params.connectionType);
@@ -437,6 +440,82 @@ suite('SQL ConnectionManagementService tests', () => {
 			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, true, connectionResult, false);
 		});
 	});
+
+	test('Edit Connection - Changing connection profile name for same URI should persist after edit', () => {
+		let profile = connectionProfile;
+		let uri1 = 'test_uri1';
+		let newname = 'connection renamed';
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri1,
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		return connect(uri1, options, true, profile).then(result => {
+			assert.equal(result.connected, true);
+			let newProfile = connectionProfile;
+			newProfile.connectionName = newname;
+			options.params.isEditConnection = true;
+			return connect(uri1, options, true, profile).then(result => {
+				assert.equal(result.connected, true);
+				assert.equal(connectionManagementService.getConnectionProfile(uri1).connectionName, newname);
+			});
+		});
+	});
+
+	test('Edit Connection - Connecting a different URI with same profile via edit should not change profile ID.', () => {
+		let profile = connectionProfile;
+		profile.id = '0451';
+		let uri1 = 'test_uri1';
+		let uri2 = 'test_uri2';
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri1
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		return connect(uri1, options, true, profile).then(result => {
+			assert.equal(result.connected, true);
+			options.params.isEditConnection = true;
+			return connect(uri2, options, true, profile).then(result => {
+				assert.equal(result.connected, true);
+				let uri1info = connectionManagementService.getConnectionInfo(uri1);
+				let uri2info = connectionManagementService.getConnectionInfo(uri2);
+				assert.equal(uri1info.connectionProfile.id, uri2info.connectionProfile.id);
+			});
+		});
+	});
+
 
 	test('failed firewall rule should open the firewall rule dialog', () => {
 		handleFirewallRuleResult.canHandleFirewallRule = true;
@@ -626,7 +705,7 @@ suite('SQL ConnectionManagementService tests', () => {
 					onConnectCanceled: undefined,
 					uri: uri
 				},
-				querySelection: undefined,
+				queryRange: undefined,
 				runQueryOnCompletion: RunQueryOnConnectionMode.none
 			},
 			saveTheConnection: true,
@@ -795,9 +874,10 @@ suite('SQL ConnectionManagementService tests', () => {
 		let azureConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
 		azureConnectionProfile.authenticationType = 'AzureMFA';
 		let username = 'testuser@microsoft.com';
-		azureConnectionProfile.userName = username;
+		azureConnectionProfile.azureAccount = username;
 		let servername = 'test-database.database.windows.net';
 		azureConnectionProfile.serverName = servername;
+		let providerId = 'azure_PublicCloud';
 
 		// Set up the account management service to return a token for the given user
 		accountManagementService.setup(x => x.getAccountsForProvider(TypeMoq.It.isAny())).returns(providerId => Promise.resolve<azdata.Account[]>([
@@ -811,9 +891,23 @@ suite('SQL ConnectionManagementService tests', () => {
 				properties: undefined
 			}
 		]));
+
+		accountManagementService.setup(x => x.getAccounts()).returns(() => {
+			return Promise.resolve<azdata.Account[]>([
+				{
+					key: {
+						accountId: username,
+						providerId: providerId
+					},
+					displayInfo: undefined,
+					isStale: false,
+					properties: undefined
+				}
+			]);
+		});
 		let testToken = 'testToken';
 		accountManagementService.setup(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
-			azurePublicCloud: {
+			azure_publicCloud: {
 				token: testToken
 			}
 		}));
@@ -826,7 +920,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		let profileWithCredentials = await connectionManagementService.addSavedPassword(azureConnectionProfile);
 
 		// Then the returned profile has the account token set
-		assert.equal(profileWithCredentials.userName, username);
+		assert.equal(profileWithCredentials.userName, azureConnectionProfile.userName);
 		assert.equal(profileWithCredentials.options['azureAccountToken'], testToken);
 	});
 
@@ -835,11 +929,12 @@ suite('SQL ConnectionManagementService tests', () => {
 		let azureConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
 		azureConnectionProfile.authenticationType = 'AzureMFA';
 		let username = 'testuser@microsoft.com';
-		azureConnectionProfile.userName = username;
+		azureConnectionProfile.azureAccount = username;
 		let servername = 'test-database.database.windows.net';
 		azureConnectionProfile.serverName = servername;
 		let azureTenantId = 'testTenant';
 		azureConnectionProfile.azureTenantId = azureTenantId;
+		let providerId = 'azure_PublicCloud';
 
 		// Set up the account management service to return a token for the given user
 		accountManagementService.setup(x => x.getAccountsForProvider(TypeMoq.It.isAny())).returns(providerId => Promise.resolve<azdata.Account[]>([
@@ -853,9 +948,24 @@ suite('SQL ConnectionManagementService tests', () => {
 				properties: undefined
 			}
 		]));
+
+		accountManagementService.setup(x => x.getAccounts()).returns(() => {
+			return Promise.resolve<azdata.Account[]>([
+				{
+					key: {
+						accountId: username,
+						providerId,
+					},
+					displayInfo: undefined,
+					isStale: false,
+					properties: undefined
+				}
+			]);
+		});
+
 		let testToken = 'testToken';
 		let returnedTokens = {};
-		returnedTokens['azurePublicCloud'] = { token: 'badToken' };
+		returnedTokens['azure_publicCloud'] = { token: 'badToken' };
 		returnedTokens[azureTenantId] = { token: testToken };
 		accountManagementService.setup(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(returnedTokens));
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === 'AzureMFA'))).returns(profile => Promise.resolve({
@@ -867,7 +977,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		let profileWithCredentials = await connectionManagementService.addSavedPassword(azureConnectionProfile);
 
 		// Then the returned profile has the account token set corresponding to the requested tenant
-		assert.equal(profileWithCredentials.userName, username);
+		assert.equal(profileWithCredentials.userName, azureConnectionProfile.userName);
 		assert.equal(profileWithCredentials.options['azureAccountToken'], testToken);
 	});
 
@@ -890,7 +1000,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionStoreMock.setup(x => x.getConnectionProfileGroups(TypeMoq.It.isAny(), undefined)).returns(() => {
 			return [group1];
 		});
-		const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, connectionStatusManagerMock.object, undefined, undefined, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+		const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, connectionStatusManagerMock.object, undefined, undefined, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService());
 
 		// dupe connections have been seeded the numbers below already reflected the de-duped results
 
@@ -935,4 +1045,10 @@ function createConnectionProfile(id: string): ConnectionProfile {
 
 function createConnectionGroup(id: string): ConnectionProfileGroup {
 	return new ConnectionProfileGroup(id, undefined, id, undefined, undefined);
+}
+
+function getBasicExtensionService(): IExtensionService {
+	return <any>{
+		activateByEvent: () => Promise.resolve()
+	};
 }

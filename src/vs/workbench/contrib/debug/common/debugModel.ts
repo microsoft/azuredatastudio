@@ -21,8 +21,9 @@ import { commonSuffixLength } from 'vs/base/common/strings';
 import { posix } from 'vs/base/common/path';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { ITextEditor } from 'vs/workbench/common/editor';
+import { ITextEditorPane } from 'vs/workbench/common/editor';
 import { mixin } from 'vs/base/common/objects';
+import { DebugStorage } from 'vs/workbench/contrib/debug/common/debugStorage';
 
 export class ExpressionContainer implements IExpressionContainer {
 
@@ -269,6 +270,21 @@ export class Scope extends ExpressionContainer implements IScope {
 	}
 }
 
+export class ErrorScope extends Scope {
+
+	constructor(
+		stackFrame: IStackFrame,
+		index: number,
+		message: string,
+	) {
+		super(stackFrame, index, message, 0, false);
+	}
+
+	toString(): string {
+		return this.name;
+	}
+}
+
 export class StackFrame implements IStackFrame {
 
 	private scopes: Promise<Scope[]> | undefined;
@@ -290,10 +306,20 @@ export class StackFrame implements IStackFrame {
 	getScopes(): Promise<IScope[]> {
 		if (!this.scopes) {
 			this.scopes = this.thread.session.scopes(this.frameId, this.thread.threadId).then(response => {
-				return response && response.body && response.body.scopes ?
-					response.body.scopes.map((rs, index) => new Scope(this, index, rs.name, rs.variablesReference, rs.expensive, rs.namedVariables, rs.indexedVariables,
-						rs.line && rs.column && rs.endLine && rs.endColumn ? new Range(rs.line, rs.column, rs.endLine, rs.endColumn) : undefined)) : [];
-			}, err => []);
+				if (!response || !response.body || !response.body.scopes) {
+					return [];
+				}
+
+				const scopeNameIndexes = new Map<string, number>();
+				return response.body.scopes.map(rs => {
+					const previousIndex = scopeNameIndexes.get(rs.name);
+					const index = typeof previousIndex === 'number' ? previousIndex + 1 : 0;
+					scopeNameIndexes.set(rs.name, index);
+					return new Scope(this, index, rs.name, rs.variablesReference, rs.expensive, rs.namedVariables, rs.indexedVariables,
+						rs.line && rs.column && rs.endLine && rs.endColumn ? new Range(rs.line, rs.column, rs.endLine, rs.endColumn) : undefined);
+
+				});
+			}, err => [new ErrorScope(this, 0, err.message)]);
 		}
 
 		return this.scopes;
@@ -347,7 +373,7 @@ export class StackFrame implements IStackFrame {
 		return sourceToString === UNKNOWN_SOURCE_LABEL ? this.name : `${this.name} (${sourceToString})`;
 	}
 
-	async openInEditor(editorService: IEditorService, preserveFocus?: boolean, sideBySide?: boolean, pinned?: boolean): Promise<ITextEditor | undefined> {
+	async openInEditor(editorService: IEditorService, preserveFocus?: boolean, sideBySide?: boolean, pinned?: boolean): Promise<ITextEditorPane | undefined> {
 		if (this.source.available) {
 			return this.source.openInEditor(editorService, this.range, preserveFocus, sideBySide, pinned);
 		}
@@ -355,7 +381,7 @@ export class StackFrame implements IStackFrame {
 	}
 
 	equals(other: IStackFrame): boolean {
-		return (this.name === other.name) && (other.thread === this.thread) && (other.source === this.source) && (Range.equalsRange(this.range, other.range));
+		return (this.name === other.name) && (other.thread === this.thread) && (this.frameId === other.frameId) && (other.source === this.source) && (Range.equalsRange(this.range, other.range));
 	}
 }
 
@@ -694,7 +720,7 @@ export class Breakpoint extends BaseBreakpoint implements IBreakpoint {
 	}
 
 	toString(): string {
-		return resources.basenameOrAuthority(this.uri);
+		return `${resources.basenameOrAuthority(this.uri)} ${this.lineNumber}`;
 	}
 
 	update(data: IBreakpointUpdateData): void {
@@ -823,15 +849,21 @@ export class DebugModel implements IDebugModel {
 	private readonly _onDidChangeBreakpoints = new Emitter<IBreakpointsChangeEvent | undefined>();
 	private readonly _onDidChangeCallStack = new Emitter<void>();
 	private readonly _onDidChangeWatchExpressions = new Emitter<IExpression | undefined>();
+	private breakpoints: Breakpoint[];
+	private functionBreakpoints: FunctionBreakpoint[];
+	private exceptionBreakpoints: ExceptionBreakpoint[];
+	private dataBreakopints: DataBreakpoint[];
+	private watchExpressions: Expression[];
 
 	constructor(
-		private breakpoints: Breakpoint[],
-		private functionBreakpoints: FunctionBreakpoint[],
-		private exceptionBreakpoints: ExceptionBreakpoint[],
-		private dataBreakopints: DataBreakpoint[],
-		private watchExpressions: Expression[],
-		private textFileService: ITextFileService
+		debugStorage: DebugStorage,
+		@ITextFileService private readonly textFileService: ITextFileService
 	) {
+		this.breakpoints = debugStorage.loadBreakpoints();
+		this.functionBreakpoints = debugStorage.loadFunctionBreakpoints();
+		this.exceptionBreakpoints = debugStorage.loadExceptionBreakpoints();
+		this.dataBreakopints = debugStorage.loadDataBreakpoints();
+		this.watchExpressions = debugStorage.loadWatchExpressions();
 		this.sessions = [];
 	}
 
@@ -841,7 +873,7 @@ export class DebugModel implements IDebugModel {
 
 	getSession(sessionId: string | undefined, includeInactive = false): IDebugSession | undefined {
 		if (sessionId) {
-			return this.getSessions(includeInactive).filter(s => s.getId() === sessionId).pop();
+			return this.getSessions(includeInactive).find(s => s.getId() === sessionId);
 		}
 		return undefined;
 	}
@@ -892,7 +924,7 @@ export class DebugModel implements IDebugModel {
 	}
 
 	rawUpdate(data: IRawModelUpdate): void {
-		let session = this.sessions.filter(p => p.getId() === data.sessionId).pop();
+		let session = this.sessions.find(p => p.getId() === data.sessionId);
 		if (session) {
 			session.rawUpdate(data);
 			this._onDidChangeCallStack.fire(undefined);
@@ -900,7 +932,7 @@ export class DebugModel implements IDebugModel {
 	}
 
 	clearThreads(id: string, removeThreads: boolean, reference: number | undefined = undefined): void {
-		const session = this.sessions.filter(p => p.getId() === id).pop();
+		const session = this.sessions.find(p => p.getId() === id);
 		this.schedulers.forEach(scheduler => scheduler.dispose());
 		this.schedulers.clear();
 
@@ -1144,7 +1176,7 @@ export class DebugModel implements IDebugModel {
 	}
 
 	renameFunctionBreakpoint(id: string, name: string): void {
-		const functionBreakpoint = this.functionBreakpoints.filter(fbp => fbp.getId() === id).pop();
+		const functionBreakpoint = this.functionBreakpoints.find(fbp => fbp.getId() === id);
 		if (functionBreakpoint) {
 			functionBreakpoint.name = name;
 			this._onDidChangeBreakpoints.fire({ changed: [functionBreakpoint], sessionOnly: false });
@@ -1207,7 +1239,7 @@ export class DebugModel implements IDebugModel {
 	}
 
 	moveWatchExpression(id: string, position: number): void {
-		const we = this.watchExpressions.filter(we => we.getId() === id).pop();
+		const we = this.watchExpressions.find(we => we.getId() === id);
 		if (we) {
 			this.watchExpressions = this.watchExpressions.filter(we => we.getId() !== id);
 			this.watchExpressions = this.watchExpressions.slice(0, position).concat(we, this.watchExpressions.slice(position));

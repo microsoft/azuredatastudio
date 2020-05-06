@@ -7,7 +7,7 @@ import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } fro
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { localize } from 'vs/nls';
-import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions } from 'vs/workbench/common/editor';
+import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions, ActiveEditorContext } from 'vs/workbench/common/editor';
 
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
@@ -36,7 +36,7 @@ import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import { ConnectedContext } from 'azdata';
 import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
 import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
-import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTreeContext';
+import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
 import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { MarkdownOutputComponent } from 'sql/workbench/contrib/notebook/browser/outputs/markdownOutput.component';
@@ -45,6 +45,7 @@ import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellVi
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { NotebookThemingContribution } from 'sql/workbench/contrib/notebook/browser/notebookThemingContribution';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { ToggleTabFocusModeAction } from 'vs/editor/contrib/toggleTabFocusMode/toggleTabFocusMode';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
 	.registerEditorInputFactory(FileNotebookInput.ID, FileNoteBookEditorInputFactory);
@@ -56,7 +57,7 @@ Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.Language
 	.registerLanguageAssociation(NotebookEditorInputAssociation.languages, NotebookEditorInputAssociation);
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(new EditorDescriptor(NotebookEditor, NotebookEditor.ID, localize('notebookEditor.name', "Notebook Editor")), [new SyncDescriptor(UntitledNotebookInput), new SyncDescriptor(FileNotebookInput)]);
+	.registerEditor(EditorDescriptor.create(NotebookEditor, NotebookEditor.ID, localize('notebookEditor.name', "Notebook Editor")), [new SyncDescriptor(UntitledNotebookInput), new SyncDescriptor(FileNotebookInput)]);
 
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
 	.registerWorkbenchContribution(NotebookThemingContribution, LifecyclePhase.Restored);
@@ -135,6 +136,25 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 	order: 1
 });
 
+const TOGGLE_TAB_FOCUS_COMMAND_ID = 'notebook.action.toggleTabFocusMode';
+const toggleTabFocusAction = new ToggleTabFocusModeAction();
+
+CommandsRegistry.registerCommand({
+	id: TOGGLE_TAB_FOCUS_COMMAND_ID,
+	handler: (accessor) => {
+		toggleTabFocusAction.run(accessor, undefined);
+	}
+});
+
+
+MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
+	command: {
+		id: TOGGLE_TAB_FOCUS_COMMAND_ID,
+		title: toggleTabFocusAction.label,
+	},
+	when: ContextKeyExpr.and(ActiveEditorContext.isEqualTo(NotebookEditor.ID))
+});
+
 registerAction2(class extends Action2 {
 	constructor() {
 		super({
@@ -173,6 +193,19 @@ configurationRegistry.registerConfiguration({
 			'type': 'boolean',
 			'default': true,
 			'description': localize('notebook.sqlStopOnError', "SQL kernel: stop Notebook execution when error occurs in a cell.")
+		}
+	}
+});
+
+configurationRegistry.registerConfiguration({
+	'id': 'notebook',
+	'title': 'Notebook',
+	'type': 'object',
+	'properties': {
+		'notebook.showAllKernels': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('notebook.showAllKernels', "(Preview) show all kernels for the current notebook provider.")
 		}
 	}
 });

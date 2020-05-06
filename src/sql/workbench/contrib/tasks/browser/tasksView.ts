@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./media/tasksPanel';
 import * as errors from 'vs/base/common/errors';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
@@ -10,10 +11,17 @@ import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { Disposable } from 'vs/base/common/lifecycle';
 import { DefaultFilter, DefaultDragAndDrop, DefaultAccessibilityProvider } from 'vs/base/parts/tree/browser/treeDefaults';
 import { localize } from 'vs/nls';
 import { hide, $, append } from 'vs/base/browser/dom';
+import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { IViewDescriptorService } from 'vs/workbench/common/views';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
 
 import { TaskHistoryRenderer } from 'sql/workbench/contrib/tasks/browser/tasksRenderer';
 import { TaskHistoryDataSource } from 'sql/workbench/contrib/tasks/browser/tasksDataSource';
@@ -27,25 +35,34 @@ import { IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/t
 /**
  * TaskHistoryView implements the dynamic tree view.
  */
-export class TaskHistoryView extends Disposable {
+export class TaskHistoryView extends ViewPane {
 	private _messages: HTMLElement;
 	private _tree: ITree;
 
 	constructor(
-		@IInstantiationService private _instantiationService: IInstantiationService,
-		@ITaskService private _taskService: ITaskService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService,
-		@IThemeService private _themeService: IThemeService
+		options: IViewPaneOptions,
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
+		@IConfigurationService configurationService: IConfigurationService,
+		@ITelemetryService telemetryService: ITelemetryService,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IContextMenuService contextMenuService: IContextMenuService,
+		@IKeybindingService keybindingService: IKeybindingService,
+		@IOpenerService openerService: IOpenerService,
+		@IThemeService themeService: IThemeService,
+		@ITaskService private readonly taskService: ITaskService,
+		@IErrorMessageService private readonly errorMessageService: IErrorMessageService
 	) {
-		super();
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
 	}
 
 	/**
 	 * Render the view body
 	 */
 	public renderBody(container: HTMLElement): void {
+		super.renderBody(container);
 
-		let taskNode = this._taskService.getAllTasks();
+		let taskNode = this.taskService.getAllTasks();
 
 		// Add div to display no task executed message
 		this._messages = append(container, $('div.empty-task-message'));
@@ -56,17 +73,17 @@ export class TaskHistoryView extends Disposable {
 		let noTaskMessage = localize('noTaskMessage', "No task history to display.");
 		append(this._messages, $('span')).innerText = noTaskMessage;
 
-		this._tree = this._register(this.createTaskHistoryTree(container, this._instantiationService));
+		this._tree = this._register(this.createTaskHistoryTree(container, this.instantiationService));
 		this._register(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
 
 		// Theme styler
-		this._register(attachListStyler(this._tree, this._themeService));
+		this._register(attachListStyler(this._tree, this.themeService));
 
-		this._register(this._taskService.onAddNewTask(args => {
+		this._register(this.taskService.onAddNewTask(args => {
 			hide(this._messages);
 			this.refreshTree();
 		}));
-		this._register(this._taskService.onTaskComplete(task => {
+		this._register(this.taskService.onTaskComplete(task => {
 			this.updateTask(task);
 		}));
 
@@ -118,7 +135,7 @@ export class TaskHistoryView extends Disposable {
 		}
 
 		//Get the tree Input
-		let treeInput = this._taskService.getAllTasks();
+		let treeInput = this.taskService.getAllTasks();
 		if (treeInput) {
 			this._tree.setInput(treeInput).then(async () => {
 				// Make sure to expand all folders that where expanded in the previous session
@@ -143,7 +160,7 @@ export class TaskHistoryView extends Disposable {
 			if (isDoubleClick) {
 				if (task.status === TaskStatus.Failed) {
 					let err = task.taskName + ': ' + task.message;
-					this._errorMessageService.showDialog(Severity.Error, localize('taskError', "Task error"), err);
+					this.errorMessageService.showDialog(Severity.Error, localize('taskError', "Task error"), err);
 				}
 			}
 		}
@@ -152,18 +169,8 @@ export class TaskHistoryView extends Disposable {
 	/**
 	 * set the layout of the view
 	 */
-	public layout(height: number): void {
+	public layoutBody(height: number, width: number): void {
+		super.layoutBody(height, width);
 		this._tree.layout(height);
-	}
-
-	/**
-	 * set the visibility of the view
-	 */
-	public setVisible(visible: boolean): void {
-		if (visible) {
-			this._tree.onVisible();
-		} else {
-			this._tree.onHidden();
-		}
 	}
 }

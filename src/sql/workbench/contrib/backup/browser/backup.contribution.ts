@@ -9,7 +9,7 @@ import { BackupAction } from 'sql/workbench/contrib/backup/browser/backupActions
 import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTreeContext';
+import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
 import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/mssqlNodeContext';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
