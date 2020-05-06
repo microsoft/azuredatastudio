@@ -102,6 +102,11 @@
         "command": "sqlDatabaseProjects.properties",
         "title": "%sqlDatabaseProjects.properties%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.schemaCompare",
+        "title": "%sqlDatabaseProjects.schemaCompare%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -154,23 +159,32 @@
         {
           "command": "sqlDatabaseProjects.properties",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.schemaCompare",
+          "when": "false"
         }
       ],
       "view/item/context": [
         {
           "command": "sqlDatabaseProjects.build",
           "when": "view == sqlDatabaseProjectsView",
-          "group": "1_dbProjectsFirst"
+          "group": "1_dbProjectsFirst@1"
         },
         {
           "command": "sqlDatabaseProjects.deploy",
           "when": "view == sqlDatabaseProjectsView",
-          "group": "1_dbProjectsFirst"
+          "group": "1_dbProjectsFirst@2"
+        },
+        {
+          "command": "sqlDatabaseProjects.schemaCompare",
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "1_dbProjectsFirst@3"
         },
         {
           "command": "sqlDatabaseProjects.import",
           "when": "view == sqlDatabaseProjectsView",
-          "group": "1_dbProjectsFirst"
+          "group": "1_dbProjectsFirst@4"
         },
         {
           "command": "sqlDatabaseProjects.newItem",
