@@ -75,7 +75,7 @@ suite('Explorer Widget Tests', () => {
 		obj2[prop3] = 'cd';
 		const result = filter.filter('ATc', [obj1, obj2]);
 		assert.equal(result.length, 1, 'filtered result set should container 1 item');
-		assert.equal(result[0], obj1, 'filtered result set does not match expectation');
+		assert.equal(result[0], obj2, 'filtered result set does not match expectation');
 	});
 
 	test('object type filter', () => {
@@ -117,7 +117,7 @@ suite('Explorer Widget Tests', () => {
 					schema: undefined
 				}
 			]);
-		const filter = new ExplorerFilter('server', ['name']);
+		const filter = new ExplorerFilter('database', ['name']);
 		let result = filter.filter('t:', testMetadata);
 		assert.equal(result.length, 1, 'table type filter should return only 1 item');
 		assert.equal(result[0]['name'], 'testTable', 'table type filter does not return correct data');
