@@ -14,18 +14,12 @@ import { HdfsDialogCancelledError } from './hdfsDialogBase';
 import { BdcDashboardPage } from './bdcDashboardPage';
 import * as loc from '../localizedConstants';
 
-const clusterStateLabelColumnWidth = 100;
-const clusterStateValueColumnWidth = 225;
-const healthStatusColumnWidth = 125;
-
 const hyperlinkedEndpoints = [Endpoint.metricsui, Endpoint.logsui, Endpoint.sparkHistory, Endpoint.yarnUi];
 
 export class BdcDashboardOverviewPage extends BdcDashboardPage {
 	private rootContainer: azdata.FlexContainer;
 	private lastUpdatedLabel: azdata.TextComponent;
-	private propertiesContainer: azdata.DivContainer;
-	private clusterStateLoadingComponent: azdata.LoadingComponent;
-	private clusterHealthStatusLoadingComponent: azdata.LoadingComponent;
+	private propertiesContainerLoadingComponent: azdata.LoadingComponent;
 
 	private serviceStatusTable: azdata.DeclarativeTableComponent;
 	private endpointsTable: azdata.DeclarativeTableComponent;
@@ -69,43 +63,10 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 			.component();
 		rootContainer.addItem(propertiesLabel, { CSSStyles: { 'margin-top': '15px', 'padding-left': '10px', ...cssStyles.title } });
 
-		this.propertiesErrorMessage = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ display: 'none', CSSStyles: { ...cssStyles.errorText } }).component();
-		rootContainer.addItem(this.propertiesErrorMessage, { flex: '0 0 auto' });
+		const propertiesContainer = this.modelView.modelBuilder.propertiesContainer().component();
 
-		this.propertiesContainer = this.modelView.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
-
-		// Row 1
-		const row1 = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', height: '30px', alignItems: 'center' }).component();
-
-		// Cluster State
-		const clusterStateLabel = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.clusterState }).component();
-		const clusterStateValue = this.modelView.modelBuilder.text().component();
-		this.clusterStateLoadingComponent = this.modelView.modelBuilder.loadingComponent()
-			.withItem(clusterStateValue)
-			.withProperties<azdata.LoadingComponentProperties>({
-				loading: !this.model.bdcStatus,
-				loadingCompletedText: loc.loadingClusterStateCompleted
-			})
-			.component();
-		row1.addItem(clusterStateLabel, { CSSStyles: { 'width': `${clusterStateLabelColumnWidth}px`, 'min-width': `${clusterStateLabelColumnWidth}px`, 'user-select': 'none', 'font-weight': 'bold' } });
-		row1.addItem(this.clusterStateLoadingComponent, { CSSStyles: { 'width': `${clusterStateValueColumnWidth}px`, 'min-width': `${clusterStateValueColumnWidth}px` } });
-
-		// Health Status
-		const healthStatusLabel = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.healthStatusWithColon }).component();
-		const healthStatusValue = this.modelView.modelBuilder.text().component();
-		this.clusterHealthStatusLoadingComponent = this.modelView.modelBuilder.loadingComponent()
-			.withItem(healthStatusValue)
-			.withProperties<azdata.LoadingComponentProperties>({
-				loading: !this.model.bdcStatus,
-				loadingCompletedText: loc.loadingHealthStatusCompleted
-			})
-			.component();
-		row1.addItem(healthStatusLabel, { CSSStyles: { 'width': `${healthStatusColumnWidth}px`, 'min-width': `${healthStatusColumnWidth}px`, 'user-select': 'none', 'font-weight': 'bold' } });
-		row1.addItem(this.clusterHealthStatusLoadingComponent, { CSSStyles: { 'width': `${healthStatusColumnWidth}px`, 'min-width': `${healthStatusColumnWidth}px` } });
-
-		this.propertiesContainer.addItem(row1, { CSSStyles: { 'padding-left': '10px', 'border-bottom': 'solid 1px #ccc', 'box-sizing': 'border-box', 'user-select': 'text' } });
-
-		rootContainer.addItem(this.propertiesContainer, { flex: '0 0 auto' });
+		this.propertiesContainerLoadingComponent = this.modelView.modelBuilder.loadingComponent().withItem(propertiesContainer).component();
+		rootContainer.addItem(this.propertiesContainerLoadingComponent, { flex: '0 0 auto', CSSStyles: { 'padding-left': '10px' } });
 
 		// ############
 		// # OVERVIEW #
@@ -345,7 +306,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		this.endpointsErrorMessage.display = 'none';
 
 		this.serviceStatusDisplayContainer.display = undefined;
-		this.propertiesContainer.display = undefined;
+		this.propertiesContainerLoadingComponent.display = undefined;
 		this.endpointsDisplayContainer.display = undefined;
 	}
 
@@ -355,10 +316,12 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		}
 		this.lastUpdatedLabel.value = loc.lastUpdated(this.model.bdcStatusLastUpdated);
 
-		this.clusterStateLoadingComponent.loading = false;
-		this.clusterHealthStatusLoadingComponent.loading = false;
-		(<azdata.TextComponent>this.clusterStateLoadingComponent.component).value = getStateDisplayText(bdcStatus.state);
-		(<azdata.TextComponent>this.clusterHealthStatusLoadingComponent.component).value = getHealthStatusDisplayText(bdcStatus.healthStatus);
+		this.propertiesContainerLoadingComponent.loading = false;
+
+		(<azdata.PropertiesContainerComponentProperties>this.propertiesContainerLoadingComponent.component).propertyItems = [
+			{ displayName: loc.clusterState, value: getStateDisplayText(bdcStatus.state) },
+			{ displayName: loc.healthStatus, value: getHealthStatusDisplayText(bdcStatus.healthStatus) }
+		];
 
 		if (bdcStatus.services) {
 			this.serviceStatusTable.data = bdcStatus.services.map(serviceStatus => {
@@ -436,7 +399,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 
 	private showBdcStatusError(errorMessage: string): void {
 		this.serviceStatusDisplayContainer.display = 'none';
-		this.propertiesContainer.display = 'none';
+		this.propertiesContainerLoadingComponent.display = 'none';
 		this.serviceStatusErrorMessage.value = errorMessage;
 		this.serviceStatusErrorMessage.display = undefined;
 		this.propertiesErrorMessage.value = errorMessage;

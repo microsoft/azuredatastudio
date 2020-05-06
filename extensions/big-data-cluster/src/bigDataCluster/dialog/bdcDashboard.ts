@@ -12,6 +12,7 @@ import { getServiceNameDisplayText, showErrorMessage } from '../utils';
 import { HdfsDialogCancelledError } from './hdfsDialogBase';
 import { InitializingComponent } from './intializingComponent';
 import * as loc from '../localizedConstants';
+import { IconPathHelper } from '../constants';
 
 export class BdcDashboard extends InitializingComponent {
 
@@ -19,7 +20,7 @@ export class BdcDashboard extends InitializingComponent {
 
 	private modelView: azdata.ModelView;
 
-	private overviewPage: BdcDashboardOverviewPage;
+	private createdServicePages: Map<string, azdata.Tab> = new Map<string, azdata.Tab>();
 
 	constructor(private title: string, private model: BdcDashboardModel) {
 		super();
@@ -34,18 +35,17 @@ export class BdcDashboard extends InitializingComponent {
 
 	private async createDashboard(): Promise<void> {
 		this.dashboard = azdata.window.createModelViewDashboard(this.title, { alwaysShowTabs: true });
-		//this.dashboard = azdata.workspace.createModelViewEditor(this.title, { retainContextWhenHidden: true, supportsSave: false });
 		this.dashboard.registerTabs(async (modelView: azdata.ModelView) => {
 			this.modelView = modelView;
 
-			this.overviewPage = new BdcDashboardOverviewPage(this.model, modelView);
+			const overviewPage = new BdcDashboardOverviewPage(this.model, modelView);
 			return [
 				{
 					title: loc.bdcOverview,
 					id: 'overview-tab',
 					//icon: IconPathHelper.postgres,
-					content: this.overviewPage.container,
-					toolbar: this.overviewPage.toolbarContainer
+					content: overviewPage.container,
+					toolbar: overviewPage.toolbarContainer
 				}
 			];
 		});
@@ -59,7 +59,7 @@ export class BdcDashboard extends InitializingComponent {
 		if (!bdcStatus) {
 			return;
 		}
-		this.updateServiceNavTabs(bdcStatus.services);
+		this.createServicePages(bdcStatus.services);
 	}
 
 	private handleError(errorEvent: BdcErrorEvent): void {
@@ -74,38 +74,34 @@ export class BdcDashboard extends InitializingComponent {
 	}
 
 	/**
-	 * Helper to update the navigation tabs for the services when we get a status update
+	 * Helper to create service status pages for new services
 	 */
-	private updateServiceNavTabs(services?: ServiceStatusModel[]): void {
+	private createServicePages(services?: ServiceStatusModel[]): void {
 		if (services) {
-			// Add a nav item for each service
-			const servicePages = services.map(s => {
-				//const existingTabPage = this.dashboardTabs.serviceTabGroup.tabs.find(tab => tab.id === s.serviceName);
-				//if (existingTabPage) {
-				// We've already created the tab and page for this service, just update the tab health status dot
-				//existingTabPage.navTab.dot.value = getHealthStatusDot(s.healthStatus);
-				//} else {
-				// New service - create the tab
-				const serviceStatusPage = new BdcServiceStatusPage(s.serviceName, this.model, this.modelView);
-				return <azdata.Tab>{
-					title: getServiceNameDisplayText(s.serviceName),
-					id: s.serviceName,
-					content: serviceStatusPage.container,
-					toolbar: serviceStatusPage.toolbarContainer
-				};
-				//}
+			const newTabs: azdata.Tab[] = [];
+			let i = 0;
+			// Create a service page for each new service. We currently don't support services being removed.
+			services.forEach(s => {
+				const existingPage = this.createdServicePages.get(s.serviceName);
+				if (existingPage) {
+					existingPage.icon = existingPage.icon === IconPathHelper.status_circle_red ? IconPathHelper.status_circle_blank : IconPathHelper.status_circle_red;
+				} else {
+					const serviceStatusPage = new BdcServiceStatusPage(s.serviceName, this.model, this.modelView);
+					const newTab = <azdata.Tab>{
+						title: getServiceNameDisplayText(s.serviceName),
+						id: s.serviceName,
+						icon: i++ % 2 === 0 ? IconPathHelper.status_circle_red : IconPathHelper.status_circle_blank,
+						content: serviceStatusPage.container,
+						toolbar: serviceStatusPage.toolbarContainer
+					};
+					this.createdServicePages.set(s.serviceName, newTab);
+					newTabs.push(newTab);
+				}
 			});
-			this.dashboard.updateTabs([
-				{
-					title: loc.bdcOverview,
-					id: 'overview-tab',
-					//icon: IconPathHelper.postgres,
-					content: this.overviewPage.container,
-					toolbar: this.overviewPage.toolbarContainer
-				},
+			this.dashboard.addTabs([
 				{
 					title: loc.clusterDetails,
-					tabs: servicePages
+					tabs: newTabs
 				}]);
 		}
 	}

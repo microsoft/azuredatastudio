@@ -26,6 +26,8 @@ export class IconPathHelper {
 	public static status_ok: IconPath;
 	public static status_warning: IconPath;
 	public static notebook: IconPath;
+	public static status_circle_red: IconPath;
+	public static status_circle_blank: IconPath;
 
 	public static setExtensionContext(extensionContext: vscode.ExtensionContext) {
 		IconPathHelper.extensionContext = extensionContext;
@@ -52,6 +54,14 @@ export class IconPathHelper {
 		IconPathHelper.notebook = {
 			light: IconPathHelper.extensionContext.asAbsolutePath('resources/light/notebook.svg'),
 			dark: IconPathHelper.extensionContext.asAbsolutePath('resources/dark/notebook_inverse.svg')
+		};
+		IconPathHelper.status_circle_red = {
+			light: IconPathHelper.extensionContext.asAbsolutePath('resources/status_circle_red.svg'),
+			dark: IconPathHelper.extensionContext.asAbsolutePath('resources/status_circle_red.svg')
+		};
+		IconPathHelper.status_circle_blank = {
+			light: IconPathHelper.extensionContext.asAbsolutePath('resources/status_circle_blank.svg'),
+			dark: IconPathHelper.extensionContext.asAbsolutePath('resources/status_circle_blank.svg')
 		};
 	}
 }
