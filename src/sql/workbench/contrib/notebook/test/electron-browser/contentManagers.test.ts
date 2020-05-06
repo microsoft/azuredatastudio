@@ -49,8 +49,50 @@ let expectedNotebookContentMarkdown: nb.INotebookContents = {
 	nbformat_minor: 2
 };
 
+let expectedNotebookStreamOutputContent: nb.INotebookContents = {
+	cells: [{
+		cell_type: CellTypes.Code,
+		source: [],
+		metadata: { language: 'python' },
+		execution_count: 1,
+		outputs: [
+			<nb.IStreamResult>{
+				output_type: 'stream',
+				text: 'Select * FROM database WHERE x = 0  \nSelect * FROM database WHERE x = 0\n'
+			}
+		]
+	}],
+	metadata: {
+		kernelspec: {
+			name: 'Python 3',
+			language: 'python3'
+		}
+	},
+	nbformat: 4,
+	nbformat_minor: 2
+};
+
+let expectedNotebookContentV3: nb.INotebookContents = {
+	cells: [{
+		cell_type: CellTypes.Code,
+		source: 'insert into t1 values (c1, c2)',
+		metadata: { language: 'python' },
+		execution_count: 1
+	}],
+	metadata: {
+		kernelspec: {
+			name: 'mssql',
+			language: 'sql'
+		}
+	},
+	nbformat: 3,
+	nbformat_minor: 2
+};
+
 let notebookContentString = JSON.stringify(expectedNotebookContent);
 let markdownNotebookContent = JSON.stringify(expectedNotebookContentMarkdown);
+let streamOutputContent = JSON.stringify(expectedNotebookStreamOutputContent);
+let notebookv3Content = JSON.stringify(expectedNotebookContentV3);
 
 function verifyMatchesExpectedNotebook(notebook: nb.INotebookContents): void {
 	assert.equal(notebook.cells.length, 1, 'Expected 1 cell');
@@ -172,5 +214,21 @@ suite('Local Content Manager', function (): void {
 		assert.equal(notebook.metadata.kernelspec.name, expectedNotebookContentMarkdown.metadata.kernelspec.name);
 		assert.equal(notebook.nbformat, expectedNotebookContentMarkdown.nbformat);
 		assert.equal(notebook.nbformat_minor, expectedNotebookContentMarkdown.nbformat_minor);
+	});
+
+	test('Should allow stream for output types', async function (): Promise<void> {
+		let notebook = await contentManager.loadFromContentString(streamOutputContent);
+		assert.equal(notebook.cells[0].outputs[0].output_type, 'stream');
+		assert.equal(notebook.cells[0].cell_type, expectedNotebookStreamOutputContent.cells[0].cell_type);
+	});
+
+	test('Should read notebook on v3 format', async function (): Promise<void> {
+		let notebook = await contentManager.loadFromContentString(notebookv3Content);
+		assert.equal(notebook.cells.length, expectedNotebookContentV3.cells.length);
+		assert.equal(notebook.cells[0].cell_type, CellTypes.Code);
+		assert.equal(notebook.cells[0].source, expectedNotebookContentV3.cells[0].source);
+		assert.equal(notebook.metadata.kernelspec.name, expectedNotebookContentV3.metadata.kernelspec.name);
+		assert.equal(notebook.nbformat, expectedNotebookContentV3.nbformat);
+		assert.equal(notebook.nbformat_minor, expectedNotebookContentV3.nbformat_minor);
 	});
 });
