@@ -120,7 +120,8 @@ export class ProjectsController {
 
 	public async deploy(treeNode: BaseProjectTreeItem) {
 		const project = this.getProjectContextFromTreeNode(treeNode);
-		await vscode.window.showErrorMessage(`Deploy not yet implemented: ${project.projectFilePath}`); // TODO
+		const deployDatabaseDialog = new DeployDatabaseDialog(project);
+		deployDatabaseDialog.openDialog();
 	}
 
 	public async import(treeNode: BaseProjectTreeItem) {
@@ -179,12 +180,6 @@ export class ProjectsController {
 		vscode.commands.executeCommand('vscode.open', newEntry.fsUri);
 
 		this.refreshProjectsTree();
-	}
-
-	public deployProject(treeNode: BaseProjectTreeItem) {
-		const project = this.getProjectContextFromTreeNode(treeNode);
-		const deployDatabaseDialog = new DeployDatabaseDialog(project);
-		deployDatabaseDialog.openDialog();
 	}
 
 	//#region Helper methods

@@ -270,7 +270,7 @@ export class DeployDatabaseDialog {
 		return clearButton;
 	}
 
-	// only enable Generate Script button if all fields are filled
+	// only enable Generate Script and Ok buttons if all fields are filled
 	private tryEnableGenerateScriptAndOkButtons(): void {
 		if (this.targetConnectionTextBox!.value && this.targetDatabaseTextBox!.value && this.deployScriptNameTextBox!.value
 			|| this.connectionIsDataSource && this.targetDatabaseTextBox!.value && this.deployScriptNameTextBox!.value) {
