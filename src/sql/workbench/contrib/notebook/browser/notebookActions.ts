@@ -212,9 +212,12 @@ export class CollapseCellsAction extends ToggleableAction {
 	}
 }
 
+const ShowAllKernelsConfigName = 'notebook.showAllKernels';
+const WorkbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>) {
+	private _showAllKernels: boolean = false;
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService) {
 		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false, ariaLabel: kernelLabel } as ISelectBoxOptionsWithLabel);
 
 		if (modelReady) {
@@ -226,6 +229,12 @@ export class KernelsDropdown extends SelectBox {
 		}
 
 		this.onDidSelect(e => this.doChangeKernel(e.selected));
+		this.getAllKernelConfigValue();
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration(ShowAllKernelsConfigName) || e.affectsConfiguration(WorkbenchPreviewConfigName)) {
+				this.getAllKernelConfigValue();
+			}
+		}));
 	}
 
 	updateModel(model: INotebookModel): void {
@@ -239,12 +248,23 @@ export class KernelsDropdown extends SelectBox {
 
 	// Update SelectBox values
 	public updateKernel(kernel: azdata.nb.IKernel) {
-		let kernels: string[] = this.model.standardKernelsDisplayName();
+		let kernels: string[] = this._showAllKernels ? [...new Set(this.model.specs.kernels.map(a => a.display_name).concat(this.model.standardKernelsDisplayName()))]
+			: this.model.standardKernelsDisplayName();
 		if (kernel && kernel.isReady) {
 			let standardKernel = this.model.getStandardKernelFromName(kernel.name);
-
-			if (kernels && standardKernel) {
-				let index = firstIndex(kernels, kernel => kernel === standardKernel.displayName);
+			if (kernels) {
+				let index;
+				if (standardKernel) {
+					index = firstIndex(kernels, kernel => kernel === standardKernel.displayName);
+				} else {
+					let kernelSpec = this.model.specs.kernels.find(k => k.name === kernel.name);
+					index = firstIndex(kernels, k => k === kernelSpec.display_name);
+				}
+				// This is an error case that should never happen
+				// Just in case, setting index to 0
+				if (index < 0) {
+					index = 0;
+				}
 				this.setOptions(kernels, index);
 			}
 		} else if (this.model.clientSession.isInErrorState) {
@@ -257,6 +277,10 @@ export class KernelsDropdown extends SelectBox {
 	public doChangeKernel(displayName: string): void {
 		this.setOptions([msgChanging], 0);
 		this.model.changeKernel(displayName);
+	}
+
+	private getAllKernelConfigValue(): void {
+		this._showAllKernels = !!this._configurationService.getValue(ShowAllKernelsConfigName) && !!this._configurationService.getValue(WorkbenchPreviewConfigName);
 	}
 }
 

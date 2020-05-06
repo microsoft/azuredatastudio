@@ -57,10 +57,10 @@ Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.Language
 	.registerLanguageAssociation(QueryEditorLanguageAssociation.languages, QueryEditorLanguageAssociation, QueryEditorLanguageAssociation.isDefault);
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(new EditorDescriptor(QueryResultsEditor, QueryResultsEditor.ID, localize('queryResultsEditor.name', "Query Results")), [new SyncDescriptor(QueryResultsInput)]);
+	.registerEditor(EditorDescriptor.create(QueryResultsEditor, QueryResultsEditor.ID, localize('queryResultsEditor.name', "Query Results")), [new SyncDescriptor(QueryResultsInput)]);
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(new EditorDescriptor(QueryEditor, QueryEditor.ID, localize('queryEditor.name', "Query Editor")), [new SyncDescriptor(FileQueryEditorInput), new SyncDescriptor(UntitledQueryEditorInput)]);
+	.registerEditor(EditorDescriptor.create(QueryEditor, QueryEditor.ID, localize('queryEditor.name', "Query Editor")), [new SyncDescriptor(FileQueryEditorInput), new SyncDescriptor(UntitledQueryEditorInput)]);
 
 const actionRegistry = <IWorkbenchActionRegistry>Registry.as(ActionExtensions.WorkbenchActions);
 
@@ -522,6 +522,11 @@ const registryProperties: { [path: string]: IConfigurationPropertySchema; } = {
 		'type': 'boolean',
 		'default': true,
 		'description': localize('mssql.query.ansiNulls', "Enable SET ANSI_NULLS")
+	},
+	'mssql.query.alwaysEncryptedParameterization': {
+		'type': 'boolean',
+		'default': false,
+		'description': localize('mssql.query.alwaysEncryptedParameterization', "Enable Parameterization for Always Encrypted")
 	}
 };
 
