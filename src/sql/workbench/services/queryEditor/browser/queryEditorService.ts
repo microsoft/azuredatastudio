@@ -6,7 +6,7 @@
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { EditDataInput } from 'sql/workbench/browser/editData/editDataInput';
 import { IConnectableInput } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { IQueryEditorService, INewSqlEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -18,6 +18,11 @@ import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataRes
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
+import { mixin } from 'vs/base/common/objects';
+
+const defaults: INewSqlEditorOptions = {
+	open: true
+};
 
 /**
  * Service wrapper for opening and creating SQL documents as sql editor inputs
@@ -35,11 +40,11 @@ export class QueryEditorService implements IQueryEditorService {
 	}
 
 	////// Public functions
-
+	// TODOKusto: Clean this code later after testing Kusto support impact
 	/**
 	 * Creates new untitled document for SQL query and opens in new editor tab
 	 */
-	public newSqlEditor(sqlContent?: string, connectionProviderName?: string, isDirty?: boolean, objectName?: string): Promise<IConnectableInput> {
+	/*public newSqlEditor(sqlContent?: string, connectionProviderName?: string, isDirty?: boolean, objectName?: string): Promise<IConnectableInput> {
 		return new Promise<IConnectableInput>(async (resolve, reject) => {
 			try {
 				// Create file path and file URI
@@ -66,9 +71,31 @@ export class QueryEditorService implements IQueryEditorService {
 						reject(error);
 					});
 			} catch (error) {
-				reject(error);
+				reject(error);*/
+	public async newSqlEditor(options: INewSqlEditorOptions = {}): Promise<IConnectableInput> {
+		options = mixin(options, defaults, false);
+		// Create file path and file URI
+		let filePath = await this.createUntitledSqlFilePath();
+		let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
+
+		// Create a sql document pane with accoutrements
+		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: 'sql' }) as UntitledTextEditorInput;
+		let untitledEditorModel = await fileInput.resolve() as UntitledTextEditorModel;
+		if (options.initalContent) {
+			untitledEditorModel.textEditorModel.setValue(options.initalContent);
+			if (options.dirty === false || (options.dirty === undefined && !this._configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles'))) {
+				untitledEditorModel.setDirty(false);
 			}
-		});
+		}
+
+		const queryResultsInput: QueryResultsInput = this._instantiationService.createInstance(QueryResultsInput, docUri.toString());
+		let queryInput = this._instantiationService.createInstance(UntitledQueryEditorInput, options.description, fileInput, queryResultsInput);
+
+		if (options.open) {
+			await this._editorService.openEditor(queryInput, { pinned: true });
+		}
+
+		return queryInput;
 	}
 
 	/**
@@ -82,7 +109,7 @@ export class QueryEditorService implements IQueryEditorService {
 		let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 		// Create a sql document pane with accoutrements
-		const fileInput = this._editorService.createInput({ forceUntitled: true, resource: docUri, mode: 'sql' }) as UntitledTextEditorInput;
+		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: 'sql' }) as UntitledTextEditorInput;
 		const m = await fileInput.resolve() as UntitledTextEditorModel;
 		//when associatedResource editor is created it is dirty, this must be set to false to be able to detect changes to the editor.
 		m.setDirty(false);
@@ -99,12 +126,12 @@ export class QueryEditorService implements IQueryEditorService {
 	}
 
 	////// Private functions
-	private createUntitledSqlFilePath(providerName: string): Promise<string> {
-		if (providerName === 'MSSQL') {
-			return this.createPrefixedSqlFilePath('SQLQuery');
-		}
+	private createUntitledSqlFilePath(): Promise<string> {		//TODOKusto: Make changes here for kusto query editor to have Kusto prefix
+		//if (providerName === 'MSSQL') {
+		return this.createPrefixedSqlFilePath('SQLQuery');
+		//}
 
-		return this.createPrefixedSqlFilePath(providerName + 'Query');
+		//return this.createPrefixedSqlFilePath(providerName + 'Query');
 	}
 
 	private async createPrefixedSqlFilePath(prefix: string): Promise<string> {

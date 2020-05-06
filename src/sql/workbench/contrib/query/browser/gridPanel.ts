@@ -44,7 +44,7 @@ import { localize } from 'vs/nls';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { GridPanelState, GridTableState } from 'sql/workbench/common/editor/query/gridPanelState';
+import { GridPanelState, GridTableState } from 'sql/workbench/common/editor/query/gridTableState';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { Progress } from 'vs/platform/progress/common/progress';
@@ -108,6 +108,7 @@ export class GridPanel extends Disposable {
 
 	public focus(): void {
 		// will need to add logic to save the focused grid and focus that
+		this.tables[0].focus();
 	}
 
 	public set queryRunner(runner: QueryRunner) {
@@ -322,7 +323,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private table: Table<T>;
 	private actionBar: ActionBar;
 	private container = document.createElement('div');
-	private selectionModel = new CellSelectionModel();
+	private selectionModel = new CellSelectionModel<T>();
 	private styles: ITableStyles;
 	private currentHeight: number;
 	private dataProvider: AsyncDataProvider<T>;
@@ -336,6 +337,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	public id = generateUuid();
 	readonly element: HTMLElement = this.container;
+	protected tableContainer: HTMLElement;
 
 	private _state: GridTableState;
 
@@ -349,6 +351,14 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	// this handles if the row count is small, like 4-5 rows
 	protected get maxSize(): number {
 		return ((this.resultSet.rowCount) * this.rowHeight) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
+	}
+
+	public focus(): void {
+		if (!this.table.activeCell) {
+			this.table.setActiveCell(0, 1);
+			this.selectionModel.setSelectedRanges([new Slick.Range(0, 1)]);
+		}
+		this.table.focus();
 	}
 
 	constructor(
@@ -366,7 +376,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.state = state;
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
-		this.container.className = 'grid-panel';
 
 		this.columns = this.resultSet.columnInfo.map((c, i) => {
 			let isLinked = c.isXml || c.isJson;
@@ -435,11 +444,12 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			this.container.appendChild(actionBarContainer);
 		}
 
-		let tableContainer = document.createElement('div');
-		tableContainer.style.display = 'inline-block';
-		tableContainer.style.width = `calc(100% - ${ACTIONBAR_WIDTH}px)`;
+		this.tableContainer = document.createElement('div');
+		this.tableContainer.className = 'grid-panel';
+		this.tableContainer.style.display = 'inline-block';
+		this.tableContainer.style.width = `calc(100% - ${ACTIONBAR_WIDTH}px)`;
 
-		this.container.appendChild(tableContainer);
+		this.container.appendChild(this.tableContainer);
 
 		let collection = new VirtualizedCollection(
 			50,
@@ -451,7 +461,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			this.renderGridDataRowsRange(startIndex, count);
 		});
 		this.rowNumberColumn = new RowNumberColumn({ numberOfRows: this.resultSet.rowCount });
-		let copyHandler = new CopyKeybind();
+		let copyHandler = new CopyKeybind<T>();
 		copyHandler.onCopy(e => {
 			new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false).run(this.generateContext());
 		});
@@ -463,7 +473,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			defaultColumnWidth: 120
 		};
 		this.dataProvider = new AsyncDataProvider(collection);
-		this.table = this._register(new Table(tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
+		this.table = this._register(new Table(this.tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setTableTitle(localize('resultsGrid', "Results grid"));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
@@ -581,6 +591,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				let content = value.displayValue;
 
 				const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
+				await input.load();
 				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
 				return this.editorService.openEditor(input);
 			});

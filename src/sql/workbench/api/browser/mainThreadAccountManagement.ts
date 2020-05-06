@@ -86,6 +86,9 @@ export class MainThreadAccountManagement extends Disposable implements MainThrea
 			},
 			refresh(account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> {
 				return self._proxy.$refresh(handle, account);
+			},
+			clearTokenCache(): Thenable<void> {
+				return self._proxy.$clearTokenCache();
 			}
 		};
 		this._accountManagementService.registerProvider(providerMetadata, accountProvider);

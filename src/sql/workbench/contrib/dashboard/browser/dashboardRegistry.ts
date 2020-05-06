@@ -14,7 +14,7 @@ import { DATABASE_DASHBOARD_TABS } from 'sql/workbench/contrib/dashboard/browser
 import { SERVER_DASHBOARD_TABS } from 'sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution';
 import { DASHBOARD_CONFIG_ID, DASHBOARD_TABS_KEY_PROPERTY } from 'sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution';
 import { find } from 'vs/base/common/arrays';
-import { IDashboardTab } from 'sql/workbench/services/dashboard/browser/common/interfaces';
+import { IDashboardTab, IDashboardTabGroup } from 'sql/workbench/services/dashboard/browser/common/interfaces';
 
 export const Extensions = {
 	DashboardContributions: 'dashboard.contributions'
@@ -24,12 +24,15 @@ export interface IDashboardRegistry {
 	registerDashboardProvider(id: string, properties: ProviderProperties): void;
 	getProperties(id: string): ProviderProperties;
 	registerTab(tab: IDashboardTab): void;
+	registerTabGroup(tabGroup: IDashboardTabGroup): void;
 	tabs: Array<IDashboardTab>;
+	tabGroups: Array<IDashboardTabGroup>;
 }
 
 class DashboardRegistry implements IDashboardRegistry {
 	private _properties = new Map<string, ProviderProperties>();
 	private _tabs = new Array<IDashboardTab>();
+	private _tabGroups = new Array<IDashboardTabGroup>();
 	private _configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtension.Configuration);
 
 	/**
@@ -61,8 +64,18 @@ class DashboardRegistry implements IDashboardRegistry {
 		}
 	}
 
+	registerTabGroup(tabGroup: IDashboardTabGroup): void {
+		if (this.tabGroups.findIndex(group => group.id === tabGroup.id) === -1) {
+			this.tabGroups.push(tabGroup);
+		}
+	}
+
 	public get tabs(): Array<IDashboardTab> {
 		return this._tabs;
+	}
+
+	public get tabGroups(): Array<IDashboardTabGroup> {
+		return this._tabGroups;
 	}
 }
 
@@ -71,6 +84,10 @@ Registry.add(Extensions.DashboardContributions, dashboardRegistry);
 
 export function registerTab(tab: IDashboardTab): void {
 	dashboardRegistry.registerTab(tab);
+}
+
+export function registerTabGroup(tabGroup: IDashboardTabGroup): void {
+	dashboardRegistry.registerTabGroup(tabGroup);
 }
 
 const dashboardPropertiesPropertyContrib: IJSONSchema = {

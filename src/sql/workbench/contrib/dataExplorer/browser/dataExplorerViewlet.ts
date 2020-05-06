@@ -105,7 +105,7 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService
 	) {
-		super(VIEWLET_ID, `${VIEWLET_ID}.state`, { mergeViewWithContainerWhenSingleView: true }, instantiationService, configurationService, layoutService, contextMenuService, telemetryService, extensionService, themeService, storageService, contextService, viewDescriptorService);
+		super(VIEWLET_ID, { mergeViewWithContainerWhenSingleView: true }, instantiationService, configurationService, layoutService, contextMenuService, telemetryService, extensionService, themeService, storageService, contextService, viewDescriptorService);
 	}
 
 	create(parent: HTMLElement): void {
@@ -156,5 +156,7 @@ export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainer
 	id: VIEWLET_ID,
 	name: localize('dataexplorer.name', "Connections"),
 	ctorDescriptor: new SyncDescriptor(DataExplorerViewPaneContainer),
-	icon: 'dataExplorer'
+	icon: 'dataExplorer',
+	order: 0,
+	storageId: `${VIEWLET_ID}.state`
 }, ViewContainerLocation.Sidebar);

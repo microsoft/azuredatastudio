@@ -19,12 +19,12 @@ import { CloseTabAction } from 'sql/base/browser/ui/panel/tabActions';
 @Component({
 	selector: 'tab-header',
 	template: `
-		<div #actionHeader role="presentation" class="tab-header" style="flex: 0 0; flex-direction: row; height: 100%" [class.active]="tab.active" tabindex="0" (keyup)="onKey($event)">
-			<span class="tab" (click)="selectTab(tab)" role="tab" [attr.aria-selected]="tab.active" [attr.aria-controls]="tab.title">
-				<a class="tabLabel" [class.active]="tab.active" #tabLabel>
-				</a>
-			</span>
-			<span #actionbar style="flex: 0 0 auto; align-self: end; margin-top: auto; margin-bottom: auto;" ></span>
+		<div #actionHeader role="tab" [attr.aria-selected]="tab.active" [attr.aria-label]="tab.title" class="tab-header" style="flex: 0 0; flex-direction: row;" [class.active]="tab.active" tabindex="0" (click)="selectTab(tab)" (keyup)="onKey($event)">
+			<div class="tab" role="presentation">
+				<a #tabIcon></a>
+				<a class="tabLabel" [class.active]="tab.active" [title]="tab.title" #tabLabel></a>
+			</div>
+			<div #actionbar style="flex: 0 0 auto; align-self: end; margin-top: auto; margin-bottom: auto;" ></div>
 		</div>
 	`
 })
@@ -34,14 +34,21 @@ export class TabHeaderComponent extends Disposable implements AfterContentInit, 
 	@Input() public active?: boolean;
 	@Output() public onSelectTab: EventEmitter<TabComponent> = new EventEmitter<TabComponent>();
 	@Output() public onCloseTab: EventEmitter<TabComponent> = new EventEmitter<TabComponent>();
+	@Output() public onFocusTab: EventEmitter<TabComponent> = new EventEmitter<TabComponent>();
 
 	private _actionbar!: ActionBar;
 
 	@ViewChild('actionHeader', { read: ElementRef }) private _actionHeaderRef!: ElementRef;
 	@ViewChild('actionbar', { read: ElementRef }) private _actionbarRef!: ElementRef;
 	@ViewChild('tabLabel', { read: ElementRef }) private _tabLabelRef!: ElementRef;
+	@ViewChild('tabIcon', { read: ElementRef }) private _tabIconRef!: ElementRef;
+
 	constructor() {
 		super();
+	}
+
+	public get nativeElement(): HTMLElement {
+		return this._actionHeaderRef.nativeElement;
 	}
 
 	ngAfterContentInit(): void {
@@ -56,15 +63,14 @@ export class TabHeaderComponent extends Disposable implements AfterContentInit, 
 			}
 		}
 
-		let tabLabelcontainer = this._tabLabelRef.nativeElement as HTMLElement;
+		const tabLabelContainer = this._tabLabelRef.nativeElement as HTMLElement;
 		if (this.showIcon && this.tab.iconClass) {
-			tabLabelcontainer.className = 'tabLabel codicon';
-			tabLabelcontainer.classList.add(this.tab.iconClass);
-		} else {
-			tabLabelcontainer.className = 'tabLabel';
-			tabLabelcontainer.textContent = this.tab.title;
+			const tabIconContainer = this._tabIconRef.nativeElement as HTMLElement;
+			tabIconContainer.className = 'tabIcon codicon icon';
+			tabIconContainer.classList.add(this.tab.iconClass);
 		}
-		tabLabelcontainer.title = this.tab.title;
+
+		tabLabelContainer.textContent = this.tab.title;
 	}
 
 	ngOnDestroy() {
@@ -90,7 +96,7 @@ export class TabHeaderComponent extends Disposable implements AfterContentInit, 
 	onKey(e: Event) {
 		if (DOM.isAncestor(<HTMLElement>e.target, this._actionHeaderRef.nativeElement) && e instanceof KeyboardEvent) {
 			let event = new StandardKeyboardEvent(e);
-			if (event.equals(KeyCode.Enter)) {
+			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 				this.onSelectTab.emit(this.tab);
 				e.stopPropagation();
 			}

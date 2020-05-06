@@ -16,6 +16,7 @@ import * as path from 'vs/base/common/path';
 
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { isThenable } from 'vs/base/common/async';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -26,7 +27,9 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 		@IEditorService private readonly editorService: IEditorService,
 		@IModeService private readonly modeService: IModeService
 	) {
-		this.editorOpeningListener = this.editorService.overrideOpenEditor((editor, options, group) => this.onEditorOpening(editor, options, group));
+		this.editorOpeningListener = this.editorService.overrideOpenEditor({
+			open: (editor, options, group) => this.onEditorOpening(editor, options, group)
+		});
 	}
 
 	private onEditorOpening(editor: IEditorInput, options: IEditorOptions | ITextEditorOptions | undefined, group: IEditorGroup): IOpenEditorOverride | undefined {
@@ -63,7 +66,7 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 				editor.setMode(defaultInputCreator[0]);
 				const newInput = defaultInputCreator[1].convertInput(editor);
 				if (newInput) {
-					return { override: this.editorService.openEditor(newInput, options, group) };
+					return { override: isThenable(newInput) ? newInput.then(input => this.editorService.openEditor(input, options, group)) : this.editorService.openEditor(newInput, options, group) };
 				}
 			}
 		} else {
@@ -71,7 +74,7 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 			if (inputCreator) {
 				const newInput = inputCreator.convertInput(editor);
 				if (newInput) {
-					return { override: this.editorService.openEditor(newInput, options, group) };
+					return { override: isThenable(newInput) ? newInput.then(input => this.editorService.openEditor(input, options, group)) : this.editorService.openEditor(newInput, options, group) };
 				}
 			}
 		}

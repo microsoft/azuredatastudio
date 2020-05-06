@@ -418,6 +418,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				createWizard(title: string): azdata.window.Wizard {
 					return extHostModelViewDialog.createWizard(title);
 				},
+				createModelViewDashboard(title: string, options?: azdata.ModelViewDashboardOptions): azdata.window.ModelViewDashboard {
+					return extHostModelViewDialog.createModelViewDashboard(title, options, extension);
+				},
 				MessageLevel: sqlExtHostTypes.MessageLevel
 			};
 
@@ -488,6 +491,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				get onDidOpenNotebookDocument() {
 					return extHostNotebookDocumentsAndEditors.onDidOpenNotebookDocument;
 				},
+				get onDidChangeActiveNotebookEditor() {
+					return extHostNotebookDocumentsAndEditors.onDidChangeActiveNotebookEditor;
+				},
 				get onDidChangeNotebookCell() {
 					return extHostNotebookDocumentsAndEditors.onDidChangeNotebookCell;
 				},
@@ -549,7 +555,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				AgentSubSystem: sqlExtHostTypes.AgentSubSystem,
 				ExtensionNodeType: sqlExtHostTypes.ExtensionNodeType,
 				ColumnSizingMode: sqlExtHostTypes.ColumnSizingMode,
-				DatabaseEngineEdition: sqlExtHostTypes.DatabaseEngineEdition
+				DatabaseEngineEdition: sqlExtHostTypes.DatabaseEngineEdition,
+				TabOrientation: sqlExtHostTypes.TabOrientation
 			};
 		}
 	};

@@ -16,6 +16,7 @@ import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { find } from 'vs/base/common/arrays';
 import { localize } from 'vs/nls';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { convertSize } from 'sql/base/browser/dom';
 
 export enum DeclarativeDataType {
 	string = 'string',
@@ -31,14 +32,14 @@ export enum DeclarativeDataType {
 	<table role=grid #container *ngIf="columns" class="declarative-table" [style.height]="getHeight()" [attr.aria-label]="ariaLabel">
 	<thead>
 		<ng-container *ngFor="let column of columns;">
-		<th class="declarative-table-header" tabindex="-1" aria-sort="none" [style.width]="getColumnWidth(column)" [attr.aria-label]="column.ariaLabel" [ngStyle]="column.headerCssStyles">{{column.displayName}}</th>
+		<th class="declarative-table-header" aria-sort="none" [style.width]="getColumnWidth(column)" [attr.aria-label]="column.ariaLabel" [ngStyle]="column.headerCssStyles">{{column.displayName}}</th>
 		</ng-container>
 	</thead>
 		<ng-container *ngIf="data">
 			<ng-container *ngFor="let row of data;let r = index">
 				<tr class="declarative-table-row">
 					<ng-container *ngFor="let cellData of row;let c = index">
-						<td class="declarative-table-cell" tabindex="-1" [style.width]="getColumnWidth(c)" [attr.aria-label]="getAriaLabel(r, c)" [ngStyle]="columns[c].rowCssStyles">
+						<td class="declarative-table-cell" [style.width]="getColumnWidth(c)" [attr.aria-label]="getAriaLabel(r, c)" [ngStyle]="columns[c].rowCssStyles">
 							<checkbox *ngIf="isCheckBox(c)" label="" (onChange)="onCheckBoxChanged($event,r,c)" [enabled]="isControlEnabled(c)" [checked]="isChecked(r,c)"></checkbox>
 							<select-box *ngIf="isSelectBox(c)" [options]="getOptions(c)" (onDidSelect)="onSelectBoxChanged($event,r,c)" [selectedOption]="getSelectedOptionDisplayName(r,c)"></select-box>
 							<editable-select-box *ngIf="isEditableSelectBox(c)" [options]="getOptions(c)" (onDidSelect)="onSelectBoxChanged($event,r,c)" [selectedOption]="getSelectedOptionDisplayName(r,c)"></editable-select-box>
@@ -161,7 +162,7 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 
 	public getColumnWidth(col: number | azdata.DeclarativeTableColumn): string {
 		let column = typeof col === 'number' ? this.columns[col] : col;
-		return this.convertSize(column.width, '30px');
+		return convertSize(column.width, '30px');
 	}
 
 	public getOptions(colIdx: number): string[] {

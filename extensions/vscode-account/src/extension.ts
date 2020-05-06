@@ -5,60 +5,43 @@
 
 import * as vscode from 'vscode';
 import { AzureActiveDirectoryService, onDidChangeSessions } from './AADHelper';
+import TelemetryReporter from 'vscode-extension-telemetry';
 
 export const DEFAULT_SCOPES = 'https://management.core.windows.net/.default offline_access';
 
 export async function activate(context: vscode.ExtensionContext) {
+	const { name, version, aiKey } = require('../package.json') as { name: string, version: string, aiKey: string };
+	const telemetryReporter = new TelemetryReporter(name, version, aiKey);
 
 	const loginService = new AzureActiveDirectoryService();
 
 	await loginService.initialize();
 
 	context.subscriptions.push(vscode.authentication.registerAuthenticationProvider({
-		id: 'MSA',
+		id: 'microsoft',
 		displayName: 'Microsoft',
 		onDidChangeSessions: onDidChangeSessions.event,
 		getSessions: () => Promise.resolve(loginService.sessions),
 		login: async (scopes: string[]) => {
 			try {
+				telemetryReporter.sendTelemetryEvent('login');
 				await loginService.login(scopes.sort().join(' '));
+				const session = loginService.sessions[loginService.sessions.length - 1];
+				onDidChangeSessions.fire({ added: [session.id], removed: [], changed: [] });
 				return loginService.sessions[0]!;
 			} catch (e) {
+				telemetryReporter.sendTelemetryEvent('loginFailed');
 				throw e;
 			}
 		},
 		logout: async (id: string) => {
-			return loginService.logout(id);
-		}
-	}));
-
-	context.subscriptions.push(vscode.commands.registerCommand('microsoft.signin', () => {
-		return loginService.login(DEFAULT_SCOPES);
-	}));
-
-	context.subscriptions.push(vscode.commands.registerCommand('microsoft.signout', async () => {
-		const sessions = loginService.sessions;
-		if (sessions.length === 0) {
-			return;
-		}
-
-		if (sessions.length === 1) {
-			await loginService.logout(loginService.sessions[0].id);
-			onDidChangeSessions.fire();
-			return;
-		}
-
-		const selectedSession = await vscode.window.showQuickPick(sessions.map(session => {
-			return {
-				id: session.id,
-				label: session.accountName
-			};
-		}));
-
-		if (selectedSession) {
-			await loginService.logout(selectedSession.id);
-			onDidChangeSessions.fire();
-			return;
+			try {
+				telemetryReporter.sendTelemetryEvent('logout');
+				await loginService.logout(id);
+				onDidChangeSessions.fire({ added: [], removed: [id], changed: [] });
+			} catch (e) {
+				telemetryReporter.sendTelemetryEvent('logoutFailed');
+			}
 		}
 	}));
 

@@ -23,3 +23,52 @@ dashboard-page .dashboard-panel .tab-header .action-item .action-label.pin {
 dashboard-page .dashboard-panel .tab-header .action-item .action-label.close {
 	padding: 5px;
 }
+
+dashboard-page .home-tab-icon {
+	background-image: url("media/home.svg");
+}
+
+dashboard-page .default-tab-icon {
+	background-image: url("media/default.svg");
+}
+
+dashboard-page .actions-container .action-item .action-label{
+	padding-left: 20px;
+	padding-right: 5px;
+	background-size: 16px;
+	background-position: left;
+}
+
+dashboard-page .actions-container .taskbarSeparator {
+	height: 14px;
+	margin-right: 16px;
+}
+
+dashboard-page .editor-toolbar {
+	flex: 0 0 auto;
+	flex-flow: row;
+	width: 100%;
+	align-items: center;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	padding: 3px 0;
+}
+
+.dashboardEditor breadcrumb .chevron-right.codicon {
+	background-size: 8px;
+}
+
+.dashboardEditor breadcrumb {
+	font-size: 13px;
+	color: #323130;
+}
+
+.vs-dark .dashboardEditor breadcrumb,
+.hc-black .dashboardEditor breadcrumb {
+	color: #FFFFFF;
+}
+
+.dashboardEditor breadcrumb .router-link {
+	color: #2170DE;;
+}
+

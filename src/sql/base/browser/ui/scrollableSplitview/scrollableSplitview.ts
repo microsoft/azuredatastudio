@@ -14,7 +14,7 @@ import { clamp } from 'vs/base/common/numbers';
 import { range, firstIndex, pushToStart } from 'vs/base/common/arrays';
 import { Sash, Orientation, ISashEvent as IBaseSashEvent } from 'vs/base/browser/ui/sash/sash';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
-import { ArrayIterator } from 'vs/base/common/iterator';
+import { ArrayNavigator } from 'vs/base/common/navigator';
 import { mixin } from 'vs/base/common/objects';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { ISplitViewStyles, Sizing } from 'vs/base/browser/ui/splitview/splitview';
@@ -239,7 +239,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 				if (container.parentElement) {
 					this.viewContainer.removeChild(container);
 				}
-				this.onRemoveItems(new ArrayIterator([item.view.id!]));
+				this.onRemoveItems(new ArrayNavigator([item.view.id!]));
 			});
 			const disposable = combinedDisposable(onChangeDisposable, containerDisposable);
 
@@ -268,7 +268,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			const item: IViewItem = { onAdd, onRemove, view, container, size: viewSize, layout, disposable, height: viewSize, top: 0, width: 0 };
 			this.viewItems.splice(currentIndex, 0, item);
 
-			this.onInsertItems(new ArrayIterator([item]), currentIndex > 0 ? this.viewItems[currentIndex - 1].view.id : undefined);
+			this.onInsertItems(new ArrayNavigator([item]), currentIndex > 0 ? this.viewItems[currentIndex - 1].view.id : undefined);
 
 			// Add sash
 			if (this.options.enableResizing && this.viewItems.length > 1) {
@@ -342,7 +342,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			if (container.parentElement) {
 				this.viewContainer.removeChild(container);
 			}
-			this.onRemoveItems(new ArrayIterator([item.view.id!]));
+			this.onRemoveItems(new ArrayNavigator([item.view.id!]));
 		});
 		const disposable = combinedDisposable(onChangeDisposable, containerDisposable);
 
@@ -371,7 +371,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		const item: IViewItem = { onAdd, onRemove, view, container, size: viewSize, layout, disposable, height: viewSize, top: 0, width: 0 };
 		this.viewItems.splice(index, 0, item);
 
-		this.onInsertItems(new ArrayIterator([item]), index > 0 ? this.viewItems[index - 1].view.id : undefined);
+		this.onInsertItems(new ArrayNavigator([item]), index > 0 ? this.viewItems[index - 1].view.id : undefined);
 
 		// Add sash
 		if (this.options.enableResizing && this.viewItems.length > 1) {

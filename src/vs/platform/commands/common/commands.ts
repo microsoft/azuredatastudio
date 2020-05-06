@@ -10,6 +10,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { LinkedList } from 'vs/base/common/linkedList';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { keys } from 'vs/base/common/map';
+import { Iterable } from 'vs/base/common/iterator';
 
 export const ICommandService = createDecorator<ICommandService>('commandService');
 
@@ -38,9 +39,14 @@ export interface ICommand {
 }
 
 export interface ICommandHandlerDescription {
-	description: string;
-	args: { name: string; description?: string; constraint?: TypeConstraint; schema?: IJSONSchema; }[];
-	returns?: string;
+	readonly description: string;
+	readonly args: ReadonlyArray<{
+		readonly name: string;
+		readonly description?: string;
+		readonly constraint?: TypeConstraint;
+		readonly schema?: IJSONSchema;
+	}>;
+	readonly returns?: string;
 }
 
 export interface ICommandRegistry {
@@ -119,7 +125,7 @@ export const CommandsRegistry: ICommandRegistry = new class implements ICommandR
 		if (!list || list.isEmpty()) {
 			return undefined;
 		}
-		return list.iterator().next().value;
+		return Iterable.first(list);
 	}
 
 	getCommands(): ICommandsMap {

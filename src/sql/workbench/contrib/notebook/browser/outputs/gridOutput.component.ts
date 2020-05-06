@@ -24,20 +24,25 @@ import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IMimeComponent } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRegistry';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { MimeModel } from 'sql/workbench/services/notebook/browser/outputs/mimemodel';
-import { GridTableState } from 'sql/workbench/common/editor/query/gridPanelState';
+import { GridTableState } from 'sql/workbench/common/editor/query/gridTableState';
 import { GridTableBase } from 'sql/workbench/contrib/query/browser/gridPanel';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { ISerializationService, SerializeDataParams } from 'sql/platform/serialization/common/serializationService';
-import { SaveResultAction } from 'sql/workbench/contrib/query/browser/actions';
+import { SaveResultAction, IGridActionContext } from 'sql/workbench/contrib/query/browser/actions';
 import { ResultSerializer, SaveResultsResponse, SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { values } from 'vs/base/common/collections';
 import { assign } from 'vs/base/common/objects';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
+import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
+import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
+import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
-	template: `<div #output class="notebook-cellTable" (mouseover)="hover=true" (mouseleave)="hover=false"></div>`
+	template: `<div #output class="notebook-cellTable"></div>`
 })
 export class GridOutputComponent extends AngularDisposable implements IMimeComponent, OnInit {
 	public static readonly SELECTOR: string = 'grid-output';
@@ -46,9 +51,10 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 
 	private _initialized: boolean = false;
 	private _cellModel: ICellModel;
+	private _cellOutput: azdata.nb.ICellOutput;
 	private _bundleOptions: MimeModel.IOptions;
 	private _table: DataResourceTable;
-	private _hover: boolean;
+
 	constructor(
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IThemeService) private readonly themeService: IThemeService
@@ -76,12 +82,12 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		}
 	}
 
-	@Input() set hover(value: boolean) {
-		// only reaction on hover changes
-		if (this._hover !== value) {
-			this.toggleActionbar(value);
-			this._hover = value;
-		}
+	get cellOutput(): azdata.nb.ICellOutput {
+		return this._cellOutput;
+	}
+
+	@Input() set cellOutput(value: azdata.nb.ICellOutput) {
+		this._cellOutput = value;
 	}
 
 	ngOnInit() {
@@ -95,13 +101,12 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		if (!this._table) {
 			let source = <IDataResource><any>this._bundleOptions.data[this.mimeType];
 			let state = new GridTableState(0, 0);
-			this._table = this.instantiationService.createInstance(DataResourceTable, source, this.cellModel.notebookModel.notebookUri.toString(), state);
+			this._table = this.instantiationService.createInstance(DataResourceTable, source, this.cellModel, this.cellOutput, state);
 			let outputElement = <HTMLElement>this.output.nativeElement;
 			outputElement.appendChild(this._table.element);
 			this._register(attachTableStyler(this._table, this.themeService));
 			this.layout();
-			// By default, do not show the actions
-			this.toggleActionbar(false);
+
 			this._table.onAdd();
 			this._initialized = true;
 		}
@@ -113,40 +118,45 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			this._table.layout(maxSize, undefined, ActionsOrientation.HORIZONTAL);
 		}
 	}
-
-	private toggleActionbar(visible: boolean) {
-		let outputElement = <HTMLElement>this.output.nativeElement;
-		let actionsContainers: HTMLElement[] = Array.prototype.slice.call(outputElement.getElementsByClassName('actions-container'));
-		if (actionsContainers && actionsContainers.length) {
-			if (visible) {
-				actionsContainers.forEach(container => container.style.visibility = 'visible');
-			} else {
-				actionsContainers.forEach(container => container.style.visibility = 'hidden');
-			}
-		}
-	}
 }
 
 class DataResourceTable extends GridTableBase<any> {
 
 	private _gridDataProvider: IGridDataProvider;
+	private _chart: ChartView;
+	private _chartContainer: HTMLElement;
 
 	constructor(source: IDataResource,
-		documentUri: string,
+		private cellModel: ICellModel,
+		private cellOutput: azdata.nb.ICellOutput,
 		state: GridTableState,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IInstantiationService instantiationService: IInstantiationService,
+		@IInstantiationService protected instantiationService: IInstantiationService,
 		@IEditorService editorService: IEditorService,
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@ISerializationService private _serializationService: ISerializationService
+		@IConfigurationService configurationService: IConfigurationService
 	) {
 		super(state, createResultSet(source), contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
-		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, documentUri);
+		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel.notebookModel.notebookUri.toString());
+		this._chart = this.instantiationService.createInstance(ChartView, false);
+
+		if (!this.cellOutput.metadata) {
+			this.cellOutput.metadata = {};
+		} else if (this.cellOutput.metadata.azdata_chartOptions) {
+			this._chart.options = this.cellOutput.metadata.azdata_chartOptions as IInsightOptions;
+			this.updateChartData(this.resultSet.rowCount, this.resultSet.columnInfo.length, this.gridDataProvider);
+		}
+		this._chart.onOptionsChange(options => {
+			this.setChartOptions(options);
+		});
 	}
 
-	get gridDataProvider(): IGridDataProvider {
+	public get gridDataProvider(): IGridDataProvider {
 		return this._gridDataProvider;
+	}
+
+	public get chartDisplayed(): boolean {
+		return this.cellOutput.metadata.azdata_chartOptions !== undefined;
 	}
 
 	protected getCurrentActions(): IAction[] {
@@ -154,14 +164,12 @@ class DataResourceTable extends GridTableBase<any> {
 	}
 
 	protected getContextActions(): IAction[] {
-		if (!this._serializationService.hasProvider()) {
-			return [];
-		}
 		return [
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
+			this.instantiationService.createInstance(NotebookChartAction, this)
 		];
 	}
 
@@ -169,6 +177,51 @@ class DataResourceTable extends GridTableBase<any> {
 		// Overriding action bar size calculation for now.
 		// When we add this back in, we should update this calculation
 		return Math.max(this.maxSize, /* ACTIONBAR_HEIGHT + BOTTOM_PADDING */ 0);
+	}
+
+	public layout(size?: number, orientation?: Orientation, actionsOrientation?: ActionsOrientation): void {
+		super.layout(size, orientation, actionsOrientation);
+
+		if (!this._chartContainer) {
+			this._chartContainer = document.createElement('div');
+			this._chartContainer.style.width = '100%';
+
+			if (this.cellOutput.metadata.azdata_chartOptions) {
+				this.tableContainer.style.display = 'none';
+				this._chartContainer.style.display = 'inline-block';
+			} else {
+				this._chartContainer.style.display = 'none';
+			}
+
+			this.element.appendChild(this._chartContainer);
+			this._chart.render(this._chartContainer);
+		}
+	}
+
+	public toggleChartVisibility(): void {
+		if (this.tableContainer.style.display !== 'none') {
+			this.tableContainer.style.display = 'none';
+			this._chartContainer.style.display = 'inline-block';
+			this.setChartOptions(this._chart.options);
+		} else {
+			this._chartContainer.style.display = 'none';
+			this.tableContainer.style.display = 'inline-block';
+			this.setChartOptions(undefined);
+		}
+		this.layout();
+	}
+
+	public updateChartData(rowCount: number, columnCount: number, gridDataProvider: IGridDataProvider): void {
+		gridDataProvider.getRowData(0, rowCount).then(result => {
+			let range = new Slick.Range(0, 0, rowCount - 1, columnCount - 1);
+			let columns = gridDataProvider.getColumnHeaders(range);
+			this._chart.setData(result.resultSubset.rows, columns);
+		});
+	}
+
+	private setChartOptions(options: IInsightOptions | undefined) {
+		this.cellOutput.metadata.azdata_chartOptions = options;
+		this.cellModel.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
 	}
 }
 
@@ -251,7 +304,6 @@ class DataResourceDataProvider implements IGridDataProvider {
 	get canSerialize(): boolean {
 		return this._serializationService.hasProvider();
 	}
-
 
 	serializeResults(format: SaveFormat, selection: Slick.Range[]): Thenable<void> {
 		let serializer = this._instantiationService.createInstance(ResultSerializer);
@@ -374,4 +426,34 @@ class SimpleDbColumn implements azdata.IDbColumn {
 	numericScale?: number;
 	udtAssemblyQualifiedName: string;
 	dataTypeName: string;
+}
+
+export class NotebookChartAction extends ToggleableAction {
+	public static ID = 'notebook.showChart';
+	public static SHOWCHART_LABEL = localize('notebook.showChart', "Show chart");
+	public static SHOWCHART_ICON = 'viewChart';
+
+	public static SHOWTABLE_LABEL = localize('notebook.showTable', "Show table");
+	public static SHOWTABLE_ICON = 'table';
+
+	constructor(private resourceTable: DataResourceTable) {
+		super(NotebookChartAction.ID, {
+			toggleOnLabel: NotebookChartAction.SHOWTABLE_LABEL,
+			toggleOnClass: NotebookChartAction.SHOWTABLE_ICON,
+			toggleOffLabel: NotebookChartAction.SHOWCHART_LABEL,
+			toggleOffClass: NotebookChartAction.SHOWCHART_ICON,
+			isOn: resourceTable.chartDisplayed
+		});
+	}
+
+	public async run(context: IGridActionContext): Promise<boolean> {
+		this.resourceTable.toggleChartVisibility();
+		this.toggle(!this.state.isOn);
+		if (this.state.isOn) {
+			let rowCount = context.table.getData().getLength();
+			let columnCount = context.table.columns.length;
+			this.resourceTable.updateChartData(rowCount, columnCount, context.gridDataProvider);
+		}
+		return true;
+	}
 }

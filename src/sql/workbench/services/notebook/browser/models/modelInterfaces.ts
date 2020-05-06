@@ -119,11 +119,6 @@ export interface IClientSession extends IDisposable {
 	readonly kernelChangeCompleted: Promise<void>;
 
 	/**
-	 * The kernel preference.
-	 */
-	kernelPreference: IKernelPreference;
-
-	/**
 	 * The display name of the kernel.
 	 */
 	readonly kernelDisplayName: string;
@@ -211,41 +206,6 @@ export interface IClientSession extends IDisposable {
 	 * the kernel before actions such as run should be allowed
 	 */
 	onKernelChanging(changeHandler: ((kernel: nb.IKernelChangedArgs) => Promise<void>)): void;
-}
-
-/**
- * A kernel preference.
- */
-export interface IKernelPreference {
-	/**
-	 * The name of the kernel.
-	 */
-	readonly name?: string;
-
-	/**
-	 * The preferred kernel language.
-	 */
-	readonly language?: string;
-
-	/**
-	 * The id of an existing kernel.
-	 */
-	readonly id?: string;
-
-	/**
-	 * Whether to prefer starting a kernel.
-	 */
-	readonly shouldStart?: boolean;
-
-	/**
-	 * Whether a kernel can be started.
-	 */
-	readonly canStart?: boolean;
-
-	/**
-	 * Whether to auto-start the default kernel if no matching kernel is found.
-	 */
-	readonly autoStartDefault?: boolean;
 }
 
 export interface INotebookModel {
@@ -468,6 +428,7 @@ export interface ICellModel {
 	executionCount: number | undefined;
 	readonly future: FutureInternal;
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
+	renderedOutputTextContent?: string[];
 	readonly onOutputsChanged: Event<IOutputChangedEvent>;
 	readonly onExecutionStateChange: Event<CellExecutionState>;
 	readonly executionState: CellExecutionState;
@@ -483,9 +444,10 @@ export interface ICellModel {
 	readonly onLoaded: Event<string>;
 	isCollapsed: boolean;
 	readonly onCollapseStateChanged: Event<boolean>;
+	readonly onCellModeChanged: Event<boolean>;
 	modelContentChangedEvent: IModelContentChangedEvent;
 	isEditMode: boolean;
-	readonly ariaLabel: string;
+	sendChangeToNotebook(change: NotebookChangeType): void;
 }
 
 export interface IModelFactory {

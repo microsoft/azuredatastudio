@@ -232,8 +232,8 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
  * @param params The params used to build up the command parameter string
  */
 export function buildSsmsMinCommandArgs(params: LaunchSsmsDialogParams): string {
-	return `${params.action ? '-a "' + backEscapeDoubleQuotes(params.action) + '"' : ''}\
-${params.server ? ' -S "' + backEscapeDoubleQuotes(params.server) + '"' : ''}\
+	return `-a "${backEscapeDoubleQuotes(params.action)}" \
+-S "${backEscapeDoubleQuotes(params.server)}"\
 ${params.database ? ' -D "' + backEscapeDoubleQuotes(params.database) + '"' : ''}\
 ${params.user ? ' -U "' + backEscapeDoubleQuotes(params.user) + '"' : ''}\
 ${params.useAad === true ? ' -G' : ''}\

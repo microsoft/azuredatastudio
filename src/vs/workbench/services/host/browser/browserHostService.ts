@@ -6,8 +6,8 @@
 import { Event } from 'vs/base/common/event';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
-import { IResourceEditor, IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { IResourceEditorInputType, IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWindowSettings, IWindowOpenable, IOpenWindowOptions, isFolderToOpen, isWorkspaceToOpen, isFileToOpen, IOpenEmptyWindowOptions } from 'vs/platform/windows/common/windows';
 import { pathsToEditors } from 'vs/workbench/common/editor';
@@ -17,7 +17,6 @@ import { trackFocus } from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
-import { mapToSerializable } from 'vs/base/common/map';
 
 /**
  * A workspace to open in the workbench can either be:
@@ -59,7 +58,7 @@ export class BrowserHostService extends Disposable implements IHostService {
 	private workspaceProvider: IWorkspaceProvider;
 
 	constructor(
-		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService,
+		@ILayoutService private readonly layoutService: ILayoutService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IFileService private readonly fileService: IFileService,
@@ -118,14 +117,34 @@ export class BrowserHostService extends Disposable implements IHostService {
 			const openable = toOpen[i];
 			openable.label = openable.label || this.getRecentLabel(openable);
 
+			// selectively copy payload: for now only extension debugging properties are considered
+			const originalPayload = this.workspaceProvider.payload;
+			let newPayload: Array<unknown> | undefined = undefined;
+			if (originalPayload && Array.isArray(originalPayload)) {
+				for (let pair of originalPayload) {
+					if (Array.isArray(pair) && pair.length === 2) {
+						switch (pair[0]) {
+							case 'extensionDevelopmentPath':
+							case 'debugId':
+							case 'inspect-brk-extensions':
+								if (!newPayload) {
+									newPayload = new Array();
+								}
+								newPayload.push(pair);
+								break;
+						}
+					}
+				}
+			}
+
 			// Folder
 			if (isFolderToOpen(openable)) {
-				this.workspaceProvider.open({ folderUri: openable.folderUri }, { reuse: this.shouldReuse(options, false /* no file */) });
+				this.workspaceProvider.open({ folderUri: openable.folderUri }, { reuse: this.shouldReuse(options, false /* no file */), payload: newPayload });
 			}
 
 			// Workspace
 			else if (isWorkspaceToOpen(openable)) {
-				this.workspaceProvider.open({ workspaceUri: openable.workspaceUri }, { reuse: this.shouldReuse(options, false /* no file */) });
+				this.workspaceProvider.open({ workspaceUri: openable.workspaceUri }, { reuse: this.shouldReuse(options, false /* no file */), payload: newPayload });
 			}
 
 			// File
@@ -133,7 +152,7 @@ export class BrowserHostService extends Disposable implements IHostService {
 
 				// Same Window: open via editor service in current window
 				if (this.shouldReuse(options, true /* file */)) {
-					const inputs: IResourceEditor[] = await pathsToEditors([openable], this.fileService);
+					const inputs: IResourceEditorInputType[] = await pathsToEditors([openable], this.fileService);
 					this.editorService.openEditors(inputs);
 				}
 
@@ -142,7 +161,7 @@ export class BrowserHostService extends Disposable implements IHostService {
 					const environment = new Map<string, string>();
 					environment.set('openFile', openable.fileUri.toString());
 
-					this.workspaceProvider.open(undefined, { payload: mapToSerializable(environment) });
+					this.workspaceProvider.open(undefined, { payload: Array.from(environment.entries()) });
 				}
 			}
 		}
@@ -177,7 +196,7 @@ export class BrowserHostService extends Disposable implements IHostService {
 	}
 
 	async toggleFullScreen(): Promise<void> {
-		const target = this.layoutService.getWorkbenchElement();
+		const target = this.layoutService.container;
 
 		// Chromium
 		if (document.fullscreen !== undefined) {

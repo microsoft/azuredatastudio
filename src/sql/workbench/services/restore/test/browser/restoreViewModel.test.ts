@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as assert from 'assert';
 import { RestoreViewModel } from 'sql/workbench/services/restore/browser/restoreViewModel';
-import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 
 suite('Restore Dialog view model tests', () => {
 	let option1String = 'option1';

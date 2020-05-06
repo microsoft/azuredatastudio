@@ -7,15 +7,16 @@ import 'vs/css!./renameInputField';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { ContentWidgetPositionPreference, ICodeEditor, IContentWidget, IContentWidgetPosition } from 'vs/editor/browser/editorBrowser';
 import { Position } from 'vs/editor/common/core/position';
-import { IRange, Range } from 'vs/editor/common/core/range';
+import { IRange } from 'vs/editor/common/core/range';
 import { ScrollType } from 'vs/editor/common/editorCommon';
 import { localize } from 'vs/nls';
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { inputBackground, inputBorder, inputForeground, widgetShadow, editorWidgetBackground } from 'vs/platform/theme/common/colorRegistry';
-import { ITheme, IThemeService } from 'vs/platform/theme/common/themeService';
+import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
 import { EditorOption } from 'vs/editor/common/config/editorOptions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { toggleClass } from 'vs/base/browser/dom';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export const CONTEXT_RENAME_INPUT_VISIBLE = new RawContextKey<boolean>('renameInputVisible', false);
 
@@ -53,7 +54,7 @@ export class RenameInputField implements IContentWidget {
 			}
 		}));
 
-		this._disposables.add(_themeService.onThemeChange(this._updateStyles, this));
+		this._disposables.add(_themeService.onDidColorThemeChange(this._updateStyles, this));
 	}
 
 	dispose(): void {
@@ -88,12 +89,12 @@ export class RenameInputField implements IContentWidget {
 			this._disposables.add(this._keybindingService.onDidUpdateKeybindings(updateLabel));
 
 			this._updateFont();
-			this._updateStyles(this._themeService.getTheme());
+			this._updateStyles(this._themeService.getColorTheme());
 		}
 		return this._domNode;
 	}
 
-	private _updateStyles(theme: ITheme): void {
+	private _updateStyles(theme: IColorTheme): void {
 		if (!this._input || !this._domNode) {
 			return;
 		}
@@ -149,7 +150,7 @@ export class RenameInputField implements IContentWidget {
 		}
 	}
 
-	getInput(where: IRange, value: string, selectionStart: number, selectionEnd: number, supportPreview: boolean): Promise<RenameInputFieldResult | boolean> {
+	getInput(where: IRange, value: string, selectionStart: number, selectionEnd: number, supportPreview: boolean, token: CancellationToken): Promise<RenameInputFieldResult | boolean> {
 
 		toggleClass(this._domNode!, 'preview', supportPreview);
 
@@ -185,14 +186,7 @@ export class RenameInputField implements IContentWidget {
 				});
 			};
 
-			let onCursorChanged = () => {
-				const editorPosition = this._editor.getPosition();
-				if (!editorPosition || !Range.containsPosition(where, editorPosition)) {
-					this.cancelInput(true);
-				}
-			};
-
-			disposeOnDone.add(this._editor.onDidChangeCursorSelection(onCursorChanged));
+			token.onCancellationRequested(() => this.cancelInput(true));
 			disposeOnDone.add(this._editor.onDidBlurEditorWidget(() => this.cancelInput(false)));
 
 			this._show();

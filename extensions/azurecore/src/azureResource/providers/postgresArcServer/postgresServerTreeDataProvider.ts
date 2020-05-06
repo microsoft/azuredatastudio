@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionNodeType, TreeItem } from 'azdata';
+import { ExtensionNodeType, TreeItem, Account } from 'azdata';
 import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -17,7 +17,7 @@ import { azureResource } from '../../azure-resource';
 
 export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly containerId = 'azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel', "PostgreSQL Hyperscale - Azure Arc");
+	private static readonly containerLabel = localize('azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel', "PostgreSQL Hyperscale – Azure Arc");
 
 	public constructor(
 		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
@@ -28,7 +28,7 @@ export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderB
 	}
 
 
-	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer): TreeItem {
+	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: Account): TreeItem {
 		return {
 			id: `databaseServer_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: databaseServer.name,
@@ -54,7 +54,8 @@ export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderB
 				options: {
 					// Set default for SSL or will get error complaining about it not being set correctly
 					'sslmode': 'require'
-				}
+				},
+				azureAccount: account.key.accountId
 			},
 			childProvider: 'PGSQL',
 			type: ExtensionNodeType.Server

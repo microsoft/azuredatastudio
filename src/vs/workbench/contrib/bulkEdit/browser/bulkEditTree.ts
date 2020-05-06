@@ -18,8 +18,7 @@ import { BulkFileOperations, BulkFileOperation, BulkFileOperationType, BulkTextE
 import { FileKind } from 'vs/platform/files/common/files';
 import { localize } from 'vs/nls';
 import { ILabelService } from 'vs/platform/label/common/label';
-import type { IAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
-import type { IAriaProvider } from 'vs/base/browser/ui/list/listView';
+import type { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
 import { IconLabel } from 'vs/base/browser/ui/iconLabel/iconLabel';
 import { basename } from 'vs/base/common/resources';
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';
@@ -27,6 +26,7 @@ import { WorkspaceFileEdit } from 'vs/editor/common/modes';
 import { compare } from 'vs/base/common/strings';
 import { URI } from 'vs/base/common/uri';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
+import { Iterable } from 'vs/base/common/iterator';
 
 // --- VIEW MODEL
 
@@ -201,7 +201,7 @@ export class BulkEditDataSource implements IAsyncDataSource<BulkFileOperations, 
 
 		// category
 		if (element instanceof CategoryElement) {
-			return element.category.fileOperations.map(op => new FileElement(element, op));
+			return [...Iterable.map(element.category.fileOperations, op => new FileElement(element, op))];
 		}
 
 		// file: text edit
@@ -258,19 +258,6 @@ export class BulkEditDataSource implements IAsyncDataSource<BulkFileOperations, 
 export class BulkEditSorter implements ITreeSorter<BulkEditElement> {
 
 	compare(a: BulkEditElement, b: BulkEditElement): number {
-		if (a instanceof CategoryElement && b instanceof CategoryElement) {
-			//
-			const aConfirm = BulkEditSorter._needsConfirmation(a.category);
-			const bConfirm = BulkEditSorter._needsConfirmation(b.category);
-			if (aConfirm === bConfirm) {
-				return a.category.metadata.label.localeCompare(b.category.metadata.label);
-			} else if (aConfirm) {
-				return -1;
-			} else {
-				return 1;
-			}
-		}
-
 		if (a instanceof FileElement && b instanceof FileElement) {
 			return compare(a.edit.uri.toString(), b.edit.uri.toString());
 		}
@@ -281,17 +268,21 @@ export class BulkEditSorter implements ITreeSorter<BulkEditElement> {
 
 		return 0;
 	}
-
-	private static _needsConfirmation(a: BulkCategory): boolean {
-		return a.fileOperations.some(ops => ops.needsConfirmation());
-	}
 }
 
 // --- ACCESSI
 
-export class BulkEditAccessibilityProvider implements IAccessibilityProvider<BulkEditElement> {
+export class BulkEditAccessibilityProvider implements IListAccessibilityProvider<BulkEditElement> {
 
 	constructor(@ILabelService private readonly _labelService: ILabelService) { }
+
+	getWidgetAriaLabel(): string {
+		return localize('bulkEdit', "Bulk Edit");
+	}
+
+	getRole(_element: BulkEditElement): string {
+		return 'checkbox';
+	}
 
 	getAriaLabel(element: BulkEditElement): string | null {
 		if (element instanceof FileElement) {
@@ -371,21 +362,6 @@ export class BulkEditIdentityProvider implements IIdentityProvider<BulkEditEleme
 		} else {
 			return JSON.stringify(element.category.metadata);
 		}
-	}
-}
-
-export class BulkEditAriaProvider implements IAriaProvider<BulkEditElement> {
-
-	getSetSize(_element: BulkEditElement, _index: number, listLength: number): number {
-		return listLength;
-	}
-
-	getPosInSet(_element: BulkEditElement, index: number): number {
-		return index;
-	}
-
-	getRole?(_element: BulkEditElement): string {
-		return 'checkbox';
 	}
 }
 
@@ -553,17 +529,22 @@ class TextEditElementTemplate {
 	private readonly _localDisposables = new DisposableStore();
 
 	private readonly _checkbox: HTMLInputElement;
+	private readonly _icon: HTMLDivElement;
 	private readonly _label: HighlightedLabel;
 
 	constructor(container: HTMLElement) {
+		container.classList.add('textedit');
+
 		this._checkbox = document.createElement('input');
 		this._checkbox.className = 'edit-checkbox';
 		this._checkbox.type = 'checkbox';
 		this._checkbox.setAttribute('role', 'checkbox');
 		container.appendChild(this._checkbox);
 
+		this._icon = document.createElement('div');
+		container.appendChild(this._icon);
+
 		this._label = new HighlightedLabel(container, false);
-		dom.addClass(this._label.element, 'textedit');
 	}
 
 	dispose(): void {
@@ -603,7 +584,36 @@ class TextEditElementTemplate {
 			title = metadata.label;
 		}
 
+		const iconPath = metadata?.iconPath;
+		if (!iconPath) {
+			this._icon.style.display = 'none';
+		} else {
+			this._icon.style.display = 'block';
+
+			this._icon.style.setProperty('--background-dark', null);
+			this._icon.style.setProperty('--background-light', null);
+
+			if (ThemeIcon.isThemeIcon(iconPath)) {
+				// css
+				const className = ThemeIcon.asClassName(iconPath);
+				this._icon.className = className ? `theme-icon ${className}` : '';
+
+			} else if (URI.isUri(iconPath)) {
+				// background-image
+				this._icon.className = 'uri-icon';
+				this._icon.style.setProperty('--background-dark', `url("${iconPath.toString(true)}")`);
+				this._icon.style.setProperty('--background-light', `url("${iconPath.toString(true)}")`);
+
+			} else {
+				// background-image
+				this._icon.className = 'uri-icon';
+				this._icon.style.setProperty('--background-dark', `url("${iconPath.dark.toString(true)}")`);
+				this._icon.style.setProperty('--background-light', `url("${iconPath.light.toString(true)}")`);
+			}
+		}
+
 		this._label.set(value, [selectHighlight, insertHighlight], title, true);
+		this._icon.title = title || '';
 	}
 }
 

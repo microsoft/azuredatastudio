@@ -1,0 +1,19 @@
+{
+	"displayName": "Machine Learning",
+	"description": "Machine Learning",
+	"title.tasks": "Tasks",
+	"title.documents": "Documents",
+	"title.configurations": "Configurations",
+	"title.endpoints": "Endpoints",
+	"mls.command.managePackages": "Manage packages in database",
+	"mls.command.manageLanguages": "Manage external languages",
+	"mls.command.predictModel": "Make prediction",
+	"mls.command.manageModels": "Manage models",
+	"mls.command.importModel": "Import model",
+	"mls.configuration.title": "Machine Learning Configurations",
+	"mls.pythonPath.description": "Local path to a preexisting Python installation used by Machine Learning.",
+	"mls.enablePython.description": "Enable Python package management.",
+	"mls.enableR.description": "Enable R package management.",
+	"mls.rPath.description": "Local path to a preexisting R installation used by Machine Learning.",
+	"mls.command.dependencies": "Install Machine Learning Dependencies"
+}

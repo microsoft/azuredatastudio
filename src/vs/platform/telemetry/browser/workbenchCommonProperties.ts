@@ -4,17 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
-
-export const instanceStorageKey = 'telemetry.instanceId';
-export const currentSessionDateStorageKey = 'telemetry.currentSessionDate';
-export const firstSessionDateStorageKey = 'telemetry.firstSessionDate';
-export const lastSessionDateStorageKey = 'telemetry.lastSessionDate';
-export const machineIdKey = 'telemetry.machineId';
-
 import * as Platform from 'vs/base/common/platform';
 import * as uuid from 'vs/base/common/uuid';
 import { cleanRemoteAuthority } from 'vs/platform/telemetry/common/telemetryUtils';
 import { mixin } from 'vs/base/common/objects';
+import { firstSessionDateStorageKey, lastSessionDateStorageKey, machineIdKey } from 'vs/platform/telemetry/common/telemetry';
+import product from 'vs/platform/product/common/product'; // {{SQL CARBON EDIT}}
 
 export async function resolveWorkbenchCommonProperties(
 	storageService: IStorageService,
@@ -60,6 +55,7 @@ export async function resolveWorkbenchCommonProperties(
 	result['common.product'] = 'web';
 	// __GDPR__COMMON__ "common.userAgent" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 	result['common.userAgent'] = Platform.userAgent;
+	result['quality'] = product.quality || 'dev'; // {{SQL CARBON EDIT}} Add quality
 
 	// dynamic properties which value differs on each call
 	let seq = 0;

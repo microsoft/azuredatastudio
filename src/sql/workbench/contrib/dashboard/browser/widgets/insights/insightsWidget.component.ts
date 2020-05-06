@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import 'vs/css!./insightsWidget';
 
 import {
 	Component, Inject, forwardRef, AfterContentInit,
@@ -46,11 +47,11 @@ interface IStorageResult {
 	selector: 'insights-widget',
 	template: `
 				<div *ngIf="error" style="text-align: center; padding-top: 20px">{{error}}</div>
-				<div *ngIf="lastUpdated" style="font-style: italic; font-size: 80%; margin-left: 5px">{{lastUpdated}}</div>
+				<div *ngIf="lastUpdated" class="insights-widget-last-updated subText">{{lastUpdated}}</div>
 				<div *ngIf="autoRefreshStatus" style="font-style: italic; font-size: 80%; margin-left: 5px">{{autoRefreshStatus}}</div>
 				<div style="margin: 10px; width: calc(100% - 20px); height: calc(100% - 20px)">
-					<ng-template component-host></ng-template>
-					<loading-spinner [loading]="_loading"></loading-spinner>
+					<ng-template *ngIf="!_loading" component-host></ng-template>
+					<loading-spinner [loading]="_loading" [loadingMessage]="_loadingMessage" [loadingCompletedMessage]="_loadingCompletedMessage"></loading-spinner>
 				</div>`,
 	styles: [':host { width: 100%; height: 100% }']
 })
@@ -60,8 +61,6 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 	@ViewChild(ComponentHostDirective) private componentHost: ComponentHostDirective;
 
 	private _typeKey: string;
-	private _init: boolean = false;
-	public _loading: boolean = true;
 	private _intervalTimer: IntervalTimer;
 
 	public error: string;
@@ -72,16 +71,17 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
 		@Inject(forwardRef(() => CommonServiceInterface)) private dashboardService: CommonServiceInterface,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => Injector)) private _injector: Injector,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IStorageService) private storageService: IStorageService,
 		@Inject(IConfigurationService) private readonly _configurationService: IConfigurationService,
 		@Inject(IFileService) private readonly fileService: IFileService
 	) {
-		super();
+		super(changeRef);
 		this.insightConfig = <IInsightsConfig>this._config.widget['insights-widget'];
-
+		this._loadingMessage = nls.localize('insightsWidgetLoadingMessage', "Loading {0}", this._config.name);
+		this._loadingCompletedMessage = nls.localize('insightsWidgetLoadingCompletedMessage', "Loading {0} completed", this._config.name);
 		this._verifyConfig();
 
 		this._parseConfig().then(() => {
@@ -91,8 +91,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 				const cancelablePromise = createCancelablePromise(() => {
 					return promise.then(
 						result => {
-							this._loading = false;
-							if (this._init) {
+							if (this._inited) {
 								this._updateChild(result);
 								this.setupInterval();
 							} else {
@@ -100,37 +99,36 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 							}
 						},
 						error => {
-							this._loading = false;
 							if (isPromiseCanceledError(error)) {
 								return;
 							}
-							if (this._init) {
+							if (this._inited) {
 								this.showError(error);
 							} else {
 								this.queryObv = Observable.fromPromise(Promise.resolve<SimpleExecuteResult>(error));
 							}
 						}
-					).then(() => this._cd.detectChanges());
+					).then(() => this._changeRef.detectChanges());
 				});
 				this._register(toDisposable(() => cancelablePromise.cancel()));
 			}
 		}, error => {
-			this._loading = false;
+			this.setLoadingStatus(false);
 			this.showError(error);
 		});
 	}
 
 	ngAfterContentInit() {
-		this._init = true;
+		this._inited = true;
 		if (this.queryObv) {
 			this._register(subscriptionToDisposable(this.queryObv.subscribe(
 				result => {
-					this._loading = false;
+					this.setLoadingStatus(false);
 					this._updateChild(result);
 					this.setupInterval();
 				},
 				error => {
-					this._loading = false;
+					this.setLoadingStatus(false);
 					this.showError(error);
 				}
 			)));
@@ -156,13 +154,13 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		let newState = autoRefreshOn ? '' : nls.localize('insights.autoRefreshOffState', "Auto Refresh: OFF");
 		if (this.autoRefreshStatus !== newState) {
 			this.autoRefreshStatus = newState;
-			this._cd.detectChanges();
+			this._changeRef.detectChanges();
 		}
 	}
 
 	private showError(error: string): void {
 		this.error = error;
-		this._cd.detectChanges();
+		this._changeRef.detectChanges();
 	}
 
 	get actions(): Array<Action> {
@@ -189,7 +187,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 				results: result
 			};
 			this.lastUpdated = nls.localize('insights.lastUpdated', "Last Updated: {0} {1}", currentTime.toLocaleTimeString(), currentTime.toLocaleDateString());
-			this._cd.detectChanges();
+			this._changeRef.detectChanges();
 			this.storageService.store(this._getStorageKey(), JSON.stringify(store), StorageScope.GLOBAL);
 		}
 		return result;
@@ -202,11 +200,10 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 				const storedResult: IStorageResult = JSON.parse(storage);
 				const date = new Date(storedResult.date);
 				this.lastUpdated = nls.localize('insights.lastUpdated', "Last Updated: {0} {1}", date.toLocaleTimeString(), date.toLocaleDateString());
-				this._loading = false;
-				if (this._init) {
+				if (this._inited) {
 					this._updateChild(storedResult.results);
 					this.setupInterval();
-					this._cd.detectChanges();
+					this._changeRef.detectChanges();
 				} else {
 					this.queryObv = Observable.fromPromise(Promise.resolve<SimpleExecuteResult>(JSON.parse(storage)));
 				}
@@ -231,11 +228,14 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 	}
 
 	private _runQuery(): Promise<SimpleExecuteResult> {
+		this.setLoadingStatus(true);
 		return Promise.resolve(this.dashboardService.queryManagementService.runQueryAndReturn(this.insightConfig.query as string).then(
 			result => {
+				this.setLoadingStatus(false);
 				return this._storeResult(result);
 			},
 			error => {
+				this.setLoadingStatus(false);
 				throw error;
 			}
 		));
@@ -244,7 +244,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 	private _updateChild(result: SimpleExecuteResult): void {
 		this.componentHost.viewContainerRef.clear();
 		this.error = undefined;
-		this._cd.detectChanges();
+		this._changeRef.detectChanges();
 
 		if (result.rowCount === 0) {
 			this.showError(nls.localize('noResults', "No results to show"));

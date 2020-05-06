@@ -88,7 +88,7 @@ export class TaskService implements ITaskService {
 				serverName = connectionProfile.serverName;
 			}
 		}
-		let node: TaskNode = new TaskNode(taskInfo.name, serverName, databaseName, taskInfo.taskId, taskInfo.taskExecutionMode, taskInfo.isCancelable);
+		let node: TaskNode = new TaskNode(taskInfo.name, serverName, databaseName, taskInfo.taskId, taskInfo.taskExecutionMode, taskInfo.isCancelable, taskInfo.targetLocation);
 		node.providerName = taskInfo.providerName;
 		this.handleNewTask(node);
 	}
@@ -216,7 +216,7 @@ export class TaskService implements ITaskService {
 			if ((task.status === TaskStatus.Succeeded || task.status === TaskStatus.SucceededWithWarning)
 				&& eventArgs.script && eventArgs.script !== '') {
 				if (task.taskExecutionMode === TaskExecutionMode.script) {
-					this.queryEditorService.newSqlEditor(eventArgs.script);
+					this.queryEditorService.newSqlEditor({ initalContent: eventArgs.script });
 				} else if (task.taskExecutionMode === TaskExecutionMode.executeAndScript) {
 					task.script = eventArgs.script;
 				}

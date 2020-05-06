@@ -33,6 +33,7 @@ import { $ } from 'vs/base/browser/dom';
 import { OEManageConnectionAction } from 'sql/workbench/contrib/dashboard/browser/dashboardActions';
 import { IViewsService, IView } from 'vs/workbench/common/views';
 import { ConsoleLogService } from 'vs/platform/log/common/log';
+import { IProgressIndicator } from 'vs/platform/progress/common/progress';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -109,6 +110,9 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 
 		const viewsService = new class implements IViewsService {
+			getProgressIndicator(id: string): IProgressIndicator {
+				throw new Error('Method not implemented.');
+			}
 			getActiveViewWithId<T extends IView>(id: string): T | null {
 				throw new Error('Method not implemented.');
 			}

@@ -13,7 +13,7 @@ import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { RunCellAction, CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 
-import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModel } from 'vs/editor/common/model';
@@ -36,6 +36,7 @@ import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser/simpleProgressIndicator';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
+import { IColorTheme } from 'vs/platform/theme/common/themeService';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';

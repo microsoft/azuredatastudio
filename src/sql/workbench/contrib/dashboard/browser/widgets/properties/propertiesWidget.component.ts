@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef, ViewChild } from '@angular/core';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
@@ -11,13 +10,14 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 
 import { DatabaseInfo, ServerInfo } from 'azdata';
-
-import { EventType, addDisposableListener } from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
 import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
+import { PropertiesContainer, PropertyItem } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
+import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { PROPERTIES_CONTAINER_PROPERTY_NAME, PROPERTIES_CONTAINER_PROPERTY_VALUE } from 'vs/workbench/common/theme';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
@@ -51,39 +51,31 @@ export interface Property {
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 
-export interface DisplayProperty {
-	displayName: string;
-	value: string;
-}
-
 @Component({
 	selector: 'properties-widget',
-	templateUrl: decodeURI(require.toUrl('./propertiesWidget.component.html'))
+	template: `
+	<loading-spinner *ngIf="_loading" [loading]="_loading" [loadingMessage]="loadingMessage" [loadingCompletedMessage]="loadingCompletedMessage"></loading-spinner>
+	<properties-container [style.display]="_loading ? 'none' : ''"></properties-container>`
 })
 export class PropertiesWidgetComponent extends DashboardWidget implements IDashboardWidget, OnInit {
+	@ViewChild(PropertiesContainer) private _propertiesContainer: PropertiesContainer;
+	public loadingMessage: string = nls.localize('loadingProperties', "Loading properties");
+	public loadingCompletedMessage: string = nls.localize('loadingPropertiesCompleted', "Loading properties completed");
 	private _connection: ConnectionManagementInfo;
-	private _databaseInfo: DatabaseInfo;
-	public _clipped: boolean;
-	private properties: Array<DisplayProperty>;
-	private _hasInit = false;
-
-	@ViewChild('child', { read: ElementRef }) private _child: ElementRef;
-	@ViewChild('parent', { read: ElementRef }) private _parent: ElementRef;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
 		@Inject(ILogService) private logService: ILogService
 	) {
-		super();
+		super(changeRef);
 		this.init();
 	}
 
 	ngOnInit() {
-		this._hasInit = true;
-		this._register(addDisposableListener(window, EventType.RESIZE, () => this.handleClipping()));
+		this._inited = true;
 		this._changeRef.detectChanges();
 	}
 
@@ -93,28 +85,23 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 	private init(): void {
 		this._connection = this._bootstrap.connectionManagementService.connectionInfo;
-		this._register(subscriptionToDisposable(this._bootstrap.adminService.databaseInfo.subscribe(data => {
-			this._databaseInfo = data;
-			this._changeRef.detectChanges();
-			this.parseProperties();
-			if (this._hasInit) {
-				this.handleClipping();
+		this.setLoadingStatus(true);
+		this._register(subscriptionToDisposable(this._bootstrap.adminService.databaseInfo.subscribe(databaseInfo => {
+			const propertyItems = this.parseProperties(databaseInfo);
+			if (this._inited) {
+				this._propertiesContainer.propertyItems = propertyItems;
+				this._changeRef.detectChanges();
+			} else {
+				this.logService.info('Database properties successfully retrieved but component not initialized yet');
 			}
+			this.setLoadingStatus(false);
 		}, error => {
+			this.setLoadingStatus(false);
 			(<HTMLElement>this._el.nativeElement).innerText = nls.localize('dashboard.properties.error', "Unable to load dashboard properties");
 		})));
 	}
 
-	private handleClipping(): void {
-		if (this._child.nativeElement.offsetWidth > this._parent.nativeElement.offsetWidth) {
-			this._clipped = true;
-		} else {
-			this._clipped = false;
-		}
-		this._changeRef.detectChanges();
-	}
-
-	private parseProperties() {
+	private parseProperties(databaseInfo?: DatabaseInfo): PropertyItem[] {
 		const provider = this._config.provider;
 
 		let propertyArray: Array<Property>;
@@ -128,7 +115,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 			if (!providerProperties) {
 				this.logService.error('No property definitions found for provider', provider);
-				return;
+				return [];
 			}
 
 			let flavor: FlavorProperties;
@@ -139,7 +126,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			} else if (providerProperties.flavors.length === 0) {
 				this.logService.error('No flavor definitions found for "', provider,
 					'. If there are not multiple flavors of this provider, add one flavor without a condition');
-				return;
+				return [];
 			} else {
 				const flavorArray = providerProperties.flavors.filter((item) => {
 
@@ -164,10 +151,10 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 				if (flavorArray.length === 0) {
 					this.logService.error('Could not determine flavor');
-					return;
+					return [];
 				} else if (flavorArray.length > 1) {
 					this.logService.error('Multiple flavors matched correctly for this provider', provider);
-					return;
+					return [];
 				}
 
 				flavor = flavorArray[0];
@@ -196,18 +183,14 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 		let infoObject: ServerInfo | {};
 		if (this._config.context === 'database') {
-			if (this._databaseInfo && this._databaseInfo.options) {
-				infoObject = this._databaseInfo.options;
+			if (databaseInfo?.options) {
+				infoObject = databaseInfo.options;
 			}
 		} else {
 			infoObject = this._connection.serverInfo;
 		}
 
-		// iterate over properties and display them
-		this.properties = [];
-		for (let i = 0; i < propertyArray.length; i++) {
-			const property = propertyArray[i];
-			const assignProperty = {};
+		return propertyArray.map(property => {
 			let propertyObject = this.getValueOrDefault<string>(infoObject, property.value, property.default || '--');
 
 			// make sure the value we got shouldn't be ignored
@@ -220,14 +203,11 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 					}
 				}
 			}
-			assignProperty['displayName'] = property.displayName;
-			assignProperty['value'] = propertyObject;
-			this.properties.push(<DisplayProperty>assignProperty);
-		}
-
-		if (this._hasInit) {
-			this._changeRef.detectChanges();
-		}
+			return {
+				displayName: property.displayName,
+				value: propertyObject
+			};
+		});
 	}
 
 	private getConditionResult(item: FlavorProperties, conditionItem: ConditionProperties): boolean {
@@ -266,3 +246,22 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		return val;
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+
+	const propertyNameColor = theme.getColor(PROPERTIES_CONTAINER_PROPERTY_NAME);
+	if (propertyNameColor) {
+		collector.addRule(`
+		properties-widget .propertyName,
+		properties-widget .splitter {
+			color: ${propertyNameColor}
+		}`);
+	}
+
+	const propertyValueColor = theme.getColor(PROPERTIES_CONTAINER_PROPERTY_VALUE);
+	if (propertyValueColor) {
+		collector.addRule(`properties-widget .propertyValue {
+			color: ${propertyValueColor}
+		}`);
+	}
+});

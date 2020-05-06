@@ -8,16 +8,18 @@ import { localize } from 'vs/nls';
 import { SyncActionDescriptor, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { TasksPanel } from 'sql/workbench/contrib/tasks/browser/tasksPanel';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import * as ext from 'vs/workbench/common/contributions';
 import { ITaskService } from 'sql/workbench/services/tasks/common/tasksService';
 import { IActivityService, NumberBadge } from 'vs/workbench/services/activity/common/activity';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
-import { PanelRegistry, Extensions as PanelExtensions, PanelDescriptor } from 'vs/workbench/browser/panel';
-import { TASKS_PANEL_ID } from 'sql/workbench/contrib/tasks/common/tasks';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { ToggleTasksAction } from 'sql/workbench/contrib/tasks/browser/tasksActions';
+import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { IViewContainersRegistry, Extensions as ViewContainerExtensions, ViewContainer, ViewContainerLocation, IViewsRegistry } from 'vs/workbench/common/views';
+import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
+import { TASKS_CONTAINER_ID, TASKS_VIEW_ID } from 'sql/workbench/contrib/tasks/common/tasks';
+import { TaskHistoryView } from 'sql/workbench/contrib/tasks/browser/tasksView';
 
 export class StatusUpdater extends lifecycle.Disposable implements ext.IWorkbenchContribution {
 	static ID = 'data.taskhistory.statusUpdater';
@@ -32,7 +34,7 @@ export class StatusUpdater extends lifecycle.Disposable implements ext.IWorkbenc
 		super();
 
 		this._register(this.taskService.onAddNewTask(args => {
-			this.panelService.openPanel(TASKS_PANEL_ID, true);
+			this.panelService.openPanel(TASKS_CONTAINER_ID, true);
 			this.onServiceChange();
 		}));
 
@@ -46,7 +48,7 @@ export class StatusUpdater extends lifecycle.Disposable implements ext.IWorkbenc
 		lifecycle.dispose(this.badgeHandle);
 		let numOfInProgressTask: number = this.taskService.getNumberOfInProgressTasks();
 		let badge: NumberBadge = new NumberBadge(numOfInProgressTask, n => localize('inProgressTasksChangesBadge', "{0} in progress tasks", n));
-		this.badgeHandle = this.activityBarService.showActivity(TASKS_PANEL_ID, badge, 'taskhistory-viewlet-label');
+		this.badgeHandle = this.activityBarService.showViewContainerActivity(TASKS_CONTAINER_ID, { badge, clazz: 'taskhistory-viewlet-label' });
 	}
 
 	public getId(): string {
@@ -70,15 +72,26 @@ registry.registerWorkbenchAction(
 	localize('viewCategory', "View")
 );
 
-// Register Output Panel
-Registry.as<PanelRegistry>(PanelExtensions.Panels).registerPanel(PanelDescriptor.create(
-	TasksPanel,
-	TASKS_PANEL_ID,
-	localize('tasks', "Tasks"),
-	'output',
-	20,
-	ToggleTasksAction.ID
-));
+// markers view container
+const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
+	id: TASKS_CONTAINER_ID,
+	name: localize('tasks', "Tasks"),
+	hideIfEmpty: true,
+	order: 20,
+	ctorDescriptor: new SyncDescriptor(ViewPaneContainer, [TASKS_CONTAINER_ID, { mergeViewWithContainerWhenSingleView: true, donotShowContainerTitleWhenMergedWithContainer: true }]),
+	storageId: `${TASKS_CONTAINER_ID}.storage`,
+	focusCommand: {
+		id: ToggleTasksAction.ID
+	}
+}, ViewContainerLocation.Panel);
+
+Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{
+	id: TASKS_VIEW_ID,
+	name: localize('tasks', "Tasks"),
+	canToggleVisibility: false,
+	canMoveView: false,
+	ctorDescriptor: new SyncDescriptor(TaskHistoryView),
+}], VIEW_CONTAINER);
 
 // Register StatusUpdater
 (<ext.IWorkbenchContributionsRegistry>Registry.as(ext.Extensions.Workbench)).registerWorkbenchContribution(StatusUpdater, LifecyclePhase.Restored);

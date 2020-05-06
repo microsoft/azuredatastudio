@@ -37,6 +37,15 @@ export class MainThreadQuickOpen implements MainThreadQuickOpenShape {
 	}
 
 	$show(instance: number, options: IPickOptions<TransferQuickPickItems>, token: CancellationToken): Promise<number | number[] | undefined> {
+		// {{ SQL CARBON EDIT }} Fix a11y issue https://github.com/microsoft/azuredatastudio/issues/9232
+		const activeElement = document.activeElement as HTMLElement;
+		const focusBackToStartingPosition = () => {
+			try {
+				activeElement?.focus();
+			} catch { }
+		};
+		// {{ SQL CARBON EDIT }} Fix a11y issue https://github.com/microsoft/azuredatastudio/issues/9232
+
 		const contents = new Promise<TransferQuickPickItems[]>((resolve, reject) => {
 			this._items[instance] = { resolve, reject };
 		});
@@ -52,6 +61,7 @@ export class MainThreadQuickOpen implements MainThreadQuickOpenShape {
 
 		if (options.canPickMany) {
 			return this._quickInputService.pick(contents, options as { canPickMany: true }, token).then(items => {
+				focusBackToStartingPosition(); // {{ SQL CARBON EDIT }} Fix a11y issue https://github.com/microsoft/azuredatastudio/issues/9232
 				if (items) {
 					return items.map(item => item.handle);
 				}
@@ -59,6 +69,7 @@ export class MainThreadQuickOpen implements MainThreadQuickOpenShape {
 			});
 		} else {
 			return this._quickInputService.pick(contents, options, token).then(item => {
+				focusBackToStartingPosition(); // {{ SQL CARBON EDIT }} Fix a11y issue https://github.com/microsoft/azuredatastudio/issues/9232
 				if (item) {
 					return item.handle;
 				}
@@ -85,7 +96,7 @@ export class MainThreadQuickOpen implements MainThreadQuickOpenShape {
 
 	// ---- input
 
-	$input(options: IInputBoxOptions | undefined, validateInput: boolean, token: CancellationToken): Promise<string> {
+	$input(options: IInputBoxOptions | undefined, validateInput: boolean, token: CancellationToken): Promise<string | undefined> {
 		const inputOptions: IInputOptions = Object.create(null);
 
 		if (options) {

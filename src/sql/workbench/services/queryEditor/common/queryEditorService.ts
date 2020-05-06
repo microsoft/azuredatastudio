@@ -16,12 +16,25 @@ export interface IQueryEditorOptions extends IEditorOptions {
 
 export const IQueryEditorService = createDecorator<IQueryEditorService>('QueryEditorService');
 
+export interface INewSqlEditorOptions {
+	initalContent?: string;
+	/**
+	 * Defaults based on user configuration
+	 */
+	dirty?: boolean;
+	description?: string;
+	/**
+	 * defaults to true
+	 */
+	open?: boolean;
+}
+
 export interface IQueryEditorService {
 
 	_serviceBrand: undefined;
 
 	// Creates new untitled document for SQL queries and opens it in a new editor tab
-	newSqlEditor(sqlContent?: string, connectionProviderName?: string, isDirty?: boolean, objectName?: string): Promise<IConnectableInput>;
+	newSqlEditor(options?: INewSqlEditorOptions): Promise<IConnectableInput>;
 
 	// Creates new edit data session
 	newEditDataEditor(schemaName: string, tableName: string, queryString: string): Promise<IConnectableInput>;

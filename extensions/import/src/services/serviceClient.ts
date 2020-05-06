@@ -30,45 +30,43 @@ export class ServiceClient {
 		config.installDirectory = path.join(context.extensionPath, config.installDirectory);
 		config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
 		config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
-
 		const serverdownloader = new ServerProvider(config);
 		serverdownloader.eventEmitter.onAny(this.generateHandleServerProviderEvent());
-
 		let clientOptions: ClientOptions = this.createClientOptions();
 
-		const installationStart = Date.now();
-		let client: SqlOpsDataClient;
-		return new Promise((resolve, reject) => {
-			serverdownloader.getOrDownloadServer().then(e => {
-				const installationComplete = Date.now();
-				let serverOptions = this.generateServerOptions(e, context);
-				client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
-				const processStart = Date.now();
-				client.onReady().then(() => {
-					const processEnd = Date.now();
-					this.statusView.text = localize('serviceStarted', "{0} Started", Constants.serviceName);
-					setTimeout(() => {
-						this.statusView.hide();
-					}, 1500);
-					Telemetry.sendTelemetryEvent('startup/LanguageClientStarted', {
-						installationTime: String(installationComplete - installationStart),
-						processStartupTime: String(processEnd - processStart),
-						totalTime: String(processEnd - installationStart),
-						beginningTimestamp: String(installationStart)
-					});
+		try {
+			const installationStart = Date.now();
+			let client: SqlOpsDataClient;
+			let serviceBinaries = await serverdownloader.getOrDownloadServer();
+			const installationComplete = Date.now();
+			let serverOptions = this.generateServerOptions(serviceBinaries, context);
+			client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
+			const processStart = Date.now();
+			client.onReady().then(() => {
+				const processEnd = Date.now();
+				this.statusView.text = localize('serviceStarted', "{0} Started", Constants.serviceName);
+				setTimeout(() => {
+					this.statusView.hide();
+				}, 1500);
+				Telemetry.sendTelemetryEvent('startup/LanguageClientStarted', {
+					installationTime: String(installationComplete - installationStart),
+					processStartupTime: String(processEnd - processStart),
+					totalTime: String(processEnd - installationStart),
+					beginningTimestamp: String(installationStart)
 				});
-				this.statusView.show();
-				this.statusView.text = localize('serviceStarting', "Starting {0}", Constants.serviceName);
-				let disposable = client.start();
-				context.subscriptions.push(disposable);
-				resolve(client);
-			}, e => {
-				Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
-				vscode.window.showErrorMessage(localize('flatFileImport.serviceStartFailed', "Failed to start {0}: {1}", Constants.serviceName, e));
-				// Just resolve to avoid unhandled promise. We show the error to the user.
-				resolve(undefined);
 			});
-		});
+			this.statusView.show();
+			this.statusView.text = localize('serviceStarting', "Starting {0}", Constants.serviceName);
+			let disposable = client.start();
+			context.subscriptions.push(disposable);
+			return client;
+		}
+		catch (error) {
+			Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
+			vscode.window.showErrorMessage(localize('flatFileImport.serviceStartFailed', "Failed to start {0}: {1}", Constants.serviceName, error));
+			// Just resolve to avoid unhandled promise. We show the error to the user.
+			return undefined;
+		}
 	}
 
 	private createClientOptions(): ClientOptions {
@@ -131,8 +129,8 @@ export class ServiceClient {
 				case Events.DOWNLOAD_END:
 					this.outputChannel.appendLine(localize('downloadingServiceComplete', "Done downloading {0}", Constants.serviceName));
 					break;
-				default:
-					console.error(`Unknown event from Server Provider ${e}`);
+				case Events.ENTRY_EXTRACTED:
+					this.outputChannel.appendLine(localize('entryExtractedChannelMsg', "Extracted {0} ({1}/{2})", args[0], args[1], args[2]));
 					break;
 			}
 		};

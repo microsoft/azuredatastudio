@@ -30,8 +30,10 @@ import { registerComponentType } from 'sql/platform/dashboard/browser/modelCompo
 import HyperlinkComponent from 'sql/workbench/browser/modelComponents/hyperlink.component';
 import SplitViewContainer from 'sql/workbench/browser/modelComponents/splitviewContainer.component';
 import RadioCardGroup from 'sql/workbench/browser/modelComponents/radioCardGroup.component';
+import TabbedPanelComponent from 'sql/workbench/browser/modelComponents/tabbedPanel.component';
+import SeparatorComponent from 'sql/workbench/browser/modelComponents/separator.component';
 import { ModelComponentTypes } from 'sql/platform/dashboard/browser/interfaces';
-
+import PropertiesContainerComponent from 'sql/workbench/browser/modelComponents/propertiesContainer.component';
 export const DIV_CONTAINER = 'div-container';
 registerComponentType(DIV_CONTAINER, ModelComponentTypes.DivContainer, DivContainer);
 
@@ -62,7 +64,7 @@ registerComponentType(DROPDOWN_COMPONENT, ModelComponentTypes.DropDown, DropDown
 export const DECLARATIVETABLE_COMPONENT = 'declarativeTable-component';
 registerComponentType(DECLARATIVETABLE_COMPONENT, ModelComponentTypes.DeclarativeTable, DeclarativeTableComponent);
 
-export const LISTBOX_COMPONENT = 'lisbox-component';
+export const LISTBOX_COMPONENT = 'listbox-component';
 registerComponentType(LISTBOX_COMPONENT, ModelComponentTypes.ListBox, ListBoxComponent);
 
 export const BUTTON_COMPONENT = 'button-component';
@@ -110,3 +112,12 @@ registerComponentType(HYPERLINK_COMPONENT, ModelComponentTypes.Hyperlink, Hyperl
 
 export const RADIOCARDGROUP_COMPONENT = 'radiocardgroup-component';
 registerComponentType(RADIOCARDGROUP_COMPONENT, ModelComponentTypes.RadioCardGroup, RadioCardGroup);
+
+export const TABBEDPANEL_COMPONENT = 'tabbedpanel-component';
+registerComponentType(TABBEDPANEL_COMPONENT, ModelComponentTypes.TabbedPanel, TabbedPanelComponent);
+
+export const SEPARATOR_COMPONENT = 'separator-component';
+registerComponentType(SEPARATOR_COMPONENT, ModelComponentTypes.Separator, SeparatorComponent);
+
+export const PROPERTIESCONTAINER_COMPONENT = 'propertiescontainer-component';
+registerComponentType(PROPERTIESCONTAINER_COMPONENT, ModelComponentTypes.PropertiesContainer, PropertiesContainerComponent);

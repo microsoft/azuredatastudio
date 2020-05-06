@@ -2,16 +2,21 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+.notebookEditor .scrollable {
+	margin-top: 5px;
+}
+
 .notebookEditor .editor-toolbar {
-	border-bottom-width: 1px;
 	border-bottom-style: solid;
+	border-width: 0px 0px 1px 0px;
 }
 
 .notebookEditor .notebook-cell {
-	margin: 1px 20px;
-	border-width: 1px;
+	border-color: transparent;
 	border-style: solid;
-	border-radius: 3px;
+	border-width: 1px 1px 1px 4px;
+	margin: 1px 20px;
+	position: relative;
 }
 
 .notebookEditor .notebook-info-label {
@@ -119,6 +124,9 @@
 
 .moreActions.actionhidden {
 	visibility: hidden
+}
+.moreActions .monaco-action-bar {
+	margin-left: -12px;
 }
 
 .notebookEditor .notebook-cellTable {

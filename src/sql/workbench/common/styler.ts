@@ -8,7 +8,11 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
 import { IThemable } from 'vs/base/common/styler';
 import { attachStyler } from 'vs/platform/theme/common/styler';
-import { SIDE_BAR_SECTION_HEADER_FOREGROUND, SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, SIDE_BAR_DRAG_AND_DROP_BACKGROUND, PANEL_ACTIVE_TITLE_BORDER, PANEL_ACTIVE_TITLE_FOREGROUND, PANEL_INACTIVE_TITLE_FOREGROUND } from 'vs/workbench/common/theme';
+import {
+	SIDE_BAR_SECTION_HEADER_FOREGROUND, SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, SIDE_BAR_DRAG_AND_DROP_BACKGROUND,
+	PANEL_ACTIVE_TITLE_BORDER, PANEL_ACTIVE_TITLE_FOREGROUND, PANEL_INACTIVE_TITLE_FOREGROUND, VERTICAL_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER,
+
+} from 'vs/workbench/common/theme';
 
 export function attachModalDialogStyler(widget: IThemable, themeService: IThemeService, style?:
 	{
@@ -39,6 +43,9 @@ export function attachTabbedPanelStyler(widget: IThemable, themeService: IThemeS
 		titleActiveBorder: PANEL_ACTIVE_TITLE_BORDER,
 		titleInactiveForeground: PANEL_INACTIVE_TITLE_FOREGROUND,
 		focusBorder: cr.focusBorder,
-		outline: cr.activeContrastBorder
+		outline: cr.activeContrastBorder,
+		activeBackgroundForVerticalLayout: VERTICAL_TAB_ACTIVE_BACKGROUND,
+		border: DASHBOARD_BORDER,
+		activeTabContrastBorder: cr.activeContrastBorder
 	}, widget);
 }

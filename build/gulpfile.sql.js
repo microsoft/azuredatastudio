@@ -5,22 +5,15 @@
 
 'use strict';
 const gulp = require('gulp');
-const util = require('./lib/util');
 const tsfmt = require('typescript-formatter');
 const es = require('event-stream');
 const filter = require('gulp-filter');
-const del = require('del');
-const serviceDownloader = require('service-downloader').ServiceDownloadProvider;
-const platform = require('service-downloader/out/platform').PlatformInformation;
 const path = require('path');
 const ext = require('./lib/extensions');
 const task = require('./lib/task');
 const glob = require('glob');
 const vsce = require('vsce');
 const mkdirp = require('mkdirp');
-
-gulp.task('clean-mssql-extension', util.rimraf('extensions/mssql/node_modules'));
-gulp.task('clean-credentials-extension', util.rimraf('extensions/credentials/node_modules'));
 
 gulp.task('fmt', () => formatStagedFiles());
 const formatFiles = (some) => {
@@ -95,45 +88,6 @@ const formatStagedFiles = () => {
 		});
 	});
 };
-
-function installService() {
-	let config = require('../extensions/mssql/config.json');
-	return platform.getCurrent().then(p => {
-		let runtime = p.runtimeId;
-		// fix path since it won't be correct
-		config.installDirectory = path.join(__dirname, '../extensions/mssql/src', config.installDirectory);
-		let installer = new serviceDownloader(config);
-		let serviceInstallFolder = installer.getInstallDirectory(runtime);
-		console.log('Cleaning up the install folder: ' + serviceInstallFolder);
-		return del(serviceInstallFolder + '/*').then(() => {
-			console.log('Installing the service. Install folder: ' + serviceInstallFolder);
-			return installer.installService(runtime);
-		}, delError => {
-			console.log('failed to delete the install folder error: ' + delError);
-		});
-	});
-}
-
-gulp.task('install-sqltoolsservice', () => {
-	return installService();
-});
-
-gulp.task('install-ssmsmin', () => {
-	const config = require('../extensions/admin-tool-ext-win/config.json');
-	const runtime = 'Windows_64'; // admin-tool-ext is a windows only extension, and we only ship a 64 bit version, so locking the binaries as such
-	// fix path since it won't be correct
-	config.installDirectory = path.join(__dirname, '..', 'extensions', 'admin-tool-ext-win', config.installDirectory);
-	let installer = new serviceDownloader(config);
-	const serviceInstallFolder = installer.getInstallDirectory(runtime);
-	const serviceCleanupFolder = path.join(serviceInstallFolder, '..');
-	console.log('Cleaning up the install folder: ' + serviceCleanupFolder);
-	return del(serviceCleanupFolder + '/*').then(() => {
-		console.log('Installing the service. Install folder: ' + serviceInstallFolder);
-		return installer.installService(runtime);
-	}, delError => {
-		console.log('failed to delete the install folder error: ' + delError);
-	});
-});
 
 const root = path.dirname(__dirname);
 

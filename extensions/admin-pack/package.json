@@ -3,7 +3,8 @@
 	"displayName": "Admin Pack for SQL Server",
 	"description": "",
 	"version": "0.1.0",
-	"publisher": "Microsoft",
+  "publisher": "Microsoft",
+  "icon": "images/extension.png",
 	"engines": {
 		"vscode": "*",
 		"azdata": "*"

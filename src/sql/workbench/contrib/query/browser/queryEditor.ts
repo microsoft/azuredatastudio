@@ -24,7 +24,7 @@ import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { Event } from 'vs/base/common/event';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { ISelectionData } from 'azdata';
-import { Action, IActionViewItem } from 'vs/base/common/actions';
+import { IActionViewItem, IAction } from 'vs/base/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
@@ -171,7 +171,7 @@ export class QueryEditor extends BaseEditor {
 		// Create QueryTaskbar
 		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
 		this.taskbar = this._register(new Taskbar(taskbarContainer, {
-			actionViewItemProvider: (action: Action) => this._getActionItemForAction(action),
+			actionViewItemProvider: action => this._getActionItemForAction(action),
 		}));
 
 		// Create Actions for the toolbar
@@ -228,7 +228,7 @@ export class QueryEditor extends BaseEditor {
 	 * Gets the IActionItem for the List Databases dropdown if provided the associated Action.
 	 * Otherwise returns null.
 	 */
-	private _getActionItemForAction(action: Action): IActionViewItem {
+	private _getActionItemForAction(action: IAction): IActionViewItem {
 		if (action.id === actions.ListDatabasesAction.ID) {
 			return this.listDatabasesActionItem;
 		}
@@ -414,7 +414,7 @@ export class QueryEditor extends BaseEditor {
 			let visible = currentEditorIsVisible;
 			if (!currentEditorIsVisible) {
 				// Current editor is closing but still tracked as visible. Check if any other editor is visible
-				const candidates = [...this.editorService.visibleControls].filter(e => {
+				const candidates = [...this.editorService.visibleEditorPanes].filter(e => {
 					if (e && e.getId) {
 						return e.getId() === QueryEditor.ID;
 					}

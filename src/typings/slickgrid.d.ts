@@ -1554,7 +1554,7 @@ declare namespace Slick {
 	}
 
 	export interface Formatter<T extends SlickData> {
-		(row: number, cell: number, value: any, columnDef: Column<T>, dataContext: SlickData): string | undefined;
+		(row: number, cell: number, value: any, columnDef: Column<T>, dataContext: T): string | undefined;
 	}
 
 	export module Formatters {

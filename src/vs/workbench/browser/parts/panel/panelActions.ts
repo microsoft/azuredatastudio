@@ -17,7 +17,12 @@ import { ActivityAction, ToggleCompositePinnedAction, ICompositeBar } from 'vs/w
 import { IActivity } from 'vs/workbench/common/activity';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { ActivePanelContext, PanelPositionContext } from 'vs/workbench/common/panel';
-import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyExpression } from 'vs/platform/contextkey/common/contextkey';
+import { Codicon, registerIcon } from 'vs/base/common/codicons';
+
+const maximizeIcon = registerIcon('panel-maximize', Codicon.chevronUp);
+const restoreIcon = registerIcon('panel-restore', Codicon.chevronDown);
+const closeIcon = registerIcon('panel-close', Codicon.close);
 
 export class ClosePanelAction extends Action {
 
@@ -29,12 +34,11 @@ export class ClosePanelAction extends Action {
 		name: string,
 		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService
 	) {
-		super(id, name, 'codicon-close');
+		super(id, name, closeIcon.classNames);
 	}
 
-	run(): Promise<any> {
+	async run(): Promise<void> {
 		this.layoutService.setPanelHidden(true);
-		return Promise.resolve();
 	}
 }
 
@@ -51,9 +55,8 @@ export class TogglePanelAction extends Action {
 		super(id, name, layoutService.isVisible(Parts.PANEL_PART) ? 'panel expanded' : 'panel');
 	}
 
-	run(): Promise<any> {
+	async run(): Promise<void> {
 		this.layoutService.setPanelHidden(this.layoutService.isVisible(Parts.PANEL_PART));
-		return Promise.resolve();
 	}
 }
 
@@ -71,12 +74,11 @@ class FocusPanelAction extends Action {
 		super(id, label);
 	}
 
-	run(): Promise<any> {
+	async run(): Promise<void> {
 
 		// Show panel
 		if (!this.layoutService.isVisible(Parts.PANEL_PART)) {
 			this.layoutService.setPanelHidden(false);
-			return Promise.resolve();
 		}
 
 		// Focus into active panel
@@ -84,8 +86,6 @@ class FocusPanelAction extends Action {
 		if (panel) {
 			panel.focus();
 		}
-
-		return Promise.resolve();
 	}
 }
 
@@ -106,22 +106,21 @@ export class ToggleMaximizedPanelAction extends Action {
 		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService,
 		@IEditorGroupsService editorGroupsService: IEditorGroupsService
 	) {
-		super(id, label, layoutService.isPanelMaximized() ? 'codicon-chevron-down' : 'codicon-chevron-up');
+		super(id, label, layoutService.isPanelMaximized() ? restoreIcon.classNames : maximizeIcon.classNames);
 
 		this.toDispose.add(editorGroupsService.onDidLayout(() => {
 			const maximized = this.layoutService.isPanelMaximized();
-			this.class = maximized ? 'codicon-chevron-down' : 'codicon-chevron-up';
+			this.class = maximized ? restoreIcon.classNames : maximizeIcon.classNames;
 			this.label = maximized ? ToggleMaximizedPanelAction.RESTORE_LABEL : ToggleMaximizedPanelAction.MAXIMIZE_LABEL;
 		}));
 	}
 
-	run(): Promise<any> {
+	async run(): Promise<void> {
 		if (!this.layoutService.isVisible(Parts.PANEL_PART)) {
 			this.layoutService.setPanelHidden(false);
 		}
 
 		this.layoutService.toggleMaximizedPanel();
-		return Promise.resolve();
 	}
 }
 
@@ -133,7 +132,7 @@ const PositionPanelActionId = {
 
 interface PanelActionConfig<T> {
 	id: string;
-	when: ContextKeyExpr;
+	when: ContextKeyExpression;
 	alias: string;
 	label: string;
 	value: T;
@@ -166,10 +165,9 @@ export class SetPanelPositionAction extends Action {
 		super(id, label);
 	}
 
-	run(): Promise<any> {
+	async run(): Promise<void> {
 		const position = positionByActionId.get(this.id);
 		this.layoutService.setPanelPosition(position === undefined ? Position.BOTTOM : position);
-		return Promise.resolve();
 	}
 }
 
@@ -182,7 +180,7 @@ export class PanelActivityAction extends ActivityAction {
 		super(activity);
 	}
 
-	async run(event: any): Promise<any> {
+	async run(): Promise<void> {
 		await this.panelService.openPanel(this.activity.id, true);
 		this.activate();
 	}
@@ -224,7 +222,7 @@ export class SwitchPanelViewAction extends Action {
 		super(id, name);
 	}
 
-	async run(offset: number): Promise<any> {
+	async run(offset: number): Promise<void> {
 		const pinnedPanels = this.panelService.getPinnedPanels();
 		const activePanel = this.panelService.getActivePanel();
 		if (!activePanel) {
@@ -256,7 +254,7 @@ export class PreviousPanelViewAction extends SwitchPanelViewAction {
 		super(id, name, panelService);
 	}
 
-	run(): Promise<any> {
+	run(): Promise<void> {
 		return super.run(-1);
 	}
 }
@@ -274,19 +272,19 @@ export class NextPanelViewAction extends SwitchPanelViewAction {
 		super(id, name, panelService);
 	}
 
-	run(): Promise<any> {
+	run(): Promise<void> {
 		return super.run(1);
 	}
 }
 
 const actionRegistry = Registry.as<IWorkbenchActionRegistry>(WorkbenchExtensions.WorkbenchActions);
-actionRegistry.registerWorkbenchAction(SyncActionDescriptor.create(TogglePanelAction, TogglePanelAction.ID, TogglePanelAction.LABEL, { primary: KeyMod.CtrlCmd | KeyCode.KEY_J }), 'View: Toggle Panel', nls.localize('view', "View"));
-actionRegistry.registerWorkbenchAction(SyncActionDescriptor.create(FocusPanelAction, FocusPanelAction.ID, FocusPanelAction.LABEL), 'View: Focus into Panel', nls.localize('view', "View"));
-actionRegistry.registerWorkbenchAction(SyncActionDescriptor.create(ToggleMaximizedPanelAction, ToggleMaximizedPanelAction.ID, ToggleMaximizedPanelAction.LABEL), 'View: Toggle Maximized Panel', nls.localize('view', "View"));
-actionRegistry.registerWorkbenchAction(SyncActionDescriptor.create(ClosePanelAction, ClosePanelAction.ID, ClosePanelAction.LABEL), 'View: Close Panel', nls.localize('view', "View"));
-actionRegistry.registerWorkbenchAction(SyncActionDescriptor.create(ToggleMaximizedPanelAction, ToggleMaximizedPanelAction.ID, undefined), 'View: Toggle Panel Position', nls.localize('view', "View"));
-actionRegistry.registerWorkbenchAction(SyncActionDescriptor.create(PreviousPanelViewAction, PreviousPanelViewAction.ID, PreviousPanelViewAction.LABEL), 'View: Previous Panel View', nls.localize('view', "View"));
-actionRegistry.registerWorkbenchAction(SyncActionDescriptor.create(NextPanelViewAction, NextPanelViewAction.ID, NextPanelViewAction.LABEL), 'View: Next Panel View', nls.localize('view', "View"));
+actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(TogglePanelAction, { primary: KeyMod.CtrlCmd | KeyCode.KEY_J }), 'View: Toggle Panel', nls.localize('view', "View"));
+actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(FocusPanelAction), 'View: Focus into Panel', nls.localize('view', "View"));
+actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(ToggleMaximizedPanelAction), 'View: Toggle Maximized Panel', nls.localize('view', "View"));
+actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(ClosePanelAction), 'View: Close Panel', nls.localize('view', "View"));
+actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(ToggleMaximizedPanelAction), 'View: Toggle Panel Position', nls.localize('view', "View"));
+actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(PreviousPanelViewAction), 'View: Previous Panel View', nls.localize('view', "View"));
+actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(NextPanelViewAction), 'View: Next Panel View', nls.localize('view', "View"));
 
 MenuRegistry.appendMenuItem(MenuId.MenubarAppearanceMenu, {
 	group: '2_workbench_layout',

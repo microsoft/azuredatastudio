@@ -271,7 +271,7 @@ export class DropdownMenu extends BaseDropdown {
 }
 
 export class DropdownMenuActionViewItem extends BaseActionViewItem {
-	private menuActionsOrProvider: any;
+	private menuActionsOrProvider: ReadonlyArray<IAction> | IActionProvider;
 	private dropdownMenu: DropdownMenu | undefined;
 	private contextMenuProvider: IContextMenuProvider;
 	private actionViewItemProvider?: IActionViewItemProvider;
@@ -295,7 +295,7 @@ export class DropdownMenuActionViewItem extends BaseActionViewItem {
 
 	render(container: HTMLElement): void {
 		const labelRenderer: ILabelRenderer = (el: HTMLElement): IDisposable | null => {
-			this.element = append(el, $('a.action-label.codicon'));
+			this.element = append(el, $('a.action-label.codicon')); // todo@aeschli: remove codicon, should come through `this.clazz`
 			if (this.clazz) {
 				addClasses(this.element, this.clazz);
 			}
@@ -317,7 +317,7 @@ export class DropdownMenuActionViewItem extends BaseActionViewItem {
 		if (Array.isArray(this.menuActionsOrProvider)) {
 			options.actions = this.menuActionsOrProvider;
 		} else {
-			options.actionProvider = this.menuActionsOrProvider;
+			options.actionProvider = this.menuActionsOrProvider as IActionProvider;
 		}
 
 		this.dropdownMenu = this._register(new DropdownMenu(container, options));
@@ -341,7 +341,7 @@ export class DropdownMenuActionViewItem extends BaseActionViewItem {
 		}
 	}
 
-	setActionContext(newContext: any): void {
+	setActionContext(newContext: unknown): void {
 		super.setActionContext(newContext);
 
 		if (this.dropdownMenu) {

@@ -122,8 +122,7 @@ export class ConfigurationModel implements IConfigurationModel {
 	}
 
 	freeze(): ConfigurationModel {
-		// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 needs investigation; we shouldn't need to do this
-		// this.isFrozen = true;
+		this.isFrozen = true;
 		return this;
 	}
 

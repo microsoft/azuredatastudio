@@ -16,7 +16,7 @@ export class ChartTab implements IPanelTab {
 	public readonly view: ChartView;
 
 	constructor(@IInstantiationService instantiationService: IInstantiationService) {
-		this.view = instantiationService.createInstance(ChartView);
+		this.view = instantiationService.createInstance(ChartView, true);
 	}
 
 	public set queryRunner(runner: QueryRunner) {
