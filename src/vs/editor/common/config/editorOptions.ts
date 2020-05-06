@@ -693,6 +693,7 @@ export interface IComputedEditorOptions {
  * @internal
  */
 export interface IEnvironmentalOptions {
+	readonly memory: IComputeOptionsMemory | null;
 	readonly outerWidth: number;
 	readonly outerHeight: number;
 	readonly fontInfo: FontInfo;
@@ -704,6 +705,12 @@ export interface IEnvironmentalOptions {
 	readonly pixelRatio: number;
 	readonly tabFocusMode: boolean;
 	readonly accessibilitySupport: AccessibilitySupport;
+}
+
+/**
+ * @internal
+ */
+export interface IComputeOptionsMemory {
 }
 
 export interface IEditorOption<K1 extends EditorOption, V> {
@@ -1762,6 +1769,7 @@ export interface EditorLayoutInfo {
  * @internal
  */
 export interface EditorLayoutInfoComputerEnv {
+	memory: IComputeOptionsMemory | null;
 	outerWidth: number;
 	outerHeight: number;
 	lineHeight: number;
@@ -1786,6 +1794,7 @@ export class EditorLayoutInfoComputer extends ComputedEditorOption<EditorOption.
 
 	public compute(env: IEnvironmentalOptions, options: IComputedEditorOptions, _: EditorLayoutInfo): EditorLayoutInfo {
 		return EditorLayoutInfoComputer.computeLayout(options, {
+			memory: env.memory,
 			outerWidth: env.outerWidth,
 			outerHeight: env.outerHeight,
 			lineHeight: env.fontInfo.lineHeight,
