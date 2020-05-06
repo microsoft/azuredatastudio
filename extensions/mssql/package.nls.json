@@ -142,7 +142,7 @@
 	"mssql.connectionOptions.typeSystemVersion.displayName": "Type system version",
 	"mssql.connectionOptions.typeSystemVersion.description": "Indicates which server type system the provider will expose through the DataReader",
 	"databasesListProperties.name": "Name",
-	"databasesListProperties.state": "State",
+	"databasesListProperties.status": "Status",
 	"databasesListProperties.size": "Size (MB)",
 	"databasesListProperties.lastBackup": "Last backup",
 	"objectsListProperties.name": "Name"

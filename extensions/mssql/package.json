@@ -374,7 +374,7 @@
               "widthWeight": 60
             },
             {
-              "displayName": "%databasesListProperties.state%",
+              "displayName": "%databasesListProperties.status%",
               "value": "state",
               "widthWeight": 10
             },
@@ -434,7 +434,7 @@
               "widthWeight": 60
             },
             {
-              "displayName": "%databasesListProperties.state%",
+              "displayName": "%databasesListProperties.status%",
               "value": "state",
               "widthWeight": 20
             },
@@ -481,7 +481,7 @@
               "widthWeight": 60
             },
             {
-              "displayName": "%databasesListProperties.state%",
+              "displayName": "%databasesListProperties.status%",
               "value": "state",
               "widthWeight": 20
             },

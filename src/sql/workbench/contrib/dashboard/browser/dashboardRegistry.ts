@@ -15,11 +15,14 @@ import { DASHBOARD_CONFIG_ID, DASHBOARD_TABS_KEY_PROPERTY } from 'sql/workbench/
 import { find } from 'vs/base/common/arrays';
 import { IDashboardTab, IDashboardTabGroup } from 'sql/workbench/services/dashboard/browser/common/interfaces';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ServerInfo } from 'azdata';
 
 export const Extensions = {
 	DashboardContributions: 'dashboard.contributions'
 };
+
+export interface ServerInfo {
+	[key: string]: any;
+}
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
