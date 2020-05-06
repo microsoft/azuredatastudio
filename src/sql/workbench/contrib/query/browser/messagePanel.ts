@@ -7,8 +7,6 @@ import 'vs/css!./media/messagePanel';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { IQueryMessage } from 'sql/workbench/services/query/common/query';
 
-import { ISelectionData } from 'azdata';
-
 import { ITreeRenderer, IDataSource, ITreeNode, ITreeContextMenuEvent } from 'vs/base/browser/ui/tree/tree';
 import { generateUuid } from 'vs/base/common/uuid';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
@@ -33,6 +31,7 @@ import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IDataTreeViewState } from 'vs/base/browser/ui/tree/dataTree';
+import { IRange } from 'vs/editor/common/core/range';
 
 export interface IResultMessageIntern {
 	id?: string;
@@ -40,8 +39,7 @@ export interface IResultMessageIntern {
 	isError: boolean;
 	time?: string | Date;
 	message: string;
-	selection?: ISelectionData;
-
+	range?: IRange;
 }
 
 export interface IMessagePanelMessage {
@@ -50,7 +48,7 @@ export interface IMessagePanelMessage {
 }
 
 export interface IMessagePanelBatchMessage extends IMessagePanelMessage {
-	selection: ISelectionData;
+	range: IRange;
 	time: string;
 }
 
@@ -268,7 +266,7 @@ class MessagePanelDelegate extends CachedListVirtualDelegate<IResultMessageInter
 	getTemplateId(element: IResultMessageIntern): string {
 		if (element instanceof Model) {
 			return TemplateIds.MODEL;
-		} else if (element.selection) {
+		} else if (element.range) {
 			return TemplateIds.BATCH;
 		} else if (element.isError) {
 			return TemplateIds.ERROR;
@@ -323,14 +321,13 @@ class BatchMessageRenderer implements ITreeRenderer<IResultMessageIntern, void, 
 		}
 		templateData.timeStamp.innerText = (node.element.time as Date).toLocaleTimeString();
 		templateData.message.innerText = node.element.message;
-		if (node.element.selection) {
-			const selection = { endColumn: node.element.selection.endColumn + 1, endLineNumber: node.element.selection.endLine + 1, startColumn: node.element.selection.startColumn + 1, startLineNumber: node.element.selection.startLine + 1 };
+		if (node.element.range) {
 			templateData.disposable.add(addStandardDisposableGenericMouseDownListner(templateData.message, () => {
 				let editor = this.editorService.activeEditorPane as QueryEditor;
 				const codeEditor = <ICodeEditor>editor.getControl();
 				codeEditor.focus();
-				codeEditor.setSelection(selection);
-				codeEditor.revealRangeInCenterIfOutsideViewport(selection);
+				codeEditor.setSelection(node.element.range);
+				codeEditor.revealRangeInCenterIfOutsideViewport(node.element.range);
 			}));
 		}
 	}
