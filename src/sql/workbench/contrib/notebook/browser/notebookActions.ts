@@ -49,23 +49,17 @@ export class AddCellAction extends Action {
 		super(id, label, cssClass);
 	}
 	public async run(context: INotebookEditor): Promise<any> {
-		try {
-			//Add Cell after current selected cell.
+		//Add Cell after current selected cell.
+		let index = 0;
+		if (context && context.cells) {
 			let notebookcomponent = context as NotebookComponent;
 			let id = notebookcomponent.activeCellId;
-			let index = 0;
-			if (context && context.cells) {
-				if (id) {
-					index = context.cells.findIndex(cell => cell.id === id);
-					index = index + 1;
-				}
+			if (id) {
+				index = context.cells.findIndex(cell => cell.id === id);
+				index = index + 1;
 			}
-			context.addCell(this.cellType, index);
-			return Promise.resolve(true);
 		}
-		catch (e) {
-			return Promise.reject(e);
-		}
+		context.addCell(this.cellType, index);
 	}
 }
 

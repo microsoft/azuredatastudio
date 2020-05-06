@@ -30,8 +30,7 @@ suite('Notebook Actions', function (): void {
 			actualCellType = cellType;
 		});
 
-		let result = await action.run(mockNotebookComponent.object);
-		assert.ok(result, 'Add Cell Action should succeed');
+		assert.doesNotThrow(() => action.run(mockNotebookComponent.object));
 		assert.strictEqual(actualCellType, testCellType);
 
 		// Handle error case
