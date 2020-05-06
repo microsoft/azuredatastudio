@@ -72,13 +72,13 @@
 			"type": "chrome",
 			"request": "attach",
 			"name": "Attach to azuredatastudio",
+			"timeout": 50000,
 			"port": 9222
 		},
 		{
 			"type": "pwa-chrome",
 			"request": "launch",
 			"name": "Launch azuredatastudio",
-			"browserLaunchLocation": "workspace",
 			"windows": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
 			},

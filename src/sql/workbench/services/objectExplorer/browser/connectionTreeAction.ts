@@ -83,6 +83,30 @@ export class RefreshAction extends Action {
 	}
 }
 
+export class EditConnectionAction extends Action {
+	public static ID = 'registeredServers.editConnection';
+	public static LABEL = localize('connectionTree.editConnection', "Edit Connection");
+
+	constructor(
+		id: string,
+		label: string,
+		private _connectionProfile: ConnectionProfile,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+	) {
+		super(id, label);
+		this.class = 'edit-server-action';
+	}
+
+	public async run(): Promise<boolean> {
+		if (!this._connectionProfile) {
+			return false;
+		}
+
+		await this._connectionManagementService.showEditConnectionDialog(this._connectionProfile);
+		return true;
+	}
+}
+
 export class DisconnectConnectionAction extends Action {
 	public static ID = 'objectExplorer.disconnect';
 	public static LABEL = localize('DisconnectAction', "Disconnect");

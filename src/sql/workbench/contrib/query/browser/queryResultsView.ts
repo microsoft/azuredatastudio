@@ -13,7 +13,6 @@ import { ChartTab } from 'sql/workbench/contrib/charts/browser/chartTab';
 import { QueryPlanTab } from 'sql/workbench/contrib/queryPlan/browser/queryPlan';
 import { TopOperationsTab } from 'sql/workbench/contrib/queryPlan/browser/topOperations';
 import { QueryModelViewTab } from 'sql/workbench/contrib/query/browser/modelViewTab/queryModelViewTab';
-import { MessagePanelState } from 'sql/workbench/common/editor/query/messagePanelState';
 import { GridPanelState } from 'sql/workbench/common/editor/query/gridTableState';
 
 import * as nls from 'vs/nls';
@@ -60,10 +59,6 @@ class MessagesView extends Disposable implements IPanelView {
 
 	public set queryRunner(runner: QueryRunner) {
 		this.messagePanel.queryRunner = runner;
-	}
-
-	public set state(val: MessagePanelState) {
-		this.messagePanel.state = val;
 	}
 }
 
@@ -305,7 +300,6 @@ export class QueryResultsView extends Disposable {
 		this.dynamicModelViewTabs.forEach(t => t.clear());
 
 		this.resultsTab.view.state = this.input.state.gridPanelState;
-		this.messagesTab.view.state = this.input.state.messagePanelState;
 		this.qpTab.view.state = this.input.state.queryPlanState;
 		this.topOperationsTab.view.state = this.input.state.topOperationsState;
 		this.chartTab.view.state = this.input.state.chartState;

@@ -453,7 +453,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private setActive() {
 		if (this.firstRender && this.table) {
-			this.table.setActive();
+			this.table.setActiveCell(0, 1);
 			this.firstRender = false;
 		}
 	}

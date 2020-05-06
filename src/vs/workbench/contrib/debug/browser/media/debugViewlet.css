@@ -31,6 +31,7 @@
 	font-size: 11px;
 	margin-right: 0.3em;
 	height: 20px;
+	line-height: 20px;
 	flex-shrink: 1;
 	margin-top: 7px;
 }
@@ -40,6 +41,7 @@
 }
 
 .monaco-workbench .part > .title > .title-actions .start-debug-action-item .codicon {
+	line-height: inherit;
 	flex-shrink: 0;
 	transition: transform 50ms ease;
 }
@@ -48,7 +50,7 @@
 	border: none;
 	margin-top: 0px;
 	cursor: pointer;
-	outline-offset: 2px;
+	line-height: inherit;
 }
 
 .monaco-workbench .monaco-action-bar .start-debug-action-item .configuration.disabled .monaco-select-box {
@@ -73,6 +75,11 @@
 .debug-pane .disabled {
 	opacity: 0.65;
 	cursor: initial;
+}
+
+/* Make icons the same color as the list foreground on focus selection */
+.debug-pane .monaco-list:focus .monaco-list-row.selected.focused .codicon {
+	color: inherit !important;
 }
 
 /* Call stack */
@@ -145,7 +152,9 @@
 	height: 100%;
 	line-height: 22px;
 	margin-right: 8px;
-	vertical-align: text-top;
+	background-size: 16px;
+	background-position: center center;
+	background-repeat: no-repeat;
 }
 
 .debug-pane .debug-call-stack .thread > .state > .label,

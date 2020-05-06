@@ -32,7 +32,7 @@ import { IFilesConfigurationService, AutoSaveMode } from 'vs/workbench/services/
 export const DirtyWorkingCopiesContext = new RawContextKey<boolean>('dirtyWorkingCopies', false);
 export const ActiveEditorContext = new RawContextKey<string | null>('activeEditor', null);
 export const ActiveEditorIsReadonlyContext = new RawContextKey<boolean>('activeEditorIsReadonly', false);
-export const ActiveEditorAvailableEditorsContext = new RawContextKey<string>('availableEditors', '');
+export const ActiveEditorAvailableEditorIdsContext = new RawContextKey<string>('activeEditorAvailableEditorIds', '');
 export const EditorsVisibleContext = new RawContextKey<boolean>('editorIsOpen', false);
 export const EditorPinnedContext = new RawContextKey<boolean>('editorPinned', false);
 export const EditorGroupActiveEditorDirtyContext = new RawContextKey<boolean>('groupActiveEditorDirty', false);
@@ -1304,7 +1304,7 @@ export interface IWorkbenchEditorConfiguration {
 
 interface IEditorPartConfiguration {
 	showTabs?: boolean;
-	scrollToSwitchTabs?: 'off' | 'natural' | 'reverse';
+	scrollToSwitchTabs?: boolean;
 	highlightModifiedTabs?: boolean;
 	tabCloseButton?: 'left' | 'right' | 'off';
 	tabSizing?: 'fit' | 'shrink';
@@ -1477,10 +1477,13 @@ export async function pathsToEditors(paths: IPathData[] | undefined, fileService
 	const editors = await Promise.all(paths.map(async path => {
 		const resource = URI.revive(path.fileUri);
 		if (!resource || !fileService.canHandleResource(resource)) {
-			return undefined; // {{SQL CARBON EDIT}} @anthonydresser revert after strictnullchecks
+			return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-checks
 		}
 
 		const exists = (typeof path.exists === 'boolean') ? path.exists : await fileService.exists(resource);
+		if (!exists && path.openOnlyIfExists) {
+			return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-checks
+		}
 
 		const options: ITextEditorOptions = (exists && typeof path.lineNumber === 'number') ? {
 			selection: {

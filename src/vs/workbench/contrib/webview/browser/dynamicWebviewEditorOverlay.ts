@@ -97,6 +97,7 @@ export class DynamicWebviewEditorOverlay extends Disposable implements WebviewOv
 		if (!this.container || !this.container.parentElement) {
 			return;
 		}
+
 		const frameRect = element.getBoundingClientRect();
 		const containerRect = this.container.parentElement.getBoundingClientRect();
 		this.container.style.position = 'absolute';

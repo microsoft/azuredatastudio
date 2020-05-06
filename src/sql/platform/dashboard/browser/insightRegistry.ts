@@ -67,7 +67,7 @@ export interface IInsightData {
 
 export interface IInsightsView {
 	data: IInsightData;
-	setConfig?: (config: { [key: string]: any }) => void;
+	setConfig?: (config: any) => void;
 	init?: () => void;
 }
 

@@ -874,7 +874,7 @@ export class SearchView extends ViewPane {
 					selectedText = strings.escapeRegExpCharacters(selectedText);
 				}
 
-				if (allowSearchOnType && !this.viewModel.searchResult.hasRemovedResults) {
+				if (allowSearchOnType && !this.viewModel.searchResult.isDirty) {
 					this.searchWidget.setValue(selectedText);
 				} else {
 					this.pauseSearching = true;
@@ -1657,7 +1657,7 @@ export class SearchView extends ViewPane {
 				revealIfVisible: true
 			}
 		}, sideBySide ? SIDE_GROUP : ACTIVE_GROUP).then(editor => {
-			if (editor && element instanceof Match && preserveFocus) {
+			if (element instanceof Match && preserveFocus && isCodeEditor(editor)) {
 				this.viewModel.searchResult.rangeHighlightDecorations.highlightRange(
 					(<ICodeEditor>editor.getControl()).getModel()!,
 					element.range()

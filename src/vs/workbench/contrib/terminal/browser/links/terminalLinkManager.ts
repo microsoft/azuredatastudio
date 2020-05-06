@@ -37,6 +37,7 @@ const excludedPathCharactersClause = '[^\\0\\s!$`&*()\\[\\]+\'":;\\\\]';
 /** A regex that matches paths in the form /foo, ~/foo, ./foo, ../foo, foo/bar */
 const unixLocalLinkClause = '((' + pathPrefix + '|(' + excludedPathCharactersClause + ')+)?(' + pathSeparatorClause + '(' + excludedPathCharactersClause + ')+)+)';
 
+// Valid absolute formats: C:, \\?\C: and \\?\%VAR%
 const winDrivePrefix = '(?:\\\\\\\\\\?\\\\)?[a-zA-Z]:';
 const winPathPrefix = '(' + winDrivePrefix + '|\\.\\.?|\\~)';
 const winPathSeparatorClause = '(\\\\|\\/)';
@@ -185,17 +186,21 @@ export class TerminalLinkManager extends DisposableStore {
 			terminalDimensions,
 			modifierDownCallback,
 			modifierUpCallback
-		}, this._getLinkHoverString(link.text, link.label), (text) => link.activate(undefined, text));
+		}, this._getLinkHoverString(link.text, link.label), (text) => link.activate(undefined, text), link);
 	}
 
 	private _showHover(
 		targetOptions: ILinkHoverTargetOptions,
 		text: IMarkdownString,
-		linkHandler: (url: string) => void
+		linkHandler: (url: string) => void,
+		link?: TerminalLink
 	) {
 		if (this._widgetManager) {
 			const widget = this._instantiationService.createInstance(TerminalHover, targetOptions, text, linkHandler);
-			this._widgetManager.attachWidget(widget);
+			const attached = this._widgetManager.attachWidget(widget);
+			if (attached) {
+				link?.onLeave(() => attached.dispose());
+			}
 		}
 	}
 
@@ -464,7 +469,7 @@ export class TerminalLinkManager extends DisposableStore {
 		} else if (link.charAt(0) !== '/' && link.charAt(0) !== '~') {
 			// Resolve workspace path . | .. | <relative_path> -> <path>/. | <path>/.. | <path>/<relative_path>
 			if (this._processManager.os === OperatingSystem.Windows) {
-				if (!link.match('^' + winDrivePrefix)) {
+				if (!link.match('^' + winDrivePrefix) && !link.startsWith('\\\\?\\')) {
 					if (!this._processCwd) {
 						// Abort if no workspace is open
 						return null;

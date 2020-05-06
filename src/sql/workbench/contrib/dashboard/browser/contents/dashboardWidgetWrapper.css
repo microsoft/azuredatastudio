@@ -45,7 +45,6 @@ dashboard-widget-wrapper .actionbar {
 
 dashboard-widget-wrapper .bottomActionbar {
 	align-self: center;
-	display: none;
 }
 
 dashboard-widget-wrapper .bottomActionbar.collapsed {
