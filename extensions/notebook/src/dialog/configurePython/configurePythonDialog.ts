@@ -7,12 +7,12 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import { promises as fs } from 'fs';
-import * as utils from '../../common/utils';
+import * as utils from '../common/utils';
 
-import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
-import { ApiWrapper } from '../../common/apiWrapper';
-import { Deferred } from '../../common/promise';
-import { PythonPathLookup, PythonPathInfo } from '../pythonPathLookup';
+import { JupyterServerInstallation } from '../jupyter/jupyterServerInstallation';
+import { ApiWrapper } from '../common/apiWrapper';
+import { Deferred } from '../common/promise';
+import { PythonPathLookup, PythonPathInfo } from './pythonPathLookup';
 
 const localize = nls.loadMessageBundle();
 
@@ -25,6 +25,7 @@ export class ConfigurePythonDialog {
 	private readonly BrowseButtonText = localize('configurePython.browseButtonText', "Browse");
 	private readonly LocationTextBoxTitle = localize('configurePython.locationTextBoxText', "Python Install Location");
 	private readonly SelectFileLabel = localize('configurePython.selectFileLabel', "Select");
+	private readonly InstallationNote = localize('configurePython.installNote', "This installation will take some time. It is recommended to not close the application until the installation is complete.");
 	private readonly InvalidLocationMsg = localize('configurePython.invalidLocationMsg', "The specified install location is invalid.");
 	private readonly PythonNotFoundMsg = localize('configurePython.pythonNotFoundMsg', "No python installation was found at the specified location.");
 
@@ -93,6 +94,20 @@ export class ConfigurePythonDialog {
 				}).component();
 			this.browseButton.onDidClick(() => this.handleBrowse());
 
+			let installationNoteText = view.modelBuilder.text().withProperties({
+				value: this.InstallationNote
+			}).component();
+			let noteWrapper = view.modelBuilder.flexContainer().component();
+			noteWrapper.addItem(installationNoteText, {
+				flex: '1 1 auto',
+				CSSStyles: {
+					'margin-top': '60px',
+					'padding-left': '15px',
+					'padding-right': '15px',
+					'border': '1px solid'
+				}
+			});
+
 			let useExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
 			this.createInstallRadioButtons(view.modelBuilder, useExistingPython);
 
@@ -108,6 +123,9 @@ export class ConfigurePythonDialog {
 					title: this.LocationTextBoxTitle
 				}, {
 					component: this.browseButton,
+					title: ''
+				}, {
+					component: noteWrapper,
 					title: ''
 				}]).component();
 
