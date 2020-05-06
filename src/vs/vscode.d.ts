@@ -7897,7 +7897,7 @@ declare module 'vscode' {
 		 * This will trigger the view to update the changed element/root and its children recursively (if shown).
 		 * To signal that root has changed, do not pass any argument or pass `undefined` or `null`.
 		 */
-		onDidChangeTreeData?: Event<T | undefined | null>;
+		onDidChangeTreeData?: Event<T | undefined | null | void>;
 
 		/**
 		 * Get [TreeItem](#TreeItem) representation of the `element`
@@ -10487,6 +10487,23 @@ declare module 'vscode' {
 	}
 
 	/**
+	 * A DebugConfigurationProviderTriggerKind specifies when the `provideDebugConfigurations` method of a `DebugConfigurationProvider` is triggered.
+	 * Currently there are two situations: to provide the initial debug configurations for a newly created launch.json or
+	 * to provide dynamically generated debug configurations when the user asks for them through the UI (e.g. via the "Select and Start Debugging" command).
+	 * A trigger kind is used when registering a `DebugConfigurationProvider` with #debug.registerDebugConfigurationProvider.
+	 */
+	export enum DebugConfigurationProviderTriggerKind {
+		/**
+		 *	`DebugConfigurationProvider.provideDebugConfigurations` is called to provide the initial debug configurations for a newly created launch.json.
+		 */
+		Initial = 1,
+		/**
+		 * `DebugConfigurationProvider.provideDebugConfigurations` is called to provide dynamically generated debug configurations when the user asks for them through the UI (e.g. via the "Select and Start Debugging" command).
+		 */
+		Dynamic = 2
+	}
+
+	/**
 	 * Namespace for debug functionality.
 	 */
 	export namespace debug {
@@ -10539,13 +10556,19 @@ declare module 'vscode' {
 
 		/**
 		 * Register a [debug configuration provider](#DebugConfigurationProvider) for a specific debug type.
+		 * The optional [triggerKind](#DebugConfigurationProviderTriggerKind) can be used to specify when the `provideDebugConfigurations` method of the provider is triggered.
+		 * Currently two trigger kinds are possible: with the value `Initial` (or if no trigger kind argument is given) the `provideDebugConfigurations` method is used to provide the initial debug configurations to be copied into a newly created launch.json.
+		 * With the trigger kind `Dynamic` the `provideDebugConfigurations` method is used to dynamically determine debug configurations to be presented to the user (in addition to the static configurations from the launch.json).
+		 * Please note that the `triggerKind` argument only applies to the `provideDebugConfigurations` method: so the `resolveDebugConfiguration` methods are not affected at all.
+		 * Registering a single provider with resolve methods for different trigger kinds, results in the same resolve methods called multiple times.
 		 * More than one provider can be registered for the same type.
 		 *
 		 * @param type The debug type for which the provider is registered.
 		 * @param provider The [debug configuration provider](#DebugConfigurationProvider) to register.
+		 * @param triggerKind The [trigger](#DebugConfigurationProviderTrigger) for which the 'provideDebugConfiguration' method of the provider is registered. If `triggerKind` is missing, the value `DebugConfigurationProviderTriggerKind.Initial` is assumed.
 		 * @return A [disposable](#Disposable) that unregisters this provider when being disposed.
 		 */
-		export function registerDebugConfigurationProvider(debugType: string, provider: DebugConfigurationProvider): Disposable;
+		export function registerDebugConfigurationProvider(debugType: string, provider: DebugConfigurationProvider, triggerKind?: DebugConfigurationProviderTriggerKind): Disposable;
 
 		/**
 		 * Register a [debug adapter descriptor factory](#DebugAdapterDescriptorFactory) for a specific debug type.
@@ -10876,6 +10899,21 @@ declare module 'vscode' {
 	}
 
 	/**
+	 * Represents a [comment controller](#CommentController)'s [options](#CommentController.options).
+	 */
+	export interface CommentOptions {
+		/**
+		 * An optional string to show on the comment input box when it's collapsed.
+		 */
+		prompt?: string;
+
+		/**
+		 * An optional string to show as placeholder in the comment input box when it's focused.
+		 */
+		placeHolder?: string;
+	}
+
+	/**
 	 * A comment controller is able to provide [comments](#CommentThread) support to the editor and
 	 * provide users various ways to interact with comments.
 	 */
@@ -10889,6 +10927,11 @@ declare module 'vscode' {
 		 * The human-readable label of this comment controller.
 		 */
 		readonly label: string;
+
+		/**
+		 * Comment controller options
+		 */
+		options?: CommentOptions;
 
 		/**
 		 * Optional commenting range provider. Provide a list [ranges](#Range) which support commenting to any given resource uri.
