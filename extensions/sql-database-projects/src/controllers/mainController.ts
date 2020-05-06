@@ -12,6 +12,7 @@ import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewPro
 import { getErrorMessage } from '../common/utils';
 import { ProjectsController } from './projectController';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
+import { NetCoreTool } from '../tools/netcoreTool';
 
 const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
 
@@ -22,10 +23,12 @@ export default class MainController implements vscode.Disposable {
 	protected _context: vscode.ExtensionContext;
 	protected dbProjectTreeViewProvider: SqlDatabaseProjectTreeViewProvider = new SqlDatabaseProjectTreeViewProvider();
 	protected projectsController: ProjectsController;
+	protected netcoreTool: NetCoreTool;
 
 	public constructor(context: vscode.ExtensionContext) {
 		this._context = context;
 		this.projectsController = new ProjectsController(this.dbProjectTreeViewProvider);
+		this.netcoreTool = new NetCoreTool();
 	}
 
 	public get extensionContext(): vscode.ExtensionContext {
@@ -44,6 +47,12 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.new', async () => { await this.createNewProject(); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.open', async () => { await this.openProjectFromFile(); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.close', (node: BaseProjectTreeItem) => { this.projectsController.closeProject(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.properties', async (node: BaseProjectTreeItem) => { await vscode.window.showErrorMessage(`Properties not yet implemented: ${node.uri.path}`); }); // TODO
+
+		vscode.commands.registerCommand('sqlDatabaseProjects.build', async (node: BaseProjectTreeItem) => { await this.projectsController.build(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.deploy', async (node: BaseProjectTreeItem) => { await this.projectsController.deploy(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.import', async (node: BaseProjectTreeItem) => { await this.projectsController.import(node); });
+
 
 		vscode.commands.registerCommand('sqlDatabaseProjects.newScript', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPrompt(node, templates.script); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newTable', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPrompt(node, templates.table); });
@@ -56,6 +65,9 @@ export default class MainController implements vscode.Disposable {
 		this.extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(SQL_DATABASE_PROJECTS_VIEW_ID, this.dbProjectTreeViewProvider));
 
 		await templates.loadTemplates(path.join(this._context.extensionPath, 'resources', 'templates'));
+
+		// ensure .net core is installed
+		this.netcoreTool.findOrInstallNetCore();
 	}
 
 	/**

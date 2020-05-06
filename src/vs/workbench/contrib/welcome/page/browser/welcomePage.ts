@@ -42,7 +42,7 @@ import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { joinPath } from 'vs/base/common/resources';
 import { IRecentlyOpened, isRecentWorkspace, IRecentWorkspace, IRecentFolder, isRecentFolder, IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}}
+import 'sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}}
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
@@ -292,7 +292,7 @@ class WelcomePage extends Disposable {
 		const resource = URI.parse(require.toUrl('./az_data_welcome_page'))
 			.with({
 				scheme: Schemas.walkThrough,
-				query: JSON.stringify({ moduleId: 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page' })
+				query: JSON.stringify({ moduleId: 'sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page' })
 			});
 		this.editorInput = this.instantiationService.createInstance(WalkThroughInput, {
 			typeId: welcomeInputTypeId,
@@ -317,7 +317,7 @@ class WelcomePage extends Disposable {
 			this.configurationService.updateValue(configurationKey, showOnStartup.checked ? 'welcomePage' : 'newUntitledFile', ConfigurationTarget.USER);
 		});
 
-		const prodName = container.querySelector('.welcomePage .title .caption') as HTMLElement;
+		const prodName = container.querySelector('.welcomePage2 .title .caption') as HTMLElement;
 		if (prodName) {
 			prodName.innerHTML = this.productService.nameLong;
 		}
@@ -326,7 +326,7 @@ class WelcomePage extends Disposable {
 			// Filter out the current workspace
 			workspaces = workspaces.filter(recent => !this.contextService.isCurrentWorkspace(isRecentWorkspace(recent) ? recent.workspace : recent.folderUri));
 			if (!workspaces.length) {
-				const recent = container.querySelector('.welcomePage') as HTMLElement;
+				const recent = container.querySelector('.welcomePage2') as HTMLElement;
 				recent.classList.add('emptyRecent');
 				return;
 			}
@@ -639,39 +639,39 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const foregroundColor = theme.getColor(foreground);
 	if (foregroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .caption { color: ${foregroundColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage2 .caption { color: ${foregroundColor}; }`);
 	}
 	const descriptionColor = theme.getColor(descriptionForeground);
 	if (descriptionColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .detail { color: ${descriptionColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage2 .detail { color: ${descriptionColor}; }`);
 	}
 	const buttonColor = getExtraColor(theme, buttonBackground, { dark: 'rgba(0, 0, 0, .2)', extra_dark: 'rgba(200, 235, 255, .042)', light: 'rgba(0,0,0,.04)', hc: 'black' });
 	if (buttonColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .commands .item button { background: ${buttonColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage2 .commands .item button { background: ${buttonColor}; }`);
 	}
 	const buttonHoverColor = getExtraColor(theme, buttonHoverBackground, { dark: 'rgba(200, 235, 255, .072)', extra_dark: 'rgba(200, 235, 255, .072)', light: 'rgba(0,0,0,.10)', hc: null });
 	if (buttonHoverColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .commands .item button:hover { background: ${buttonHoverColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage2 .commands .item button:hover { background: ${buttonHoverColor}; }`);
 	}
 	const link = theme.getColor(textLinkForeground);
 	if (link) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a { color: ${link}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage2 a { color: ${link}; }`);
 	}
 	const activeLink = theme.getColor(textLinkActiveForeground);
 	if (activeLink) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a:hover,
-			.monaco-workbench .part.editor > .content .welcomePage a:active { color: ${activeLink}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage2 a:hover,
+			.monaco-workbench .part.editor > .content .welcomePage2 a:active { color: ${activeLink}; }`);
 	}
 	const focusColor = theme.getColor(focusBorder);
 	if (focusColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a:focus { outline-color: ${focusColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage2 a:focus { outline-color: ${focusColor}; }`);
 	}
 	const border = theme.getColor(contrastBorder);
 	if (border) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .commands .item button { border-color: ${border}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage2 .commands .item button { border-color: ${border}; }`);
 	}
 	const activeBorder = theme.getColor(activeContrastBorder);
 	if (activeBorder) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .commands .item button:hover { outline-color: ${activeBorder}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage2 .commands .item button:hover { outline-color: ${activeBorder}; }`);
 	}
 });

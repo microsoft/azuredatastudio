@@ -199,6 +199,36 @@ describe('Manage Packages', () => {
 		should.deepEqual(model.getPackageTypes('location1'), [{providerId: 'providerId1', packageType: 'package-type1'}]);
 	});
 
+	it('Should set default location to one set in given options', async function (): Promise<void> {
+		let testContext1 = createContext();
+		testContext1.provider.providerId = 'providerId1';
+		testContext1.provider.packageTarget = {
+			location: 'location1',
+			packageType: 'package-type1'
+		};
+
+		let testContext2 = createContext();
+		testContext2.provider.providerId = 'providerId2';
+		testContext2.provider.packageTarget = {
+			location: 'location1',
+			packageType: 'package-type2'
+		};
+		testContext2.provider.canUseProvider = () => { return Promise.resolve(false); };
+
+		let providers = new Map<string, IPackageManageProvider>();
+		providers.set(testContext1.provider.providerId, createProvider(testContext1));
+		providers.set(testContext2.provider.providerId, createProvider(testContext2));
+
+		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, {
+			defaultLocation: testContext2.provider.packageTarget.location,
+			defaultProviderId: testContext2.provider.providerId
+		});
+
+		await model.init();
+		should.equal(model.defaultLocation, testContext2.provider.packageTarget.location);
+		should.deepEqual(model.getPackageTypes('location1'), [{providerId: 'providerId1', packageType: 'package-type1'}]);
+	});
+
 	it('changeProvider should change current provider successfully', async function (): Promise<void> {
 		let testContext1 = createContext();
 		testContext1.provider.providerId = 'providerId1';

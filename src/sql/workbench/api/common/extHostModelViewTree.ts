@@ -165,7 +165,7 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 			});
 	}
 
-	protected createTreeNode(element: T, extensionTreeItem: azdata.TreeComponentItem, parent?: vsTreeExt.TreeNode): vsTreeExt.TreeNode {
+	protected createTreeNode(element: T, extensionTreeItem: azdata.TreeComponentItem, parent?: vsTreeExt.TreeNode | vsTreeExt.Root): vsTreeExt.TreeNode {
 		let node = super.createTreeNode(element, extensionTreeItem, parent);
 		if (node.item) {
 			node.item = assign(node.item, { checked: extensionTreeItem.checked, enabled: extensionTreeItem.enabled });

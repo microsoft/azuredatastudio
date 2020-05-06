@@ -74,7 +74,7 @@ import { IPathService } from 'vs/workbench/services/path/common/pathService';
 import { format } from 'vs/base/common/jsonFormatter';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { applyEdits } from 'vs/base/common/jsonEdit';
-import { ITextEditorPane } from 'vs/workbench/common/editor';
+import { ITextEditorPane, SaveReason } from 'vs/workbench/common/editor';
 import { ITextEditorSelection, TextEditorSelectionRevealType } from 'vs/platform/editor/common/editor';
 import { IPreferencesService } from 'vs/workbench/services/preferences/common/preferences';
 import { find } from 'vs/base/common/arrays';
@@ -791,7 +791,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		if (quickOpenHistoryLimit === 0) {
 			return;
 		}
-		let keys = this._recentlyUsedTasks.keys();
+		let keys = [...this._recentlyUsedTasks.keys()];
 		if (keys.length > quickOpenHistoryLimit) {
 			keys = keys.slice(0, quickOpenHistoryLimit);
 		}
@@ -1419,7 +1419,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		};
 
 		const saveAllEditorsAndExecTask = async (task: Task, resolver: ITaskResolver): Promise<ITaskSummary> => {
-			return this.editorService.saveAll().then(() => {
+			return this.editorService.saveAll({ reason: SaveReason.AUTO }).then(() => {
 				return execTask(task, resolver);
 			});
 		};
@@ -2323,7 +2323,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 				taskMap[key] = task;
 			}
 		});
-		const reversed = recentlyUsedTasks.keys().reverse();
+		const reversed = [...recentlyUsedTasks.keys()].reverse();
 		for (const key in reversed) {
 			let task = taskMap[key];
 			if (task) {
@@ -2461,7 +2461,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		}
 
 		ProblemMatcherRegistry.onReady().then(() => {
-			return this.editorService.saveAll().then(() => { // make sure all dirty editors are saved
+			return this.editorService.saveAll({ reason: SaveReason.AUTO }).then(() => { // make sure all dirty editors are saved
 				let executeResult = this.getTaskSystem().rerun();
 				if (executeResult) {
 					return this.handleExecuteResult(executeResult);
