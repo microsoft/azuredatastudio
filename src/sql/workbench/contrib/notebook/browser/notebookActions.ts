@@ -28,6 +28,7 @@ import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/t
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookComponent } from 'sql/workbench/contrib/notebook/browser/notebook.component';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
