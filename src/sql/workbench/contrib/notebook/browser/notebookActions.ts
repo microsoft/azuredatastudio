@@ -27,6 +27,7 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookComponent } from 'sql/workbench/contrib/notebook/browser/notebook.component';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const msgLoading = localize('loading', "Loading kernels...");
@@ -47,15 +48,18 @@ export class AddCellAction extends Action {
 	) {
 		super(id, label, cssClass);
 	}
-	public run(context: INotebookEditor): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			try {
-				context.addCell(this.cellType);
-				resolve(true);
-			} catch (e) {
-				reject(e);
+	public async run(context: INotebookEditor): Promise<any> {
+		//Add Cell after current selected cell.
+		let index = 0;
+		if (context && context.cells) {
+			let notebookcomponent = context as NotebookComponent;
+			let id = notebookcomponent.activeCellId;
+			if (id) {
+				index = context.cells.findIndex(cell => cell.id === id);
+				index = index + 1;
 			}
-		});
+		}
+		context.addCell(this.cellType, index);
 	}
 }
 
