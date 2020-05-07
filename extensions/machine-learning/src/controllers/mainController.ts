@@ -95,7 +95,7 @@ export default class MainController implements vscode.Disposable {
 		let modelManagementController = new ModelManagementController(this._apiWrapper, this._rootPath,
 			azureModelsService, registeredModelService, predictService);
 
-		let dashboardWidget = new DashboardWidget(this._apiWrapper, this._rootPath);
+		let dashboardWidget = new DashboardWidget(this._apiWrapper, this._rootPath, predictService);
 		dashboardWidget.register();
 
 		this._apiWrapper.registerCommand(constants.mlManageModelsCommand, (async () => {

@@ -91,47 +91,53 @@ describe('Register Model Wizard', () => {
 		view.importTable = importTable;
 		await view.open();
 		setEvents(view);
+		await view.refresh();
+		should.notEqual(view.modelBrowsePage, undefined);
 
 		if (view.modelBrowsePage) {
 			view.modelBrowsePage.modelSourceType = ModelSourceType.Azure;
+			await view.modelBrowsePage.refresh();
+			should.equal(view.modelBrowsePage.modelSourceType, ModelSourceType.Azure);
 		}
-		await view.refresh();
-		should.notEqual(view.azureModelsComponent?.data ,undefined);
+		should.notEqual(view.azureModelsComponent?.data, undefined);
 		should.notEqual(view.localModelsComponent?.data, undefined);
 	});
 
 	function setEvents(view: ImportModelWizard): void {
-		view.on(ListModelsEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListModelsEventName), { data: localModels });
+		view.on(ListModelsEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListModelsEventName), { inputArgs: args, data: localModels });
 		});
-		view.on(ListDatabaseNamesEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListDatabaseNamesEventName), { data: [
-				'db', 'db1'
-			] });
+		view.on(ListDatabaseNamesEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListDatabaseNamesEventName), {
+				inputArgs: args, data: [
+					'db', 'db1'
+				]
+			});
 		});
-		view.on(ListTableNamesEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListTableNamesEventName), { data: [
-				'tb', 'tb1'
-			] });
+		view.on(ListTableNamesEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListTableNamesEventName), {
+				inputArgs: args, data: [
+					'tb', 'tb1'
+				]
+			});
 		});
-		view.on(ListAccountsEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListAccountsEventName), { data: accounts });
+		view.on(ListAccountsEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListAccountsEventName), { inputArgs: args, data: accounts });
 		});
-		view.on(ListSubscriptionsEventName, () => {
-
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListSubscriptionsEventName), { data: subscriptions });
+		view.on(ListSubscriptionsEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListSubscriptionsEventName), { inputArgs: args, data: subscriptions });
 		});
-		view.on(ListGroupsEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListGroupsEventName), { data: groups });
+		view.on(ListGroupsEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListGroupsEventName), { inputArgs: args, data: groups });
 		});
-		view.on(ListWorkspacesEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListWorkspacesEventName), { data: workspaces });
+		view.on(ListWorkspacesEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListWorkspacesEventName), { inputArgs: args, data: workspaces });
 		});
-		view.on(ListAzureModelsEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListAzureModelsEventName), { data: models });
+		view.on(ListAzureModelsEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListAzureModelsEventName), { inputArgs: args, data: models });
 		});
-		view.on(VerifyImportTableEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(VerifyImportTableEventName), { data: view.importTable });
+		view.on(VerifyImportTableEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(VerifyImportTableEventName), { inputArgs: args, data: view.importTable });
 		});
 	}
 });

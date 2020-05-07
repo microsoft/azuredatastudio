@@ -64,9 +64,6 @@ export class ModelManagementController extends ControllerBase {
 		}
 
 		controller.registerEvents(view);
-		if (view.modelSourcePage?.data) {
-			view.modelSourceType = view.modelSourcePage?.data;
-		}
 
 		// Open view
 		//
@@ -105,9 +102,10 @@ export class ModelManagementController extends ControllerBase {
 			view.importTable = await this._deployedModelService.getRecentImportTable();
 
 			this.registerEvents(view);
-			view.on(LoadModelParametersEventName, async () => {
+
+			view.on(LoadModelParametersEventName, async (args) => {
 				const modelArtifact = await view.getModelFileName();
-				await this.executeAction(view, LoadModelParametersEventName, this.loadModelParameters, this._deployedModelService,
+				await this.executeAction(view, LoadModelParametersEventName, args, this.loadModelParameters, this._deployedModelService,
 					modelArtifact?.filePath);
 			});
 
@@ -132,99 +130,99 @@ export class ModelManagementController extends ControllerBase {
 		// Register events
 		//
 		super.registerEvents(view);
-		view.on(ListAccountsEventName, async () => {
-			await this.executeAction(view, ListAccountsEventName, this.getAzureAccounts, this._amlService);
+		view.on(ListAccountsEventName, async (args) => {
+			await this.executeAction(view, ListAccountsEventName, args, this.getAzureAccounts, this._amlService);
 		});
-		view.on(ListSubscriptionsEventName, async (arg) => {
-			let azureArgs = <AzureResourceEventArgs>arg;
-			await this.executeAction(view, ListSubscriptionsEventName, this.getAzureSubscriptions, this._amlService, azureArgs.account);
+		view.on(ListSubscriptionsEventName, async (args) => {
+			let azureArgs = <AzureResourceEventArgs>args;
+			await this.executeAction(view, ListSubscriptionsEventName, args, this.getAzureSubscriptions, this._amlService, azureArgs.account);
 		});
-		view.on(ListWorkspacesEventName, async (arg) => {
-			let azureArgs = <AzureResourceEventArgs>arg;
-			await this.executeAction(view, ListWorkspacesEventName, this.getWorkspaces, this._amlService, azureArgs.account, azureArgs.subscription, azureArgs.group);
+		view.on(ListWorkspacesEventName, async (args) => {
+			let azureArgs = <AzureResourceEventArgs>args;
+			await this.executeAction(view, ListWorkspacesEventName, args, this.getWorkspaces, this._amlService, azureArgs.account, azureArgs.subscription, azureArgs.group);
 		});
-		view.on(ListGroupsEventName, async (arg) => {
-			let azureArgs = <AzureResourceEventArgs>arg;
-			await this.executeAction(view, ListGroupsEventName, this.getAzureGroups, this._amlService, azureArgs.account, azureArgs.subscription);
+		view.on(ListGroupsEventName, async (args) => {
+			let azureArgs = <AzureResourceEventArgs>args;
+			await this.executeAction(view, ListGroupsEventName, args, this.getAzureGroups, this._amlService, azureArgs.account, azureArgs.subscription);
 		});
-		view.on(ListAzureModelsEventName, async (arg) => {
-			let azureArgs = <AzureResourceEventArgs>arg;
-			await this.executeAction(view, ListAzureModelsEventName, this.getAzureModels, this._amlService
+		view.on(ListAzureModelsEventName, async (args) => {
+			let azureArgs = <AzureResourceEventArgs>args;
+			await this.executeAction(view, ListAzureModelsEventName, args, this.getAzureModels, this._amlService
 				, azureArgs.account, azureArgs.subscription, azureArgs.group, azureArgs.workspace);
 		});
 		view.on(ListModelsEventName, async (args) => {
 			const table = <DatabaseTable>args;
-			await this.executeAction(view, ListModelsEventName, this.getRegisteredModels, this._deployedModelService, table);
+			await this.executeAction(view, ListModelsEventName, args, this.getRegisteredModels, this._deployedModelService, table);
 		});
-		view.on(RegisterLocalModelEventName, async (arg) => {
-			let models = <ModelViewData[]>arg;
-			await this.executeAction(view, RegisterLocalModelEventName, this.registerLocalModel, this._deployedModelService, models);
+		view.on(RegisterLocalModelEventName, async (args) => {
+			let models = <ModelViewData[]>args;
+			await this.executeAction(view, RegisterLocalModelEventName, args, this.registerLocalModel, this._deployedModelService, models);
 			view.refresh();
 		});
 		view.on(RegisterModelEventName, async (args) => {
 			const importTable = <DatabaseTable>args;
-			await this.executeAction(view, RegisterModelEventName, this.importModel, importTable, view, this, this._apiWrapper, this._root);
+			await this.executeAction(view, RegisterModelEventName, args, this.importModel, importTable, view, this, this._apiWrapper, this._root);
 		});
 		view.on(EditModelEventName, async (args) => {
 			const model = <ImportedModel>args;
-			await this.executeAction(view, EditModelEventName, this.editModel, model, view, this, this._apiWrapper, this._root);
+			await this.executeAction(view, EditModelEventName, args, this.editModel, model, view, this, this._apiWrapper, this._root);
 		});
 		view.on(UpdateModelEventName, async (args) => {
 			const model = <ImportedModel>args;
-			await this.executeAction(view, UpdateModelEventName, this.updateModel, this._deployedModelService, model);
+			await this.executeAction(view, UpdateModelEventName, args, this.updateModel, this._deployedModelService, model);
 		});
 		view.on(DeleteModelEventName, async (args) => {
 			const model = <ImportedModel>args;
-			await this.executeAction(view, DeleteModelEventName, this.deleteModel, this._deployedModelService, model);
+			await this.executeAction(view, DeleteModelEventName, args, this.deleteModel, this._deployedModelService, model);
 		});
-		view.on(RegisterAzureModelEventName, async (arg) => {
-			let models = <ModelViewData[]>arg;
-			await this.executeAction(view, RegisterAzureModelEventName, this.registerAzureModel, this._amlService, this._deployedModelService,
+		view.on(RegisterAzureModelEventName, async (args) => {
+			let models = <ModelViewData[]>args;
+			await this.executeAction(view, RegisterAzureModelEventName, args, this.registerAzureModel, this._amlService, this._deployedModelService,
 				models);
 		});
-		view.on(DownloadAzureModelEventName, async (arg) => {
-			let registerArgs = <AzureModelResource>arg;
-			await this.executeAction(view, DownloadAzureModelEventName, this.downloadAzureModel, this._amlService,
+		view.on(DownloadAzureModelEventName, async (args) => {
+			let registerArgs = <AzureModelResource>args;
+			await this.executeAction(view, DownloadAzureModelEventName, args, this.downloadAzureModel, this._amlService,
 				registerArgs.account, registerArgs.subscription, registerArgs.group, registerArgs.workspace, registerArgs.model);
 		});
-		view.on(ListDatabaseNamesEventName, async () => {
-			await this.executeAction(view, ListDatabaseNamesEventName, this.getDatabaseList, this._predictService);
+		view.on(ListDatabaseNamesEventName, async (args) => {
+			await this.executeAction(view, ListDatabaseNamesEventName, args, this.getDatabaseList, this._predictService);
 		});
-		view.on(ListTableNamesEventName, async (arg) => {
-			let dbName = <string>arg;
-			await this.executeAction(view, ListTableNamesEventName, this.getTableList, this._predictService, dbName);
+		view.on(ListTableNamesEventName, async (args) => {
+			let dbName = <string>args;
+			await this.executeAction(view, ListTableNamesEventName, args, this.getTableList, this._predictService, dbName);
 		});
-		view.on(ListColumnNamesEventName, async (arg) => {
-			let tableColumnsArgs = <DatabaseTable>arg;
-			await this.executeAction(view, ListColumnNamesEventName, this.getTableColumnsList, this._predictService,
+		view.on(ListColumnNamesEventName, async (args) => {
+			let tableColumnsArgs = <DatabaseTable>args;
+			await this.executeAction(view, ListColumnNamesEventName, args, this.getTableColumnsList, this._predictService,
 				tableColumnsArgs);
 		});
-		view.on(PredictModelEventName, async (arg) => {
-			let predictArgs = <PredictModelEventArgs>arg;
-			await this.executeAction(view, PredictModelEventName, this.generatePredictScript, this._predictService,
+		view.on(PredictModelEventName, async (args) => {
+			let predictArgs = <PredictModelEventArgs>args;
+			await this.executeAction(view, PredictModelEventName, args, this.generatePredictScript, this._predictService,
 				predictArgs, predictArgs.model, predictArgs.filePath);
 		});
-		view.on(DownloadRegisteredModelEventName, async (arg) => {
-			let model = <ImportedModel>arg;
-			await this.executeAction(view, DownloadRegisteredModelEventName, this.downloadRegisteredModel, this._deployedModelService,
+		view.on(DownloadRegisteredModelEventName, async (args) => {
+			let model = <ImportedModel>args;
+			await this.executeAction(view, DownloadRegisteredModelEventName, args, this.downloadRegisteredModel, this._deployedModelService,
 				model);
 		});
-		view.on(StoreImportTableEventName, async (arg) => {
-			let importTable = <DatabaseTable>arg;
-			await this.executeAction(view, StoreImportTableEventName, this.storeImportTable, this._deployedModelService,
+		view.on(StoreImportTableEventName, async (args) => {
+			let importTable = <DatabaseTable>args;
+			await this.executeAction(view, StoreImportTableEventName, args, this.storeImportTable, this._deployedModelService,
 				importTable);
 		});
-		view.on(VerifyImportTableEventName, async (arg) => {
-			let importTable = <DatabaseTable>arg;
-			await this.executeAction(view, VerifyImportTableEventName, this.verifyImportTable, this._deployedModelService,
+		view.on(VerifyImportTableEventName, async (args) => {
+			let importTable = <DatabaseTable>args;
+			await this.executeAction(view, VerifyImportTableEventName, args, this.verifyImportTable, this._deployedModelService,
 				importTable);
 		});
-		view.on(SourceModelSelectedEventName, async (arg) => {
-			view.modelSourceType = <ModelSourceType>arg;
+		view.on(SourceModelSelectedEventName, async (args) => {
+			view.modelSourceType = <ModelSourceType>args;
 			await view.refresh();
 		});
-		view.on(SignInToAzureEventName, async () => {
-			await this.executeAction(view, SignInToAzureEventName, this.signInToAzure, this._amlService);
+		view.on(SignInToAzureEventName, async (args) => {
+			await this.executeAction(view, SignInToAzureEventName, args, this.signInToAzure, this._amlService);
 			await view.refresh();
 		});
 	}

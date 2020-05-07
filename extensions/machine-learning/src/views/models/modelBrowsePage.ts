@@ -46,7 +46,6 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 			editable: false
 		});
 		this.registeredModelsComponent.registerComponent(modelBuilder);
-		this.refresh();
 		this._form = this._formBuilder.component();
 		return this._form;
 	}
