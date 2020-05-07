@@ -530,11 +530,9 @@ function processReadonlyTextField(context: FieldContext): ReadOnlyFieldInputs {
 	return { label: label, text: text };
 }
 
-
-
 /**
  * creates a text component that has text that contains hyperlinks. The context.fieldInfo.label contains {0},{1} ...
- * placeholder where contents of link array object are placed with that portion interpolated as a clickable link.
+ * placeholder(s) where contents of link array object are placed with that portion interpolated as a clickable link.
  *
  * @param context - the FieldContext object using which the field gets created
  */
