@@ -11,7 +11,6 @@ import { DragMouseEvent } from 'vs/base/browser/mouseEvent';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { IDragAndDropData } from 'vs/base/browser/dnd';
-import { memoize } from 'vs/base/common/decorators';
 
 /**
  * Implements drag and drop for the server tree
