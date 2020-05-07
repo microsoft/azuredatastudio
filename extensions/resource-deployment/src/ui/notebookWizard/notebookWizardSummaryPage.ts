@@ -6,7 +6,7 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 
 import { SubFieldInfo, FieldType, FontWeight, LabelPosition, SectionInfo } from '../../interfaces';
-import { createSection, DefaultInputWidth, DefaultLabelWidth, DefaultRowAlignItems, DefaultRowWidth , DefaultRowHeight } from '../modelViewUtils';
+import { createSection, DefaultInputWidth, DefaultLabelWidth, DefaultRowAlignItems, DefaultRowWidth, DefaultRowHeight } from '../modelViewUtils';
 import { WizardPageBase } from '../wizardPageBase';
 import { NotebookWizard } from './notebookWizard';
 
@@ -39,7 +39,7 @@ export class NotebookWizardSummaryPage extends WizardPageBase<NotebookWizard> {
 		});
 		this.formItems = [];
 
-		const rowWidth = this.wizard.wizardInfo.rowWidth || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.rowWidth) || DefaultRowWidth
+		const rowWidth = this.wizard.wizardInfo.rowWidth || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.rowWidth) || DefaultRowWidth;
 		const rowHeight = this.wizard.wizardInfo.rowHeight || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.rowHeight) || DefaultRowHeight;
 		const rowAlignItems = this.wizard.wizardInfo.rowAlignItems || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.rowAlignItems) || DefaultRowAlignItems;
 		const labelWidth = this.wizard.wizardInfo.labelWidth || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.labelWidth) || DefaultLabelWidth;

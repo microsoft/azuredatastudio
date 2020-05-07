@@ -307,7 +307,7 @@ export function createFlexContainer(view: azdata.ModelView, items: azdata.Compon
 	if (alignItems) {
 		flexLayout.alignItems = alignItems;
 	}
-	const flexComponentProperties:azdata.ComponentProperties = {
+	const flexComponentProperties: azdata.ComponentProperties = {
 		CSSStyles: cssStyles || {}
 	};
 	return view.modelBuilder.flexContainer().withItems(items, itemsStyle).withLayout(flexLayout).withProperties<azdata.ComponentProperties>(flexComponentProperties).component();
