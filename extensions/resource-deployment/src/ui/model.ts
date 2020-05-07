@@ -33,6 +33,11 @@ export class Model {
 		return value === undefined ? defaultValue : value === 'true';
 	}
 
+	/**
+	 * returns python code statements for setting variables starting with {@see NoteBookEnvironmentVariablePrefix} as python variables.
+	 * The prefix {@see NoteBookEnvironmentVariablePrefix} is removed and variable name changed to all lowercase to arrive at python variable name.
+	 * The statements returned are escaped for use in cell of a python notebook.
+	 */
 	public getCodeCellContentForNotebook(): string[] {
 		const regex = new RegExp(`^${NoteBookEnvironmentVariablePrefix}`);
 		const statements: string[] = Object.keys(this.propValueObject)
@@ -40,10 +45,10 @@ export class Model {
 			.map(propertyName => {
 				const value = this.escapeForNotebookCodeCell(this.getStringValue(propertyName, ''));
 				const varName = propertyName.replace(regex, '').toLocaleLowerCase();
-				return `${varName} = '${value}'`;
+				return `${varName} = '${value}'${EOL}`;
 			});
-		statements.push(`print('Variables have been set successfully.')`);
-		return statements.map(line => line + EOL);
+		statements.push(`print('Variables have been set successfully.')${EOL}`);
+		return statements;
 	}
 
 	protected escapeForNotebookCodeCell(original?: string): string | undefined {
