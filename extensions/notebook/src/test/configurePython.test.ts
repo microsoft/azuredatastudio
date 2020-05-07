@@ -142,14 +142,6 @@ function createViewContext(): TestContext {
 		validate: undefined!,
 		focus: undefined!
 	};
-	let dropdown: azdata.DropDownComponent = Object.assign({}, componentBase, {
-		onValueChanged: onClick.event,
-		value: {
-			name: '',
-			displayName: ''
-		},
-		values: []
-	});
 	let text: azdata.TextComponent = Object.assign({}, componentBase, {
 		value: ''
 	});
@@ -186,6 +178,14 @@ function createViewContext(): TestContext {
 		withProperties: () => radioButtonBuilder,
 		withValidation: () => radioButtonBuilder
 	};
+	let dropdown: () => azdata.DropDownComponent = () => Object.assign({}, componentBase, {
+		onValueChanged: onClick.event,
+		value: {
+			name: '',
+			displayName: ''
+		},
+		values: []
+	});
 	let declarativeTable: () => azdata.DeclarativeTableComponent = () => Object.assign({}, componentBase, {
 		onDataChanged: undefined!,
 		data: [],
@@ -223,7 +223,10 @@ function createViewContext(): TestContext {
 		withLayout: () => formBuilder
 	});
 	let dropdownBuilder: azdata.ComponentBuilder<azdata.DropDownComponent> = {
-		component: () => dropdown,
+		component: () => {
+			let r = dropdown();
+			return r;
+		},
 		withProperties: () => dropdownBuilder,
 		withValidation: () => dropdownBuilder
 	};
