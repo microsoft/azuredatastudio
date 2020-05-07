@@ -29,7 +29,7 @@ export interface ConfigurePythonModel {
 export class ConfigurePythonWizard {
 	private readonly InstallButtonText = localize('configurePython.okButtonText', "Install");
 	public readonly InvalidLocationMsg = localize('configurePython.invalidLocationMsg', "The specified install location is invalid.");
-	private readonly PythonNotFoundMsg = localize('configurePython.pythonNotFoundMsg', "No python installation was found at the specified location.");
+	private readonly PythonNotFoundMsg = localize('configurePython.pythonNotFoundMsg', "No Python installation was found at the specified location.");
 
 	private _wizard: azdata.window.Wizard;
 	private model: ConfigurePythonModel;
