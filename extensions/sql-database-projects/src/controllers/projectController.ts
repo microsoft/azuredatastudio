@@ -112,6 +112,21 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 	}
 
+	public async build(treeNode: BaseProjectTreeItem) {
+		const project = this.getProjectContextFromTreeNode(treeNode);
+		await vscode.window.showErrorMessage(`Build not yet implemented: ${project.projectFilePath}`); // TODO
+	}
+
+	public async deploy(treeNode: BaseProjectTreeItem) {
+		const project = this.getProjectContextFromTreeNode(treeNode);
+		await vscode.window.showErrorMessage(`Deploy not yet implemented: ${project.projectFilePath}`); // TODO
+	}
+
+	public async import(treeNode: BaseProjectTreeItem) {
+		const project = this.getProjectContextFromTreeNode(treeNode);
+		await vscode.window.showErrorMessage(`Import not yet implemented: ${project.projectFilePath}`); // TODO
+	}
+
 	public async addFolderPrompt(treeNode: BaseProjectTreeItem) {
 		const project = this.getProjectContextFromTreeNode(treeNode);
 		const newFolderName = await this.promptForNewObjectName(new templates.ProjectScriptType(templates.folder, constants.folderFriendlyName, ''), project);
@@ -193,7 +208,7 @@ export class ProjectsController {
 			return (treeNode.root as ProjectRootTreeItem).project;
 		}
 		else {
-			throw new Error('"Add item" command invoked from unexpected location: ' + treeNode.uri.path);
+			throw new Error('Unable to establish project context.  Command invoked from unexpected location: ' + treeNode.uri.path);
 		}
 	}
 
