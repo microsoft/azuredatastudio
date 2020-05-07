@@ -12,6 +12,7 @@ import { JupyterServerInstallation } from '../jupyter/jupyterServerInstallation'
 import { ConfigurePathPage } from '../dialog/configurePython/configurePathPage';
 import * as should from 'should';
 import { PickPackagesPage } from '../dialog/configurePython/pickPackagesPage';
+import { python3DisplayName, allKernelsName } from '../common/constants';
 
 describe('Configure Python Wizard', function () {
 	let apiWrapper: ApiWrapper = new ApiWrapper();
@@ -86,7 +87,7 @@ describe('Configure Python Wizard', function () {
 
 	it('Pick Packages Page test', async () => {
 		let model = <ConfigurePythonModel>{
-			kernelName: 'Python 3',
+			kernelName: allKernelsName,
 			installation: testInstallation,
 			pythonLocation: '/not/a/real/path',
 			useExistingPython: true
@@ -97,11 +98,34 @@ describe('Configure Python Wizard', function () {
 
 		should(await pickPackagesPage.start()).be.true();
 
+		should((<any>pickPackagesPage).kernelLabel).not.be.undefined();
+		should((<any>pickPackagesPage).kernelDropdown).be.undefined();
+
 		// Last page, so onPageLeave should do nothing
 		should(await pickPackagesPage.onPageLeave()).be.true();
 
 		should(await pickPackagesPage.onPageEnter()).be.true();
-		should(model.packagesToInstall).be.deepEqual(JupyterServerInstallation.getRequiredPackagesForKernel(model.kernelName));
+		should(model.packagesToInstall).be.deepEqual(JupyterServerInstallation.getRequiredPackagesForKernel(allKernelsName));
+	});
+
+	it('Undefined kernel test', async () => {
+		let model = <ConfigurePythonModel>{
+			kernelName: undefined,
+			installation: testInstallation,
+			pythonLocation: '/not/a/real/path',
+			useExistingPython: true
+		};
+
+		let page = azdata.window.createWizardPage('Page 2');
+		let pickPackagesPage = new PickPackagesPage(apiWrapper, testWizard, page, model, viewContext.view);
+
+		should(await pickPackagesPage.start()).be.true();
+
+		should((<any>pickPackagesPage).kernelLabel).be.undefined();
+		should((<any>pickPackagesPage).kernelDropdown).not.be.undefined();
+
+		should(await pickPackagesPage.onPageEnter()).be.true();
+		should(model.packagesToInstall).be.deepEqual(JupyterServerInstallation.getRequiredPackagesForKernel(python3DisplayName));
 	});
 });
 
@@ -118,6 +142,14 @@ function createViewContext(): TestContext {
 		validate: undefined!,
 		focus: undefined!
 	};
+	let dropdown: azdata.DropDownComponent = Object.assign({}, componentBase, {
+		onValueChanged: onClick.event,
+		value: {
+			name: '',
+			displayName: ''
+		},
+		values: []
+	});
 	let text: azdata.TextComponent = Object.assign({}, componentBase, {
 		value: ''
 	});
@@ -154,14 +186,6 @@ function createViewContext(): TestContext {
 		withProperties: () => radioButtonBuilder,
 		withValidation: () => radioButtonBuilder
 	};
-	let dropdown: () => azdata.DropDownComponent = () => Object.assign({}, componentBase, {
-		onValueChanged: onClick.event,
-		value: {
-			name: '',
-			displayName: ''
-		},
-		values: []
-	});
 	let declarativeTable: () => azdata.DeclarativeTableComponent = () => Object.assign({}, componentBase, {
 		onDataChanged: undefined!,
 		data: [],
@@ -199,10 +223,7 @@ function createViewContext(): TestContext {
 		withLayout: () => formBuilder
 	});
 	let dropdownBuilder: azdata.ComponentBuilder<azdata.DropDownComponent> = {
-		component: () => {
-			let r = dropdown();
-			return r;
-		},
+		component: () => dropdown,
 		withProperties: () => dropdownBuilder,
 		withValidation: () => dropdownBuilder
 	};
