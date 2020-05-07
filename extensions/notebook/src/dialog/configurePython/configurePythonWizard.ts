@@ -181,18 +181,17 @@ export class ConfigurePythonWizard {
 	}
 
 	private async isFileValid(pythonLocation: string): Promise<boolean> {
-		let self = this;
 		try {
 			const stats = await fs.stat(pythonLocation);
 			if (stats.isFile()) {
-				self.showErrorMessage(self.InvalidLocationMsg);
+				this.showErrorMessage(this.InvalidLocationMsg);
 				return false;
 			}
 		} catch (err) {
 			// Ignore error if folder doesn't exist, since it will be
 			// created during installation
 			if (err.code !== 'ENOENT') {
-				self.showErrorMessage(err.message);
+				this.showErrorMessage(err.message);
 				return false;
 			}
 		}
