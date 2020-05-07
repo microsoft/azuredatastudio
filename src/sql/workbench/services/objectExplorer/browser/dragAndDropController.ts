@@ -59,7 +59,6 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	}
 
 
-	@memoize // Without memoizing this, we'd create thousands of ConnectionProfile objects
 	public canDragToConnectionProfileGroup(source: any, targetConnectionProfileGroup: ConnectionProfileGroup) {
 		let canDragOver: boolean = true;
 
