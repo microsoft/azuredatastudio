@@ -472,12 +472,12 @@ export interface ListRegisteredServersResult {
 
 // SqlAssessment interfaces  -----------------------------------------------------------------------
 
-export enum SqlAssessmentTargetType {
+export const enum SqlAssessmentTargetType {
 	Server = 1,
 	Database = 2
 }
 
-export enum SqlAssessmentResultItemKind {
+export const enum SqlAssessmentResultItemKind {
 	RealResult = 0,
 	Warning = 1,
 	Error = 2
