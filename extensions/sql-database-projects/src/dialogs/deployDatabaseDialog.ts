@@ -5,10 +5,10 @@
 
 import * as azdata from 'azdata';
 import * as constants from '../common/constants';
-import * as path from 'path';
 import { Project } from '../models/project';
 import { DataSource } from '../models/dataSources/dataSources';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
+import { ApiWrapper } from '../common/apiWrapper';
 
 interface DataSourceDropdownValue extends azdata.CategoryValue {
 	dataSource: DataSource;
@@ -28,10 +28,10 @@ export class DeployDatabaseDialog {
 	private dataSourcesRadioButton: azdata.RadioButtonComponent | undefined;
 	private formBuilder: azdata.FormBuilder | undefined;
 
-	private connection: azdata.connection.ConnectionProfile | undefined;
+	private connection: azdata.connection.Connection | undefined;
 	private connectionIsDataSource: boolean | undefined;
 
-	constructor(private project: Project) {
+	constructor(private apiWrapper: ApiWrapper, private project: Project) {
 		this.dialog = azdata.window.createModelViewDialog(constants.deployDialogName);
 		this.deployTab = azdata.window.createTab(constants.deployDialogName);
 	}
@@ -135,7 +135,7 @@ export class DeployDatabaseDialog {
 	}
 
 	public getDefaultDatabaseName(): string {
-		return path.basename(this.project.projectFolderPath);
+		return this.project.projectFileName;
 	}
 
 	public getDefaultScriptName(): string {
@@ -205,7 +205,7 @@ export class DeployDatabaseDialog {
 		let dataSourcesValues: DataSourceDropdownValue[] = [];
 
 		this.project.dataSources.forEach(dataSource => {
-			const dbName: string = (dataSource as SqlConnectionDataSource).getSetting('Initial Catalog');
+			const dbName: string = (dataSource as SqlConnectionDataSource).getSetting(constants.initialCatalogSetting);
 			const displayName: string = `${dataSource.name}`;
 			dataSourcesValues.push({
 				displayName: displayName,
@@ -245,7 +245,7 @@ export class DeployDatabaseDialog {
 		}).component();
 
 		editConnectionButton.onDidClick(async () => {
-			this.connection = <azdata.connection.ConnectionProfile><any>await azdata.connection.openConnectionDialog();
+			this.connection = await this.apiWrapper.openConnectionDialog();
 
 			// show connection name if there is one, otherwise show connection string
 			if (this.connection.options['connectionName']) {

@@ -31,7 +31,7 @@ describe('Deploy Database Dialog', () => {
 
 		const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
 		const project = new Project(projFilePath);
-		const deployDatabaseDialog = new DeployDatabaseDialog(project);
+		const deployDatabaseDialog = new DeployDatabaseDialog(testContext.apiWrapper.object, project);
 		deployDatabaseDialog.openDialog();
 		should.notEqual(deployDatabaseDialog.deployTab, undefined);
 	});
@@ -44,7 +44,7 @@ describe('Deploy Database Dialog', () => {
 		const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
 		const project = new Project(projFilePath);
 
-		const deployDatabaseDialog = new DeployDatabaseDialog(project);
+		const deployDatabaseDialog = new DeployDatabaseDialog(testContext.apiWrapper.object, project);
 		should.equal(deployDatabaseDialog.getDefaultDatabaseName(), projFolder);
 	});
 
@@ -56,7 +56,7 @@ describe('Deploy Database Dialog', () => {
 		const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
 		const project = new Project(projFilePath);
 
-		const deployDatabaseDialog = new DeployDatabaseDialog(project);
+		const deployDatabaseDialog = new DeployDatabaseDialog(testContext.apiWrapper.object, project);
 		should.equal(deployDatabaseDialog.getDefaultScriptName(), `${projFolder}.sql`);
 	});
 });

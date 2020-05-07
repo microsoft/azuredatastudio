@@ -121,7 +121,7 @@ export class ProjectsController {
 
 	public deploy(treeNode: BaseProjectTreeItem): void {
 		const project = this.getProjectContextFromTreeNode(treeNode);
-		const deployDatabaseDialog = new DeployDatabaseDialog(project);
+		const deployDatabaseDialog = new DeployDatabaseDialog(this.apiWrapper, project);
 		deployDatabaseDialog.openDialog();
 	}
 
