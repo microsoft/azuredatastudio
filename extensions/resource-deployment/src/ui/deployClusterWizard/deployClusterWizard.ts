@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { SummaryPage } from './pages/summaryPage';
 import { WizardBase } from '../wizardBase';
 import * as nls from 'vscode-nls';
-import { WizardInfo, BdcDeploymentType } from '../../interfaces';
+import { BdcWizardInfo, BdcDeploymentType } from '../../interfaces';
 import { WizardPageBase } from '../wizardPageBase';
 import { AzureSettingsPage } from './pages/azureSettingsPage';
 import { ClusterSettingsPage } from './pages/clusterSettingsPage';
@@ -49,7 +49,7 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 		this._saveConfigButton.hidden = true;
 	}
 
-	constructor(private wizardInfo: WizardInfo, private _kubeService: IKubeService, private _azdataService: IAzdataService, private _notebookService: INotebookService) {
+	constructor(private wizardInfo: BdcWizardInfo, private _kubeService: IKubeService, private _azdataService: IAzdataService, private _notebookService: INotebookService) {
 		super(DeployClusterWizard.getTitle(wizardInfo.type), new DeployClusterWizardModel(wizardInfo.type));
 		this._saveConfigButton = azdata.window.createButton(localize('deployCluster.SaveConfigFiles', "Save config files"), 'left');
 		this._saveConfigButton.hidden = true;
@@ -138,9 +138,9 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 
 	private scriptToNotebook(): void {
 		this.setEnvironmentVariables(process.env);
-		const variableeValueStatements = this.model.getCodeCellContentForNotebook();
+		const variableValueStatements = this.model.getCodeCellContentForNotebook();
 		const insertionPosition = 5;
-		this.notebookService.insertCellAndLaunchNotebook(this.wizardInfo.notebook, variableeValueStatements, insertionPosition).catch((error: Error) => {
+		this.notebookService.insertCellAndLaunchNotebook(this.wizardInfo.notebook, variableValueStatements, insertionPosition).catch((error: Error) => {
 			vscode.window.showErrorMessage(getErrorMessage(error));
 		});
 	}

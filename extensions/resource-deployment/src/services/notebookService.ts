@@ -66,7 +66,6 @@ export class NotebookService implements INotebookService {
 	public async insertCellAndLaunchNotebook(notebook: string, cellStatements: string[], insertionPosition: number = 0): Promise<void> {
 		const notebook_1 = await this.launchNotebook(notebook);
 		notebook_1.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
-			// 5 is the position after the 'Set variables' cell in the deployment notebooks
 			editBuilder.insertCell({
 				cell_type: 'code',
 				source: cellStatements

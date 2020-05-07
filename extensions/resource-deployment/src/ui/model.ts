@@ -34,11 +34,11 @@ export class Model {
 	}
 
 	public getCodeCellContentForNotebook(): string[] {
+		const regex = new RegExp(`^${NoteBookEnvironmentVariablePrefix}`);
 		const statements: string[] = Object.keys(this.propValueObject)
 			.filter(propertyName => propertyName.startsWith(NoteBookEnvironmentVariablePrefix))
 			.map(propertyName => {
 				const value = this.escapeForNotebookCodeCell(this.getStringValue(propertyName, ''));
-				const regex = new RegExp(`^${NoteBookEnvironmentVariablePrefix}`);
 				const varName = propertyName.replace(regex, '').toLocaleLowerCase();
 				return `${varName} = '${value}'`;
 			});

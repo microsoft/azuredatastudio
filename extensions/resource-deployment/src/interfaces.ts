@@ -42,7 +42,7 @@ export interface DialogDeploymentProvider extends DeploymentProviderBase {
 }
 
 export interface BdcWizardDeploymentProvider extends DeploymentProviderBase {
-	bdcWizard: WizardInfo;
+	bdcWizard: BdcWizardInfo;
 }
 
 export interface NotebookWizardDeploymentProvider extends DeploymentProviderBase {
@@ -100,24 +100,26 @@ export interface DeploymentProviderBase {
 
 export type DeploymentProvider = DialogDeploymentProvider | BdcWizardDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider;
 
-export interface WizardInfo {
+export interface BdcWizardInfo {
 	notebook: string | NotebookInfo;
 	type: BdcDeploymentType;
 }
 
 export interface NotebookWizardInfo extends WizardInfoBase {
 	notebook: string | NotebookInfo;
+	runNotebook?: boolean;
+	codeCellInsertionPosition?: number;
+	pages: NotebookWizardPageInfo[];
+	summaryPage: NotebookWizardPageInfo;
 }
 
 export interface WizardInfoBase extends InheritableAttributes {
 	taskName?: string;
 	type?: DeploymentType;
-	runNotebook?: boolean;
-	codeCellInssertionPosition?: number;
 	actionText?: string;
 	title: string;
-	pages: NotebookWizardPageInfo[];
-	summaryPage: NotebookWizardPageInfo;
+	pages: PageInfoBase[];
+	summaryPage: PageInfoBase;
 	generateSummaryPage: boolean;
 }
 

@@ -115,7 +115,7 @@ export function createTextInput(view: azdata.ModelView, inputInfo: { defaultValu
 }
 
 export function createLabel(view: azdata.ModelView, info: { text: string, description?: string, required?: boolean, width?: string, fontStyle?: FontStyle, fontWeight?: FontWeight, links?: azdata.LinkArea[], color?: string, cssStyles?: CSSStyles }): azdata.TextComponent {
-	let cssStyles: CSSStyles = { 'font-style': info.fontStyle || 'normal', 'font-weight': info.fontWeight || 'normal'};
+	let cssStyles: CSSStyles = { 'font-style': info.fontStyle || 'normal', 'font-weight': info.fontWeight || 'normal' };
 	if (info.cssStyles !== undefined) {
 		cssStyles = Object.assign(info.cssStyles, cssStyles);
 	}
@@ -242,8 +242,6 @@ export function createSection(context: SectionContext): azdata.GroupContainer {
 	context.sectionInfo.rowAlignItems = context.sectionInfo.rowAlignItems || DefaultRowAlignItems;
 	context.sectionInfo.rowWidth = context.sectionInfo.rowWidth || DefaultRowWidth;
 	context.sectionInfo.rowHeight = context.sectionInfo.rowHeight || DefaultRowHeight;
-	context.sectionInfo.inputWidth = context.sectionInfo.inputWidth || DefaultInputWidth;
-	context.sectionInfo.labelWidth = context.sectionInfo.labelWidth || DefaultLabelWidth;
 	if (context.sectionInfo.fields) {
 		processFields(context.sectionInfo.fields, components, context);
 	} else if (context.sectionInfo.rows) {
@@ -309,15 +307,14 @@ export function createFlexContainer(view: azdata.ModelView, items: azdata.Compon
 	if (alignItems) {
 		flexLayout.alignItems = alignItems;
 	}
-	let flexComponent = view.modelBuilder.flexContainer().withItems(items, itemsStyle).withLayout(flexLayout).component();
-	if ( cssStyles ) {
-		flexComponent.CSSStyles = Object.assign(flexComponent.CSSStyles || {}, cssStyles);
-	}
-	return flexComponent;
+	const flexComponentProperties:azdata.ComponentProperties = {
+		CSSStyles: cssStyles || {}
+	};
+	return view.modelBuilder.flexContainer().withItems(items, itemsStyle).withLayout(flexLayout).withProperties<azdata.ComponentProperties>(flexComponentProperties).component();
 }
 
 export function createGroupContainer(view: azdata.ModelView, items: azdata.Component[], layout: azdata.GroupLayout): azdata.GroupContainer {
-	return view.modelBuilder.groupContainer().withItems(items).	withLayout(layout).component();
+	return view.modelBuilder.groupContainer().withItems(items).withLayout(layout).component();
 }
 
 function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata.Component[], label: azdata.Component, input: azdata.Component | undefined, fieldInfo: FieldInfo, additionalComponents?: azdata.Component[]) {
@@ -328,7 +325,7 @@ function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata
 	if (additionalComponents && additionalComponents.length > 0) {
 		inputs.push(...additionalComponents);
 	}
-	if (inputs.length > 0 && fieldInfo.labelPosition && fieldInfo.labelPosition === LabelPosition.Left) {
+	if (fieldInfo.labelPosition === LabelPosition.Left) {
 		const row = createFlexContainer(view, inputs, true, fieldInfo.rowWidth, fieldInfo.rowHeight, fieldInfo.rowAlignItems);
 		components.push(row);
 	} else {
@@ -461,7 +458,6 @@ function processTextField(context: FieldContext): void {
 			return { valid: inputIsValid, message: context.fieldInfo.textValidationDescription! };
 		};
 		context.onNewValidatorCreated(inputValidator);
-
 	}
 }
 
