@@ -97,20 +97,20 @@ export class ConfigurePathPage extends BasePage {
 				if (pythonPaths && pythonPaths.length > 0) {
 					dropdownValues = pythonPaths.map(path => {
 						return {
-							displayName: `${path.installDir} (Python ${path.version})`,
+							displayName: localize('configurePythyon.dropdownPathLabel', "{0} (Python {1})", path.installDir, path.version),
 							name: path.installDir
 						};
 					});
 				} else {
 					dropdownValues = [{
-						displayName: 'No supported Python versions found.',
+						displayName: localize('configurePythyon.noVersionsFound', "No supported Python versions found."),
 						name: ''
 					}];
 				}
 			} else {
 				let defaultPath = JupyterServerInstallation.DefaultPythonLocation;
 				dropdownValues = [{
-					displayName: `${defaultPath} (Default)`,
+					displayName: localize('configurePythyon.defaultPathLabel', "{0} (Default)", defaultPath),
 					name: defaultPath
 				}];
 			}
@@ -170,7 +170,7 @@ export class ConfigurePathPage extends BasePage {
 			let existingValues = <azdata.CategoryValue[]>this.pythonLocationDropdown.values;
 			let filePath = fileUris[0].fsPath;
 			let newValue = {
-				displayName: `${filePath} (Custom)`,
+				displayName: localize('configurePythyon.customPathLabel', "{0} (Custom)", filePath),
 				name: filePath
 			};
 
