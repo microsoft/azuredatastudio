@@ -345,9 +345,9 @@ export class AccountDialog extends Modal {
 
 		const insertIndex = this._splitView.length;
 		providerView.render();
+
 		// Append the list view to the split view
 		this._splitView.addView(providerView, Sizing.Distribute, insertIndex);
-
 		providerView.index = insertIndex;
 
 		this._splitView.layout(DOM.getContentHeight(this._container));

@@ -445,15 +445,12 @@ export class FilesRenderer implements ICompressibleTreeRenderer<ExplorerItem, Fu
 			DOM.addStandardDisposableListener(inputBox.inputElement, DOM.EventType.KEY_UP, (e: IKeyboardEvent) => {
 				showInputBoxNotification();
 			}),
+			DOM.addDisposableListener(inputBox.inputElement, DOM.EventType.BLUR, () => {
+				done(inputBox.isInputValid(), true);
+			}),
 			label,
 			styler
 		];
-		setTimeout(() => {
-			// Do not react immediatly on blur events due to tree refresh potentially causing an early blur #96566
-			toDispose.push(DOM.addDisposableListener(inputBox.inputElement, DOM.EventType.BLUR, () => {
-				done(inputBox.isInputValid(), true);
-			}));
-		}, 100);
 
 		return toDisposable(() => {
 			done(false, false);
@@ -602,7 +599,7 @@ export class FilesFilter implements ITreeFilter<ExplorerItem, FuzzyScore> {
 		if ((cached && cached.parsed(path.relative(stat.root.resource.path, stat.resource.path), stat.name, name => !!(stat.parent && stat.parent.getChild(name)))) || stat.parent?.isExcluded) {
 			stat.isExcluded = true;
 			const editors = this.editorService.visibleEditors;
-			const editor = editors.filter(e => e.resource && isEqualOrParent(e.resource, stat.resource)).pop();
+			const editor = editors.find(e => e.resource && isEqualOrParent(e.resource, stat.resource));
 			if (editor) {
 				this.editorsAffectingFilter.add(editor);
 				return true; // Show all opened files and their parents
