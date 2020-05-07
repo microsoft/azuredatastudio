@@ -11,6 +11,7 @@ import { DragMouseEvent } from 'vs/base/browser/mouseEvent';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { IDragAndDropData } from 'vs/base/browser/dnd';
+import { memoize } from 'vs/base/common/decorators';
 
 /**
  * Implements drag and drop for the server tree
@@ -57,28 +58,37 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		return;
 	}
 
+
+	@memoize // Without memoizing this, we'd create thousands of ConnectionProfile objects
+	public canDragToConnectionProfileGroup(source: any, targetConnectionProfileGroup: ConnectionProfileGroup) {
+		let canDragOver: boolean = true;
+
+		if (source instanceof ConnectionProfile) {
+			if (!this._connectionManagementService.canChangeConnectionConfig(source, targetConnectionProfileGroup.id)) {
+				canDragOver = false;
+			}
+		} else if (source instanceof ConnectionProfileGroup) {
+			// Dropping a group to itself or its descendants nodes is not allowed
+			// to avoid creating a circular structure.
+			canDragOver = source.id !== targetConnectionProfileGroup.id && !source.isAncestorOf(targetConnectionProfileGroup);
+		}
+
+		return canDragOver;
+	}
+
 	/**
 	 * Returns a DragOverReaction indicating whether sources can be
 	 * dropped into target or some parent of the target.
 	 * Returns DRAG_OVER_ACCEPT_BUBBLE_DOWN when element is a connection group or connection
 	 */
 	public onDragOver(tree: ITree, data: IDragAndDropData, targetElement: any, originalEvent: DragMouseEvent): IDragOverReaction {
-
 		let canDragOver: boolean = true;
+
 		if (targetElement instanceof ConnectionProfile || targetElement instanceof ConnectionProfileGroup) {
 			let targetConnectionProfileGroup = this.getTargetGroup(targetElement);
 			// Verify if the connection can be moved to the target group
 			const source = data.getData()[0];
-			if (source instanceof ConnectionProfile) {
-				if (!this._connectionManagementService.canChangeConnectionConfig(source, targetConnectionProfileGroup.id)) {
-					canDragOver = false;
-				}
-			} else if (source instanceof ConnectionProfileGroup) {
-				// Dropping a group to itself or its descendants nodes is not allowed
-				// to avoid creating a circular structure.
-				canDragOver = source.id !== targetElement.id && !source.isAncestorOf(targetElement);
-			}
-
+			canDragOver = this.canDragToConnectionProfileGroup(source, targetConnectionProfileGroup);
 		} else {
 			canDragOver = false;
 		}
