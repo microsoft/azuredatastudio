@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import { ApiWrapper } from '../common/apiWrapper';
@@ -13,6 +12,7 @@ import { ConfigurePathPage } from '../dialog/configurePython/configurePathPage';
 import * as should from 'should';
 import { PickPackagesPage } from '../dialog/configurePython/pickPackagesPage';
 import { python3DisplayName, allKernelsName } from '../common/constants';
+import { TestContext, createViewContext } from './common';
 
 describe('Configure Python Wizard', function () {
 	let apiWrapper: ApiWrapper = new ApiWrapper();
@@ -78,7 +78,7 @@ describe('Configure Python Wizard', function () {
 		should(await configurePathPage.initialize()).be.true();
 
 		// First page, so onPageEnter should do nothing
-		should(await configurePathPage.onPageEnter()).be.true();
+		await should(configurePathPage.onPageEnter()).be.resolved();
 
 		should(await configurePathPage.onPageLeave()).be.true();
 		should(model.useExistingPython).be.true();
@@ -104,7 +104,7 @@ describe('Configure Python Wizard', function () {
 		// Last page, so onPageLeave should do nothing
 		should(await pickPackagesPage.onPageLeave()).be.true();
 
-		should(await pickPackagesPage.onPageEnter()).be.true();
+		await should(pickPackagesPage.onPageEnter()).be.resolved();
 		should(model.packagesToInstall).be.deepEqual(JupyterServerInstallation.getRequiredPackagesForKernel(allKernelsName));
 	});
 
@@ -124,139 +124,7 @@ describe('Configure Python Wizard', function () {
 		should((<any>pickPackagesPage).kernelLabel).be.undefined();
 		should((<any>pickPackagesPage).kernelDropdown).not.be.undefined();
 
-		should(await pickPackagesPage.onPageEnter()).be.true();
+		await should(pickPackagesPage.onPageEnter()).be.resolved();
 		should(model.packagesToInstall).be.deepEqual(JupyterServerInstallation.getRequiredPackagesForKernel(python3DisplayName));
 	});
 });
-
-function createViewContext(): TestContext {
-	let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
-
-	let componentBase: azdata.Component = {
-		id: '',
-		updateProperties: () => Promise.resolve(),
-		updateProperty: () => Promise.resolve(),
-		updateCssStyles: undefined!,
-		onValidityChanged: undefined!,
-		valid: true,
-		validate: undefined!,
-		focus: undefined!
-	};
-	let text: azdata.TextComponent = Object.assign({}, componentBase, {
-		value: ''
-	});
-	let button: azdata.ButtonComponent = Object.assign({}, componentBase, {
-		onDidClick: onClick.event
-	});
-	let radioButton: azdata.RadioButtonComponent = Object.assign({}, componentBase, {
-		onDidClick: onClick.event
-	});
-	const components: azdata.Component[] = [];
-	let container = {
-		clearItems: () => { },
-		addItems: () => { },
-		addItem: () => { },
-		removeItem: () => true,
-		insertItem: () => { },
-		items: components,
-		setLayout: () => { }
-	};
-	let form: azdata.FormContainer = Object.assign({}, componentBase, container, {
-	});
-	let textBuilder: azdata.ComponentBuilder<azdata.TextComponent> = {
-		component: () => text,
-		withProperties: () => textBuilder,
-		withValidation: () => textBuilder
-	};
-	let buttonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent> = {
-		component: () => button,
-		withProperties: () => buttonBuilder,
-		withValidation: () => buttonBuilder
-	};
-	let radioButtonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent> = {
-		component: () => radioButton,
-		withProperties: () => radioButtonBuilder,
-		withValidation: () => radioButtonBuilder
-	};
-	let dropdown: () => azdata.DropDownComponent = () => Object.assign({}, componentBase, {
-		onValueChanged: onClick.event,
-		value: {
-			name: '',
-			displayName: ''
-		},
-		values: []
-	});
-	let declarativeTable: () => azdata.DeclarativeTableComponent = () => Object.assign({}, componentBase, {
-		onDataChanged: undefined!,
-		data: [],
-		columns: []
-	});
-
-	let loadingComponent: () => azdata.LoadingComponent = () => Object.assign({}, componentBase, {
-		loading: false,
-		component: undefined!
-	});
-
-	let declarativeTableBuilder: azdata.ComponentBuilder<azdata.DeclarativeTableComponent> = {
-		component: () => declarativeTable(),
-		withProperties: () => declarativeTableBuilder,
-		withValidation: () => declarativeTableBuilder
-	};
-
-	let loadingBuilder: azdata.LoadingComponentBuilder = {
-		component: () => loadingComponent(),
-		withProperties: () => loadingBuilder,
-		withValidation: () => loadingBuilder,
-		withItem: () => loadingBuilder
-	};
-
-	let formBuilder: azdata.FormBuilder = Object.assign({}, {
-		component: () => form,
-		addFormItem: () => { },
-		insertFormItem: () => { },
-		removeFormItem: () => true,
-		addFormItems: () => { },
-		withFormItems: () => formBuilder,
-		withProperties: () => formBuilder,
-		withValidation: () => formBuilder,
-		withItems: () => formBuilder,
-		withLayout: () => formBuilder
-	});
-	let dropdownBuilder: azdata.ComponentBuilder<azdata.DropDownComponent> = {
-		component: () => {
-			let r = dropdown();
-			return r;
-		},
-		withProperties: () => dropdownBuilder,
-		withValidation: () => dropdownBuilder
-	};
-
-	let view: azdata.ModelView = {
-		onClosed: undefined!,
-		connection: undefined!,
-		serverInfo: undefined!,
-		valid: true,
-		onValidityChanged: undefined!,
-		validate: undefined!,
-		initializeModel: () => { return Promise.resolve(); },
-		modelBuilder: <azdata.ModelBuilder>{
-			radioButton: () => radioButtonBuilder,
-			text: () => textBuilder,
-			button: () => buttonBuilder,
-			dropDown: () => dropdownBuilder,
-			declarativeTable: () => declarativeTableBuilder,
-			formContainer: () => formBuilder,
-			loadingComponent: () => loadingBuilder
-		}
-	};
-
-	return {
-		view: view,
-		onClick: onClick,
-	};
-}
-
-interface TestContext {
-	view: azdata.ModelView;
-	onClick: vscode.EventEmitter<any>;
-}
