@@ -11,10 +11,10 @@ import { promises as fs } from 'fs';
 import should = require('should');
 import { AssertionError } from 'assert';
 
-export function shouldThrowSpecificError(block: Function, expectedMessage: string) {
+export async function shouldThrowSpecificError(block: Function, expectedMessage: string, details?: string) {
 	let succeeded = false;
 	try {
-		block();
+		await block();
 		succeeded = true;
 	}
 	catch (err) {
@@ -22,7 +22,7 @@ export function shouldThrowSpecificError(block: Function, expectedMessage: strin
 	}
 
 	if (succeeded) {
-		throw new AssertionError({ message: 'Operation succeeded, but expected failure with exception: "' + expectedMessage + '"' });
+		throw new AssertionError({ message: `Operation succeeded, but expected failure with exception: "${expectedMessage}".${details ? '  ' + details : ''}` });
 	}
 }
 

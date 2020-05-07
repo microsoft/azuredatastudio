@@ -3,13 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import QueryRunner, { IQueryMessage } from 'sql/workbench/services/query/common/queryRunner';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
+import { IQueryMessage, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
 import {
-	ISelectionData,
-	ResultSetSubset,
 	EditUpdateCellResult,
 	EditSessionReadyParams,
 	EditSubsetResult,
@@ -19,6 +18,7 @@ import {
 	queryeditor
 } from 'azdata';
 import { QueryInfo } from 'sql/workbench/services/query/common/queryModelService';
+import { IRange } from 'vs/editor/common/core/range';
 
 export const SERVICE_ID = 'queryModelService';
 
@@ -31,7 +31,7 @@ export interface IQueryPlanInfo {
 }
 
 export interface IQueryInfo {
-	selection: ISelectionData[];
+	range: IRange[];
 	messages: IQueryMessage[];
 }
 
@@ -51,8 +51,8 @@ export interface IQueryModelService {
 	getQueryRunner(uri: string): QueryRunner | undefined;
 
 	getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Promise<ResultSetSubset | undefined>;
-	runQuery(uri: string, selection: ISelectionData | undefined, runOptions?: ExecutionPlanOptions): void;
-	runQueryStatement(uri: string, selection: ISelectionData | undefined): void;
+	runQuery(uri: string, range: IRange | undefined, runOptions?: ExecutionPlanOptions): void;
+	runQueryStatement(uri: string, range: IRange | undefined): void;
 	runQueryString(uri: string, selection: string | undefined): void;
 	cancelQuery(input: QueryRunner | string): void;
 	disposeQuery(uri: string): void;

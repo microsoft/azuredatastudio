@@ -226,6 +226,26 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
+	 * Opens the edit connection dialog
+	 * @param model the existing connection profile to edit on.
+	 */
+	public async showEditConnectionDialog(model: interfaces.IConnectionProfile): Promise<void> {
+		if (!model) {
+			throw new Error('Connection Profile is undefined');
+		}
+		let params = {
+			connectionType: ConnectionType.default,
+			isEditConnection: true
+		};
+
+		try {
+			return await this._connectionDialogService.showDialog(this, params, model);
+		} catch (dialogError) {
+			this._logService.warn('failed to open the connection dialog. error: ' + dialogError);
+		}
+	}
+
+	/**
 	 * Load the password for the profile
 	 * @param connectionProfile Connection Profile
 	 */
@@ -420,6 +440,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		connection.options['groupId'] = connection.groupId;
 		connection.options['databaseDisplayName'] = connection.databaseName;
 
+		let isEdit = options?.params?.isEditConnection ?? false;
+
 		if (!uri) {
 			uri = Utils.generateUri(connection);
 		}
@@ -459,8 +481,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				if (callbacks.onConnectSuccess) {
 					callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
 				}
-				if (options.saveTheConnection) {
-					await this.saveToSettings(uri, connection).then(value => {
+				if (options.saveTheConnection || isEdit) {
+					let matcher: interfaces.ProfileMatcher;
+					if (isEdit) {
+						matcher = (a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile) => {
+							return a.id === b.id;
+						};
+					}
+
+					await this.saveToSettings(uri, connection, matcher).then(value => {
 						this._onAddConnectionProfile.fire(connection);
 						this.doActionsAfterConnectionComplete(value, options);
 					});
@@ -529,7 +558,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions,) {
+	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {
 		let connectionManagementInfo = this._connectionStatusManager.findConnection(uri);
 		if (options.showDashboard) {
 			this.showDashboardForConnectionManagementInfo(connectionManagementInfo.connectionProfile);
@@ -873,11 +902,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private saveToSettings(id: string, connection: interfaces.IConnectionProfile): Promise<string> {
-		return this._connectionStore.saveProfile(connection).then(savedProfile => {
-			let newId = this._connectionStatusManager.updateConnectionProfile(savedProfile, id);
-			return newId;
-		});
+
+	private async saveToSettings(id: string, connection: interfaces.IConnectionProfile, matcher?: interfaces.ProfileMatcher): Promise<string> {
+		const savedProfile = await this._connectionStore.saveProfile(connection, undefined, matcher);
+		return this._connectionStatusManager.updateConnectionProfile(savedProfile, id);
 	}
 
 	/**

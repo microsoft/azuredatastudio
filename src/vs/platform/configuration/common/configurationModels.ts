@@ -231,7 +231,7 @@ export class ConfigurationModelParser {
 	}
 
 	public parseContent(content: string | null | undefined): void {
-		if (content) {
+		if (!types.isUndefinedOrNull(content)) {
 			const raw = this.doParseContent(content);
 			this.parseRaw(raw);
 		}
@@ -677,7 +677,7 @@ export class Configuration {
 				overrides: this._workspaceConfiguration.overrides,
 				keys: this._workspaceConfiguration.keys
 			},
-			folders: this._folderConfigurations.keys().reduce<[UriComponents, IConfigurationModel][]>((result, folder) => {
+			folders: [...this._folderConfigurations.keys()].reduce<[UriComponents, IConfigurationModel][]>((result, folder) => {
 				const { contents, overrides, keys } = this._folderConfigurations.get(folder)!;
 				result.push([folder, { contents, overrides, keys }]);
 				return result;
