@@ -586,7 +586,7 @@ suite('ConnectionConfig', () => {
 			providerName: 'MSSQL',
 			options: {},
 			saveProfile: true,
-			id: 'server3-2',
+			id: 'server3',
 			connectionName: undefined!
 		};
 		let existingProfile = ConnectionProfile.convertToProfileStore(capabilitiesService.object, {
