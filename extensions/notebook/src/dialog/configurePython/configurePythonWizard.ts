@@ -21,7 +21,6 @@ export interface ConfigurePythonModel {
 	kernelName: string;
 	pythonLocation: string;
 	useExistingPython: boolean;
-	usingCustomPath: boolean;
 	pythonPathsPromise: Promise<PythonPathInfo[]>;
 	packagesToInstall: PythonPkgDetails[];
 	installation: JupyterServerInstallation;
@@ -37,12 +36,10 @@ export class ConfigurePythonWizard {
 
 	private _setupComplete: Deferred<void>;
 	private pythonPathsPromise: Promise<PythonPathInfo[]>;
-	private usingCustomPath: boolean;
 
 	constructor(private apiWrapper: ApiWrapper, private jupyterInstallation: JupyterServerInstallation) {
 		this._setupComplete = new Deferred<void>();
 		this.pythonPathsPromise = (new PythonPathLookup()).getSuggestions();
-		this.usingCustomPath = false;
 	}
 
 	public get wizard(): azdata.window.Wizard {
@@ -56,7 +53,6 @@ export class ConfigurePythonWizard {
 	public async start(kernelName?: string, rejectOnCancel?: boolean, ...args: any[]): Promise<void> {
 		this.model = <ConfigurePythonModel>{
 			kernelName: kernelName,
-			usingCustomPath: this.usingCustomPath,
 			pythonPathsPromise: this.pythonPathsPromise,
 			installation: this.jupyterInstallation,
 			useExistingPython: JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper)

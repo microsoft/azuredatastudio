@@ -24,6 +24,8 @@ export class ConfigurePathPage extends BasePage {
 	private newInstallButton: azdata.RadioButtonComponent;
 	private existingInstallButton: azdata.RadioButtonComponent;
 
+	private usingCustomPath: boolean = false;
+
 	public async start(): Promise<boolean> {
 		this.pythonLocationDropdown = this.view.modelBuilder.dropDown()
 			.withProperties<azdata.DropDownProperties>({
@@ -74,7 +76,7 @@ export class ConfigurePathPage extends BasePage {
 	}
 
 	public async onPageLeave(): Promise<boolean> {
-		let pythonLocation = (this.pythonLocationDropdown.value as azdata.CategoryValue).name;
+		let pythonLocation = utils.getDropdownValue(this.pythonLocationDropdown);
 		if (!pythonLocation || pythonLocation.length === 0) {
 			this.instance.showErrorMessage(this.instance.InvalidLocationMsg);
 			return false;
@@ -114,7 +116,7 @@ export class ConfigurePathPage extends BasePage {
 				}];
 			}
 
-			this.model.usingCustomPath = false;
+			this.usingCustomPath = false;
 			await this.pythonLocationDropdown.updateProperties({
 				value: dropdownValues[0],
 				values: dropdownValues
@@ -173,11 +175,11 @@ export class ConfigurePathPage extends BasePage {
 				name: filePath
 			};
 
-			if (this.model.usingCustomPath) {
+			if (this.usingCustomPath) {
 				existingValues[0] = newValue;
 			} else {
 				existingValues.unshift(newValue);
-				this.model.usingCustomPath = true;
+				this.usingCustomPath = true;
 			}
 
 			await this.pythonLocationDropdown.updateProperties({

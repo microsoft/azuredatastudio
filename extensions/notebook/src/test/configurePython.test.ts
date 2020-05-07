@@ -65,7 +65,6 @@ describe('Configure Python Wizard', function () {
 		let testPythonLocation = '/not/a/real/path';
 		let model = <ConfigurePythonModel>{
 			useExistingPython: true,
-			usingCustomPath: false,
 			pythonPathsPromise: Promise.resolve([{
 				installDir: testPythonLocation,
 				version: '4000'
