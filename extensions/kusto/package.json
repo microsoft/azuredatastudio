@@ -164,8 +164,8 @@
         {
           "id": "kusto:cloud",
           "path": {
-            "light": "resources/light/azureDB.svg",
-            "dark": "resources/dark/azureDB_inverse.svg"
+            "light": "resources/light/azureDE.svg",
+            "dark": "resources/dark/azureDE_inverse.svg"
           }
         },
         {
