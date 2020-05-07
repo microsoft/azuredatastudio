@@ -55,9 +55,10 @@ export const requiredPackagesNotInstalled = localize('mls.requiredPackagesNotIns
 export const confirmEnableExternalScripts = localize('mls.confirmEnableExternalScripts', "External script is required for package management. Are you sure you want to enable that.");
 export const enableExternalScriptsError = localize('mls.enableExternalScriptsError', "Failed to enable External script.");
 export const externalScriptsIsRequiredError = localize('mls.externalScriptsIsRequiredError', "External script configuration is required for this action.");
-export function confirmInstallPythonPackages(packages: string): string {
+export const confirmInstallPythonPackages = localize('mls.confirmInstallPythonPackages', "Are you sure you want to install required packages?");
+export function confirmInstallPythonPackagesDetails(packages: string): string {
 	return localize('mls.installDependencies.confirmInstallPythonPackages'
-		, "The following Python packages are required to install: {0}. Are you sure you want to install?", packages);
+		, "The following Python packages are required to install: {0}", packages);
 }
 export function confirmDeleteModel(modelName: string): string {
 	return localize('models.confirmDeleteModel'

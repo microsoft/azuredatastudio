@@ -106,6 +106,7 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 			}
 		});
 		this._sourceType = this._options[0];
+		this.modelSourceType = this._sourceType;
 
 		this._flexContainer = modelBuilder.flexContainer()
 			.withLayout({

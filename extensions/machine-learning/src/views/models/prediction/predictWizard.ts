@@ -94,7 +94,7 @@ export class PredictWizard extends ModelViewBase {
 	private refreshButtons(loading: boolean): void {
 		if (this.wizardView && this.wizardView.wizard) {
 			this.wizardView.wizard.cancelButton.enabled = !loading;
-			this.wizardView.wizard.cancelButton.enabled = !loading;
+			this.wizardView.wizard.backButton.enabled = !loading;
 		}
 	}
 

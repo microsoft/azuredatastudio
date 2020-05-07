@@ -39,14 +39,19 @@ export class PredictService {
 	 * Returns true if server supports ONNX
 	 */
 	public async serverSupportOnnxModel(): Promise<boolean> {
-		let connection = await this.getCurrentConnection();
-		if (connection) {
-			const serverInfo = await this._apiWrapper.getServerInfo(connection.connectionId);
-			// Right now only SQL Database Edge support Onnx
-			//
-			return serverInfo && serverInfo.engineEditionId === 9;
+		try {
+			let connection = await this.getCurrentConnection();
+			if (connection) {
+				const serverInfo = await this._apiWrapper.getServerInfo(connection.connectionId);
+				// Right now only Azure SQL Edge support Onnx
+				//
+				return serverInfo && serverInfo.engineEditionId === 9;
+			}
+			return false;
+		} catch (error) {
+			console.log(error);
+			return false;
 		}
-		return false;
 	}
 
 	/**

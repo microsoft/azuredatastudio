@@ -2,7 +2,7 @@
   "name": "machine-learning",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
