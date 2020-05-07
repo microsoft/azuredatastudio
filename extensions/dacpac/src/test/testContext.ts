@@ -17,7 +17,7 @@ export function createContext(): TestContext {
 		context: {
 			subscriptions: [],
 			workspaceState: {
-				get: () => { return undefined; },
+				get: () => { return Promise.resolve(); },
 				update: () => { return Promise.resolve(); }
 			},
 			globalState: {

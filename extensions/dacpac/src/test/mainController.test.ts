@@ -19,7 +19,9 @@ describe('MainController', function (): void {
 	});
 
 	it('Should create new instance successfully', async function (): Promise<void> {
-		should.doesNotThrow(() => createController());
+		let controller: MainController;
+		should.doesNotThrow(() => controller = createController());
+		should.notEqual(controller.extensionContext, undefined);
 	});
 
 });
