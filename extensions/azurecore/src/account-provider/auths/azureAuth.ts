@@ -325,6 +325,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return tenants;
 		} catch (ex) {
 			console.log(ex);
+			console.log(JSON.stringify(ex?.response?.data, undefined, 2));
 			throw new Error('Error retreiving tenant information');
 		}
 	}
