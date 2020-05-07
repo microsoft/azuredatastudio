@@ -134,11 +134,11 @@ export class DeployDatabaseDialog {
 	private async cancel(): Promise<void> {
 	}
 
-	private getDefaultDatabaseName(): string {
+	public getDefaultDatabaseName(): string {
 		return path.basename(this.project.projectFolderPath);
 	}
 
-	private getDefaultScriptName(): string {
+	public getDefaultScriptName(): string {
 		return this.getDefaultDatabaseName() + '.sql';
 	}
 
