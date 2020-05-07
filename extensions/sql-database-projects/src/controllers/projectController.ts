@@ -119,10 +119,10 @@ export class ProjectsController {
 		await this.apiWrapper.showErrorMessage(`Build not yet implemented: ${project.projectFilePath}`); // TODO
 	}
 
-	public async deploy(treeNode: BaseProjectTreeItem): Promise<void> {
+	public deploy(treeNode: BaseProjectTreeItem): void {
 		const project = this.getProjectContextFromTreeNode(treeNode);
 		const deployDatabaseDialog = new DeployDatabaseDialog(project);
-		return deployDatabaseDialog.openDialog();
+		deployDatabaseDialog.openDialog();
 	}
 
 	public async import(treeNode: BaseProjectTreeItem) {

@@ -36,8 +36,8 @@ export class DeployDatabaseDialog {
 		this.deployTab = azdata.window.createTab(constants.deployDialogName);
 	}
 
-	public async openDialog(): Promise<void> {
-		await this.initializeDialog();
+	public openDialog(): void {
+		this.initializeDialog();
 		this.dialog.okButton.label = constants.deployDialogOkButtonText;
 		this.dialog.okButton.enabled = false;
 		this.dialog.okButton.onClick(async () => await this.deploy());
@@ -57,69 +57,66 @@ export class DeployDatabaseDialog {
 	}
 
 
-	private async initializeDialog(): Promise<void> {
-		await this.initializeDeployTab();
+	private initializeDialog(): void {
+		this.initializeDeployTab();
 		this.dialog.content = [this.deployTab];
 	}
 
-	private initializeDeployTab(): Promise<void> {
-		return new Promise(async (resolve) => {
-			this.deployTab.registerContent(async view => {
+	private initializeDeployTab(): void {
+		this.deployTab.registerContent(async view => {
 
-				let selectConnectionRadioButtons = this.createRadioButtons(view);
-				this.targetConnectionFormComponent = this.createTargetConnectionComponent(view);
+			let selectConnectionRadioButtons = this.createRadioButtons(view);
+			this.targetConnectionFormComponent = this.createTargetConnectionComponent(view);
 
-				this.targetDatabaseTextBox = view.modelBuilder.inputBox().withProperties({
-					value: this.getDefaultDatabaseName(),
-					ariaLabel: constants.databaseNameLabel
-				}).component();
+			this.targetDatabaseTextBox = view.modelBuilder.inputBox().withProperties({
+				value: this.getDefaultDatabaseName(),
+				ariaLabel: constants.databaseNameLabel
+			}).component();
 
-				this.dataSourcesFormComponent = this.createDataSourcesDropdown(view);
+			this.dataSourcesFormComponent = this.createDataSourcesDropdown(view);
 
-				this.targetDatabaseTextBox.onTextChanged(() => {
-					this.tryEnableGenerateScriptAndOkButtons();
-				});
-
-				this.deployScriptNameTextBox = view.modelBuilder.inputBox().withProperties({
-					value: this.getDefaultScriptName(),
-					ariaLabel: constants.deployScriptNameLabel
-				}).component();
-
-				this.deployScriptNameTextBox.onTextChanged(() => {
-					this.tryEnableGenerateScriptAndOkButtons();
-				});
-
-				this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
-					.withFormItems([
-						{
-							title: constants.targetDatabaseSettings,
-							components: [
-								{
-									title: constants.selectConnectionRadioButtonsTitle,
-									component: selectConnectionRadioButtons
-								},
-								this.targetConnectionFormComponent,
-								{
-									title: constants.databaseNameLabel,
-									component: this.targetDatabaseTextBox
-								},
-								{
-									title: constants.deployScriptNameLabel,
-									component: this.deployScriptNameTextBox
-								}
-							]
-						}
-					], {
-						horizontal: false
-					})
-					.withLayout({
-						width: '100%'
-					});
-
-				let formModel = this.formBuilder.component();
-				await view.initializeModel(formModel);
-				resolve();
+			this.targetDatabaseTextBox.onTextChanged(() => {
+				this.tryEnableGenerateScriptAndOkButtons();
 			});
+
+			this.deployScriptNameTextBox = view.modelBuilder.inputBox().withProperties({
+				value: this.getDefaultScriptName(),
+				ariaLabel: constants.deployScriptNameLabel
+			}).component();
+
+			this.deployScriptNameTextBox.onTextChanged(() => {
+				this.tryEnableGenerateScriptAndOkButtons();
+			});
+
+			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
+				.withFormItems([
+					{
+						title: constants.targetDatabaseSettings,
+						components: [
+							{
+								title: constants.selectConnectionRadioButtonsTitle,
+								component: selectConnectionRadioButtons
+							},
+							this.targetConnectionFormComponent,
+							{
+								title: constants.databaseNameLabel,
+								component: this.targetDatabaseTextBox
+							},
+							{
+								title: constants.deployScriptNameLabel,
+								component: this.deployScriptNameTextBox
+							}
+						]
+					}
+				], {
+					horizontal: false
+				})
+				.withLayout({
+					width: '100%'
+				});
+
+			let formModel = this.formBuilder.component();
+			await view.initializeModel(formModel);
 		});
 	}
 
