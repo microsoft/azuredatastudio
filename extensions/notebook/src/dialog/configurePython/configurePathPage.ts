@@ -166,7 +166,7 @@ export class ConfigurePathPage extends BasePage {
 		};
 
 		let fileUris: vscode.Uri[] = await this.apiWrapper.showOpenDialog(options);
-		if (fileUris && fileUris[0]) {
+		if (fileUris?.length > 0 && fileUris[0]) {
 			let existingValues = <azdata.CategoryValue[]>this.pythonLocationDropdown.values;
 			let filePath = fileUris[0].fsPath;
 			let newValue = {
