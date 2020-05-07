@@ -11,6 +11,7 @@ import { AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
 import { append, $, addClasses } from 'vs/base/browser/dom';
 import { IDropdownMenuOptions, DropdownMenu, IActionProvider, IContextMenuProvider, ILabelRenderer } from 'vs/base/browser/ui/dropdown/dropdown';
+
 export class DropdownMenuActionViewItem extends BaseActionViewItem {
 	private menuActionsOrProvider: ReadonlyArray<IAction> | IActionProvider;
 	private dropdownMenu: DropdownMenu | undefined;
@@ -107,8 +108,6 @@ export class DropdownMenuActionViewItem extends BaseActionViewItem {
 	}
 
 	show(): void {
-		if (this.dropdownMenu) {
-			this.dropdownMenu.show();
-		}
+		this.dropdownMenu?.show();
 	}
 }
