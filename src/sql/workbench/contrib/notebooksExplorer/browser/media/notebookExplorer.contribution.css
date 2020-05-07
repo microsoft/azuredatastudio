@@ -13,3 +13,9 @@
 .monaco-workbench .activitybar .monaco-action-bar .checked .action-label.notebookExplorer {
 	background-color: rgb(255, 255, 255); /* this is a patch, will need to find a better long term fix*/
 }
+
+.notebookExplorer-viewlet > .header {
+	height: 41px;
+	box-sizing: border-box;
+	padding: 5px 12px 6px 16px;
+}
