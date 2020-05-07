@@ -107,11 +107,7 @@ export class ConfigurePythonWizard {
 			// Hit "next" on last page, so handle submit
 			let nextOnLastPage = !newPage && lastPage instanceof PickPackagesPage;
 			if (nextOnLastPage) {
-				let createSuccess = await this.handlePackageInstall();
-				if (createSuccess) {
-					this.showTaskComplete();
-				}
-				return createSuccess;
+				return await this.handlePackageInstall();
 			}
 
 			if (lastPage) {
@@ -201,17 +197,5 @@ export class ConfigurePythonWizard {
 			}
 		}
 		return true;
-	}
-
-	private showTaskComplete() {
-		this._wizard.registerOperation({
-			connection: undefined,
-			displayName: localize('tableFromFile.taskLabel', 'Create External Table'),
-			description: undefined,
-			isCancelable: false,
-			operation: op => {
-				op.updateStatus(azdata.TaskStatus.Succeeded);
-			}
-		});
 	}
 }
