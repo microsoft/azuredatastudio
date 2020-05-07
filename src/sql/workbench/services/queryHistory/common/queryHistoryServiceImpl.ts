@@ -52,12 +52,12 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 				const uri: URI = URI.parse(e.uri);
 				// VS Range is 1 based so offset values by 1. The endLine we get back from SqlToolsService is incremented
 				// by 1 from the original input range sent in as well so take that into account and don't modify
-				const text: string = e.queryInfo.selection && e.queryInfo.selection.length > 0 ?
+				const text: string = e.queryInfo.range && e.queryInfo.range.length > 0 ?
 					_modelService.getModel(uri).getValueInRange(new Range(
-						e.queryInfo.selection[0].startLine + 1,
-						e.queryInfo.selection[0].startColumn + 1,
-						e.queryInfo.selection[0].endLine,
-						e.queryInfo.selection[0].endColumn + 1)) :
+						e.queryInfo.range[0].startLineNumber,
+						e.queryInfo.range[0].startColumn,
+						e.queryInfo.range[0].endLineNumber,
+						e.queryInfo.range[0].endColumn)) :
 					// If no specific selection get the entire text
 					_modelService.getModel(uri).getValue();
 
