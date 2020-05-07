@@ -19,6 +19,7 @@ import { IAzdataService } from '../../services/azdataService';
 import { DeploymentProfilePage } from './pages/deploymentProfilePage';
 import { INotebookService } from '../../services/notebookService';
 import { DeployClusterWizardModel, AuthenticationMode } from './deployClusterWizardModel';
+import { getErrorMessage } from '../../utils';
 import * as VariableNames from './constants';
 import * as os from 'os';
 import { join } from 'path';
@@ -137,16 +138,10 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 
 	private scriptToNotebook(): void {
 		this.setEnvironmentVariables(process.env);
-		this.notebookService.launchNotebook(this.wizardInfo.notebook).then((notebook: azdata.nb.NotebookEditor) => {
-			notebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
-				// 5 is the position after the 'Set variables' cell in the deployment notebooks
-				editBuilder.insertCell({
-					cell_type: 'code',
-					source: this.model.getCodeCellContentForNotebook()
-				}, 5);
-			});
-		}, (error) => {
-			vscode.window.showErrorMessage(error);
+		const variableeValueStatements = this.model.getCodeCellContentForNotebook();
+		const insertionPosition = 5;
+		this.notebookService.insertCellAndLaunchNotebook(this.wizardInfo.notebook, variableeValueStatements, insertionPosition).catch((error: Error) => {
+			vscode.window.showErrorMessage(getErrorMessage(error));
 		});
 	}
 

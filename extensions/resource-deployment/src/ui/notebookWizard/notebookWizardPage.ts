@@ -63,7 +63,6 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 	}
 
 	public onEnter() {
-		console.log(`NotebookWizardPage -> onEnter -> this._pageIndex`, this._pageIndex);
 		if (this.pageInfo.isSummaryPage) {
 			this.inputComponentOriginalValues.forEach((originalValue: string, name: string) => {
 				const textComponent = getTextComponent(name, this.inputComponents);

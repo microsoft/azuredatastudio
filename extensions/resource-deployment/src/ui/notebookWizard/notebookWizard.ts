@@ -31,6 +31,9 @@ export class NotebookWizard extends WizardBase<NotebookWizard, Model> {
 
 	constructor(private _wizardInfo: NotebookWizardInfo, private _notebookService: INotebookService, private _platformService: IPlatformService) {
 		super(_wizardInfo.title, new Model());
+		if (this._wizardInfo.codeCellInssertionPosition === undefined) {
+			this._wizardInfo.codeCellInssertionPosition = 0;
+		}
 		this.wizardObject.doneButton.label = _wizardInfo.actionText || this.wizardObject.doneButton.label;
 	}
 
@@ -53,7 +56,7 @@ export class NotebookWizard extends WizardBase<NotebookWizard, Model> {
 		if (this.wizardInfo.runNotebook) {
 			this.notebookService.backgroundExecuteNotebook(this.wizardInfo.taskName, this.wizardInfo.notebook, 'deploy', this.platformService);
 		} else {
-			this.notebookService.launchNotebook(this.wizardInfo.notebook).then(() => { }, (error) => {
+			this.notebookService.insertCellAndLaunchNotebook(this.wizardInfo.notebook, this.model.getCodeCellContentForNotebook(),this._wizardInfo.codeCellInssertionPosition).then(() => { }, (error) => {
 				vscode.window.showErrorMessage(error);
 			});
 		}

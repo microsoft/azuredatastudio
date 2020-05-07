@@ -171,11 +171,6 @@ export class DeployClusterWizardModel extends Model {
 		statements.push(`print('Variables have been set successfully.')`);
 		return statements.map(line => line + EOL);
 	}
-
-	private escapeForNotebookCodeCell(original: string): string {
-		// Escape the \ character for the code cell string value
-		return original && original.replace(/\\/g, '\\\\');
-	}
 }
 
 export enum AuthenticationMode {

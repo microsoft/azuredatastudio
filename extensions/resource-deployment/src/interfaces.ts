@@ -113,6 +113,7 @@ export interface WizardInfoBase extends InheritableAttributes {
 	taskName?: string;
 	type?: DeploymentType;
 	runNotebook?: boolean;
+	codeCellInssertionPosition?: number;
 	actionText?: string;
 	title: string;
 	pages: NotebookWizardPageInfo[];
@@ -181,7 +182,8 @@ export interface SectionInfo extends InheritableAttributes {
 }
 
 export interface RowInfo {
-	fields: FieldInfo[];
+	cssStyles?: CSSStyles;
+	fields: FieldInfo[] | RowInfo[];
 }
 
 export interface SubFieldInfo {

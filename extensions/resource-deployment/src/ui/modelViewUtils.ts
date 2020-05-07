@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import * as azurecore from '../../../azurecore/src/azurecore';
 import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
-import { AzureAccountFieldInfo, AzureLocationsFieldInfo, DialogInfoBase, FieldInfo, FieldType, FontStyle, FontWeight, LabelPosition, PageInfoBase, SectionInfo, KubeClusterContextFieldInfo, CSSStyles } from '../interfaces';
+import { AzureAccountFieldInfo, AzureLocationsFieldInfo, DialogInfoBase, FieldInfo, FieldType, FontStyle, FontWeight, LabelPosition, PageInfoBase, SectionInfo, KubeClusterContextFieldInfo, CSSStyles, RowInfo } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
 import { getDateTimeString, getErrorMessage } from '../utils';
@@ -248,10 +248,7 @@ export function createSection(context: SectionContext): azdata.GroupContainer {
 		processFields(context.sectionInfo.fields, components, context);
 	} else if (context.sectionInfo.rows) {
 		context.sectionInfo.rows.forEach(rowInfo => {
-			const rowItems: azdata.Component[] = [];
-			processFields(rowInfo.fields, rowItems, context, context.sectionInfo.spaceBetweenFields === undefined ? '50px' : context.sectionInfo.spaceBetweenFields);
-			const row = createFlexContainer(context.view, rowItems, true, context.sectionInfo.rowWidth, context.sectionInfo.rowHeight, context.sectionInfo.rowAlignItems);
-			components.push(row);
+			components.push(processRow(rowInfo, context));
 		});
 	}
 
@@ -260,6 +257,18 @@ export function createSection(context: SectionContext): azdata.GroupContainer {
 		collapsible: context.sectionInfo.collapsible === undefined ? true : context.sectionInfo.collapsible,
 		collapsed: context.sectionInfo.collapsed === undefined ? false : context.sectionInfo.collapsed
 	});
+}
+
+function processRow(rowInfo: RowInfo, context: SectionContext): azdata.Component {
+	const rowItems: azdata.Component[] = [];
+	if ('fields' in rowInfo.fields[0]) { // rowInfo.fields is RowInfo[]
+		const rows = rowInfo.fields as RowInfo[];
+		rowItems.push(...rows.map(rowInfo => processRow(rowInfo, context)));
+	} else { // rowInfo.fields is FieldInfo[]
+		const fields = rowInfo.fields as FieldInfo[];
+		processFields(fields, rowItems, context, context.sectionInfo.spaceBetweenFields === undefined ? '50px' : context.sectionInfo.spaceBetweenFields);
+	}
+	return createFlexContainer(context.view, rowItems, true, context.sectionInfo.rowWidth, context.sectionInfo.rowHeight, context.sectionInfo.rowAlignItems, rowInfo.cssStyles);
 }
 
 function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component[], context: SectionContext, spaceBetweenFields?: string): void {
@@ -286,7 +295,7 @@ function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component
 	}
 }
 
-export function createFlexContainer(view: azdata.ModelView, items: azdata.Component[], rowLayout: boolean = true, width?: string | number, height?: string | number, alignItems?: azdata.AlignItemsType): azdata.FlexContainer {
+export function createFlexContainer(view: azdata.ModelView, items: azdata.Component[], rowLayout: boolean = true, width?: string | number, height?: string | number, alignItems?: azdata.AlignItemsType, cssStyles?: CSSStyles): azdata.FlexContainer {
 	const flexFlow = rowLayout ? 'row' : 'column';
 	alignItems = alignItems || (rowLayout ? 'center' : undefined);
 	const itemsStyle = rowLayout ? { CSSStyles: { 'margin-right': '5px', } } : {};
@@ -300,12 +309,15 @@ export function createFlexContainer(view: azdata.ModelView, items: azdata.Compon
 	if (alignItems) {
 		flexLayout.alignItems = alignItems;
 	}
-	let flexBuilder = view.modelBuilder.flexContainer().withItems(items, itemsStyle).withLayout(flexLayout);
-	return flexBuilder.component();
+	let flexComponent = view.modelBuilder.flexContainer().withItems(items, itemsStyle).withLayout(flexLayout).component();
+	if ( cssStyles ) {
+		flexComponent.CSSStyles = Object.assign(flexComponent.CSSStyles || {}, cssStyles);
+	}
+	return flexComponent;
 }
 
 export function createGroupContainer(view: azdata.ModelView, items: azdata.Component[], layout: azdata.GroupLayout): azdata.GroupContainer {
-	return view.modelBuilder.groupContainer().withItems(items).withLayout(layout).component();
+	return view.modelBuilder.groupContainer().withItems(items).	withLayout(layout).component();
 }
 
 function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata.Component[], label: azdata.Component, input: azdata.Component | undefined, fieldInfo: FieldInfo, additionalComponents?: azdata.Component[]) {
@@ -757,7 +769,7 @@ function createAzureSubscriptionDropdown(
 	});
 	const subscriptionDropdown = createDropdown(context.view, {
 		width: context.fieldInfo.inputWidth,
-		editable: true,
+		editable: false,
 		required: context.fieldInfo.required,
 		label: loc.subscription
 	});
@@ -830,7 +842,7 @@ function createAzureResourceGroupsDropdown(
 	});
 	const resourceGroupDropdown = createDropdown(context.view, {
 		width: context.fieldInfo.inputWidth,
-		editable: true,
+		editable: false,
 		required: context.fieldInfo.required,
 		label: loc.resourceGroup
 	});

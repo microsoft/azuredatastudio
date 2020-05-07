@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { NoteBookEnvironmentVariablePrefix } from '../interfaces';
+import { EOL } from 'os';
 
 export class Model {
 	private propValueObject: { [s: string]: string | undefined } = {};
@@ -30,6 +31,24 @@ export class Model {
 	public getBooleanValue(propName: string, defaultValue: boolean = false): boolean {
 		const value = this.propValueObject[propName];
 		return value === undefined ? defaultValue : value === 'true';
+	}
+
+	public getCodeCellContentForNotebook(): string[] {
+		const statements: string[] = Object.keys(this.propValueObject)
+			.filter(propertyName => propertyName.startsWith(NoteBookEnvironmentVariablePrefix))
+			.map(propertyName => {
+				const value = this.escapeForNotebookCodeCell(this.getStringValue(propertyName, ''));
+				const regex = new RegExp(`^${NoteBookEnvironmentVariablePrefix}`);
+				const varName = propertyName.replace(regex, '').toLocaleLowerCase();
+				return `${varName} = '${value}'`;
+			});
+		statements.push(`print('Variables have been set successfully.')`);
+		return statements.map(line => line + EOL);
+	}
+
+	protected escapeForNotebookCodeCell(original?: string): string | undefined {
+		// Escape the \ character for the code cell string value
+		return original && original.replace(/\\/g, '\\\\');
 	}
 
 	public setEnvironmentVariables(): void {

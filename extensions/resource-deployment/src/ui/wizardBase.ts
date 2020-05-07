@@ -50,7 +50,7 @@ export abstract class WizardBase<T, M extends Model> {
 		});
 
 	}
-
+	
 	protected abstract initialize(): void;
 	protected abstract onOk(): void;
 	protected abstract onCancel(): void;
