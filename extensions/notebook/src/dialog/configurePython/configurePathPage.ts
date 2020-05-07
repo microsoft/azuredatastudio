@@ -26,7 +26,7 @@ export class ConfigurePathPage extends BasePage {
 
 	private usingCustomPath: boolean = false;
 
-	public async start(): Promise<boolean> {
+	public async initialize(): Promise<boolean> {
 		this.pythonLocationDropdown = this.view.modelBuilder.dropDown()
 			.withProperties<azdata.DropDownProperties>({
 				value: undefined,
@@ -134,7 +134,6 @@ export class ConfigurePathPage extends BasePage {
 				checked: !useExistingPython
 			}).component();
 		this.newInstallButton.onDidClick(() => {
-			this.existingInstallButton.checked = false;
 			this.updatePythonPathsDropdown(false)
 				.catch(err => {
 					this.instance.showErrorMessage(utils.getErrorMessage(err));
@@ -148,7 +147,6 @@ export class ConfigurePathPage extends BasePage {
 				checked: useExistingPython
 			}).component();
 		this.existingInstallButton.onDidClick(() => {
-			this.newInstallButton.checked = false;
 			this.updatePythonPathsDropdown(true)
 				.catch(err => {
 					this.instance.showErrorMessage(utils.getErrorMessage(err));

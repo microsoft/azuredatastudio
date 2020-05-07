@@ -73,14 +73,14 @@ export class ConfigurePythonWizard {
 		page0.registerContent(async (view) => {
 			let configurePathPage = new ConfigurePathPage(this.apiWrapper, this, page0, this.model, view);
 			pages.set(0, configurePathPage);
-			await configurePathPage.start();
+			await configurePathPage.initialize();
 			await configurePathPage.onPageEnter();
 		});
 
 		page1.registerContent(async (view) => {
 			let pickPackagesPage = new PickPackagesPage(this.apiWrapper, this, page1, this.model, view);
 			pages.set(1, pickPackagesPage);
-			await pickPackagesPage.start();
+			await pickPackagesPage.initialize();
 		});
 
 		this._wizard.doneButton.label = this.InstallButtonText;

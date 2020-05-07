@@ -75,7 +75,7 @@ describe('Configure Python Wizard', function () {
 		let page = azdata.window.createWizardPage('Page 1');
 		let configurePathPage = new ConfigurePathPage(apiWrapper, testWizard, page, model, viewContext.view);
 
-		should(await configurePathPage.start()).be.true();
+		should(await configurePathPage.initialize()).be.true();
 
 		// First page, so onPageEnter should do nothing
 		should(await configurePathPage.onPageEnter()).be.true();
@@ -96,7 +96,7 @@ describe('Configure Python Wizard', function () {
 		let page = azdata.window.createWizardPage('Page 2');
 		let pickPackagesPage = new PickPackagesPage(apiWrapper, testWizard, page, model, viewContext.view);
 
-		should(await pickPackagesPage.start()).be.true();
+		should(await pickPackagesPage.initialize()).be.true();
 
 		should((<any>pickPackagesPage).kernelLabel).not.be.undefined();
 		should((<any>pickPackagesPage).kernelDropdown).be.undefined();
@@ -119,7 +119,7 @@ describe('Configure Python Wizard', function () {
 		let page = azdata.window.createWizardPage('Page 2');
 		let pickPackagesPage = new PickPackagesPage(apiWrapper, testWizard, page, model, viewContext.view);
 
-		should(await pickPackagesPage.start()).be.true();
+		should(await pickPackagesPage.initialize()).be.true();
 
 		should((<any>pickPackagesPage).kernelLabel).be.undefined();
 		should((<any>pickPackagesPage).kernelDropdown).not.be.undefined();

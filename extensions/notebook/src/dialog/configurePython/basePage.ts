@@ -19,7 +19,7 @@ export abstract class BasePage {
 	/**
 	 * This method constructs all the elements of the page.
 	 */
-	public async abstract start(): Promise<boolean>;
+	public async abstract initialize(): Promise<boolean>;
 
 	/**
 	 * This method is called when the user is entering the page.

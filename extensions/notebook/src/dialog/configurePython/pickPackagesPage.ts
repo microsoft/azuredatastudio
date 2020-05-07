@@ -21,7 +21,7 @@ export class PickPackagesPage extends BasePage {
 	private installedPackagesPromise: Promise<PythonPkgDetails[]>;
 	private installedPackages: PythonPkgDetails[];
 
-	public async start(): Promise<boolean> {
+	public async initialize(): Promise<boolean> {
 		if (this.model.kernelName) {
 			// Wizard was started for a specific kernel, so don't populate any other options
 			this.kernelLabel = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
