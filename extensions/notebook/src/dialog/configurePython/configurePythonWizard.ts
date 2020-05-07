@@ -73,9 +73,8 @@ export class ConfigurePythonWizard {
 		page0.registerContent(async (view) => {
 			let configurePathPage = new ConfigurePathPage(this.apiWrapper, this, page0, this.model, view);
 			pages.set(0, configurePathPage);
-			await configurePathPage.start().then(() => {
-				configurePathPage.onPageEnter();
-			});
+			await configurePathPage.start();
+			await configurePathPage.onPageEnter();
 		});
 
 		page1.registerContent(async (view) => {
