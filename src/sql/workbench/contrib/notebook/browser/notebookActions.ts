@@ -36,7 +36,8 @@ const msgLoadingContexts = localize('loadingContexts', "Loading contexts...");
 const msgChangeConnection = localize('changeConnection', "Change Connection");
 const msgSelectConnection = localize('selectConnection', "Select Connection");
 const msgLocalHost = localize('localhost', "localhost");
-const noKernel: string = localize('noKernel', "No Kernel");
+
+export const noKernel: string = localize('noKernel', "No Kernel");
 
 // Action to add a cell to notebook based on cell type(code/markdown).
 export class AddCellAction extends Action {
