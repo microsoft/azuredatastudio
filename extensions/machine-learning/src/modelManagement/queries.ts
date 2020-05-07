@@ -144,11 +144,17 @@ export function getInsertModelQuery(model: ImportedModel, table: DatabaseTable):
 		`;
 }
 
+/**
+ * Returns the query for loading model content from database
+ * @param model model information
+ */
 export function getModelContentQuery(model: ImportedModel): string {
 	const threePartTableName = utils.getRegisteredModelsThreePartsName(model.table.databaseName || '', model.table.tableName || '', model.table.schema || '');
 	const len = model.contentLength !== undefined ? model.contentLength : 0;
 	const maxLength = 1000;
 	let numberOfColumns = len / maxLength;
+	// The query provider doesn't return the whole file bites if too big. so loading the bites it blocks
+	// and merge together to load the file
 	numberOfColumns = numberOfColumns <= 0 ? 1 : numberOfColumns;
 	let columns: string[] = [];
 	let fileIndex = 0;
