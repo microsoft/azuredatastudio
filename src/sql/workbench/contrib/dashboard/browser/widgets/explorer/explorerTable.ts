@@ -60,7 +60,13 @@ export class ExplorerTable extends Disposable {
 		private readonly logService: ILogService) {
 		super();
 		this._explorerView = new ExplorerView(this.context);
-		this._table = new Table<Slick.SlickData>(parentElement, undefined, { forceFitColumns: true, rowHeight: 35 });
+		const connectionInfo = this.bootStrapService.connectionManagementService.connectionInfo;
+		this._displayProperties = this._explorerView.getPropertyList(getFlavor(connectionInfo.serverInfo, this.logService, connectionInfo.providerId));
+		const explorerFilter = new ExplorerFilter(this.context, this._displayProperties.map(p => p.value));
+		this._view = new TableDataView<Slick.SlickData>(undefined, undefined, undefined, (data: Slick.SlickData[]): Slick.SlickData[] => {
+			return explorerFilter.filter(this._filterStr, data);
+		});
+		this._table = new Table<Slick.SlickData>(parentElement, { dataProvider: this._view }, { forceFitColumns: true, rowHeight: 35 });
 		this._table.setSelectionModel(new RowSelectionModel());
 		this._actionsColumn = new ButtonColumn<Slick.SlickData>({
 			id: 'actions',
@@ -68,9 +74,6 @@ export class ExplorerTable extends Disposable {
 			title: ShowActionsText,
 			width: 40
 		});
-		const connectionInfo = this.bootStrapService.connectionManagementService.connectionInfo;
-		this._displayProperties = this._explorerView.getPropertyList(getFlavor(connectionInfo.serverInfo, this.logService, connectionInfo.providerId));
-		const explorerFilter = new ExplorerFilter(this.context, this._displayProperties.map(p => p.value));
 		this._table.registerPlugin(this._actionsColumn);
 		this._register(this._actionsColumn.onClick((args) => {
 			this.showContextMenu(args.item, args.position);
@@ -86,9 +89,6 @@ export class ExplorerTable extends Disposable {
 			}
 		}));
 		this._register(attachTableStyler(this._table, themeService));
-		this._view = new TableDataView<Slick.SlickData>(undefined, undefined, undefined, (data: Slick.SlickData[]): Slick.SlickData[] => {
-			return explorerFilter.filter(this._filterStr, data);
-		});
 		this._register(this._view);
 		this._register(this._view.onRowCountChange(() => {
 			this._table.updateRowCount();
@@ -174,7 +174,6 @@ export class ExplorerTable extends Disposable {
 		items.forEach(item => {
 			item[IconClassProperty] = this._explorerView.getIconClass(item);
 		});
-		this._table.setData(this._view);
 		this._view.push(items);
 	}
 
