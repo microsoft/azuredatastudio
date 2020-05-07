@@ -73,7 +73,7 @@ export class PickPackagesPage extends BasePage {
 		return true;
 	}
 
-	public async onPageEnter(): Promise<boolean> {
+	public async onPageEnter(): Promise<void> {
 		let pythonExe = JupyterServerInstallation.getPythonExePath(this.model.pythonLocation, this.model.useExistingPython);
 		this.installedPackagesPromise = this.model.installation.getInstalledPipPackages(pythonExe);
 		this.installedPackages = undefined;
@@ -86,7 +86,6 @@ export class PickPackagesPage extends BasePage {
 			}
 		}
 		await this.updateRequiredPackages(this.model.kernelName);
-		return true;
 	}
 
 	public async onPageLeave(): Promise<boolean> {

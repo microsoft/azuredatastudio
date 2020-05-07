@@ -71,8 +71,7 @@ export class ConfigurePathPage extends BasePage {
 		return true;
 	}
 
-	public async onPageEnter(): Promise<boolean> {
-		return true;
+	public async onPageEnter(): Promise<void> {
 	}
 
 	public async onPageLeave(): Promise<boolean> {
@@ -89,7 +88,7 @@ export class ConfigurePathPage extends BasePage {
 	}
 
 	private async updatePythonPathsDropdown(useExistingPython: boolean): Promise<void> {
-		await this.pythonDropdownLoader.updateProperties({ loading: true });
+		this.pythonDropdownLoader.loading = true;
 		try {
 			let pythonPaths: PythonPathInfo[];
 			let dropdownValues: azdata.CategoryValue[];
@@ -122,7 +121,7 @@ export class ConfigurePathPage extends BasePage {
 				values: dropdownValues
 			});
 		} finally {
-			await this.pythonDropdownLoader.updateProperties({ loading: false });
+			this.pythonDropdownLoader.loading = false;
 		}
 	}
 

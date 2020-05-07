@@ -24,7 +24,7 @@ export abstract class BasePage {
 	/**
 	 * This method is called when the user is entering the page.
 	 */
-	public async abstract onPageEnter(): Promise<boolean>;
+	public async abstract onPageEnter(): Promise<void>;
 
 	/**
 	 * This method is called when the user is leaving the page.
