@@ -732,6 +732,7 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$addToContainer(handle: number, containerId: string, item: IItemConfig, index?: number): Thenable<void>;
 	$removeFromContainer(handle: number, containerId: string, item: IItemConfig): Thenable<void>;
 	$setLayout(handle: number, componentId: string, layout: any): Thenable<void>;
+	$setItemLayout(handle: number, componentId: string, item: IItemConfig): Thenable<void>;
 	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
 	$registerEvent(handle: number, componentId: string): Thenable<void>;
 	$validate(handle: number, componentId: string): Thenable<boolean>;

@@ -66,6 +66,10 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 		return this.execModelViewAction(handle, (modelView) => modelView.setLayout(componentId, layout));
 	}
 
+	$setItemLayout(handle: number, containerId: string, item: IItemConfig): Thenable<void> {
+		return this.execModelViewAction(handle, (modelView) => modelView.setItemLayout(containerId, item));
+	}
+
 	private onEvent(handle: number, componentId: string, eventArgs: any) {
 		this._proxy.$handleEvent(handle, componentId, eventArgs);
 	}

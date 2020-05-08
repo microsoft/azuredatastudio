@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/tabHeader';
 
-import { Component, AfterContentInit, OnDestroy, Input, Output, ElementRef, ViewChild, EventEmitter } from '@angular/core';
+import { Component, AfterContentInit, OnDestroy, Input, Output, ElementRef, ViewChild, EventEmitter, ChangeDetectorRef, forwardRef, Inject } from '@angular/core';
 
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -21,8 +21,8 @@ import { CloseTabAction } from 'sql/base/browser/ui/panel/tabActions';
 	template: `
 		<div #actionHeader role="tab" [attr.aria-selected]="tab.active" [attr.aria-label]="tab.title" class="tab-header" style="flex: 0 0; flex-direction: row;" [class.active]="tab.active" tabindex="0" (click)="selectTab(tab)" (keyup)="onKey($event)">
 			<div class="tab" role="presentation">
-				<a #tabIcon></a>
-				<a class="tabLabel" [class.active]="tab.active" [title]="tab.title" #tabLabel></a>
+				<a #tabIcon *ngIf="showIcon && tab.iconClass" class="tabIcon codicon icon {{tab.iconClass}}"></a>
+				<a class="tabLabel" [class.active]="tab.active" [title]="tab.title" #tabLabel>{{tab.title}}</a>
 			</div>
 			<div #actionbar style="flex: 0 0 auto; align-self: end; margin-top: auto; margin-bottom: auto;" ></div>
 		</div>
@@ -40,15 +40,19 @@ export class TabHeaderComponent extends Disposable implements AfterContentInit, 
 
 	@ViewChild('actionHeader', { read: ElementRef }) private _actionHeaderRef!: ElementRef;
 	@ViewChild('actionbar', { read: ElementRef }) private _actionbarRef!: ElementRef;
-	@ViewChild('tabLabel', { read: ElementRef }) private _tabLabelRef!: ElementRef;
-	@ViewChild('tabIcon', { read: ElementRef }) private _tabIconRef!: ElementRef;
 
-	constructor() {
+	constructor(
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef
+	) {
 		super();
 	}
 
 	public get nativeElement(): HTMLElement {
 		return this._actionHeaderRef.nativeElement;
+	}
+
+	public refresh(): void {
+		this._cd.detectChanges();
 	}
 
 	ngAfterContentInit(): void {
@@ -62,15 +66,6 @@ export class TabHeaderComponent extends Disposable implements AfterContentInit, 
 				this._actionbar.push(closeAction, { icon: true, label: false });
 			}
 		}
-
-		const tabLabelContainer = this._tabLabelRef.nativeElement as HTMLElement;
-		if (this.showIcon && this.tab.iconClass) {
-			const tabIconContainer = this._tabIconRef.nativeElement as HTMLElement;
-			tabIconContainer.className = 'tabIcon codicon icon';
-			tabIconContainer.classList.add(this.tab.iconClass);
-		}
-
-		tabLabelContainer.textContent = this.tab.title;
 	}
 
 	ngOnDestroy() {
