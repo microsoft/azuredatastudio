@@ -249,6 +249,31 @@ export class PanelComponent extends Disposable implements IThemable {
 		this.selectTab(nextTabIndex);
 	}
 
+	/**
+	 * Updates the specified tab with new config values
+	 * @param tabId The id of the tab to update
+	 * @param config The values to update the tab with
+	 */
+	public updateTab(tabId: string, config: { title?: string, iconClass?: string }): void {
+		// First find the tab and update it with the new values. Then manually refresh the
+		// tab header since it won't detect changes made to the corresponding tab by itself.
+		let tabHeader: TabHeaderComponent;
+		const tabHeaders = this._tabHeaders.toArray();
+		const tab = this._tabs.find((item, i) => {
+			if (item.identifier === tabId) {
+				tabHeader = tabHeaders?.length > i ? tabHeaders[i] : undefined;
+				return true;
+			}
+			return false;
+		});
+
+		if (tab) {
+			tab.title = config.title;
+			tab.iconClass = config.iconClass;
+			tabHeader?.refresh();
+		}
+	}
+
 	private findAndRemoveTabFromMRU(tab: TabComponent): void {
 		let mruIndex = firstIndex(this._mru, i => i === tab);
 
