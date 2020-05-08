@@ -6,10 +6,13 @@
 import * as path from 'path';
 import * as xmldom from 'xmldom';
 import * as constants from '../common/constants';
+import * as utils from '../common/utils';
 
 import { Uri } from 'vscode';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
+import { ApiWrapper } from '../common/apiWrapper';
+
 
 /**
  * Class representing a Project, and providing functions for operating on it
@@ -25,7 +28,7 @@ export class Project {
 
 	private projFileXmlDoc: any = undefined;
 
-	constructor(projectFilePath: string) {
+	constructor(projectFilePath: string, private apiWrapper: ApiWrapper) {
 		this.projectFilePath = projectFilePath;
 	}
 
@@ -57,7 +60,12 @@ export class Project {
 	 */
 	public async addFolderItem(relativeFolderPath: string): Promise<ProjectEntry> {
 		const absoluteFolderPath = path.join(this.projectFolderPath, relativeFolderPath);
-		await fs.mkdir(absoluteFolderPath, { recursive: true });
+
+		//If folder doesn't exist, create it
+		let exists = utils.exists(absoluteFolderPath);
+		if (!exists) {
+			fs.mkdir(absoluteFolderPath, { recursive: true });
+		}
 
 		const folderEntry = this.createProjectEntry(relativeFolderPath, EntryType.Folder);
 		this.files.push(folderEntry);
@@ -67,7 +75,7 @@ export class Project {
 	}
 
 	/**
-	 * Writes a file to disk, adds that file to the project, and writes it to disk
+	 * Writes a file to disk if contents are provided, adds that file to the project, and writes it to disk
 	 * @param relativeFilePath Relative path of the file
 	 * @param contents Contents to be written to the new file
 	 */
@@ -77,10 +85,13 @@ export class Project {
 		if (contents) {
 			await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
 			await fs.writeFile(absoluteFilePath, contents);
-
 		}
-		else {
-			// check that file actually exists
+
+		//Check that file actually exists
+		let exists = utils.exists(absoluteFilePath);
+		if (!exists) {
+			//TODO: Should we exit from here?
+			this.apiWrapper.showErrorMessage(constants.noFileExist(absoluteFilePath));
 		}
 
 		const fileEntry = this.createProjectEntry(relativeFilePath, EntryType.File);
@@ -148,6 +159,31 @@ export class Project {
 		const xml = new xmldom.XMLSerializer().serializeToString(projFileContents); // TODO: how to get this to serialize with "pretty" formatting
 
 		await fs.writeFile(this.projectFilePath, xml);
+	}
+
+	/**
+	 * Adds the list of files and directories to the project, and saves the project file
+	 * @param absolutePath Absolute path of the folder
+	 */
+	public async addToProject(list: string[]): Promise<boolean> {
+
+		for (let i = 0; i < list.length; i++) {
+			let file: string = list[i];
+			const relativePath = utils.trimChars(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(file)), '/');
+
+			if (relativePath.length > 0) {
+				let fileStat = await fs.stat(file);
+
+				if (fileStat.isFile()) {
+					await this.addScriptItem(relativePath);
+				}
+				else if (fileStat.isDirectory()) {
+					await this.addFolderItem(relativePath);
+				}
+			}
+		}
+		return true;
+
 	}
 }
 

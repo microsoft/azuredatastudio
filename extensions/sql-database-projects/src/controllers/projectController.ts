@@ -10,8 +10,9 @@ import * as dataSources from '../models/dataSources/dataSources';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
+import * as mssql from '../../../mssql';
 
-import { Uri, QuickPickItem, WorkspaceFolder } from 'vscode';
+import { Uri, QuickPickItem, WorkspaceFolder, extensions } from 'vscode';
 import { ApiWrapper } from '../common/apiWrapper';
 import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
@@ -19,6 +20,7 @@ import { promises as fs } from 'fs';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
+import { ImportDataModel } from '../models/api/import';
 
 /**
  * Controller for managing project lifecycle
@@ -45,7 +47,7 @@ export class ProjectsController {
 			}
 		}
 
-		const newProject = new Project(projectFile.fsPath);
+		const newProject = new Project(projectFile.fsPath, this.apiWrapper);
 
 		try {
 			// Read project file
@@ -108,60 +110,6 @@ export class ProjectsController {
 		return newProjFilePath;
 	}
 
-	/**
-	 * Imports a new SQL database project from the existing database,
-	 * prompting the user for a name, file path location and extract target
-	 */
-	public async importNewDatabaseProject(context: any): Promise<void> {
-		let profile = context ? <azdata.IConnectionProfile>context.connectionProfile : undefined;
-		if (profile) {
-			//this.model.serverId = profile.id;
-			//this.model.database = profile.databaseName;
-		}
-		try {
-
-			let newProjName = await this.apiWrapper.showInputBox({
-				prompt: constants.newDatabaseProjectName,
-				value: `DatabaseProject${this.projects.length + 1}`
-			});
-
-			if (!newProjName) {
-				// TODO: is this case considered an intentional cancellation (shouldn't warn) or an error case (should warn)?
-				this.apiWrapper.showErrorMessage(constants.projectNameRequired);
-				return;
-			}
-
-			let selectionResult = await this.apiWrapper.showOpenDialog({
-				canSelectFiles: false,
-				canSelectFolders: true,
-				canSelectMany: false,
-				defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined
-			});
-
-			if (!selectionResult) {
-				this.apiWrapper.showErrorMessage(constants.projectLocationRequired);
-				return;
-			}
-
-			// TODO: what if the selected folder is outside the workspace?
-
-			const newProjFolderUri = (selectionResult as Uri[])[0];
-			console.log(newProjFolderUri.fsPath);
-			const newProjFilePath = await this.createNewProject(newProjName as string, newProjFolderUri as Uri);
-			await this.openProject(Uri.file(newProjFilePath));
-		}
-		catch (err) {
-			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
-		}
-	}
-
-	/*private async getService(): Promise<mssql.ISchemaCompareService> {
-		if (isNullOrUndefined(this.schemaCompareService)) {
-			this.schemaCompareService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
-		}
-		return this.schemaCompareService;
-	}
-*/
 	public closeProject(treeNode: BaseProjectTreeItem) {
 		const project = this.getProjectContextFromTreeNode(treeNode);
 		this.projects = this.projects.filter((e) => { return e !== project; });
@@ -286,6 +234,161 @@ export class ProjectsController {
 
 	private getRelativePath(treeNode: BaseProjectTreeItem): string {
 		return treeNode instanceof FolderNode ? utils.trimUri(treeNode.root.uri, treeNode.uri) : '';
+	}
+
+	/**
+	 * Imports a new SQL database project from the existing database,
+	 * prompting the user for a name, file path location and extract target
+	 */
+	public async importNewDatabaseProject(context: any): Promise<void> {
+		let model = <ImportDataModel>{};
+
+		try {
+			let profile = context ? <azdata.IConnectionProfile>context.connectionProfile : undefined;
+			if (profile) {
+				model.serverId = profile.id;
+				model.database = profile.databaseName;
+			}
+
+			// Get project name
+			let newProjName = await this.apiWrapper.showInputBox({
+				prompt: constants.newDatabaseProjectName,
+				value: `DatabaseProject${model.database}`
+			});
+
+			if (!newProjName) {
+				this.apiWrapper.showErrorMessage(constants.projectNameRequired);
+				return;
+			}
+			model.projName = newProjName;
+
+			// Get extractTarget
+			// eslint-disable-next-line code-no-unexternalized-strings
+			let extractTargetOptions: string[] = Object.keys(azdata.ExtractTarget).filter(k => typeof azdata.ExtractTarget[k as any] === "number");
+			let extractTargetInput = await this.apiWrapper.showQuickPickString(extractTargetOptions.slice(1), {
+				canPickMany: false,
+				placeHolder: constants.extractTargetInput
+			});
+			let extractTarget: azdata.ExtractTarget;
+			if (!extractTargetInput) {
+				// TODO: Default value of SchemaObjectType to be used or cancel out?
+				this.apiWrapper.showErrorMessage(constants.extractTargetDefault);
+				extractTarget = azdata.ExtractTarget.SchemaObjectType;
+			} else {
+				extractTarget = azdata.ExtractTarget[extractTargetInput as keyof typeof azdata.ExtractTarget];
+			}
+			model.extractTarget = extractTarget;
+
+			// Get folder location for project creation
+			let selectionResult;
+			let newProjFolderUri;
+			let newProjUri;
+			if (extractTarget !== 1) {
+				selectionResult = await this.apiWrapper.showOpenDialog({
+					canSelectFiles: false,
+					canSelectFolders: true,
+					canSelectMany: false,
+					openLabel: constants.selectFileFolder,
+					defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined
+				});
+				newProjUri = (selectionResult as Uri[])[0];
+				newProjFolderUri = newProjUri;
+			} else {
+				// Get filename
+				selectionResult = await this.apiWrapper.showSaveDialog(
+					{
+						defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined,
+						saveLabel: constants.selectFileFolder,
+						filters: {
+							'Text files': ['sql'],
+							'All files': ['*']
+						}
+					}
+				);
+				newProjUri = selectionResult as unknown as Uri;
+				newProjFolderUri = utils.trimFileName(newProjUri);
+			}
+			if (!selectionResult) {
+				this.apiWrapper.showErrorMessage(constants.projectLocationRequired);
+				return;
+			}
+
+			// TODO: what if the selected folder is outside the workspace?
+			console.log(newProjUri.fsPath);
+			model.filePath = newProjUri.fsPath;
+
+			//Set model version
+			model.version = '1.0.0.0';
+
+			// Call ExtractAPI in DacFx Service
+			await this.importApiCall(model);
+			// TODO: Check for success
+
+			// Create and open new project
+			const newProjFilePath = await this.createNewProject(newProjName as string, newProjFolderUri as Uri);
+			const project = await this.openProject(Uri.file(newProjFilePath));
+
+			//Create a list of all the files and directories to be added to project
+			let fileFolderList: string[] = await this.generateList(model.filePath);
+
+			// Add generated file structure to the project
+			await project.addToProject(fileFolderList);
+
+			//Refresh project to show the added files
+			this.refreshProjectsTree();
+		}
+		catch (err) {
+			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
+	private async importApiCall(model: ImportDataModel): Promise<void> {
+		let ext = extensions.getExtension(mssql.extension.name);
+
+		if (ext === undefined) {
+			this.apiWrapper.showErrorMessage('VSCode extension undefined');
+			return;
+		}
+
+		const service = (ext.exports as mssql.IExtension).dacFx;
+		const ownerUri = await azdata.connection.getUriForConnection(model.serverId);
+
+		await service.importDatabaseProject(model.database, model.filePath, model.projName, model.version, ownerUri, model.extractTarget, azdata.TaskExecutionMode.execute);
+	}
+
+	private async generateList(absolutePath: string): Promise<string[]> {
+		let fileFolderList: string[] = [];
+
+		if (!utils.exists(absolutePath)) {
+			if (utils.exists(absolutePath + constants.sqlFileExtension)) {
+				absolutePath += constants.sqlFileExtension;
+			} else {
+				await this.apiWrapper.showErrorMessage(constants.cannotResolvePath(absolutePath));
+				return fileFolderList;
+			}
+		}
+
+		const files = [absolutePath];
+		do {
+			const filepath = files.pop();
+
+			if (filepath) {
+				const stat = await fs.stat(filepath);
+
+				if (stat.isDirectory()) {
+					fileFolderList.push(filepath);
+					(await fs
+						.readdir(filepath))
+						.forEach((f: string) => files.push(path.join(filepath, f)));
+				}
+				else if (stat.isFile()) {
+					fileFolderList.push(filepath);
+				}
+			}
+
+		} while (files.length !== 0);
+
+		return fileFolderList;
 	}
 
 	//#endregion

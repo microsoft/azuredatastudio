@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import { promises as fs } from 'fs';
 /**
  * Consolidates on the error message string
  */
@@ -44,4 +45,28 @@ export function trimChars(input: string, chars: string): string {
 	output = output.substring(0, output.length - i);
 
 	return output;
+}
+
+
+/**
+ * Trims file name from @param input and return UriPath
+ */
+export function trimFileName(input: vscode.Uri): vscode.Uri {
+	let lastLevel: number = input.path.lastIndexOf('/');
+	if (lastLevel < 1) {
+		return input;
+	}
+	return vscode.Uri.file(input.path.substring(0, lastLevel));
+}
+
+/**
+ * Checks if the folder or file exists @param path path of the folder/file
+*/
+export function exists(path: string): boolean {
+	try {
+		fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
+	}
 }

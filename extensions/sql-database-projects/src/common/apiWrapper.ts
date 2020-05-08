@@ -115,8 +115,16 @@ export class ApiWrapper {
 		return vscode.window.showQuickPick(items, options, token);
 	}
 
+	public showQuickPickString(items: string[] | Thenable<string[]>, options?: vscode.QuickPickOptions, token?: vscode.CancellationToken): Thenable<string | undefined> {
+		return vscode.window.showQuickPick(items, options, token);
+	}
+
 	public showInputBox(options?: vscode.InputBoxOptions, token?: vscode.CancellationToken): Thenable<string | undefined> {
 		return vscode.window.showInputBox(options, token);
+	}
+
+	public showSaveDialog(options?: vscode.SaveDialogOptions): Thenable<string | undefined> {
+		return vscode.window.showSaveDialog(options);
 	}
 
 	public listDatabases(connectionId: string): Thenable<string[]> {
