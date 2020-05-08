@@ -272,7 +272,6 @@ export class PanelComponent extends Disposable implements IThemable {
 			tab.iconClass = config.iconClass;
 			tabHeader?.refresh();
 		}
-
 	}
 
 	private findAndRemoveTabFromMRU(tab: TabComponent): void {
