@@ -591,15 +591,15 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public async getInstalledPipPackages(pythonExePath?: string): Promise<PythonPkgDetails[]> {
-		if (pythonExePath) {
-			if (!fs.existsSync(pythonExePath)) {
+		try {
+			if (pythonExePath) {
+				if (!fs.existsSync(pythonExePath)) {
+					return [];
+				}
+			} else if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
 				return [];
 			}
-		} else if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
-			return [];
-		}
 
-		try {
 			let cmd = `"${pythonExePath ?? this.pythonExecutable}" -m pip list --format=json`;
 			let packagesInfo = await this.executeBufferedCommand(cmd);
 			let packagesResult: PythonPkgDetails[] = [];
@@ -632,11 +632,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public async getInstalledCondaPackages(): Promise<PythonPkgDetails[]> {
-		if (!this.isCondaInstalled()) {
-			return [];
-		}
-
 		try {
+			if (!this.isCondaInstalled()) {
+				return [];
+			}
+
 			let condaExe = this.getCondaExePath();
 			let cmd = `"${condaExe}" list --json`;
 			let packagesInfo = await this.executeBufferedCommand(cmd);
