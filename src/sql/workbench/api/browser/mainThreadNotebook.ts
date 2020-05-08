@@ -184,12 +184,12 @@ class ServerManagerWrapper implements azdata.nb.ServerManager {
 		return this.onServerStartedEmitter.event;
 	}
 
-	startServer(): Thenable<void> {
-		return this.doStartServer();
+	startServer(kernelSpec: azdata.nb.IKernelSpec): Thenable<void> {
+		return this.doStartServer(kernelSpec);
 	}
 
-	private async doStartServer(): Promise<void> {
-		await this._proxy.ext.$doStartServer(this.handle);
+	private async doStartServer(kernelSpec: azdata.nb.IKernelSpec): Promise<void> {
+		await this._proxy.ext.$doStartServer(this.handle, kernelSpec);
 		this._isStarted = true;
 		this.onServerStartedEmitter.fire();
 	}
