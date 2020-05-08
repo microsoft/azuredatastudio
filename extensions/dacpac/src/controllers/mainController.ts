@@ -11,10 +11,8 @@ import { DataTierApplicationWizard } from '../wizard/dataTierApplicationWizard';
  * The main controller class that initializes the extension
  */
 export default class MainController implements vscode.Disposable {
-	protected _context: vscode.ExtensionContext;
 
-	public constructor(context: vscode.ExtensionContext) {
-		this._context = context;
+	public constructor(private context: vscode.ExtensionContext) {
 	}
 
 	public deactivate(): void {
@@ -30,7 +28,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	public get extensionContext(): vscode.ExtensionContext {
-		return this._context;
+		return this.context;
 	}
 
 	public dispose(): void {
