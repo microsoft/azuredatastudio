@@ -79,7 +79,7 @@ export enum PageName {
 export class DataTierApplicationWizard {
 	public wizard: azdata.window.Wizard;
 	private connection: azdata.connection.ConnectionProfile;
-	public model: DacFxDataModel;
+	private model: DacFxDataModel;
 	public pages: Map<string, Page> = new Map<string, Page>();
 	public selectedOperation: Operation;
 
@@ -331,7 +331,7 @@ export class DataTierApplicationWizard {
 		return page;
 	}
 
-	public isSummaryPage(idx: number): boolean {
+	private isSummaryPage(idx: number): boolean {
 		return this.selectedOperation === Operation.import && idx === ImportOperationPath.summary
 			|| this.selectedOperation === Operation.export && idx === ExportOperationPath.summary
 			|| this.selectedOperation === Operation.extract && idx === ExtractOperationPath.summary
