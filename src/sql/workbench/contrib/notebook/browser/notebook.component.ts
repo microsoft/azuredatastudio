@@ -57,6 +57,7 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -84,6 +85,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _scrollTop: number;
 	private _navProvider: INavigationProvider;
 	private navigationResult: nb.NavigationResult;
+	public previewFeaturesEnabled: boolean = false;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -104,11 +106,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
 		@Inject(ICommandService) private commandService: ICommandService,
-		@Inject(IAdsTelemetryService) private adstelemetryService: IAdsTelemetryService
+		@Inject(IAdsTelemetryService) private adstelemetryService: IAdsTelemetryService,
+		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
 		super();
 		this.updateProfile();
 		this.isLoading = true;
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
+			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
+		}));
 	}
 
 	private updateProfile(): void {
@@ -116,6 +122,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	ngOnInit() {
+		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
@@ -396,67 +403,112 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	protected initActionBar(): void {
-		let kernelContainer = document.createElement('li');
-		let kernelDropdown = this.instantiationService.createInstance(KernelsDropdown, kernelContainer, this.contextViewService, this.modelReady);
-		kernelDropdown.render(kernelContainer);
-		attachSelectBoxStyler(kernelDropdown, this.themeService);
+		if (this.previewFeaturesEnabled) {
+			let kernelContainer = document.createElement('li');
+			let kernelDropdown = this.instantiationService.createInstance(KernelsDropdown, kernelContainer, this.contextViewService, this.modelReady);
+			kernelDropdown.render(kernelContainer);
+			attachSelectBoxStyler(kernelDropdown, this.themeService);
 
-		let attachToContainer = document.createElement('li');
-		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
-			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
-		attachToDropdown.render(attachToContainer);
-		attachSelectBoxStyler(attachToDropdown, this.themeService);
+			let attachToContainer = document.createElement('li');
+			let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
+				this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
+			attachToDropdown.render(attachToContainer);
+			attachSelectBoxStyler(attachToDropdown, this.themeService);
 
-		let spacerElement = document.createElement('li');
-		spacerElement.style.marginLeft = 'auto';
+			let spacerElement = document.createElement('li');
+			spacerElement.style.marginLeft = 'auto';
 
-		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Code cell"), 'notebook-button masked-pseudo code');
-		addCodeCellButton.cellType = CellTypes.Code;
+			let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Code cell"), 'notebook-button masked-pseudo code');
+			addCodeCellButton.cellType = CellTypes.Code;
 
-		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Markdown cell"), 'notebook-button masked-pseudo markdown');
-		addTextCellButton.cellType = CellTypes.Markdown;
+			let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Markdown cell"), 'notebook-button masked-pseudo markdown');
+			addTextCellButton.cellType = CellTypes.Markdown;
 
 
-		this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run all"), 'notebook-button masked-pseudo start-outline');
+			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run all"), 'notebook-button masked-pseudo start-outline');
 
-		let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', true);
+			let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', true);
 
-		let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', true);
+			let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', true);
 
-		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', true);
-		this._trustedAction.enabled = false;
+			this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', true);
+			this._trustedAction.enabled = false;
 
-		let taskbar = <HTMLElement>this.toolbar.nativeElement;
-		this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
-		this._actionBar.context = this;
+			let taskbar = <HTMLElement>this.toolbar.nativeElement;
+			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
+			this._actionBar.context = this;
+			taskbar.classList.add('in-preview');
 
-		let buttonDropdownContainer = DOM.$('li.action-item');
-		buttonDropdownContainer.setAttribute('role', 'presentation');
-		let dropdownMenuActionViewItem = new DropdownMenuActionViewItem(
-			addCodeCellButton,
-			[addCodeCellButton, addTextCellButton],
-			this.contextMenuService,
-			undefined,
-			this._actionBar.actionRunner,
-			undefined,
-			'codicon notebook-button masked-pseudo masked-pseudo-after add-new dropdown-arrow',
-			localize('addCell', "Cell"),
-			undefined
-		);
-		dropdownMenuActionViewItem.render(buttonDropdownContainer);
-		dropdownMenuActionViewItem.setActionContext(this);
+			let buttonDropdownContainer = DOM.$('li.action-item');
+			buttonDropdownContainer.setAttribute('role', 'presentation');
+			let dropdownMenuActionViewItem = new DropdownMenuActionViewItem(
+				addCodeCellButton,
+				[addCodeCellButton, addTextCellButton],
+				this.contextMenuService,
+				undefined,
+				this._actionBar.actionRunner,
+				undefined,
+				'codicon notebook-button masked-pseudo masked-pseudo-after add-new dropdown-arrow',
+				localize('addCell', "Cell"),
+				undefined
+			);
+			dropdownMenuActionViewItem.render(buttonDropdownContainer);
+			dropdownMenuActionViewItem.setActionContext(this);
 
-		this._actionBar.setContent([
-			{ element: buttonDropdownContainer },
-			{ action: this._runAllCellsAction },
-			{ element: Taskbar.createTaskbarSeparator() },
-			{ element: attachToContainer },
-			{ element: kernelContainer },
-			{ element: spacerElement },
-			{ action: collapseCellsAction },
-			{ action: clearResultsButton },
-			{ action: this._trustedAction },
-		]);
+			this._actionBar.setContent([
+				{ element: buttonDropdownContainer },
+				{ action: this._runAllCellsAction },
+				{ element: Taskbar.createTaskbarSeparator() },
+				{ element: attachToContainer },
+				{ element: kernelContainer },
+				{ element: spacerElement },
+				{ action: collapseCellsAction },
+				{ action: clearResultsButton },
+				{ action: this._trustedAction },
+			]);
+		} else {
+			let kernelContainer = document.createElement('div');
+			let kernelDropdown = this.instantiationService.createInstance(KernelsDropdown, kernelContainer, this.contextViewService, this.modelReady);
+			kernelDropdown.render(kernelContainer);
+			attachSelectBoxStyler(kernelDropdown, this.themeService);
+
+			let attachToContainer = document.createElement('div');
+			let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
+				this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
+			attachToDropdown.render(attachToContainer);
+			attachSelectBoxStyler(attachToDropdown, this.themeService);
+
+			let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code1', "Code"), 'notebook-button icon-add');
+			addCodeCellButton.cellType = CellTypes.Code;
+
+			let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text1', "Text"), 'notebook-button icon-add');
+			addTextCellButton.cellType = CellTypes.Markdown;
+
+			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll1', "Run Cells"), 'notebook-button icon-run-cells');
+
+			let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', false);
+
+			this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', false);
+			this._trustedAction.enabled = false;
+
+			let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', false);
+
+			let taskbar = <HTMLElement>this.toolbar.nativeElement;
+			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
+			this._actionBar.context = this;
+
+			this._actionBar.setContent([
+				{ action: addCodeCellButton },
+				{ action: addTextCellButton },
+				{ element: kernelContainer },
+				{ element: attachToContainer },
+				{ action: this._trustedAction },
+				{ action: this._runAllCellsAction },
+				{ action: clearResultsButton },
+				{ action: collapseCellsAction }
+			]);
+		}
+
 	}
 
 	protected initNavSection(): void {

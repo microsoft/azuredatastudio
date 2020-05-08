@@ -157,8 +157,10 @@ export class TrustedAction extends ToggleableAction {
 	private static readonly trustedLabel = localize('trustLabel', "Trusted");
 	private static readonly notTrustedLabel = localize('untrustLabel', "Not Trusted");
 	private static readonly baseClass = 'notebook-button';
-	private static readonly trustedCssClass = 'icon-shield';
-	private static readonly notTrustedCssClass = 'icon-shield';
+	private static readonly previewTrustedCssClass = 'icon-shield';
+	private static readonly trustedCssClass = 'icon-trusted';
+	private static readonly previewNotTrustedCssClass = 'icon-shield';
+	private static readonly notTrustedCssClass = 'icon-notTrusted';
 	private static readonly maskedIconClass = 'masked';
 
 	constructor(
@@ -167,9 +169,9 @@ export class TrustedAction extends ToggleableAction {
 		super(id, {
 			baseClass: TrustedAction.baseClass,
 			toggleOnLabel: TrustedAction.trustedLabel,
-			toggleOnClass: TrustedAction.trustedCssClass,
+			toggleOnClass: toggleTooltip === true ? TrustedAction.previewTrustedCssClass : TrustedAction.trustedCssClass,
 			toggleOffLabel: TrustedAction.notTrustedLabel,
-			toggleOffClass: TrustedAction.notTrustedCssClass,
+			toggleOffClass: toggleTooltip === true ? TrustedAction.previewNotTrustedCssClass : TrustedAction.notTrustedCssClass,
 			maskedIconClass: TrustedAction.maskedIconClass,
 			shouldToggleTooltip: toggleTooltip,
 			isOn: false
@@ -220,17 +222,19 @@ export class CollapseCellsAction extends ToggleableAction {
 	private static readonly collapseCells = localize('collapseAllCells', "Collapse Cells");
 	private static readonly expandCells = localize('expandAllCells', "Expand Cells");
 	private static readonly baseClass = 'notebook-button';
-	private static readonly collapseCssClass = 'icon-collapse-cells';
-	private static readonly expandCssClass = 'icon-expand-cells';
+	private static readonly previewCollapseCssClass = 'icon-collapse-cells';
+	private static readonly collapseCssClass = 'icon-hide-cells';
+	private static readonly previewExpandCssClass = 'icon-expand-cells';
+	private static readonly expandCssClass = 'icon-show-cells';
 	private static readonly maskedIconClass = 'masked';
 
 	constructor(id: string, toggleTooltip: boolean) {
 		super(id, {
 			baseClass: CollapseCellsAction.baseClass,
 			toggleOnLabel: CollapseCellsAction.expandCells,
-			toggleOnClass: CollapseCellsAction.expandCssClass,
+			toggleOnClass: toggleTooltip === true ? CollapseCellsAction.previewExpandCssClass : CollapseCellsAction.expandCssClass,
 			toggleOffLabel: CollapseCellsAction.collapseCells,
-			toggleOffClass: CollapseCellsAction.collapseCssClass,
+			toggleOffClass: toggleTooltip === true ? CollapseCellsAction.previewCollapseCssClass : CollapseCellsAction.collapseCssClass,
 			maskedIconClass: CollapseCellsAction.maskedIconClass,
 			shouldToggleTooltip: toggleTooltip,
 			isOn: false
