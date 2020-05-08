@@ -15,6 +15,7 @@ const localize = nls.loadMessageBundle();
 
 import { JupyterKernel } from './jupyterKernel';
 import { Deferred } from '../common/promise';
+import { JupyterServerInstallation } from './jupyterServerInstallation';
 
 const configBase = {
 	'kernel_python_credentials': {
@@ -66,6 +67,7 @@ export class JupyterSessionManager implements nb.SessionManager {
 	private _isReady: boolean;
 	private _sessionManager: Session.IManager;
 	private static _sessions: JupyterSession[] = [];
+	private _installation: JupyterServerInstallation;
 
 	constructor(private _pythonEnvVarPath?: string) {
 		this._isReady = false;
@@ -84,6 +86,12 @@ export class JupyterSessionManager implements nb.SessionManager {
 			});
 	}
 
+	public set installation(installation: JupyterServerInstallation) {
+		this._installation = installation;
+		JupyterSessionManager._sessions.forEach(session => {
+			session.installation = installation;
+		});
+	}
 	public get isReady(): boolean {
 		return this._isReady;
 	}
@@ -126,7 +134,7 @@ export class JupyterSessionManager implements nb.SessionManager {
 			return Promise.reject(new Error(localize('errorStartBeforeReady', "Cannot start a session, the manager is not yet initialized")));
 		}
 		let sessionImpl = await this._sessionManager.startNew(options);
-		let jupyterSession = new JupyterSession(sessionImpl, skipSettingEnvironmentVars, this._pythonEnvVarPath);
+		let jupyterSession = new JupyterSession(sessionImpl, this._installation, skipSettingEnvironmentVars, this._pythonEnvVarPath);
 		await jupyterSession.messagesComplete;
 		let index = JupyterSessionManager._sessions.findIndex(session => session.path === options.path);
 		if (index > -1) {
@@ -173,7 +181,7 @@ export class JupyterSession implements nb.ISession {
 	private _kernel: nb.IKernel;
 	private _messagesComplete: Deferred<void> = new Deferred<void>();
 
-	constructor(private sessionImpl: Session.ISession, skipSettingEnvironmentVars?: boolean, private _pythonEnvVarPath?: string) {
+	constructor(private sessionImpl: Session.ISession, private _installation: JupyterServerInstallation, skipSettingEnvironmentVars?: boolean, private _pythonEnvVarPath?: string) {
 		this.setEnvironmentVars(skipSettingEnvironmentVars).catch(error => {
 			console.error(`Unexpected exception setting Jupyter Session variables : ${error}`);
 			// We don't want callers to hang forever waiting - it's better to continue on even if we weren't
@@ -221,7 +229,20 @@ export class JupyterSession implements nb.ISession {
 		return this._messagesComplete.promise;
 	}
 
+	public set installation(installation: JupyterServerInstallation) {
+		this._installation = installation;
+	}
+
 	public async changeKernel(kernelInfo: nb.IKernelSpec): Promise<nb.IKernel> {
+		if (this._installation) {
+			try {
+				await this._installation.promptForPackageUpgrade(kernelInfo.display_name);
+			} catch (err) {
+				// Have to swallow the error here to prevent hangs when changing back to the old kernel.
+				console.error(err.toString());
+				return this._kernel;
+			}
+		}
 		// For now, Jupyter implementation handles disposal etc. so we can just
 		// null out our kernel and let the changeKernel call handle this
 		this._kernel = undefined;
