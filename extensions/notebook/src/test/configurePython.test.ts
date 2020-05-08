@@ -36,6 +36,7 @@ describe('Configure Python Wizard', function () {
 		let wizard = new ConfigurePythonWizard(apiWrapper, testInstallation);
 		await wizard.start();
 		await wizard.close();
+		await should(wizard.setupComplete).be.resolved();
 	});
 
 	it('Reject setup on cancel test', async () => {
