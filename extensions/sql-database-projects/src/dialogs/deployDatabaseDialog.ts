@@ -43,8 +43,6 @@ export class DeployDatabaseDialog {
 		this.dialog.okButton.onClick(async () => await this.deploy());
 
 		this.dialog.cancelButton.label = constants.cancelButtonText;
-		this.dialog.cancelButton.onClick(async () => await this.cancel());
-		this.dialog.cancelButton.onClick(async () => await this.cancel());
 
 		let generateScriptButton: azdata.window.Button = azdata.window.createButton(constants.generateScriptButtonText);
 		generateScriptButton.onClick(async () => await this.generateScript());
@@ -129,9 +127,6 @@ export class DeployDatabaseDialog {
 		// TODO: hook up with build and generate script
 		// if target connection is a data source, have to check if already connected or if connection dialog needs to be opened
 		azdata.window.closeDialog(this.dialog);
-	}
-
-	private async cancel(): Promise<void> {
 	}
 
 	public getDefaultDatabaseName(): string {
