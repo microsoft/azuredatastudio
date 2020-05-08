@@ -51,7 +51,8 @@ export function createViewContext(): ViewTestContext {
 		removeItem: () => true,
 		insertItem: () => { },
 		items: [],
-		setLayout: () => { }
+		setLayout: () => { },
+		setItemLayout: () => { }
 	};
 	let form: azdata.FormContainer = Object.assign({}, componentBase, container, {
 	});
