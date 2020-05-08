@@ -10,6 +10,7 @@ const localize = nls.loadMessageBundle();
 // Placeholder values
 export const dataSourcesFileName = 'datasources.json';
 export const sqlprojExtension = '.sqlproj';
+export const sqlFileExtension = '.sql';
 
 // UI Strings
 
@@ -19,6 +20,8 @@ export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
 export const newDatabaseProjectName = localize('newDatabaseProjectName', "New database project name:");
 export const sqlDatabaseProject = localize('sqlDatabaseProject', "SQL database project");
+export const extractTargetInput = localize('extractTargetInput', "Target for extraction:");
+export const selectFileFolder = localize('selectFileFolder', "Select");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 
 // Error messages
@@ -32,8 +35,11 @@ export const unknownDataSourceType = localize('unknownDataSourceType', "Unknown 
 export const invalidSqlConnectionString = localize('invalidSqlConnectionString', "Invalid SQL connection string");
 export const projectNameRequired = localize('projectNameRequired', "Name is required to create a new database project.");
 export const projectLocationRequired = localize('projectLocationRequired', "Location is required to create a new database project.");
+export const extractTargetDefault = localize('extractTargetDefault', "Default of SchemaObjectType is set as target for extraction.");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
+export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
+export function cannotResolvePath(path: string) { return localize('cannotResolvePath', "Can not resolve path {0}", path); }
 
 
 // Project script types

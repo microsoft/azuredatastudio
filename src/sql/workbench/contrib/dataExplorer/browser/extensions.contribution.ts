@@ -15,7 +15,7 @@ import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes'
 // Data-Tier Application Wizard
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'export',
-	order: 8,
+	order: 7,
 	command: {
 		id: DATA_TIER_WIZARD_COMMAND_ID,
 		title: localize('dacFx', "Data-tier Application Wizard")
@@ -27,7 +27,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'export',
-	order: 8,
+	order: 7,
 	command: {
 		id: DATA_TIER_WIZARD_COMMAND_ID,
 		title: localize('dacFx', "Data-tier Application Wizard")
@@ -115,7 +115,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 // Import Database
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'export',
-	order: 7,
+	order: 8,
 	command: {
 		id: IMPORT_DATABASE_COMMAND_ID,
 		title: localize('importDatabase', "Import New Database Project")

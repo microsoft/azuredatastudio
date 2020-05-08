@@ -65,8 +65,8 @@ export class DacFxService implements mssql.IDacFxService {
 		);
 	}
 
-	public importDatabaseProject(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, extractTarget: azdata.ExtractTarget, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> {
-		const params: contracts.ExtractParams = { databaseName: databaseName, packageFilePath: packageFilePath, applicationName: applicationName, applicationVersion: applicationVersion, ownerUri: ownerUri, extractTarget: extractTarget, taskExecutionMode: taskExecutionMode };
+	public importDatabaseProject(databaseName: string, targetFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, extractTarget: azdata.ExtractTarget, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> {
+		const params: contracts.ExtractParams = { databaseName: databaseName, packageFilePath: targetFilePath, applicationName: applicationName, applicationVersion: applicationVersion, ownerUri: ownerUri, extractTarget: extractTarget, taskExecutionMode: taskExecutionMode };
 		return this.client.sendRequest(contracts.ExtractRequest.type, params).then(
 			undefined,
 			e => {

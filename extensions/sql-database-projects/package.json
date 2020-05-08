@@ -152,6 +152,13 @@
           "command": "sqlDatabaseProjects.importDatabase",
           "when": "view == sqlDatabaseProjectsView"
         }
+      ],
+      "objectExplorer/item/context": [
+        {
+          "command": "sqlDatabaseProjects.importDatabase",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
+          "group": "export"
+        }
       ]
     },
     "views": {
@@ -162,14 +169,7 @@
           "when": ""
         }
       ]
-    },
-    "objectExplorer/item/context": [
-      {
-        "command": "sqlDatabaseProjects.importDatabase",
-        "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
-        "group": "export"
-      }
-    ]
+    }
   },
   "dependencies": {
     "vscode-languageclient": "^5.3.0-next.1",
