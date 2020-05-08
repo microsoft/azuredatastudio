@@ -4,9 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+
+import ControllerBase from './controllers/controllerBase';
 import MainController from './controllers/mainController';
 
-let controllers: MainController[] = [];
+let controllers: ControllerBase[] = [];
 
 export function activate(context: vscode.ExtensionContext) {
 	let activations: Promise<boolean>[] = [];
