@@ -8,11 +8,10 @@ import { BdcDashboardModel, BdcErrorEvent } from './bdcDashboardModel';
 import { BdcServiceStatusPage } from './bdcServiceStatusPage';
 import { BdcDashboardOverviewPage } from './bdcDashboardOverviewPage';
 import { BdcStatusModel, ServiceStatusModel } from '../controller/apiGenerated';
-import { getServiceNameDisplayText, showErrorMessage } from '../utils';
+import { getServiceNameDisplayText, showErrorMessage, getHealthStatusDotIcon } from '../utils';
 import { HdfsDialogCancelledError } from './hdfsDialogBase';
 import { InitializingComponent } from './intializingComponent';
 import * as loc from '../localizedConstants';
-import { IconPathHelper } from '../constants';
 
 export class BdcDashboard extends InitializingComponent {
 
@@ -20,7 +19,8 @@ export class BdcDashboard extends InitializingComponent {
 
 	private modelView: azdata.ModelView;
 
-	private createdServicePages: Map<string, azdata.Tab> = new Map<string, azdata.Tab>();
+	private createdServicePages: Map<string, azdata.DashboardTab> = new Map<string, azdata.DashboardTab>();
+	private overviewTab: azdata.DashboardTab;
 
 	constructor(private title: string, private model: BdcDashboardModel) {
 		super();
@@ -39,14 +39,14 @@ export class BdcDashboard extends InitializingComponent {
 			this.modelView = modelView;
 
 			const overviewPage = new BdcDashboardOverviewPage(this.model, modelView);
+			this.overviewTab = {
+				title: loc.bdcOverview,
+				id: 'overview-tab',
+				content: overviewPage.container,
+				toolbar: overviewPage.toolbarContainer
+			};
 			return [
-				{
-					title: loc.bdcOverview,
-					id: 'overview-tab',
-					//icon: IconPathHelper.postgres,
-					content: overviewPage.container,
-					toolbar: overviewPage.toolbarContainer
-				}
+				this.overviewTab
 			];
 		});
 		this.initialized = true;
@@ -59,7 +59,7 @@ export class BdcDashboard extends InitializingComponent {
 		if (!bdcStatus) {
 			return;
 		}
-		this.createServicePages(bdcStatus.services);
+		this.updateServicePages(bdcStatus.services);
 	}
 
 	private handleError(errorEvent: BdcErrorEvent): void {
@@ -74,34 +74,32 @@ export class BdcDashboard extends InitializingComponent {
 	}
 
 	/**
-	 * Helper to create service status pages for new services
+	 * Update the service tab pages, creating any new ones as necessary
 	 */
-	private createServicePages(services?: ServiceStatusModel[]): void {
+	private updateServicePages(services?: ServiceStatusModel[]): void {
 		if (services) {
-			const newTabs: azdata.Tab[] = [];
-			let i = 0;
 			// Create a service page for each new service. We currently don't support services being removed.
 			services.forEach(s => {
 				const existingPage = this.createdServicePages.get(s.serviceName);
 				if (existingPage) {
-					existingPage.icon = existingPage.icon === IconPathHelper.status_circle_red ? IconPathHelper.status_circle_blank : IconPathHelper.status_circle_red;
+					existingPage.icon = getHealthStatusDotIcon(s.healthStatus);
 				} else {
 					const serviceStatusPage = new BdcServiceStatusPage(s.serviceName, this.model, this.modelView);
 					const newTab = <azdata.Tab>{
 						title: getServiceNameDisplayText(s.serviceName),
 						id: s.serviceName,
-						icon: i++ % 2 === 0 ? IconPathHelper.status_circle_red : IconPathHelper.status_circle_blank,
+						icon: getHealthStatusDotIcon(s.healthStatus),
 						content: serviceStatusPage.container,
 						toolbar: serviceStatusPage.toolbarContainer
 					};
 					this.createdServicePages.set(s.serviceName, newTab);
-					newTabs.push(newTab);
 				}
 			});
-			this.dashboard.addTabs([
+			this.dashboard.updateTabs([
+				this.overviewTab,
 				{
 					title: loc.clusterDetails,
-					tabs: newTabs
+					tabs: Array.from(this.createdServicePages.values())
 				}]);
 		}
 	}

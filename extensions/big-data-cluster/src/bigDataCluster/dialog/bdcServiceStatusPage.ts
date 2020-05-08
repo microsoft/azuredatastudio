@@ -8,7 +8,7 @@ import { BdcStatusModel, ResourceStatusModel } from '../controller/apiGenerated'
 import { BdcDashboardResourceStatusPage } from './bdcDashboardResourceStatusPage';
 import { BdcDashboardModel } from './bdcDashboardModel';
 import { BdcDashboardPage } from './bdcDashboardPage';
-import { IconPathHelper } from '../constants';
+import { getHealthStatusDotIcon } from '../utils';
 
 export class BdcServiceStatusPage extends BdcDashboardPage {
 
@@ -29,12 +29,11 @@ export class BdcServiceStatusPage extends BdcDashboardPage {
 	}
 
 	private createPage(): void {
+		this.tabbedPanel = this.modelView.modelBuilder.tabbedPanel()
+			.withLayout({ showIcon: true, alwaysShowTabs: true }).component();
+
 		// Initialize our set of tab pages
 		this.handleBdcStatusUpdate(this.model.bdcStatus);
-
-		this.tabbedPanel = this.modelView.modelBuilder.tabbedPanel()
-			.withTabs(Array.from(this.createdResourceTabs.values()))
-			.withLayout({ showIcon: true }).component();
 
 		this.initialized = true;
 	}
@@ -45,33 +44,29 @@ export class BdcServiceStatusPage extends BdcDashboardPage {
 		}
 		const service = bdcStatus.services.find(s => s.serviceName === this.serviceName);
 		if (service && service.resources) {
-			this.createAndUpdateResourcePages(service.resources);
+			this.updateResourcePages(service.resources);
 		}
 	}
 
 	/**
-	 * Helper to create the resource status page
+	 * Update the resource tab pages, creating any new ones as necessary
 	 */
-	private createAndUpdateResourcePages(resources: ResourceStatusModel[]): azdata.Tab[] {
-		const newTabs: azdata.Tab[] = [];
-		let i = 0;
+	private updateResourcePages(resources: ResourceStatusModel[]): void {
 		resources.forEach(resource => {
 			const existingTab = this.createdResourceTabs.get(resource.resourceName);
 			if (existingTab) {
-				existingTab.icon = existingTab.icon === IconPathHelper.status_circle_red ? IconPathHelper.status_circle_blank : IconPathHelper.status_circle_red;
+				existingTab.icon = getHealthStatusDotIcon(resource.healthStatus);
 			} else {
 				const resourceStatusPage = new BdcDashboardResourceStatusPage(this.model, this.modelView, this.serviceName, resource.resourceName);
 				const newTab: azdata.Tab = {
 					title: resource.resourceName,
 					id: resource.resourceName,
 					content: resourceStatusPage.container,
-					icon: i++ % 2 === 0 ? IconPathHelper.status_circle_red : IconPathHelper.status_circle_blank
+					icon: getHealthStatusDotIcon(resource.healthStatus)
 				};
 				this.createdResourceTabs.set(resource.resourceName, newTab);
-
-				newTabs.push();
 			}
 		});
-		return newTabs;
+		this.tabbedPanel.updateTabs(Array.from(this.createdResourceTabs.values()));
 	}
 }
