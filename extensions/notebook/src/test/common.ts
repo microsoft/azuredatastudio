@@ -318,6 +318,25 @@ class TestLoadingComponent extends TestComponentBase implements azdata.LoadingCo
 	component: azdata.Component;
 }
 
+class TestFormContainer extends TestComponentBase implements azdata.FormContainer {
+	items: azdata.Component[] = [];
+	clearItems(): void {
+	}
+	addItems(itemConfigs: azdata.Component[], itemLayout?: azdata.FormItemLayout): void {
+	}
+	addItem(component: azdata.Component, itemLayout?: azdata.FormItemLayout): void {
+	}
+	insertItem(component: azdata.Component, index: number, itemLayout?: azdata.FormItemLayout): void {
+	}
+	removeItem(component: azdata.Component): boolean {
+		return true;
+	}
+	setLayout(layout: azdata.FormLayout): void {
+	}
+	setItemLayout(component: azdata.Component, layout: azdata.FormItemLayout): void {
+	}
+}
+
 class TestComponentBuilder<T extends azdata.Component> implements azdata.ComponentBuilder<T> {
 	constructor(private _component: T) {
 	}
@@ -343,17 +362,7 @@ class TestLoadingBuilder extends TestComponentBuilder<azdata.LoadingComponent> i
 export function createViewContext(): TestContext {
 	let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 
-	const components: azdata.Component[] = [];
-	let container = {
-		clearItems: () => { },
-		addItems: () => { },
-		addItem: () => { },
-		removeItem: () => true,
-		insertItem: () => { },
-		items: components,
-		setLayout: () => { }
-	};
-	let form: azdata.FormContainer = Object.assign({}, new TestComponentBase(), container);
+	let form: azdata.FormContainer = new TestFormContainer();
 	let textBuilder: azdata.ComponentBuilder<azdata.TextComponent> = new TestComponentBuilder(new TestTextComponent());
 	let buttonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent> = new TestComponentBuilder(new TestButtonComponent(onClick));
 	let radioButtonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent> = new TestComponentBuilder(new TestRadioButtonComponent(onClick));
