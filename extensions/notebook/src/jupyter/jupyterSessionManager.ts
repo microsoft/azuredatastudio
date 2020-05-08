@@ -348,11 +348,6 @@ export class JupyterSession implements nb.ISession {
 			}
 			for (let i = 0; i < Object.keys(process.env).length; i++) {
 				let key = Object.keys(process.env)[i];
-				// DOTNET_ROOT gets set as part of the liveshare experience, but confuses the dotnet interactive kernel
-				// Not setting this environment variable for notebooks removes this issue
-				if (key.toLowerCase() === 'dotnet_root') {
-					continue;
-				}
 				if (key.toLowerCase() === 'path' && this._pythonEnvVarPath) {
 					allCode += `%set_env ${key}=${this._pythonEnvVarPath}${EOL}`;
 				} else {

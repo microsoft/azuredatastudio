@@ -333,11 +333,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		delete env['Path']; // Delete extra 'Path' variable for Windows, just in case.
 		env['PATH'] = this.pythonEnvVarPath;
 
-		// We don't want Jupyter to know about DOTNET_ROOT, as it's been modified by the liveshare experience
-		// Without this, won't be able to find the ASP.NET bits
-		if (process.env['DOTNET_ROOT']) {
-			delete env['DOTNET_ROOT'];
-		}
 		this.execOptions = {
 			env: env
 		};
