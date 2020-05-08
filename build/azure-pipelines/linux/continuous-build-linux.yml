@@ -74,12 +74,12 @@ steps:
 #     DISPLAY=:10 ./scripts/test-integration.sh --tfs "Integration Tests"
 #   displayName: Run Integration Tests (Electron)
 
-- task: PublishPipelineArtifact@0
-  inputs:
-    artifactName: crash-dump-linux
-    targetPath: .build/crashes
-  displayName: 'Publish Crash Reports'
-  condition: succeededOrFailed()
+# - task: PublishPipelineArtifact@0
+#   inputs:
+#     artifactName: crash-dump-linux
+#     targetPath: .build/crashes
+#   displayName: 'Publish Crash Reports'
+#   condition: succeededOrFailed()
 
 - task: PublishTestResults@2
   displayName: Publish Tests Results
