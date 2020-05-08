@@ -5,7 +5,7 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnDestroy, ViewChild } from '@angular/core';
 import { NavigationBarLayout, PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { TabType } from 'sql/base/browser/ui/panel/tab.component';
-import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
+import { ContainerBase, ItemDescriptor } from 'sql/workbench/browser/modelComponents/componentBase';
 import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import 'vs/css!./media/tabbedPanel';
 import { IUserFriendlyIcon, createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
@@ -120,5 +120,9 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 		if (firstTabIndex >= 0) {
 			this._panel.selectTab(firstTabIndex);
 		}
+	}
+
+	onItemLayoutUpdated(item: ItemDescriptor<TabConfig>): void {
+		this._panel.updateTab(item.config.id, { title: item.config.title, iconClass: item.config.icon ? createIconCssClass(item.config.icon) : undefined });
 	}
 }

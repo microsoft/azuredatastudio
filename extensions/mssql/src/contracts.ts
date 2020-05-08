@@ -674,6 +674,35 @@ export namespace SchemaCompareCancellationRequest {
 
 // ------------------------------- <Schema Compare> -----------------------------
 
+// ------------------------------- <Sql Assessment> -----------------------------
+
+export interface SqlAssessmentParams {
+	ownerUri: string;
+	targetType: mssql.SqlAssessmentTargetType
+}
+
+export interface GenerateSqlAssessmentScriptParams {
+	items: mssql.SqlAssessmentResultItem[];
+	taskExecutionMode: azdata.TaskExecutionMode;
+	targetServerName: string;
+	targetDatabaseName: string;
+}
+
+export namespace SqlAssessmentInvokeRequest {
+	export const type = new RequestType<SqlAssessmentParams, mssql.SqlAssessmentResult, void, void>('assessment/invoke');
+}
+
+export namespace GetSqlAssessmentItemsRequest {
+	export const type = new RequestType<SqlAssessmentParams, mssql.SqlAssessmentResult, void, void>('assessment/getAssessmentItems');
+}
+
+export namespace GenerateSqlAssessmentScriptRequest {
+	export const type = new RequestType<GenerateSqlAssessmentScriptParams, azdata.ResultStatus, void, void>('assessment/generateScript');
+}
+
+// ------------------------------- <Sql Assessment> -----------------------------
+
+
 // ------------------------------- <Serialization> -----------------------------
 export namespace SerializeDataStartRequest {
 	export const type = new RequestType<azdata.SerializeDataStartRequestParams, azdata.SerializeDataResult, void, void>('serialize/start');
