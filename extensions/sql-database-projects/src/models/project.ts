@@ -13,7 +13,6 @@ import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ApiWrapper } from '../common/apiWrapper';
 
-
 /**
  * Class representing a Project, and providing functions for operating on it
  */
