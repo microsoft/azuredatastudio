@@ -48,13 +48,12 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 							type: FieldType.ReadonlyText,
 							label: localize('deployCluster.Kubeconfig', "Kube config"),
 							defaultValue: this.wizard.model.getStringValue(VariableNames.KubeConfigPath_VariableName),
-							labelFontWeight: FontWeight.Bold
+							labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 						},
 						{
 							type: FieldType.ReadonlyText,
 							label: localize('deployCluster.ClusterContext', "Cluster context"),
-							defaultValue: this.wizard.model.getStringValue(VariableNames.ClusterContext_VariableName),
-							labelFontWeight: FontWeight.Bold
+							labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 						}]
 				}
 			]
@@ -73,13 +72,13 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 							type: FieldType.ReadonlyText,
 							label: localize('deployCluster.DeploymentProfile', "Deployment profile"),
 							defaultValue: this.wizard.model.getStringValue(VariableNames.DeploymentProfile_VariableName),
-							labelFontWeight: FontWeight.Bold
+							labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 						},
 						{
 							type: FieldType.ReadonlyText,
 							label: localize('deployCluster.ClusterName', "Cluster name"),
 							defaultValue: this.wizard.model.getStringValue(VariableNames.ClusterName_VariableName),
-							labelFontWeight: FontWeight.Bold
+							labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 						}]
 				}, {
 					fields: [
@@ -87,14 +86,14 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 							type: FieldType.ReadonlyText,
 							label: localize('deployCluster.ControllerUsername', "Controller username"),
 							defaultValue: this.wizard.model.getStringValue(VariableNames.AdminUserName_VariableName),
-							labelFontWeight: FontWeight.Bold
+							labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 						}, {
 							type: FieldType.ReadonlyText,
 							label: localize('deployCluster.AuthenticationMode', "Authentication mode"),
 							defaultValue: this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory ?
 								localize('deployCluster.AuthenticationMode.ActiveDirectory', "Active Directory") :
 								localize('deployCluster.AuthenticationMode.Basic', "Basic"),
-							labelFontWeight: FontWeight.Bold
+							labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 						}
 					]
 				}
@@ -108,13 +107,13 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.OuDistinguishedName', "Organizational unit"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.OrganizationalUnitDistinguishedName_VariableName),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					},
 					{
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.DomainControllerFQDNs', "Domain controller FQDNs"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.DomainControllerFQDNs_VariableName),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					}]
 			});
 			clusterSectionInfo.rows!.push({
@@ -123,13 +122,13 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.DomainDNSIPAddresses', "Domain DNS IP addresses"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.DomainDNSIPAddresses_VariableName),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					},
 					{
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.DomainDNSName', "Domain DNS name"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.DomainDNSName_VariableName),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					}]
 			});
 			clusterSectionInfo.rows!.push({
@@ -138,13 +137,13 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.ClusterAdmins', "Cluster admin group"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.ClusterAdmins_VariableName),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					},
 					{
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.ClusterUsers', "Cluster users"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.ClusterUsers_VariableName),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					}]
 			});
 			clusterSectionInfo.rows!.push({
@@ -153,13 +152,13 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.AppOwers', "App owners"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.AppOwners_VariableName),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					},
 					{
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.AppReaders', "App readers"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.AppReaders_VariableName),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					}]
 			});
 			clusterSectionInfo.rows!.push({
@@ -168,7 +167,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.DomainServiceAccountUserName', "Service account username"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.DomainServiceAccountUserName_VariableName),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					}]
 			});
 		}
@@ -184,12 +183,12 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.SubscriptionId', "Subscription id"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.SubscriptionId_VariableName) || localize('deployCluster.DefaultSubscription', "Default Azure Subscription"),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					}, {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.ResourceGroup', "Resource group"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.ResourceGroup_VariableName),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					}
 				]
 			}, {
@@ -198,12 +197,12 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.Location', "Location"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.Location_VariableName),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					}, {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.AksClusterName', "AKS cluster name"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.AksName_VariableName),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					}
 				]
 			}, {
@@ -212,12 +211,12 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.VMSize', "VM size"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.VMSize_VariableName),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					}, {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.VMCount', "VM count"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.VMCount_VariableName),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					}
 				]
 			}
@@ -235,31 +234,31 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.MasterSqlServerInstances', "SQL Server master instances"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.SQLServerScale_VariableName),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					}, {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.ComputePoolInstances', "Compute pool instances"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.ComputePoolScale_VariableName),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					}]
 				}, {
 					fields: [{
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.DataPoolInstances', "Data pool instances"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.DataPoolScale_VariableName),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					}, {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.SparkPoolInstances', "Spark pool instances"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.SparkPoolScale_VariableName),
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					}]
 				}, {
 					fields: [{
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.StoragePoolInstances', "Storage pool (HDFS) instances"),
 						defaultValue: `${this.wizard.model.getStringValue(VariableNames.HDFSPoolScale_VariableName)} ${this.wizard.model.getBooleanValue(VariableNames.IncludeSpark_VariableName) ? localize('deployCluster.WithSpark', "(Spark included)") : ''}`,
-						labelFontWeight: FontWeight.Bold
+						labelCSSStyles: { labelFontWeight: FontWeight.Bold }
 					}]
 				}
 			]
@@ -398,7 +397,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 
 	private createEndpointRow(name: string, dnsVariableName: string, portVariableName: string): azdata.FlexContainer {
 		const items = [];
-		items.push(createLabel(this.view, { text: name, width: '150px', fontWeight: FontWeight.Bold }));
+		items.push(createLabel(this.view, { text: name, width: '150px', cssStyles: { fontWeight: FontWeight.Bold } }));
 		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
 			items.push(createLabel(this.view, {
 				text: this.wizard.model.getStringValue(dnsVariableName)!, width: '200px'

@@ -94,7 +94,7 @@ export class NotebookWizardSummaryPage extends WizardPageBase<NotebookWizard> {
 				type: FieldType.ReadonlyText,
 				label: fieldInfo.label,
 				defaultValue: this.wizard.model.getStringValue(fieldInfo.variableName!),
-				labelFontWeight: FontWeight.Bold
+				labelCSSStyles: { fontWeight: FontWeight.Bold }
 			}]
 		});
 	}

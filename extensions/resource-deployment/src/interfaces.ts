@@ -162,7 +162,14 @@ export interface PageInfoBase extends InheritableAttributes {
 	sections: SectionInfo[];
 }
 
-export type CSSStyles = {
+export interface TextCSSStyles {
+	fontStyle?: FontStyle | undefined;
+	fontWeight?: FontWeight | undefined;
+	color?: string;
+	[key: string]: string | undefined;
+}
+
+export type ComponentCSSStyles = {
 	[key: string]: string;
 };
 
@@ -184,7 +191,7 @@ export interface SectionInfo extends InheritableAttributes {
 }
 
 export interface RowInfo {
-	cssStyles?: CSSStyles;
+	cssStyles?: ComponentCSSStyles;
 	fields: FieldInfo[] | RowInfo[];
 }
 
@@ -209,11 +216,8 @@ export interface FieldInfo extends SubFieldInfo, InheritableAttributes {
 	placeHolder?: string;
 	userName?: string; // needed for sql server's password complexity requirement check, password can not include the login name.
 	description?: string;
-	labelColor?: string;
-	labelCSSStyles?: CSSStyles;
-	fontStyle?: FontStyle;
-	labelFontWeight?: FontWeight;
-	textFontWeight?: FontWeight;
+	labelCSSStyles?: TextCSSStyles;
+	fontWeight?: FontWeight;
 	links?: azdata.LinkArea[];
 	editable?: boolean; // for editable drop-down,
 	enabled?: boolean;
