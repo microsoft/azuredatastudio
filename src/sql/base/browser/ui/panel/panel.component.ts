@@ -88,6 +88,9 @@ export class PanelComponent extends Disposable implements IThemable {
 	private _options: IPanelOptions = defaultOptions;
 
 	@Input() public set options(newOptions: IPanelOptions) {
+		// Refresh for the case when the options are set
+		// manually through code which doesn't trigger
+		// Angular's change detection
 		this._options = newOptions;
 		this._cd.detectChanges();
 	}
