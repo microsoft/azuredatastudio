@@ -363,7 +363,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 					.withProperties<azdata.HyperlinkComponentProperties>({
 						label: getServiceNameDisplayText(serviceStatus.serviceName),
 						url: '',
-						CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink }
+						CSSStyles: { ...cssStyles.text }
 					}).component();
 				nameCell.onDidClick(() => {
 					this.dashboard.switchToServiceTab(serviceStatus.serviceName);
@@ -458,7 +458,7 @@ function createEndpointComponent(modelBuilder: azdata.ModelBuilder, endpoint: En
 			.withProperties<azdata.HyperlinkComponentProperties>({
 				label: endpoint.endpoint,
 				title: endpoint.endpoint,
-				url: endpoint.endpoint, CSSStyles: { ...cssStyles.hyperlink }
+				url: endpoint.endpoint
 			})
 			.component();
 	}
@@ -468,7 +468,7 @@ function createEndpointComponent(modelBuilder: azdata.ModelBuilder, endpoint: En
 				title: endpoint.endpoint,
 				label: endpoint.endpoint,
 				url: '',
-				CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink }
+				CSSStyles: { ...cssStyles.text }
 			}).component();
 		endpointCell.onDidClick(async () => {
 			const connProfile = bdcModel.getSqlServerMasterConnectionProfile();
