@@ -104,6 +104,9 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 
 	private formatter(row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string {
 		const buttonColumn = columnDef as ButtonColumnDefinition<T>;
+
+		// tabindex=-1 means it is only focusable programatically, when the button column cell becomes active, we will set to focus to the button inside it, the tab navigation experience is smooth.
+		// Otherwise, if we set tabindex to 0, the focus will go to the button first and then the first cell of the table.
 		return `<button tabindex=-1 class="codicon icon slick-button-cell-content ${buttonColumn.iconCssClassField}" aria-label="${this.options.title}"></button>`;
 	}
 }
