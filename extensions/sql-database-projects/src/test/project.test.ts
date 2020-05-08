@@ -10,6 +10,7 @@ import * as testUtils from './testUtils';
 
 import { promises as fs } from 'fs';
 import { Project, EntryType } from '../models/project';
+import { ApiWrapper } from '../common/apiWrapper';
 
 let projFilePath: string;
 
@@ -23,7 +24,7 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 
 	it('Should read Project from sqlproj', async function (): Promise<void> {
-		const project: Project = new Project(projFilePath);
+		const project: Project = new Project(projFilePath, new ApiWrapper());
 		await project.readProjFile();
 
 		should(project.files.filter(f => f.type === EntryType.File).length).equal(4);
@@ -34,7 +35,7 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 
 	it('Should add Folder and Build entries to sqlproj', async function (): Promise<void> {
-		const project: Project = new Project(projFilePath);
+		const project: Project = new Project(projFilePath, new ApiWrapper());
 		await project.readProjFile();
 
 		const folderPath = 'Stored Procedures';
@@ -44,7 +45,7 @@ describe('Project: sqlproj content operations', function (): void {
 		await project.addFolderItem(folderPath);
 		await project.addScriptItem(filePath, fileContents);
 
-		const newProject = new Project(projFilePath);
+		const newProject = new Project(projFilePath, new ApiWrapper());
 		await newProject.readProjFile();
 
 		should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === folderPath)).not.equal(undefined);

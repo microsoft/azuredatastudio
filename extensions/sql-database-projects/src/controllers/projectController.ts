@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import * as path from 'path';
 import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
@@ -13,6 +12,7 @@ import * as templates from '../templates/templates';
 import * as mssql from '../../../mssql';
 
 import { Uri, QuickPickItem, WorkspaceFolder, extensions } from 'vscode';
+import { IConnectionProfile, ExtractTarget, TaskExecutionMode } from 'azdata';
 import { ApiWrapper } from '../common/apiWrapper';
 import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
@@ -244,17 +244,15 @@ export class ProjectsController {
 		let model = <ImportDataModel>{};
 
 		try {
-			let profile = context ? <azdata.IConnectionProfile>context.connectionProfile : undefined;
+			let profile = context ? <IConnectionProfile>context.connectionProfile : undefined;
+			//TODO: Prompt for new connection addition and get database information if context information isn't provided.
 			if (profile) {
 				model.serverId = profile.id;
 				model.database = profile.databaseName;
 			}
 
 			// Get project name
-			let newProjName = await this.apiWrapper.showInputBox({
-				prompt: constants.newDatabaseProjectName,
-				value: `DatabaseProject${model.database}`
-			});
+			let newProjName = await this.getProjectName(model.database);
 
 			if (!newProjName) {
 				this.apiWrapper.showErrorMessage(constants.projectNameRequired);
@@ -263,58 +261,25 @@ export class ProjectsController {
 			model.projName = newProjName;
 
 			// Get extractTarget
-			// eslint-disable-next-line code-no-unexternalized-strings
-			let extractTargetOptions: string[] = Object.keys(azdata.ExtractTarget).filter(k => typeof azdata.ExtractTarget[k as any] === "number");
-			let extractTargetInput = await this.apiWrapper.showQuickPickString(extractTargetOptions.slice(1), {
-				canPickMany: false,
-				placeHolder: constants.extractTargetInput
-			});
-			let extractTarget: azdata.ExtractTarget;
-			if (!extractTargetInput) {
-				// TODO: Default value of SchemaObjectType to be used or cancel out?
-				this.apiWrapper.showErrorMessage(constants.extractTargetDefault);
-				extractTarget = azdata.ExtractTarget.SchemaObjectType;
-			} else {
-				extractTarget = azdata.ExtractTarget[extractTargetInput as keyof typeof azdata.ExtractTarget];
-			}
+			let extractTarget: ExtractTarget = await this.getExtractTarget();
 			model.extractTarget = extractTarget;
 
 			// Get folder location for project creation
-			let selectionResult;
-			let newProjFolderUri;
-			let newProjUri;
-			if (extractTarget !== 1) {
-				selectionResult = await this.apiWrapper.showOpenDialog({
-					canSelectFiles: false,
-					canSelectFolders: true,
-					canSelectMany: false,
-					openLabel: constants.selectFileFolder,
-					defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined
-				});
-				newProjUri = (selectionResult as Uri[])[0];
-				newProjFolderUri = newProjUri;
-			} else {
-				// Get filename
-				selectionResult = await this.apiWrapper.showSaveDialog(
-					{
-						defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined,
-						saveLabel: constants.selectFileFolder,
-						filters: {
-							'Text files': ['sql'],
-							'All files': ['*']
-						}
-					}
-				);
-				newProjUri = selectionResult as unknown as Uri;
-				newProjFolderUri = utils.trimFileName(newProjUri);
-			}
-			if (!selectionResult) {
+			let newProjUri = await this.getFolderLocation(model.extractTarget);
+			if (!newProjUri) {
 				this.apiWrapper.showErrorMessage(constants.projectLocationRequired);
 				return;
 			}
 
+			let newProjFolderUri;
+			if (extractTarget !== 1) {
+				newProjFolderUri = newProjUri;
+			} else {
+				// Get filename, if extractTarget = File
+				newProjFolderUri = utils.trimFileName(newProjUri);
+			}
+
 			// TODO: what if the selected folder is outside the workspace?
-			console.log(newProjUri.fsPath);
 			model.filePath = newProjUri.fsPath;
 
 			//Set model version
@@ -342,6 +307,72 @@ export class ProjectsController {
 		}
 	}
 
+	private async getProjectName(dbName: string): Promise<string | undefined> {
+		let projName = await this.apiWrapper.showInputBox({
+			prompt: constants.newDatabaseProjectName,
+			value: `DatabaseProject${dbName}`
+		});
+
+		return projName;
+	}
+
+	private async getExtractTarget(): Promise<ExtractTarget> {
+		let extractTarget: ExtractTarget;
+
+		// eslint-disable-next-line code-no-unexternalized-strings
+		let extractTargetOptions: string[] = Object.keys(ExtractTarget).filter(k => typeof ExtractTarget[k as any] === "number");
+
+		let extractTargetInput = await this.apiWrapper.showQuickPickString(extractTargetOptions.slice(1), {
+			canPickMany: false,
+			placeHolder: constants.extractTargetInput
+		});
+
+		if (!extractTargetInput) {
+			// TODO: Default value of SchemaObjectType to be used or cancel out?
+			this.apiWrapper.showErrorMessage(constants.extractTargetDefault);
+			extractTarget = ExtractTarget.SchemaObjectType;
+		} else {
+			extractTarget = ExtractTarget[extractTargetInput as keyof typeof ExtractTarget];
+		}
+
+		return extractTarget;
+	}
+
+	private async getFolderLocation(extractTarget: ExtractTarget): Promise<Uri | undefined> {
+		let selectionResult;
+		let projUri;
+
+		if (extractTarget !== 1) {
+			selectionResult = await this.apiWrapper.showOpenDialog({
+				canSelectFiles: false,
+				canSelectFolders: true,
+				canSelectMany: false,
+				openLabel: constants.selectFileFolder,
+				defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined
+			});
+			if (selectionResult) {
+				projUri = (selectionResult as Uri[])[0];
+			}
+		} else {
+			// Get filename
+			selectionResult = await this.apiWrapper.showSaveDialog(
+				{
+					defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined,
+					saveLabel: constants.selectFileFolder,
+					filters: {
+						'Text files': ['sql'],
+						'All files': ['*']
+					}
+				}
+			);
+			if (selectionResult) {
+				projUri = selectionResult as unknown as Uri;
+			}
+		}
+
+		return projUri;
+	}
+
 	private async importApiCall(model: ImportDataModel): Promise<void> {
 		let ext = extensions.getExtension(mssql.extension.name);
 
@@ -351,9 +382,9 @@ export class ProjectsController {
 		}
 
 		const service = (ext.exports as mssql.IExtension).dacFx;
-		const ownerUri = await azdata.connection.getUriForConnection(model.serverId);
+		const ownerUri = await this.apiWrapper.getUriForConnection(model.serverId);
 
-		await service.importDatabaseProject(model.database, model.filePath, model.projName, model.version, ownerUri, model.extractTarget, azdata.TaskExecutionMode.execute);
+		await service.importDatabaseProject(model.database, model.filePath, model.projName, model.version, ownerUri, model.extractTarget, TaskExecutionMode.execute);
 	}
 
 	private async generateList(absolutePath: string): Promise<string[]> {
