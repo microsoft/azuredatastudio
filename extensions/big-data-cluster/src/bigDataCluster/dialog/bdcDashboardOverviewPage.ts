@@ -40,9 +40,9 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 
 	public get container(): azdata.FlexContainer {
 		// Lazily create the container only when needed
-		//if (!this.rootContainer) {
-		this.rootContainer = this.createContainer();
-		//}
+		if (!this.rootContainer) {
+			this.rootContainer = this.createContainer();
+		}
 		return this.rootContainer;
 	}
 
