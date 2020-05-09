@@ -319,7 +319,9 @@ export interface ITool {
 export const enum BdcDeploymentType {
 	NewAKS = 'new-aks',
 	ExistingAKS = 'existing-aks',
-	ExistingKubeAdm = 'existing-kubeadm'
+	ExistingKubeAdm = 'existing-kubeadm',
+	ExistingARO = 'existing-aro',
+	ExistingOpenShift = 'existing-openshift'
 }
 
 export const enum ArcDeploymentType {
