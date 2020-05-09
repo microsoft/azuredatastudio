@@ -91,57 +91,6 @@ export namespace nbformat {
 	export type OutputMetadata = JSONObject;
 
 	/**
-	 * Validate a mime type/value pair.
-	 *
-	 * @param type - The mimetype name.
-	 *
-	 * @param value - The value associated with the type.
-	 *
-	 * @returns Whether the type/value pair are valid.
-	 */
-	export function validateMimeValue(
-		type: string,
-		value: MultilineString | JSONObject
-	): boolean {
-		// Check if "application/json" or "application/foo+json"
-		const jsonTest = /^application\/(.*?)+\+json$/;
-		const isJSONType = type === 'application/json' || jsonTest.test(type);
-
-		let isString = (x: any) => {
-			return Object.prototype.toString.call(x) === '[object String]';
-		};
-
-		// If it is an array, make sure if is not a JSON type and it is an
-		// array of strings.
-		if (Array.isArray(value)) {
-			if (isJSONType) {
-				return false;
-			}
-			let valid = true;
-			(value as string[]).forEach(v => {
-				if (!isString(v)) {
-					valid = false;
-				}
-			});
-			return valid;
-		}
-
-		// If it is a string, make sure we are not a JSON type.
-		if (isString(value)) {
-			return !isJSONType;
-		}
-
-		// It is not a string, make sure it is a JSON type.
-		if (!isJSONType) {
-			return false;
-		}
-
-		// It is a JSON type, make sure it is a valid JSON object.
-		// return JSONExt.isObject(value);
-		return true;
-	}
-
-	/**
 	 * Cell-level metadata.
 	 */
 	export interface IBaseCellMetadata extends JSONObject {
@@ -281,27 +230,6 @@ export namespace nbformat {
 	 * A cell union type.
 	 */
 	export type ICell = IRawCell | IMarkdownCell | ICodeCell | IUnrecognizedCell;
-
-	/**
-	 * Test whether a cell is a raw cell.
-	 */
-	export function isRaw(cell: ICell): cell is IRawCell {
-		return cell.cell_type === 'raw';
-	}
-
-	/**
-	 * Test whether a cell is a markdown cell.
-	 */
-	export function isMarkdown(cell: ICell): cell is IMarkdownCell {
-		return cell.cell_type === 'markdown';
-	}
-
-	/**
-	 * Test whether a cell is a code cell.
-	 */
-	export function isCode(cell: ICell): cell is ICodeCell {
-		return cell.cell_type === 'code';
-	}
 
 	/**
 	 * A union metadata type.
@@ -486,9 +414,4 @@ export namespace nbformat {
 		| IDisplayData
 		| IStream
 		| IError;
-}
-
-export interface ICellOutputWithIdAndTrust extends nb.ICellOutput {
-	id: number;
-	trusted: boolean;
 }
