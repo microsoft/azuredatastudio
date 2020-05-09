@@ -231,6 +231,14 @@
               {
                 "name": "existing-kubeadm",
                 "displayName": "%bdc-deployment-target-existing-kubeadm%"
+              },
+              {
+                "name": "existing-aro",
+                "displayName": "%bdc-deployment-target-existing-aro%"
+              },
+              {
+                "name": "existing-openshift",
+                "displayName": "%bdc-deployment-target-existing-openshift%"
               }
             ]
           }
@@ -285,6 +293,36 @@
               }
             ],
             "when": "target=existing-kubeadm&&version=bdc2019"
+          },
+          {
+            "bdcWizard": {
+              "type": "existing-aro",
+              "notebook": "%bdc-2019-existing-aro-notebook%"
+            },
+            "requiredTools": [
+              {
+                "name": "kubectl"
+              },
+              {
+                "name": "azdata"
+              }
+            ],
+            "when": "target=existing-aro&&version=bdc2019"
+          },
+          {
+            "bdcWizard": {
+              "type": "existing-openshift",
+              "notebook": "%bdc-2019-existing-openshift-notebook%"
+            },
+            "requiredTools": [
+              {
+                "name": "kubectl"
+              },
+              {
+                "name": "azdata"
+              }
+            ],
+            "when": "target=existing-openshift&&version=bdc2019"
           }
         ],
         "agreement": {

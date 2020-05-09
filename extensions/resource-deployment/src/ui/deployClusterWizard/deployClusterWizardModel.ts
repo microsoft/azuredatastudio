@@ -148,7 +148,10 @@ export class DeployClusterWizardModel extends Model {
 			statements.push(`azure_vm_size = '${this.getStringValue(VariableNames.VMSize_VariableName)}'`);
 			statements.push(`azure_vm_count = '${this.getStringValue(VariableNames.VMCount_VariableName)}'`);
 			statements.push(`aks_cluster_name = '${this.getStringValue(VariableNames.AksName_VariableName)}'`);
-		} else if (this.deploymentTarget === BdcDeploymentType.ExistingAKS || this.deploymentTarget === BdcDeploymentType.ExistingKubeAdm) {
+		} else if (this.deploymentTarget === BdcDeploymentType.ExistingAKS
+			|| this.deploymentTarget === BdcDeploymentType.ExistingKubeAdm
+			|| this.deploymentTarget === BdcDeploymentType.ExistingARO
+			|| this.deploymentTarget === BdcDeploymentType.ExistingOpenShift) {
 			statements.push(`mssql_kube_config_path = '${this.escapeForNotebookCodeCell(this.getStringValue(VariableNames.KubeConfigPath_VariableName)!)}'`);
 			statements.push(`mssql_cluster_context = '${this.getStringValue(VariableNames.ClusterContext_VariableName)}'`);
 			statements.push('os.environ["KUBECONFIG"] = mssql_kube_config_path');
