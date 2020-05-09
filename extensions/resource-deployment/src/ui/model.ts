@@ -71,7 +71,7 @@ export class Model {
 	}
 
 	/**
-	 * Returns a string that interpolates all variable names in the {@param inputValue} de-marked as ${VariableName} in the input
+	 * Returns a string that interpolates all variable names in the {@param inputValue} de-marked as $(VariableName) in the input
 	 * string with their corresponding values.
 	 *
 	 * Only variables in the current model starting with {@see NoteBookEnvironmentVariablePrefix} are replaced.
