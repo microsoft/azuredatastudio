@@ -94,7 +94,7 @@ export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 
 	private addSummaryForVariable(summarySectionInfo: SectionInfo, fieldInfo: SubFieldInfo) {
 		summarySectionInfo!.rows!.push({
-			fields: [{
+			items: [{
 				type: FieldType.ReadonlyText,
 				label: fieldInfo.label,
 				defaultValue: this.wizard.model.getStringValue(fieldInfo.variableName!),

@@ -59,7 +59,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			inputWidth: NumberInputWidth,
 			spaceBetweenFields: '40px',
 			rows: [{
-				fields: [{
+				items: [{
 					type: FieldType.Options,
 					label: localize('deployCluster.MasterSqlServerInstances', "SQL Server master instances"),
 					options: ['1', '3', '4', '5', '6', '7', '8', '9'],
@@ -75,7 +75,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.ComputePoolScale_VariableName,
 				}]
 			}, {
-				fields: [{
+				items: [{
 					type: FieldType.Number,
 					label: localize('deployCluster.DataPoolInstances', "Data pool instances"),
 					min: 1,
@@ -93,7 +93,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.SparkPoolScale_VariableName
 				}]
 			}, {
-				fields: [
+				items: [
 					{
 						type: FieldType.Number,
 						label: localize('deployCluster.StoragePoolInstances', "Storage pool (HDFS) instances"),

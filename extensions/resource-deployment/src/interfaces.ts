@@ -190,7 +190,7 @@ export interface SectionInfo extends FieldInfoBase {
 
 export interface RowInfo {
 	cssStyles?: ComponentCSSStyles;
-	fields: FieldInfo[] | RowInfo[];
+	items: FieldInfo[] | RowInfo[];
 }
 
 export interface SubFieldInfo {

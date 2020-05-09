@@ -29,7 +29,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			labelPosition: LabelPosition.Left,
 			spaceBetweenFields: '5px',
 			rows: [{
-				fields: [{
+				items: [{
 					type: FieldType.Text,
 					label: localize('deployCluster.SubscriptionField', "Subscription id"),
 					required: false,
@@ -49,7 +49,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					]
 				}]
 			}, {
-				fields: [{
+				items: [{
 					type: FieldType.DateTimeText,
 					label: localize('deployCluster.ResourceGroupName', "New resource group name"),
 					required: true,
@@ -57,7 +57,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					defaultValue: 'mssql-'
 				}]
 			}, {
-				fields: [{
+				items: [{
 					type: FieldType.Options,
 					label: localize('deployCluster.Location', "Location"),
 					required: true,
@@ -90,7 +90,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					]
 				}]
 			}, {
-				fields: [{
+				items: [{
 					type: FieldType.DateTimeText,
 					label: localize('deployCluster.AksName', "AKS cluster name"),
 					required: true,
@@ -98,7 +98,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					defaultValue: 'mssql-',
 				}]
 			}, {
-				fields: [
+				items: [
 					{
 						type: FieldType.Number,
 						label: localize('deployCluster.VMCount', "VM count"),
@@ -110,7 +110,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					}
 				]
 			}, {
-				fields: [{
+				items: [{
 					type: FieldType.Text,
 					label: localize('deployCluster.VMSize', "VM size"),
 					required: true,

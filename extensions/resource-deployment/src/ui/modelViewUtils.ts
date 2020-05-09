@@ -258,15 +258,15 @@ export function createSection(context: SectionContext): azdata.GroupContainer {
 }
 
 function processRow(rowInfo: RowInfo, context: SectionContext): azdata.Component {
-	const rowItems: azdata.Component[] = [];
-	if ('fields' in rowInfo.fields[0]) { // rowInfo.fields is RowInfo[]
-		const rows = rowInfo.fields as RowInfo[];
-		rowItems.push(...rows.map(rowInfo => processRow(rowInfo, context)));
-	} else { // rowInfo.fields is FieldInfo[]
-		const fields = rowInfo.fields as FieldInfo[];
-		processFields(fields, rowItems, context, context.sectionInfo.spaceBetweenFields === undefined ? '50px' : context.sectionInfo.spaceBetweenFields);
+	const items: azdata.Component[] = [];
+	if ('items' in rowInfo.items[0]) { // rowInfo.items is RowInfo[]
+		const rowItems = rowInfo.items as RowInfo[];
+		items.push(...rowItems.map(rowInfo => processRow(rowInfo, context)));
+	} else { // rowInfo.items is FieldInfo[]
+		const fieldItems = rowInfo.items as FieldInfo[];
+		processFields(fieldItems, items, context, context.sectionInfo.spaceBetweenFields === undefined ? '50px' : context.sectionInfo.spaceBetweenFields);
 	}
-	return createFlexContainer(context.view, rowItems, true, context.sectionInfo.rowWidth, context.sectionInfo.rowHeight, context.sectionInfo.rowAlignItems, rowInfo.cssStyles);
+	return createFlexContainer(context.view, items, true, context.sectionInfo.rowWidth, context.sectionInfo.rowHeight, context.sectionInfo.rowAlignItems, rowInfo.cssStyles);
 }
 
 function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component[], context: SectionContext, spaceBetweenFields?: string): void {
