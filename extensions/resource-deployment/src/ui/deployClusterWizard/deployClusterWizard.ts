@@ -140,7 +140,7 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 		this.setEnvironmentVariables(process.env);
 		const variableValueStatements = this.model.getCodeCellContentForNotebook();
 		const insertionPosition = 5;
-		this.notebookService.insertCellAndLaunchNotebook(this.wizardInfo.notebook, variableValueStatements, insertionPosition).catch((error: Error) => {
+		this.notebookService.launchNotebookWithEdits(this.wizardInfo.notebook, variableValueStatements, insertionPosition).catch((error: Error) => {
 			vscode.window.showErrorMessage(getErrorMessage(error));
 		});
 	}

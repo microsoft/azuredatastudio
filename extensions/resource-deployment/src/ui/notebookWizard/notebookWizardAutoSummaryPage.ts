@@ -7,18 +7,22 @@ import * as nls from 'vscode-nls';
 
 import { SubFieldInfo, FieldType, FontWeight, LabelPosition, SectionInfo } from '../../interfaces';
 import { createSection, DefaultInputWidth, DefaultLabelWidth, DefaultRowAlignItems, DefaultRowWidth, DefaultRowHeight } from '../modelViewUtils';
-import { WizardPageBase } from '../wizardPageBase';
 import { NotebookWizard } from './notebookWizard';
+import { NotebookWizardPage } from './notebookWizardPage';
 
 const localize = nls.loadMessageBundle();
 
-export class NotebookWizardSummaryPage extends WizardPageBase<NotebookWizard> {
+export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 	private formItems: azdata.FormComponent[] = [];
 	private form!: azdata.FormBuilder;
 	private view!: azdata.ModelView;
 
-	constructor(wizard: NotebookWizard) {
-		super(localize('notebookWizard.summaryPageTitle', "Review your configuration"), '', wizard);
+	constructor(wizard: NotebookWizard, _pageIndex: number) {
+		super(wizard,
+			_pageIndex,
+			wizard.wizardInfo.pages[_pageIndex].title || localize('notebookWizard.autoSummaryPageTitle', "Review your configuration"),
+			wizard.wizardInfo.pages[_pageIndex].description || ''
+		);
 	}
 
 	public initialize(): void {
@@ -39,14 +43,14 @@ export class NotebookWizardSummaryPage extends WizardPageBase<NotebookWizard> {
 		});
 		this.formItems = [];
 
-		const rowWidth = this.wizard.wizardInfo.rowWidth || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.rowWidth) || DefaultRowWidth;
-		const rowHeight = this.wizard.wizardInfo.rowHeight || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.rowHeight) || DefaultRowHeight;
-		const rowAlignItems = this.wizard.wizardInfo.rowAlignItems || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.rowAlignItems) || DefaultRowAlignItems;
-		const labelWidth = this.wizard.wizardInfo.labelWidth || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.labelWidth) || DefaultLabelWidth;
-		const labelPosition = this.wizard.wizardInfo.labelPosition || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.labelPosition) || LabelPosition.Left;
-		const inputWidth = this.wizard.wizardInfo.inputWidth || (this.wizard.wizardInfo.summaryPage && this.wizard.wizardInfo.summaryPage.inputWidth) || DefaultInputWidth;
+		const rowWidth = this.pageInfo.rowWidth || this.wizard.wizardInfo.rowWidth || DefaultRowWidth;
+		const rowHeight = this.pageInfo.rowHeight || this.wizard.wizardInfo.rowHeight || DefaultRowHeight;
+		const rowAlignItems = this.pageInfo.rowAlignItems || this.wizard.wizardInfo.rowAlignItems || DefaultRowAlignItems;
+		const labelWidth = this.pageInfo.labelWidth || this.wizard.wizardInfo.labelWidth || DefaultLabelWidth;
+		const labelPosition = this.pageInfo.labelPosition || this.wizard.wizardInfo.labelPosition || LabelPosition.Left;
+		const inputWidth = this.pageInfo.inputWidth || this.wizard.wizardInfo.inputWidth || DefaultInputWidth;
 
-		this.wizard.wizardInfo.pages.forEach(pageInfo => {
+		this.wizard.wizardInfo.pages.filter((undefined, index) => index < this._pageIndex).forEach(pageInfo => {
 			const summarySectionInfo: SectionInfo = {
 				labelPosition: labelPosition,
 				labelWidth: labelWidth,

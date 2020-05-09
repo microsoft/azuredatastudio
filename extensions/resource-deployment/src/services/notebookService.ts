@@ -34,7 +34,7 @@ export interface NotebookExecutionResult {
 
 export interface INotebookService {
 	launchNotebook(notebook: string | NotebookInfo): Thenable<azdata.nb.NotebookEditor>;
-	insertCellAndLaunchNotebook(notebook: string | NotebookInfo, cellStatements: string[], insertionPosition?: number): Promise<void>;
+	launchNotebookWithEdits(notebook: string | NotebookInfo, cellStatements: string[], insertionPosition?: number): Promise<void>;
 	launchNotebookWithContent(title: string, content: string): Thenable<azdata.nb.NotebookEditor>;
 	getNotebook(notebook: string | NotebookInfo): Promise<Notebook>;
 	executeNotebook(notebook: any, env?: NodeJS.ProcessEnv): Promise<NotebookExecutionResult>;
@@ -56,16 +56,16 @@ export class NotebookService implements INotebookService {
 	}
 
 	/**
-	 * Inserts cell code given by {@param cellStatements} in an existing notebook given by {@param notebook} filepath at the location
+	 * Inserts cell code given by {@param cellStatements} in an existing notebook given by {@param notebook} file path at the location
 	 * {@param insertionPosition} and then launches the edited notebook.
 	 *
 	 * @param notebook - the path to notebook that needs to be launched
-	 * @param cellStatements - array of statments to be insterted in a cell
+	 * @param cellStatements - array of statements to be inserted in a cell
 	 * @param insertionPosition - the position at which cells are inserted. Default is a new cell at the beginning of the notebook.
 	 */
-	public async insertCellAndLaunchNotebook(notebook: string, cellStatements: string[], insertionPosition: number = 0): Promise<void> {
-		const notebook_1 = await this.launchNotebook(notebook);
-		notebook_1.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
+	public async launchNotebookWithEdits(notebook: string, cellStatements: string[], insertionPosition: number = 0): Promise<void> {
+		const openedNotebook = await this.launchNotebook(notebook);
+		openedNotebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
 			editBuilder.insertCell({
 				cell_type: 'code',
 				source: cellStatements

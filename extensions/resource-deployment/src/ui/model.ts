@@ -56,6 +56,10 @@ export class Model {
 		return original && original.replace(/\\/g, '\\\\');
 	}
 
+	/**
+	 * sets the environment variable for each model variable that starts with {@see NoteBookEnvironmentVariablePrefix} in the
+	 * current process.
+	 */
 	public setEnvironmentVariables(): void {
 		Object.keys(this.propValueObject).filter(propertyName => propertyName.startsWith(NoteBookEnvironmentVariablePrefix)).forEach(propertyName => {
 			const value = this.getStringValue(propertyName);
@@ -66,6 +70,14 @@ export class Model {
 		});
 	}
 
+	/**
+	 * Returns a string that interpolates all variable names in the {@param inputValue} de-marked as ${VariableName} in the input
+	 * string with their corresponding values.
+	 *
+	 * Only variables in the current model starting with {@see NoteBookEnvironmentVariablePrefix} are replaced.
+	 *
+	 * @param inputValue
+	 */
 	public interpolateVariableValues(inputValue: string): string {
 		Object.keys(this.propValueObject)
 			.filter(propertyName => propertyName.startsWith(NoteBookEnvironmentVariablePrefix))
