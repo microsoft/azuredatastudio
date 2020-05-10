@@ -294,3 +294,7 @@ function decorate(decorator: (fn: Function, key: string) => Function): Function 
 		descriptor[fnKey] = decorator(fn, key);
 	};
 }
+
+export function getDropdownValue(dropdown: azdata.DropDownComponent): string {
+	return (typeof dropdown.value === 'string') ? dropdown.value : dropdown.value.name;
+}

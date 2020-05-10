@@ -16,7 +16,7 @@ import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common
 import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
 import { ManageActionContext } from 'sql/workbench/browser/actions';
-import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTreeContext';
+import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
 import { ServerInfoContextKey } from 'sql/workbench/services/connection/common/serverInfoContextKey';
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 

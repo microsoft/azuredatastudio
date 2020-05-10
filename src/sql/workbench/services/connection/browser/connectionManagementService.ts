@@ -807,9 +807,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			connection.options['azureAccountToken'] = undefined;
 			return true;
 		}
-		if (connection.options['azureAccountToken']) {
-			return true;
-		}
 		let azureResource = this.getAzureResourceForConnection(connection);
 		let accounts = (await this._accountManagementService.getAccounts()).filter(a => a.key.providerId.startsWith('azure'));
 		if (accounts && accounts.length > 0) {
