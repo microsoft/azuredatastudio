@@ -259,7 +259,7 @@ export enum FieldType {
 	Options = 'options',
 	RadioOptions = 'radio_options',
 	ReadonlyText = 'readonly_text',
-	SummaryText = 'summary_text',
+	EvaluatedText = 'evaluated_text',
 	Checkbox = 'checkbox',
 	AzureAccount = 'azure_account',
 	AzureLocations = 'azure_locations',

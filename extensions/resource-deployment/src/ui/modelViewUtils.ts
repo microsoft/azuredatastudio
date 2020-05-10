@@ -354,8 +354,8 @@ function processField(context: FieldContext): void {
 		case FieldType.ReadonlyText:
 			processReadonlyTextField(context);
 			break;
-		case FieldType.SummaryText:
-			processSummaryTextField(context);
+		case FieldType.EvaluatedText:
+			processEvaluatedTextField(context);
 			break;
 		case FieldType.Checkbox:
 			processCheckboxField(context);
@@ -535,7 +535,7 @@ function processLinkedTextField(context: FieldContext): azdata.TextComponent {
 	return label;
 }
 
-function processSummaryTextField(context: FieldContext): void {
+function processEvaluatedTextField(context: FieldContext): void {
 	const readOnlyField = processReadonlyTextField(context);
 	if (readOnlyField.text) {
 		context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, readOnlyField.text);
