@@ -449,6 +449,7 @@ export interface DeployParams {
 	packageFilePath: string;
 	databaseName: string;
 	upgradeExisting: boolean;
+	sqlCommandVariableValues?: Record<string, string>;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }

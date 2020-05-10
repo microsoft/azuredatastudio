@@ -9,8 +9,9 @@ import * as dataSources from '../models/dataSources/dataSources';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
+import * as mssql from '../../../mssql';
 
-import { Uri, QuickPickItem } from 'vscode';
+import { Uri, QuickPickItem, extensions } from 'vscode';
 import { ApiWrapper } from '../common/apiWrapper';
 import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
@@ -18,6 +19,7 @@ import { promises as fs } from 'fs';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
+import { TaskExecutionMode } from 'azdata';
 
 /**
  * Controller for managing project lifecycle
@@ -113,14 +115,32 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 	}
 
-	public async build(treeNode: BaseProjectTreeItem) {
+	public async build(treeNode: BaseProjectTreeItem): Promise<string> {
 		const project = this.getProjectContextFromTreeNode(treeNode);
 		await this.apiWrapper.showErrorMessage(`Build not yet implemented: ${project.projectFilePath}`); // TODO
+		return ''; // placeholder for .dacpac path
 	}
+
+	msSqlProvider = 'MSSQL';
 
 	public async deploy(treeNode: BaseProjectTreeItem) {
 		const project = this.getProjectContextFromTreeNode(treeNode);
+		const dacFxService = await ProjectsController.getService(mssql.extension.name);
+		const dacpacPath = await this.build(treeNode);
+		dacFxService.deployDacpac(dacpacPath, 'databaseName', false, 'ownerUri', TaskExecutionMode.execute);
+
 		await this.apiWrapper.showErrorMessage(`Deploy not yet implemented: ${project.projectFilePath}`); // TODO
+	}
+
+	private static async getService(extensionId: string): Promise<mssql.IDacFxService> {
+		const ext = extensions.getExtension(extensionId);
+
+		if (ext) {
+			return (ext.exports as mssql.IExtension).dacFx;
+		}
+		else {
+			throw new Error(`Failed to get extension: ${extensionId}`);
+		}
 	}
 
 	public async import(treeNode: BaseProjectTreeItem) {
