@@ -12,9 +12,9 @@ import { NetCoreTool, DBProjectConfigurationKey, NetCoreInstallLocationKey, Next
 import { isNullOrUndefined } from 'util';
 import { BuildHelper } from '../tools/buildHelper';
 
-describe('NetCoreTool: Net core install popup tests', function (): void {
+describe('NetCoreTool: Net core tests', function (): void {
 
-	it('settings value should override default paths', async function (): Promise<void> {
+	it('Should override dotnet default value with settings', async function (): Promise<void> {
 		try {
 			// update settings and validate
 			await vscode.workspace.getConfiguration(DBProjectConfigurationKey).update(NetCoreInstallLocationKey, 'test value path', true);
@@ -28,7 +28,7 @@ describe('NetCoreTool: Net core install popup tests', function (): void {
 		}
 	});
 
-	it('should find right default paths', async function (): Promise<void> {
+	it('Should find right dotnet default paths', async function (): Promise<void> {
 		const netcoreTool = new NetCoreTool();
 		netcoreTool.findOrInstallNetCore();
 
@@ -45,7 +45,7 @@ describe('NetCoreTool: Net core install popup tests', function (): void {
 		}
 	});
 
-	it('should run dotnet command', async function (): Promise<void> {
+	it('Should run dotnet command', async function (): Promise<void> {
 		this.timeout(10000 * 10); // higher timeout for this test
 
 		const netcoreTool = new NetCoreTool();
