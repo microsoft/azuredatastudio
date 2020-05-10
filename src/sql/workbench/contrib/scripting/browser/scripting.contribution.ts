@@ -13,7 +13,7 @@ import { ConnectionContextKey } from 'sql/workbench/services/connection/common/c
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTreeContext';
+import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
 import { EditDataAction } from 'sql/workbench/browser/scriptingActions';
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 

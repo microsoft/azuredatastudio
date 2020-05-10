@@ -7,8 +7,8 @@ import { nb } from 'azdata';
 import { localize } from 'vs/nls';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
+import { noKernel } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 
-export const noKernel: string = localize('noKernel', "No Kernel");
 const runNotebookDisabled = localize('runNotebookDisabled', "Cannot run cells as no kernel has been configured");
 
 let noKernelSpec: nb.IKernelSpec = ({

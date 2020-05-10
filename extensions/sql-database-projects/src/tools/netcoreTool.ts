@@ -127,6 +127,8 @@ export class NetCoreTool {
 		};
 
 		const child = cp.spawn(command, [], spawnOptions);
+		outputChannel.show();
+
 		// Add listeners to print stdout and stderr and exit code
 		child.on('exit', (code: number | null, signal: string | null) => {
 			if (code !== null) {

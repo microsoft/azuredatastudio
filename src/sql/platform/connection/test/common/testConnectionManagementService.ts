@@ -59,6 +59,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined!;
 	}
 
+	showEditConnectionDialog(model: IConnectionProfile): Promise<void> {
+		return undefined!;
+	}
+
 	onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
 
 	}

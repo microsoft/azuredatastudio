@@ -38,13 +38,24 @@ export class FlatFileWizard {
 
 		let pages: Map<number, ImportPage> = new Map<number, ImportPage>();
 
-		let connectionId = (await azdata.connection.getCurrentConnection())?.connectionId ??
-			(await azdata.connection.openConnectionDialog())?.connectionId;
+		let currentConnection = await azdata.connection.getCurrentConnection();
 
-		if (!connectionId) {
-			vscode.window.showErrorMessage(localize('import.needConnection', "Please connect to a server before using this wizard."));
-			return;
+		let connectionId: string;
+
+		if (!currentConnection) {
+			connectionId = (await azdata.connection.openConnectionDialog(['MSSQL'])).connectionId;
+			if (!connectionId) {
+				vscode.window.showErrorMessage(localize('import.needConnection', "Please connect to a server before using this wizard."));
+				return;
+			}
+		} else {
+			if (currentConnection.providerId !== 'MSSQL') {
+				vscode.window.showErrorMessage(localize('import.needSQLConnection', "SQL Server Import extension does not support this type of connection"));
+				return;
+			}
+			connectionId = currentConnection.connectionId;
 		}
+
 
 		model.serverId = connectionId;
 
