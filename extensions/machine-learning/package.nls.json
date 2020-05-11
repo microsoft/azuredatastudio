@@ -12,8 +12,9 @@
 	"mls.command.importModel": "Import model",
 	"mls.configuration.title": "Machine Learning Configurations",
 	"mls.pythonPath.description": "Local path to a preexisting Python installation used by Machine Learning.",
-	"mls.enablePython.description": "Enable Python package management.",
-	"mls.enableR.description": "Enable R package management.",
+	"mls.enablePython.description": "Enable Python package management in database.",
+	"mls.enableR.description": "Enable R package management in database.",
 	"mls.rPath.description": "Local path to a preexisting R installation used by Machine Learning.",
-	"mls.command.dependencies": "Install Machine Learning Dependencies"
+	"mls.command.dependencies": "Install Machine Learning Dependencies",
+	"mls.command.enableExternalScript": "Enable External script"
 }

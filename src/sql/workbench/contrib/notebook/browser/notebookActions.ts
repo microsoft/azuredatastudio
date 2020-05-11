@@ -14,7 +14,6 @@ import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selec
 import { IConnectionManagementService, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { noKernel } from 'sql/workbench/services/notebook/browser/sessionManager';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -38,6 +37,8 @@ const msgLoadingContexts = localize('loadingContexts', "Loading contexts...");
 const msgChangeConnection = localize('changeConnection', "Change Connection");
 const msgSelectConnection = localize('selectConnection', "Select Connection");
 const msgLocalHost = localize('localhost', "localhost");
+
+export const noKernel: string = localize('noKernel', "No Kernel");
 
 // Action to add a cell to notebook based on cell type(code/markdown).
 export class AddCellAction extends Action {

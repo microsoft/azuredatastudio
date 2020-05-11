@@ -19,6 +19,7 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 	private _form: azdata.FormContainer | undefined;
 	private _formBuilder: azdata.FormBuilder | undefined;
 	public tableSelectionComponent: TableSelectionComponent | undefined;
+	private _labelComponent: azdata.TextComponent | undefined;
 
 	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase) {
 		super(apiWrapper, parent.root, parent);
@@ -31,12 +32,35 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 
 		this._formBuilder = modelBuilder.formContainer();
-		this.tableSelectionComponent = new TableSelectionComponent(this._apiWrapper, this, true);
+		this.tableSelectionComponent = new TableSelectionComponent(this._apiWrapper, this, { editable: true, preSelected: true });
+		this._labelComponent = modelBuilder.text().withProperties({
+			width: 200
+		}).component();
+		const container = modelBuilder.flexContainer().withLayout({
+			width: 800,
+			height: '400px',
+			justifyContent: 'center'
+		}).withItems([
+			this._labelComponent
+		], {
+			CSSStyles: {
+				'align-items': 'center',
+				'padding-top': '30px',
+				'font-size': '16px'
+			}
+		}).component();
+
+
 		this.tableSelectionComponent.onSelectedChanged(async () => {
 			await this.onTableSelected();
 		});
-		this.tableSelectionComponent.registerComponent(modelBuilder);
+		this.tableSelectionComponent.registerComponent(modelBuilder, constants.databaseName, constants.tableName);
 		this.tableSelectionComponent.addComponents(this._formBuilder);
+
+		this._formBuilder.addFormItem({
+			title: '',
+			component: container
+		});
 		this._form = this._formBuilder.component();
 		return this._form;
 	}
@@ -44,6 +68,15 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 	private async onTableSelected(): Promise<void> {
 		if (this.tableSelectionComponent?.data) {
 			this.importTable = this.tableSelectionComponent?.data;
+		}
+
+		if (this.importTable && this._labelComponent) {
+			const validated = await this.verifyImportConfigTable(this.importTable);
+			if (validated) {
+				this._labelComponent.value = constants.modelSchemaIsAcceptedMessage;
+			} else {
+				this._labelComponent.value = constants.modelSchemaIsNotAcceptedMessage;
+			}
 		}
 	}
 

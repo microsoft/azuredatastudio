@@ -60,7 +60,7 @@ export class ClientSession implements IClientSession {
 
 	public async initialize(): Promise<void> {
 		try {
-			this._serverLoadFinished = this.startServer();
+			this._serverLoadFinished = this.startServer(this.options.kernelSpec);
 			await this._serverLoadFinished;
 			await this.initializeSession();
 			await this.updateCachedKernelSpec();
@@ -75,10 +75,10 @@ export class ClientSession implements IClientSession {
 		}
 	}
 
-	private async startServer(): Promise<void> {
+	private async startServer(kernelSpec: nb.IKernelSpec): Promise<void> {
 		let serverManager = this.notebookManager.serverManager;
 		if (serverManager) {
-			await serverManager.startServer();
+			await serverManager.startServer(kernelSpec);
 			if (!serverManager.isStarted) {
 				throw new Error(localize('ServerNotStarted', "Server did not start for unknown reason"));
 			}
