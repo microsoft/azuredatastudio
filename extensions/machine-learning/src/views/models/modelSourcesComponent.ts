@@ -31,12 +31,14 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 
+		this._sourceType = this._options && this._options.length > 0 ? this._options[0] : ModelSourceType.Local;
+		this.modelSourceType = this._sourceType;
 		this._localModel = modelBuilder.card()
 			.withProperties({
 				value: 'local',
 				name: 'modelLocation',
 				label: constants.localModelSource,
-				selected: this._options[0] === ModelSourceType.Local,
+				selected: this._sourceType === ModelSourceType.Local,
 				cardType: azdata.CardType.VerticalButton,
 				width: 50
 			}).component();
@@ -45,7 +47,7 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 				value: 'aml',
 				name: 'modelLocation',
 				label: constants.azureModelSource,
-				selected: this._options[0] === ModelSourceType.Azure,
+				selected: this._sourceType === ModelSourceType.Azure,
 				cardType: azdata.CardType.VerticalButton,
 				width: 50
 			}).component();
@@ -55,7 +57,7 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 				value: 'registered',
 				name: 'modelLocation',
 				label: constants.registeredModelsSource,
-				selected: this._options[0] === ModelSourceType.RegisteredModels,
+				selected: this._sourceType === ModelSourceType.RegisteredModels,
 				cardType: azdata.CardType.VerticalButton,
 				width: 50
 			}).component();
@@ -105,9 +107,6 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 					break;
 			}
 		});
-		this._sourceType = this._options[0];
-		this.sendRequest(SourceModelSelectedEventName, this._sourceType);
-
 		this._flexContainer = modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'row',

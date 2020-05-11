@@ -2,7 +2,7 @@
   "name": "machine-learning",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
@@ -84,6 +84,10 @@
       {
         "command": "mls.command.dependencies",
         "title": "%mls.command.dependencies%"
+      },
+      {
+        "command": "mls.command.enableExternalScript",
+        "title": "%mls.command.enableExternalScript%"
       }
     ],
     "dashboard.tabs": [
@@ -113,8 +117,8 @@
               "name": "",
               "row": 0,
               "col": 1,
-              "rowspan": 4,
-              "colspan": 3,
+              "rowspan": 5,
+              "colspan": 5,
               "widget": {
                 "modelview": {
                   "id":"mls.dashboard"

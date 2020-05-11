@@ -9,6 +9,7 @@ import { ApiWrapper } from '../../common/apiWrapper';
 import * as path from 'path';
 import * as constants from '../../common/constants';
 import * as utils from '../../common/utils';
+import { PredictService } from '../../prediction/predictService';
 
 interface IActionMetadata {
 	title?: string,
@@ -25,53 +26,56 @@ export class DashboardWidget {
 	/**
 	 * Creates new instance of dashboard
 	 */
-	constructor(private _apiWrapper: ApiWrapper, private _root: string) {
+	constructor(private _apiWrapper: ApiWrapper, private _root: string, private _predictService: PredictService) {
 	}
 
-	public register(): void {
-		this._apiWrapper.registerWidget('mls.dashboard', async (view) => {
-			const container = view.modelBuilder.flexContainer().withLayout({
-				flexFlow: 'column',
-				width: '100%',
-				height: '100%'
-			}).component();
-			const header = this.createHeader(view);
-			const tasksContainer = this.createTasks(view);
-			const footerContainer = this.createFooter(view);
-			container.addItem(header, {
-				CSSStyles: {
-					'background-image': `url(${vscode.Uri.file(this.asAbsolutePath('images/background.svg'))})`,
-					'background-repeat': 'no-repeat',
-					'background-position': 'bottom',
-					'width': `${maxWidth}px`,
-					'height': '330px',
-					'background-size': `${maxWidth}px ${headerMaxHeight}px`,
-					'margin-bottom': '-60px'
-				}
-			});
-			container.addItem(tasksContainer, {
-				CSSStyles: {
-					'width': `${maxWidth}px`,
-					'height': '150px',
-				}
-			});
-			container.addItem(footerContainer, {
-				CSSStyles: {
-					'width': `${maxWidth}px`,
-					'height': '500px',
-				}
-			});
-			const mainContainer = view.modelBuilder.flexContainer()
-				.withLayout({
+	public register(): Promise<void> {
+		return new Promise<void>(resolve => {
+			this._apiWrapper.registerWidget('mls.dashboard', async (view) => {
+				const container = view.modelBuilder.flexContainer().withLayout({
 					flexFlow: 'column',
 					width: '100%',
-					height: '100%',
-					position: 'absolute'
+					height: '100%'
 				}).component();
-			mainContainer.addItem(container, {
-				CSSStyles: { 'padding-top': '25px', 'padding-left': '5px' }
+				const header = this.createHeader(view);
+				const tasksContainer = await this.createTasks(view);
+				const footerContainer = this.createFooter(view);
+				container.addItem(header, {
+					CSSStyles: {
+						'background-image': `url(${vscode.Uri.file(this.asAbsolutePath('images/background.svg'))})`,
+						'background-repeat': 'no-repeat',
+						'background-position': 'bottom',
+						'width': `${maxWidth}px`,
+						'height': '330px',
+						'background-size': `${maxWidth}px ${headerMaxHeight}px`,
+						'margin-bottom': '-60px'
+					}
+				});
+				container.addItem(tasksContainer, {
+					CSSStyles: {
+						'width': `${maxWidth}px`,
+						'height': '150px',
+					}
+				});
+				container.addItem(footerContainer, {
+					CSSStyles: {
+						'width': `${maxWidth}px`,
+						'height': '500px',
+					}
+				});
+				const mainContainer = view.modelBuilder.flexContainer()
+					.withLayout({
+						flexFlow: 'column',
+						width: '100%',
+						height: '100%',
+						position: 'absolute'
+					}).component();
+				mainContainer.addItem(container, {
+					CSSStyles: { 'padding-top': '25px', 'padding-left': '5px' }
+				});
+				await view.initializeModel(mainContainer);
+				resolve();
 			});
-			await view.initializeModel(mainContainer);
 		});
 	}
 
@@ -445,7 +449,7 @@ export class DashboardWidget {
 		return path.join(this._root || '', filePath);
 	}
 
-	private createTasks(view: azdata.ModelView): azdata.Component {
+	private async createTasks(view: azdata.ModelView): Promise<azdata.Component> {
 		const tasksContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 			width: '100%',
@@ -489,6 +493,7 @@ export class DashboardWidget {
 				'padding': '10px'
 			}
 		});
+		predictionButton.enabled = await this._predictService.serverSupportOnnxModel();
 
 		return tasksContainer;
 	}
@@ -506,7 +511,7 @@ export class DashboardWidget {
 		const iconContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 			width: maxWidth,
-			height: maxHeight - 20,
+			height: maxHeight - 23,
 			alignItems: 'flex-start'
 		}).component();
 		const labelsContainer = view.modelBuilder.flexContainer().withLayout({
@@ -571,7 +576,7 @@ export class DashboardWidget {
 			}
 		});
 		mainContainer.onDidClick(async () => {
-			if (taskMetaData.command) {
+			if (mainContainer.enabled && taskMetaData.command) {
 				await this._apiWrapper.executeCommand(taskMetaData.command);
 			}
 		});

@@ -7,12 +7,12 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import { promises as fs } from 'fs';
-import * as utils from '../common/utils';
+import * as utils from '../../common/utils';
 
-import { JupyterServerInstallation } from '../jupyter/jupyterServerInstallation';
-import { ApiWrapper } from '../common/apiWrapper';
-import { Deferred } from '../common/promise';
-import { PythonPathLookup, PythonPathInfo } from './pythonPathLookup';
+import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
+import { ApiWrapper } from '../../common/apiWrapper';
+import { Deferred } from '../../common/promise';
+import { PythonPathLookup, PythonPathInfo } from '../pythonPathLookup';
 
 const localize = nls.loadMessageBundle();
 

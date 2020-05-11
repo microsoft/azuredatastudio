@@ -108,7 +108,7 @@ describe('Jupyter Session', function (): void {
 
 	beforeEach(() => {
 		mockJupyterSession = TypeMoq.Mock.ofType(SessionStub);
-		session = new JupyterSession(mockJupyterSession.object);
+		session = new JupyterSession(mockJupyterSession.object, undefined);
 	});
 
 	it('should always be able to change kernels', function (): void {
