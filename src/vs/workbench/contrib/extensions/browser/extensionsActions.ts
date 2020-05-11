@@ -236,7 +236,7 @@ export class InstallAction extends ExtensionAction {
 
 		const extension = await this.install(this.extension);
 
-		alert(localize('installExtensionComplete', "Installing extension {0} is completed. Please reload Azure Data Studio to enable it.", this.extension.displayName));
+		alert(localize('installExtensionComplete', "Installing extension {0} is completed.", this.extension.displayName));
 
 		// {{SQL CARBON EDIT}} Add extension object check since ADS third party extensions will be directed to a download page
 		// and the extension object will be undefined.
@@ -1380,7 +1380,7 @@ export class ReloadAction extends ExtensionAction {
 						this.enabled = true;
 						this.label = localize('reloadRequired', "Reload Required");
 						this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension."); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-						alert(localize('installExtensionComplete', "Installing extension {0} is completed. Please reload Azure Data Studio to enable it.", this.extension.displayName)); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+						alert(localize('installExtensionCompletedAndReloadRequired', "Installing extension {0} is completed. Please reload Azure Data Studio to enable it.", this.extension.displayName)); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 						return;
 					}
 				}
