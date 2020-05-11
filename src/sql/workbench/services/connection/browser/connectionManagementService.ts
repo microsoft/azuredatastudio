@@ -51,6 +51,7 @@ import { values } from 'vs/base/common/collections';
 import { assign } from 'vs/base/common/objects';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
+import { toErrorMessage } from 'vs/base/common/errorMessage';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -820,7 +821,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					try {
 						account = await this._accountManagementService.refreshAccount(account);
 					} catch (err) {
-						this._logService.info(`Exception refreshing stale account : ${err}`);
+						this._logService.info(`Exception refreshing stale account : ${toErrorMessage(err, true)}`);
 						// refreshAccount throws an error if the user cancels the dialog
 						return false;
 					}
