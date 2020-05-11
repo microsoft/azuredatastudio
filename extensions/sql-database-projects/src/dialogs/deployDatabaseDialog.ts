@@ -23,7 +23,6 @@ export class DeployDatabaseDialog {
 	private dataSourcesFormComponent: azdata.FormComponent | undefined;
 	private dataSourcesDropDown: azdata.DropDownComponent | undefined;
 	private targetDatabaseTextBox: azdata.InputBoxComponent | undefined;
-	private deployScriptNameTextBox: azdata.InputBoxComponent | undefined;
 	private connectionsRadioButton: azdata.RadioButtonComponent | undefined;
 	private dataSourcesRadioButton: azdata.RadioButtonComponent | undefined;
 	private formBuilder: azdata.FormBuilder | undefined;
@@ -77,15 +76,6 @@ export class DeployDatabaseDialog {
 				this.tryEnableGenerateScriptAndOkButtons();
 			});
 
-			this.deployScriptNameTextBox = view.modelBuilder.inputBox().withProperties({
-				value: this.getDefaultScriptName(),
-				ariaLabel: constants.deployScriptNameLabel
-			}).component();
-
-			this.deployScriptNameTextBox.onTextChanged(() => {
-				this.tryEnableGenerateScriptAndOkButtons();
-			});
-
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
 					{
@@ -99,10 +89,6 @@ export class DeployDatabaseDialog {
 							{
 								title: constants.databaseNameLabel,
 								component: this.targetDatabaseTextBox
-							},
-							{
-								title: constants.deployScriptNameLabel,
-								component: this.deployScriptNameTextBox
 							}
 						]
 					}
@@ -274,8 +260,8 @@ export class DeployDatabaseDialog {
 
 	// only enable Generate Script and Ok buttons if all fields are filled
 	private tryEnableGenerateScriptAndOkButtons(): void {
-		if (this.targetConnectionTextBox!.value && this.targetDatabaseTextBox!.value && this.deployScriptNameTextBox!.value
-			|| this.connectionIsDataSource && this.targetDatabaseTextBox!.value && this.deployScriptNameTextBox!.value) {
+		if (this.targetConnectionTextBox!.value && this.targetDatabaseTextBox!.value
+			|| this.connectionIsDataSource && this.targetDatabaseTextBox!.value) {
 			this.dialog.okButton.enabled = true;
 			this.dialog.customButtons[0].enabled = true;
 		} else {
