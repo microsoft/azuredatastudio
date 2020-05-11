@@ -384,5 +384,13 @@ declare module 'azdata' {
 		 */
 		alwaysShowTabs?: boolean;
 	}
+
+	export interface Container<TLayout, TItemLayout> extends Component {
+		setItemLayout(component: Component, layout: TItemLayout): void;
+	}
+
+	export interface TaskInfo {
+		targetLocation?: string;
+	}
 }
 

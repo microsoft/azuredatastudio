@@ -11,7 +11,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { getErrorMessage } from 'vs/base/common/errors';
 
-import { IClientSession, IKernelPreference, IClientSessionOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { IClientSession, IClientSessionOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -35,7 +35,6 @@ export class ClientSession implements IClientSession {
 	private _isReady: boolean;
 	private _ready: Deferred<void>;
 	private _kernelChangeCompleted: Deferred<void>;
-	private _kernelPreference: IKernelPreference;
 	private _kernelDisplayName: string;
 	private _errorMessage: string;
 	private _cachedKernelSpec: nb.IKernelSpec;
@@ -61,7 +60,7 @@ export class ClientSession implements IClientSession {
 
 	public async initialize(): Promise<void> {
 		try {
-			this._serverLoadFinished = this.startServer();
+			this._serverLoadFinished = this.startServer(this.options.kernelSpec);
 			await this._serverLoadFinished;
 			await this.initializeSession();
 			await this.updateCachedKernelSpec();
@@ -76,10 +75,10 @@ export class ClientSession implements IClientSession {
 		}
 	}
 
-	private async startServer(): Promise<void> {
+	private async startServer(kernelSpec: nb.IKernelSpec): Promise<void> {
 		let serverManager = this.notebookManager.serverManager;
 		if (serverManager) {
-			await serverManager.startServer();
+			await serverManager.startServer(kernelSpec);
 			if (!serverManager.isStarted) {
 				throw new Error(localize('ServerNotStarted', "Server did not start for unknown reason"));
 			}
@@ -199,12 +198,6 @@ export class ClientSession implements IClientSession {
 	}
 	public get kernelChangeCompleted(): Promise<void> {
 		return this._kernelChangeCompleted.promise;
-	}
-	public get kernelPreference(): IKernelPreference {
-		return this._kernelPreference;
-	}
-	public set kernelPreference(value: IKernelPreference) {
-		this._kernelPreference = value;
 	}
 	public get kernelDisplayName(): string {
 		return this._kernelDisplayName;

@@ -303,6 +303,7 @@ export const enum Operation {
 	CheckIgnore = 'CheckIgnore',
 	GetObjectDetails = 'GetObjectDetails',
 	SubmoduleUpdate = 'SubmoduleUpdate',
+	RebaseAbort = 'RebaseAbort',
 	RebaseContinue = 'RebaseContinue',
 	FindTrackingBranches = 'GetTracking',
 	Apply = 'Apply',
@@ -1096,6 +1097,10 @@ export class Repository implements Disposable {
 		await this.run(Operation.Remote, () => this.repository.removeRemote(name));
 	}
 
+	async renameRemote(name: string, newName: string): Promise<void> {
+		await this.run(Operation.Remote, () => this.repository.renameRemote(name, newName));
+	}
+
 	@throttle
 	async fetchDefault(options: { silent?: boolean } = {}): Promise<void> {
 		await this.run(Operation.Fetch, () => this.repository.fetch(options));
@@ -1325,6 +1330,10 @@ export class Repository implements Disposable {
 			await workspace.applyEdit(edit);
 			await document.save();
 		});
+	}
+
+	async rebaseAbort(): Promise<void> {
+		await this.run(Operation.RebaseAbort, async () => await this.repository.rebaseAbort());
 	}
 
 	checkIgnore(filePaths: string[]): Promise<Set<string>> {

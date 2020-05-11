@@ -5,7 +5,7 @@
 
 import { nb, IConnectionProfile } from 'azdata';
 import * as vsEvent from 'vs/base/common/event';
-import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, IKernelPreference } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookModel, ICellModel, IClientSession, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
 import { NotebookChangeType, CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, INotebookProvider, INavigationProvider, INotebookParams, INotebookSection, ICellEditorProvider, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
@@ -178,7 +178,7 @@ export class ServerManagerStub implements nb.ServerManager {
 	calledEnd: boolean = false;
 	result: Promise<void> = undefined;
 
-	startServer(): Promise<void> {
+	startServer(kernelSpec: nb.IKernelSpec): Promise<void> {
 		this.calledStart = true;
 		return this.result;
 	}
@@ -341,12 +341,6 @@ export class ClientSessionStub implements IClientSession {
 		throw new Error('Method not implemented.');
 	}
 	get kernelChangeCompleted(): Promise<void> {
-		throw new Error('Method not implemented.');
-	}
-	get kernelPreference(): IKernelPreference {
-		throw new Error('Method not implemented.');
-	}
-	set kernelPreference(value: IKernelPreference) {
 		throw new Error('Method not implemented.');
 	}
 	get kernelDisplayName(): string {

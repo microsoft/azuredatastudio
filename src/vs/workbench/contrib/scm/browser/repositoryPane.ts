@@ -407,11 +407,11 @@ export class SCMAccessibilityProvider implements IListAccessibilityProvider<Tree
 		} else {
 			const result: string[] = [];
 
+			result.push(basename(element.sourceUri));
+
 			if (element.decorations.tooltip) {
 				result.push(element.decorations.tooltip);
 			}
-
-			result.push(basename(element.sourceUri));
 
 			const path = this.labelService.getUriLabel(dirname(element.sourceUri), { relative: true, noPrefix: true });
 
@@ -865,13 +865,7 @@ export class RepositoryPane extends ViewPane {
 
 		const actionRunner = new RepositoryPaneActionRunner(() => this.getSelectedResources());
 		this._register(actionRunner);
-		this._register(actionRunner.onDidRun(() => {
-			if (this.repository.input.visible && this.inputEditor.hasWidgetFocus()) {
-				return;
-			}
-
-			this.tree.domFocus();
-		}));
+		this._register(actionRunner.onDidBeforeRun(() => this.tree.domFocus()));
 
 		const renderers = [
 			new ResourceGroupRenderer(actionViewItemProvider, this.themeService, this.menus),
@@ -1083,7 +1077,7 @@ export class RepositoryPane extends ViewPane {
 		}
 
 		const actionRunner = new RepositoryPaneActionRunner(() => this.getSelectedResources());
-		actionRunner.onDidRun(() => this.tree.domFocus());
+		actionRunner.onDidBeforeRun(() => this.tree.domFocus());
 
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => e.anchor,

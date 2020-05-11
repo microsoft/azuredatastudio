@@ -651,12 +651,6 @@ export const DASHBOARD_BORDER = registerColor('dashboard.border', {
 	hc: contrastBorder
 }, nls.localize('dashboardBorder', "Color for borders in dashboard"));
 
-export const TAB_LABEL = registerColor('tab.tabLabel', {
-	light: '#000000',
-	dark: 'FFFFFF',
-	hc: 'FFFFFF'
-}, nls.localize('tabLabel', "Color of tab label"));
-
 export const TAB_GROUP_HEADER = registerColor('tab.tabGroupHeader', {
 	light: '#dddddd',
 	dark: '#dddddd',
@@ -675,11 +669,17 @@ export const DASHBOARD_WIDGET_SUBTEXT = registerColor('dashboardWidget.subText',
 	hc: '#FFFFFF'
 }, nls.localize('dashboardWidgetSubtext', "Color for dashboard widget subtext"));
 
-export const DASHBOARD_PROPERTIES_NAME = registerColor('dashboardWidget.propertiesName', {
+export const PROPERTIES_CONTAINER_PROPERTY_VALUE = registerColor('propertiesContainer.propertyValue', {
+	light: '#000000',
+	dark: 'FFFFFF',
+	hc: 'FFFFFF'
+}, nls.localize('propertiesContainerPropertyValue', "Color for property values displayed in the properties container component"));
+
+export const PROPERTIES_CONTAINER_PROPERTY_NAME = registerColor('propertiesContainer.propertyName', {
 	light: '#161616',
 	dark: '#8A8886',
 	hc: '#FFFFFF'
-}, nls.localize('dashboardWidgetPropertiesName', "Color for dashboard properties widget names"));
+}, nls.localize('propertiesContainerPropertyName', "Color for property names displayed in the properties container component"));
 
 export const TOOLBAR_OVERFLOW_SHADOW = registerColor('toolbar.overflowShadow', {
 	light: new Color(new RGBA(0, 0, 0, .132)),

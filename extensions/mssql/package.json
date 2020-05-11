@@ -366,6 +366,28 @@
               "displayName": "%onprem.serverProperties.osVersion%",
               "value": "osVersion"
             }
+          ],
+          "databasesListProperties": [
+            {
+              "displayName": "%databasesListProperties.name%",
+              "value": "name",
+              "widthWeight": 60
+            },
+            {
+              "displayName": "%databasesListProperties.status%",
+              "value": "state",
+              "widthWeight": 10
+            },
+            {
+              "displayName": "%databasesListProperties.size%",
+              "value": "sizeInMB",
+              "widthWeight": 10
+            },
+            {
+              "displayName": "%databasesListProperties.lastBackup%",
+              "value": "lastBackup",
+              "widthWeight": 20
+            }
           ]
         },
         {
@@ -404,6 +426,23 @@
               "displayName": "%cloud.serverProperties.serverEdition%",
               "value": "serverEdition"
             }
+          ],
+          "databasesListProperties": [
+            {
+              "displayName": "%databasesListProperties.name%",
+              "value": "name",
+              "widthWeight": 60
+            },
+            {
+              "displayName": "%databasesListProperties.status%",
+              "value": "state",
+              "widthWeight": 20
+            },
+            {
+              "displayName": "%databasesListProperties.size%",
+              "value": "sizeInMB",
+              "widthWeight": 20
+            }
           ]
         },
         {
@@ -433,6 +472,23 @@
             {
               "displayName": "%cloud.serverProperties.serverEdition%",
               "value": "serverEdition"
+            }
+          ],
+          "databasesListProperties": [
+            {
+              "displayName": "%databasesListProperties.name%",
+              "value": "name",
+              "widthWeight": 60
+            },
+            {
+              "displayName": "%databasesListProperties.status%",
+              "value": "state",
+              "widthWeight": 20
+            },
+            {
+              "displayName": "%databasesListProperties.size%",
+              "value": "sizeInMB",
+              "widthWeight": 20
             }
           ]
         }
@@ -483,29 +539,6 @@
                 "modelview": {
                   "id": "books-widget"
                 }
-              }
-            }
-          ]
-        }
-      },
-      {
-        "id": "mssql-databases",
-        "description": "%mssql.tabs.databases%",
-        "provider": "*",
-        "title": "%mssql.tabs.databases%",
-        "when": "dashboardContext == 'server' && !mssql:iscloud && mssql:engineedition != 11",
-        "group": "home",
-        "icon": "resources/database.svg",
-        "container": {
-          "widgets-container": [
-            {
-              "name": "%explorer-widget-title%",
-              "gridItemConfig": {
-                "sizex": 3,
-                "sizey": 3
-              },
-              "widget": {
-                "explorer-widget": {}
               }
             }
           ]
@@ -1061,7 +1094,7 @@
     "ads-kerberos": "^1.1.3",
     "buffer-stream-reader": "^0.1.1",
     "bytes": "^3.1.0",
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.0.0",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.1.0",
     "error-ex": "^1.3.2",
     "figures": "^2.0.0",
     "find-remove": "1.2.1",

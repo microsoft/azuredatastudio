@@ -237,7 +237,7 @@
         ],
         "providers": [
           {
-            "wizard": {
+            "bdcWizard": {
               "type": "new-aks",
               "notebook": "%bdc-2019-aks-notebook%"
             },
@@ -257,7 +257,7 @@
             "when": "target=new-aks&&version=bdc2019"
           },
           {
-            "wizard": {
+            "bdcWizard": {
               "type": "existing-aks",
               "notebook": "%bdc-2019-existing-aks-notebook%"
             },
@@ -272,7 +272,7 @@
             "when": "target=existing-aks&&version=bdc2019"
           },
           {
-            "wizard": {
+            "bdcWizard": {
               "type": "existing-kubeadm",
               "notebook": "%bdc-2019-existing-kubeadm-notebook%"
             },

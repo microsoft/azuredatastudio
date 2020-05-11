@@ -264,7 +264,7 @@ export const terminalConfiguration: IConfigurationNode = {
 				localize('terminal.integrated.environmentChangesIndicator.on', "Enable the indicator."),
 				localize('terminal.integrated.environmentChangesIndicator.warnonly', "Only show the warning indicator when a terminal's environment is 'stale', not the information indicator that shows a terminal has had its environment modified by an extension."),
 			],
-			default: 'on'
+			default: 'warnonly'
 		},
 		'terminal.integrated.showExitAlert': {
 			description: localize('terminal.integrated.showExitAlert', "Controls whether to show the alert \"The terminal process terminated with exit code\" when exit code is non-zero."),
@@ -315,7 +315,7 @@ export const terminalConfiguration: IConfigurationNode = {
 		'terminal.integrated.experimentalLinkProvider': {
 			description: localize('terminal.integrated.experimentalLinkProvider', "An experimental setting that aims to improve link detection in the terminal by improving when links are detected and by enabling shared link detection with the editor. Currently this only supports web links."),
 			type: 'boolean',
-			default: false
+			default: true
 		}
 	}
 };

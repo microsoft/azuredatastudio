@@ -113,7 +113,7 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$getMetadata(handle: number, connectionUri: string): Thenable<azdata.ProviderMetadata> { throw ni(); }
 
-	$getDatabases(handle: number, connectionUri: string): Thenable<string[]> { throw ni(); }
+	$getDatabases(handle: number, connectionUri: string): Thenable<string[] | azdata.DatabaseInfo[]> { throw ni(); }
 
 	$getTableInfo(handle: number, connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[]> { throw ni(); }
 
@@ -732,6 +732,7 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$addToContainer(handle: number, containerId: string, item: IItemConfig, index?: number): Thenable<void>;
 	$removeFromContainer(handle: number, containerId: string, item: IItemConfig): Thenable<void>;
 	$setLayout(handle: number, componentId: string, layout: any): Thenable<void>;
+	$setItemLayout(handle: number, componentId: string, item: IItemConfig): Thenable<void>;
 	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
 	$registerEvent(handle: number, componentId: string): Thenable<void>;
 	$validate(handle: number, componentId: string): Thenable<boolean>;
@@ -805,7 +806,7 @@ export interface ExtHostNotebookShape {
 	$handleNotebookClosed(notebookUri: UriComponents): void;
 
 	// Server Manager APIs
-	$doStartServer(managerHandle: number): Thenable<void>;
+	$doStartServer(managerHandle: number, kernelSpec: azdata.nb.IKernelSpec): Thenable<void>;
 	$doStopServer(managerHandle: number): Thenable<void>;
 
 	// Content Manager APIs

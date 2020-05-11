@@ -599,6 +599,7 @@ declare module 'azdata' {
 	// List Databases Request ----------------------------------------------------------------------
 	export interface ListDatabasesResult {
 		databaseNames: Array<string>;
+		databases?: Array<DatabaseInfo>;
 	}
 
 	/**
@@ -725,7 +726,7 @@ declare module 'azdata' {
 	export interface MetadataProvider extends DataProvider {
 		getMetadata(connectionUri: string): Thenable<ProviderMetadata>;
 
-		getDatabases(connectionUri: string): Thenable<string[]>;
+		getDatabases(connectionUri: string): Thenable<string[] | DatabaseInfo[]>;
 
 		getTableInfo(connectionUri: string, metadata: ObjectMetadata): Thenable<ColumnMetadata[]>;
 
@@ -4589,7 +4590,7 @@ declare module 'azdata' {
 			 * Starts the server. Some server types may not support or require this.
 			 * Should no-op if server is already started
 			 */
-			startServer(): Thenable<void>;
+			startServer(kernelSpec: IKernelSpec): Thenable<void>;
 
 			/**
 			 * Stops the server. Some server types may not support or require this

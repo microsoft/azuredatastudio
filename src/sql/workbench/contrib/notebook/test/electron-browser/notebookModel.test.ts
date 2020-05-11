@@ -31,7 +31,7 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { assign } from 'vs/base/common/objects';
 import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
-import { SessionManager } from 'sql/workbench/services/notebook/browser/sessionManager';
+import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
@@ -400,20 +400,6 @@ suite('notebook model', function (): void {
 		assert.equal(model.inErrorState, false);
 		assert.equal(model.notebookManagers.length, 1);
 		assert.deepEqual(model.clientSession, mockClientSession.object);
-	});
-
-	test('Should sanitize kernel display name when IP is included', async function (): Promise<void> {
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService());
-		let displayName = 'PySpark (1.1.1.1)';
-		let sanitizedDisplayName = model.sanitizeDisplayName(displayName);
-		assert.equal(sanitizedDisplayName, 'PySpark');
-	});
-
-	test('Should sanitize kernel display name properly when IP is not included', async function (): Promise<void> {
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService());
-		let displayName = 'PySpark';
-		let sanitizedDisplayName = model.sanitizeDisplayName(displayName);
-		assert.equal(sanitizedDisplayName, 'PySpark');
 	});
 
 	test('Should notify on trust set', async function () {

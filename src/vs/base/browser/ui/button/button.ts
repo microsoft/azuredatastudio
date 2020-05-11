@@ -12,9 +12,12 @@ import { mixin } from 'vs/base/common/objects';
 import { Event as BaseEvent, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { Gesture, EventType } from 'vs/base/browser/touch';
+import { renderCodicons } from 'vs/base/common/codicons';
+import { escape } from 'vs/base/common/strings';
 
 export interface IButtonOptions extends IButtonStyles {
-	title?: boolean | string;
+	readonly title?: boolean | string;
+	readonly supportCodicons?: boolean;
 }
 
 export interface IButtonStyles {
@@ -150,7 +153,11 @@ export class Button extends Disposable {
 		if (!DOM.hasClass(this._element, 'monaco-text-button')) {
 			DOM.addClass(this._element, 'monaco-text-button');
 		}
-		this._element.textContent = value;
+		if (this.options.supportCodicons) {
+			this._element.innerHTML = renderCodicons(escape(value));
+		} else {
+			this._element.textContent = value;
+		}
 		this._element.setAttribute('aria-label', value); // {{SQL CARBON EDIT}}
 		if (typeof this.options.title === 'string') {
 			this._element.title = this.options.title;

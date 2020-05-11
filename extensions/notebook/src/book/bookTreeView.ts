@@ -110,9 +110,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				this.currentBook = existingBook;
 			} else {
 				await this.createAndAddBookModel(bookPath, !!isNotebook);
-				let bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
 				this.currentBook = this.books.find(book => book.bookPath === bookPath);
-				bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
 			}
 
 			if (showPreview) {
@@ -223,9 +221,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						openDocumentListenerUnsubscriber.dispose();
 					});
 				}
-
-				let doc = await vscode.workspace.openTextDocument(resource);
-				vscode.window.showTextDocument(doc);
+				azdata.nb.showNotebookDocument(vscode.Uri.file(resource));
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openNotebookError(resource, e instanceof Error ? e.message : e));
