@@ -42,6 +42,7 @@ export const description = localize('arc.description', 'Description');
 export const yes = localize('arc.yes', 'Yes');
 export const no = localize('arc.no', 'No');
 export const feedback = localize('arc.feedback', 'Feedback');
+export const selectConnectionString = localize('arc.selectConnectionString', 'Select from available client connection strings below');
 
 export const coordinatorEndpoint = localize('arc.coordinatorEndpoint', 'Coordinator endpoint');
 export const postgresAdminUsername = localize('arc.postgresAdminUsername', 'Admin username');
@@ -56,6 +57,7 @@ export const worker = localize('arc.worker', 'Worker');
 export const newDatabase = localize('arc.newDatabase', 'New Database');
 export const databaseName = localize('arc.databaseName', 'Database name');
 export const newPassword = localize('arc.newPassword', 'New password');
+export const learnAboutPostgresClients = localize('arc.learnAboutPostgresClients', 'Learn more about Azure PostgreSQL Hyperscale client interfaces');
 
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database '{0}' created", name); }
 export function databaseCreationFailed(name: string, error: any): string { return localize('arc.databaseCreationFailed', "Failed to create database '{0}'. {1}", name, (error instanceof Error ? error.message : error)); }

@@ -11,7 +11,7 @@ export class ControllerModel {
 	private _tokenRouter: TokenRouterApi;
 	private _registrationRouter: RegistrationRouterApi;
 	private _endpoints!: EndpointModel[];
-	private _controllerNamespace!: string;
+	private _namespace!: string;
 	private _registrations!: RegistrationResponse[];
 
 	constructor(controllerUrl: string, auth: Authentication) {
@@ -31,10 +31,10 @@ export class ControllerModel {
 				this._endpoints = response.body;
 			}),
 			this._tokenRouter.apiV1TokenPost().then(async response => {
-				this._controllerNamespace = response.body.namespace!;
+				this._namespace = response.body.namespace!;
 			})
 		]).then(async _ => {
-			this._registrations = (await this._registrationRouter.apiV1RegistrationListResourcesNsGet(this._controllerNamespace)).body;
+			this._registrations = (await this._registrationRouter.apiV1RegistrationListResourcesNsGet(this._namespace)).body;
 		});
 	}
 
@@ -46,8 +46,8 @@ export class ControllerModel {
 		return this._endpoints.find(e => e.name === name);
 	}
 
-	public controllerNamespace(): string {
-		return this._controllerNamespace;
+	public namespace(): string {
+		return this._namespace;
 	}
 
 	public registrations(): RegistrationResponse[] {

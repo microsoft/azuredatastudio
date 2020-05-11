@@ -25,36 +25,37 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 
 	protected get container(): azdata.Component {
 		const root = this.modelView.modelBuilder.divContainer().component();
-		const overview = this.modelView.modelBuilder.divContainer().component();
-		root.addItem(overview, { CSSStyles: { 'margin': '10px' } });
+		const content = this.modelView.modelBuilder.divContainer().component();
+		root.addItem(content, { CSSStyles: { 'margin': '10px 20px 0px 20px' } });
 
-		const registration = this.controllerModel.registration('postgres', this.databaseModel.namespace(), this.databaseModel.name());
+		const registration = this.controllerModel.registration('postgresInstances', this.databaseModel.namespace(), this.databaseModel.name());
+		const endpoint: { ip?: string, port?: number } = this.databaseModel.endpoint();
 		const essentials = this.modelView.modelBuilder.propertiesContainer().withProperties<azdata.PropertiesContainerComponentProperties>({
 			propertyItems: [
 				{ displayName: loc.name, value: this.databaseModel.name() },
 				{ displayName: loc.serverGroupType, value: loc.postgresArcProductName },
 				{ displayName: loc.resourceGroup, value: registration?.resourceGroupName ?? 'None' },
-				{ displayName: loc.coordinatorEndpoint, value: `postgresql://postgres:${this.databaseModel.password()}@${this.databaseModel.endpoint()}` },
-				{ displayName: loc.status, value: this.databaseModel.service().status!.state },
+				{ displayName: loc.coordinatorEndpoint, value: `postgresql://postgres:${this.databaseModel.password()}@${endpoint.ip}:${endpoint.port}` },
+				{ displayName: loc.status, value: this.databaseModel.service().status?.state ?? '' },
 				{ displayName: loc.postgresAdminUsername, value: 'postgres' },
-				{ displayName: loc.dataController, value: this.controllerModel.controllerNamespace() },
+				{ displayName: loc.dataController, value: this.controllerModel.namespace() },
 				{ displayName: loc.nodeConfiguration, value: this.databaseModel.configuration() },
 				{ displayName: loc.subscriptionId, value: registration?.subscriptionId ?? 'None' },
-				{ displayName: loc.postgresVersion, value: this.databaseModel.service().spec.engine.version!.toString() }
+				{ displayName: loc.postgresVersion, value: this.databaseModel.service().spec.engine.version?.toString() ?? '' }
 			]
 		}).component();
-		overview.addItem(essentials, { CSSStyles: cssStyles.text });
+		content.addItem(essentials, { CSSStyles: cssStyles.text });
 
 		// Service endpoints
-		const titleCSS = { ...cssStyles.text, 'font-weight': 'bold', 'font-size': '14px', 'margin-block-start': '2em', 'margin-block-end': '0' };
-		overview.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.serviceEndpoints, CSSStyles: titleCSS }).component());
+		const titleCSS = { ...cssStyles.title, 'margin-block-start': '2em', 'margin-block-end': '0' };
+		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.serviceEndpoints, CSSStyles: titleCSS }).component());
 
 		const kibanaQuery = `kubernetes_namespace:"${this.databaseModel.namespace()}" and cluster_name:"${this.databaseModel.name()}"`;
 		const kibanaUrl = `${this.controllerModel.endpoint('logsui')?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
 		const grafanaUrl = `${this.controllerModel.endpoint('metricsui')?.endpoint}/d/postgres-metrics?var-Namespace=${this.databaseModel.namespace()}&var-Name=${this.databaseModel.name()}`;
 
-		const kibanaLink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: kibanaUrl, url: kibanaUrl, CSSStyles: cssStyles.hyperlink }).component();
-		const grafanaLink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: grafanaUrl, url: grafanaUrl, CSSStyles: cssStyles.hyperlink }).component();
+		const kibanaLink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: kibanaUrl, url: kibanaUrl, CSSStyles: cssStyles.link }).component();
+		const grafanaLink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: grafanaUrl, url: grafanaUrl, CSSStyles: cssStyles.link }).component();
 
 		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
@@ -94,10 +95,10 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 				[loc.kibanaDashboard, kibanaLink, loc.kibanaDashboardDescription],
 				[loc.grafanaDashboard, grafanaLink, loc.grafanaDashboardDescription]]
 		}).component();
-		overview.addItem(endpointsTable);
+		content.addItem(endpointsTable);
 
 		// Server group nodes
-		overview.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.serverGroupNodes, CSSStyles: titleCSS }).component());
+		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.serverGroupNodes, CSSStyles: titleCSS }).component());
 		const nodesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
 			columns: [
@@ -134,10 +135,10 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 			nodesTable.data.push([
 				`${this.databaseModel.name()}-${i}`,
 				i === 0 ? loc.coordinatorEndpoint : loc.worker,
-				i === 0 ? this.databaseModel.endpoint() : `${this.databaseModel.name()}-${i}.${this.databaseModel.name()}-svc.${this.databaseModel.namespace()}.svc.cluster.local`]);
+				i === 0 ? `${endpoint.ip}:${endpoint.port}` : `${this.databaseModel.name()}-${i}.${this.databaseModel.name()}-svc.${this.databaseModel.namespace()}.svc.cluster.local`]);
 		}
 
-		overview.addItem(nodesTable, { CSSStyles: { 'margin-bottom': '20px' } });
+		content.addItem(nodesTable, { CSSStyles: { 'margin-bottom': '20px' } });
 		return root;
 	}
 
@@ -151,7 +152,7 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 		newDatabaseButton.onDidClick(async () => {
 			const name = await vscode.window.showInputBox({ prompt: loc.databaseName });
 			if (name === undefined) { return; }
-			let db: DuskyObjectModelsDatabase = { name: name }; // TODO support other options (sharded, owner)
+			const db: DuskyObjectModelsDatabase = { name: name }; // TODO support other options (sharded, owner)
 			await this.databaseModel.createDatabase(db)
 				.then(db => vscode.window.showInformationMessage(loc.databaseCreated(db.name)))
 				.catch(error => vscode.window.showErrorMessage(loc.databaseCreationFailed(db.name, error)));
@@ -198,7 +199,7 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 		}).component();
 
 		openInAzurePortalButton.onDidClick(async () => {
-			const r = this.controllerModel.registration('postgres', this.databaseModel.namespace(), this.databaseModel.name());
+			const r = this.controllerModel.registration('postgresInstances', this.databaseModel.namespace(), this.databaseModel.name());
 			if (r === undefined) {
 				vscode.window.showErrorMessage(loc.couldNotFindAzureResource(this.databaseModel.fullName()));
 			} else {

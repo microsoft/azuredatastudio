@@ -25,7 +25,7 @@ export class PostgresComputeStoragePage extends PostgresDashboardPage {
 		return this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Compute + storage' }).component();
 	}
 
-	protected get toolbarContainer(): azdata.ToolbarContainer | undefined {
-		return undefined;
+	protected get toolbarContainer(): azdata.ToolbarContainer {
+		return this.modelView.modelBuilder.toolbarContainer().component();
 	}
 }

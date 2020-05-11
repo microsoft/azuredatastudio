@@ -86,27 +86,19 @@ export class PostgresModel {
 		return nodes;
 	}
 
-	/** Returns the ip:port of the service */
-	public endpoint(): string {
-		const externalIp = this._service.status!.externalIP;
-		const internalIp = this._service.status!.internalIP;
-		const externalPort = this._service.status!.externalPort;
-		const internalPort = this._service.status!.internalPort;
+	/**
+	 * Returns the IP address and port of the service, preferring external IP over
+	 * internal IP. If either field is not available it will be set to undefined.
+	 */
+	public endpoint(): { ip?: string, port?: number } {
+		const externalIp = this._service.status?.externalIP;
+		const internalIp = this._service.status?.internalIP;
+		const externalPort = this._service.status?.externalPort;
+		const internalPort = this._service.status?.internalPort;
 
-		let ip = '0.0.0.0';
-		if (externalIp) {
-			ip = externalIp;
-			if (externalPort) {
-				ip += `:${externalPort}`;
-			}
-		} else if (internalIp) {
-			ip = internalIp;
-			if (internalPort) {
-				ip += `:${internalPort}`;
-			}
-		}
-
-		return ip;
+		return externalIp ? { ip: externalIp, port: externalPort ?? undefined }
+			: internalIp ? { ip: internalIp, port: internalPort ?? undefined }
+				: { ip: undefined, port: undefined };
 	}
 
 	/** Returns the service's configuration e.g. '3 nodes, 1.5 vCores, 1GiB RAM, 2GiB storage per node' */
