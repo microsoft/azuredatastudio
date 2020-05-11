@@ -13,7 +13,6 @@ import { createViewDetailsButton } from './commonControls';
 import { HdfsDialogCancelledError } from './hdfsDialogBase';
 import { BdcDashboardPage } from './bdcDashboardPage';
 import * as loc from '../localizedConstants';
-import { BdcDashboard } from './bdcDashboard';
 
 const hyperlinkedEndpoints = [Endpoint.metricsui, Endpoint.logsui, Endpoint.sparkHistory, Endpoint.yarnUi];
 
