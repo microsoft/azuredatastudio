@@ -181,12 +181,12 @@ export class DashboardWidget {
 		});
 		const videosContainer = this.createVideoLinkContainers(view, [
 			{
-				iconPath: { light: 'images/video1.svg', dark: 'images/video1.svg' },
+				iconPath: { light: 'images/aiMlSqlServer.svg', dark: 'images/aiMlSqlServer.svg' },
 				description: 'Artificial intelligence and machine learning with SQL Server 2019',
 				link: 'https://www.youtube.com/watch?v=sE99cSoFOHs'
 			},
 			{
-				iconPath: { light: 'images/video2.svg', dark: 'images/video2.svg' },
+				iconPath: { light: 'images/sqlServer.svg', dark: 'images/sqlServer.svg' },
 				description: 'SQL Server Machine Learning Services',
 				link: 'https://www.youtube.com/watch?v=R4GCBoxADyQ'
 			}
@@ -198,7 +198,7 @@ export class DashboardWidget {
 
 		const moreVideosContainer = this.createVideoLinkContainers(view, [
 			{
-				iconPath: { light: 'images/video2.svg', dark: 'images/video2.svg' },
+				iconPath: { light: 'images/notebooksIntro.svg', dark: 'images/notebooksIntro.svg' },
 				description: 'Introduction to Azure Data Studio Notebooks',
 				link: 'https://www.youtube.com/watch?v=Nt4kIHQ0IOc'
 			}
@@ -315,7 +315,7 @@ export class DashboardWidget {
 				'background-position': 'top',
 				'width': `${maxWidth}px`,
 				'height': '110px',
-				'background-size': `{maxWidth}px 120px`
+				'background-size': `${maxWidth}px 120px`
 			}
 		});
 		videosContainer.addItem(descriptionComponent);
