@@ -39,6 +39,7 @@ export const SchemaCompareService = 'schemaCompareService';
 export const LanguageExtensionService = 'languageExtensionService';
 export const objectExplorerPrefix: string = 'objectexplorer://';
 export const ViewType = 'view';
+export const SqlAssessmentService = 'sqlAssessmentService';
 
 export enum BuiltInCommands {
 	SetContext = 'setContext'

@@ -83,7 +83,8 @@ describe('DeployedModelService', () => {
 				frameworkVersion: '1',
 				deployedBy: '1',
 				runId: 'run1',
-				table: testContext.importTable
+				table: testContext.importTable,
+				contentLength: 100
 
 			}
 		];
@@ -139,6 +140,11 @@ describe('DeployedModelService', () => {
 					},
 					{
 						displayValue: 'run1',
+						isNull: false,
+						invariantCultureDisplayValue: ''
+					},
+					{
+						displayValue: '100',
 						isNull: false,
 						invariantCultureDisplayValue: ''
 					}
@@ -304,7 +310,13 @@ describe('DeployedModelService', () => {
 					displayValue: 'run1',
 					isNull: false,
 					invariantCultureDisplayValue: ''
-				}
+				},
+				{
+					displayValue: '100',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				},
+
 		];
 		const result = {
 			rowCount: 1,
@@ -391,7 +403,7 @@ describe('DeployedModelService', () => {
 		testContext.importTable.tableName = 'ta[b]le';
 		testContext.importTable.schema = 'dbo';
 		const expected = `
-		SELECT model_id, model_name, model_description, model_version, model_creation_time, model_framework, model_framework_version, model_deployment_time, deployed_by, run_id
+		SELECT model_id, model_name, model_description, model_version, model_creation_time, model_framework, model_framework_version, model_deployment_time, deployed_by, run_id, len(model)
 		FROM [d[[]]b].[dbo].[ta[[b]]le]
 		WHERE model_name not like 'MLmodel' and model_name not like 'conda.yaml'
 		ORDER BY model_id
@@ -443,9 +455,13 @@ describe('DeployedModelService', () => {
 			databaseName: 'd[]b', tableName: 'ta[b]le', schema: 'dbo'
 		};
 		const expected = `
-		SELECT model
+		DECLARE @str varbinary(max)
+
+		SELECT @str=model
 		FROM [d[[]]b].[dbo].[ta[[b]]le]
 		WHERE model_id = 1;
+
+		select substring(@str, 0, 1001) as d0
 		`;
 		const actual = queries.getModelContentQuery(model);
 		should.deepEqual(actual, expected, `actual: ${actual} \n expected: ${expected}`);

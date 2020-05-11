@@ -178,7 +178,7 @@ export class ServerManagerStub implements nb.ServerManager {
 	calledEnd: boolean = false;
 	result: Promise<void> = undefined;
 
-	startServer(): Promise<void> {
+	startServer(kernelSpec: nb.IKernelSpec): Promise<void> {
 		this.calledStart = true;
 		return this.result;
 	}

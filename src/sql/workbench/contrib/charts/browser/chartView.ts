@@ -8,6 +8,7 @@ import 'vs/css!./media/chartView';
 import { IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { Insight } from './insight';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
+import { ICellValue } from 'sql/workbench/services/query/common/query';
 import { ChartOptions, IChartOption, ControlType } from './chartOptions';
 import { Extensions, IInsightRegistry, IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -28,7 +29,6 @@ import { ChartState } from 'sql/workbench/common/editor/query/chartState';
 import * as nls from 'vs/nls';
 import { find } from 'vs/base/common/arrays';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { DbCellValue } from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
@@ -213,7 +213,7 @@ export class ChartView extends Disposable implements IPanelView {
 		this.shouldGraph();
 	}
 
-	public setData(rows: DbCellValue[][], columns: string[]): void {
+	public setData(rows: ICellValue[][], columns: string[]): void {
 		if (!rows) {
 			this._data = { columns: [], rows: [] };
 			this._notificationService.error(nls.localize('charting.failedToGetRows', "Failed to get rows for the dataset to chart."));
@@ -238,7 +238,7 @@ export class ChartView extends Disposable implements IPanelView {
 				let summary = batch.resultSetSummaries[this._currentData.resultId];
 				if (summary) {
 					this._queryRunner.getQueryRows(0, summary.rowCount, this._currentData.batchId, this._currentData.resultId).then(d => {
-						let rows = d.resultSubset.rows;
+						let rows = d.rows;
 						let columns = summary.columnInfo.map(c => c.columnName);
 						this.setData(rows, columns);
 					});

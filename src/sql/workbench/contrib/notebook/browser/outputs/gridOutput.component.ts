@@ -14,6 +14,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
+import { ICellValue, ResultSetSummary, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
@@ -215,7 +216,7 @@ class DataResourceTable extends GridTableBase<any> {
 		gridDataProvider.getRowData(0, rowCount).then(result => {
 			let range = new Slick.Range(0, 0, rowCount - 1, columnCount - 1);
 			let columns = gridDataProvider.getColumnHeaders(range);
-			this._chart.setData(result.resultSubset.rows, columns);
+			this._chart.setData(result.rows, columns);
 		});
 	}
 
@@ -226,9 +227,9 @@ class DataResourceTable extends GridTableBase<any> {
 }
 
 class DataResourceDataProvider implements IGridDataProvider {
-	private rows: azdata.DbCellValue[][];
+	private rows: ICellValue[][];
 	constructor(source: IDataResource,
-		private resultSet: azdata.ResultSetSummary,
+		private resultSet: ResultSetSummary,
 		private documentUri: string,
 		@INotificationService private _notificationService: INotificationService,
 		@IClipboardService private _clipboardService: IClipboardService,
@@ -256,17 +257,14 @@ class DataResourceDataProvider implements IGridDataProvider {
 		});
 	}
 
-	getRowData(rowStart: number, numberOfRows: number): Thenable<azdata.QueryExecuteSubsetResult> {
+	getRowData(rowStart: number, numberOfRows: number): Thenable<ResultSetSubset> {
 		let rowEnd = rowStart + numberOfRows;
 		if (rowEnd > this.rows.length) {
 			rowEnd = this.rows.length;
 		}
-		let resultSubset: azdata.QueryExecuteSubsetResult = {
-			message: undefined,
-			resultSubset: {
-				rowCount: rowEnd - rowStart,
-				rows: this.rows.slice(rowStart, rowEnd)
-			}
+		let resultSubset: ResultSetSubset = {
+			rowCount: rowEnd - rowStart,
+			rows: this.rows.slice(rowStart, rowEnd)
 		};
 		return Promise.resolve(resultSubset);
 	}
@@ -326,7 +324,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 			maxRow = singleSelection.toRow + 1;
 			columns = columns.slice(singleSelection.fromCell, singleSelection.toCell + 1);
 		}
-		let getRows: ((index: number, rowCount: number) => azdata.DbCellValue[][]) = (index, rowCount) => {
+		let getRows: ((index: number, rowCount: number) => ICellValue[][]) = (index, rowCount) => {
 			// Offset for selections by adding the selection startRow to the index
 			index = index + minRow;
 			if (rowLength === 0 || index < 0 || index >= maxRow) {

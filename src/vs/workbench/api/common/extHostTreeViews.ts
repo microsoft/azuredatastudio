@@ -155,7 +155,7 @@ export class ExtHostTreeViews implements ExtHostTreeViewsShape {
 	}
 }
 
-type Root = null | undefined;
+export type Root = null | undefined | void; // {{SQL CARBON EDIT}} export interface
 type TreeData<T> = { message: boolean, element: T | Root | false };
 
 export interface TreeNode extends IDisposable { // {{SQL CARBON EDIT}} export interface
