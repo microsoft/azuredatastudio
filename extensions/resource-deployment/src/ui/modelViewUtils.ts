@@ -372,8 +372,8 @@ function processField(context: FieldContext): void {
 		case FieldType.KubeClusterContextPicker:
 			processKubeConfigClusterPickerField(context);
 			break;
-		case FieldType.LinkedText:
-			processLinkedTextField(context);
+		case FieldType.HyperlinkedText:
+			processHyperlinkedTextField(context);
 			break;
 		default:
 			throw new Error(localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", context.fieldInfo.type));
@@ -517,7 +517,7 @@ function processPasswordField(context: FieldContext): void {
 function processReadonlyTextField(context: FieldContext): ReadOnlyFieldInputs {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const text = context.fieldInfo.defaultValue !== undefined
-		? createLabel(context.view, { text: context.fieldInfo.defaultValue, description: '', required: false, width: context.fieldInfo.inputWidth, links: context.fieldInfo.links })
+		? createLabel(context.view, { text: context.fieldInfo.defaultValue, description: '', required: false, width: context.fieldInfo.inputWidth })
 		: undefined;
 	addLabelInputPairToContainer(context.view, context.components, label, text, context.fieldInfo);
 	return { label: label, text: text };
@@ -529,7 +529,7 @@ function processReadonlyTextField(context: FieldContext): ReadOnlyFieldInputs {
  *
  * @param context - the FieldContext object using which the field gets created
  */
-function processLinkedTextField(context: FieldContext): azdata.TextComponent {
+function processHyperlinkedTextField(context: FieldContext): azdata.TextComponent {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth, links: context.fieldInfo.links, cssStyles: context.fieldInfo.labelCSSStyles });
 	context.components.push(label);
 	return label;

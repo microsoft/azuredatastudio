@@ -37,10 +37,8 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					placeHolder: localize('deployCluster.SubscriptionPlaceholder', "Use my default Azure subscription"),
 					description: localize('deployCluster.SubscriptionDescription', "The default subscription will be used if you leave this field blank.")
 				}, {
-					type: FieldType.ReadonlyText,
-					label: '',
-					labelWidth: '0px',
-					defaultValue: localize('deployCluster.SubscriptionHelpText', "{0}"),
+					type: FieldType.HyperlinkedText,
+					label: localize('deployCluster.SubscriptionHelpText', "{0}"),
 					links: [
 						{
 							text: localize('deployCluster.SubscriptionHelpLink', "View available Azure subscriptions"),
@@ -78,10 +76,8 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						'canadaeast'
 					]
 				}, {
-					type: FieldType.ReadonlyText,
-					label: '',
-					labelWidth: '0px',
-					defaultValue: localize('deployCluster.LocationHelpText', "{0}"),
+					type: FieldType.HyperlinkedText,
+					label: localize('deployCluster.LocationHelpText', "{0}"),
 					links: [
 						{
 							text: localize('deployCluster.AzureLocationHelpLink', "View available Azure locations"),
@@ -117,10 +113,8 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VMSize_VariableName,
 					defaultValue: 'Standard_E8s_v3'
 				}, {
-					type: FieldType.ReadonlyText,
-					label: '',
-					labelWidth: '0px',
-					defaultValue: localize('deployCluster.VMSizeHelpText', "{0}"),
+					type: FieldType.HyperlinkedText,
+					label: localize('deployCluster.VMSizeHelpText', "{0}"),
 					links: [
 						{
 							text: localize('deployCluster.VMSizeHelpLink', "View available VM sizes"),

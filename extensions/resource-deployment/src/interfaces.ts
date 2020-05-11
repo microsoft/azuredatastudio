@@ -265,7 +265,7 @@ export enum FieldType {
 	AzureLocations = 'azure_locations',
 	FilePicker = 'file_picker',
 	KubeClusterContextPicker = 'kube_cluster_context_picker',
-	LinkedText = 'linked_text'
+	HyperlinkedText = 'hyperlinked_text'
 }
 
 export interface NotebookInfo {
