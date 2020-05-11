@@ -78,6 +78,8 @@ export class SparkJobSubmissionService {
 				}
 			}
 
+			options.data = JSON.stringify(options.data);
+
 			const response = JSON.parse((await this._requestPromise.xhr(options)).responseText);
 			if (response && utils.isValidNumber(response.id)) {
 				return response.id;
