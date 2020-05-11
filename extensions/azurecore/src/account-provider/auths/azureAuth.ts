@@ -284,7 +284,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 			return await axios.post(uri, qs.stringify(postData), config);
 		} catch (ex) {
-			console.log(JSON.stringify(ex?.response?.data, undefined, 2));
+			console.log('Unexpected error making Azure auth request', 'azureCore.postRequest', JSON.stringify(ex?.response?.data, undefined, 2));
 			throw ex;
 		}
 	}
@@ -301,7 +301,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return await axios.get(uri, config);
 		} catch (ex) {
 			// Intercept and print error
-			console.log(JSON.stringify(ex?.response?.data, undefined, 2));
+			console.log('Unexpected error making Azure auth request', 'azureCore.getRequest', JSON.stringify(ex?.response?.data, undefined, 2));
 			// rethrow error
 			throw ex;
 		}
