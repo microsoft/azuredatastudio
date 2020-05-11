@@ -186,7 +186,7 @@ export class DashboardWidget {
 				link: 'https://www.youtube.com/watch?v=sE99cSoFOHs'
 			},
 			{
-				iconPath: { light: 'images/sqlServer.svg', dark: 'images/sqlServer.svg' },
+				iconPath: { light: 'images/sqlServerMl.svg', dark: 'images/sqlServerMl.svg' },
 				description: 'SQL Server Machine Learning Services',
 				link: 'https://www.youtube.com/watch?v=R4GCBoxADyQ'
 			}

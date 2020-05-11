@@ -177,7 +177,7 @@ AS (
 )
 SELECT
 ${this.getPredictColumnNames(columns, 'predict_input')}, ${this.getPredictInputColumnNames(outputColumns, 'p')}
-FROM PREDICT(MODEL = @model, DATA = predict_input)
+FROM PREDICT(MODEL = @model, DATA = predict_input, runtime=onnx)
 WITH (
 	${this.getOutputParameters(outputColumns)}
 ) AS p
@@ -198,7 +198,7 @@ AS (
 )
 SELECT
 ${this.getPredictColumnNames(columns, 'predict_input')}, ${this.getOutputColumnNames(outputColumns, 'p')}
-FROM PREDICT(MODEL = ${modelBytes}, DATA = predict_input)
+FROM PREDICT(MODEL = ${modelBytes}, DATA = predict_input, runtime=onnx)
 WITH (
 	${this.getOutputParameters(outputColumns)}
 ) AS p
