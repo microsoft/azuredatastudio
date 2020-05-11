@@ -62,7 +62,7 @@ export class PredictWizard extends ModelViewBase {
 		});
 		wizard.registerNavigationValidator(async (pageInfo: azdata.window.WizardPageChangeInfo) => {
 			let validated: boolean = true;
-			if (pageInfo.newPage > pageInfo.lastPage) {
+			if (pageInfo.newPage === undefined || pageInfo.newPage > pageInfo.lastPage) {
 				validated = this.wizardView ? await this.wizardView.validate(pageInfo) : false;
 			}
 			if (validated) {
@@ -94,7 +94,7 @@ export class PredictWizard extends ModelViewBase {
 	private refreshButtons(loading: boolean): void {
 		if (this.wizardView && this.wizardView.wizard) {
 			this.wizardView.wizard.cancelButton.enabled = !loading;
-			this.wizardView.wizard.cancelButton.enabled = !loading;
+			this.wizardView.wizard.backButton.enabled = !loading;
 		}
 	}
 

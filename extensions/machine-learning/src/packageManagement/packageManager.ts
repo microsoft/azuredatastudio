@@ -158,7 +158,8 @@ export class PackageManager {
 		});
 
 		if (fileContent) {
-			let confirmed = await utils.promptConfirm(constants.confirmInstallPythonPackages(fileContent), this._apiWrapper);
+			this._apiWrapper.showInfoMessage(constants.confirmInstallPythonPackagesDetails(fileContent));
+			let confirmed = await utils.promptConfirm(constants.confirmInstallPythonPackages, this._apiWrapper);
 			if (confirmed) {
 				this._outputChannel.appendLine(constants.installDependenciesPackages);
 				let result = await utils.execCommandOnTempFile<string>(fileContent, async (tempFilePath) => {
