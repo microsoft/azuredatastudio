@@ -12,12 +12,7 @@ import * as path from 'path';
 import { EventEmitterCollection } from '../common/eventEmitter';
 
 export interface CallbackEventArgs {
-	data?: any;
-	error?: (reason?: any) => void;
-}
-
-
-export interface CallbackEventArgs {
+	inputArgs?: any;
 	data?: any;
 	error?: (reason?: any) => void;
 }
@@ -95,28 +90,38 @@ export abstract class ViewBase extends EventEmitterCollection {
 		this.fire(requestType, arg);
 	}
 
-	public sendDataRequest<T>(
+	public async sendDataRequest<T>(
 		eventName: string,
 		arg?: any,
 		callbackEventName?: string): Promise<T> {
-		return new Promise<T>((resolve, reject) => {
+		let emitter: vscode.EventEmitter<any> | undefined;
+		let promise = new Promise<T>((resolve, reject) => {
 			if (!callbackEventName) {
 				callbackEventName = ViewBase.getCallbackEventName(eventName);
 			}
-			this.on(callbackEventName, result => {
+			emitter = this.on(callbackEventName, result => {
 				let callbackArgs = <CallbackEventArgs>result;
 				if (callbackArgs) {
-					if (callbackArgs.error) {
-						reject(callbackArgs.error);
-					} else {
-						resolve(<T>callbackArgs.data);
+					if (callbackArgs.inputArgs === arg) {
+						if (callbackArgs.error) {
+							reject(callbackArgs.error);
+						} else {
+							resolve(<T>callbackArgs.data);
+						}
 					}
 				} else {
 					reject(constants.notSupportedEventArg);
 				}
 			});
+
 			this.fire(eventName, arg);
 		});
+		const result = await promise;
+		if (emitter && callbackEventName) {
+			this.disposeEvent(callbackEventName, emitter);
+		}
+
+		return result;
 	}
 
 	public async getLocalPaths(options: vscode.OpenDialogOptions): Promise<string[]> {
