@@ -45,18 +45,6 @@ describe('Deploy Database Dialog', () => {
 		const project = new Project(projFilePath);
 
 		const deployDatabaseDialog = new DeployDatabaseDialog(testContext.apiWrapper.object, project);
-		should.equal(deployDatabaseDialog.getDefaultDatabaseName(), projFolder);
-	});
-
-	it('Should create default script name correctly ', async function (): Promise<void> {
-		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
-		const projFolder = `TestProject_${new Date().getTime()}`;
-		const projFileDir = path.join(os.tmpdir(), projFolder);
-
-		const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
-		const project = new Project(projFilePath);
-
-		const deployDatabaseDialog = new DeployDatabaseDialog(testContext.apiWrapper.object, project);
-		should.equal(deployDatabaseDialog.getDefaultScriptName(), `${projFolder}.sql`);
+		should.equal(deployDatabaseDialog.getDefaultDatabaseName(), project.projectFileName);
 	});
 });

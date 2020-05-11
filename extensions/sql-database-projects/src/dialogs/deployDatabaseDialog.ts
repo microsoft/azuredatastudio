@@ -119,10 +119,6 @@ export class DeployDatabaseDialog {
 		return this.project.projectFileName;
 	}
 
-	public getDefaultScriptName(): string {
-		return this.getDefaultDatabaseName() + '.sql';
-	}
-
 	private createRadioButtons(view: azdata.ModelView): azdata.Component {
 		this.connectionsRadioButton = view.modelBuilder.radioButton()
 			.withProperties({
