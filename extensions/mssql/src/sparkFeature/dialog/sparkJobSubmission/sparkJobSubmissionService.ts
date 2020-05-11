@@ -10,18 +10,18 @@ import * as constants from '../../../constants';
 import { SqlClusterConnection } from '../../../objectExplorerNodeProvider/connection';
 import * as utils from '../../../utils';
 import * as auth from '../../../util/auth';
-import { Options } from 'request-promise';
+import { XHROptions } from 'request-light';
 
 export class SparkJobSubmissionService {
-	private _requestPromise: typeof import('request-promise');
+	private _requestPromise: typeof import('request-light');
 
 	constructor(
-		requestService?: typeof import('request-promise')) {
+		requestService?: typeof import('request-light')) {
 		if (requestService) {
 			// this is to fake the request service for test.
 			this._requestPromise = requestService;
 		} else {
-			this._requestPromise = require('request-promise');
+			this._requestPromise = require('request-light');
 		}
 	}
 
@@ -32,12 +32,11 @@ export class SparkJobSubmissionService {
 			// Get correct authentication headers
 			let headers = await this.getAuthenticationHeaders(submissionArgs);
 
-			let options: Options = {
-				uri: livyUrl,
-				method: 'POST',
-				json: true,
-				rejectUnauthorized: !auth.getIgnoreSslVerificationConfigSetting(),
-				body: {
+			let options: XHROptions = {
+				url: livyUrl,
+				type: 'POST',
+				strictSSL: !auth.getIgnoreSslVerificationConfigSetting(),
+				data: {
 					file: submissionArgs.sparkFile,
 					proxyUser: submissionArgs.user,
 					className: submissionArgs.mainClass,
@@ -51,7 +50,7 @@ export class SparkJobSubmissionService {
 			if (submissionArgs.jobArguments && submissionArgs.jobArguments.trim()) {
 				let argsList = submissionArgs.jobArguments.split(' ');
 				if (argsList.length > 0) {
-					options.body['args'] = argsList;
+					options.data['args'] = argsList;
 				}
 			}
 
@@ -59,7 +58,7 @@ export class SparkJobSubmissionService {
 			if (submissionArgs.jarFileList && submissionArgs.jarFileList.trim()) {
 				let jarList = submissionArgs.jarFileList.split(';');
 				if (jarList.length > 0) {
-					options.body['jars'] = jarList;
+					options.data['jars'] = jarList;
 				}
 			}
 
@@ -67,7 +66,7 @@ export class SparkJobSubmissionService {
 			if (submissionArgs.pyFileList && submissionArgs.pyFileList.trim()) {
 				let pyList = submissionArgs.pyFileList.split(';');
 				if (pyList.length > 0) {
-					options.body['pyFiles'] = pyList;
+					options.data['pyFiles'] = pyList;
 				}
 			}
 
@@ -75,11 +74,11 @@ export class SparkJobSubmissionService {
 			if (submissionArgs.otherFileList && submissionArgs.otherFileList.trim()) {
 				let otherList = submissionArgs.otherFileList.split(';');
 				if (otherList.length > 0) {
-					options.body['files'] = otherList;
+					options.data['files'] = otherList;
 				}
 			}
 
-			const response = await this._requestPromise(options);
+			const response = JSON.parse((await this._requestPromise.xhr(options)).responseText);
 			if (response && utils.isValidNumber(response.id)) {
 				return response.id;
 			}
@@ -117,7 +116,7 @@ export class SparkJobSubmissionService {
 				headers: headers
 			};
 
-			const response = await this._requestPromise(options);
+			const response = JSON.parse((await this._requestPromise.xhr(options)).responseText);
 			if (response && response.log) {
 				return this.extractYarnAppIdFromLog(response.log);
 			}
