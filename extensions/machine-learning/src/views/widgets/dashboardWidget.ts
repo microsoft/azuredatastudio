@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import { ApiWrapper } from '../../common/apiWrapper';
 import * as path from 'path';
 import * as constants from '../../common/constants';
-import * as utils from '../../common/utils';
 import { PredictService } from '../../prediction/predictService';
 
 interface IActionMetadata {
@@ -349,15 +348,15 @@ export class DashboardWidget {
 			link: constants.mlsDocLink
 		},
 		{
-			title: constants.sqlMlsAzureDocTitle,
-			description: constants.sqlMlsAzureDocDesc,
-			link: constants.mlsAzureDocLink
+			title: constants.onnxOnEdgeOdbcDocTitle,
+			description: constants.onnxOnEdgeOdbcDocDesc,
+			link: constants.onnxOnEdgeDocs
 		}];
 
 		const moreLink = {
 			title: constants.mlsInstallOdbcDocTitle,
 			description: constants.mlsInstallOdbcDocDesc,
-			link: utils.isWindows() ? constants.odbcDriverWindowsDocuments : constants.odbcDriverLinuxDocuments
+			link: constants.odbcDriverDocuments
 		};
 		const styles = {
 			'padding': '10px'
