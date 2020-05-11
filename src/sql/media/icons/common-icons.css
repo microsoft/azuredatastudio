@@ -410,6 +410,14 @@ Includes non-masked style declarations. */
 	mask-image: url('shield.svg');
 }
 
+.codicon:not(.masked).icon-shield-x  {
+	background-image: url('shield-x.svg');
+}
+.codicon.masked.icon-shield-x {
+	-webkit-mask-image: url('shield-x.svg');
+	mask-image: url('shield-x.svg');
+}
+
 .codicon:not(.masked).packages {
 	background-image: url('packages.svg');
 }

@@ -159,7 +159,7 @@ export class TrustedAction extends ToggleableAction {
 	private static readonly baseClass = 'notebook-button';
 	private static readonly previewTrustedCssClass = 'icon-shield';
 	private static readonly trustedCssClass = 'icon-trusted';
-	private static readonly previewNotTrustedCssClass = 'icon-shield';
+	private static readonly previewNotTrustedCssClass = 'icon-shield-x';
 	private static readonly notTrustedCssClass = 'icon-notTrusted';
 	private static readonly maskedIconClass = 'masked';
 

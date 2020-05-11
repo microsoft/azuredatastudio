@@ -122,7 +122,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	ngOnInit() {
-		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
@@ -403,6 +402,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	protected initActionBar(): void {
+		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
+
 		if (this.previewFeaturesEnabled) {
 			let kernelContainer = document.createElement('li');
 			let kernelDropdown = this.instantiationService.createInstance(KernelsDropdown, kernelContainer, this.contextViewService, this.modelReady);
@@ -418,14 +419,14 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			let spacerElement = document.createElement('li');
 			spacerElement.style.marginLeft = 'auto';
 
-			let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Code cell"), 'notebook-button masked-pseudo code');
+			let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('codePreview', "Code cell"), 'notebook-button masked-pseudo code');
 			addCodeCellButton.cellType = CellTypes.Code;
 
-			let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Markdown cell"), 'notebook-button masked-pseudo markdown');
+			let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('textPreview', "Markdown cell"), 'notebook-button masked-pseudo markdown');
 			addTextCellButton.cellType = CellTypes.Markdown;
 
 
-			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run all"), 'notebook-button masked-pseudo start-outline');
+			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'notebook-button masked-pseudo start-outline');
 
 			let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', true);
 
@@ -478,13 +479,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			attachToDropdown.render(attachToContainer);
 			attachSelectBoxStyler(attachToDropdown, this.themeService);
 
-			let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code1', "Code"), 'notebook-button icon-add');
+			let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Code"), 'notebook-button icon-add');
 			addCodeCellButton.cellType = CellTypes.Code;
 
-			let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text1', "Text"), 'notebook-button icon-add');
+			let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Text"), 'notebook-button icon-add');
 			addTextCellButton.cellType = CellTypes.Markdown;
 
-			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll1', "Run Cells"), 'notebook-button icon-run-cells');
+			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run Cells"), 'notebook-button icon-run-cells');
 
 			let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', false);
 
@@ -553,8 +554,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private actionItemProvider(action: Action): IActionViewItem {
 		// Check extensions to create ActionItem; otherwise, return undefined
 		// This is similar behavior that exists in MenuItemActionItem
+		let incomingLabel: string;
+
 		if (action instanceof MenuItemAction) {
-			return new LabeledMenuItemActionItem(action, this.keybindingService, this.contextMenuService, this.notificationService, 'notebook-button');
+
+			if (action.item.id.includes('jupyter.cmd') && this.previewFeaturesEnabled) {
+				incomingLabel = action.label;
+				action.label = null;
+				action.tooltip = incomingLabel;
+			}
+			return new LabeledMenuItemActionItem(action, this.keybindingService, this.contextMenuService, this.notificationService, 'notebook-button fixed-width');
 		}
 		return undefined;
 	}

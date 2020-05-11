@@ -62,7 +62,17 @@
 	width: 16px;
 }
 .notebookEditor .in-preview .actions-container .action-item:last-child {
-	margin-right: 23px;
+	margin-right: 8px;
+}
+.notebookEditor .in-preview .actions-container .action-item:last-child .notebook-button {
+	margin-right: 0;
+}
+.notebookEditor .in-preview .actions-container .action-item:last-child .notebook-button.fixed-width {
+	margin-left: 8px;
+	margin-right: -28px;
+}
+.notebookEditor .in-preview .actions-container .action-item .notebook-button.fixed-width {
+	width: 34px;
 }
 
 .notebookEditor .labelOnLeftContainer {
@@ -147,7 +157,9 @@
 	border-radius: 0;
 	padding: 3px 22px 3px 6px;
 }
-
+.notebookEditor .in-preview .carbon-taskbar .action-item {
+	margin-right: 0;
+}
 .notebookEditor .in-preview .labelOnLeftContainer {
 	display: flex;
 	align-items: center;
