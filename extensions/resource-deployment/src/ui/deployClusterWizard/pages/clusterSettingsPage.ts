@@ -174,7 +174,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.DomainServiceAccountPassword_VariableName
 				}, {
 					type: FieldType.Text,
-					label: localize('deployCluster.AppOwers', "App owners"),
+					label: localize('deployCluster.AppOwners', "App owners"),
 					required: false,
 					variableName: VariableNames.AppOwners_VariableName,
 					placeHolder: localize('deployCluster.AppOwnersPlaceHolder', "Use comma to separate the values."),

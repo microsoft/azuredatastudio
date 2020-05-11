@@ -41,9 +41,9 @@ export function getTextComponent(name: string, inputComponents: InputComponents)
 
 export const DefaultInputWidth = '400px';
 export const DefaultLabelWidth = '200px';
-export const DefaultRowAlignItems = undefined;
-export const DefaultRowWidth = undefined;
-export const DefaultRowHeight = undefined;
+export const DefaultFieldAlignItems = undefined;
+export const DefaultFieldWidth = undefined;
+export const DefaultFieldHeight = undefined;
 
 export interface DialogContext extends CreateContext {
 	dialogInfo: DialogInfoBase;
@@ -175,9 +175,9 @@ export function initializeDialog(dialogContext: DialogContext): void {
 			const sections = tabInfo.sections.map(sectionInfo => {
 				sectionInfo.inputWidth = sectionInfo.inputWidth || tabInfo.inputWidth || DefaultInputWidth;
 				sectionInfo.labelWidth = sectionInfo.labelWidth || tabInfo.labelWidth || DefaultLabelWidth;
-				sectionInfo.rowAlignItems = sectionInfo.rowAlignItems || tabInfo.rowAlignItems || DefaultRowAlignItems;
-				sectionInfo.rowWidth = sectionInfo.rowWidth || tabInfo.rowWidth || DefaultRowWidth;
-				sectionInfo.rowHeight = sectionInfo.rowHeight || tabInfo.rowHeight || DefaultRowHeight;
+				sectionInfo.fieldAlignItems = sectionInfo.fieldAlignItems || tabInfo.fieldAlignItems || DefaultFieldAlignItems;
+				sectionInfo.fieldWidth = sectionInfo.fieldWidth || tabInfo.fieldWidth || DefaultFieldWidth;
+				sectionInfo.fieldHeight = sectionInfo.fieldHeight || tabInfo.fieldHeight || DefaultFieldHeight;
 				sectionInfo.labelPosition = sectionInfo.labelPosition || tabInfo.labelPosition;
 				return createSection({
 					sectionInfo: sectionInfo,
@@ -210,9 +210,9 @@ export function initializeWizardPage(context: WizardPageContext): void {
 		const sections = context.pageInfo.sections.map(sectionInfo => {
 			sectionInfo.inputWidth = sectionInfo.inputWidth || context.pageInfo.inputWidth || context.wizardInfo.inputWidth || DefaultInputWidth;
 			sectionInfo.labelWidth = sectionInfo.labelWidth || context.pageInfo.labelWidth || context.wizardInfo.labelWidth || DefaultLabelWidth;
-			sectionInfo.rowAlignItems = sectionInfo.rowAlignItems || context.pageInfo.rowAlignItems || DefaultRowAlignItems;
-			sectionInfo.rowWidth = sectionInfo.rowWidth || context.pageInfo.rowWidth || context.wizardInfo.rowWidth || DefaultRowWidth;
-			sectionInfo.rowHeight = sectionInfo.rowHeight || context.pageInfo.rowHeight || context.wizardInfo.rowHeight || DefaultRowHeight;
+			sectionInfo.fieldAlignItems = sectionInfo.fieldAlignItems || context.pageInfo.fieldAlignItems || DefaultFieldAlignItems;
+			sectionInfo.fieldWidth = sectionInfo.fieldWidth || context.pageInfo.fieldWidth || context.wizardInfo.fieldWidth || DefaultFieldWidth;
+			sectionInfo.fieldHeight = sectionInfo.fieldHeight || context.pageInfo.fieldHeight || context.wizardInfo.fieldHeight || DefaultFieldHeight;
 			sectionInfo.labelPosition = sectionInfo.labelPosition || context.pageInfo.labelPosition || context.wizardInfo.labelPosition;
 			return createSection({
 				view: view,
@@ -239,9 +239,9 @@ export function createSection(context: SectionContext): azdata.GroupContainer {
 	const components: azdata.Component[] = [];
 	context.sectionInfo.inputWidth = context.sectionInfo.inputWidth || DefaultInputWidth;
 	context.sectionInfo.labelWidth = context.sectionInfo.labelWidth || DefaultLabelWidth;
-	context.sectionInfo.rowAlignItems = context.sectionInfo.rowAlignItems || DefaultRowAlignItems;
-	context.sectionInfo.rowWidth = context.sectionInfo.rowWidth || DefaultRowWidth;
-	context.sectionInfo.rowHeight = context.sectionInfo.rowHeight || DefaultRowHeight;
+	context.sectionInfo.fieldAlignItems = context.sectionInfo.fieldAlignItems || DefaultFieldAlignItems;
+	context.sectionInfo.fieldWidth = context.sectionInfo.fieldWidth || DefaultFieldWidth;
+	context.sectionInfo.fieldHeight = context.sectionInfo.fieldHeight || DefaultFieldHeight;
 	if (context.sectionInfo.fields) {
 		processFields(context.sectionInfo.fields, components, context);
 	} else if (context.sectionInfo.rows) {
@@ -266,7 +266,7 @@ function processRow(rowInfo: RowInfo, context: SectionContext): azdata.Component
 		const fieldItems = rowInfo.items as FieldInfo[];
 		processFields(fieldItems, items, context, context.sectionInfo.spaceBetweenFields === undefined ? '50px' : context.sectionInfo.spaceBetweenFields);
 	}
-	return createFlexContainer(context.view, items, true, context.sectionInfo.rowWidth, context.sectionInfo.rowHeight, context.sectionInfo.rowAlignItems, rowInfo.cssStyles);
+	return createFlexContainer(context.view, items, true, context.sectionInfo.fieldWidth, context.sectionInfo.fieldHeight, context.sectionInfo.fieldAlignItems, rowInfo.cssStyles);
 }
 
 function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component[], context: SectionContext, spaceBetweenFields?: string): void {
@@ -274,9 +274,9 @@ function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component
 		const fieldInfo = fieldInfoArray[i];
 		fieldInfo.labelWidth = fieldInfo.labelWidth || context.sectionInfo.labelWidth;
 		fieldInfo.inputWidth = fieldInfo.inputWidth || context.sectionInfo.inputWidth;
-		fieldInfo.rowAlignItems = fieldInfo.rowAlignItems || context.sectionInfo.rowAlignItems;
-		fieldInfo.rowWidth = fieldInfo.rowWidth || context.sectionInfo.rowWidth;
-		fieldInfo.rowHeight = fieldInfo.rowHeight || context.sectionInfo.rowHeight;
+		fieldInfo.fieldAlignItems = fieldInfo.fieldAlignItems || context.sectionInfo.fieldAlignItems;
+		fieldInfo.fieldWidth = fieldInfo.fieldWidth || context.sectionInfo.fieldWidth;
+		fieldInfo.fieldHeight = fieldInfo.fieldHeight || context.sectionInfo.fieldHeight;
 		fieldInfo.labelPosition = fieldInfo.labelPosition === undefined ? context.sectionInfo.labelPosition : fieldInfo.labelPosition;
 		processField({
 			view: context.view,
@@ -323,7 +323,7 @@ function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata
 		inputs.push(...additionalComponents);
 	}
 	if (fieldInfo.labelPosition === LabelPosition.Left) {
-		const row = createFlexContainer(view, inputs, true, fieldInfo.rowWidth, fieldInfo.rowHeight, fieldInfo.rowAlignItems);
+		const row = createFlexContainer(view, inputs, true, fieldInfo.fieldWidth, fieldInfo.fieldHeight, fieldInfo.fieldAlignItems);
 		components.push(row);
 	} else {
 		components.push(...inputs);
@@ -588,7 +588,7 @@ function processFilePickerField(context: FieldContext, defaultFilePath?: string)
 }
 
 /**
- * An Kube Config Cluster picker field consists of a file system filee picker and radio button selector for cluster contexts defined in the config filed picked using the file picker.
+ * An Kube Config Cluster picker field consists of a file system file picker and radio button selector for cluster contexts defined in the config filed picked using the file picker.
  * @param context The context to use to create the field
  */
 async function processKubeConfigClusterPickerField(context: KubeClusterContextFieldContext): Promise<void> {
@@ -649,8 +649,8 @@ async function processRadioOptionsTypeField(context: FieldContext): Promise<Radi
 
 async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: (() => Promise<{ values: string[] | azdata.CategoryValue[], defaultValue: string }>))
 	: Promise<RadioOptionsInputs> {
-	if (context.fieldInfo.rowAlignItems === undefined) {
-		context.fieldInfo.rowAlignItems = 'flex-start'; // by default align the items to the top.
+	if (context.fieldInfo.fieldAlignItems === undefined) {
+		context.fieldInfo.fieldAlignItems = 'flex-start'; // by default align the items to the top.
 	}
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const optionsListContainer = context.view!.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();

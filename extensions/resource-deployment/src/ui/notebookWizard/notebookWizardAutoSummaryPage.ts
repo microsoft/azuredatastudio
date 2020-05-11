@@ -6,7 +6,7 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 
 import { SubFieldInfo, FieldType, FontWeight, LabelPosition, SectionInfo } from '../../interfaces';
-import { createSection, DefaultInputWidth, DefaultLabelWidth, DefaultRowAlignItems, DefaultRowWidth, DefaultRowHeight } from '../modelViewUtils';
+import { createSection, DefaultInputWidth, DefaultLabelWidth, DefaultFieldAlignItems, DefaultFieldWidth, DefaultFieldHeight } from '../modelViewUtils';
 import { NotebookWizard } from './notebookWizard';
 import { NotebookWizardPage } from './notebookWizardPage';
 
@@ -43,9 +43,9 @@ export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 		});
 		this.formItems = [];
 
-		const rowWidth = this.pageInfo.rowWidth || this.wizard.wizardInfo.rowWidth || DefaultRowWidth;
-		const rowHeight = this.pageInfo.rowHeight || this.wizard.wizardInfo.rowHeight || DefaultRowHeight;
-		const rowAlignItems = this.pageInfo.rowAlignItems || this.wizard.wizardInfo.rowAlignItems || DefaultRowAlignItems;
+		const fieldWidth = this.pageInfo.fieldWidth || this.wizard.wizardInfo.fieldWidth || DefaultFieldWidth;
+		const fieldHeight = this.pageInfo.fieldHeight || this.wizard.wizardInfo.fieldHeight || DefaultFieldHeight;
+		const fieldAlignItems = this.pageInfo.fieldAlignItems || this.wizard.wizardInfo.fieldAlignItems || DefaultFieldAlignItems;
 		const labelWidth = this.pageInfo.labelWidth || this.wizard.wizardInfo.labelWidth || DefaultLabelWidth;
 		const labelPosition = this.pageInfo.labelPosition || this.wizard.wizardInfo.labelPosition || LabelPosition.Left;
 		const inputWidth = this.pageInfo.inputWidth || this.wizard.wizardInfo.inputWidth || DefaultInputWidth;
@@ -55,9 +55,9 @@ export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 				labelPosition: labelPosition,
 				labelWidth: labelWidth,
 				inputWidth: inputWidth,
-				rowWidth: rowWidth,
-				rowHeight: rowHeight,
-				rowAlignItems: rowAlignItems,
+				fieldWidth: fieldWidth,
+				fieldHeight: fieldHeight,
+				fieldAlignItems: fieldAlignItems,
 				title: '',
 				rows: []
 			};

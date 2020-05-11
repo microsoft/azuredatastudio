@@ -175,9 +175,9 @@ export interface FieldInfoBase {
 	labelWidth?: string;
 	inputWidth?: string;
 	labelPosition?: LabelPosition; // Default value is top
-	rowWidth?: string;
-	rowHeight?: string;
-	rowAlignItems?: azdata.AlignItemsType;
+	fieldWidth?: string;
+	fieldHeight?: string;
+	fieldAlignItems?: azdata.AlignItemsType;
 }
 export interface SectionInfo extends FieldInfoBase {
 	title?: string;

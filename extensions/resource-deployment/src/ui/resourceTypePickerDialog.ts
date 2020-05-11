@@ -199,8 +199,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private updateToolsDisplayTable(): void {
 		this.toolRefreshTimestamp = new Date().getTime();
 		const currentRefreshTimestamp = this.toolRefreshTimestamp;
-		const headerRowHeight = 28;
-		this._toolsTable.height = 25 * Math.max(this.toolRequirements.length, 1) + headerRowHeight;
+		const headerFieldHeight = 28;
+		this._toolsTable.height = 25 * Math.max(this.toolRequirements.length, 1) + headerFieldHeight;
 		if (!this._installationInProgress) { // Wipe the informational message clean unless installation is already in progress.
 			this._dialogObject.message = {
 				text: ''
