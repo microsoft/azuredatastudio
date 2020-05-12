@@ -10,7 +10,7 @@ import * as constants from '../../../constants';
 import { SqlClusterConnection } from '../../../objectExplorerNodeProvider/connection';
 import * as utils from '../../../utils';
 import * as auth from '../../../util/auth';
-import { XHROptions } from 'request-light';
+import { XHROptions, configure } from 'request-light';
 
 export class SparkJobSubmissionService {
 	private _requestPromise: typeof import('request-light');
@@ -79,6 +79,8 @@ export class SparkJobSubmissionService {
 			}
 
 			options.data = JSON.stringify(options.data);
+
+			this._requestPromise.configure(null, options.strictSSL);
 
 			const response = JSON.parse((await this._requestPromise.xhr(options)).responseText);
 			if (response && utils.isValidNumber(response.id)) {
