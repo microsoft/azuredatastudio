@@ -10,7 +10,7 @@ import * as constants from '../../../constants';
 import { SqlClusterConnection } from '../../../objectExplorerNodeProvider/connection';
 import * as utils from '../../../utils';
 import * as auth from '../../../util/auth';
-import { XHROptions, configure } from 'request-light';
+import { XHROptions } from 'request-light';
 
 export class SparkJobSubmissionService {
 	private _requestPromise: typeof import('request-light');
