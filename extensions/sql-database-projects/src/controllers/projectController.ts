@@ -18,6 +18,7 @@ import { promises as fs } from 'fs';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
+import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 
 /**
  * Controller for managing project lifecycle
@@ -118,9 +119,10 @@ export class ProjectsController {
 		await this.apiWrapper.showErrorMessage(`Build not yet implemented: ${project.projectFilePath}`); // TODO
 	}
 
-	public async deploy(treeNode: BaseProjectTreeItem) {
+	public deploy(treeNode: BaseProjectTreeItem): void {
 		const project = this.getProjectContextFromTreeNode(treeNode);
-		await this.apiWrapper.showErrorMessage(`Deploy not yet implemented: ${project.projectFilePath}`); // TODO
+		const deployDatabaseDialog = new DeployDatabaseDialog(this.apiWrapper, project);
+		deployDatabaseDialog.openDialog();
 	}
 
 	public async import(treeNode: BaseProjectTreeItem) {
