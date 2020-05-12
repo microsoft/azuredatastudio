@@ -272,13 +272,17 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 			// Add sash
 			if (this.options.enableResizing && this.viewItems.length > 1) {
-				const orientation = this.orientation === Orientation.VERTICAL ? Orientation.HORIZONTAL : Orientation.VERTICAL;
-				const layoutProvider = this.orientation === Orientation.VERTICAL ? { getHorizontalSashTop: (sash: Sash) => this.getSashPosition(sash) } : { getVerticalSashLeft: (sash: Sash) => this.getSashPosition(sash) };
-				const sash = new Sash(this.sashContainer, layoutProvider, {
-					orientation,
-					orthogonalStartSash: this.orthogonalStartSash,
-					orthogonalEndSash: this.orthogonalEndSash
-				});
+				const sash = this.orientation === Orientation.HORIZONTAL
+					? new Sash(this.sashContainer, { getHorizontalSashTop: (sash: Sash) => this.getSashPosition(sash) }, {
+						orientation: Orientation.HORIZONTAL,
+						orthogonalStartSash: this.orthogonalStartSash,
+						orthogonalEndSash: this.orthogonalEndSash
+					})
+					: new Sash(this.sashContainer, { getVerticalSashLeft: (sash: Sash) => this.getSashPosition(sash) }, {
+						orientation: Orientation.VERTICAL,
+						orthogonalStartSash: this.orthogonalStartSash,
+						orthogonalEndSash: this.orthogonalEndSash
+					});
 
 				const sashEventMapper = this.orientation === Orientation.VERTICAL
 					? (e: IBaseSashEvent) => ({ sash, start: e.startY, current: e.currentY, alt: e.altKey } as ISashEvent)
@@ -375,13 +379,17 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		// Add sash
 		if (this.options.enableResizing && this.viewItems.length > 1) {
-			const orientation = this.orientation === Orientation.VERTICAL ? Orientation.HORIZONTAL : Orientation.VERTICAL;
-			const layoutProvider = this.orientation === Orientation.VERTICAL ? { getHorizontalSashTop: (sash: Sash) => this.getSashPosition(sash) } : { getVerticalSashLeft: (sash: Sash) => this.getSashPosition(sash) };
-			const sash = new Sash(this.sashContainer, layoutProvider, {
-				orientation,
-				orthogonalStartSash: this.orthogonalStartSash,
-				orthogonalEndSash: this.orthogonalEndSash
-			});
+			const sash = this.orientation === Orientation.HORIZONTAL
+				? new Sash(this.sashContainer, { getHorizontalSashTop: (sash: Sash) => this.getSashPosition(sash) }, {
+					orientation: Orientation.HORIZONTAL,
+					orthogonalStartSash: this.orthogonalStartSash,
+					orthogonalEndSash: this.orthogonalEndSash
+				})
+				: new Sash(this.sashContainer, { getVerticalSashLeft: (sash: Sash) => this.getSashPosition(sash) }, {
+					orientation: Orientation.VERTICAL,
+					orthogonalStartSash: this.orthogonalStartSash,
+					orthogonalEndSash: this.orthogonalEndSash
+				});
 
 			const sashEventMapper = this.orientation === Orientation.VERTICAL
 				? (e: IBaseSashEvent) => ({ sash, start: e.startY, current: e.currentY, alt: e.altKey } as ISashEvent)
