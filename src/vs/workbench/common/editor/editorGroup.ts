@@ -84,6 +84,9 @@ export class EditorGroup extends Disposable {
 	private readonly _onDidChangeEditorPinned = this._register(new Emitter<EditorInput>());
 	readonly onDidChangeEditorPinned = this._onDidChangeEditorPinned.event;
 
+	private readonly _onDidChangeEditorSticky = this._register(new Emitter<EditorInput>());
+	readonly onDidChangeEditorSticky = this._onDidChangeEditorSticky.event;
+
 	//#endregion
 
 	private _id: GroupIdentifier;
@@ -561,6 +564,9 @@ export class EditorGroup extends Disposable {
 
 		// Adjust sticky index
 		this.sticky++;
+
+		// Event
+		this._onDidChangeEditorSticky.fire(editor);
 	}
 
 	unstick(candidate: EditorInput): EditorInput | undefined {
@@ -586,6 +592,9 @@ export class EditorGroup extends Disposable {
 
 		// Adjust sticky index
 		this.sticky--;
+
+		// Event
+		this._onDidChangeEditorSticky.fire(editor);
 	}
 
 	isSticky(candidateOrIndex: EditorInput | number): boolean {
