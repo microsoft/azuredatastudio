@@ -113,7 +113,7 @@ export class NetCoreTool {
 	}
 
 	// spawns the dotnet command with aruments and redirects the error and output to ADS output channel
-	private async runStreamedCommand(command: string, outputChannel: vscode.OutputChannel, options?: DotNetCommandOptions): Promise<string> {
+	public async runStreamedCommand(command: string, outputChannel: vscode.OutputChannel, options?: DotNetCommandOptions): Promise<string> {
 		const stdoutData: string[] = [];
 		outputChannel.appendLine(`    > ${command}`);
 

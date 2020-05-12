@@ -5,6 +5,7 @@
 
 import * as should from 'should';
 import * as os from 'os';
+import * as fs from 'fs';
 import * as vscode from 'vscode';
 import { NetCoreTool, DBProjectConfigurationKey, NetCoreInstallLocationKey, NextCoreNonWindowsDefaultPath } from '../tools/netcoreTool';
 import { isNullOrUndefined } from 'util';
@@ -39,6 +40,27 @@ describe('NetCoreTool: Net core tests', function (): void {
 			//check that path should start with /usr/local/share
 			let result = isNullOrUndefined(netcoreTool.netcoreInstallLocation) || netcoreTool.netcoreInstallLocation.toLowerCase().startsWith(NextCoreNonWindowsDefaultPath);
 			should(result).true('dotnet is either not present or in /usr/local/share by default');
+		}
+	});
+
+	it('should run a command successfully', async function (): Promise<void> {
+
+		const netcoreTool = new NetCoreTool();
+		const dummyFile = 'dummy.dacpac';
+		const outputChannel = vscode.window.createOutputChannel('db project test');
+
+		try {
+
+			await netcoreTool.runStreamedCommand('echo test > ' + dummyFile, outputChannel, undefined);
+			const text = await fs.promises.readFile(dummyFile);
+			should(text.toString().trim()).equal('test');
+		}
+		finally {
+			await fs.exists(dummyFile, async (existBool) => {
+				if (existBool) {
+					await fs.promises.unlink(dummyFile);
+				}
+			});
 		}
 	});
 });
