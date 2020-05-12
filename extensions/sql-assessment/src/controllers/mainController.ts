@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import * as nls from 'vscode-nls';
+import { TelemetryReporter, SqlAssessmentTelemetryView, SqlTelemetryActions } from '../telemetry';
 
 const localize = nls.loadMessageBundle();
 const tabName = 'sql-assessment-tab';
@@ -50,6 +51,7 @@ export default class MainController {
 	public async activate(): Promise<boolean> {
 		this.sqlAssessment = ((await vscode.extensions.getExtension(mssql.extension.name)?.activate() as mssql.IExtension)).sqlAssessment;
 		this.registerModelView();
+		TelemetryReporter.sendViewEvent(SqlAssessmentTelemetryView);
 		return true;
 	}
 
@@ -194,8 +196,10 @@ export default class MainController {
 		this.toDispose.push(btnInvokeAssessment.onDidClick(async () => {
 			btnInvokeAssessmentLoading.loading = true;
 			if (this.isServerConnection) {
+				TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.InvokeServerAssessment);
 				await this.performServerAssessment(AssessmentType.InvokeAssessment);
 			} else {
+				TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.InvokeDatabaseAssessment);
 				let assessmentResult = await this.sqlAssessment.assessmentInvoke(this.connectionUri, mssql.SqlAssessmentTargetType.Database);
 				this.displayResults(assessmentResult, AssessmentType.InvokeAssessment);
 			}
@@ -217,8 +221,10 @@ export default class MainController {
 		this.toDispose.push(btnGetAssessmentItems.onDidClick(async () => {
 			btnGetAssessmentItemsLoading.loading = true;
 			if (this.isServerConnection) {
+				TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.GetServerAssessmentRules);
 				await this.performServerAssessment(AssessmentType.AvailableRules);
 			} else {
+				TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.GetDatabaseAssessmentRules);
 				let assessmentResult = await this.sqlAssessment.assessmentInvoke(this.connectionUri, mssql.SqlAssessmentTargetType.Database);
 				this.displayResults(assessmentResult, AssessmentType.AvailableRules);
 			}
@@ -235,6 +241,7 @@ export default class MainController {
 				enabled: false
 			}).component();
 		this.toDispose.push(this.btnExportAsScript.onDidClick(async () => {
+			TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.ExportAssessmentResults);
 			this.sqlAssessment.generateAssessmentScript(this.lastInvokedResults, '', '', azdata.TaskExecutionMode.script);
 		}));
 
@@ -248,6 +255,7 @@ export default class MainController {
 			}).component();
 
 		this.toDispose.push(btnViewSamples.onDidClick(() => {
+			TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.LearnMoreAssessmentLink);
 			vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/sql-assessment-api'));
 		}));
 
