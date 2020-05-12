@@ -196,7 +196,7 @@ export function getErrorMessage(error: Error | any, removeHeader: boolean = fals
 			errorMessage += ` (${error.status})`;
 		}
 	} else {
-		errorMessage = error.toString();
+		errorMessage = JSON.stringify(error.toString());
 	}
 	if (removeHeader) {
 		errorMessage = removeErrorHeader(errorMessage);
