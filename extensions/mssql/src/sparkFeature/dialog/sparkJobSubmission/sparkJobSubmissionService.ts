@@ -23,6 +23,8 @@ export class SparkJobSubmissionService {
 		} else {
 			this._requestPromise = require('request-light');
 		}
+
+		this._requestPromise.configure(null, !auth.getIgnoreSslVerificationConfigSetting());
 	}
 
 	public async submitBatchJob(submissionArgs: SparkJobSubmissionInput): Promise<string> {
@@ -80,8 +82,6 @@ export class SparkJobSubmissionService {
 
 			options.data = JSON.stringify(options.data);
 
-			this._requestPromise.configure(null, options.strictSSL);
-
 			const response = JSON.parse((await this._requestPromise.xhr(options)).responseText);
 			if (response && utils.isValidNumber(response.id)) {
 				return response.id;
@@ -111,11 +111,10 @@ export class SparkJobSubmissionService {
 			let livyUrl = `https://${submissionArgs.host}:${submissionArgs.port}${submissionArgs.livyPath}/${livyBatchId}/log`;
 			let headers = await this.getAuthenticationHeaders(submissionArgs);
 
-			let options = {
-				uri: livyUrl,
-				method: 'GET',
-				json: true,
-				rejectUnauthorized: !auth.getIgnoreSslVerificationConfigSetting(),
+			let options: XHROptions = {
+				url: livyUrl,
+				type: 'GET',
+				strictSSL: !auth.getIgnoreSslVerificationConfigSetting(),
 				// authentication headers
 				headers: headers
 			};
