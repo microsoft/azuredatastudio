@@ -6,11 +6,8 @@
 import * as should from 'should';
 import * as os from 'os';
 import * as vscode from 'vscode';
-import * as path from 'path';
-import * as fs from 'fs';
-import { NetCoreTool, DBProjectConfigurationKey, NetCoreInstallLocationKey, NextCoreNonWindowsDefaultPath, DotNetCommandOptions, NetCoreInstallationConfirmation } from '../tools/netcoreTool';
+import { NetCoreTool, DBProjectConfigurationKey, NetCoreInstallLocationKey, NextCoreNonWindowsDefaultPath } from '../tools/netcoreTool';
 import { isNullOrUndefined } from 'util';
-import { BuildHelper } from '../tools/buildHelper';
 
 describe('NetCoreTool: Net core tests', function (): void {
 
@@ -42,35 +39,6 @@ describe('NetCoreTool: Net core tests', function (): void {
 			//check that path should start with /usr/local/share
 			let result = isNullOrUndefined(netcoreTool.netcoreInstallLocation) || netcoreTool.netcoreInstallLocation.toLowerCase().startsWith(NextCoreNonWindowsDefaultPath);
 			should(result).true('dotnet is either not present or in /usr/local/share by default');
-		}
-	});
-
-	it('Should run dotnet command', async function (): Promise<void> {
-		this.timeout(10000 * 10); // higher timeout for this test
-
-		const netcoreTool = new NetCoreTool();
-		const projfile = path.join(__dirname, 'baselines', 'simpleProject.sqlproj');
-		const dacpacfile = path.join(__dirname, 'baselines', 'bin', 'debug', 'simpleProject.dacpac');
-
-		const buildHelper = new BuildHelper();
-		await buildHelper.createBuildDirFolder();
-		const arg = buildHelper.constructBuildArguments(projfile, buildHelper.extensionBuildDirPath);
-
-		const options: DotNetCommandOptions = {
-			argument: arg
-		};
-
-		try {
-			await netcoreTool.runDotnetCommand(options);
-			should(fs.existsSync(dacpacfile)).equal(true); //if net core is present
-		}
-		catch (error) {
-			should(error.message).equal(NetCoreInstallationConfirmation); // if net ore is not present
-		}
-		finally {
-			if (fs.existsSync(dacpacfile)) {
-				fs.unlinkSync(dacpacfile);
-			}
 		}
 	});
 });

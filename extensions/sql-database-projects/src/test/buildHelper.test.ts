@@ -14,13 +14,13 @@ describe('BuildHelper: Build Helper tests', function (): void {
 	it('Should get correct build arguments', async function (): Promise<void> {
 		// update settings and validate
 		const buildHelper = new BuildHelper();
-		const resultArg = buildHelper.constructBuildArguments('dummy\\project path', 'dummy\\dll path');
+		const resultArg = buildHelper.constructBuildArguments('dummy\\project path\\more space in path', 'dummy\\dll path');
 
 		if (os.platform() === 'win32') {
-			should(resultArg).equal(' build "dummy\\\\project path" /p:NetCoreBuild=true /p:NETCoreTargetsPath="dummy\\\\dll path"');
+			should(resultArg).equal(' build "dummy\\\\project path\\\\more space in path" /p:NetCoreBuild=true /p:NETCoreTargetsPath="dummy\\\\dll path"');
 		}
 		else {
-			should(resultArg).equal(' build "dummy/project path" /p:NetCoreBuild=true /p:NETCoreTargetsPath="dummy/dll path"');
+			should(resultArg).equal(' build "dummy/project path/more space in path" /p:NetCoreBuild=true /p:NETCoreTargetsPath="dummy/dll path"');
 		}
 	});
 

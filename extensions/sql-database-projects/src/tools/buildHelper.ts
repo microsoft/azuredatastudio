@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { promises as fs, existsSync } from 'fs';
 import * as utils from '../common/utils';
+import { mssqlNotFound } from '../common/constants';
 
 const buildDirectory = 'BuildDirectory';
 const buildFiles: string[] = [
@@ -64,12 +65,11 @@ export class BuildHelper {
 			const rawConfig = await fs.readFile(path.join(mssqlConfigDir, 'config.json'));
 			const config = JSON.parse(rawConfig.toString());
 			const installDir = config.installDirectory?.replace('{#version#}', config.version).replace('{#platform#}', 'Windows');
-			return path.join(mssqlConfigDir, installDir);
+			if (installDir) {
+				return path.join(mssqlConfigDir, installDir);
+			}
 		}
-		else {
-			throw new Error(`Could not get mssql extension's install location at ${mssqlConfigDir}`);
-
-		}
+		throw new Error(mssqlNotFound(mssqlConfigDir));
 	}
 
 	public get extensionBuildDirPath(): string {
@@ -79,7 +79,7 @@ export class BuildHelper {
 	public constructBuildArguments(projectPath: string, buildDirPath: string): string {
 		projectPath = utils.getSafePath(projectPath);
 		buildDirPath = utils.getSafePath(buildDirPath);
-		return ' build ' + projectPath + ` /p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath}`;
+		return ` build ${projectPath} /p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath}`;
 	}
 }
 

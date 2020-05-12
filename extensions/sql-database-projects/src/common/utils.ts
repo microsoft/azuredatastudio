@@ -63,7 +63,7 @@ export function getSafePath(filePath: string): string {
  * ensure that path with spaces are handles correctly
  */
 export function getSafeWindowsPath(filePath: string): string {
-	filePath = filePath.replace('\\', '\\\\').replace('"', '');
+	filePath = filePath.split('\\').join('\\\\').split('"').join('');
 	return '"' + filePath + '"';
 }
 
@@ -71,6 +71,6 @@ export function getSafeWindowsPath(filePath: string): string {
  * ensure that path with spaces are handles correctly
  */
 export function getSafeNonWindowsPath(filePath: string): string {
-	filePath = filePath.replace('\\', '/').replace('\'', '').replace('"', '');
+	filePath = filePath.split('\\').join('/').split('"').join('');
 	return '"' + filePath + '"';
 }
