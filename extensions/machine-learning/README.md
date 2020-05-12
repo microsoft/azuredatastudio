@@ -10,7 +10,7 @@ You also need to install the [ODBC driver for SQL Server](https://go.microsoft.c
 
 ## Manage packages
 
-You can install and uninstall Python and R packages in your SQL database with Azure Data Studio. he packages you install can be used in Python or R scripts running in-database using the `sp_execute_external_script` T-SQL statement. This feature is currently limited to work with [SQL Server Machine Learning Services](#).
+You can install and uninstall Python and R packages in your SQL database with Azure Data Studio. The packages you install can be used in Python or R scripts running in-database using the `sp_execute_external_script` T-SQL statement. This feature is currently limited to work with [SQL Server Machine Learning Services](#).
 
 Click on **Manage packages in database** to install or uninstall a Python or R package. For more information, see [how to manage packages with the Machine Learning extension](#).
 
