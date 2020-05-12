@@ -124,6 +124,8 @@ export const extLangUpdateFailedError = localize('extLang.updateFailedError', "F
 export const modelUpdateFailedError = localize('models.modelUpdateFailedError', "Failed to update the model");
 export const databaseName = localize('databaseName', "Models database");
 export const tableName = localize('tableName', "Models table");
+export const existingTableName = localize('existingTableName', "Existing table");
+export const newTableName = localize('newTableName', "New table");
 export const modelName = localize('models.name', "Name");
 export const modelFileName = localize('models.fileName', "File");
 export const modelDescription = localize('models.description', "Description");
@@ -211,20 +213,20 @@ export const sqlMlDocTitle = localize('sqlMlDocTitle', "SQL machine learning doc
 export const sqlMlDocDesc = localize('sqlMlDocDesc', "Learn how to use machine learning in SQL Server and SQL on Azure, to run Python and R scripts on relational data.");
 export const sqlMlsDocTitle = localize('sqlMlsDocTitle', "SQL Server Machine Learning Services (Python and R)");
 export const sqlMlsDocDesc = localize('sqlMlsDocDesc', "Get started with Machine Learning Services on SQL Server and how to install it on Windows and Linux.");
-export const sqlMlsAzureDocTitle = localize('sqlMlsAzureDocTitle', "Machine Learning Services in Azure SQL Managed Instance (preview)");
-export const sqlMlsAzureDocDesc = localize('sqlMlsAzureDocDesc', "Get started with Machine Learning Services in Azure SQL Managed Instances.");
+export const sqlMlsMIDocTitle = localize('sqlMlsMIDocTitle', "Machine Learning Services in Azure SQL Managed Instance (preview)");
+export const sqlMlsMIDocDesc = localize('sqlMlsMIDocDesc', "Get started with Machine Learning Services in Azure SQL Managed Instances.");
 export const mlsInstallOdbcDocTitle = localize('mlsInstallObdcDocTitle', "Install the Microsoft ODBC driver for SQL Server");
 export const mlsInstallOdbcDocDesc = localize('mlsInstallOdbcDocDesc', "This document explains how to install the Microsoft ODBC Driver for SQL Server.");
+export const onnxOnEdgeOdbcDocTitle = localize('onnxOnEdgeOdbcDocTitle', "Machine learning and AI with ONNX in SQL Database Edge Preview");
+export const onnxOnEdgeOdbcDocDesc = localize('onnxOnEdgeOdbcDocDesc', "Get started with machine learning in Azure SQL Database Edge");
 
 // Links
 //
-export const mlsDocuments = 'https://docs.microsoft.com/sql/advanced-analytics/?view=sql-server-ver15';
-export const odbcDriverWindowsDocuments = 'https://docs.microsoft.com/sql/connect/odbc/windows/microsoft-odbc-driver-for-sql-server-on-windows?view=sql-server-ver15';
-export const odbcDriverLinuxDocuments = 'https://docs.microsoft.com/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver15';
-export const mlDocLink = 'https://docs.microsoft.com/sql/machine-learning/';
-export const mlsDocLink = 'https://docs.microsoft.com/sql/machine-learning/what-is-sql-server-machine-learning';
-export const mlsAzureDocLink = 'https://docs.microsoft.com/azure/sql-database/sql-database-managed-instance-machine-learning-services-overview';
-export const installMlsWindowsDocs = 'https://docs.microsoft.com/sql/advanced-analytics/install/sql-machine-learning-services-windows-install?view=sql-server-ver15';
+export const odbcDriverDocuments = 'https://go.microsoft.com/fwlink/?linkid=2129818';
+export const mlDocLink = 'https://go.microsoft.com/fwlink/?linkid=2128671';
+export const mlsDocLink = 'https://go.microsoft.com/fwlink/?linkid=2128672';
+export const mlsAzureDocLink = 'https://go.microsoft.com/fwlink/?linkid=2128673';
+export const onnxOnEdgeDocs = 'https://go.microsoft.com/fwlink/?linkid=2128882';
 
 // CSS Styles
 //
