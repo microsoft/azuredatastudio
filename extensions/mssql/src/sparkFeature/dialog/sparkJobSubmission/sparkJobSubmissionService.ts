@@ -10,21 +10,9 @@ import * as constants from '../../../constants';
 import { SqlClusterConnection } from '../../../objectExplorerNodeProvider/connection';
 import * as utils from '../../../utils';
 import * as auth from '../../../util/auth';
-import { XHROptions } from 'request-light';
+import * as request from 'request-light';
 
 export class SparkJobSubmissionService {
-	private _requestPromise: typeof import('request-light');
-
-	constructor(
-		requestService?: typeof import('request-light')) {
-		if (requestService) {
-			// this is to fake the request service for test.
-			this._requestPromise = requestService;
-		} else {
-			this._requestPromise = require('request-light');
-		}
-	}
-
 	public async submitBatchJob(submissionArgs: SparkJobSubmissionInput): Promise<string> {
 		try {
 			let livyUrl: string = `https://${submissionArgs.host}:${submissionArgs.port}${submissionArgs.livyPath}/`;
@@ -32,7 +20,7 @@ export class SparkJobSubmissionService {
 			// Get correct authentication headers
 			let headers = await this.getAuthenticationHeaders(submissionArgs);
 
-			let options: XHROptions = {
+			let options: request.XHROptions = {
 				url: livyUrl,
 				type: 'POST',
 				strictSSL: !auth.getIgnoreSslVerificationConfigSetting(),
@@ -80,9 +68,9 @@ export class SparkJobSubmissionService {
 
 			options.data = JSON.stringify(options.data);
 
-			this._requestPromise.configure(null, options.strictSSL);
+			request.configure(null, options.strictSSL);
 
-			const response = JSON.parse((await this._requestPromise.xhr(options)).responseText);
+			const response = JSON.parse((await request.xhr(options)).responseText);
 			if (response && utils.isValidNumber(response.id)) {
 				return response.id;
 			}
@@ -120,7 +108,7 @@ export class SparkJobSubmissionService {
 				headers: headers
 			};
 
-			const response = JSON.parse((await this._requestPromise.xhr(options)).responseText);
+			const response = JSON.parse((await request.xhr(options)).responseText);
 			if (response && response.log) {
 				return this.extractYarnAppIdFromLog(response.log);
 			}
