@@ -33,9 +33,9 @@ export interface NotebookExecutionResult {
 }
 
 export interface INotebookService {
-	launchNotebook(notebook: string | NotebookInfo): Thenable<azdata.nb.NotebookEditor>;
+	launchNotebook(notebook: string | NotebookInfo): Promise<azdata.nb.NotebookEditor>;
 	launchNotebookWithEdits(notebook: string | NotebookInfo, cellStatements: string[], insertionPosition?: number): Promise<void>;
-	launchNotebookWithContent(title: string, content: string): Thenable<azdata.nb.NotebookEditor>;
+	launchNotebookWithContent(title: string, content: string): Promise<azdata.nb.NotebookEditor>;
 	getNotebook(notebook: string | NotebookInfo): Promise<Notebook>;
 	executeNotebook(notebook: any, env?: NodeJS.ProcessEnv): Promise<NotebookExecutionResult>;
 	backgroundExecuteNotebook(taskName: string | undefined, notebookInfo: string | NotebookInfo, tempNoteBookPrefix: string, platformService: IPlatformService): void;
@@ -49,10 +49,9 @@ export class NotebookService implements INotebookService {
 	 * Launch notebook with file path
 	 * @param notebook the path of the notebook
 	 */
-	launchNotebook(notebook: string | NotebookInfo): Thenable<azdata.nb.NotebookEditor> {
-		return this.getNotebookFullPath(notebook).then(notebookPath => {
-			return this.showNotebookAsUntitled(notebookPath);
-		});
+	async launchNotebook(notebook: string | NotebookInfo): Promise<azdata.nb.NotebookEditor> {
+		const notebookPath = await this.getNotebookFullPath(notebook);
+		return await this.showNotebookAsUntitled(notebookPath);
 	}
 
 	/**
@@ -63,9 +62,9 @@ export class NotebookService implements INotebookService {
 	 * @param cellStatements - array of statements to be inserted in a cell
 	 * @param insertionPosition - the position at which cells are inserted. Default is a new cell at the beginning of the notebook.
 	 */
-	public async launchNotebookWithEdits(notebook: string, cellStatements: string[], insertionPosition: number = 0): Promise<void> {
+	async launchNotebookWithEdits(notebook: string, cellStatements: string[], insertionPosition: number = 0): Promise<void> {
 		const openedNotebook = await this.launchNotebook(notebook);
-		openedNotebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
+		await openedNotebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
 			editBuilder.insertCell({
 				cell_type: 'code',
 				source: cellStatements
@@ -78,9 +77,9 @@ export class NotebookService implements INotebookService {
 	 * @param title the title of the notebook
 	 * @param content the notebook content
 	 */
-	launchNotebookWithContent(title: string, content: string): Thenable<azdata.nb.NotebookEditor> {
+	async launchNotebookWithContent(title: string, content: string): Promise<azdata.nb.NotebookEditor> {
 		const uri: vscode.Uri = vscode.Uri.parse(`untitled:${title}`);
-		return azdata.nb.showNotebookDocument(uri, {
+		return await azdata.nb.showNotebookDocument(uri, {
 			connectionProfile: undefined,
 			preview: false,
 			initialContent: content,
@@ -128,7 +127,7 @@ export class NotebookService implements INotebookService {
 		}
 	}
 
-	public backgroundExecuteNotebook(taskName: string | undefined, notebookInfo: string | NotebookInfo, tempNotebookPrefix: string, platformService: IPlatformService): void {
+	backgroundExecuteNotebook(taskName: string | undefined, notebookInfo: string | NotebookInfo, tempNotebookPrefix: string, platformService: IPlatformService): void {
 		azdata.tasks.startBackgroundOperation({
 			displayName: taskName!,
 			description: taskName!,
@@ -218,17 +217,16 @@ export class NotebookService implements INotebookService {
 		return title;
 	}
 
-	showNotebookAsUntitled(notebookPath: string): Thenable<azdata.nb.NotebookEditor> {
+	async showNotebookAsUntitled(notebookPath: string): Promise<azdata.nb.NotebookEditor> {
 		let targetFileName: string = this.findNextUntitledEditorName(notebookPath);
 		const untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${targetFileName}`);
-		return vscode.workspace.openTextDocument(notebookPath).then((document) => {
-			let initialContent = document.getText();
-			return azdata.nb.showNotebookDocument(untitledFileName, {
-				connectionProfile: undefined,
-				preview: false,
-				initialContent: initialContent,
-				initialDirtyState: false
-			});
+		const document = await vscode.workspace.openTextDocument(notebookPath);
+		let initialContent = document.getText();
+		return await azdata.nb.showNotebookDocument(untitledFileName, {
+			connectionProfile: undefined,
+			preview: false,
+			initialContent: initialContent,
+			initialDirtyState: false
 		});
 	}
 }

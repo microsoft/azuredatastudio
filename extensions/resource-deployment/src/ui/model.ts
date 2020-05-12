@@ -5,6 +5,9 @@
 import { NoteBookEnvironmentVariablePrefix } from '../interfaces';
 import { EOL } from 'os';
 
+
+const NotebookEnvironmentVariablePrefixRegex = new RegExp(`^${NoteBookEnvironmentVariablePrefix}`);
+
 export class Model {
 	private propValueObject: { [s: string]: string | undefined } = {};
 
@@ -39,12 +42,11 @@ export class Model {
 	 * The statements returned are escaped for use in cell of a python notebook.
 	 */
 	public getCodeCellContentForNotebook(): string[] {
-		const regex = new RegExp(`^${NoteBookEnvironmentVariablePrefix}`);
 		const statements: string[] = Object.keys(this.propValueObject)
 			.filter(propertyName => propertyName.startsWith(NoteBookEnvironmentVariablePrefix))
 			.map(propertyName => {
 				const value = this.escapeForNotebookCodeCell(this.getStringValue(propertyName, ''));
-				const varName = propertyName.replace(regex, '').toLocaleLowerCase();
+				const varName = propertyName.replace(NotebookEnvironmentVariablePrefixRegex, '').toLocaleLowerCase();
 				return `${varName} = '${value}'${EOL}`;
 			});
 		statements.push(`print('Variables have been set successfully.')${EOL}`);
@@ -57,7 +59,7 @@ export class Model {
 	}
 
 	/**
-	 * sets the environment variable for each model variable that starts with {@see NoteBookEnvironmentVariablePrefix} in the
+	 * Sets the environment variable for each model variable that starts with {@see NoteBookEnvironmentVariablePrefix} in the
 	 * current process.
 	 */
 	public setEnvironmentVariables(): void {
