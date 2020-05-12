@@ -14,8 +14,8 @@ describe('Templates: loading templates from disk', function (): void {
 	});
 
 	it('Should throw error when attempting to use templates before loaded from file', async function (): Promise<void> {
-		shouldThrowSpecificError(() => templates.projectScriptTypeMap(), 'Templates must be loaded from file before attempting to use.');
-		shouldThrowSpecificError(() => templates.projectScriptTypes(), 'Templates must be loaded from file before attempting to use.');
+		await shouldThrowSpecificError(() => templates.projectScriptTypeMap(), 'Templates must be loaded from file before attempting to use.');
+		await shouldThrowSpecificError(() => templates.projectScriptTypes(), 'Templates must be loaded from file before attempting to use.');
 	});
 
 	it('Should load all templates from files', async function (): Promise<void> {

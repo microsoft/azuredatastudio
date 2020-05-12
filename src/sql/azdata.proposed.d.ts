@@ -217,6 +217,12 @@ declare module 'azdata' {
 		 * @param tabs new tabs
 		 */
 		updateTabs(tabs: (Tab | TabGroup)[]): void;
+
+		/**
+		 * Selects the tab with the specified id
+		 * @param id The id of the tab to select
+		 */
+		selectTab(id: string): void;
 	}
 
 	/**
@@ -349,6 +355,7 @@ declare module 'azdata' {
 			registerTabs(handler: (view: ModelView) => Thenable<(DashboardTab | DashboardTabGroup)[]>): void;
 			open(): Thenable<void>;
 			updateTabs(tabs: (DashboardTab | DashboardTabGroup)[]): void;
+			selectTab(id: string): void;
 		}
 
 		export function createModelViewDashboard(title: string, options?: ModelViewDashboardOptions): ModelViewDashboard;
@@ -383,6 +390,10 @@ declare module 'azdata' {
 		 * Whether to show the tab navigation pane even when there is only one tab, default is false
 		 */
 		alwaysShowTabs?: boolean;
+	}
+
+	export interface Container<TLayout, TItemLayout> extends Component {
+		setItemLayout(component: Component, layout: TItemLayout): void;
 	}
 
 	export interface TaskInfo {

@@ -221,9 +221,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						openDocumentListenerUnsubscriber.dispose();
 					});
 				}
-
-				let doc = await vscode.workspace.openTextDocument(resource);
-				vscode.window.showTextDocument(doc);
+				azdata.nb.showNotebookDocument(vscode.Uri.file(resource));
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openNotebookError(resource, e instanceof Error ? e.message : e));

@@ -26,17 +26,16 @@ suite('Notebook Actions', function (): void {
 
 		// Normal use case
 		let mockNotebookComponent = TypeMoq.Mock.ofType<INotebookEditor>(NotebookComponentStub);
-		mockNotebookComponent.setup(c => c.addCell(TypeMoq.It.isAny())).returns(cellType => {
+		mockNotebookComponent.setup(c => c.addCell(TypeMoq.It.isAny(), TypeMoq.It.isAnyNumber())).returns(cellType => {
 			actualCellType = cellType;
 		});
 
-		let result = await action.run(mockNotebookComponent.object);
-		assert.ok(result, 'Add Cell Action should succeed');
+		assert.doesNotThrow(() => action.run(mockNotebookComponent.object));
 		assert.strictEqual(actualCellType, testCellType);
 
 		// Handle error case
 		mockNotebookComponent.reset();
-		mockNotebookComponent.setup(c => c.addCell(TypeMoq.It.isAny())).throws(new Error('Test Error'));
+		mockNotebookComponent.setup(c => c.addCell(TypeMoq.It.isAny(), TypeMoq.It.isAnyNumber())).throws(new Error('Test Error'));
 		await assert.rejects(action.run(mockNotebookComponent.object));
 	});
 
