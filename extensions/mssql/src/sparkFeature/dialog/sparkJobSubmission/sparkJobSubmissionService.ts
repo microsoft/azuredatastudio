@@ -68,7 +68,7 @@ export class SparkJobSubmissionService {
 
 			options.data = JSON.stringify(options.data);
 
-			// Note this is currently required to be called each time since node-light is overwriting
+			// Note this is currently required to be called each time since request-light is overwriting
 			// the setting passed in through the options. If/when that gets fixed this can be removed
 			request.configure(null, !auth.getIgnoreSslVerificationConfigSetting());
 
@@ -109,7 +109,7 @@ export class SparkJobSubmissionService {
 				headers: headers
 			};
 
-			// Note this is currently required to be called each time since node-light is overwriting
+			// Note this is currently required to be called each time since request-light is overwriting
 			// the setting passed in through the options. If/when that gets fixed this can be removed
 			request.configure(null, !auth.getIgnoreSslVerificationConfigSetting());
 
