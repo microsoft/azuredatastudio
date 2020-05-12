@@ -11,10 +11,10 @@
 	border-left: 3px solid #DDD;
 }
 
-.vs-dark .monaco-workbench .binarydiff-right {
+.vs-dark.monaco-workbench .binarydiff-right {
 	border-left: 3px solid rgb(20, 20, 20);
 }
 
-.hc-black .monaco-workbench .binarydiff-right {
+.hc-black.monaco-workbench .binarydiff-right {
 	border-left: 3px solid #6FC3DF;
 }
