@@ -20,6 +20,7 @@ export enum AssessmentType {
  * The main controller class that initializes the extension
  */
 export default class MainController {
+	private extensionContext: vscode.ExtensionContext;
 	private sqlAssessment!: mssql.ISqlAssessmentService;
 	private connectionUri: string = '';
 	private assessmentPropertiesContainer!: azdata.PropertiesContainerComponent;
@@ -35,9 +36,10 @@ export default class MainController {
 	private getItemsLabel: string = localize('getAssessmentItemsServer', "View applicable rules");
 
 
-	public constructor() {
+	public constructor(context: vscode.ExtensionContext) {
 		this.apiVersionPropItem = { displayName: localize('propApiVersion', "API Version"), value: '' };
 		this.defaultRulesetPropItem = { displayName: localize('propDefaultRuleset', "Default Ruleset"), value: '' };
+		this.extensionContext = context;
 	}
 	/**
 	 */
@@ -71,7 +73,8 @@ export default class MainController {
 			rootContainer.addItem(await this.createToolbar(view), {
 				flex: '0 0 auto', CSSStyles: {
 					'border-top': '3px solid rgb(221, 221, 221)',
-					'margin-top': '20px'
+					'margin-top': '20px',
+					'height': '32px'
 				}
 			});
 			this.tblResults = await this.createTable(view);
@@ -167,10 +170,19 @@ export default class MainController {
 	}
 
 	private async createToolbar(view: azdata.ModelView): Promise<azdata.ToolbarContainer> {
+		const targetIconPath = this.isServerConnection
+			? {
+				dark: this.extensionContext.asAbsolutePath('resources/dark/server.svg'),
+				light: this.extensionContext.asAbsolutePath('resources/light/server.svg')
+			} : {
+				dark: this.extensionContext.asAbsolutePath('resources/dark/database.svg'),
+				light: this.extensionContext.asAbsolutePath('resources/light/database.svg')
+			};
+
 		const btnInvokeAssessment = view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
 				label: this.invokeAssessmentLabel,
-				iconPath: ' ',
+				iconPath: targetIconPath,
 			}).component();
 		const btnInvokeAssessmentLoading = view.modelBuilder.loadingComponent()
 			.withItem(btnInvokeAssessment)
@@ -193,7 +205,7 @@ export default class MainController {
 		const btnGetAssessmentItems = view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
 				label: this.getItemsLabel,
-				iconPath: ' ',
+				iconPath: targetIconPath,
 			}).component();
 		const btnGetAssessmentItemsLoading = view.modelBuilder.loadingComponent()
 			.withItem(btnGetAssessmentItems)
@@ -216,7 +228,10 @@ export default class MainController {
 		this.btnExportAsScript = view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
 				label: localize('btnExportAsScript', "Export as script"),
-				iconPath: ' ',
+				iconPath: {
+					dark: this.extensionContext.asAbsolutePath('resources/dark/newquery_inverse.svg'),
+					light: this.extensionContext.asAbsolutePath('resources/light/newquery.svg')
+				},
 				enabled: false
 			}).component();
 		this.toDispose.push(this.btnExportAsScript.onDidClick(async () => {
@@ -226,7 +241,10 @@ export default class MainController {
 		let btnViewSamples = view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
 				label: localize('btnViewSamples', "View all rules and learn more on GitHub"),
-				iconPath: ' ',
+				iconPath: {
+					dark: this.extensionContext.asAbsolutePath('resources/dark/configuredashboard_inverse.svg'),
+					light: this.extensionContext.asAbsolutePath('resources/light/configuredashboard.svg')
+				},
 			}).component();
 
 		this.toDispose.push(btnViewSamples.onDidClick(() => {
