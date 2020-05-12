@@ -68,7 +68,9 @@ export class SparkJobSubmissionService {
 
 			options.data = JSON.stringify(options.data);
 
-			request.configure(null, options.strictSSL);
+			// Note this is currently required to be called each time since node-light is overwriting
+			// the setting passed in through the options. If/when that gets fixed this can be removed
+			request.configure(null, !auth.getIgnoreSslVerificationConfigSetting());
 
 			const response = JSON.parse((await request.xhr(options)).responseText);
 			if (response && utils.isValidNumber(response.id)) {
@@ -99,14 +101,17 @@ export class SparkJobSubmissionService {
 			let livyUrl = `https://${submissionArgs.host}:${submissionArgs.port}${submissionArgs.livyPath}/${livyBatchId}/log`;
 			let headers = await this.getAuthenticationHeaders(submissionArgs);
 
-			let options = {
-				uri: livyUrl,
-				method: 'GET',
-				json: true,
-				rejectUnauthorized: !auth.getIgnoreSslVerificationConfigSetting(),
+			let options: request.XHROptions = {
+				url: livyUrl,
+				type: 'GET',
+				strictSSL: !auth.getIgnoreSslVerificationConfigSetting(),
 				// authentication headers
 				headers: headers
 			};
+
+			// Note this is currently required to be called each time since node-light is overwriting
+			// the setting passed in through the options. If/when that gets fixed this can be removed
+			request.configure(null, !auth.getIgnoreSslVerificationConfigSetting());
 
 			const response = JSON.parse((await request.xhr(options)).responseText);
 			if (response && response.log) {
