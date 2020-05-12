@@ -10,6 +10,7 @@ const localize = nls.loadMessageBundle();
 // Placeholder values
 export const dataSourcesFileName = 'datasources.json';
 export const sqlprojExtension = '.sqlproj';
+export const initialCatalogSetting = 'Initial Catalog';
 
 // UI Strings
 
@@ -20,6 +21,23 @@ export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly
 export const newDatabaseProjectName = localize('newDatabaseProjectName', "New database project name:");
 export const sqlDatabaseProject = localize('sqlDatabaseProject', "SQL database project");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
+
+// Deploy dialog strings
+
+export const deployDialogName = localize('deployDialogName', "Deploy Database");
+export const deployDialogOkButtonText = localize('deployDialogOkButtonText', "Deploy");
+export const cancelButtonText = localize('cancelButtonText', "Cancel");
+export const generateScriptButtonText = localize('generateScriptButtonText', "Generate Script");
+export const targetDatabaseSettings = localize('targetDatabaseSettings', "Target Database Settings");
+export const databaseNameLabel = localize('databaseNameLabel', "Database");
+export const deployScriptNameLabel = localize('deployScriptName', "Deploy script name");
+export const targetConnectionLabel = localize('targetConnectionLabel', "Target Connection");
+export const editConnectionButtonText = localize('editConnectionButtonText', "Edit");
+export const clearButtonText = localize('clearButtonText', "Clear");
+export const dataSourceRadioButtonLabel = localize('dataSourceRadioButtonLabel', "Data sources");
+export const connectionRadioButtonLabel = localize('connectionRadioButtonLabel', "Connections");
+export const selectConnectionRadioButtonsTitle = localize('selectconnectionRadioButtonsTitle', "Specify connection from:");
+export const dataSourceDropdownTitle = localize('dataSourceDropdownTitle', "Data source");
 
 // Error messages
 
