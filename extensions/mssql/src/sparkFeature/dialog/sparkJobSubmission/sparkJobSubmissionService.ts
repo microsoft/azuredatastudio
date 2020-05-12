@@ -23,8 +23,6 @@ export class SparkJobSubmissionService {
 		} else {
 			this._requestPromise = require('request-light');
 		}
-
-		this._requestPromise.configure(null, !auth.getIgnoreSslVerificationConfigSetting());
 	}
 
 	public async submitBatchJob(submissionArgs: SparkJobSubmissionInput): Promise<string> {
@@ -82,6 +80,10 @@ export class SparkJobSubmissionService {
 
 			options.data = JSON.stringify(options.data);
 
+			// Note this is currently required to be called each time since node-light is overwriting
+			// the setting passed in through the options. If/when that gets fixed this can be removed
+			this._requestPromise.configure(null, !auth.getIgnoreSslVerificationConfigSetting());
+
 			const response = JSON.parse((await this._requestPromise.xhr(options)).responseText);
 			if (response && utils.isValidNumber(response.id)) {
 				return response.id;
@@ -118,6 +120,10 @@ export class SparkJobSubmissionService {
 				// authentication headers
 				headers: headers
 			};
+
+			// Note this is currently required to be called each time since node-light is overwriting
+			// the setting passed in through the options. If/when that gets fixed this can be removed
+			this._requestPromise.configure(null, !auth.getIgnoreSslVerificationConfigSetting());
 
 			const response = JSON.parse((await this._requestPromise.xhr(options)).responseText);
 			if (response && response.log) {
