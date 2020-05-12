@@ -40,6 +40,7 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 				label: constants.localModelSource,
 				selected: this._sourceType === ModelSourceType.Local,
 				cardType: azdata.CardType.VerticalButton,
+				iconPath: { light: this.asAbsolutePath('images/fileUpload.svg'), dark: this.asAbsolutePath('images/fileUpload.svg') },
 				width: 50
 			}).component();
 		this._amlModel = modelBuilder.card()
@@ -49,6 +50,7 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 				label: constants.azureModelSource,
 				selected: this._sourceType === ModelSourceType.Azure,
 				cardType: azdata.CardType.VerticalButton,
+				iconPath: { light: this.asAbsolutePath('images/aml.svg'), dark: this.asAbsolutePath('images/aml.svg') },
 				width: 50
 			}).component();
 
@@ -59,6 +61,7 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 				label: constants.registeredModelsSource,
 				selected: this._sourceType === ModelSourceType.RegisteredModels,
 				cardType: azdata.CardType.VerticalButton,
+				iconPath: { light: this.asAbsolutePath('images/imported.svg'), dark: this.asAbsolutePath('images/imported.svg') },
 				width: 50
 			}).component();
 
