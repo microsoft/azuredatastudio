@@ -1543,6 +1543,7 @@ export interface INotebookSelectionChangeEvent {
 
 export interface INotebookEditorPropertiesChangeData {
 	selections: INotebookSelectionChangeEvent | null;
+	metadata: NotebookDocumentMetadata | null;
 }
 
 export interface INotebookModelAddedData {
@@ -1550,6 +1551,7 @@ export interface INotebookModelAddedData {
 	handle: number;
 	// versionId: number;
 	viewType: string;
+	metadata?: NotebookDocumentMetadata;
 }
 
 export interface INotebookDocumentsAndEditorsDelta {
