@@ -246,6 +246,10 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 				return 'aks-dev-test';
 			case BdcDeploymentType.ExistingKubeAdm:
 				return 'kubeadm-dev-test';
+			case BdcDeploymentType.ExistingARO:
+				return 'aro-dev-test';
+			case BdcDeploymentType.ExistingOpenShift:
+				return 'openshift-dev-test';
 			default:
 				throw new Error(`Unknown deployment type: ${this.wizard.deploymentType}`);
 		}
