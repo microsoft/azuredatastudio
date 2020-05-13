@@ -169,11 +169,11 @@
 	background: transparent;
 }
 
-.vs.monaco-workbench input {
+.monaco-workbench.vs input {
 	color: var(--color-content);
 }
 
-.vs.monaco-workbench .input {
+.monaco-workbench.vs .input {
 	background-color: white;
 }
 
@@ -323,7 +323,7 @@
 	background: transparent;
 }
 
-.vs-dark.monaco-workbench input, .vs-dark.monaco-workbench .input {
+.monaco-workbench.vs-dark input, .monaco-workbench.vs-dark .input {
 	color: var(--color-content);
 	background-color: #3C3C3C;
 }
@@ -404,7 +404,7 @@
 	background: transparent;
 }
 
-.hc-black.monaco-workbench input {
+.monaco-workbench.hc-black input {
 	color: #000;
 	background-color: #FFF;
 }
