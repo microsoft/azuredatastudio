@@ -34,7 +34,7 @@ import { IExtensionService } from 'vs/workbench/services/extensions/common/exten
 import { MergeGroupMode, IMergeGroupOptions, GroupsArrangement } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { addClass, addDisposableListener, hasClass, EventType, EventHelper, removeClass, Dimension, scheduleAtNextAnimationFrame, findParentWithClass, clearNode } from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
-import { IEditorGroupsAccessor, IEditorGroupView, EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
+import { IEditorGroupsAccessor, IEditorGroupView, EditorServiceImpl, EDITOR_TITLE_HEIGHT } from 'vs/workbench/browser/parts/editor/editor';
 import { CloseOneEditorAction } from 'vs/workbench/browser/parts/editor/editorActions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BreadcrumbsControl } from 'vs/workbench/browser/parts/editor/breadcrumbsControl';
@@ -199,15 +199,12 @@ export class TabsTitleControl extends TitleControl {
 
 	private updateBreadcrumbsControl(): void {
 		if (this.breadcrumbsControl && this.breadcrumbsControl.update()) {
-			// relayout when we have a breadcrumbs and when update changed
-			// its hidden-status
-			this.group.relayout();
+			this.group.relayout(); // relayout when we have a breadcrumbs and when update changed its hidden-status
 		}
 	}
 
 	protected handleBreadcrumbsEnablementChange(): void {
-		// relayout when breadcrumbs are enable/disabled
-		this.group.relayout();
+		this.group.relayout(); // relayout when breadcrumbs are enable/disabled
 	}
 
 	private registerTabsContainerListeners(tabsContainer: HTMLElement, tabsScrollbar: ScrollableElement): void {
@@ -1209,6 +1206,10 @@ export class TabsTitleControl extends TitleControl {
 		}
 
 		return hasModifiedBorderColor;
+	}
+
+	getPreferredHeight(): number {
+		return EDITOR_TITLE_HEIGHT + (this.breadcrumbsControl && !this.breadcrumbsControl.isHidden() ? BreadcrumbsControl.HEIGHT : 0);
 	}
 
 	layout(dimension: Dimension | undefined): void {
