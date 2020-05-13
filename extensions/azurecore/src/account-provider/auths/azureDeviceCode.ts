@@ -11,7 +11,6 @@ import {
 	TokenClaims,
 	AccessToken,
 	RefreshToken,
-	TokenRefreshResponse
 
 } from './azureAuth';
 
@@ -19,7 +18,6 @@ import {
 	AzureAccountProviderMetadata,
 	AzureAccount,
 	AzureAuthType,
-	Deferred,
 	// Tenant,
 	// Subscription
 } from '../interfaces';
