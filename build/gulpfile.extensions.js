@@ -6,6 +6,11 @@
 // Increase max listeners for event emitters
 require('events').EventEmitter.defaultMaxListeners = 100;
 
+// {{SQL CARBON EDIT}}
+const fs = require('fs');
+const git = require('gulp-git');
+const semver = require('semver');
+
 const gulp = require('gulp');
 const path = require('path');
 const tsb = require('gulp-tsb');
@@ -173,3 +178,50 @@ const compileExtensionsBuildTask = task.define('compile-extensions-build', task.
 
 gulp.task(compileExtensionsBuildTask);
 exports.compileExtensionsBuildTask = compileExtensionsBuildTask;
+
+// {{SQL CARBON EDIT}}
+
+// Update extension metadata
+const extensionList = require('./lib/extensions').externalExtensions;
+const galleryPath = path.join(__dirname, '../extensionsGallery.json');
+const insiderGalleryPath = path.join(__dirname, '../extensionGallery-insider.json');
+let versionMap = new Map();
+
+
+
+gulp.task('checkout-release', function(){
+	return gulp.src('./*')
+	.pipe(git.checkout('release/extensions'));
+});
+
+gulp.task('get-latest-extension-version', async () => {
+	// current versions
+	for (let ext of extensionList) {
+		let package = JSON.parse(fs.readFileSync(path.join(extensionsPath, ext, 'package.json')));
+		versionMap[ext] = package.version;
+	}
+	return new Promise((resolve, reject) => {
+		fs.unlinkSync(path.join(__dirname, '../.git', 'index.lock'));
+		git.checkout('release/extensions', (err) => {
+			if (err) {
+				reject(err);
+			}
+			resolve();
+		});
+	});
+});
+
+gulp.task('update-extension-metadata', () => {
+	//grab extension versions from gallery file
+	let gallery = JSON.parse(fs.readFileSync(galleryPath));
+	let extensions = gallery.results[0].extensions;
+	for (ext of extensions) {
+		if (semver.gt(versionMap[ext], ext.versions.version)) {
+			ext.versions.version = versionMap[ext];
+			ext.version.lastUpdated = new Date.now();
+		}
+	}
+	fs.writeFileSync(galleryPath, JSON.stringify(gallery));
+});
+
+gulp.task('final', gulp.series('get-latest-extension-version', 'update-extension-metadata'));

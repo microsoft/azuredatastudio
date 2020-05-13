@@ -1,6 +1,18 @@
 {
 	"version": "0.1.0",
 	"configurations": [
+	{
+		"type": "node",
+		"request": "launch",
+		"name": "Gulp task",
+		"program": "${workspaceFolder}/node_modules/gulp/bin/gulp.js",
+		"args": [
+			"final"
+		],
+		"skipFiles": [
+			"<node_internals>/**"
+		]
+	},
 		{
 			"type": "node",
 			"request": "launch",

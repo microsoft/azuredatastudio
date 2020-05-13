@@ -1,13 +1,1 @@
-{
-"results": [{
-	"extensions": [
-	],
-	"resultMetadata": [{
-		"metadataType": "ResultCount",
-		"metadataItems": [{
-			"name": "TotalCount",
-			"count": 0
-		}]
-	}]
-}]
-}
+{"results":[{"extensions":[],"resultMetadata":[{"metadataType":"ResultCount","metadataItems":[{"name":"TotalCount","count":0}]}]}]}
