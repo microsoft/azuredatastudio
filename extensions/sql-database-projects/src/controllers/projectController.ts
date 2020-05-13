@@ -19,19 +19,24 @@ import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
+import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
+import { BuildHelper } from '../tools/buildHelper';
 
 /**
  * Controller for managing project lifecycle
  */
 export class ProjectsController {
 	private projectTreeViewProvider: SqlDatabaseProjectTreeViewProvider;
+	private netCoreTool: NetCoreTool;
+	private buildHelper: BuildHelper;
 
 	projects: Project[] = [];
 
 	constructor(private apiWrapper: ApiWrapper, projTreeViewProvider: SqlDatabaseProjectTreeViewProvider) {
 		this.projectTreeViewProvider = projTreeViewProvider;
+		this.netCoreTool = new NetCoreTool();
+		this.buildHelper = new BuildHelper();
 	}
-
 
 	public refreshProjectsTree() {
 		this.projectTreeViewProvider.load(this.projects);
@@ -114,9 +119,17 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 	}
 
-	public async build(treeNode: BaseProjectTreeItem) {
+	public async buildProject(treeNode: BaseProjectTreeItem): Promise<void> {
+		// Check mssql extension for project dlls (tracking issue #10273)
+		await this.buildHelper.createBuildDirFolder();
+
 		const project = this.getProjectContextFromTreeNode(treeNode);
-		await this.apiWrapper.showErrorMessage(`Build not yet implemented: ${project.projectFilePath}`); // TODO
+		const options: DotNetCommandOptions = {
+			commandTitle: 'Build',
+			workingDirectory: project.projectFolderPath,
+			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath)
+		};
+		await this.netCoreTool.runDotnetCommand(options);
 	}
 
 	public deploy(treeNode: BaseProjectTreeItem): void {
