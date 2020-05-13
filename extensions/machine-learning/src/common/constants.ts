@@ -125,6 +125,8 @@ export const extLangInstallFailedError = localize('extLang.installFailedError', 
 export const extLangUpdateFailedError = localize('extLang.updateFailedError', "Failed to update language");
 
 export const modelUpdateFailedError = localize('models.modelUpdateFailedError', "Failed to update the model");
+export const modelsListEmptyMessage = localize('models.modelsListEmptyMessage', "No Models Yet");
+export const modelsListEmptyDescription = localize('models.modelsListEmptyDescription', "Use import wizard to add models to this table");
 export const databaseName = localize('databaseName', "Models database");
 export const tableName = localize('tableName', "Models table");
 export const existingTableName = localize('existingTableName', "Existing table");
