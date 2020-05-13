@@ -33,6 +33,8 @@
 	"kusto.connectionOptions.connectionName.description": "Custom name of the connection",
 	"kusto.connectionOptions.serverName.displayName": "Cluster",
 	"kusto.connectionOptions.serverName.description": "Kusto cluster name",
+	"kusto.connectionOptions.databaseName.displayName": "Database",
+	"kusto.connectionOptions.databaseName.description": "The name of the initial catalog or database int the data source",
 	"kusto.connectionOptions.authType.displayName": "Authentication type",
 	"kusto.connectionOptions.authType.description": "Specifies the method of authenticating with Kusto Server",
 	"kusto.connectionOptions.authType.categoryValues.azureMFA": "Azure Active Directory - Universal with MFA support",

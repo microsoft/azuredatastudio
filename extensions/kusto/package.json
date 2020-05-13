@@ -206,6 +206,20 @@
           "isArray": false
         },
         {
+          "specialValueType": "databaseName",
+          "isIdentity": true,
+          "name": "database",
+          "displayName": "%kusto.connectionOptions.databaseName.displayName%",
+          "description": "%kusto.connectionOptions.databaseName.description%",
+          "groupName": "Source",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
           "specialValueType": "authType",
           "isIdentity": true,
           "name": "authenticationType",
