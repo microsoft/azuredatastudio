@@ -10,7 +10,8 @@ import {
 	AzureAuth,
 	TokenClaims,
 	AccessToken,
-	RefreshToken
+	RefreshToken,
+	TokenRefreshResponse
 
 } from './azureAuth';
 
@@ -18,6 +19,7 @@ import {
 	AzureAccountProviderMetadata,
 	AzureAccount,
 	AzureAuthType,
+	Deferred,
 	// Tenant,
 	// Subscription
 } from '../interfaces';
@@ -55,6 +57,11 @@ export class AzureDeviceCode extends AzureAuth {
 		super(metadata, tokenCache, context, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureDeviceCode.USER_FRIENDLY_NAME);
 		this.pageTitle = localize('addAccount', "Add {0} account", this.metadata.displayName);
 
+	}
+
+	public async promptForConsent(resourceId: string): Promise<undefined> {
+		vscode.window.showErrorMessage(localize('azure.deviceCodeDoesNotSupportConsent', "Device code authentication does not support prompting for consent. Switch the authentication method in settings to code grant."));
+		return undefined;
 	}
 
 	public async login(): Promise<AzureAccount | azdata.PromptFailedResult> {

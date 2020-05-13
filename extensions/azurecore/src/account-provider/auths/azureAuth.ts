@@ -16,7 +16,8 @@ import {
 	AzureAccount,
 	Resource,
 	AzureAuthType,
-	Subscription
+	Subscription,
+	Deferred
 } from '../interfaces';
 
 import { SimpleTokenCache } from '../simpleTokenCache';
@@ -89,7 +90,7 @@ export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-
 	ver: string;
 }
 
-export type TokenRefreshResponse = { accessToken: AccessToken, refreshToken: RefreshToken, tokenClaims: TokenClaims };
+export type TokenRefreshResponse = { accessToken: AccessToken, refreshToken: RefreshToken, tokenClaims: TokenClaims, expiresOn: string };
 
 export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly memdb = new MemoryDatabase();
@@ -135,6 +136,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 	public abstract async login(): Promise<AzureAccount | azdata.PromptFailedResult>;
 
 	public abstract async autoOAuthCancelled(): Promise<void>;
+
+	public abstract async promptForConsent(resourceId: string): Promise<{ tokenRefreshResponse: TokenRefreshResponse, authCompleteDeferred: Deferred<void> } | undefined>;
 
 	public dispose() { }
 
@@ -376,25 +379,37 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	protected async getToken(postData: { [key: string]: string }, tenant = this.commonTenant, resourceId: string = ''): Promise<TokenRefreshResponse | undefined> {
 		try {
-			const tokenUrl = `${this.loginEndpointUrl}${tenant}/oauth2/token`;
+			let refreshResponse: TokenRefreshResponse;
 
-			const tokenResponse = await this.makePostRequest(tokenUrl, postData);
-			const tokenClaims = this.getTokenClaims(tokenResponse.data.access_token);
+			try {
+				const tokenUrl = `${this.loginEndpointUrl}${tenant}/oauth2/token`;
+				const tokenResponse = await this.makePostRequest(tokenUrl, postData);
+				const tokenClaims = this.getTokenClaims(tokenResponse.data.access_token);
 
-			const accessToken: AccessToken = {
-				token: tokenResponse.data.access_token,
-				key: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name,
-			};
+				const accessToken: AccessToken = {
+					token: tokenResponse.data.access_token,
+					key: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name,
+				};
 
-			this.memdb.set(this.createMemdbString(accessToken.key, tenant, resourceId), tokenResponse.data.expires_on);
+				const refreshToken: RefreshToken = {
+					token: tokenResponse.data.refresh_token,
+					key: accessToken.key
+				};
+				const expiresOn = tokenResponse.data.expires_on;
 
-			const refreshToken: RefreshToken = {
-				token: tokenResponse.data.refresh_token,
-				key: accessToken.key
-			};
+				refreshResponse = { accessToken, refreshToken, tokenClaims, expiresOn };
+			} catch (ex) {
+				if (ex?.response?.data?.error === 'interaction_required') {
+					const { tokenRefreshResponse, authCompleteDeferred } = await this.promptForConsent(resourceId);
+					refreshResponse = tokenRefreshResponse;
+					authCompleteDeferred.resolve();
+				} else {
+					return undefined;
+				}
+			}
 
-			return { accessToken, refreshToken, tokenClaims };
-
+			this.memdb.set(this.createMemdbString(refreshResponse.accessToken.key, tenant, resourceId), refreshResponse.expiresOn);
+			return refreshResponse;
 		} catch (err) {
 			const msg = localize('azure.noToken', "Retrieving the Azure token failed. Please sign in again.");
 			vscode.window.showErrorMessage(msg);
