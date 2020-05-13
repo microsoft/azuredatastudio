@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as os from 'os';
 import { promises as fs, existsSync } from 'fs';
 import * as utils from '../common/utils';
 import { mssqlNotFound } from '../common/constants';
@@ -64,12 +65,19 @@ export class BuildHelper {
 		if (existsSync(path.join(mssqlConfigDir, 'config.json'))) {
 			const rawConfig = await fs.readFile(path.join(mssqlConfigDir, 'config.json'));
 			const config = JSON.parse(rawConfig.toString());
-			const installDir = config.installDirectory?.replace('{#version#}', config.version).replace('{#platform#}', 'Windows');
+			const installDir = config.installDirectory?.replace('{#version#}', config.version).replace('{#platform#}', this.getPlatform());
 			if (installDir) {
 				return path.join(mssqlConfigDir, installDir);
 			}
 		}
 		throw new Error(mssqlNotFound(mssqlConfigDir));
+	}
+
+	private getPlatform(): string {
+		return os.platform() === 'win32' ? 'Windows' :
+			os.platform() === 'darwin' ? 'OSX' :
+				os.platform() === 'linux' ? 'Linux' :
+					'';
 	}
 
 	public get extensionBuildDirPath(): string {

@@ -26,13 +26,7 @@ describe('BuildHelper: Build Helper tests', function (): void {
 
 	it('Should get correct build folder', async function (): Promise<void> {
 		const buildHelper = new BuildHelper();
-
-		try {
-			await buildHelper.createBuildDirFolder();
-		}
-		catch (error) {
-			should(error.Message).startWith('Could not get mssql extension');
-		}
+		await buildHelper.createBuildDirFolder();
 
 		// get expected path for build
 		let expectedPath = vscode.extensions.getExtension('Microsoft.sql-database-projects')?.extensionPath ?? 'EmptyPath';

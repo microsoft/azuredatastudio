@@ -6,9 +6,12 @@
 import * as should from 'should';
 import * as os from 'os';
 import * as fs from 'fs';
+import * as path from 'path';
 import * as vscode from 'vscode';
 import { NetCoreTool, DBProjectConfigurationKey, NetCoreInstallLocationKey, NextCoreNonWindowsDefaultPath } from '../tools/netcoreTool';
+import { getSafePath } from '../common/utils';
 import { isNullOrUndefined } from 'util';
+import { generateTestFolderPath } from './testUtils';
 
 describe('NetCoreTool: Net core tests', function (): void {
 
@@ -44,14 +47,12 @@ describe('NetCoreTool: Net core tests', function (): void {
 	});
 
 	it('should run a command successfully', async function (): Promise<void> {
-
 		const netcoreTool = new NetCoreTool();
-		const dummyFile = 'dummy.dacpac';
+		const dummyFile =  path.join(await generateTestFolderPath(), 'dummy.dacpac');
 		const outputChannel = vscode.window.createOutputChannel('db project test');
 
 		try {
-
-			await netcoreTool.runStreamedCommand('echo test > ' + dummyFile, outputChannel, undefined);
+			await netcoreTool.runStreamedCommand('echo test > ' + getSafePath(dummyFile), outputChannel, undefined);
 			const text = await fs.promises.readFile(dummyFile);
 			should(text.toString().trim()).equal('test');
 		}
