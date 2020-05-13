@@ -52,7 +52,7 @@ export const projectNameRequired = localize('projectNameRequired', "Name is requ
 export const projectLocationRequired = localize('projectLocationRequired', "Location is required to create a new database project.");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
-
+export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNotFound', "Could not get mssql extension's install location at {0}", mssqlConfigDir); }
 
 // Project script types
 
