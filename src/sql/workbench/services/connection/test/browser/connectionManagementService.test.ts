@@ -855,6 +855,10 @@ suite('SQL ConnectionManagementService tests', () => {
 		assert.equal(foundUri, uri);
 	});
 
+	test('provider is registered and working', () => {
+		assert.equal(connectionManagementService.providerRegistered('MSSQL'), true);
+	});
+
 	test('getConectionUriFromId returns undefined if the given connection is not active', () => {
 		let profile = assign({}, connectionProfile);
 		profile.options = { password: profile.password };
