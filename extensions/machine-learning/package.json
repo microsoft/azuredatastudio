@@ -42,12 +42,12 @@
         },
         "machineLearningServices.pythonPath": {
           "type": "string",
-          "default": "python",
+          "default": "",
           "description": "%mls.pythonPath.description%"
         },
         "machineLearningServices.rPath": {
           "type": "string",
-          "default": "r",
+          "default": "",
           "description": "%mls.rPath.description%"
         }
       }
