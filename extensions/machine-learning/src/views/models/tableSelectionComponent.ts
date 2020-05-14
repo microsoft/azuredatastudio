@@ -29,7 +29,11 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	private _dbTableComponent: azdata.FlexContainer | undefined;
 	private tableMaxLength = this.componentMaxLength * 2 + 70;
 	private _onSelectedChanged: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
+	private _existingTableButton: azdata.RadioButtonComponent | undefined;
+	private _newTableButton: azdata.RadioButtonComponent | undefined;
+	private _newTableName: azdata.InputBoxComponent | undefined;
 	private _existingTablesSelected: boolean = true;
+
 	public readonly onSelectedChanged: vscode.Event<void> = this._onSelectedChanged.event;
 
 	/**
@@ -55,50 +59,46 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 			await this.onDatabaseSelected();
 		});
 
-		const existingTableButton = modelBuilder.radioButton().withProperties({
+		this._existingTableButton = modelBuilder.radioButton().withProperties({
 			name: 'tableName',
 			value: 'existing',
 			label: 'Existing table',
 			checked: true
 		}).component();
-		const newTableButton = modelBuilder.radioButton().withProperties({
+		this._newTableButton = modelBuilder.radioButton().withProperties({
 			name: 'tableName',
 			value: 'new',
 			label: 'New table',
 			checked: false
 		}).component();
-		const newTableName = modelBuilder.inputBox().withProperties({
+		this._newTableName = modelBuilder.inputBox().withProperties({
 			width: this.componentMaxLength - 10,
 			enabled: false
 		}).component();
 		const group = modelBuilder.groupContainer().withItems([
-			existingTableButton,
+			this._existingTableButton,
 			this._tables,
-			newTableButton,
-			newTableName
+			this._newTableButton,
+			this._newTableName
 		], {
 			CSSStyles: {
 				'padding-top': '5px'
 			}
 		}).component();
 
-		existingTableButton.onDidClick(() => {
-			if (this._tables) {
-				this._tables.enabled = existingTableButton.checked;
-			}
-			newTableName.enabled = !existingTableButton.checked;
-			this._existingTablesSelected = existingTableButton.checked || false;
+		this._existingTableButton.onDidClick(() => {
+			this._existingTablesSelected = true;
+			this.refreshTableComponent();
 		});
-		newTableButton.onDidClick(() => {
-			if (this._tables) {
-				this._tables.enabled = !newTableButton.checked;
-			}
-			newTableName.enabled = newTableButton.checked;
-			this._existingTablesSelected = existingTableButton.checked || false;
+		this._newTableButton.onDidClick(() => {
+			this._existingTablesSelected = false;
+			this.refreshTableComponent();
 		});
-		newTableName.onTextChanged(async () => {
-			this._selectedTableName = newTableName.value || '';
-			await this.onTableSelected();
+		this._newTableName.onTextChanged(async () => {
+			if (this._newTableName) {
+				this._selectedTableName = this._newTableName.value || '';
+				await this.onTableSelected();
+			}
 		});
 
 		this._tables.onValueChanged(async (value) => {
@@ -192,7 +192,7 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	public async loadData(): Promise<void> {
 		this._dbNames = await this.listDatabaseNames();
 		let dbNames = this._dbNames;
-		if (!this._settings.preSelected && !this._dbNames.find(x => x === constants.selectDatabaseTitle)) {
+		if (!this._dbNames.find(x => x === constants.selectDatabaseTitle)) {
 			dbNames = [constants.selectDatabaseTitle].concat(this._dbNames);
 		}
 		if (this._databases && dbNames && dbNames.length > 0) {
@@ -216,35 +216,49 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	}
 
 	private async onDatabaseSelected(): Promise<void> {
-		if (this._existingTablesSelected) {
-			this._tableNames = await this.listTableNames(this.databaseName || '');
-			let tableNames = this._tableNames;
-
-			if (this._tableNames && !this._settings.preSelected && !this._tableNames.find(x => x.tableName === constants.selectTableTitle)) {
-				const firstRow: DatabaseTable = { tableName: constants.selectTableTitle, databaseName: '', schema: '' };
-				tableNames = [firstRow].concat(this._tableNames);
-			}
-
-			if (this._tables && tableNames && tableNames.length > 0) {
-				this._tables.values = tableNames.map(t => this.getTableFullName(t));
-				if (this.importTable) {
-					const selectedTable = tableNames.find(t => t.tableName === this.importTable?.tableName && t.schema === this.importTable?.schema);
-					if (selectedTable) {
-						this._selectedTableName = this.getTableFullName(selectedTable);
-						this._tables.value = this.getTableFullName(selectedTable);
-					} else {
-						this._selectedTableName = this._settings.editable ? this.getTableFullName(this.importTable) : this.getTableFullName(tableNames[0]);
-					}
-				} else {
-					this._selectedTableName = this.getTableFullName(tableNames[0]);
-				}
-				this._tables.value = this._selectedTableName;
-			} else if (this._tables) {
-				this._tables.values = [];
-				this._tables.value = '';
-			}
+		this._tableNames = await this.listTableNames(this.databaseName || '');
+		let tableNames = this._tableNames;
+		if (this._settings.editable && this._tables && this._existingTableButton && this._newTableButton && this._newTableName) {
+			this._existingTablesSelected = this._tableNames !== undefined && this._tableNames.length > 0;
+			this._newTableButton.checked = !this._existingTablesSelected;
+			this._existingTableButton.checked = this._existingTablesSelected;
 		}
+		this.refreshTableComponent();
+
+
+		if (this._tableNames && !this._tableNames.find(x => x.tableName === constants.selectTableTitle)) {
+			const firstRow: DatabaseTable = { tableName: constants.selectTableTitle, databaseName: '', schema: '' };
+			tableNames = [firstRow].concat(this._tableNames);
+		}
+
+		if (this._tables && tableNames && tableNames.length > 0) {
+			this._tables.values = tableNames.map(t => this.getTableFullName(t));
+			if (this.importTable && this.importTable.databaseName === this._databases?.value) {
+				const selectedTable = tableNames.find(t => t.tableName === this.importTable?.tableName && t.schema === this.importTable?.schema);
+				if (selectedTable) {
+					this._selectedTableName = this.getTableFullName(selectedTable);
+					this._tables.value = this.getTableFullName(selectedTable);
+				} else {
+					this._selectedTableName = this._settings.editable ? this.getTableFullName(this.importTable) : this.getTableFullName(tableNames[0]);
+				}
+			} else {
+				this._selectedTableName = this.getTableFullName(tableNames[0]);
+			}
+			this._tables.value = this._selectedTableName;
+		} else if (this._tables) {
+			this._tables.values = [];
+			this._tables.value = '';
+		}
+
 		await this.onTableSelected();
+
+	}
+
+	private refreshTableComponent(): void {
+		if (this._settings.editable && this._tables && this._existingTableButton && this._newTableButton && this._newTableName) {
+			this._tables.enabled = this._existingTablesSelected;
+			this._newTableName.enabled = !this._existingTablesSelected;
+		}
 	}
 
 	private getTableFullName(table: DatabaseTable): string {
