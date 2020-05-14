@@ -339,6 +339,10 @@ export class DashboardWidget {
 		}).component();
 
 		const links = [{
+			title: constants.sqlMlExtDocTitle,
+			description: constants.sqlMlDocDesc,
+			link: constants.mlExtDocLink
+		}, {
 			title: constants.sqlMlDocTitle,
 			description: constants.sqlMlDocDesc,
 			link: constants.mlDocLink
@@ -461,7 +465,7 @@ export class DashboardWidget {
 				dark: this.asAbsolutePath('images/makePredictions.svg'),
 				light: this.asAbsolutePath('images/makePredictions.svg'),
 			},
-			link: '',
+			link: 'https://go.microsoft.com/fwlink/?linkid=2129795',
 			command: constants.mlsPredictModelCommand
 		};
 		const predictionButton = this.createTaskButton(view, predictionMetadata);
@@ -472,7 +476,7 @@ export class DashboardWidget {
 				dark: this.asAbsolutePath('images/manageModels.svg'),
 				light: this.asAbsolutePath('images/manageModels.svg'),
 			},
-			link: '',
+			link: 'https://go.microsoft.com/fwlink/?linkid=2129796',
 			command: constants.mlManageModelsCommand
 		};
 		const importModelsButton = this.createTaskButton(view, importMetadata);
@@ -483,7 +487,7 @@ export class DashboardWidget {
 				dark: this.asAbsolutePath('images/createNotebook.svg'),
 				light: this.asAbsolutePath('images/createNotebook.svg'),
 			},
-			link: '',
+			link: 'https://go.microsoft.com/fwlink/?linkid=2129920',
 			command: constants.notebookCommandNew
 		};
 		const notebookModelsButton = this.createTaskButton(view, notebookMetadata);
