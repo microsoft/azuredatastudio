@@ -8,7 +8,7 @@ import * as constants from '../common/constants';
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
 import { ApiWrapper } from '../common/apiWrapper';
-import { IDeploymentProfile } from '../models/IDeploymentProfile';
+import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
 
 interface DataSourceDropdownValue extends azdata.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -30,7 +30,7 @@ export class DeployDatabaseDialog {
 	private connection: azdata.connection.Connection | undefined;
 	private connectionIsDataSource: boolean | undefined;
 
-	constructor(private apiWrapper: ApiWrapper, private project: Project, private deploy: (proj: Project, profile: IDeploymentProfile) => any, private generateScript: (proj: Project, profile: IDeploymentProfile) => any) {
+	constructor(private apiWrapper: ApiWrapper, private project: Project, private deploy: (proj: Project, profile: IDeploymentProfile) => any, private generateScript: (proj: Project, profile: IGenerateScriptProfile) => any) {
 		this.dialog = azdata.window.createModelViewDialog(constants.deployDialogName);
 		this.deployTab = azdata.window.createTab(constants.deployDialogName);
 	}
@@ -150,9 +150,12 @@ export class DeployDatabaseDialog {
 	}
 
 	private async generateScriptClick(): Promise<void> {
-		// TODO: hook up with build and generate script
-		// if target connection is a data source, have to check if already connected or if connection dialog needs to be opened
-		this.generateScript(this.project, { databaseName: 'stub', connectionUri: 'stub', upgradeExisting: true });
+		const profile: IGenerateScriptProfile = {
+			databaseName: this.targetDatabaseTextBox!.value!,
+			connectionUri: await this.getConnectionUri()
+		};
+
+		await this.generateScript(this.project, profile); // TODO: sqlcmd vars
 
 		azdata.window.closeDialog(this.dialog);
 	}

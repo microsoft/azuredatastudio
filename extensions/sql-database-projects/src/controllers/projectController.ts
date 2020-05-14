@@ -23,8 +23,7 @@ import { TaskExecutionMode } from 'azdata';
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
-import { IDeploymentProfile } from '../models/IDeploymentProfile';
-//import { stringify } from 'querystring';
+import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
 
 /**
  * Controller for managing project lifecycle
@@ -123,9 +122,19 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 	}
 
+	/**
+	 * Builds a project, producing a dacpac
+	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
+	 * @returns path of the built dacpac
+	 */
 	public async buildProject(treeNode: BaseProjectTreeItem): Promise<string>;
+	/**
+	 * Builds a project, producing a dacpac
+	 * @param project Project to be built
+	 * @returns path of the built dacpac
+	 */
 	public async buildProject(project: Project): Promise<string>;
-	public async buildProject(context: Project | BaseProjectTreeItem): Promise<string> {
+	public async buildProject(context: Project | BaseProjectTreeItem): Promise<string | undefined> {
 		const project: Project = context instanceof Project ? context : this.getProjectContextFromTreeNode(context);
 
 		// Check mssql extension for project dlls (tracking issue #10273)
@@ -136,22 +145,35 @@ export class ProjectsController {
 			workingDirectory: project.projectFolderPath,
 			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath)
 		};
+		try {
+			await this.netCoreTool.runDotnetCommand(options);
 
-		await this.netCoreTool.runDotnetCommand(options);
-
-		return path.join(project.projectFolderPath, 'bin', 'Debug', `${project.projectFileName}.dacpac`);
+			return path.join(project.projectFolderPath, 'bin', 'Debug', `${project.projectFileName}.dacpac`);
+		}
+		catch (err) {
+			this.apiWrapper.showErrorMessage(`Build failed.  Check output pane for more details.  ${utils.getErrorMessage(err)}`);
+			return;
+		}
 	}
 
+	/**
+	 * Builds and deploys a project
+	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
 	public async deployProject(treeNode: BaseProjectTreeItem): Promise<void>;
+	/**
+	 * Builds and deploys a project
+	 * @param project Project to be built and deployed
+	 */
 	public async deployProject(project: Project): Promise<void>;
 	public async deployProject(context: Project | BaseProjectTreeItem): Promise<void> {
 		const project: Project = context instanceof Project ? context : this.getProjectContextFromTreeNode(context);
 
-		const deployDatabaseDialog = new DeployDatabaseDialog(this.apiWrapper, project, async (proj, prof) => await this.deploy(proj, prof), async (proj, prof) => await this.generateScript(proj, prof));
+		const deployDatabaseDialog = new DeployDatabaseDialog(this.apiWrapper, project, async (proj, prof) => await this.deployCallback(proj, prof), async (proj, prof) => await this.deployCallback(proj, prof));
 		deployDatabaseDialog.openDialog();
 	}
 
-	public async deploy(project: Project, profile: IDeploymentProfile): Promise<void> {
+	public async deployCallback(project: Project, profile: IDeploymentProfile | IGenerateScriptProfile): Promise<void> {
 		const dacpacPath = await this.buildProject(project);
 
 		if (!dacpacPath) {
@@ -160,14 +182,16 @@ export class ProjectsController {
 
 		const dacFxService = await ProjectsController.getService(mssql.extension.name);
 
-		let result = await dacFxService.deployDacpac(dacpacPath, profile.databaseName, profile.upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
+		let result;
+
+		if (profile as IDeploymentProfile) {
+			result = await dacFxService.deployDacpac(dacpacPath, profile.databaseName, (<IDeploymentProfile>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, (<IDeploymentProfile>profile).sqlCmdVariables);
+		}
+		else {
+			result = await dacFxService.generateDeployScript(dacpacPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.execute); // TODO: add sqlcmdvar support
+		}
+
 		console.log(result);
-	}
-
-	private async generateScript(_: Project, __: IDeploymentProfile): Promise<void> {
-		// TODO: hook up with build and generate script
-		// if target connection is a data source, have to check if already connected or if connection dialog needs to be opened
-
 	}
 
 	private static async getService(extensionId: string): Promise<mssql.IDacFxService> {

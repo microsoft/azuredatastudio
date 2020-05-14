@@ -9,3 +9,8 @@ export interface IDeploymentProfile {
 	upgradeExisting: boolean;
 	sqlCmdVariables?: Record<string, string>;
 }
+
+export interface IGenerateScriptProfile {
+	databaseName: string;
+	connectionUri: string;
+}
