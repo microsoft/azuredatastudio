@@ -10,7 +10,6 @@ const localize = nls.loadMessageBundle();
 // Placeholder values
 export const dataSourcesFileName = 'datasources.json';
 export const sqlprojExtension = '.sqlproj';
-export const initialCatalogSetting = 'Initial Catalog';
 
 // UI Strings
 
@@ -67,3 +66,8 @@ export const ItemGroup = 'ItemGroup';
 export const Build = 'Build';
 export const Folder = 'Folder';
 export const Include = 'Include';
+
+// SQL connection string components
+export const initialCatalogSetting = 'Initial Catalog';
+export const dataSourceSetting = 'Data Source';
+export const integratedSecuritySetting = 'Integrated Security';

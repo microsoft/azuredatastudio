@@ -19,10 +19,11 @@ import { promises as fs } from 'fs';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
-import { IConnectionProfile, TaskExecutionMode, connection } from 'azdata';
-//import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
+import { TaskExecutionMode } from 'azdata';
+import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
+import { IDeploymentProfile } from '../models/IDeploymentProfile';
 //import { stringify } from 'querystring';
 
 /**
@@ -122,11 +123,14 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 	}
 
-	public async buildProject(treeNode: BaseProjectTreeItem): Promise<string> {
+	public async buildProject(treeNode: BaseProjectTreeItem): Promise<string>;
+	public async buildProject(project: Project): Promise<string>;
+	public async buildProject(context: Project | BaseProjectTreeItem): Promise<string> {
+		const project: Project = context instanceof Project ? context : this.getProjectContextFromTreeNode(context);
+
 		// Check mssql extension for project dlls (tracking issue #10273)
 		await this.buildHelper.createBuildDirFolder();
 
-		const project = this.getProjectContextFromTreeNode(treeNode);
 		const options: DotNetCommandOptions = {
 			commandTitle: 'Build',
 			workingDirectory: project.projectFolderPath,
@@ -138,33 +142,26 @@ export class ProjectsController {
 		return result;
 	}
 
-	public async deploy(_: BaseProjectTreeItem): Promise<void> {
-		// const project = this.getProjectContextFromTreeNode(treeNode);
-		// const deployDatabaseDialog = new DeployDatabaseDialog(this.apiWrapper, project);
-		// deployDatabaseDialog.openDialog();
+	public async deployProject(treeNode: BaseProjectTreeItem): Promise<void>;
+	public async deployProject(project: Project): Promise<void>;
+	public async deployProject(context: Project | BaseProjectTreeItem): Promise<void> {
+		const project: Project = context instanceof Project ? context : this.getProjectContextFromTreeNode(context);
+
+		const deployDatabaseDialog = new DeployDatabaseDialog(this.apiWrapper, project, this.deploy, this.generateScript);
+		deployDatabaseDialog.openDialog();
+	}
+
+	private async deploy(project: Project, deploymentProfile: IDeploymentProfile): Promise<void> {
+		const dacpacPath = await this.buildProject(project);
+
+		if (!dacpacPath) {
+			return; // buildProject() handles displaying the error
+		}
 
 		const dacFxService = await ProjectsController.getService(mssql.extension.name);
-		// //const dacpacPath = await this.buildProject(treeNode);
-		// const dacpacPath = await this.apiWrapper.showOpenDialog({
-		// 	canSelectMany: false,
-		// 	filters: { 'DACPACs': ['dacpac'] }
-		// });
-
-		// if (!dacpacPath || dacpacPath.length === 0) {
-		// 	return;
-		// }
-
-		const dacpacPath = 'F:\\SqlCmd.dacpac';
-
-		const sqlCmdVars: Record<string, string> = {};
-		sqlCmdVars['FilterValue'] = 'Employee';
-		sqlCmdVars['DatabaseRef'] = 'MyOtherDatabase';
-
-		const connResult = await connection.connect(this.getConnectionProfile(), false, false);
-		const connUri = await connection.getUriForConnection(connResult.connectionId);
 
 		try {
-			let result = await dacFxService.deployDacpac(dacpacPath, 'adsDeployTest', false, connUri, TaskExecutionMode.execute, sqlCmdVars);
+			let result = await dacFxService.deployDacpac(dacpacPath, deploymentProfile.databaseName, false, deploymentProfile.connectionUri, TaskExecutionMode.execute, deploymentProfile.sqlCmdVariables);
 			console.log(result);
 		}
 		catch (err) {
@@ -172,22 +169,10 @@ export class ProjectsController {
 		}
 	}
 
-	private getConnectionProfile(): IConnectionProfile {
-		return {
-			serverName: '.',
-			databaseName: '',
-			authenticationType: 'Integrated',
-			providerName: 'MSSQL',
-			connectionName: '',
-			userName: '',
-			password: '',
-			savePassword: false,
-			groupFullName: undefined,
-			saveProfile: true,
-			id: 'hardcodedTest',
-			groupId: undefined,
-			options: []
-		};
+	private async generateScript(): Promise<void> {
+		// TODO: hook up with build and generate script
+		// if target connection is a data source, have to check if already connected or if connection dialog needs to be opened
+
 	}
 
 	private static async getService(extensionId: string): Promise<mssql.IDacFxService> {

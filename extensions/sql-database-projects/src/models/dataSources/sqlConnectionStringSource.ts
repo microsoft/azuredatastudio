@@ -25,6 +25,18 @@ export class SqlConnectionDataSource extends DataSource {
 		return constants.sqlConnectionStringFriendly;
 	}
 
+	public get server(): string {
+		return this.getSetting(constants.dataSourceSetting);
+	}
+
+	public get database(): string {
+		return this.getSetting(constants.initialCatalogSetting);
+	}
+
+	public get integratedSecurity(): boolean {
+		return this.getSetting(constants.integratedSecuritySetting).toLowerCase() === 'true';
+	}
+
 	constructor(name: string, connectionString: string) {
 		super(name);
 
