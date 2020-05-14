@@ -9,10 +9,11 @@ import * as constants from '../common/constants';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { PackageConfigModel } from './packageConfigModel';
+import * as utils from '../common/utils';
 
 const configFileName = 'config.json';
-const defaultPythonExecutable = 'python';
-const defaultRExecutable = 'r';
+const defaultPythonExecutable = '';
+const defaultRExecutable = '';
 
 
 /**
@@ -57,8 +58,22 @@ export class Config {
 	/**
 	 * Returns python path from user settings
 	 */
-	public get pythonExecutable(): string {
-		return this.config.get(constants.pythonPathConfigKey) || defaultPythonExecutable;
+	public async getPythonExecutable(verify: boolean): Promise<string> {
+		let executable: string = this.config.get(constants.pythonPathConfigKey) || defaultPythonExecutable;
+		if (!executable) {
+			executable = utils.getDefaultPythonLocation();
+		} else {
+			const exeName = utils.getPythonExeName();
+			const isFolder = await utils.isDirectory(executable);
+			if (isFolder && executable.indexOf(exeName) < 0) {
+				executable = path.join(executable, exeName);
+			}
+		}
+		let checkExist = executable && executable.toLocaleUpperCase() !== 'PYTHON' && executable.toLocaleUpperCase() !== 'PYTHON3';
+		if (verify && checkExist && !await utils.exists(executable)) {
+			throw new Error(constants.cannotFindPython(executable));
+		}
+		return executable;
 	}
 
 	/**
@@ -128,8 +143,14 @@ export class Config {
 	/**
 	 * Returns r path from user settings
 	 */
-	public get rExecutable(): string {
-		return this.config.get(constants.rPathConfigKey) || defaultRExecutable;
+	public async getRExecutable(verify: boolean): Promise<string> {
+		let executable: string = this.config.get(constants.rPathConfigKey) || defaultRExecutable;
+		let checkExist = executable && executable.toLocaleUpperCase() !== 'R';
+		if (verify && checkExist && !await utils.exists(executable)) {
+			throw new Error(constants.cannotFindR(executable));
+		}
+
+		return executable;
 	}
 
 	private get config(): vscode.WorkspaceConfiguration {
