@@ -336,10 +336,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		};
 	}
 
-	private async isPythonRunning(installPath: string, existingPython: boolean): Promise<boolean> {
+	private async isPythonRunning(pythonExePath: string): Promise<boolean> {
 		if (process.platform === constants.winPlatform) {
-			let pythonExe = JupyterServerInstallation.getPythonExePath(installPath, existingPython);
-			let cmd = `powershell.exe -NoProfile -Command "& {Get-Process python | Where-Object {$_.Path -eq '${pythonExe}'}}"`;
+			let cmd = `powershell.exe -NoProfile -Command "& {Get-Process python | Where-Object {$_.Path -eq '${pythonExePath}'}}"`;
 			let cmdResult: string;
 			try {
 				cmdResult = await this.executeBufferedCommand(cmd);
@@ -347,9 +346,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				return false;
 			}
 			return cmdResult !== undefined && cmdResult.length > 0;
-		} else {
-			return false;
 		}
+
+		return false;
 	}
 
 	/**
@@ -359,15 +358,22 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	 * The previous python path (or the default) is used if a new path is not specified.
 	 */
 	public async startInstallProcess(forceInstall: boolean, installSettings?: PythonInstallSettings): Promise<void> {
-		let isPythonRunning: boolean;
-		if (installSettings) {
-			isPythonRunning = await this.isPythonRunning(installSettings.installPath, installSettings.existingPython);
-		} else {
-			isPythonRunning = await this.isPythonRunning(this._pythonInstallationPath, this._usingExistingPython);
+		if (!installSettings) {
+			installSettings = {
+				installPath: this._pythonInstallationPath,
+				existingPython: this._usingExistingPython
+			};
 		}
 
-		if (isPythonRunning) {
-			return Promise.reject(msgPythonRunningError);
+		// Check if Python is running before attempting to overwrite the installation.
+		// This step is skipped when using an existing installation, since we only add
+		// extra packages in that case and don't modify the install itself.
+		if (!installSettings.existingPython) {
+			let pythonExePath = JupyterServerInstallation.getPythonExePath(installSettings.installPath, false);
+			let isPythonRunning = await this.isPythonRunning(pythonExePath);
+			if (isPythonRunning) {
+				return Promise.reject(msgPythonRunningError);
+			}
 		}
 
 		if (this._installInProgress) {
@@ -378,10 +384,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this._installInProgress = true;
 		this._installCompletion = new Deferred<void>();
 
-		if (installSettings) {
-			this._pythonInstallationPath = installSettings.installPath;
-			this._usingExistingPython = installSettings.existingPython;
-		}
+		this._pythonInstallationPath = installSettings.installPath;
+		this._usingExistingPython = installSettings.existingPython;
 		await this.configurePackagePaths();
 
 		let updateConfig = async () => {
@@ -397,7 +401,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				description: msgTaskName,
 				isCancelable: false,
 				operation: op => {
-					this.installDependencies(op, forceInstall, installSettings?.specificPackages)
+					this.installDependencies(op, forceInstall, installSettings.specificPackages)
 						.then(async () => {
 							await updateConfig();
 							this._installCompletion.resolve();
