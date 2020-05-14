@@ -19,10 +19,11 @@ import { promises as fs } from 'fs';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
-import { TaskExecutionMode } from 'azdata';
-import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
+import { IConnectionProfile, TaskExecutionMode, connection } from 'azdata';
+//import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
+//import { stringify } from 'querystring';
 
 /**
  * Controller for managing project lifecycle
@@ -137,14 +138,56 @@ export class ProjectsController {
 		return result;
 	}
 
-	public async deploy(treeNode: BaseProjectTreeItem): Promise<void> {
-		const project = this.getProjectContextFromTreeNode(treeNode);
-		const deployDatabaseDialog = new DeployDatabaseDialog(this.apiWrapper, project);
-		deployDatabaseDialog.openDialog();
+	public async deploy(_: BaseProjectTreeItem): Promise<void> {
+		// const project = this.getProjectContextFromTreeNode(treeNode);
+		// const deployDatabaseDialog = new DeployDatabaseDialog(this.apiWrapper, project);
+		// deployDatabaseDialog.openDialog();
 
 		const dacFxService = await ProjectsController.getService(mssql.extension.name);
-		const dacpacPath = await this.buildProject(treeNode);
-		dacFxService.deployDacpac(dacpacPath, 'databaseName', false, 'ownerUri', TaskExecutionMode.execute);
+		// //const dacpacPath = await this.buildProject(treeNode);
+		// const dacpacPath = await this.apiWrapper.showOpenDialog({
+		// 	canSelectMany: false,
+		// 	filters: { 'DACPACs': ['dacpac'] }
+		// });
+
+		// if (!dacpacPath || dacpacPath.length === 0) {
+		// 	return;
+		// }
+
+		const dacpacPath = 'F:\\SqlCmd.dacpac';
+
+		const sqlCmdVars: Record<string, string> = {};
+		sqlCmdVars['FilterValue'] = 'Employee';
+		sqlCmdVars['DatabaseRef'] = 'MyOtherDatabase';
+
+		const connResult = await connection.connect(this.getConnectionProfile(), false, false);
+		const connUri = await connection.getUriForConnection(connResult.connectionId);
+
+		try {
+			let result = await dacFxService.deployDacpac(dacpacPath, 'adsDeployTest', false, connUri, TaskExecutionMode.execute, sqlCmdVars);
+			console.log(result);
+		}
+		catch (err) {
+			console.log(err);
+		}
+	}
+
+	private getConnectionProfile(): IConnectionProfile {
+		return {
+			serverName: '.',
+			databaseName: '',
+			authenticationType: 'Integrated',
+			providerName: 'MSSQL',
+			connectionName: '',
+			userName: '',
+			password: '',
+			savePassword: false,
+			groupFullName: undefined,
+			saveProfile: true,
+			id: 'hardcodedTest',
+			groupId: undefined,
+			options: []
+		};
 	}
 
 	private static async getService(extensionId: string): Promise<mssql.IDacFxService> {
