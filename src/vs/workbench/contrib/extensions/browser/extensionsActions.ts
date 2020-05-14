@@ -3043,7 +3043,7 @@ export class InstallVSIXAction extends Action {
 						return;
 					}
 					const requireReload = !(extension.local && this.extensionService.canAddExtension(toExtensionDescription(extension.local)));
-					const message = requireReload ? localize('InstallVSIXAction.successReload', "Please reload Visual Studio Code to complete installing the extension {0}.", extension.displayName || extension.name)
+					const message = requireReload ? localize('InstallVSIXAction.successReload', "Please reload Azure Data Studio to complete installing the extension {0}.", extension.displayName || extension.name) // {{SQL CARBON EDIT}}
 						: localize('InstallVSIXAction.success', "Completed installing the extension {0}.", extension.displayName || extension.name);
 					const actions = requireReload ? [{
 						label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
