@@ -492,7 +492,9 @@ export class DashboardWidget {
 				'padding': '10px'
 			}
 		});
-		predictionButton.enabled = await this._predictService.serverSupportOnnxModel();
+		if (!await this._predictService.serverSupportOnnxModel()) {
+			console.log(constants.onnxNotSupportedError);
+		}
 
 		return tasksContainer;
 	}

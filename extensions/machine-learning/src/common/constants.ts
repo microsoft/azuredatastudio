@@ -41,6 +41,7 @@ export const pythonEnabledConfigKey = 'enablePython';
 export const rEnabledConfigKey = 'enableR';
 export const registeredModelsTableName = 'registeredModelsTableName';
 export const rPathConfigKey = 'rPath';
+export const adsPythonBundleVersion = '0.0.1';
 
 // Localized texts
 //
@@ -48,8 +49,10 @@ export const msgYes = localize('msgYes', "Yes");
 export const msgNo = localize('msgNo', "No");
 export const managePackageCommandError = localize('mls.managePackages.error', "Package management is not supported for the server. Make sure you have Python or R installed.");
 export function taskFailedError(taskName: string, err: string): string { return localize('mls.taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
-export const installPackageMngDependenciesMsgTaskName = localize('mls.installPackageMngDependencies.msgTaskName', "Installing package management dependencies");
-export const installModelMngDependenciesMsgTaskName = localize('mls.installModelMngDependencies.msgTaskName', "Installing model management dependencies");
+export function cannotFindPython(path: string): string { return localize('mls.cannotFindPython.error', "Cannot find Python executable '{0}'. Please make sure Python is installed and configured correctly", path); }
+export function cannotFindR(path: string): string { return localize('mls.cannotFindR.error', "Cannot find R executable '{0}'. Please make sure R is installed and configured correctly", path); }
+export const installPackageMngDependenciesMsgTaskName = localize('mls.installPackageMngDependencies.msgTaskName', "Verifying package management dependencies");
+export const installModelMngDependenciesMsgTaskName = localize('mls.installModelMngDependencies.msgTaskName', "Verifying model management dependencies");
 export const noResultError = localize('mls.noResultError', "No Result returned");
 export const requiredPackagesNotInstalled = localize('mls.requiredPackagesNotInstalled', "The required dependencies are not installed");
 export const confirmEnableExternalScripts = localize('mls.confirmEnableExternalScripts', "External script is required for package management. Are you sure you want to enable that.");
@@ -122,6 +125,8 @@ export const extLangInstallFailedError = localize('extLang.installFailedError', 
 export const extLangUpdateFailedError = localize('extLang.updateFailedError', "Failed to update language");
 
 export const modelUpdateFailedError = localize('models.modelUpdateFailedError', "Failed to update the model");
+export const modelsListEmptyMessage = localize('models.modelsListEmptyMessage', "No Models Yet");
+export const modelsListEmptyDescription = localize('models.modelsListEmptyDescription', "Use import wizard to add models to this table");
 export const databaseName = localize('databaseName', "Models database");
 export const tableName = localize('tableName', "Models table");
 export const existingTableName = localize('existingTableName', "Existing table");
@@ -195,6 +200,7 @@ export const columnDataTypeMismatchWarning = localize('models.columnDataTypeMism
 export const modelNameRequiredError = localize('models.modelNameRequiredError', "Model name is required.");
 export const updateModelFailedError = localize('models.updateModelFailedError', "Failed to update the model");
 export const modelSchemaIsAcceptedMessage = localize('models.modelSchemaIsAcceptedMessage', "Table meets requirements!");
+export const selectModelsTableMessage = localize('models.selectModelsTableMessage', "Select models table");
 export const modelSchemaIsNotAcceptedMessage = localize('models.modelSchemaIsNotAcceptedMessage', "Invalid table structure");
 export function importModelFailedError(modelName: string | undefined, filePath: string | undefined): string { return localize('models.importModelFailedError', "Failed to register the model: {0} ,file: {1}", modelName || '', filePath || ''); }
 export function invalidImportTableError(databaseName: string | undefined, tableName: string | undefined): string { return localize('models.invalidImportTableError', "Invalid table for importing models. database name: {0} ,table name: {1}", databaseName || '', tableName || ''); }

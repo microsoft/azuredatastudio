@@ -70,7 +70,7 @@ export class DeployDatabaseDialog {
 				ariaLabel: constants.databaseNameLabel
 			}).component();
 
-			this.dataSourcesFormComponent = this.createDataSourcesDropdown(view);
+			this.dataSourcesFormComponent = this.createDataSourcesFormComponent(view);
 
 			this.targetDatabaseTextBox.onTextChanged(() => {
 				this.tryEnableGenerateScriptAndOkButtons();
@@ -176,6 +176,18 @@ export class DeployDatabaseDialog {
 			component: this.targetConnectionTextBox,
 			actions: [editConnectionButton, clearButton]
 		};
+	}
+
+	private createDataSourcesFormComponent(view: azdata.ModelView): azdata.FormComponent {
+		if (this.project.dataSources.length > 0) {
+			return this.createDataSourcesDropdown(view);
+		} else {
+			const noDataSourcesText = view.modelBuilder.text().withProperties({ value: constants.noDataSourcesText }).component();
+			return {
+				title: constants.dataSourceDropdownTitle,
+				component: noDataSourcesText
+			};
+		}
 	}
 
 	private createDataSourcesDropdown(view: azdata.ModelView): azdata.FormComponent {
