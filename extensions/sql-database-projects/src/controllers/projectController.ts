@@ -6,6 +6,7 @@
 import * as path from 'path';
 import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
+import * as fs from 'fs';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
@@ -14,7 +15,6 @@ import { Uri, QuickPickItem } from 'vscode';
 import { ApiWrapper } from '../common/apiWrapper';
 import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { promises as fs } from 'fs';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
@@ -98,7 +98,7 @@ export class ProjectsController {
 
 		let fileExists = false;
 		try {
-			await fs.access(newProjFilePath);
+			await fs.promises.access(newProjFilePath);
 			fileExists = true;
 		}
 		catch { } // file doesn't already exist
@@ -107,8 +107,8 @@ export class ProjectsController {
 			throw new Error(constants.projectAlreadyExists(newProjFileName, folderUri.fsPath));
 		}
 
-		await fs.mkdir(path.dirname(newProjFilePath), { recursive: true });
-		await fs.writeFile(newProjFilePath, newProjFileContents);
+		await fs.promises.mkdir(path.dirname(newProjFilePath), { recursive: true });
+		await fs.promises.writeFile(newProjFilePath, newProjFileContents);
 
 		return newProjFilePath;
 	}
@@ -147,7 +147,13 @@ export class ProjectsController {
 			// start schema compare with the dacpac produced from build
 			const project = this.getProjectContextFromTreeNode(treeNode);
 			const dacpacPath = path.join(project.projectFolderPath, 'bin', 'Debug', `${project.projectFileName}.dacpac`);
-			this.apiWrapper.executeCommand('schemaCompare.start', dacpacPath);
+
+			// check that dacpac exists
+			if (fs.existsSync(dacpacPath)) {
+				this.apiWrapper.executeCommand('schemaCompare.start', dacpacPath);
+			} else {
+				this.apiWrapper.showErrorMessage(constants.buildDacpacNotFound);
+			}
 		} else {
 			this.apiWrapper.showErrorMessage(constants.schemaCompareNotInstalled);
 		}
