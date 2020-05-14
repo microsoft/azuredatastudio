@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { QueryRunner } from '../common/queryRunner';
 import * as constants from '../common/constants';
@@ -20,13 +19,6 @@ export class PackageManagementService {
 		private _apiWrapper: ApiWrapper,
 		private _queryRunner: QueryRunner,
 	) {
-	}
-
-	/**
-	 * Opens server config documents
-	 */
-	public async openDocuments(): Promise<boolean> {
-		return await this._apiWrapper.openExternal(vscode.Uri.parse(constants.mlsDocuments));
 	}
 
 	/**
@@ -59,6 +51,7 @@ export class PackageManagementService {
 		let current = await this._queryRunner.isMachineLearningServiceEnabled(connection);
 
 		if (current) {
+			this._apiWrapper.showInfoMessage(constants.mlsEnabledMessage);
 			return current;
 		}
 		let confirmed = await utils.promptConfirm(constants.confirmEnableExternalScripts, this._apiWrapper);

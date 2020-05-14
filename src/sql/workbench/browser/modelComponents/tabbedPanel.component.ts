@@ -2,16 +2,17 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import 'vs/css!./media/tabbedPanel';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnDestroy, ViewChild } from '@angular/core';
 import { NavigationBarLayout, PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { TabType } from 'sql/base/browser/ui/panel/tab.component';
-import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
-import 'vs/css!./media/tabbedPanel';
+import { ContainerBase, ItemDescriptor } from 'sql/workbench/browser/modelComponents/componentBase';
+import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
 import { IUserFriendlyIcon, createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { TabbedPanelLayout } from 'azdata';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export interface TabConfig {
 	title: string;
@@ -50,7 +51,8 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(ILogService) private logService: ILogService
 	) {
 		super(changeRef, el);
 	}
@@ -120,5 +122,24 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 		if (firstTabIndex >= 0) {
 			this._panel.selectTab(firstTabIndex);
 		}
+	}
+
+	onItemLayoutUpdated(item: ItemDescriptor<TabConfig>): void {
+		this._panel.updateTab(item.config.id, { title: item.config.title, iconClass: item.config.icon ? createIconCssClass(item.config.icon) : undefined });
+	}
+
+	public doAction(action: string, ...args: any[]): void {
+		switch (action) {
+			case ModelViewAction.SelectTab:
+				if (typeof args?.[0] !== 'string') {
+					this.logService.warn(`Got unknown arg type for SelectTab action ${args?.[0]}`);
+					return;
+				}
+				this.selectTab(args[0]);
+		}
+	}
+
+	public selectTab(id: string): void {
+		this._panel.selectTab(id);
 	}
 }

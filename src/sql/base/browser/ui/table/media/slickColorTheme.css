@@ -16,20 +16,15 @@
 	padding-left: 20px;
 }
 
-.slick-cell a, a:link {
+.slick-cell a,
+.slick-cell a:link,
+.resultsMessageValue a,
+.resultsMessageValue a:link {
 	color: var(--color-grid-link);
 	text-decoration: underline;
 }
 
-.slick-cell a:hover {
-	color: var(--color-grid-link-hover);
-}
-
-.resultsMessageValue a, a:link {
-	color: var(--color-grid-link);
-	text-decoration: underline;
-}
-
+.slick-cell a:hover,
 .resultsMessageValue a:hover {
 	color: var(--color-grid-link-hover);
 }

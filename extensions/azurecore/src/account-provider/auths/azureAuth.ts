@@ -225,7 +225,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 				} catch (ex) {
 					console.log(`Could not refresh access token for ${JSON.stringify(tenant)} - silently removing the tenant from the user's account.`);
 					azureAccount.properties.tenants = azureAccount.properties.tenants.filter(t => t.id !== tenant.id);
-					console.log(ex, ex?.data, ex?.response);
 					continue;
 				}
 
@@ -272,28 +271,40 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	protected async makePostRequest(uri: string, postData: { [key: string]: string }, validateStatus = false) {
-		const config: AxiosRequestConfig = {
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded'
+		try {
+			const config: AxiosRequestConfig = {
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				}
+			};
+
+			if (validateStatus) {
+				config.validateStatus = () => true;
 			}
-		};
 
-		if (validateStatus) {
-			config.validateStatus = () => true;
+			return await axios.post(uri, qs.stringify(postData), config);
+		} catch (ex) {
+			console.log('Unexpected error making Azure auth request', 'azureCore.postRequest', JSON.stringify(ex?.response?.data, undefined, 2));
+			throw ex;
 		}
-
-		return axios.post(uri, qs.stringify(postData), config);
 	}
 
 	protected async makeGetRequest(token: string, uri: string): Promise<AxiosResponse<any>> {
-		const config = {
-			headers: {
-				Authorization: `Bearer ${token}`,
-				'Content-Type': 'application/json',
-			},
-		};
+		try {
+			const config = {
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+			};
 
-		return axios.get(uri, config);
+			return await axios.get(uri, config);
+		} catch (ex) {
+			// Intercept and print error
+			console.log('Unexpected error making Azure auth request', 'azureCore.getRequest', JSON.stringify(ex?.response?.data, undefined, 2));
+			// rethrow error
+			throw ex;
+		}
 	}
 
 	protected async getTenants(token: AccessToken): Promise<Tenant[]> {
