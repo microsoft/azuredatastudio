@@ -266,6 +266,10 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		(<HTMLElement>this._el.nativeElement).focus();
 	}
 
+	public doAction(action: string, ...args: any[]): void {
+		// no-op, components should override this if they want to handle actions
+	}
+
 	protected onkeydown(domNode: HTMLElement, listener: (e: StandardKeyboardEvent) => void): void {
 		this._register(addDisposableListener(domNode, EventType.KEY_DOWN, (e: KeyboardEvent) => listener(new StandardKeyboardEvent(e))));
 	}

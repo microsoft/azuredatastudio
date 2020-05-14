@@ -134,6 +134,7 @@ export class ConfigurePathPage extends BasePage {
 				checked: !useExistingPython
 			}).component();
 		this.newInstallButton.onDidClick(() => {
+			this.existingInstallButton.checked = false;
 			this.updatePythonPathsDropdown(false)
 				.catch(err => {
 					this.instance.showErrorMessage(utils.getErrorMessage(err));
@@ -147,6 +148,7 @@ export class ConfigurePathPage extends BasePage {
 				checked: useExistingPython
 			}).component();
 		this.existingInstallButton.onDidClick(() => {
+			this.newInstallButton.checked = false;
 			this.updatePythonPathsDropdown(true)
 				.catch(err => {
 					this.instance.showErrorMessage(utils.getErrorMessage(err));

@@ -40,6 +40,7 @@ export class ManageModelsDialog extends ModelViewBase {
 		});
 
 		let dialog = this.dialogView.createDialog(constants.registerModelTitle, [this.currentLanguagesTab]);
+		dialog.isWide = true;
 		dialog.customButtons = [registerModelButton];
 		this.mainViewPanel = dialog;
 		dialog.okButton.hidden = true;

@@ -4,11 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import * as os from 'os';
 /**
  * Consolidates on the error message string
  */
-export function getErrorMessage(error: Error | string): string {
-	return (error instanceof Error) ? error.message : error;
+export function getErrorMessage(error: any): string {
+	return (error instanceof Error)
+		? (typeof error.message === 'string' ? error.message : '')
+		: typeof error === 'string' ? error : `${JSON.stringify(error, undefined, '\t')}`;
 }
 
 /**
@@ -44,4 +47,30 @@ export function trimChars(input: string, chars: string): string {
 	output = output.substring(0, output.length - i);
 
 	return output;
+}
+
+/**
+ * get quoted path to be used in any commandline argument
+ * @param filePath
+ */
+export function getSafePath(filePath: string): string {
+	return (os.platform() === 'win32') ?
+		getSafeWindowsPath(filePath) :
+		getSafeNonWindowsPath(filePath);
+}
+
+/**
+ * ensure that path with spaces are handles correctly
+ */
+export function getSafeWindowsPath(filePath: string): string {
+	filePath = filePath.split('\\').join('\\\\').split('"').join('');
+	return '"' + filePath + '"';
+}
+
+/**
+ * ensure that path with spaces are handles correctly
+ */
+export function getSafeNonWindowsPath(filePath: string): string {
+	filePath = filePath.split('\\').join('/').split('"').join('');
+	return '"' + filePath + '"';
 }

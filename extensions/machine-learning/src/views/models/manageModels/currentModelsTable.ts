@@ -66,6 +66,32 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 					...constants.cssStyles.tableRow
 				},
 			},
+			{ // Version
+				displayName: constants.modelVersion,
+				ariaLabel: constants.modelVersion,
+				valueType: azdata.DeclarativeDataType.string,
+				isReadOnly: true,
+				width: 150,
+				headerCssStyles: {
+					...constants.cssStyles.tableHeader
+				},
+				rowCssStyles: {
+					...constants.cssStyles.tableRow
+				},
+			},
+			{ // Format
+				displayName: constants.modelFramework,
+				ariaLabel: constants.modelFramework,
+				valueType: azdata.DeclarativeDataType.string,
+				isReadOnly: true,
+				width: 150,
+				headerCssStyles: {
+					...constants.cssStyles.tableHeader
+				},
+				rowCssStyles: {
+					...constants.cssStyles.tableRow
+				},
+			},
 			{ // Action
 				displayName: '',
 				valueType: azdata.DeclarativeDataType.component,
@@ -113,13 +139,13 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
 		if (this.component) {
-			formBuilder.addFormItem({ title: constants.modelSourcesTitle, component: this.component });
+			formBuilder.addFormItem({ title: '', component: this.component });
 		}
 	}
 
 	public removeComponents(formBuilder: azdata.FormBuilder) {
 		if (this.component) {
-			formBuilder.removeFormItem({ title: constants.modelSourcesTitle, component: this.component });
+			formBuilder.removeFormItem({ title: '', component: this.component });
 		}
 	}
 
@@ -169,7 +195,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	}
 
 	private createTableRow(model: ImportedModel): any[] {
-		let row: any[] = [model.modelName, model.created];
+		let row: any[] = [model.modelName, model.created, model.version, model.framework];
 		if (this._modelBuilder) {
 			const selectButton = this.createSelectButton(model);
 			if (selectButton) {

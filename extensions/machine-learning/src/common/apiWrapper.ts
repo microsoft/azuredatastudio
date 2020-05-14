@@ -110,6 +110,10 @@ export class ApiWrapper {
 		return azdata.connection.listDatabases(connectionId);
 	}
 
+	public getServerInfo(connectionId: string): Thenable<azdata.ServerInfo> {
+		return azdata.connection.getServerInfo(connectionId);
+	}
+
 	public openTextDocument(options?: { language?: string; content?: string; }): Thenable<vscode.TextDocument> {
 		return vscode.workspace.openTextDocument(options);
 	}
