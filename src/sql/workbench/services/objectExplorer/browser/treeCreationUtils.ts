@@ -12,7 +12,7 @@ import { ServerTreeController } from 'sql/workbench/services/objectExplorer/brow
 import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/browser/serverTreeActionProvider';
 import { DefaultFilter, DefaultAccessibilityProvider, DefaultController } from 'vs/base/parts/tree/browser/treeDefaults';
 import { IController } from 'vs/base/parts/tree/browser/tree';
-import { ServerTreeDragAndDrop, RecentConnectionsDragAndDrop } from 'sql/workbench/services/objectExplorer/browser/dragAndDropController';
+import { TreeDragAndDrop, RecentConnectionsDragAndDrop } from 'sql/workbench/services/objectExplorer/browser/dragAndDropController';
 import { RecentConnectionDataSource } from 'sql/workbench/services/objectExplorer/browser/recentConnectionDataSource';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
@@ -46,7 +46,7 @@ export class TreeCreationUtils {
 		const actionProvider = instantiationService.createInstance(ServerTreeActionProvider);
 		const renderer = instantiationService.createInstance(ServerTreeRenderer, false);
 		const controller = instantiationService.createInstance(ServerTreeController, actionProvider);
-		const dnd = instantiationService.createInstance(ServerTreeDragAndDrop);
+		const dnd = instantiationService.createInstance(TreeDragAndDrop);
 		const filter = new DefaultFilter();
 		const sorter = undefined;
 		const accessibilityProvider = new DefaultAccessibilityProvider();

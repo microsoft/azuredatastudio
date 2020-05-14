@@ -543,6 +543,8 @@ export class TreeView extends HeightMap {
 
 		this.viewListeners.push(DOM.addDisposableListener(window, 'dragover', (e) => this.onDragOver(e)));
 		this.viewListeners.push(DOM.addDisposableListener(this.wrapper, 'drop', (e) => this.onDrop(e)));
+		//TODO: Need an event that detects a drop on the text editor pane
+		// this.viewListeners.push(DOM.addDisposableListener(window, 'drop', (e) => this.onDrop(e)));
 		this.viewListeners.push(DOM.addDisposableListener(window, 'dragend', (e) => this.onDragEnd(e)));
 		this.viewListeners.push(DOM.addDisposableListener(window, 'dragleave', (e) => this.onDragOver(e)));
 
@@ -1355,11 +1357,11 @@ export class TreeView extends HeightMap {
 
 		let event = new Mouse.DragMouseEvent(e);
 
+		// viewItem is what you are dragging onto
 		let viewItem = this.getItemAround(event.target);
 
 		if (!viewItem || (event.posx === 0 && event.posy === 0 && event.browserEvent.type === DOM.EventType.DRAG_LEAVE)) {
 			// dragging outside of tree
-
 			if (this.currentDropTarget) {
 				// clear previously hovered element feedback
 
@@ -1367,7 +1369,6 @@ export class TreeView extends HeightMap {
 				this.currentDropTargets = [];
 				this.currentDropDisposable.dispose();
 			}
-
 			this.cancelDragAndDropScrollInterval();
 			this.currentDropTarget = null;
 			this.currentDropElement = null;
@@ -1431,7 +1432,7 @@ export class TreeView extends HeightMap {
 
 		// can be null
 		let currentDropTarget = item.id === this.inputItem.id ? this.inputItem : this.items[item.id];
-
+		console.log(currentDropTarget);
 		if (this.shouldInvalidateDropReaction || this.currentDropTarget !== currentDropTarget || !reactionEquals(this.currentDropElementReaction, reaction)) {
 			this.shouldInvalidateDropReaction = false;
 
@@ -1556,6 +1557,7 @@ export class TreeView extends HeightMap {
 		return item.top < this.lastRenderTop + this.lastRenderHeight && item.top + item.height > this.lastRenderTop;
 	}
 
+	// Searches event target & its parents
 	private getItemAround(element: HTMLElement): ViewItem | undefined {
 		let candidate: ViewItem = this.inputItem;
 		let el: HTMLElement | null = element;

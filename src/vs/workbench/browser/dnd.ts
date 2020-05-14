@@ -79,6 +79,7 @@ export function extractResources(e: DragEvent, externalOnly?: boolean): Array<ID
 
 			// Data Transfer: Code Editors
 			const rawEditorsData = e.dataTransfer.getData(CodeDataTransfers.EDITORS);
+
 			if (rawEditorsData) {
 				try {
 					const draggedEditors: ISerializedDraggedEditor[] = JSON.parse(rawEditorsData);
@@ -101,6 +102,10 @@ export function extractResources(e: DragEvent, externalOnly?: boolean): Array<ID
 			else {
 				try {
 					const rawResourcesData = e.dataTransfer.getData(DataTransfers.RESOURCES);
+					const rawResourcesText = e.dataTransfer.getData(DataTransfers.TEXT);
+					const rawResourcesFiles = e.dataTransfer.getData(DataTransfers.FILES);
+					if (rawResourcesText) { }
+					if (rawResourcesFiles) { }
 					if (rawResourcesData) {
 						const uriStrArray: string[] = JSON.parse(rawResourcesData);
 						resources.push(...uriStrArray.map(uriStr => ({ resource: URI.parse(uriStr), isExternal: false })));

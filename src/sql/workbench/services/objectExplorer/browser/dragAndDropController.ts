@@ -11,11 +11,12 @@ import { DragMouseEvent } from 'vs/base/browser/mouseEvent';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { IDragAndDropData } from 'vs/base/browser/dnd';
+import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 
 /**
  * Implements drag and drop for the server tree
  */
-export class ServerTreeDragAndDrop implements IDragAndDrop {
+export class TreeDragAndDrop implements IDragAndDrop {
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -29,9 +30,11 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	public getDragURI(tree: ITree, element: any): string {
 		if (element instanceof ConnectionProfile) {
 			return (<ConnectionProfile>element).id;
-		}
-		else if (element instanceof ConnectionProfileGroup) {
+		} else if (element instanceof ConnectionProfileGroup) {
 			return (<ConnectionProfileGroup>element).id;
+
+		} else if (element.nodeTypeId === 'Table' || element.nodeTypeId === 'Column') {
+			return (<TreeNode>element).id;
 		}
 		return null;
 	}
@@ -44,7 +47,10 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			return (<ConnectionProfile>elements[0]).serverName;
 		} else if (elements[0] instanceof ConnectionProfileGroup) {
 			return (<ConnectionProfileGroup>elements[0]).name;
-		} else {
+		} else if (elements[0].label) {
+			return elements[0].label;
+		}
+		else {
 			return undefined;
 		}
 	}
@@ -78,9 +84,12 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 				// to avoid creating a circular structure.
 				canDragOver = source.id !== targetElement.id && !source.isAncestorOf(targetElement);
 			}
+			//TODO: Change the filter used here?
+		} else if (targetElement.nodeTypeId === 'Table' || targetElement.nodeTypeId === 'Column') {
+			// Try to edit the text in the text window here, if possible
 
 		} else {
-			canDragOver = false;
+			canDragOver = true;
 		}
 
 		if (canDragOver) {
