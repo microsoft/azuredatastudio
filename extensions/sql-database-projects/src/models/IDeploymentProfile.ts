@@ -6,5 +6,6 @@
 export interface IDeploymentProfile {
 	databaseName: string;
 	connectionUri: string;
+	upgradeExisting: boolean;
 	sqlCmdVariables?: Record<string, string>;
 }

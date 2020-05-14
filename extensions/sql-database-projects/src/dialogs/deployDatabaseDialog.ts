@@ -39,12 +39,12 @@ export class DeployDatabaseDialog {
 		this.initializeDialog();
 		this.dialog.okButton.label = constants.deployDialogOkButtonText;
 		this.dialog.okButton.enabled = false;
-		this.dialog.okButton.onClick(this.deployClick);
+		this.dialog.okButton.onClick(async () => await this.deployClick());
 
 		this.dialog.cancelButton.label = constants.cancelButtonText;
 
 		let generateScriptButton: azdata.window.Button = azdata.window.createButton(constants.generateScriptButtonText);
-		generateScriptButton.onClick(this.generateScriptClick);
+		generateScriptButton.onClick(async () => await this.generateScriptClick());
 		generateScriptButton.enabled = false;
 
 		this.dialog.customButtons = [];
@@ -117,11 +117,11 @@ export class DeployDatabaseDialog {
 				connectionName: dataSource.name,
 				userName: '',
 				password: '', // TODO: secure password storage
-				authenticationType: dataSource.getSetting(constants.integratedSecuritySetting) === 'true' ? 'Integrated' : 'SqlAuth',
+				authenticationType: dataSource.integratedSecurity ? 'Integrated' : 'SqlAuth',
 				savePassword: false,
 				providerName: 'MSSQL',
 				saveProfile: true,
-				id: dataSource.name + 'dataSource',
+				id: dataSource.name + '-dataSource',
 				options: []
 			};
 
@@ -139,18 +139,20 @@ export class DeployDatabaseDialog {
 	private async deployClick(): Promise<void> {
 		const profile: IDeploymentProfile = {
 			databaseName: this.targetDatabaseTextBox!.value!,
+			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: this.project.sqlCmdVariables
 		};
 
-		this.deploy(this.project, profile);
+		await this.deploy(this.project, profile);
+
 		azdata.window.closeDialog(this.dialog);
 	}
 
 	private async generateScriptClick(): Promise<void> {
 		// TODO: hook up with build and generate script
 		// if target connection is a data source, have to check if already connected or if connection dialog needs to be opened
-		this.generateScript(this.project, { databaseName: 'stub', connectionUri: 'stub' });
+		this.generateScript(this.project, { databaseName: 'stub', connectionUri: 'stub', upgradeExisting: true });
 
 		azdata.window.closeDialog(this.dialog);
 	}

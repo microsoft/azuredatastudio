@@ -137,9 +137,9 @@ export class ProjectsController {
 			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath)
 		};
 
-		const result = await this.netCoreTool.runDotnetCommand(options);
+		await this.netCoreTool.runDotnetCommand(options);
 
-		return result;
+		return path.join(project.projectFolderPath, 'bin', 'Debug', `${project.projectFileName}.dacpac`);
 	}
 
 	public async deployProject(treeNode: BaseProjectTreeItem): Promise<void>;
@@ -147,11 +147,11 @@ export class ProjectsController {
 	public async deployProject(context: Project | BaseProjectTreeItem): Promise<void> {
 		const project: Project = context instanceof Project ? context : this.getProjectContextFromTreeNode(context);
 
-		const deployDatabaseDialog = new DeployDatabaseDialog(this.apiWrapper, project, this.deploy, this.generateScript);
+		const deployDatabaseDialog = new DeployDatabaseDialog(this.apiWrapper, project, async (proj, prof) => await this.deploy(proj, prof), async (proj, prof) => await this.generateScript(proj, prof));
 		deployDatabaseDialog.openDialog();
 	}
 
-	private async deploy(project: Project, deploymentProfile: IDeploymentProfile): Promise<void> {
+	public async deploy(project: Project, profile: IDeploymentProfile): Promise<void> {
 		const dacpacPath = await this.buildProject(project);
 
 		if (!dacpacPath) {
@@ -160,16 +160,11 @@ export class ProjectsController {
 
 		const dacFxService = await ProjectsController.getService(mssql.extension.name);
 
-		try {
-			let result = await dacFxService.deployDacpac(dacpacPath, deploymentProfile.databaseName, false, deploymentProfile.connectionUri, TaskExecutionMode.execute, deploymentProfile.sqlCmdVariables);
-			console.log(result);
-		}
-		catch (err) {
-			console.log(err);
-		}
+		let result = await dacFxService.deployDacpac(dacpacPath, profile.databaseName, profile.upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
+		console.log(result);
 	}
 
-	private async generateScript(): Promise<void> {
+	private async generateScript(_: Project, __: IDeploymentProfile): Promise<void> {
 		// TODO: hook up with build and generate script
 		// if target connection is a data source, have to check if already connected or if connection dialog needs to be opened
 
