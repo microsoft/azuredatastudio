@@ -34,7 +34,6 @@ const msgTaskName = localize('msgTaskName', "Installing Notebook dependencies");
 const msgInstallPkgStart = localize('msgInstallPkgStart', "Installing Notebook dependencies, see Tasks view for more information");
 const msgInstallPkgFinish = localize('msgInstallPkgFinish', "Notebook dependencies installation is complete");
 const msgPythonRunningError = localize('msgPythonRunningError', "Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.");
-const msgSkipPythonInstall = localize('msgSkipPythonInstall', "Python already exists at the specific location. Skipping install.");
 const msgWaitingForInstall = localize('msgWaitingForInstall', "Another Python installation is currently in progress. Waiting for it to complete.");
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
@@ -132,25 +131,26 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
-		if (!(await utils.exists(this._pythonExecutable)) || forceInstall || this._usingExistingPython) {
-			window.showInformationMessage(msgInstallPkgStart);
+		window.showInformationMessage(msgInstallPkgStart);
 
-			this.outputChannel.show(true);
-			this.outputChannel.appendLine(msgInstallPkgProgress);
-			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgInstallPkgProgress);
+		this.outputChannel.show(true);
+		this.outputChannel.appendLine(msgInstallPkgProgress);
+		backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgInstallPkgProgress);
 
-			try {
+		try {
+			let pythonExists = await utils.exists(this._pythonExecutable);
+			if (!pythonExists || forceInstall) {
 				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
-				await this.upgradePythonPackages(false, forceInstall, specificPackages);
-			} catch (err) {
-				this.outputChannel.appendLine(msgDependenciesInstallationFailed(utils.getErrorMessage(err)));
-				throw err;
 			}
-
-			this.outputChannel.appendLine(msgInstallPkgFinish);
-			backgroundOperation.updateStatus(azdata.TaskStatus.Succeeded, msgInstallPkgFinish);
-			window.showInformationMessage(msgInstallPkgFinish);
+			await this.upgradePythonPackages(false, forceInstall, specificPackages);
+		} catch (err) {
+			this.outputChannel.appendLine(msgDependenciesInstallationFailed(utils.getErrorMessage(err)));
+			throw err;
 		}
+
+		this.outputChannel.appendLine(msgInstallPkgFinish);
+		backgroundOperation.updateStatus(azdata.TaskStatus.Succeeded, msgInstallPkgFinish);
+		window.showInformationMessage(msgInstallPkgFinish);
 	}
 
 	public installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: OutputChannel): Promise<void> {
@@ -388,41 +388,29 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this._usingExistingPython = installSettings.existingPython;
 		await this.configurePackagePaths();
 
-		let updateConfig = async () => {
-			let notebookConfig = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
-			await notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, ConfigurationTarget.Global);
-			await notebookConfig.update(constants.existingPythonConfigKey, this._usingExistingPython, ConfigurationTarget.Global);
-			await this.configurePackagePaths();
-		};
+		this.apiWrapper.startBackgroundOperation({
+			displayName: msgTaskName,
+			description: msgTaskName,
+			isCancelable: false,
+			operation: op => {
+				this.installDependencies(op, forceInstall, installSettings.specificPackages)
+					.then(async () => {
+						let notebookConfig = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
+						await notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, ConfigurationTarget.Global);
+						await notebookConfig.update(constants.existingPythonConfigKey, this._usingExistingPython, ConfigurationTarget.Global);
+						await this.configurePackagePaths();
 
-		if (!(await utils.exists(this._pythonExecutable)) || forceInstall || this._usingExistingPython) {
-			this.apiWrapper.startBackgroundOperation({
-				displayName: msgTaskName,
-				description: msgTaskName,
-				isCancelable: false,
-				operation: op => {
-					this.installDependencies(op, forceInstall, installSettings.specificPackages)
-						.then(async () => {
-							await updateConfig();
-							this._installCompletion.resolve();
-							this._installInProgress = false;
-						})
-						.catch(err => {
-							let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
-							op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
-							this._installCompletion.reject(errorMsg);
-							this._installInProgress = false;
-						});
-				}
-			});
-		} else {
-			// Python executable already exists, but the path setting wasn't defined,
-			// so update it here
-			await updateConfig();
-			this._installCompletion.resolve();
-			this._installInProgress = false;
-			this.apiWrapper.showInfoMessage(msgSkipPythonInstall);
-		}
+						this._installCompletion.resolve();
+						this._installInProgress = false;
+					})
+					.catch(err => {
+						let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
+						op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
+						this._installCompletion.reject(errorMsg);
+						this._installInProgress = false;
+					});
+			}
+		});
 		return this._installCompletion.promise;
 	}
 
