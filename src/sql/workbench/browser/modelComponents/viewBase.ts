@@ -156,4 +156,8 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	public focus(componentId: string): void {
 		return this.queueAction(componentId, (component) => component.focus());
 	}
+
+	public doAction(componentId: string, action: string, ...args: any[]): void {
+		return this.queueAction(componentId, (component) => component.doAction(action, ...args));
+	}
 }

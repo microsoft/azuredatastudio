@@ -16,6 +16,7 @@ import { DataSource } from './dataSources/dataSources';
  */
 export class Project {
 	public projectFilePath: string;
+	public projectFileName: string;
 	public files: ProjectEntry[] = [];
 	public dataSources: DataSource[] = [];
 
@@ -27,6 +28,7 @@ export class Project {
 
 	constructor(projectFilePath: string) {
 		this.projectFilePath = projectFilePath;
+		this.projectFileName = path.basename(projectFilePath, '.sqlproj');
 	}
 
 	/**
