@@ -11,10 +11,12 @@ import { IPlatformService } from './platformService';
 
 export interface IToolsService {
 	getToolByName(toolName: string): ITool | undefined;
+	toolsForCurrentProvider: ITool[];
 }
 
 export class ToolsService implements IToolsService {
 	private supportedTools: Map<string, ITool>;
+	private currentTools: ITool[] = [];
 
 	constructor(private _platformService: IPlatformService) {
 		this.supportedTools = new Map<string, ITool>(
@@ -29,5 +31,13 @@ export class ToolsService implements IToolsService {
 
 	getToolByName(toolName: string): ITool | undefined {
 		return this.supportedTools.get(toolName);
+	}
+
+	get toolsForCurrentProvider(): ITool[] {
+		return this.currentTools;
+	}
+
+	set toolsForCurrentProvider(tools: ITool[]) {
+		this.currentTools = tools;
 	}
 }

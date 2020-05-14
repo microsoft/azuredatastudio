@@ -5,13 +5,14 @@
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { INotebookService } from '../../services/notebookService';
+import { IToolsService } from '../../services/toolsService';
 import { Model } from '../model';
 import { WizardBase } from '../wizardBase';
 import { WizardPageBase } from '../wizardPageBase';
 import { DeploymentType, NotebookWizardInfo } from './../../interfaces';
 import { IPlatformService } from './../../services/platformService';
-import { NotebookWizardPage } from './notebookWizardPage';
 import { NotebookWizardAutoSummaryPage } from './notebookWizardAutoSummaryPage';
+import { NotebookWizardPage } from './notebookWizardPage';
 
 const localize = nls.loadMessageBundle();
 
@@ -29,7 +30,7 @@ export class NotebookWizard extends WizardBase<NotebookWizard, Model> {
 		return this._wizardInfo;
 	}
 
-	constructor(private _wizardInfo: NotebookWizardInfo, private _notebookService: INotebookService, private _platformService: IPlatformService) {
+	constructor(private _wizardInfo: NotebookWizardInfo, private _notebookService: INotebookService, private _platformService: IPlatformService, private _toolsService: IToolsService) {
 		super(_wizardInfo.title, new Model());
 		if (this._wizardInfo.codeCellInsertionPosition === undefined) {
 			this._wizardInfo.codeCellInsertionPosition = 0;
@@ -52,11 +53,12 @@ export class NotebookWizard extends WizardBase<NotebookWizard, Model> {
 	}
 
 	protected onOk(): void {
-		this.model.setEnvironmentVariables();
 		if (this.wizardInfo.runNotebook) {
-			this.notebookService.backgroundExecuteNotebook(this.wizardInfo.taskName, this.wizardInfo.notebook, 'deploy', this.platformService);
+			const env: NodeJS.ProcessEnv = {};
+			this.model.setEnvironmentVariables(env, this._toolsService.toolsForCurrentProvider);
+			this.notebookService.backgroundExecuteNotebook(this.wizardInfo.taskName, this.wizardInfo.notebook, 'deploy', this.platformService, env);
 		} else {
-			this.notebookService.launchNotebookWithEdits(this.wizardInfo.notebook, this.model.getCodeCellContentForNotebook(), this._wizardInfo.codeCellInsertionPosition).then(() => { }, (error) => {
+			this.notebookService.launchNotebookWithEdits(this.wizardInfo.notebook, this.model.getCodeCellContentForNotebook(this._toolsService.toolsForCurrentProvider), this._wizardInfo.codeCellInsertionPosition).then(() => { }, (error) => {
 				vscode.window.showErrorMessage(error);
 			});
 		}

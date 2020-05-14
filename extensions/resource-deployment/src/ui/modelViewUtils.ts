@@ -552,10 +552,10 @@ function processCheckboxField(context: FieldContext): void {
  * A File Picker field consists of a text field and a browse button that allows a user to pick a file system file.
  * @param context The context to use to create the field
  */
-function processFilePickerField(context: FieldContext, defaultFilePath?: string): FilePickerInputs {
+function processFilePickerField(context: FieldContext): FilePickerInputs {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const input = createTextInput(context.view, {
-		defaultValue: defaultFilePath || context.fieldInfo.defaultValue || '',
+		defaultValue: context.fieldInfo.defaultValue || '',
 		ariaLabel: context.fieldInfo.label,
 		required: context.fieldInfo.required,
 		placeHolder: context.fieldInfo.placeHolder,
@@ -603,14 +603,16 @@ async function processKubeConfigClusterPickerField(context: KubeClusterContextFi
 		fieldInfo: {
 			label: loc.kubeConfigFilePath,
 			type: FieldType.FilePicker,
+			defaultValue: getDefaultKubeConfigPath(),
+			inputWidth: context.fieldInfo.inputWidth,
 			labelWidth: context.fieldInfo.labelWidth,
 			variableName: kubeConfigFilePathVariableName,
 			required: true
 		}
 	};
-	const filePicker = processFilePickerField(filePickerContext, getDefaultKubeConfigPath());
+	const filePicker = processFilePickerField(filePickerContext);
 	context.fieldInfo.subFields = context.fieldInfo.subFields || [];
-	context.fieldInfo.subFields!.push({
+	context.fieldInfo.subFields.push({
 		label: filePickerContext.fieldInfo.label,
 		variableName: kubeConfigFilePathVariableName
 	});

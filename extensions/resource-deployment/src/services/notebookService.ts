@@ -38,7 +38,7 @@ export interface INotebookService {
 	launchNotebookWithContent(title: string, content: string): Promise<azdata.nb.NotebookEditor>;
 	getNotebook(notebook: string | NotebookInfo): Promise<Notebook>;
 	executeNotebook(notebook: any, env?: NodeJS.ProcessEnv): Promise<NotebookExecutionResult>;
-	backgroundExecuteNotebook(taskName: string | undefined, notebookInfo: string | NotebookInfo, tempNoteBookPrefix: string, platformService: IPlatformService): void;
+	backgroundExecuteNotebook(taskName: string | undefined, notebookInfo: string | NotebookInfo, tempNoteBookPrefix: string, platformService: IPlatformService, env?: NodeJS.ProcessEnv): void;
 }
 
 export class NotebookService implements INotebookService {
@@ -101,7 +101,7 @@ export class NotebookService implements INotebookService {
 		const outputFullPath = path.join(workingDirectory, `output-${fileName}`);
 		const additionalEnvironmentVariables: NodeJS.ProcessEnv = env || {};
 		// Set the azdata eula
-		// Scenarios using the executeNotebook feature already have the EULA acceptted by the user before executing this.
+		// Scenarios using the executeNotebook feature already have the EULA accepted by the user before executing this.
 		additionalEnvironmentVariables['ACCEPT_EULA'] = 'yes';
 		try {
 			await this.platformService.saveTextFile(content, notebookFullPath);
@@ -127,7 +127,7 @@ export class NotebookService implements INotebookService {
 		}
 	}
 
-	backgroundExecuteNotebook(taskName: string | undefined, notebookInfo: string | NotebookInfo, tempNotebookPrefix: string, platformService: IPlatformService): void {
+	backgroundExecuteNotebook(taskName: string | undefined, notebookInfo: string | NotebookInfo, tempNotebookPrefix: string, platformService: IPlatformService, env?: NodeJS.ProcessEnv): void {
 		azdata.tasks.startBackgroundOperation({
 			displayName: taskName!,
 			description: taskName!,
@@ -135,7 +135,7 @@ export class NotebookService implements INotebookService {
 			operation: async op => {
 				op.updateStatus(azdata.TaskStatus.InProgress);
 				const notebook = await this.getNotebook(notebookInfo);
-				const result = await this.executeNotebook(notebook);
+				const result = await this.executeNotebook(notebook, env);
 				if (result.succeeded) {
 					op.updateStatus(azdata.TaskStatus.Succeeded);
 				} else {
