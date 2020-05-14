@@ -155,7 +155,7 @@ export class DeployDatabaseDialog {
 			connectionUri: await this.getConnectionUri()
 		};
 
-		await this.generateScript(this.project, profile); // TODO: sqlcmd vars
+		await this.generateScript(this.project, profile);
 
 		azdata.window.closeDialog(this.dialog);
 	}
