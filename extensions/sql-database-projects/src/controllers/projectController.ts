@@ -185,10 +185,10 @@ export class ProjectsController {
 		let result;
 
 		if (profile as IDeploymentProfile) {
-			result = await dacFxService.deployDacpac(dacpacPath, profile.databaseName, (<IDeploymentProfile>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, (<IDeploymentProfile>profile).sqlCmdVariables);
+			result = await dacFxService.deployDacpac(dacpacPath, profile.databaseName, (<IDeploymentProfile>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
 		}
 		else {
-			result = await dacFxService.generateDeployScript(dacpacPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.execute); // TODO: add sqlcmdvar support
+			result = await dacFxService.generateDeployScript(dacpacPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
 		}
 
 		console.log(result);

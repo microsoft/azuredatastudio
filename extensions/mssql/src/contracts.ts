@@ -457,6 +457,7 @@ export interface DeployParams {
 export interface GenerateDeployScriptParams {
 	packageFilePath: string;
 	databaseName: string;
+	sqlCommandVariableValues?: Record<string, string>;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }

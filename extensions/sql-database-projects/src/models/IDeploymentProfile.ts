@@ -13,4 +13,5 @@ export interface IDeploymentProfile {
 export interface IGenerateScriptProfile {
 	databaseName: string;
 	connectionUri: string;
+	sqlCmdVariables?: Record<string, string>;
 }
