@@ -166,6 +166,21 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 				fields: [
 					{
 						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.SubDomain', "Sub domain"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.SubDomain_VariableName),
+						labelFontWeight: FontWeight.Bold
+					},
+					{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.AccountPrefix', "Account prefix"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.AccountPrefix_VariableName),
+						labelFontWeight: FontWeight.Bold
+					}]
+			});
+			clusterSectionInfo.rows!.push({
+				fields: [
+					{
+						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.DomainServiceAccountUserName', "Service account username"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.DomainServiceAccountUserName_VariableName),
 						labelFontWeight: FontWeight.Bold

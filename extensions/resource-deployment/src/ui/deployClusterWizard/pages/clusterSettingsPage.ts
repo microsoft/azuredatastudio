@@ -186,6 +186,18 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.AppReaders_VariableName,
 					placeHolder: localize('deployCluster.AppReadersPlaceHolder', "Use comma to separate the values."),
 					description: localize('deployCluster.AppReadersDescription', "The Active Directory users or groups of app readers. Use comma as separator them if there are multiple users/groups.")
+				}, {
+					type: FieldType.Text,
+					label: localize('deployCluster.SubDomain', "Sub domain"),
+					required: false,
+					variableName: VariableNames.SubDomain_VariableName,
+					description: localize('deployCluster.SubDomainDescription', "A unique DNS subdomain to use for this BDC cluster. If not provided, cluster name will be used as the default value.")
+				}, {
+					type: FieldType.Text,
+					label: localize('deployCluster.AccountPrefix', "Account prefix"),
+					required: false,
+					variableName: VariableNames.AccountPrefix_VariableName,
+					description: localize('deployCluster.AccountPrefixDescription', "A unique prefix for AD accounts BDC cluster will generate,When not provided, subdomain name will be used as the default value. When subdomain is not provided, cluster name will be used as the subdomain name.")
 				}
 			]
 		};
@@ -275,10 +287,9 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			variableDNSPrefixMapping[VariableNames.SQLServerDNSName_VariableName] = 'bdc-sql';
 			variableDNSPrefixMapping[VariableNames.ServiceProxyDNSName_VariableName] = 'bdc-proxy';
 
+			const subDomain = this.wizard.model.getStringValue(VariableNames.SubDomain_VariableName) || this.wizard.model.getStringValue(VariableNames.ClusterName_VariableName);
 			Object.keys(variableDNSPrefixMapping).forEach((variableName: string) => {
-				if (!this.wizard.model.getStringValue(variableName)) {
-					this.wizard.model.setPropertyValue(variableName, `${variableDNSPrefixMapping[variableName]}.${this.wizard.model.getStringValue(VariableNames.DomainDNSName_VariableName)}`);
-				}
+				this.wizard.model.setPropertyValue(variableName, `${variableDNSPrefixMapping[variableName]}.${subDomain}.${this.wizard.model.getStringValue(VariableNames.DomainDNSName_VariableName)}`);
 			});
 		}
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
