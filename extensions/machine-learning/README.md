@@ -8,7 +8,13 @@ For more information, see the [Machine Learning extension documentation](https:/
 
 Find the **Machine Learning** extension in Azure Data Studio and install the latest available version.
 
-You also need to install the [ODBC driver for SQL Server](https://go.microsoft.com/fwlink/?linkid=2129818) for Windows, macOS, or Linux to use the extension.
+The following prerequisites need to be installed on the computer you run Azure Data Studio on:
+
+- Python 3. Specify the local path to a preexisting Python installation under **Settings**. If you have used a Python kernel notebook in Azure Data Studio, the extension will use the path from the notebook by default.
+- [Microsoft ODBC driver 17 for SQL Server](https://go.microsoft.com/fwlink/?linkid=2129818) for Windows, macOS, or Linux.
+- R 3.5 (optional). Enable R and specify the local path to a preexisting R installation under **Settings**. This is only required if you want to manage R packages in your database.
+
+For more information on how to install and configure the prerequisites, see the [Machine Learning extension documentation](https://go.microsoft.com/fwlink/?linkid=2129918).
 
 ## Manage packages
 
