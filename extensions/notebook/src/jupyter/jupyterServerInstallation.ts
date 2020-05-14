@@ -751,7 +751,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		return useExistingPython;
 	}
 
-	private static getPythonPathSetting(apiWrapper: ApiWrapper): string {
+	public static getPythonPathSetting(apiWrapper: ApiWrapper): string {
 		let path = undefined;
 		if (apiWrapper) {
 			let notebookConfig = apiWrapper.getConfiguration(constants.notebookConfigKey);

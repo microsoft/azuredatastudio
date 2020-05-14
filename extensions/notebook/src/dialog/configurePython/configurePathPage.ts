@@ -15,15 +15,14 @@ const localize = nls.loadMessageBundle();
 
 export class ConfigurePathPage extends BasePage {
 	private readonly BrowseButtonText = localize('configurePython.browseButtonText', "Browse");
-	private readonly LocationTextBoxTitle = localize('configurePython.locationTextBoxText', "Python Install Location");
 	private readonly SelectFileLabel = localize('configurePython.selectFileLabel', "Select");
 
 	private pythonLocationDropdown: azdata.DropDownComponent;
 	private pythonDropdownLoader: azdata.LoadingComponent;
-	private browseButton: azdata.ButtonComponent;
 	private newInstallButton: azdata.RadioButtonComponent;
 	private existingInstallButton: azdata.RadioButtonComponent;
 
+	private browsePathEnabled: boolean;
 	private usingCustomPath: boolean = false;
 
 	public async initialize(): Promise<boolean> {
@@ -31,7 +30,7 @@ export class ConfigurePathPage extends BasePage {
 			.withProperties<azdata.DropDownProperties>({
 				value: undefined,
 				values: [],
-				width: '100%'
+				width: '400px'
 			}).component();
 		this.pythonDropdownLoader = this.view.modelBuilder.loadingComponent()
 			.withItem(this.pythonLocationDropdown)
@@ -39,33 +38,51 @@ export class ConfigurePathPage extends BasePage {
 				loading: false
 			})
 			.component();
-
-		this.browseButton = this.view.modelBuilder.button()
+		let browseButton = this.view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
 				label: this.BrowseButtonText,
 				width: '70px'
 			}).component();
-		this.browseButton.onDidClick(() => this.handleBrowse());
+		browseButton.onDidClick(() => this.handleBrowse());
 
 		this.createInstallRadioButtons(this.view.modelBuilder, this.model.useExistingPython);
 
-		let formModel = this.view.modelBuilder.formContainer()
-			.withFormItems([{
-				component: this.newInstallButton,
-				title: localize('configurePython.installationType', "Installation Type")
-			}, {
-				component: this.existingInstallButton,
-				title: ''
-			}, {
-				component: this.pythonDropdownLoader,
-				title: this.LocationTextBoxTitle
-			}, {
-				component: this.browseButton,
-				title: ''
-			}]).component();
+		// localize('configurePython.installationType', "Installation Type")
+		// localize('configurePython.locationTextBoxText', "Python Install Location")
+		let selectInstallContainer = this.view.modelBuilder.divContainer().withItems([
+			this.newInstallButton,
+			this.existingInstallButton,
+			this.pythonDropdownLoader,
+			browseButton
+		]).component();
 
-		await this.view.initializeModel(formModel);
+		let parentContainer = this.view.modelBuilder.groupContainer().withItems([selectInstallContainer]).component();
+		if (this.model.pythonLocation) {
+			let installedPathTextBox = this.view.modelBuilder.inputBox().withProperties<azdata.TextComponentProperties>({
+				value: this.model.pythonLocation,
+				enabled: false,
+				width: '400px'
+			}).component();
+			let editPathButton = this.view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+				label: 'Edit',
+				width: '70px'
+			}).component();
+			let editPathContainer = this.view.modelBuilder.divContainer().withItems([installedPathTextBox, editPathButton]).component();
+			parentContainer.addItems([editPathContainer]);
 
+			editPathButton.onDidClick(async () => {
+				editPathContainer.display = 'none';
+				selectInstallContainer.display = 'block';
+				this.browsePathEnabled = true;
+			});
+			selectInstallContainer.display = 'none';
+
+			this.browsePathEnabled = false;
+		} else {
+			this.browsePathEnabled = true;
+		}
+
+		await this.view.initializeModel(parentContainer);
 		await this.updatePythonPathsDropdown(this.model.useExistingPython);
 
 		return true;
@@ -75,15 +92,16 @@ export class ConfigurePathPage extends BasePage {
 	}
 
 	public async onPageLeave(): Promise<boolean> {
-		let pythonLocation = utils.getDropdownValue(this.pythonLocationDropdown);
-		if (!pythonLocation || pythonLocation.length === 0) {
-			this.instance.showErrorMessage(this.instance.InvalidLocationMsg);
-			return false;
+		if (this.browsePathEnabled) {
+			let pythonLocation = utils.getDropdownValue(this.pythonLocationDropdown);
+			if (!pythonLocation || pythonLocation.length === 0) {
+				this.instance.showErrorMessage(this.instance.InvalidLocationMsg);
+				return false;
+			}
+
+			this.model.pythonLocation = pythonLocation;
+			this.model.useExistingPython = !!this.existingInstallButton.checked;
 		}
-
-		this.model.pythonLocation = pythonLocation;
-		this.model.useExistingPython = !!this.existingInstallButton.checked;
-
 		return true;
 	}
 

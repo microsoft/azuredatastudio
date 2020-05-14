@@ -55,6 +55,7 @@ export class ConfigurePythonWizard {
 			kernelName: kernelName,
 			pythonPathsPromise: this.pythonPathsPromise,
 			installation: this.jupyterInstallation,
+			pythonLocation: JupyterServerInstallation.getPythonPathSetting(this.apiWrapper),
 			useExistingPython: JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper)
 		};
 
