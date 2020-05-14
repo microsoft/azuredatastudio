@@ -311,7 +311,7 @@ describe('SQL R Package Manager', () => {
 	});
 
 	function createProvider(testContext: TestContext): SqlRPackageManageProvider {
-		testContext.config.setup(x => x.rExecutable).returns(() => 'r');
+		testContext.config.setup(x => x.getRExecutable(true)).returns(() => Promise.resolve('r'));
 		testContext.config.setup(x => x.rEnabled).returns(() => true);
 		testContext.config.setup(x => x.rPackagesRepository).returns(() => 'http://cran.r-project.org');
 		return new SqlRPackageManageProvider(
