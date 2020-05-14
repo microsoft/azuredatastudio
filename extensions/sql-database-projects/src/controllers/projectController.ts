@@ -138,6 +138,20 @@ export class ProjectsController {
 		deployDatabaseDialog.openDialog();
 	}
 
+	public async schemaCompare(treeNode: BaseProjectTreeItem): Promise<void> {
+		// check if schema compare extension is installed
+		if (this.apiWrapper.getExtension(constants.schemaCompareExtensionId)) {
+			// build project
+			const project = this.getProjectContextFromTreeNode(treeNode);
+
+			// start schema compare with the dacpac produced from build
+			const dacpacUri = undefined;
+			this.apiWrapper.executeCommand('schemaCompare.start', dacpacUri);
+		} else {
+			this.apiWrapper.showErrorMessage(constants.schemaCompareNotInstalled);
+		}
+	}
+
 	public async import(treeNode: BaseProjectTreeItem) {
 		const project = this.getProjectContextFromTreeNode(treeNode);
 		await this.apiWrapper.showErrorMessage(`Import not yet implemented: ${project.projectFilePath}`); // TODO
