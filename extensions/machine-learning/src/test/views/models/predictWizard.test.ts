@@ -9,7 +9,7 @@ import 'mocha';
 import { createContext } from './utils';
 import {
 	ListModelsEventName, ListAccountsEventName, ListSubscriptionsEventName, ListGroupsEventName, ListWorkspacesEventName,
-	ListAzureModelsEventName, ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, LoadModelParametersEventName, DownloadAzureModelEventName, DownloadRegisteredModelEventName, ModelSourceType
+	ListAzureModelsEventName, ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, LoadModelParametersEventName, DownloadAzureModelEventName, DownloadRegisteredModelEventName, ModelSourceType, VerifyImportTableEventName
 }
 	from '../../../views/models/modelViewBase';
 import { ImportedModel, ModelParameters } from '../../../modelManagement/interfaces';
@@ -136,42 +136,45 @@ describe('Predict Wizard', () => {
 			]
 		};
 
-		view.on(ListModelsEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListModelsEventName), { data: localModels });
+		view.on(ListModelsEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListModelsEventName), { inputArgs: args,  data: localModels });
 		});
-		view.on(ListAccountsEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListAccountsEventName), { data: accounts });
+		view.on(ListAccountsEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListAccountsEventName), { inputArgs: args,  data: accounts });
 		});
-		view.on(ListSubscriptionsEventName, () => {
+		view.on(ListSubscriptionsEventName, (args) => {
 
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListSubscriptionsEventName), { data: subscriptions });
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListSubscriptionsEventName), { inputArgs: args,  data: subscriptions });
 		});
-		view.on(ListGroupsEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListGroupsEventName), { data: groups });
+		view.on(ListGroupsEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListGroupsEventName), { inputArgs: args,  data: groups });
 		});
-		view.on(ListWorkspacesEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListWorkspacesEventName), { data: workspaces });
+		view.on(ListWorkspacesEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListWorkspacesEventName), { inputArgs: args,  data: workspaces });
 		});
-		view.on(ListAzureModelsEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListAzureModelsEventName), { data: models });
+		view.on(ListAzureModelsEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListAzureModelsEventName), { inputArgs: args,  data: models });
 		});
-		view.on(ListDatabaseNamesEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListDatabaseNamesEventName), { data: dbNames });
+		view.on(ListDatabaseNamesEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListDatabaseNamesEventName), { inputArgs: args,  data: dbNames });
 		});
-		view.on(ListTableNamesEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListTableNamesEventName), { data: tableNames });
+		view.on(ListTableNamesEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListTableNamesEventName), { inputArgs: args,  data: tableNames });
 		});
-		view.on(ListColumnNamesEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListColumnNamesEventName), { data: columnNames });
+		view.on(ListColumnNamesEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListColumnNamesEventName), { inputArgs: args,  data: columnNames });
 		});
-		view.on(LoadModelParametersEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(LoadModelParametersEventName), { data: modelParameters });
+		view.on(LoadModelParametersEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(LoadModelParametersEventName), { inputArgs: args,  data: modelParameters });
 		});
-		view.on(DownloadAzureModelEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(DownloadAzureModelEventName), { data: 'path' });
+		view.on(DownloadAzureModelEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(DownloadAzureModelEventName), { inputArgs: args,  data: 'path' });
 		});
-		view.on(DownloadRegisteredModelEventName, () => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(DownloadRegisteredModelEventName), { data: 'path' });
+		view.on(DownloadRegisteredModelEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(DownloadRegisteredModelEventName), { inputArgs: args,  data: 'path' });
+		});
+		view.on(VerifyImportTableEventName, (args) => {
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(VerifyImportTableEventName), { inputArgs: args,  data: view.importTable });
 		});
 		if (view.modelBrowsePage) {
 			view.modelBrowsePage.modelSourceType = ModelSourceType.Azure;

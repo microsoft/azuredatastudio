@@ -20,19 +20,25 @@ import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
 import { TaskExecutionMode } from 'azdata';
+import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
+import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
+import { BuildHelper } from '../tools/buildHelper';
 
 /**
  * Controller for managing project lifecycle
  */
 export class ProjectsController {
 	private projectTreeViewProvider: SqlDatabaseProjectTreeViewProvider;
+	private netCoreTool: NetCoreTool;
+	private buildHelper: BuildHelper;
 
 	projects: Project[] = [];
 
 	constructor(private apiWrapper: ApiWrapper, projTreeViewProvider: SqlDatabaseProjectTreeViewProvider) {
 		this.projectTreeViewProvider = projTreeViewProvider;
+		this.netCoreTool = new NetCoreTool();
+		this.buildHelper = new BuildHelper();
 	}
-
 
 	public refreshProjectsTree() {
 		this.projectTreeViewProvider.load(this.projects);
@@ -115,21 +121,30 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 	}
 
-	public async build(treeNode: BaseProjectTreeItem): Promise<string> {
+	public async buildProject(treeNode: BaseProjectTreeItem): Promise<string> {
+		// Check mssql extension for project dlls (tracking issue #10273)
+		await this.buildHelper.createBuildDirFolder();
+
 		const project = this.getProjectContextFromTreeNode(treeNode);
-		await this.apiWrapper.showErrorMessage(`Build not yet implemented: ${project.projectFilePath}`); // TODO
-		return ''; // placeholder for .dacpac path
+		const options: DotNetCommandOptions = {
+			commandTitle: 'Build',
+			workingDirectory: project.projectFolderPath,
+			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath)
+		};
+
+		const result = await this.netCoreTool.runDotnetCommand(options);
+
+		return result;
 	}
 
-	msSqlProvider = 'MSSQL';
-
-	public async deploy(treeNode: BaseProjectTreeItem) {
+	public async deploy(treeNode: BaseProjectTreeItem): Promise<void> {
 		const project = this.getProjectContextFromTreeNode(treeNode);
-		const dacFxService = await ProjectsController.getService(mssql.extension.name);
-		const dacpacPath = await this.build(treeNode);
-		dacFxService.deployDacpac(dacpacPath, 'databaseName', false, 'ownerUri', TaskExecutionMode.execute);
+		const deployDatabaseDialog = new DeployDatabaseDialog(this.apiWrapper, project);
+		deployDatabaseDialog.openDialog();
 
-		await this.apiWrapper.showErrorMessage(`Deploy not yet implemented: ${project.projectFilePath}`); // TODO
+		const dacFxService = await ProjectsController.getService(mssql.extension.name);
+		const dacpacPath = await this.buildProject(treeNode);
+		dacFxService.deployDacpac(dacpacPath, 'databaseName', false, 'ownerUri', TaskExecutionMode.execute);
 	}
 
 	private static async getService(extensionId: string): Promise<mssql.IDacFxService> {
