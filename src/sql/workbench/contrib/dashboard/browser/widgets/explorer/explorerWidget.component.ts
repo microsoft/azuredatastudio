@@ -27,6 +27,7 @@ import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 @Component({
 	selector: 'explorer-widget',
@@ -108,8 +109,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			)));
 		} else {
 			// TODO: remove this ADS side workaround for SQL On-Demand and handle it in SQL Tools Service
-			// engineEditionId === 11 means this is a SQL on-demand server
-			if (this._bootstrap.connectionManagementService.connectionInfo.serverInfo.engineEditionId === 11) {
+			if (this._bootstrap.connectionManagementService.connectionInfo.serverInfo.engineEditionId === DatabaseEngineEdition.SqlOnDemand) {
 				this.connectionManagementService.listDatabases(this._bootstrap.connectionManagementService.connectionInfo.ownerUri).then(
 					result => {
 						// Sort the databases: system databases first and then the sorted list of other databases
