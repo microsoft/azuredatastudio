@@ -39,3 +39,13 @@ export function openMarkdownError(resource: string, error: string): string { ret
 export function openUntitledNotebookError(resource: string, error: string): string { return localize('openUntitledNotebookError', "Open untitled notebook {0} as untitled failed: {1}", resource, error); }
 export function openExternalLinkError(resource: string, error: string): string { return localize('openExternalLinkError', "Open link {0} failed: {1}", resource, error); }
 export function closeBookError(resource: string, error: string): string { return localize('closeBookError', "Close book {0} failed: {1}", resource, error); }
+
+// Remote Book dialog constants
+export const url = localize('url', "URL");
+export const remoteBookUrl = localize('remoteBookUrl', "Remote Book URL");
+export const location = localize('location', "Location");
+export const openRemoteBook = localize('openRemoteBook', "Open Remote Book");
+export const onGitHub = localize('onGitHub', "GitHub");
+export const onSharedFile = localize('onsharedFile', "Shared File");
+export const ok = localize('ok', "OK");
+export const cancel = localize('cancel', "Cancel");

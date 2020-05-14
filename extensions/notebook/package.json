@@ -230,8 +230,8 @@
         }
       },
       {
-        "command": "notebook.command.openBook",
-        "title": "%title.openJupyterBook%",
+        "command": "notebook.command.openRemoteBook",
+        "title": "%title.openRemoteJupyterBook%",
         "category": "%books-preview-category%",
         "icon": {
           "dark": "resources/dark/open_notebook_inverse.svg",
@@ -416,6 +416,10 @@
           "command": "notebook.command.openNotebookFolder",
           "when": "view == bookTreeView",
           "group": "navigation"
+        },
+        {
+          "command": "notebook.command.openRemoteBook",
+          "when": "view == bookTreeView"
         }
       ],
       "notebook/toolbar": [
