@@ -84,7 +84,7 @@ export class SchemaCompareMainWindow {
 	public async start(context: any) {
 		// if schema compare was launched from a db, set that as the source
 		let profile = context ? <azdata.IConnectionProfile>context.connectionProfile : undefined;
-		let sourceDacpac = context as vscode.Uri;
+		let sourceDacpac = context as string;
 		if (profile) {
 			let ownerUri = await azdata.connection.getUriForConnection((profile.id));
 			this.sourceEndpointInfo = {
@@ -103,7 +103,7 @@ export class SchemaCompareMainWindow {
 				serverName: '',
 				databaseName: '',
 				ownerUri: '',
-				packageFilePath: sourceDacpac.path,
+				packageFilePath: sourceDacpac,
 				connectionDetails: undefined
 			};
 		}

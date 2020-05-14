@@ -142,11 +142,12 @@ export class ProjectsController {
 		// check if schema compare extension is installed
 		if (this.apiWrapper.getExtension(constants.schemaCompareExtensionId)) {
 			// build project
-			const project = this.getProjectContextFromTreeNode(treeNode);
+			await this.buildProject(treeNode);
 
 			// start schema compare with the dacpac produced from build
-			const dacpacUri = undefined;
-			this.apiWrapper.executeCommand('schemaCompare.start', dacpacUri);
+			const project = this.getProjectContextFromTreeNode(treeNode);
+			const dacpacPath = path.join(project.projectFolderPath, 'bin', 'Debug', `${project.projectFileName}.dacpac`);
+			this.apiWrapper.executeCommand('schemaCompare.start', dacpacPath);
 		} else {
 			this.apiWrapper.showErrorMessage(constants.schemaCompareNotInstalled);
 		}
