@@ -86,9 +86,9 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		}
 
 		if (!accessToken) {
-			const msg = localize('azure.tokenFail', "Failure when retreiving tokens.");
+			const msg = localize('azure.tokenFail', "Failure when retrieving tokens.");
 			authCompleteDeferred.reject(new Error(msg));
-			throw Error('Failure when retreiving tokens');
+			throw Error('Failure when retrieving tokens');
 		}
 
 		return {

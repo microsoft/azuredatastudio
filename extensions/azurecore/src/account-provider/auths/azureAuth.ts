@@ -339,7 +339,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return tenants;
 		} catch (ex) {
 			console.log(ex);
-			throw new Error('Error retreiving tenant information');
+			throw new Error('Error retrieving tenant information');
 		}
 	}
 
@@ -371,7 +371,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				allSubs.push(...subscriptions);
 			} catch (ex) {
 				console.log(ex);
-				throw new Error('Error retreiving subscription information');
+				throw new Error('Error retrieving subscription information');
 			}
 		}
 		return allSubs;
