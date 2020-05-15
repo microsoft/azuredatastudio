@@ -30,22 +30,22 @@
       "type": "object",
       "title": "%mls.configuration.title%",
       "properties": {
-        "machineLearningServices.enablePython": {
+        "machineLearning.enablePython": {
           "type": "boolean",
           "default": "true",
           "description": "%mls.enablePython.description%"
         },
-        "machineLearningServices.enableR": {
+        "machineLearning.enableR": {
           "type": "boolean",
           "default": "false",
           "description": "%mls.enableR.description%"
         },
-        "machineLearningServices.pythonPath": {
+        "machineLearning.pythonPath": {
           "type": "string",
           "default": "",
           "description": "%mls.pythonPath.description%"
         },
-        "machineLearningServices.rPath": {
+        "machineLearning.rPath": {
           "type": "string",
           "default": "",
           "description": "%mls.rPath.description%"
