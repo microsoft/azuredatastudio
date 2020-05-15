@@ -340,7 +340,7 @@ export class DashboardWidget {
 
 		const links = [{
 			title: constants.sqlMlExtDocTitle,
-			description: constants.sqlMlDocDesc,
+			description: constants.sqlMlExtDocDesc,
 			link: constants.mlExtDocLink
 		}, {
 			title: constants.sqlMlDocTitle,
