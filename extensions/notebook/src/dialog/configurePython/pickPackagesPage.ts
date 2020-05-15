@@ -12,6 +12,12 @@ import { getDropdownValue } from '../../common/utils';
 
 const localize = nls.loadMessageBundle();
 
+interface RequiredPackageInfo {
+	name: string;
+	existingVersion: string;
+	requiredVersion: string;
+}
+
 export class PickPackagesPage extends BasePage {
 	private kernelLabel: azdata.TextComponent | undefined;
 	private kernelDropdown: azdata.DropDownComponent | undefined;
@@ -19,7 +25,7 @@ export class PickPackagesPage extends BasePage {
 	private packageTableSpinner: azdata.LoadingComponent;
 
 	private installedPackagesPromise: Promise<PythonPkgDetails[]>;
-	private installedPackages: PythonPkgDetails[];
+	private packageVersionMap: Map<string, string>;
 
 	public async initialize(): Promise<boolean> {
 		if (this.model.kernelName) {
@@ -76,7 +82,7 @@ export class PickPackagesPage extends BasePage {
 	public async onPageEnter(): Promise<void> {
 		let pythonExe = JupyterServerInstallation.getPythonExePath(this.model.pythonLocation, this.model.useExistingPython);
 		this.installedPackagesPromise = this.model.installation.getInstalledPipPackages(pythonExe);
-		this.installedPackages = undefined;
+		this.packageVersionMap = undefined;
 
 		if (this.kernelDropdown) {
 			if (this.model.kernelName) {
@@ -95,31 +101,36 @@ export class PickPackagesPage extends BasePage {
 	private async updateRequiredPackages(kernelName: string): Promise<void> {
 		this.packageTableSpinner.loading = true;
 		try {
-			let pkgVersionMap = new Map<string, { currentVersion: string, newVersion: string }>();
-
 			// Fetch list of required packages for the specified kernel
+			let pkgVersions: RequiredPackageInfo[] = [];
 			let requiredPackages = JupyterServerInstallation.getRequiredPackagesForKernel(kernelName);
 			requiredPackages.forEach(pkg => {
-				pkgVersionMap.set(pkg.name, { currentVersion: undefined, newVersion: pkg.version });
+				pkgVersions.push({ name: pkg.name, existingVersion: undefined, requiredVersion: pkg.version });
 			});
 
 			// For each required package, check if there is another version of that package already installed
-			if (!this.installedPackages) {
-				this.installedPackages = await this.installedPackagesPromise;
+			if (!this.packageVersionMap) {
+				this.packageVersionMap = new Map<string, string>();
+				let installedPackages = await this.installedPackagesPromise;
+				if (installedPackages) {
+					installedPackages.forEach(pkg => {
+						this.packageVersionMap.set(pkg.name, pkg.version);
+					});
+				}
 			}
-			this.installedPackages.forEach(pkg => {
-				let info = pkgVersionMap.get(pkg.name);
-				if (info) {
-					info.currentVersion = pkg.version;
-					pkgVersionMap.set(pkg.name, info);
+
+			pkgVersions.forEach(pkgVersion => {
+				let installedPackageVersion = this.packageVersionMap.get(pkgVersion.name);
+				if (installedPackageVersion) {
+					pkgVersion.existingVersion = installedPackageVersion;
 				}
 			});
 
-			if (pkgVersionMap.size > 0) {
-				let packageData = [];
-				for (let [key, value] of pkgVersionMap.entries()) {
-					packageData.push([key, value.currentVersion ?? '-', value.newVersion]);
-				}
+			if (pkgVersions.length > 0) {
+				let packageData: string[][] = [];
+				pkgVersions.forEach(pkg => {
+					packageData.push([pkg.name, pkg.existingVersion ?? '-', pkg.requiredVersion]);
+				});
 				this.requiredPackagesTable.data = packageData;
 				this.model.packagesToInstall = requiredPackages;
 			} else {

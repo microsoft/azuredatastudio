@@ -108,8 +108,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private readonly _expectedCondaPipPackages = this._commonPipPackages;
 	private readonly _expectedCondaPackages: PythonPkgDetails[];
 
-	private _kernelSetupCache: Map<string, boolean>;
-
 	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
 		this.extensionPath = extensionPath;
 		this.outputChannel = outputChannel;
@@ -126,8 +124,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		} else {
 			this._expectedCondaPackages = this._commonPackages;
 		}
-
-		this._kernelSetupCache = new Map<string, boolean>();
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
