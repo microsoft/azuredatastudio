@@ -306,7 +306,6 @@ declare module 'azdata' {
 
 	export interface InputBoxProperties extends ComponentProperties {
 		validationErrorMessage?: string;
-		readOnly?: boolean;
 	}
 
 	export interface CheckBoxProperties {

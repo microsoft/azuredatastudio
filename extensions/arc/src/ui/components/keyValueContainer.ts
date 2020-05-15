@@ -61,7 +61,7 @@ export class InputKeyValue extends KeyValue {
 	getValueComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		const container = modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
 		container.addItem(modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			value: this.value, readOnly: true
+			value: this.value // TODO: Add a readOnly property to input boxes
 		}).component());
 
 		const copy = modelBuilder.button().withProperties<azdata.ButtonProperties>({
