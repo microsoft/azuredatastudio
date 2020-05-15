@@ -3215,7 +3215,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/machine-learninge/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/machine-learning/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
