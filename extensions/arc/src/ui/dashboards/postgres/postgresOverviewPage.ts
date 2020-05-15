@@ -54,8 +54,8 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 		const kibanaUrl = `${this.controllerModel.endpoint('logsui')?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
 		const grafanaUrl = `${this.controllerModel.endpoint('metricsui')?.endpoint}/d/postgres-metrics?var-Namespace=${this.databaseModel.namespace()}&var-Name=${this.databaseModel.name()}`;
 
-		const kibanaLink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: kibanaUrl, url: kibanaUrl, CSSStyles: cssStyles.link }).component();
-		const grafanaLink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: grafanaUrl, url: grafanaUrl, CSSStyles: cssStyles.link }).component();
+		const kibanaLink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: kibanaUrl, url: kibanaUrl, }).component();
+		const grafanaLink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: grafanaUrl, url: grafanaUrl }).component();
 
 		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
@@ -153,9 +153,12 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 			const name = await vscode.window.showInputBox({ prompt: loc.databaseName });
 			if (name === undefined) { return; }
 			const db: DuskyObjectModelsDatabase = { name: name }; // TODO support other options (sharded, owner)
-			await this.databaseModel.createDatabase(db)
-				.then(db => vscode.window.showInformationMessage(loc.databaseCreated(db.name)))
-				.catch(error => vscode.window.showErrorMessage(loc.databaseCreationFailed(db.name, error)));
+			try {
+				await this.databaseModel.createDatabase(db);
+				vscode.window.showInformationMessage(loc.databaseCreated(db.name));
+			} catch (error) {
+				vscode.window.showErrorMessage(loc.databaseCreationFailed(db.name, error));
+			}
 		});
 
 		// Reset password
@@ -167,12 +170,15 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 		resetPasswordButton.onDidClick(async () => {
 			const password = await vscode.window.showInputBox({ prompt: loc.newPassword, password: true });
 			if (password === undefined) { return; }
-			await this.databaseModel.update(s => {
-				s.arc = s.arc ?? new DuskyObjectModelsDatabaseServiceArcPayload();
-				s.arc.servicePassword = password;
-			})
-				.then(_ => vscode.window.showInformationMessage(loc.passwordReset(this.databaseModel.fullName())))
-				.catch(error => vscode.window.showErrorMessage(loc.passwordResetFailed(this.databaseModel.fullName(), error)));
+			try {
+				await this.databaseModel.update(s => {
+					s.arc = s.arc ?? new DuskyObjectModelsDatabaseServiceArcPayload();
+					s.arc.servicePassword = password;
+				});
+				vscode.window.showInformationMessage(loc.passwordReset(this.databaseModel.fullName()));
+			} catch (error) {
+				vscode.window.showErrorMessage(loc.passwordResetFailed(this.databaseModel.fullName(), error));
+			}
 		});
 
 		// Delete service
@@ -185,10 +191,12 @@ export class PostgresOverviewPage extends PostgresDashboardPage {
 			const response = await vscode.window.showQuickPick([loc.yes, loc.no], {
 				placeHolder: loc.deleteServicePrompt(this.databaseModel.fullName())
 			});
-			if (response === loc.yes) {
-				await this.databaseModel.delete()
-					.then(_ => vscode.window.showInformationMessage(loc.serviceDeleted(this.databaseModel.fullName())))
-					.catch(error => vscode.window.showErrorMessage(loc.serviceDeletionFailed(this.databaseModel.fullName(), error)));
+			if (response !== loc.yes) { return; }
+			try {
+				await this.databaseModel.delete();
+				vscode.window.showInformationMessage(loc.serviceDeleted(this.databaseModel.fullName()));
+			} catch (error) {
+				vscode.window.showErrorMessage(loc.serviceDeletionFailed(this.databaseModel.fullName(), error));
 			}
 		});
 

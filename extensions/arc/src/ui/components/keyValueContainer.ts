@@ -86,7 +86,7 @@ export class LinkKeyValue extends KeyValue {
 
 	getValueComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		const link = modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
-			label: this.value, url: '', CSSStyles: cssStyles.link
+			label: this.value, url: ''
 		}).component();
 
 		link.onDidClick(this.onClick);

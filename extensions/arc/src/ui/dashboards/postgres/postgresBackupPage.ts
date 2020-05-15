@@ -22,7 +22,7 @@ export class PostgresBackupPage extends PostgresDashboardPage {
 	}
 
 	protected get container(): azdata.Component {
-		return this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Backup' }).component();
+		return this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.backup }).component();
 	}
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {

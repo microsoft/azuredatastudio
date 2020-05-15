@@ -13,14 +13,15 @@ export const overview = localize('arc.overview', "Overview");
 export const connectionStrings = localize('arc.connectionStrings', "Connection Strings");
 export const networking = localize('arc.networking', "Networking");
 export const properties = localize('arc.properties', "Properties");
+export const settings = localize('arc.settings', "Settings");
+export const security = localize('arc.security', "Security");
+export const computeAndStorage = localize('arc.computeAndStorage', 'Compute + Storage');
+export const backup = localize('arc.backup', "Backup");
 
 export const createNew = localize('arc.createNew', "Create New");
 export const deleteText = localize('arc.delete', "Delete");
 export const resetPassword = localize('arc.resetPassword', "Reset Password");
 export const openInAzurePortal = localize('arc.openInAzurePortal', "Open in Azure Portal");
-export const backup = localize('arc.backup', "Backup");
-
-export const computeAndStorage = localize('arc.computeAndStorage', 'Compute + Storage');
 export const resourceGroup = localize('arc.resourceGroup', "Resource Group");
 export const region = localize('arc.region', "Region");
 export const subscription = localize('arc.subscription', "Subscription");
@@ -43,7 +44,10 @@ export const yes = localize('arc.yes', 'Yes');
 export const no = localize('arc.no', 'No');
 export const feedback = localize('arc.feedback', 'Feedback');
 export const selectConnectionString = localize('arc.selectConnectionString', 'Select from available client connection strings below');
+export const vCores = localize('arc.vCores', 'vCores');
+export const ram = localize('arc.ram', 'RAM');
 
+// Postgres constants
 export const coordinatorEndpoint = localize('arc.coordinatorEndpoint', 'Coordinator endpoint');
 export const postgresAdminUsername = localize('arc.postgresAdminUsername', 'Admin username');
 export const nodeConfiguration = localize('arc.nodeConfiguration', 'Node configuration');
@@ -58,6 +62,9 @@ export const newDatabase = localize('arc.newDatabase', 'New Database');
 export const databaseName = localize('arc.databaseName', 'Database name');
 export const newPassword = localize('arc.newPassword', 'New password');
 export const learnAboutPostgresClients = localize('arc.learnAboutPostgresClients', 'Learn more about Azure PostgreSQL Hyperscale client interfaces');
+export const node = localize('arc.node', 'node');
+export const nodes = localize('arc.nodes', 'nodes');
+export const storagePerNode = localize('arc.storagePerNode', 'storage per node');
 
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database '{0}' created", name); }
 export function databaseCreationFailed(name: string, error: any): string { return localize('arc.databaseCreationFailed', "Failed to create database '{0}'. {1}", name, (error instanceof Error ? error.message : error)); }
@@ -68,6 +75,4 @@ export function serviceDeleted(name: string): string { return localize('arc.serv
 export function serviceDeletionFailed(name: string, error: any): string { return localize('arc.serviceDeletionFailed', "Failed to delete service '{0}'. {1}", name, (error instanceof Error ? error.message : error)); }
 export function couldNotFindAzureResource(name: string): string { return localize('arc.couldNotFindAzureResource', "Could not find Azure resource for '{0}'", name); }
 
-
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
-

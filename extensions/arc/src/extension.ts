@@ -16,12 +16,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
 	vscode.commands.registerCommand('arc.managePostgres', async () => {
 		// Controller information
-		const controllerUrl = 'https://0.0.0.0:30080';
-		const auth = new BasicAuth('username', 'password');
+		const controllerUrl = '';
+		const auth = new BasicAuth('', '');
 
-		// Postgres database information
-		const dbNamespace = 'default';
-		const dbName = 'my-postgres2';
+		// Postgres information
+		const dbNamespace = '';
+		const dbName = '';
 
 		const controllerModel = new ControllerModel(controllerUrl, auth);
 		const databaseModel = new PostgresModel(controllerUrl, auth, dbNamespace, dbName);

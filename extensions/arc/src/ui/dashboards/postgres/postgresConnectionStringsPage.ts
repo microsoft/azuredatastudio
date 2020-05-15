@@ -40,7 +40,6 @@ export class PostgresConnectionStringsPage extends PostgresDashboardPage {
 		const link = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
 			label: loc.learnAboutPostgresClients,
 			url: 'http://example.com', // TODO link to documentation
-			CSSStyles: cssStyles.link
 		}).component();
 
 		content.addItem(

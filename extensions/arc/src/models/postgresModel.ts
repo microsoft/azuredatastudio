@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as loc from '../localizedConstants';
 import { DuskyObjectModelsDatabaseService, DatabaseRouterApi, DuskyObjectModelsDatabase, V1Status } from '../controller/generated/dusky/api';
 import { Authentication } from '../controller/auth';
 
@@ -111,19 +112,18 @@ export class PostgresModel {
 		const storage = this._service.spec.storage.volumeSize;
 
 		// Prefer limits if they're provided, otherwise use requests if they're provided
-		let nodeConfiguration = `${nodes} node`;
-		if (nodes > 1) { nodeConfiguration += 's'; }
+		let nodeConfiguration = `${nodes} ${nodes > 1 ? loc.nodes : loc.node}`;
 		if (cpuLimit) {
-			nodeConfiguration += `, ${this.formatCores(cpuLimit)} vCores`;
+			nodeConfiguration += `, ${this.formatCores(cpuLimit)} ${loc.vCores}`;
 		} else if (cpuRequest) {
-			nodeConfiguration += `, ${this.formatCores(cpuRequest)} vCores`;
+			nodeConfiguration += `, ${this.formatCores(cpuRequest)} ${loc.vCores}`;
 		}
 		if (ramLimit) {
-			nodeConfiguration += `, ${this.formatMemory(ramLimit)} RAM`;
+			nodeConfiguration += `, ${this.formatMemory(ramLimit)} ${loc.ram}`;
 		} else if (ramRequest) {
-			nodeConfiguration += `, ${this.formatMemory(ramRequest)} RAM`;
+			nodeConfiguration += `, ${this.formatMemory(ramRequest)} ${loc.ram}`;
 		}
-		if (storage) { nodeConfiguration += `, ${storage} storage per node`; }
+		if (storage) { nodeConfiguration += `, ${storage} ${loc.storagePerNode}`; }
 		return nodeConfiguration;
 	}
 

@@ -94,5 +94,4 @@ export namespace cssStyles {
 	export const title = { ...text, 'font-weight': 'bold', 'font-size': '14px' };
 	export const tableHeader = { ...text, 'text-align': 'left', 'border': 'none' };
 	export const tableRow = { ...text, 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none' };
-	export const link = { 'user-select': 'text', 'cursor': 'pointer', 'color': '#0078d4', 'text-decoration': 'underline' };
 }
