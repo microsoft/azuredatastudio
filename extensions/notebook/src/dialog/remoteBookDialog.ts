@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as loc from '../common/localizedConstants';
-import { RemoteBookController, getReleases } from '../book/remoteBookController';
+import { RemoteBookController } from '../book/remoteBookController';
 import { TreeNode, TreeDataProvider } from './treeDataProvider';
 //import * as path from 'path';
 
@@ -20,12 +20,8 @@ export class RemoteBookDialogModel {
 
 	private _canceled = false;
 	private _remoteTypes: azdata.CategoryValue[];
+	private dialog: RemoteBookDialogModel;
 
-	//private _dummyPath: string = 'books/HowToDebug/EN/1.11';
-
-	// TODO add the dialogs to show as cascade
-
-	// Open a file (funcionality)
 	constructor(
 		public prefilledUrl?: string
 	) {
@@ -39,32 +35,26 @@ export class RemoteBookDialogModel {
 		return this._remoteTypes;
 	}
 
-	public async onComplete(url: string, remoteLocation: string): Promise<void> {
+	public async fetchData(url: string, remoteLocation: string): Promise<void> {
 		try {
 			// We pre-fetch the endpoints here to verify that the information entered is correct (the user is able to connect)
 			let controller = new RemoteBookController(url, remoteLocation);
 			console.log(controller);
-			await getReleases();
+			let hello = await controller.getReleases();
+			console.log(hello.response);
 
-
-			// Verify if it's a valid input
+			// Verify if it'
 			//bookname -> language -> versions
 			// books/ HowToDebug / EN/ 1.11
 
 
-
-			/*
 			let _isvalid = controller.validate();
-			let response = await controller.getVersions();
 			if (_isvalid) {
 				if (this._canceled) {
 					return;
 				}
-				this.treeDataProvider.addOrUpdateController(url, auth, username, password, rememberPassword);
-				vscode.commands.executeCommand(ManageControllerCommand, <BdcDashboardOptions>{ url: url, auth: auth, username: username, password: password });
-				await this.treeDataProvider.saveControllers();
+				let versions = await controller.getReleases();
 			}
-			*/
 		} catch (error) {
 			// Ignore the error if we cancelled the request since we can't stop the actual request from completing
 			if (!this._canceled) {
@@ -77,8 +67,11 @@ export class RemoteBookDialogModel {
 export class RemoteBookDialog {
 
 	private dialog: azdata.window.Dialog;
+	private view: azdata.ModelView;
+	private formModel: azdata.FormContainer;
 	private urlInputBox: azdata.InputBoxComponent;
 	private remoteLocationDropdown: azdata.DropDownComponent;
+	private remoteBookDropdown: azdata.DropDownComponent;
 	private languageDropdown: azdata.DropDownComponent;
 	private versionDropdown: azdata.DropDownComponent;
 
@@ -93,31 +86,43 @@ export class RemoteBookDialog {
 	private createDialog(): void {
 		this.dialog = azdata.window.createModelViewDialog(loc.openRemoteBook);
 		this.dialog.registerContent(async view => {
-			this.urlInputBox = view.modelBuilder.inputBox()
+			this.view = view;
+			this.urlInputBox = this.view.modelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
 					placeHolder: loc.url,
 					value: this.model.prefilledUrl
 				}).component();
 
-			this.remoteLocationDropdown = view.modelBuilder.dropDown().withProperties({
+			this.urlInputBox.onTextChanged(async () => await this.loadBooks());
+
+			this.remoteLocationDropdown = this.view.modelBuilder.dropDown().withProperties({
 				values: this.model.remoteLocationCategories,
 				value: '',
 				editable: false,
 			}).component();
 
-			this.languageDropdown = view.modelBuilder.dropDown().withProperties({
-				values: ['EN', 'ES'],
+			this.remoteBookDropdown = this.view.modelBuilder.dropDown().withProperties({
+				values: [],
 				value: '',
-				editable: false,
+				display: false,
 			}).component();
 
-			this.versionDropdown = view.modelBuilder.dropDown().withProperties({
-				values: ['1.11', '1.21'],
+			this.remoteBookDropdown.onValueChanged(async () => await this.validate());
+
+			this.languageDropdown = this.view.modelBuilder.dropDown().withProperties({
+				values: [],
 				value: '',
-				editable: false,
+				display: false,
 			}).component();
 
-			let formModel = view.modelBuilder.formContainer()
+			this.versionDropdown = this.view.modelBuilder.dropDown().withProperties({
+				values: [],
+				value: '',
+				display: false,
+			}).component();
+
+
+			this.formModel = this.view.modelBuilder.formContainer()
 				.withFormItems([{
 					components: [
 						{
@@ -128,24 +133,31 @@ export class RemoteBookDialog {
 							component: this.remoteLocationDropdown,
 							title: loc.location,
 							required: true
-						}, {
+						},
+						{
+							component: this.remoteBookDropdown,
+							title: 'Book',
+							required: true
+						},
+						{
 							component: this.languageDropdown,
 							title: 'Language',
 							required: true
-						}, {
+						},
+						{
 							component: this.versionDropdown,
 							title: 'Version',
 							required: true
 						}
 					],
-					title: 'Open Remote Book'
+					title: ''
 				}]).withLayout({ width: '100%' }).component();
-			await view.initializeModel(formModel);
+			await this.view.initializeModel(this.formModel);
 			this.urlInputBox.focus();
 		});
-		this.dialog.registerCloseValidator(async () => await this.validate());
 		this.dialog.okButton.label = loc.ok;
 		this.dialog.cancelButton.label = loc.cancel;
+		this.dialog.okButton.onClick(async () => await this.validate());
 		azdata.window.openDialog(this.dialog);
 	}
 
@@ -158,7 +170,8 @@ export class RemoteBookDialog {
 		let location = this.remoteLocationValue;
 
 		try {
-			await this.model.onComplete(url, location);
+			await this.model.fetchData(url, location);
+			await this.fillDropdowns();
 			return true;
 		} catch (error) {
 			this.dialog.message = {
@@ -169,6 +182,21 @@ export class RemoteBookDialog {
 		}
 	}
 
+	private async loadBooks(): Promise<void> {
+		this.remoteBookDropdown.values = ['Azure data TSG', 'BDC Troubleshooting Guide', 'Debugging Guide'];
+		this.remoteBookDropdown.value = '';
+	}
+
+	public async fillDropdowns(): Promise<void> {
+		this.languageDropdown.updateProperties({
+			values: ['EN', 'ES'],
+			display: true,
+		});
+		this.versionDropdown.updateProperties({
+			values: ['1.11', '1.12'],
+			display: true,
+		});
+	}
 
 	private async getTab3Content(view: azdata.ModelView): Promise<void> {
 		// Make this programmatically
