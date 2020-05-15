@@ -38,6 +38,7 @@ export const dataSourceRadioButtonLabel = localize('dataSourceRadioButtonLabel',
 export const connectionRadioButtonLabel = localize('connectionRadioButtonLabel', "Connections");
 export const selectConnectionRadioButtonsTitle = localize('selectconnectionRadioButtonsTitle', "Specify connection from:");
 export const dataSourceDropdownTitle = localize('dataSourceDropdownTitle', "Data source");
+export const noDataSourcesText = localize('noDataSourcesText', "No data sources in this project");
 
 // Error messages
 

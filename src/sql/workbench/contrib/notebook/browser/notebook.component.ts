@@ -238,10 +238,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private async doLoad(): Promise<void> {
 		try {
 			await this.createModelAndLoadContents();
-			await this.setNotebookManager();
-			await this.loadModel();
 			this._modelReadyDeferred.resolve(this._model);
 			this.notebookService.addNotebookEditor(this);
+			await this.setNotebookManager();
+			await this.loadModel();
 		} catch (error) {
 			if (error) {
 				// Offer to create a file from the error if we have a file not found and the name is valid

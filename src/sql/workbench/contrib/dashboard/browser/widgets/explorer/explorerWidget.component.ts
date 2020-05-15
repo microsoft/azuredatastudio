@@ -7,6 +7,10 @@ import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, OnInit, V
 import { Router } from '@angular/router';
 import { DatabaseInfo } from 'azdata';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { ConnectionProfilePropertyName, ExplorerTable } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTable';
 import { NameProperty } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerView';
@@ -51,6 +55,8 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(IMenuService) private readonly menuService: IMenuService,
 		@Inject(IContextKeyService) private readonly contextKeyService: IContextKeyService,
 		@Inject(IEditorProgressService) private readonly progressService: IEditorProgressService,
+		@Inject(IConnectionManagementService) private readonly connectionManagementService: IConnectionManagementService,
+		@Inject(ICapabilitiesService) private readonly capabilitiesService: ICapabilitiesService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
 	) {
 		super(changeRef);
@@ -95,7 +101,6 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			this._register(subscriptionToDisposable(this._bootstrap.metadataService.metadata.subscribe(
 				data => {
 					if (data) {
-
 						const objectData = ObjectMetadataWrapper.createFromObjectMetadata(data.objectMetadata);
 						objectData.sort(ObjectMetadataWrapper.sort);
 						this.updateTable(objectData);
@@ -106,32 +111,53 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 				}
 			)));
 		} else {
-			this._register(subscriptionToDisposable(this._bootstrap.metadataService.databases.subscribe(
-				data => {
-					// Handle the case where there is no metadata service
-					data = data || [];
-					if (isStringArray(data)) {
-						data = data.map(item => {
-							const dbInfo: DatabaseInfo = { options: {} };
-							dbInfo.options[NameProperty] = item;
-							return dbInfo;
-						});
+			// TODO: remove this ADS side workaround for SQL On-Demand and handle it in SQL Tools Service
+			if (this._bootstrap.connectionManagementService.connectionInfo.serverInfo.engineEditionId === DatabaseEngineEdition.SqlOnDemand) {
+				this.connectionManagementService.listDatabases(this._bootstrap.connectionManagementService.connectionInfo.ownerUri).then(
+					result => {
+						// Sort the databases: system databases first and then the sorted list of other databases
+						const sysDatabases = ['master', 'model', 'msdb', 'tempdb'];
+						const databaseNames = result.databaseNames.filter(db => sysDatabases.indexOf(db) !== -1).
+							concat(result.databaseNames.filter(db => sysDatabases.indexOf(db) === -1).sort());
+						this.handleServerContextResults(databaseNames);
+					},
+					error => {
+						this.showErrorMessage(nls.localize('dashboard.explorer.databaseError', "Unable to load databases"));
 					}
-
-					const currentProfile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
-					this.updateTable(data.map(d => {
-						const item = assign({}, d.options);
-						const profile = currentProfile.toIConnectionProfile();
-						profile.databaseName = d.options[NameProperty];
-						item[ConnectionProfilePropertyName] = profile;
-						return item;
-					}));
-				},
-				error => {
-					this.showErrorMessage(nls.localize('dashboard.explorer.databaseError', "Unable to load databases"));
-				}
-			)));
+				);
+			}
+			else {
+				this._register(subscriptionToDisposable(this._bootstrap.metadataService.databases.subscribe(
+					data => {
+						this.handleServerContextResults(data);
+					},
+					error => {
+						this.showErrorMessage(nls.localize('dashboard.explorer.databaseError', "Unable to load databases"));
+					}
+				)));
+			}
 		}
+	}
+
+	private handleServerContextResults(data: string[] | DatabaseInfo[]): void {
+		// Handle the case where there is no metadata service
+		data = data || [];
+		if (isStringArray(data)) {
+			data = data.map(item => {
+				const dbInfo: DatabaseInfo = { options: {} };
+				dbInfo.options[NameProperty] = item;
+				return dbInfo;
+			});
+		}
+
+		const currentProfile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
+		this.updateTable(data.map(d => {
+			const item = assign({}, d.options);
+			const profile = new ConnectionProfile(this.capabilitiesService, currentProfile);
+			profile.databaseName = d.options[NameProperty];
+			item[ConnectionProfilePropertyName] = profile;
+			return item;
+		}));
 	}
 
 	private updateTable(data: Slick.SlickData[]) {
