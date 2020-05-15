@@ -210,7 +210,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		//Notebook toolbar masked icons
 		const notebookToolbarIconColor = theme.getColor(notebookToolbarIcon);
 		if (notebookToolbarIconColor) {
-			collector.addRule(`.notebookEditor .notebook-button.masked { background-color: ${notebookToolbarIconColor};}`);
+			collector.addRule(`.notebookEditor .notebook-button.masked-icon { background-color: ${notebookToolbarIconColor};}`);
 			collector.addRule(`.notebookEditor .notebook-button.masked-pseudo:before { background-color: ${notebookToolbarIconColor};}`);
 		}
 		const notebookToolbarLinesColor = theme.getColor(notebookToolbarLines);

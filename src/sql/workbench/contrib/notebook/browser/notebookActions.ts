@@ -96,7 +96,7 @@ export class ClearAllOutputsAction extends TooltipFromLabelAction {
 	private static readonly label = localize('clearResults', "Clear Results");
 	private static readonly baseClass = 'notebook-button';
 	private static readonly iconClass = 'icon-clear-results';
-	private static readonly maskedIconClass = 'masked';
+	private static readonly maskedIconClass = 'masked-icon';
 
 	constructor(id: string, toggleTooltip: boolean) {
 		super(id, {
@@ -166,7 +166,7 @@ export class TrustedAction extends ToggleableAction {
 	private static readonly trustedCssClass = 'icon-trusted';
 	private static readonly previewNotTrustedCssClass = 'icon-shield-x';
 	private static readonly notTrustedCssClass = 'icon-notTrusted';
-	private static readonly maskedIconClass = 'masked';
+	private static readonly maskedIconClass = 'masked-icon';
 
 	constructor(
 		id: string, toggleTooltip: boolean
@@ -231,7 +231,7 @@ export class CollapseCellsAction extends ToggleableAction {
 	private static readonly collapseCssClass = 'icon-hide-cells';
 	private static readonly previewExpandCssClass = 'icon-expand-cells';
 	private static readonly expandCssClass = 'icon-show-cells';
-	private static readonly maskedIconClass = 'masked';
+	private static readonly maskedIconClass = 'masked-icon';
 
 	constructor(id: string, toggleTooltip: boolean) {
 		super(id, {

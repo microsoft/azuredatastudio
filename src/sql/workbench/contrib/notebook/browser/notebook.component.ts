@@ -554,14 +554,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private actionItemProvider(action: Action): IActionViewItem {
 		// Check extensions to create ActionItem; otherwise, return undefined
 		// This is similar behavior that exists in MenuItemActionItem
-		let incomingLabel: string;
-
 		if (action instanceof MenuItemAction) {
 
 			if (action.item.id.includes('jupyter.cmd') && this.previewFeaturesEnabled) {
-				incomingLabel = action.label;
-				action.label = null;
-				action.tooltip = incomingLabel;
+				action.tooltip = action.label;
+				action.label = '';
 			}
 			return new LabeledMenuItemActionItem(action, this.keybindingService, this.contextMenuService, this.notificationService, 'notebook-button fixed-width');
 		}
