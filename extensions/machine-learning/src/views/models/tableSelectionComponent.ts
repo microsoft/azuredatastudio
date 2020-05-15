@@ -13,7 +13,11 @@ import * as constants from '../../common/constants';
 
 export interface ITableSelectionSettings {
 	editable: boolean,
-	preSelected: boolean
+	preSelected: boolean,
+	databaseTitle: string,
+	tableTitle: string,
+	databaseInfo: string,
+	tableInfo: string
 }
 /**
  * View to render filters to pick an azure resource
@@ -47,7 +51,7 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	 * Register components
 	 * @param modelBuilder model builder
 	 */
-	public registerComponent(modelBuilder: azdata.ModelBuilder, databaseTitle: string, tableTitle: string): azdata.Component {
+	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		this._databases = modelBuilder.dropDown().withProperties({
 			width: this.componentMaxLength,
 		}).component();
@@ -111,23 +115,23 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 		});
 
 		const databaseForm = modelBuilder.formContainer().withFormItems([{
-			title: databaseTitle,
+			title: this._settings.databaseTitle,
 			component: this._databases,
-		}], { info: databaseTitle }).withLayout({
+		}], { info: this._settings.databaseInfo }).withLayout({
 			padding: '0px'
 		}).component();
 
 		const tableForm = modelBuilder.formContainer();
 		if (this._settings.editable) {
 			tableForm.addFormItem({
-				title: tableTitle,
+				title: this._settings.tableTitle,
 				component: group
-			}, { info: tableTitle });
+			}, { info: this._settings.tableInfo });
 		} else {
 			tableForm.addFormItem({
-				title: tableTitle,
+				title: this._settings.tableTitle,
 				component: this._tables
-			}, { info: tableTitle });
+			}, { info: this._settings.tableInfo });
 		}
 
 		this._dbTableComponent = modelBuilder.flexContainer().withItems([
