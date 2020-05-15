@@ -57,7 +57,7 @@ export class AzureDeviceCode extends AzureAuth {
 
 	}
 
-	public async promptForConsent(resourceId: string): Promise<undefined> {
+	public async promptForConsent(resourceId: string, tenant: string = this.commonTenant): Promise<undefined> {
 		vscode.window.showErrorMessage(localize('azure.deviceCodeDoesNotSupportConsent', "Device code authentication does not support prompting for consent. Switch the authentication method in settings to code grant."));
 		return undefined;
 	}

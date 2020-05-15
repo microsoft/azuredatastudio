@@ -137,7 +137,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	public abstract async autoOAuthCancelled(): Promise<void>;
 
-	public abstract async promptForConsent(resourceId: string): Promise<{ tokenRefreshResponse: TokenRefreshResponse, authCompleteDeferred: Deferred<void> } | undefined>;
+	public abstract async promptForConsent(resourceId: string, tenant: string): Promise<{ tokenRefreshResponse: TokenRefreshResponse, authCompleteDeferred: Deferred<void> } | undefined>;
 
 	public dispose() { }
 
@@ -400,7 +400,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				refreshResponse = { accessToken, refreshToken, tokenClaims, expiresOn };
 			} catch (ex) {
 				if (ex?.response?.data?.error === 'interaction_required') {
-					const { tokenRefreshResponse, authCompleteDeferred } = await this.promptForConsent(resourceId);
+					const { tokenRefreshResponse, authCompleteDeferred } = await this.promptForConsent(resourceId, tenant);
 					refreshResponse = tokenRefreshResponse;
 					authCompleteDeferred.resolve();
 				} else {

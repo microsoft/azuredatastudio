@@ -56,15 +56,15 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		super(metadata, tokenCache, context, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME);
 	}
 
-	public async promptForConsent(resourceId: string): Promise<{ tokenRefreshResponse: TokenRefreshResponse, authCompleteDeferred: Deferred<void> } | undefined> {
+	public async promptForConsent(resourceId: string, tenant: string = this.commonTenant): Promise<{ tokenRefreshResponse: TokenRefreshResponse, authCompleteDeferred: Deferred<void> } | undefined> {
 		let authCompleteDeferred: Deferred<void>;
 		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
 
 		let authResponse: AuthCodeResponse;
 		if (vscode.env.uiKind === vscode.UIKind.Web) {
-			authResponse = await this.loginWithoutLocalServer(resourceId);
+			authResponse = await this.loginWithoutLocalServer(resourceId, tenant);
 		} else {
-			authResponse = await this.loginWithLocalServer(authCompletePromise, resourceId);
+			authResponse = await this.loginWithLocalServer(authCompletePromise, resourceId, tenant);
 		}
 
 		let tokenClaims: TokenClaims;
@@ -101,7 +101,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		return this.server.shutdown();
 	}
 
-	public async loginWithLocalServer(authCompletePromise: Promise<void>, resourceId: string): Promise<AuthCodeResponse | undefined> {
+	public async loginWithLocalServer(authCompletePromise: Promise<void>, resourceId: string, tenant: string = this.commonTenant): Promise<AuthCodeResponse | undefined> {
 		this.server = new SimpleWebServer();
 		const nonce = crypto.randomBytes(16).toString('base64');
 		let serverPort: string;
@@ -133,7 +133,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 				code_challenge: codeChallenge,
 				resource: resourceId
 			};
-			loginUrl = `${this.loginEndpointUrl}${this.commonTenant}/oauth2/authorize?${qs.stringify(loginQuery)}`;
+			loginUrl = `${this.loginEndpointUrl}${tenant}/oauth2/authorize?${qs.stringify(loginQuery)}`;
 		}
 
 		await vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(nonce)}`));
@@ -146,7 +146,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		};
 	}
 
-	public async loginWithoutLocalServer(resourceId: string): Promise<AuthCodeResponse | undefined> {
+	public async loginWithoutLocalServer(resourceId: string, tenant: string = this.commonTenant): Promise<AuthCodeResponse | undefined> {
 		const callbackUri = await vscode.env.asExternalUri(vscode.Uri.parse(`${vscode.env.uriScheme}://microsoft.azurecore`));
 		const nonce = crypto.randomBytes(16).toString('base64');
 		const port = (callbackUri.authority.match(/:([0-9]*)$/) || [])[1] || (callbackUri.scheme === 'https' ? 443 : 80);
@@ -167,7 +167,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			resource: resourceId
 		};
 
-		const signInUrl = `${this.loginEndpointUrl}${this.commonTenant}/oauth2/authorize?${qs.stringify(loginQuery)}`;
+		const signInUrl = `${this.loginEndpointUrl}${tenant}/oauth2/authorize?${qs.stringify(loginQuery)}`;
 		await vscode.env.openExternal(vscode.Uri.parse(signInUrl));
 
 		const authCode = await this.handleCodeResponse(state);
