@@ -555,7 +555,7 @@ export class DashboardWidget {
 			CSSStyles: {
 				'padding': '0px',
 				'padding-bottom': '5px',
-				'width': '180px',
+				'width': '200px',
 				'margin': '0px',
 				'color': '#006ab1'
 			}
