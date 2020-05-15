@@ -3175,6 +3175,10 @@
 									"value": ">=0.32.1"
 								},
 								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.18.0"
+								},
+								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Microsoft/azuredatastudio"
 								}
