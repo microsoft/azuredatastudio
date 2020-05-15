@@ -399,5 +399,10 @@ declare module 'azdata' {
 	export interface TaskInfo {
 		targetLocation?: string;
 	}
-}
 
+	export interface TreeItem2 extends vscode.TreeItem2 {
+		payload?: IConnectionProfile;
+		childProvider?: string;
+		type?: ExtensionNodeType;
+	}
+}
