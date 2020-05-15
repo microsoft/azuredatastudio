@@ -431,10 +431,14 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	private async areRequiredPackagesInstalled(kernelDisplayName: string): Promise<boolean> {
 		let installedPackages = await this.getInstalledPipPackages();
-		let packageSet = new Set(installedPackages);
+		let installedPackageMap = new Map<string, string>();
+		installedPackages.forEach(pkg => {
+			installedPackageMap.set(pkg.name, pkg.version);
+		});
 		let requiredPackages = JupyterServerInstallation.getRequiredPackagesForKernel(kernelDisplayName);
 		for (let pkg of requiredPackages) {
-			if (!packageSet.has(pkg)) {
+			let installedVersion = installedPackageMap.get(pkg.name);
+			if (!installedVersion || utils.comparePackageVersions(installedVersion, pkg.version) < 0) {
 				return false;
 			}
 		}
