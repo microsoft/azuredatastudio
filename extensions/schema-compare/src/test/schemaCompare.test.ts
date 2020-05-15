@@ -99,6 +99,8 @@ describe('SchemaCompareResult.start', function (): void {
 
 		let result = new SchemaCompareMainWindow(sc, mockExtensionContext.object);
 		await result.start(undefined);
+		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
+		await promise;
 
 		should.equal(result.sourceEndpointInfo, undefined);
 		should.equal(result.targetEndpointInfo, undefined);
@@ -109,6 +111,8 @@ describe('SchemaCompareResult.start', function (): void {
 
 		let result = new SchemaCompareMainWindow(sc, mockExtensionContext.object);
 		await result.start({connectionProfile: mockConnectionProfile});
+		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
+		await promise;
 
 		should.notEqual(result.sourceEndpointInfo, undefined);
 		should.equal(result.sourceEndpointInfo.endpointType, mssql.SchemaCompareEndpointType.Database);
@@ -123,6 +127,8 @@ describe('SchemaCompareResult.start', function (): void {
 		let result = new SchemaCompareMainWindow(sc, mockExtensionContext.object);
 		const dacpacPath = 'C:\\users\\test\\test.dacpac';
 		await result.start(dacpacPath);
+		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
+		await promise;
 
 		should.notEqual(result.sourceEndpointInfo, undefined);
 		should.equal(result.sourceEndpointInfo.endpointType, mssql.SchemaCompareEndpointType.Dacpac);
