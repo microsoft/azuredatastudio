@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
+import { ExtractTarget } from 'azdata';
 
 /**
  * Data model to communicate for Import API
@@ -14,5 +14,5 @@ export interface ImportDataModel {
 	projName: string;
 	filePath: string;
 	version: string;
-	extractTarget: azdata.ExtractTarget;
+	extractTarget: ExtractTarget;
 }

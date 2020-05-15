@@ -11,7 +11,6 @@ import * as utils from '../common/utils';
 import { Uri } from 'vscode';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
-import { ApiWrapper } from '../common/apiWrapper';
 
 /**
  * Class representing a Project, and providing functions for operating on it
@@ -27,7 +26,7 @@ export class Project {
 
 	private projFileXmlDoc: any = undefined;
 
-	constructor(projectFilePath: string, private apiWrapper: ApiWrapper) {
+	constructor(projectFilePath: string) {
 		this.projectFilePath = projectFilePath;
 	}
 
@@ -61,7 +60,7 @@ export class Project {
 		const absoluteFolderPath = path.join(this.projectFolderPath, relativeFolderPath);
 
 		//If folder doesn't exist, create it
-		let exists = utils.exists(absoluteFolderPath);
+		let exists = await utils.exists(absoluteFolderPath);
 		if (!exists) {
 			fs.mkdir(absoluteFolderPath, { recursive: true });
 		}
@@ -87,10 +86,9 @@ export class Project {
 		}
 
 		//Check that file actually exists
-		let exists = utils.exists(absoluteFilePath);
+		let exists = await utils.exists(absoluteFilePath);
 		if (!exists) {
-			//TODO: Should we exit from here?
-			this.apiWrapper.showErrorMessage(constants.noFileExist(absoluteFilePath));
+			throw new Error(constants.noFileExist(absoluteFilePath));
 		}
 
 		const fileEntry = this.createProjectEntry(relativeFilePath, EntryType.File);
@@ -161,10 +159,10 @@ export class Project {
 	}
 
 	/**
-	 * Adds the list of files and directories to the project, and saves the project file
+	 * Adds the list of sql files and directories to the project, and saves the project file
 	 * @param absolutePath Absolute path of the folder
 	 */
-	public async addToProject(list: string[]): Promise<boolean> {
+	public async addToProject(list: string[]): Promise<void> {
 
 		for (let i = 0; i < list.length; i++) {
 			let file: string = list[i];
@@ -173,7 +171,7 @@ export class Project {
 			if (relativePath.length > 0) {
 				let fileStat = await fs.stat(file);
 
-				if (fileStat.isFile()) {
+				if (fileStat.isFile() && file.toLowerCase().endsWith(constants.sqlFileExtension)) {
 					await this.addScriptItem(relativePath);
 				}
 				else if (fileStat.isDirectory()) {
@@ -181,8 +179,6 @@ export class Project {
 				}
 			}
 		}
-		return true;
-
 	}
 }
 

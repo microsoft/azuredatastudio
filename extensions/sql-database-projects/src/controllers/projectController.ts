@@ -47,7 +47,7 @@ export class ProjectsController {
 			}
 		}
 
-		const newProject = new Project(projectFile.fsPath, this.apiWrapper);
+		const newProject = new Project(projectFile.fsPath);
 
 		try {
 			// Read project file
@@ -179,7 +179,7 @@ export class ProjectsController {
 		// TODO: file already exists?
 
 		const newFileText = this.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName });
-		const relativeFilePath = path.join(relativePath, itemObjectName + '.sql');
+		const relativeFilePath = path.join(relativePath, itemObjectName + constants.sqlFileExtension);
 
 		const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
 
@@ -253,32 +253,38 @@ export class ProjectsController {
 
 			// Get project name
 			let newProjName = await this.getProjectName(model.database);
-
 			if (!newProjName) {
-				this.apiWrapper.showErrorMessage(constants.projectNameRequired);
-				return;
+				throw new Error(constants.projectNameRequired);
 			}
 			model.projName = newProjName;
 
 			// Get extractTarget
 			let extractTarget: ExtractTarget = await this.getExtractTarget();
+			if (!extractTarget || extractTarget === -1) {
+				throw new Error(constants.extractTargetRequired);
+			}
 			model.extractTarget = extractTarget;
 
 			// Get folder location for project creation
 			let newProjUri = await this.getFolderLocation(model.extractTarget);
 			if (!newProjUri) {
-				this.apiWrapper.showErrorMessage(constants.projectLocationRequired);
-				return;
+				throw new Error(constants.projectLocationRequired);
 			}
 
+			// Set project folder/file location
 			let newProjFolderUri;
-			if (extractTarget !== 1) {
+			if (extractTarget !== ExtractTarget.file) {
 				newProjFolderUri = newProjUri;
 			} else {
-				// Get filename, if extractTarget = File
-				newProjFolderUri = utils.trimFileName(newProjUri);
+				// Get folder info, if extractTarget = File
+				newProjFolderUri = Uri.file(path.dirname(newProjUri.fsPath));
 			}
 
+			//Check folder is empty
+			let isEmpty: boolean = await this.isDirEmpty(newProjFolderUri.fsPath);
+			if (!isEmpty) {
+				throw new Error(constants.projectLocationNotEmpty);
+			}
 			// TODO: what if the selected folder is outside the workspace?
 			model.filePath = newProjUri.fsPath;
 
@@ -313,26 +319,34 @@ export class ProjectsController {
 			value: `DatabaseProject${dbName}`
 		});
 
+		projName = projName?.trim();
+
 		return projName;
 	}
 
 	private async getExtractTarget(): Promise<ExtractTarget> {
 		let extractTarget: ExtractTarget;
 
-		// eslint-disable-next-line code-no-unexternalized-strings
-		let extractTargetOptions: string[] = Object.keys(ExtractTarget).filter(k => typeof ExtractTarget[k as any] === "number");
+		const extractTargetOptions: QuickPickItem[] = [];
 
-		let extractTargetInput = await this.apiWrapper.showQuickPickString(extractTargetOptions.slice(1), {
+		let keys: string[] = Object.keys(ExtractTarget).filter(k => typeof ExtractTarget[k as any] === 'number');
+
+		keys.forEach(targetOption => {
+			let pascalCaseTargetOption: string = utils.toPascalCase(targetOption);	// for better readability
+			extractTargetOptions.push({ label: pascalCaseTargetOption });
+		});
+
+		let input = await this.apiWrapper.showQuickPick(extractTargetOptions.slice(1), {		//Ignore the first option to create Dacpac
 			canPickMany: false,
 			placeHolder: constants.extractTargetInput
 		});
+		let extractTargetInput = input?.label;
 
-		if (!extractTargetInput) {
-			// TODO: Default value of SchemaObjectType to be used or cancel out?
-			this.apiWrapper.showErrorMessage(constants.extractTargetDefault);
-			extractTarget = ExtractTarget.SchemaObjectType;
+		if (extractTargetInput) {
+			let camelCaseInput: string = utils.toCamelCase(extractTargetInput);
+			extractTarget = ExtractTarget[camelCaseInput as keyof typeof ExtractTarget];
 		} else {
-			extractTarget = ExtractTarget[extractTargetInput as keyof typeof ExtractTarget];
+			extractTarget = -1;
 		}
 
 		return extractTarget;
@@ -342,7 +356,7 @@ export class ProjectsController {
 		let selectionResult;
 		let projUri;
 
-		if (extractTarget !== 1) {
+		if (extractTarget !== ExtractTarget.file) {
 			selectionResult = await this.apiWrapper.showOpenDialog({
 				canSelectFiles: false,
 				canSelectFolders: true,
@@ -360,7 +374,7 @@ export class ProjectsController {
 					defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined,
 					saveLabel: constants.selectFileFolder,
 					filters: {
-						'Text files': ['sql'],
+						'SQL files': ['sql'],
 						'All files': ['*']
 					}
 				}
@@ -371,6 +385,10 @@ export class ProjectsController {
 		}
 
 		return projUri;
+	}
+
+	private async isDirEmpty(newProjFolderUri: string): Promise<boolean> {
+		return (await fs.readdir(newProjFolderUri)).length === 0;
 	}
 
 	private async importApiCall(model: ImportDataModel): Promise<void> {
@@ -387,11 +405,14 @@ export class ProjectsController {
 		await service.importDatabaseProject(model.database, model.filePath, model.projName, model.version, ownerUri, model.extractTarget, TaskExecutionMode.execute);
 	}
 
-	private async generateList(absolutePath: string): Promise<string[]> {
+	/**
+	 * Generate a flat list of all files and folder under a folder.
+	 */
+	public async generateList(absolutePath: string): Promise<string[]> {
 		let fileFolderList: string[] = [];
 
-		if (!utils.exists(absolutePath)) {
-			if (utils.exists(absolutePath + constants.sqlFileExtension)) {
+		if (!await utils.exists(absolutePath)) {
+			if (await utils.exists(absolutePath + constants.sqlFileExtension)) {
 				absolutePath += constants.sqlFileExtension;
 			} else {
 				await this.apiWrapper.showErrorMessage(constants.cannotResolvePath(absolutePath));

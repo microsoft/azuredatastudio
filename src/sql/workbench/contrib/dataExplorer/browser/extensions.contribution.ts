@@ -38,6 +38,18 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
+// Import Database
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'export',
+	order: 8,
+	command: {
+		id: IMPORT_DATABASE_COMMAND_ID,
+		title: localize('importDatabase', "Import New Database Project")
+	},
+	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
+		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
+});
+
 // Profiler
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'profiler',
@@ -50,18 +62,6 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Server), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
-// Flat File Import
-MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
-	group: 'import',
-	order: 11,
-	command: {
-		id: IMPORT_COMMAND_ID,
-		title: localize('flatFileImport', "Import Wizard")
-	},
-	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
-		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database))
-});
-
 // Schema Compare
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'export',
@@ -72,6 +72,18 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
+});
+
+// Flat File Import
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'import',
+	order: 11,
+	command: {
+		id: IMPORT_COMMAND_ID,
+		title: localize('flatFileImport', "Import Wizard")
+	},
+	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
+		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database))
 });
 
 // Generate Scripts Action
@@ -110,16 +122,4 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.IsWindows, MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()),
 		ContextKeyRegexExpr.create('nodeType', /^(Database|Table|Column|Index|Statistic|View|ServerLevelLogin|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy|ServerLevelLinkedServer)$/))
-});
-
-// Import Database
-MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
-	group: 'export',
-	order: 8,
-	command: {
-		id: IMPORT_DATABASE_COMMAND_ID,
-		title: localize('importDatabase', "Import New Database Project")
-	},
-	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
-		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });

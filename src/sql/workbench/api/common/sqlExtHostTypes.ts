@@ -63,12 +63,12 @@ export enum TaskExecutionMode {
 }
 
 export enum ExtractTarget {
-	DacPac = 0,
-	File = 1,
-	Flat = 2,
-	ObjectType = 3,
-	Schema = 4,
-	SchemaObjectType = 5
+	dacPac = 0,
+	file = 1,
+	flat = 2,
+	objectType = 3,
+	schema = 4,
+	schemaObjectType = 5
 }
 
 export enum ScriptOperation {

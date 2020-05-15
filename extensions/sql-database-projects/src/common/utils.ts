@@ -47,26 +47,28 @@ export function trimChars(input: string, chars: string): string {
 	return output;
 }
 
-
-/**
- * Trims file name from @param input and return UriPath
- */
-export function trimFileName(input: vscode.Uri): vscode.Uri {
-	let lastLevel: number = input.path.lastIndexOf('/');
-	if (lastLevel < 1) {
-		return input;
-	}
-	return vscode.Uri.file(input.path.substring(0, lastLevel));
-}
-
 /**
  * Checks if the folder or file exists @param path path of the folder/file
 */
-export function exists(path: string): boolean {
+export async function exists(path: string): Promise<boolean> {
 	try {
-		fs.access(path);
+		await fs.access(path);
 		return true;
 	} catch (e) {
 		return false;
 	}
+}
+
+/**
+ * Convert camelCase input to PascalCase
+ */
+export function toPascalCase(input: string): string {
+	return input.charAt(0).toUpperCase() + input.substr(1);
+}
+
+/**
+ * Convert PascalCase input to camelCase
+ */
+export function toCamelCase(input: string): string {
+	return input.charAt(0).toLowerCase() + input.substr(1);
 }
