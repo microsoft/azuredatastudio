@@ -418,7 +418,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	 * Opens a dialog for configuring the installation path for the Notebook Python dependencies.
 	 */
 	public async promptForPythonInstall(kernelDisplayName: string): Promise<void> {
-		if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
+		let isPythonInstalled = JupyterServerInstallation.isPythonInstalled(this.apiWrapper);
+		let areRequiredPackagesInstalled = await this.areRequiredPackagesInstalled(kernelDisplayName);
+		if (!isPythonInstalled || !areRequiredPackagesInstalled) {
 			let enablePreviewFeatures = this.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
 			if (enablePreviewFeatures) {
 				let pythonWizard = new ConfigurePythonWizard(this.apiWrapper, this);
@@ -429,6 +431,18 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				return pythonDialog.showDialog(true);
 			}
 		}
+	}
+
+	private async areRequiredPackagesInstalled(kernelDisplayName: string): Promise<boolean> {
+		let installedPackages = await this.getInstalledPipPackages();
+		let packageSet = new Set(installedPackages);
+		let requiredPackages = JupyterServerInstallation.getRequiredPackagesForKernel(kernelDisplayName);
+		for (let pkg of requiredPackages) {
+			if (!packageSet.has(pkg)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private async upgradePythonPackages(promptForUpgrade: boolean, forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
