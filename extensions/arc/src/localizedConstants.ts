@@ -46,7 +46,6 @@ export const feedback = localize('arc.feedback', 'Feedback');
 export const selectConnectionString = localize('arc.selectConnectionString', 'Select from available client connection strings below');
 export const vCores = localize('arc.vCores', 'vCores');
 export const ram = localize('arc.ram', 'RAM');
-export const copiedToClipboard = localize('arc.copiedToClipboard', 'copied to clipboard');
 
 // Postgres constants
 export const coordinatorEndpoint = localize('arc.coordinatorEndpoint', 'Coordinator endpoint');
@@ -75,5 +74,6 @@ export function deleteServicePrompt(name: string): string { return localize('arc
 export function serviceDeleted(name: string): string { return localize('arc.serviceDeleted', "Service '{0}' deleted", name); }
 export function serviceDeletionFailed(name: string, error: any): string { return localize('arc.serviceDeletionFailed', "Failed to delete service '{0}'. {1}", name, (error instanceof Error ? error.message : error)); }
 export function couldNotFindAzureResource(name: string): string { return localize('arc.couldNotFindAzureResource', "Could not find Azure resource for '{0}'", name); }
+export function copiedToClipboard(name: string): string { return localize('arc.copiedToClipboard', '{0} copied to clipboard', name); }
 
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");

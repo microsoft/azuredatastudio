@@ -71,7 +71,7 @@ export class InputKeyValue extends KeyValue {
 
 		copy.onDidClick(async () => {
 			vscode.env.clipboard.writeText(this.value);
-			vscode.window.showInformationMessage(`${this.key} ${loc.copiedToClipboard}`);
+			vscode.window.showInformationMessage(loc.copiedToClipboard(this.key));
 		});
 
 		container.addItem(copy, { CSSStyles: { 'margin-left': '10px' } });
