@@ -19,7 +19,7 @@ explorer-widget .list-row {
 }
 
 /**
- * The widget could be put in a grid container and get unexpected colors,
+ * The widget could be put into container with class name "grid" and inherit colors unexpectedly,
  * using this selector to force the cell to use the colors from parent elements
  */
 .grid .explorer-widget .slick-cell {
