@@ -14,6 +14,8 @@ import * as azdata from 'azdata';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 import { TitledComponent } from 'sql/workbench/browser/modelComponents/titledComponent';
 import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { textLinkForeground, textLinkActiveForeground } from 'vs/platform/theme/common/colorRegistry';
 
 @Component({
 	selector: 'modelview-text',
@@ -99,3 +101,24 @@ export default class TextComponent extends TitledComponent implements IComponent
 		return this.requiredIndicator || !!this.description;
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const linkForeground = theme.getColor(textLinkForeground);
+	if (linkForeground) {
+		collector.addRule(`
+		a.modelview-text-link:link,
+		a.modelview-text-link:visited {
+			color: ${linkForeground};
+		}
+		`);
+	}
+
+	const activeForeground = theme.getColor(textLinkActiveForeground);
+	if (activeForeground) {
+		collector.addRule(`
+		a.modelview-text-link:hover {
+			color: ${activeForeground};
+		}
+		`);
+	}
+});
