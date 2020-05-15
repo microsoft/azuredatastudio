@@ -17,6 +17,8 @@ import { Link } from 'vs/platform/opener/browser/link';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
+import { attachLinkStyler } from 'vs/platform/theme/common/styler';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 @Component({
 	selector: 'modelview-text',
@@ -44,7 +46,8 @@ export default class TextComponent extends TitledComponent implements IComponent
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(ILogService) private logService: ILogService) {
+		@Inject(ILogService) private logService: ILogService,
+		@Inject(IThemeService) private themeService: IThemeService) {
 		super(changeRef, el);
 	}
 
@@ -120,10 +123,11 @@ export default class TextComponent extends TitledComponent implements IComponent
 
 			// Now insert the link element
 			const link = links[i];
-			const linkElement = this.instantiationService.createInstance(Link, {
+			const linkElement = this._register(this.instantiationService.createInstance(Link, {
 				label: link.text,
 				href: link.url
-			});
+			}));
+			this._register(attachLinkStyler(linkElement, this.themeService));
 			(<HTMLElement>this.textContainer.nativeElement).appendChild(linkElement.el);
 
 			// And finally update the text to remove the text up through the placeholder we just added
