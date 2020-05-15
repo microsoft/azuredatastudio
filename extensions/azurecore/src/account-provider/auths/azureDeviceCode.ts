@@ -150,6 +150,7 @@ export class AzureDeviceCode extends AzureAuth {
 			return result;
 		} catch (ex) {
 			console.log(ex);
+			console.log('Unexpected error making Azure auth request', 'azureCore.checkForResult', JSON.stringify(ex?.response?.data, undefined, 2));
 			throw new Error(msg);
 		}
 	}

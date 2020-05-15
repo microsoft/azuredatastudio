@@ -23,6 +23,10 @@ export class ApiWrapper {
 		return azdata.connection.getCurrentConnection();
 	}
 
+	public openConnectionDialog(): Thenable<azdata.connection.Connection> {
+		return azdata.connection.openConnectionDialog();
+	}
+
 	public getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
 		return azdata.connection.getCredentials(connectionId);
 	}

@@ -7,57 +7,35 @@ import * as azdata from 'azdata';
 import { BdcStatusModel, ResourceStatusModel } from '../controller/apiGenerated';
 import { BdcDashboardResourceStatusPage } from './bdcDashboardResourceStatusPage';
 import { BdcDashboardModel } from './bdcDashboardModel';
-import { getHealthStatusDot } from '../utils';
-import { cssStyles } from '../constants';
 import { BdcDashboardPage } from './bdcDashboardPage';
-
-type ServiceTab = { div: azdata.DivContainer, dot: azdata.TextComponent, text: azdata.TextComponent };
+import { getHealthStatusDotIcon } from '../utils';
 
 export class BdcServiceStatusPage extends BdcDashboardPage {
 
-	private currentTab: { tab: ServiceTab, index: number };
-	private currentTabPage: BdcDashboardResourceStatusPage;
-	private rootContainer: azdata.FlexContainer;
-	private resourceHeader: azdata.FlexContainer;
+	private createdResourceTabs: Map<string, azdata.Tab> = new Map<string, azdata.Tab>();
+	private tabbedPanel: azdata.TabbedPanelComponent;
 
-	private createdTabs: Map<string, ServiceTab> = new Map<string, ServiceTab>();
-
-	constructor(private serviceName: string, private model: BdcDashboardModel, private modelView: azdata.ModelView) {
-		super();
+	constructor(serviceName: string, model: BdcDashboardModel, modelView: azdata.ModelView) {
+		super(model, modelView, serviceName);
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.eventuallyRunOnInitialized(() => this.handleBdcStatusUpdate(bdcStatus)));
 	}
 
-	public get container(): azdata.FlexContainer {
+	public get container(): azdata.TabbedPanelComponent {
 		// Lazily create the container only when needed
-		if (!this.rootContainer) {
+		if (!this.tabbedPanel) {
 			this.createPage();
 		}
-		return this.rootContainer;
+		return this.tabbedPanel;
 	}
 
 	private createPage(): void {
-		this.rootContainer = this.modelView.modelBuilder.flexContainer().withLayout(
-			{
-				flexFlow: 'column',
-				width: '100%',
-				height: '100%'
-			}).component();
+		this.tabbedPanel = this.modelView.modelBuilder.tabbedPanel()
+			.withLayout({ showIcon: true, alwaysShowTabs: true }).component();
 
-		this.resourceHeader = this.modelView.modelBuilder.flexContainer().withLayout(
-			{
-				flexFlow: 'row',
-				width: '100%',
-				height: '25px'
-			}
-		).withProperties({
-			ariaRole: 'tablist'
-		}).component();
-
-		this.rootContainer.addItem(this.resourceHeader, { CSSStyles: { 'padding-top': '15px' } });
+		// Initialize our set of tab pages
+		this.handleBdcStatusUpdate(this.model.bdcStatus);
 
 		this.initialized = true;
-
-		this.handleBdcStatusUpdate(this.model.bdcStatus);
 	}
 
 	private handleBdcStatusUpdate(bdcStatus: BdcStatusModel): void {
@@ -66,90 +44,29 @@ export class BdcServiceStatusPage extends BdcDashboardPage {
 		}
 		const service = bdcStatus.services.find(s => s.serviceName === this.serviceName);
 		if (service && service.resources) {
-			this.createResourceNavTabs(service.resources);
+			this.updateResourcePages(service.resources);
 		}
-	}
-
-	private changeSelectedTabPage(newPage: BdcDashboardResourceStatusPage): void {
-		if (this.currentTabPage) {
-			this.rootContainer.removeItem(this.currentTabPage.container);
-		}
-		this.rootContainer.addItem(newPage.container);
-		this.currentTabPage = newPage;
 	}
 
 	/**
-	 * Helper to create the navigation tabs for the resources
+	 * Update the resource tab pages, creating any new ones as necessary
 	 */
-	private createResourceNavTabs(resources: ResourceStatusModel[]) {
-		let tabIndex = this.createdTabs.size;
+	private updateResourcePages(resources: ResourceStatusModel[]): void {
 		resources.forEach(resource => {
-			const existingTab: ServiceTab = this.createdTabs.get(resource.resourceName);
+			const existingTab = this.createdResourceTabs.get(resource.resourceName);
 			if (existingTab) {
-				// We already created this tab so just update the status
-				existingTab.dot.value = getHealthStatusDot(resource.healthStatus);
+				existingTab.icon = getHealthStatusDotIcon(resource.healthStatus);
 			} else {
-				// New tab - create and add to the end of the container
-				const currentIndex = tabIndex++;
-				const resourceHeaderTab = createResourceHeaderTab(this.modelView.modelBuilder, resource);
-				this.createdTabs.set(resource.resourceName, resourceHeaderTab);
 				const resourceStatusPage = new BdcDashboardResourceStatusPage(this.model, this.modelView, this.serviceName, resource.resourceName);
-				resourceHeaderTab.div.onDidClick(() => {
-					// Don't need to do anything if this is already the currently selected tab
-					if (this.currentTab.index === currentIndex) {
-						return;
-					}
-					if (this.currentTab) {
-						this.currentTab.tab.text.updateCssStyles(cssStyles.unselectedResourceHeaderTab);
-						this.currentTab.tab.div.ariaSelected = false;
-						this.resourceHeader.removeItem(this.currentTab.tab.div);
-						this.resourceHeader.insertItem(this.currentTab.tab.div, this.currentTab.index, { flex: '0 0 auto', CSSStyles: cssStyles.unselectedTabDiv });
-					}
-					this.changeSelectedTabPage(resourceStatusPage);
-					this.currentTab = { tab: resourceHeaderTab, index: currentIndex };
-					this.currentTab.tab.text.updateCssStyles(cssStyles.selectedResourceHeaderTab);
-					this.currentTab.tab.div.ariaSelected = true;
-					this.resourceHeader.removeItem(this.currentTab.tab.div);
-					this.resourceHeader.insertItem(this.currentTab.tab.div, this.currentTab.index, { flex: '0 0 auto', CSSStyles: cssStyles.selectedTabDiv });
-				});
-				// Set initial page
-				if (!this.currentTabPage) {
-					this.changeSelectedTabPage(resourceStatusPage);
-					this.currentTab = { tab: resourceHeaderTab, index: currentIndex };
-					this.currentTab.tab.text.updateCssStyles(cssStyles.selectedResourceHeaderTab);
-					this.currentTab.tab.div.ariaSelected = true;
-					this.resourceHeader.addItem(resourceHeaderTab.div, { flex: '0 0 auto', CSSStyles: cssStyles.selectedTabDiv });
-				}
-				else {
-					resourceHeaderTab.text.updateCssStyles(cssStyles.unselectedResourceHeaderTab);
-					this.resourceHeader.addItem(resourceHeaderTab.div, { flex: '0 0 auto', CSSStyles: cssStyles.unselectedTabDiv });
-				}
+				const newTab: azdata.Tab = {
+					title: resource.resourceName,
+					id: resource.resourceName,
+					content: resourceStatusPage.container,
+					icon: getHealthStatusDotIcon(resource.healthStatus)
+				};
+				this.createdResourceTabs.set(resource.resourceName, newTab);
 			}
 		});
+		this.tabbedPanel.updateTabs(Array.from(this.createdResourceTabs.values()));
 	}
-}
-
-/**
- * Creates a single resource header tab
- * @param modelBuilder The ModelBuilder used to construct the object
- * @param resourceStatus The status of the resource we're creating
- */
-function createResourceHeaderTab(modelBuilder: azdata.ModelBuilder, resourceStatus: ResourceStatusModel): ServiceTab {
-	const resourceHeaderTab = modelBuilder
-		.divContainer()
-		.withLayout({
-			width: '100px',
-			height: '25px'
-		})
-		.withProperties({
-			clickable: true,
-			ariaRole: 'tab'
-		}).component();
-	const innerContainer = modelBuilder.flexContainer().withLayout({ width: '100px', height: '25px', flexFlow: 'row' }).component();
-	const statusDot = modelBuilder.text().withProperties({ value: getHealthStatusDot(resourceStatus.healthStatus), CSSStyles: { 'color': 'red', 'font-size': '40px', 'width': '20px', 'text-align': 'right', ...cssStyles.nonSelectableText } }).component();
-	innerContainer.addItem(statusDot, { flex: '0 0 auto' });
-	const resourceHeaderLabel = modelBuilder.text().withProperties({ value: resourceStatus.resourceName, CSSStyles: { 'text-align': 'left', ...cssStyles.tabHeaderText } }).component();
-	innerContainer.addItem(resourceHeaderLabel);
-	resourceHeaderTab.addItem(innerContainer);
-	return { div: resourceHeaderTab, text: resourceHeaderLabel, dot: statusDot };
 }

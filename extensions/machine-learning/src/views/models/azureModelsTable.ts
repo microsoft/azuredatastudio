@@ -65,9 +65,22 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 								...constants.cssStyles.tableRow
 							},
 						},
+						{ // Framework
+							displayName: constants.modelFramework,
+							ariaLabel: constants.modelFramework,
+							valueType: azdata.DeclarativeDataType.string,
+							isReadOnly: true,
+							width: 100,
+							headerCssStyles: {
+								...constants.cssStyles.tableHeader
+							},
+							rowCssStyles: {
+								...constants.cssStyles.tableRow
+							},
+						},
 						{ // Version
-							displayName: constants.modelVersion,
-							ariaLabel: constants.modelVersion,
+							displayName: constants.modelFrameworkVersion,
+							ariaLabel: constants.modelFrameworkVersion,
 							valueType: azdata.DeclarativeDataType.string,
 							isReadOnly: true,
 							width: 100,
@@ -159,7 +172,7 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 				selectModelButton = radioButton;
 			}
 
-			return [model.name, model.createdTime, model.frameworkVersion, selectModelButton];
+			return [model.name, model.createdTime, model.framework, model.frameworkVersion, selectModelButton];
 		}
 
 		return [];

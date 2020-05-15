@@ -254,8 +254,8 @@ describe('Package Manager', () => {
 			{ name: 'sqlmlutils', fileName: 'sqlmlutils_0.7.1.zip', downloadUrl: 'https://github.com/microsoft/sqlmlutils/blob/master/R/dist/sqlmlutils_0.7.1.zip?raw=true'}
 		]);
 		testContext.httpClient.setup(x => x.download(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
-		testContext.config.setup(x => x.pythonExecutable).returns(() => 'python');
-		testContext.config.setup(x => x.rExecutable).returns(() => 'r');
+		testContext.config.setup(x => x.getPythonExecutable(true)).returns(() => Promise.resolve('python'));
+		testContext.config.setup(x => x.getRExecutable(true)).returns(() => Promise.resolve('r'));
 		testContext.config.setup(x => x.rEnabled).returns(() => true);
 		testContext.config.setup(x => x.pythonEnabled).returns(() => true);
 		let packageManager = new PackageManager(

@@ -739,6 +739,7 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$setDataProvider(handle: number, componentId: string): Thenable<void>;
 	$refreshDataProvider(handle: number, componentId: string, item?: any): Thenable<void>;
 	$focus(handle: number, componentId: string): Thenable<void>;
+	$doAction(handle: number, componentId: string, action: string, ...args: any[]): Thenable<void>;
 }
 
 export interface ExtHostObjectExplorerShape {
@@ -806,7 +807,7 @@ export interface ExtHostNotebookShape {
 	$handleNotebookClosed(notebookUri: UriComponents): void;
 
 	// Server Manager APIs
-	$doStartServer(managerHandle: number): Thenable<void>;
+	$doStartServer(managerHandle: number, kernelSpec: azdata.nb.IKernelSpec): Thenable<void>;
 	$doStopServer(managerHandle: number): Thenable<void>;
 
 	// Content Manager APIs

@@ -144,12 +144,37 @@ export function getInsertModelQuery(model: ImportedModel, table: DatabaseTable):
 		`;
 }
 
+/**
+ * Returns the query for loading model content from database
+ * @param model model information
+ */
 export function getModelContentQuery(model: ImportedModel): string {
 	const threePartTableName = utils.getRegisteredModelsThreePartsName(model.table.databaseName || '', model.table.tableName || '', model.table.schema || '');
+	const len = model.contentLength !== undefined ? model.contentLength : 0;
+	const maxLength = 1000;
+	let numberOfColumns = len / maxLength;
+	// The query provider doesn't return the whole file bites if too big. so loading the bites it blocks
+	// and merge together to load the file
+	numberOfColumns = numberOfColumns <= 0 ? 1 : numberOfColumns;
+	let columns: string[] = [];
+	let fileIndex = 0;
+	for (let index = 0; index < numberOfColumns; index++) {
+		const length = fileIndex === 0 ? maxLength + 1 : maxLength;
+		columns.push(`substring(@str, ${fileIndex}, ${length}) as d${index}`);
+		fileIndex = fileIndex + length;
+	}
+
+	if (fileIndex < len) {
+		columns.push(`substring(@str, ${fileIndex}, ${maxLength}) as d${columns.length}`);
+	}
 	return `
-		SELECT model
+		DECLARE @str varbinary(max)
+
+		SELECT @str=model
 		FROM ${threePartTableName}
 		WHERE model_id = ${model.id};
+
+		select ${columns.join(',')}
 		`;
 }
 
@@ -190,6 +215,6 @@ export function getDeleteModelQuery(model: ImportedModel): string {
 		`;
 }
 
-export const selectQuery = 'SELECT model_id, model_name, model_description, model_version, model_creation_time, model_framework, model_framework_version, model_deployment_time, deployed_by, run_id';
+export const selectQuery = 'SELECT model_id, model_name, model_description, model_version, model_creation_time, model_framework, model_framework_version, model_deployment_time, deployed_by, run_id, len(model)';
 
 
