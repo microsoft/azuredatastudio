@@ -109,7 +109,7 @@ steps:
       exec { yarn electron x64 }
       exec { .\scripts\test.bat --build --coverage --reporter mocha-junit-reporter --tfs "Unit Tests" }
     displayName: Run unit tests (Electron)
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'false'))
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - powershell: |
       # Figure out the full absolute path of the product we just built
@@ -122,7 +122,7 @@ steps:
       $AppNameShort = $AppProductJson.nameShort
       exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; $env:VSCODE_REMOTE_SERVER_PATH = "$(agent.builddirectory)\azuredatastudio-reh-win32-x64"; .\scripts\test-integration.bat --build --tfs "Integration Tests" }
     displayName: Run integration tests (Electron)
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'false'))
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1

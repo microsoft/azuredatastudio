@@ -119,7 +119,7 @@ steps:
       VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-darwin" \
       ./scripts/test-integration.sh --build --tfs "Integration Tests"
     displayName: Run integration tests (Electron)
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'false'))
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
       set -e

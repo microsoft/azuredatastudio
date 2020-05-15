@@ -105,13 +105,13 @@ steps:
       set -e
       service xvfb start
     displayName: Start xvfb
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'false'))
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
       set -e
       DISPLAY=:10 ./scripts/test.sh --build --coverage --reporter mocha-junit-reporter --tfs "Unit Tests"
     displayName: Run unit tests (Electron)
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'false'))
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
       # Figure out the full absolute path of the product we just built
@@ -124,7 +124,7 @@ steps:
       VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-x64" \
       DISPLAY=:10 ./scripts/test-integration.sh --build --tfs "Integration Tests"
     displayName: Run integration tests (Electron)
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'false'))
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
       set -e
