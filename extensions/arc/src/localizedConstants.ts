@@ -46,6 +46,7 @@ export const feedback = localize('arc.feedback', 'Feedback');
 export const selectConnectionString = localize('arc.selectConnectionString', 'Select from available client connection strings below');
 export const vCores = localize('arc.vCores', 'vCores');
 export const ram = localize('arc.ram', 'RAM');
+export const copiedToClipboard = localize('arc.copiedToClipboard', 'copied to clipboard');
 
 // Postgres constants
 export const coordinatorEndpoint = localize('arc.coordinatorEndpoint', 'Coordinator endpoint');

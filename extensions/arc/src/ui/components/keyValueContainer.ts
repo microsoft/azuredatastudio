@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import * as loc from '../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../constants';
 
 /** A container with a single vertical column of KeyValue pairs */
@@ -70,7 +71,7 @@ export class InputKeyValue extends KeyValue {
 
 		copy.onDidClick(async () => {
 			vscode.env.clipboard.writeText(this.value);
-			vscode.window.showInformationMessage(`${this.key} copied to clipboard`);
+			vscode.window.showInformationMessage(`${this.key} ${loc.copiedToClipboard}`);
 		});
 
 		container.addItem(copy, { CSSStyles: { 'margin-left': '10px' } });
