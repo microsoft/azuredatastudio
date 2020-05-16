@@ -11,6 +11,7 @@ const localize = nls.loadMessageBundle();
 export const dataSourcesFileName = 'datasources.json';
 export const sqlprojExtension = '.sqlproj';
 export const initialCatalogSetting = 'Initial Catalog';
+export const schemaCompareExtensionId = 'microsoft.schema-compare';
 
 // UI Strings
 
@@ -51,6 +52,8 @@ export const unknownDataSourceType = localize('unknownDataSourceType', "Unknown 
 export const invalidSqlConnectionString = localize('invalidSqlConnectionString', "Invalid SQL connection string");
 export const projectNameRequired = localize('projectNameRequired', "Name is required to create a new database project.");
 export const projectLocationRequired = localize('projectLocationRequired', "Location is required to create a new database project.");
+export const schemaCompareNotInstalled = localize('schemaCompareNotInstalled', "Schema compare extension installation is required to run schema compare");
+export const buildDacpacNotFound = localize('buildDacpacNotFound', "Dacpac created from build not found");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNotFound', "Could not get mssql extension's install location at {0}", mssqlConfigDir); }
