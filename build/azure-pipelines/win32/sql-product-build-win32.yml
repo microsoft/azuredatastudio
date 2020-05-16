@@ -103,13 +103,13 @@ steps:
     env:
       VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
 
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { yarn electron x64 }
-      exec { .\scripts\test.bat --build --coverage --reporter mocha-junit-reporter --tfs "Unit Tests" }
-    displayName: Run unit tests (Electron)
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+  # - powershell: |
+  #     . build/azure-pipelines/win32/exec.ps1
+  #     $ErrorActionPreference = "Stop"
+  #     exec { yarn electron x64 }
+  #     exec { .\scripts\test.bat --build --coverage --reporter mocha-junit-reporter --tfs "Unit Tests" }
+  #   displayName: Run unit tests (Electron)
+  #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - powershell: |
       # Figure out the full absolute path of the product we just built
