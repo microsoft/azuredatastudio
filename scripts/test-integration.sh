@@ -25,14 +25,7 @@ else
 	# Run from a built: need to compile all test extensions
 	# because we run extension tests from their source folders
 	# and the build bundles extensions into .build webpacked
-	yarn gulp 	compile-extension:vscode-api-tests \
-				compile-extension:vscode-colorize-tests \
-				compile-extension:vscode-notebook-tests \
-				compile-extension:markdown-language-features \
-				compile-extension:emmet \
-				compile-extension:css-language-features-server \
-				compile-extension:html-language-features-server \
-				compile-extension:json-language-features-server \
+	yarn gulp 	compile-extension:azurecore \
 				compile-extension:git
 
 	# Configuration for more verbose output
