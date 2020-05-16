@@ -26,6 +26,7 @@
 }
 
 .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container {
+	box-sizing: border-box;
 	justify-content: flex-start;
 	padding-left: 15px;
 	flex-wrap: wrap;
