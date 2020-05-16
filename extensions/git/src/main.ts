@@ -6,7 +6,7 @@
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { ExtensionContext, workspace, window, Disposable, commands, OutputChannel } from 'vscode'; // {{SQL CARBON EDIT}} - remove unused imports
+import { ExtensionContext, workspace, window, Disposable, commands, OutputChannel, Uri } from 'vscode';
 import { findGit, Git, IGit } from './git';
 import { Model } from './model';
 import { CommandCenter } from './commands';
@@ -78,7 +78,7 @@ async function createModel(context: ExtensionContext, outputChannel: OutputChann
 		new GitTimelineProvider(model)
 	);
 
-	await checkGitVersion(info);
+	// await checkGitVersion(info); {{SQL CARBON EDIT}} Don't check git version
 
 	return model;
 }
@@ -180,13 +180,8 @@ export async function activate(context: ExtensionContext): Promise<GitExtension>
 	return result;
 }
 
-async function checkGitVersion(_info: IGit): Promise<void> { // {{SQL CARBON EDIT}} - Rename info to _info to prevent error due to unused variable
-	return; /* {{SQL CARBON EDIT}} return immediately
-
-	/*const config = workspace.getConfiguration('git');
-	const shouldIgnore = config.get<boolean>('ignoreLegacyWarning') === true;
-
-
+// @ts-expect-error
+async function checkGitVersion(info: IGit): Promise<void> {
 	const config = workspace.getConfiguration('git');
 	const shouldIgnore = config.get<boolean>('ignoreLegacyWarning') === true;
 
@@ -211,5 +206,5 @@ async function checkGitVersion(_info: IGit): Promise<void> { // {{SQL CARBON EDI
 		commands.executeCommand('vscode.open', Uri.parse('https://git-scm.com/'));
 	} else if (choice === neverShowAgain) {
 		await config.update('ignoreLegacyWarning', true, true);
-	}*/
+	}
 }
