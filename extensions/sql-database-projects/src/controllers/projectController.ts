@@ -194,14 +194,24 @@ export class ProjectsController {
 		console.log(result);
 	}
 
-	private static async getService(extensionId: string): Promise<mssql.IDacFxService> {
-		const ext = extensions.getExtension(extensionId);
+	public async schemaCompare(treeNode: BaseProjectTreeItem): Promise<void> {
+		// check if schema compare extension is installed
+		if (this.apiWrapper.getExtension(constants.schemaCompareExtensionId)) {
+			// build project
+			await this.buildProject(treeNode);
 
-		if (ext) {
-			return (ext.exports as mssql.IExtension).dacFx;
-		}
-		else {
-			throw new Error(`Failed to get extension: ${extensionId}`);
+			// start schema compare with the dacpac produced from build
+			const project = this.getProjectContextFromTreeNode(treeNode);
+			const dacpacPath = path.join(project.projectFolderPath, 'bin', 'Debug', `${project.projectFileName}.dacpac`);
+
+			// check that dacpac exists
+			if (await utils.exists(dacpacPath)) {
+				this.apiWrapper.executeCommand('schemaCompare.start', dacpacPath);
+			} else {
+				this.apiWrapper.showErrorMessage(constants.buildDacpacNotFound);
+			}
+		} else {
+			this.apiWrapper.showErrorMessage(constants.schemaCompareNotInstalled);
 		}
 	}
 
@@ -268,6 +278,17 @@ export class ProjectsController {
 	}
 
 	//#region Helper methods
+
+	private static async getService(extensionId: string): Promise<mssql.IDacFxService> {
+		const ext = extensions.getExtension(extensionId);
+
+		if (ext) {
+			return (ext.exports as mssql.IExtension).dacFx;
+		}
+		else {
+			throw new Error(`Failed to get extension: ${extensionId}`);
+		}
+	}
 
 	private macroExpansion(template: string, macroDict: Record<string, string>): string {
 		const macroIndicator = '@@';
