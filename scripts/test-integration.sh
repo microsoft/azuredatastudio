@@ -51,7 +51,7 @@ fi
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX $ROOT/extensions/azurecore/test-fixtures --extensionDevelopmentPath=$ROOT/extensions/azurecore --extensionTestsPath=$ROOT/extensions/azurecore/out/test --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions --user-data-dir=$VSCODEUSERDATADIR
 
 # Tests in commonJS
-cd $ROOT/extensions/css-language-features/server && $ROOT/scripts/node-electron.sh test/index.js
-cd $ROOT/extensions/html-language-features/server && $ROOT/scripts/node-electron.sh test/index.js
+# cd $ROOT/extensions/css-language-features/server && $ROOT/scripts/node-electron.sh test/index.js
+# cd $ROOT/extensions/html-language-features/server && $ROOT/scripts/node-electron.sh test/index.js
 
 rm -r $VSCODEUSERDATADIR
