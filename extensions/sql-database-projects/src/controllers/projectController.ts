@@ -117,7 +117,7 @@ export class ProjectsController {
 	}
 
 	public closeProject(treeNode: BaseProjectTreeItem) {
-		const project = this.getProjectContextFromTreeNode(treeNode);
+		const project = ProjectsController.getProjectFromContext(treeNode);
 		this.projects = this.projects.filter((e) => { return e !== project; });
 		this.refreshProjectsTree();
 	}
@@ -135,7 +135,7 @@ export class ProjectsController {
 	 */
 	public async buildProject(project: Project): Promise<string>;
 	public async buildProject(context: Project | BaseProjectTreeItem): Promise<string | undefined> {
-		const project: Project = context instanceof Project ? context : this.getProjectContextFromTreeNode(context);
+		const project: Project = ProjectsController.getProjectFromContext(context);
 
 		// Check mssql extension for project dlls (tracking issue #10273)
 		await this.buildHelper.createBuildDirFolder();
@@ -167,7 +167,7 @@ export class ProjectsController {
 	 */
 	public async deployProject(project: Project): Promise<DeployDatabaseDialog>;
 	public async deployProject(context: Project | BaseProjectTreeItem): Promise<DeployDatabaseDialog> {
-		const project: Project = context instanceof Project ? context : this.getProjectContextFromTreeNode(context);
+		const project: Project = ProjectsController.getProjectFromContext(context);
 		let deployDatabaseDialog = this.getDeployDialog(project);
 
 		deployDatabaseDialog.deploy = async (proj, prof) => await this.executionCallback(proj, prof);
@@ -202,7 +202,7 @@ export class ProjectsController {
 			await this.buildProject(treeNode);
 
 			// start schema compare with the dacpac produced from build
-			const project = this.getProjectContextFromTreeNode(treeNode);
+			const project = ProjectsController.getProjectFromContext(treeNode);
 			const dacpacPath = path.join(project.projectFolderPath, 'bin', 'Debug', `${project.projectFileName}.dacpac`);
 
 			// check that dacpac exists
@@ -217,12 +217,12 @@ export class ProjectsController {
 	}
 
 	public async import(treeNode: BaseProjectTreeItem) {
-		const project = this.getProjectContextFromTreeNode(treeNode);
+		const project = ProjectsController.getProjectFromContext(treeNode);
 		await this.apiWrapper.showErrorMessage(`Import not yet implemented: ${project.projectFilePath}`); // TODO
 	}
 
 	public async addFolderPrompt(treeNode: BaseProjectTreeItem) {
-		const project = this.getProjectContextFromTreeNode(treeNode);
+		const project = ProjectsController.getProjectFromContext(treeNode);
 		const newFolderName = await this.promptForNewObjectName(new templates.ProjectScriptType(templates.folder, constants.folderFriendlyName, ''), project);
 
 		if (!newFolderName) {
@@ -237,7 +237,7 @@ export class ProjectsController {
 	}
 
 	public async addItemPromptFromNode(treeNode: BaseProjectTreeItem, itemTypeName?: string) {
-		await this.addItemPrompt(this.getProjectContextFromTreeNode(treeNode), this.getRelativePath(treeNode), itemTypeName);
+		await this.addItemPrompt(ProjectsController.getProjectFromContext(treeNode), this.getRelativePath(treeNode), itemTypeName);
 	}
 
 	public async addItemPrompt(project: Project, relativePath: string, itemTypeName?: string) {
@@ -284,6 +284,19 @@ export class ProjectsController {
 		return new DeployDatabaseDialog(this.apiWrapper, project);
 	}
 
+	private static getProjectFromContext(context: Project | BaseProjectTreeItem) {
+		if (context instanceof Project) {
+			return context;
+		}
+
+		if (context.root instanceof ProjectRootTreeItem) {
+			return (context.root as ProjectRootTreeItem).project;
+		}
+		else {
+			throw new Error('Unable to establish project context.  Command invoked from unexpected location: ' + context.uri.path);
+		}
+	}
+
 	private static async getService(extensionId: string): Promise<mssql.IDacFxService> {
 		const ext = extensions.getExtension(extensionId);
 
@@ -309,20 +322,6 @@ export class ProjectsController {
 		}
 
 		return output;
-	}
-
-	private getProjectContextFromTreeNode(treeNode: BaseProjectTreeItem): Project {
-		if (!treeNode) {
-			// TODO: prompt for which (currently-open) project when invoked via command pallet
-			throw new Error('TODO: prompt for which project when invoked via command pallet');
-		}
-
-		if (treeNode.root instanceof ProjectRootTreeItem) {
-			return (treeNode.root as ProjectRootTreeItem).project;
-		}
-		else {
-			throw new Error('Unable to establish project context.  Command invoked from unexpected location: ' + treeNode.uri.path);
-		}
 	}
 
 	private async promptForNewObjectName(itemType: templates.ProjectScriptType, _project: Project): Promise<string | undefined> {
