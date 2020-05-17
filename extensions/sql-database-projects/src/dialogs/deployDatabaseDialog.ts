@@ -291,8 +291,8 @@ export class DeployDatabaseDialog {
 
 			// show connection name if there is one, otherwise show connection string
 			if (this.connection.options['connectionName']) {
-			} else {
 				this.targetConnectionTextBox!.value = this.connection.options['connectionName'];
+			} else {
 				this.targetConnectionTextBox!.value = await azdata.connection.getConnectionString(this.connection.connectionId, false);
 			}
 
