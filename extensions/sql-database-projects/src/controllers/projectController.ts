@@ -151,7 +151,7 @@ export class ProjectsController {
 			return path.join(project.projectFolderPath, 'bin', 'Debug', `${project.projectFileName}.dacpac`);
 		}
 		catch (err) {
-			this.apiWrapper.showErrorMessage(`Build failed.  Check output pane for more details.  ${utils.getErrorMessage(err)}`);
+			this.apiWrapper.showErrorMessage(constants.projBuildFailed(utils.getErrorMessage(err)));
 			return;
 		}
 	}
@@ -160,20 +160,25 @@ export class ProjectsController {
 	 * Builds and deploys a project
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async deployProject(treeNode: BaseProjectTreeItem): Promise<void>;
+	public async deployProject(treeNode: BaseProjectTreeItem): Promise<DeployDatabaseDialog>;
 	/**
 	 * Builds and deploys a project
 	 * @param project Project to be built and deployed
 	 */
-	public async deployProject(project: Project): Promise<void>;
-	public async deployProject(context: Project | BaseProjectTreeItem): Promise<void> {
+	public async deployProject(project: Project): Promise<DeployDatabaseDialog>;
+	public async deployProject(context: Project | BaseProjectTreeItem): Promise<DeployDatabaseDialog> {
 		const project: Project = context instanceof Project ? context : this.getProjectContextFromTreeNode(context);
+		let deployDatabaseDialog = this.getDeployDialog(project);
 
-		const deployDatabaseDialog = new DeployDatabaseDialog(this.apiWrapper, project, async (proj, prof) => await this.deployCallback(proj, prof), async (proj, prof) => await this.deployCallback(proj, prof));
+		deployDatabaseDialog.deploy = async (proj, prof) => await this.executionCallback(proj, prof);
+		deployDatabaseDialog.generateScript = async (proj, prof) => await this.executionCallback(proj, prof);
+
 		deployDatabaseDialog.openDialog();
+
+		return deployDatabaseDialog;
 	}
 
-	public async deployCallback(project: Project, profile: IDeploymentProfile | IGenerateScriptProfile): Promise<void> {
+	public async executionCallback(project: Project, profile: IDeploymentProfile | IGenerateScriptProfile): Promise<mssql.DacFxResult | undefined> {
 		const dacpacPath = await this.buildProject(project);
 
 		if (!dacpacPath) {
@@ -182,16 +187,12 @@ export class ProjectsController {
 
 		const dacFxService = await ProjectsController.getService(mssql.extension.name);
 
-		let result;
-
 		if (profile as IDeploymentProfile) {
-			result = await dacFxService.deployDacpac(dacpacPath, profile.databaseName, (<IDeploymentProfile>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
+			return await dacFxService.deployDacpac(dacpacPath, profile.databaseName, (<IDeploymentProfile>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
 		}
 		else {
-			result = await dacFxService.generateDeployScript(dacpacPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
+			return await dacFxService.generateDeployScript(dacpacPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
 		}
-
-		console.log(result);
 	}
 
 	public async schemaCompare(treeNode: BaseProjectTreeItem): Promise<void> {
@@ -278,6 +279,10 @@ export class ProjectsController {
 	}
 
 	//#region Helper methods
+
+	public getDeployDialog(project: Project): DeployDatabaseDialog {
+		return new DeployDatabaseDialog(this.apiWrapper, project);
+	}
 
 	private static async getService(extensionId: string): Promise<mssql.IDacFxService> {
 		const ext = extensions.getExtension(extensionId);

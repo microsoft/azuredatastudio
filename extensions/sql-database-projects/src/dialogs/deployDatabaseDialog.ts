@@ -30,7 +30,10 @@ export class DeployDatabaseDialog {
 	private connection: azdata.connection.Connection | undefined;
 	private connectionIsDataSource: boolean | undefined;
 
-	constructor(private apiWrapper: ApiWrapper, private project: Project, private deploy: (proj: Project, profile: IDeploymentProfile) => any, private generateScript: (proj: Project, profile: IGenerateScriptProfile) => any) {
+	public deploy: ((proj: Project, profile: IDeploymentProfile) => any) | undefined;
+	public generateScript: ((proj: Project, profile: IGenerateScriptProfile) => any) | undefined;
+
+	constructor(private apiWrapper: ApiWrapper, private project: Project) {
 		this.dialog = azdata.window.createModelViewDialog(constants.deployDialogName);
 		this.deployTab = azdata.window.createTab(constants.deployDialogName);
 	}
@@ -52,7 +55,6 @@ export class DeployDatabaseDialog {
 
 		azdata.window.openDialog(this.dialog);
 	}
-
 
 	private initializeDialog(): void {
 		this.initializeDeployTab();
@@ -104,7 +106,7 @@ export class DeployDatabaseDialog {
 		});
 	}
 
-	private async getConnectionUri(): Promise<string> {
+	public async getConnectionUri(): Promise<string> {
 		// if target connection is a data source, have to check if already connected or if connection dialog needs to be opened
 		let connId: string;
 
@@ -136,28 +138,34 @@ export class DeployDatabaseDialog {
 		return await azdata.connection.getUriForConnection(connId);
 	}
 
-	private async deployClick(): Promise<void> {
+	public async deployClick(): Promise<void> {
 		const profile: IDeploymentProfile = {
-			databaseName: this.targetDatabaseTextBox!.value!,
+			databaseName: this.getTargetDatabaseName(),
 			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: this.project.sqlCmdVariables
 		};
 
-		await this.deploy(this.project, profile);
+		await this.deploy!(this.project, profile);
 
 		azdata.window.closeDialog(this.dialog);
 	}
 
-	private async generateScriptClick(): Promise<void> {
+	public async generateScriptClick(): Promise<void> {
 		const profile: IGenerateScriptProfile = {
-			databaseName: this.targetDatabaseTextBox!.value!,
+			databaseName: this.getTargetDatabaseName(),
 			connectionUri: await this.getConnectionUri()
 		};
 
-		await this.generateScript(this.project, profile);
+		if (this.generateScript) {
+			await this.generateScript(this.project, profile);
+		}
 
 		azdata.window.closeDialog(this.dialog);
+	}
+
+	private getTargetDatabaseName(): string {
+		return this.targetDatabaseTextBox?.value ?? '';
 	}
 
 	public getDefaultDatabaseName(): string {

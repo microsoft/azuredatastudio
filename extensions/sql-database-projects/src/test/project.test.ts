@@ -19,7 +19,7 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 
 	beforeEach(async () => {
-		projFilePath = await testUtils.createTestSqlProj(baselines.openProjectFileBaseline);
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
 	});
 
 	it('Should read Project from sqlproj', async function (): Promise<void> {

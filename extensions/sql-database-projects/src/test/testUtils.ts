@@ -10,6 +10,7 @@ import * as constants from '../common/constants';
 import { promises as fs } from 'fs';
 import should = require('should');
 import { AssertionError } from 'assert';
+import { Project } from '../models/project';
 
 export async function shouldThrowSpecificError(block: Function, expectedMessage: string, details?: string) {
 	let succeeded = false;
@@ -26,8 +27,12 @@ export async function shouldThrowSpecificError(block: Function, expectedMessage:
 	}
 }
 
-export async function createTestSqlProj(contents: string, folderPath?: string): Promise<string> {
+export async function createTestSqlProjFile(contents: string, folderPath?: string): Promise<string> {
 	return await createTestFile(contents, 'TestProject.sqlproj', folderPath);
+}
+
+export async function createTestProject(contents: string, folderPath?: string): Promise<Project> {
+	return new Project(await createTestSqlProjFile(contents, folderPath));
 }
 
 export async function createTestDataSources(contents: string, folderPath?: string): Promise<string> {
