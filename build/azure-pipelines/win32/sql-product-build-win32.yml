@@ -103,7 +103,7 @@ steps:
     env:
       VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
 
-  # - powershell: |
+  # - powershell: | @anthonydresser unit tests timeout never existing the node process
   #     . build/azure-pipelines/win32/exec.ps1
   #     $ErrorActionPreference = "Stop"
   #     exec { yarn electron x64 }
