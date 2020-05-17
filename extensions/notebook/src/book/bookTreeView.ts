@@ -62,6 +62,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				// no-op, not all workspace folders are going to be valid books
 			}
 		}));
+		this._bookViewer = this._apiWrapper.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
+		azdata.nb.onDidChangeActiveNotebookEditor(e => {
+			this.revealActiveDocumentInViewlet(e.document.uri, false);
+		});
 		this._initializeDeferred.resolve();
 	}
 
@@ -114,6 +118,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 
 			if (showPreview) {
+				if (!this._bookViewer.visible) {
+					this._bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
+				}
 				await this.showPreviewFile(urlToOpen);
 			}
 
@@ -176,15 +183,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (!this.currentBook) {
 			this.currentBook = book;
 		}
-		this._bookViewer = this._apiWrapper.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
-		this._bookViewer.onDidChangeVisibility(e => {
-			if (e.visible) {
-				this.revealActiveDocumentInViewlet();
-			}
-		});
-		azdata.nb.onDidChangeActiveNotebookEditor(e => {
-			this.revealActiveDocumentInViewlet(e.document.uri, false);
-		});
 	}
 
 	async showPreviewFile(urlToOpen?: string): Promise<void> {
@@ -234,10 +232,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (!uri) {
 			let openDocument = azdata.nb.activeNotebookEditor;
 			if (openDocument) {
-				bookItem = this.currentBook.getNotebook(openDocument.document.uri.fsPath);
+				let book = this.books.find(b => openDocument.document.uri.path.indexOf(b.bookPath) > -1);
+				bookItem = book?.getNotebook((path.basename(openDocument.document.uri.path)));
 			}
-		} else if (uri.fsPath) {
-			bookItem = this.currentBook.getNotebook(uri.fsPath);
+		} else if (uri.path) {
+			let book = this.books.find(b => uri.path.indexOf(b.bookPath) > -1);
+			bookItem = book?.getNotebook(path.basename(uri.path));
 		}
 		if (bookItem) {
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
