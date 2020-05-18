@@ -7,6 +7,10 @@ import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, OnInit, V
 import { Router } from '@angular/router';
 import { DatabaseInfo } from 'azdata';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { ConnectionProfilePropertyName, ExplorerTable } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTable';
 import { NameProperty } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerView';
@@ -26,8 +30,6 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 @Component({
 	selector: 'explorer-widget',
@@ -54,6 +56,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(IContextKeyService) private readonly contextKeyService: IContextKeyService,
 		@Inject(IEditorProgressService) private readonly progressService: IEditorProgressService,
 		@Inject(IConnectionManagementService) private readonly connectionManagementService: IConnectionManagementService,
+		@Inject(ICapabilitiesService) private readonly capabilitiesService: ICapabilitiesService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
 	) {
 		super(changeRef);
@@ -150,7 +153,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		const currentProfile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
 		this.updateTable(data.map(d => {
 			const item = assign({}, d.options);
-			const profile = currentProfile.toIConnectionProfile();
+			const profile = new ConnectionProfile(this.capabilitiesService, currentProfile);
 			profile.databaseName = d.options[NameProperty];
 			item[ConnectionProfilePropertyName] = profile;
 			return item;
