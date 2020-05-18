@@ -658,7 +658,6 @@ abstract class ResourceNavigator<T> extends Disposable {
 			onDidChangeFocus: Event<{ browserEvent?: UIEvent }>,
 			onDidChangeSelection: Event<{ browserEvent?: UIEvent }>,
 			onDidOpen: Event<{ browserEvent?: UIEvent }>,
-			readonly openOnSingleClick?: boolean
 		},
 		options?: IResourceNavigatorOptions
 	) {
