@@ -51,6 +51,7 @@ export default class MainController implements Disposable {
 
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.build', async (node: BaseProjectTreeItem) => { await this.projectsController.buildProject(node); });
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.deploy', async (node: BaseProjectTreeItem) => { await this.projectsController.deploy(node); });
+		this.apiWrapper.registerCommand('sqlDatabaseProjects.schemaCompare', async (node: BaseProjectTreeItem) => { await this.projectsController.schemaCompare(node); });
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.import', async (node: BaseProjectTreeItem) => { await this.projectsController.import(node); });
 
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.newScript', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.script); });
