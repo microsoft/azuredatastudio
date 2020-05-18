@@ -739,8 +739,8 @@ export class ListResourceNavigator<T> extends ResourceNavigator<number> {
 }
 
 export class TreeResourceNavigator<T, TFilterData> extends ResourceNavigator<T> {
-	constructor(tree: WorkbenchObjectTree<T, TFilterData> | WorkbenchCompressibleObjectTree<T, TFilterData> | WorkbenchDataTree<any, T, TFilterData> | WorkbenchAsyncDataTree<any, T, TFilterData> | WorkbenchCompressibleAsyncDataTree<any, T, TFilterData>, options: IResourceNavigatorOptions = {}) {
-		super(tree, options);
+	constructor(tree: WorkbenchObjectTree<T, TFilterData> | WorkbenchCompressibleObjectTree<T, TFilterData> | WorkbenchDataTree<any, T, TFilterData> | WorkbenchAsyncDataTree<any, T, TFilterData> | WorkbenchCompressibleAsyncDataTree<any, T, TFilterData>, options?: IResourceNavigatorOptions) {
+		super(tree, { openOnSingleClick: tree.openOnSingleClick, ...(options || {}) });
 	}
 }
 
