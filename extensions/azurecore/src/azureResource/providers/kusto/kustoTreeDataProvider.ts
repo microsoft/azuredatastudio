@@ -33,8 +33,8 @@ export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<azureRes
 			id: `Kusto_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: databaseServer.name,
 			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_instance_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/sql_instance.svg')
+				dark: this._extensionContext.asAbsolutePath('resources/dark/azureDE_inverse.svg'),
+				light: this._extensionContext.asAbsolutePath('resources/light/azureDE.svg')
 			},
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServer,
