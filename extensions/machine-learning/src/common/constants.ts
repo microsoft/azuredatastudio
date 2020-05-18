@@ -104,6 +104,7 @@ export const extLangInstallTabTitle = localize('extLang.installTabTitle', "Insta
 export const extLangLanguageCreatedDate = localize('extLang.languageCreatedDate', "Installed");
 export const extLangLanguagePlatform = localize('extLang.languagePlatform', "Platform");
 export const deleteTitle = localize('extLang.delete', "Delete");
+export const editTitle = localize('editTitle', "Edit");
 export const extLangInstallButtonText = localize('extLang.installButtonText', "Install");
 export const extLangCancelButtonText = localize('extLang.CancelButtonText', "Cancel");
 export const extLangDoneButtonText = localize('extLang.DoneButtonText', "Close");
