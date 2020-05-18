@@ -114,6 +114,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 
 			if (showPreview) {
+				this._bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
 				await this.showPreviewFile(urlToOpen);
 			}
 
