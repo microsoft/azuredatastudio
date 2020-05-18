@@ -34,12 +34,12 @@
       "properties": {
         "machineLearning.enablePython": {
           "type": "boolean",
-          "default": "true",
+          "default": true,
           "description": "%ml.enablePython.description%"
         },
         "machineLearning.enableR": {
           "type": "boolean",
-          "default": "false",
+          "default": false,
           "description": "%ml.enableR.description%"
         },
         "machineLearning.pythonPath": {
