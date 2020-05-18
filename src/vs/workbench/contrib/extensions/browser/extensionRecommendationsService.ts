@@ -84,6 +84,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 		this.dynamicWorkspaceRecommendations = instantiationService.createInstance(DynamicWorkspaceRecommendations, isExtensionAllowedToBeRecommended);
 		this.keymapRecommendations = instantiationService.createInstance(KeymapRecommendations, isExtensionAllowedToBeRecommended);
 		this.staticRecommendations = instantiationService.createInstance(StaticRecommendations, isExtensionAllowedToBeRecommended); // {{SQL CARBON EDIT}} add ours
+		this.scenarioRecommendations = instantiationService.createInstance(ScenarioRecommendations, isExtensionAllowedToBeRecommended); // {{SQL CARBON EDIT}} add ours
 
 		if (!this.isEnabled()) {
 			this.sessionSeed = 0;
@@ -99,6 +100,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 		this.experimentalRecommendations.activate();
 		this.keymapRecommendations.activate();
 		this.staticRecommendations.activate(); // {{SQL CARBON EDIT}} add ours
+		this.scenarioRecommendations.activate(); // {{SQL CARBON EDIT}} add ours
 		if (!this.configurationService.getValue<boolean>(ShowRecommendationsOnlyOnDemandKey)) {
 			lifecycleService.when(LifecyclePhase.Eventually).then(() => this.activateProactiveRecommendations());
 		}

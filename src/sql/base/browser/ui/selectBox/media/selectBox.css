@@ -15,6 +15,10 @@
 }
 
 .monaco-select-box {
-	padding: 2px 8px;
-	padding: 0 22px 0 6px !important; /* I don't like this but for now its fine */
+	padding: 0 22px 0 6px;
+}
+
+.monaco-inputbox > .wrapper > .input,
+.monaco-inputbox > .wrapper > .mirror {
+	padding-left: 6px !important;
 }
