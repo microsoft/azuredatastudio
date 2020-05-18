@@ -29,13 +29,13 @@ export default class MainController {
 	private defaultRulesetPropItem: azdata.PropertiesContainerItem;
 	private toDispose: vscode.Disposable[] = [];
 	private lastInvokedResults!: mssql.SqlAssessmentResultItem[];
-	private tblResults!: azdata.TableComponent;
+	private tblResults!: azdata.DeclarativeTableComponent;
 	private btnExportAsScript!: azdata.ButtonComponent;
 	private isServerConnection: boolean = false;
 	private connectionProfile!: azdata.connection.ConnectionProfile;
 	private invokeAssessmentLabel: string = localize('invokeAssessmentLabelServer', "Invoke assessment");
 	private getItemsLabel: string = localize('getAssessmentItemsServer', "View applicable rules");
-
+	private modelView!: azdata.ModelView;
 
 	public constructor(context: vscode.ExtensionContext) {
 		this.apiVersionPropItem = { displayName: localize('propApiVersion', "API Version"), value: '' };
@@ -80,8 +80,13 @@ export default class MainController {
 				}
 			});
 			this.tblResults = await this.createTable(view);
+			this.modelView = view;
 			rootContainer.addItem(this.tblResults, { flex: '1 1 auto' });
+			rootContainer.addItem(view.modelBuilder.dom().withProperties<azdata.DomProperties>({
+				html: '<style> .cls1 {padding-right: 10px}</style>'
+			}).component());
 			await view.initializeModel(rootContainer);
+
 		});
 	}
 
@@ -270,46 +275,85 @@ export default class MainController {
 			).component();
 	}
 
-	private async createTable(view: azdata.ModelView): Promise<azdata.TableComponent> {
-		return view.modelBuilder.table()
-			.withProperties<azdata.TableComponentProperties>({
+	private async createTable(view: azdata.ModelView): Promise<azdata.DeclarativeTableComponent> {
+		const tableHeader = {
+			'border': 'none',
+			'border-right': '1px dotted silver',
+			'border-bottom': '2px solid #bbb',
+		};
+		const rowStyle = {
+			'border': 'none',
+			'border-right': '1px dotted silver'
+		};
+
+
+
+		let table = view.modelBuilder.declarativeTable()
+			.withProperties<azdata.DeclarativeTableProperties>({
+				columns: [
+					{
+						displayName: 'Target',
+						headerCssStyles: tableHeader,
+						valueType: azdata.DeclarativeDataType.string,
+						width: /*'8%'*/100,
+						rowCssStyles: rowStyle,
+						isReadOnly: true
+					},
+					{
+						displayName: 'Severity',
+						headerCssStyles: tableHeader,
+						valueType: azdata.DeclarativeDataType.string,
+						width: /*'7%'*/80,
+						rowCssStyles: rowStyle,
+						isReadOnly: true
+					},
+					{
+						displayName: 'Message',
+						headerCssStyles: tableHeader,
+						valueType: azdata.DeclarativeDataType.component,
+						width: 900,
+						rowCssStyles: rowStyle,
+						isReadOnly: true
+					},
+					{
+						displayName: 'Tags',
+						headerCssStyles: tableHeader,
+						valueType: azdata.DeclarativeDataType.string,
+						width: /*'14%',*/100,
+						rowCssStyles: rowStyle,
+						isReadOnly: true
+					},
+					{
+						displayName: 'Check ID',
+						headerCssStyles: tableHeader,
+						valueType: azdata.DeclarativeDataType.string,
+						width: /*'7%',*/60,
+						rowCssStyles: rowStyle,
+						isReadOnly: true
+					}
+				],
 				data: [],
-				columns: [{
-					value: 'Target',
-					headerCssClass: 'no-borders align-with-header',
-					width: 125
-				},
-				{
-					value: 'Severity',
-					headerCssClass: 'no-borders align-with-header',
-					width: 100
-				},
-				{
-					value: 'Message',
-					headerCssClass: 'no-borders align-with-header',
-					width: 900
-				},
-				{
-					value: 'Tags',
-					headerCssClass: 'no-borders align-with-header',
-					width: 200,
-				},
-				{
-					value: 'Check ID',
-					headerCssClass: 'no-borders ',
-					width: 80
-				}],
-				height: '100%',
-				width: '100%',
-			}).component();
+			})
+			.component();
+
+
+		return table;
 	}
 
-	private transformItem(item: mssql.SqlAssessmentResultItem, assessmentType: AssessmentType): string[] {
+	private transformItem(item: mssql.SqlAssessmentResultItem, assessmentType: AssessmentType): any[] {
 		return [
 			item.targetName,
 			item.level,
-			assessmentType === AssessmentType.AvailableRules ? item.description : item.message,
-			item.tags.join(','),
+			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+				value: `<span class='cls1'>${(assessmentType === AssessmentType.AvailableRules ? item.description : item.message)}</span>{0}`,
+				links: [
+					{ text: 'Show more', url: item.helpLink }
+				],
+				CSSStyles: {
+					'margin': '0px'
+				}
+			}).component(),
+			item.tags.slice(1).join(', '),
 			item.checkId
 		];
 	}
