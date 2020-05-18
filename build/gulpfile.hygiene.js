@@ -103,9 +103,11 @@ const indentationFilter = [
 	'!extensions/resource-deployment/notebooks/**',
 	'!extensions/mssql/notebooks/**',
 	'!extensions/integration-tests/testData/**',
+	'!extensions/arc/src/controller/generated/**',
 	'!extensions/sql-database-projects/resources/templates/*.xml',
 	'!extensions/sql-database-projects/src/test/baselines/*.xml',
 	'!extensions/sql-database-projects/src/test/baselines/*.json',
+	'!extensions/sql-database-projects/src/test/baselines/*.sqlproj',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
 	'!resources/linux/snap/electron-launch'

@@ -77,9 +77,14 @@ export class SchemaCompareMainWindow {
 		this.editor = azdata.workspace.createModelViewEditor(loc.SchemaCompareLabel, { retainContextWhenHidden: true, supportsSave: true, resourceName: schemaCompareResourceName });
 	}
 
+	// schema compare can get started with three contexts for the source:
+	// 1. undefined
+	// 2. connection profile
+	// 3. dacpac
 	public async start(context: any) {
 		// if schema compare was launched from a db, set that as the source
 		let profile = context ? <azdata.IConnectionProfile>context.connectionProfile : undefined;
+		let sourceDacpac = context as string;
 		if (profile) {
 			let ownerUri = await azdata.connection.getUriForConnection((profile.id));
 			this.sourceEndpointInfo = {
@@ -89,6 +94,16 @@ export class SchemaCompareMainWindow {
 				databaseName: profile.databaseName,
 				ownerUri: ownerUri,
 				packageFilePath: '',
+				connectionDetails: undefined
+			};
+		} else if (sourceDacpac) {
+			this.sourceEndpointInfo = {
+				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: '',
+				packageFilePath: sourceDacpac,
 				connectionDetails: undefined
 			};
 		}
