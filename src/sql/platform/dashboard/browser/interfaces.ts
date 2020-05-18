@@ -24,6 +24,13 @@ export enum ComponentEventType {
 }
 
 /**
+ * Actions that can be handled by ModelView components
+ */
+export enum ModelViewAction {
+	SelectTab = 'selectTab'
+}
+
+/**
  * Defines a component and can be used to map from the model-backed version of the
  * world to the frontend UI;
  *
@@ -86,6 +93,7 @@ export interface IComponent extends IDisposable {
 	addToContainer?: (componentDescriptor: IComponentDescriptor, config: any, index?: number) => void;
 	removeFromContainer?: (componentDescriptor: IComponentDescriptor) => void;
 	setLayout?: (layout: any) => void;
+	setItemLayout?: (componentDescriptor: IComponentDescriptor, config: any) => void;
 	getHtml: () => any;
 	setProperties?: (properties: { [key: string]: any; }) => void;
 	enabled: boolean;
@@ -94,6 +102,7 @@ export interface IComponent extends IDisposable {
 	setDataProvider(handle: number, componentId: string, context: any): void;
 	refreshDataProvider(item: any): void;
 	focus(): void;
+	doAction(action: string, ...args: any[]): void;
 }
 
 export enum ModelComponentTypes {

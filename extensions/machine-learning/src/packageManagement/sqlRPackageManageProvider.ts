@@ -75,7 +75,7 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 			let scripts: string[] = [
 				'formals(quit)$save <- formals(q)$save <- "no"',
 				'library(sqlmlutils)',
-				`connection <- connectionInfo(${connectionParts})`,
+				`connection <- connectionInfo(driver= "ODBC Driver 17 for SQL Server", ${connectionParts})`,
 				`r = getOption("repos")`,
 				`r["CRAN"] = "${this._config.rPackagesRepository}"`,
 				`options(repos = r)`,
@@ -83,7 +83,7 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 				`${rCommandScript}(connectionString = connection, pkgs, scope = "PUBLIC")`,
 				'q()'
 			];
-			let rExecutable = this._config.rExecutable;
+			let rExecutable = await this._config.getRExecutable(true);
 			await this._processService.execScripts(`${rExecutable}`, scripts, ['--vanilla'], this._outputChannel);
 		}
 	}

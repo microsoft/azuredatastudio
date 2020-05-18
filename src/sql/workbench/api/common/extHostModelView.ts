@@ -15,10 +15,11 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape, ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, ColumnSizingMode } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, ColumnSizingMode, ModelViewAction } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { firstIndex } from 'vs/base/common/arrays';
 import { ILogService } from 'vs/platform/log/common/log';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 class ModelBuilderImpl implements azdata.ModelBuilder {
 	private nextComponentId: number;
@@ -730,6 +731,15 @@ class ComponentWrapper implements azdata.Component {
 		return this._proxy.$setLayout(this._handle, this.id, layout);
 	}
 
+	public setItemLayout(item: azdata.Component, itemLayout: any): boolean {
+		const itemConfig = this.itemConfigs.find(c => c.component.id === item.id);
+		if (itemConfig) {
+			itemConfig.config = itemLayout;
+			this._proxy.$setItemLayout(this._handle, this.id, itemConfig.toIItemConfig()).then(undefined, onUnexpectedError);
+		}
+		return false;
+	}
+
 	public updateProperties(properties: { [key: string]: any }): Thenable<void> {
 		this.properties = assign(this.properties, properties);
 		return this.notifyPropertyChanged();
@@ -807,6 +817,10 @@ class ComponentWrapper implements azdata.Component {
 
 	public focus() {
 		return this._proxy.$focus(this._handle, this._id);
+	}
+
+	public doAction(action: ModelViewAction, ...args: any[]): Thenable<void> {
+		return this._proxy.$doAction(this._handle, this._id, action, ...args);
 	}
 }
 
@@ -1740,12 +1754,24 @@ class TabbedPanelComponentWrapper extends ComponentWrapper implements azdata.Tab
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<string>());
 	}
+
 	updateTabs(tabs: (azdata.Tab | azdata.TabGroup)[]): void {
-		this.clearItems();
 		const itemConfigs = createFromTabs(tabs);
-		itemConfigs.forEach(itemConfig => {
-			this.addItem(itemConfig.component, itemConfig.config);
+		// Go through all of the tabs and either update their layout if they already exist
+		// or add them if they don't.
+		// We do not currently support reordering or removing tabs.
+		itemConfigs.forEach(newItemConfig => {
+			const existingTab = this.itemConfigs.find(itemConfig => newItemConfig.config.id === itemConfig.config.id);
+			if (existingTab) {
+				this.setItemLayout(existingTab.component, newItemConfig.config);
+			} else {
+				this.addItem(newItemConfig.component, newItemConfig.config);
+			}
 		});
+	}
+
+	public selectTab(id: string): void {
+		this.doAction(ModelViewAction.SelectTab, id);
 	}
 
 	public get onTabChanged(): vscode.Event<string> {

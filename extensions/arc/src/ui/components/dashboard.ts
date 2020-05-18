@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 
 export abstract class Dashboard {
 
-	private dashboard: azdata.window.ModelViewDashboard;
+	private dashboard!: azdata.window.ModelViewDashboard;
 
 	constructor(protected title: string) { }
 

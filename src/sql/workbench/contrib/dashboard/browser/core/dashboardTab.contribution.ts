@@ -167,7 +167,6 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 		if (isValidIcon(icon, extension)) {
 			iconClass = createCSSRuleForIcon(icon, extension);
 		}
-
 		if (result) {
 			registerTab({ description, title, container, provider, when, id, alwaysShow, publisher, isHomeTab, group, iconClass });
 		}
@@ -282,14 +281,14 @@ const CommonTabs: IDashboardTab[] = [
 		container: {
 			'widgets-container': [
 				{
-					name: localize('databasesWidgetTitle', "Search"),
 					gridItemConfig: {
 						sizex: 3,
-						sizey: 3
+						sizey: 2
 					},
 					widget: {
 						'explorer-widget': {}
-					}
+					},
+					hideHeader: true
 				}
 			]
 		}

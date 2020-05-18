@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as loc from '../../../localizedConstants';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
 import { PostgresOverviewPage } from './postgresOverviewPage';
@@ -32,7 +33,7 @@ export class PostgresDashboard extends Dashboard {
 		return [
 			overviewPage.tab,
 			{
-				title: 'Settings',
+				title: loc.settings,
 				tabs: [
 					computeStoragePage.tab,
 					connectionStringsPage.tab,
@@ -40,7 +41,7 @@ export class PostgresDashboard extends Dashboard {
 					propertiesPage.tab
 				]
 			}, {
-				title: 'Security',
+				title: loc.security,
 				tabs: [
 					networkingPage.tab
 				]

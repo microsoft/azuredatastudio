@@ -22,14 +22,14 @@ export abstract class ControllerBase {
 	/**
 	 * Executes an action and sends back callback event to the view
 	 */
-	public async executeAction<T extends ViewBase>(dialog: T, eventName: string, func: (...args: any[]) => Promise<any>, ...args: any[]): Promise<void> {
+	public async executeAction<T extends ViewBase>(dialog: T, eventName: string, inputArgs: any, func: (...args: any[]) => Promise<any>, ...args: any[]): Promise<void> {
 		const callbackEvent = ViewBase.getCallbackEventName(eventName);
 		try {
 			let result = await func(...args);
-			dialog.sendCallbackRequest(callbackEvent, { data: result });
+			dialog.sendCallbackRequest(callbackEvent, { inputArgs: inputArgs, data: result });
 
 		} catch (error) {
-			dialog.sendCallbackRequest(callbackEvent, { error: error });
+			dialog.sendCallbackRequest(callbackEvent, { inputArgs: inputArgs, error: error });
 		}
 	}
 
@@ -39,7 +39,7 @@ export abstract class ControllerBase {
 	 */
 	public registerEvents(view: ViewBase): void {
 		view.on(LocalPathsEventName, async (args) => {
-			await this.executeAction(view, LocalPathsEventName, this.getLocalPaths, this._apiWrapper, args);
+			await this.executeAction(view, LocalPathsEventName, args, this.getLocalPaths, this._apiWrapper, args);
 		});
 	}
 

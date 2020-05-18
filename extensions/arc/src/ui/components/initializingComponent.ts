@@ -31,7 +31,7 @@ export abstract class InitializingComponent {
 	 */
 	protected eventuallyRunOnInitialized(action: () => void): void {
 		if (!this._initialized) {
-			this.onInitializedPromise.promise.then(() => action()).catch(error => console.error(`Unexpected error running onInitialized action for BDC Page : ${error}`));
+			this.onInitializedPromise.promise.then(() => action()).catch(error => console.error(`Unexpected error running onInitialized action: ${error}`));
 		} else {
 			action();
 		}

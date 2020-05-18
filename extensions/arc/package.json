@@ -1,18 +1,19 @@
 {
   "name": "arc",
-  "displayName": "Azure Arc",
+  "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
     "vscode": "*",
-    "azdata": "*"
+    "azdata": ">=1.18.0"
   },
   "activationEvents": [
-    "*"
+    "onCommand:arc.manageMiaa",
+    "onCommand:arc.managePostgres"
   ],
   "repository": {
     "type": "git",
@@ -29,7 +30,30 @@
         "command": "arc.managePostgres",
         "title": "%arc.managePostgres%"
       }
-    ]
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "arc.manageMiaa",
+          "when": "false"
+        },
+        {
+          "command": "arc.managePostgres",
+          "when": "false"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "%arc.configuration.title%",
+      "properties": {
+        "arc.ignoreSslVerification": {
+          "type": "boolean",
+          "default": true,
+          "description": "%arc.ignoreSslVerification.desc%"
+        }
+      }
+    }
   },
   "dependencies": {
     "request": "^2.88.0",

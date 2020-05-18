@@ -266,6 +266,10 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		(<HTMLElement>this._el.nativeElement).focus();
 	}
 
+	public doAction(action: string, ...args: any[]): void {
+		// no-op, components should override this if they want to handle actions
+	}
+
 	protected onkeydown(domNode: HTMLElement, listener: (e: StandardKeyboardEvent) => void): void {
 		this._register(addDisposableListener(domNode, EventType.KEY_DOWN, (e: KeyboardEvent) => listener(new StandardKeyboardEvent(e))));
 	}
@@ -352,6 +356,24 @@ export abstract class ContainerBase<T> extends ComponentBase {
 
 	abstract setLayout(layout: any): void;
 
+	public setItemLayout(componentDescriptor: IComponentDescriptor, config: any): void {
+		if (!componentDescriptor) {
+			return;
+		}
+		const item = this.items.find(item => item.descriptor.id === componentDescriptor.id && item.descriptor.type === componentDescriptor.type);
+		if (item) {
+			item.config = config;
+			this.onItemLayoutUpdated(item);
+			this._changeRef.detectChanges();
+		} else {
+			throw new Error(`Unable to set item layout - unknown item ${componentDescriptor.id}`);
+		}
+		return;
+	}
+
 	protected onItemsUpdated(): void {
+	}
+
+	protected onItemLayoutUpdated(item: ItemDescriptor<T>): void {
 	}
 }

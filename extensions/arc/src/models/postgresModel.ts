@@ -3,27 +3,33 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as loc from '../localizedConstants';
 import { DuskyObjectModelsDatabaseService, DatabaseRouterApi, DuskyObjectModelsDatabase, V1Status } from '../controller/generated/dusky/api';
 import { Authentication } from '../controller/auth';
 
 export class PostgresModel {
 	private _databaseRouter: DatabaseRouterApi;
-	private _service: DuskyObjectModelsDatabaseService;
-	private _password: string;
+	private _service!: DuskyObjectModelsDatabaseService;
+	private _password!: string;
 
 	constructor(controllerUrl: string, auth: Authentication, private _namespace: string, private _name: string) {
 		this._databaseRouter = new DatabaseRouterApi(controllerUrl);
 		this._databaseRouter.setDefaultAuthentication(auth);
 	}
 
-	/** Returns the Kubernetes namespace of the service */
+	/** Returns the service's Kubernetes namespace */
 	public namespace(): string {
 		return this._namespace;
 	}
 
-	/** Returns the name of the service */
+	/** Returns the service's name */
 	public name(): string {
 		return this._name;
+	}
+
+	/** Returns the service's fully qualified name in the format namespace.name */
+	public fullName(): string {
+		return `${this._namespace}.${this._name}`;
 	}
 
 	/** Returns the service's spec */
@@ -81,52 +87,43 @@ export class PostgresModel {
 		return nodes;
 	}
 
-	/** Returns the ip:port of the service */
-	public endpoint(): string {
-		const externalIp = this._service.status.externalIP;
-		const internalIp = this._service.status.internalIP;
-		const externalPort = this._service.status.externalPort;
-		const internalPort = this._service.status.internalPort;
+	/**
+	 * Returns the IP address and port of the service, preferring external IP over
+	 * internal IP. If either field is not available it will be set to undefined.
+	 */
+	public endpoint(): { ip?: string, port?: number } {
+		const externalIp = this._service.status?.externalIP;
+		const internalIp = this._service.status?.internalIP;
+		const externalPort = this._service.status?.externalPort;
+		const internalPort = this._service.status?.internalPort;
 
-		let ip = '0.0.0.0';
-		if (externalIp) {
-			ip = externalIp;
-			if (externalPort) {
-				ip += `:${externalPort}`;
-			}
-		} else if (internalIp) {
-			ip = internalIp;
-			if (internalPort) {
-				ip += `:${internalPort}`;
-			}
-		}
-
-		return ip;
+		return externalIp ? { ip: externalIp, port: externalPort ?? undefined }
+			: internalIp ? { ip: internalIp, port: internalPort ?? undefined }
+				: { ip: undefined, port: undefined };
 	}
 
 	/** Returns the service's configuration e.g. '3 nodes, 1.5 vCores, 1GiB RAM, 2GiB storage per node' */
 	public configuration(): string {
 		const nodes = this.numNodes();
-		const cpuLimit = this.formatCores(this._service.spec.scheduling?.resources.limits?.['cpu']);
-		const ramLimit = this.formatMemory(this._service.spec.scheduling?.resources.limits?.['memory']);
-		const cpuRequest = this.formatCores(this._service.spec.scheduling?.resources.requests?.['cpu']);
-		const ramRequest = this.formatMemory(this._service.spec.scheduling?.resources.requests?.['memory']);
-		const storage = this.formatMemory(this._service.spec.storage.volumeSize);
+		const cpuLimit = this._service.spec.scheduling?.resources?.limits?.['cpu'];
+		const ramLimit = this._service.spec.scheduling?.resources?.limits?.['memory'];
+		const cpuRequest = this._service.spec.scheduling?.resources?.requests?.['cpu'];
+		const ramRequest = this._service.spec.scheduling?.resources?.requests?.['memory'];
+		const storage = this._service.spec.storage.volumeSize;
 
 		// Prefer limits if they're provided, otherwise use requests if they're provided
-		let nodeConfiguration = `${nodes} node`;
-		if (nodes > 1) { nodeConfiguration += 's'; }
+		let nodeConfiguration = `${nodes} ${nodes > 1 ? loc.nodes : loc.node}`;
 		if (cpuLimit) {
-			nodeConfiguration += `, ${cpuLimit} vCores`;
+			nodeConfiguration += `, ${this.formatCores(cpuLimit)} ${loc.vCores}`;
 		} else if (cpuRequest) {
-			nodeConfiguration += `, ${cpuRequest} vCores`;
+			nodeConfiguration += `, ${this.formatCores(cpuRequest)} ${loc.vCores}`;
 		}
 		if (ramLimit) {
-			nodeConfiguration += `, ${ramLimit} RAM`;
+			nodeConfiguration += `, ${this.formatMemory(ramLimit)} ${loc.ram}`;
 		} else if (ramRequest) {
-			nodeConfiguration += `, ${ramRequest} RAM`;
+			nodeConfiguration += `, ${this.formatMemory(ramRequest)} ${loc.ram}`;
 		}
-		if (storage) { nodeConfiguration += `, ${storage} storage per node`; }
+		if (storage) { nodeConfiguration += `, ${storage} ${loc.storagePerNode}`; }
 		return nodeConfiguration;
 	}
 

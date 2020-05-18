@@ -10,6 +10,7 @@ export interface TableColumn {
 
 export interface PredictColumn extends TableColumn {
 	paramName?: string;
+	paramType?: string;
 }
 
 export interface DatabaseTable {

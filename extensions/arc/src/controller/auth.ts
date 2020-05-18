@@ -64,7 +64,7 @@ export class OAuthWithSsl extends SslAuth implements Authentication {
 
 /* Retrieves the current setting for whether to ignore SSL verification errors */
 export function getIgnoreSslVerificationConfigSetting(): boolean {
-	const arcConfigSectionName = 'azureArc';
+	const arcConfigSectionName = 'arc';
 	const ignoreSslConfigName = 'ignoreSslVerification';
 
 	try {

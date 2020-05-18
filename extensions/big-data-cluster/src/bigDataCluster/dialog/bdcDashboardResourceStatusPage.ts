@@ -21,8 +21,8 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 	private metricsAndLogsRowsTable: azdata.DeclarativeTableComponent;
 	private lastUpdatedLabel: azdata.TextComponent;
 
-	constructor(private model: BdcDashboardModel, private modelView: azdata.ModelView, private serviceName: string, private resourceName: string) {
-		super();
+	constructor(model: BdcDashboardModel, modelView: azdata.ModelView, serviceName: string, private resourceName: string) {
+		super(model, modelView, serviceName);
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.eventuallyRunOnInitialized(() => this.handleBdcStatusUpdate(bdcStatus)));
 	}
 
@@ -304,7 +304,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 				url: instanceStatus.dashboards.nodeMetricsUrl,
 				title: instanceStatus.dashboards.nodeMetricsUrl,
 				ariaLabel: loc.viewNodeMetrics(instanceStatus.dashboards.nodeMetricsUrl),
-				CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink }
+				CSSStyles: { ...cssStyles.text }
 			}).component());
 		}
 
@@ -319,7 +319,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 					url: instanceStatus.dashboards.sqlMetricsUrl,
 					title: instanceStatus.dashboards.sqlMetricsUrl,
 					ariaLabel: loc.viewSqlMetrics(instanceStatus.dashboards.sqlMetricsUrl),
-					CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink }
+					CSSStyles: { ...cssStyles.text }
 				}).component());
 			}
 		}
@@ -332,7 +332,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 				url: instanceStatus.dashboards.logsUrl,
 				title: instanceStatus.dashboards.logsUrl,
 				ariaLabel: loc.viewLogs(instanceStatus.dashboards.logsUrl),
-				CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink }
+				CSSStyles: { ...cssStyles.text }
 			}).component());
 		}
 		return row;

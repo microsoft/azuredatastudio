@@ -3,20 +3,20 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import * as path from 'path';
 import * as xmldom from 'xmldom';
 import * as constants from '../common/constants';
 
+import { Uri } from 'vscode';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
-import { getErrorMessage } from '../common/utils';
 
 /**
  * Class representing a Project, and providing functions for operating on it
  */
 export class Project {
 	public projectFilePath: string;
+	public projectFileName: string;
 	public files: ProjectEntry[] = [];
 	public dataSources: DataSource[] = [];
 
@@ -28,6 +28,7 @@ export class Project {
 
 	constructor(projectFilePath: string) {
 		this.projectFilePath = projectFilePath;
+		this.projectFileName = path.basename(projectFilePath, '.sqlproj');
 	}
 
 	/**
@@ -35,14 +36,7 @@ export class Project {
 	 */
 	public async readProjFile() {
 		const projFileText = await fs.readFile(this.projectFilePath);
-
-		try {
-			this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
-		}
-		catch (err) {
-			vscode.window.showErrorMessage(err);
-			return;
-		}
+		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
 
 		// find all folders and files to include
 
@@ -93,7 +87,7 @@ export class Project {
 	}
 
 	private createProjectEntry(relativePath: string, entryType: EntryType): ProjectEntry {
-		return new ProjectEntry(vscode.Uri.file(path.join(this.projectFolderPath, relativePath)), relativePath, entryType);
+		return new ProjectEntry(Uri.file(path.join(this.projectFolderPath, relativePath)), relativePath, entryType);
 	}
 
 	private findOrCreateItemGroup(containedTag?: string): any {
@@ -134,21 +128,15 @@ export class Project {
 	}
 
 	private async addToProjFile(entry: ProjectEntry) {
-		try {
-			switch (entry.type) {
-				case EntryType.File:
-					this.addFileToProjFile(entry.relativePath);
-					break;
-				case EntryType.Folder:
-					this.addFolderToProjFile(entry.relativePath);
-			}
+		switch (entry.type) {
+			case EntryType.File:
+				this.addFileToProjFile(entry.relativePath);
+				break;
+			case EntryType.Folder:
+				this.addFolderToProjFile(entry.relativePath);
+		}
 
-			await this.serializeToProjFile(this.projFileXmlDoc);
-		}
-		catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
-			return;
-		}
+		await this.serializeToProjFile(this.projFileXmlDoc);
 	}
 
 	private async serializeToProjFile(projFileContents: any) {
@@ -165,11 +153,11 @@ export class ProjectEntry {
 	/**
 	 * Absolute file system URI
 	 */
-	fsUri: vscode.Uri;
+	fsUri: Uri;
 	relativePath: string;
 	type: EntryType;
 
-	constructor(uri: vscode.Uri, relativePath: string, type: EntryType) {
+	constructor(uri: Uri, relativePath: string, type: EntryType) {
 		this.fsUri = uri;
 		this.relativePath = relativePath;
 		this.type = type;

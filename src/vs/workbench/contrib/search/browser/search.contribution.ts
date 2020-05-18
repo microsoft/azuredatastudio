@@ -808,7 +808,7 @@ configurationRegistry.registerConfiguration({
 		'search.seedOnFocus': {
 			type: 'boolean',
 			default: false,
-			description: nls.localize('search.seedOnFocus', "Update workspace seach query to the editor's selected text when focusing the search view. This happens either on click or when triggering the `workbench.views.search.focus` command.")
+			description: nls.localize('search.seedOnFocus', "Update workspace search query to the editor's selected text when focusing the search view. This happens either on click or when triggering the `workbench.views.search.focus` command.")
 		},
 		'search.searchOnTypeDebouncePeriod': {
 			type: 'number',
@@ -825,6 +825,11 @@ configurationRegistry.registerConfiguration({
 				nls.localize('search.searchEditor.doubleClickBehaviour.openLocationToSide', "Double clicking opens the result in the editor group to the side, creating one if it does not yet exist."),
 			],
 			markdownDescription: nls.localize('search.searchEditor.doubleClickBehaviour', "Configure effect of double clicking a result in a search editor.")
+		},
+		'search.searchEditor.reusePriorSearchConfiguration': {
+			type: 'boolean',
+			default: false,
+			markdownDescription: nls.localize('search.searchEditor.reusePriorSearchConfiguration', "When enabled, new Search Editors will reuse the includes, excludes, and flags of the previously opened Search Editor")
 		},
 		'search.sortOrder': {
 			'type': 'string',

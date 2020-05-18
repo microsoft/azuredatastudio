@@ -139,7 +139,8 @@ describe('Manage Package Dialog', () => {
 			removeItem: () => true,
 			insertItem: () => { },
 			items: components,
-			setLayout: () => { }
+			setLayout: () => { },
+			setItemLayout: () => { }
 		};
 		let form: azdata.FormContainer = Object.assign({}, componentBase, container, {
 		});

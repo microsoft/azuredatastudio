@@ -22,10 +22,10 @@ export class PostgresComputeStoragePage extends PostgresDashboardPage {
 	}
 
 	protected get container(): azdata.Component {
-		return this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'Compute + storage' }).component();
+		return this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.computeAndStorage }).component();
 	}
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
-		return undefined;
+		return this.modelView.modelBuilder.toolbarContainer().component();
 	}
 }
