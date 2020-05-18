@@ -166,8 +166,8 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 				fields: [
 					{
 						type: FieldType.ReadonlyText,
-						label: localize('deployCluster.SubDomain', "Sub domain"),
-						defaultValue: this.wizard.model.getStringValue(VariableNames.SubDomain_VariableName),
+						label: localize('deployCluster.Subdomain', "Subdomain"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.Subdomain_VariableName),
 						labelFontWeight: FontWeight.Bold
 					},
 					{

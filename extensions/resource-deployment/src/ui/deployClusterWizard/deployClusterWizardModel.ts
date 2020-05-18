@@ -133,7 +133,7 @@ export class DeployClusterWizardModel extends Model {
 				clusterUsers: this.getStringValue(VariableNames.ClusterUsers_VariableName)!,
 				appOwners: this.getStringValue(VariableNames.AppOwners_VariableName),
 				appReaders: this.getStringValue(VariableNames.AppReaders_VariableName),
-				subDomain: this.getStringValue(VariableNames.SubDomain_VariableName),
+				subdomain: this.getStringValue(VariableNames.Subdomain_VariableName),
 				accountPrefix: this.getStringValue(VariableNames.AccountPrefix_VariableName)
 			});
 		}

@@ -188,16 +188,16 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					description: localize('deployCluster.AppReadersDescription', "The Active Directory users or groups of app readers. Use comma as separator them if there are multiple users/groups.")
 				}, {
 					type: FieldType.Text,
-					label: localize('deployCluster.SubDomain', "Sub domain"),
+					label: localize('deployCluster.Subdomain', "Subdomain"),
 					required: false,
-					variableName: VariableNames.SubDomain_VariableName,
-					description: localize('deployCluster.SubDomainDescription', "A unique DNS subdomain to use for this BDC cluster. If not provided, cluster name will be used as the default value.")
+					variableName: VariableNames.Subdomain_VariableName,
+					description: localize('deployCluster.SubdomainDescription', "A unique DNS subdomain to use for this SQL Server Big Data Cluster. If not provided, the cluster name will be used as the default value.")
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.AccountPrefix', "Account prefix"),
 					required: false,
 					variableName: VariableNames.AccountPrefix_VariableName,
-					description: localize('deployCluster.AccountPrefixDescription', "A unique prefix for AD accounts BDC cluster will generate,When not provided, subdomain name will be used as the default value. When subdomain is not provided, cluster name will be used as the subdomain name.")
+					description: localize('deployCluster.AccountPrefixDescription', "A unique prefix for AD accounts SQL Server Big Data Cluster will generate. If not provided, the subdomain name will be used as the default value. If a subdomain is not provided, the cluster name will be used as the default value.")
 				}
 			]
 		};
@@ -287,9 +287,9 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			variableDNSPrefixMapping[VariableNames.SQLServerDNSName_VariableName] = 'bdc-sql';
 			variableDNSPrefixMapping[VariableNames.ServiceProxyDNSName_VariableName] = 'bdc-proxy';
 
-			const subDomain = this.wizard.model.getStringValue(VariableNames.SubDomain_VariableName) || this.wizard.model.getStringValue(VariableNames.ClusterName_VariableName);
+			const subdomain = this.wizard.model.getStringValue(VariableNames.Subdomain_VariableName) || this.wizard.model.getStringValue(VariableNames.ClusterName_VariableName);
 			Object.keys(variableDNSPrefixMapping).forEach((variableName: string) => {
-				this.wizard.model.setPropertyValue(variableName, `${variableDNSPrefixMapping[variableName]}.${subDomain}.${this.wizard.model.getStringValue(VariableNames.DomainDNSName_VariableName)}`);
+				this.wizard.model.setPropertyValue(variableName, `${variableDNSPrefixMapping[variableName]}.${subdomain}.${this.wizard.model.getStringValue(VariableNames.DomainDNSName_VariableName)}`);
 			});
 		}
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
