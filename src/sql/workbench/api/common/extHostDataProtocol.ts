@@ -324,6 +324,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		if (this.uriTransformer) {
 			batchInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(batchInfo.ownerUri))).toString(true);
 		}
+		this.messageRunner.cancel(); // clear batch messages before saying we completed the batch
+		this.sendMessages();
 		this._proxy.$onBatchComplete(handle, batchInfo);
 	}
 	$onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {

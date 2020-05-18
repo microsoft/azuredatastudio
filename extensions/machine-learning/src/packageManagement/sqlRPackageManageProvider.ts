@@ -83,7 +83,7 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 				`${rCommandScript}(connectionString = connection, pkgs, scope = "PUBLIC")`,
 				'q()'
 			];
-			let rExecutable = this._config.rExecutable;
+			let rExecutable = await this._config.getRExecutable(true);
 			await this._processService.execScripts(`${rExecutable}`, scripts, ['--vanilla'], this._outputChannel);
 		}
 	}

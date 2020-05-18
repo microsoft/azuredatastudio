@@ -5,6 +5,8 @@
 
 import * as vscode from 'vscode';
 import * as os from 'os';
+import { promises as fs } from 'fs';
+
 /**
  * Consolidates on the error message string
  */
@@ -73,4 +75,16 @@ export function getSafeWindowsPath(filePath: string): string {
 export function getSafeNonWindowsPath(filePath: string): string {
 	filePath = filePath.split('\\').join('/').split('"').join('');
 	return '"' + filePath + '"';
+}
+
+/**
+ * Checks if the folder or file exists @param path path of the folder/file
+*/
+export async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
+	}
 }

@@ -92,7 +92,7 @@ export class ModelPythonClient {
 			'addParameters(onnx_model.graph.output, "outputs")',
 			'print(json.dumps(parameters))'
 		];
-		let pythonExecutable = this._config.pythonExecutable;
+		let pythonExecutable = await this._config.getPythonExecutable(true);
 		let output = await this._processService.execScripts(pythonExecutable, scripts, [], undefined);
 		let parametersJson = JSON.parse(output);
 		return Object.assign({}, parametersJson);
@@ -124,7 +124,7 @@ export class ModelPythonClient {
 				'mlflow.set_experiment(exp_name)',
 				'mlflow.onnx.log_model(onx, "pipeline_vectorize")'
 			];
-			let pythonExecutable = this._config.pythonExecutable;
+			let pythonExecutable = await this._config.getPythonExecutable(true);
 			await this._processService.execScripts(pythonExecutable, scripts, [], this._outputChannel);
 		}
 	}
