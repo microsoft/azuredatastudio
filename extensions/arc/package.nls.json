@@ -1,0 +1,8 @@
+{
+	"arc.displayName": "Azure Arc",
+	"arc.description": "Support for Azure Arc",
+	"arc.configuration.title": "Azure Arc",
+	"arc.ignoreSslVerification.desc" : "Ignore SSL verification errors against the controller endpoint if true",
+	"arc.manageMiaa": "Manage MIAA",
+	"arc.managePostgres": "Manage Postgres"
+}
