@@ -34,11 +34,10 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 
 const connectAuthority = 'connect';
 
-interface SqlArgs {
+export interface SqlArgs {
 	_?: string[];
-	aad?: boolean;
+	authenticationType?: string
 	database?: string;
-	integrated?: boolean;
 	server?: string;
 	user?: string;
 	command?: string;
@@ -220,11 +219,11 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		let profile = new ConnectionProfile(this._capabilitiesService, null);
 		// We want connection store to use any matching password it finds
 		profile.savePassword = true;
-		profile.providerName = args.provider ? args.provider : Constants.mssqlProviderName;
+		profile.providerName = args.provider ?? Constants.mssqlProviderName;
 		profile.serverName = args.server;
-		profile.databaseName = args.database ? args.database : '';
-		profile.userName = args.user ? args.user : '';
-		profile.authenticationType = args.integrated ? Constants.integrated : args.aad ? Constants.azureMFA : (profile.userName.length > 0) ? Constants.sqlLogin : Constants.integrated;
+		profile.databaseName = args.database ?? '';
+		profile.userName = args.user ?? '';
+		profile.authenticationType = args.authenticationType ?? Constants.integrated;
 		profile.connectionName = '';
 		profile.setOptionValue('applicationName', Constants.applicationName);
 		profile.setOptionValue('databaseDisplayName', profile.databaseName);
