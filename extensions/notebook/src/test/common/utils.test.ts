@@ -189,7 +189,7 @@ describe('Utils Tests', function () {
 			osVersion: '',
 			options: {}
 		};
-		it('empty endpoints doesn\' error', () => {
+		it('empty endpoints does not error', () => {
 			const serverInfo = Object.assign({}, baseServerInfo);
 			serverInfo.options['clusterEndpoints'] = [];
 			should(utils.getClusterEndpoints(serverInfo).length).equal(0);
