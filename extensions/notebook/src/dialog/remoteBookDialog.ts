@@ -20,13 +20,9 @@ export class RemoteBookDialogModel {
 
 	private _canceled = false;
 	private _remoteTypes: azdata.CategoryValue[];
-	private dialog: RemoteBookDialogModel;
 
 	constructor(
-		public prefilledUrl?: string
-	) {
-		prefilledUrl = prefilledUrl;
-	}
+	) { }
 
 	public get remoteLocationCategories(): azdata.CategoryValue[] {
 		if (!this._remoteTypes) {
@@ -35,25 +31,24 @@ export class RemoteBookDialogModel {
 		return this._remoteTypes;
 	}
 
-	public async fetchData(url: string, remoteLocation: string): Promise<void> {
+	public async fetchData(url: string, remoteLocation: string): Promise<any> {
 		try {
 			// We pre-fetch the endpoints here to verify that the information entered is correct (the user is able to connect)
 			let controller = new RemoteBookController(url, remoteLocation);
-			console.log(controller);
-			let hello = await controller.getReleases();
-			console.log(hello.response);
 
 			// Verify if it'
 			//bookname -> language -> versions
 			// books/ HowToDebug / EN/ 1.11
 
 
-			let _isvalid = controller.validate();
+			let _isvalid = await controller.validate();
 			if (_isvalid) {
 				if (this._canceled) {
 					return;
 				}
-				let versions = await controller.getReleases();
+				let releases = await controller.getReleases();
+				let jsonReleases = JSON.parse(releases);
+				return jsonReleases;
 			}
 		} catch (error) {
 			// Ignore the error if we cancelled the request since we can't stop the actual request from completing
@@ -61,6 +56,7 @@ export class RemoteBookDialogModel {
 				throw error;
 			}
 		}
+		return [];
 	}
 }
 
@@ -89,8 +85,7 @@ export class RemoteBookDialog {
 			this.view = view;
 			this.urlInputBox = this.view.modelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
-					placeHolder: loc.url,
-					value: this.model.prefilledUrl
+					placeHolder: loc.url
 				}).component();
 
 			this.urlInputBox.onTextChanged(async () => await this.loadBooks());
@@ -170,8 +165,8 @@ export class RemoteBookDialog {
 		let location = this.remoteLocationValue;
 
 		try {
-			await this.model.fetchData(url, location);
-			await this.fillDropdowns();
+			let books = await this.model.fetchData(url, location);
+			await this.fillDropdowns(books);
 			return true;
 		} catch (error) {
 			this.dialog.message = {
@@ -187,13 +182,17 @@ export class RemoteBookDialog {
 		this.remoteBookDropdown.value = '';
 	}
 
-	public async fillDropdowns(): Promise<void> {
+	public async fillDropdowns(books: any): Promise<void> {
+		let bookVersions: Array<string> = [];
+		books.forEach(book => {
+			bookVersions.push(book.tag_name);
+		});
 		this.languageDropdown.updateProperties({
 			values: ['EN', 'ES'],
 			display: true,
 		});
 		this.versionDropdown.updateProperties({
-			values: ['1.11', '1.12'],
+			values: bookVersions,
 			display: true,
 		});
 	}
@@ -246,8 +245,7 @@ export class RemoteBookDialog {
 
 		this.urlInputBox = view.modelBuilder.inputBox()
 			.withProperties<azdata.InputBoxProperties>({
-				placeHolder: loc.url,
-				value: this.model.prefilledUrl
+				placeHolder: loc.url
 			}).component();
 
 		this.remoteLocationDropdown = view.modelBuilder.dropDown().withProperties({

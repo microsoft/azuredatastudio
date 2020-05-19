@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Url } from 'url';
-import * as localVarRequest from 'request';
-import * as http from 'http';
+import * as request from 'request';
 import * as fs from 'fs';
 //import * as nls from 'vscode-nls';
 
@@ -19,9 +18,9 @@ export class RemoteBookController {
 	constructor(_url: string,
 		_remoteLocation: string) {
 		if (_remoteLocation === 'GitHub') {
-			this._path = 'https://api.github.com/'.concat(this._url);
+			this._path = 'https://api.github.com/'.concat(_url);
 		} else {
-			this._path = this._url;
+			this._path = _url;
 		}
 	}
 
@@ -46,29 +45,42 @@ export class RemoteBookController {
 			catch (error) {
 				throw (error);
 			}
+		} else {
+			try {
+				let url: URL = new URL(this._path);
+				if (url) {
+					return true;
+				}
+			}
+			catch (error) {
+				throw (error);
+			}
+
 		}
 		return false;
 	}
 
-	public async getReleases() {
-		let localVarRequestOptions: localVarRequest.Options = {
-			method: 'GET',
-			uri: 'https://api.github.com/repos/microsoft/azuredatastudio/releases',
-			json: true,
+	public async getReleases(): Promise<any> {
+		let options = {
+			headers: {
+				'User-Agent': 'request'
+			}
 		};
-
-		return new Promise<{ response: http.IncomingMessage; body: IVersionsResponse; }>((resolve, reject) => {
-			localVarRequest(localVarRequestOptions, (error, response, body) => {
-				let versions = JSON.parse(body);
+		return new Promise<any>((resolve, reject) => {
+			request.get(this._path, options, (error, response, body) => {
 				if (error) {
-					reject(error);
-				} else {
-					if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-						resolve({ response: response, body: versions });
-					} else {
-						reject({ response: response, body: versions });
-					}
+					return reject(error);
 				}
+
+				if (response.statusCode === 404) {
+					return reject('Resource not found');
+				}
+
+				if (response.statusCode !== 200) {
+					return reject(response.statusCode);
+				}
+
+				resolve(body);
 			});
 		});
 	}
