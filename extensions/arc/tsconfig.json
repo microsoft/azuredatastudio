@@ -1,0 +1,14 @@
+{
+	"extends": "../shared.tsconfig.json",
+	"compileOnSave": true,
+	"compilerOptions": {
+		"outDir": "./out",
+		"lib": [
+			"es6",
+			"es2015.promise"
+		]
+	},
+	"include": [
+		"src/**/*"
+	]
+}

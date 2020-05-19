@@ -18,19 +18,25 @@ import { promises as fs } from 'fs';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
+import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
+import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
+import { BuildHelper } from '../tools/buildHelper';
 
 /**
  * Controller for managing project lifecycle
  */
 export class ProjectsController {
 	private projectTreeViewProvider: SqlDatabaseProjectTreeViewProvider;
+	private netCoreTool: NetCoreTool;
+	private buildHelper: BuildHelper;
 
 	projects: Project[] = [];
 
 	constructor(private apiWrapper: ApiWrapper, projTreeViewProvider: SqlDatabaseProjectTreeViewProvider) {
 		this.projectTreeViewProvider = projTreeViewProvider;
+		this.netCoreTool = new NetCoreTool();
+		this.buildHelper = new BuildHelper();
 	}
-
 
 	public refreshProjectsTree() {
 		this.projectTreeViewProvider.load(this.projects);
@@ -113,14 +119,44 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 	}
 
-	public async build(treeNode: BaseProjectTreeItem) {
+	public async buildProject(treeNode: BaseProjectTreeItem): Promise<void> {
+		// Check mssql extension for project dlls (tracking issue #10273)
+		await this.buildHelper.createBuildDirFolder();
+
 		const project = this.getProjectContextFromTreeNode(treeNode);
-		await this.apiWrapper.showErrorMessage(`Build not yet implemented: ${project.projectFilePath}`); // TODO
+		const options: DotNetCommandOptions = {
+			commandTitle: 'Build',
+			workingDirectory: project.projectFolderPath,
+			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath)
+		};
+		await this.netCoreTool.runDotnetCommand(options);
 	}
 
-	public async deploy(treeNode: BaseProjectTreeItem) {
+	public deploy(treeNode: BaseProjectTreeItem): void {
 		const project = this.getProjectContextFromTreeNode(treeNode);
-		await this.apiWrapper.showErrorMessage(`Deploy not yet implemented: ${project.projectFilePath}`); // TODO
+		const deployDatabaseDialog = new DeployDatabaseDialog(this.apiWrapper, project);
+		deployDatabaseDialog.openDialog();
+	}
+
+	public async schemaCompare(treeNode: BaseProjectTreeItem): Promise<void> {
+		// check if schema compare extension is installed
+		if (this.apiWrapper.getExtension(constants.schemaCompareExtensionId)) {
+			// build project
+			await this.buildProject(treeNode);
+
+			// start schema compare with the dacpac produced from build
+			const project = this.getProjectContextFromTreeNode(treeNode);
+			const dacpacPath = path.join(project.projectFolderPath, 'bin', 'Debug', `${project.projectFileName}.dacpac`);
+
+			// check that dacpac exists
+			if (await utils.exists(dacpacPath)) {
+				this.apiWrapper.executeCommand('schemaCompare.start', dacpacPath);
+			} else {
+				this.apiWrapper.showErrorMessage(constants.buildDacpacNotFound);
+			}
+		} else {
+			this.apiWrapper.showErrorMessage(constants.schemaCompareNotInstalled);
+		}
 	}
 
 	public async import(treeNode: BaseProjectTreeItem) {

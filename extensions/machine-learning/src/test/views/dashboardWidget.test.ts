@@ -39,10 +39,12 @@ describe('Dashboard widget', () => {
 			await handler(testContext.view);
 		});
 
+		testContext.apiWrapper.setup(x => x.openExternal(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
+
 		testContext.predictService.setup(x => x.serverSupportOnnxModel()).returns(() => Promise.resolve(true));
 		const dashboard = new DashboardWidget(testContext.apiWrapper.object, '', testContext.predictService.object);
 		await dashboard.register();
 		testContext.onClick.fire(undefined);
-		testContext.apiWrapper.verify(x => x.executeCommand(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
+		testContext.apiWrapper.verify(x => x.openExternal(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 	});
 });
