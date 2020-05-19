@@ -72,7 +72,7 @@ describe('ProjectsController: project controller operations', function (): void 
 		});
 	});
 
-	describe('Deployment', function (): void {
+	describe('Deployment and deployment script generation', function (): void {
 		it('Deploy dialog should open from ProjectController', async function (): Promise<void> {
 			let opened = false;
 
