@@ -223,7 +223,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		profile.serverName = args.server;
 		profile.databaseName = args.database ?? '';
 		profile.userName = args.user ?? '';
-		profile.authenticationType = args.authenticationType ?? Constants.sqlLogin;
+		profile.authenticationType = args.authenticationType ?? Constants.integrated;
 		profile.connectionName = '';
 		profile.setOptionValue('applicationName', Constants.applicationName);
 		profile.setOptionValue('databaseDisplayName', profile.databaseName);
