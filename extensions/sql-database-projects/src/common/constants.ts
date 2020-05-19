@@ -21,6 +21,8 @@ export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
 export const newDatabaseProjectName = localize('newDatabaseProjectName', "New database project name:");
 export const sqlDatabaseProject = localize('sqlDatabaseProject', "SQL database project");
+export const yesString = localize('yesString', "Yes");
+export const noString = localize('noString', "No");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 
 // Deploy dialog strings
@@ -54,6 +56,7 @@ export const projectNameRequired = localize('projectNameRequired', "Name is requ
 export const projectLocationRequired = localize('projectLocationRequired', "Location is required to create a new database project.");
 export const schemaCompareNotInstalled = localize('schemaCompareNotInstalled', "Schema compare extension installation is required to run schema compare");
 export const buildDacpacNotFound = localize('buildDacpacNotFound', "Dacpac created from build not found");
+export const updateProjectForRoundTrip = localize('updateProjectForRoundTrip', "To build this project, ADS needs to update targets. If the project is created in SSDT, it will continue to work in both tools. Do you want ADS to update the project?");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNotFound', "Could not get mssql extension's install location at {0}", mssqlConfigDir); }
@@ -71,3 +74,16 @@ export const ItemGroup = 'ItemGroup';
 export const Build = 'Build';
 export const Folder = 'Folder';
 export const Include = 'Include';
+export const Import = 'Import';
+export const Project = 'Project';
+export const Condition = 'Condition';
+
+// SqlProj File targets
+export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
+export const SqlDbTargets = '$(SQLDBExtensionsRefPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
+export const MsBuildtargets = '$(MSBuildExtensionsPath)\\Microsoft\\VisualStudio\\v$(VisualStudioVersion)\\SSDT\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
+export const NetCoreCondition = '\'$(NetCoreBuild)\' == \'true\'';
+export const SqlDbPresentCondition = '\'$(SQLDBExtensionsRefPath)\' != \'\'';
+export const SqlDbNotPresentCondition = '\'$(SQLDBExtensionsRefPath)\' == \'\'';
+export const RoundTripSqlDbPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' != \'\'';
+export const RoundTripSqlDbNotPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' == \'\'';

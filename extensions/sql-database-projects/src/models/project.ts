@@ -7,7 +7,7 @@ import * as path from 'path';
 import * as xmldom from 'xmldom';
 import * as constants from '../common/constants';
 
-import { Uri } from 'vscode';
+import { Uri, window } from 'vscode';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 
@@ -19,6 +19,7 @@ export class Project {
 	public projectFileName: string;
 	public files: ProjectEntry[] = [];
 	public dataSources: DataSource[] = [];
+	public importedTargets: string[] = [];
 
 	public get projectFolderPath() {
 		return path.dirname(this.projectFilePath);
@@ -51,6 +52,45 @@ export class Project {
 				this.files.push(this.createProjectEntry(itemGroup.getElementsByTagName(constants.Folder)[f].getAttribute(constants.Include), EntryType.Folder));
 			}
 		}
+
+		// find all import statements to include
+
+		for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import).length; ig++) {
+			const importTarget = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import)[ig];
+			this.importedTargets.push(importTarget.getAttribute(constants.Project));
+		}
+	}
+
+	public async updateImportForRoundTrip() {
+		if (this.importedTargets.includes(constants.NetCoreTargets)) {
+			return;
+		}
+
+		window.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString).then(async (result) => {
+			if (result === constants.yesString) {
+				await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
+				await this.updateImportToSupportRountTrip();
+			}
+		});
+	}
+
+	private async updateImportToSupportRountTrip(): Promise<void> {
+
+		for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import).length; ig++) {
+			const importTarget = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import)[ig];
+
+			let condition = importTarget.getAttribute(constants.Condition);
+			let project = importTarget.getAttribute(constants.Project);
+
+			if (condition === constants.SqlDbPresentCondition && project === constants.SqlDbTargets) {
+				await this.updateImportedTargetsToProjFile(constants.RoundTripSqlDbPresentCondition, project, importTarget);
+			}
+			if (condition === constants.SqlDbNotPresentCondition && project === constants.MsBuildtargets) {
+				await this.updateImportedTargetsToProjFile(constants.RoundTripSqlDbNotPresentCondition, project, importTarget);
+			}
+		}
+
+		await this.updateImportedTargetsToProjFile(constants.NetCoreCondition, constants.NetCoreTargets, undefined);
 	}
 
 	/**
@@ -125,6 +165,22 @@ export class Project {
 		newFolderNode.setAttribute(constants.Include, path);
 
 		this.findOrCreateItemGroup(constants.Folder).appendChild(newFolderNode);
+	}
+
+	private async updateImportedTargetsToProjFile(condition: string, project: string, oldImportNode?: any): Promise<any> {
+		const importNode = this.projFileXmlDoc.createElement(constants.Import);
+		importNode.setAttribute(constants.Condition, condition);
+		importNode.setAttribute(constants.Project, project);
+
+		if (oldImportNode) {
+			this.projFileXmlDoc.documentElement.replaceChild(importNode, oldImportNode);
+		}
+		else {
+			this.projFileXmlDoc.documentElement.appendChild(importNode, oldImportNode);
+		}
+
+		await this.serializeToProjFile(this.projFileXmlDoc);
+		return importNode;
 	}
 
 	private async addToProjFile(entry: ProjectEntry) {
