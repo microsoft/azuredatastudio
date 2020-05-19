@@ -10,7 +10,7 @@ import { IconPathHelper } from '../../../constants';
 import { ControllerModel } from '../../../models/controllerModel';
 import { resourceTypeToDisplayName } from '../../../common/utils';
 
-export class MiaaDashboardOverviewPage extends DashboardPage {
+export class ControllerDashboardOverviewPage extends DashboardPage {
 
 	private _arcResourcesTable!: azdata.DeclarativeTableComponent;
 
@@ -26,7 +26,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	}
 
 	public get id(): string {
-		return 'miaa-overview';
+		return 'controller-overview';
 	}
 
 	public get icon(): { dark: string, light: string } {

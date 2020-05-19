@@ -5,28 +5,19 @@
 
 import * as azdata from 'azdata';
 import { Dashboard } from '../../components/dashboard';
-import { MiaaDashboardOverviewPage } from './miaaDashboardOverviewPage';
 import { ControllerModel } from '../../../models/controllerModel';
-import * as loc from '../../../localizedConstants';
-import { MiaaConnectionStringsPage } from './miaaConnectionStringsPage';
+import { ControllerDashboardOverviewPage } from './controllerDashboardOverviewPage';
 
-export class MiaaDashboard extends Dashboard {
+export class ControllerDashboard extends Dashboard {
 
 	constructor(title: string, private _controllerModel: ControllerModel) {
 		super(title);
 	}
 
 	protected async registerTabs(modelView: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]> {
-		const overviewPage = new MiaaDashboardOverviewPage(modelView, this._controllerModel);
-		const connectionStringsPage = new MiaaConnectionStringsPage(modelView, this._controllerModel);
+		const overviewPage = new ControllerDashboardOverviewPage(modelView, this._controllerModel);
 		return [
-			overviewPage.tab,
-			{
-				title: loc.settings,
-				tabs: [
-					connectionStringsPage.tab
-				]
-			},
+			overviewPage.tab
 		];
 	}
 

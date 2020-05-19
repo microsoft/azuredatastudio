@@ -31,8 +31,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	});
 
 	vscode.commands.registerCommand('arc.manageMiaa', async () => {
+		// Controller information
+		const controllerUrl = '';
+		const auth = new BasicAuth('', '');
 
-		await new MiaaDashboard('MIAA').showDashboard();
+		const controllerModel = new ControllerModel(controllerUrl, auth);
+		await new MiaaDashboard('MIAA', controllerModel).showDashboard();
 	});
 }
 

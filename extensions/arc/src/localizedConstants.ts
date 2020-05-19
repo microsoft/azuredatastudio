@@ -66,6 +66,9 @@ export const node = localize('arc.node', 'node');
 export const nodes = localize('arc.nodes', 'nodes');
 export const storagePerNode = localize('arc.storagePerNode', 'storage per node');
 
+export const pgSqlType = localize('arc.pgSqlType', "PostgreSQL Server group - Azure Arc");
+export const miaaType = localize('arc.miaaType', "SQL instance - Azure Arc");
+
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database '{0}' created", name); }
 export function databaseCreationFailed(name: string, error: any): string { return localize('arc.databaseCreationFailed', "Failed to create database '{0}'. {1}", name, (error instanceof Error ? error.message : error)); }
 export function passwordReset(name: string): string { return localize('arc.passwordReset', "Password reset for service '{0}'", name); }
