@@ -281,6 +281,7 @@ describe('Utils Tests', function () {
 
 		it('decorates getter correctly', async () => {
 			const debounceTestObj = new DebounceTest();
+			// eslint-disable-next-line no-unused-vars
 			let getterValue = debounceTestObj.getter;
 			getterValue = debounceTestObj.getter;
 			await sleep(500);
