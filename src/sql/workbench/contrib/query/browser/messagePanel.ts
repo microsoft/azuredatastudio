@@ -210,7 +210,7 @@ export class MessagePanel extends Disposable {
 		const errorColor = theme.getColor(resultsErrorColor);
 		const content: string[] = [];
 		if (errorColor) {
-			content.push(`.message-tree .monaco-tree-rows .error-message { color: ${errorColor}; }`);
+			content.push(`.message-tree .monaco-list-rows .error-message { color: ${errorColor}; }`);
 		}
 
 		const newStyles = content.join('\n');
