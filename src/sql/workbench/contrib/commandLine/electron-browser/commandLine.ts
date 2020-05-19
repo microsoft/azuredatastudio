@@ -172,11 +172,11 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		let key = uri.authority.toLowerCase();
 
 		let method = pathMappings[key];
-		method = method.bind(this);
 
 		if (!method) {
 			return false;
 		}
+		method = method.bind(this);
 		return method(uri);
 	}
 
