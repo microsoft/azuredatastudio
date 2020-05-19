@@ -34,6 +34,13 @@ export interface ILanguageMagic {
 	executionTarget?: string;
 }
 
+/**
+		 * The valid navigation providers.
+		 */
+export enum NavigationProviders {
+	NotebooksNavigator = 'BookNavigator.Notebooks',
+	ProvidedBooksNavigator = 'BookNavigator.ProvidedBooks'
+}
 export interface INotebookService {
 	_serviceBrand: undefined;
 

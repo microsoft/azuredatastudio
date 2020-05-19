@@ -10,7 +10,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
 	INotebookService, INotebookManager, INotebookProvider,
-	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, INavigationProvider, ILanguageMagic
+	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, INavigationProvider, ILanguageMagic, NavigationProviders
 } from 'sql/workbench/services/notebook/browser/notebookService';
 import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
 import { standardRendererFactories } from 'sql/workbench/services/notebook/browser/outputs/factories';
@@ -36,6 +36,7 @@ import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contr
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -116,7 +117,8 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IFileService private readonly _fileService: IFileService,
 		@ILogService private readonly _logService: ILogService,
 		@IQueryManagementService private readonly _queryManagementService: IQueryManagementService,
-		@ILogService private readonly logService: ILogService
+		@ILogService private readonly logService: ILogService,
+		@IContextKeyService private contextKeyService: IContextKeyService,
 	) {
 		super();
 		this._providersMemento = new Memento('notebookProviders', this._storageService);
@@ -221,7 +223,15 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	getNavigationProvider(): INavigationProvider {
-		let provider = this._navigationProviders.size > 0 ? this._navigationProviders.values().next().value : undefined;
+		let provider;
+		if (this._navigationProviders.size > 0) {
+			let unsavedBooks = this.contextKeyService.getContextKeyValue('unsavedBooks');
+			let providerName = NavigationProviders.NotebooksNavigator;
+			if (unsavedBooks) {
+				providerName = NavigationProviders.ProvidedBooksNavigator;
+			}
+			provider = this._navigationProviders.get(providerName);
+		}
 		return provider;
 	}
 

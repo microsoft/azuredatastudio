@@ -17,6 +17,7 @@ import { CellType } from './contracts/content';
 import { getErrorMessage, isEditorTitleFree } from './common/utils';
 import { NotebookUriHandler } from './protocol/notebookUriHandler';
 import { BookTreeViewProvider } from './book/bookTreeView';
+import { NavigationProviders } from './common/constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -124,10 +125,19 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	}
 
 	let workspaceFolders = vscode.workspace.workspaceFolders?.slice() ?? [];
-	const bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, workspaceFolders, extensionContext, false, BOOKS_VIEWID);
+	const bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, workspaceFolders, extensionContext, false, BOOKS_VIEWID, NavigationProviders.NotebooksNavigator);
 	await bookTreeViewProvider.initialized;
-	const untitledBookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], extensionContext, true, READONLY_BOOKS_VIEWID);
+	const untitledBookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], extensionContext, true, READONLY_BOOKS_VIEWID, NavigationProviders.ProvidedBooksNavigator);
 	await untitledBookTreeViewProvider.initialized;
+
+	azdata.nb.onDidChangeActiveNotebookEditor(e => {
+		if (e.document.uri.scheme === 'untitled') {
+			untitledBookTreeViewProvider.revealActiveDocumentInViewlet(e.document.uri, false);
+		} else {
+			bookTreeViewProvider.revealActiveDocumentInViewlet(e.document.uri, false);
+		}
+
+	});
 
 	return {
 		getJupyterController() {
