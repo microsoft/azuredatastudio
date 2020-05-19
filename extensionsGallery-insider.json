@@ -1623,7 +1623,7 @@
 					"versions": [
 						{
 							"version": "0.4.1",
-							"lastUpdated": "03/08/2019",
+							"lastUpdated": "03/08/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -3244,7 +3244,56 @@
 					],
 					"statistics": [],
 					"flags": "preview"
-				}
+				},
+				{
+					"extensionId": "65",
+					"extensionName": "sql-prompt",
+					"displayName": "Redgate SQL Prompt",
+					"shortDescription": "Write and format your SQL effortlessly",
+					"publisher": {
+						"displayName": "Redgate",
+						"publisherId": "Redgate",
+						"publisherName": "Redgate"
+					},
+					"versions": [
+						{
+							"version": "0.2.1",
+							"lastUpdated": "05/15/2020",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://download.red-gate.com/EAP/SQLPromptADS.zip"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://foundrylabssqlsearch.blob.core.windows.net/sqlops-sql-search-insiders/metadata/gatebase.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://cdn.rd.gt/sqlprompt-productassets/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://www.red-gate.com/support/license/"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "^1.38.0"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				}				
 			],
 			"resultMetadata": [
 				{
@@ -3252,7 +3301,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 55
+							"count": 56
 						}
 					]
 				}
