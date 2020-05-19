@@ -34,7 +34,7 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 
 const connectAuthority = 'connect';
 
-interface SqlArgs {
+export interface SqlArgs {
 	_?: string[];
 	authenticationType?: string
 	database?: string;
