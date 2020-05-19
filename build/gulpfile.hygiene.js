@@ -103,6 +103,7 @@ const indentationFilter = [
 	'!extensions/resource-deployment/notebooks/**',
 	'!extensions/mssql/notebooks/**',
 	'!extensions/integration-tests/testData/**',
+	'!extensions/arc/src/controller/generated/**',
 	'!extensions/sql-database-projects/resources/templates/*.xml',
 	'!extensions/sql-database-projects/src/test/baselines/*.xml',
 	'!extensions/sql-database-projects/src/test/baselines/*.json',
