@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import { promises as fs } from 'fs';
 import * as os from 'os';
+
 /**
  * Consolidates on the error message string
  */

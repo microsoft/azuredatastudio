@@ -35,7 +35,15 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 
 		this._formBuilder = modelBuilder.formContainer();
-		this.tableSelectionComponent = new TableSelectionComponent(this._apiWrapper, this, { editable: true, preSelected: true });
+		this.tableSelectionComponent = new TableSelectionComponent(this._apiWrapper, this,
+			{
+				editable: true,
+				preSelected: true,
+				databaseTitle: constants.databaseName,
+				tableTitle: constants.tableName,
+				databaseInfo: constants.databaseToStoreInfo,
+				tableInfo: constants.tableToStoreInfo
+			});
 		this._descriptionComponent = modelBuilder.text().withProperties({
 			width: 200
 		}).component();
@@ -74,7 +82,7 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 		this.tableSelectionComponent.onSelectedChanged(async () => {
 			await this.onTableSelected();
 		});
-		this.tableSelectionComponent.registerComponent(modelBuilder, constants.databaseName, constants.tableName);
+		this.tableSelectionComponent.registerComponent(modelBuilder);
 		this.tableSelectionComponent.addComponents(this._formBuilder);
 
 		this._formBuilder.addFormItem({
