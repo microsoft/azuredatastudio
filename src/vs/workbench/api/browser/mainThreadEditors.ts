@@ -125,7 +125,7 @@ export class MainThreadTextEditors implements MainThreadTextEditorsShape {
 			// preserve pre 1.38 behaviour to not make group active when preserveFocus: true
 			// but make sure to restore the editor to fix https://github.com/microsoft/vscode/issues/79633
 			activation: options.preserveFocus ? EditorActivation.RESTORE : undefined,
-			ignoreOverrides: true
+			ignoreOverrides: uri?.fsPath?.toLowerCase().endsWith('ipynb') || uri?.fsPath?.toLowerCase().endsWith('sql') ? false : true // {{SQL CARBON EDIT}}
 		};
 
 		const input: IResourceEditorInput = {
