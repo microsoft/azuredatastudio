@@ -84,7 +84,7 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 				'pkgmanager = sqlmlutils.SQLPackageManager(connection)',
 				pythonCommandScript
 			];
-			let pythonExecutable = this._config.pythonExecutable;
+			let pythonExecutable = await this._config.getPythonExecutable(true);
 			await this._processService.execScripts(pythonExecutable, scripts, [], this._outputChannel);
 		}
 	}

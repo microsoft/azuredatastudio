@@ -69,7 +69,7 @@
 	"builtInExtensions": [
 		{
 			"name": "Microsoft.sqlservernotebook",
-			"version": "0.3.6",
+			"version": "0.3.7",
 			"repo": "https://github.com/Microsoft/azuredatastudio"
 		}
 	]

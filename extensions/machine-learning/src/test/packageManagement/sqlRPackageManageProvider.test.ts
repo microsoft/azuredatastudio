@@ -100,7 +100,8 @@ describe('SQL R Package Manager', () => {
 		let connection = new azdata.connection.ConnectionProfile();
 		connection.serverName = 'serverName';
 		connection.databaseName = 'databaseName';
-		let credentials = { [azdata.ConnectionOptionSpecialType.password]: 'password' };
+		connection.userName = 'user';
+		let credentials = { [azdata.ConnectionOptionSpecialType.password]: 'password', [azdata.ConnectionOptionSpecialType.userName]: 'user' };
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
 		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
 		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((path, scripts: string[]) => {
@@ -139,7 +140,11 @@ describe('SQL R Package Manager', () => {
 		let connection = new azdata.connection.ConnectionProfile();
 		connection.serverName = 'serverName';
 		connection.databaseName = 'databaseName';
-		let credentials = { [azdata.ConnectionOptionSpecialType.password]: 'password' };
+		connection.userName = 'user';
+		let credentials = {
+			[azdata.ConnectionOptionSpecialType.password]: 'password',
+			[azdata.ConnectionOptionSpecialType.userName]: 'user'
+		};
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
 		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
 		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((path, scripts: string[]) => {
@@ -311,7 +316,7 @@ describe('SQL R Package Manager', () => {
 	});
 
 	function createProvider(testContext: TestContext): SqlRPackageManageProvider {
-		testContext.config.setup(x => x.rExecutable).returns(() => 'r');
+		testContext.config.setup(x => x.getRExecutable(true)).returns(() => Promise.resolve('r'));
 		testContext.config.setup(x => x.rEnabled).returns(() => true);
 		testContext.config.setup(x => x.rPackagesRepository).returns(() => 'http://cran.r-project.org');
 		return new SqlRPackageManageProvider(

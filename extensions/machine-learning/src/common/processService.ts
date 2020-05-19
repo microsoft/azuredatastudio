@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as childProcess from 'child_process';
 
-const ExecScriptsTimeoutInSeconds = 600000;
+const ExecScriptsTimeoutInSeconds = 1800000;
 export class ProcessService {
 
 	public timeout = ExecScriptsTimeoutInSeconds;

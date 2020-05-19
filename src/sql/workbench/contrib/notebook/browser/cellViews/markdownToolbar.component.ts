@@ -21,6 +21,7 @@ export class MarkdownToolbarComponent {
 
 	public buttonBold = localize('buttonBold', "Bold");
 	public buttonItalic = localize('buttonItalic', "Italic");
+	public buttonUnderline = localize('buttonUnderline', "Underline");
 	public buttonHighlight = localize('buttonHighlight', "Highlight");
 	public buttonCode = localize('buttonCode', "Code");
 	public buttonLink = localize('buttonLink', "Link");
@@ -43,6 +44,7 @@ export class MarkdownToolbarComponent {
 	private initActionBar() {
 		let boldButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.boldText', '', 'bold', this.buttonBold, this.cellModel, MarkdownButtonType.BOLD);
 		let italicButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.italicText', '', 'italic', this.buttonItalic, this.cellModel, MarkdownButtonType.ITALIC);
+		let underlineButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.underlineText', '', 'underline', this.buttonUnderline, this.cellModel, MarkdownButtonType.UNDERLINE);
 		let highlightButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.highlightText', '', 'highlight', this.buttonHighlight, this.cellModel, MarkdownButtonType.HIGHLIGHT);
 		let codeButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.codeText', '', 'code', this.buttonCode, this.cellModel, MarkdownButtonType.CODE);
 		let linkButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.linkText', '', 'insert-link', this.buttonLink, this.cellModel, MarkdownButtonType.LINK);
@@ -56,6 +58,7 @@ export class MarkdownToolbarComponent {
 		this._actionBar.setContent([
 			{ action: boldButton },
 			{ action: italicButton },
+			{ action: underlineButton },
 			{ action: highlightButton },
 			{ action: codeButton },
 			{ action: linkButton },
