@@ -153,12 +153,7 @@ async function newNotebook(connectionProfile: azdata.IConnectionProfile): Promis
 		connectionProfile: connectionProfile,
 		defaultKernel: null
 	} : null;
-	try {
-		return await azdata.nb.showNotebookDocument(untitledUri, options);
-	} catch (err) {
-		vscode.window.showErrorMessage(err.message);
-		throw err;
-	}
+	return azdata.nb.showNotebookDocument(untitledUri, options);
 }
 
 function findNextUntitledEditorName(): string {
