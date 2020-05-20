@@ -177,7 +177,13 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 			return false;
 		}
 		method = method.bind(this);
-		return method(uri);
+		const result = await method(uri);
+
+		if (typeof result !== 'boolean') {
+			throw new Error('Invalid URL Handler used in commandLine code.');
+		}
+
+		return result;
 	}
 
 	@pathHandler({
