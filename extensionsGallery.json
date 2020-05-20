@@ -1576,15 +1576,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Microsoft/SandDance/master/packages/azdata-sanddance/sanddance-logo.png"
+									"source": "https://raw.githubusercontent.com/Microsoft/SandDance/master/extensions/azdata-sanddance/sanddance-logo.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/SandDance/master/packages/azdata-sanddance/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/SandDance/master/extensions/azdata-sanddance/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/SandDance/master/packages/azdata-sanddance/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/SandDance/master/extensions/azdata-sanddance/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
