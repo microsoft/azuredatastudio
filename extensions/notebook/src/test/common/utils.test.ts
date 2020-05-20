@@ -132,7 +132,7 @@ describe('Utils Tests', function () {
 
 		it('different lengths', () => {
 			const random = ['1.0.0', '42', '100.0', '0.1', '1.0.1'];
-			const randomSorted = ['0.1', '1.0.0', '1.0.1', '42', '100.0']
+			const randomSorted = ['0.1', '1.0.0', '1.0.1', '42', '100.0'];
 			should(utils.sortPackageVersions(random)).deepEqual(randomSorted);
 		});
 	});
@@ -160,6 +160,10 @@ describe('Utils Tests', function () {
 	});
 
 	describe('isEditorTitleFree', () => {
+		afterEach( async () => {
+			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+		});
+
 		it('title is free', () => {
 			should(utils.isEditorTitleFree('MyTitle')).be.true();
 		});
@@ -170,8 +174,13 @@ describe('Utils Tests', function () {
 		});
 
 		it('title is not free with notebook document sharing name', async () => {
-			await azdata.nb.showNotebookDocument(vscode.Uri.parse(`untitled:Untitled-1`));
-			should(utils.isEditorTitleFree('Untitled-1')).be.false();
+			await azdata.nb.showNotebookDocument(vscode.Uri.parse(`untitled:MyUntitledNotebook`));
+			should(utils.isEditorTitleFree('MyUntitledNotebook')).be.false();
+		});
+
+		it('title is not free with notebook document sharing name created through command', async () => {
+			await vscode.commands.executeCommand('_notebook.command.new');
+			should(utils.isEditorTitleFree('Notebook-0')).be.false();
 		});
 	});
 
@@ -219,9 +228,10 @@ describe('Utils Tests', function () {
 		it('valid endpoint is parsed correctly', () => {
 			const host = 'localhost';
 			const port = '123';
-			const hostAndIp = utils.getHostAndPortFromEndpoint(`https://${host}:${123}`);
+			const hostAndIp = utils.getHostAndPortFromEndpoint(`https://${host}:${port}`);
 			should(hostAndIp).deepEqual({ host: host, port: port });
 		});
+
 		it('invalid endpoint is returned as is', () => {
 			const host = 'localhost';
 			const hostAndIp = utils.getHostAndPortFromEndpoint(`https://${host}`);
@@ -231,7 +241,7 @@ describe('Utils Tests', function () {
 
 	describe('exists', () => {
 		it('runs as expected', async () => {
-			const filename = path.join(os.tmpdir(), `NotebookUtilsTest_uuid.v4()`);
+			const filename = path.join(os.tmpdir(), `NotebookUtilsTest_${uuid.v4()}`);
 			try {
 				should(await utils.exists(filename)).be.false();
 				await fs.writeFile(filename, '');
