@@ -26,6 +26,7 @@ import { main as sqlMain, setup as sqlSetup } from './sql/main'; //{{SQL CARBON 
 import { setup as setupDataLossTests } from './areas/workbench/data-loss.test';
 import { setup as setupDataPreferencesTests } from './areas/preferences/preferences.test';
 import { setup as setupDataSearchTests } from './areas/search/search.test';
+import { setup as setupDataNotebookTests } from './areas/notebook/notebook.test';
 import { setup as setupDataLanguagesTests } from './areas/languages/languages.test';
 import { setup as setupDataEditorTests } from './areas/editor/editor.test';
 import { setup as setupDataStatusbarTests } from './areas/statusbar/statusbar.test';
@@ -318,6 +319,7 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 		/*if (!opts.web) { setupDataLossTests(); }
 		if (!opts.web) { setupDataPreferencesTests(); }
 		setupDataSearchTests();
+		setupDataNotebookTests();
 		setupDataLanguagesTests();
 		setupDataEditorTests();
 		setupDataStatusbarTests(!!opts.web);
