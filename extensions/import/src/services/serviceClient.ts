@@ -13,31 +13,28 @@ import * as path from 'path';
 import { EventAndListener } from 'eventemitter2';
 
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
-import * as Constants from '../constants';
+import * as Constants from '../common/constants';
 import { TelemetryFeature, FlatFileImportFeature } from './features';
 import { promises as fs } from 'fs';
+import { ApiWrapper } from '../common/apiWrapper';
 
 export class ServiceClient {
 	private statusView: vscode.StatusBarItem;
 
-	constructor(private outputChannel: vscode.OutputChannel) {
+	constructor(
+		private outputChannel: vscode.OutputChannel,
+		private _apiWrapper: ApiWrapper
+	) {
 		this.statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 	}
 
 	public async startService(context: vscode.ExtensionContext): Promise<SqlOpsDataClient> {
 		const rawConfig = await fs.readFile(path.join(context.extensionPath, 'config.json'));
-		const config = JSON.parse(rawConfig.toString());
-		config.installDirectory = path.join(context.extensionPath, config.installDirectory);
-		config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
-		config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
-		const serverdownloader = new ServerProvider(config);
-		serverdownloader.eventEmitter.onAny(this.generateHandleServerProviderEvent());
 		let clientOptions: ClientOptions = this.createClientOptions();
-
 		try {
 			const installationStart = Date.now();
 			let client: SqlOpsDataClient;
-			let serviceBinaries = await serverdownloader.getOrDownloadServer();
+			let serviceBinaries = await this.downloadBinaries(context, rawConfig);
 			const installationComplete = Date.now();
 			let serverOptions = this.generateServerOptions(serviceBinaries, context);
 			client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
@@ -67,6 +64,16 @@ export class ServiceClient {
 			// Just resolve to avoid unhandled promise. We show the error to the user.
 			return undefined;
 		}
+	}
+
+	public async downloadBinaries(context: vscode.ExtensionContext, rawConfig: Buffer): Promise<string> {
+		const config = JSON.parse(rawConfig.toString());
+		config.installDirectory = path.join(context.extensionPath, config.installDirectory);
+		config.proxy = this._apiWrapper.getConfiguration('http').get('proxy');
+		config.strictSSL = this._apiWrapper.getConfiguration('http').get('proxyStrictSSL') || true;
+		const serverdownloader = new ServerProvider(config);
+		serverdownloader.eventEmitter.onAny(this.generateHandleServerProviderEvent());
+		return serverdownloader.getOrDownloadServer();
 	}
 
 	private createClientOptions(): ClientOptions {

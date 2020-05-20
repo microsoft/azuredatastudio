@@ -4,18 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
-import { ImportDataModel } from '../api/models';
 import { ImportPage } from '../api/importPage';
-import { FlatFileProvider } from '../../services/contracts';
-import { FlatFileWizard } from '../flatFileWizard';
-
-const localize = nls.loadMessageBundle();
+import * as constants from '../../common/constants';
 
 export class ProsePreviewPage extends ImportPage {
-
-	private readonly successTitle: string = localize('flatFileImport.prosePreviewMessage', "This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.");
-	private readonly failureTitle: string = localize('flatFileImport.prosePreviewMessageFail', "This operation was unsuccessful. Please try a different input file.");
 
 	private table: azdata.TableComponent;
 	private loading: azdata.LoadingComponent;
@@ -24,10 +16,6 @@ export class ProsePreviewPage extends ImportPage {
 	private resultTextComponent: azdata.TextComponent;
 	private isSuccess: boolean;
 
-	public constructor(instance: FlatFileWizard, wizardPage: azdata.window.WizardPage, model: ImportDataModel, view: azdata.ModelView, provider: FlatFileProvider) {
-		super(instance, wizardPage, model, view, provider);
-	}
-
 	async start(): Promise<boolean> {
 		this.table = this.view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 			data: undefined,
@@ -35,7 +23,7 @@ export class ProsePreviewPage extends ImportPage {
 			forceFitColumns: azdata.ColumnSizingMode.DataFit
 		}).component();
 		this.refresh = this.view.modelBuilder.button().withProperties({
-			label: localize('flatFileImport.refresh', "Refresh"),
+			label: constants.refreshText,
 			isFile: false
 		}).component();
 
@@ -47,7 +35,7 @@ export class ProsePreviewPage extends ImportPage {
 
 		this.resultTextComponent = this.view.modelBuilder.text()
 			.withProperties({
-				value: this.isSuccess ? this.successTitle : this.failureTitle
+				value: this.isSuccess ? constants.successTitleText : constants.failureTitleText
 			}).component();
 
 		this.form = this.view.modelBuilder.formContainer().withFormItems([
@@ -84,14 +72,14 @@ export class ProsePreviewPage extends ImportPage {
 			await this.populateTable(this.model.proseDataPreview, this.model.proseColumns.map(c => c.columnName));
 			this.isSuccess = true;
 			if (this.form) {
-				this.resultTextComponent.value = this.successTitle;
+				this.resultTextComponent.value = constants.successTitleText;
 			}
 			return true;
 		} else {
 			await this.populateTable([], []);
 			this.isSuccess = false;
 			if (this.form) {
-				this.resultTextComponent.value = this.failureTitle + '\n' + (error ?? '');
+				this.resultTextComponent.value = constants.failureTitleText + '\n' + (error ?? '');
 			}
 			return false;
 		}

@@ -4,13 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
-import { ColumnMetadata, ImportDataModel } from '../api/models';
+import { ColumnMetadata } from '../api/models';
 import { ImportPage } from '../api/importPage';
-import { FlatFileProvider } from '../../services/contracts';
-import { FlatFileWizard } from '../flatFileWizard';
-
-const localize = nls.loadMessageBundle();
+import * as constants from '../../common/constants';
 
 export class ModifyColumnsPage extends ImportPage {
 	private readonly categoryValues = [
@@ -53,11 +49,6 @@ export class ModifyColumnsPage extends ImportPage {
 	private loading: azdata.LoadingComponent;
 	private text: azdata.TextComponent;
 	private form: azdata.FormContainer;
-
-	public constructor(instance: FlatFileWizard, wizardPage: azdata.window.WizardPage, model: ImportDataModel, view: azdata.ModelView, provider: FlatFileProvider) {
-		super(instance, wizardPage, model, view, provider);
-	}
-
 
 	private static convertMetadata(column: ColumnMetadata): any[] {
 		return [column.columnName, column.dataType, false, column.nullable];
@@ -105,20 +96,20 @@ export class ModifyColumnsPage extends ImportPage {
 	async onPageEnter(): Promise<boolean> {
 		this.loading.loading = true;
 		await this.populateTable();
-		this.instance.changeNextButtonLabel(localize('flatFileImport.importData', "Import Data"));
+		this.instance.changeNextButtonLabel(constants.importDataText);
 		this.loading.loading = false;
 
 		return true;
 	}
 
 	async onPageLeave(): Promise<boolean> {
-		this.instance.changeNextButtonLabel(localize('flatFileImport.next', "Next"));
+		this.instance.changeNextButtonLabel(constants.nextText);
 		return undefined;
 	}
 
 	async cleanup(): Promise<boolean> {
 		delete this.model.proseColumns;
-		this.instance.changeNextButtonLabel(localize('flatFileImport.next', "Next"));
+		this.instance.changeNextButtonLabel(constants.nextText);
 
 		return true;
 	}
@@ -139,23 +130,23 @@ export class ModifyColumnsPage extends ImportPage {
 		this.table.updateProperties({
 			height: 400,
 			columns: [{
-				displayName: localize('flatFileImport.columnName', "Column Name"),
+				displayName: constants.columnNameText,
 				valueType: azdata.DeclarativeDataType.string,
 				width: '150px',
 				isReadOnly: false
 			}, {
-				displayName: localize('flatFileImport.dataType', "Data Type"),
+				displayName: constants.dataTypeText,
 				valueType: azdata.DeclarativeDataType.editableCategory,
 				width: '150px',
 				isReadOnly: false,
 				categoryValues: this.categoryValues
 			}, {
-				displayName: localize('flatFileImport.primaryKey', "Primary Key"),
+				displayName: constants.primaryKeyText,
 				valueType: azdata.DeclarativeDataType.boolean,
 				width: '100px',
 				isReadOnly: false
 			}, {
-				displayName: localize('flatFileImport.allowNulls', "Allow Nulls"),
+				displayName: constants.allowNullsText,
 				valueType: azdata.DeclarativeDataType.boolean,
 				isReadOnly: false,
 				width: '100px'

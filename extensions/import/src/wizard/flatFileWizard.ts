@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import { FlatFileProvider } from '../services/contracts';
 import { ImportDataModel } from './api/models';
@@ -14,8 +12,8 @@ import { FileConfigPage } from './pages/fileConfigPage';
 import { ProsePreviewPage } from './pages/prosePreviewPage';
 import { ModifyColumnsPage } from './pages/modifyColumnsPage';
 import { SummaryPage } from './pages/summaryPage';
-
-const localize = nls.loadMessageBundle();
+import { ApiWrapper } from '../common/apiWrapper';
+import * as constants from '../common/constants';
 
 export class FlatFileWizard {
 	private readonly provider: FlatFileProvider;
@@ -23,7 +21,10 @@ export class FlatFileWizard {
 
 	private importAnotherFileButton: azdata.window.Button;
 
-	constructor(provider: FlatFileProvider) {
+	constructor(
+		provider: FlatFileProvider,
+		private _apiWrapper: ApiWrapper
+	) {
 		this.provider = provider;
 	}
 
@@ -38,19 +39,19 @@ export class FlatFileWizard {
 
 		let pages: Map<number, ImportPage> = new Map<number, ImportPage>();
 
-		let currentConnection = await azdata.connection.getCurrentConnection();
+		let currentConnection = await this._apiWrapper.getCurrentConnection();
 
 		let connectionId: string;
 
 		if (!currentConnection) {
-			connectionId = (await azdata.connection.openConnectionDialog(['MSSQL'])).connectionId;
+			connectionId = (await this._apiWrapper.openConnectionDialog(constants.supportedProviders)).connectionId;
 			if (!connectionId) {
-				vscode.window.showErrorMessage(localize('import.needConnection', "Please connect to a server before using this wizard."));
+				this._apiWrapper.showErrorMessage(constants.needConnectionText);
 				return;
 			}
 		} else {
 			if (currentConnection.providerId !== 'MSSQL') {
-				vscode.window.showErrorMessage(localize('import.needSQLConnection', "SQL Server Import extension does not support this type of connection"));
+				this._apiWrapper.showErrorMessage(constants.needSqlConnectionText);
 				return;
 			}
 			connectionId = currentConnection.connectionId;
@@ -59,16 +60,16 @@ export class FlatFileWizard {
 
 		model.serverId = connectionId;
 
-		this.wizard = azdata.window.createWizard(localize('flatFileImport.wizardName', "Import flat file wizard"));
-		let page1 = azdata.window.createWizardPage(localize('flatFileImport.page1Name', "Specify Input File"));
-		let page2 = azdata.window.createWizardPage(localize('flatFileImport.page2Name', "Preview Data"));
-		let page3 = azdata.window.createWizardPage(localize('flatFileImport.page3Name', "Modify Columns"));
-		let page4 = azdata.window.createWizardPage(localize('flatFileImport.page4Name', "Summary"));
+		this.wizard = this._apiWrapper.createWizard(constants.wizardNameText);
+		let page1 = this._apiWrapper.createWizardPage(constants.page1NameText);
+		let page2 = this._apiWrapper.createWizardPage(constants.page2NameText);
+		let page3 = this._apiWrapper.createWizardPage(constants.page3NameText);
+		let page4 = this._apiWrapper.createWizardPage(constants.page4NameText);
 
 		let fileConfigPage: FileConfigPage;
 
 		page1.registerContent(async (view) => {
-			fileConfigPage = new FileConfigPage(this, page1, model, view, this.provider);
+			fileConfigPage = new FileConfigPage(this, page1, model, view, this.provider, this._apiWrapper);
 			pages.set(0, fileConfigPage);
 			await fileConfigPage.start().then(() => {
 				fileConfigPage.setupNavigationValidator();
@@ -78,14 +79,14 @@ export class FlatFileWizard {
 
 		let prosePreviewPage: ProsePreviewPage;
 		page2.registerContent(async (view) => {
-			prosePreviewPage = new ProsePreviewPage(this, page2, model, view, this.provider);
+			prosePreviewPage = new ProsePreviewPage(this, page2, model, view, this.provider, this._apiWrapper);
 			pages.set(1, prosePreviewPage);
 			await prosePreviewPage.start();
 		});
 
 		let modifyColumnsPage: ModifyColumnsPage;
 		page3.registerContent(async (view) => {
-			modifyColumnsPage = new ModifyColumnsPage(this, page3, model, view, this.provider);
+			modifyColumnsPage = new ModifyColumnsPage(this, page3, model, view, this.provider, this._apiWrapper);
 			pages.set(2, modifyColumnsPage);
 			await modifyColumnsPage.start();
 		});
@@ -93,13 +94,13 @@ export class FlatFileWizard {
 		let summaryPage: SummaryPage;
 
 		page4.registerContent(async (view) => {
-			summaryPage = new SummaryPage(this, page4, model, view, this.provider);
+			summaryPage = new SummaryPage(this, page4, model, view, this.provider, this._apiWrapper);
 			pages.set(3, summaryPage);
 			await summaryPage.start();
 		});
 
 
-		this.importAnotherFileButton = azdata.window.createButton(localize('flatFileImport.importNewFile', "Import new file"));
+		this.importAnotherFileButton = this._apiWrapper.createButton(constants.importNewFileText);
 		this.importAnotherFileButton.onClick(() => {
 			//TODO replace this with proper cleanup for all the pages
 			this.wizard.close();

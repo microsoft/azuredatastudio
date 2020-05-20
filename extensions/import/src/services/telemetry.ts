@@ -6,10 +6,8 @@
 import { ErrorAction, CloseAction } from 'vscode-languageclient';
 import TelemetryReporter from 'vscode-extension-telemetry';
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
 
-import * as constants from '../constants';
+import * as constants from '../common/constants';
 import { IMessage, ITelemetryEventProperties, ITelemetryEventMeasures } from './contracts';
 
 
@@ -33,12 +31,11 @@ export class LanguageClientErrorHandler {
 	showOnErrorPrompt(): void {
 		// TODO add telemetry
 		// Telemetry.sendTelemetryEvent('SqlToolsServiceCrash');
-		let crashButtonText = localize('import.serviceCrashButton', "Give Feedback");
 		vscode.window.showErrorMessage(
-			localize('serviceCrashMessage', "service component could not start"),
-			crashButtonText
+			constants.serviceCrashMessageText,
+			constants.crashButtonText
 		).then(action => {
-			if (action && action === crashButtonText) {
+			if (action && action === constants.crashButtonText) {
 				vscode.env.openExternal(vscode.Uri.parse(constants.serviceCrashLink));
 			}
 		});
