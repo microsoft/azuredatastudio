@@ -89,7 +89,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				if (notebookDocuments) {
 					// update trust state of opened items
 					notebookDocuments.forEach(document => {
-						let notebook = this.currentBook.getNotebook(document.uri.fsPath);
+						let notebook = this.currentBook?.getNotebook(document.uri.fsPath);
 						if (notebook && this._bookTrustManager.isNotebookTrustedByDefault(document.uri.fsPath)) {
 							document.setTrusted(true);
 						}
@@ -275,7 +275,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	async saveJupyterBooks(): Promise<void> {
-		if (this.currentBook.bookPath) {
+		if (this.currentBook?.bookPath) {
 			const allFilesFilter = loc.allFiles;
 			let filter: any = {};
 			filter[allFilesFilter] = '*';
