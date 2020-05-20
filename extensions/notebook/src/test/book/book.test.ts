@@ -220,14 +220,69 @@ describe('BookTreeViewProviderTests', function () {
 
 			});
 
+		});
 
-			this.afterAll(async function (): Promise<void> {
-				console.log('Removing temporary files...');
-				if (await exists(rootFolderPath)) {
-					await promisify(rimraf)(rootFolderPath);
-				}
-				console.log('Successfully removed temporary files.');
+		describe('ProvidedBooksTreeViewProvider.getChildren', function (): void {
+			let providedbookTreeViewProvider: BookTreeViewProvider;
+			let book: BookTreeItem;
+			let notebook1: BookTreeItem;
+
+			this.beforeAll(async () => {
+				providedbookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], mockExtensionContext, true, 'unsavedBookTreeView', 'BookNavigator.ProvidedBooks');
+				let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+				await Promise.race([providedbookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('ProvidedBooksTreeViewProvider did not initialize in time'); })]);
+				await providedbookTreeViewProvider.openBook(bookFolderPath, undefined, true, false);
 			});
+
+			it('should return all book nodes when element is undefined', async function (): Promise<void> {
+				const children = await providedbookTreeViewProvider.getChildren();
+				should(children).be.Array();
+				should(children.length).equal(1);
+				book = children[0];
+				should(book.title).equal(expectedBook.title);
+			});
+
+			it('should return all page nodes when element is a book', async function (): Promise<void> {
+				const children = await providedbookTreeViewProvider.getChildren(book);
+				should(children).be.Array();
+				should(children.length).equal(3);
+				notebook1 = children[0];
+				const markdown = children[1];
+				const externalLink = children[2];
+				equalBookItems(notebook1, expectedNotebook1);
+				equalBookItems(markdown, expectedMarkdown);
+				equalBookItems(externalLink, expectedExternalLink);
+			});
+
+			it('should return all sections when element is a notebook', async function (): Promise<void> {
+				const children = await providedbookTreeViewProvider.getChildren(notebook1);
+				should(children).be.Array();
+				should(children.length).equal(2);
+				const notebook2 = children[0];
+				const notebook3 = children[1];
+				equalBookItems(notebook2, expectedNotebook2);
+				equalBookItems(notebook3, expectedNotebook3);
+			});
+
+			it('getNavigation should get previous and next urls correctly from the bookModel', async () => {
+				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
+				let notebook2Path = path.join(rootFolderPath, 'Book', 'content', 'notebook2.ipynb');
+				let notebook3Path = path.join(rootFolderPath, 'Book', 'content', 'notebook3.ipynb');
+				const result = await providedbookTreeViewProvider.getNavigation(vscode.Uri.file(notebook2Path));
+				should(result.hasNavigation).be.true('getNavigation failed to get previous and next urls');
+				should(result.next.fsPath).equal(notebook3Path, 'getNavigation failed to get the next url');
+				should(result.previous.fsPath).equal(notebook1Path, 'getNavigation failed to get the previous url');
+
+			});
+
+		});
+
+		this.afterAll(async function (): Promise<void> {
+			console.log('Removing temporary files...');
+			if (await exists(rootFolderPath)) {
+				await promisify(rimraf)(rootFolderPath);
+			}
+			console.log('Successfully removed temporary files.');
 		});
 
 	});

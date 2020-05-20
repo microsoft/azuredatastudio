@@ -498,7 +498,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {
 		let result: azdata.nb.NavigationResult;
 		let book = this.getBookFromItemPath(uri.scheme === 'untitled' ? vscode.Uri.file(uri.path).path : uri.path);
-		let notebook = book ? book.getNotebook(uri.fsPath) : undefined;
+		let notebook = book?.getNotebook(uri.fsPath);
 		if (notebook) {
 			result = {
 				hasNavigation: true,
@@ -517,7 +517,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	public getBookFromItemPath(itemPath: string): BookModel | undefined {
-		let selectedBook = this.books.find(b => itemPath.indexOf(b.bookPath) > -1);
+		let selectedBook = this.books.find(b => itemPath.toLowerCase().indexOf(b.bookPath.toLowerCase()) > -1);
 		return selectedBook;
 	}
 }
