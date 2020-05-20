@@ -11,8 +11,8 @@ import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
 import * as mssql from '../../../mssql';
 
-import { Uri, QuickPickItem, WorkspaceFolder, extensions } from 'vscode';
-import { IConnectionProfile, ExtractTarget, TaskExecutionMode } from 'azdata';
+import { Uri, QuickPickItem, WorkspaceFolder } from 'vscode';
+import { IConnectionProfile, TaskExecutionMode, ExtractTarget } from 'azdata';
 import { ApiWrapper } from '../common/apiWrapper';
 import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
@@ -279,6 +279,7 @@ export class ProjectsController {
 	public async importNewDatabaseProject(context: any): Promise<void> {
 		let model = <ImportDataModel>{};
 
+		// TODO: Refactor code
 		try {
 			let profile = context ? <IConnectionProfile>context.connectionProfile : undefined;
 			//TODO: Prompt for new connection addition and get database information if context information isn't provided.
@@ -295,6 +296,7 @@ export class ProjectsController {
 			model.projName = newProjName;
 
 			// Get extractTarget
+			// TODO: Move ExtractTarget from azdata.proposed.d.ts to mssql.d.ts
 			let extractTarget: ExtractTarget = await this.getExtractTarget();
 			if (!extractTarget || extractTarget === -1) {
 				throw new Error(constants.extractTargetRequired);
@@ -316,7 +318,7 @@ export class ProjectsController {
 				newProjFolderUri = Uri.file(path.dirname(newProjUri.fsPath));
 			}
 
-			//Check folder is empty
+			// Check folder is empty
 			let isEmpty: boolean = await this.isDirEmpty(newProjFolderUri.fsPath);
 			if (!isEmpty) {
 				throw new Error(constants.projectLocationNotEmpty);
@@ -363,16 +365,18 @@ export class ProjectsController {
 	private async getExtractTarget(): Promise<ExtractTarget> {
 		let extractTarget: ExtractTarget;
 
-		const extractTargetOptions: QuickPickItem[] = [];
+		let extractTargetOptions: QuickPickItem[] = [];
 
 		let keys: string[] = Object.keys(ExtractTarget).filter(k => typeof ExtractTarget[k as any] === 'number');
 
-		keys.forEach(targetOption => {
-			let pascalCaseTargetOption: string = utils.toPascalCase(targetOption);	// for better readability
-			extractTargetOptions.push({ label: pascalCaseTargetOption });
+		keys.forEach((targetOption: string) => {
+			if (targetOption !== 'dacpac') {
+				let pascalCaseTargetOption: string = utils.toPascalCase(targetOption);	// for better readability
+				extractTargetOptions.push({ label: pascalCaseTargetOption });
+			}
 		});
 
-		let input = await this.apiWrapper.showQuickPick(extractTargetOptions.slice(1), {		//Ignore the first option to create Dacpac
+		let input = await this.apiWrapper.showQuickPick(extractTargetOptions, {		//Ignore the first option to create Dacpac
 			canPickMany: false,
 			placeHolder: constants.extractTargetInput
 		});
@@ -428,14 +432,13 @@ export class ProjectsController {
 	}
 
 	private async importApiCall(model: ImportDataModel): Promise<void> {
-		let ext = extensions.getExtension(mssql.extension.name);
+		let ext = this.apiWrapper.getExtension(mssql.extension.name)!;
 
-		if (ext === undefined) {
-			this.apiWrapper.showErrorMessage('VSCode extension undefined');
-			return;
-		}
+		const service = ((await ext.activate() as mssql.IExtension)).dacFx;//(ext.activate() as mssql.IExtension).dacFx;
+		//const service = (ext.exports as mssql.IExtension).dacFx;
 
-		const service = (ext.exports as mssql.IExtension).dacFx;
+		//dacfxService = ((await ext.activate() as mssql.IExtension)).dacFx;
+
 		const ownerUri = await this.apiWrapper.getUriForConnection(model.serverId);
 
 		await service.importDatabaseProject(model.database, model.filePath, model.projName, model.version, ownerUri, model.extractTarget, TaskExecutionMode.execute);

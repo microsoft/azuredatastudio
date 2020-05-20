@@ -423,7 +423,7 @@ export enum TaskExecutionMode {
 }
 
 export enum ExtractTarget {
-	dacPac = 0,
+	dacpac = 0,
 	file = 1,
 	flat = 2,
 	objectType = 3,

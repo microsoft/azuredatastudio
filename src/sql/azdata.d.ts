@@ -1833,7 +1833,6 @@ declare module 'azdata' {
 		executeAndScript = 2,
 	}
 
-
 	export interface ListTasksParams {
 		listActiveTasksOnly: boolean;
 	}

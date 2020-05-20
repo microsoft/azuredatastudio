@@ -64,7 +64,7 @@ export class Project {
 		//If folder doesn't exist, create it
 		let exists = await utils.exists(absoluteFolderPath);
 		if (!exists) {
-			fs.mkdir(absoluteFolderPath, { recursive: true });
+			await fs.mkdir(absoluteFolderPath, { recursive: true });
 		}
 
 		const folderEntry = this.createProjectEntry(relativeFolderPath, EntryType.Folder);
