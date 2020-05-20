@@ -44,14 +44,14 @@ export class BuildHelper {
 			return;
 		}
 
-		if (!fs.existsSync(this.extensionBuildDir)) {
+		if (!await new Promise(c => fs.exists(this.extensionBuildDir, c))) {
 			await fs.promises.mkdir(this.extensionBuildDir);
 		}
 
 		const buildfilesPath = await this.getBuildDirPathFromMssqlTools();
 
 		buildFiles.forEach(async (fileName) => {
-			await fs.exists(path.join(buildfilesPath, fileName), async (fileExists) => {
+			fs.exists(path.join(buildfilesPath, fileName), async (fileExists) => {
 				if (fileExists) {
 					await fs.promises.copyFile(path.join(buildfilesPath, fileName), path.join(this.extensionBuildDir, fileName));
 				}
