@@ -56,15 +56,15 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		super(metadata, tokenCache, context, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME);
 	}
 
-	public async promptForConsent(resourceId: string, tenant: string = this.commonTenant): Promise<{ tokenRefreshResponse: TokenRefreshResponse, authCompleteDeferred: Deferred<void> } | undefined> {
+	public async promptForConsent(resourceEndpoint: string, tenant: string = this.commonTenant): Promise<{ tokenRefreshResponse: TokenRefreshResponse, authCompleteDeferred: Deferred<void> } | undefined> {
 		let authCompleteDeferred: Deferred<void>;
 		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
 
 		let authResponse: AuthCodeResponse;
 		if (vscode.env.uiKind === vscode.UIKind.Web) {
-			authResponse = await this.loginWithoutLocalServer(resourceId, tenant);
+			authResponse = await this.loginWithoutLocalServer(resourceEndpoint, tenant);
 		} else {
-			authResponse = await this.loginWithLocalServer(authCompletePromise, resourceId, tenant);
+			authResponse = await this.loginWithLocalServer(authCompletePromise, resourceEndpoint, tenant);
 		}
 
 		let tokenClaims: TokenClaims;

@@ -377,7 +377,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return allSubs;
 	}
 
-	protected async getToken(postData: { [key: string]: string }, tenant = this.commonTenant, resourceId: string = ''): Promise<TokenRefreshResponse | undefined> {
+	protected async getToken(postData: { [key: string]: string }, tenant = this.commonTenant, resourceId: string = '', resourceEndpoint: string = ''): Promise<TokenRefreshResponse | undefined> {
 		try {
 			let refreshResponse: TokenRefreshResponse;
 
@@ -400,7 +400,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				refreshResponse = { accessToken, refreshToken, tokenClaims, expiresOn };
 			} catch (ex) {
 				if (ex?.response?.data?.error === 'interaction_required') {
-					const { tokenRefreshResponse, authCompleteDeferred } = await this.promptForConsent(resourceId, tenant);
+					const { tokenRefreshResponse, authCompleteDeferred } = await this.promptForConsent(resourceEndpoint, tenant);
 					refreshResponse = tokenRefreshResponse;
 					authCompleteDeferred.resolve();
 				} else {
@@ -438,7 +438,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			postData.resource = resource.endpoint;
 		}
 
-		const getTokenResponse = await this.getToken(postData, tenant?.id, resource?.id);
+		const getTokenResponse = await this.getToken(postData, tenant?.id, resource?.id, resource?.endpoint);
 
 		const accessToken = getTokenResponse?.accessToken;
 		const refreshToken = getTokenResponse?.refreshToken;
