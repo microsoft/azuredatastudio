@@ -3189,7 +3189,7 @@
 					"flags": "preview"
 				},
 				{
-					"extensionId": "65",
+					"extensionId": "66",
 					"extensionName": "sql-prompt",
 					"displayName": "Redgate SQL Prompt",
 					"shortDescription": "Write and format your SQL effortlessly",
