@@ -865,8 +865,7 @@
                             "terminate",
                             "trigger",
                             "unregister",
-                            "write",
-                            "move"
+                            "write"
                         ]
                     }
                 ]
