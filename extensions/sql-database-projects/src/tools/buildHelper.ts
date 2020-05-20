@@ -6,7 +6,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as os from 'os';
-import { promises as fs, existsSync } from 'fs';
+import * as constants from './../common/constants';
+import * as fs from 'fs';
 import * as utils from '../common/utils';
 import { mssqlNotFound } from '../common/constants';
 
@@ -31,7 +32,7 @@ export class BuildHelper {
 	private initialized: boolean = false;
 
 	constructor() {
-		this.extensionDir = vscode.extensions.getExtension('Microsoft.sql-database-projects')?.extensionPath ?? '';
+		this.extensionDir = vscode.extensions.getExtension(constants.sqlDatabaseProjectExtensionId)?.extensionPath ?? '';
 		this.extensionBuildDir = path.join(this.extensionDir, buildDirectory);
 	}
 
@@ -43,16 +44,18 @@ export class BuildHelper {
 			return;
 		}
 
-		if (!existsSync(this.extensionBuildDir)) {
-			await fs.mkdir(this.extensionBuildDir);
+		if (!fs.existsSync(this.extensionBuildDir)) {
+			await fs.promises.mkdir(this.extensionBuildDir);
 		}
 
 		const buildfilesPath = await this.getBuildDirPathFromMssqlTools();
 
 		buildFiles.forEach(async (fileName) => {
-			if (existsSync(path.join(buildfilesPath, fileName))) {
-				await fs.copyFile(path.join(buildfilesPath, fileName), path.join(this.extensionBuildDir, fileName));
-			}
+			await fs.exists(path.join(buildfilesPath, fileName), async (fileExists) => {
+				if (fileExists) {
+					await fs.promises.copyFile(path.join(buildfilesPath, fileName), path.join(this.extensionBuildDir, fileName));
+				}
+			});
 		});
 
 		this.initialized = true;
@@ -60,10 +63,12 @@ export class BuildHelper {
 
 	// get mssql sqltoolsservice path
 	private async getBuildDirPathFromMssqlTools(): Promise<string> {
-		const mssqlConfigDir = path.join(this.extensionDir, '..', 'mssql');
+		const mssqlConfigDir = vscode.extensions.getExtension(constants.mssqlExtensionId)?.extensionPath ?? '';
+		const rawConfig = await new Promise(c => fs.exists(path.join(mssqlConfigDir, 'config.json'), c))
+			? await fs.promises.readFile(path.join(mssqlConfigDir, 'config.json'))
+			: undefined;
 
-		if (existsSync(path.join(mssqlConfigDir, 'config.json'))) {
-			const rawConfig = await fs.readFile(path.join(mssqlConfigDir, 'config.json'));
+		if (rawConfig) {
 			const config = JSON.parse(rawConfig.toString());
 			const installDir = config.installDirectory?.replace('{#version#}', config.version).replace('{#platform#}', this.getPlatform());
 			if (installDir) {
