@@ -27,25 +27,25 @@ import { OpenerServiceStub } from 'sql/platform/opener/common/openerServiceStub'
  * Class to test Assessment Management Actions
  */
 
-let assessmentResultItems: azdata.AssessmentResultItem[] = [
-	<azdata.AssessmentResultItem>{ checkId: 'check1' },
-	<azdata.AssessmentResultItem>{ checkId: 'check2' },
-	<azdata.AssessmentResultItem>{ checkId: 'check3' }
+let assessmentResultItems: azdata.SqlAssessmentResultItem[] = [
+	<azdata.SqlAssessmentResultItem>{ checkId: 'check1' },
+	<azdata.SqlAssessmentResultItem>{ checkId: 'check2' },
+	<azdata.SqlAssessmentResultItem>{ checkId: 'check3' }
 ];
 
 class AssessmentTestViewComponent implements IAssessmentComponent {
 	showProgress(mode: AssessmentType) { return undefined; }
-	showInitialResults(result: azdata.AssessmentResult, method: AssessmentType) { return undefined; }
-	appendResults(result: azdata.AssessmentResult, method: AssessmentType) { }
+	showInitialResults(result: azdata.SqlAssessmentResult, method: AssessmentType) { return undefined; }
+	appendResults(result: azdata.SqlAssessmentResult, method: AssessmentType) { }
 	stopProgress(mode: AssessmentType) { return undefined; }
-	resultItems: azdata.AssessmentResultItem[] = assessmentResultItems;
+	resultItems: azdata.SqlAssessmentResultItem[] = assessmentResultItems;
 	isActive: boolean = true;
 }
 
 let mockAssessmentService: TypeMoq.Mock<AssessmentService>;
 let mockAsmtViewComponent: TypeMoq.Mock<IAssessmentComponent>;
 
-let assessmentResult: azdata.AssessmentResult = {
+let assessmentResult: azdata.SqlAssessmentResult = {
 	success: true,
 	errorMessage: '',
 	apiVersion: '',

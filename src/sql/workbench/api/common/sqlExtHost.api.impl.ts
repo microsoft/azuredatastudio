@@ -561,7 +561,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				ExtensionNodeType: sqlExtHostTypes.ExtensionNodeType,
 				ColumnSizingMode: sqlExtHostTypes.ColumnSizingMode,
 				DatabaseEngineEdition: sqlExtHostTypes.DatabaseEngineEdition,
-				TabOrientation: sqlExtHostTypes.TabOrientation
+				TabOrientation: sqlExtHostTypes.TabOrientation,
+				SqlAssessmentResultItemKind: sqlExtHostTypes.SqlAssessmentResultItemKind,
+				SqlAssessmentTargetType: sqlExtHostTypes.SqlAssessmentTargetType
 			};
 		}
 	};

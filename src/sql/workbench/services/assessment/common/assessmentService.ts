@@ -22,19 +22,19 @@ export class AssessmentService implements IAssessmentService {
 
 	}
 
-	public getAssessmentItems(connectionUri: string, targetType: number): Thenable<azdata.AssessmentResult> {
+	public getAssessmentItems(connectionUri: string, targetType: number): Thenable<azdata.SqlAssessmentResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getAssessmentItems(connectionUri, targetType);
 		});
 	}
 
-	public assessmentInvoke(connectionUri: string, targetType: number): Thenable<azdata.AssessmentResult> {
+	public assessmentInvoke(connectionUri: string, targetType: number): Thenable<azdata.SqlAssessmentResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.assessmentInvoke(connectionUri, targetType);
 		});
 	}
 
-	public generateAssessmentScript(connectionUri: string, items: azdata.AssessmentResultItem[]): Thenable<azdata.ResultStatus> {
+	public generateAssessmentScript(connectionUri: string, items: azdata.SqlAssessmentResultItem[]): Thenable<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.generateAssessmentScript(items);
 		});

@@ -845,15 +845,15 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	// Assessment methods
-	public $assessmentInvoke(handle: number, ownerUri: string, targetType: number): Thenable<azdata.AssessmentResult> {
+	public $assessmentInvoke(handle: number, ownerUri: string, targetType: number): Thenable<azdata.SqlAssessmentResult> {
 		return this._resolveProvider<azdata.SqlAssessmentServicesProvider>(handle).assessmentInvoke(ownerUri, targetType);
 	}
 
-	public $getAssessmentItems(handle: number, ownerUri: string, targetType: number): Thenable<azdata.AssessmentResult> {
+	public $getAssessmentItems(handle: number, ownerUri: string, targetType: number): Thenable<azdata.SqlAssessmentResult> {
 		return this._resolveProvider<azdata.SqlAssessmentServicesProvider>(handle).getAssessmentItems(ownerUri, targetType);
 	}
 
-	public $generateAssessmentScript(handle: number, items: azdata.AssessmentResultItem[]): Thenable<azdata.ResultStatus> {
+	public $generateAssessmentScript(handle: number, items: azdata.SqlAssessmentResultItem[]): Thenable<azdata.ResultStatus> {
 		return this._resolveProvider<azdata.SqlAssessmentServicesProvider>(handle).generateAssessmentScript(items);
 	}
 }

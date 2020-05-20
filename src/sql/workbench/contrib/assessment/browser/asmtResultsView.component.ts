@@ -116,7 +116,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 	private placeholderElem: HTMLElement;
 	private placeholderNoResultsLabel: string;
 	private spinner: { [mode: number]: HTMLElement } = Object.create(null);
-	private lastInvokedResults: azdata.AssessmentResultItem[];
+	private lastInvokedResults: azdata.SqlAssessmentResultItem[];
 
 	@ViewChild('resultsgrid') _gridEl: ElementRef;
 	@ViewChild('actionbarContainer') protected actionBarContainer: ElementRef;
@@ -173,7 +173,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		}
 	}
 
-	public get resultItems(): azdata.AssessmentResultItem[] {
+	public get resultItems(): azdata.SqlAssessmentResultItem[] {
 		return this.lastInvokedResults;
 	}
 
@@ -206,7 +206,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		}
 	}
 
-	public showInitialResults(result: azdata.AssessmentResult, method: AssessmentType) {
+	public showInitialResults(result: azdata.SqlAssessmentResult, method: AssessmentType) {
 		if (result) {
 			if (method === AssessmentType.InvokeAssessment) {
 				this.lastInvokedResults = result.items;
@@ -227,7 +227,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		this._table.grid.invalidate();
 	}
 
-	public appendResults(result: azdata.AssessmentResult, method: AssessmentType) {
+	public appendResults(result: azdata.SqlAssessmentResult, method: AssessmentType) {
 		if (method === AssessmentType.InvokeAssessment) {
 			this.lastInvokedResults.push(...result.items);
 		}
@@ -362,7 +362,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		this.exportActionItem.enabled = false;
 	}
 
-	private convertToDataViewItems(asmtResult: azdata.AssessmentResultItem, index: number, method: AssessmentType) {
+	private convertToDataViewItems(asmtResult: azdata.SqlAssessmentResultItem, index: number, method: AssessmentType) {
 		return {
 			id: `${asmtResult.targetType}${this.escapeId(asmtResult.targetName)}${asmtResult.checkId}${index}`,
 			severity: asmtResult.level,
@@ -378,7 +378,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		};
 	}
 
-	private displayResults(results: azdata.AssessmentResultItem[], method: AssessmentType) {
+	private displayResults(results: azdata.SqlAssessmentResultItem[], method: AssessmentType) {
 		this._table.grid.updateColumnHeader(COLUMN_MESSAGE_ID, COLUMN_MESSAGE_TITLE[method]);
 
 		let resultViews = results.map((item, index) => this.convertToDataViewItems(item, index, method));

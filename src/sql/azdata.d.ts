@@ -1803,11 +1803,22 @@ declare module 'azdata' {
 
 
 	}
+	// Assessment interfaces
+	export enum SqlAssessmentTargetType {
+		Server = 1,
+		Database = 2
+	}
 
-	export interface AssessmentResultItem {
+	export enum SqlAssessmentResultItemKind {
+		RealResult = 0,
+		Warning = 1,
+		Error = 2
+	}
+
+	export interface SqlAssessmentResultItem {
 		rulesetVersion: string;
 		rulesetName: string;
-		targetType: number;
+		targetType: SqlAssessmentTargetType;
 		targetName: string;
 		checkId: string;
 		tags: string[];
@@ -1817,18 +1828,18 @@ declare module 'azdata' {
 		helpLink: string;
 		level: string;
 		timestamp: string;
-		kind: number;
+		kind: SqlAssessmentResultItemKind;
 	}
 
-	export interface AssessmentResult extends ResultStatus {
-		items: AssessmentResultItem[];
+	export interface SqlAssessmentResult extends ResultStatus {
+		items: SqlAssessmentResultItem[];
 		apiVersion: string;
 	}
 
 	export interface SqlAssessmentServicesProvider extends DataProvider {
-		assessmentInvoke(ownerUri: string, targetType: number): Promise<AssessmentResult>;
-		getAssessmentItems(ownerUri: string, targetType: number): Promise<AssessmentResult>;
-		generateAssessmentScript(items: AssessmentResultItem[]): Promise<ResultStatus>;
+		assessmentInvoke(ownerUri: string, targetType: number): Promise<SqlAssessmentResult>;
+		getAssessmentItems(ownerUri: string, targetType: number): Promise<SqlAssessmentResult>;
+		generateAssessmentScript(items: SqlAssessmentResultItem[]): Promise<ResultStatus>;
 	}
 
 	// DacFx interfaces  -----------------------------------------------------------------------

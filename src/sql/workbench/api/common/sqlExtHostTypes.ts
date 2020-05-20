@@ -848,12 +848,12 @@ export interface TabbedPanelLayout {
 	alwaysShowTabs: boolean;
 }
 
-export const enum SqlAssessmentTargetType {
+export enum SqlAssessmentTargetType {
 	Server = 1,
 	Database = 2
 }
 
-export const enum SqlAssessmentResultItemKind {
+export enum SqlAssessmentResultItemKind {
 	RealResult = 0,
 	Warning = 1,
 	Error = 2

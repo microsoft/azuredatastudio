@@ -9,7 +9,7 @@ import * as nls from 'vs/nls';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
-import { AssessmentResult, AssessmentResultItem } from 'azdata';
+import { SqlAssessmentResult, SqlAssessmentResultItem } from 'azdata';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
@@ -18,10 +18,10 @@ import { SqlAssessmentTelemetryView } from 'sql/platform/telemetry/common/teleme
 
 export interface IAssessmentComponent {
 	showProgress(mode: AssessmentType): any;
-	showInitialResults(result: AssessmentResult, method: AssessmentType): any;
-	appendResults(result: AssessmentResult, method: AssessmentType): any;
+	showInitialResults(result: SqlAssessmentResult, method: AssessmentType): any;
+	appendResults(result: SqlAssessmentResult, method: AssessmentType): any;
 	stopProgress(mode: AssessmentType): any;
-	resultItems: AssessmentResultItem[];
+	resultItems: SqlAssessmentResultItem[];
 	isActive: boolean;
 }
 
@@ -80,8 +80,8 @@ abstract class AsmtServerAction extends Action {
 		return false;
 	}
 
-	abstract getServerItems(ownerUri: string): Thenable<AssessmentResult>;
-	abstract getDatabaseItems(ownerUri: string): Thenable<AssessmentResult>;
+	abstract getServerItems(ownerUri: string): Thenable<SqlAssessmentResult>;
+	abstract getDatabaseItems(ownerUri: string): Thenable<SqlAssessmentResult>;
 }
 
 
@@ -101,11 +101,11 @@ export class AsmtServerSelectItemsAction extends AsmtServerAction {
 			_logService, _telemetryService);
 	}
 
-	getServerItems(ownerUri: string): Thenable<AssessmentResult> {
+	getServerItems(ownerUri: string): Thenable<SqlAssessmentResult> {
 		return this._assessmentService.getAssessmentItems(ownerUri, AssessmentTargetType.Server);
 	}
 
-	getDatabaseItems(ownerUri: string): Thenable<AssessmentResult> {
+	getDatabaseItems(ownerUri: string): Thenable<SqlAssessmentResult> {
 		return this._assessmentService.getAssessmentItems(ownerUri, AssessmentTargetType.Database);
 	}
 }
@@ -149,12 +149,12 @@ export class AsmtServerInvokeItemsAction extends AsmtServerAction {
 	) {
 		super(AsmtServerInvokeItemsAction.ID, AsmtServerInvokeItemsAction.LABEL, AssessmentType.InvokeAssessment, _connectionManagement, _logService, _telemetryService);
 	}
-	getServerItems(ownerUri: string): Thenable<AssessmentResult> {
+	getServerItems(ownerUri: string): Thenable<SqlAssessmentResult> {
 		this._logService.info(`Requesting server items`);
 		return this._assessmentService.assessmentInvoke(ownerUri, AssessmentTargetType.Server);
 	}
 
-	getDatabaseItems(ownerUri: string): Thenable<AssessmentResult> {
+	getDatabaseItems(ownerUri: string): Thenable<SqlAssessmentResult> {
 		return this._assessmentService.assessmentInvoke(ownerUri, AssessmentTargetType.Database);
 	}
 }

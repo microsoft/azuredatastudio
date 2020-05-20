@@ -51,14 +51,7 @@
 			</div>
 		</div>
 	</div>
-
-	<panel class="dashboard-panel" [options]="panelOpt">
-		<tab class="fullsize">
-			<ng-template>
-				<div id="asmtDiv" class="fullsize">
-					<asmt-results-view-component></asmt-results-view-component>
-				</div>
-			</ng-template>
-		</tab>
-	</panel>
+	<div #asmtresultcomponent id="asmtDiv" class="fullsize">
+		<asmt-results-view-component></asmt-results-view-component>
+	</div>
 </div>

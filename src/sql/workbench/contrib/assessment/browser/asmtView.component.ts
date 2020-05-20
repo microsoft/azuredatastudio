@@ -6,10 +6,11 @@
 import 'vs/css!./media/asmt';
 import { Component, Inject, forwardRef, ChangeDetectorRef, ViewChild, Injectable, OnInit } from '@angular/core';
 import { ServerInfo } from 'azdata';
-import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
+//import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { localize } from 'vs/nls';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
+import { AsmtResultsViewComponent } from 'sql/workbench/contrib/assessment/browser/asmtResultsView.component';
 
 
 const LocalizedStrings = {
@@ -32,7 +33,7 @@ export const DASHBOARD_SELECTOR: string = 'asmtview-component';
 @Injectable()
 export class AsmtViewComponent extends AngularDisposable implements OnInit {
 
-	@ViewChild(PanelComponent) private _panel: PanelComponent;
+	@ViewChild('asmtresultcomponent') private _asmtResultView: AsmtResultsViewComponent;
 	protected localizedStrings = LocalizedStrings;
 
 	connectionInfo: ServerInfo = null;
@@ -41,11 +42,7 @@ export class AsmtViewComponent extends AngularDisposable implements OnInit {
 	api: string = '';
 
 
-	public readonly panelOpt: IPanelOptions = {
-		alwaysShowTabs: false,
-		layout: NavigationBarLayout.vertical,
-		showIcon: true
-	};
+
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
@@ -76,6 +73,7 @@ export class AsmtViewComponent extends AngularDisposable implements OnInit {
 	}
 
 	public layout() {
-		this._panel.layout();
+		this._asmtResultView.layout();
+		//this._panel.layout();
 	}
 }
