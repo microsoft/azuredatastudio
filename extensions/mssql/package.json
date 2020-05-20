@@ -478,17 +478,7 @@
             {
               "displayName": "%databasesListProperties.name%",
               "value": "name",
-              "widthWeight": 60
-            },
-            {
-              "displayName": "%databasesListProperties.status%",
-              "value": "state",
-              "widthWeight": 20
-            },
-            {
-              "displayName": "%databasesListProperties.size%",
-              "value": "sizeInMB",
-              "widthWeight": 20
+              "widthWeight": 100
             }
           ]
         }

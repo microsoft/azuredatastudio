@@ -20,6 +20,9 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 	private _formBuilder: azdata.FormBuilder | undefined;
 	public tableSelectionComponent: TableSelectionComponent | undefined;
 	private _labelComponent: azdata.TextComponent | undefined;
+	private _descriptionComponent: azdata.TextComponent | undefined;
+	private _labelContainer: azdata.FlexContainer | undefined;
+
 
 	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase) {
 		super(apiWrapper, parent.root, parent);
@@ -32,34 +35,59 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 
 		this._formBuilder = modelBuilder.formContainer();
-		this.tableSelectionComponent = new TableSelectionComponent(this._apiWrapper, this, { editable: true, preSelected: true });
+		this.tableSelectionComponent = new TableSelectionComponent(this._apiWrapper, this,
+			{
+				editable: true,
+				preSelected: true,
+				databaseTitle: constants.databaseName,
+				tableTitle: constants.tableName,
+				databaseInfo: constants.databaseToStoreInfo,
+				tableInfo: constants.tableToStoreInfo
+			});
+		this._descriptionComponent = modelBuilder.text().withProperties({
+			width: 200
+		}).component();
 		this._labelComponent = modelBuilder.text().withProperties({
 			width: 200
 		}).component();
-		const container = modelBuilder.flexContainer().withLayout({
+		this._labelContainer = modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column',
 			width: 800,
-			height: '400px',
+			height: '300px',
 			justifyContent: 'center'
-		}).withItems([
-			this._labelComponent
-		], {
-			CSSStyles: {
-				'align-items': 'center',
-				'padding-top': '30px',
-				'font-size': '16px'
-			}
 		}).component();
+
+		this._labelContainer.addItem(
+			this._labelComponent
+			, {
+				CSSStyles: {
+					'align-items': 'center',
+					'padding-top': '10px',
+					'padding-left': `${this.componentMaxLength}px`,
+					'font-size': '16px'
+				}
+			});
+		this._labelContainer.addItem(
+			this._descriptionComponent
+			, {
+				CSSStyles: {
+					'align-items': 'center',
+					'padding-top': '10px',
+					'padding-left': `${this.componentMaxLength - 80}px`,
+					'font-size': '13px'
+				}
+			});
 
 
 		this.tableSelectionComponent.onSelectedChanged(async () => {
 			await this.onTableSelected();
 		});
-		this.tableSelectionComponent.registerComponent(modelBuilder, constants.databaseName, constants.tableName);
+		this.tableSelectionComponent.registerComponent(modelBuilder);
 		this.tableSelectionComponent.addComponents(this._formBuilder);
 
 		this._formBuilder.addFormItem({
 			title: '',
-			component: container
+			component: this._labelContainer
 		});
 		this._form = this._formBuilder.component();
 		return this._form;
@@ -71,13 +99,22 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 		}
 
 		if (this.importTable && this._labelComponent) {
-			const validated = await this.verifyImportConfigTable(this.importTable);
-			if (validated) {
-				this._labelComponent.value = constants.modelSchemaIsAcceptedMessage;
+			if (!this.validateImportTableName()) {
+				this._labelComponent.value = constants.selectModelsTableMessage;
 			} else {
-				this._labelComponent.value = constants.modelSchemaIsNotAcceptedMessage;
+				const validated = await this.verifyImportConfigTable(this.importTable);
+				if (validated) {
+					this._labelComponent.value = constants.modelSchemaIsAcceptedMessage;
+				} else {
+					this._labelComponent.value = constants.modelSchemaIsNotAcceptedMessage;
+				}
 			}
 		}
+	}
+
+	private validateImportTableName(): boolean {
+		return this.importTable?.databaseName !== undefined && this.importTable?.databaseName !== constants.selectDatabaseTitle
+			&& this.importTable?.tableName !== undefined && this.importTable?.tableName !== constants.selectTableTitle;
 	}
 
 	/**
@@ -116,7 +153,7 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 	public async validate(): Promise<boolean> {
 		let validated = false;
 
-		if (this.data?.databaseName && this.data?.tableName) {
+		if (this.data && this.validateImportTableName()) {
 			validated = true;
 			validated = await this.verifyImportConfigTable(this.data);
 			if (!validated) {

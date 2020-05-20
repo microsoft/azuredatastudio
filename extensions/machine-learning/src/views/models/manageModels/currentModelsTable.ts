@@ -25,6 +25,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	private _downloadedFile: ModelArtifact | undefined;
 	private _onModelSelectionChanged: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	public readonly onModelSelectionChanged: vscode.Event<void> = this._onModelSelectionChanged.event;
+	public isEmpty: boolean = false;
 
 	/**
 	 * Creates new view
@@ -149,7 +150,6 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 		}
 	}
 
-
 	/**
 	 * Returns the component
 	 */
@@ -175,6 +175,8 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 			if (models) {
 				tableData = tableData.concat(models.map(model => this.createTableRow(model)));
 			}
+
+			this.isEmpty = models === undefined || models.length === 0;
 
 			this._table.data = tableData;
 		}
@@ -275,7 +277,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 					if (confirm) {
 						await this.sendDataRequest(DeleteModelEventName, model);
 						if (this.parent) {
-							await this.parent?.refresh();
+							await this.parent.refresh();
 						}
 					}
 				} catch (error) {
@@ -285,7 +287,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 
 			editButton = this._modelBuilder.button().withProperties({
 				label: '',
-				title: constants.deleteTitle,
+				title: constants.editTitle,
 				iconPath: {
 					dark: this.asAbsolutePath('images/dark/edit_inverse.svg'),
 					light: this.asAbsolutePath('images/light/edit.svg')

@@ -8,7 +8,7 @@ import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/
 import { SIDE_BAR_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
 import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, editorBackground, lighten } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
-import { cellBorder, markdownEditorBackground, splitBorder, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder } from 'sql/platform/theme/common/colorRegistry';
+import { cellBorder, notebookToolbarIcon, notebookToolbarLines, buttonMenuArrow, dropdownArrow, markdownEditorBackground, splitBorder, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder } from 'sql/platform/theme/common/colorRegistry';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
@@ -207,6 +207,25 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			${getBareResultsGridInfoStyles(rawOptions)}
 		}`);
 
+		//Notebook toolbar masked icons
+		const notebookToolbarIconColor = theme.getColor(notebookToolbarIcon);
+		if (notebookToolbarIconColor) {
+			collector.addRule(`.notebookEditor .notebook-button.masked-icon { background-color: ${notebookToolbarIconColor};}`);
+			collector.addRule(`.notebookEditor .notebook-button.masked-pseudo:before { background-color: ${notebookToolbarIconColor};}`);
+		}
+		const notebookToolbarLinesColor = theme.getColor(notebookToolbarLines);
+		if (notebookToolbarLinesColor) {
+			collector.addRule(`.notebookEditor .editor-toolbar.actionbar-container { border-bottom-color: ${notebookToolbarLinesColor}!important;}`);
+			collector.addRule(`.notebookEditor .taskbarSeparator { background-color: ${notebookToolbarLinesColor};}`);
+		}
+		const dropdownArrowColor = theme.getColor(dropdownArrow);
+		if (dropdownArrowColor) {
+			collector.addRule(`.monaco-workbench .notebookEditor .select-container:after { color: ${dropdownArrowColor};}`);
+		}
+		const buttonMenuArrowColor = theme.getColor(buttonMenuArrow);
+		if (buttonMenuArrowColor) {
+			collector.addRule(`.notebookEditor .notebook-button.masked-pseudo-after:after { background-color: ${buttonMenuArrowColor};}`);
+		}
 
 		// Cell border
 		const cellBorderColor = theme.getColor(cellBorder);
