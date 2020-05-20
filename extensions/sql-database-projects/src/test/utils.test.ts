@@ -6,19 +6,13 @@
 import * as should from 'should';
 import * as path from 'path';
 import {createDummyFileStructure} from './testUtils';
-import {toPascalCase, toCamelCase, exists} from '../common/utils';
+import {toPascalCase, exists} from '../common/utils';
 
 describe('Tests for conversion within PascalCase and camelCase', function (): void {
 	it('Should generate PascalCase from camelCase correctly', async () => {
 		should(toPascalCase('')).equal('');
 		should(toPascalCase('camelCase')).equal('CamelCase');
 		should(toPascalCase('camel.case')).equal('Camel.case');
-	});
-
-	it('Should generate camelCase from PascalCase correctly', async () => {
-		should(toCamelCase('')).equal('');
-		should(toCamelCase('PascalCase')).equal('pascalCase');
-		should(toCamelCase('Pascal.case')).equal('pascal.case');
 	});
 });
 

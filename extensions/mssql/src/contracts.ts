@@ -422,15 +422,6 @@ export enum TaskExecutionMode {
 	executeAndScript = 2,
 }
 
-export enum ExtractTarget {
-	dacpac = 0,
-	file = 1,
-	flat = 2,
-	objectType = 3,
-	schema = 4,
-	schemaObjectType = 5
-}
-
 export interface ExportParams {
 	databaseName: string;
 	packageFilePath: string;
@@ -452,7 +443,7 @@ export interface ExtractParams {
 	applicationName: string;
 	applicationVersion: string;
 	ownerUri: string;
-	extractTarget?: ExtractTarget;
+	extractTarget?: mssql.ExtractTarget;
 	taskExecutionMode: TaskExecutionMode;
 }
 

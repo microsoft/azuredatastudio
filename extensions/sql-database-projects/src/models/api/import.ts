@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtractTarget } from 'azdata';
+import { ExtractTarget } from '../../../../mssql';
 
 /**
  * Data model to communicate for Import API

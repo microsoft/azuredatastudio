@@ -62,15 +62,6 @@ export enum TaskExecutionMode {
 	executeAndScript = 2,
 }
 
-export enum ExtractTarget {
-	dacpac = 0,
-	file = 1,
-	flat = 2,
-	objectType = 3,
-	schema = 4,
-	schemaObjectType = 5
-}
-
 export enum ScriptOperation {
 	Select = 0,
 	Create = 1,

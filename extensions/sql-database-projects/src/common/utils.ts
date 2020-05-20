@@ -71,13 +71,6 @@ export function toPascalCase(input: string): string {
 }
 
 /**
- * Convert PascalCase input to camelCase
- */
-export function toCamelCase(input: string): string {
-	return input.charAt(0).toLowerCase() + input.substr(1);
-}
-
-/**
  * get quoted path to be used in any commandline argument
  * @param filePath
  */
