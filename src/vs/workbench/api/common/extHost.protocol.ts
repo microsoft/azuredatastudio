@@ -1570,6 +1570,7 @@ export interface INotebookDocumentsAndEditorsDelta {
 	removedEditors?: string[];
 	addedEditors?: INotebookEditorAddData[];
 	newActiveEditor?: string | null;
+	visibleEditors?: string[];
 }
 
 export interface ExtHostNotebookShape {
