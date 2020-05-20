@@ -169,18 +169,24 @@ describe('Utils Tests', function () {
 		});
 
 		it('title is not free with text document sharing name', async () => {
+			const editorTitle = 'Untitled-1';
+			should(utils.isEditorTitleFree(editorTitle)).be.true('Title should be free before opening text document');
 			await vscode.workspace.openTextDocument();
-			should(utils.isEditorTitleFree('Untitled-1')).be.false();
+			should(utils.isEditorTitleFree(editorTitle)).be.false('Title should not be free after opening text document');
 		});
 
 		it('title is not free with notebook document sharing name', async () => {
-			await azdata.nb.showNotebookDocument(vscode.Uri.parse(`untitled:MyUntitledNotebook`));
-			should(utils.isEditorTitleFree('MyUntitledNotebook')).be.false();
+			const editorTitle = 'MyUntitledNotebook';
+			should(utils.isEditorTitleFree(editorTitle)).be.true('Title should be free before opening notebook');
+			await azdata.nb.showNotebookDocument(vscode.Uri.parse(`untitled:${editorTitle}`));
+			should(utils.isEditorTitleFree('MyUntitledNotebook')).be.false('Title should not be free after opening notebook');
 		});
 
 		it('title is not free with notebook document sharing name created through command', async () => {
+			const editorTitle = 'Notebook-0';
+			should(utils.isEditorTitleFree(editorTitle)).be.true('Title should be free before opening notebook');
 			await vscode.commands.executeCommand('_notebook.command.new');
-			should(utils.isEditorTitleFree('Notebook-0')).be.false();
+			should(utils.isEditorTitleFree(editorTitle)).be.false('Title should not be free after opening notebook');
 		});
 	});
 
