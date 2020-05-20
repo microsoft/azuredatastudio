@@ -7,10 +7,9 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as os from 'os';
 import * as constants from './../common/constants';
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 import * as utils from '../common/utils';
 import { mssqlNotFound } from '../common/constants';
-import { promisify } from 'util';
 
 const buildDirectory = 'BuildDirectory';
 const buildFiles: string[] = [
@@ -25,7 +24,6 @@ const buildFiles: string[] = [
 	'System.ComponentModel.Composition.dll',
 	'Microsoft.Data.Tools.Schema.SqlTasks.targets'
 ];
-const existsAsync = promisify(fs.exists);
 
 export class BuildHelper {
 
@@ -46,15 +44,15 @@ export class BuildHelper {
 			return;
 		}
 
-		if (!await existsAsync(this.extensionBuildDir)) {
-			await fs.promises.mkdir(this.extensionBuildDir);
+		if (!await utils.exists(this.extensionBuildDir)) {
+			await fs.mkdir(this.extensionBuildDir);
 		}
 
 		const buildfilesPath = await this.getBuildDirPathFromMssqlTools();
 
 		buildFiles.forEach(async (fileName) => {
-			if (await (existsAsync(path.join(buildfilesPath, fileName)))) {
-				await fs.promises.copyFile(path.join(buildfilesPath, fileName), path.join(this.extensionBuildDir, fileName));
+			if (await (utils.exists(path.join(buildfilesPath, fileName)))) {
+				await fs.copyFile(path.join(buildfilesPath, fileName), path.join(this.extensionBuildDir, fileName));
 			}
 		});
 		this.initialized = true;
@@ -63,8 +61,8 @@ export class BuildHelper {
 	// get mssql sqltoolsservice path
 	private async getBuildDirPathFromMssqlTools(): Promise<string> {
 		const mssqlConfigDir = vscode.extensions.getExtension(constants.mssqlExtensionId)?.extensionPath ?? '';
-		if (await existsAsync(path.join(mssqlConfigDir, 'config.json'))) {
-			const rawConfig = await fs.promises.readFile(path.join(mssqlConfigDir, 'config.json'));
+		if (await utils.exists(path.join(mssqlConfigDir, 'config.json'))) {
+			const rawConfig = await fs.readFile(path.join(mssqlConfigDir, 'config.json'));
 			const config = JSON.parse(rawConfig.toString());
 			const installDir = config.installDirectory?.replace('{#version#}', config.version).replace('{#platform#}', this.getPlatform());
 			if (installDir) {
