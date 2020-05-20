@@ -117,7 +117,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IFileService private readonly _fileService: IFileService,
 		@ILogService private readonly _logService: ILogService,
 		@IQueryManagementService private readonly _queryManagementService: IQueryManagementService,
-		@ILogService private readonly logService: ILogService,
 		@IContextKeyService private contextKeyService: IContextKeyService,
 	) {
 		super();
@@ -183,7 +182,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		this._registrationComplete.resolve();
 	}
 
-	private updateRegisteredProviders(p: { id: string; registration: NotebookProviderRegistration; }) {
+	private updateRegisteredProviders(p: { id: string; registration: NotebookProviderRegistration }) {
 		let registration = p.registration;
 
 		if (!this._providers.has(p.id)) {
@@ -408,7 +407,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				try {
 					await this._extensionService.whenInstalledExtensionsRegistered();
 				} catch (error) {
-					this.logService.error(error);
+					this._logService.error(error);
 				}
 				instance = await this.waitOnProviderAvailability(providerDescriptor);
 			} else {
