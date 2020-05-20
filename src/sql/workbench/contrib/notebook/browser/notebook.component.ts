@@ -514,8 +514,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._navProvider = this.notebookService.getNavigationProvider(this._notebookParams.notebookUri);
 
 		if (this.contextKeyService.getContextKeyValue('bookOpened') && this._navProvider) {
-			// If there's a book opened but the current notebook isn't part of the book, this is a no-op
-			// this.commandService.executeCommand('notebook.command.revealInBooksViewlet', this._notebookParams.notebookUri, false);
 			this._navProvider.getNavigation(this._notebookParams.notebookUri).then(result => {
 				this.navigationResult = result;
 				this.addButton(localize('previousButtonLabel', "< Previous"),
