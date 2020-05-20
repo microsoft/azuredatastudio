@@ -400,9 +400,14 @@ export abstract class AzureAuth implements vscode.Disposable {
 				refreshResponse = { accessToken, refreshToken, tokenClaims, expiresOn };
 			} catch (ex) {
 				if (ex?.response?.data?.error === 'interaction_required') {
-					const { tokenRefreshResponse, authCompleteDeferred } = await this.promptForConsent(resourceEndpoint, tenant);
-					refreshResponse = tokenRefreshResponse;
-					authCompleteDeferred.resolve();
+					const shouldOpenLink = await this.openConsentDialog(tenant, resourceId);
+					if (shouldOpenLink === true) {
+						const { tokenRefreshResponse, authCompleteDeferred } = await this.promptForConsent(resourceEndpoint, tenant);
+						refreshResponse = tokenRefreshResponse;
+						authCompleteDeferred.resolve();
+					} else {
+						vscode.window.showInformationMessage(localize('azure.noConsentToReauth', "The authentication failed since ADS was unable to open re-authentication page."));
+					}
 				} else {
 					return undefined;
 				}
@@ -415,6 +420,36 @@ export abstract class AzureAuth implements vscode.Disposable {
 			vscode.window.showErrorMessage(msg);
 			throw new Error(err);
 		}
+	}
+
+	private async openConsentDialog(tenantId: string, resourceId: string): Promise<boolean> {
+		return new Promise((resolve) => {
+			// 20 second timeout just in case something happens.
+			const timer = setTimeout(() => {
+				resolve(false);
+			}, 20 * 1000);
+
+			const dialogTitle = localize('azurecore.consentDialog.title', "Authentication Consent Confirmation");
+			const dialogBody = localize('azurecore.consentDialog.body', "Your tenant {0} requires you to re-authenticate again to access {1} resources. Press OK to start the authentication process.", tenantId, resourceId);
+			const dialog = azdata.window.createModelViewDialog(dialogTitle, 'azureCore.consentDialog');
+
+			dialog.message = {
+				text: dialogBody,
+				level: azdata.window.MessageLevel.Information
+			} as azdata.window.DialogMessage;
+
+			dialog.okButton.onClick(() => {
+				clearTimeout(timer);
+				return resolve(true);
+			});
+
+			dialog.cancelButton.onClick(() => {
+				clearTimeout(timer);
+				return resolve(false);
+			});
+
+			azdata.window.openDialog(dialog);
+		});
 	}
 
 	protected getTokenClaims(accessToken: string): TokenClaims | undefined {
