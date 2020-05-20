@@ -94,7 +94,7 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 	clusterConnInfo.options[constants.knoxPortPropName] = hostAndIp.port || constants.defaultKnoxPort;
 	let authType = clusterConnInfo.options[constants.authenticationTypePropName] = sqlConnInfo.options[constants.authenticationTypePropName];
 	if (authType && authType.toLowerCase() !== constants.integratedAuth) {
-		clusterConnInfo.options[constants.userPropName] = 'root'; //should be the same user as sql master
+		clusterConnInfo.options[constants.userPropName] = sqlConnInfo.options[constants.userPropName]; //should be the same user as sql master
 		clusterConnInfo.options[constants.passwordPropName] = credentials.password;
 	}
 	clusterConnInfo = connToConnectionParam(clusterConnInfo);
