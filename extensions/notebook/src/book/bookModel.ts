@@ -187,8 +187,8 @@ export class BookModel {
 						if (this.openAsUntitled) {
 							if (!this._allNotebooks.get(path.basename(pathToNotebook))) {
 								this._allNotebooks.set(path.basename(pathToNotebook), notebook);
-								notebooks.push(notebook);
 							}
+							notebooks.push(notebook);
 						} else {
 							// convert to URI to avoid casing issue with drive letters when getting navigation links
 							let uriToNotebook: vscode.Uri = vscode.Uri.file(pathToNotebook);
