@@ -423,33 +423,25 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	private async openConsentDialog(tenantId: string, resourceId: string): Promise<boolean> {
-		return new Promise((resolve) => {
-			// 20 second timeout just in case something happens.
-			const timer = setTimeout(() => {
-				resolve(false);
-			}, 20 * 1000);
+		interface ConsentMessageItem extends vscode.MessageItem {
+			booleanResult: boolean;
+		}
 
-			const dialogTitle = localize('azurecore.consentDialog.title', "Authentication Consent Confirmation");
-			const dialogBody = localize('azurecore.consentDialog.body', "Your tenant {0} requires you to re-authenticate again to access {1} resources. Press OK to start the authentication process.", tenantId, resourceId);
-			const dialog = azdata.window.createModelViewDialog(dialogTitle, 'azureCore.consentDialog');
+		const openItem: ConsentMessageItem = {
+			title: localize('open', "Open"),
+			booleanResult: true
+		};
 
-			dialog.message = {
-				text: dialogBody,
-				level: azdata.window.MessageLevel.Information
-			} as azdata.window.DialogMessage;
+		const closeItem: ConsentMessageItem = {
+			title: localize('close', "Close"),
+			isCloseAffordance: true,
+			booleanResult: false
+		};
 
-			dialog.okButton.onClick(() => {
-				clearTimeout(timer);
-				return resolve(true);
-			});
+		const messageBody = localize('azurecore.consentDialog.body', "Your tenant {0} requires you to re-authenticate again to access {1} resources. Press OK to start the authentication process.", tenantId, resourceId);
+		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem);
 
-			dialog.cancelButton.onClick(() => {
-				clearTimeout(timer);
-				return resolve(false);
-			});
-
-			azdata.window.openDialog(dialog);
-		});
+		return result.booleanResult;
 	}
 
 	protected getTokenClaims(accessToken: string): TokenClaims | undefined {
