@@ -406,7 +406,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 						refreshResponse = tokenRefreshResponse;
 						authCompleteDeferred.resolve();
 					} else {
-						vscode.window.showInformationMessage(localize('azure.noConsentToReauth', "The authentication failed since ADS was unable to open re-authentication page."));
+						vscode.window.showInformationMessage(localize('azure.noConsentToReauth', "The authentication failed since Azure Data Studio was unable to open re-authentication page."));
 					}
 				} else {
 					return undefined;
