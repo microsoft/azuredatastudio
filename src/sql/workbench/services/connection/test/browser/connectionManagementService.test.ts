@@ -294,6 +294,12 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
+	test('showConnectionDialog should not show when editing a connection', () => {
+		return connectionManagementService.showEditConnectionDialog(connectionProfile).then(() => {
+			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, undefined, false, undefined, false);
+		});
+	});
+
 	test('connect should save profile given options with saveProfile set to true', () => {
 		let uri: string = 'Editor Uri';
 		let options: IConnectionCompletionOptions = {
