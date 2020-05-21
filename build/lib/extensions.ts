@@ -233,6 +233,7 @@ const externalExtensions = [
 	// Any extension not included here will be installed by default.
 	'admin-tool-ext-win',
 	'agent',
+	'arc',
 	'import',
 	'profiler',
 	'admin-pack',

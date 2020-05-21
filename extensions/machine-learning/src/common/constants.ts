@@ -14,8 +14,8 @@ export const pythonLanguageName = 'Python';
 export const rLanguageName = 'R';
 export const rLPackagedFolderName = 'r_packages';
 
-export const mlEnableMlsCommand = 'mls.command.enableMls';
-export const mlDisableMlsCommand = 'mls.command.disableMls';
+export const mlEnableMlsCommand = 'ml.command.enableMls';
+export const mlDisableMlsCommand = 'ml.command.disableMls';
 export const extensionOutputChannel = 'Machine Learning';
 export const notebookExtensionName = 'Microsoft.notebook';
 export const azureSubscriptionsCommand = 'azure.accounts.getSubscriptions';
@@ -24,13 +24,13 @@ export const signInToAzureCommand = 'azure.resource.signin';
 
 // Tasks, commands
 //
-export const mlManageLanguagesCommand = 'mls.command.manageLanguages';
-export const mlsPredictModelCommand = 'mls.command.predictModel';
-export const mlManageModelsCommand = 'mls.command.manageModels';
-export const mlImportModelCommand = 'mls.command.importModel';
-export const mlManagePackagesCommand = 'mls.command.managePackages';
-export const mlsDependenciesCommand = 'mls.command.dependencies';
-export const mlsEnableExternalScriptCommand = 'mls.command.enableExternalScript';
+export const mlManageLanguagesCommand = 'ml.command.manageLanguages';
+export const mlsPredictModelCommand = 'ml.command.predictModel';
+export const mlManageModelsCommand = 'ml.command.manageModels';
+export const mlImportModelCommand = 'ml.command.importModel';
+export const mlManagePackagesCommand = 'ml.command.managePackages';
+export const mlsDependenciesCommand = 'ml.command.dependencies';
+export const mlsEnableExternalScriptCommand = 'ml.command.enableExternalScript';
 export const notebookCommandNew = 'notebook.command.new';
 
 // Configurations
@@ -104,6 +104,7 @@ export const extLangInstallTabTitle = localize('extLang.installTabTitle', "Insta
 export const extLangLanguageCreatedDate = localize('extLang.languageCreatedDate', "Installed");
 export const extLangLanguagePlatform = localize('extLang.languagePlatform', "Platform");
 export const deleteTitle = localize('extLang.delete', "Delete");
+export const editTitle = localize('editTitle', "Edit");
 export const extLangInstallButtonText = localize('extLang.installButtonText', "Install");
 export const extLangCancelButtonText = localize('extLang.CancelButtonText', "Cancel");
 export const extLangDoneButtonText = localize('extLang.DoneButtonText', "Close");
@@ -129,7 +130,7 @@ export const modelsListEmptyMessage = localize('models.modelsListEmptyMessage', 
 export const modelsListEmptyDescription = localize('models.modelsListEmptyDescription', "Use import wizard to add models to this table");
 export const databaseName = localize('databaseName', "Models database");
 export const databaseToStoreInfo = localize('databaseToStoreInfo', "Select a database to store the new model.");
-export const tableToStoreInfo = localize('tableToStoreInfo', "Select an existing table that conforms the model schema or create a new one to store the new model.");
+export const tableToStoreInfo = localize('tableToStoreInfo', "Select an existing table that conforms the model schema or create a new one to store the imported model.");
 export const tableName = localize('tableName', "Models table");
 export const modelTableInfo = localize('modelTableInfo', "Select a model table to view the list of existing / imported models.");
 export const modelDatabaseInfo = localize('modelDatabaseInfo', "Select a database where existing / imported models are stored.");
