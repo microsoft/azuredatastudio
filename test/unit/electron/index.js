@@ -124,7 +124,8 @@ app.on('ready', () => {
 			backgroundThrottling: false,
 			nodeIntegration: true,
 			webSecurity: false,
-			webviewTag: true
+			webviewTag: true,
+			enableWebSQL: false
 		}
 	});
 
