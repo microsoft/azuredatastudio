@@ -8,17 +8,22 @@ import * as os from 'os';
 import 'mocha';
 
 import { PromptFailedResult, AccountKey } from 'azdata';
-import { AzureAuth, AccessToken, RefreshToken, TokenClaims } from '../../../account-provider/auths/azureAuth';
-import { AzureAccount, AzureAuthType } from '../../../account-provider/interfaces';
+import { AzureAuth, AccessToken, RefreshToken, TokenClaims, TokenRefreshResponse } from '../../../account-provider/auths/azureAuth';
+import { AzureAccount, AzureAuthType, Deferred } from '../../../account-provider/interfaces';
 import providerSettings from '../../../account-provider/providerSettings';
 import { SimpleTokenCache } from '../../../account-provider/simpleTokenCache';
 import { CredentialsTestProvider } from '../../stubs/credentialsTestProvider';
 
 class BasicAzureAuth extends AzureAuth {
-	public login(): Promise<AzureAccount | PromptFailedResult> {
+	public async login(): Promise<AzureAccount | PromptFailedResult> {
 		throw new Error('Method not implemented.');
 	}
-	public autoOAuthCancelled(): Promise<void> {
+
+	public async autoOAuthCancelled(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	public async promptForConsent(): Promise<{ tokenRefreshResponse: TokenRefreshResponse, authCompleteDeferred: Deferred<void> } | undefined> {
 		throw new Error('Method not implemented.');
 	}
 }
