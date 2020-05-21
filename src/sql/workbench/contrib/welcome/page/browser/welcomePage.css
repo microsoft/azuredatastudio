@@ -332,7 +332,6 @@
 	width: 80%;
 	max-width: 372px;
 	height: 116px;
-	background: #FFFFFF;
 	border-radius: 2px;
 	display: flex;
 	flex-direction: column;
@@ -1246,7 +1245,6 @@
 	mask: url('../../media/diamondIcon.svg') no-repeat;
 	mask-size: 24px 24px;
 	margin: 0 17px 0 20px;
-	background: #fff;
 }
 
 .ads_homepage .guided_tour_banner {
@@ -1258,18 +1256,17 @@
 	width: 100%;
 	-ms-flex-align: center;
 	align-items: center;
-	background: #007acc;
 	box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
-	color: #212121;
 	display: -ms-flexbox;
 	display: flex;
 	overflow: hidden;
 	display: flex;
-	justify-content: flex-start;
+	justify-content: space-between;
 	align-items: center;
 	height: 0;
 	overflow: hidden;
-	color: white;
+	padding: 0 14px 0 20px;
+	width: 99%;
 }
 
 .ads_homepage #guidedTourBanner.show {
@@ -1280,21 +1277,24 @@
 }
 
 .ads_homepage .guided_tour_banner p {
-	color: white;
 	font-size: 1.16em;
 	font-family: Segoe UI, Frutiger, Frutiger Linotype, Dejavu Sans, Helvetica Neue, Arial, sans-serif;
 	font-weight: normal;
 }
 
+.ads_homepage .guided_tour_banner b {
+	font-weight: 600;
+}
+
 .ads_homepage .guided_tour_banner .btn_start {
-	background: #ffec18 !important;
-	color: black !important;
-	line-height: 1.8em !important;
+	line-height: 2.1em !important;
 	font-weight: 600 !important;
 	height: 26px !important;
 	font-weight: 600 !important;
-	border-color: #ffec18 !important;
 	margin: 0 20px !important;
+	font-size: 14px !important;
+	width: 125px !important;
+	height: 32px !important;
 }
 
 .ads_homepage .guided_tour_banner .tour_btn_container {
@@ -1308,14 +1308,3 @@
 	margin: 0;
 	margin-right: 15px;
 }
-
-.ads_homepage .guided_tour_banner .btn_remove_tour {
-	line-height: 1.8em !important;
-	border: 0 none !important;
-	width: auto !important;
-	padding: 0 10px !important;
-	height: 26px !important;
-	font-weight: 600 !important;
-	border-color: #fff !important;
-}
-

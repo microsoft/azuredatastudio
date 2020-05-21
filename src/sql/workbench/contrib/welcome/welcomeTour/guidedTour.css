@@ -3,6 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+.ads_tour:focus {
+	outline: 0 none !important;
+}
+
 .monaco-workbench>.ads_tour {
 	position: absolute;
 	top: 0;
@@ -12,46 +16,46 @@
 	z-index: 9999;
 	font-size: 10px;
 	transition: font-size .25s;
-	outline: 0
+	outline: 0;
 }
 
 #workbench\.parts\.editor {
-	transition: filter .25s, opacity .2s
+	transition: filter .25s, opacity .2s;
 }
 
 .monaco-workbench.blur-background #workbench\.parts\.editor, .monaco-workbench.blur-background #workbench\.parts\.panel, .monaco-workbench.blur-background #workbench\.parts\.sidebar {
 	filter: blur(2px);
-	opacity: .4
+	opacity: .4;
 }
 
 .hc-black .monaco-workbench.blur-background #workbench\.parts\.editor, .hc-black .monaco-workbench.blur-background #workbench\.parts\.panel, .hc-black .monaco-workbench.blur-background #workbench\.parts\.sidebar {
-	opacity: .2
+	opacity: .2;
 }
 
 .monaco-workbench>.ads_tour>.key {
-	font-size: 1.6em
+	font-size: 1.6em;
 }
 
 .monaco-workbench>.ads_tour>.key>.label {
-	padding: 0 1ex
+	padding: 0 1ex;
 }
 
 .monaco-workbench>.ads_tour>.key>.shortcut {
 	letter-spacing: .15em;
 	font-size: .8125em;
-	font-family: "Lucida Grande", sans-serif
+	font-family: "Lucida Grande", sans-serif;
 }
 
 .monaco-workbench>.ads_tour>.key.explorer {
 	position: absolute;
 	top: 13px;
-	left: 60px
+	left: 60px;
 }
 
 .monaco-workbench>.ads_tour>.key.search {
 	position: absolute;
 	top: 63px;
-	left: 60px
+	left: 60px;
 }
 
 .monaco-workbench>.ads_tour>.key.git {
@@ -63,19 +67,19 @@
 .monaco-workbench>.ads_tour>.key.debug {
 	position: absolute;
 	top: 163px;
-	left: 60px
+	left: 60px;
 }
 
 .monaco-workbench>.ads_tour>.key.extensions {
 	position: absolute;
 	top: 213px;
-	left: 60px
+	left: 60px;
 }
 
 .monaco-workbench>.ads_tour>.key.watermark {
 	position: absolute;
 	top: calc(50% + 30px);
-	left: calc(50% + 30px)
+	left: calc(50% + 30px);
 }
 
 .monaco-workbench>.ads_tour>.key.watermark>.label {
@@ -84,56 +88,58 @@
 
 @media (max-height:500px) {
 	.monaco-workbench>.ads_tour>.key.watermark {
-		display: none
+		display: none;
 	}
 }
 
 .monaco-workbench>.ads_tour>.key.problems {
 	position: absolute;
 	bottom: 25px;
-	left: 45px
+	left: 45px;
 }
 
 .monaco-workbench>.ads_tour>.key.terminal {
 	position: absolute;
 	bottom: 25px;
-	left: 50%
+	left: 50%;
 }
 
 .monaco-workbench>.ads_tour>.key.notifications {
 	position: absolute;
 	bottom: 25px;
-	right: 16px
+	right: 16px;
 }
 
 .monaco-workbench>.ads_tour>.key.notifications>.label, .monaco-workbench>.ads_tour>.key.notifications>.shortcut, .monaco-workbench>.ads_tour>.key.problems>.label, .monaco-workbench>.ads_tour>.key.problems>.shortcut {
-	vertical-align: super
+	vertical-align: super;
 }
 
 .monaco-workbench>.ads_tour>.key.openfile {
 	position: absolute;
 	bottom: 25px;
-	right: 45px
+	right: 45px;
 }
 
 .monaco-workbench>.ads_tour>.key.openfile>.label {
-	vertical-align: super
+	vertical-align: super;
 }
 
 .monaco-workbench>.ads_tour>.key.commandPalette {
 	position: absolute;
 	top: 210px;
-	left: calc(50% - 52px);
-	transition: top .25s, left .25s
+	left: 0;
+	right: 0;
+	transition: top .25s, left .25s;
+	margin: auto;
 }
 
 .monaco-workbench>.ads_tour>.key.commandPalette>.label {
-	vertical-align: sub
+	vertical-align: sub;
 }
 
 .monaco-workbench>.ads_tour>.key.commandPalette>.shortcut {
 	padding-left: .5em;
-	vertical-align: sub
+	vertical-align: sub;
 }
 
 .monaco-workbench>.ads_tour>.command_palette_placeholder {
@@ -141,78 +147,102 @@
 	height: 344px;
 	position: absolute;
 	top: 2px;
-	left: calc(50% - 193px)
+	left: 0;
+	right: 0;
+	margin: auto;
+}
+
+.vs-dark .monaco-workbench>.ads_tour>.command_palette_placeholder {
+	width: 600px;
+	height: 344px;
+	background: url('media/commandPaletteDark.png');
+	background-size: contain;
+	background-repeat: no-repeat;
+	position: absolute;
+	top: 2px;
+	left: calc(50% - 193px);
 }
 
 @media screen and (max-width:880px) {
 	.monaco-workbench>.ads_tour {
-		font-size: 8px
+		font-size: 8px;
 	}
 	.monaco-workbench>.ads_tour>.command_palette_placeholder {
-		display: none
+		display: none;
 	}
 	.monaco-workbench>.ads_tour>.key.commandPalette {
 		top: 10px;
-		left: 50%
+		left: 50%;
 	}
 }
 
 .hide {
-	display: none
+	display: none;
 }
 
 .guided_tour p {
-	color: #fff;
 	font-size: 1.2em;
 	font-family: Segoe UI, Frutiger, Frutiger Linotype, Dejavu Sans, Helvetica Neue, Arial, sans-serif;
-	font-weight: 400
+	font-weight: 400;
+}
+
+.popup .popup_text_container {
+	padding: 20px 15px 15px 20px;
+}
+
+.popup .popup_text_container p {
+	font-size: 1.2em;
 }
 
 .popup {
 	position: absolute;
 	width: 400px;
-	color: #fff;
-	height: 150px;
-	background: #fff;
 	left: 45px;
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
 	align-items: center;
-	padding: 20px 15px 15px 20px
-}
-
-.ads_homepage .btn_start {
-	background: #ffec18!important;
-	color: #000!important;
-	line-height: 1.8em!important;
-	font-weight: 600!important;
-	height: 26px!important;
-	font-weight: 600!important;
-	border-color: #ffec18!important;
-	margin: 0 20px!important
 }
 
 .tour_btn_container {
 	display: flex;
 	justify-content: flex-end;
-	align-items: center
+	align-items: center;
 }
 
 .tour_btn_container p {
-	font-size: 1.3em;
+	font-size: 1.5em;
 	margin: 0;
-	margin-right: 15px
+	margin-left: 15px;
+}
+
+.tour_btn_container:first-of-type(p) {
+	margin-bottom: 20px;
+}
+
+.popup .btn_exit {
+	background: none;
+	position: absolute;
+	top: 2px;
+	right: 10px;
+	font-size: 19px;
+	font-family: inherit;
+	transform: scaleX(1.4);
+}
+
+.popup .btn_exit:hover {
+	cursor: pointer;
 }
 
 .ads_homepage .btn_remove_tour {
-	line-height: 1.8em!important;
-	border: 0 none!important;
-	width: auto!important;
-	padding: 0 10px!important;
-	height: 26px!important;
-	font-weight: 600!important;
-	border-color: #fff!important
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	-webkit-mask: url('media/close.svg') center center no-repeat;
+	-webkit-mask-size: 24px 24px;
+	mask: url('media/close.svg') center center no-repeat;
+	mask-size: 24px 24px;
+	margin: 0 17px 0 20px;
 }
 
 .popup .btn {
@@ -231,24 +261,23 @@
 	margin: 0;
 	align-self: flex-end;
 	cursor: pointer;
-	color: #fff!important
 }
 
 .popup .flex.column {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-	height: 100%
+	height: 100%;
 }
 
 .popup h1, .popup p {
 	font-family: Segoe UI, Frutiger, Frutiger Linotype, Dejavu Sans, Helvetica Neue, Arial, sans-serif;
 	font-weight: 400;
-	color: #4a4a4a
 }
 
 .popup h1 {
-	margin: 0
+	margin: 0;
+	font-size: 20px;
 }
 
 .popup.arrow_left:after {
@@ -257,31 +286,40 @@
 	left: -10px;
 	top: 8px;
 	border-top: 10px solid transparent;
-	border-right: 10px solid #fff;
 	border-left: none;
-	border-bottom: 10px solid transparent
+	border-bottom: 10px solid transparent;
 }
 
 .popup.arrow_top:after {
 	content: " ";
 	position: absolute;
-	bottom: 392px;
 	left: 0;
 	right: 0;
 	border-top: 10px solid transparent;
-	border-right: 10px solid #fff;
 	border-left: none;
 	border-bottom: 10px solid transparent;
-	transform: rotate(90deg)
+	transform: rotate(90deg);
+	bottom: 509px;
+}
+
+.popup.arrow_bottom_left:after {
+	content: " ";
+	position: absolute;
+	left: -10px;
+	border-top: 10px solid transparent;
+	border-left: none;
+	border-bottom: 10px solid transparent;
+	bottom: 3px;
 }
 
 .popup {
+	max-height: 361px;
 	display: none;
-	z-index: 1
+	z-index: 1;
 }
 
 .popup.show {
-	display: block
+	display: block;
 }
 
 .tour_overlay {
@@ -292,15 +330,13 @@
 	right: 0;
 	bottom: 0;
 	left: 0;
-	background-color: #000;
-	opacity: .6
+	opacity: .6;
 }
 
 .tour_btn_container .docs_link {
-	color: #006ab1;
 	align-self: center;
 	justify-self: flex-start;
-	margin-right: auto
+	margin-right: auto;
 }
 
 .btn {
@@ -316,15 +352,10 @@
 	justify-content: center;
 	text-align: center;
 	text-decoration: none;
-	margin: 10px 0
+	margin: 10px 0;
 }
 
 .monaco-workbench .activitybar>.content :not(.monaco-menu)>.monaco-action-bar .action-label.codicon.subject_element_focused {
 	z-index: 1!important;
-	color: #fff!important;
-	pointer-events: none!important
-}
-
-.monaco-workbench .activitybar>.content :not(.monaco-menu)>.monaco-action-bar .action-label.activity-workbench-view-extension-books-explorer.subject_element_focused, .monaco-workbench .activitybar>.content :not(.monaco-menu)>.monaco-action-bar .action-label.codicon.dataExplorer.subject_element_focused {
-	background-color: #fff!important
+	pointer-events: none!important;
 }

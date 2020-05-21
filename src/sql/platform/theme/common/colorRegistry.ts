@@ -17,6 +17,7 @@ export const gradientOneColorOne = new Color(new RGBA(0, 0, 0, .2));
 export const gradientTwoColorOne = new Color(new RGBA(156, 48, 48, 0));
 export const gradientTwoColorTwo = new Color(new RGBA(255, 255, 255, 0.1));
 
+
 // -- Tiles
 export const tileBorder = registerColor('tileBorder', { light: '#fff', dark: '#8A8886', hc: '#2B56F2' }, nls.localize('tileBorder', "The border color of tiles"));
 export const tileBoxShadow = registerColor('tileBoxShadow', { light: tileBoxShadowColor, dark: tileBoxShadowColor, hc: tileBoxShadowColor }, nls.localize('tileBoxShadow', "The tile box shadow color"));

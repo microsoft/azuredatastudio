@@ -47,8 +47,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { joinPath } from 'vs/base/common/resources';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
-// import { initGuidedTour } from 'sql/workbench/contrib/welcome/overviewFeatureStep/overviewFeatureStep';
-import { WelcomeTour } from 'sql/workbench/contrib/welcome/welcomeTour/welcomeTour';
+import { GuidedTour } from 'sql/workbench/contrib/welcome/welcomeTour/guidedTour';
 
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
@@ -226,7 +225,8 @@ class WelcomePage extends Disposable {
 		@IHostService private readonly hostService: IHostService,
 		@IFileService fileService: IFileService,
 		@IProductService private readonly productService: IProductService,
-		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService
+		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
+		// @ICommandService private readonly commandService: ICommandService
 	) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
@@ -252,7 +252,6 @@ class WelcomePage extends Disposable {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
 		const showOnStartup = <HTMLInputElement>container.querySelector('#showOnStartup');
 		const guidedTourEnabled = isGuidedTourEnabled(this.configurationService);
-
 		if (enabled) {
 			showOnStartup.setAttribute('checked', 'checked');
 		}
@@ -261,33 +260,41 @@ class WelcomePage extends Disposable {
 			const adsHomepage = document.querySelector('.ads_homepage');
 			const guidedTourNotificationContainer = document.createElement('div');
 			const p = document.createElement('p');
+			const b = document.createElement('b');
 			const icon = document.createElement('div');
+			const containerLeft = document.createElement('div');
+			const containerRight = document.createElement('div');
 			const startTourBtn = document.createElement('a');
 			const removeTourBtn = document.createElement('a');
 			const startBtnClasses = ['btn', 'btn_start'];
 			const removeBtnClasses = ['btn', 'btn_remove_tour', 'btn_secondary'];
+			const flexClassesLeft = ['flex', 'flex_a_center'];
+			const flexClassesRight = ['flex', 'flex_a_start'];
 			guidedTourNotificationContainer.id = 'guidedTourBanner';
 			guidedTourNotificationContainer.classList.add('guided_tour_banner');
 			startTourBtn.id = 'start_tour_btn';
 			startTourBtn.classList.add(...startBtnClasses);
+			containerLeft.classList.add(...flexClassesLeft);
+			containerRight.classList.add(...flexClassesRight);
 			icon.classList.add('diamond_icon');
 			removeTourBtn.classList.add(...removeBtnClasses);
 			startTourBtn.innerText = 'Start tour';
-			removeTourBtn.innerText = `Don't ask again`;
-			p.innerText = 'Welcome! Would you like to take a quick tour of Azure Data Studio?';
-			guidedTourNotificationContainer.appendChild(icon);
-			guidedTourNotificationContainer.appendChild(p);
-			guidedTourNotificationContainer.appendChild(startTourBtn);
-			guidedTourNotificationContainer.appendChild(removeTourBtn);
+			p.appendChild(b);
+			p.innerHTML = '<b>Welcome!</b> Would you like to take a quick tour of Azure Data Studio?';
+			containerLeft.appendChild(icon);
+			containerLeft.appendChild(p);
+			containerRight.appendChild(startTourBtn);
+			containerRight.appendChild(removeTourBtn);
+			guidedTourNotificationContainer.appendChild(containerLeft);
+			guidedTourNotificationContainer.appendChild(containerRight);
 
 			startTourBtn.addEventListener('click', async (e: MouseEvent) => {
-
 				configurationService.updateValue(configurationKey, 'welcomePageWithTour', ConfigurationTarget.USER);
 				this.layoutService.setSideBarHidden(true);
-				const welcomeTour = this.instantiationService.createInstance(WelcomeTour);
-				welcomeTour.show();
-				// initGuidedTour(e);
+				const welcomeTour = this.instantiationService.createInstance(GuidedTour);
+				welcomeTour.create();
 			});
+
 			removeTourBtn.addEventListener('click', (e: MouseEvent) => {
 				configurationService.updateValue(configurationKey, 'welcomePage', ConfigurationTarget.USER);
 				guidedTourNotificationContainer.classList.add('hide');
@@ -1058,6 +1065,16 @@ registerThemingParticipant((theme, collector) => {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .entity { color: ${iconForegroundColor}; }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .themed_icon { background-color: ${iconForegroundColor}; }`);
 	}
+
+	const startButtonColor = theme.getColor(buttonBackground);
+	if (startButtonColor) {
+		collector.addRule(`.monaco-workbench > .part.editor > .content .welcomePage .btn_exit { color: ${startButtonColor}; }`);
+	}
+	const startButtonHover = theme.getColor(buttonHoverBackground);
+	if (startButtonHover) {
+		collector.addRule(`.monaco-workbench > .part.editor > .content .welcomePage .btn_exit:hover { color: ${startButtonHover}; }`);
+	}
+
 	const gradientOneColor = theme.getColor(gradientOne);
 	const gradientTwoColor = theme.getColor(gradientTwo);
 	const gradientBackgroundColor = theme.getColor(gradientBackground);
