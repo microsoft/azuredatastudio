@@ -59,7 +59,7 @@ export class SqlConnectionDataSource extends DataSource {
 				throw new Error(constants.invalidSqlConnectionString);
 			}
 
-			this.connectionStringComponents[split[0]] = split[1];
+			this.connectionStringComponents[split[0].toLocaleLowerCase()] = split[1];
 		}
 	}
 
