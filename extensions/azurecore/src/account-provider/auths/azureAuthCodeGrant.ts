@@ -56,11 +56,52 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		super(metadata, tokenCache, context, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME);
 	}
 
+	public async promptForConsent(resourceEndpoint: string, tenant: string = this.commonTenant): Promise<{ tokenRefreshResponse: TokenRefreshResponse, authCompleteDeferred: Deferred<void> } | undefined> {
+		let authCompleteDeferred: Deferred<void>;
+		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
+
+		let authResponse: AuthCodeResponse;
+		if (vscode.env.uiKind === vscode.UIKind.Web) {
+			authResponse = await this.loginWithoutLocalServer(resourceEndpoint, tenant);
+		} else {
+			authResponse = await this.loginWithLocalServer(authCompletePromise, resourceEndpoint, tenant);
+		}
+
+		let tokenClaims: TokenClaims;
+		let accessToken: AccessToken;
+		let refreshToken: RefreshToken;
+		let expiresOn: string;
+
+		try {
+			const { accessToken: at, refreshToken: rt, tokenClaims: tc, expiresOn: eo } = await this.getTokenWithAuthCode(authResponse.authCode, authResponse.codeVerifier, this.redirectUri);
+			tokenClaims = tc;
+			accessToken = at;
+			refreshToken = rt;
+			expiresOn = eo;
+		} catch (ex) {
+			if (ex.msg) {
+				vscode.window.showErrorMessage(ex.msg);
+			}
+			console.log(ex);
+		}
+
+		if (!accessToken) {
+			const msg = localize('azure.tokenFail', "Failure when retrieving tokens.");
+			authCompleteDeferred.reject(new Error(msg));
+			throw Error('Failure when retrieving tokens');
+		}
+
+		return {
+			tokenRefreshResponse: { accessToken, refreshToken, tokenClaims, expiresOn },
+			authCompleteDeferred
+		};
+	}
+
 	public async autoOAuthCancelled(): Promise<void> {
 		return this.server.shutdown();
 	}
 
-	public async loginWithLocalServer(authCompletePromise: Promise<void>): Promise<AuthCodeResponse | undefined> {
+	public async loginWithLocalServer(authCompletePromise: Promise<void>, resourceId: string, tenant: string = this.commonTenant): Promise<AuthCodeResponse | undefined> {
 		this.server = new SimpleWebServer();
 		const nonce = crypto.randomBytes(16).toString('base64');
 		let serverPort: string;
@@ -90,9 +131,9 @@ export class AzureAuthCodeGrant extends AzureAuth {
 				prompt: 'select_account',
 				code_challenge_method: 'S256',
 				code_challenge: codeChallenge,
-				resource: this.metadata.settings.signInResourceId
+				resource: resourceId
 			};
-			loginUrl = `${this.loginEndpointUrl}${this.commonTenant}/oauth2/authorize?${qs.stringify(loginQuery)}`;
+			loginUrl = `${this.loginEndpointUrl}${tenant}/oauth2/authorize?${qs.stringify(loginQuery)}`;
 		}
 
 		await vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(nonce)}`));
@@ -105,7 +146,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		};
 	}
 
-	public async loginWithoutLocalServer(): Promise<AuthCodeResponse | undefined> {
+	public async loginWithoutLocalServer(resourceId: string, tenant: string = this.commonTenant): Promise<AuthCodeResponse | undefined> {
 		const callbackUri = await vscode.env.asExternalUri(vscode.Uri.parse(`${vscode.env.uriScheme}://microsoft.azurecore`));
 		const nonce = crypto.randomBytes(16).toString('base64');
 		const port = (callbackUri.authority.match(/:([0-9]*)$/) || [])[1] || (callbackUri.scheme === 'https' ? 443 : 80);
@@ -123,10 +164,10 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			prompt: 'select_account',
 			code_challenge_method: 'S256',
 			code_challenge: codeChallenge,
-			resource: this.metadata.settings.signInResourceId
+			resource: resourceId
 		};
 
-		const signInUrl = `${this.loginEndpointUrl}${this.commonTenant}/oauth2/authorize?${qs.stringify(loginQuery)}`;
+		const signInUrl = `${this.loginEndpointUrl}${tenant}/oauth2/authorize?${qs.stringify(loginQuery)}`;
 		await vscode.env.openExternal(vscode.Uri.parse(signInUrl));
 
 		const authCode = await this.handleCodeResponse(state);
@@ -159,38 +200,8 @@ export class AzureAuthCodeGrant extends AzureAuth {
 	}
 
 	public async login(): Promise<azdata.Account | azdata.PromptFailedResult> {
-
-		let authCompleteDeferred: Deferred<void>;
-		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
-
-		let authResponse: AuthCodeResponse;
-		if (vscode.env.uiKind === vscode.UIKind.Web) {
-			authResponse = await this.loginWithoutLocalServer();
-		} else {
-			authResponse = await this.loginWithLocalServer(authCompletePromise);
-		}
-
-		let tokenClaims: TokenClaims;
-		let accessToken: AccessToken;
-		let refreshToken: RefreshToken;
-
-		try {
-			const { accessToken: at, refreshToken: rt, tokenClaims: tc } = await this.getTokenWithAuthCode(authResponse.authCode, authResponse.codeVerifier, this.redirectUri);
-			tokenClaims = tc;
-			accessToken = at;
-			refreshToken = rt;
-		} catch (ex) {
-			if (ex.msg) {
-				vscode.window.showErrorMessage(ex.msg);
-			}
-			console.log(ex);
-		}
-
-		if (!accessToken) {
-			const msg = localize('azure.tokenFail', "Failure when retreiving tokens.");
-			authCompleteDeferred.reject(new Error(msg));
-			throw Error('Failure when retreiving tokens');
-		}
+		const { tokenRefreshResponse, authCompleteDeferred } = await this.promptForConsent(this.metadata.settings.signInResourceId);
+		const { accessToken, refreshToken, tokenClaims } = tokenRefreshResponse;
 
 		const tenants = await this.getTenants(accessToken);
 
