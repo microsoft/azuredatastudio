@@ -3,27 +3,27 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as path from 'path';
 import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
+import * as mssql from '../../../mssql';
+import * as path from 'path';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
-import * as mssql from '../../../mssql';
 
-import { Uri, QuickPickItem, extensions } from 'vscode';
+import { TaskExecutionMode } from 'azdata';
+import { promises as fs } from 'fs';
+import { Uri, QuickPickItem, extensions, Extension } from 'vscode';
 import { ApiWrapper } from '../common/apiWrapper';
+import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { promises as fs } from 'fs';
+import { FolderNode } from '../models/tree/fileFolderTreeItem';
+import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
-import { FolderNode } from '../models/tree/fileFolderTreeItem';
-import { TaskExecutionMode } from 'azdata';
-import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
-import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
 
 /**
  * Controller for managing project lifecycle
@@ -152,7 +152,7 @@ export class ProjectsController {
 		}
 		catch (err) {
 			this.apiWrapper.showErrorMessage(constants.projBuildFailed(utils.getErrorMessage(err)));
-			return;
+			return undefined;
 		}
 	}
 
@@ -182,10 +182,10 @@ export class ProjectsController {
 		const dacpacPath = await this.buildProject(project);
 
 		if (!dacpacPath) {
-			return; // buildProject() handles displaying the error
+			return undefined; // buildProject() handles displaying the error
 		}
 
-		const dacFxService = await ProjectsController.getService(mssql.extension.name);
+		const dacFxService = await ProjectsController.getDaxFxService();
 
 		if (profile as IDeploymentProfile) {
 			return await dacFxService.deployDacpac(dacpacPath, profile.databaseName, (<IDeploymentProfile>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
@@ -297,15 +297,11 @@ export class ProjectsController {
 		}
 	}
 
-	private static async getService(extensionId: string): Promise<mssql.IDacFxService> {
-		const ext = extensions.getExtension(extensionId);
+	private static async getDaxFxService(): Promise<mssql.IDacFxService> {
+		const ext: Extension<any> = extensions.getExtension(mssql.extension.name)!;
 
-		if (ext) {
-			return (ext.exports as mssql.IExtension).dacFx;
-		}
-		else {
-			throw new Error(`Failed to get extension: ${extensionId}`);
-		}
+		await ext.activate();
+		return (ext.exports as mssql.IExtension).dacFx;
 	}
 
 	private macroExpansion(template: string, macroDict: Record<string, string>): string {

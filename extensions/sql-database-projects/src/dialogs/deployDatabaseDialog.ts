@@ -4,7 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as constants from '../common/constants';
+
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
 import { ApiWrapper } from '../common/apiWrapper';
@@ -30,6 +32,8 @@ export class DeployDatabaseDialog {
 	private connection: azdata.connection.Connection | undefined;
 	private connectionIsDataSource: boolean | undefined;
 
+	private toDispose: vscode.Disposable[] = [];
+
 	public deploy: ((proj: Project, profile: IDeploymentProfile) => any) | undefined;
 	public generateScript: ((proj: Project, profile: IGenerateScriptProfile) => any) | undefined;
 
@@ -42,18 +46,22 @@ export class DeployDatabaseDialog {
 		this.initializeDialog();
 		this.dialog.okButton.label = constants.deployDialogOkButtonText;
 		this.dialog.okButton.enabled = false;
-		this.dialog.okButton.onClick(async () => await this.deployClick());
+		this.toDispose.push(this.dialog.okButton.onClick(async () => await this.deployClick()));
 
 		this.dialog.cancelButton.label = constants.cancelButtonText;
 
 		let generateScriptButton: azdata.window.Button = azdata.window.createButton(constants.generateScriptButtonText);
-		generateScriptButton.onClick(async () => await this.generateScriptClick());
+		this.toDispose.push(generateScriptButton.onClick(async () => await this.generateScriptClick()));
 		generateScriptButton.enabled = false;
 
 		this.dialog.customButtons = [];
 		this.dialog.customButtons.push(generateScriptButton);
 
 		azdata.window.openDialog(this.dialog);
+	}
+
+	private dispose(): void {
+		this.toDispose.forEach(disposable => disposable.dispose());
 	}
 
 	private initializeDialog(): void {
@@ -117,8 +125,8 @@ export class DeployDatabaseDialog {
 				serverName: dataSource.server,
 				databaseName: dataSource.database,
 				connectionName: dataSource.name,
-				userName: '',
-				password: '', // TODO: secure password storage
+				userName: dataSource.username,
+				password: dataSource.password,
 				authenticationType: dataSource.integratedSecurity ? 'Integrated' : 'SqlAuth',
 				savePassword: false,
 				providerName: 'MSSQL',
@@ -127,12 +135,19 @@ export class DeployDatabaseDialog {
 				options: []
 			};
 
-			const connResult = await azdata.connection.connect(connProfile, false, false);
-			connId = connResult.connectionId;
+			if (dataSource.integratedSecurity) {
+				connId = (await azdata.connection.connect(connProfile, false, false)).connectionId;
+			}
+			else {
+				connId = (await azdata.connection.openConnectionDialog(undefined, connProfile)).connectionId;
+			}
 		}
 		else {
-			const connection = (await azdata.connection.getConnections()).find(c => c.connectionName === this.targetConnectionTextBox!.value)!;
-			connId = connection.connectionId;
+			if (!this.connection) {
+				throw new Error('Connection not defined.');
+			}
+
+			connId = this.connection?.connectionId;
 		}
 
 		return await azdata.connection.getUriForConnection(connId);
@@ -148,6 +163,7 @@ export class DeployDatabaseDialog {
 
 		await this.deploy!(this.project, profile);
 
+		this.dispose();
 		azdata.window.closeDialog(this.dialog);
 	}
 
@@ -158,9 +174,10 @@ export class DeployDatabaseDialog {
 		};
 
 		if (this.generateScript) {
-			await this.generateScript(this.project, profile);
+			await this.generateScript!(this.project, profile);
 		}
 
+		this.dispose();
 		azdata.window.closeDialog(this.dialog);
 	}
 

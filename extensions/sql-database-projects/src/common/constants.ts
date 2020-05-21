@@ -58,7 +58,7 @@ export const buildDacpacNotFound = localize('buildDacpacNotFound', "Dacpac creat
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNotFound', "Could not get mssql extension's install location at {0}", mssqlConfigDir); }
-export function projBuildFailed(errorMessage: string) { return localize('projBuildFailed', "Build failed.  Check output pane for more details.  {0}}", errorMessage); }
+export function projBuildFailed(errorMessage: string) { return localize('projBuildFailed', "Build failed. Check output pane for more details. {0}", errorMessage); }
 
 // Project script types
 
@@ -78,3 +78,5 @@ export const Include = 'Include';
 export const initialCatalogSetting = 'Initial Catalog';
 export const dataSourceSetting = 'Data Source';
 export const integratedSecuritySetting = 'Integrated Security';
+export const userIdSetting = 'User ID';
+export const passwordSetting = 'Password';

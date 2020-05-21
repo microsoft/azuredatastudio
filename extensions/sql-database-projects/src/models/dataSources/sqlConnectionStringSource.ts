@@ -37,6 +37,15 @@ export class SqlConnectionDataSource extends DataSource {
 		return this.getSetting(constants.integratedSecuritySetting).toLowerCase() === 'true';
 	}
 
+	public get username(): string {
+		return this.getSetting(constants.userIdSetting);
+	}
+
+	public get password(): string {
+		// TODO: secure password storage
+		return this.getSetting(constants.passwordSetting);
+	}
+
 	constructor(name: string, connectionString: string) {
 		super(name);
 
@@ -55,7 +64,7 @@ export class SqlConnectionDataSource extends DataSource {
 	}
 
 	public getSetting(settingName: string): string {
-		return this.connectionStringComponents[settingName];
+		return this.connectionStringComponents[settingName.toLocaleLowerCase()];
 	}
 
 	public static fromJson(json: DataSourceJson): SqlConnectionDataSource {
