@@ -152,6 +152,10 @@
         }
       },
       {
+        "command": "azure.resource.openInAzurePortal",
+        "title": "Open in Azure Portal"
+      },
+      {
         "command": "azure.resource.connectsqlserver",
         "title": "%azure.resource.connectsqlserver.title%",
         "icon": {
@@ -259,6 +263,11 @@
           "command": "azure.resource.startterminal",
           "when": "viewItem == azure.resource.itemType.account",
           "group": "azurecore"
+        },
+        {
+          "command": "azure.resource.openInAzurePortal",
+          "when": "isDatabaseOrServer",
+          "group": "0_query"
         }
       ]
     },
