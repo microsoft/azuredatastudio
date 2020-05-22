@@ -13,6 +13,8 @@ export const sqlprojExtension = '.sqlproj';
 export const sqlFileExtension = '.sql';
 export const initialCatalogSetting = 'Initial Catalog';
 export const schemaCompareExtensionId = 'microsoft.schema-compare';
+export const sqlDatabaseProjectExtensionId = 'microsoft.sql-database-projects';
+export const mssqlExtensionId = 'microsoft.mssql';
 
 // UI Strings
 
