@@ -294,7 +294,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
-	test('showConnectionDialog should not show when editing a connection', () => {
+	test('showConnectionDialog should not be called when using showEditConnectionDialog', () => {
 		return connectionManagementService.showEditConnectionDialog(connectionProfile).then(() => {
 			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, undefined, false, undefined, false);
 		});
