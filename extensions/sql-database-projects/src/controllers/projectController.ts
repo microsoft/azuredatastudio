@@ -25,6 +25,7 @@ import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
 
+// TODO: use string enums
 export enum ExtractTarget {
 	dacpac = 0,
 	file = 1,
@@ -367,7 +368,7 @@ export class ProjectsController {
 		return projName;
 	}
 
-	private getExtractTargetStrings(inputTarget: any): mssql.ExtractTarget {
+	private mapExtractTargetEnum(inputTarget: any): mssql.ExtractTarget {
 		if (inputTarget) {
 			switch (inputTarget) {
 				case 'File': return mssql.ExtractTarget['file'];
@@ -389,6 +390,7 @@ export class ProjectsController {
 
 		let keys: string[] = Object.keys(ExtractTarget).filter(k => typeof ExtractTarget[k as any] === 'number');
 
+		// TODO: Create a wrapper class to handle the mapping
 		keys.forEach((targetOption: string) => {
 			if (targetOption !== 'dacpac') {		//Do not present the option to create Dacpac
 				let pascalCaseTargetOption: string = utils.toPascalCase(targetOption);	// for better readability
@@ -402,7 +404,7 @@ export class ProjectsController {
 		});
 		let extractTargetInput = input?.label;
 
-		extractTarget = this.getExtractTargetStrings(extractTargetInput);
+		extractTarget = this.mapExtractTargetEnum(extractTargetInput);
 
 		return extractTarget;
 	}
@@ -449,7 +451,7 @@ export class ProjectsController {
 	private async importApiCall(model: ImportDataModel): Promise<void> {
 		let ext = this.apiWrapper.getExtension(mssql.extension.name)!;
 
-		const service = ((await ext.activate() as mssql.IExtension)).dacFx;
+		const service = (await ext.activate() as mssql.IExtension).dacFx;
 		const ownerUri = await this.apiWrapper.getUriForConnection(model.serverId);
 
 		await service.importDatabaseProject(model.database, model.filePath, model.projName, model.version, ownerUri, model.extractTarget, TaskExecutionMode.execute);

@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { promises as fs } from 'fs';
 import * as os from 'os';
+import { promises as fs } from 'fs';
 
 /**
  * Consolidates on the error message string
