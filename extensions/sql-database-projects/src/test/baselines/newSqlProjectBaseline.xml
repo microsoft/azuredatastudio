@@ -58,7 +58,7 @@
   <ItemGroup>
     <PackageReference Condition="'$(NetCoreBuild)' == 'true'" Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
-	<ItemGroup>
+  <ItemGroup>
     <Folder Include="Properties" />
   </ItemGroup>
 </Project>
