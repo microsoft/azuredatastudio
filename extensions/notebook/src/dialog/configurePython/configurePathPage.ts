@@ -22,7 +22,7 @@ export class ConfigurePathPage extends BasePage {
 	private newInstallButton: azdata.RadioButtonComponent;
 	private existingInstallButton: azdata.RadioButtonComponent;
 
-	private browsePathEnabled: boolean;
+	private selectInstallEnabled: boolean;
 	private usingCustomPath: boolean = false;
 
 	public async initialize(): Promise<boolean> {
@@ -47,17 +47,23 @@ export class ConfigurePathPage extends BasePage {
 
 		this.createInstallRadioButtons(this.view.modelBuilder, this.model.useExistingPython);
 
-		let selectInstallContainer = this.view.modelBuilder.divContainer().withItems([
-			this.newInstallButton,
-			this.existingInstallButton,
-			this.pythonDropdownLoader,
-			browseButton
-		]).component();
+		let selectInstallForm = this.view.modelBuilder.formContainer()
+			.withFormItems([{
+				component: this.newInstallButton,
+				title: localize('configurePython.installationType', "Installation Type")
+			}, {
+				component: this.existingInstallButton,
+				title: ''
+			}, {
+				component: this.pythonDropdownLoader,
+				title: localize('configurePython.locationTextBoxText', "Python Install Location")
+			}, {
+				component: browseButton,
+				title: ''
+			}]).component();
+		let selectInstallContainer = this.view.modelBuilder.divContainer().withItems([selectInstallForm]).component();
 
-		let allFormItems = [{
-			title: '',
-			component: selectInstallContainer
-		}];
+		let parentContainer = this.view.modelBuilder.divContainer().withItems([selectInstallContainer]).component();
 		if (this.model.pythonLocation) {
 			let installedPathTextBox = this.view.modelBuilder.inputBox().withProperties<azdata.TextComponentProperties>({
 				value: this.model.pythonLocation,
@@ -68,25 +74,30 @@ export class ConfigurePathPage extends BasePage {
 				label: 'Edit',
 				width: '70px'
 			}).component();
-			let editPathContainer = this.view.modelBuilder.divContainer().withItems([installedPathTextBox, editPathButton]).component();
-			allFormItems.push({
-				title: localize('configurePython.runtimeConfigured', "Python runtime configured!"),
-				component: editPathContainer
-			});
+			let editPathForm = this.view.modelBuilder.formContainer()
+				.withFormItems([{
+					title: localize('configurePython.pythonConfigured', "Python runtime configured!"),
+					component: installedPathTextBox
+				}, {
+					title: '',
+					component: editPathButton
+				}]).component();
+
+			let editPathContainer = this.view.modelBuilder.divContainer().withItems([editPathForm]).component();
+			parentContainer.addItem(editPathContainer);
 
 			editPathButton.onDidClick(async () => {
 				editPathContainer.display = 'none';
 				selectInstallContainer.display = 'block';
-				this.browsePathEnabled = true;
+				this.selectInstallEnabled = true;
 			});
 			selectInstallContainer.display = 'none';
 
-			this.browsePathEnabled = false;
+			this.selectInstallEnabled = false;
 		} else {
-			this.browsePathEnabled = true;
+			this.selectInstallEnabled = true;
 		}
 
-		let parentContainer = this.view.modelBuilder.formContainer().withFormItems(allFormItems).component();
 		await this.view.initializeModel(parentContainer);
 		await this.updatePythonPathsDropdown(this.model.useExistingPython);
 
@@ -97,7 +108,7 @@ export class ConfigurePathPage extends BasePage {
 	}
 
 	public async onPageLeave(): Promise<boolean> {
-		if (this.browsePathEnabled) {
+		if (this.selectInstallEnabled) {
 			let pythonLocation = utils.getDropdownValue(this.pythonLocationDropdown);
 			if (!pythonLocation || pythonLocation.length === 0) {
 				this.instance.showErrorMessage(this.instance.InvalidLocationMsg);
