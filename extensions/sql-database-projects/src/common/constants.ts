@@ -10,7 +10,8 @@ const localize = nls.loadMessageBundle();
 // Placeholder values
 export const dataSourcesFileName = 'datasources.json';
 export const sqlprojExtension = '.sqlproj';
-export const initialCatalogSetting = 'Initial Catalog';
+
+// Commands
 export const schemaCompareExtensionId = 'microsoft.schema-compare';
 export const sqlDatabaseProjectExtensionId = 'microsoft.sql-database-projects';
 export const mssqlExtensionId = 'microsoft.mssql';
@@ -59,6 +60,8 @@ export const buildDacpacNotFound = localize('buildDacpacNotFound', "Dacpac creat
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNotFound', "Could not get mssql extension's install location at {0}", mssqlConfigDir); }
+export function projBuildFailed(errorMessage: string) { return localize('projBuildFailed', "Build failed. Check output pane for more details. {0}", errorMessage); }
+export function unexpectedProjectContext(uri: string) { return localize('unexpectedProjectContext', "Unable to establish project context.  Command invoked from unexpected location: {0}", uri); }
 
 // Project script types
 
@@ -73,3 +76,10 @@ export const ItemGroup = 'ItemGroup';
 export const Build = 'Build';
 export const Folder = 'Folder';
 export const Include = 'Include';
+
+// SQL connection string components
+export const initialCatalogSetting = 'Initial Catalog';
+export const dataSourceSetting = 'Data Source';
+export const integratedSecuritySetting = 'Integrated Security';
+export const userIdSetting = 'User ID';
+export const passwordSetting = 'Password';
