@@ -67,20 +67,40 @@ export class InstalledPackagesTab {
 			this.installedPackagesTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
-						localize('managePackages.pkgNameColumn', "Name"),
-						localize('managePackages.newPkgVersionColumn', "Version")
+						{
+							value: localize('managePackages.pkgNameColumn', "Name"),
+							type: azdata.ColumnType.text,
+							width: 100
+						},
+						{
+							value: localize('managePackages.newPkgVersionColumn', "Version"),
+							type: azdata.ColumnType.text,
+							width: 100
+						},
+						{
+							value: localize('managePackages.deleteColumn', "Delete"),
+							type: azdata.ColumnType.button,
+							options: { iconClass: 'delete small' },
+							width: 30
+						}
 					],
 					data: [[]],
 					height: '600px',
 					width: '400px'
 				}).component();
+			this.installedPackagesTable.onCellAction(async (rowState) => {
+				let buttonState = <azdata.ICellActionEventArgs>rowState;
+				if (buttonState) {
+					await this.doUninstallPackage([rowState.row]);
+				}
+			});
 
 			this.uninstallPackageButton = view.modelBuilder.button()
 				.withProperties({
 					label: localize('managePackages.uninstallButtonText', "Uninstall selected packages"),
 					width: '200px'
 				}).component();
-			this.uninstallPackageButton.onDidClick(() => this.doUninstallPackage());
+			this.uninstallPackageButton.onDidClick(() => this.doUninstallPackage(this.installedPackagesTable.selectedRows));
 
 			this.formBuilder = view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -190,7 +210,7 @@ export class InstalledPackagesTab {
 			await this.installedPackagesLoader.updateProperties({ loading: false });
 		}
 
-		let packageData: string[][];
+		let packageData: any[][];
 		let packageCount: number;
 		if (pythonPackages) {
 			packageCount = pythonPackages.length;
@@ -214,8 +234,8 @@ export class InstalledPackagesTab {
 		}
 	}
 
-	private async doUninstallPackage(): Promise<void> {
-		let rowNums = this.installedPackagesTable.selectedRows;
+	private async doUninstallPackage(rowNums: number[]): Promise<void> {
+		//let rowNums = this.installedPackagesTable.selectedRows;
 		if (!rowNums || rowNums.length === 0) {
 			return;
 		}

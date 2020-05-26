@@ -27,6 +27,7 @@ import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
+import { ButtonColumn, ButtonClickEventArgs } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -47,8 +48,11 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	private _tableData: TableDataView<Slick.SlickData>;
 	private _tableColumns;
 	private _checkboxColumns: CheckboxSelectColumn<{}>[] = [];
+	private _buttonsColumns: ButtonColumn<{}>[] = [];
 	private _onCheckBoxChanged = new Emitter<ICheckboxCellActionEventArgs>();
+	private _onButtonClicked = new Emitter<ButtonClickEventArgs<{}>>();
 	public readonly onCheckBoxChanged: vsEvent<ICheckboxCellActionEventArgs> = this._onCheckBoxChanged.event;
+	public readonly onButtonClicked: vsEvent<ButtonClickEventArgs<{}>> = this._onButtonClicked.event;
 
 	@ViewChild('table', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
@@ -71,6 +75,9 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			(<any[]>columns).map(col => {
 				if (col.type && col.type === 1) {
 					this.createCheckBoxPlugin(col, index);
+				}
+				if (col.type && col.type === 2) {
+					this.createButtonPlugin(col, index);
 				}
 				else if (col.value) {
 					mycolumns.push(<Slick.Column<any>>{
@@ -238,7 +245,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.setSelectedRows(this.selectedRows);
 		}
 
-		Object.keys(this._checkboxColumns).forEach(col => this.registerCheckboxPlugin(this._checkboxColumns[col]));
+		Object.keys(this._checkboxColumns).forEach(col => this.registerPlugins(this._checkboxColumns[col]));
+		Object.keys(this._buttonsColumns).forEach(col => this.registerPlugins(this._buttonsColumns[col]));
 
 		if (this.ariaRowCount === -1) {
 			this._table.removeAriaRowCount();
@@ -280,6 +288,13 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			if (checkInfo) {
 				this._checkboxColumns[checkInfo.columnName].reactiveCheckboxCheck(checkInfo.row, checkInfo.checked);
 			}
+
+
+			const buttonInfo: azdata.ButtonCell = cellInfo as azdata.ButtonCell;
+			if (buttonInfo) {
+				this._buttonsColumns[checkInfo.columnName].reactiveButton(checkInfo.row);
+			}
+
 		});
 	}
 
@@ -309,9 +324,33 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		}
 	}
 
-	private registerCheckboxPlugin(checkboxSelectColumn: CheckboxSelectColumn<{}>): void {
-		this._tableColumns.splice(checkboxSelectColumn.index, 0, checkboxSelectColumn.getColumnDefinition());
-		this._table.registerPlugin(checkboxSelectColumn);
+	private createButtonPlugin(col: any, index: number) {
+		let name = col.value;
+		if (!this._buttonsColumns[col.value]) {
+			this._buttonsColumns[col.value] = new ButtonColumn({
+				width: col.width,
+				title: col.title,
+				iconCssClass: col.options ? col.options.iconClass : ''
+			}, index);
+
+			this._register(this._buttonsColumns[col.value].onClick((state) => {
+				this.fireEvent({
+					eventType: ComponentEventType.onCellAction,
+					args: {
+						row: state.row,
+						column: state.column,
+						name: name
+					}
+				});
+			}));
+		}
+	}
+
+	private registerPlugins(plugin: CheckboxSelectColumn<{}> | ButtonColumn<{}>): void {
+		this._tableColumns.splice(plugin.index, 0, plugin.getColumnDefinition());
+		this._table.registerPlugin(plugin);
+
+
 		this._table.columns = this._tableColumns;
 		this._table.autosizeColumns();
 	}

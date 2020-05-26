@@ -21,6 +21,8 @@ export interface ButtonColumnOptions {
 export interface ButtonClickEventArgs<T extends Slick.SlickData> {
 	item: T;
 	position: { x: number, y: number };
+	row: number;
+	column: number;
 }
 
 export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> {
@@ -29,8 +31,9 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 	private _grid: Slick.Grid<T>;
 	private _onClick = new Emitter<ButtonClickEventArgs<T>>();
 	public onClick = this._onClick.event;
+	public index: number;
 
-	constructor(private options: ButtonColumnOptions) {
+	constructor(private options: ButtonColumnOptions, columnIndex?: number) {
 		this._definition = {
 			id: options.id,
 			resizable: false,
@@ -43,6 +46,7 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 			iconCssClassField: options.iconCssClass,
 			cssClass: 'slick-button-cell'
 		};
+		this.index = columnIndex ? columnIndex : 0;
 	}
 
 	public init(grid: Slick.Grid<T>): void {
@@ -54,6 +58,10 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 
 	public destroy(): void {
 		this._handler.unsubscribeAll();
+	}
+
+	public getColumnDefinition(): Slick.Column<T> {
+		return this._definition;
 	}
 
 	private handleActiveCellChanged(args: Slick.OnActiveCellChangedEventArgs<T>): void {
@@ -80,6 +88,17 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 		}
 	}
 
+	// This call is to handle reactive changes in check box UI
+	// This DOES NOT fire UI change Events
+	reactiveButton(row: number) {
+
+		// update row to call formatter
+		this._grid.updateRow(row);
+
+		// ensure that grid reflects the change
+		this._grid.scrollRowIntoView(row);
+	}
+
 	public get definition(): ButtonColumnDefinition<T> {
 		return this._definition;
 	}
@@ -89,6 +108,8 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 		const activeCellPosition = this._grid.getActiveCellPosition();
 		if (activeCell && activeCellPosition) {
 			this._onClick.fire({
+				row: activeCell.row,
+				column: activeCell.cell,
 				item: this._grid.getDataItem(activeCell.row),
 				position: {
 					x: (activeCellPosition.left + activeCellPosition.right) / 2,

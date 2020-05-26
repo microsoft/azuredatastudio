@@ -399,5 +399,12 @@ declare module 'azdata' {
 	export interface TaskInfo {
 		targetLocation?: string;
 	}
+
+	export interface ButtonCell extends TableCell {
+		columnName: string;
+	}
+
+	export interface IButtonCellActionEventArgs extends ICellActionEventArgs {
+	}
 }
 
