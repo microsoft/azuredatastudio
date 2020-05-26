@@ -1289,10 +1289,16 @@
 	min-width: 24px;
 	height: 24px;
 	margin-left: 6px;
+	margin-right: 20px;
 	-webkit-mask: url('../../gettingStarted/media/diamondIcon.svg') no-repeat;
 	-webkit-mask-size: 24px 24px;
 	mask: url('../../gettingStarted/media/diamondIcon.svg') no-repeat;
 	mask-size: 24px 24px;
+	margin: 0 17px 0 20px;
+}
+
+.ads_homepage .btn_remove_tour {
+	display: inline-block;
 	margin: 0 17px 0 20px;
 }
 
@@ -1337,12 +1343,11 @@
 	font-weight: 600;
 }
 
-.ads_homepage .guided_tour_banner .ads_tour_btn_start {
+.ads_homepage .guided_tour_banner .monaco-button {
 	line-height: 1.9em !important;
 	font-weight: 600 !important;
 	height: 26px !important;
 	font-weight: 600 !important;
-	margin: 0 20px !important;
 	font-size: 14px !important;
 	width: 125px !important;
 	height: 32px !important;
@@ -1354,7 +1359,7 @@
 	align-items: center;
 }
 
-.ads_homepage .guided_tour_banner .ads_tour_btn_container p {
+.ads_homepage .guided_tour_banner .tour_btn_container p {
 	font-size: 1.3em;
 	margin: 0;
 	margin-right: 15px;

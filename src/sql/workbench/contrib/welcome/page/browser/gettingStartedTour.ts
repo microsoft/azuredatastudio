@@ -19,6 +19,7 @@ import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/action
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { Button } from 'sql/base/browser/ui/button/button';
 
 const $ = dom.$;
 interface TourData {
@@ -44,7 +45,7 @@ const tourData: TourData[] = [
 	{ key: 'jupyer_books', order: '2', header: localize('GuidedTour.notebooks', "Notebooks"), body: localize('GuidedTour.gettingStartedNotebooks', "Get started creating your own notebook or collection of notebooks in a single place."), step: localize('GuidedTour.two', "2"), elmClass: 'overview_tour_jupyterBooks', id: 'overview_tour_jupyterBooks', btnId: 'overview_tour_jupyter_btn', btnText: localize('GuidedTour.next', "Next"), docs: 'https://aka.ms/ads-notebooks', elementToAppendTo: '.action-label.activity-workbench-view-extension-books-explorer', arrow: 'arrow_left', popupImage: './../../gettingStarted/media/notebooks.png' },
 	{ key: 'extensions', order: '3', header: localize('GuidedTour.extensions', "Extensions"), body: localize('GuidedTour.addExtensions', "Extend the functionality of Azure Data Studio by installing extensions developed by us/Microsoft as well as the third-party community (you!)."), step: localize('GuidedTour.three', "3"), elmClass: 'overview_tour_extensions', id: 'overview_tour_extensions', btnId: 'overview_tour_extensions_btn', btnText: localize('GuidedTour.next', "Next"), docs: 'https://aka.ms/ads-extensions', elementToAppendTo: '.action-label.codicon-extensions', arrow: 'arrow_center_left', popupImage: './../../gettingStarted/media/extensions.png' },
 	{ key: 'settings', order: '4', header: localize('GuidedTour.settings', "Settings"), body: localize('GuidedTour.makeConnesetSettings', "Customize Azure Data Studio based on your preferences. You can configure Settings like autosave and tab size, personalize your Keyboard Shortcuts, and switch to a Color Theme of your liking."), step: localize('GuidedTour.four', "4"), elmClass: 'overview_tour_settings', id: 'overview_tour_settings', btnId: 'overview_tour_settings_btn', btnText: localize('GuidedTour.next', "Next"), elementToAppendTo: '.codicon-settings-gear', arrow: 'arrow_bottom_left', popupImage: './../../gettingStarted/media/settings.png' },
-	{ key: 'welcome_page', order: '5', header: localize('GuidedTour.welcomePage', "Welcome Page"), body: localize('GuidedTour.discoverWelcomePage', "Discover top features, recently opened files, and recommended extensions on the Welcome page. For more information on how to get started in Azure Data Studio, check out our videos and documentation."), step: localize('GuidedTour.five', "5"), elmClass: 'overview_tour_home', id: 'overview_tour_home', btnId: 'overview_tour_home_btn', btnText: localize('GuidedTour.exit', "Exit"), elementToAppendTo: 'center', arrow: 'none', popupImage: './../../welcome/gettingStarted/media/welcome.png' },
+	{ key: 'welcome_page', order: '5', header: localize('GuidedTour.welcomePage', "Welcome Page"), body: localize('GuidedTour.discoverWelcomePage', "Discover top features, recently opened files, and recommended extensions on the Welcome page. For more information on how to get started in Azure Data Studio, check out our videos and documentation."), step: localize('GuidedTour.five', "5"), elmClass: 'overview_tour_home', id: 'overview_tour_home', btnId: 'overview_tour_home_btn', btnText: localize('GuidedTour.exit', "Exit"), elementToAppendTo: 'center', arrow: 'none', popupImage: './../../gettingStarted/media/welcome.png' },
 ];
 
 const IS_OVERLAY_VISIBLE = new RawContextKey<boolean>('interfaceOverviewVisible', false);
@@ -154,20 +155,17 @@ export class GuidedTour extends Disposable {
 			const headerTag = document.createElement('h1');
 			const bodyTag = document.createElement('p');
 			const stepText = document.createElement('p');
-			const btn: any = document.createElement('a');
 			if (docs) {
 				const docsLink = document.createElement('a');
-				docsLink.classList.add('docs_link');
+				docsLink.classList.add('ads_tour_docs_link');
 				docsLink.innerText = 'Read more';
 				docsLink.href = docs;
 				docsLink.target = '_blank';
 				btnContainer.appendChild(docsLink);
 			}
 			const textContainer = document.createElement('div');
-			headerTag.tabIndex = 0;
-			bodyTag.tabIndex = 0;
-			bodyTag.tabIndex = 0;
-			btn.tabIndex = 0;
+			headerTag.tabIndex = 2;
+			bodyTag.tabIndex = 3;
 			const exitButton = document.createElement('div');
 			exitButton.classList.add('ads_tour_btn_exit');
 			exitButton.innerText = 'x';
@@ -187,13 +185,12 @@ export class GuidedTour extends Disposable {
 			} else {
 				container.classList.add('show');
 			}
-			const buttonClasses = ['ads_tour_btn', 'ads_tour_btn_primary', 'ads_tour_btn_primary_inverse', 'overview_tour_btn_next'];
-			btn.classList.add(...buttonClasses);
 			headerTag.innerText = header;
 			bodyTag.innerText = body;
-			btn.innerText = btnText;
 			stepText.innerText = `${step} of ${tourData.length + 1}`;
-			btnContainer.appendChild(btn);
+			let button = new Button(btnContainer);
+			button.icon = '';
+			button.label = btnText;
 			btnContainer.appendChild(stepText);
 			flexContainer.appendChild(img);
 			flexContainer.appendChild(textContainer);
@@ -236,6 +233,7 @@ export class GuidedTour extends Disposable {
 		return -1;
 	}
 
+
 	private buildInteractions() {
 		const popups = document.querySelectorAll('.ads_tour_popup') as NodeListOf<Element>;
 		const menuBarItems = document.querySelectorAll('.menubar-menu-button') as NodeListOf<HTMLElement>;
@@ -244,7 +242,9 @@ export class GuidedTour extends Disposable {
 			elm.style.pointerEvents = 'none';
 		});
 		popups.forEach(function (elm, i) {
-			const btn = elm.querySelector('.overview_tour_btn_next');
+			const btn = elm.querySelector('.ads_tour_popup_text_container .monaco-button') as HTMLElement;
+			btn.tabIndex = 4;
+			btn.focus();
 			const exitButton = elm.querySelector('.ads_tour_btn_exit');
 			const popupsLength = popups.length;
 			exitButton.addEventListener('click', function () {
@@ -293,7 +293,7 @@ export class GuidedTour extends Disposable {
 				popups[i].classList.remove('show');
 				popups[next].classList.add('show');
 				popups[next].classList.remove('hide');
-				const nextBtn: HTMLElement = popups[next].querySelector('.overview_tour_btn_next');
+				const nextBtn: HTMLElement = popups[next].querySelector('.ads_tour_popup_text_container .monaco-button');
 				nextBtn.focus();
 			});
 		});
@@ -342,7 +342,7 @@ registerThemingParticipant((theme, collector) => {
 		collector.addRule(`.monaco-workbench > .ads_tour p { color: ${bodyTag}; }`);
 		collector.addRule(`.monaco-workbench > .ads_tour .ads_tour_popup  .ads_tour_btn { color: ${bodyTag}; }`);
 		collector.addRule(`.monaco-workbench > .ads_tour .ads_tour_popup p, .monaco-workbench > .ads_tour .ads_tour_popup h1  { color: ${bodyTag}; }`);
-		collector.addRule(`.monaco-workbench > .ads_tour .ads_tour_popup .ads_tour_btn_container .docs_link  { color: ${bodyTag}; }`);
+		collector.addRule(`.monaco-workbench > .ads_tour .ads_tour_popup .ads_tour_btn_container .ads_tour_docs_link  { color: ${bodyTag}; }`);
 		collector.addRule(`.monaco-workbench > .ads_tour .ads_tour_popup .ads_tour_btn_container .ads_tour_btn_primary_inverse { background: ${bodyTag}; }`);
 		collector.addRule(`.monaco-workbench .activitybar>.content :not(.monaco-menu)>.monaco-action-bar .action-label.activity-workbench-view-extension-books-explorer.subject_element_focused, .monaco-workbench .activitybar>.content :not(.monaco-menu)>.monaco-action-bar .action-label.codicon.dataExplorer.subject_element_focused { background: ${bodyTag}; }`);
 		collector.addRule(`.monaco-workbench .activitybar>.content :not(.monaco-menu)>.monaco-action-bar .action-label.codicon.subject_element_focused { color: ${bodyTag} !important; }`);

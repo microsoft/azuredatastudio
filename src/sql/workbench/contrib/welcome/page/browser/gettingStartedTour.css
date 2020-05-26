@@ -234,18 +234,7 @@
 	cursor: pointer;
 }
 
-.ads_homepage .btn_remove_tour {
-	display: inline-block;
-	width: 12px;
-	height: 12px;
-	-webkit-mask: url(media/close.svg) center center no-repeat;
-	-webkit-mask-size: 12px 12px;
-	mask: url(media/close.svg) center center no-repeat;
-	mask-size: 12px 12px;
-	margin: 0 17px 0 20px;
-}
-
-.ads_tour_popup .ads_tour_btn {
+.ads_tour_popup .monaco-button {
 	box-sizing: border-box;
 	width: 77px;
 	height: 34px;
@@ -343,10 +332,11 @@
 	opacity: .6;
 }
 
-.ads_tour_btn_container .docs_link {
+.ads_tour_btn_container .ads_tour_docs_link {
 	align-self: center;
 	justify-self: flex-start;
 	margin-right: auto;
+	text-decoration: underline;
 }
 
 .ads_tour_btn {
