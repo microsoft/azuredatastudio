@@ -31,21 +31,21 @@ export class CellToggleMoreActions {
 	constructor(
 		@IInstantiationService private instantiationService: IInstantiationService) {
 		this._actions.push(
-			instantiationService.createInstance(RunCellsAction, 'runAllBefore', localize('runAllBefore', "Run Cells Before"), false),
-			instantiationService.createInstance(RunCellsAction, 'runAllAfter', localize('runAllAfter', "Run Cells After"), true),
-			new Separator(),
-			instantiationService.createInstance(AddCellFromContextAction, 'codeBefore', localize('codeBefore', "Insert Code Before"), CellTypes.Code, false),
-			instantiationService.createInstance(AddCellFromContextAction, 'codeAfter', localize('codeAfter', "Insert Code After"), CellTypes.Code, true),
-			new Separator(),
-			instantiationService.createInstance(AddCellFromContextAction, 'markdownBefore', localize('markdownBefore', "Insert Text Before"), CellTypes.Markdown, false),
-			instantiationService.createInstance(AddCellFromContextAction, 'markdownAfter', localize('markdownAfter', "Insert Text After"), CellTypes.Markdown, true),
-			new Separator(),
+			// instantiationService.createInstance(RunCellsAction, 'runAllBefore', localize('runAllBefore', "Run Cells Before"), false),
+			// instantiationService.createInstance(RunCellsAction, 'runAllAfter', localize('runAllAfter', "Run Cells After"), true),
+			// new Separator(),
+			// instantiationService.createInstance(AddCellFromContextAction, 'codeBefore', localize('codeBefore', "Insert Code Before"), CellTypes.Code, false),
+			// instantiationService.createInstance(AddCellFromContextAction, 'codeAfter', localize('codeAfter', "Insert Code After"), CellTypes.Code, true),
+			// new Separator(),
+			// instantiationService.createInstance(AddCellFromContextAction, 'markdownBefore', localize('markdownBefore', "Insert Text Before"), CellTypes.Markdown, false),
+			// instantiationService.createInstance(AddCellFromContextAction, 'markdownAfter', localize('markdownAfter', "Insert Text After"), CellTypes.Markdown, true),
+			// new Separator(),
 			instantiationService.createInstance(CollapseCellAction, 'collapseCell', localize('collapseCell', "Collapse Cell"), true),
 			instantiationService.createInstance(CollapseCellAction, 'expandCell', localize('expandCell', "Expand Cell"), false),
 			new Separator(),
 			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', "Clear Result")),
-			new Separator(),
-			instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', "Delete")),
+			// new Separator(),
+			// instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', "Delete")),
 		);
 	}
 

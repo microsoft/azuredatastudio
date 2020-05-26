@@ -18,7 +18,7 @@
 	display: block;
 	list-style: none;
 	margin: 0;
-	padding: 4px 16px;
+	padding: 10px 16px 4px 16px;
 }
 .markdown-toolbar .carbon-taskbar li.action-item {
 	display: inline-block;
