@@ -451,6 +451,7 @@ export interface DeployParams {
 	packageFilePath: string;
 	databaseName: string;
 	upgradeExisting: boolean;
+	sqlCommandVariableValues?: Record<string, string>;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }
@@ -458,6 +459,7 @@ export interface DeployParams {
 export interface GenerateDeployScriptParams {
 	packageFilePath: string;
 	databaseName: string;
+	sqlCommandVariableValues?: Record<string, string>;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }

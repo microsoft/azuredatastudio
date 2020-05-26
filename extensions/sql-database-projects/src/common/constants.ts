@@ -11,7 +11,6 @@ const localize = nls.loadMessageBundle();
 export const dataSourcesFileName = 'datasources.json';
 export const sqlprojExtension = '.sqlproj';
 export const sqlFileExtension = '.sql';
-export const initialCatalogSetting = 'Initial Catalog';
 export const schemaCompareExtensionId = 'microsoft.schema-compare';
 export const sqlDatabaseProjectExtensionId = 'microsoft.sql-database-projects';
 export const mssqlExtensionId = 'microsoft.mssql';
@@ -67,6 +66,8 @@ export function noFileExist(fileName: string) { return localize('noFileExist', "
 export function cannotResolvePath(path: string) { return localize('cannotResolvePath', "Cannot resolve path {0}", path); }
 
 export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNotFound', "Could not get mssql extension's install location at {0}", mssqlConfigDir); }
+export function projBuildFailed(errorMessage: string) { return localize('projBuildFailed', "Build failed. Check output pane for more details. {0}", errorMessage); }
+export function unexpectedProjectContext(uri: string) { return localize('unexpectedProjectContext', "Unable to establish project context.  Command invoked from unexpected location: {0}", uri); }
 
 // Project script types
 
@@ -81,3 +82,10 @@ export const ItemGroup = 'ItemGroup';
 export const Build = 'Build';
 export const Folder = 'Folder';
 export const Include = 'Include';
+
+// SQL connection string components
+export const initialCatalogSetting = 'Initial Catalog';
+export const dataSourceSetting = 'Data Source';
+export const integratedSecuritySetting = 'Integrated Security';
+export const userIdSetting = 'User ID';
+export const passwordSetting = 'Password';

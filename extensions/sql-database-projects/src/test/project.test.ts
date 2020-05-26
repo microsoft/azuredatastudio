@@ -19,7 +19,7 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 
 	beforeEach(async () => {
-		projFilePath = await testUtils.createTestSqlProj(baselines.openProjectFileBaseline);
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
 	});
 
 	it('Should read Project from sqlproj', async function (): Promise<void> {
@@ -56,7 +56,7 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 
 	it('Should add Folder and Build entries to sqlproj with pre-existing scripts on disk', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProj(baselines.newProjectFileBaseline);
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project: Project = new Project(projFilePath);
 		await project.readProjFile();
 
