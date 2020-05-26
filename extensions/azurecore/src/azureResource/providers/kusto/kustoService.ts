@@ -10,6 +10,7 @@ export interface KustoGraphData extends GraphData {
 	properties: {
 		fullyQualifiedDomainName: string;
 		administratorLogin: string;
+		uri: string;
 	};
 }
 
@@ -25,7 +26,7 @@ export class KustoResourceService extends ResourceServiceBase<KustoGraphData, az
 		return {
 			id: resource.id,
 			name: resource.name,
-			fullName: resource.properties.fullyQualifiedDomainName,
+			fullName: resource.properties.uri.replace('https://', ''),
 			loginName: '',
 			defaultDatabaseName: ''
 		};
