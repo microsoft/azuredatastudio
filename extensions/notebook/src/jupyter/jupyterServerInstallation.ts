@@ -108,6 +108,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private readonly _expectedCondaPipPackages = this._commonPipPackages;
 	private readonly _expectedCondaPackages: PythonPkgDetails[];
 
+	private _kernelSetupCache: Map<string, boolean>;
+
 	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
 		this.extensionPath = extensionPath;
 		this.outputChannel = outputChannel;
@@ -124,6 +126,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		} else {
 			this._expectedCondaPackages = this._commonPackages;
 		}
+
+		this._kernelSetupCache = new Map<string, boolean>();
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
@@ -421,7 +425,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			if (enablePreviewFeatures) {
 				let pythonWizard = new ConfigurePythonWizard(this.apiWrapper, this);
 				await pythonWizard.start(kernelDisplayName, true);
-				return pythonWizard.setupComplete;
+				return pythonWizard.setupComplete.then(() => {
+					this._kernelSetupCache.set(kernelDisplayName, true);
+				});
 			} else {
 				let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this);
 				return pythonDialog.showDialog(true);
@@ -430,6 +436,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	private async areRequiredPackagesInstalled(kernelDisplayName: string): Promise<boolean> {
+		if (this._kernelSetupCache.get(kernelDisplayName)) {
+			return true;
+		}
+
 		let installedPackages = await this.getInstalledPipPackages();
 		let installedPackageMap = new Map<string, string>();
 		installedPackages.forEach(pkg => {
@@ -442,6 +452,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				return false;
 			}
 		}
+		this._kernelSetupCache.set(kernelDisplayName, true);
 		return true;
 	}
 
