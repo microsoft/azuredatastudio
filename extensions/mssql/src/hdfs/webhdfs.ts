@@ -228,12 +228,6 @@ export class WebHDFS {
 		let handler = (error: any, response: request.Response) => {
 			if (error && error.statusCode === 401 && this._requestParams.isKerberos) {
 				this.requestWithKerberosSync(requestParams, callback);
-			} else if (error && error.statusCode === 401 && this._requestParams.auth.user !== 'root') {
-				// Backwards compat code for pre-CU5 clusters which were set with root as the user.
-				// Since we already failed we just optimistically assume that it's a pre-CU5 cluster and
-				// try again. If that fails then we'll fall back to prompting for an updated username/password
-				this._requestParams.auth.user = 'root';
-				this.sendRequest(method, urlValue, opts, callback);
 			} else {
 				callback(error, response);
 			}

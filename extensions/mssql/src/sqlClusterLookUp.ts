@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as bdc from 'bdc';
+import * as vscode from 'vscode';
 import * as constants from './constants';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { AppContext } from './appContext';
@@ -96,6 +98,14 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 	if (authType && authType.toLowerCase() !== constants.integratedAuth) {
 		clusterConnInfo.options[constants.userPropName] = sqlConnInfo.options[constants.userPropName]; //should be the same user as sql master
 		clusterConnInfo.options[constants.passwordPropName] = credentials.password;
+		try {
+			const bdcApi = <bdc.IExtension>await vscode.extensions.getExtension(bdc.constants.extensionName).activate();
+			const controllerEndpoint = endpoints.find(ep => ep.serviceName.toLowerCase() === 'controller');
+			const controller = bdcApi.getClusterController(controllerEndpoint.endpoint, 'basic', sqlConnInfo.options[constants.userPropName], credentials.password);
+			clusterConnInfo.options[constants.userPropName] = await controller.getKnoxUsername(sqlConnInfo.options[constants.userPropName]);
+		} catch (err) {
+			console.log(`Unexpected error getting Knox username for SQL Cluster connection: ${err}`);
+		}
 	}
 	clusterConnInfo = connToConnectionParam(clusterConnInfo);
 
