@@ -61,9 +61,14 @@ export class ConfigurePathPage extends BasePage {
 				component: browseButton,
 				title: ''
 			}]).component();
-		let selectInstallContainer = this.view.modelBuilder.divContainer().withItems([selectInstallForm]).component();
+		let selectInstallContainer = this.view.modelBuilder.divContainer()
+			.withItems([selectInstallForm])
+			.withProperties<azdata.DivContainerProperties>({
+				clickable: false
+			})
+			.component();
 
-		let parentContainer = this.view.modelBuilder.divContainer().withItems([selectInstallContainer]).component();
+		let parentContainer = this.view.modelBuilder.groupContainer().withItems([selectInstallContainer]).component();
 		if (this.model.pythonLocation) {
 			let installedPathTextBox = this.view.modelBuilder.inputBox().withProperties<azdata.TextComponentProperties>({
 				value: this.model.pythonLocation,
@@ -83,7 +88,12 @@ export class ConfigurePathPage extends BasePage {
 					component: editPathButton
 				}]).component();
 
-			let editPathContainer = this.view.modelBuilder.divContainer().withItems([editPathForm]).component();
+			let editPathContainer = this.view.modelBuilder.divContainer()
+				.withItems([editPathForm])
+				.withProperties<azdata.DivContainerProperties>({
+					clickable: false
+				})
+				.component();
 			parentContainer.addItem(editPathContainer);
 
 			editPathButton.onDidClick(async () => {
