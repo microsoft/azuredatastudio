@@ -571,6 +571,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerAdminServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerAgentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerSerializationProvider(providerId: string, handle: number): Promise<any>;
+	$registerSqlAssessmentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
@@ -594,7 +595,6 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onSessionStopped(handle: number, response: azdata.ProfilerSessionStoppedParams): void;
 	$onProfilerSessionCreated(handle: number, response: azdata.ProfilerSessionCreatedParams): void;
 	$onJobDataUpdated(handle: Number): void;
-	$registerSqlAssessmentServicesProvider(providerId: string, handle: number): Promise<any>;
 
 	/**
 	 * Callback when a session has completed initialization

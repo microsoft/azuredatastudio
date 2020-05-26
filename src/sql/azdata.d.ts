@@ -41,8 +41,6 @@ declare module 'azdata' {
 
 		export function registerCapabilitiesServiceProvider(provider: CapabilitiesProvider): vscode.Disposable;
 
-		export function registerSqlAssessmentServicesProvider(provider: SqlAssessmentServicesProvider): vscode.Disposable;
-
 		/**
 		 * Get the provider corresponding to the given provider ID and type
 		 * @param providerId The ID that the provider was registered with
@@ -1803,45 +1801,6 @@ declare module 'azdata' {
 
 
 	}
-	// Assessment interfaces
-	export enum SqlAssessmentTargetType {
-		Server = 1,
-		Database = 2
-	}
-
-	export enum SqlAssessmentResultItemKind {
-		RealResult = 0,
-		Warning = 1,
-		Error = 2
-	}
-
-	export interface SqlAssessmentResultItem {
-		rulesetVersion: string;
-		rulesetName: string;
-		targetType: SqlAssessmentTargetType;
-		targetName: string;
-		checkId: string;
-		tags: string[];
-		displayName: string;
-		description: string;
-		message: string;
-		helpLink: string;
-		level: string;
-		timestamp: string;
-		kind: SqlAssessmentResultItemKind;
-	}
-
-	export interface SqlAssessmentResult extends ResultStatus {
-		items: SqlAssessmentResultItem[];
-		apiVersion: string;
-	}
-
-	export interface SqlAssessmentServicesProvider extends DataProvider {
-		assessmentInvoke(ownerUri: string, targetType: number): Promise<SqlAssessmentResult>;
-		getAssessmentItems(ownerUri: string, targetType: number): Promise<SqlAssessmentResult>;
-		generateAssessmentScript(items: SqlAssessmentResultItem[]): Promise<ResultStatus>;
-	}
-
 	// DacFx interfaces  -----------------------------------------------------------------------
 
 	// Security service interfaces ------------------------------------------------------------------------

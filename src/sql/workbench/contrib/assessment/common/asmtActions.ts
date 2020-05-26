@@ -14,7 +14,7 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { AssessmentType, AssessmentTargetType, TARGET_ICON_CLASS } from 'sql/workbench/contrib/assessment/common/consts';
-import { SqlAssessmentTelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 export interface IAssessmentComponent {
 	showProgress(mode: AssessmentType): any;
@@ -47,7 +47,7 @@ abstract class AsmtServerAction extends Action {
 	}
 
 	public async run(context: IAsmtActionInfo): Promise<boolean> {
-		this._telemetryService.sendActionEvent(SqlAssessmentTelemetryView, this.id);
+		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, this.id);
 		if (context && context.component) {
 			context.component.showProgress(this.asmtType);
 			let serverResults = this.getServerItems(context.ownerUri);
@@ -124,7 +124,7 @@ export class AsmtDatabaseSelectItemsAction extends Action {
 	}
 
 	public async run(context: IAsmtActionInfo): Promise<boolean> {
-		this._telemetryService.sendActionEvent(SqlAssessmentTelemetryView, this.id);
+		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, this.id);
 		if (context && context.component) {
 			context.component.showProgress(AssessmentType.AvailableRules);
 			let dbAsmtResults = await this._assessmentService.getAssessmentItems(context.ownerUri, AssessmentTargetType.Database);
@@ -173,7 +173,7 @@ export class AsmtDatabaseInvokeItemsAction extends Action {
 	}
 
 	public async run(context: IAsmtActionInfo): Promise<boolean> {
-		this._telemetryService.sendActionEvent(SqlAssessmentTelemetryView, this.id);
+		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, this.id);
 		if (context && context.component) {
 			context.component.showProgress(AssessmentType.InvokeAssessment);
 			let dbAsmtResults = await this._assessmentService.assessmentInvoke(context.ownerUri, AssessmentTargetType.Database);
@@ -197,7 +197,7 @@ export class AsmtExportAsScriptAction extends Action {
 	}
 
 	public async run(context: IAsmtActionInfo): Promise<boolean> {
-		this._telemetryService.sendActionEvent(SqlAssessmentTelemetryView, AsmtExportAsScriptAction.ID);
+		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtExportAsScriptAction.ID);
 		if (context && context.component && context.component.resultItems) {
 			await this._assessmentService.generateAssessmentScript(context.ownerUri, context.component.resultItems);
 			return true;
@@ -221,7 +221,7 @@ export class AsmtSamplesLinkAction extends Action {
 	}
 
 	public async run(): Promise<boolean> {
-		this._telemetryService.sendActionEvent(SqlAssessmentTelemetryView, AsmtSamplesLinkAction.ID);
+		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtSamplesLinkAction.ID);
 		return this._openerService.open(URI.parse(AsmtSamplesLinkAction.configHelpUri));
 	}
 }

@@ -42,7 +42,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 import * as themeColors from 'vs/workbench/common/theme';
 import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
-import { SqlAssessmentTelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 export const ASMTRESULTSVIEW_SELECTOR: string = 'asmt-results-view-component';
 export const ROW_HEIGHT: number = 25;
@@ -151,7 +151,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 	ngOnInit(): void {
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._asmtViewComponent;
-		this._telemetryService.sendViewEvent(SqlAssessmentTelemetryView);
+		this._telemetryService.sendViewEvent(TelemetryView.SqlAssessment);
 	}
 
 	ngOnDestroy(): void {

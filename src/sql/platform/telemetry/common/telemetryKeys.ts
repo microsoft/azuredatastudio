@@ -64,12 +64,12 @@ export enum TelemetryView {
 	Shell = 'Shell',
 	ExtensionRecommendationDialog = 'ExtensionRecommendationDialog',
 	ResultsPanel = 'ResultsPanel',
-	Notebook = 'Notebook'
+	Notebook = 'Notebook',
+	SqlAssessment = 'SqlAssessment'
 }
 
 export enum TelemetryAction {
 	Click = 'Click',
 	Open = 'Open'
 }
-// Sql Assessment View
-export const SqlAssessmentTelemetryView = 'SqlAssessmentTab';
+
