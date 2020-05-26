@@ -34,6 +34,9 @@ cell-toolbar-component ul.actions-container li:last-child {
 cell-toolbar-component .carbon-taskbar .action-label {
 	padding: 0;
 }
+cell-toolbar-component .monaco-action-bar .action-label {
+	margin-right: 0;
+}
 cell-toolbar-component ul.actions-container li a.masked-icon {
 	display: flex;
 	height: 24px;
