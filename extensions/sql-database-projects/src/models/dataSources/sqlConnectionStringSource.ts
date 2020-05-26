@@ -42,7 +42,7 @@ export class SqlConnectionDataSource extends DataSource {
 	}
 
 	public get password(): string {
-		// TODO: secure password storage
+		// TODO: secure password storage; https://github.com/microsoft/azuredatastudio/issues/10561
 		return this.getSetting(constants.passwordSetting);
 	}
 

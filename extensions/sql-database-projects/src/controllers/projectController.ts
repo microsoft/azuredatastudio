@@ -290,10 +290,10 @@ export class ProjectsController {
 		}
 
 		if (context.root instanceof ProjectRootTreeItem) {
-			return (context.root as ProjectRootTreeItem).project;
+			return (<ProjectRootTreeItem>context.root).project;
 		}
 		else {
-			throw new Error('Unable to establish project context.  Command invoked from unexpected location: ' + context.uri.path);
+			throw new Error(constants.unexpectedProjectContext(context.uri.path));
 		}
 	}
 
