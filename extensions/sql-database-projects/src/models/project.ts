@@ -91,6 +91,8 @@ export class Project {
 		}
 
 		await this.updateImportedTargetsToProjFile(constants.NetCoreCondition, constants.NetCoreTargets, undefined);
+
+		await this.updatePackageReferenceInProjFile();
 	}
 
 	/**
@@ -181,6 +183,21 @@ export class Project {
 
 		await this.serializeToProjFile(this.projFileXmlDoc);
 		return importNode;
+	}
+
+	private async updatePackageReferenceInProjFile(): Promise<void> {
+		let outputItemGroup = this.projFileXmlDoc.createElement(constants.ItemGroup);
+		this.projFileXmlDoc.documentElement.appendChild(outputItemGroup);
+
+		const packageRefNode = this.projFileXmlDoc.createElement(constants.PackageReference);
+		packageRefNode.setAttribute(constants.Condition, constants.NetCoreCondition);
+		packageRefNode.setAttribute(constants.Include, constants.NETFrameworkAssembly);
+		packageRefNode.setAttribute(constants.Version, constants.VersionNumber);
+		packageRefNode.setAttribute(constants.PrivateAssets, constants.All);
+
+		outputItemGroup.appendChild(packageRefNode);
+
+		await this.serializeToProjFile(this.projFileXmlDoc);
 	}
 
 	private async addToProjFile(entry: ProjectEntry) {

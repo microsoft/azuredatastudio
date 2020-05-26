@@ -77,6 +77,10 @@ export const Include = 'Include';
 export const Import = 'Import';
 export const Project = 'Project';
 export const Condition = 'Condition';
+export const PackageReference = 'PackageReference';
+export const Version = 'Version';
+export const PrivateAssets = 'PrivateAssets';
+
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
@@ -87,3 +91,8 @@ export const SqlDbPresentCondition = '\'$(SQLDBExtensionsRefPath)\' != \'\'';
 export const SqlDbNotPresentCondition = '\'$(SQLDBExtensionsRefPath)\' == \'\'';
 export const RoundTripSqlDbPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' != \'\'';
 export const RoundTripSqlDbNotPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' == \'\'';
+
+// SqlProj Reference Assembly Information
+export const NETFrameworkAssembly = 'Microsoft.NETFramework.ReferenceAssemblies';
+export const VersionNumber = '1.0.0';
+export const All = 'All';
