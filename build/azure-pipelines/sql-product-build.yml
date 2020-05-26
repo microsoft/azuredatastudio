@@ -9,6 +9,7 @@ jobs:
   pool:
     vmImage: 'Ubuntu-16.04'
   container: linux-x64
+  continueOnError: false
   steps:
   - script: |
       set -e
