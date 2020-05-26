@@ -1337,7 +1337,7 @@
 	font-weight: 600;
 }
 
-.ads_homepage .guided_tour_banner .btn_start {
+.ads_homepage .guided_tour_banner .ads_tour_btn_start {
 	line-height: 1.9em !important;
 	font-weight: 600 !important;
 	height: 26px !important;
@@ -1348,13 +1348,13 @@
 	height: 32px !important;
 }
 
-.ads_homepage .guided_tour_banner .tour_btn_container {
+.ads_homepage .guided_tour_banner .ads_tour_btn_container {
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
 }
 
-.ads_homepage .guided_tour_banner .tour_btn_container p {
+.ads_homepage .guided_tour_banner .ads_tour_btn_container p {
 	font-size: 1.3em;
 	margin: 0;
 	margin-right: 15px;

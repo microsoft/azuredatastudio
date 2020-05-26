@@ -221,7 +221,7 @@ class WelcomePage extends Disposable {
 		@IHostService private readonly hostService: IHostService,
 		@IFileService fileService: IFileService,
 		@IProductService private readonly productService: IProductService,
-		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService, ) {
+		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
 		const recentlyOpened = this.workspacesService.getRecentlyOpened();
@@ -242,7 +242,7 @@ class WelcomePage extends Disposable {
 	public openEditor() {
 		return this.editorService.openEditor(this.editorInput, { pinned: false });
 	}
-	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>, fileService: IFileService, layoutService: ILayoutService, ): void {
+	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>, fileService: IFileService, layoutService: ILayoutService): void {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
 		const showOnStartup = <HTMLInputElement>container.querySelector('#showOnStartup');
 		if (enabled) {
@@ -343,8 +343,8 @@ class WelcomePage extends Disposable {
 			const containerRight = document.createElement('div');
 			const startTourBtn = document.createElement('a');
 			const removeTourBtn = document.createElement('a');
-			const startBtnClasses = ['btn', 'btn_start'];
-			const removeBtnClasses = ['btn_remove_tour', 'btn_secondary'];
+			const startBtnClasses = ['ads_tour_btn', 'ads_tour_btn_start'];
+			const removeBtnClasses = ['btn_remove_tour', 'ads_tour_btn_secondary'];
 			const flexClassesLeft = ['flex', 'flex_a_center'];
 			const flexClassesRight = ['flex', 'flex_a_start'];
 			guidedTourNotificationContainer.id = 'guidedTourBanner';
