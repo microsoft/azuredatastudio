@@ -23,6 +23,7 @@ import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor
 import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { Event } from 'vs/base/common/event';
 import { DisposableStore } from 'vs/base/common/lifecycle';
+import { ISelectionData } from 'azdata';
 import { IActionViewItem, IAction } from 'vs/base/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
@@ -35,7 +36,6 @@ import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryRes
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as actions from 'sql/workbench/contrib/query/browser/queryActions';
-import { IRange } from 'vs/editor/common/core/range';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -499,7 +499,7 @@ export class QueryEditor extends BaseEditor {
 	 * Returns the underlying SQL editor's text selection in a 0-indexed format. Returns undefined if there
 	 * is no selected text.
 	 */
-	public getSelection(checkIfRange: boolean = true): IRange {
+	public getSelection(checkIfRange: boolean = true): ISelectionData {
 		if (this.currentTextEditor && this.currentTextEditor.getControl()) {
 			let vscodeSelection = this.currentTextEditor.getControl().getSelection();
 
@@ -508,7 +508,13 @@ export class QueryEditor extends BaseEditor {
 				!(vscodeSelection.getStartPosition().lineNumber === vscodeSelection.getEndPosition().lineNumber &&
 					vscodeSelection.getStartPosition().column === vscodeSelection.getEndPosition().column);
 			if (!checkIfRange || isRange) {
-				return vscodeSelection;
+				let sqlToolsServiceSelection: ISelectionData = {
+					startLine: vscodeSelection.getStartPosition().lineNumber - 1,
+					startColumn: vscodeSelection.getStartPosition().column - 1,
+					endLine: vscodeSelection.getEndPosition().lineNumber - 1,
+					endColumn: vscodeSelection.getEndPosition().column - 1,
+				};
+				return sqlToolsServiceSelection;
 			}
 		}
 
@@ -516,7 +522,7 @@ export class QueryEditor extends BaseEditor {
 		return undefined;
 	}
 
-	public getAllSelection(): IRange {
+	public getAllSelection(): ISelectionData {
 		if (this.currentTextEditor && this.currentTextEditor.getControl()) {
 			let control = this.currentTextEditor.getControl();
 			let codeEditor: ICodeEditor = <ICodeEditor>control;
@@ -524,12 +530,13 @@ export class QueryEditor extends BaseEditor {
 				let model = codeEditor.getModel();
 				let totalLines = model.getLineCount();
 				let endColumn = model.getLineMaxColumn(totalLines);
-				return {
-					startLineNumber: 1,
-					startColumn: 1,
-					endLineNumber: totalLines,
-					endColumn: endColumn,
+				let selection: ISelectionData = {
+					startLine: 0,
+					startColumn: 0,
+					endLine: totalLines - 1,
+					endColumn: endColumn - 1,
 				};
+				return selection;
 			}
 		}
 		return undefined;
