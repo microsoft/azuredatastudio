@@ -23,7 +23,7 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 			'workbench.startupEditor': {
 				'scope': ConfigurationScope.APPLICATION, // Make sure repositories cannot trigger opening a README for tracking.
 				'type': 'string',
-				'enum': ['none', 'welcomePage', 'readme', 'newUntitledFile', 'welcomePageInEmptyWorkbench'],
+				'enum': ['none', 'welcomePage', 'welcomePageWithTour', 'readme', 'newUntitledFile', 'welcomePageInEmptyWorkbench'],
 				'enumDescriptions': [
 					localize({ comment: ['This is the description for a setting. Values surrounded by single quotes are not to be translated.'], key: 'workbench.startupEditor.none' }, "Start without an editor."),
 					localize({ comment: ['This is the description for a setting. Values surrounded by single quotes are not to be translated.'], key: 'workbench.startupEditor.welcomePage' }, "Open the Welcome page (default)."),
@@ -31,7 +31,7 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 					localize({ comment: ['This is the description for a setting. Values surrounded by single quotes are not to be translated.'], key: 'workbench.startupEditor.newUntitledFile' }, "Open a new untitled file (only applies when opening an empty workspace)."),
 					localize({ comment: ['This is the description for a setting. Values surrounded by single quotes are not to be translated.'], key: 'workbench.startupEditor.welcomePageInEmptyWorkbench' }, "Open the Welcome page when opening an empty workbench."),
 				],
-				'default': 'welcomePage',
+				'default': 'welcomePageWithTour',
 				'description': localize('workbench.startupEditor', "Controls which editor is shown at startup, if none are restored from the previous session.")
 			},
 		}
