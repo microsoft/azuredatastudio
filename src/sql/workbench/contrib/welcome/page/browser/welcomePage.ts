@@ -96,8 +96,7 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 							const isMarkDown = (readme: URI) => strings.endsWith(readme.path.toLowerCase(), '.md');
 							await Promise.all([
 								this.commandService.executeCommand('markdown.showPreview', null, readmes.filter(isMarkDown), { locked: true }),
-								this.editorService.openEditors(readmes.filter(readme => !isMarkDown(readme))
-									.map(readme => ({ resource: readme }))),
+								this.editorService.openEditors(readmes.filter(readme => !isMarkDown(readme)).map(readme => ({ resource: readme }))),
 							]);
 						} else {
 							await this.instantiationService.createInstance(WelcomePage).openEditor();
@@ -125,7 +124,7 @@ function isWelcomePageEnabled(configurationService: IConfigurationService, conte
 function isGuidedTourEnabled(configurationService: IConfigurationService) {
 	const tourEnabled = configurationService.inspect(configurationKey);
 	if (tourEnabled.value === 'welcomePageWithTour') {
-		return tourEnabled.value;
+		return true;
 	}
 	return false;
 }
@@ -246,58 +245,10 @@ class WelcomePage extends Disposable {
 	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>, fileService: IFileService, layoutService: ILayoutService, ): void {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
 		const showOnStartup = <HTMLInputElement>container.querySelector('#showOnStartup');
-		const guidedTourEnabled = isGuidedTourEnabled(this.configurationService);
 		if (enabled) {
 			showOnStartup.setAttribute('checked', 'checked');
 		}
-
-		if (guidedTourEnabled) {
-			const adsHomepage = document.querySelector('.ads_homepage');
-			const guidedTourNotificationContainer = document.createElement('div');
-			const p = document.createElement('p');
-			const b = document.createElement('b');
-			const icon = document.createElement('div');
-			const containerLeft = document.createElement('div');
-			const containerRight = document.createElement('div');
-			const startTourBtn = document.createElement('a');
-			const removeTourBtn = document.createElement('a');
-			const startBtnClasses = ['btn', 'btn_start'];
-			const removeBtnClasses = ['btn_remove_tour', 'btn_secondary'];
-			const flexClassesLeft = ['flex', 'flex_a_center'];
-			const flexClassesRight = ['flex', 'flex_a_start'];
-			guidedTourNotificationContainer.id = 'guidedTourBanner';
-			guidedTourNotificationContainer.classList.add('guided_tour_banner');
-			startTourBtn.id = 'start_tour_btn';
-			startTourBtn.classList.add(...startBtnClasses);
-			containerLeft.classList.add(...flexClassesLeft);
-			containerRight.classList.add(...flexClassesRight);
-			icon.classList.add('diamond_icon');
-			removeTourBtn.classList.add(...removeBtnClasses);
-			startTourBtn.innerText = 'Start tour';
-			p.appendChild(b);
-			p.innerHTML = '<b>Welcome!</b> Would you like to take a quick tour of Azure Data Studio?';
-			containerLeft.appendChild(icon);
-			containerLeft.appendChild(p);
-			containerRight.appendChild(startTourBtn);
-			containerRight.appendChild(removeTourBtn);
-			guidedTourNotificationContainer.appendChild(containerLeft);
-			guidedTourNotificationContainer.appendChild(containerRight);
-			startTourBtn.addEventListener('click', async (e: MouseEvent) => {
-				this.configurationService.updateValue(configurationKey, 'welcomePageWithTour', ConfigurationTarget.USER);
-				this.layoutService.setSideBarHidden(true);
-				const welcomeTour = this.instantiationService.createInstance(GuidedTour);
-				welcomeTour.create();
-			});
-			removeTourBtn.addEventListener('click', (e: MouseEvent) => {
-				this.configurationService.updateValue(configurationKey, 'welcomePage', ConfigurationTarget.USER);
-				guidedTourNotificationContainer.classList.add('hide');
-				guidedTourNotificationContainer.classList.remove('show');
-			});
-			adsHomepage.prepend(guidedTourNotificationContainer);
-			setTimeout(function () {
-				guidedTourNotificationContainer.classList.add('show');
-			}, 3000);
-		}
+		this.enableGuidedTour();
 		if (enabled) {
 			showOnStartup.setAttribute('checked', 'checked');
 		}
@@ -380,12 +331,63 @@ class WelcomePage extends Disposable {
 		this.createPreviewModal();
 	}
 
+	private enableGuidedTour() {
+		const guidedTourEnabled = isGuidedTourEnabled(this.configurationService);
+		if (guidedTourEnabled) {
+			const adsHomepage = document.querySelector('.ads_homepage');
+			const guidedTourNotificationContainer = document.createElement('div');
+			const p = document.createElement('p');
+			const b = document.createElement('b');
+			const icon = document.createElement('div');
+			const containerLeft = document.createElement('div');
+			const containerRight = document.createElement('div');
+			const startTourBtn = document.createElement('a');
+			const removeTourBtn = document.createElement('a');
+			const startBtnClasses = ['btn', 'btn_start'];
+			const removeBtnClasses = ['btn_remove_tour', 'btn_secondary'];
+			const flexClassesLeft = ['flex', 'flex_a_center'];
+			const flexClassesRight = ['flex', 'flex_a_start'];
+			guidedTourNotificationContainer.id = 'guidedTourBanner';
+			guidedTourNotificationContainer.classList.add('guided_tour_banner');
+			startTourBtn.id = 'start_tour_btn';
+			startTourBtn.classList.add(...startBtnClasses);
+			containerLeft.classList.add(...flexClassesLeft);
+			containerRight.classList.add(...flexClassesRight);
+			icon.classList.add('diamond_icon');
+			removeTourBtn.classList.add(...removeBtnClasses);
+			startTourBtn.innerText = localize('welcomePage.startTour', "Start Tour");
+			p.appendChild(b);
+			p.innerText = localize('WelcomePage.TakeATour', "Would you like to take a quick tour of Azure Data Studio?");
+			b.innerText = localize('WelcomePage.welcome', "Welcome!");
+			containerLeft.appendChild(icon);
+			containerLeft.appendChild(p);
+			containerRight.appendChild(startTourBtn);
+			containerRight.appendChild(removeTourBtn);
+			guidedTourNotificationContainer.appendChild(containerLeft);
+			guidedTourNotificationContainer.appendChild(containerRight);
+			startTourBtn.addEventListener('click', async (e: MouseEvent) => {
+				this.configurationService.updateValue(configurationKey, 'welcomePageWithTour', ConfigurationTarget.USER);
+				this.layoutService.setSideBarHidden(true);
+				const welcomeTour = this.instantiationService.createInstance(GuidedTour);
+				welcomeTour.create();
+			});
+			removeTourBtn.addEventListener('click', (e: MouseEvent) => {
+				this.configurationService.updateValue(configurationKey, 'welcomePage', ConfigurationTarget.USER);
+				guidedTourNotificationContainer.classList.add('hide');
+				guidedTourNotificationContainer.classList.remove('show');
+			});
+			adsHomepage.prepend(guidedTourNotificationContainer);
+			setTimeout(function () {
+				guidedTourNotificationContainer.classList.add('show');
+			}, 3000);
+		}
+	}
+
 	private createWidePreviewToolTip() {
 		const previewLink = document.querySelector('#tool_tip_container_wide') as HTMLElement;
 		const tooltip = document.querySelector('#tooltip_text_wide') as HTMLElement;
 		const previewModalBody = document.querySelector('.preview_tooltip_body') as HTMLElement;
 		const previewModalHeader = document.querySelector('.preview_tooltip_header') as HTMLElement;
-
 		addStandardDisposableListener(previewLink, 'mouseover', () => {
 			tooltip.setAttribute('aria-hidden', 'true');
 			tooltip.classList.toggle('show');
@@ -394,7 +396,6 @@ class WelcomePage extends Disposable {
 			tooltip.setAttribute('aria-hidden', 'false');
 			tooltip.classList.remove('show');
 		});
-
 		addStandardDisposableListener(previewLink, 'keydown', event => {
 			if (event.equals(KeyCode.Escape)) {
 				if (tooltip.classList.contains('show')) {
@@ -408,7 +409,6 @@ class WelcomePage extends Disposable {
 				previewModalHeader.focus();
 			}
 		});
-
 		addStandardDisposableListener(tooltip, 'keydown', event => {
 			if (event.equals(KeyCode.Escape)) {
 				if (tooltip.classList.contains('show')) {
@@ -425,7 +425,6 @@ class WelcomePage extends Disposable {
 				}
 			}
 		});
-
 		window.addEventListener('click', (event) => {
 			const target = event.target as HTMLTextAreaElement;
 			if (!target.matches('.tooltip')) {
@@ -439,11 +438,9 @@ class WelcomePage extends Disposable {
 	private createDropDown() {
 		const dropdownBtn = document.querySelector('#dropdown_btn') as HTMLElement;
 		const dropdown = document.querySelector('#dropdown') as HTMLInputElement;
-
 		addStandardDisposableListener(dropdownBtn, 'click', () => {
 			dropdown.classList.toggle('show');
 		});
-
 		addStandardDisposableListener(dropdownBtn, 'keydown', event => {
 			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 				const dropdownFirstElement = document.querySelector('#dropdown').firstElementChild.children[0] as HTMLInputElement;
@@ -451,7 +448,6 @@ class WelcomePage extends Disposable {
 				dropdownFirstElement.focus();
 			}
 		});
-
 		addStandardDisposableListener(dropdown, 'keydown', event => {
 			if (event.equals(KeyCode.Escape)) {
 				if (dropdown.classList.contains('show')) {
@@ -463,7 +459,6 @@ class WelcomePage extends Disposable {
 		});
 
 		const body = document.querySelector('body');
-
 		if (body.classList.contains('windows') || body.classList.contains('linux')) {
 			const macOnly = document.querySelector('#dropdown_mac_only');
 			macOnly.remove();
@@ -471,7 +466,6 @@ class WelcomePage extends Disposable {
 			const windowsLinuxOnly = document.querySelector('#dropdown_windows_linux_only');
 			windowsLinuxOnly.remove();
 		}
-
 		window.addEventListener('click', (event) => {
 			const target = event.target as HTMLTextAreaElement;
 			if (!target.matches('.dropdown')) {
@@ -512,26 +506,19 @@ class WelcomePage extends Disposable {
 		const btn = document.querySelector('#tool_tip_container_narrow') as HTMLElement;
 		const span = document.querySelector('.close_icon') as HTMLElement;
 		const previewModalHeader = document.querySelector('.preview_modal_header') as HTMLElement;
-
-
-
 		btn.addEventListener('click', function () {
 			modal.classList.toggle('show');
 		});
-
 		span.addEventListener('click', function () {
 			modal.classList.remove('show');
 		});
-
 		window.addEventListener('click', (e: MouseEvent) => {
 			if (e.target === modal && modal.classList.contains('show')) {
 				modal.classList.remove('show');
 			}
 		});
-
 		btn.addEventListener('keydown', (e: KeyboardEvent) => {
 			let event = new StandardKeyboardEvent(e);
-
 			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 				modal.classList.toggle('show');
 				modal.setAttribute('aria-hidden', 'false');
@@ -586,7 +573,6 @@ class WelcomePage extends Disposable {
 		const a = document.createElement('a');
 		const span = document.createElement('span');
 		const ul = document.querySelector('.recent ul');
-
 		icon.title = relativePath;
 		a.innerText = name;
 		a.title = relativePath;
@@ -647,7 +633,6 @@ class WelcomePage extends Disposable {
 				const iconElm = document.createElement('img');
 				const pElm = document.createElement('p');
 				const bodyElm = document.createElement('p');
-
 				outerAnchorContainerElm.classList.add('extension');
 				outerAnchorContainerElm.classList.add('tile');
 				outerAnchorContainerElm.href = extension.link;
@@ -656,9 +641,7 @@ class WelcomePage extends Disposable {
 				imgContainerElm.classList.add('img_container');
 				iconElm.classList.add('icon');
 				pElm.classList.add('extension_header');
-
 				iconElm.src = extension.icon;
-
 				imgContainerElm.appendChild(iconElm);
 				flexDivContainerElm.appendChild(imgContainerElm);
 				flexDivContainerElm.appendChild(descriptionContainerElm);
@@ -681,7 +664,6 @@ class WelcomePage extends Disposable {
 				const btn = document.createElement('button');
 				const description = document.querySelector('.extension_pack_body');
 				const header = document.querySelector('.extension_pack_header');
-
 				a.classList.add(...classes);
 				a.innerText = localize('welcomePage.install', "Install");
 				a.title = extension.title || (extension.isKeymap ? localize('welcomePage.installKeymap', "Install {0} keymap", extension.name) : localize('welcomePage.installExtensionPack', "Install additional support for {0}", extension.name));
@@ -701,10 +683,8 @@ class WelcomePage extends Disposable {
 				btn.setAttribute('disabled', 'true');
 				btn.setAttribute('data-extension', extension.id);
 				btnContainer.appendChild(btn);
-
 				description.innerHTML = extension.description;
 				header.innerHTML = extension.name;
-
 				this.addExtensionPackList(container, '.extension_pack_extension_list');
 			});
 		}
@@ -720,27 +700,21 @@ class WelcomePage extends Disposable {
 				const descriptionContainerElem = document.createElement('div');
 				const pElem = document.createElement('p');
 				const anchorElem = document.createElement('a');
-
 				const outerContainerClasses = ['extension_pack_extension_container', 'flex', 'flex_j_center'];
 				const flexContainerClasses = ['flex', 'flex_a_center'];
-
 				anchorElem.href = j.link;
-
 				outerContainerElem.classList.add(...outerContainerClasses);
 				flexContainerElem.classList.add(...flexContainerClasses);
 				iconContainerElem.classList.add('icon');
 				pElem.classList.add('extension_pack_extension_list_header');
 				descriptionContainerElem.classList.add('description');
-
 				outerContainerElem.appendChild(flexContainerElem);
 				flexContainerElem.appendChild(iconContainerElem);
 				flexContainerElem.appendChild(descriptionContainerElem);
 				descriptionContainerElem.appendChild(anchorElem);
 				anchorElem.appendChild(pElem);
-
 				pElem.innerText = j.name;
 				iconContainerElem.src = j.icon;
-
 				list.appendChild(outerContainerElem);
 			});
 		}
@@ -935,9 +909,7 @@ export class WelcomeInputFactory implements IEditorInputFactory {
 // theming
 export const welcomePageBackground = registerColor('welcomePage.background', { light: null, dark: null, hc: null }, localize('welcomePage.background', 'Background color for the Welcome page.'));
 
-
 registerThemingParticipant((theme, collector) => {
-
 	const backgroundColor = theme.getColor(welcomePageBackground);
 	if (backgroundColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer { background-color: ${backgroundColor}; }`);
@@ -1056,7 +1028,6 @@ registerThemingParticipant((theme, collector) => {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .history .list li a { color: ${foregroundColor};}`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .resources .label { color: ${foregroundColor}; }`);
 	}
-
 	const link = theme.getColor(textLinkForeground);
 	if (link) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a { color: ${link}; }`);
