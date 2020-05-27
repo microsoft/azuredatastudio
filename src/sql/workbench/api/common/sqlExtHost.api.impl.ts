@@ -515,6 +515,11 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				NotebookChangeKind: sqlExtHostTypes.NotebookChangeKind
 			};
 
+			const sqlAssessment: typeof azdata.sqlAssessment = {
+				SqlAssessmentResultItemKind: sqlExtHostTypes.SqlAssessmentResultItemKind,
+				SqlAssessmentTargetType: sqlExtHostTypes.SqlAssessmentTargetType
+			};
+
 			return {
 				accounts,
 				connection,
@@ -562,8 +567,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				ColumnSizingMode: sqlExtHostTypes.ColumnSizingMode,
 				DatabaseEngineEdition: sqlExtHostTypes.DatabaseEngineEdition,
 				TabOrientation: sqlExtHostTypes.TabOrientation,
-				SqlAssessmentResultItemKind: sqlExtHostTypes.SqlAssessmentResultItemKind,
-				SqlAssessmentTargetType: sqlExtHostTypes.SqlAssessmentTargetType
+				sqlAssessment
 			};
 		}
 	};

@@ -475,7 +475,7 @@ export interface ListRegisteredServersResult {
 
 
 export interface ISqlAssessmentService {
-	assessmentInvoke(ownerUri: string, targetType: azdata.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult>;
-	getAssessmentItems(ownerUri: string, targetType: azdata.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult>;
+	assessmentInvoke(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult>;
+	getAssessmentItems(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult>;
 	generateAssessmentScript(items: azdata.SqlAssessmentResultItem[], targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Promise<azdata.ResultStatus>;
 }

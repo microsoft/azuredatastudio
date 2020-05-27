@@ -30,7 +30,7 @@ export class SqlAssessmentService implements mssql.ISqlAssessmentService {
 	private constructor(context: AppContext, protected readonly client: SqlOpsDataClient) {
 		context.registerService(constants.SqlAssessmentService, this);
 	}
-	async assessmentInvoke(ownerUri: string, targetType: azdata.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult | undefined> {
+	async assessmentInvoke(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult | undefined> {
 		let params: contracts.SqlAssessmentParams = { ownerUri: ownerUri, targetType: targetType };
 		try {
 			return this.client.sendRequest(contracts.SqlAssessmentInvokeRequest.type, params);
@@ -41,7 +41,7 @@ export class SqlAssessmentService implements mssql.ISqlAssessmentService {
 
 		return undefined;
 	}
-	async getAssessmentItems(ownerUri: string, targetType: azdata.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult | undefined> {
+	async getAssessmentItems(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult | undefined> {
 		let params: contracts.SqlAssessmentParams = { ownerUri: ownerUri, targetType: targetType };
 		try {
 			return this.client.sendRequest(contracts.GetSqlAssessmentItemsRequest.type, params);

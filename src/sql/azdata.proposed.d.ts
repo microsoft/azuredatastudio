@@ -400,22 +400,26 @@ declare module 'azdata' {
 	export interface TaskInfo {
 		targetLocation?: string;
 	}
-	// Assessment interfaces
-	export enum SqlAssessmentTargetType {
-		Server = 1,
-		Database = 2
-	}
 
-	export enum SqlAssessmentResultItemKind {
-		RealResult = 0,
-		Warning = 1,
-		Error = 2
+	export namespace sqlAssessment {
+
+		export enum SqlAssessmentTargetType {
+			Server = 1,
+			Database = 2
+		}
+
+		export enum SqlAssessmentResultItemKind {
+			RealResult = 0,
+			Warning = 1,
+			Error = 2
+		}
 	}
+	// Assessment interfaces
 
 	export interface SqlAssessmentResultItem {
 		rulesetVersion: string;
 		rulesetName: string;
-		targetType: SqlAssessmentTargetType;
+		targetType: sqlAssessment.SqlAssessmentTargetType;
 		targetName: string;
 		checkId: string;
 		tags: string[];
@@ -425,7 +429,7 @@ declare module 'azdata' {
 		helpLink: string;
 		level: string;
 		timestamp: string;
-		kind: SqlAssessmentResultItemKind;
+		kind: sqlAssessment.SqlAssessmentResultItemKind;
 	}
 
 	export interface SqlAssessmentResult extends ResultStatus {
@@ -434,8 +438,8 @@ declare module 'azdata' {
 	}
 
 	export interface SqlAssessmentServicesProvider extends DataProvider {
-		assessmentInvoke(ownerUri: string, targetType: SqlAssessmentTargetType): Promise<SqlAssessmentResult>;
-		getAssessmentItems(ownerUri: string, targetType: SqlAssessmentTargetType): Promise<SqlAssessmentResult>;
+		assessmentInvoke(ownerUri: string, targetType: sqlAssessment.SqlAssessmentTargetType): Promise<SqlAssessmentResult>;
+		getAssessmentItems(ownerUri: string, targetType: sqlAssessment.SqlAssessmentTargetType): Promise<SqlAssessmentResult>;
 		generateAssessmentScript(items: SqlAssessmentResultItem[]): Promise<ResultStatus>;
 	}
 }

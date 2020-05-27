@@ -678,7 +678,7 @@ export namespace SchemaCompareCancellationRequest {
 
 export interface SqlAssessmentParams {
 	ownerUri: string;
-	targetType: azdata.SqlAssessmentTargetType
+	targetType: azdata.sqlAssessment.SqlAssessmentTargetType
 }
 
 export interface GenerateSqlAssessmentScriptParams {
