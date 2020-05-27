@@ -1,5 +1,11 @@
 # Change Log
 
+## Version 1.18.1
+* Release date: May 27, 2020
+* Release status: General Availability
+* Hotfix for https://github.com/microsoft/azuredatastudio/issues/10538
+* Hotfix for https://github.com/microsoft/azuredatastudio/issues/10537
+
 ## Version 1.18.0
 * Release date: May 20, 2020
 * Release status: General Availability

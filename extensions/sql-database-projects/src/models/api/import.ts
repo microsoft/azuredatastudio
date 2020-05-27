@@ -3,7 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/// <reference path='../../../../src/sql/azdata.d.ts'/>
-/// <reference path='../../../../src/sql/azdata.proposed.d.ts'/>
-/// <reference path='../../../../src/vs/vscode.d.ts'/>
-/// <reference path='../../../big-data-cluster/src/bdc.d.ts'/>
+import { ExtractTarget } from '../../../../mssql';
+
+/**
+ * Data model to communicate for Import API
+ */
+export interface ImportDataModel {
+	serverId: string;
+	database: string;
+	projName: string;
+	filePath: string;
+	version: string;
+	extractTarget: ExtractTarget;
+}

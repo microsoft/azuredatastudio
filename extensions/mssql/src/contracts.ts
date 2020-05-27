@@ -421,6 +421,7 @@ export enum TaskExecutionMode {
 	script = 1,
 	executeAndScript = 2,
 }
+
 export interface ExportParams {
 	databaseName: string;
 	packageFilePath: string;
@@ -442,6 +443,7 @@ export interface ExtractParams {
 	applicationName: string;
 	applicationVersion: string;
 	ownerUri: string;
+	extractTarget?: mssql.ExtractTarget;
 	taskExecutionMode: TaskExecutionMode;
 }
 
@@ -449,6 +451,7 @@ export interface DeployParams {
 	packageFilePath: string;
 	databaseName: string;
 	upgradeExisting: boolean;
+	sqlCommandVariableValues?: Record<string, string>;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }
@@ -456,6 +459,7 @@ export interface DeployParams {
 export interface GenerateDeployScriptParams {
 	packageFilePath: string;
 	databaseName: string;
+	sqlCommandVariableValues?: Record<string, string>;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }
