@@ -40,6 +40,7 @@ export class PredictWizard extends ModelViewBase {
 	 * Opens a dialog to manage packages used by notebooks.
 	 */
 	public async open(): Promise<void> {
+		this.modelSourceType = ModelSourceType.RegisteredModels;
 		this.modelSourcePage = new ModelSourcePage(this._apiWrapper, this, [ModelSourceType.RegisteredModels, ModelSourceType.Local, ModelSourceType.Azure]);
 		this.columnsSelectionPage = new ColumnsSelectionPage(this._apiWrapper, this);
 		this.modelBrowsePage = new ModelBrowsePage(this._apiWrapper, this, false);

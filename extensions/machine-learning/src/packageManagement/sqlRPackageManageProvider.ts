@@ -69,7 +69,8 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 
 		if (connection) {
 			let database = databaseName ? `, database="${databaseName}"` : '';
-			let connectionParts = `server="${connection.serverName}", uid="${connection.userName}", pwd="${credentials[azdata.ConnectionOptionSpecialType.password]}"${database}`;
+			const auth = connection.userName ? `, uid="${connection.userName}", pwd="${credentials[azdata.ConnectionOptionSpecialType.password]}"` : '';
+			let connectionParts = `server="${connection.serverName}"${auth}${database}`;
 			let rCommandScript = scriptMode === ScriptMode.Install ? 'sql_install.packages' : 'sql_remove.packages';
 
 			let scripts: string[] = [

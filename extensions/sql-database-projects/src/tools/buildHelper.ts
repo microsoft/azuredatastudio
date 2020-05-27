@@ -6,7 +6,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as os from 'os';
-import { promises as fs, existsSync } from 'fs';
+import * as constants from './../common/constants';
+import { promises as fs } from 'fs';
 import * as utils from '../common/utils';
 import { mssqlNotFound } from '../common/constants';
 
@@ -31,7 +32,7 @@ export class BuildHelper {
 	private initialized: boolean = false;
 
 	constructor() {
-		this.extensionDir = vscode.extensions.getExtension('Microsoft.sql-database-projects')?.extensionPath ?? '';
+		this.extensionDir = vscode.extensions.getExtension(constants.sqlDatabaseProjectExtensionId)?.extensionPath ?? '';
 		this.extensionBuildDir = path.join(this.extensionDir, buildDirectory);
 	}
 
@@ -43,26 +44,24 @@ export class BuildHelper {
 			return;
 		}
 
-		if (!existsSync(this.extensionBuildDir)) {
+		if (!await utils.exists(this.extensionBuildDir)) {
 			await fs.mkdir(this.extensionBuildDir);
 		}
 
 		const buildfilesPath = await this.getBuildDirPathFromMssqlTools();
 
 		buildFiles.forEach(async (fileName) => {
-			if (existsSync(path.join(buildfilesPath, fileName))) {
+			if (await (utils.exists(path.join(buildfilesPath, fileName)))) {
 				await fs.copyFile(path.join(buildfilesPath, fileName), path.join(this.extensionBuildDir, fileName));
 			}
 		});
-
 		this.initialized = true;
 	}
 
 	// get mssql sqltoolsservice path
 	private async getBuildDirPathFromMssqlTools(): Promise<string> {
-		const mssqlConfigDir = path.join(this.extensionDir, '..', 'mssql');
-
-		if (existsSync(path.join(mssqlConfigDir, 'config.json'))) {
+		const mssqlConfigDir = vscode.extensions.getExtension(constants.mssqlExtensionId)?.extensionPath ?? '';
+		if (await utils.exists(path.join(mssqlConfigDir, 'config.json'))) {
 			const rawConfig = await fs.readFile(path.join(mssqlConfigDir, 'config.json'));
 			const config = JSON.parse(rawConfig.toString());
 			const installDir = config.installDirectory?.replace('{#version#}', config.version).replace('{#platform#}', this.getPlatform());

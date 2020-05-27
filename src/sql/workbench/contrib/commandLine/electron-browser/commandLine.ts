@@ -32,18 +32,34 @@ import { find } from 'vs/base/common/arrays';
 import { INativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
-const connectAuthority = 'connect';
-
-interface SqlArgs {
+export interface SqlArgs {
 	_?: string[];
-	aad?: boolean;
+	authenticationType?: string
 	database?: string;
-	integrated?: boolean;
 	server?: string;
 	user?: string;
 	command?: string;
 	provider?: string;
 }
+
+//#region decorators
+
+type PathHandler = (uri: URI) => Promise<boolean>;
+
+const pathMappings: { [key: string]: PathHandler } = {};
+
+interface PathHandlerOptions {
+	path: string
+}
+
+function pathHandler({ path }: PathHandlerOptions) {
+	return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+		const method: PathHandler = descriptor.value;
+
+		pathMappings[path] = method;
+	};
+}
+//#endregion
 
 export class CommandLineWorkbenchContribution implements IWorkbenchContribution, IURLHandler {
 
@@ -153,27 +169,42 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	}
 
 	public async handleURL(uri: URI): Promise<boolean> {
-		// Catch file URLs
-		let authority = uri.authority.toLowerCase();
-		if (authority === connectAuthority) {
-			try {
-				let args = this.parseProtocolArgs(uri);
-				if (!args.server) {
-					this._notificationService.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
-					return true;
-				}
-				let isOpenOk = await this.confirmConnect(args);
-				if (isOpenOk) {
-					await this.processCommandLine(args);
-				}
-			} catch (err) {
-				this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
-			}
-			// Handled either way
-			return true;
+		let key = uri.authority.toLowerCase();
+
+		let method = pathMappings[key];
+
+		if (!method) {
+			return false;
+		}
+		method = method.bind(this);
+		const result = await method(uri);
+
+		if (typeof result !== 'boolean') {
+			throw new Error('Invalid URL Handler used in commandLine code.');
 		}
 
-		return false;
+		return result;
+	}
+
+	@pathHandler({
+		path: 'connect'
+	})
+	public async handleConnect(uri: URI): Promise<boolean> {
+		try {
+			let args = this.parseProtocolArgs(uri);
+			if (!args.server) {
+				this._notificationService.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
+				return true;
+			}
+			let isOpenOk = await this.confirmConnect(args);
+			if (isOpenOk) {
+				await this.processCommandLine(args);
+			}
+		} catch (err) {
+			this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
+		}
+		// Handled either way
+		return true;
 	}
 
 	private async confirmConnect(args: SqlArgs): Promise<boolean> {
@@ -220,11 +251,11 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		let profile = new ConnectionProfile(this._capabilitiesService, null);
 		// We want connection store to use any matching password it finds
 		profile.savePassword = true;
-		profile.providerName = args.provider ? args.provider : Constants.mssqlProviderName;
+		profile.providerName = args.provider ?? Constants.mssqlProviderName;
 		profile.serverName = args.server;
-		profile.databaseName = args.database ? args.database : '';
-		profile.userName = args.user ? args.user : '';
-		profile.authenticationType = args.integrated ? Constants.integrated : args.aad ? Constants.azureMFA : (profile.userName.length > 0) ? Constants.sqlLogin : Constants.integrated;
+		profile.databaseName = args.database ?? '';
+		profile.userName = args.user ?? '';
+		profile.authenticationType = args.authenticationType ?? Constants.integrated;
 		profile.connectionName = '';
 		profile.setOptionValue('applicationName', Constants.applicationName);
 		profile.setOptionValue('databaseDisplayName', profile.databaseName);
