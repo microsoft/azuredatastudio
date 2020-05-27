@@ -18,6 +18,11 @@ interface RequiredPackageInfo {
 	requiredVersion: string;
 }
 
+namespace cssStyles {
+	export const tableHeader = { 'text-align': 'left', 'font-weight': 'lighter', 'font-size': '10px', 'user-select': 'text', 'border': 'none' };
+	export const tableRow = { 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none' };
+}
+
 export class PickPackagesPage extends BasePage {
 	private kernelLabel: azdata.TextComponent | undefined;
 	private kernelDropdown: azdata.DropDownComponent | undefined;
@@ -45,22 +50,46 @@ export class PickPackagesPage extends BasePage {
 			});
 		}
 
+		let nameColumn = localize('configurePython.pkgNameColumn', "Name");
+		let existingVersionColumn = localize('configurePython.existingVersionColumn', "Existing Version");
+		let requiredVersionColumn = localize('configurePython.requiredVersionColumn', "Required Version");
 		this.requiredPackagesTable = this.view.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			columns: [{
-				displayName: localize('configurePython.pkgNameColumn', "Name"),
+				displayName: nameColumn,
+				ariaLabel: nameColumn,
 				valueType: azdata.DeclarativeDataType.string,
 				isReadOnly: true,
-				width: '200px'
+				width: '200px',
+				headerCssStyles: {
+					...cssStyles.tableHeader
+				},
+				rowCssStyles: {
+					...cssStyles.tableRow
+				}
 			}, {
-				displayName: localize('configurePython.existingVersionColumn', "Existing Version"),
+				displayName: existingVersionColumn,
+				ariaLabel: existingVersionColumn,
 				valueType: azdata.DeclarativeDataType.string,
 				isReadOnly: true,
-				width: '200px'
+				width: '200px',
+				headerCssStyles: {
+					...cssStyles.tableHeader
+				},
+				rowCssStyles: {
+					...cssStyles.tableRow
+				}
 			}, {
-				displayName: localize('configurePython.requiredVersionColumn', "Required Version"),
+				displayName: requiredVersionColumn,
+				ariaLabel: requiredVersionColumn,
 				valueType: azdata.DeclarativeDataType.string,
 				isReadOnly: true,
-				width: '200px'
+				width: '200px',
+				headerCssStyles: {
+					...cssStyles.tableHeader
+				},
+				rowCssStyles: {
+					...cssStyles.tableRow
+				}
 			}],
 			data: [[]]
 		}).component();
