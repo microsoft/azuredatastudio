@@ -32,14 +32,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 		const output: BaseProjectTreeItem[] = [];
 		output.push(this.dataSourceNode);
 
-		// sort children so that folders come first, then alphabetical
-		const sortedChildren = Object.values(this.fileChildren).sort((a: (fileTree.FolderNode | fileTree.FileNode), b: (fileTree.FolderNode | fileTree.FileNode)) => {
-			if (a instanceof fileTree.FolderNode && !(b instanceof fileTree.FolderNode)) { return -1; }
-			else if (!(a instanceof fileTree.FolderNode) && b instanceof fileTree.FolderNode) { return 1; }
-			else { return a.uri.fsPath.localeCompare(b.uri.fsPath); }
-		});
-
-		return output.concat(sortedChildren);
+		return output.concat(Object.values(this.fileChildren).sort(fileTree.sortFileFolderNodes));
 	}
 
 	public get treeItem(): vscode.TreeItem {
@@ -60,6 +53,10 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 					newNode = new fileTree.FileNode(entry.fsUri, parentNode);
 					break;
 				case EntryType.Folder:
+					if (Object.keys(parentNode.fileChildren).includes(entry.fsUri.path)) {
+						continue; // don't create a new folder node if one has already been implicitly created by getEntryParentNode
+					}
+
 					newNode = new fileTree.FolderNode(entry.fsUri, parentNode);
 					break;
 				default:
