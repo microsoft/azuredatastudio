@@ -46,6 +46,10 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 		for (const entry of this.project.files) {
 			const parentNode = this.getEntryParentNode(entry);
 
+			if (Object.keys(parentNode.fileChildren).includes(entry.fsUri.path)) {
+				continue; // ignore duplicate entries
+			}
+
 			let newNode: fileTree.FolderNode | fileTree.FileNode;
 
 			switch (entry.type) {
@@ -53,10 +57,6 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 					newNode = new fileTree.FileNode(entry.fsUri, parentNode);
 					break;
 				case EntryType.Folder:
-					if (Object.keys(parentNode.fileChildren).includes(entry.fsUri.path)) {
-						continue; // don't create a new folder node if one has already been implicitly created by getEntryParentNode
-					}
-
 					newNode = new fileTree.FolderNode(entry.fsUri, parentNode);
 					break;
 				default:
