@@ -259,7 +259,7 @@
               },
               {
                 "name": "azdata",
-                "version": "15.0.4013"
+                "version": "20.0.0"
               }
             ],
             "when": "target=new-aks&&version=bdc2019"
@@ -271,10 +271,12 @@
             },
             "requiredTools": [
               {
-                "name": "kubectl"
+                "name": "kubectl",
+                "version": "1.13.0"
               },
               {
-                "name": "azdata"
+                "name": "azdata",
+                "version": "20.0.0"
               }
             ],
             "when": "target=existing-aks&&version=bdc2019"
@@ -286,10 +288,12 @@
             },
             "requiredTools": [
               {
-                "name": "kubectl"
+                "name": "kubectl",
+                "version": "1.13.0"
               },
               {
-                "name": "azdata"
+                "name": "azdata",
+                "version": "20.0.0"
               }
             ],
             "when": "target=existing-kubeadm&&version=bdc2019"
@@ -301,10 +305,12 @@
             },
             "requiredTools": [
               {
-                "name": "kubectl"
+                "name": "kubectl",
+                "version": "1.13.0"
               },
               {
-                "name": "azdata"
+                "name": "azdata",
+                "version": "20.0.0"
               }
             ],
             "when": "target=existing-aro&&version=bdc2019"
@@ -316,10 +322,12 @@
             },
             "requiredTools": [
               {
-                "name": "kubectl"
+                "name": "kubectl",
+                "version": "1.13.0"
               },
               {
-                "name": "azdata"
+                "name": "azdata",
+                "version": "20.0.0"
               }
             ],
             "when": "target=existing-openshift&&version=bdc2019"
