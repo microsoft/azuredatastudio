@@ -3,7 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/// <reference path='../../../../src/sql/azdata.d.ts'/>
-/// <reference path='../../../../src/sql/azdata.proposed.d.ts'/>
-/// <reference path='../../../../src/vs/vscode.d.ts'/>
-/// <reference path='../../../big-data-cluster/src/bdc.d.ts'/>
+export interface IDeploymentProfile {
+	databaseName: string;
+	connectionUri: string;
+	upgradeExisting: boolean;
+	sqlCmdVariables?: Record<string, string>;
+}
+
+export interface IGenerateScriptProfile {
+	databaseName: string;
+	connectionUri: string;
+	sqlCmdVariables?: Record<string, string>;
+}

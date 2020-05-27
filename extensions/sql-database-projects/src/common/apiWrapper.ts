@@ -123,6 +123,10 @@ export class ApiWrapper {
 		return vscode.window.showInputBox(options, token);
 	}
 
+	public showSaveDialog(options: vscode.SaveDialogOptions): Thenable<vscode.Uri | undefined> {
+		return vscode.window.showSaveDialog(options);
+	}
+
 	public listDatabases(connectionId: string): Thenable<string[]> {
 		return azdata.connection.listDatabases(connectionId);
 	}
