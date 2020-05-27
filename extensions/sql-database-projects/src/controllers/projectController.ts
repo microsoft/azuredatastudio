@@ -3,22 +3,25 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as path from 'path';
 import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
+import * as mssql from '../../../mssql';
+import * as path from 'path';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
 
-import { Uri, QuickPickItem } from 'vscode';
+import { TaskExecutionMode } from 'azdata';
+import { promises as fs } from 'fs';
+import { Uri, QuickPickItem, extensions, Extension } from 'vscode';
 import { ApiWrapper } from '../common/apiWrapper';
+import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { promises as fs } from 'fs';
+import { FolderNode } from '../models/tree/fileFolderTreeItem';
+import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
-import { FolderNode } from '../models/tree/fileFolderTreeItem';
-import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
 
@@ -117,28 +120,82 @@ export class ProjectsController {
 	}
 
 	public closeProject(treeNode: BaseProjectTreeItem) {
-		const project = this.getProjectContextFromTreeNode(treeNode);
+		const project = ProjectsController.getProjectFromContext(treeNode);
 		this.projects = this.projects.filter((e) => { return e !== project; });
 		this.refreshProjectsTree();
 	}
 
-	public async buildProject(treeNode: BaseProjectTreeItem): Promise<void> {
+	/**
+	 * Builds a project, producing a dacpac
+	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
+	 * @returns path of the built dacpac
+	 */
+	public async buildProject(treeNode: BaseProjectTreeItem): Promise<string>;
+	/**
+	 * Builds a project, producing a dacpac
+	 * @param project Project to be built
+	 * @returns path of the built dacpac
+	 */
+	public async buildProject(project: Project): Promise<string>;
+	public async buildProject(context: Project | BaseProjectTreeItem): Promise<string | undefined> {
+		const project: Project = ProjectsController.getProjectFromContext(context);
+
 		// Check mssql extension for project dlls (tracking issue #10273)
 		await this.buildHelper.createBuildDirFolder();
 
-		const project = this.getProjectContextFromTreeNode(treeNode);
 		const options: DotNetCommandOptions = {
 			commandTitle: 'Build',
 			workingDirectory: project.projectFolderPath,
 			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath)
 		};
-		await this.netCoreTool.runDotnetCommand(options);
+		try {
+			await this.netCoreTool.runDotnetCommand(options);
+
+			return path.join(project.projectFolderPath, 'bin', 'Debug', `${project.projectFileName}.dacpac`);
+		}
+		catch (err) {
+			this.apiWrapper.showErrorMessage(constants.projBuildFailed(utils.getErrorMessage(err)));
+			return undefined;
+		}
 	}
 
-	public deploy(treeNode: BaseProjectTreeItem): void {
-		const project = this.getProjectContextFromTreeNode(treeNode);
-		const deployDatabaseDialog = new DeployDatabaseDialog(this.apiWrapper, project);
+	/**
+	 * Builds and deploys a project
+	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
+	public async deployProject(treeNode: BaseProjectTreeItem): Promise<DeployDatabaseDialog>;
+	/**
+	 * Builds and deploys a project
+	 * @param project Project to be built and deployed
+	 */
+	public async deployProject(project: Project): Promise<DeployDatabaseDialog>;
+	public async deployProject(context: Project | BaseProjectTreeItem): Promise<DeployDatabaseDialog> {
+		const project: Project = ProjectsController.getProjectFromContext(context);
+		let deployDatabaseDialog = this.getDeployDialog(project);
+
+		deployDatabaseDialog.deploy = async (proj, prof) => await this.executionCallback(proj, prof);
+		deployDatabaseDialog.generateScript = async (proj, prof) => await this.executionCallback(proj, prof);
+
 		deployDatabaseDialog.openDialog();
+
+		return deployDatabaseDialog;
+	}
+
+	public async executionCallback(project: Project, profile: IDeploymentProfile | IGenerateScriptProfile): Promise<mssql.DacFxResult | undefined> {
+		const dacpacPath = await this.buildProject(project);
+
+		if (!dacpacPath) {
+			return undefined; // buildProject() handles displaying the error
+		}
+
+		const dacFxService = await ProjectsController.getDaxFxService();
+
+		if (profile as IDeploymentProfile) {
+			return await dacFxService.deployDacpac(dacpacPath, profile.databaseName, (<IDeploymentProfile>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
+		}
+		else {
+			return await dacFxService.generateDeployScript(dacpacPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
+		}
 	}
 
 	public async schemaCompare(treeNode: BaseProjectTreeItem): Promise<void> {
@@ -148,7 +205,7 @@ export class ProjectsController {
 			await this.buildProject(treeNode);
 
 			// start schema compare with the dacpac produced from build
-			const project = this.getProjectContextFromTreeNode(treeNode);
+			const project = ProjectsController.getProjectFromContext(treeNode);
 			const dacpacPath = path.join(project.projectFolderPath, 'bin', 'Debug', `${project.projectFileName}.dacpac`);
 
 			// check that dacpac exists
@@ -163,12 +220,12 @@ export class ProjectsController {
 	}
 
 	public async import(treeNode: BaseProjectTreeItem) {
-		const project = this.getProjectContextFromTreeNode(treeNode);
+		const project = ProjectsController.getProjectFromContext(treeNode);
 		await this.apiWrapper.showErrorMessage(`Import not yet implemented: ${project.projectFilePath}`); // TODO
 	}
 
 	public async addFolderPrompt(treeNode: BaseProjectTreeItem) {
-		const project = this.getProjectContextFromTreeNode(treeNode);
+		const project = ProjectsController.getProjectFromContext(treeNode);
 		const newFolderName = await this.promptForNewObjectName(new templates.ProjectScriptType(templates.folder, constants.folderFriendlyName, ''), project);
 
 		if (!newFolderName) {
@@ -183,7 +240,7 @@ export class ProjectsController {
 	}
 
 	public async addItemPromptFromNode(treeNode: BaseProjectTreeItem, itemTypeName?: string) {
-		await this.addItemPrompt(this.getProjectContextFromTreeNode(treeNode), this.getRelativePath(treeNode), itemTypeName);
+		await this.addItemPrompt(ProjectsController.getProjectFromContext(treeNode), this.getRelativePath(treeNode), itemTypeName);
 	}
 
 	public async addItemPrompt(project: Project, relativePath: string, itemTypeName?: string) {
@@ -226,6 +283,30 @@ export class ProjectsController {
 
 	//#region Helper methods
 
+	public getDeployDialog(project: Project): DeployDatabaseDialog {
+		return new DeployDatabaseDialog(this.apiWrapper, project);
+	}
+
+	private static getProjectFromContext(context: Project | BaseProjectTreeItem) {
+		if (context instanceof Project) {
+			return context;
+		}
+
+		if (context.root instanceof ProjectRootTreeItem) {
+			return (<ProjectRootTreeItem>context.root).project;
+		}
+		else {
+			throw new Error(constants.unexpectedProjectContext(context.uri.path));
+		}
+	}
+
+	private static async getDaxFxService(): Promise<mssql.IDacFxService> {
+		const ext: Extension<any> = extensions.getExtension(mssql.extension.name)!;
+
+		await ext.activate();
+		return (ext.exports as mssql.IExtension).dacFx;
+	}
+
 	private macroExpansion(template: string, macroDict: Record<string, string>): string {
 		const macroIndicator = '@@';
 		let output = template;
@@ -240,20 +321,6 @@ export class ProjectsController {
 		}
 
 		return output;
-	}
-
-	private getProjectContextFromTreeNode(treeNode: BaseProjectTreeItem): Project {
-		if (!treeNode) {
-			// TODO: prompt for which (currently-open) project when invoked via command pallet
-			throw new Error('TODO: prompt for which project when invoked via command pallet');
-		}
-
-		if (treeNode.root instanceof ProjectRootTreeItem) {
-			return (treeNode.root as ProjectRootTreeItem).project;
-		}
-		else {
-			throw new Error('Unable to establish project context.  Command invoked from unexpected location: ' + treeNode.uri.path);
-		}
 	}
 
 	private async promptForNewObjectName(itemType: templates.ProjectScriptType, _project: Project): Promise<string | undefined> {

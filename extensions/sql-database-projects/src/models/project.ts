@@ -20,6 +20,7 @@ export class Project {
 	public files: ProjectEntry[] = [];
 	public dataSources: DataSource[] = [];
 	public importedTargets: string[] = [];
+	public sqlCmdVariables: Record<string, string> = {};
 
 	public get projectFolderPath() {
 		return path.dirname(this.projectFilePath);
