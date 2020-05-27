@@ -75,7 +75,7 @@ steps:
 
   - script: |
       set -e
-      for f in $(Build.SourcesDirectory)/.build/linux/server/*.tar.gz
+      for f in $(Build.SourcesDirectory)/.build/drop/linux/server/*.tar.gz
       do
         tar -C $(agent.builddirectory) -zxvf $f
         rm $f
