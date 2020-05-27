@@ -267,7 +267,7 @@
         {
           "command": "azure.resource.openInAzurePortal",
           "when": "isDatabaseOrServer",
-          "group": "3_query"
+          "group": "0_zzz"
         }
       ]
     },

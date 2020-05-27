@@ -57,7 +57,8 @@ export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderB
 				},
 				azureAccount: account.key.accountId,
 				azureTenantId: databaseServer.tenant,
-				azureResourceId: databaseServer.id
+				azureResourceId: databaseServer.id,
+				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
 			childProvider: 'PGSQL',
 			type: ExtensionNodeType.Server

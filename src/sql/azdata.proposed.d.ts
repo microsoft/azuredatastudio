@@ -110,6 +110,8 @@ declare module 'azdata' {
 	 */
 	export interface IConnectionProfile extends ConnectionInfo {
 		azureAccount?: string;
+		azureResourceId?: string;
+		azurePortalEndpoint?: string;
 	}
 
 	/*

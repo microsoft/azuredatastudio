@@ -253,7 +253,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			return;
 		}
 
-		const urlToOpen = `https://portal.azure.com//${connectionProfile.azureTenantId}/#resource/${connectionProfile.azureResourceId}`;
+		const urlToOpen = `${connectionProfile.azurePortalEndpoint}//${connectionProfile.azureTenantId}/#resource/${connectionProfile.azureResourceId}`;
 		env.openExternal(Uri.parse(urlToOpen));
 	});
 }

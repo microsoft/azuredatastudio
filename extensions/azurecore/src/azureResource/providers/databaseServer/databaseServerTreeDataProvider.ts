@@ -54,7 +54,8 @@ export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDat
 				options: {},
 				azureAccount: account.key.accountId,
 				azureTenantId: databaseServer.tenant,
-				azureResourceId: databaseServer.id
+				azureResourceId: databaseServer.id,
+				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
 			childProvider: 'MSSQL',
 			type: ExtensionNodeType.Server

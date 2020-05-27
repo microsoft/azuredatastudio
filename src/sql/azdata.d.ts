@@ -333,7 +333,7 @@ declare module 'azdata' {
 		saveProfile: boolean;
 		id: string;
 		azureTenantId?: string;
-		azureResourceId?: string;
+
 	}
 
 	/**
