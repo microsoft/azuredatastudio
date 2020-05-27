@@ -75,7 +75,6 @@ export class Project {
 	}
 
 	private async updateImportToSupportRoundTrip(): Promise<void> {
-
 		// update an SSDT project to include Net core target information
 		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import).length; i++) {
 			const importTarget = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import)[i];
