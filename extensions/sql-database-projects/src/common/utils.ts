@@ -52,6 +52,25 @@ export function trimChars(input: string, chars: string): string {
 }
 
 /**
+ * Checks if the folder or file exists @param path path of the folder/file
+*/
+export async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
+	}
+}
+
+/**
+ * Convert camelCase input to PascalCase
+ */
+export function toPascalCase(input: string): string {
+	return input.charAt(0).toUpperCase() + input.substr(1);
+}
+
+/**
  * get quoted path to be used in any commandline argument
  * @param filePath
  */
@@ -75,16 +94,4 @@ export function getSafeWindowsPath(filePath: string): string {
 export function getSafeNonWindowsPath(filePath: string): string {
 	filePath = filePath.split('\\').join('/').split('"').join('');
 	return '"' + filePath + '"';
-}
-
-/**
- * Checks if the folder or file exists @param path path of the folder/file
-*/
-export async function exists(path: string): Promise<boolean> {
-	try {
-		await fs.access(path);
-		return true;
-	} catch (e) {
-		return false;
-	}
 }
