@@ -18,7 +18,7 @@
 	"azure.accounts.getSubscriptions.title": "Get Azure Account Subscriptions",
 	"azure.accounts.getResourceGroups.title": "Get Azure Account Subscription Resource Groups",
 
-	"azure.openInAzurePortal": "Open in Azure Portal",
+	"azure.openInAzurePortal.title": "Open in Azure Portal",
 
 	"config.azureAccountConfigurationSection": "Azure Account Configuration",
 	"config.enablePublicCloudDescription": "Should Azure public cloud integration be enabled",

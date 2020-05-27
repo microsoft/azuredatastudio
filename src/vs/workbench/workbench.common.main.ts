@@ -466,4 +466,7 @@ import 'sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.cont
 // Extension
 import 'sql/workbench/contrib/extensions/browser/extensions.contribution';
 
+// Azure
+import 'sql/workbench/contrib/azure/browser/azure.contribution';
+
 //#endregion
