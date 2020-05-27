@@ -133,29 +133,6 @@
 	margin: auto;
 }
 
-*/
-/* .monaco-workbench>.ads_tour>.key.commandPalette>.label {
-	vertical-align: sub;
-}
-
-.monaco-workbench>.ads_tour>.key.commandPalette>.shortcut {
-	padding-left: .5em;
-	vertical-align: sub;
-} */
-
-/* @media screen and (max-width:880px) {
-	.monaco-workbench>.ads_tour {
-		font-size: 0.625em;
-	}
-	.monaco-workbench>.ads_tour>.command_palette_placeholder {
-		display: none;
-	}
-	.monaco-workbench>.ads_tour>.key.commandPalette {
-		top: 10px;
-		left: 50%;
-	}
-} */
-
 .hide {
 	display: none;
 }
