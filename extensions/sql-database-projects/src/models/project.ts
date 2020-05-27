@@ -41,7 +41,6 @@ export class Project {
 		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
 
 		// find all folders and files to include
-
 		for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
 			const itemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
 
@@ -55,14 +54,13 @@ export class Project {
 		}
 
 		// find all import statements to include
-
-		for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import).length; ig++) {
-			const importTarget = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import)[ig];
+		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import).length; i++) {
+			const importTarget = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import)[i];
 			this.importedTargets.push(importTarget.getAttribute(constants.Project));
 		}
 	}
 
-	public async updateImportForRoundTrip() {
+	public async updateProjectForRoundTrip() {
 		if (this.importedTargets.includes(constants.NetCoreTargets)) {
 			return;
 		}
@@ -70,15 +68,17 @@ export class Project {
 		window.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString).then(async (result) => {
 			if (result === constants.yesString) {
 				await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
-				await this.updateImportToSupportRountTrip();
+				await this.updateImportToSupportRoundTrip();
+				await this.updatePackageReferenceInProjFile();
 			}
 		});
 	}
 
-	private async updateImportToSupportRountTrip(): Promise<void> {
+	private async updateImportToSupportRoundTrip(): Promise<void> {
 
-		for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import).length; ig++) {
-			const importTarget = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import)[ig];
+		// update an SSDT project to include Net core target information
+		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import).length; i++) {
+			const importTarget = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import)[i];
 
 			let condition = importTarget.getAttribute(constants.Condition);
 			let project = importTarget.getAttribute(constants.Project);
@@ -92,8 +92,6 @@ export class Project {
 		}
 
 		await this.updateImportedTargetsToProjFile(constants.NetCoreCondition, constants.NetCoreTargets, undefined);
-
-		await this.updatePackageReferenceInProjFile();
 	}
 
 	/**
@@ -136,14 +134,17 @@ export class Project {
 	private findOrCreateItemGroup(containedTag?: string): any {
 		let outputItemGroup = undefined;
 
-		// find any ItemGroup node that contains files; that's where we'll add
-		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup).length; i++) {
-			const currentItemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup)[i];
+		// search for a particular item goup if a child type is provided
+		if (containedTag) {
+			// find any ItemGroup node that contains files; that's where we'll add
+			for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
+				const currentItemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
 
-			// if we're not hunting for a particular child type, or if we are and we find it, use the ItemGroup
-			if (!containedTag || currentItemGroup.getElementsByTagName(containedTag).length > 0) {
-				outputItemGroup = currentItemGroup;
-				break;
+				// if we find the tag, use the ItemGroup
+				if (currentItemGroup.getElementsByTagName(containedTag).length > 0) {
+					outputItemGroup = currentItemGroup;
+					break;
+				}
 			}
 		}
 
@@ -187,16 +188,13 @@ export class Project {
 	}
 
 	private async updatePackageReferenceInProjFile(): Promise<void> {
-		let outputItemGroup = this.projFileXmlDoc.createElement(constants.ItemGroup);
-		this.projFileXmlDoc.documentElement.appendChild(outputItemGroup);
-
 		const packageRefNode = this.projFileXmlDoc.createElement(constants.PackageReference);
 		packageRefNode.setAttribute(constants.Condition, constants.NetCoreCondition);
 		packageRefNode.setAttribute(constants.Include, constants.NETFrameworkAssembly);
 		packageRefNode.setAttribute(constants.Version, constants.VersionNumber);
 		packageRefNode.setAttribute(constants.PrivateAssets, constants.All);
 
-		outputItemGroup.appendChild(packageRefNode);
+		this.findOrCreateItemGroup(constants.PackageReference).appendChild(packageRefNode);
 
 		await this.serializeToProjFile(this.projFileXmlDoc);
 	}

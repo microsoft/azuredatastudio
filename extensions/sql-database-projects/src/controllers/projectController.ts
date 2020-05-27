@@ -61,7 +61,7 @@ export class ProjectsController {
 			this.projects.push(newProject);
 
 			// Update for round tripping as needed
-			await newProject.updateImportForRoundTrip();
+			await newProject.updateProjectForRoundTrip();
 
 			// Read datasources.json (if present)
 			const dataSourcesFilePath = path.join(path.dirname(projectFile.fsPath), constants.dataSourcesFileName);

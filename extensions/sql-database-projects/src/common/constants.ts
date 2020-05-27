@@ -59,7 +59,7 @@ export const projectNameRequired = localize('projectNameRequired', "Name is requ
 export const projectLocationRequired = localize('projectLocationRequired', "Location is required to create a new database project.");
 export const schemaCompareNotInstalled = localize('schemaCompareNotInstalled', "Schema compare extension installation is required to run schema compare");
 export const buildDacpacNotFound = localize('buildDacpacNotFound', "Dacpac created from build not found");
-export const updateProjectForRoundTrip = localize('updateProjectForRoundTrip', "To build this project, ADS needs to update targets. If the project is created in SSDT, it will continue to work in both tools. Do you want ADS to update the project?");
+export const updateProjectForRoundTrip = localize('updateProjectForRoundTrip', "To build this project, ADS needs to update targets and references. If the project is created in SSDT, it will continue to work in both tools. Do you want ADS to update the project?");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNotFound', "Could not get mssql extension's install location at {0}", mssqlConfigDir); }
