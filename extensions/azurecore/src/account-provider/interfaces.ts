@@ -100,6 +100,11 @@ interface Settings {
 	azureKeyVaultResource?: Resource;
 
 	/**
+	 * Information that describes the Azure Dev Ops resource
+	 */
+	azureDevOpsResource?: Resource;
+
+	/**
 	 * A list of tenant IDs to authenticate against. If defined, then these IDs will be used
 	 * instead of querying the tenants endpoint of the armResource
 	 */
