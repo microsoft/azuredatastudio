@@ -65,7 +65,7 @@ steps:
       node build/azure-pipelines/mixin
     displayName: Mix in quality
 
-  - task: DownloadPipelineArtifact@2
+  - task: DownloadBuildArtifacts@0
     inputs:
       buildType: 'current'
       targetPath: '$(Build.SourcesDirectory)/.build'
