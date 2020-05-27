@@ -261,7 +261,7 @@ class WelcomePage extends Disposable {
 			showOnStartup.setAttribute('checked', 'checked');
 		}
 		showOnStartup.addEventListener('click', e => {
-			this.configurationService.updateValue(configurationKey, showOnStartup.checked ? 'welcomePage' : 'newUntitledFile', ConfigurationTarget.USER);
+			this.configurationService.updateValue(configurationKey, showOnStartup.checked ? 'welcomePageWithGuidedTour' : 'newUntitledFile', ConfigurationTarget.USER);
 		});
 		const prodName = container.querySelector('.welcomePage .title .caption') as HTMLElement;
 		if (prodName) {
@@ -353,7 +353,7 @@ class WelcomePage extends Disposable {
 			let startTourBtn = new Button(containerRight);
 			startTourBtn.label = localize('welcomePage.startTour', "Start Tour");
 			const removeTourBtn = document.createElement('a');
-			const removeBtnClasses = ['btn_remove_tour', 'ads_tour_btn_secondary'];
+			const removeBtnClasses = ['btn_remove_tour', 'codicon', 'codicon-close'];
 			const flexClassesLeft = ['flex', 'flex_a_center'];
 			const flexClassesRight = ['flex', 'flex_a_start'];
 			guidedTourNotificationContainer.id = 'guidedTourBanner';

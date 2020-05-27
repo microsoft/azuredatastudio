@@ -133,37 +133,17 @@
 	margin: auto;
 }
 
-.monaco-workbench>.ads_tour>.key.commandPalette>.label {
+*/
+/* .monaco-workbench>.ads_tour>.key.commandPalette>.label {
 	vertical-align: sub;
 }
 
 .monaco-workbench>.ads_tour>.key.commandPalette>.shortcut {
 	padding-left: .5em;
 	vertical-align: sub;
-}
+} */
 
-.monaco-workbench>.ads_tour>.command_palette_placeholder {
-	width: 600px;
-	height: 344px;
-	position: absolute;
-	top: 2px;
-	left: 0;
-	right: 0;
-	margin: auto;
-}
-
-.vs-dark .monaco-workbench>.ads_tour>.command_palette_placeholder {
-	width: 600px;
-	height: 344px;
-	background: url('media/commandPaletteDark.png');
-	background-size: contain;
-	background-repeat: no-repeat;
-	position: absolute;
-	top: 2px;
-	left: calc(50% - 193px);
-}
-
-@media screen and (max-width:880px) {
+/* @media screen and (max-width:880px) {
 	.monaco-workbench>.ads_tour {
 		font-size: 0.625em;
 	}
@@ -174,7 +154,7 @@
 		top: 10px;
 		left: 50%;
 	}
-}
+} */
 
 .hide {
 	display: none;

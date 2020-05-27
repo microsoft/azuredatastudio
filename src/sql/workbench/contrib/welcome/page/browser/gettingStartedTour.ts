@@ -187,7 +187,7 @@ export class GuidedTour extends Disposable {
 			}
 			headerTag.innerText = header;
 			bodyTag.innerText = body;
-			stepText.innerText = `${step} of ${tourData.length + 1}`;
+			stepText.innerText = `${step} of ${tourData.length}`;
 			let button = new Button(btnContainer);
 			button.icon = '';
 			button.label = btnText;
@@ -346,7 +346,7 @@ registerThemingParticipant((theme, collector) => {
 		collector.addRule(`.monaco-workbench > .ads_tour .ads_tour_popup .ads_tour_btn_container .ads_tour_btn_primary_inverse { background: ${bodyTag}; }`);
 		collector.addRule(`.monaco-workbench .activitybar>.content :not(.monaco-menu)>.monaco-action-bar .action-label.activity-workbench-view-extension-books-explorer.subject_element_focused, .monaco-workbench .activitybar>.content :not(.monaco-menu)>.monaco-action-bar .action-label.codicon.dataExplorer.subject_element_focused { background: ${bodyTag}; }`);
 		collector.addRule(`.monaco-workbench .activitybar>.content :not(.monaco-menu)>.monaco-action-bar .action-label.codicon.subject_element_focused { color: ${bodyTag} !important; }`);
-		collector.addRule(`.monaco-workbench .welcomePage .btn_remove_tour { background: ${bodyTag} !important; }`);
+		collector.addRule(`.monaco-workbench .welcomePage .btn_remove_tour { color: ${bodyTag} !important; }`);
 		collector.addRule(`.monaco-workbench .welcomePage .guided_tour_banner p { color: ${bodyTag}; }`);
 		collector.addRule(`.monaco-workbench .welcomePage .guided_tour_banner .ads_tour_btn_start { border: 1px solid ${bodyTag}; }`);
 		collector.addRule(`.monaco-workbench .welcomePage .guided_tour_banner .ads_tour_btn_start { background: ${bodyTag}; }`);

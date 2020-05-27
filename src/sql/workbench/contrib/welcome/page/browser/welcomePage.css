@@ -1300,6 +1300,12 @@
 .ads_homepage .btn_remove_tour {
 	display: inline-block;
 	margin: 0 17px 0 20px;
+	width: 20px;
+	height: 20px;
+}
+
+.ads_homepage .btn_remove_tour:hover {
+	cursor: pointer;
 }
 
 .ads_homepage .guided_tour_banner {
