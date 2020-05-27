@@ -38,7 +38,6 @@ export class CellToolbarComponent {
 	private _model: NotebookModel;
 	private _editCellAction: EditCellAction;
 
-
 	constructor(
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService
@@ -54,9 +53,6 @@ export class CellToolbarComponent {
 	}
 
 	private initActionBar(): void {
-
-		// Todo: set this up like the Add new cells is done in main toolbar
-		//let addButton = this._instantiationService.createInstance(CellToolbarAction, 'notebook.addCell', '', 'codicon masked-icon new', this.buttonAdd, this.cellModel);
 		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('codePreview', "Code cell"), 'notebook-button masked-pseudo code');
 		addCodeCellButton.cellType = CellTypes.Code;
 
@@ -65,10 +61,11 @@ export class CellToolbarComponent {
 
 		let deleteButton = this._instantiationService.createInstance(CellToolbarAction, 'notebook.deleteCell', '', 'codicon masked-icon delete', this.buttonDelete, this.cellModel);
 
+		// Todo: Get this to show the list of actions specific to code or markdown cell.
 		let moreActionsButton = new MoreActions('notebook.moreActions', this.buttonMoreActions, 'codicon masked-icon more');
 
 		// Todo: Wire up toolbarToggleEditMode
-		// Todo: Wireup toolbarUnselectActiveCell
+		// Todo: Wire up toolbarUnselectActiveCell
 		this._editCellAction = this._instantiationService.createInstance(EditCellAction, 'notebook.editCell', true);
 		this._editCellAction.enabled = true;
 
@@ -85,7 +82,7 @@ export class CellToolbarComponent {
 			undefined,
 			this._actionBar.actionRunner,
 			undefined,
-			'codicon masked-icon masked-pseudo-after new dropdown-arrow',
+			'codicon masked-icon new',
 			localize('addCell', "Cell"),
 			undefined
 		);
@@ -96,7 +93,6 @@ export class CellToolbarComponent {
 			{ action: this._editCellAction },
 			{ element: buttonDropdownContainer },
 			{ action: deleteButton },
-			// Todo: Get this to show the list of actions.
 			{ action: moreActionsButton }
 		]);
 	}

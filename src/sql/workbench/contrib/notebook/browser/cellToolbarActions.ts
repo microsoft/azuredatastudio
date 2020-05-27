@@ -9,10 +9,7 @@ import { INotebookService, INotebookEditor } from 'sql/workbench/services/notebo
 import { NotebookComponent } from 'sql/workbench/contrib/notebook/browser/notebook.component';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { CellType } from 'sql/workbench/services/notebook/common/contracts';
-import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
-
-export const HIDDEN_CLASS = 'actionhidden';
 
 export class CellToolbarAction extends Action {
 
@@ -59,7 +56,6 @@ export class AddCellAction extends Action {
  * (ie. runAlActions when on code cell.)
  */
 export class MoreActions extends Action {
-	private _cellToggleMoreActions: CellToggleMoreActions;
 
 	constructor(
 		id: string, label: string, cssClass: string
@@ -67,7 +63,9 @@ export class MoreActions extends Action {
 		super(id, label, cssClass);
 	}
 }
-
+/**
+ * Todo: When a code cell is selected, the cursor focus is already set to the field within it. The below method needs to check for the active state first, then set the icon accordingly.
+ */
 export class EditCellAction extends ToggleableAction {
 	// Constants
 	private static readonly editLabel = localize('editLabel', "Edit");
@@ -96,15 +94,17 @@ export class EditCellAction extends ToggleableAction {
 		return this.state.isOn;
 	}
 	public set editMode(value: boolean) {
+		// Toggle icon
 		this.toggle(value);
+		// Todo: Toggle cell active state
 	}
 
+	// Todo: Nothing is being done on the model at this point. Will that be necessary in order to apply focus to the cell?
 	public run(context: INotebookEditor): Promise<boolean> {
 		let self = this;
 		return new Promise<boolean>((resolve, reject) => {
 			try {
 				self.editMode = !self.editMode;
-				context.model.activeCell.active = self.editMode;
 				resolve(true);
 			} catch (e) {
 				reject(e);
