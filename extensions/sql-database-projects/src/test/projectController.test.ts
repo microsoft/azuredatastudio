@@ -6,11 +6,13 @@
 import * as should from 'should';
 import * as path from 'path';
 import * as os from 'os';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as TypeMoq from 'typemoq';
 import * as baselines from './baselines/baselines';
 import * as templates from '../templates/templates';
 import * as testUtils from './testUtils';
+import * as constants from '../common/constants';
 
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
@@ -22,6 +24,23 @@ import { ApiWrapper } from '../common/apiWrapper';
 import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
 
 let testContext: TestContext;
+
+// Mock test data
+const mockConnectionProfile: azdata.IConnectionProfile = {
+	connectionName: 'My Connection',
+	serverName: 'My Server',
+	databaseName: 'My Database',
+	userName: 'My User',
+	password: 'My Pwd',
+	authenticationType: 'SqlLogin',
+	savePassword: false,
+	groupFullName: 'My groupName',
+	groupId: 'My GroupId',
+	providerName: 'My Server',
+	saveProfile: true,
+	id: 'My Id',
+	options: undefined as any
+};
 
 describe('ProjectsController: project controller operations', function (): void {
 	before(async function (): Promise<void> {
@@ -124,5 +143,66 @@ describe('ProjectsController: project controller operations', function (): void 
 
 			should(holler).equal(generateHoller, 'executionCallback() is supposed to have been setup and called for GenerateScript scenario');
 		});
+	});
+});
+
+describe('ProjectsController: import operations', function (): void {
+	it('Should create list of all files and folders correctly', async function (): Promise<void> {
+		const testFolderPath = await testUtils.createDummyFileStructure();
+
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+		const fileList = await projController.generateList(testFolderPath);
+
+		should(fileList.length).equal(15);	// Parent folder + 2 files under parent folder + 2 directories with 5 files each
+	});
+
+	it('Should error out for inaccessible path', async function (): Promise<void> {
+		let testFolderPath = await testUtils.generateTestFolderPath();
+		testFolderPath += '_nonExistant';	// Modify folder path to point to a non-existant location
+
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+
+		await testUtils.shouldThrowSpecificError(async () => await projController.generateList(testFolderPath), constants.cannotResolvePath(testFolderPath));
+	});
+
+	it('Should show error when no project name provided', async function (): Promise<void> {
+		for (const name of ['', '    ', undefined]) {
+			testContext.apiWrapper.reset();
+			testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(name));
+			testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+			await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject(mockConnectionProfile), constants.projectNameRequired, `case: '${name}'`);
+		}
+	});
+
+	it('Should show error when no target information provided', async function (): Promise<void> {
+		testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('MyProjectName'));
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject(mockConnectionProfile), constants.extractTargetRequired);
+	});
+
+	it('Should show error when no location provided with ExtractTarget = File', async function (): Promise<void> {
+		testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('MyProjectName'));
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({label: 'File'}));
+		testContext.apiWrapper.setup(x => x.showSaveDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject(mockConnectionProfile), constants.projectLocationRequired);
+	});
+
+	it('Should show error when no location provided with ExtractTarget = SchemaObjectType', async function (): Promise<void> {
+		testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('MyProjectName'));
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny())).returns(() => Promise.resolve({label: 'SchemaObjectType'}));
+		testContext.apiWrapper.setup(x => x.showOpenDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
+		testContext.apiWrapper.setup(x => x.workspaceFolders()).returns(() => undefined);
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject(mockConnectionProfile), constants.projectLocationRequired);
 	});
 });

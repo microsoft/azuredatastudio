@@ -54,4 +54,17 @@ describe('Project: sqlproj content operations', function (): void {
 
 		should (newFileContents).equal(fileContents);
 	});
+
+	it('Should add Folder and Build entries to sqlproj with pre-existing scripts on disk', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project: Project = new Project(projFilePath);
+		await project.readProjFile();
+
+		let list: string[] = await testUtils.createListOfFiles(path.dirname(projFilePath));
+
+		await project.addToProject(list);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(11);	// txt file shouldn't be added to the project
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(3);		// 2folders + default Properties folder
+	});
 });
