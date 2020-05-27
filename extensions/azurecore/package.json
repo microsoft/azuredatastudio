@@ -153,7 +153,7 @@
       },
       {
         "command": "azure.resource.openInAzurePortal",
-        "title": "%azure.openInAzurePortal"
+        "title": "%azure.openInAzurePortal%"
       },
       {
         "command": "azure.resource.connectsqlserver",
@@ -267,7 +267,7 @@
         {
           "command": "azure.resource.openInAzurePortal",
           "when": "isDatabaseOrServer",
-          "group": "0_query"
+          "group": "3_query"
         }
       ]
     },

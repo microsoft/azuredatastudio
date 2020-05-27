@@ -55,7 +55,9 @@ export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderB
 					// Set default for SSL or will get error complaining about it not being set correctly
 					'sslmode': 'require'
 				},
-				azureAccount: account.key.accountId
+				azureAccount: account.key.accountId,
+				azureTenantId: databaseServer.tenant,
+				azureResourceId: databaseServer.id
 			},
 			childProvider: 'PGSQL',
 			type: ExtensionNodeType.Server

@@ -52,7 +52,9 @@ export class SqlInstanceArcTreeDataProvider extends ResourceTreeDataProviderBase
 				providerName: 'MSSQL',
 				saveProfile: false,
 				options: {},
-				azureAccount: account.key.accountId
+				azureAccount: account.key.accountId,
+				azureTenantId: databaseServer.tenant,
+				azureResourceId: databaseServer.id
 			},
 			childProvider: 'MSSQL',
 			type: ExtensionNodeType.Server
