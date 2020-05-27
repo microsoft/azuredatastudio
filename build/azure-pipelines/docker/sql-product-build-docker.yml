@@ -68,7 +68,7 @@ steps:
   - task: DownloadBuildArtifacts@0
     inputs:
       buildType: 'current'
-      targetPath: '$(Build.SourcesDirectory)/.build'
+      downloadPath: '$(Build.SourcesDirectory)/.build'
       artifactName: drop
       itemPattern: |
         drop/linux/server/*.tar.gz
