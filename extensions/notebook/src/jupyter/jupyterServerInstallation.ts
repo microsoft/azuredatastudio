@@ -435,6 +435,40 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 	}
 
+	/**
+	 * Prompts user to upgrade certain python packages if they're below the minimum expected version.
+	 */
+	public async promptForPackageUpgrade(kernelName: string): Promise<void> {
+		if (this._installInProgress) {
+			this.apiWrapper.showInfoMessage(msgWaitingForInstall);
+			return this._installCompletion.promise;
+		}
+
+		let requiredPackages: PythonPkgDetails[];
+		let enablePreviewFeatures = this.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
+		if (enablePreviewFeatures) {
+			if (this._kernelSetupCache.get(kernelName)) {
+				return;
+			}
+			requiredPackages = JupyterServerInstallation.getRequiredPackagesForKernel(kernelName);
+		}
+
+		this._installInProgress = true;
+		this._installCompletion = new Deferred<void>();
+		this.upgradePythonPackages(true, false, requiredPackages)
+			.then(() => {
+				this._installCompletion.resolve();
+				this._installInProgress = false;
+				this._kernelSetupCache.set(kernelName, true);
+			})
+			.catch(err => {
+				let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
+				this._installCompletion.reject(errorMsg);
+				this._installInProgress = false;
+			});
+		return this._installCompletion.promise;
+	}
+
 	private async areRequiredPackagesInstalled(kernelDisplayName: string): Promise<boolean> {
 		if (this._kernelSetupCache.get(kernelDisplayName)) {
 			return true;
