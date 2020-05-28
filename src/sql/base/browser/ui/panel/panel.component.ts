@@ -53,7 +53,7 @@ let idPool = 0;
 	selector: 'panel',
 	template: `
 		<div #rootContainer class="tabbedPanel fullsize" [ngClass]="_options.layout === NavigationBarLayout.vertical ? 'vertical' : 'horizontal'">
-			<div *ngIf="!_options.alwaysShowTabs ? _tabs.length !== 1 : true" class="composite title">
+			<div *ngIf="!_options.alwaysShowTabs ? _tabs && _tabs.length !== 1 : true" class="composite title">
 				<div class="tabContainer">
 					<div *ngIf="_options.layout === NavigationBarLayout.vertical" class="vertical-tab-action-container">
 						<button [attr.aria-expanded]="_tabExpanded" [title]="toggleTabPanelButtonAriaLabel" [attr.aria-label]="toggleTabPanelButtonAriaLabel" [ngClass]="toggleTabPanelButtonCssClass" tabindex="0" (click)="toggleTabPanel()"></button>
