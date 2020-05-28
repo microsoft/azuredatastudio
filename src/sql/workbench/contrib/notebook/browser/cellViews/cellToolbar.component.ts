@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./cellToolbar';
 import * as DOM from 'vs/base/browser/dom';
-import { Component, Inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, Inject, ViewChild, ElementRef, Input } from '@angular/core';
 import { localize } from 'vs/nls';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -12,6 +12,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { DeleteCellAction, MoreActions, AddCellAction, EditCellAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
+import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
+import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 
 export const CELL_TOOLBAR_SELECTOR: string = 'cell-toolbar-component';
 
@@ -28,6 +31,9 @@ export class CellToolbarComponent {
 	public buttonDelete = localize('buttonDelete', "Delete cell");
 	public buttonMoreActions = localize('buttonMoreActions', "More actions");
 
+	@Input() cellModel: ICellModel;
+	@Input() model: NotebookModel;
+
 	private _actionBar: Taskbar;
 	private _editCellAction: EditCellAction;
 
@@ -42,6 +48,7 @@ export class CellToolbarComponent {
 	}
 
 	protected initActionBar(): void {
+		let _context = new CellContext(this.model, this.cellModel);
 		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('codePreview', "Code cell"), 'notebook-button masked-pseudo code');
 		addCodeCellButton.cellType = CellTypes.Code;
 
@@ -61,7 +68,7 @@ export class CellToolbarComponent {
 
 		let taskbar = <HTMLElement>this.celltoolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar);
-		this._actionBar.context = this;
+		this._actionBar.context = _context;
 
 		let buttonDropdownContainer = DOM.$('li.action-item');
 		buttonDropdownContainer.setAttribute('role', 'presentation');
