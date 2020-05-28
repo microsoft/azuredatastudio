@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { DeleteCellAction, MoreActions, EditCellAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
+import { DeleteCellAction, EditCellAction, CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
 import { AddCellAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
@@ -37,6 +37,7 @@ export class CellToolbarComponent {
 
 	private _actionBar: Taskbar;
 	private _editCellAction: EditCellAction;
+	public _cellToggleMoreActions: CellToggleMoreActions;
 
 	constructor(
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
@@ -59,7 +60,7 @@ export class CellToolbarComponent {
 		let deleteButton = this.instantiationService.createInstance(DeleteCellAction, 'delete', 'codicon masked-icon delete', localize('delete', "Delete"));
 
 		// Todo: Get this to show the list of actions specific to code or markdown cell.
-		let moreActionsButton = new MoreActions('notebook.moreActions', this.buttonMoreActions, 'codicon masked-icon more');
+		//this._cellToggleMoreActions = this.instantiationService.createInstance(CellToggleMoreActions, 'codicon masked-icon more');
 
 		// Todo: Wire up toolbarToggleEditMode
 		// Todo: Wire up toolbarUnselectActiveCell
@@ -90,7 +91,7 @@ export class CellToolbarComponent {
 			{ action: this._editCellAction },
 			{ element: buttonDropdownContainer },
 			{ action: deleteButton },
-			{ action: moreActionsButton }
+			//{ action: this._cellToggleMoreActions }
 		]);
 	}
 }

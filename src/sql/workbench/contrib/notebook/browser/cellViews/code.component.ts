@@ -7,7 +7,7 @@ import 'vs/css!./code';
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange, forwardRef, ChangeDetectorRef } from '@angular/core';
 
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
-import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions';
+// import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions';
 import { ICellModel, CellExecutionState } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { RunCellAction, CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
@@ -26,7 +26,7 @@ import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
-import { CollapseComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/collapse.component';
+// import { CollapseComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/collapse.component';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
@@ -50,7 +50,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
-	@ViewChild(CollapseComponent) private collapseComponent: CollapseComponent;
+	// @ViewChild(CollapseComponent) private collapseComponent: CollapseComponent;
 
 	public get cellModel(): ICellModel {
 		return this._cellModel;
@@ -100,7 +100,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	private _editorModel: ITextModel;
 	private _model: NotebookModel;
 	private _activeCellId: string;
-	private _cellToggleMoreActions: CellToggleMoreActions;
+	// private _cellToggleMoreActions: CellToggleMoreActions;
 	private _layoutEmitter = new Emitter<void>();
 
 	constructor(
@@ -113,7 +113,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		@Inject(ILogService) private readonly logService: ILogService
 	) {
 		super();
-		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
+		// this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
 		this._register(Event.debounce(this._layoutEmitter.event, (l, e) => e, 250, /*leading=*/false)
 			(() => this.layout()));
 		// Handle disconnect on removal of the cell, if it was the active cell
@@ -294,7 +294,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._actionBar.setContent([
 			{ action: runCellAction }
 		]);
-		this._cellToggleMoreActions.onInit(this.moreActionsElementRef, this.model, this.cellModel);
+		// this._cellToggleMoreActions.onInit(this.moreActionsElementRef, this.model, this.cellModel);
 	}
 
 	/// Editor Functions
@@ -361,11 +361,11 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	protected toggleActionsVisibility(isActiveOrHovered: boolean) {
-		this._cellToggleMoreActions.toggleVisible(!isActiveOrHovered);
+		//this._cellToggleMoreActions.toggleVisible(!isActiveOrHovered);
 
-		if (this.collapseComponent) {
-			this.collapseComponent.toggleIconVisibility(isActiveOrHovered);
-		}
+		// if (this.collapseComponent) {
+		// 	this.collapseComponent.toggleIconVisibility(isActiveOrHovered);
+		// }
 	}
 
 	private onCellCollapse(isCollapsed: boolean): void {
