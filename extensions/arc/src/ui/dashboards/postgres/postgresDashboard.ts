@@ -16,19 +16,17 @@ import { PostgresNetworkingPage } from './postgresNetworkingPage';
 import { Dashboard } from '../../components/dashboard';
 
 export class PostgresDashboard extends Dashboard {
-	constructor(title: string, private _controllerModel: ControllerModel, private _databaseModel: PostgresModel) {
+	constructor(title: string, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
 		super(title);
 	}
 
 	protected async registerTabs(modelView: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]> {
-		await Promise.all([this._controllerModel.refresh(), this._databaseModel.refresh()]);
-
-		const overviewPage = new PostgresOverviewPage(modelView, this._controllerModel, this._databaseModel);
-		const computeStoragePage = new PostgresComputeStoragePage(modelView, this._controllerModel, this._databaseModel);
-		const connectionStringsPage = new PostgresConnectionStringsPage(modelView, this._controllerModel, this._databaseModel);
-		const backupPage = new PostgresBackupPage(modelView, this._controllerModel, this._databaseModel);
-		const propertiesPage = new PostgresPropertiesPage(modelView, this._controllerModel, this._databaseModel);
-		const networkingPage = new PostgresNetworkingPage(modelView, this._controllerModel, this._databaseModel);
+		const overviewPage = new PostgresOverviewPage(modelView, this._controllerModel, this._postgresModel);
+		const computeStoragePage = new PostgresComputeStoragePage(modelView);
+		const connectionStringsPage = new PostgresConnectionStringsPage(modelView, this._postgresModel);
+		const backupPage = new PostgresBackupPage(modelView);
+		const propertiesPage = new PostgresPropertiesPage(modelView, this._controllerModel, this._postgresModel);
+		const networkingPage = new PostgresNetworkingPage(modelView);
 
 		return [
 			overviewPage.tab,
