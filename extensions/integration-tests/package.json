@@ -22,18 +22,17 @@
     "Microsoft.azuredatastudio-postgresql"
   ],
   "scripts": {
-    "vscode:prepublish": "node ../../node_modules/gulp/bin/gulp.js --gulpfile ../../build/gulpfile.extensions.js compile-extension:vscode-colorize-tests ./tsconfig.json"
+    "vscode:prepublish": "node ../../node_modules/gulp/bin/gulp.js --gulpfile ../../build/gulpfile.extensions.js compile-extension:vscode-colorize-tests ./tsconfig.json",
+    "postinstall": "node ./node_modules/vscode/bin/install"
   },
   "devDependencies": {
     "@types/chai": "3.4.34",
     "@types/node": "^10.14.8",
+    "azure-keyvault": "^3.0.4",
     "chai": "3.5.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.7"
-  },
-  "dependencies": {
-    "azure-keyvault": "^3.0.4",
-    "ms-rest-azure": "^2.6.0"
+    "ms-rest-azure": "^2.6.0",
+    "vscode": "1.1.5"
   }
 }

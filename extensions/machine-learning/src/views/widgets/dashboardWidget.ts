@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import { ApiWrapper } from '../../common/apiWrapper';
 import * as path from 'path';
 import * as constants from '../../common/constants';
-import * as utils from '../../common/utils';
 import { PredictService } from '../../prediction/predictService';
 
 interface IActionMetadata {
@@ -182,12 +181,12 @@ export class DashboardWidget {
 		});
 		const videosContainer = this.createVideoLinkContainers(view, [
 			{
-				iconPath: { light: 'images/video1.svg', dark: 'images/video1.svg' },
+				iconPath: { light: 'images/aiMlSqlServer.svg', dark: 'images/aiMlSqlServer.svg' },
 				description: 'Artificial intelligence and machine learning with SQL Server 2019',
 				link: 'https://www.youtube.com/watch?v=sE99cSoFOHs'
 			},
 			{
-				iconPath: { light: 'images/video2.svg', dark: 'images/video2.svg' },
+				iconPath: { light: 'images/sqlServerMl.svg', dark: 'images/sqlServerMl.svg' },
 				description: 'SQL Server Machine Learning Services',
 				link: 'https://www.youtube.com/watch?v=R4GCBoxADyQ'
 			}
@@ -199,7 +198,7 @@ export class DashboardWidget {
 
 		const moreVideosContainer = this.createVideoLinkContainers(view, [
 			{
-				iconPath: { light: 'images/video2.svg', dark: 'images/video2.svg' },
+				iconPath: { light: 'images/notebooksIntro.svg', dark: 'images/notebooksIntro.svg' },
 				description: 'Introduction to Azure Data Studio Notebooks',
 				link: 'https://www.youtube.com/watch?v=Nt4kIHQ0IOc'
 			}
@@ -316,7 +315,7 @@ export class DashboardWidget {
 				'background-position': 'top',
 				'width': `${maxWidth}px`,
 				'height': '110px',
-				'background-size': `{maxWidth}px 120px`
+				'background-size': `${maxWidth}px 120px`
 			}
 		});
 		videosContainer.addItem(descriptionComponent);
@@ -340,6 +339,10 @@ export class DashboardWidget {
 		}).component();
 
 		const links = [{
+			title: constants.sqlMlExtDocTitle,
+			description: constants.sqlMlExtDocDesc,
+			link: constants.mlExtDocLink
+		}, {
 			title: constants.sqlMlDocTitle,
 			description: constants.sqlMlDocDesc,
 			link: constants.mlDocLink
@@ -349,15 +352,15 @@ export class DashboardWidget {
 			link: constants.mlsDocLink
 		},
 		{
-			title: constants.sqlMlsAzureDocTitle,
-			description: constants.sqlMlsAzureDocDesc,
-			link: constants.mlsAzureDocLink
+			title: constants.onnxOnEdgeOdbcDocTitle,
+			description: constants.onnxOnEdgeOdbcDocDesc,
+			link: constants.onnxOnEdgeDocs
 		}];
 
 		const moreLink = {
 			title: constants.mlsInstallOdbcDocTitle,
 			description: constants.mlsInstallOdbcDocDesc,
-			link: utils.isWindows() ? constants.odbcDriverWindowsDocuments : constants.odbcDriverLinuxDocuments
+			link: constants.odbcDriverDocuments
 		};
 		const styles = {
 			'padding': '10px'
@@ -462,7 +465,7 @@ export class DashboardWidget {
 				dark: this.asAbsolutePath('images/makePredictions.svg'),
 				light: this.asAbsolutePath('images/makePredictions.svg'),
 			},
-			link: '',
+			link: 'https://go.microsoft.com/fwlink/?linkid=2129795',
 			command: constants.mlsPredictModelCommand
 		};
 		const predictionButton = this.createTaskButton(view, predictionMetadata);
@@ -473,7 +476,7 @@ export class DashboardWidget {
 				dark: this.asAbsolutePath('images/manageModels.svg'),
 				light: this.asAbsolutePath('images/manageModels.svg'),
 			},
-			link: '',
+			link: 'https://go.microsoft.com/fwlink/?linkid=2129796',
 			command: constants.mlManageModelsCommand
 		};
 		const importModelsButton = this.createTaskButton(view, importMetadata);
@@ -484,7 +487,7 @@ export class DashboardWidget {
 				dark: this.asAbsolutePath('images/createNotebook.svg'),
 				light: this.asAbsolutePath('images/createNotebook.svg'),
 			},
-			link: '',
+			link: 'https://go.microsoft.com/fwlink/?linkid=2129920',
 			command: constants.notebookCommandNew
 		};
 		const notebookModelsButton = this.createTaskButton(view, notebookMetadata);
@@ -493,13 +496,15 @@ export class DashboardWidget {
 				'padding': '10px'
 			}
 		});
-		predictionButton.enabled = await this._predictService.serverSupportOnnxModel();
+		if (!await this._predictService.serverSupportOnnxModel()) {
+			console.log(constants.onnxNotSupportedError);
+		}
 
 		return tasksContainer;
 	}
 
 	private createTaskButton(view: azdata.ModelView, taskMetaData: IActionMetadata): azdata.Component {
-		const maxHeight = 106;
+		const maxHeight = 116;
 		const maxWidth = 250;
 		const mainContainer = view.modelBuilder.divContainer().withLayout({
 			width: maxWidth,
@@ -550,7 +555,7 @@ export class DashboardWidget {
 			CSSStyles: {
 				'padding': '0px',
 				'padding-bottom': '5px',
-				'width': '180px',
+				'width': '200px',
 				'margin': '0px',
 				'color': '#006ab1'
 			}

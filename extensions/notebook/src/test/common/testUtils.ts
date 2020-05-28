@@ -17,3 +17,7 @@ export async function assertThrowsAsync(fn: () => Promise<any>, msg: string): Pr
 		assert.throws(f, msg);
 	}
 }
+
+export async function sleep(ms: number): Promise<{}> {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}

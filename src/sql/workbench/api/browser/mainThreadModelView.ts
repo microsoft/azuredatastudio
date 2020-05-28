@@ -104,6 +104,10 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 		return new Promise(resolve => this.execModelViewAction(handle, (modelView) => resolve(modelView.focus(componentId))));
 	}
 
+	$doAction(handle: number, componentId: string, action: string, ...args: any[]): Thenable<void> {
+		return new Promise(resolve => this.execModelViewAction(handle, (modelView) => resolve(modelView.doAction(componentId, action, ...args))));
+	}
+
 	private runCustomValidations(handle: number, componentId: string): Thenable<boolean> {
 		return this._proxy.$runCustomValidations(handle, componentId);
 	}

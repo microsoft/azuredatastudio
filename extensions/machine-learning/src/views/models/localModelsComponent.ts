@@ -62,9 +62,13 @@ export class LocalModelsComponent extends ModelViewBase implements IDataComponen
 			.withLayout({
 				flexFlow: 'row',
 				justifyContent: 'space-between',
-				width: this.componentMaxLength + 200
+				width: this.componentMaxLength
 			}).withItems([
-				this._localPath, this._localBrowse]
+				this._localPath, this._localBrowse], {
+				CSSStyles: {
+					'padding-right': '5px'
+				}
+			}
 			).component();
 
 		this._form = modelBuilder.formContainer().withFormItems([{

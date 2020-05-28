@@ -386,7 +386,7 @@ describe('SQL Python Package Manager', () => {
 	});
 
 	function createProvider(testContext: TestContext): SqlPythonPackageManageProvider {
-		testContext.config.setup(x => x.pythonExecutable).returns(() => 'python');
+		testContext.config.setup(x => x.getPythonExecutable(true)).returns(() => Promise.resolve('python'));
 		testContext.config.setup(x => x.pythonEnabled).returns(() => true);
 		return new SqlPythonPackageManageProvider(
 			testContext.outputChannel,

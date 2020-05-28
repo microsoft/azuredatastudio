@@ -45,4 +45,5 @@ export interface IModelView extends IView {
 	validate(componentId: string): Thenable<boolean>;
 	readonly onDestroy: Event<void>;
 	focus(componentId: string): void;
+	doAction(componentId: string, action: string, ...args: any[]): void;
 }

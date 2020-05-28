@@ -42,6 +42,7 @@ export class NotebookEditorModel extends EditorModel {
 	private _notebookTextFileModel: NotebookTextFileModel;
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
 	private _lastEditFullReplacement: boolean;
+	private _isFirstKernelChange: boolean = true;
 	constructor(public readonly notebookUri: URI,
 		private textEditorModel: ITextFileEditorModel | IUntitledTextEditorModel | ResourceEditorModel,
 		@INotebookService private notebookService: INotebookService,
@@ -110,6 +111,10 @@ export class NotebookEditorModel extends EditorModel {
 	}
 
 	public updateModel(contentChange?: NotebookContentChange, type?: NotebookChangeType): void {
+		if (type === NotebookChangeType.KernelChanged && this._isFirstKernelChange) {
+			this._isFirstKernelChange = false;
+			return;
+		}
 		this._lastEditFullReplacement = false;
 		if (contentChange && contentChange.changeType === NotebookChangeType.Saved) {
 			// We send the saved events out, so ignore. Otherwise we double-count this as a change

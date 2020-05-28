@@ -176,8 +176,9 @@ AS (
 	FROM [${utils.doubleEscapeSingleBrackets(sourceTable.databaseName)}].[${sourceTable.schema}].[${utils.doubleEscapeSingleBrackets(sourceTable.tableName)}] as pi
 )
 SELECT
-${this.getPredictColumnNames(columns, 'predict_input')}, ${this.getPredictInputColumnNames(outputColumns, 'p')}
-FROM PREDICT(MODEL = @model, DATA = predict_input)
+${this.getPredictColumnNames(columns, 'predict_input')},
+${this.getPredictInputColumnNames(outputColumns, 'p')}
+FROM PREDICT(MODEL = @model, DATA = predict_input, runtime=onnx)
 WITH (
 	${this.getOutputParameters(outputColumns)}
 ) AS p
@@ -197,8 +198,9 @@ AS (
 	FROM [${utils.doubleEscapeSingleBrackets(databaseNameTable.databaseName)}].[${databaseNameTable.schema}].[${utils.doubleEscapeSingleBrackets(databaseNameTable.tableName)}] as pi
 )
 SELECT
-${this.getPredictColumnNames(columns, 'predict_input')}, ${this.getOutputColumnNames(outputColumns, 'p')}
-FROM PREDICT(MODEL = ${modelBytes}, DATA = predict_input)
+${this.getPredictColumnNames(columns, 'predict_input')},
+${this.getPredictInputColumnNames(outputColumns, 'p')}
+FROM PREDICT(MODEL = ${modelBytes}, DATA = predict_input, runtime=onnx)
 WITH (
 	${this.getOutputParameters(outputColumns)}
 ) AS p
@@ -221,12 +223,6 @@ WITH (
 	private getPredictInputColumnNames(columns: PredictColumn[], tableName: string) {
 		return columns.map(c => {
 			return this.getColumnName(tableName, c.paramName || '', c.columnName);
-		}).join(',\n');
-	}
-
-	private getOutputColumnNames(columns: PredictColumn[], tableName: string) {
-		return columns.map(c => {
-			return this.getColumnName(tableName, c.columnName, c.paramName || '');
 		}).join(',\n');
 	}
 

@@ -31,7 +31,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 	private endpointsErrorMessage: azdata.TextComponent;
 	private serviceStatusErrorMessage: azdata.TextComponent;
 
-	constructor(model: BdcDashboardModel, modelView: azdata.ModelView) {
+	constructor(model: BdcDashboardModel, modelView: azdata.ModelView, private dashboard: azdata.window.ModelViewDashboard) {
 		super(model, modelView);
 		this.model.onDidUpdateEndpoints(endpoints => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdate(endpoints)));
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.eventuallyRunOnInitialized(() => this.handleBdcStatusUpdate(bdcStatus)));
@@ -339,7 +339,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 						CSSStyles: { ...cssStyles.text }
 					}).component();
 				nameCell.onDidClick(() => {
-					//this.dashboard.switchToServiceTab(serviceStatus.serviceName); TODO: Enable direct link to tab page
+					this.dashboard.selectTab(serviceStatus.serviceName);
 				});
 
 				const viewDetailsButton = serviceStatus.healthStatus !== 'healthy' && serviceStatus.details && serviceStatus.details.length > 0 ? createViewDetailsButton(this.modelView.modelBuilder, serviceStatus.details) : undefined;

@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
-  "version": "1.18.0",
-  "distro": "1a99144c4c1f884810b37cdc9be608372e99d168",
+  "version": "1.19.0",
+  "distro": "a04ebf32a5868f2bc7a4eed0716a42564d2a7896",
   "author": {
     "name": "Microsoft Corporation"
   },

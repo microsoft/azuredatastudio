@@ -236,7 +236,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 		let params = {
 			connectionType: ConnectionType.default,
-			isEditConnection: true
+			isEditConnection: true,
+			oldProfileId: model.id
 		};
 
 		try {

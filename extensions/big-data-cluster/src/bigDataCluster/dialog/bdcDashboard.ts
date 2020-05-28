@@ -38,7 +38,7 @@ export class BdcDashboard extends InitializingComponent {
 		this.dashboard.registerTabs(async (modelView: azdata.ModelView) => {
 			this.modelView = modelView;
 
-			const overviewPage = new BdcDashboardOverviewPage(this.model, modelView);
+			const overviewPage = new BdcDashboardOverviewPage(this.model, modelView, this.dashboard);
 			this.overviewTab = {
 				title: loc.bdcOverview,
 				id: 'overview-tab',

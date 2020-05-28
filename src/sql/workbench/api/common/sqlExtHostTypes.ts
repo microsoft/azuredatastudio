@@ -179,6 +179,10 @@ export enum ModelComponentTypes {
 	PropertiesContainer
 }
 
+export enum ModelViewAction {
+	SelectTab = 'selectTab'
+}
+
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
 	AutoFit = 1,	// columns will be ForceFit up to a certain number; currently 3.  At 4 or more the behavior will switch to NO force fit

@@ -261,7 +261,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				width: this.componentMaxLength
 			}).component();
 			const name = modelParameter.name;
-			let column = values.find(x => x.name === modelParameter.name);
+			let column = values.find(x => x.name.toLocaleUpperCase() === modelParameter.name.toLocaleUpperCase());
 			if (!column) {
 				column = values.length > 0 ? values[0] : undefined;
 			}

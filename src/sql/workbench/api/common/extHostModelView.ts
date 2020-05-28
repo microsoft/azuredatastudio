@@ -15,7 +15,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape, ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, ColumnSizingMode } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, ColumnSizingMode, ModelViewAction } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { firstIndex } from 'vs/base/common/arrays';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -817,6 +817,10 @@ class ComponentWrapper implements azdata.Component {
 
 	public focus() {
 		return this._proxy.$focus(this._handle, this._id);
+	}
+
+	public doAction(action: ModelViewAction, ...args: any[]): Thenable<void> {
+		return this._proxy.$doAction(this._handle, this._id, action, ...args);
 	}
 }
 
@@ -1755,7 +1759,7 @@ class TabbedPanelComponentWrapper extends ComponentWrapper implements azdata.Tab
 		const itemConfigs = createFromTabs(tabs);
 		// Go through all of the tabs and either update their layout if they already exist
 		// or add them if they don't.
-		// We do not currently support reordering or removing tabs. 
+		// We do not currently support reordering or removing tabs.
 		itemConfigs.forEach(newItemConfig => {
 			const existingTab = this.itemConfigs.find(itemConfig => newItemConfig.config.id === itemConfig.config.id);
 			if (existingTab) {
@@ -1764,6 +1768,10 @@ class TabbedPanelComponentWrapper extends ComponentWrapper implements azdata.Tab
 				this.addItem(newItemConfig.component, newItemConfig.config);
 			}
 		});
+	}
+
+	public selectTab(id: string): void {
+		this.doAction(ModelViewAction.SelectTab, id);
 	}
 
 	public get onTabChanged(): vscode.Event<string> {

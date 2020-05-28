@@ -108,11 +108,12 @@ export class ImportModelWizard extends ModelViewBase {
 			} else {
 				await this.importAzureModel(this.modelsViewData);
 			}
+			this._apiWrapper.showInfoMessage(constants.modelRegisteredSuccessfully);
 			await this.storeImportConfigTable();
-			this.showInfoMessage(constants.modelRegisteredSuccessfully);
+
 			return true;
 		} catch (error) {
-			this.showErrorMessage(`${constants.modelFailedToRegister} ${constants.getErrorMessage(error)}`);
+			await this.showErrorMessage(`${constants.modelFailedToRegister} ${constants.getErrorMessage(error)}`);
 			return false;
 		}
 	}
