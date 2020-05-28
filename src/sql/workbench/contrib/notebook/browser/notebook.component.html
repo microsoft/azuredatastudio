@@ -25,7 +25,7 @@
 
 		<div *ngFor="let cell of cells">
 			<div class="notebook-cell" (click)="selectCell(cell, $event)" [class.active]="cell.active">
-				<cell-toolbar-component *ngIf="cell.active"></cell-toolbar-component>
+				<cell-toolbar-component *ngIf="cell.active" [cellModel]="cell" [model]="model"></cell-toolbar-component>
 				<code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
 				</code-cell-component>
 				<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
