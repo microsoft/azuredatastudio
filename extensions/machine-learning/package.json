@@ -11,8 +11,8 @@
   },
   "activationEvents": [
     "onCommand:ml.command.managePackages",
-		"onCommand:ml.command.predictModel",
-		"onCommand:ml.command.importModel",
+    "onCommand:ml.command.predictModel",
+    "onCommand:ml.command.importModel",
     "onDashboardOpen"
   ],
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
@@ -123,7 +123,7 @@
               "colspan": 5,
               "widget": {
                 "modelview": {
-                  "id":"mls.dashboard"
+                  "id": "mls.dashboard"
                 }
               }
             }
@@ -149,5 +149,10 @@
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
     "vscodetestcover": "github:corivera/vscodetestcover#1.0.6"
+  },
+  "__metadata": {
+    "id": "65",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
   }
 }
