@@ -69,6 +69,7 @@ export class BookTreeItem extends vscode.TreeItem {
 				vscode.TreeItemCollapsibleState.None;
 		this._sections = this.book.page.sections || this.book.page.subsections;
 		this._uri = this.book.page.url;
+		this.resourceUri = vscode.Uri.parse(this._uri);
 
 		if (this.book.tableOfContents.sections) {
 			let index = (this.book.tableOfContents.sections.indexOf(this.book.page));

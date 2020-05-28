@@ -104,6 +104,10 @@ export class TreeViewPane extends ViewPane {
 	private updateTreeVisibility(): void {
 		this.treeView.setVisibility(this.isBodyVisible());
 	}
+
+	getTreeView(): ITreeView {
+		return this.treeView;
+	}
 }
 
 class Root implements ITreeItem {
@@ -247,7 +251,9 @@ export class TreeView extends Disposable implements ITreeView {
 						children = node.children;
 					} else {
 						children = await (node instanceof Root ? dataProvider.getChildren() : dataProvider.getChildren(node));
-						node.children = children;
+						if (node) {
+							node.children = children;
+						}
 					}
 					if (node instanceof Root) {
 						const oldEmpty = this._isEmpty;

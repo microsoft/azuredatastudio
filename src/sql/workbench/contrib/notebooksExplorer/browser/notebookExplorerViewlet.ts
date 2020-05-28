@@ -35,7 +35,8 @@ import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { QueryBuilder, ITextQueryBuilderOptions } from 'vs/workbench/contrib/search/common/queryBuilder';
 import { IFileService } from 'vs/platform/files/common/files';
 import { getOutOfWorkspaceEditorResources } from 'vs/workbench/contrib/search/common/search';
-import { TreeViewPane } from 'vs/workbench/browser/parts/views/treeView';
+import { TreeViewPane, TreeView } from 'sql/workbench/browser/parts/views/treeView';
+import { NotebookSearchView } from 'sql/workbench/contrib/notebooksExplorer/browser/notebookSearchView';
 
 export const VIEWLET_ID = 'workbench.view.notebooks';
 
@@ -63,7 +64,20 @@ export class NotebookExplorerViewletViewsContribution implements IWorkbenchContr
 
 	private registerViews(): void {
 		let viewDescriptors = [];
+		viewDescriptors.push(this.createNotebookSearchViewDescriptor());
 		Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews(viewDescriptors, NOTEBOOK_VIEW_CONTAINER);
+	}
+
+	createNotebookSearchViewDescriptor(): IViewDescriptor {
+		return {
+			id: NotebookSearchView.ID,
+			name: localize('notebookExplorer.searchResults', "Search Results"),
+			ctorDescriptor: new SyncDescriptor(NotebookSearchView),
+			weight: 100,
+			canToggleVisibility: true,
+			hideByDefault: true,
+			order: 0,
+		};
 	}
 }
 
@@ -92,6 +106,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 	private triggerQueryDelayer: Delayer<void>;
 	private pauseSearching = false;
 	private queryBuilder: QueryBuilder;
+	private searchView: NotebookSearchView;
 
 	constructor(
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
@@ -155,6 +170,11 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		}));
 
 		this.trackInputBox(this.searchWidget.searchInputFocusTracker);
+		let containerModel = this.viewDescriptorService.getViewContainerModel(this.viewContainer);
+		let viewDescriptors = containerModel.visibleViewDescriptors;
+		if (viewDescriptors.length === 1) {
+			this.toggleViewVisibility(NotebookSearchView.ID);
+		}
 	}
 
 	cancelSearch(focus: boolean = true): boolean {
@@ -187,6 +207,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 
 		if (contentPattern.length === 0) {
 			this.clearSearchResults(false);
+			this.updateViewletsVisibility();
 			return;
 		}
 
@@ -237,14 +258,63 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 
 		this.validateQuery(query).then(() => {
 			// this.onQueryTriggered(query, options, excludePatternText, includePatternText, triggeredOnType);
-			let booksViewPane = this.views[0];
-			if (booksViewPane instanceof TreeViewPane) {
-
+			if (this.views.length > 1) {
+				let booksViewPane = (<TreeViewPane>this.views[0]).getTreeView();
+				if (booksViewPane instanceof TreeView) {
+					let dataProvider = booksViewPane?.dataProvider;
+					if (dataProvider) {
+						let items = dataProvider.getChildren();
+						items.then(results => {
+							results.forEach(root => {
+								booksViewPane.collapse(root);
+								root.children?.forEach(bookItem => {
+									booksViewPane.collapse(bookItem);
+									if (bookItem.label.label.indexOf(query.contentPattern.pattern) > 0) {
+										booksViewPane.expand(bookItem);
+									}
+								});
+							});
+						});
+					}
+				}
 			}
+
 			if (!preserveFocus) {
 				this.searchWidget.focus(false, true); // focus back to input field
 			}
+			this.updateViewletsVisibility();
 		}, onQueryValidationError);
+	}
+
+	updateViewletsVisibility(): void {
+		let containerModel = this.viewDescriptorService.getViewContainerModel(this.viewContainer);
+		let visibleViewDescriptors = containerModel.visibleViewDescriptors;
+		if (this.searchWidget.searchInput.getValue().length > 0) {
+			if (visibleViewDescriptors.length > 1) {
+				let allViews = containerModel.allViewDescriptors;
+				allViews.forEach(view => {
+					this.toggleViewVisibility(view.id);
+				});
+				this.getView(NotebookSearchView.ID)?.setVisible(true);
+			}
+		} else {
+			if (visibleViewDescriptors.length === 1) {
+				let allViews = containerModel.allViewDescriptors;
+				allViews.forEach(view => {
+					this.toggleViewVisibility(view.id);
+				});
+				this.getView(NotebookSearchView.ID)?.setVisible(false);
+			}
+		}
+	}
+
+	showSearchResultsView(): void {
+		this.searchView = <NotebookSearchView>this.getView(NotebookSearchView.ID);
+		if (!this.searchView) {
+			this.toggleViewVisibility(NotebookSearchView.ID);
+		} else {
+			this.searchView.setVisible(true);
+		}
 	}
 
 	clearSearchResults(clearInput = true): void {
