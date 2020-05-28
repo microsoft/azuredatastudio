@@ -230,55 +230,61 @@ export class FileBasedRecommendations extends ExtensionRecommendations {
 	}
 
 	private async promptRecommendedExtensionForFileExtension(fileExtension: string, installed: ILocalExtension[]): Promise<void> {
-		const fileExtensionSuggestionIgnoreList = <string[]>JSON.parse(this.storageService.get('extensionsAssistant/fileExtensionsSuggestionIgnore', StorageScope.GLOBAL, '[]'));
-		if (fileExtensionSuggestionIgnoreList.indexOf(fileExtension) > -1) {
+		// {{SQL CARBON EDIT}} - Turn off file extension-based extensions until we have a scenario that requires this.  The queryGallery isn't working correctly in ADS now.
+		let enableRecommendation: boolean = false;
+		if (!enableRecommendation) {
 			return;
-		}
-
-		const text = `ext:${fileExtension}`;
-		const pager = await this.extensionsWorkbenchService.queryGallery({ text, pageSize: 100 }, CancellationToken.None);
-		if (pager.firstPage.length === 0) {
-			return;
-		}
-
-		const installedExtensionsIds = installed.reduce((result, i) => { result.add(i.identifier.id.toLowerCase()); return result; }, new Set<string>());
-		if (pager.firstPage.some(e => installedExtensionsIds.has(e.identifier.id.toLowerCase()))) {
-			return;
-		}
-
-		this.notificationService.prompt(
-			Severity.Info,
-			localize('showLanguageExtensions', "The Marketplace has extensions that can help with '.{0}' files", fileExtension),
-			[{
-				label: searchMarketplace,
-				run: () => {
-					this.telemetryService.publicLog2<{ userReaction: string, fileExtension: string }, FileExtensionSuggestionClassification>('fileExtensionSuggestion:popup', { userReaction: 'ok', fileExtension });
-					this.viewletService.openViewlet('workbench.view.extensions', true)
-						.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
-						.then(viewlet => {
-							viewlet.search(`ext:${fileExtension}`);
-							viewlet.focus();
-						});
-				}
-			}, {
-				label: localize('dontShowAgainExtension', "Don't Show Again for '.{0}' files", fileExtension),
-				run: () => {
-					fileExtensionSuggestionIgnoreList.push(fileExtension);
-					this.storageService.store(
-						'extensionsAssistant/fileExtensionsSuggestionIgnore',
-						JSON.stringify(fileExtensionSuggestionIgnoreList),
-						StorageScope.GLOBAL
-					);
-					this.telemetryService.publicLog2<{ userReaction: string, fileExtension: string }, FileExtensionSuggestionClassification>('fileExtensionSuggestion:popup', { userReaction: 'neverShowAgain', fileExtension });
-				}
-			}],
-			{
-				sticky: true,
-				onCancel: () => {
-					this.telemetryService.publicLog2<{ userReaction: string, fileExtension: string }, FileExtensionSuggestionClassification>('fileExtensionSuggestion:popup', { userReaction: 'cancelled', fileExtension });
-				}
+		} else {
+			const fileExtensionSuggestionIgnoreList = <string[]>JSON.parse(this.storageService.get('extensionsAssistant/fileExtensionsSuggestionIgnore', StorageScope.GLOBAL, '[]'));
+			if (fileExtensionSuggestionIgnoreList.indexOf(fileExtension) > -1) {
+				return;
 			}
-		);
+
+			const text = `ext:${fileExtension}`;
+			const pager = await this.extensionsWorkbenchService.queryGallery({ text, pageSize: 100 }, CancellationToken.None);
+			if (pager.firstPage.length === 0) {
+				return;
+			}
+
+			const installedExtensionsIds = installed.reduce((result, i) => { result.add(i.identifier.id.toLowerCase()); return result; }, new Set<string>());
+			if (pager.firstPage.some(e => installedExtensionsIds.has(e.identifier.id.toLowerCase()))) {
+				return;
+			}
+
+			this.notificationService.prompt(
+				Severity.Info,
+				localize('showLanguageExtensions', "The Marketplace has extensions that can help with '.{0}' files", fileExtension),
+				[{
+					label: searchMarketplace,
+					run: () => {
+						this.telemetryService.publicLog2<{ userReaction: string, fileExtension: string }, FileExtensionSuggestionClassification>('fileExtensionSuggestion:popup', { userReaction: 'ok', fileExtension });
+						this.viewletService.openViewlet('workbench.view.extensions', true)
+							.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
+							.then(viewlet => {
+								viewlet.search(`ext:${fileExtension}`);
+								viewlet.focus();
+							});
+					}
+				}, {
+					label: localize('dontShowAgainExtension', "Don't Show Again for '.{0}' files", fileExtension),
+					run: () => {
+						fileExtensionSuggestionIgnoreList.push(fileExtension);
+						this.storageService.store(
+							'extensionsAssistant/fileExtensionsSuggestionIgnore',
+							JSON.stringify(fileExtensionSuggestionIgnoreList),
+							StorageScope.GLOBAL
+						);
+						this.telemetryService.publicLog2<{ userReaction: string, fileExtension: string }, FileExtensionSuggestionClassification>('fileExtensionSuggestion:popup', { userReaction: 'neverShowAgain', fileExtension });
+					}
+				}],
+				{
+					sticky: true,
+					onCancel: () => {
+						this.telemetryService.publicLog2<{ userReaction: string, fileExtension: string }, FileExtensionSuggestionClassification>('fileExtensionSuggestion:popup', { userReaction: 'cancelled', fileExtension });
+					}
+				}
+			);
+		}
 	}
 
 	private filterInstalled(recommendationsToSuggest: string[], installed: ILocalExtension[]): string[] {

@@ -40,6 +40,7 @@ export class PredictWizard extends ModelViewBase {
 	 * Opens a dialog to manage packages used by notebooks.
 	 */
 	public async open(): Promise<void> {
+		this.modelSourceType = ModelSourceType.RegisteredModels;
 		this.modelSourcePage = new ModelSourcePage(this._apiWrapper, this, [ModelSourceType.RegisteredModels, ModelSourceType.Local, ModelSourceType.Azure]);
 		this.columnsSelectionPage = new ColumnsSelectionPage(this._apiWrapper, this);
 		this.modelBrowsePage = new ModelBrowsePage(this._apiWrapper, this, false);
@@ -62,7 +63,7 @@ export class PredictWizard extends ModelViewBase {
 		});
 		wizard.registerNavigationValidator(async (pageInfo: azdata.window.WizardPageChangeInfo) => {
 			let validated: boolean = true;
-			if (pageInfo.newPage > pageInfo.lastPage) {
+			if (pageInfo.newPage === undefined || pageInfo.newPage > pageInfo.lastPage) {
 				validated = this.wizardView ? await this.wizardView.validate(pageInfo) : false;
 			}
 			if (validated) {
@@ -94,7 +95,7 @@ export class PredictWizard extends ModelViewBase {
 	private refreshButtons(loading: boolean): void {
 		if (this.wizardView && this.wizardView.wizard) {
 			this.wizardView.wizard.cancelButton.enabled = !loading;
-			this.wizardView.wizard.cancelButton.enabled = !loading;
+			this.wizardView.wizard.backButton.enabled = !loading;
 		}
 	}
 

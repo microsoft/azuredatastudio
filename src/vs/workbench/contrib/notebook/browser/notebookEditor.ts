@@ -29,9 +29,10 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { IEditorGroupView } from 'vs/workbench/browser/parts/editor/editor';
 import { EditorOptions, IEditorCloseEvent, IEditorMemento } from 'vs/workbench/common/editor';
 import { CELL_MARGIN, CELL_RUN_GUTTER, EDITOR_TOP_MARGIN, EDITOR_TOP_PADDING, EDITOR_BOTTOM_PADDING } from 'vs/workbench/contrib/notebook/browser/constants';
-import { CellEditState, CellFocusMode, ICellRange, ICellViewModel, INotebookCellList, INotebookEditor, INotebookEditorMouseEvent, NotebookLayoutInfo, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_EDITOR_EXECUTING_NOTEBOOK, NOTEBOOK_EDITOR_FOCUSED, INotebookEditorContribution, NOTEBOOK_EDITOR_RUNNABLE } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
-import { NotebookEditorInput, NotebookEditorModel } from 'vs/workbench/contrib/notebook/browser/notebookEditorInput';
-import { INotebookService } from 'vs/workbench/contrib/notebook/browser/notebookService';
+import { CellEditState, CellFocusMode, ICellRange, ICellViewModel, INotebookCellList, INotebookEditor, INotebookEditorMouseEvent, NotebookLayoutInfo, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_EDITOR_EXECUTING_NOTEBOOK, NOTEBOOK_EDITOR_FOCUSED, INotebookEditorContribution, NOTEBOOK_EDITOR_RUNNABLE, IEditableCellViewModel } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { NotebookEditorInput } from 'vs/workbench/contrib/notebook/browser/notebookEditorInput';
+import { NotebookEditorModel } from 'vs/workbench/contrib/notebook/common/notebookEditorModel';
+import { INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
 import { NotebookCellList } from 'vs/workbench/contrib/notebook/browser/view/notebookCellList';
 import { OutputRenderer } from 'vs/workbench/contrib/notebook/browser/view/output/outputRenderer';
 import { BackLayerWebView } from 'vs/workbench/contrib/notebook/browser/view/renderers/backLayerWebView';
@@ -45,6 +46,8 @@ import { getExtraColor } from 'vs/workbench/contrib/welcome/walkThrough/common/w
 import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { NotebookEditorExtensionsRegistry } from 'vs/workbench/contrib/notebook/browser/notebookEditorExtensions';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { IPosition, Position } from 'vs/editor/common/core/position';
+import { IReadonlyTextBuffer } from 'vs/editor/common/model';
 
 const $ = DOM.$;
 const NOTEBOOK_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'NotebookEditorViewState';
@@ -168,19 +171,20 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 		return true;
 	}
 
+	private updateEditorFocus() {
+		// Note - focus going to the webview will fire 'blur', but the webview element will be
+		// a descendent of the notebook editor root.
+		this.editorFocus?.set(DOM.isAncestor(document.activeElement, this.getDomNode()));
+	}
+
 	protected createEditor(parent: HTMLElement): void {
 		this._rootElement = DOM.append(parent, $('.notebook-editor'));
 		this.createBody(this._rootElement);
 		this.generateFontInfo();
 		this.editorFocus = NOTEBOOK_EDITOR_FOCUSED.bindTo(this.contextKeyService);
 		this.editorFocus.set(true);
-		this._register(this.onDidFocus(() => {
-			this.editorFocus?.set(true);
-		}));
-
-		this._register(this.onDidBlur(() => {
-			this.editorFocus?.set(false);
-		}));
+		this._register(this.onDidFocus(() => this.updateEditorFocus()));
+		this._register(this.onDidBlur(() => this.updateEditorFocus()));
 
 		this.editorEditable = NOTEBOOK_EDITOR_EDITABLE.bindTo(this.contextKeyService);
 		this.editorEditable.set(true);
@@ -252,9 +256,9 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 	private createCellList(): void {
 		DOM.addClass(this.body, 'cell-list-container');
 
-		const dndController = new CellDragAndDropController(this);
+		const dndController = this._register(new CellDragAndDropController(this));
 		const renders = [
-			this.instantiationService.createInstance(CodeCellRenderer, this, this.contextKeyService, this.renderedEditors, dndController),
+			this.instantiationService.createInstance(CodeCellRenderer, this, this.renderedEditors, dndController),
 			this.instantiationService.createInstance(MarkdownCellRenderer, this.contextKeyService, this, dndController, this.renderedEditors),
 		];
 
@@ -305,6 +309,8 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 
 		this.control = new NotebookCodeEditors(this.list, this.renderedEditors);
 		this.webview = this.instantiationService.createInstance(BackLayerWebView, this);
+		this.webview.webview.onDidBlur(() => this.updateEditorFocus());
+		this.webview.webview.onDidFocus(() => this.updateEditorFocus());
 		this._register(this.webview.onMessage(message => {
 			if (this.viewModel) {
 				this.notebookService.onDidReceiveMessage(this.viewModel.viewType, this.viewModel.uri, message);
@@ -416,7 +422,7 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 		await super.setInput(input, options, token);
 		const model = await input.resolve();
 
-		if (this.notebookViewModel === undefined || !this.notebookViewModel.equal(model) || this.webview === null) {
+		if (this.notebookViewModel === undefined || !this.notebookViewModel.equal(model.notebook) || this.webview === null) {
 			this.detachModel();
 			await this.attachModel(input, model);
 		}
@@ -476,7 +482,7 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 		await this.webview.waitForInitialization();
 
 		this.eventDispatcher = new NotebookEventDispatcher();
-		this.viewModel = this.instantiationService.createInstance(NotebookViewModel, input.viewType!, model, this.eventDispatcher, this.getLayoutInfo());
+		this.viewModel = this.instantiationService.createInstance(NotebookViewModel, input.viewType!, model.notebook, this.eventDispatcher, this.getLayoutInfo());
 		this.eventDispatcher.emit([new NotebookLayoutChangedEvent({ width: true, fontInfo: true }, this.getLayoutInfo())]);
 
 		this.updateForMetadata();
@@ -636,8 +642,6 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 
 			state.contributionsState = contributionsState;
 			this.editorMemento.saveEditorState(this.group, input.resource, state);
-
-			this.notebookViewModel.viewCells.forEach(cell => cell.save());
 		}
 	}
 
@@ -775,12 +779,164 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 			(direction === 'above' ? index : nextIndex) :
 			index;
 		const newCell = this.notebookViewModel!.createCell(insertIndex, initialText.split(/\r?\n/g), language, type, true);
+		return newCell;
+	}
 
-		if (type === CellKind.Markdown) {
-			newCell.editState = CellEditState.Editing;
+	private pushIfAbsent(positions: IPosition[], p: IPosition) {
+		const last = positions.length > 0 ? positions[positions.length - 1] : undefined;
+		if (!last || last.lineNumber !== p.lineNumber || last.column !== p.column) {
+			positions.push(p);
+		}
+	}
+
+	/**
+	 * Add split point at the beginning and the end;
+	 * Move end of line split points to the beginning of the next line;
+	 * Avoid duplicate split points
+	 */
+	private splitPointsToBoundaries(splitPoints: IPosition[], textBuffer: IReadonlyTextBuffer): IPosition[] | null {
+		const boundaries: IPosition[] = [];
+		const lineCnt = textBuffer.getLineCount();
+		const getLineLen = (lineNumber: number) => {
+			return textBuffer.getLineLength(lineNumber);
+		};
+
+		// split points need to be sorted
+		splitPoints = splitPoints.sort((l, r) => {
+			const lineDiff = l.lineNumber - r.lineNumber;
+			const columnDiff = l.column - r.column;
+			return lineDiff !== 0 ? lineDiff : columnDiff;
+		});
+
+		// eat-up any split point at the beginning, i.e. we ignore the split point at the very beginning
+		this.pushIfAbsent(boundaries, new Position(1, 1));
+
+		for (let sp of splitPoints) {
+			if (getLineLen(sp.lineNumber) + 1 === sp.column && sp.lineNumber < lineCnt) {
+				sp = new Position(sp.lineNumber + 1, 1);
+			}
+			this.pushIfAbsent(boundaries, sp);
 		}
 
-		return newCell;
+		// eat-up any split point at the beginning, i.e. we ignore the split point at the very end
+		this.pushIfAbsent(boundaries, new Position(lineCnt, getLineLen(lineCnt) + 1));
+
+		// if we only have two then they describe the whole range and nothing needs to be split
+		return boundaries.length > 2 ? boundaries : null;
+	}
+
+	private computeCellLinesContents(cell: IEditableCellViewModel, splitPoints: IPosition[]): string[] | null {
+		const rangeBoundaries = this.splitPointsToBoundaries(splitPoints, cell.textBuffer);
+		if (!rangeBoundaries) {
+			return null;
+		}
+		const newLineModels: string[] = [];
+		for (let i = 1; i < rangeBoundaries.length; i++) {
+			const start = rangeBoundaries[i - 1];
+			const end = rangeBoundaries[i];
+
+			newLineModels.push(cell.textModel.getValueInRange(new Range(start.lineNumber, start.column, end.lineNumber, end.column)));
+		}
+
+		return newLineModels;
+	}
+
+	async splitNotebookCell(cell: ICellViewModel): Promise<CellViewModel[] | null> {
+		if (!this.notebookViewModel!.metadata.editable) {
+			return null;
+		}
+
+		let splitPoints = cell.getSelectionsStartPosition();
+		if (splitPoints && splitPoints.length > 0) {
+			await cell.resolveTextModel();
+
+			if (!cell.hasModel()) {
+				return null;
+			}
+
+			let newLinesContents = this.computeCellLinesContents(cell, splitPoints);
+			if (newLinesContents) {
+
+				// update the contents of the first cell
+				cell.textModel.applyEdits([
+					{ range: cell.textModel.getFullModelRange(), text: newLinesContents[0] }
+				], true);
+
+				// create new cells based on the new text models
+				const language = cell.model.language;
+				const kind = cell.cellKind;
+				let insertIndex = this.notebookViewModel!.getCellIndex(cell) + 1;
+				const newCells = [];
+				for (let j = 1; j < newLinesContents.length; j++, insertIndex++) {
+					newCells.push(this.notebookViewModel!.createCell(insertIndex, newLinesContents[j], language, kind, true));
+				}
+				return newCells;
+			}
+		}
+
+		return null;
+	}
+
+	async joinNotebookCells(cell: ICellViewModel, direction: 'above' | 'below', constraint?: CellKind): Promise<ICellViewModel | null> {
+		if (!this.notebookViewModel!.metadata.editable) {
+			return null;
+		}
+
+		if (constraint && cell.cellKind !== constraint) {
+			return null;
+		}
+
+		const index = this.notebookViewModel!.getCellIndex(cell);
+		if (index === 0 && direction === 'above') {
+			return null;
+		}
+
+		if (index === this.notebookViewModel!.length - 1 && direction === 'below') {
+			return null;
+		}
+
+		if (direction === 'above') {
+			const above = this.notebookViewModel!.viewCells[index - 1];
+			if (constraint && above.cellKind !== constraint) {
+				return null;
+			}
+
+			await above.resolveTextModel();
+			if (!above.hasModel()) {
+				return null;
+			}
+
+			const insertContent = cell.getText();
+			const aboveCellLineCount = above.textModel.getLineCount();
+			const aboveCellLastLineEndColumn = above.textModel.getLineLength(aboveCellLineCount);
+			above.textModel.applyEdits([
+				{ range: new Range(aboveCellLineCount, aboveCellLastLineEndColumn + 1, aboveCellLineCount, aboveCellLastLineEndColumn + 1), text: insertContent }
+			]);
+
+			await this.deleteNotebookCell(cell);
+			return above;
+		} else {
+			const below = this.notebookViewModel!.viewCells[index + 1];
+			if (constraint && below.cellKind !== constraint) {
+				return null;
+			}
+
+			await cell.resolveTextModel();
+			if (!cell.hasModel()) {
+				return null;
+			}
+
+			const insertContent = below.getText();
+
+			const cellLineCount = cell.textModel.getLineCount();
+			const cellLastLineEndColumn = cell.textModel.getLineLength(cellLineCount);
+			cell.textModel.applyEdits([
+				{ range: new Range(cellLineCount, cellLastLineEndColumn + 1, cellLineCount, cellLastLineEndColumn + 1), text: insertContent }
+			]);
+
+			await this.deleteNotebookCell(below);
+			return cell;
+		}
 	}
 
 	async deleteNotebookCell(cell: ICellViewModel): Promise<boolean> {
@@ -788,7 +944,6 @@ export class NotebookEditor extends BaseEditor implements INotebookEditor {
 			return false;
 		}
 
-		(cell as CellViewModel).save();
 		const index = this.notebookViewModel!.getCellIndex(cell);
 		this.notebookViewModel!.deleteCell(index, true);
 		return true;
@@ -1158,7 +1313,7 @@ registerThemingParticipant((theme, collector) => {
 	if (focusedCellIndicatorColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .notebook-editor .monaco-list-row.focused .notebook-cell-focus-indicator { border-color: ${focusedCellIndicatorColor}; }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .notebook-editor .monaco-list-row .notebook-cell-focus-indicator { border-color: ${focusedCellIndicatorColor}; }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .notebook-editor .monaco-list-row .notebook-cell-insertion-indicator-top { background-color: ${focusedCellIndicatorColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .notebook-editor .monaco-list-row .cell-insertion-indicator { background-color: ${focusedCellIndicatorColor}; }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .notebook-editor .monaco-list-row.cell-editor-focus .cell-editor-part:before { outline: solid 1px ${focusedCellIndicatorColor}; }`);
 	}
 
@@ -1178,7 +1333,7 @@ registerThemingParticipant((theme, collector) => {
 	collector.addRule(`.monaco-workbench .part.editor > .content .notebook-editor .markdown-cell-row .cell .cell-editor-part { margin-left: ${CELL_RUN_GUTTER}px; }`);
 	collector.addRule(`.monaco-workbench .part.editor > .content .notebook-editor .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row  > div.cell.markdown { padding-left: ${CELL_RUN_GUTTER}px; }`);
 	collector.addRule(`.monaco-workbench .part.editor > .content .notebook-editor .cell .run-button-container { width: ${CELL_RUN_GUTTER}px; }`);
-	collector.addRule(`.monaco-workbench .part.editor > .content .notebook-editor .monaco-list .monaco-list-row .notebook-cell-insertion-indicator-top { left: ${CELL_MARGIN + CELL_RUN_GUTTER}px; right: ${CELL_MARGIN}px; }`);
+	collector.addRule(`.monaco-workbench .part.editor > .content .notebook-editor .monaco-list .monaco-list-row .cell-insertion-indicator { left: ${CELL_MARGIN + CELL_RUN_GUTTER}px; right: ${CELL_MARGIN}px; }`);
 	collector.addRule(`.monaco-workbench .part.editor > .content .notebook-editor .cell-drag-image .cell-editor-container > div { padding: ${EDITOR_TOP_PADDING}px 16px ${EDITOR_BOTTOM_PADDING}px 16px; }`);
 	collector.addRule(`.monaco-workbench .part.editor > .content .notebook-editor .monaco-list .monaco-list-row .notebook-cell-focus-indicator { left: ${CELL_MARGIN}px; }`);
 });

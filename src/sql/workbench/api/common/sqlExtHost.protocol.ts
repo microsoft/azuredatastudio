@@ -488,6 +488,26 @@ export abstract class ExtHostDataProtocolShape {
 	 * Serialization continuation request
 	 */
 	$continueSerialization(handle: number, requestParams: azdata.SerializeDataContinueRequestParams): Thenable<azdata.SerializeDataResult> { throw ni(); }
+
+
+	/**
+	 * SQL Assessment Section
+	 */
+
+	/**
+	* Perform an assessment
+	*/
+	$assessmentInvoke(handle: number, connectionUri: string, targetType: number): Thenable<azdata.SqlAssessmentResult> { throw ni(); }
+
+	/**
+	 * Get applicable assessment rules
+	 */
+	$getAssessmentItems(handle: number, connectionUri: string, targetType: number): Thenable<azdata.SqlAssessmentResult> { throw ni(); }
+
+	/**
+	 * Generate an assessment script based on recent results
+	 */
+	$generateAssessmentScript(handle: number, items: azdata.SqlAssessmentResultItem[]): Thenable<azdata.ResultStatus> { throw ni(); }
 }
 
 /**
@@ -551,6 +571,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerAdminServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerAgentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerSerializationProvider(providerId: string, handle: number): Promise<any>;
+	$registerSqlAssessmentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
@@ -732,12 +753,14 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$addToContainer(handle: number, containerId: string, item: IItemConfig, index?: number): Thenable<void>;
 	$removeFromContainer(handle: number, containerId: string, item: IItemConfig): Thenable<void>;
 	$setLayout(handle: number, componentId: string, layout: any): Thenable<void>;
+	$setItemLayout(handle: number, componentId: string, item: IItemConfig): Thenable<void>;
 	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
 	$registerEvent(handle: number, componentId: string): Thenable<void>;
 	$validate(handle: number, componentId: string): Thenable<boolean>;
 	$setDataProvider(handle: number, componentId: string): Thenable<void>;
 	$refreshDataProvider(handle: number, componentId: string, item?: any): Thenable<void>;
 	$focus(handle: number, componentId: string): Thenable<void>;
+	$doAction(handle: number, componentId: string, action: string, ...args: any[]): Thenable<void>;
 }
 
 export interface ExtHostObjectExplorerShape {
@@ -805,7 +828,7 @@ export interface ExtHostNotebookShape {
 	$handleNotebookClosed(notebookUri: UriComponents): void;
 
 	// Server Manager APIs
-	$doStartServer(managerHandle: number): Thenable<void>;
+	$doStartServer(managerHandle: number, kernelSpec: azdata.nb.IKernelSpec): Thenable<void>;
 	$doStopServer(managerHandle: number): Thenable<void>;
 
 	// Content Manager APIs

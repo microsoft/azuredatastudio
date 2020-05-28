@@ -78,7 +78,7 @@ export class ModelDetailsComponent extends ModelViewBase implements IDataCompone
 				component: this._createdComponent
 			},
 			{
-				title: constants.modelDeployed,
+				title: constants.modelImported,
 				component: this._deployedComponent
 			}, {
 				title: constants.modelFramework,

@@ -5,6 +5,9 @@
 
 import * as azdata from 'azdata';
 
+// Used to allow various methods of matching profiles
+export type ProfileMatcher = (a: IConnectionProfile, b: IConnectionProfile) => boolean;
+
 export interface IConnectionProfile extends azdata.IConnectionProfile {
 	getOptionsKey(): string;
 	matches(profile: azdata.IConnectionProfile): boolean;

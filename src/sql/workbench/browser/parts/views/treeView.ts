@@ -534,7 +534,7 @@ export class TreeView extends Disposable implements ITreeView {
 				}
 			},
 
-			getActionsContext: () => (<TreeViewItemHandleArg>{ $treeViewId: this.id, $treeItemHandle: node.handle }),
+			getActionsContext: () => (<TreeViewItemHandleArg>{ $treeViewId: this.id, $treeItemHandle: node.handle, $treeItem: node }),
 
 			actionRunner
 		});
@@ -860,11 +860,10 @@ class TreeRenderer extends Disposable implements ITreeRenderer<ITreeItem, FuzzyS
 		templateData.icon.title = title ? title : '';
 
 		if (iconUrl || sqlIcon) {
+			templateData.icon.className = 'custom-view-tree-node-item-icon';
 			DOM.toggleClass(templateData.icon, sqlIcon, !!sqlIcon);  // tracked change
 			DOM.toggleClass(templateData.icon, 'icon', !!sqlIcon);
-			templateData.icon.className = 'custom-view-tree-node-item-icon';
 			templateData.icon.style.backgroundImage = iconUrl ? DOM.asCSSUrl(iconUrl) : '';
-
 		} else {
 			let iconClass: string | undefined;
 			if (node.themeIcon && !this.isFileKindThemeIcon(node.themeIcon)) {

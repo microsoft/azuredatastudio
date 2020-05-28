@@ -140,5 +140,10 @@
 	"mssql.connectionOptions.packetSize.displayName": "Packet size",
 	"mssql.connectionOptions.packetSize.description": "Size in bytes of the network packets used to communicate with an instance of SQL Server",
 	"mssql.connectionOptions.typeSystemVersion.displayName": "Type system version",
-	"mssql.connectionOptions.typeSystemVersion.description": "Indicates which server type system the provider will expose through the DataReader"
+	"mssql.connectionOptions.typeSystemVersion.description": "Indicates which server type system the provider will expose through the DataReader",
+	"databasesListProperties.name": "Name",
+	"databasesListProperties.status": "Status",
+	"databasesListProperties.size": "Size (MB)",
+	"databasesListProperties.lastBackup": "Last backup",
+	"objectsListProperties.name": "Name"
 }

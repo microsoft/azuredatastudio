@@ -1798,8 +1798,9 @@ declare module 'azdata' {
 		deleteJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<ResultStatus>;
 
 		registerOnUpdated(handler: () => any): void;
-	}
 
+
+	}
 	// DacFx interfaces  -----------------------------------------------------------------------
 
 	// Security service interfaces ------------------------------------------------------------------------
@@ -4102,7 +4103,8 @@ declare module 'azdata' {
 		CapabilitiesProvider = 'CapabilitiesProvider',
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 		IconProvider = 'IconProvider',
-		SerializationProvider = 'SerializationProvider'
+		SerializationProvider = 'SerializationProvider',
+		SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider'
 	}
 
 	/**
@@ -4590,7 +4592,7 @@ declare module 'azdata' {
 			 * Starts the server. Some server types may not support or require this.
 			 * Should no-op if server is already started
 			 */
-			startServer(): Thenable<void>;
+			startServer(kernelSpec: IKernelSpec): Thenable<void>;
 
 			/**
 			 * Stops the server. Some server types may not support or require this

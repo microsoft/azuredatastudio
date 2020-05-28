@@ -95,20 +95,23 @@ export default class MainController implements vscode.Disposable {
 		let modelManagementController = new ModelManagementController(this._apiWrapper, this._rootPath,
 			azureModelsService, registeredModelService, predictService);
 
-		let dashboardWidget = new DashboardWidget(this._apiWrapper, this._rootPath);
+		let dashboardWidget = new DashboardWidget(this._apiWrapper, this._rootPath, predictService);
 		dashboardWidget.register();
 
 		this._apiWrapper.registerCommand(constants.mlManageModelsCommand, (async () => {
 			await modelManagementController.manageRegisteredModels();
 		}));
 		this._apiWrapper.registerCommand(constants.mlImportModelCommand, (async () => {
-			await modelManagementController.registerModel(undefined);
+			await modelManagementController.importModel(undefined);
 		}));
 		this._apiWrapper.registerCommand(constants.mlsPredictModelCommand, (async () => {
 			await modelManagementController.predictModel();
 		}));
 		this._apiWrapper.registerCommand(constants.mlsDependenciesCommand, (async () => {
 			await packageManager.installDependencies();
+		}));
+		this._apiWrapper.registerCommand(constants.mlsEnableExternalScriptCommand, (async () => {
+			await packageManager.enableExternalScript();
 		}));
 		this._apiWrapper.registerTaskHandler(constants.mlManagePackagesCommand, async () => {
 			await packageManager.managePackages();

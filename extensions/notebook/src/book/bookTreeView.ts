@@ -86,7 +86,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				if (notebookDocuments) {
 					// update trust state of opened items
 					notebookDocuments.forEach(document => {
-						let notebook = this.currentBook.getNotebook(document.uri.fsPath);
+						let notebook = this.currentBook?.getNotebook(document.uri.fsPath);
 						if (notebook && this._bookTrustManager.isNotebookTrustedByDefault(document.uri.fsPath)) {
 							document.setTrusted(true);
 						}
@@ -114,6 +114,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 
 			if (showPreview) {
+				this._bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
 				await this.showPreviewFile(urlToOpen);
 			}
 
@@ -221,9 +222,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						openDocumentListenerUnsubscriber.dispose();
 					});
 				}
-
-				let doc = await vscode.workspace.openTextDocument(resource);
-				vscode.window.showTextDocument(doc);
+				azdata.nb.showNotebookDocument(vscode.Uri.file(resource));
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openNotebookError(resource, e instanceof Error ? e.message : e));
@@ -236,10 +235,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (!uri) {
 			let openDocument = azdata.nb.activeNotebookEditor;
 			if (openDocument) {
-				bookItem = this.currentBook.getNotebook(openDocument.document.uri.fsPath);
+				bookItem = this.currentBook?.getNotebook(openDocument.document.uri.fsPath);
 			}
 		} else if (uri.fsPath) {
-			bookItem = this.currentBook.getNotebook(uri.fsPath);
+			bookItem = this.currentBook?.getNotebook(uri.fsPath);
 		}
 		if (bookItem) {
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
@@ -277,7 +276,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	async saveJupyterBooks(): Promise<void> {
-		if (this.currentBook.bookPath) {
+		if (this.currentBook?.bookPath) {
 			const allFilesFilter = loc.allFiles;
 			let filter: any = {};
 			filter[allFilesFilter] = '*';

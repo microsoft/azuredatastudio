@@ -22,6 +22,7 @@ export class MockExtensionContext implements vscode.ExtensionContext {
 	constructor() {
 		this.subscriptions = [];
 	}
+	environmentVariableCollection: vscode.EnvironmentVariableCollection;
 }
 
 export class MockOutputChannel implements vscode.OutputChannel {

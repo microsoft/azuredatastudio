@@ -173,7 +173,12 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 
 		if (this._table) {
 			if (this._forInput) {
-				const columns = await this.listColumnNames(table);
+				let columns: TableColumn[];
+				try {
+					columns = await this.listColumnNames(table);
+				} catch {
+					columns = [];
+				}
 				if (modelParameters?.inputs && columns) {
 					tableData = tableData.concat(modelParameters.inputs.map(input => this.createInputTableRow(input, columns)));
 				}
@@ -212,6 +217,10 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 			const dataType = dataTypes.find(x => x === modelParameter.type);
 			if (dataType) {
 				nameInput.value = dataType;
+			} else {
+				// Output type not supported
+				//
+				modelParameter.type = dataTypes[0];
 			}
 			this._parameters.push({ columnName: name, paramName: name, dataType: modelParameter.type });
 
@@ -234,7 +243,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 					selectedRow.columnName = displayNameInput.value || name;
 				}
 			});
-			return [`${name}(${modelParameter.type ? modelParameter.type : constants.unsupportedModelParameterType})`, displayNameInput, nameInput];
+			return [`${name}(${modelParameter.originalType ? modelParameter.originalType : constants.unsupportedModelParameterType})`, displayNameInput, nameInput];
 		}
 
 		return [];
@@ -242,19 +251,40 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 
 	private createInputTableRow(modelParameter: ModelParameter, columns: TableColumn[] | undefined): any[] {
 		if (this._modelBuilder && columns) {
-			const values = columns.map(c => { return { name: c.columnName, displayName: `${c.columnName}(${c.dataType})` }; });
+
+			let values = columns.map(c => { return { name: c.columnName, displayName: `${c.columnName}(${c.dataType})` }; });
+			if (columns.length > 0 && columns[0].columnName !== constants.selectColumnTitle) {
+				values = [{ displayName: constants.selectColumnTitle, name: '' }].concat(values);
+			}
 			let nameInput = this._modelBuilder.dropDown().withProperties({
 				values: values,
 				width: this.componentMaxLength
 			}).component();
 			const name = modelParameter.name;
-			let column = values.find(x => x.name === modelParameter.name);
+			let column = values.find(x => x.name.toLocaleUpperCase() === modelParameter.name.toLocaleUpperCase());
 			if (!column) {
-				column = values[0];
+				column = values.length > 0 ? values[0] : undefined;
 			}
+			const currentColumn = columns.find(x => x.columnName === column?.name);
 			nameInput.value = column;
 
-			this._parameters.push({ columnName: column.name, paramName: name });
+			if (column) {
+				this._parameters.push({ columnName: column.name, paramName: name, paramType: modelParameter.type });
+			}
+			const inputContainer = this._modelBuilder.flexContainer().withLayout({
+				flexFlow: 'row',
+				width: this.componentMaxLength + 20,
+				justifyContent: 'flex-start'
+			}).component();
+			const warningButton = this.createWarningButton();
+			warningButton.onDidClick(() => {
+			});
+
+			const css = {
+				'padding-top': '5px',
+				'padding-right': '5px',
+				'margin': '0px'
+			};
 
 			nameInput.onValueChanged(() => {
 				const selectedColumn = nameInput.value;
@@ -264,12 +294,36 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				if (selectedRow) {
 					selectedRow.columnName = value || '';
 				}
+
+				const currentColumn = columns.find(x => x.columnName === value);
+				if (currentColumn && modelParameter.type === currentColumn?.dataType) {
+					inputContainer.removeItem(warningButton);
+				} else {
+					inputContainer.addItem(warningButton, {
+						CSSStyles: css
+					});
+				}
 			});
+
 			const label = this._modelBuilder.inputBox().withProperties({
-				value: `${name}(${modelParameter.type ? modelParameter.type : constants.unsupportedModelParameterType})`,
+				value: `${name}(${modelParameter.originalType ? modelParameter.originalType : constants.unsupportedModelParameterType})`,
 				enabled: false,
 				width: this.componentMaxLength
 			}).component();
+
+
+			inputContainer.addItem(label, {
+				CSSStyles: {
+					'padding': '0px',
+					'padding-right': '5px',
+					'margin': '0px'
+				}
+			});
+			if (currentColumn && modelParameter.type !== currentColumn?.dataType) {
+				inputContainer.addItem(warningButton, {
+					CSSStyles: css
+				});
+			}
 			const image = this._modelBuilder.image().withProperties({
 				width: 50,
 				height: 50,
@@ -281,10 +335,26 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				iconHeight: 20,
 				title: 'maps'
 			}).component();
-			return [nameInput, image, label];
+			return [nameInput, image, inputContainer];
 		}
 
 		return [];
+	}
+
+	private createWarningButton(): azdata.ButtonComponent {
+		const warningButton = this._modelBuilder.button().withProperties({
+			width: '10px',
+			height: '10px',
+			title: constants.columnDataTypeMismatchWarning,
+			iconPath: {
+				dark: this.asAbsolutePath('images/dark/warning_notification_inverse.svg'),
+				light: this.asAbsolutePath('images/light/warning_notification.svg'),
+			},
+			iconHeight: '10px',
+			iconWidth: '10px'
+		}).component();
+
+		return warningButton;
 	}
 
 	/**

@@ -9,7 +9,7 @@ import { ConnectionConfig } from 'sql/platform/connection/common/connectionConfi
 import { fixupConnectionCredentials } from 'sql/platform/connection/common/connectionInfo';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { IConnectionProfile, ProfileMatcher } from 'sql/platform/connection/common/interfaces';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
@@ -103,21 +103,18 @@ export class ConnectionStore {
 	 * @param whether the plaintext password should be written to the settings file
 	 * @returns a Promise that returns the original profile, for help in chaining calls
 	 */
-	public saveProfile(profile: IConnectionProfile, forceWritePlaintextPassword?: boolean): Promise<IConnectionProfile> {
+	public async saveProfile(profile: IConnectionProfile, forceWritePlaintextPassword?: boolean, matcher?: ProfileMatcher): Promise<IConnectionProfile> {
 		// Add the profile to the saved list, taking care to clear out the password field if necessary
 		const savedProfile = forceWritePlaintextPassword ? profile : this.getProfileWithoutPassword(profile);
-		return this.saveProfileToConfig(savedProfile)
-			.then(savedConnectionProfile => {
-				profile.groupId = savedConnectionProfile.groupId;
-				profile.id = savedConnectionProfile.id;
-				// Only save if we successfully added the profile
-				return this.saveProfilePasswordIfNeeded(profile);
-			}).then(() => {
-				// Add necessary default properties before returning
-				// this is needed to support immediate connections
-				fixupConnectionCredentials(profile);
-				return profile;
-			});
+		const savedConnectionProfile = await this.saveProfileToConfig(savedProfile, matcher);
+		profile.groupId = savedConnectionProfile.groupId;
+		profile.id = savedConnectionProfile.id;
+		// Only save if we successfully added the profile
+		await this.saveProfilePasswordIfNeeded(profile);
+		// Add necessary default properties before returning
+		// this is needed to support immediate connections
+		fixupConnectionCredentials(profile);
+		return profile;
 	}
 
 	public savePassword(profile: IConnectionProfile): Promise<boolean> {
@@ -134,9 +131,9 @@ export class ConnectionStore {
 		return this.connectionConfig.addGroup(profile);
 	}
 
-	private saveProfileToConfig(profile: IConnectionProfile): Promise<IConnectionProfile> {
+	private saveProfileToConfig(profile: IConnectionProfile, matcher?: ProfileMatcher): Promise<IConnectionProfile> {
 		if (profile.saveProfile) {
-			return this.connectionConfig.addConnection(profile);
+			return this.connectionConfig.addConnection(profile, matcher);
 		} else {
 			return Promise.resolve(profile);
 		}

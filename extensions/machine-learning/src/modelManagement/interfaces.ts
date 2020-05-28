@@ -18,6 +18,7 @@ export interface ListWorkspaceModelsResult extends Array<WorkspaceModel> {
  */
 export interface WorkspaceModel extends Resource {
 	framework?: string;
+	description?: string;
 	frameworkVersion?: string;
 	createdBy?: string;
 	createdTime?: string;
@@ -52,12 +53,14 @@ export type WorkspacesModelsResponse = ListWorkspaceModelsResult & {
 export interface ImportedModel extends ImportedModelDetails {
 	id: number;
 	content?: string;
+	contentLength?: number;
 	table: DatabaseTable;
 }
 
 export interface ModelParameter {
 	name: string;
 	type: string;
+	originalType?: string;
 }
 
 export interface ModelParameters {

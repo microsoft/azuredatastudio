@@ -131,8 +131,8 @@
         "command": "jupyter.cmd.managePackages",
         "title": "%title.managePackages%",
         "icon": {
-          "dark": "resources/dark/manage_inverse.svg",
-          "light": "resources/light/manage.svg"
+          "dark": "resources/dark/packages_inverse.svg",
+          "light": "resources/light/packages.svg"
         }
       },
       {

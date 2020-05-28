@@ -9,6 +9,7 @@ import * as azdata from 'azdata';
 import { Event } from 'vs/base/common/event';
 import { QueryInfo } from 'sql/workbench/services/query/common/queryModelService';
 import { DataService } from 'sql/workbench/services/query/common/dataService';
+import { IRange } from 'vs/editor/common/core/range';
 
 export class TestQueryModelService implements IQueryModelService {
 	_serviceBrand: any;
@@ -25,10 +26,10 @@ export class TestQueryModelService implements IQueryModelService {
 	getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Promise<azdata.ResultSetSubset> {
 		throw new Error('Method not implemented.');
 	}
-	runQuery(uri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): void {
+	runQuery(uri: string, range: IRange, runOptions?: azdata.ExecutionPlanOptions): void {
 		throw new Error('Method not implemented.');
 	}
-	runQueryStatement(uri: string, selection: azdata.ISelectionData): void {
+	runQueryStatement(uri: string, range: IRange): void {
 		throw new Error('Method not implemented.');
 	}
 	runQueryString(uri: string, selection: string) {
