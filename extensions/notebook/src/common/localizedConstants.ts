@@ -47,5 +47,5 @@ export const location = localize('location', "Location");
 export const openRemoteBook = localize('openRemoteBook', "Open Remote Book");
 export const onGitHub = localize('onGitHub', "GitHub");
 export const onSharedFile = localize('onsharedFile', "Shared File");
-export const ok = localize('ok', "OK");
+export const open = localize('open', "Open");
 export const cancel = localize('cancel', "Cancel");
