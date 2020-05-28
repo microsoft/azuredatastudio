@@ -132,10 +132,10 @@ export class PickPackagesPage extends BasePage {
 		this.packageTableSpinner.loading = true;
 		try {
 			// Fetch list of required packages for the specified kernel
-			let pkgVersions: RequiredPackageInfo[] = [];
+			let requiredPkgVersions: RequiredPackageInfo[] = [];
 			let requiredPackages = this.model.installation.requiredKernelPackages.get(kernelName);
 			requiredPackages.forEach(pkg => {
-				pkgVersions.push({ name: pkg.name, existingVersion: undefined, requiredVersion: pkg.version });
+				requiredPkgVersions.push({ name: pkg.name, existingVersion: undefined, requiredVersion: pkg.version });
 			});
 
 			// For each required package, check if there is another version of that package already installed
@@ -149,22 +149,18 @@ export class PickPackagesPage extends BasePage {
 				}
 			}
 
-			pkgVersions.forEach(pkgVersion => {
+			requiredPkgVersions.forEach(pkgVersion => {
 				let installedPackageVersion = this.packageVersionMap.get(pkgVersion.name);
 				if (installedPackageVersion) {
 					pkgVersion.existingVersion = installedPackageVersion;
 				}
 			});
 
-			if (pkgVersions.length > 0) {
-				let packageData: string[][] = [];
-				pkgVersions.forEach(pkg => {
-					packageData.push([pkg.name, pkg.existingVersion ?? '-', pkg.requiredVersion]);
-				});
-				this.requiredPackagesTable.data = packageData;
+			if (requiredPkgVersions.length > 0) {
+				this.requiredPackagesTable.data = requiredPkgVersions.map(pkg => [pkg.name, pkg.existingVersion ?? '-', pkg.requiredVersion]);
 				this.model.packagesToInstall = requiredPackages;
 			} else {
-				this.instance.showErrorMessage(localize('msgUnsupportedKernel', "Could not retrieve packages for unsupported kernel {0}", kernelName));
+				this.instance.showErrorMessage(localize('msgUnsupportedKernel', "Could not retrieve packages for kernel {0}", kernelName));
 				this.requiredPackagesTable.data = [['-', '-', '-']];
 				this.model.packagesToInstall = undefined;
 			}
