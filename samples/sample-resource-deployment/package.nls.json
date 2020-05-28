@@ -1,5 +1,5 @@
 {
-	"extension-displayName": "Sample resource deployment extension for  Data Studio",
+	"extension-displayName": "Sample resource deployment extension for Azure Data Studio",
 	"extension-description": "You can contribute a resource deployment type without any coding",
 	"resource-type-display-name": "X Data Service",
 	"resource-type-description": "X Data Service provides a full set of features...",
