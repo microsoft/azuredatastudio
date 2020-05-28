@@ -632,7 +632,13 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 	return { input: input, browseButton: browseFileButton };
 }
 
-function getClusterContexts(file: string) {
+/**
+ *	This function returns a method that reads the cluster context from the {@param file}. This method then returns the cluster contexts
+ *  read as an OptionsInfo object asynchronously.
+ *
+ * @param file - the file from which to fetch the cluster contexts
+ */
+function getClusterContexts(file: string): (() => Promise<OptionsInfo>) {
 	return async () => {
 		try {
 			let currentClusterContext = '';
