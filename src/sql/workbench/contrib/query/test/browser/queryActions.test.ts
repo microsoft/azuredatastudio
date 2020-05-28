@@ -640,7 +640,7 @@ suite('SQL QueryAction Tests', () => {
 		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAnyString())).returns(() => true);
 
 		// Mocking runQuery and runQueryStatement in unititledQueryEditorInput
-		testQueryInput.setup(x => x.runQuery(TypeMoq.It.isAny())).callback(() => { calledRunQueryStatementOnInput = true; });
+		testQueryInput.setup(x => x.runQuery(TypeMoq.It.isAny())).callback(() => { calledRunQueryOnInput = true; });
 		testQueryInput.setup(x => x.runQueryStatement(TypeMoq.It.isAny())).callback(() => { calledRunQueryStatementOnInput = true; });
 
 		// mocking QueryModelService
@@ -658,20 +658,19 @@ suite('SQL QueryAction Tests', () => {
 
 		assert.equal(calledRunQueryStatementOnInput, true, 'runCurrent should call runQueryStatement');
 		assert.equal(calledRunQueryOnInput, false, 'run should not call runQuery');
-		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isValue(predefinedCursorSelection)), TypeMoq.Times.once());
 		testQueryInput.verify(x => x.runQuery(TypeMoq.It.isAny()), TypeMoq.Times.never());
 
 
 		// setting up queryEditor with a selection range. This case should call runQuery
+		queryEditor.setup(x => x.getSelection()).returns(() => { return predefinedRangeSelection; });
 		queryEditor.setup(x => x.getSelection(false)).returns(() => { return predefinedRangeSelection; });
 		calledRunQueryOnInput = false;
 		calledRunQueryStatementOnInput = false;
 		await queryAction.runCurrent();
-
 		assert.equal(calledRunQueryStatementOnInput, false, 'runCurrent should not call runQueryStatement');
 		assert.equal(calledRunQueryOnInput, true, 'run should call runQuery');
-		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isAny()), TypeMoq.Times.once());
-		testQueryInput.verify(x => x.runQuery(TypeMoq.It.isAny()), TypeMoq.Times.never());
+		testQueryInput.verify(x => x.runQuery(TypeMoq.It.isValue(predefinedRangeSelection)), TypeMoq.Times.once());
 	});
 });
 
