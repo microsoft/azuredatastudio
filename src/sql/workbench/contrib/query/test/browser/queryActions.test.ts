@@ -666,14 +666,13 @@ suite('SQL QueryAction Tests', () => {
 		// checking if runQuery is not called at all
 		testQueryInput.verify(x => x.runQuery(TypeMoq.It.isAny()), TypeMoq.Times.never());
 
-
 		// setting up queryEditor with a selection range. This case should call runQuery
 		queryEditor.setup(x => x.getSelection()).returns(() => { return predefinedRangeSelection; });
 		queryEditor.setup(x => x.getSelection(false)).returns(() => { return predefinedRangeSelection; });
+
 		calledRunQueryOnInput = false;
 		calledRunQueryStatementOnInput = false;
 		await queryAction.runCurrent();
-
 
 		assert.equal(calledRunQueryStatementOnInput, false, 'runCurrent should not call runQueryStatement');
 		assert.equal(calledRunQueryOnInput, true, 'run should call runQuery');
