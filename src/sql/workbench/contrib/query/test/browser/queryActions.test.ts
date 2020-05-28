@@ -658,7 +658,12 @@ suite('SQL QueryAction Tests', () => {
 
 		assert.equal(calledRunQueryStatementOnInput, true, 'runCurrent should call runQueryStatement');
 		assert.equal(calledRunQueryOnInput, false, 'run should not call runQuery');
+
+		// checking if runQuery statement is called with predefinedCursorSelection only
 		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isValue(predefinedCursorSelection)), TypeMoq.Times.once());
+		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isAny()), TypeMoq.Times.once());
+
+		// checking if runQuery is not called at all
 		testQueryInput.verify(x => x.runQuery(TypeMoq.It.isAny()), TypeMoq.Times.never());
 
 
@@ -668,9 +673,17 @@ suite('SQL QueryAction Tests', () => {
 		calledRunQueryOnInput = false;
 		calledRunQueryStatementOnInput = false;
 		await queryAction.runCurrent();
+
+
 		assert.equal(calledRunQueryStatementOnInput, false, 'runCurrent should not call runQueryStatement');
 		assert.equal(calledRunQueryOnInput, true, 'run should call runQuery');
+
+		// checking if runQuery is called with predefinedRangeSelection only
 		testQueryInput.verify(x => x.runQuery(TypeMoq.It.isValue(predefinedRangeSelection)), TypeMoq.Times.once());
+		testQueryInput.verify(x => x.runQuery(TypeMoq.It.isAny()), TypeMoq.Times.once());
+
+		// checking if runQueryStatement is never called
+		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 });
 
