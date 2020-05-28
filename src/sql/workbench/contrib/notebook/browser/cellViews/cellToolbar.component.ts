@@ -63,7 +63,7 @@ export class CellToolbarComponent {
 
 		// Todo: Wire up toolbarToggleEditMode
 		// Todo: Wire up toolbarUnselectActiveCell
-		this._editCellAction = this.instantiationService.createInstance(EditCellAction, 'notebook.editCell', true);
+		this._editCellAction = this.instantiationService.createInstance(EditCellAction, 'notebook.editCell', true, this.cellModel.isEditMode);
 		this._editCellAction.enabled = true;
 
 		let taskbar = <HTMLElement>this.celltoolbar.nativeElement;

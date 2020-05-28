@@ -148,6 +148,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._register(this.cellModel.onOutputsChanged(e => {
 			this.updatePreview();
 		}));
+		this._register(this.cellModel.onCellModeChanged(mode => {
+			if (mode !== this.isEditMode) {
+				this.toggleEditMode(mode);
+			}
+		}));
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {

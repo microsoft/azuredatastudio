@@ -37,7 +37,7 @@ export class EditCellAction extends ToggleableAction {
 	private static readonly maskedIconClass = 'masked-icon';
 
 	constructor(
-		id: string, toggleTooltip: boolean
+		id: string, toggleTooltip: boolean, isEditMode: boolean
 	) {
 		super(id, {
 			baseClass: EditCellAction.baseClass,
@@ -47,7 +47,7 @@ export class EditCellAction extends ToggleableAction {
 			toggleOffClass: EditCellAction.editCssClass,
 			maskedIconClass: EditCellAction.maskedIconClass,
 			shouldToggleTooltip: toggleTooltip,
-			isOn: false
+			isOn: isEditMode
 		});
 	}
 
