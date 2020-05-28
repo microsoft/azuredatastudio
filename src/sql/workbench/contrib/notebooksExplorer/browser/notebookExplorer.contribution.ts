@@ -13,7 +13,6 @@ import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } fr
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
-import { NotebookExplorerContainerExtensionHandler } from 'sql/workbench/contrib/notebooksExplorer/browser/notebookExplorerExtensionPoint';
 
 Registry.as<ViewletRegistry>(ViewletExtensions.Viewlets).setDefaultViewletId(VIEWLET_ID);
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
@@ -28,5 +27,3 @@ registry.registerWorkbenchAction(
 	'View: Show Notebook Explorer',
 	localize('notebookExplorer.view', "View")
 );
-
-workbenchRegistry.registerWorkbenchContribution(NotebookExplorerContainerExtensionHandler, LifecyclePhase.Starting);
