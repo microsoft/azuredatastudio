@@ -33,11 +33,11 @@ export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 		});
 	}
 
-	public onLeave() {
+	public onLeave(): void {
 		this.wizard.wizardObject.message = { text: '' };
 	}
 
-	public onEnter() {
+	public onEnter(): void {
 		this.formItems.forEach(item => {
 			this.form!.removeFormItem(item);
 		});
@@ -78,6 +78,7 @@ export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 					title: pageInfo.title,
 					component: createSection({
 						container: this.wizard.wizardObject,
+						inputComponents: this.wizard.inputComponents,
 						sectionInfo: summarySectionInfo,
 						view: this.view,
 						onNewDisposableCreated: () => { },

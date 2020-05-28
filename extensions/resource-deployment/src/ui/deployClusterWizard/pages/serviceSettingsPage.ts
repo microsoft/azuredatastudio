@@ -119,6 +119,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				return createSection({
 					view: view,
 					container: this.wizard.wizardObject,
+					inputComponents: this.inputComponents,
 					sectionInfo: sectionInfo,
 					onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 						this.wizard.registerDisposable(disposable);
@@ -400,6 +401,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	public onLeave(): void {
 		setModelValues(this.inputComponents, this.wizard.model);
+		Object.assign(this.wizard.inputComponents, this.inputComponents);
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});

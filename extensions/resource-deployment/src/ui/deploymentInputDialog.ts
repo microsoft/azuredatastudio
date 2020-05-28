@@ -42,6 +42,7 @@ export class DeploymentInputDialog extends DialogBase {
 		initializeDialog({
 			dialogInfo: this.dialogInfo,
 			container: this._dialogObject,
+			inputComponents: this.inputComponents,
 			onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 				this._toDispose.push(disposable);
 			},

@@ -15,6 +15,7 @@ import { IKubeService } from '../../services/kubeService';
 import { INotebookService } from '../../services/notebookService';
 import { IToolsService } from '../../services/toolsService';
 import { getErrorMessage, setEnvironmentVariablesForInstallPaths } from '../../utils';
+import { InputComponents } from '../modelViewUtils';
 import { WizardBase } from '../wizardBase';
 import { WizardPageBase } from '../wizardPageBase';
 import * as VariableNames from './constants';
@@ -27,7 +28,9 @@ import { SummaryPage } from './pages/summaryPage';
 import { TargetClusterContextPage } from './pages/targetClusterPage';
 const localize = nls.loadMessageBundle();
 
-export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployClusterWizardModel> {
+export class DeployClusterWizard extends WizardBase<DeployClusterWizard, WizardPageBase<DeployClusterWizard>, DeployClusterWizardModel> {
+	private _inputComponents: InputComponents = {};
+
 	private _saveConfigButton: azdata.window.Button;
 
 	public get kubeService(): IKubeService {
@@ -40,6 +43,10 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 
 	public get notebookService(): INotebookService {
 		return this._notebookService;
+	}
+
+	public get inputComponents(): InputComponents {
+		return this._inputComponents;
 	}
 
 	public showCustomButtons(): void {

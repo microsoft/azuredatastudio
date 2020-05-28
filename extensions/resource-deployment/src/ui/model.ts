@@ -89,23 +89,4 @@ export class Model {
 			});
 		setEnvironmentVariablesForInstallPaths(tools, env);
 	}
-
-	/**
-	 * Returns a string that interpolates all variable names in the {@param inputValue} string de-marked as $(VariableName)
-	 * substituted with their corresponding values.
-	 *
-	 * Only variables in the current model starting with {@see NoteBookEnvironmentVariablePrefix} are replaced.
-	 *
-	 * @param inputValue
-	 */
-	public substituteVariableValues(inputValue: string): string {
-		Object.keys(this.propValueObject)
-			.filter(propertyName => propertyName.startsWith(NoteBookEnvironmentVariablePrefix))
-			.forEach(propertyName => {
-				const value = this.getStringValue(propertyName) || '';
-				const re: RegExp = new RegExp(`\\\$\\\(${propertyName}\\\)`, 'gi');
-				inputValue = inputValue.replace(re, value);
-			});
-		return inputValue;
-	}
 }

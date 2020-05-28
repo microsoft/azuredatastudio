@@ -193,6 +193,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			const basicSettingsGroup = createSection({
 				view: view,
 				container: self.wizard.wizardObject,
+				inputComponents: this.wizard.inputComponents,
 				sectionInfo: basicSection,
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
@@ -207,6 +208,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			const activeDirectorySettingsGroup = createSection({
 				view: view,
 				container: self.wizard.wizardObject,
+				inputComponents: this.wizard.inputComponents,
 				sectionInfo: activeDirectorySection,
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
@@ -221,6 +223,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			const dockerSettingsGroup = createSection({
 				view: view,
 				container: self.wizard.wizardObject,
+				inputComponents: this.wizard.inputComponents,
 				sectionInfo: dockerSection,
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
@@ -266,6 +269,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	public onLeave() {
 		setModelValues(this.inputComponents, this.wizard.model);
+		Object.assign(this.wizard.inputComponents, this.inputComponents);
 		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
 			const variableDNSPrefixMapping: { [s: string]: string } = {};
 			variableDNSPrefixMapping[VariableNames.AppServiceProxyDNSName_VariableName] = 'bdc-appproxy';

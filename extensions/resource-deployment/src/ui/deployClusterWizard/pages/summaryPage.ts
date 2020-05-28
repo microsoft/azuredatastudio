@@ -150,7 +150,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 				items: [
 					{
 						type: FieldType.ReadonlyText,
-						label: localize('deployCluster.AppOwers', "App owners"),
+						label: localize('deployCluster.AppOwners', "App owners"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.AppOwners_VariableName),
 						labelCSSStyles: { fontWeight: FontWeight.Bold }
 					},
@@ -269,6 +269,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 				title: '',
 				component: createSection({
 					container: this.wizard.wizardObject,
+					inputComponents: this.wizard.inputComponents,
 					sectionInfo: sectionInfo,
 					view: this.view,
 					onNewDisposableCreated: () => { },

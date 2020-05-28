@@ -171,6 +171,12 @@ export type ComponentCSSStyles = {
 	[key: string]: string;
 };
 
+
+export interface OptionsInfo {
+	values: string[] | azdata.CategoryValue[],
+	defaultValue: string
+}
+
 export interface FieldInfoBase {
 	labelWidth?: string;
 	inputWidth?: string;
@@ -225,6 +231,7 @@ export interface KubeClusterContextFieldInfo extends FieldInfo {
 	configFileVariableName?: string;
 }
 export interface AzureAccountFieldInfo extends AzureLocationsFieldInfo {
+	displaySubscriptionVariableName?: string;
 	subscriptionVariableName?: string;
 	resourceGroupVariableName?: string;
 }

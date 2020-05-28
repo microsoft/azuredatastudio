@@ -10,9 +10,9 @@ import { WizardPageBase } from './wizardPageBase';
 import { Model } from './model';
 const localize = nls.loadMessageBundle();
 
-export abstract class WizardBase<T, M extends Model> {
+export abstract class WizardBase<T, P extends WizardPageBase<T>, M extends Model> {
 	private customButtons: azdata.window.Button[] = [];
-	private pages: WizardPageBase<T>[] = [];
+	public pages: P[] = [];
 
 	public wizardObject: azdata.window.Wizard;
 	public toDispose: vscode.Disposable[] = [];
@@ -59,7 +59,7 @@ export abstract class WizardBase<T, M extends Model> {
 		this.customButtons.push(button);
 	}
 
-	protected setPages(pages: WizardPageBase<T>[]) {
+	protected setPages(pages: P[]) {
 		this.wizardObject!.pages = pages.map(p => p.pageObject);
 		this.pages = pages;
 		this.pages.forEach((page) => {

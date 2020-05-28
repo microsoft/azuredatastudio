@@ -9,19 +9,27 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import * as azurecore from '../../../azurecore/src/azurecore';
 import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
-import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, KubeClusterContextFieldInfo, LabelPosition, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
+import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
 import { getDateTimeString, getErrorMessage } from '../utils';
 import { WizardInfoBase } from './../interfaces';
 import { Model } from './model';
+import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentBuilder';
 
 const localize = nls.loadMessageBundle();
 
 export type Validator = () => { valid: boolean, message: string };
 export type InputValueTransformer = (inputValue: string) => string;
-export type InputComponent = azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | azdata.RadioButtonComponent;
-export type InputComponents = { [s: string]: { component: InputComponent; inputValueTransformer?: InputValueTransformer } };
+export type InputComponent = azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder;
+export type InputComponentInfo = {
+	component: InputComponent;
+	inputValueTransformer?: InputValueTransformer
+};
+
+export type InputComponents = {
+	[s: string]: InputComponentInfo
+};
 
 export function getInputBoxComponent(name: string, inputComponents: InputComponents): azdata.InputBoxComponent {
 	return <azdata.InputBoxComponent>inputComponents[name].component;
@@ -45,39 +53,33 @@ export const DefaultFieldAlignItems = undefined;
 export const DefaultFieldWidth = undefined;
 export const DefaultFieldHeight = undefined;
 
-export interface DialogContext extends CreateContext {
+export interface DialogContext extends ContextBase {
 	dialogInfo: DialogInfoBase;
 	container: azdata.window.Dialog;
 }
 
-export interface WizardPageContext extends CreateContext {
+export interface WizardPageContext extends ContextBase {
 	wizardInfo: WizardInfoBase;
 	pageInfo: PageInfoBase;
 	page: azdata.window.WizardPage;
 	container: azdata.window.Wizard;
 }
 
-export interface SectionContext extends CreateContext {
+export interface SectionContext extends ContextBase {
 	sectionInfo: SectionInfo;
 	view: azdata.ModelView;
 }
 
-interface FieldContext extends CreateContext {
+export interface FieldContext extends ContextBase {
 	fieldInfo: FieldInfo;
 	components: azdata.Component[];
 	view: azdata.ModelView;
 }
 
-interface FilePickerInputs {
+export interface FilePickerInputs {
 	input: azdata.InputBoxComponent;
 	browseButton: azdata.ButtonComponent;
 }
-
-interface RadioOptionsInputs {
-	optionsList: azdata.DivContainer;
-	loader: azdata.LoadingComponent;
-}
-
 interface ReadOnlyFieldInputs {
 	label: azdata.TextComponent;
 	text?: azdata.TextComponent;
@@ -95,8 +97,9 @@ interface AzureAccountFieldContext extends FieldContext {
 	fieldInfo: AzureAccountFieldInfo;
 }
 
-interface CreateContext {
+interface ContextBase {
 	container: azdata.window.Dialog | azdata.window.Wizard;
+	inputComponents: InputComponents;
 	onNewValidatorCreated: (validator: Validator) => void;
 	onNewDisposableCreated: (disposable: vscode.Disposable) => void;
 	onNewInputComponentCreated: (name: string, component: InputComponent, inputValueTransformer?: InputValueTransformer) => void;
@@ -185,7 +188,8 @@ export function initializeDialog(dialogContext: DialogContext): void {
 					onNewDisposableCreated: dialogContext.onNewDisposableCreated,
 					onNewInputComponentCreated: dialogContext.onNewInputComponentCreated,
 					onNewValidatorCreated: dialogContext.onNewValidatorCreated,
-					container: dialogContext.container
+					container: dialogContext.container,
+					inputComponents: dialogContext.inputComponents
 				});
 			});
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
@@ -217,6 +221,7 @@ export function initializeWizardPage(context: WizardPageContext): void {
 			return createSection({
 				view: view,
 				container: context.container,
+				inputComponents: context.inputComponents,
 				onNewDisposableCreated: context.onNewDisposableCreated,
 				onNewInputComponentCreated: context.onNewInputComponentCreated,
 				onNewValidatorCreated: context.onNewValidatorCreated,
@@ -285,6 +290,7 @@ function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component
 			onNewValidatorCreated: context.onNewValidatorCreated,
 			fieldInfo: fieldInfo,
 			container: context.container,
+			inputComponents: context.inputComponents,
 			components: components
 		});
 		if (spaceBetweenFields && i < fieldInfoArray.length - 1) {
@@ -390,6 +396,7 @@ function processOptionsTypeField(context: FieldContext): void {
 		required: context.fieldInfo.required,
 		label: context.fieldInfo.label
 	});
+	dropdown.fireOnTextChange = true;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, dropdown);
 	addLabelInputPairToContainer(context.view, context.components, label, dropdown, context.fieldInfo);
 }
@@ -535,11 +542,32 @@ function processHyperlinkedTextField(context: FieldContext): azdata.TextComponen
 	return label;
 }
 
+/**
+ * Returns a string that interpolates all variable names in the {@param inputValue} string de-marked as $(VariableName)
+ * substituted with their corresponding values.
+ *
+ * Only variables in the current model starting with {@see NoteBookEnvironmentVariablePrefix} are replaced.
+ *
+ * @param inputValue
+ * @param inputComponents
+ */
+function substituteVariableValues(inputComponents: InputComponents, inputValue?: string): string | undefined {
+	Object.keys(inputComponents)
+		.filter(key => key.startsWith(NoteBookEnvironmentVariablePrefix))
+		.forEach(key => {
+			const value = getInputComponentValue(inputComponents, key) ?? '<undefined>';
+			const re: RegExp = new RegExp(`\\\$\\\(${key}\\\)`, 'gi');
+			inputValue = inputValue?.replace(re, value);
+		});
+	return inputValue;
+}
+
 function processEvaluatedTextField(context: FieldContext): void {
 	const readOnlyField = processReadonlyTextField(context);
-	if (readOnlyField.text) {
-		context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, readOnlyField.text);
-	}
+	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, readOnlyField.text!, () => {
+		readOnlyField.text!.value = substituteVariableValues(context.inputComponents, context.fieldInfo.defaultValue);
+		return readOnlyField.text?.value!;
+	});
 }
 
 function processCheckboxField(context: FieldContext): void {
@@ -587,6 +615,27 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 	return { input: input, browseButton: browseFileButton };
 }
 
+function getClusterContexts(file: string) {
+	return async () => {
+		try {
+			let currentClusterContext = '';
+			const clusterContexts: string[] = (await getKubeConfigClusterContexts(file)).map(kubeClusterContext => {
+				if (kubeClusterContext.isCurrentContext) {
+					currentClusterContext = kubeClusterContext.name;
+				}
+				return kubeClusterContext.name;
+			});
+			if (clusterContexts.length === 0) {
+				throw Error(loc.clusterContextNotFound);
+			}
+			return { values: clusterContexts, defaultValue: currentClusterContext };
+		}
+		catch (e) {
+			throw Error(localize('getClusterContexts.errorFetchingClusters', "An error ocurred while loading or parsing the config file:{0}, error is:{1}", file, getErrorMessage(e)));
+		}
+	};
+}
+
 /**
  * An Kube Config Cluster picker field consists of a file system file picker and radio button selector for cluster contexts defined in the config filed picked using the file picker.
  * @param context The context to use to create the field
@@ -595,6 +644,7 @@ async function processKubeConfigClusterPickerField(context: KubeClusterContextFi
 	const kubeConfigFilePathVariableName = context.fieldInfo.configFileVariableName || 'AZDATA_NB_VAR_KUBECONFIG_PATH';
 	const filePickerContext: FieldContext = {
 		container: context.container,
+		inputComponents: context.inputComponents,
 		components: context.components,
 		view: context.view,
 		onNewValidatorCreated: context.onNewValidatorCreated,
@@ -616,94 +666,39 @@ async function processKubeConfigClusterPickerField(context: KubeClusterContextFi
 		label: filePickerContext.fieldInfo.label,
 		variableName: kubeConfigFilePathVariableName
 	});
-	context.onNewInputComponentCreated(kubeConfigFilePathVariableName, filePicker.input);
-	const getClusterContexts = async () => {
-		try {
-			let currentClusterContext = '';
-			const clusterContexts: string[] = (await getKubeConfigClusterContexts(filePicker.input.value!)).map(kubeClusterContext => {
-				if (kubeClusterContext.isCurrentContext) {
-					currentClusterContext = kubeClusterContext.name;
-				}
-				return kubeClusterContext.name;
-			});
-			if (clusterContexts.length === 0) {
-				throw Error(loc.clusterContextNotFound);
-			}
-			return { values: clusterContexts, defaultValue: currentClusterContext };
-		} catch (e) {
-			throw Error(localize('kubeConfigClusterPicker.errorLoadingClusters', "An error ocurred while loading or parsing the config file:{0}, error is:{1}", filePicker.input.value, getErrorMessage(e)));
-		}
-	};
 
-	createRadioOptions(context, getClusterContexts)
-		.then(clusterContextOptions => {
-			context.onNewDisposableCreated(filePicker.input.onTextChanged(async () => {
-				await loadOrReloadRadioOptions(context, clusterContextOptions.optionsList, clusterContextOptions.loader, getClusterContexts);
-			}));
-		}).catch(error => {
-			console.log(`failed to create radio options, Error: ${error}`);
-		});
+	const radioOptionsGroup = await createRadioOptions(context, getClusterContexts(filePicker.input.value!));
+	context.onNewDisposableCreated(filePicker.input.onTextChanged(async () =>
+		await radioOptionsGroup.loadOptions(getClusterContexts(filePicker.input.value!))
+	));
+
 }
 
-async function processRadioOptionsTypeField(context: FieldContext): Promise<RadioOptionsInputs> {
+async function processRadioOptionsTypeField(context: FieldContext): Promise<RadioGroupLoadingComponentBuilder> {
 	return await createRadioOptions(context);
 }
 
-async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: (() => Promise<{ values: string[] | azdata.CategoryValue[], defaultValue: string }>))
-	: Promise<RadioOptionsInputs> {
+
+async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: (() => Promise<OptionsInfo>))
+	: Promise<RadioGroupLoadingComponentBuilder> {
 	if (context.fieldInfo.fieldAlignItems === undefined) {
 		context.fieldInfo.fieldAlignItems = 'flex-start'; // by default align the items to the top.
 	}
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
-	const optionsListContainer = context.view!.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
-	const radioOptionsLoadingComponent = context.view!.modelBuilder.loadingComponent().withItem(optionsListContainer).component();
+	const radioGroupLoadingComponentBuilder = new RadioGroupLoadingComponentBuilder(context.view, context.onNewDisposableCreated);
 	context.fieldInfo.labelPosition = LabelPosition.Left;
-	addLabelInputPairToContainer(context.view, context.components, label, radioOptionsLoadingComponent, context.fieldInfo);
-	await loadOrReloadRadioOptions(context, optionsListContainer, radioOptionsLoadingComponent, getRadioButtonInfo);
-	return { optionsList: optionsListContainer, loader: radioOptionsLoadingComponent };
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, radioGroupLoadingComponentBuilder);
+	addLabelInputPairToContainer(context.view, context.components, label, radioGroupLoadingComponentBuilder.component(), context.fieldInfo);
+	await radioGroupLoadingComponentBuilder.loadOptions(getRadioButtonInfo || { values: context.fieldInfo.options!, defaultValue: context.fieldInfo.defaultValue! }); // wait for the radioGroup to be fully initialized
+	return radioGroupLoadingComponentBuilder;
 }
 
-async function loadOrReloadRadioOptions(context: FieldContext, optionsListContainer: azdata.DivContainer, radioOptionsLoadingComponent: azdata.LoadingComponent, getRadioButtonInfo: (() => Promise<{ values: string[] | azdata.CategoryValue[]; defaultValue: string; }>) | undefined): Promise<void> {
-	radioOptionsLoadingComponent.loading = true;
-	optionsListContainer.clearItems();
-	let options: (string[] | azdata.CategoryValue[]) = context.fieldInfo.options!;
-	let defaultValue: string = context.fieldInfo.defaultValue!;
-	try {
-		if (getRadioButtonInfo) {
-			const radioButtonsInfo = await getRadioButtonInfo();
-			options = radioButtonsInfo.values;
-			defaultValue = radioButtonsInfo.defaultValue;
-		}
-		options.forEach((op: string | azdata.CategoryValue) => {
-			const option: azdata.CategoryValue = (typeof op === 'string') ? { name: op, displayName: op } : op as azdata.CategoryValue;
-			const radioOption = context.view!.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
-				label: option.displayName,
-				checked: option.displayName === defaultValue,
-				name: option.name,
-			}).component();
-			if (radioOption.checked) {
-				context.onNewInputComponentCreated(context.fieldInfo.variableName!, radioOption);
-			}
-			context.onNewDisposableCreated(radioOption.onDidClick(() => {
-				// reset checked status of all remaining radioButtons
-				optionsListContainer.items.filter(otherOption => otherOption !== radioOption).forEach(otherOption => (otherOption as azdata.RadioButtonComponent).checked = false);
-				context.onNewInputComponentCreated(context.fieldInfo.variableName!, radioOption!);
-			}));
-			optionsListContainer.addItem(radioOption);
-		});
-	}
-	catch (e) {
-		const errorLoadingRadioOptionsLabel = context.view!.modelBuilder.text().withProperties({ value: getErrorMessage(e) }).component();
-		optionsListContainer.addItem(errorLoadingRadioOptionsLabel);
-	}
-	radioOptionsLoadingComponent.loading = false;
-}
 
 /**
  * An Azure Account field consists of 3 separate dropdown fields - Account, Subscription and Resource Group
  * @param context The context to use to create the field
  */
-function processAzureAccountField(context: AzureAccountFieldContext): void {
+async function processAzureAccountField(context: AzureAccountFieldContext): Promise<void> {
 	context.fieldInfo.subFields = [];
 	const accountValueToAccountMap = new Map<string, azdata.Account>();
 	const subscriptionValueToSubscriptionMap = new Map<string, azureResource.AzureResourceSubscription>();
@@ -711,11 +706,12 @@ function processAzureAccountField(context: AzureAccountFieldContext): void {
 	const subscriptionDropdown = createAzureSubscriptionDropdown(context, subscriptionValueToSubscriptionMap);
 	const resourceGroupDropdown = createAzureResourceGroupsDropdown(context, accountDropdown, accountValueToAccountMap, subscriptionDropdown, subscriptionValueToSubscriptionMap);
 	const locationDropdown = context.fieldInfo.locations && processAzureLocationsField(context);
-	accountDropdown.onValueChanged(selectedItem => {
+	accountDropdown.onValueChanged(async selectedItem => {
 		const selectedAccount = accountValueToAccountMap.get(selectedItem.selected)!;
-		handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
+		await handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
 	});
-	azdata.accounts.getAllAccounts().then((accounts: azdata.Account[]) => {
+	try {
+		const accounts = await azdata.accounts.getAllAccounts();
 		// Append a blank value for the "default" option if the field isn't required, context will clear all the dropdowns when selected
 		const dropdownValues = context.fieldInfo.required ? [] : [''];
 		accountDropdown.values = dropdownValues.concat(accounts.map(account => {
@@ -724,8 +720,10 @@ function processAzureAccountField(context: AzureAccountFieldContext): void {
 			return displayName;
 		}));
 		const selectedAccount = accountDropdown.value ? accountValueToAccountMap.get(accountDropdown.value.toString()) : undefined;
-		handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
-	}, (err: any) => console.log(`Unexpected error fetching accounts: ${err}`));
+		await handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
+	} catch (error) {
+		vscode.window.showErrorMessage(localize('azure.accounts.unexpectedAccountsError', 'Unexpected error fetching accounts: ${0}', getErrorMessage(error)));
+	}
 }
 
 function createAzureAccountDropdown(context: AzureAccountFieldContext): azdata.DropDownComponent {
@@ -742,6 +740,7 @@ function createAzureAccountDropdown(context: AzureAccountFieldContext): azdata.D
 		required: context.fieldInfo.required,
 		label: loc.account
 	});
+	accountDropdown.fireOnTextChange = true;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, accountDropdown);
 	addLabelInputPairToContainer(context.view, context.components, label, accountDropdown, context.fieldInfo);
 	return accountDropdown;
@@ -757,11 +756,13 @@ function createAzureSubscriptionDropdown(
 		cssStyles: context.fieldInfo.labelCSSStyles
 	});
 	const subscriptionDropdown = createDropdown(context.view, {
+		defaultValue: (context.fieldInfo.required) ? undefined : '',
 		width: context.fieldInfo.inputWidth,
 		editable: false,
 		required: context.fieldInfo.required,
 		label: loc.subscription
 	});
+	subscriptionDropdown.fireOnTextChange = true;
 	context.fieldInfo.subFields!.push({
 		label: label.value!,
 		variableName: context.fieldInfo.subscriptionVariableName
@@ -769,21 +770,28 @@ function createAzureSubscriptionDropdown(
 	context.onNewInputComponentCreated(context.fieldInfo.subscriptionVariableName!, subscriptionDropdown, (inputValue: string) => {
 		return subscriptionValueToSubscriptionMap.get(inputValue)?.id || inputValue;
 	});
+	if (context.fieldInfo.displaySubscriptionVariableName) {
+		context.fieldInfo.subFields!.push({
+			label: label.value!,
+			variableName: context.fieldInfo.displaySubscriptionVariableName
+		});
+		context.onNewInputComponentCreated(context.fieldInfo.displaySubscriptionVariableName, subscriptionDropdown);
+	}
 	addLabelInputPairToContainer(context.view, context.components, label, subscriptionDropdown, context.fieldInfo);
 	return subscriptionDropdown;
 }
 
-function handleSelectedAccountChanged(
+async function handleSelectedAccountChanged(
 	context: AzureAccountFieldContext,
 	selectedAccount: azdata.Account | undefined,
 	subscriptionDropdown: azdata.DropDownComponent,
 	subscriptionValueToSubscriptionMap: Map<string, azureResource.AzureResourceSubscription>,
 	resourceGroupDropdown: azdata.DropDownComponent,
 	locationDropdown?: azdata.DropDownComponent
-): void {
+): Promise<void> {
 	subscriptionValueToSubscriptionMap.clear();
 	subscriptionDropdown.values = [];
-	handleSelectedSubscriptionChanged(context, selectedAccount, undefined, resourceGroupDropdown);
+	await handleSelectedSubscriptionChanged(context, selectedAccount, undefined, resourceGroupDropdown);
 	if (!selectedAccount) {
 		subscriptionDropdown.values = [''];
 		if (locationDropdown) {
@@ -798,7 +806,8 @@ function handleSelectedAccountChanged(
 		}
 	}
 
-	vscode.commands.executeCommand<azurecore.GetSubscriptionsResult>('azure.accounts.getSubscriptions', selectedAccount, true /*ignoreErrors*/).then(response => {
+	try {
+		const response = await vscode.commands.executeCommand<azurecore.GetSubscriptionsResult>('azure.accounts.getSubscriptions', selectedAccount, true /*ignoreErrors*/);
 		if (!response) {
 			return;
 		}
@@ -815,8 +824,10 @@ function handleSelectedAccountChanged(
 			return displayName;
 		}).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()));
 		const selectedSubscription = subscriptionDropdown.values.length > 0 ? subscriptionValueToSubscriptionMap.get(subscriptionDropdown.values[0]) : undefined;
-		handleSelectedSubscriptionChanged(context, selectedAccount, selectedSubscription, resourceGroupDropdown);
-	}, err => { vscode.window.showErrorMessage(localize('azure.accounts.unexpectedSubscriptionsError', "Unexpected error fetching subscriptions for account {0} ({1}): {2}", selectedAccount?.displayInfo.displayName, selectedAccount?.key.accountId, err.message)); });
+		await handleSelectedSubscriptionChanged(context, selectedAccount, selectedSubscription, resourceGroupDropdown);
+	} catch (error) {
+		vscode.window.showErrorMessage(localize('azure.accounts.unexpectedSubscriptionsError', "Unexpected error fetching subscriptions for account {0} ({1}): {2}", selectedAccount?.displayInfo.displayName, selectedAccount?.key.accountId, getErrorMessage(error)));
+	}
 }
 
 function createAzureResourceGroupsDropdown(
@@ -832,32 +843,39 @@ function createAzureResourceGroupsDropdown(
 		cssStyles: context.fieldInfo.labelCSSStyles
 	});
 	const resourceGroupDropdown = createDropdown(context.view, {
+		defaultValue: (context.fieldInfo.required) ? undefined : '',
 		width: context.fieldInfo.inputWidth,
 		editable: false,
 		required: context.fieldInfo.required,
 		label: loc.resourceGroup
 	});
+	resourceGroupDropdown.fireOnTextChange = true;
 	context.fieldInfo.subFields!.push({
 		label: label.value!,
 		variableName: context.fieldInfo.resourceGroupVariableName
 	});
+	const rgValueChangedEmitter = new vscode.EventEmitter<void>();
+	resourceGroupDropdown.onValueChanged(() => rgValueChangedEmitter.fire());
 	context.onNewInputComponentCreated(context.fieldInfo.resourceGroupVariableName!, resourceGroupDropdown);
 	addLabelInputPairToContainer(context.view, context.components, label, resourceGroupDropdown, context.fieldInfo);
-	subscriptionDropdown.onValueChanged(selectedItem => {
+	subscriptionDropdown.onValueChanged(async selectedItem => {
 		const selectedAccount = !accountDropdown || !accountDropdown.value ? undefined : accountValueToAccountMap.get(accountDropdown.value.toString());
 		const selectedSubscription = subscriptionValueToSubscriptionMap.get(selectedItem.selected);
-		handleSelectedSubscriptionChanged(context, selectedAccount, selectedSubscription, resourceGroupDropdown);
+		await handleSelectedSubscriptionChanged(context, selectedAccount, selectedSubscription, resourceGroupDropdown);
+		rgValueChangedEmitter.fire();
 	});
 	return resourceGroupDropdown;
 }
 
-function handleSelectedSubscriptionChanged(context: AzureAccountFieldContext, selectedAccount: azdata.Account | undefined, selectedSubscription: azureResource.AzureResourceSubscription | undefined, resourceGroupDropdown: azdata.DropDownComponent): void {
+async function handleSelectedSubscriptionChanged(context: AzureAccountFieldContext, selectedAccount: azdata.Account | undefined, selectedSubscription: azureResource.AzureResourceSubscription | undefined, resourceGroupDropdown: azdata.DropDownComponent): Promise<void> {
 	resourceGroupDropdown.values = [''];
 	if (!selectedAccount || !selectedSubscription) {
 		// Don't need to execute command if we don't have both an account and subscription selected
 		return;
 	}
-	vscode.commands.executeCommand<azurecore.GetResourceGroupsResult>('azure.accounts.getResourceGroups', selectedAccount, selectedSubscription, true /*ignoreErrors*/).then(response => {
+	try {
+		const response = await vscode.commands.executeCommand<azurecore.GetResourceGroupsResult>('azure.accounts.getResourceGroups', selectedAccount, selectedSubscription, true /*ignoreErrors*/);
+		//.then(response => {
 		if (!response) {
 			return;
 		}
@@ -871,7 +889,9 @@ function handleSelectedSubscriptionChanged(context: AzureAccountFieldContext, se
 		resourceGroupDropdown.values = (response.resourceGroups.length !== 0)
 			? response.resourceGroups.map(resourceGroup => resourceGroup.name).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()))
 			: [''];
-	}, err => { vscode.window.showErrorMessage(localize('azure.accounts.unexpectedResourceGroupsError', "Unexpected error fetching resource groups for subscription {0} ({1}): {2}", selectedSubscription?.name, selectedSubscription?.id, err.message)); });
+	} catch (error) {
+		vscode.window.showErrorMessage(localize('azure.accounts.unexpectedResourceGroupsError', "Unexpected error fetching resource groups for subscription {0} ({1}): {2}", selectedSubscription?.name, selectedSubscription?.id, getErrorMessage(error)));
+	}
 }
 
 /**
@@ -901,6 +921,7 @@ function processAzureLocationsField(context: AzureLocationsFieldContext): azdata
 		label: loc.location,
 		values: context.fieldInfo.locations
 	});
+	locationDropdown.fireOnTextChange = true;
 	context.fieldInfo.subFields = context.fieldInfo.subFields || [];
 	if (context.fieldInfo.locationVariableName) {
 		context.fieldInfo.subFields!.push({
@@ -954,29 +975,36 @@ export function getPasswordMismatchMessage(fieldName: string): string {
 
 export function setModelValues(inputComponents: InputComponents, model: Model): void {
 	Object.keys(inputComponents).forEach(key => {
-		let value;
-		const input = inputComponents[key].component;
-		if ('name' in input && 'checked' in input) { //RadioButtonComponent
-			value = input.name;
-		} else if ('checked' in input) { // CheckBoxComponent
-			value = input.checked ? 'true' : 'false';
-		} else if ('value' in input) { // InputBoxComponent or DropDownComponent
-			const inputValue = input.value;
-			if (typeof inputValue === 'string' || typeof inputValue === 'undefined') {
-				value = inputValue;
-			} else {
-				value = inputValue.name;
-			}
-		} else {
-			throw new Error(`Unknown input type with ID ${input.id}`);
-		}
-
-		const inputValueTransformer = inputComponents[key].inputValueTransformer;
-		if (inputValueTransformer) {
-			value = inputValueTransformer(value || '');
-		}
+		const value = getInputComponentValue(inputComponents, key);
 		model.setPropertyValue(key, value);
 	});
+}
+
+function getInputComponentValue(inputComponents: InputComponents, key: string): string | undefined {
+	const input = inputComponents[key].component;
+	if (input === undefined) {
+		return undefined;
+	}
+	let value;
+	if (input instanceof RadioGroupLoadingComponentBuilder) {
+		value = input.value;
+	} else if ('checked' in input) { // CheckBoxComponent
+		value = input.checked ? 'true' : 'false';
+	} else if ('value' in input) { // InputBoxComponent or DropDownComponent
+		const inputValue = input.value;
+		if (typeof inputValue === 'string' || typeof inputValue === 'undefined') {
+			value = inputValue;
+		} else {
+			value = inputValue.name;
+		}
+	} else {
+		throw new Error(`Unknown input type with ID ${input.id}`);
+	}
+	const inputValueTransformer = inputComponents[key].inputValueTransformer;
+	if (inputValueTransformer) {
+		value = inputValueTransformer(value || '');
+	}
+	return value;
 }
 
 export function isInputBoxEmpty(input: azdata.InputBoxComponent): boolean {
