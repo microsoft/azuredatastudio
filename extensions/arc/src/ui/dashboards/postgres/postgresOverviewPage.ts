@@ -220,6 +220,11 @@ export class PostgresOverviewPage extends DashboardPage {
 		refreshButton.onDidClick(async () => {
 			refreshButton.enabled = false;
 			try {
+				this.propertiesLoading!.loading = true;
+				this.kibanaLoading!.loading = true;
+				this.grafanaLoading!.loading = true;
+				this.nodesTableLoading!.loading = true;
+
 				await Promise.all([
 					this._postgresModel.refresh(),
 					this._controllerModel.refresh()
