@@ -32,7 +32,7 @@
 	opacity: .2;
 }
 
-.monaco-workbench>.ads_tour>.key {
+/* .monaco-workbench>.ads_tour>.key {
 	font-size: 1.6em;
 }
 
@@ -62,78 +62,9 @@
 	position: absolute;
 	top: 113px;
 	left: 60px
-}
+} */
 
-.monaco-workbench>.ads_tour>.key.debug {
-	position: absolute;
-	top: 163px;
-	left: 60px;
-}
-
-.monaco-workbench>.ads_tour>.key.extensions {
-	position: absolute;
-	top: 213px;
-	left: 60px;
-}
-
-.monaco-workbench>.ads_tour>.key.watermark {
-	position: absolute;
-	top: calc(50% + 30px);
-	left: calc(50% + 30px);
-}
-
-.monaco-workbench>.ads_tour>.key.watermark>.label {
-	vertical-align: super
-}
-
-@media (max-height:500px) {
-	.monaco-workbench>.ads_tour>.key.watermark {
-		display: none;
-	}
-}
-
-.monaco-workbench>.ads_tour>.key.problems {
-	position: absolute;
-	bottom: 25px;
-	left: 45px;
-}
-
-.monaco-workbench>.ads_tour>.key.terminal {
-	position: absolute;
-	bottom: 25px;
-	left: 50%;
-}
-
-.monaco-workbench>.ads_tour>.key.notifications {
-	position: absolute;
-	bottom: 25px;
-	right: 16px;
-}
-
-.monaco-workbench>.ads_tour>.key.notifications>.label, .monaco-workbench>.ads_tour>.key.notifications>.shortcut, .monaco-workbench>.ads_tour>.key.problems>.label, .monaco-workbench>.ads_tour>.key.problems>.shortcut {
-	vertical-align: super;
-}
-
-.monaco-workbench>.ads_tour>.key.openfile {
-	position: absolute;
-	bottom: 25px;
-	right: 45px;
-}
-
-.monaco-workbench>.ads_tour>.key.openfile>.label {
-	vertical-align: super;
-}
-
-.monaco-workbench>.ads_tour>.key.commandPalette {
-	position: absolute;
-	top: 210px;
-	left: 0;
-	right: 0;
-	transition: top .25s, left .25s;
-	margin: auto;
-}
-
-.hide {
+.guided_tour .ads_tour_hide {
 	display: none;
 }
 
@@ -274,7 +205,7 @@
 	z-index: 1;
 }
 
-.ads_tour_popup.show {
+.ads_tour_popup.ads_tour_show {
 	display: block;
 }
 
@@ -287,6 +218,11 @@
 	bottom: 0;
 	left: 0;
 	opacity: .6;
+}
+
+.ads_tour_popup .ads_tour_img {
+	width: 400px;
+	height: 178px;
 }
 
 .ads_tour_btn_container .ads_tour_docs_link {

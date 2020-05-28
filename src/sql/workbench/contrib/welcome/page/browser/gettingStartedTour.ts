@@ -44,8 +44,8 @@ const tourData: TourData[] = [
 	{ key: 'connections', order: '1', header: localize('GuidedTour.connections', "Connections"), body: localize('GuidedTour.makeConnections', "Connect, query, and manage your connections from SQL Server, Azure, and more."), step: localize('GuidedTour.one', "1"), elmClass: 'overview_tour_connections', id: 'overview_tour_connections', btnId: 'overview_tour_connections_btn', btnText: localize('GuidedTour.next', "Next"), docs: 'https://aka.ms/ads-connections-quickstart', elementToAppendTo: '.action-label.dataExplorer', arrow: 'arrow_left', popupImage: './../../gettingStarted/media/connections.png' },
 	{ key: 'jupyer_books', order: '2', header: localize('GuidedTour.notebooks', "Notebooks"), body: localize('GuidedTour.gettingStartedNotebooks', "Get started creating your own notebook or collection of notebooks in a single place."), step: localize('GuidedTour.two', "2"), elmClass: 'overview_tour_jupyterBooks', id: 'overview_tour_jupyterBooks', btnId: 'overview_tour_jupyter_btn', btnText: localize('GuidedTour.next', "Next"), docs: 'https://aka.ms/ads-notebooks', elementToAppendTo: '.action-label.activity-workbench-view-extension-books-explorer', arrow: 'arrow_left', popupImage: './../../gettingStarted/media/notebooks.png' },
 	{ key: 'extensions', order: '3', header: localize('GuidedTour.extensions', "Extensions"), body: localize('GuidedTour.addExtensions', "Extend the functionality of Azure Data Studio by installing extensions developed by us/Microsoft as well as the third-party community (you!)."), step: localize('GuidedTour.three', "3"), elmClass: 'overview_tour_extensions', id: 'overview_tour_extensions', btnId: 'overview_tour_extensions_btn', btnText: localize('GuidedTour.next', "Next"), docs: 'https://aka.ms/ads-extensions', elementToAppendTo: '.action-label.codicon-extensions', arrow: 'arrow_center_left', popupImage: './../../gettingStarted/media/extensions.png' },
-	{ key: 'settings', order: '4', header: localize('GuidedTour.settings', "Settings"), body: localize('GuidedTour.makeConnesetSettings', "Customize Azure Data Studio based on your preferences. You can configure Settings like autosave and tab size, personalize your Keyboard Shortcuts, and switch to a Color Theme of your liking."), step: localize('GuidedTour.four', "4"), elmClass: 'overview_tour_settings', id: 'overview_tour_settings', btnId: 'overview_tour_settings_btn', btnText: localize('GuidedTour.next', "Next"), elementToAppendTo: '.codicon-settings-gear', arrow: 'arrow_bottom_left', popupImage: './../../gettingStarted/media/settings.png' },
-	{ key: 'welcome_page', order: '5', header: localize('GuidedTour.welcomePage', "Welcome Page"), body: localize('GuidedTour.discoverWelcomePage', "Discover top features, recently opened files, and recommended extensions on the Welcome page. For more information on how to get started in Azure Data Studio, check out our videos and documentation."), step: localize('GuidedTour.five', "5"), elmClass: 'overview_tour_home', id: 'overview_tour_home', btnId: 'overview_tour_home_btn', btnText: localize('GuidedTour.exit', "Exit"), elementToAppendTo: 'center', arrow: 'none', popupImage: './../../gettingStarted/media/welcome.png' },
+	{ key: 'settings', order: '4', header: localize('GuidedTour.settings', "Settings"), body: localize('GuidedTour.makeConnesetSettings', "Customize Azure Data Studio based on your preferences. You can configure Settings like autosave and tab size, personalize your Keyboard Shortcuts, and switch to a Color Theme of your liking."), step: localize('GuidedTour.four', "4"), elmClass: 'overview_tour_settings', id: 'overview_tour_settings', btnId: 'overview_tour_settings_btn', btnText: localize('GuidedTour.next', "Next"), elementToAppendTo: '.codicon-settings-gear', arrow: 'arrow_bottom_left', popupImage: '../../gettingStarted/media/settings.png' },
+	{ key: 'welcome_page', order: '5', header: localize('GuidedTour.welcomePage', "Welcome Page"), body: localize('GuidedTour.discoverWelcomePage', "Discover top features, recently opened files, and recommended extensions on the Welcome page. For more information on how to get started in Azure Data Studio, check out our videos and documentation."), step: localize('GuidedTour.five', "5"), elmClass: 'overview_tour_home', id: 'overview_tour_home', btnId: 'overview_tour_home_btn', btnText: localize('GuidedTour.exit', "Exit"), elementToAppendTo: 'center', arrow: 'none', popupImage: '../../gettingStarted/media/welcome.png' },
 ];
 
 const IS_OVERLAY_VISIBLE = new RawContextKey<boolean>('interfaceOverviewVisible', false);
@@ -120,24 +120,9 @@ export class GuidedTour extends Disposable {
 			}
 		});
 
-		this._overlay.addEventListener('keydown', (e) => {
-			let event = new StandardKeyboardEvent(e);
-			if (event.equals(KeyCode.Enter)) {
-				const currentPopup = document.querySelector('.ads_tour_popup.show');
-				const order = parseInt(currentPopup.getAttribute('data-order'));
-				const nextPopup = document.querySelector(`.ads_tour_popup[data-order="${order + 1}"]`);
-				if (order !== tourData.length) {
-					currentPopup.classList.remove('show');
-					currentPopup.classList.add('hide');
-					nextPopup.classList.add('show');
-					nextPopup.classList.remove('hide');
-				} else {
-					this.hide();
-				}
-			}
-		});
 
-		tourData.forEach(({ key, order, header, body, step, elmClass, id, btnId, btnText, docs, elementToAppendTo, arrow, popupImage }, i) => {
+
+		tourData.forEach(({ key, order, header, body, step, elmClass, id, btnId, btnText, docs, elementToAppendTo, arrow, popupImage }, i): void => {
 			const container = document.createElement('div');
 			let positionVertical;
 			let positionHorizontal;
@@ -158,7 +143,7 @@ export class GuidedTour extends Disposable {
 			if (docs) {
 				const docsLink = document.createElement('a');
 				docsLink.classList.add('ads_tour_docs_link');
-				docsLink.innerText = 'Read more';
+				// docsLink.innerText = localize('GuidedTour.readMore', "Read more");
 				docsLink.href = docs;
 				docsLink.target = '_blank';
 				btnContainer.appendChild(docsLink);
@@ -172,7 +157,7 @@ export class GuidedTour extends Disposable {
 			const img = document.createElement('img');
 			const gif = require.toUrl(popupImage);
 			img.src = require.toUrl(gif);
-			img.classList.add('img');
+			img.classList.add('ads_tour_img');
 			flexContainer.classList.add(...flexClasses);
 			container.classList.add('ads_tour_popup');
 			container.setAttribute('data-order', order);
@@ -181,9 +166,9 @@ export class GuidedTour extends Disposable {
 			container.classList.add('ads_tour_element');
 			container.id = id;
 			if (i !== 0) {
-				container.classList.add('hide');
+				container.classList.add('ads_tour_hide');
 			} else {
-				container.classList.add('show');
+				container.classList.add('ads_tour_show');
 			}
 			headerTag.innerText = header;
 			bodyTag.innerText = body;
@@ -224,7 +209,7 @@ export class GuidedTour extends Disposable {
 		this.buildInteractions();
 	}
 
-	private findWithAttr(array, attr, value) {
+	private findWithAttr(array: TourData[], attr: string, value: string): number {
 		for (let i = 0; i < array.length; i += 1) {
 			if (array[i][attr] === value) {
 				return i;
@@ -234,10 +219,12 @@ export class GuidedTour extends Disposable {
 	}
 
 
-	private buildInteractions() {
+	private buildInteractions(): void {
 		const popups = document.querySelectorAll('.ads_tour_popup') as NodeListOf<Element>;
 		const menuBarItems = document.querySelectorAll('.menubar-menu-button') as NodeListOf<HTMLElement>;
 		const context = this;
+
+
 		menuBarItems.forEach((elm) => {
 			elm.style.pointerEvents = 'none';
 		});
@@ -252,6 +239,26 @@ export class GuidedTour extends Disposable {
 				return;
 			});
 			btn.id = 'ads_tour_btn_' + popups[i];
+			btn.addEventListener('keydown', (e: KeyboardEvent) => {
+				let next = i + 1;
+				let event = new StandardKeyboardEvent(e);
+				if (event.equals(KeyCode.Enter)) {
+					const h1: HTMLElement = popups[next].querySelector('.ads_tour_popup_text_container h1');
+
+					const currentPopup = document.querySelector('.ads_tour_popup.ads_tour_show');
+					const order = parseInt(currentPopup.getAttribute('data-order'));
+					const nextPopup = document.querySelector(`.ads_tour_popup[data-order="${order + 1}"]`);
+					if (order !== tourData.length) {
+						currentPopup.classList.remove('ads_tour_show');
+						currentPopup.classList.add('ads_tour_hide');
+						nextPopup.classList.add('ads_tour_show');
+						nextPopup.classList.remove('ads_tour_hide');
+						h1.focus();
+					} else {
+						context.hide();
+					}
+				}
+			});
 			btn.addEventListener('click', function () {
 				if (i === (popupsLength - 1)) {
 					context.hide();
@@ -289,10 +296,10 @@ export class GuidedTour extends Disposable {
 					tourItem.style.top = (positionVertical) + 'px';
 					tourItem.style.left = positionHorizontal + 'px';
 				}
-				popups[i].classList.add('hide');
-				popups[i].classList.remove('show');
-				popups[next].classList.add('show');
-				popups[next].classList.remove('hide');
+				popups[i].classList.add('ads_tour_hide');
+				popups[i].classList.remove('ads_tour_show');
+				popups[next].classList.add('ads_tour_show');
+				popups[next].classList.remove('ads_tour_hide');
 				const nextBtn: HTMLElement = popups[next].querySelector('.ads_tour_popup_text_container .monaco-button');
 				nextBtn.focus();
 			});
@@ -300,10 +307,10 @@ export class GuidedTour extends Disposable {
 		this.show();
 	}
 
-	public show() {
+	public show(): void {
 		if (this._overlay.style.display !== 'block') {
 			const firstTourElement = document.querySelector('.ads_tour_element');
-			firstTourElement.classList.add('show');
+			firstTourElement.classList.add('ads_tour_show');
 			this._overlay.style.display = 'block';
 			const workbench = document.querySelector('.monaco-workbench') as HTMLElement;
 			dom.addClass(workbench, 'blur-background');
@@ -312,7 +319,7 @@ export class GuidedTour extends Disposable {
 		}
 	}
 
-	public hide() {
+	public hide(): void {
 		const menuBarItems = document.querySelectorAll('.menubar-menu-button') as NodeListOf<HTMLElement>;
 		menuBarItems.forEach(function (elm) {
 			elm.style.pointerEvents = 'auto';

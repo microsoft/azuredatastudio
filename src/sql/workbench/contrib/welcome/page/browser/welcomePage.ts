@@ -74,6 +74,7 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 	}
 	private async enableWelcomePage(): Promise<void> {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
+		const guidedTourEnabled = isGuidedTourEnabled(this.configurationService);
 		if (enabled && this.lifecycleService.startupKind !== StartupKind.ReloadedWindow) {
 			const hasBackups: boolean = await this.backupFileService.hasBackups();
 			const activeEditor = this.editorService.activeEditor;
@@ -117,7 +118,6 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 
 function isWelcomePageEnabled(configurationService: IConfigurationService, contextService: IWorkspaceContextService) {
 	const startupEditor = configurationService.inspect(configurationKey);
-
 	if (!startupEditor.userValue && !startupEditor.workspaceValue) {
 		const welcomeEnabled = configurationService.inspect(oldConfigurationKey);
 		if (welcomeEnabled.value !== undefined && welcomeEnabled.value !== null) {
@@ -127,7 +127,7 @@ function isWelcomePageEnabled(configurationService: IConfigurationService, conte
 	return startupEditor.value === 'welcomePage' || startupEditor.value === 'readme' || startupEditor.value === 'welcomePageInEmptyWorkbench' && contextService.getWorkbenchState() === WorkbenchState.EMPTY;
 }
 
-function isGuidedTourEnabled(configurationService: IConfigurationService) {
+function isGuidedTourEnabled(configurationService: IConfigurationService): boolean {
 	const tourEnabled = configurationService.inspect(configurationKey);
 	if (tourEnabled.value === 'welcomePageWithTour') {
 		return true;
@@ -228,7 +228,7 @@ class WelcomePage extends Disposable {
 		@IHostService private readonly hostService: IHostService,
 		@IFileService fileService: IFileService,
 		@IProductService private readonly productService: IProductService,
-		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,) {
+		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
 		const recentlyOpened = this.workspacesService.getRecentlyOpened();
@@ -249,19 +249,20 @@ class WelcomePage extends Disposable {
 	public openEditor() {
 		return this.editorService.openEditor(this.editorInput, { pinned: false });
 	}
-	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>, fileService: IFileService, layoutService: ILayoutService,): void {
+	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>, fileService: IFileService, layoutService: ILayoutService): void {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
 		const showOnStartup = <HTMLInputElement>container.querySelector('#showOnStartup');
+		const guidedTourEnabled = isGuidedTourEnabled(this.configurationService);
 
-		if (enabled) {
+		if (enabled || guidedTourEnabled) {
 			showOnStartup.setAttribute('checked', 'checked');
 		}
-		this.enableGuidedTour();
-		if (enabled) {
-			showOnStartup.setAttribute('checked', 'checked');
+		if (guidedTourEnabled) {
+			this.enableGuidedTour();
 		}
+
 		showOnStartup.addEventListener('click', e => {
-			this.configurationService.updateValue(configurationKey, showOnStartup.checked ? 'welcomePageWithGuidedTour' : 'newUntitledFile', ConfigurationTarget.USER);
+			this.configurationService.updateValue(configurationKey, showOnStartup.checked ? 'welcomePageWithTour' : 'newUntitledFile', ConfigurationTarget.USER);
 		});
 		const prodName = container.querySelector('.welcomePage .title .caption') as HTMLElement;
 		if (prodName) {
@@ -287,7 +288,7 @@ class WelcomePage extends Disposable {
 				adsHomepage.classList.remove(breakpoint);
 			}
 		});
-		function parseMutations() {
+		function parseMutations(): void {
 			const width = parseInt(welcomeContainerContainer.style.width);
 			Object.keys(defaultBreakpoints).forEach(function (breakpoint) {
 				let minWidth = defaultBreakpoints[breakpoint];
@@ -339,61 +340,58 @@ class WelcomePage extends Disposable {
 		this.createPreviewModal();
 	}
 
-	private enableGuidedTour() {
-		const guidedTourEnabled = isGuidedTourEnabled(this.configurationService);
-		if (guidedTourEnabled) {
-			const guidedTour = this.instantiationService.createInstance(GuidedTour);
-			const adsHomepage = document.querySelector('.ads_homepage');
-			const guidedTourNotificationContainer = document.createElement('div');
-			const p = document.createElement('p');
-			const b = document.createElement('b');
-			const icon = document.createElement('div');
-			const containerLeft = document.createElement('div');
-			const containerRight = document.createElement('div');
-			let startTourBtn = new Button(containerRight);
-			startTourBtn.label = localize('welcomePage.startTour', "Start Tour");
-			const removeTourBtn = document.createElement('a');
-			const removeBtnClasses = ['btn_remove_tour', 'codicon', 'codicon-close'];
-			const flexClassesLeft = ['flex', 'flex_a_center'];
-			const flexClassesRight = ['flex', 'flex_a_start'];
-			guidedTourNotificationContainer.id = 'guidedTourBanner';
-			guidedTourNotificationContainer.classList.add('guided_tour_banner');
-			containerLeft.classList.add(...flexClassesLeft);
-			containerRight.classList.add(...flexClassesRight);
-			icon.classList.add('diamond_icon');
-			removeTourBtn.classList.add(...removeBtnClasses);
-			p.appendChild(b);
-			p.innerText = localize('WelcomePage.TakeATour', "Would you like to take a quick tour of Azure Data Studio?");
-			b.innerText = localize('WelcomePage.welcome', "Welcome!");
-			containerLeft.appendChild(icon);
-			containerLeft.appendChild(p);
-			containerRight.appendChild(removeTourBtn);
-			guidedTourNotificationContainer.appendChild(containerLeft);
-			guidedTourNotificationContainer.appendChild(containerRight);
+	private enableGuidedTour(): void {
+		const guidedTour = this.instantiationService.createInstance(GuidedTour);
+		const adsHomepage = document.querySelector('.ads_homepage');
+		const guidedTourNotificationContainer = document.createElement('div');
+		const p = document.createElement('p');
+		const b = document.createElement('b');
+		const icon = document.createElement('div');
+		const containerLeft = document.createElement('div');
+		const containerRight = document.createElement('div');
+		let startTourBtn = new Button(containerRight);
+		startTourBtn.label = localize('welcomePage.startTour', "Start Tour");
+		const removeTourBtn = document.createElement('a');
+		const removeBtnClasses = ['btn_remove_tour', 'codicon', 'codicon-close'];
+		const flexClassesLeft = ['flex', 'flex_a_center'];
+		const flexClassesRight = ['flex', 'flex_a_start'];
+		guidedTourNotificationContainer.id = 'guidedTourBanner';
+		guidedTourNotificationContainer.classList.add('guided_tour_banner');
+		containerLeft.classList.add(...flexClassesLeft);
+		containerRight.classList.add(...flexClassesRight);
+		icon.classList.add('diamond_icon');
+		removeTourBtn.classList.add(...removeBtnClasses);
+		p.appendChild(b);
+		p.innerText = localize('WelcomePage.TakeATour', "Would you like to take a quick tour of Azure Data Studio?");
+		b.innerText = localize('WelcomePage.welcome', "Welcome!");
+		containerLeft.appendChild(icon);
+		containerLeft.appendChild(p);
+		containerRight.appendChild(removeTourBtn);
+		guidedTourNotificationContainer.appendChild(containerLeft);
+		guidedTourNotificationContainer.appendChild(containerRight);
 
-			startTourBtn.onDidClick((e) => {
-				this.configurationService.updateValue(configurationKey, 'welcomePageWithTour', ConfigurationTarget.USER);
-				this.layoutService.setSideBarHidden(true);
-				guidedTour.create();
-			});
+		startTourBtn.onDidClick((e) => {
+			this.configurationService.updateValue(configurationKey, 'welcomePageWithTour', ConfigurationTarget.USER);
+			this.layoutService.setSideBarHidden(true);
+			guidedTour.create();
+		});
 
-			removeTourBtn.addEventListener('click', (e: MouseEvent) => {
-				this.configurationService.updateValue(configurationKey, 'welcomePage', ConfigurationTarget.USER);
-				guidedTourNotificationContainer.classList.add('hide');
-				guidedTourNotificationContainer.classList.remove('show');
-			});
+		removeTourBtn.addEventListener('click', (e: MouseEvent) => {
+			this.configurationService.updateValue(configurationKey, 'welcomePage', ConfigurationTarget.USER);
+			guidedTourNotificationContainer.classList.add('hide');
+			guidedTourNotificationContainer.classList.remove('show');
+		});
 
 
-			adsHomepage.prepend(guidedTourNotificationContainer);
+		adsHomepage.prepend(guidedTourNotificationContainer);
 
-			setTimeout(function () {
-				guidedTourNotificationContainer.classList.add('show');
+		setTimeout(function () {
+			guidedTourNotificationContainer.classList.add('show');
 
-			}, 3000);
-		}
+		}, 3000);
 	}
 
-	private createWidePreviewToolTip() {
+	private createWidePreviewToolTip(): void {
 		const previewLink = document.querySelector('#tool_tip_container_wide') as HTMLElement;
 		const tooltip = document.querySelector('#tooltip_text_wide') as HTMLElement;
 		const previewModalBody = document.querySelector('.preview_tooltip_body') as HTMLElement;
@@ -445,7 +443,7 @@ class WelcomePage extends Disposable {
 		});
 	}
 
-	private createDropDown() {
+	private createDropDown(): void {
 		const dropdownBtn = document.querySelector('#dropdown_btn') as HTMLElement;
 		const dropdown = document.querySelector('#dropdown') as HTMLInputElement;
 		addStandardDisposableListener(dropdownBtn, 'click', () => {
@@ -511,7 +509,7 @@ class WelcomePage extends Disposable {
 		});
 	}
 
-	private createPreviewModal() {
+	private createPreviewModal(): void {
 		const modal = document.querySelector('#preview_modal') as HTMLElement;
 		const btn = document.querySelector('#tool_tip_container_narrow') as HTMLElement;
 		const span = document.querySelector('.close_icon') as HTMLElement;
@@ -631,7 +629,7 @@ class WelcomePage extends Disposable {
 		return result;
 	}
 
-	private addExtensionList(container: HTMLElement, listSelector: string) {
+	private addExtensionList(container: HTMLElement, listSelector: string): void {
 		const list = container.querySelector(listSelector);
 		if (list) {
 			extensions.forEach((extension, i) => {
@@ -665,7 +663,7 @@ class WelcomePage extends Disposable {
 		}
 	}
 
-	private addExtensionPack(container: HTMLElement, anchorSelector: string) {
+	private addExtensionPack(container: HTMLElement, anchorSelector: string): void {
 		const btnContainer = container.querySelector(anchorSelector);
 		if (btnContainer) {
 			extensionPacks.forEach((extension, i) => {
@@ -700,7 +698,7 @@ class WelcomePage extends Disposable {
 		}
 	}
 
-	private addExtensionPackList(container: HTMLElement, listSelector: string) {
+	private addExtensionPackList(container: HTMLElement, listSelector: string): void {
 		const list = container.querySelector(listSelector);
 		if (list) {
 			extensionPackExtensions.forEach((j) => {
