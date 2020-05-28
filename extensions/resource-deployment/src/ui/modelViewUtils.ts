@@ -654,7 +654,7 @@ function getClusterContexts(file: string) {
 }
 
 /**
- * An Kube Config Cluster picker field consists of a file system file picker and radio button selector for cluster contexts defined in the config filed picked using the file picker.
+ * A Kube Config Cluster picker field consists of a file system file picker and radio button selector for cluster contexts defined in the config filed picked using the file picker.
  * @param context The context to use to create the field
  */
 async function processKubeConfigClusterPickerField(context: KubeClusterContextFieldContext): Promise<void> {
