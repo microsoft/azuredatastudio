@@ -23,46 +23,19 @@
 	transition: filter .25s, opacity .2s;
 }
 
-.monaco-workbench.blur-background #workbench\.parts\.editor, .monaco-workbench.blur-background #workbench\.parts\.panel, .monaco-workbench.blur-background #workbench\.parts\.sidebar {
+.monaco-workbench.blur-background #workbench\.parts\.editor,
+.monaco-workbench.blur-background #workbench\.parts\.panel,
+.monaco-workbench.blur-background #workbench\.parts\.sidebar {
 	filter: blur(2px);
 	opacity: .4;
 }
 
-.hc-black .monaco-workbench.blur-background #workbench\.parts\.editor, .hc-black .monaco-workbench.blur-background #workbench\.parts\.panel, .hc-black .monaco-workbench.blur-background #workbench\.parts\.sidebar {
+.hc-black .monaco-workbench.blur-background #workbench\.parts\.editor,
+.hc-black .monaco-workbench.blur-background #workbench\.parts\.panel,
+.hc-black .monaco-workbench.blur-background #workbench\.parts\.sidebar {
 	opacity: .2;
 }
 
-/* .monaco-workbench>.ads_tour>.key {
-	font-size: 1.6em;
-}
-
-.monaco-workbench>.ads_tour>.key>.label {
-	padding: 0 1ex;
-}
-
-.monaco-workbench>.ads_tour>.key>.shortcut {
-	letter-spacing: .15em;
-	font-size: .8125em;
-	font-family: "Lucida Grande", sans-serif;
-}
-
-.monaco-workbench>.ads_tour>.key.explorer {
-	position: absolute;
-	top: 13px;
-	left: 60px;
-}
-
-.monaco-workbench>.ads_tour>.key.search {
-	position: absolute;
-	top: 63px;
-	left: 60px;
-}
-
-.monaco-workbench>.ads_tour>.key.git {
-	position: absolute;
-	top: 113px;
-	left: 60px
-} */
 
 .guided_tour .ads_tour_hide {
 	display: none;
@@ -147,7 +120,8 @@
 	height: 100%;
 }
 
-.ads_tour_popup h1, .ads_tour_popup p {
+.ads_tour_popup h1,
+.ads_tour_popup p {
 	font-family: Segoe UI, Frutiger, Frutiger Linotype, Dejavu Sans, Helvetica Neue, Arial, sans-serif;
 	font-weight: 400;
 }
