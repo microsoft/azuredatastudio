@@ -44,7 +44,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { getManifest } from 'vs/platform/extensionManagement/node/extensionManagementUtil';
 import { IExtensionManifest, ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { ExtensionsDownloader } from 'vs/platform/extensionManagement/node/extensionDownloader';
-import { ExtensionsScanner } from 'vs/platform/extensionManagement/node/extensionsScanner';
+import { ExtensionsScanner, IMetadata } from 'vs/platform/extensionManagement/node/extensionsScanner';
 import { ExtensionsLifecycle } from 'vs/platform/extensionManagement/node/extensionLifecycle';
 
 const INSTALL_ERROR_UNSET_UNINSTALLED = 'unsetUninstalled';
@@ -56,7 +56,7 @@ const ERROR_UNKNOWN = 'unknown';
 interface InstallableExtension {
 	zipPath: string;
 	identifierWithVersion: ExtensionIdentifierWithVersion;
-	metadata: IGalleryMetadata | null;
+	metadata?: IMetadata;
 }
 
 export class ExtensionManagementService extends Disposable implements IExtensionManagementService {
@@ -151,7 +151,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 
 	}
 
-	install(vsix: URI): Promise<ILocalExtension> {
+	install(vsix: URI, isDefault?: boolean): Promise<ILocalExtension> {
 		// {{SQL CARBON EDIT}}
 		let startTime = new Date().getTime();
 
@@ -197,7 +197,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 								this._onInstallExtension.fire({ identifier, zipPath });
 								// {{SQL CARBON EDIT}}
 								// Until there's a gallery for SQL Ops Studio, skip retrieving the metadata from the gallery
-								return this.installExtension({ zipPath, identifierWithVersion, metadata: null }, token)
+								return this.installExtension({ zipPath, identifierWithVersion, metadata: { isDefault } }, token)
 									.then(
 										local => {
 											this.reportTelemetry(this.getTelemetryEvent(InstallOperation.Install), getLocalExtensionTelemetryData(local), new Date().getTime() - startTime, void 0);
@@ -234,9 +234,9 @@ export class ExtensionManagementService extends Disposable implements IExtension
 		return this.downloadService.download(vsix, URI.file(downloadedLocation)).then(() => URI.file(downloadedLocation));
 	}
 
-	/*private installFromZipPath(identifierWithVersion: ExtensionIdentifierWithVersion, zipPath: string, metadata: IGalleryMetadata | null, operation: InstallOperation, token: CancellationToken): Promise<ILocalExtension> { {{SQL CARBON EDIT}} comment out for no unused
+	/*private installFromZipPath(identifierWithVersion: ExtensionIdentifierWithVersion, zipPath: string, metadata: IMetadata | undefined, operation: InstallOperation, token: CancellationToken): Promise<ILocalExtension> { {{SQL CARBON EDIT}}
 		return this.toNonCancellablePromise(this.installExtension({ zipPath, identifierWithVersion, metadata }, token)
-			.then(local => this.installDependenciesAndPackExtensions(local, null)
+			.then(local => this.installDependenciesAndPackExtensions(local, undefined)
 				.then(
 					() => local,
 					error => {
@@ -254,7 +254,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			));
 	}*/
 
-	async installFromGallery(extension: IGalleryExtension): Promise<ILocalExtension> {
+	async installFromGallery(extension: IGalleryExtension, isDefault?: boolean): Promise<ILocalExtension> {
 		if (!this.galleryService.isEnabled()) {
 			return Promise.reject(new Error(nls.localize('MarketPlaceDisabled', "Marketplace is not enabled")));
 		}
@@ -296,14 +296,17 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			this.installingExtensions.set(key, cancellablePromise);
 			try {
 				const installed = await this.getInstalled(ExtensionType.User);
-				const existingExtension = installed.filter(i => areSameExtensions(i.identifier, extension.identifier))[0];
+				const existingExtension = installed.find(i => areSameExtensions(i.identifier, extension.identifier));
 				if (existingExtension) {
 					operation = InstallOperation.Update;
 				}
 
 				this.downloadInstallableExtension(extension, operation)
-					.then(installableExtension => this.installExtension(installableExtension, cancellationToken)
-						.then(local => this.extensionsDownloader.delete(URI.file(installableExtension.zipPath)).finally(() => { }).then(() => local)))
+					.then(installableExtension => {
+						installableExtension.metadata.isDefault = isDefault !== undefined ? isDefault : existingExtension?.isDefault;
+						return this.installExtension(installableExtension, cancellationToken)
+							.then(local => this.extensionsDownloader.delete(URI.file(installableExtension.zipPath)).finally(() => { }).then(() => local));
+					})
 					.then(local => this.installDependenciesAndPackExtensions(local, existingExtension)
 						.then(() => local, error => this.uninstall(local, true).then(() => Promise.reject(error), () => Promise.reject(error))))
 					.then(
@@ -373,7 +376,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			.then(report => getMaliciousExtensionsSet(report).has(extension.identifier.id));
 	}
 
-	private downloadInstallableExtension(extension: IGalleryExtension, operation: InstallOperation): Promise<InstallableExtension> {
+	private downloadInstallableExtension(extension: IGalleryExtension, operation: InstallOperation): Promise<Required<InstallableExtension>> {
 		const metadata = <IGalleryMetadata>{
 			id: extension.identifier.uuid,
 			publisherId: extension.publisherId,
@@ -388,7 +391,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 					this.logService.info('Downloaded extension:', extension.identifier.id, zipPath);
 					return getManifest(zipPath)
 						.then(
-							manifest => (<InstallableExtension>{ zipPath, identifierWithVersion: new ExtensionIdentifierWithVersion(extension.identifier, manifest.version), metadata }),
+							manifest => (<Required<InstallableExtension>>{ zipPath, identifierWithVersion: new ExtensionIdentifierWithVersion(extension.identifier, manifest.version), metadata }),
 							error => Promise.reject(new ExtensionManagementError(this.joinErrors(error).message, INSTALL_ERROR_VALIDATING))
 						);
 				},
@@ -434,13 +437,12 @@ export class ExtensionManagementService extends Disposable implements IExtension
 		let local = await this.extensionsScanner.extractUserExtension(identifierWithVersion, zipPath, token);
 		this.logService.info('Installation completed.', identifier.id);
 		if (metadata) {
-			this.setMetadata(local, metadata);
-			local = await this.extensionsScanner.saveMetadataForLocalExtension(local);
+			local = await this.extensionsScanner.saveMetadataForLocalExtension(local, metadata);
 		}
 		return local;
 	}
 
-	private async installDependenciesAndPackExtensions(installed: ILocalExtension, existing: ILocalExtension | null): Promise<void> {
+	private async installDependenciesAndPackExtensions(installed: ILocalExtension, existing: ILocalExtension | undefined): Promise<void> {
 		if (this.galleryService.isEnabled()) {
 			const dependenciesAndPackExtensions: string[] = installed.manifest.extensionDependencies || [];
 			if (installed.manifest.extensionPack) {
@@ -496,15 +498,14 @@ export class ExtensionManagementService extends Disposable implements IExtension
 
 	async updateMetadata(local: ILocalExtension, metadata: IGalleryMetadata): Promise<ILocalExtension> {
 		this.logService.trace('ExtensionManagementService#updateMetadata', local.identifier.id);
-		local.metadata = metadata;
-		local = await this.extensionsScanner.saveMetadataForLocalExtension(local);
+		local = await this.extensionsScanner.saveMetadataForLocalExtension(local, { ...metadata, isDefault: local.isDefault });
 		this.manifestCache.invalidate();
 		return local;
 	}
 
-	/*private getMetadata(extensionName: string): Promise<IGalleryMetadata | null> { {{SQL CARBON EDIT}} comment out function for no unused
+	/*private getGalleryMetadata(extensionName: string): Promise<IGalleryMetadata | undefined> { {{SQL CARBON EDIT}}
 		return this.findGalleryExtensionByName(extensionName)
-			.then(galleryExtension => galleryExtension ? <IGalleryMetadata>{ id: galleryExtension.identifier.uuid, publisherDisplayName: galleryExtension.publisherDisplayName, publisherId: galleryExtension.publisherId } : null);
+			.then(galleryExtension => galleryExtension ? <IGalleryMetadata>{ id: galleryExtension.identifier.uuid, publisherDisplayName: galleryExtension.publisherDisplayName, publisherId: galleryExtension.publisherId } : undefined);
 	}*/
 
 	private findGalleryExtension(local: ILocalExtension): Promise<IGalleryExtension> {
@@ -642,11 +643,6 @@ export class ExtensionManagementService extends Disposable implements IExtension
 
 	getInstalled(type: ExtensionType | null = null): Promise<ILocalExtension[]> {
 		return this.extensionsScanner.scanExtensions(type);
-	}
-
-	private setMetadata(local: ILocalExtension, metadata: IGalleryMetadata): void {
-		local.metadata = metadata;
-		local.identifier.uuid = metadata.id;
 	}
 
 	removeDeprecatedExtensions(): Promise<void> {

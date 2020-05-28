@@ -35,7 +35,7 @@
     "strict-function-types-watch": "tsc --watch -p src/tsconfig.json --noEmit --strictFunctionTypes",
     "update-distro": "node build/npm/update-distro.js",
     "web": "node scripts/code-web.js",
-    "eslint": "eslint -c .eslintrc.json --rulesdir ./build/lib/eslint --ext .ts --ext .js ./src/sql",
+    "eslint": "eslint -c .eslintrc.json --rulesdir ./build/lib/eslint --ext .ts --ext .js ./src/vs ./extensions",
     "sqllint": "eslint --no-eslintrc -c .eslintrc.sql.ts.json --rulesdir ./build/lib/eslint --ext .ts ./src/sql"
   },
   "dependencies": {
@@ -125,7 +125,7 @@
     "css-loader": "^3.2.0",
     "debounce": "^1.0.0",
     "deemon": "^1.4.0",
-    "electron": "7.2.4",
+    "electron": "7.3.0",
     "eslint": "6.8.0",
     "eslint-plugin-jsdoc": "^19.1.0",
     "event-stream": "3.3.4",
