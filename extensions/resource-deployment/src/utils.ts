@@ -2,9 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { ITool, NoteBookEnvironmentVariablePrefix } from './interfaces';
+import { AssertionError } from 'assert';
 import * as path from 'path';
 import { ToolsInstallPath } from './constants';
+import { ITool, NoteBookEnvironmentVariablePrefix } from './interfaces';
 
 export function getErrorMessage(error: any): string {
 	return (error instanceof Error)
@@ -37,5 +38,11 @@ export function setEnvironmentVariablesForInstallPaths(tools: ITool[], env: Node
 	if (installationPaths.size > 0) {
 		const envVarToolsInstallationPath: string = [...installationPaths.values()].join(path.delimiter);
 		env[ToolsInstallPath] = envVarToolsInstallationPath;
+	}
+}
+
+export function assert(condition: any, message?: string): asserts condition {
+	if (!condition) {
+		throw new AssertionError({ message: message });
 	}
 }

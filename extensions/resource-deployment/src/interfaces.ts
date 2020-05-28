@@ -174,7 +174,8 @@ export type ComponentCSSStyles = {
 
 export interface OptionsInfo {
 	values: string[] | azdata.CategoryValue[],
-	defaultValue: string
+	defaultValue: string,
+	optionsType?: OptionsType
 }
 
 export interface FieldInfoBase {
@@ -216,7 +217,7 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	min?: number;
 	max?: number;
 	required?: boolean;
-	options?: string[] | azdata.CategoryValue[];
+	options?: string[] | azdata.CategoryValue[] | OptionsInfo;
 	placeHolder?: string;
 	userName?: string; // needed for sql server's password complexity requirement check, password can not include the login name.
 	description?: string;
@@ -264,7 +265,6 @@ export enum FieldType {
 	SQLPassword = 'sql_password',
 	Password = 'password',
 	Options = 'options',
-	RadioOptions = 'radio_options',
 	ReadonlyText = 'readonly_text',
 	EvaluatedText = 'evaluated_text',
 	Checkbox = 'checkbox',
@@ -273,6 +273,11 @@ export enum FieldType {
 	FilePicker = 'file_picker',
 	KubeClusterContextPicker = 'kube_cluster_context_picker',
 	HyperlinkedText = 'hyperlinked_text'
+}
+
+export enum OptionsType {
+	Dropdown = 'dropdown',
+	Radio = 'radio'
 }
 
 export interface NotebookInfo {

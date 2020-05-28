@@ -9,10 +9,10 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import * as azurecore from '../../../azurecore/src/azurecore';
 import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
-import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
+import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
-import { getDateTimeString, getErrorMessage } from '../utils';
+import { assert, getDateTimeString, getErrorMessage } from '../utils';
 import { WizardInfoBase } from './../interfaces';
 import { Model } from './model';
 import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentBuilder';
@@ -341,9 +341,6 @@ function processField(context: FieldContext): void {
 		case FieldType.Options:
 			processOptionsTypeField(context);
 			break;
-		case FieldType.RadioOptions:
-			processRadioOptionsTypeField(context);
-			break;
 		case FieldType.DateTimeText:
 			processDateTimeTextField(context);
 			break;
@@ -387,10 +384,30 @@ function processField(context: FieldContext): void {
 }
 
 function processOptionsTypeField(context: FieldContext): void {
+	assert(context.fieldInfo.options !== undefined);
+	if (Array.isArray(context.fieldInfo.options)) {
+		context.fieldInfo.options = <OptionsInfo>{
+			values: context.fieldInfo.options,
+			defaultValue: context.fieldInfo.defaultValue,
+			optionsType: OptionsType.Dropdown
+		};
+	}
+	assert(typeof context.fieldInfo.options === 'object');
+	assert('optionsType' in context.fieldInfo.options);
+	if (context.fieldInfo.options.optionsType === OptionsType.Radio) {
+		processRadioOptionsTypeField(context);
+	} else {
+		assert(context.fieldInfo.options.optionsType === OptionsType.Dropdown);
+		processDropdownOptionsTypeField(context);
+	}
+}
+
+function processDropdownOptionsTypeField(context: FieldContext): void {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
+	const options = context.fieldInfo.options as OptionsInfo;
 	const dropdown = createDropdown(context.view, {
-		values: context.fieldInfo.options,
-		defaultValue: context.fieldInfo.defaultValue,
+		values: options.values,
+		defaultValue: options.defaultValue,
 		width: context.fieldInfo.inputWidth,
 		editable: context.fieldInfo.editable,
 		required: context.fieldInfo.required,
@@ -689,7 +706,9 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 	context.fieldInfo.labelPosition = LabelPosition.Left;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, radioGroupLoadingComponentBuilder);
 	addLabelInputPairToContainer(context.view, context.components, label, radioGroupLoadingComponentBuilder.component(), context.fieldInfo);
-	await radioGroupLoadingComponentBuilder.loadOptions(getRadioButtonInfo || { values: context.fieldInfo.options!, defaultValue: context.fieldInfo.defaultValue! }); // wait for the radioGroup to be fully initialized
+	const options = context.fieldInfo.options as OptionsInfo;
+	await radioGroupLoadingComponentBuilder.loadOptions(
+		getRadioButtonInfo || options); // wait for the radioGroup to be fully initialized
 	return radioGroupLoadingComponentBuilder;
 }
 
