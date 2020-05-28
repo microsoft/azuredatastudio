@@ -16,7 +16,7 @@ function getRemoteLocationCategory(name: string): azdata.CategoryValue {
 
 export class RemoteBookDialogModel {
 
-	private _canceled = false;
+	// private _canceled = false;
 	private _remoteTypes: azdata.CategoryValue[];
 	private _controller: RemoteBookController;
 
@@ -45,12 +45,11 @@ export class RemoteBookDialogModel {
 	}
 
 
-	public async downloadLocalCopy(url: URL, remoteLocation: string, release?: IReleases): Promise<void> {
-		let isDownload: boolean;
+	public async downloadLocalCopy(url: URL, remoteLocation: string, release?: IReleases): Promise<boolean> {
 		if (release) {
-			isDownload = await this._controller.setRemoteBook(url, remoteLocation, release.zipURL, release.tarURL);
+			return await this._controller.setRemoteBook(url, remoteLocation, release.zipURL, release.tarURL);
 		}
-		isDownload = await this._controller.setRemoteBook(url, remoteLocation);
+		return await this._controller.setRemoteBook(url, remoteLocation);
 	}
 
 }

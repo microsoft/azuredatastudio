@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as request from 'request';
-import * as fs from 'fs';
+// import * as fs from 'fs';
 import * as os from 'os';
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
@@ -18,8 +18,9 @@ export class RemoteBookController {
 	public async setRemoteBook(url: URL, remoteLocation: string, zipURL?: URL, tarURL?: URL): Promise<boolean> {
 		if (remoteLocation === 'GitHub') {
 			this._book = new GitHubRemoteBook(url, zipURL, tarURL);
+		} else {
+			this._book = new SharedRemoteBook(url);
 		}
-		this._book = new SharedRemoteBook(url);
 		return this._book.createLocalCopy();
 	}
 
@@ -90,28 +91,28 @@ export class RemoteBookController {
 	/**
 	 * Unzip a .zip or .tar.gz
 	 */
-	private unzip(archivePath: string, extractDir: string) {
-		if (archivePath.endsWith('.zip')) {
-			if (process.platform === 'win32') {
-				cp.spawnSync('powershell.exe', [
-					'-NoProfile',
-					'-ExecutionPolicy', 'Bypass',
-					'-NonInteractive',
-					'-NoLogo',
-					'-Command',
-					`Microsoft.PowerShell.Archive\\Expand-Archive -Path "${archivePath}" -DestinationPath "${extractDir}"`
-				]);
-			} else {
-				cp.spawnSync('unzip', [archivePath, '-d', `${extractDir}`]);
-			}
-		} else {
-			// tar does not create extractDir by default
-			if (!fs.existsSync(extractDir)) {
-				fs.mkdirSync(extractDir);
-			}
-			cp.spawnSync('tar', ['-xzf', archivePath, '-C', extractDir, '--strip-components', '1']);
-		}
-	}
+	// private unzip(archivePath: string, extractDir: string) {
+	// 	if (archivePath.endsWith('.zip')) {
+	// 		if (process.platform === 'win32') {
+	// 			cp.spawnSync('powershell.exe', [
+	// 				'-NoProfile',
+	// 				'-ExecutionPolicy', 'Bypass',
+	// 				'-NonInteractive',
+	// 				'-NoLogo',
+	// 				'-Command',
+	// 				`Microsoft.PowerShell.Archive\\Expand-Archive -Path "${archivePath}" -DestinationPath "${extractDir}"`
+	// 			]);
+	// 		} else {
+	// 			cp.spawnSync('unzip', [archivePath, '-d', `${extractDir}`]);
+	// 		}
+	// 	} else {
+	// 		// tar does not create extractDir by default
+	// 		if (!fs.existsSync(extractDir)) {
+	// 			fs.mkdirSync(extractDir);
+	// 		}
+	// 		cp.spawnSync('tar', ['-xzf', archivePath, '-C', extractDir, '--strip-components', '1']);
+	// 	}
+	// }
 }
 
 export interface IRemoteBook {
@@ -131,6 +132,13 @@ export interface IReleases {
 }
 
 export abstract class RemoteBook implements IRemoteBook {
+	private _book_name: string;
+	private _version: string;
+	private _lang_code: string;
+	private _local_path: URL;
+	private _tarURL: URL;
+	private _zipURL: URL;
+
 	constructor(public remote_path: URL) {
 		this.remote_path = remote_path;
 	}
@@ -144,49 +152,49 @@ export abstract class RemoteBook implements IRemoteBook {
 	}
 
 	public set book_name(value: string) {
-		this.book_name = value;
+		this._book_name = value;
 	}
 
 	public set version(value: string) {
-		this.version = value;
+		this._version = value;
 	}
 
 	public set lang_code(value: string) {
-		this.lang_code = value;
+		this._lang_code = value;
 	}
 
 	public set local_path(value: URL) {
-		this.local_path = value;
+		this._local_path = value;
 	}
 	public set zipURL(value: URL) {
-		this.zipURL = value;
+		this._zipURL = value;
 	}
-
 	public set tarURL(value: URL) {
-		this.tarURL = value;
+		this._tarURL = value;
 	}
 
 	public get book_name() {
-		return this.book_name;
+		return this._book_name;
 	}
 
 	public get version() {
-		return this.version;
+		return this._version;
 	}
 
 	public get lang_code() {
-		return this.lang_code;
+		return this._lang_code;
 	}
 
 	public get local_path() {
-		return this.local_path;
+		return this._local_path;
 	}
+
 	public get tarURL() {
-		return this.tarURL;
+		return this._tarURL;
 	}
 
 	public get zipURL() {
-		return this.zipURL;
+		return this._zipURL;
 	}
 }
 
@@ -210,8 +218,6 @@ class SharedRemoteBook extends RemoteBook implements IRemoteBook {
 export class GitHubRemoteBook extends RemoteBook implements IRemoteBook {
 	constructor(public remote_path: URL, public zipURL: URL, public tarURL: URL) {
 		super(remote_path);
-		this.zipURL = zipURL;
-		this.tarURL = tarURL;
 	}
 
 	public async createLocalCopy(): Promise<boolean> {
