@@ -2531,7 +2531,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 						// eat the error, it has already been surfaced to the user and we don't care about it here
 					});
 				});
-				return;
+				return undefined; // {{SQL CARBON EDIT}} strict-null-check
 			}
 
 			return this.getTasksForGroup(TaskGroup.Build).then((tasks) => {
