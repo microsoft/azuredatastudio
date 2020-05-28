@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
-import { DATA_TIER_WIZARD_COMMAND_ID, PROFILER_COMMAND_ID, IMPORT_COMMAND_ID, SCHEMA_COMPARE_COMMAND_ID, GENERATE_SCRIPTS_COMMAND_ID, PROPERTIES_COMMAND_ID } from 'sql/workbench/contrib/dataExplorer/browser/extensionActions';
+import { DATA_TIER_WIZARD_COMMAND_ID, PROFILER_COMMAND_ID, IMPORT_COMMAND_ID, SCHEMA_COMPARE_COMMAND_ID, GENERATE_SCRIPTS_COMMAND_ID, PROPERTIES_COMMAND_ID, IMPORT_DATABASE_COMMAND_ID } from 'sql/workbench/contrib/dataExplorer/browser/extensionActions';
 import { ContextKeyExpr, ContextKeyRegexExpr } from 'vs/platform/contextkey/common/contextkey';
 import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/mssqlNodeContext';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
@@ -38,10 +38,22 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
+// Import Database
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'export',
+	order: 8,
+	command: {
+		id: IMPORT_DATABASE_COMMAND_ID,
+		title: localize('importDatabase', "Import New Database Project")
+	},
+	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
+		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
+});
+
 // Profiler
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'profiler',
-	order: 8,
+	order: 9,
 	command: {
 		id: PROFILER_COMMAND_ID,
 		title: localize('profiler', "Launch Profiler")
@@ -50,22 +62,10 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Server), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
-// Flat File Import
-MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
-	group: 'import',
-	order: 10,
-	command: {
-		id: IMPORT_COMMAND_ID,
-		title: localize('flatFileImport', "Import Wizard")
-	},
-	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
-		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database))
-});
-
 // Schema Compare
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'export',
-	order: 9,
+	order: 10,
 	command: {
 		id: SCHEMA_COMPARE_COMMAND_ID,
 		title: localize('schemaCompare', "Schema Compare")
@@ -74,10 +74,22 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
+// Flat File Import
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'import',
+	order: 11,
+	command: {
+		id: IMPORT_COMMAND_ID,
+		title: localize('flatFileImport', "Import Wizard")
+	},
+	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
+		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database))
+});
+
 // Generate Scripts Action
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'z-AdminToolExt@1',
-	order: 11,
+	order: 12,
 	command: {
 		id: GENERATE_SCRIPTS_COMMAND_ID,
 		title: localize('generateScripts', "Generate Scripts...")
@@ -90,7 +102,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 // Properties Action
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'z-AdminToolExt@2',
-	order: 12,
+	order: 13,
 	command: {
 		id: PROPERTIES_COMMAND_ID,
 		title: localize('properties', "Properties")
@@ -102,7 +114,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'z-AdminToolExt@2',
-	order: 12,
+	order: 13,
 	command: {
 		id: PROPERTIES_COMMAND_ID,
 		title: localize('properties', "Properties")

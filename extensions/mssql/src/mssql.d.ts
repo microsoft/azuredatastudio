@@ -319,10 +319,20 @@ export interface SchemaCompareOpenScmpResult extends azdata.ResultStatus {
 //#endregion
 
 //#region --- dacfx
+export const enum ExtractTarget {
+	dacpac = 0,
+	file = 1,
+	flat = 2,
+	objectType = 3,
+	schema = 4,
+	schemaObjectType = 5
+}
+
 export interface IDacFxService {
 	exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<DacFxResult>;
 	importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<DacFxResult>;
 	extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<DacFxResult>;
+	importDatabaseProject(databaseName: string, targetFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, extractTarget: ExtractTarget, taskExecutionMode: azdata.TaskExecutionMode): Thenable<DacFxResult>;
 	deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>): Thenable<DacFxResult>;
 	generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>): Thenable<DacFxResult>;
 	generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
@@ -356,6 +366,7 @@ export interface ExtractParams {
 	applicationName: string;
 	applicationVersion: string;
 	ownerUri: string;
+	extractTarget?: ExtractTarget;
 	taskExecutionMode: azdata.TaskExecutionMode;
 }
 
