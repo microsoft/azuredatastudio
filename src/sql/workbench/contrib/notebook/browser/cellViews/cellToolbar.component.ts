@@ -55,7 +55,6 @@ export class CellToolbarComponent {
 		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('textPreview', "Markdown cell"), 'notebook-button masked-pseudo markdown');
 		addTextCellButton.cellType = CellTypes.Markdown;
 
-		// let deleteButton = this.instantiationService.createInstance(DeleteCellAction, 'notebook.deleteCell', localize('buttonDelete', "Delete cell"), 'codicon masked-icon delete');
 		let deleteButton = this.instantiationService.createInstance(DeleteCellAction, 'delete', 'codicon masked-icon delete', localize('delete', "Delete"));
 
 		// Todo: Get this to show the list of actions specific to code or markdown cell.

@@ -83,15 +83,14 @@ export class EditCellAction extends ToggleableAction {
 	public set editMode(value: boolean) {
 		// Toggle icon
 		this.toggle(value);
-		// Todo: Toggle cell active state
 	}
 
-	// Todo: Nothing is being done on the model at this point. Will that be necessary in order to apply focus to the cell?
-	public run(context: INotebookEditor): Promise<boolean> {
+	public run(context: CellContext): Promise<boolean> {
 		let self = this;
 		return new Promise<boolean>((resolve, reject) => {
 			try {
 				self.editMode = !self.editMode;
+				context.cell.isEditMode = self.editMode;
 				resolve(true);
 			} catch (e) {
 				reject(e);
