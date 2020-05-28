@@ -43,9 +43,9 @@ interface TourData {
 const tourData: TourData[] = [
 	{ key: 'connections', order: '1', header: localize('GuidedTour.connections', "Connections"), body: localize('GuidedTour.makeConnections', "Connect, query, and manage your connections from SQL Server, Azure, and more."), step: localize('GuidedTour.one', "1"), elmClass: 'overview_tour_connections', id: 'overview_tour_connections', btnId: 'overview_tour_connections_btn', btnText: localize('GuidedTour.next', "Next"), docs: 'https://aka.ms/ads-connections-quickstart', elementToAppendTo: '.action-label.dataExplorer', arrow: 'arrow_left', popupImage: './../../gettingStarted/media/connections.png' },
 	{ key: 'jupyer_books', order: '2', header: localize('GuidedTour.notebooks', "Notebooks"), body: localize('GuidedTour.gettingStartedNotebooks', "Get started creating your own notebook or collection of notebooks in a single place."), step: localize('GuidedTour.two', "2"), elmClass: 'overview_tour_jupyterBooks', id: 'overview_tour_jupyterBooks', btnId: 'overview_tour_jupyter_btn', btnText: localize('GuidedTour.next', "Next"), docs: 'https://aka.ms/ads-notebooks', elementToAppendTo: '.action-label.activity-workbench-view-extension-books-explorer', arrow: 'arrow_left', popupImage: './../../gettingStarted/media/notebooks.png' },
-	{ key: 'extensions', order: '3', header: localize('GuidedTour.extensions', "Extensions"), body: localize('GuidedTour.addExtensions', "Extend the functionality of Azure Data Studio by installing extensions developed by us/Microsoft as well as the third-party community (you!)."), step: localize('GuidedTour.three', "3"), elmClass: 'overview_tour_extensions', id: 'overview_tour_extensions', btnId: 'overview_tour_extensions_btn', btnText: localize('GuidedTour.next', "Next"), docs: 'https://aka.ms/ads-extensions', elementToAppendTo: '.action-label.codicon-extensions', arrow: 'arrow_center_left', popupImage: './../../gettingStarted/media/extensions.png' },
+	{ key: 'extensions', order: '3', header: localize('GuidedTour.extensions', "Extensions"), body: localize('GuidedTour.addExtensions', "Extend the functionality of Azure Data Studio by installing extensions developed by us/Microsoft as well as the third-party community (you!)."), step: localize('GuidedTour.three', "3"), elmClass: 'overview_tour_extensions', id: 'overview_tour_extensions', btnId: 'overview_tour_extensions_btn', btnText: localize('GuidedTour.next', "Next"), docs: 'https://aka.ms/ads-extensions', elementToAppendTo: '.action-label.codicon-extensions', arrow: 'arrow_left', popupImage: './../../gettingStarted/media/extensions.png' },
 	{ key: 'settings', order: '4', header: localize('GuidedTour.settings', "Settings"), body: localize('GuidedTour.makeConnesetSettings', "Customize Azure Data Studio based on your preferences. You can configure Settings like autosave and tab size, personalize your Keyboard Shortcuts, and switch to a Color Theme of your liking."), step: localize('GuidedTour.four', "4"), elmClass: 'overview_tour_settings', id: 'overview_tour_settings', btnId: 'overview_tour_settings_btn', btnText: localize('GuidedTour.next', "Next"), elementToAppendTo: '.codicon-settings-gear', arrow: 'arrow_bottom_left', popupImage: '../../gettingStarted/media/settings.png' },
-	{ key: 'welcome_page', order: '5', header: localize('GuidedTour.welcomePage', "Welcome Page"), body: localize('GuidedTour.discoverWelcomePage', "Discover top features, recently opened files, and recommended extensions on the Welcome page. For more information on how to get started in Azure Data Studio, check out our videos and documentation."), step: localize('GuidedTour.five', "5"), elmClass: 'overview_tour_home', id: 'overview_tour_home', btnId: 'overview_tour_home_btn', btnText: localize('GuidedTour.exit', "Exit"), elementToAppendTo: 'center', arrow: 'none', popupImage: '../../gettingStarted/media/welcome.png' },
+	{ key: 'welcome_page', order: '5', header: localize('GuidedTour.welcomePage', "Welcome Page"), body: localize('GuidedTour.discoverWelcomePage', "Discover top features, recently opened files, and recommended extensions on the Welcome page. For more information on how to get started in Azure Data Studio, check out our videos and documentation."), step: localize('GuidedTour.five', "5"), elmClass: 'overview_tour_home', id: 'overview_tour_home', btnId: 'overview_tour_home_btn', btnText: localize('GuidedTour.close', "Close"), elementToAppendTo: 'center', arrow: 'none', popupImage: '../../gettingStarted/media/welcome.png' },
 ];
 
 const IS_OVERLAY_VISIBLE = new RawContextKey<boolean>('interfaceOverviewVisible', false);
@@ -120,8 +120,6 @@ export class GuidedTour extends Disposable {
 			}
 		});
 
-
-
 		tourData.forEach(({ key, order, header, body, step, elmClass, id, btnId, btnText, docs, elementToAppendTo, arrow, popupImage }, i): void => {
 			const container = document.createElement('div');
 			let positionVertical;
@@ -185,11 +183,8 @@ export class GuidedTour extends Disposable {
 			container.appendChild(exitButton);
 			container.style.position = 'absolute';
 			container.appendChild(flexContainer);
-			if (elementToAppendTo === '.codicon-settings-gear') {
+			if (key === 'settings') {
 				container.style.top = (positionVertical - 330) + 'px';
-				container.style.left = positionHorizontal + 'px';
-			} else if (elementToAppendTo === '.action-label.codicon-extensions') {
-				container.style.top = (positionVertical - 170) + 'px';
 				container.style.left = positionHorizontal + 'px';
 			}
 			else if (elementToAppendTo === 'center') {
@@ -218,13 +213,53 @@ export class GuidedTour extends Disposable {
 		return -1;
 	}
 
+	private tourEvents(popups: NodeListOf<Element>, popupsLength: number, i: number): void {
+		if (i === (popupsLength - 1)) {
+			this.hide();
+			return;
+		}
+		let next = i + 1;
+		const h1: HTMLElement = popups[next].querySelector('.ads_tour_popup_text_container h1');
+		const popupId = popups[next].getAttribute('id');
+		const popupItem = this.findWithAttr(tourData, 'id', popupId);
+		let elementClassToAppendTo = tourData[popupItem].elementToAppendTo;
+		let tourItem = document.querySelector(`#${tourData[popupItem].elmClass}`) as HTMLElement;
+		let positionVertical;
+		let positionHorizontal;
+		let subjectElement = tourItem as HTMLElement;
+		if (elementClassToAppendTo !== 'center') {
+			subjectElement = document.querySelector(elementClassToAppendTo) as HTMLElement;
+			const subjectElementPosition = subjectElement.getBoundingClientRect();
+			positionHorizontal = Math.round((subjectElementPosition.left + 70));
+			positionVertical = Math.round((subjectElementPosition.top - 22));
+			subjectElement.style.pointerEvents = 'none';
+		}
+		if (elementClassToAppendTo === '.codicon-settings-gear') {
+			tourItem.style.top = (positionVertical - 330) + 'px';
+			tourItem.style.left = positionHorizontal + 'px';
+		}
+		else if (elementClassToAppendTo === 'center') {
+			tourItem.style.margin = 'auto';
+			tourItem.style.left = '0px';
+			tourItem.style.right = '0px';
+			tourItem.style.bottom = '0px';
+			tourItem.style.top = '0px';
+		} else {
+			tourItem.style.top = (positionVertical) + 'px';
+			tourItem.style.left = positionHorizontal + 'px';
+		}
+		popups[i].classList.add('ads_tour_hide');
+		popups[i].classList.remove('ads_tour_show');
+		popups[next].classList.add('ads_tour_show');
+		popups[next].classList.remove('ads_tour_hide');
+		h1.focus();
+	}
+
 
 	private buildInteractions(): void {
 		const popups = document.querySelectorAll('.ads_tour_popup') as NodeListOf<Element>;
 		const menuBarItems = document.querySelectorAll('.menubar-menu-button') as NodeListOf<HTMLElement>;
 		const context = this;
-
-
 		menuBarItems.forEach((elm) => {
 			elm.style.pointerEvents = 'none';
 		});
@@ -240,68 +275,10 @@ export class GuidedTour extends Disposable {
 			});
 			btn.id = 'ads_tour_btn_' + popups[i];
 			btn.addEventListener('keydown', (e: KeyboardEvent) => {
-				let next = i + 1;
-				let event = new StandardKeyboardEvent(e);
-				if (event.equals(KeyCode.Enter)) {
-					const h1: HTMLElement = popups[next].querySelector('.ads_tour_popup_text_container h1');
-
-					const currentPopup = document.querySelector('.ads_tour_popup.ads_tour_show');
-					const order = parseInt(currentPopup.getAttribute('data-order'));
-					const nextPopup = document.querySelector(`.ads_tour_popup[data-order="${order + 1}"]`);
-					if (order !== tourData.length) {
-						currentPopup.classList.remove('ads_tour_show');
-						currentPopup.classList.add('ads_tour_hide');
-						nextPopup.classList.add('ads_tour_show');
-						nextPopup.classList.remove('ads_tour_hide');
-						h1.focus();
-					} else {
-						context.hide();
-					}
-				}
+				context.tourEvents(popups, popupsLength, i);
 			});
 			btn.addEventListener('click', function () {
-				if (i === (popupsLength - 1)) {
-					context.hide();
-					return;
-				}
-				let next = i + 1;
-				const popupId = popups[next].getAttribute('id');
-				const popupItem = context.findWithAttr(tourData, 'id', popupId);
-				let elementClassToAppendTo = tourData[popupItem].elementToAppendTo;
-				let tourItem = document.querySelector(`#${tourData[popupItem].elmClass}`) as HTMLElement;
-				let positionVertical;
-				let positionHorizontal;
-				let subjectElement = tourItem as HTMLElement;
-				if (elementClassToAppendTo !== 'center') {
-					subjectElement = document.querySelector(elementClassToAppendTo) as HTMLElement;
-					const subjectElementPosition = subjectElement.getBoundingClientRect();
-					positionHorizontal = Math.round((subjectElementPosition.left + 70));
-					positionVertical = Math.round((subjectElementPosition.top - 22));
-					subjectElement.style.pointerEvents = 'none';
-				}
-				if (elementClassToAppendTo === '.codicon-settings-gear') {
-					tourItem.style.top = (positionVertical - 330) + 'px';
-					tourItem.style.left = positionHorizontal + 'px';
-				} else if (elementClassToAppendTo === '.action-label.codicon-extensions') {
-					tourItem.style.top = (positionVertical - 170) + 'px';
-					tourItem.style.left = positionHorizontal + 'px';
-				}
-				else if (elementClassToAppendTo === 'center') {
-					tourItem.style.margin = 'auto';
-					tourItem.style.left = '0px';
-					tourItem.style.right = '0px';
-					tourItem.style.bottom = '0px';
-					tourItem.style.top = '0px';
-				} else {
-					tourItem.style.top = (positionVertical) + 'px';
-					tourItem.style.left = positionHorizontal + 'px';
-				}
-				popups[i].classList.add('ads_tour_hide');
-				popups[i].classList.remove('ads_tour_show');
-				popups[next].classList.add('ads_tour_show');
-				popups[next].classList.remove('ads_tour_hide');
-				const nextBtn: HTMLElement = popups[next].querySelector('.ads_tour_popup_text_container .monaco-button');
-				nextBtn.focus();
+				context.tourEvents(popups, popupsLength, i);
 			});
 		});
 		this.show();
