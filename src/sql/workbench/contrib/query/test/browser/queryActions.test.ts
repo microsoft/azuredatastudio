@@ -570,7 +570,7 @@ suite('SQL QueryAction Tests', () => {
 		// setting up assert variables
 		let countCalledShowDialog: number = 0;
 
-		// creating a local
+		// mocking query editor
 		const contextkeyservice = new MockContextKeyService();
 		let queryEditor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Loose, undefined, new TestThemeService(),
 			new TestStorageService(), contextkeyservice, undefined, new TestFileService(), undefined);
@@ -630,7 +630,7 @@ suite('SQL QueryAction Tests', () => {
 		let predefinedCursorSelection: IRange = { startLineNumber: 1, startColumn: 1, endLineNumber: 1, endColumn: 1 };
 		let predefinedRangeSelection: IRange = { startLineNumber: 1, startColumn: 2, endLineNumber: 3, endColumn: 4 };
 
-		// creating a local
+		// mocking query editor
 		const contextkeyservice = new MockContextKeyService();
 		let queryEditor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Loose, undefined, new TestThemeService(),
 			new TestStorageService(), contextkeyservice, undefined, new TestFileService(), undefined);
