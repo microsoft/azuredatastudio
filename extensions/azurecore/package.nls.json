@@ -11,9 +11,9 @@
 	"azure.resource.signin.title": "Azure: Sign In",
 	"azure.resource.selectsubscriptions.title": "Select Subscriptions",
 	"azure.resource.startterminal.title": "Start Cloud Shell",
-	"azure.resource.connectsqlserver.title": "Connect SQL",
+	"azure.resource.connectsqlserver.title": "Connect",
 	"azure.resource.connectsqldb.title": "Add to Servers",
-	"azure.resource.connectazureDataExplorer.title": "Connect ADE",
+	"azure.resource.connectazureDataExplorer.title": "Connect",
 
 	"accounts.clearTokenCache": "Clear Azure Account Token Cache",
 	"azure.accounts.getSubscriptions.title": "Get Azure Account Subscriptions",
