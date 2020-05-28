@@ -28,6 +28,7 @@ import { find, firstIndex } from 'vs/base/common/arrays';
 import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookComponent } from 'sql/workbench/contrib/notebook/browser/notebook.component';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
@@ -49,18 +50,27 @@ export class AddCellAction extends Action {
 	) {
 		super(id, label, cssClass);
 	}
-	public async run(context: INotebookEditor): Promise<any> {
-		//Add Cell after current selected cell.
+	public async run(context: INotebookEditor | CellContext): Promise<any> {
 		let index = 0;
-		if (context && context.cells) {
-			let notebookcomponent = context as NotebookComponent;
-			let id = notebookcomponent.activeCellId;
-			if (id) {
-				index = context.cells.findIndex(cell => cell.id === id);
-				index = index + 1;
+		if (context instanceof CellContext) {
+			if (context && context.model && context.model.cells) {
+				let activeCellId = context.model.activeCell.id;
+				if (activeCellId) {
+					index = context.model.cells.findIndex(cell => cell.id === activeCellId) + 1;
+				}
 			}
+			context.model.addCell(this.cellType, index);
+		} else {
+			//Add Cell after current selected cell.
+			if (context && context.cells) {
+				let notebookcomponent = context as NotebookComponent;
+				let id = notebookcomponent.activeCellId;
+				if (id) {
+					index = context.cells.findIndex(cell => cell.id === id) + 1;
+				}
+			}
+			context.addCell(this.cellType, index);
 		}
-		context.addCell(this.cellType, index);
 	}
 }
 

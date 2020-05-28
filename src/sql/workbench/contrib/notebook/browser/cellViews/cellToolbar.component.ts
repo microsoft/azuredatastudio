@@ -50,7 +50,7 @@ export class CellToolbarComponent {
 	}
 
 	protected initActionBar(): void {
-		let _context = new CellContext(this.model, this.cellModel);
+		let context = new CellContext(this.model, this.cellModel);
 		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('codePreview', "Code cell"), 'notebook-button masked-pseudo code');
 		addCodeCellButton.cellType = CellTypes.Code;
 
@@ -69,7 +69,7 @@ export class CellToolbarComponent {
 
 		let taskbar = <HTMLElement>this.celltoolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar);
-		this._actionBar.context = _context;
+		this._actionBar.context = context;
 
 		let buttonDropdownContainer = DOM.$('li.action-item');
 		buttonDropdownContainer.setAttribute('role', 'presentation');
@@ -85,7 +85,7 @@ export class CellToolbarComponent {
 			undefined
 		);
 		dropdownMenuActionViewItem.render(buttonDropdownContainer);
-		dropdownMenuActionViewItem.setActionContext(this);
+		dropdownMenuActionViewItem.setActionContext(context);
 
 		this._actionBar.setContent([
 			{ action: this._editCellAction },

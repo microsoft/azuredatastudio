@@ -4,9 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Action } from 'vs/base/common/actions';
 import { ActionBar, Separator, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -14,12 +12,12 @@ import { CellActionBase, CellContext } from 'sql/workbench/contrib/notebook/brow
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { CellTypes, CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { ElementRef } from '@angular/core';
-import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { ToggleMoreWidgetAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
 import { firstIndex } from 'vs/base/common/arrays';
 import { getErrorMessage } from 'vs/base/common/errors';
 import Severity from 'vs/base/common/severity';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 
 
 export class EditCellAction extends ToggleableAction {
