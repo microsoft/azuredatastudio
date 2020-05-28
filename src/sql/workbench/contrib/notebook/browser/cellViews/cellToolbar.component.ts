@@ -43,6 +43,7 @@ export class CellToolbarComponent {
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService
 	) {
+		this._cellToggleMoreActions = this.instantiationService.createInstance(CellToggleMoreActions);
 	}
 
 	ngOnInit() {
@@ -51,6 +52,10 @@ export class CellToolbarComponent {
 
 	protected initActionBar(): void {
 		let context = new CellContext(this.model, this.cellModel);
+		let taskbar = <HTMLElement>this.celltoolbar.nativeElement;
+		this._actionBar = new Taskbar(taskbar);
+		this._actionBar.context = context;
+
 		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('codePreview', "Code cell"), 'notebook-button masked-pseudo code');
 		addCodeCellButton.cellType = CellTypes.Code;
 
@@ -59,17 +64,12 @@ export class CellToolbarComponent {
 
 		let deleteButton = this.instantiationService.createInstance(DeleteCellAction, 'delete', 'codicon masked-icon delete', localize('delete', "Delete"));
 
-		// Todo: Get this to show the list of actions specific to code or markdown cell.
-		//this._cellToggleMoreActions = this.instantiationService.createInstance(CellToggleMoreActions, 'codicon masked-icon more');
+		let moreActionsContainer = DOM.$('li.action-item');
+		this._cellToggleMoreActions = this.instantiationService.createInstance(CellToggleMoreActions);
+		this._cellToggleMoreActions.onInit(moreActionsContainer, context);
 
-		// Todo: Wire up toolbarToggleEditMode
-		// Todo: Wire up toolbarUnselectActiveCell
 		this._editCellAction = this.instantiationService.createInstance(EditCellAction, 'notebook.editCell', true, this.cellModel.isEditMode);
 		this._editCellAction.enabled = true;
-
-		let taskbar = <HTMLElement>this.celltoolbar.nativeElement;
-		this._actionBar = new Taskbar(taskbar);
-		this._actionBar.context = context;
 
 		let buttonDropdownContainer = DOM.$('li.action-item');
 		buttonDropdownContainer.setAttribute('role', 'presentation');
@@ -91,7 +91,7 @@ export class CellToolbarComponent {
 			{ action: this._editCellAction },
 			{ element: buttonDropdownContainer },
 			{ action: deleteButton },
-			//{ action: this._cellToggleMoreActions }
+			{ element: moreActionsContainer }
 		]);
 	}
 }

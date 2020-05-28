@@ -6,18 +6,18 @@
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { Action } from 'vs/base/common/actions';
+import { Action, IAction } from 'vs/base/common/actions';
 import { ActionBar, Separator, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { CellActionBase, CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { CellTypes, CellType } from 'sql/workbench/services/notebook/common/contracts';
-import { ElementRef } from '@angular/core';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
-import { ToggleMoreWidgetAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
 import { firstIndex } from 'vs/base/common/arrays';
 import { getErrorMessage } from 'vs/base/common/errors';
 import Severity from 'vs/base/common/severity';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 
 export class EditCellAction extends ToggleableAction {
@@ -97,11 +97,9 @@ export class CellToggleMoreActions {
 	private _actions: (Action | CellActionBase)[] = [];
 	private _moreActions: ActionBar;
 	private _moreActionsElement: HTMLElement;
-	private _cssClass: string;
 	constructor(
-		@IInstantiationService private instantiationService: IInstantiationService,
-		cssClass: string) {
-		this._cssClass = cssClass;
+		@IInstantiationService private instantiationService: IInstantiationService
+	) {
 		this._actions.push(
 			instantiationService.createInstance(RunCellsAction, 'runAllBefore', localize('runAllBefore', "Run Cells Before"), false),
 			instantiationService.createInstance(RunCellsAction, 'runAllAfter', localize('runAllAfter', "Run Cells After"), true),
@@ -119,8 +117,8 @@ export class CellToggleMoreActions {
 		);
 	}
 
-	public onInit(elementRef: ElementRef, context: CellContext) {
-		this._moreActionsElement = <HTMLElement>elementRef.nativeElement;
+	public onInit(elementRef: HTMLElement, context: CellContext) {
+		this._moreActionsElement = <HTMLElement>elementRef;
 		if (this._moreActionsElement.childNodes.length > 0) {
 			this._moreActionsElement.removeChild(this._moreActionsElement.childNodes[0]);
 		}
@@ -128,7 +126,7 @@ export class CellToggleMoreActions {
 		this._moreActions.context = { target: this._moreActionsElement };
 		let validActions = this._actions.filter(a => a instanceof Separator || a instanceof CellActionBase && a.canRun(context));
 		this.removeDuplicatedAndStartingSeparators(validActions);
-		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, validActions, context), { icon: true, label: false });
+		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreActions, validActions, context), { icon: true, label: false });
 	}
 
 	private removeDuplicatedAndStartingSeparators(actions: (Action | CellActionBase)[]): void {
@@ -284,5 +282,29 @@ export class CollapseCellAction extends CellActionBase {
 			});
 		}
 		return Promise.resolve();
+	}
+}
+
+export class ToggleMoreActions extends Action {
+
+	private static readonly ID = 'toggleMore';
+	private static readonly LABEL = localize('toggleMore', "Toggle More");
+	private static readonly ICON = 'masked-icon more';
+
+	constructor(
+		private readonly _actions: Array<IAction>,
+		private readonly _context: CellContext,
+		@IContextMenuService private readonly _contextMenuService: IContextMenuService
+	) {
+		super(ToggleMoreActions.ID, ToggleMoreActions.LABEL, ToggleMoreActions.ICON);
+	}
+
+	run(context: StandardKeyboardEvent): Promise<boolean> {
+		this._contextMenuService.showContextMenu({
+			getAnchor: () => context.target,
+			getActions: () => this._actions,
+			getActionsContext: () => this._context
+		});
+		return Promise.resolve(true);
 	}
 }
