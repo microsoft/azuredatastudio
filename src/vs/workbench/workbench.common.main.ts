@@ -390,6 +390,8 @@ import 'sql/workbench/contrib/query/common/resultsGrid.contribution';
 // data explorer
 import 'sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution';
 import 'sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contribution';
+import 'sql/workbench/contrib/dataExplorer/browser/extensions.contribution';
+
 
 //editor replacement
 import 'sql/workbench/contrib/editorReplacement/common/editorReplacer.contribution';
