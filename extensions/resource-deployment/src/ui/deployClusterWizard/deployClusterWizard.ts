@@ -78,8 +78,8 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, WizardP
 	protected onCancel(): void {
 	}
 
-	protected onOk(): void {
-		this.scriptToNotebook();
+	protected async onOk(): Promise<void> {
+		await this.scriptToNotebook();
 	}
 
 	private getPages(): WizardPageBase<DeployClusterWizard>[] {
@@ -144,13 +144,15 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, WizardP
 		}
 	}
 
-	private scriptToNotebook(): void {
+	private async scriptToNotebook(): Promise<void> {
 		this.setEnvironmentVariables(process.env, this._toolsService.toolsForCurrentProvider);
 		const variableValueStatements = this.model.getCodeCellContentForNotebook(this._toolsService.toolsForCurrentProvider);
 		const insertionPosition = 5; // Cell number 5 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
-		this.notebookService.launchNotebookWithEdits(this.wizardInfo.notebook, variableValueStatements, insertionPosition).catch((error: Error) => {
+		try {
+			await this.notebookService.launchNotebookWithEdits(this.wizardInfo.notebook, variableValueStatements, insertionPosition);
+		} catch (error) {
 			vscode.window.showErrorMessage(getErrorMessage(error));
-		});
+		}
 	}
 
 	private setEnvironmentVariables(env: NodeJS.ProcessEnv, tools: ITool[] = []): void {

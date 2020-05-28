@@ -57,16 +57,22 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 	protected onCancel(): void {
 	}
 
-	protected onOk(): void {
+	protected async onOk(): Promise<void> {
 		setModelValues(this.inputComponents, this.model);
-		if (this.wizardInfo.runNotebook) {
-			const env: NodeJS.ProcessEnv = {};
-			this.model.setEnvironmentVariables(env, this._toolsService.toolsForCurrentProvider);
-			this.notebookService.backgroundExecuteNotebook(this.wizardInfo.taskName, this.wizardInfo.notebook, 'deploy', this.platformService, env);
-		} else {
-			this.notebookService.launchNotebookWithEdits(this.wizardInfo.notebook, this.model.getCodeCellContentForNotebook(this._toolsService.toolsForCurrentProvider), this._wizardInfo.codeCellInsertionPosition).then(() => { }, (error) => {
-				vscode.window.showErrorMessage(error);
-			});
+		try {
+			if (this.wizardInfo.runNotebook) {
+				const env: NodeJS.ProcessEnv = {};
+				this.model.setEnvironmentVariables(env, this._toolsService.toolsForCurrentProvider);
+				this.notebookService.backgroundExecuteNotebook(this.wizardInfo.taskName, this.wizardInfo.notebook, 'deploy', this.platformService, env);
+			} else {
+				await this.notebookService.launchNotebookWithEdits(
+					this.wizardInfo.notebook,
+					this.model.getCodeCellContentForNotebook(this._toolsService.toolsForCurrentProvider),
+					this._wizardInfo.codeCellInsertionPosition
+				);
+			}
+		} catch (error) {
+			vscode.window.showErrorMessage(error);
 		}
 	}
 

@@ -34,8 +34,8 @@ export abstract class WizardBase<T, P extends WizardPageBase<T>, M extends Model
 			newPage.onEnter();
 		}));
 
-		this.toDispose.push(this.wizardObject.doneButton.onClick(() => {
-			this.onOk();
+		this.toDispose.push(this.wizardObject.doneButton.onClick(async () => {
+			await this.onOk();
 			this.dispose();
 		}));
 		this.toDispose.push(this.wizardObject.cancelButton.onClick(() => {
@@ -52,7 +52,7 @@ export abstract class WizardBase<T, P extends WizardPageBase<T>, M extends Model
 	}
 
 	protected abstract initialize(): void;
-	protected abstract onOk(): void;
+	protected abstract async onOk(): Promise<void>;
 	protected abstract onCancel(): void;
 
 	public addButton(button: azdata.window.Button) {
