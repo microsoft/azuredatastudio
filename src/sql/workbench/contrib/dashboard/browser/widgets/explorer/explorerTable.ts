@@ -46,7 +46,7 @@ export class ExplorerTable extends Disposable {
 	private _actionsColumn: ButtonColumn<Slick.SlickData>;
 	private _filterStr: string;
 	private _explorerView: ExplorerView;
-	private _displayProperties: ObjectListViewProperty[];
+	private _propertiesToDisplay: ObjectListViewProperty[];
 
 	constructor(private parentElement: HTMLElement,
 		private readonly router: Router,
@@ -61,8 +61,8 @@ export class ExplorerTable extends Disposable {
 		super();
 		this._explorerView = new ExplorerView(this.context);
 		const connectionInfo = this.bootStrapService.connectionManagementService.connectionInfo;
-		this._displayProperties = this._explorerView.getPropertyList(getFlavor(connectionInfo.serverInfo, this.logService, connectionInfo.providerId));
-		const explorerFilter = new ExplorerFilter(this.context, this._displayProperties.map(p => p.value));
+		this._propertiesToDisplay = this._explorerView.getPropertyList(getFlavor(connectionInfo.serverInfo, this.logService, connectionInfo.providerId));
+		const explorerFilter = new ExplorerFilter(this.context, this.propertiesToFilter);
 		this._view = new TableDataView<Slick.SlickData>(undefined, undefined, undefined, (data: Slick.SlickData[]): Slick.SlickData[] => {
 			return explorerFilter.filter(this._filterStr, data);
 		});
@@ -180,13 +180,13 @@ export class ExplorerTable extends Disposable {
 	private get columnDefinitions(): Slick.Column<Slick.SlickData>[] {
 		const totalWidth = DOM.getContentWidth(this.parentElement);
 		let totalColumnWidthWeight: number = 0;
-		this._displayProperties.forEach(p => {
+		this._propertiesToDisplay.forEach(p => {
 			if (p.widthWeight) {
 				totalColumnWidthWeight += p.widthWeight;
 			}
 		});
 
-		const columns: Slick.Column<Slick.SlickData>[] = this._displayProperties.map(property => {
+		const columns: Slick.Column<Slick.SlickData>[] = this._propertiesToDisplay.map(property => {
 			const columnWidth = property.widthWeight ? totalWidth * (property.widthWeight / totalColumnWidthWeight) : undefined;
 			if (property.value === NameProperty) {
 				const nameColumn = new TextWithIconColumn({
@@ -208,6 +208,14 @@ export class ExplorerTable extends Disposable {
 		});
 		columns.push(this._actionsColumn.definition);
 		return columns;
+	}
+
+	private get propertiesToFilter(): string[] {
+		const properties = this._propertiesToDisplay.map(p => p.value);
+		if (this.context === 'database') {
+			properties.push('fullName');
+		}
+		return properties;
 	}
 }
 
