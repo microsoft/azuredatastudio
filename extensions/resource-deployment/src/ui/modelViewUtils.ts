@@ -357,9 +357,6 @@ function processField(context: FieldContext): void {
 		case FieldType.ReadonlyText:
 			processReadonlyTextField(context);
 			break;
-		case FieldType.EvaluatedText:
-			processEvaluatedTextField(context);
-			break;
 		case FieldType.Checkbox:
 			processCheckboxField(context);
 			break;
@@ -374,9 +371,6 @@ function processField(context: FieldContext): void {
 			break;
 		case FieldType.KubeClusterContextPicker:
 			processKubeConfigClusterPickerField(context);
-			break;
-		case FieldType.HyperlinkedText:
-			processHyperlinkedTextField(context);
 			break;
 		default:
 			throw new Error(localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", context.fieldInfo.type));
@@ -538,7 +532,12 @@ function processPasswordField(context: FieldContext): void {
 	}
 }
 
-function processReadonlyTextField(context: FieldContext): ReadOnlyFieldInputs {
+function processReadonlyTextField(context: FieldContext, allowEvaluation: boolean = true): ReadOnlyFieldInputs {
+	if ((context.fieldInfo.links?.length ?? 0) > 0) {
+		return processHyperlinkedTextField(context);
+	} else if (context.fieldInfo.isEvaluated && allowEvaluation) {
+		return processEvaluatedTextField(context);
+	}
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const text = context.fieldInfo.defaultValue !== undefined
 		? createLabel(context.view, { text: context.fieldInfo.defaultValue, description: '', required: false, width: context.fieldInfo.inputWidth })
@@ -553,10 +552,19 @@ function processReadonlyTextField(context: FieldContext): ReadOnlyFieldInputs {
  *
  * @param context - the FieldContext object using which the field gets created
  */
-function processHyperlinkedTextField(context: FieldContext): azdata.TextComponent {
+function processHyperlinkedTextField(context: FieldContext): ReadOnlyFieldInputs {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth, links: context.fieldInfo.links, cssStyles: context.fieldInfo.labelCSSStyles });
 	context.components.push(label);
-	return label;
+	return { label: label };
+}
+
+function processEvaluatedTextField(context: FieldContext): ReadOnlyFieldInputs {
+	const readOnlyField = processReadonlyTextField(context, false /*allowEvaluation*/);
+	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, readOnlyField.text!, () => {
+		readOnlyField.text!.value = substituteVariableValues(context.inputComponents, context.fieldInfo.defaultValue);
+		return readOnlyField.text?.value!;
+	});
+	return readOnlyField;
 }
 
 /**
@@ -577,14 +585,6 @@ function substituteVariableValues(inputComponents: InputComponents, inputValue?:
 			inputValue = inputValue?.replace(re, value);
 		});
 	return inputValue;
-}
-
-function processEvaluatedTextField(context: FieldContext): void {
-	const readOnlyField = processReadonlyTextField(context);
-	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, readOnlyField.text!, () => {
-		readOnlyField.text!.value = substituteVariableValues(context.inputComponents, context.fieldInfo.defaultValue);
-		return readOnlyField.text?.value!;
-	});
 }
 
 function processCheckboxField(context: FieldContext): void {

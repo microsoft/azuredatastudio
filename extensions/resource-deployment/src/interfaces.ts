@@ -226,6 +226,7 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	links?: azdata.LinkArea[];
 	editable?: boolean; // for editable drop-down,
 	enabled?: boolean;
+	isEvaluated?: boolean;
 }
 
 export interface KubeClusterContextFieldInfo extends FieldInfo {
@@ -266,13 +267,11 @@ export enum FieldType {
 	Password = 'password',
 	Options = 'options',
 	ReadonlyText = 'readonly_text',
-	EvaluatedText = 'evaluated_text',
 	Checkbox = 'checkbox',
 	AzureAccount = 'azure_account',
 	AzureLocations = 'azure_locations',
 	FilePicker = 'file_picker',
 	KubeClusterContextPicker = 'kube_cluster_context_picker',
-	HyperlinkedText = 'hyperlinked_text'
 }
 
 export enum OptionsType {
