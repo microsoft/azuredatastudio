@@ -72,13 +72,15 @@ export abstract class SqlPackageManageProviderBase {
 	public async uninstallPackages(packages: nbExtensionApis.IPackageDetails[], databaseName: string): Promise<void> {
 		let allPackages = await this.listPackages(databaseName);
 
-		let packagesToUninstall: nbExtensionApis.IPackageDetails[] | undefined = packages ? packages.filter(x => {
-			const originalPackage = allPackages.find(p => p.name === x.name && p.version === x.version);
-			return originalPackage && !originalPackage.readonly;
-		}
-		) : undefined;
-		if (packagesToUninstall) {
-			await Promise.all(packagesToUninstall.map(x => this.executeScripts(ScriptMode.Uninstall, x, databaseName)));
+		if (packages) {
+			await Promise.all(packages.map(x => {
+				const originalPackage = allPackages.find(p => p.name === x.name && p.version === x.version);
+				if (originalPackage && originalPackage.readonly) {
+					return Promise.reject(`Cannot uninstalled system package '${x.name}'`);
+				} else {
+					return this.executeScripts(ScriptMode.Uninstall, x, databaseName);
+				}
+			}));
 		}
 	}
 
