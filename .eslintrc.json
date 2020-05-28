@@ -191,10 +191,10 @@
                     "typemoq",
                     "sinon",
                     "vs/nls",
-					"azdata",
+                    "azdata",
                     "**/{vs,sql}/base/common/**",
-                    "**/{vs,sql}/base/test/common/**",
                     "**/{vs,sql}/base/parts/*/common/**",
+                    "**/{vs,sql}/base/test/common/**",
                     "**/{vs,sql}/platform/*/common/**",
                     "**/{vs,sql}/platform/*/test/common/**"
                 ]
