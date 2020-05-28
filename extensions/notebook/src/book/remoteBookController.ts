@@ -11,39 +11,61 @@ import * as cp from 'child_process';
 import * as path from 'path';
 
 export class RemoteBookController {
-	private _url: string;
 	private _book: RemoteBook;
 	constructor() {
 	}
 
-	public async setRemoteBook(_url: string, _remoteLocation: string): Promise<any> {
-		if (_remoteLocation === 'GitHub') {
-			_url = 'https://api.github.com/'.concat(_url);
-			try {
-				let url: URL = new URL(_url);
-				if (url) {
-					this._book = new GitHubRemoteBook(url);
-					return await this._book.loadBookVersions();
-				}
-			}
-			catch (error) {
-				throw (error);
-			}
-		} else {
-			this._url = _url;
-			this._book = new SharedRemoteBook(new URL(this._url));
+	public async setRemoteBook(url: URL, remoteLocation: string, zipURL?: URL, tarURL?: URL): Promise<boolean> {
+		if (remoteLocation === 'GitHub') {
+			this._book = new GitHubRemoteBook(url, zipURL, tarURL);
 		}
-		return [];
-
+		this._book = new SharedRemoteBook(url);
+		return this._book.createLocalCopy();
 	}
 
-	public updateBook(book: GitHubRemoteBook): void {
-		this._book.zipURL = book.zipURL;
-		this._book.tarURL = book.tarURL;
-		this._book.version = book.version;
+	public async getReleases(url: URL): Promise<IReleases[]> {
+		let options = {
+			headers: {
+				'User-Agent': 'request'
+			}
+		};
+		return new Promise<IReleases[]>((resolve, reject) => {
+			request.get(url.href, options, (error, response, body) => {
+				if (error) {
+					return reject(error);
+				}
+
+				if (response.statusCode === 404) {
+					return reject('Resource not found');
+				}
+
+				if (response.statusCode !== 200) {
+					return reject(response.statusCode);
+				}
+				let releases = JSON.parse(body);
+				let bookReleases: IReleases[] = [];
+				if (releases) {
+					let keys = Object.keys(releases);
+					keys = keys.filter(key => {
+						let release = {} as IReleases;
+						try {
+							release.remote_path = url;
+							release.tag_name = releases[key].tag_name;
+							release.tarURL = new URL(releases[key].tarball_url);
+							release.zipURL = new URL(releases[key].zipball_url);
+						}
+						catch (error) {
+							throw (error);
+						}
+						bookReleases.push(release);
+					});
+				}
+				resolve(bookReleases);
+			});
+		});
 	}
 
-	public async setLocalPath(): Promise<void> {
+	public setLocalPath(): void {
 		// Save directory on User directory
 		if (vscode.workspace.workspaceFolders !== undefined) {
 			// Get workspace root path
@@ -63,8 +85,6 @@ export class RemoteBookController {
 				throw (error);
 			}
 		}
-
-		this._book.createLocalCopy();
 	}
 
 	/**
@@ -103,15 +123,19 @@ export interface IRemoteBook {
 	zipURL?: URL;
 	tarURL?: URL;
 }
+export interface IReleases {
+	remote_path: URL;
+	tag_name: string;
+	zipURL: URL;
+	tarURL: URL;
+}
 
 export abstract class RemoteBook implements IRemoteBook {
 	constructor(public remote_path: URL) {
 		this.remote_path = remote_path;
 	}
 
-	public abstract createLocalCopy(): void;
-
-	public abstract async loadBookVersions(): Promise<RemoteBook[]>;
+	public async abstract createLocalCopy(): Promise<boolean>;
 
 	public abstract loadDirectoryContents(): void;
 
@@ -171,15 +195,11 @@ class SharedRemoteBook extends RemoteBook implements IRemoteBook {
 		super(remote_path);
 	}
 
-	public createLocalCopy() {
+	public async createLocalCopy(): Promise<boolean> {
 		//compress it
 		// copy it
 		// to local path
-	}
-
-
-	public async loadBookVersions(): Promise<RemoteBook[]> {
-		throw new Error('Not Implemented');
+		return true;
 	}
 
 	public loadDirectoryContents(): void {
@@ -188,68 +208,40 @@ class SharedRemoteBook extends RemoteBook implements IRemoteBook {
 }
 
 export class GitHubRemoteBook extends RemoteBook implements IRemoteBook {
-	constructor(public remote_path: URL) {
+	constructor(public remote_path: URL, public zipURL: URL, public tarURL: URL) {
 		super(remote_path);
+		this.zipURL = zipURL;
+		this.tarURL = tarURL;
 	}
 
-	public async loadBookVersions(): Promise<GitHubRemoteBook[]> {
-		let options = {
-			headers: {
-				'User-Agent': 'request'
+	public async createLocalCopy(): Promise<boolean> {
+		let cmd;
+		return new Promise<boolean>((resolve, reject) => {
+			if (process.platform === 'win32') {
+
+				cmd = cp.spawn('powershell.exe', [
+					'-NoProfile',
+					'-ExecutionPolicy', 'Bypass',
+					'-NonInteractive',
+					'-NoLogo',
+					'-Command',
+					`Invoke-WebRequest -OutFile ${path.join(this.local_path.href, this.version)} ${this.zipURL.href}`
+				]);
+
+			} else if (process.platform === 'darwin') {
+				cmd = cp.spawn(`curl -o ${path.join(this.local_path.href, this.version)} ${this.zipURL.href}`);
+			} else {
+				cmd = cp.spawn(`curl ${this.tarURL.href} | tar -xz -C ${path.join(this.local_path.href, this.version)} `);
 			}
-		};
-		return new Promise<GitHubRemoteBook[]>((resolve, reject) => {
-			request.get(this.remote_path.href, options, (error, response, body) => {
-				if (error) {
-					return reject(error);
-				}
+			cmd.on('exit', function (code) {
+				console.log(`Child exited with code ${code}`);
+				return true;
+			});
 
-				if (response.statusCode === 404) {
-					return reject('Resource not found');
-				}
-
-				if (response.statusCode !== 200) {
-					return reject(response.statusCode);
-				}
-				let releases = JSON.parse(body);
-				let bookReleases: GitHubRemoteBook[] = [];
-				if (releases) {
-					let keys = Object.keys(releases);
-					keys = keys.filter(key => {
-						let release = {} as GitHubRemoteBook;
-						try {
-							release.version = releases[key].tag_name;
-							release.tarURL = new URL(releases[key].tarball_url);
-							release.zipURL = new URL(releases[key].zipball_url);
-						}
-						catch (error) {
-							throw (error);
-						}
-						bookReleases.push(release);
-					});
-				}
-				resolve(bookReleases);
+			cmd.on('error', function (error) {
+				throw (error);
 			});
 		});
-	}
-
-	public createLocalCopy() {
-		// Downloading..
-		if (process.platform === 'win32') {
-			cp.spawnSync('powershell.exe', [
-				'-NoProfile',
-				'-ExecutionPolicy', 'Bypass',
-				'-NonInteractive',
-				'-NoLogo',
-				'-Command',
-				`Invoke-WebRequest -OutFile ${path.join(this.local_path.href, this.version)} ${this.zipURL.href}`
-			]);
-		} else if (process.platform === 'darwin') {
-			cp.spawnSync(`curl -o ${path.join(this.local_path.href, this.version)} ${this.zipURL.href}`);
-		} else {
-			cp.spawnSync(`curl ${this.zipURL.href} | tar -xz -C ${path.join(this.local_path.href, this.version)} `);
-		}
-
 	}
 
 	public loadDirectoryContents(): void {

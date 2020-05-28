@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as loc from '../common/localizedConstants';
-import { RemoteBookController, GitHubRemoteBook } from '../book/remoteBookController';
+import { RemoteBookController, IReleases } from '../book/remoteBookController';
 
 function getRemoteLocationCategory(name: string): azdata.CategoryValue {
 	if (name === 'GitHub') {
@@ -32,27 +32,25 @@ export class RemoteBookDialogModel {
 		return this._remoteTypes;
 	}
 
-	public async setRemoteBook(url: string, remoteLocation: string): Promise<any> {
+	public async getReleases(url: string): Promise<IReleases[]> {
+		let remotePath: URL;
 		try {
-			if (this._controller !== undefined) {
-				return this._controller.setRemoteBook(url, remoteLocation);
-			}
-		} catch (error) {
-			// Ignore the error if we cancelled the request since we can't stop the actual request from completing
-			if (!this._canceled) {
-				throw error;
-			}
+			url = 'https://api.github.com/'.concat(url);
+			remotePath = new URL(url);
+			return this._controller.getReleases(remotePath);
 		}
-		return [];
+		catch (error) {
+			throw error;
+		}
 	}
 
-	public async downloadLocalCopy(book?: GitHubRemoteBook): Promise<void> {
-		if (this._controller !== undefined) {
-			if (book) {
-				this._controller.updateBook(book);
-			}
-			await this._controller.setLocalPath();
+
+	public async downloadLocalCopy(url: URL, remoteLocation: string, release?: IReleases): Promise<void> {
+		let isDownload: boolean;
+		if (release) {
+			isDownload = await this._controller.setRemoteBook(url, remoteLocation, release.zipURL, release.tarURL);
 		}
+		isDownload = await this._controller.setRemoteBook(url, remoteLocation);
 	}
 
 }
@@ -68,7 +66,7 @@ export class RemoteBookDialog {
 	//private languageDropdown: azdata.DropDownComponent;
 	//private versionDropdown: azdata.DropDownComponent;
 	private releaseDropdown: azdata.DropDownComponent;
-	private releases: GitHubRemoteBook[];
+	private releases: IReleases[];
 
 	constructor(private model: RemoteBookDialogModel) {
 	}
@@ -163,20 +161,21 @@ export class RemoteBookDialog {
 		}
 	}
 
-	private async validate(): Promise<any> {
+	private async validate(): Promise<void> {
 		let url = this.urlInputBox && this.urlInputBox.value;
 		let location = this.remoteLocationValue;
 
 		try {
-			let releases = await this.model.setRemoteBook(url, location);
-			if (releases !== undefined && releases !== []) {
-
-				this.releaseDropdown.updateCssStyles({
-					display: 'block'
-				});
-
-				return await this.fillReleasesDropdown(releases);
+			if (location === 'GitHub') {
+				let releases = await this.model.getReleases(url);
+				if (releases !== undefined && releases !== []) {
+					this.releaseDropdown.updateCssStyles({
+						display: 'block'
+					});
+					await this.fillReleasesDropdown(releases);
+				}
 			}
+
 		}
 		catch (error) {
 			this.dialog.message = {
@@ -184,24 +183,23 @@ export class RemoteBookDialog {
 				level: azdata.window.MessageLevel.Error
 			};
 		}
-		return false;
 	}
 
 	public async selectedRelease(): Promise<void> {
 		let location = this.remoteLocationValue;
 		if (location === 'GitHub') {
 			let selected_release = this.releases.filter(release =>
-				release.version === this.releaseDropdown.value);
-			await this.model.downloadLocalCopy(selected_release[0]);
+				release.tag_name === this.releaseDropdown.value);
+			await this.model.downloadLocalCopy(selected_release[0].remote_path, location, selected_release[0]);
 		}
 		this.dialog.okButton.enabled = true;
 	}
 
-	public async fillReleasesDropdown(releases: GitHubRemoteBook[]): Promise<void> {
+	public async fillReleasesDropdown(releases: IReleases[]): Promise<void> {
 		this.releases = releases;
 		let versions: string[] = ['-'];
 		releases.forEach(release => {
-			versions.push(release.version);
+			versions.push(release.tag_name);
 		});
 
 		this.releaseDropdown.updateProperties({
