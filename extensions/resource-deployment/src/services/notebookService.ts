@@ -147,7 +147,7 @@ export class NotebookService implements INotebookService {
 						platformService.logToOutputChannel(taskFailedMessage);
 						if (selectedOption === viewErrorDetail) {
 							try {
-								this.launchNotebookWithContent(`${tempNotebookPrefix}-${getDateTimeString()}`, result.outputNotebook);
+								await this.launchNotebookWithContent(`${tempNotebookPrefix}-${getDateTimeString()}`, result.outputNotebook);
 							} catch (error) {
 								const launchNotebookError = localize('resourceDeployment.FailedToOpenNotebook', "An error occurred launching the output notebook. {1}{2}.", EOL, getErrorMessage(error));
 								platformService.logToOutputChannel(launchNotebookError);
