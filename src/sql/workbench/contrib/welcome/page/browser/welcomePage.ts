@@ -75,7 +75,7 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 	private async enableWelcomePage(): Promise<void> {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
 		const guidedTourEnabled = isGuidedTourEnabled(this.configurationService);
-		if (enabled && this.lifecycleService.startupKind !== StartupKind.ReloadedWindow) {
+		if (enabled && this.lifecycleService.startupKind !== StartupKind.ReloadedWindow || guidedTourEnabled) {
 			const hasBackups: boolean = await this.backupFileService.hasBackups();
 			const activeEditor = this.editorService.activeEditor;
 			if (!activeEditor && !hasBackups) {
@@ -253,7 +253,6 @@ class WelcomePage extends Disposable {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
 		const showOnStartup = <HTMLInputElement>container.querySelector('#showOnStartup');
 		const guidedTourEnabled = isGuidedTourEnabled(this.configurationService);
-
 		if (enabled || guidedTourEnabled) {
 			showOnStartup.setAttribute('checked', 'checked');
 		}

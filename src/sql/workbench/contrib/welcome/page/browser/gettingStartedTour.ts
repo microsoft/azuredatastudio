@@ -143,7 +143,7 @@ export class GuidedTour extends Disposable {
 			if (docs) {
 				const docsLink = document.createElement('a');
 				docsLink.classList.add('ads_tour_docs_link');
-				// docsLink.innerText = localize('GuidedTour.readMore', "Read more");
+				docsLink.innerText = localize('GuidedTour.readMore', "Read more");
 				docsLink.href = docs;
 				docsLink.target = '_blank';
 				btnContainer.appendChild(docsLink);
