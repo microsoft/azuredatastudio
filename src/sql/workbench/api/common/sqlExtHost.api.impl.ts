@@ -364,6 +364,10 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				return extHostDataProvider.$registerSerializationProvider(provider);
 			};
 
+			let registerSqlAssessmentServicesProvider = (provider: azdata.SqlAssessmentServicesProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerSqlAssessmentServiceProvider(provider);
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof azdata.dataprotocol = {
 				registerBackupProvider,
@@ -382,6 +386,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
 				registerSerializationProvider,
+				registerSqlAssessmentServicesProvider,
 				onDidChangeLanguageFlavor(listener: (e: azdata.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
@@ -510,6 +515,11 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				NotebookChangeKind: sqlExtHostTypes.NotebookChangeKind
 			};
 
+			const sqlAssessment: typeof azdata.sqlAssessment = {
+				SqlAssessmentResultItemKind: sqlExtHostTypes.SqlAssessmentResultItemKind,
+				SqlAssessmentTargetType: sqlExtHostTypes.SqlAssessmentTargetType
+			};
+
 			return {
 				accounts,
 				connection,
@@ -556,7 +566,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				ExtensionNodeType: sqlExtHostTypes.ExtensionNodeType,
 				ColumnSizingMode: sqlExtHostTypes.ColumnSizingMode,
 				DatabaseEngineEdition: sqlExtHostTypes.DatabaseEngineEdition,
-				TabOrientation: sqlExtHostTypes.TabOrientation
+				TabOrientation: sqlExtHostTypes.TabOrientation,
+				sqlAssessment
 			};
 		}
 	};
