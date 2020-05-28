@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { AssertionError } from 'assert';
 import * as path from 'path';
 import { ToolsInstallPath } from './constants';
 import { ITool, NoteBookEnvironmentVariablePrefix } from './interfaces';
@@ -41,8 +40,8 @@ export function setEnvironmentVariablesForInstallPaths(tools: ITool[], env: Node
 	}
 }
 
-export function assert(condition: any, message?: string): asserts condition {
+export function assert(condition: boolean, message?: string): asserts condition {
 	if (!condition) {
-		throw new AssertionError({ message: message });
+		throw new Error(message);
 	}
 }

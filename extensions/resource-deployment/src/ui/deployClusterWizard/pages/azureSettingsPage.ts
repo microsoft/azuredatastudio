@@ -38,7 +38,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					description: localize('deployCluster.SubscriptionDescription', "The default subscription will be used if you leave this field blank.")
 				}, {
 					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.SubscriptionHelpText', "{0}"),
+					label: '{0}',
 					links: [
 						{
 							text: localize('deployCluster.SubscriptionHelpLink', "View available Azure subscriptions"),
@@ -77,7 +77,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					]
 				}, {
 					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.LocationHelpText', "{0}"),
+					label: '{0}',
 					links: [
 						{
 							text: localize('deployCluster.AzureLocationHelpLink', "View available Azure locations"),
@@ -114,7 +114,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					defaultValue: 'Standard_E8s_v3'
 				}, {
 					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.VMSizeHelpText', "{0}"),
+					label: '{0}',
 					links: [
 						{
 							text: localize('deployCluster.VMSizeHelpLink', "View available VM sizes"),

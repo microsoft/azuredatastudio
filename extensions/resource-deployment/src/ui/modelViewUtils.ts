@@ -378,7 +378,7 @@ function processField(context: FieldContext): void {
 }
 
 function processOptionsTypeField(context: FieldContext): void {
-	assert(context.fieldInfo.options !== undefined);
+	assert(context.fieldInfo.options !== undefined, `FieldInfo.options must be defined for FieldType:${FieldType.Options}`);
 	if (Array.isArray(context.fieldInfo.options)) {
 		context.fieldInfo.options = <OptionsInfo>{
 			values: context.fieldInfo.options,
@@ -386,12 +386,12 @@ function processOptionsTypeField(context: FieldContext): void {
 			optionsType: OptionsType.Dropdown
 		};
 	}
-	assert(typeof context.fieldInfo.options === 'object');
-	assert('optionsType' in context.fieldInfo.options);
+	assert(typeof context.fieldInfo.options === 'object', `FieldInfo.options must be an object if it is not an array`);
+	assert('optionsType' in context.fieldInfo.options, `When FieldInfo.options is an object it must have 'optionsType' property`);
 	if (context.fieldInfo.options.optionsType === OptionsType.Radio) {
 		processRadioOptionsTypeField(context);
 	} else {
-		assert(context.fieldInfo.options.optionsType === OptionsType.Dropdown);
+		assert(context.fieldInfo.options.optionsType === OptionsType.Dropdown, `When optionsType is not ${OptionsType.Radio} then it must be ${OptionsType.Dropdown}`);
 		processDropdownOptionsTypeField(context);
 	}
 }
