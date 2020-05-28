@@ -22,9 +22,9 @@ describe('Data Sources: DataSource operations', function (): void {
 
 		should(dataSourceList[0].name).equal('Test Data Source 1');
 		should(dataSourceList[0].type).equal(sql.SqlConnectionDataSource.type);
-		should((dataSourceList[0] as sql.SqlConnectionDataSource).getSetting('Initial Catalog')).equal('testDb');
+		should((dataSourceList[0] as sql.SqlConnectionDataSource).database).equal('testDb');
 
 		should(dataSourceList[1].name).equal('My Other Data Source');
-		should((dataSourceList[1] as sql.SqlConnectionDataSource).getSetting('Integrated Security')).equal('False');
+		should((dataSourceList[1] as sql.SqlConnectionDataSource).integratedSecurity).equal(false);
 	});
 });
