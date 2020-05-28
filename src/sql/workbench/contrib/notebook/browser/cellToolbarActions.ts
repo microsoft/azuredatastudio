@@ -5,27 +5,14 @@
 
 import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
-import { INotebookService, INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookComponent } from 'sql/workbench/contrib/notebook/browser/notebook.component';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
-
-export class CellToolbarAction extends Action {
-
-	constructor(
-		id: string,
-		label: string,
-		cssClass: string,
-		tooltip: string,
-		private _cellModel: ICellModel,
-		@INotebookService private _notebookService: INotebookService
-	) {
-		super(id, label, cssClass);
-		this._tooltip = tooltip;
-	}
-	// Todo: Add actions references here?
-}
+import { CellActionBase, CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { getErrorMessage } from 'vs/base/common/errors';
+import Severity from 'vs/base/common/severity';
 
 export class AddCellAction extends Action {
 	public cellType: CellType;
@@ -110,5 +97,33 @@ export class EditCellAction extends ToggleableAction {
 				reject(e);
 			}
 		});
+	}
+}
+
+export class DeleteCellAction extends CellActionBase {
+	constructor(
+		id: string,
+		cssClass: string,
+		label: string,
+		@INotificationService notificationService: INotificationService
+	) {
+		super(id, label, undefined, notificationService);
+		this._cssClass = cssClass;
+		this._tooltip = label;
+		this._label = '';
+	}
+
+	doRun(context: CellContext): Promise<void> {
+		try {
+			context.model.deleteCell(context.cell);
+		} catch (error) {
+			let message = getErrorMessage(error);
+
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: message
+			});
+		}
+		return Promise.resolve();
 	}
 }

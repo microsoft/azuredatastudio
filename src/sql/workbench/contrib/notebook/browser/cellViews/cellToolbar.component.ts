@@ -4,14 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./cellToolbar';
 import * as DOM from 'vs/base/browser/dom';
-import { Component, Inject, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, Inject, ViewChild, ElementRef } from '@angular/core';
 import { localize } from 'vs/nls';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { CellToolbarAction, MoreActions, AddCellAction, EditCellAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
+import { DeleteCellAction, MoreActions, AddCellAction, EditCellAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 
@@ -30,43 +28,35 @@ export class CellToolbarComponent {
 	public buttonDelete = localize('buttonDelete', "Delete cell");
 	public buttonMoreActions = localize('buttonMoreActions', "More actions");
 
-	@Input() public cellModel: ICellModel;
-	@Input() set model(value: NotebookModel) {
-		this._model = value;
-	}
 	private _actionBar: Taskbar;
-	private _model: NotebookModel;
 	private _editCellAction: EditCellAction;
 
 	constructor(
-		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService
 	) {
-	}
-
-	get model(): NotebookModel {
-		return this._model;
 	}
 
 	ngOnInit() {
 		this.initActionBar();
 	}
 
-	private initActionBar(): void {
+	protected initActionBar(): void {
 		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('codePreview', "Code cell"), 'notebook-button masked-pseudo code');
 		addCodeCellButton.cellType = CellTypes.Code;
 
 		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('textPreview', "Markdown cell"), 'notebook-button masked-pseudo markdown');
 		addTextCellButton.cellType = CellTypes.Markdown;
 
-		let deleteButton = this._instantiationService.createInstance(CellToolbarAction, 'notebook.deleteCell', '', 'codicon masked-icon delete', this.buttonDelete, this.cellModel);
+		// let deleteButton = this.instantiationService.createInstance(DeleteCellAction, 'notebook.deleteCell', localize('buttonDelete', "Delete cell"), 'codicon masked-icon delete');
+		let deleteButton = this.instantiationService.createInstance(DeleteCellAction, 'delete', 'codicon masked-icon delete', localize('delete', "Delete"));
 
 		// Todo: Get this to show the list of actions specific to code or markdown cell.
 		let moreActionsButton = new MoreActions('notebook.moreActions', this.buttonMoreActions, 'codicon masked-icon more');
 
 		// Todo: Wire up toolbarToggleEditMode
 		// Todo: Wire up toolbarUnselectActiveCell
-		this._editCellAction = this._instantiationService.createInstance(EditCellAction, 'notebook.editCell', true);
+		this._editCellAction = this.instantiationService.createInstance(EditCellAction, 'notebook.editCell', true);
 		this._editCellAction.enabled = true;
 
 		let taskbar = <HTMLElement>this.celltoolbar.nativeElement;
