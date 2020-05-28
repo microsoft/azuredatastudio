@@ -108,7 +108,7 @@ describe('Configure Python Wizard', function () {
 		should(await pickPackagesPage.onPageLeave()).be.true();
 
 		await should(pickPackagesPage.onPageEnter()).be.resolved();
-		should(model.packagesToInstall).be.deepEqual(JupyterServerInstallation.getRequiredPackagesForKernel(allKernelsName));
+		should(model.packagesToInstall).be.deepEqual(testInstallation.requiredKernelPackages.get(allKernelsName));
 	});
 
 	it('Undefined kernel test', async () => {
@@ -128,6 +128,6 @@ describe('Configure Python Wizard', function () {
 		should((<any>pickPackagesPage).kernelDropdown).not.be.undefined();
 
 		await should(pickPackagesPage.onPageEnter()).be.resolved();
-		should(model.packagesToInstall).be.deepEqual(JupyterServerInstallation.getRequiredPackagesForKernel(python3DisplayName));
+		should(model.packagesToInstall).be.deepEqual(testInstallation.requiredKernelPackages.get(python3DisplayName));
 	});
 });

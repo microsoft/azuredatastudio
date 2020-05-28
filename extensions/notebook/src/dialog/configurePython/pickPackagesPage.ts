@@ -124,15 +124,16 @@ export class PickPackagesPage extends BasePage {
 	}
 
 	public async onPageLeave(): Promise<boolean> {
-		return true;
+		return !this.packageTableSpinner.loading;
 	}
 
 	private async updateRequiredPackages(kernelName: string): Promise<void> {
+		this.instance.wizard.doneButton.enabled = false;
 		this.packageTableSpinner.loading = true;
 		try {
 			// Fetch list of required packages for the specified kernel
 			let pkgVersions: RequiredPackageInfo[] = [];
-			let requiredPackages = JupyterServerInstallation.getRequiredPackagesForKernel(kernelName);
+			let requiredPackages = this.model.installation.requiredKernelPackages.get(kernelName);
 			requiredPackages.forEach(pkg => {
 				pkgVersions.push({ name: pkg.name, existingVersion: undefined, requiredVersion: pkg.version });
 			});
@@ -168,6 +169,7 @@ export class PickPackagesPage extends BasePage {
 				this.model.packagesToInstall = undefined;
 			}
 		} finally {
+			this.instance.wizard.doneButton.enabled = true;
 			this.packageTableSpinner.loading = false;
 		}
 	}

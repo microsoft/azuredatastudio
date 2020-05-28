@@ -118,6 +118,9 @@ export class ConfigurePathPage extends BasePage {
 	}
 
 	public async onPageLeave(): Promise<boolean> {
+		if (this.pythonDropdownLoader.loading) {
+			return false;
+		}
 		if (this.selectInstallEnabled) {
 			let pythonLocation = utils.getDropdownValue(this.pythonLocationDropdown);
 			if (!pythonLocation || pythonLocation.length === 0) {
@@ -132,6 +135,7 @@ export class ConfigurePathPage extends BasePage {
 	}
 
 	private async updatePythonPathsDropdown(useExistingPython: boolean): Promise<void> {
+		this.instance.wizard.nextButton.enabled = false;
 		this.pythonDropdownLoader.loading = true;
 		try {
 			let pythonPaths: PythonPathInfo[];
@@ -165,6 +169,7 @@ export class ConfigurePathPage extends BasePage {
 				values: dropdownValues
 			});
 		} finally {
+			this.instance.wizard.nextButton.enabled = true;
 			this.pythonDropdownLoader.loading = false;
 		}
 	}

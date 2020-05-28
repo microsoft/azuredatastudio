@@ -109,6 +109,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private readonly _expectedCondaPackages: PythonPkgDetails[];
 
 	private _kernelSetupCache: Map<string, boolean>;
+	public readonly requiredKernelPackages: Map<string, PythonPkgDetails[]>;
+	private readonly _requiredPackagesSet: Set<string>;
 
 	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
 		this.extensionPath = extensionPath;
@@ -128,6 +130,43 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 
 		this._kernelSetupCache = new Map<string, boolean>();
+		this.requiredKernelPackages = new Map<string, PythonPkgDetails[]>();
+
+		let jupyterPkg = {
+			name: 'jupyter',
+			version: '1.0.0'
+		};
+		this.requiredKernelPackages.set(constants.python3DisplayName, [jupyterPkg]);
+
+		let powershellPkg = {
+			name: 'powershell-kernel',
+			version: '0.1.3'
+		};
+		this.requiredKernelPackages.set(constants.powershellDisplayName, [jupyterPkg, powershellPkg]);
+
+		let sparkPackages = [
+			jupyterPkg,
+			{
+				name: 'sparkmagic',
+				version: '0.12.9'
+			}, {
+				name: 'pandas',
+				version: '0.24.2'
+			}, {
+				name: 'prose-codeaccelerator',
+				version: '1.3.0'
+			}];
+		this.requiredKernelPackages.set(constants.pysparkDisplayName, sparkPackages);
+		this.requiredKernelPackages.set(constants.sparkScalaDisplayName, sparkPackages);
+		this.requiredKernelPackages.set(constants.sparkRDisplayName, sparkPackages);
+
+		let allPackages = sparkPackages.concat(powershellPkg);
+		this.requiredKernelPackages.set(constants.allKernelsName, allPackages);
+
+		this._requiredPackagesSet = new Set<string>();
+		allPackages.forEach(pkg => {
+			this._requiredPackagesSet.add(pkg.name);
+		});
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
@@ -450,7 +489,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			if (this._kernelSetupCache.get(kernelName)) {
 				return;
 			}
-			requiredPackages = JupyterServerInstallation.getRequiredPackagesForKernel(kernelName);
+			requiredPackages = this.requiredKernelPackages.get(kernelName);
 		}
 
 		this._installInProgress = true;
@@ -479,7 +518,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		installedPackages.forEach(pkg => {
 			installedPackageMap.set(pkg.name, pkg.version);
 		});
-		let requiredPackages = JupyterServerInstallation.getRequiredPackagesForKernel(kernelDisplayName);
+		let requiredPackages = this.requiredKernelPackages.get(kernelDisplayName);
 		for (let pkg of requiredPackages) {
 			let installedVersion = installedPackageMap.get(pkg.name);
 			if (!installedVersion || utils.comparePackageVersions(installedVersion, pkg.version) < 0) {
@@ -638,6 +677,13 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void> {
+		for (let pkg of packages) {
+			if (this._requiredPackagesSet.has(pkg.name)) {
+				this._kernelSetupCache.clear();
+				break;
+			}
+		}
+
 		let packagesStr = packages.map(pkg => `"${pkg.name}==${pkg.version}"`).join(' ');
 		let cmd = `"${this.pythonExecutable}" -m pip uninstall -y ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
@@ -682,6 +728,13 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public uninstallCondaPackages(packages: PythonPkgDetails[]): Promise<void> {
+		for (let pkg of packages) {
+			if (this._requiredPackagesSet.has(pkg.name)) {
+				this._kernelSetupCache.clear();
+				break;
+			}
+		}
+
 		let condaExe = this.getCondaExePath();
 		let packagesStr = packages.map(pkg => `"${pkg.name}==${pkg.version}"`).join(' ');
 		let cmd = `"${condaExe}" uninstall -y ${packagesStr}`;
@@ -824,55 +877,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 
 		return undefined;
-	}
-
-	public static getRequiredPackagesForKernel(kernelName: string): PythonPkgDetails[] {
-		let packages = [{
-			name: 'jupyter',
-			version: '1.0.0'
-		}];
-		switch (kernelName) {
-			case constants.python3DisplayName:
-				break;
-			case constants.pysparkDisplayName:
-			case constants.sparkScalaDisplayName:
-			case constants.sparkRDisplayName:
-				packages.push({
-					name: 'sparkmagic',
-					version: '0.12.9'
-				}, {
-					name: 'pandas',
-					version: '0.24.2'
-				}, {
-					name: 'prose-codeaccelerator',
-					version: '1.3.0'
-				});
-				break;
-			case constants.powershellDisplayName:
-				packages.push({
-					name: 'powershell-kernel',
-					version: '0.1.3'
-				});
-				break;
-			case constants.allKernelsName:
-				packages.push({
-					name: 'sparkmagic',
-					version: '0.12.9'
-				}, {
-					name: 'pandas',
-					version: '0.24.2'
-				}, {
-					name: 'prose-codeaccelerator',
-					version: '1.3.0'
-				}, {
-					name: 'powershell-kernel',
-					version: '0.1.3'
-				});
-				break;
-			default:
-				return undefined;
-		}
-		return packages;
 	}
 }
 
