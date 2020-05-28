@@ -5,37 +5,11 @@
 
 import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
-import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
-import { NotebookComponent } from 'sql/workbench/contrib/notebook/browser/notebook.component';
-import { CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { CellActionBase, CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { getErrorMessage } from 'vs/base/common/errors';
 import Severity from 'vs/base/common/severity';
-
-export class AddCellAction extends Action {
-	public cellType: CellType;
-
-	constructor(
-		id: string, label: string, cssClass: string
-	) {
-		super(id, label, cssClass);
-	}
-	public async run(context: INotebookEditor): Promise<any> {
-		//Add Cell after current selected cell.
-		let index = 0;
-		if (context && context.cells) {
-			let notebookcomponent = context as NotebookComponent;
-			let id = notebookcomponent.activeCellId;
-			if (id) {
-				index = context.cells.findIndex(cell => cell.id === id);
-				index = index + 1;
-			}
-		}
-		context.addCell(this.cellType, index);
-	}
-}
 
 /**
  * Not yet implemeneted
