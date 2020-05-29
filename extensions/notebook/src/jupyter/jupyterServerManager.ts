@@ -109,8 +109,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 	private async doStartServer(kernelSpec: nb.IKernelSpec): Promise<IServerInstance> { // We can't find or create servers until the installation is complete
 		let installation = this.options.jupyterInstallation;
 		await installation.promptForPythonInstall(kernelSpec.display_name);
-		let enablePreviewFeatures = this._apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
-		if (!enablePreviewFeatures) {
+		if (!installation.previewFeaturesEnabled) {
 			await installation.promptForPackageUpgrade(kernelSpec.display_name);
 		}
 		this._apiWrapper.setCommandContext(CommandContext.NotebookPythonInstalled, true);

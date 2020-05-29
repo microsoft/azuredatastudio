@@ -237,8 +237,7 @@ export class JupyterSession implements nb.ISession {
 	public async changeKernel(kernelInfo: nb.IKernelSpec): Promise<nb.IKernel> {
 		if (this._installation) {
 			try {
-				let enablePreviewFeatures = this._installation.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
-				if (enablePreviewFeatures) {
+				if (this._installation.previewFeaturesEnabled) {
 					await this._installation.promptForPythonInstall(kernelInfo.display_name);
 				} else {
 					await this._installation.promptForPackageUpgrade(kernelInfo.display_name);

@@ -465,8 +465,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let isPythonInstalled = JupyterServerInstallation.isPythonInstalled(this.apiWrapper);
 		let areRequiredPackagesInstalled = await this.areRequiredPackagesInstalled(kernelDisplayName);
 		if (!isPythonInstalled || !areRequiredPackagesInstalled) {
-			let enablePreviewFeatures = this.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
-			if (enablePreviewFeatures) {
+			if (this.previewFeaturesEnabled) {
 				let pythonWizard = new ConfigurePythonWizard(this.apiWrapper, this);
 				await pythonWizard.start(kernelDisplayName, true);
 				return pythonWizard.setupComplete.then(() => {
@@ -489,8 +488,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 
 		let requiredPackages: PythonPkgDetails[];
-		let enablePreviewFeatures = this.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
-		if (enablePreviewFeatures) {
+		if (this.previewFeaturesEnabled) {
 			if (this._kernelSetupCache.get(kernelName)) {
 				return;
 			}
@@ -886,6 +884,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	public getRequiredPackagesForKernel(kernelName: string): PythonPkgDetails[] {
 		return this._requiredKernelPackages.get(kernelName) ?? [];
+	}
+
+	public get previewFeaturesEnabled(): boolean {
+		return this.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
 	}
 }
 
