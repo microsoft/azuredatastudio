@@ -58,11 +58,9 @@ export class ImportModelWizard extends ModelViewBase {
 				validated = this.wizardView ? await this.wizardView.validate(pageInfo) : false;
 			}
 			if (validated && pageInfo.newPage === undefined) {
-				wizard.cancelButton.enabled = false;
-				wizard.backButton.enabled = false;
+				this.onLoading();
 				let result = await this.registerModel();
-				wizard.cancelButton.enabled = true;
-				wizard.backButton.enabled = true;
+				this.onLoaded();
 				if (this._parentView) {
 					this._parentView.importTable = this.importTable;
 					await this._parentView.refresh();
@@ -74,6 +72,21 @@ export class ImportModelWizard extends ModelViewBase {
 		});
 
 		await wizard.open();
+	}
+
+	private onLoading(): void {
+		this.refreshButtons(true);
+	}
+
+	private onLoaded(): void {
+		this.refreshButtons(false);
+	}
+
+	private refreshButtons(loading: boolean): void {
+		if (this.wizardView && this.wizardView.wizard) {
+			this.wizardView.wizard.cancelButton.enabled = !loading;
+			this.wizardView.wizard.backButton.enabled = !loading;
+		}
 	}
 
 	public get modelResources(): ModelSourcesComponent | undefined {
@@ -95,11 +108,12 @@ export class ImportModelWizard extends ModelViewBase {
 			} else {
 				await this.importAzureModel(this.modelsViewData);
 			}
+			this._apiWrapper.showInfoMessage(constants.modelRegisteredSuccessfully);
 			await this.storeImportConfigTable();
-			this.showInfoMessage(constants.modelRegisteredSuccessfully);
+
 			return true;
 		} catch (error) {
-			this.showErrorMessage(`${constants.modelFailedToRegister} ${constants.getErrorMessage(error)}`);
+			await this.showErrorMessage(`${constants.modelFailedToRegister} ${constants.getErrorMessage(error)}`);
 			return false;
 		}
 	}

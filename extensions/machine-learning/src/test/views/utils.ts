@@ -51,7 +51,8 @@ export function createViewContext(): ViewTestContext {
 		removeItem: () => true,
 		insertItem: () => { },
 		items: [],
-		setLayout: () => { }
+		setLayout: () => { },
+		setItemLayout: () => { }
 	};
 	let form: azdata.FormContainer = Object.assign({}, componentBase, container, {
 	});
@@ -114,6 +115,10 @@ export function createViewContext(): ViewTestContext {
 		onCardSelectedChanged: onClick.event
 	});
 
+	let group: () => azdata.GroupContainer = () => Object.assign({}, componentBase, container, {
+		collapsed: false,
+	});
+
 	let declarativeTableBuilder: azdata.ComponentBuilder<azdata.DeclarativeTableComponent> = {
 		component: () => declarativeTable(),
 		withProperties: () => declarativeTableBuilder,
@@ -171,6 +176,15 @@ export function createViewContext(): ViewTestContext {
 		withProperties: () => cardBuilder,
 		withValidation: () => cardBuilder
 	};
+	let groupBuilder: azdata.GroupBuilder = {
+		component: () => {
+			return group();
+		},
+		withProperties: () => groupBuilder,
+		withValidation: () => groupBuilder,
+		withItems: () => groupBuilder,
+		withLayout: () => groupBuilder
+	};
 
 	let imageBuilder: azdata.ComponentBuilder<azdata.ImageComponent> = {
 		component: () => {
@@ -222,7 +236,7 @@ export function createViewContext(): ViewTestContext {
 			dashboardWidget: undefined!,
 			dashboardWebview: undefined!,
 			formContainer: () => formBuilder,
-			groupContainer: undefined!,
+			groupContainer: () => groupBuilder,
 			toolbarContainer: undefined!,
 			loadingComponent: () => loadingBuilder,
 			fileBrowserTree: undefined!,
@@ -239,7 +253,7 @@ export function createViewContext(): ViewTestContext {
 			try {
 				await handler(view);
 			} catch (err) {
-				throw err;
+				console.log(err);
 			}
 		},
 		onValidityChanged: undefined!,
@@ -304,7 +318,7 @@ export function createViewContext(): ViewTestContext {
 			try {
 				await handler(view);
 			} catch (err) {
-				throw err;
+				console.log(err);
 			}
 		},
 		modelView: undefined!,

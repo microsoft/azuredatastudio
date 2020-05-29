@@ -35,7 +35,15 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 	 * @param modelBuilder model builder
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
-		this._tableSelectionComponent = new TableSelectionComponent(this._apiWrapper, this, false);
+		this._tableSelectionComponent = new TableSelectionComponent(this._apiWrapper, this,
+			{
+				editable: false,
+				preSelected: false,
+				databaseTitle: constants.columnDatabase,
+				tableTitle: constants.columnTable,
+				databaseInfo: constants.columnDatabaseInfo,
+				tableInfo: constants.columnTableInfo
+			});
 		this._tableSelectionComponent.registerComponent(modelBuilder);
 		this._tableSelectionComponent.onSelectedChanged(async () => {
 			await this.onTableSelected();

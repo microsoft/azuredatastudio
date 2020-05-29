@@ -13,17 +13,16 @@ export class EventEmitterCollection extends vscode.Disposable {
 	 */
 	constructor() {
 		super(() => this.dispose());
-
 	}
 
-	public on(evt: string, listener: (e: any) => any, thisArgs?: any) {
+	public on(evt: string, listener: (e: any) => any, thisArgs?: any): vscode.EventEmitter<any> {
 		if (!this._events.has(evt)) {
 			this._events.set(evt, []);
 		}
 		let eventEmitter = new vscode.EventEmitter<any>();
 		eventEmitter.event(listener, thisArgs);
 		this._events.get(evt)?.push(eventEmitter);
-		return this;
+		return eventEmitter;
 	}
 
 	public fire(evt: string, arg?: any) {
@@ -33,6 +32,16 @@ export class EventEmitterCollection extends vscode.Disposable {
 		this._events.get(evt)?.forEach(eventEmitter => {
 			eventEmitter.fire(arg);
 		});
+	}
+
+	public disposeEvent(evt: string, emitter: vscode.EventEmitter<any>): void {
+		if (this._events.has(evt)) {
+			const emitters = this._events.get(evt);
+			if (emitters) {
+				this._events.set(evt, emitters.filter(x => x !== emitter));
+			}
+		}
+		emitter.dispose();
 	}
 
 	public dispose(): any {

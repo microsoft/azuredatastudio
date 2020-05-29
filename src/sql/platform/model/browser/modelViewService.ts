@@ -36,6 +36,7 @@ export interface IModelView extends IView {
 	addToContainer(containerId: string, item: IItemConfig, index?: number): void;
 	removeFromContainer(containerId: string, item: IItemConfig): void;
 	setLayout(componentId: string, layout: any): void;
+	setItemLayout(componentId: string, item: IItemConfig): void;
 	setProperties(componentId: string, properties: { [key: string]: any }): void;
 	setDataProvider(handle: number, componentId: string, context: any): void;
 	refreshDataProvider(componentId: string, item: any): void;
@@ -44,4 +45,5 @@ export interface IModelView extends IView {
 	validate(componentId: string): Thenable<boolean>;
 	readonly onDestroy: Event<void>;
 	focus(componentId: string): void;
+	doAction(componentId: string, action: string, ...args: any[]): void;
 }

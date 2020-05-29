@@ -23,6 +23,10 @@ export class ApiWrapper {
 		return azdata.connection.getCurrentConnection();
 	}
 
+	public openConnectionDialog(): Thenable<azdata.connection.Connection> {
+		return azdata.connection.openConnectionDialog();
+	}
+
 	public getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
 		return azdata.connection.getCredentials(connectionId);
 	}
@@ -117,6 +121,10 @@ export class ApiWrapper {
 
 	public showInputBox(options?: vscode.InputBoxOptions, token?: vscode.CancellationToken): Thenable<string | undefined> {
 		return vscode.window.showInputBox(options, token);
+	}
+
+	public showSaveDialog(options: vscode.SaveDialogOptions): Thenable<vscode.Uri | undefined> {
+		return vscode.window.showSaveDialog(options);
 	}
 
 	public listDatabases(connectionId: string): Thenable<string[]> {

@@ -7,11 +7,11 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ClusterController, ControllerError } from '../controller/clusterControllerApi';
 import { ControllerTreeDataProvider } from '../tree/controllerTreeDataProvider';
-import { AuthType } from '../constants';
 import { BdcDashboardOptions } from './bdcDashboardModel';
 import { ControllerNode } from '../tree/controllerTreeNode';
 import { ManageControllerCommand } from '../../commands';
 import * as loc from '../localizedConstants';
+import { AuthType } from 'bdc';
 
 function getAuthCategory(name: AuthType): azdata.CategoryValue {
 	if (name === 'basic') {

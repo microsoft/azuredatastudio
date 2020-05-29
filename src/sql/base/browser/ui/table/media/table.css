@@ -176,9 +176,8 @@
 	align-items: center;
 }
 
-.slick-icon-cell,
 .slick-button-cell {
-	padding: 0px !important;
+	padding: 5px !important;
 }
 
 .slick-button-cell-content {

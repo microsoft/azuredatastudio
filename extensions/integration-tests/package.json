@@ -28,13 +28,11 @@
   "devDependencies": {
     "@types/chai": "3.4.34",
     "@types/node": "^10.14.8",
+    "azure-keyvault": "^3.0.4",
     "chai": "3.5.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
+    "ms-rest-azure": "^2.6.0",
     "vscode": "1.1.5"
-  },
-  "dependencies": {
-    "azure-keyvault": "^3.0.4",
-    "ms-rest-azure": "^2.6.0"
   }
 }

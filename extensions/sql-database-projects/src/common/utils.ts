@@ -4,11 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import * as os from 'os';
+import { promises as fs } from 'fs';
+
 /**
  * Consolidates on the error message string
  */
-export function getErrorMessage(error: Error | string): string {
-	return (error instanceof Error) ? error.message : error;
+export function getErrorMessage(error: any): string {
+	return (error instanceof Error)
+		? (typeof error.message === 'string' ? error.message : '')
+		: typeof error === 'string' ? error : `${JSON.stringify(error, undefined, '\t')}`;
 }
 
 /**
@@ -44,4 +49,49 @@ export function trimChars(input: string, chars: string): string {
 	output = output.substring(0, output.length - i);
 
 	return output;
+}
+
+/**
+ * Checks if the folder or file exists @param path path of the folder/file
+*/
+export async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
+	}
+}
+
+/**
+ * Convert camelCase input to PascalCase
+ */
+export function toPascalCase(input: string): string {
+	return input.charAt(0).toUpperCase() + input.substr(1);
+}
+
+/**
+ * get quoted path to be used in any commandline argument
+ * @param filePath
+ */
+export function getSafePath(filePath: string): string {
+	return (os.platform() === 'win32') ?
+		getSafeWindowsPath(filePath) :
+		getSafeNonWindowsPath(filePath);
+}
+
+/**
+ * ensure that path with spaces are handles correctly
+ */
+export function getSafeWindowsPath(filePath: string): string {
+	filePath = filePath.split('\\').join('\\\\').split('"').join('');
+	return '"' + filePath + '"';
+}
+
+/**
+ * ensure that path with spaces are handles correctly
+ */
+export function getSafeNonWindowsPath(filePath: string): string {
+	filePath = filePath.split('\\').join('/').split('"').join('');
+	return '"' + filePath + '"';
 }

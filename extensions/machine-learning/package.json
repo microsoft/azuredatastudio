@@ -2,7 +2,7 @@
   "name": "machine-learning",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
@@ -10,7 +10,9 @@
     "azdata": ">=1.13.0"
   },
   "activationEvents": [
-    "onCommand:mls.command.managePackages",
+    "onCommand:ml.command.managePackages",
+    "onCommand:ml.command.predictModel",
+    "onCommand:ml.command.importModel",
     "onDashboardOpen"
   ],
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
@@ -28,62 +30,66 @@
   "contributes": {
     "configuration": {
       "type": "object",
-      "title": "%mls.configuration.title%",
+      "title": "%ml.configuration.title%",
       "properties": {
-        "machineLearningServices.enablePython": {
+        "machineLearning.enablePython": {
           "type": "boolean",
-          "default": "true",
-          "description": "%mls.enablePython.description%"
+          "default": true,
+          "description": "%ml.enablePython.description%"
         },
-        "machineLearningServices.enableR": {
+        "machineLearning.enableR": {
           "type": "boolean",
-          "default": "false",
-          "description": "%mls.enableR.description%"
+          "default": false,
+          "description": "%ml.enableR.description%"
         },
-        "machineLearningServices.pythonPath": {
+        "machineLearning.pythonPath": {
           "type": "string",
-          "default": "python",
-          "description": "%mls.pythonPath.description%"
+          "default": "",
+          "description": "%ml.pythonPath.description%"
         },
-        "machineLearningServices.rPath": {
+        "machineLearning.rPath": {
           "type": "string",
-          "default": "r",
-          "description": "%mls.rPath.description%"
+          "default": "",
+          "description": "%ml.rPath.description%"
         }
       }
     },
     "commands": [
       {
-        "command": "mls.command.managePackages",
-        "title": "%mls.command.managePackages%",
+        "command": "ml.command.managePackages",
+        "title": "%ml.command.managePackages%",
         "icon": {
           "light": "./images/installPackages.svg",
           "dark": "./images/installPackages.svg"
         }
       },
       {
-        "command": "mls.command.predictModel",
-        "title": "%mls.command.predictModel%",
+        "command": "ml.command.predictModel",
+        "title": "%ml.command.predictModel%",
         "icon": {
           "light": "./images/makePredictions.svg",
           "dark": "./images/makePredictions.svg"
         }
       },
       {
-        "command": "mls.command.manageModels",
-        "title": "%mls.command.manageModels%"
+        "command": "ml.command.manageModels",
+        "title": "%ml.command.manageModels%"
       },
       {
-        "command": "mls.command.importModel",
-        "title": "%mls.command.importModel%",
+        "command": "ml.command.importModel",
+        "title": "%ml.command.importModel%",
         "icon": {
           "light": "./images/registerModel.svg",
           "dark": "./images/registerModel.svg"
         }
       },
       {
-        "command": "mls.command.dependencies",
-        "title": "%mls.command.dependencies%"
+        "command": "ml.command.dependencies",
+        "title": "%ml.command.dependencies%"
+      },
+      {
+        "command": "ml.command.enableExternalScript",
+        "title": "%ml.command.enableExternalScript%"
       }
     ],
     "dashboard.tabs": [
@@ -105,7 +111,7 @@
               "col": 0,
               "widget": {
                 "tasks-widget": [
-                  "mls.command.managePackages"
+                  "ml.command.managePackages"
                 ]
               }
             },
@@ -113,11 +119,11 @@
               "name": "",
               "row": 0,
               "col": 1,
-              "rowspan": 4,
-              "colspan": 3,
+              "rowspan": 5,
+              "colspan": 5,
               "widget": {
                 "modelview": {
-                  "id":"mls.dashboard"
+                  "id": "mls.dashboard"
                 }
               }
             }
@@ -143,5 +149,10 @@
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
     "vscodetestcover": "github:corivera/vscodetestcover#1.0.6"
+  },
+  "__metadata": {
+    "id": "65",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
   }
 }

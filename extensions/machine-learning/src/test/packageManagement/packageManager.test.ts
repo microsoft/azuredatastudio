@@ -48,14 +48,14 @@ describe('Package Manager', () => {
 		let connection  = new azdata.connection.ConnectionProfile();
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(connection);});
 		testContext.apiWrapper.setup(x => x.executeCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {return Promise.resolve();});
-		testContext.apiWrapper.setup(x => x.showInfoMessage(TypeMoq.It.isAny()));
+		testContext.apiWrapper.setup(x => x.showInfoMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny()));
 		testContext.serverConfigManager.setup(x => x.isPythonInstalled(connection)).returns(() => {return Promise.resolve(false);});
 		testContext.serverConfigManager.setup(x => x.isRInstalled(connection)).returns(() => {return Promise.resolve(false);});
 		testContext.serverConfigManager.setup(x => x.isPythonInstalled(connection)).returns(() => {return Promise.resolve(true);});
 		testContext.serverConfigManager.setup(x => x.enableExternalScriptConfig(connection)).returns(() => {return Promise.resolve(true);});
 		let packageManager = createPackageManager(testContext);
 		await packageManager.managePackages();
-		testContext.apiWrapper.verify(x => x.showInfoMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		testContext.apiWrapper.verify(x => x.showInfoMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
 	it('Manage Package command Should show an error for no connection', async function (): Promise<void> {
@@ -63,12 +63,12 @@ describe('Package Manager', () => {
 		let connection: azdata.connection.ConnectionProfile;
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(connection);});
 		testContext.apiWrapper.setup(x => x.executeCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {return Promise.resolve();});
-		testContext.apiWrapper.setup(x => x.showInfoMessage(TypeMoq.It.isAny()));
+		testContext.apiWrapper.setup(x => x.showInfoMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny()));
 		testContext.serverConfigManager.setup(x => x.enableExternalScriptConfig(connection)).returns(() => {return Promise.resolve(true);});
 
 		let packageManager = createPackageManager(testContext);
 		await packageManager.managePackages();
-		testContext.apiWrapper.verify(x => x.showInfoMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		testContext.apiWrapper.verify(x => x.showInfoMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
 	it('installDependencies Should download sqlmlutils if does not exist', async function (): Promise<void> {
@@ -254,8 +254,8 @@ describe('Package Manager', () => {
 			{ name: 'sqlmlutils', fileName: 'sqlmlutils_0.7.1.zip', downloadUrl: 'https://github.com/microsoft/sqlmlutils/blob/master/R/dist/sqlmlutils_0.7.1.zip?raw=true'}
 		]);
 		testContext.httpClient.setup(x => x.download(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
-		testContext.config.setup(x => x.pythonExecutable).returns(() => 'python');
-		testContext.config.setup(x => x.rExecutable).returns(() => 'r');
+		testContext.config.setup(x => x.getPythonExecutable(true)).returns(() => Promise.resolve('python'));
+		testContext.config.setup(x => x.getRExecutable(true)).returns(() => Promise.resolve('r'));
 		testContext.config.setup(x => x.rEnabled).returns(() => true);
 		testContext.config.setup(x => x.pythonEnabled).returns(() => true);
 		let packageManager = new PackageManager(

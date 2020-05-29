@@ -66,8 +66,6 @@ export class CompositeDragAndDrop implements ICompositeDragAndDrop {
 				if (targetCompositeId) {
 					this.moveComposite(currentContainer.id, targetCompositeId, before);
 				}
-
-				this.openComposite(currentContainer.id, true);
 			}
 		}
 
@@ -255,6 +253,12 @@ export class CompositeBar extends Widget implements ICompositeBar {
 		return actionBarDiv;
 	}
 
+	focus(): void {
+		if (this.compositeSwitcherBar) {
+			this.compositeSwitcherBar.focus();
+		}
+	}
+
 	layout(dimension: Dimension): void {
 		this.dimension = dimension;
 		if (dimension.height === 0 || dimension.width === 0) {
@@ -275,8 +279,7 @@ export class CompositeBar extends Widget implements ICompositeBar {
 		// Add to the model
 		if (this.model.add(id, name, order)) {
 			this.computeSizes([this.model.findItem(id)]);
-			// Set timeout helps prevent flicker
-			setTimeout(() => this.updateCompositeSwitcher(), 0);
+			this.updateCompositeSwitcher();
 		}
 	}
 

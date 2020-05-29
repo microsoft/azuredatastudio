@@ -10,7 +10,7 @@ import {
 	AzureAuth,
 	TokenClaims,
 	AccessToken,
-	RefreshToken
+	RefreshToken,
 
 } from './azureAuth';
 
@@ -55,6 +55,11 @@ export class AzureDeviceCode extends AzureAuth {
 		super(metadata, tokenCache, context, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureDeviceCode.USER_FRIENDLY_NAME);
 		this.pageTitle = localize('addAccount', "Add {0} account", this.metadata.displayName);
 
+	}
+
+	public async promptForConsent(resourceId: string, tenant: string = this.commonTenant): Promise<undefined> {
+		vscode.window.showErrorMessage(localize('azure.deviceCodeDoesNotSupportConsent', "Device code authentication does not support prompting for consent. Switch the authentication method in settings to code grant."));
+		return undefined;
 	}
 
 	public async login(): Promise<AzureAccount | azdata.PromptFailedResult> {
@@ -150,6 +155,7 @@ export class AzureDeviceCode extends AzureAuth {
 			return result;
 		} catch (ex) {
 			console.log(ex);
+			console.log('Unexpected error making Azure auth request', 'azureCore.checkForResult', JSON.stringify(ex?.response?.data, undefined, 2));
 			throw new Error(msg);
 		}
 	}

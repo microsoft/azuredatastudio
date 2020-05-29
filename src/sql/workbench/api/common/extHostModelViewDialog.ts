@@ -526,6 +526,10 @@ class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
 		});
 		return tabs;
 	}
+
+	selectTab(id: string): void {
+		this._tabbedPanel.selectTab(id);
+	}
 }
 
 export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {

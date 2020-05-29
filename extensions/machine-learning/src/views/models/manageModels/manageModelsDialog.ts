@@ -34,12 +34,13 @@ export class ManageModelsDialog extends ModelViewBase {
 			selectable: false
 		});
 
-		let registerModelButton = this._apiWrapper.createButton(constants.importModelTitle);
+		let registerModelButton = this._apiWrapper.createButton(constants.registerModelTitle);
 		registerModelButton.onClick(async () => {
 			await this.sendDataRequest(RegisterModelEventName, this.currentLanguagesTab?.modelTable?.importTable);
 		});
 
-		let dialog = this.dialogView.createDialog(constants.registerModelTitle, [this.currentLanguagesTab]);
+		let dialog = this.dialogView.createDialog(constants.importedModelTitle, [this.currentLanguagesTab]);
+		dialog.isWide = true;
 		dialog.customButtons = [registerModelButton];
 		this.mainViewPanel = dialog;
 		dialog.okButton.hidden = true;
