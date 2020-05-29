@@ -3236,59 +3236,6 @@
 					],
 					"statistics": [],
 					"flags": "preview"
-				},
-				{
-					"extensionId": "67",
-					"extensionName": "sql-assessment",
-					"displayName": "SQL Server Assessment",
-					"shortDescription": "Provides a mechanism to evaluate the configuration of SQL Server for best practices",
-					"publisher": {
-						"displayName": "Microsoft",
-						"publisherId": "Microsoft",
-						"publisherName": "Microsoft"
-					},
-					"versions": [
-						{
-							"version": "0.1.0",
-							"lastUpdated": "05/29/2020",
-							"assetUri": "",
-							"fallbackAssetUri": "fallbackAssetUri",
-							"files": [
-								{
-									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-assessment/sql-assessment-0.1.0.vsix"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/sql-assessment/images/extension.png"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/sql-assessment/README.md"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/sql-assessment/package.json"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
-								}
-							],
-							"properties": [
-								{
-									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.3"
-								},
-								{
-									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/Microsoft/azuredatastudio"
-								}
-							]
-						}
-					],
-					"statistics": [],
-					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -3297,7 +3244,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 56
+							"count": 55
 						}
 					]
 				}
