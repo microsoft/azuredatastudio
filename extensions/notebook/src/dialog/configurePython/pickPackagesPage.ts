@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { BasePage } from './basePage';
-import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
+import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
 import { python3DisplayName, pysparkDisplayName, sparkScalaDisplayName, sparkRDisplayName, powershellDisplayName, allKernelsName } from '../../common/constants';
 import { getDropdownValue } from '../../common/utils';
 
