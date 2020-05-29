@@ -75,7 +75,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.7"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.8"
   },
   "__metadata": {
     "id": "37",
