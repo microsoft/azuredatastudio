@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import 'vs/css!./cellToolbar';
 import * as DOM from 'vs/base/browser/dom';
 import { Component, Inject, ViewChild, ElementRef, Input } from '@angular/core';
@@ -21,7 +22,7 @@ export const CELL_TOOLBAR_SELECTOR: string = 'cell-toolbar-component';
 
 @Component({
 	selector: CELL_TOOLBAR_SELECTOR,
-	templateUrl: decodeURI(require.toUrl('./cellToolbar.component.html'))
+	template: `<div #celltoolbar></div>`
 })
 export class CellToolbarComponent {
 	@ViewChild('celltoolbar', { read: ElementRef }) private celltoolbar: ElementRef;
@@ -30,7 +31,6 @@ export class CellToolbarComponent {
 	public buttonClose = localize('buttonClose', "Close");
 	public buttonAdd = localize('buttonAdd', "Add new cell");
 	public buttonDelete = localize('buttonDelete', "Delete cell");
-	public buttonMoreActions = localize('buttonMoreActions', "More actions");
 
 	@Input() cellModel: ICellModel;
 	@Input() model: NotebookModel;

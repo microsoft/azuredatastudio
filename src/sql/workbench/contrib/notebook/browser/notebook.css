@@ -237,54 +237,6 @@
 	margin-right: 10px;
 }
 
-.notebookEditor .hoverButtonsContainer {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: center;
-	width: 100%;
-	padding: 0px 20px;
-	margin: 1px 0px;
-	box-sizing: border-box;
-}
-
-.notebookEditor .hoverButtonsContainer .containerBackground {
-	position: absolute;
-	width: auto;
-	left: 20px;
-	right: 20px;
-	height: 1px;
-	z-index: 0;
-	visibility: hidden;
-}
-
-.notebookEditor .hoverButtonsContainer:hover .containerBackground {
-	visibility: visible;
-}
-
-.notebookEditor .hoverButtonsContainer .hoverButton {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: center;
-	margin: 3px 2px;
-	padding: 4px 12px;
-	font-size: 12px;
-	box-sizing: border-box;
-	border-width: 1px;
-	border-style: solid;
-	z-index: 1;
-	visibility: hidden;
-}
-
-.notebookEditor .hoverButtonsContainer:hover .hoverButton {
-	visibility: visible;
-}
-
-.notebookEditor .hoverButton:active {
-	transform: scale(1.05);
-}
-
 .notebookEditor .hoverButton .addCodeIcon,
 .notebookEditor .hoverButton .addTextIcon {
 	display: inline-block;
@@ -294,24 +246,6 @@
 	height: 10px;
 	background-size: contain;
 	margin-right: 4px;
-}
-
-.notebookEditor .hoverButton .addCodeIcon {
-	background-image: url("./media/light/add_code.svg");
-}
-
-.vs-dark .notebookEditor .hoverButton .addCodeIcon,
-.hc-black .notebookEditor .hoverButton .addCodeIcon {
-	background-image: url("./media/dark/add_code_inverse.svg");
-}
-
-.notebookEditor .hoverButton .addTextIcon {
-	background-image: url("./media/light/add_text.svg");
-}
-
-.vs-dark .notebookEditor .hoverButton .addTextIcon,
-.hc-black .notebookEditor .hoverButton .addTextIcon {
-	background-image: url("./media/dark/add_text_inverse.svg");
 }
 
 .monaco-workbench.mac .notebookEditor .select-container {

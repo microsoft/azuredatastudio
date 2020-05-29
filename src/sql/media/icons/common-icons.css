@@ -133,8 +133,8 @@
 	background: url('close.svg') center center no-repeat !important;
 }
 
-.vs-dark .codicon.close,
-.hc-black .codicon.close,
+.vs-dark .codicon:not(.masked-icon).close,
+.hc-black .codicon:not(.masked-icon).close,
 .vs-dark .codicon.remove,
 .hc-black .codicon.remove {
 	background: url("close_inverse.svg") center center no-repeat !important;
@@ -188,12 +188,12 @@
 	background: url("ellipsis.svg") center center no-repeat;
 }
 
-.hc-black .codicon.new,
-.vs-dark .codicon.new {
+.hc-black .codicon:not(.masked-icon).new,
+.vs-dark .codicon:not(.masked-icon).new {
 	background: url("new_inverse.svg") center center no-repeat;
 }
 
-.vs .codicon.new {
+.vs .codicon:not(.masked-icon).new {
 	background: url("new.svg") center center no-repeat;
 }
 

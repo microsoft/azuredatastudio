@@ -13,10 +13,5 @@
 	<div style="overflow: hidden; width: 100%; height: 100%; display: flex; flex-flow: row">
 		<div #preview link-handler [isTrusted]="isTrusted" [notebookUri]="notebookUri" class="notebook-preview" style="flex: 1 1 auto" (dblclick)="toggleEditMode()">
 		</div>
-
-		<!-- Todo: Remove once we're done adding this to cell toolbar -->
-		<div #moreactions class="moreActions" style="flex: 0 0 auto; display: flex; flex-flow:column;width: 20px; min-height: 20px; max-height: 20px; padding-top: 0px; orientation: portrait">
-
-		</div>
 	</div>
 </div>
