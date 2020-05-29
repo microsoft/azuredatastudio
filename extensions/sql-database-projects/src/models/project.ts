@@ -8,7 +8,7 @@ import * as xmldom from 'xmldom';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 
-import { Uri, window } from 'vscode';
+import { Uri } from 'vscode';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 
@@ -62,17 +62,11 @@ export class Project {
 	}
 
 	public async updateProjectForRoundTrip() {
-		if (this.importedTargets.includes(constants.NetCoreTargets)) {
-			return;
-		}
-
-		window.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString).then(async (result) => {
-			if (result === constants.yesString) {
-				await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
-				await this.updateImportToSupportRoundTrip();
-				await this.updatePackageReferenceInProjFile();
-			}
-		});
+		console.log('before copy');
+		await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
+		console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>projectFilePath:', this.projectFilePath);
+		await this.updateImportToSupportRoundTrip();
+		await this.updatePackageReferenceInProjFile();
 	}
 
 	private async updateImportToSupportRoundTrip(): Promise<void> {
