@@ -12,7 +12,8 @@ import { ConfigurePathPage } from '../dialog/configurePython/configurePathPage';
 import * as should from 'should';
 import { PickPackagesPage } from '../dialog/configurePython/pickPackagesPage';
 import { python3DisplayName, allKernelsName } from '../common/constants';
-import { TestContext, createViewContext } from './common';
+import { TestContext, createViewContext, TestButton } from './common';
+import { EventEmitter } from 'vscode';
 
 describe('Configure Python Wizard', function () {
 	let apiWrapper: ApiWrapper = new ApiWrapper();
@@ -23,11 +24,20 @@ describe('Configure Python Wizard', function () {
 	beforeEach(() => {
 		let mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation);
 		mockInstall.setup(i => i.getInstalledPipPackages(TypeMoq.It.isAnyString())).returns(() => Promise.resolve([]));
+		mockInstall.setup(i => i.getRequiredPackagesForKernel(TypeMoq.It.isAnyString())).returns(() => [{ name: 'TestPkg', version: '1.0.0'}]);
 		testInstallation = mockInstall.object;
 
-		let mockWizard = TypeMoq.Mock.ofType(ConfigurePythonWizard);
-		mockWizard.setup(w => w.showErrorMessage(TypeMoq.It.isAnyString()));
-		testWizard = mockWizard.object;
+		let mockDoneButton = new TestButton(new EventEmitter<void>());
+		let mockNextButton = new TestButton(new EventEmitter<void>());
+
+		let mockWizard = TypeMoq.Mock.ofType<azdata.window.Wizard>();
+		mockWizard.setup(w => w.doneButton).returns(() => mockDoneButton);
+		mockWizard.setup(w => w.nextButton).returns(() => mockNextButton);
+
+		let mockPythonWizard = TypeMoq.Mock.ofType(ConfigurePythonWizard);
+		mockPythonWizard.setup(w => w.showErrorMessage(TypeMoq.It.isAnyString()));
+		mockPythonWizard.setup(w => w.wizard).returns(() => mockWizard.object);
+		testWizard = mockPythonWizard.object;
 
 		viewContext = createViewContext();
 	});
@@ -82,6 +92,7 @@ describe('Configure Python Wizard', function () {
 
 		// First page, so onPageEnter should do nothing
 		await should(configurePathPage.onPageEnter()).be.resolved();
+		should(testWizard.wizard.nextButton.enabled).be.true();
 
 		should(await configurePathPage.onPageLeave()).be.true();
 		should(model.useExistingPython).be.true();
@@ -108,6 +119,7 @@ describe('Configure Python Wizard', function () {
 		should(await pickPackagesPage.onPageLeave()).be.true();
 
 		await should(pickPackagesPage.onPageEnter()).be.resolved();
+		should(testWizard.wizard.doneButton.enabled).be.true();
 		should(model.packagesToInstall).be.deepEqual(testInstallation.getRequiredPackagesForKernel(allKernelsName));
 	});
 
