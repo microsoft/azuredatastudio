@@ -1181,9 +1181,9 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-"vscodetestcover@github:corivera/vscodetestcover#1.0.7":
-  version "1.0.7"
-  resolved "https://codeload.github.com/corivera/vscodetestcover/tar.gz/7e61d2d5042395ed666e07377526fda8ab99fc87"
+"vscodetestcover@github:corivera/vscodetestcover#1.0.8":
+  version "1.0.8"
+  resolved "https://codeload.github.com/corivera/vscodetestcover/tar.gz/4331080eed9d2713807e9a3f47610947d5b0a1d7"
   dependencies:
     decache "^4.4.0"
     glob "^7.1.2"

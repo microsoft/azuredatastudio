@@ -46,4 +46,3 @@ if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 testRunner.configure(mochaOptions, { coverConfig: '../../coverConfig.json' });
 
 export = testRunner;
-// export = testRunner;
