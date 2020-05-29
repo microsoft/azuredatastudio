@@ -1281,7 +1281,11 @@ export class TreeView extends HeightMap {
 		}
 
 		e.dataTransfer.effectAllowed = 'copyMove';
-		e.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([item.uri]));
+		//TODO: Here is where you need to pass the data about what object is being passed
+		//ie column, table, server, etc
+		e.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify(['column:' + item.uri]));
+		// e.dataTransfer.setData(DataTransfers.INFO, JSON.stringify(['test']));
+
 		if (e.dataTransfer.setDragImage) {
 			let label: string;
 

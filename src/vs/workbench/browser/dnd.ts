@@ -102,12 +102,13 @@ export function extractResources(e: DragEvent, externalOnly?: boolean): Array<ID
 			else {
 				try {
 					const rawResourcesData = e.dataTransfer.getData(DataTransfers.RESOURCES);
-					const rawResourcesText = e.dataTransfer.getData(DataTransfers.TEXT);
+					const rawResourcesInfo = e.dataTransfer.getData(DataTransfers.INFO);
 					const rawResourcesFiles = e.dataTransfer.getData(DataTransfers.FILES);
-					if (rawResourcesText) { }
+					if (rawResourcesInfo) { }
 					if (rawResourcesFiles) { }
 					if (rawResourcesData) {
 						const uriStrArray: string[] = JSON.parse(rawResourcesData);
+						// for each element in uriStrArray, first check if it is a URI before you try to parse it
 						resources.push(...uriStrArray.map(uriStr => ({ resource: URI.parse(uriStr), isExternal: false })));
 					}
 				} catch (error) {
@@ -177,11 +178,19 @@ export class ResourcesDropHandler {
 	}
 
 	async handleDrop(event: DragEvent, resolveTargetGroup: () => IEditorGroup | undefined, afterDrop: (targetGroup: IEditorGroup | undefined) => void, targetIndex?: number): Promise<void> {
+
+		const column = extractResources(event);
+
 		const untitledOrFileResources = extractResources(event).filter(r => this.fileService.canHandleResource(r.resource) || r.resource.scheme === Schemas.untitled);
-		if (!untitledOrFileResources.length) {
+		//TODO: need to change this conditional
+		if (!untitledOrFileResources.length && !column.length) {
 			return;
 		}
 
+		//TODO: parameterize this
+		if (column[0].resource.scheme === 'column') {
+			// insert text into editor
+		}
 		// Make the window active to handle the drop properly within
 		await this.hostService.focus();
 
@@ -211,6 +220,7 @@ export class ResourcesDropHandler {
 
 		// Open in Editor
 		const targetGroup = resolveTargetGroup();
+		//TODO: only do this if trying to open file
 		await this.editorService.openEditors(editors, targetGroup);
 
 		// Finish with provided function

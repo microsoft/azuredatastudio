@@ -48,7 +48,7 @@ function _validateUri(ret: URI, _strict?: boolean): void {
 // clear warning
 function _schemeFix(scheme: string, _strict: boolean): string {
 	if (!scheme && !_strict) {
-		return 'column';
+		return 'file';
 	}
 	//TODO: Add a check here to make the scheme into column, table, etc
 	return scheme;
