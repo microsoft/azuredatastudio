@@ -490,7 +490,7 @@
         "description": "%tab.bigDataClusterDescription%",
         "provider": "MSSQL",
         "title": "%title.bigDataCluster%",
-        "group": "monitoring",
+        "group": "home",
         "when": "connectionProvider == 'MSSQL' && mssql:iscluster && dashboardContext == 'server'",
         "container": {
           "grid-container": [
