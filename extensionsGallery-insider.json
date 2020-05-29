@@ -3335,7 +3335,11 @@
 							"properties": [
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.3"
+									"value": ">=1.46.0"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.9.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
