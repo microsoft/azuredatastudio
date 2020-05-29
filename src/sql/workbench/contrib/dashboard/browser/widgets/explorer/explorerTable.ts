@@ -213,6 +213,7 @@ export class ExplorerTable extends Disposable {
 	private get propertiesToFilter(): string[] {
 		const properties = this._propertiesToDisplay.map(p => p.value);
 		if (this.context === 'database') {
+			// for objects in databases, we also support filter by full name: schema.objectName even though the full name is not being displayed.
 			properties.push('fullName');
 		}
 		return properties;
