@@ -806,7 +806,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private createNewTable(): void {
 		let newGridContainer = document.createElement('div');
-		newGridContainer.className = 'grid';
+		newGridContainer.className = 'editDataGrid';
 
 		if (this.placeHolderDataSets) {
 			let dataSet = this.placeHolderDataSets[0];
