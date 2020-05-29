@@ -26,6 +26,21 @@ export class ConfigurePathPage extends BasePage {
 	private usingCustomPath: boolean = false;
 
 	public async initialize(): Promise<boolean> {
+		let wizardDescription: string;
+		if (this.model.kernelName) {
+			wizardDescription = localize('configurePython.descriptionWithKernel', "The {0} kernel requires a Python runtime to be configured and dependencies to be installed.", this.model.kernelName);
+		} else {
+			wizardDescription = localize('configurePython.descriptionWithoutKernel', "Notebook kernels require a Python runtime to be configured and dependencies to be installed.");
+		}
+		let wizardDescriptionLabel = this.view.modelBuilder.text()
+			.withProperties<azdata.TextComponentProperties>({
+				value: wizardDescription,
+				CSSStyles: {
+					'padding': '0px',
+					'margin': '0px'
+				}
+			}).component();
+
 		this.pythonLocationDropdown = this.view.modelBuilder.dropDown()
 			.withProperties<azdata.DropDownProperties>({
 				value: undefined,
@@ -65,10 +80,9 @@ export class ConfigurePathPage extends BasePage {
 			.withItems([selectInstallForm])
 			.withProperties<azdata.DivContainerProperties>({
 				clickable: false
-			})
-			.component();
+			}).component();
 
-		let parentContainer = this.view.modelBuilder.groupContainer().withItems([selectInstallContainer]).component();
+		let allParentItems = [selectInstallContainer];
 		if (this.model.pythonLocation) {
 			let installedPathTextBox = this.view.modelBuilder.inputBox().withProperties<azdata.TextComponentProperties>({
 				value: this.model.pythonLocation,
@@ -92,9 +106,8 @@ export class ConfigurePathPage extends BasePage {
 				.withItems([editPathForm])
 				.withProperties<azdata.DivContainerProperties>({
 					clickable: false
-				})
-				.component();
-			parentContainer.addItem(editPathContainer);
+				}).component();
+			allParentItems.push(editPathContainer);
 
 			editPathButton.onDidClick(async () => {
 				editPathContainer.display = 'none';
@@ -107,6 +120,15 @@ export class ConfigurePathPage extends BasePage {
 		} else {
 			this.selectInstallEnabled = true;
 		}
+
+		let parentContainer = this.view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' }).component();
+		parentContainer.addItem(wizardDescriptionLabel, {
+			CSSStyles: {
+				'padding': '0px 30px 0px 30px'
+			}
+		});
+		parentContainer.addItems(allParentItems);
 
 		await this.view.initializeModel(parentContainer);
 		await this.updatePythonPathsDropdown(this.model.useExistingPython);
