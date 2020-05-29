@@ -79,7 +79,7 @@ export async function createDummyFileStructure(createList?: boolean, list?: stri
 	testFolderPath = testFolderPath ?? await generateTestFolderPath();
 
 	let filePath = path.join(testFolderPath, 'file1.sql');
-	await fs.open(filePath, 'w');
+	await touchFile(filePath);
 	if (createList) {
 		list?.push(testFolderPath);
 		list?.push(filePath);
@@ -88,13 +88,14 @@ export async function createDummyFileStructure(createList?: boolean, list?: stri
 	for (let dirCount = 1; dirCount <= 2; dirCount++) {
 		let dirName = path.join(testFolderPath, `folder${dirCount}`);
 		await fs.mkdir(dirName, { recursive: true });
+
 		if (createList) {
 			list?.push(dirName);
 		}
 
 		for (let fileCount = 1; fileCount <= 5; fileCount++) {
 			let fileName = path.join(dirName, `file${fileCount}.sql`);
-			await fs.open(fileName, 'w');
+			await touchFile(fileName);
 			if (createList) {
 				list?.push(fileName);
 			}
@@ -102,12 +103,17 @@ export async function createDummyFileStructure(createList?: boolean, list?: stri
 	}
 
 	filePath = path.join(testFolderPath, 'file2.txt');
-	await fs.open(filePath, 'w');
+	await touchFile(filePath);
 	if (createList) {
 		list?.push(filePath);
 	}
 
 	return testFolderPath;
+}
+
+export async function touchFile(filePath: string) {
+	const handle = await fs.open(filePath, 'w');
+	await handle.close();
 }
 
 export async function createListOfFiles(filePath?: string): Promise<string[]> {
