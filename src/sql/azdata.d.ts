@@ -1799,8 +1799,9 @@ declare module 'azdata' {
 		deleteJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<ResultStatus>;
 
 		registerOnUpdated(handler: () => any): void;
-	}
 
+
+	}
 	// DacFx interfaces  -----------------------------------------------------------------------
 
 	// Security service interfaces ------------------------------------------------------------------------
@@ -4103,7 +4104,8 @@ declare module 'azdata' {
 		CapabilitiesProvider = 'CapabilitiesProvider',
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 		IconProvider = 'IconProvider',
-		SerializationProvider = 'SerializationProvider'
+		SerializationProvider = 'SerializationProvider',
+		SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider'
 	}
 
 	/**

@@ -13,6 +13,10 @@ export class ObjectMetadataWrapper implements ObjectMetadata {
 	public name: string;
 	public schema: string;
 
+	public get fullName(): string {
+		return `${this.schema}.${this.name}`;
+	}
+
 	constructor(from?: ObjectMetadata) {
 		if (from) {
 			this.metadataType = from.metadataType;

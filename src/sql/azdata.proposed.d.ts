@@ -86,6 +86,7 @@ declare module 'azdata' {
 
 	export namespace dataprotocol {
 		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;
+		export function registerSqlAssessmentServicesProvider(provider: SqlAssessmentServicesProvider): vscode.Disposable;
 	}
 
 	export interface HyperlinkComponent {
@@ -400,6 +401,48 @@ declare module 'azdata' {
 
 	export interface TaskInfo {
 		targetLocation?: string;
+	}
+
+	export namespace sqlAssessment {
+
+		export enum SqlAssessmentTargetType {
+			Server = 1,
+			Database = 2
+		}
+
+		export enum SqlAssessmentResultItemKind {
+			RealResult = 0,
+			Warning = 1,
+			Error = 2
+		}
+	}
+	// Assessment interfaces
+
+	export interface SqlAssessmentResultItem {
+		rulesetVersion: string;
+		rulesetName: string;
+		targetType: sqlAssessment.SqlAssessmentTargetType;
+		targetName: string;
+		checkId: string;
+		tags: string[];
+		displayName: string;
+		description: string;
+		message: string;
+		helpLink: string;
+		level: string;
+		timestamp: string;
+		kind: sqlAssessment.SqlAssessmentResultItemKind;
+	}
+
+	export interface SqlAssessmentResult extends ResultStatus {
+		items: SqlAssessmentResultItem[];
+		apiVersion: string;
+	}
+
+	export interface SqlAssessmentServicesProvider extends DataProvider {
+		assessmentInvoke(ownerUri: string, targetType: sqlAssessment.SqlAssessmentTargetType): Promise<SqlAssessmentResult>;
+		getAssessmentItems(ownerUri: string, targetType: sqlAssessment.SqlAssessmentTargetType): Promise<SqlAssessmentResult>;
+		generateAssessmentScript(items: SqlAssessmentResultItem[]): Promise<ResultStatus>;
 	}
 }
 
