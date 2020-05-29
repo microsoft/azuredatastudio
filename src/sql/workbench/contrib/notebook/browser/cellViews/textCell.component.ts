@@ -182,7 +182,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (trustedChanged || contentChanged) {
 			this._lastTrustedMode = this.cellModel.trustedMode;
 			if ((!cellModelSourceJoined) && !this.isEditMode) {
-				this._content = localize('doubleClickEdit', "Double-click to edit");
+				this._content = localize('addContent', "Add content here...");
 			} else {
 				this._content = this.cellModel.source;
 			}
