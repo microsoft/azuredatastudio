@@ -5,7 +5,6 @@
 
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
-import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import 'mocha';
 
@@ -16,9 +15,10 @@ import { AppContext } from '../../appContext';
 import { ApiWrapper } from '../../apiWrapper';
 import { AzureResourceServiceNames } from '../../azureResource/constants';
 import settings from '../../account-provider/providerSettings';
+import { AzureAccount } from '../../account-provider/interfaces';
 
 // Mock test data
-const mockAccount: azdata.Account = {
+const mockAccount: AzureAccount = {
 	key: {
 		accountId: 'mock_account',
 		providerId: 'mock_provider'
@@ -29,7 +29,11 @@ const mockAccount: azdata.Account = {
 		contextualDisplayName: 'test',
 		userId: 'test@email.com'
 	},
-	properties: settings[0],
+	properties: {
+		providerSettings: settings[0].metadata,
+		isMsAccount: true,
+		tenants: []
+	},
 	isStale: false
 };
 
