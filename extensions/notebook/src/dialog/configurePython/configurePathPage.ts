@@ -75,40 +75,32 @@ export class ConfigurePathPage extends BasePage {
 				enabled: false,
 				width: '400px'
 			}).component();
-
-			let editPathItems: azdata.FormComponent[] = [{
-				title: localize('configurePython.pythonConfigured', "Python runtime configured!"),
-				component: installedPathTextBox
-			}];
-
-			let editPathContainer = this.view.modelBuilder.divContainer()
-				.withProperties<azdata.DivContainerProperties>({
-					clickable: false
-				}).component();
-
-			// Remove Edit button if installing dependencies for a specific kernel.
-			// Installing the package to a different python instance will cause
-			// the notebook to hang, since the old instance that is still running
-			// jupyter doesn't have the package.
-			if (!this.model.kernelName) {
-				let editPathButton = this.view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-					label: 'Edit',
-					width: '70px'
-				}).component();
-				editPathButton.onDidClick(async () => {
-					editPathContainer.display = 'none';
-					selectInstallContainer.display = 'block';
-					this.selectInstallEnabled = true;
-				});
-				editPathItems.push({
+			let editPathButton = this.view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+				label: 'Edit',
+				width: '70px'
+			}).component();
+			let editPathForm = this.view.modelBuilder.formContainer()
+				.withFormItems([{
+					title: localize('configurePython.pythonConfigured', "Python runtime configured!"),
+					component: installedPathTextBox
+				}, {
 					title: '',
 					component: editPathButton
-				});
-			}
-			let editPathForm = this.view.modelBuilder.formContainer().withFormItems(editPathItems).component();
-			editPathContainer.addItem(editPathForm);
+				}]).component();
+
+			let editPathContainer = this.view.modelBuilder.divContainer()
+				.withItems([editPathForm])
+				.withProperties<azdata.DivContainerProperties>({
+					clickable: false
+				})
+				.component();
 			parentContainer.addItem(editPathContainer);
 
+			editPathButton.onDidClick(async () => {
+				editPathContainer.display = 'none';
+				selectInstallContainer.display = 'block';
+				this.selectInstallEnabled = true;
+			});
 			selectInstallContainer.display = 'none';
 
 			this.selectInstallEnabled = false;
