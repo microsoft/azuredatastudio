@@ -29,8 +29,8 @@ export class PickPackagesPage extends BasePage {
 	private requiredPackagesTable: azdata.DeclarativeTableComponent;
 	private packageTableSpinner: azdata.LoadingComponent;
 
-	private installedPackagesPromise: Promise<PythonPkgDetails[]>;
-	private packageVersionMap: Map<string, string>;
+	private packageVersionRetrieval: Promise<void>;
+	private packageVersionMap = new Map<string, string>();
 
 	public async initialize(): Promise<boolean> {
 		if (this.model.kernelName) {
@@ -109,9 +109,16 @@ export class PickPackagesPage extends BasePage {
 	}
 
 	public async onPageEnter(): Promise<void> {
+		this.packageVersionMap.clear();
 		let pythonExe = JupyterServerInstallation.getPythonExePath(this.model.pythonLocation, this.model.useExistingPython);
-		this.installedPackagesPromise = this.model.installation.getInstalledPipPackages(pythonExe);
-		this.packageVersionMap = undefined;
+		this.packageVersionRetrieval = this.model.installation.getInstalledPipPackages(pythonExe)
+			.then(installedPackages => {
+				if (installedPackages) {
+					installedPackages.forEach(pkg => {
+						this.packageVersionMap.set(pkg.name, pkg.version);
+					});
+				}
+			});
 
 		if (this.kernelDropdown) {
 			if (this.model.kernelName) {
@@ -139,16 +146,7 @@ export class PickPackagesPage extends BasePage {
 			});
 
 			// For each required package, check if there is another version of that package already installed
-			if (!this.packageVersionMap) {
-				this.packageVersionMap = new Map<string, string>();
-				let installedPackages = await this.installedPackagesPromise;
-				if (installedPackages) {
-					installedPackages.forEach(pkg => {
-						this.packageVersionMap.set(pkg.name, pkg.version);
-					});
-				}
-			}
-
+			await this.packageVersionRetrieval;
 			requiredPkgVersions.forEach(pkgVersion => {
 				let installedPackageVersion = this.packageVersionMap.get(pkgVersion.name);
 				if (installedPackageVersion) {
