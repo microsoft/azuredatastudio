@@ -347,7 +347,7 @@ export class SettingsEditor2 extends BaseEditor {
 		this.focusSearch();
 	}
 
-	onHide(): void {
+	onDidHide(): void {
 		this.searchWidget.onHide();
 	}
 
