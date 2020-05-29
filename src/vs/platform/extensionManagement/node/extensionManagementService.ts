@@ -151,7 +151,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 
 	}
 
-	install(vsix: URI, isDefault?: boolean): Promise<ILocalExtension> {
+	install(vsix: URI, isMachineScoped?: boolean): Promise<ILocalExtension> {
 		// {{SQL CARBON EDIT}}
 		let startTime = new Date().getTime();
 
@@ -173,7 +173,8 @@ export class ExtensionManagementService extends Disposable implements IExtension
 							.then(installedExtensions => {
 								const existing = installedExtensions.filter(i => areSameExtensions(identifier, i.identifier))[0];
 								if (existing) {
-									// operation = InstallOperation.Update; {{SQL CARBON EDIT}} comment out for no unused
+									isMachineScoped = isMachineScoped || existing.isMachineScoped;
+									// operation = InstallOperation.Update;
 									if (identifierWithVersion.equals(new ExtensionIdentifierWithVersion(existing.identifier, existing.manifest.version))) {
 										return this.extensionsScanner.removeExtension(existing, 'existing').then(null, e => Promise.reject(new Error(nls.localize('restartCode', "Please restart Azure Data Studio before reinstalling {0}.", manifest.displayName || manifest.name))));
 									} else if (semver.gt(existing.manifest.version, manifest.version)) {
@@ -197,7 +198,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 								this._onInstallExtension.fire({ identifier, zipPath });
 								// {{SQL CARBON EDIT}}
 								// Until there's a gallery for SQL Ops Studio, skip retrieving the metadata from the gallery
-								return this.installExtension({ zipPath, identifierWithVersion, metadata: { isDefault } }, token)
+								return this.installExtension({ zipPath, identifierWithVersion, metadata: { isMachineScoped } }, token)
 									.then(
 										local => {
 											this.reportTelemetry(this.getTelemetryEvent(InstallOperation.Install), getLocalExtensionTelemetryData(local), new Date().getTime() - startTime, void 0);
@@ -254,7 +255,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			));
 	}*/
 
-	async installFromGallery(extension: IGalleryExtension, isDefault?: boolean): Promise<ILocalExtension> {
+	async installFromGallery(extension: IGalleryExtension, isMachineScoped?: boolean): Promise<ILocalExtension> {
 		if (!this.galleryService.isEnabled()) {
 			return Promise.reject(new Error(nls.localize('MarketPlaceDisabled', "Marketplace is not enabled")));
 		}
@@ -303,7 +304,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 
 				this.downloadInstallableExtension(extension, operation)
 					.then(installableExtension => {
-						installableExtension.metadata.isDefault = isDefault !== undefined ? isDefault : existingExtension?.isDefault;
+						installableExtension.metadata.isMachineScoped = isMachineScoped || existingExtension?.isMachineScoped;
 						return this.installExtension(installableExtension, cancellationToken)
 							.then(local => this.extensionsDownloader.delete(URI.file(installableExtension.zipPath)).finally(() => { }).then(() => local));
 					})
@@ -498,7 +499,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 
 	async updateMetadata(local: ILocalExtension, metadata: IGalleryMetadata): Promise<ILocalExtension> {
 		this.logService.trace('ExtensionManagementService#updateMetadata', local.identifier.id);
-		local = await this.extensionsScanner.saveMetadataForLocalExtension(local, { ...metadata, isDefault: local.isDefault });
+		local = await this.extensionsScanner.saveMetadataForLocalExtension(local, { ...metadata, isMachineScoped: local.isMachineScoped });
 		this.manifestCache.invalidate();
 		return local;
 	}
