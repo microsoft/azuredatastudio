@@ -499,7 +499,7 @@ export class NotebookService extends Disposable implements INotebookService, ICu
 			};
 		}
 
-		return;
+		return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 	}
 
 	private _transformMimeTypes(output: IDisplayOutput, documentDisplayOrder: string[]): ITransformedDisplayOutputDto {

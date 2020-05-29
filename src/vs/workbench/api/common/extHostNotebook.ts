@@ -728,7 +728,7 @@ export class ExtHostNotebookController implements ExtHostNotebookShape, ExtHostN
 		const document = this._documents.get(URI.revive(uriComponents).toString());
 
 		if (!document) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 		}
 
 		const renderer = this._notebookOutputRenderers.get(id)!;
@@ -763,7 +763,7 @@ export class ExtHostNotebookController implements ExtHostNotebookShape, ExtHostN
 		const document = this._documents.get(URI.revive(uriComponents).toString());
 
 		if (!document) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 		}
 
 		const renderer = this._notebookOutputRenderers.get(id)!;
