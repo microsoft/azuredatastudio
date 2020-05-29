@@ -137,6 +137,6 @@ import 'vs/workbench/contrib/tasks/browser/taskService';
 import 'vs/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut.contribution';
 
 // Issues
-import 'vs/workbench/contrib/issue/browser/issue.contribution';
+import 'vs/workbench/contrib/issue/browser/issue.web.contribution';
 
 //#endregion
