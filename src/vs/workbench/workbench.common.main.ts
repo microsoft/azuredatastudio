@@ -193,6 +193,8 @@ import { DashboardService } from 'sql/platform/dashboard/browser/dashboardServic
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IScriptingService, ScriptingService } from 'sql/platform/scripting/common/scriptingService';
+import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
+import { AssessmentService } from 'sql/workbench/services/assessment/common/assessmentService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -230,6 +232,7 @@ registerSingleton(IQueryEditorService, QueryEditorService);
 registerSingleton(IAdsTelemetryService, AdsTelemetryService);
 registerSingleton(IObjectExplorerService, ObjectExplorerService);
 registerSingleton(IOEShimService, OEShimService);
+registerSingleton(IAssessmentService, AssessmentService);
 
 //#endregion
 
