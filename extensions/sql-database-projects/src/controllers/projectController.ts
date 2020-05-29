@@ -11,9 +11,9 @@ import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
 
-import { TaskExecutionMode } from 'azdata';
+import { Uri, QuickPickItem, WorkspaceFolder, extensions, Extension } from 'vscode';
+import { IConnectionProfile, TaskExecutionMode } from 'azdata';
 import { promises as fs } from 'fs';
-import { Uri, QuickPickItem, extensions, Extension } from 'vscode';
 import { ApiWrapper } from '../common/apiWrapper';
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { Project } from '../models/project';
@@ -22,8 +22,19 @@ import { FolderNode } from '../models/tree/fileFolderTreeItem';
 import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
+import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
+
+// TODO: use string enums
+export enum ExtractTarget {
+	dacpac = 0,
+	file = 1,
+	flat = 2,
+	objectType = 3,
+	schema = 4,
+	schemaObjectType = 5
+}
 
 /**
  * Controller for managing project lifecycle
@@ -59,6 +70,9 @@ export class ProjectsController {
 			// Read project file
 			await newProject.readProjFile();
 			this.projects.push(newProject);
+
+			// Update for round tripping as needed
+			await newProject.updateProjectForRoundTrip();
 
 			// Read datasources.json (if present)
 			const dataSourcesFilePath = path.join(path.dirname(projectFile.fsPath), constants.dataSourcesFileName);
@@ -269,7 +283,7 @@ export class ProjectsController {
 		// TODO: file already exists?
 
 		const newFileText = this.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName });
-		const relativeFilePath = path.join(relativePath, itemObjectName + '.sql');
+		const relativeFilePath = path.join(relativePath, itemObjectName + constants.sqlFileExtension);
 
 		const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
 
@@ -334,6 +348,219 @@ export class ProjectsController {
 
 	private getRelativePath(treeNode: BaseProjectTreeItem): string {
 		return treeNode instanceof FolderNode ? utils.trimUri(treeNode.root.uri, treeNode.uri) : '';
+	}
+
+	/**
+	 * Imports a new SQL database project from the existing database,
+	 * prompting the user for a name, file path location and extract target
+	 */
+	public async importNewDatabaseProject(context: any): Promise<void> {
+		let model = <ImportDataModel>{};
+
+		// TODO: Refactor code
+		try {
+			let profile = context ? <IConnectionProfile>context.connectionProfile : undefined;
+			//TODO: Prompt for new connection addition and get database information if context information isn't provided.
+			if (profile) {
+				model.serverId = profile.id;
+				model.database = profile.databaseName;
+			}
+
+			// Get project name
+			let newProjName = await this.getProjectName(model.database);
+			if (!newProjName) {
+				throw new Error(constants.projectNameRequired);
+			}
+			model.projName = newProjName;
+
+			// Get extractTarget
+			let extractTarget: mssql.ExtractTarget = await this.getExtractTarget();
+			model.extractTarget = extractTarget;
+
+			// Get folder location for project creation
+			let newProjUri = await this.getFolderLocation(model.extractTarget);
+			if (!newProjUri) {
+				throw new Error(constants.projectLocationRequired);
+			}
+
+			// Set project folder/file location
+			let newProjFolderUri;
+			if (extractTarget === mssql.ExtractTarget['file']) {
+				// Get folder info, if extractTarget = File
+				newProjFolderUri = Uri.file(path.dirname(newProjUri.fsPath));
+			} else {
+				newProjFolderUri = newProjUri;
+			}
+
+			// Check folder is empty
+			let isEmpty: boolean = await this.isDirEmpty(newProjFolderUri.fsPath);
+			if (!isEmpty) {
+				throw new Error(constants.projectLocationNotEmpty);
+			}
+			// TODO: what if the selected folder is outside the workspace?
+			model.filePath = newProjUri.fsPath;
+
+			//Set model version
+			model.version = '1.0.0.0';
+
+			// Call ExtractAPI in DacFx Service
+			await this.importApiCall(model);
+			// TODO: Check for success
+
+			// Create and open new project
+			const newProjFilePath = await this.createNewProject(newProjName as string, newProjFolderUri as Uri);
+			const project = await this.openProject(Uri.file(newProjFilePath));
+
+			//Create a list of all the files and directories to be added to project
+			let fileFolderList: string[] = await this.generateList(model.filePath);
+
+			// Add generated file structure to the project
+			await project.addToProject(fileFolderList);
+
+			//Refresh project to show the added files
+			this.refreshProjectsTree();
+		}
+		catch (err) {
+			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
+	private async getProjectName(dbName: string): Promise<string | undefined> {
+		let projName = await this.apiWrapper.showInputBox({
+			prompt: constants.newDatabaseProjectName,
+			value: `DatabaseProject${dbName}`
+		});
+
+		projName = projName?.trim();
+
+		return projName;
+	}
+
+	private mapExtractTargetEnum(inputTarget: any): mssql.ExtractTarget {
+		if (inputTarget) {
+			switch (inputTarget) {
+				case 'File': return mssql.ExtractTarget['file'];
+				case 'Flat': return mssql.ExtractTarget['flat'];
+				case 'ObjectType': return mssql.ExtractTarget['objectType'];
+				case 'Schema': return mssql.ExtractTarget['schema'];
+				case 'SchemaObjectType': return mssql.ExtractTarget['schemaObjectType'];
+				default: throw new Error(`Invalid input: ${inputTarget}`);
+			}
+		} else {
+			throw new Error(constants.extractTargetRequired);
+		}
+	}
+
+	private async getExtractTarget(): Promise<mssql.ExtractTarget> {
+		let extractTarget: mssql.ExtractTarget;
+
+		let extractTargetOptions: QuickPickItem[] = [];
+
+		let keys: string[] = Object.keys(ExtractTarget).filter(k => typeof ExtractTarget[k as any] === 'number');
+
+		// TODO: Create a wrapper class to handle the mapping
+		keys.forEach((targetOption: string) => {
+			if (targetOption !== 'dacpac') {		//Do not present the option to create Dacpac
+				let pascalCaseTargetOption: string = utils.toPascalCase(targetOption);	// for better readability
+				extractTargetOptions.push({ label: pascalCaseTargetOption });
+			}
+		});
+
+		let input = await this.apiWrapper.showQuickPick(extractTargetOptions, {
+			canPickMany: false,
+			placeHolder: constants.extractTargetInput
+		});
+		let extractTargetInput = input?.label;
+
+		extractTarget = this.mapExtractTargetEnum(extractTargetInput);
+
+		return extractTarget;
+	}
+
+	private async getFolderLocation(extractTarget: mssql.ExtractTarget): Promise<Uri | undefined> {
+		let selectionResult;
+		let projUri;
+
+		if (extractTarget !== mssql.ExtractTarget.file) {
+			selectionResult = await this.apiWrapper.showOpenDialog({
+				canSelectFiles: false,
+				canSelectFolders: true,
+				canSelectMany: false,
+				openLabel: constants.selectFileFolder,
+				defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined
+			});
+			if (selectionResult) {
+				projUri = (selectionResult as Uri[])[0];
+			}
+		} else {
+			// Get filename
+			selectionResult = await this.apiWrapper.showSaveDialog(
+				{
+					defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined,
+					saveLabel: constants.selectFileFolder,
+					filters: {
+						'SQL files': ['sql'],
+						'All files': ['*']
+					}
+				}
+			);
+			if (selectionResult) {
+				projUri = selectionResult as unknown as Uri;
+			}
+		}
+
+		return projUri;
+	}
+
+	private async isDirEmpty(newProjFolderUri: string): Promise<boolean> {
+		return (await fs.readdir(newProjFolderUri)).length === 0;
+	}
+
+	private async importApiCall(model: ImportDataModel): Promise<void> {
+		let ext = this.apiWrapper.getExtension(mssql.extension.name)!;
+
+		const service = (await ext.activate() as mssql.IExtension).dacFx;
+		const ownerUri = await this.apiWrapper.getUriForConnection(model.serverId);
+
+		await service.importDatabaseProject(model.database, model.filePath, model.projName, model.version, ownerUri, model.extractTarget, TaskExecutionMode.execute);
+	}
+
+	/**
+	 * Generate a flat list of all files and folder under a folder.
+	 */
+	public async generateList(absolutePath: string): Promise<string[]> {
+		let fileFolderList: string[] = [];
+
+		if (!await utils.exists(absolutePath)) {
+			if (await utils.exists(absolutePath + constants.sqlFileExtension)) {
+				absolutePath += constants.sqlFileExtension;
+			} else {
+				await this.apiWrapper.showErrorMessage(constants.cannotResolvePath(absolutePath));
+				return fileFolderList;
+			}
+		}
+
+		const files = [absolutePath];
+		do {
+			const filepath = files.pop();
+
+			if (filepath) {
+				const stat = await fs.stat(filepath);
+
+				if (stat.isDirectory()) {
+					fileFolderList.push(filepath);
+					(await fs
+						.readdir(filepath))
+						.forEach((f: string) => files.push(path.join(filepath, f)));
+				}
+				else if (stat.isFile()) {
+					fileFolderList.push(filepath);
+				}
+			}
+
+		} while (files.length !== 0);
+
+		return fileFolderList;
 	}
 
 	//#endregion

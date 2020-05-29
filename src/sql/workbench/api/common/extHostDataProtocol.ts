@@ -168,7 +168,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		this._proxy.$registerAgentServicesProvider(provider.providerId, provider.handle);
 		return rt;
 	}
-
+	$registerSqlAssessmentServiceProvider(provider: azdata.SqlAssessmentServicesProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.SqlAssessmentServicesProvider);
+		this._proxy.$registerSqlAssessmentServicesProvider(provider.providerId, provider.handle);
+		return rt;
+	}
 	$registerCapabilitiesServiceProvider(provider: azdata.CapabilitiesProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.CapabilitiesProvider);
 		this._proxy.$registerCapabilitiesServiceProvider(provider.providerId, provider.handle);
@@ -838,5 +842,18 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	public $continueSerialization(handle: number, requestParams: azdata.SerializeDataContinueRequestParams): Thenable<azdata.SerializeDataResult> {
 		return this._resolveProvider<azdata.SerializationProvider>(handle).continueSerialization(requestParams);
+	}
+
+	// Assessment methods
+	public $assessmentInvoke(handle: number, ownerUri: string, targetType: number): Thenable<azdata.SqlAssessmentResult> {
+		return this._resolveProvider<azdata.SqlAssessmentServicesProvider>(handle).assessmentInvoke(ownerUri, targetType);
+	}
+
+	public $getAssessmentItems(handle: number, ownerUri: string, targetType: number): Thenable<azdata.SqlAssessmentResult> {
+		return this._resolveProvider<azdata.SqlAssessmentServicesProvider>(handle).getAssessmentItems(ownerUri, targetType);
+	}
+
+	public $generateAssessmentScript(handle: number, items: azdata.SqlAssessmentResultItem[]): Thenable<azdata.ResultStatus> {
+		return this._resolveProvider<azdata.SqlAssessmentServicesProvider>(handle).generateAssessmentScript(items);
 	}
 }

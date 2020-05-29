@@ -75,7 +75,7 @@ export function executeStreamedCommand(cmd: string, options: childProcess.SpawnO
 			if (code === 0) {
 				resolve();
 			} else {
-				reject(localize('executeCommandProcessExited', "Process exited with  with error code: {0}. StdErr Output: {1}", code, stdErrLog));
+				reject(new Error(localize('executeCommandProcessExited', "Process exited with error code: {0}. StdErr Output: {1}", code, stdErrLog)));
 			}
 		});
 
@@ -194,7 +194,7 @@ export function isEditorTitleFree(title: string): boolean {
 	return !hasTextDoc && !hasNotebookDoc;
 }
 
-export function getClusterEndpoints(serverInfo: azdata.ServerInfo): IEndpoint[] | undefined {
+export function getClusterEndpoints(serverInfo: azdata.ServerInfo): IEndpoint[] {
 	let endpoints: RawEndpoint[] = serverInfo.options['clusterEndpoints'];
 	if (!endpoints || endpoints.length === 0) { return []; }
 

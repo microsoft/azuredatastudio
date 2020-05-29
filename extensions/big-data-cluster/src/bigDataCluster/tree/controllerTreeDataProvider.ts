@@ -12,7 +12,7 @@ import { AddControllerNode } from './addControllerNode';
 import { ControllerRootNode, ControllerNode } from './controllerTreeNode';
 import { showErrorMessage } from '../utils';
 import { LoadingControllerNode } from './loadingControllerNode';
-import { AuthType } from '../constants';
+import { AuthType } from 'bdc';
 
 const localize = nls.loadMessageBundle();
 
