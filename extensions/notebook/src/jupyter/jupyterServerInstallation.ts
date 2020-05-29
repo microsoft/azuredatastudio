@@ -109,7 +109,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private readonly _expectedCondaPackages: PythonPkgDetails[];
 
 	private _kernelSetupCache: Map<string, boolean>;
-	public readonly requiredKernelPackages: Map<string, PythonPkgDetails[]>;
+	private readonly _requiredKernelPackages: Map<string, PythonPkgDetails[]>;
 	private readonly _requiredPackagesSet: Set<string>;
 
 	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
@@ -130,19 +130,19 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 
 		this._kernelSetupCache = new Map<string, boolean>();
-		this.requiredKernelPackages = new Map<string, PythonPkgDetails[]>();
+		this._requiredKernelPackages = new Map<string, PythonPkgDetails[]>();
 
 		let jupyterPkg = {
 			name: 'jupyter',
 			version: '1.0.0'
 		};
-		this.requiredKernelPackages.set(constants.python3DisplayName, [jupyterPkg]);
+		this._requiredKernelPackages.set(constants.python3DisplayName, [jupyterPkg]);
 
 		let powershellPkg = {
 			name: 'powershell-kernel',
 			version: '0.1.3'
 		};
-		this.requiredKernelPackages.set(constants.powershellDisplayName, [jupyterPkg, powershellPkg]);
+		this._requiredKernelPackages.set(constants.powershellDisplayName, [jupyterPkg, powershellPkg]);
 
 		let sparkPackages = [
 			jupyterPkg,
@@ -156,12 +156,12 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				name: 'prose-codeaccelerator',
 				version: '1.3.0'
 			}];
-		this.requiredKernelPackages.set(constants.pysparkDisplayName, sparkPackages);
-		this.requiredKernelPackages.set(constants.sparkScalaDisplayName, sparkPackages);
-		this.requiredKernelPackages.set(constants.sparkRDisplayName, sparkPackages);
+		this._requiredKernelPackages.set(constants.pysparkDisplayName, sparkPackages);
+		this._requiredKernelPackages.set(constants.sparkScalaDisplayName, sparkPackages);
+		this._requiredKernelPackages.set(constants.sparkRDisplayName, sparkPackages);
 
 		let allPackages = sparkPackages.concat(powershellPkg);
-		this.requiredKernelPackages.set(constants.allKernelsName, allPackages);
+		this._requiredKernelPackages.set(constants.allKernelsName, allPackages);
 
 		this._requiredPackagesSet = new Set<string>();
 		allPackages.forEach(pkg => {
@@ -489,7 +489,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			if (this._kernelSetupCache.get(kernelName)) {
 				return;
 			}
-			requiredPackages = this.requiredKernelPackages.get(kernelName);
+			requiredPackages = this.getRequiredPackagesForKernel(kernelName);
 		}
 
 		this._installInProgress = true;
@@ -518,7 +518,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		installedPackages.forEach(pkg => {
 			installedPackageMap.set(pkg.name, pkg.version);
 		});
-		let requiredPackages = this.requiredKernelPackages.get(kernelDisplayName);
+		let requiredPackages = this.getRequiredPackagesForKernel(kernelDisplayName);
 		for (let pkg of requiredPackages) {
 			let installedVersion = installedPackageMap.get(pkg.name);
 			if (!installedVersion || utils.comparePackageVersions(installedVersion, pkg.version) < 0) {
@@ -877,6 +877,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 
 		return undefined;
+	}
+
+	public getRequiredPackagesForKernel(kernelName: string): PythonPkgDetails[] {
+		return this._requiredKernelPackages.get(kernelName) ?? [];
 	}
 }
 

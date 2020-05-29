@@ -133,7 +133,7 @@ export class PickPackagesPage extends BasePage {
 		try {
 			// Fetch list of required packages for the specified kernel
 			let requiredPkgVersions: RequiredPackageInfo[] = [];
-			let requiredPackages = this.model.installation.requiredKernelPackages.get(kernelName);
+			let requiredPackages = this.model.installation.getRequiredPackagesForKernel(kernelName);
 			requiredPackages.forEach(pkg => {
 				requiredPkgVersions.push({ name: pkg.name, existingVersion: undefined, requiredVersion: pkg.version });
 			});
