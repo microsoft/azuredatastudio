@@ -50,19 +50,21 @@ export class AddCellAction extends Action {
 	) {
 		super(id, label, cssClass);
 	}
-	public async run(context: INotebookEditor | CellContext): Promise<any> {
+	public async run(context: INotebookEditor | CellContext): Promise<void> {
 		let index = 0;
 		if (context instanceof CellContext) {
-			if (context && context.model && context.model.cells) {
+			if (context?.model?.cells) {
 				let activeCellId = context.model.activeCell.id;
 				if (activeCellId) {
 					index = context.model.cells.findIndex(cell => cell.id === activeCellId) + 1;
 				}
 			}
-			context.model.addCell(this.cellType, index);
+			if (context?.model) {
+				context.model.addCell(this.cellType, index);
+			}
 		} else {
 			//Add Cell after current selected cell.
-			if (context && context.cells) {
+			if (context?.cells) {
 				let notebookcomponent = context as NotebookComponent;
 				let id = notebookcomponent.activeCellId;
 				if (id) {
