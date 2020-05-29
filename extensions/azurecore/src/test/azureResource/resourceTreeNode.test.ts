@@ -15,6 +15,7 @@ import { AzureResourceResourceTreeNode } from '../../azureResource/resourceTreeN
 import { AppContext } from '../../appContext';
 import { ApiWrapper } from '../../apiWrapper';
 import { AzureResourceServiceNames } from '../../azureResource/constants';
+import settings from '../../account-provider/providerSettings';
 
 // Mock test data
 const mockAccount: azdata.Account = {
@@ -28,7 +29,7 @@ const mockAccount: azdata.Account = {
 		contextualDisplayName: 'test',
 		userId: 'test@email.com'
 	},
-	properties: undefined,
+	properties: settings[0],
 	isStale: false
 };
 
@@ -87,7 +88,7 @@ let mockResourceProvider: TypeMoq.IMock<azureResource.IAzureResourceProvider>;
 let resourceService: AzureResourceService;
 let appContext: AppContext;
 
-describe('AzureResourceResourceTreeNode.info', function(): void {
+describe('AzureResourceResourceTreeNode.info', function (): void {
 	beforeEach(() => {
 		mockResourceTreeDataProvider = TypeMoq.Mock.ofType<azureResource.IAzureResourceTreeDataProvider>();
 		mockResourceTreeDataProvider.setup((o) => o.getTreeItem(mockResourceRootNode)).returns(() => mockResourceRootNode.treeItem);
@@ -105,7 +106,7 @@ describe('AzureResourceResourceTreeNode.info', function(): void {
 		appContext.registerService(AzureResourceServiceNames.resourceService, resourceService);
 	});
 
-	it('Should be correct when created.', async function(): Promise<void> {
+	it('Should be correct when created.', async function (): Promise<void> {
 		const resourceTreeNode = new AzureResourceResourceTreeNode({
 			resourceProviderId: mockResourceProviderId,
 			resourceNode: mockResourceRootNode
@@ -127,7 +128,7 @@ describe('AzureResourceResourceTreeNode.info', function(): void {
 	});
 });
 
-describe('AzureResourceResourceTreeNode.getChildren', function(): void {
+describe('AzureResourceResourceTreeNode.getChildren', function (): void {
 	beforeEach(() => {
 		mockResourceTreeDataProvider = TypeMoq.Mock.ofType<azureResource.IAzureResourceTreeDataProvider>();
 		mockResourceTreeDataProvider.setup((o) => o.getChildren(mockResourceRootNode)).returns(() => Promise.resolve(mockResourceNodes));
@@ -145,12 +146,12 @@ describe('AzureResourceResourceTreeNode.getChildren', function(): void {
 		appContext.registerService(AzureResourceServiceNames.resourceService, resourceService);
 	});
 
-	it('Should return resource nodes when it is container node.', async function(): Promise<void> {
+	it('Should return resource nodes when it is container node.', async function (): Promise<void> {
 		const resourceTreeNode = new AzureResourceResourceTreeNode({
 			resourceProviderId: mockResourceProviderId,
 			resourceNode: mockResourceRootNode
 		},
-		undefined, appContext);
+			undefined, appContext);
 
 		const children = await resourceTreeNode.getChildren();
 
@@ -176,7 +177,7 @@ describe('AzureResourceResourceTreeNode.getChildren', function(): void {
 		}
 	});
 
-	it('Should return empty when it is leaf node.', async function(): Promise<void> {
+	it('Should return empty when it is leaf node.', async function (): Promise<void> {
 		const resourceTreeNode = new AzureResourceResourceTreeNode({
 			resourceProviderId: mockResourceProviderId,
 			resourceNode: mockResourceNode1
