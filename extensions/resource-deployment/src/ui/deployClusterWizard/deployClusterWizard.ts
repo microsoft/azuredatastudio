@@ -9,12 +9,12 @@ import * as os from 'os';
 import { join } from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { BdcDeploymentType, BdcWizardInfo, ITool } from '../../interfaces';
+import { BdcDeploymentType, BdcWizardInfo } from '../../interfaces';
 import { IAzdataService } from '../../services/azdataService';
 import { IKubeService } from '../../services/kubeService';
 import { INotebookService } from '../../services/notebookService';
 import { IToolsService } from '../../services/toolsService';
-import { getErrorMessage, setEnvironmentVariablesForInstallPaths } from '../../utils';
+import { getErrorMessage } from '../../utils';
 import { InputComponents } from '../modelViewUtils';
 import { WizardBase } from '../wizardBase';
 import { WizardPageBase } from '../wizardPageBase';
@@ -145,7 +145,7 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, WizardP
 	}
 
 	private async scriptToNotebook(): Promise<void> {
-		this.setEnvironmentVariables(process.env, this._toolsService.toolsForCurrentProvider);
+		this.setEnvironmentVariables(process.env);
 		const variableValueStatements = this.model.getCodeCellContentForNotebook(this._toolsService.toolsForCurrentProvider);
 		const insertionPosition = 5; // Cell number 5 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
 		try {
@@ -155,13 +155,12 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, WizardP
 		}
 	}
 
-	private setEnvironmentVariables(env: NodeJS.ProcessEnv, tools: ITool[] = []): void {
+	private setEnvironmentVariables(env: NodeJS.ProcessEnv): void {
 		env[VariableNames.AdminPassword_VariableName] = this.model.getStringValue(VariableNames.AdminPassword_VariableName);
 		env[VariableNames.DockerPassword_VariableName] = this.model.getStringValue(VariableNames.DockerPassword_VariableName);
 		if (this.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
 			env[VariableNames.DomainServiceAccountPassword_VariableName] = this.model.getStringValue(VariableNames.DomainServiceAccountPassword_VariableName);
 		}
-		setEnvironmentVariablesForInstallPaths(tools, env);
 	}
 
 	static getTitle(type: BdcDeploymentType): string {
