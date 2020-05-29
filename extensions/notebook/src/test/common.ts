@@ -357,24 +357,23 @@ class TestDivContainer extends TestComponentBase implements azdata.DivContainer 
 	}
 }
 
-class TestGroupContainer extends TestComponentBase implements azdata.GroupContainer {
+class TestFlexContainer extends TestComponentBase implements azdata.FlexContainer {
 	items: azdata.Component[] = [];
 	clearItems(): void {
 	}
-	addItems(itemConfigs: azdata.Component[], itemLayout?: azdata.GroupItemLayout): void {
+	addItems(itemConfigs: azdata.Component[], itemLayout?: azdata.FlexItemLayout): void {
 	}
-	addItem(component: azdata.Component, itemLayout?: azdata.GroupItemLayout): void {
+	addItem(component: azdata.Component, itemLayout?: azdata.FlexItemLayout): void {
 	}
-	insertItem(component: azdata.Component, index: number, itemLayout?: azdata.GroupItemLayout): void {
+	insertItem(component: azdata.Component, index: number, itemLayout?: azdata.FlexItemLayout): void {
 	}
 	removeItem(component: azdata.Component): boolean {
 		return true;
 	}
-	setLayout(layout: azdata.GroupLayout): void {
+	setLayout(layout: azdata.FlexLayout): void {
 	}
-	setItemLayout(component: azdata.Component, layout: azdata.GroupItemLayout): void {
+	setItemLayout(component: azdata.Component, layout: azdata.FlexItemLayout): void {
 	}
-	collapsed: boolean;
 }
 
 class TestComponentBuilder<T extends azdata.Component> implements azdata.ComponentBuilder<T> {
@@ -437,18 +436,18 @@ export function createViewContext(): TestContext {
 		withLayout: () => divBuilder
 	});
 
-	let group: azdata.GroupContainer = new TestGroupContainer();
-	let groupBuilder: azdata.GroupBuilder = Object.assign({}, {
-		component: () => group,
+	let flex: azdata.FlexContainer = new TestFlexContainer();
+	let flexBuilder: azdata.FlexBuilder = Object.assign({}, {
+		component: () => flex,
 		addFormItem: () => { },
 		insertFormItem: () => { },
 		removeFormItem: () => true,
 		addFormItems: () => { },
-		withFormItems: () => groupBuilder,
-		withProperties: () => groupBuilder,
-		withValidation: () => groupBuilder,
-		withItems: () => groupBuilder,
-		withLayout: () => groupBuilder
+		withFormItems: () => flexBuilder,
+		withProperties: () => flexBuilder,
+		withValidation: () => flexBuilder,
+		withItems: () => flexBuilder,
+		withLayout: () => flexBuilder
 	});
 
 	let view: azdata.ModelView = {
@@ -468,7 +467,7 @@ export function createViewContext(): TestContext {
 			formContainer: () => formBuilder,
 			loadingComponent: () => loadingBuilder,
 			divContainer: () => divBuilder,
-			groupContainer: () => groupBuilder
+			flexContainer: () => flexBuilder
 		}
 	};
 
