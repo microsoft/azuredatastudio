@@ -242,7 +242,7 @@ export const odbcDriverDocuments = 'https://go.microsoft.com/fwlink/?linkid=2129
 export const mlDocLink = 'https://go.microsoft.com/fwlink/?linkid=2128671';
 export const mlExtDocLink = 'https://go.microsoft.com/fwlink/?linkid=2129918';
 export const mlsDocLink = 'https://go.microsoft.com/fwlink/?linkid=2128672';
-export const mlsAzureDocLink = 'https://go.microsoft.com/fwlink/?linkid=2128673';
+export const mlsMIDocLink = 'https://go.microsoft.com/fwlink/?linkid=2128673';
 export const onnxOnEdgeDocs = 'https://go.microsoft.com/fwlink/?linkid=2128882';
 export const managePackagesDocs = 'https://go.microsoft.com/fwlink/?linkid=2129919';
 
