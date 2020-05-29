@@ -19,7 +19,8 @@ EXEC sp_execute_external_script
 @script=N'import pkg_resources
 import pandas
 OutputDataSet = pandas.DataFrame([(d.project_name, d.version) for d in pkg_resources.working_set])'
-select t.name, (CASE   WHEN e.name is NULL THEN 1 ELSE 0 END) as isReadOnly , version from @tablevar t left join sys.external_libraries e  on e.name = t.name and e.[language] = 'PYTHON'
+select t.name, (CASE   WHEN e.name is NULL THEN 1 ELSE 0 END) as isReadOnly , version from @tablevar t
+left join sys.external_libraries e  on e.name = t.name and e.[language] = 'PYTHON'
 `;
 
 const listRPackagesQuery = `
@@ -29,7 +30,8 @@ EXEC sp_execute_external_script
 @language=N'R',
 @script=N'
 OutputDataSet <- as.data.frame(installed.packages()[,c(1,3)])'
-select t.name, (CASE   WHEN e.name is NULL THEN 1 ELSE 0 END) as isReadOnly , version from @tablevar t left join sys.external_libraries e  on e.name = t.name and e.[language] = 'R'
+select t.name, (CASE   WHEN e.name is NULL THEN 1 ELSE 0 END) as isReadOnly , version from @tablevar t
+left join sys.external_libraries e  on e.name = t.name and e.[language] = 'R'
 `;
 
 const checkMlInstalledQuery = `
