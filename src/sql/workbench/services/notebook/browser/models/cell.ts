@@ -70,7 +70,7 @@ export class CellModel implements ICellModel {
 			this._source = '';
 		}
 
-		this._isEditMode = true;
+		this._isEditMode = this._cellType !== CellTypes.Markdown;
 		this._stdInVisible = false;
 		if (_options && _options.isTrusted) {
 			this._isTrusted = true;
