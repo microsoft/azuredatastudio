@@ -25,14 +25,17 @@ import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvent
 import { firstIndex, find } from 'vs/base/common/arrays';
 import { HideInputTag } from 'sql/platform/notebooks/common/outputRegistry';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 let modelId = 0;
 
-export class CellModel implements ICellModel {
+export class CellModel extends Disposable implements ICellModel {
 	public id: string;
 
 	private _cellType: nb.CellType;
-	private _source: string | string[];
+	private _source: string[];
 	private _language: string;
 	private _cellGuid: string;
 	private _future: FutureInternal;
@@ -56,18 +59,22 @@ export class CellModel implements ICellModel {
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
+	private _isCommandExecutionSettingEnabled: boolean;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
-		@optional(INotebookService) private _notebookService?: INotebookService
+		@optional(INotebookService) private _notebookService?: INotebookService,
+		@optional(ICommandService) private _commandService?: ICommandService,
+		@optional(IConfigurationService) private _configurationService?: IConfigurationService
 	) {
+		super();
 		this.id = `${modelId++}`;
 		if (cellData) {
 			// Read in contents if available
 			this.fromJSON(cellData);
 		} else {
 			this._cellType = CellTypes.Code;
-			this._source = '';
+			this._source = [''];
 		}
 
 		this._isEditMode = this._cellType !== CellTypes.Markdown;
@@ -80,6 +87,15 @@ export class CellModel implements ICellModel {
 		// if the fromJson() method was already called and _cellGuid was previously set, don't generate another UUID unnecessarily
 		this._cellGuid = this._cellGuid || generateUuid();
 		this.createUri();
+		if (this._configurationService) {
+			const previewFeaturesKey = 'workbench.enablePreviewFeatures';
+			this._isCommandExecutionSettingEnabled = this._configurationService.getValue(previewFeaturesKey);
+			this._register(this._configurationService.onDidChangeConfiguration(e => {
+				if (e.affectsConfiguration(previewFeaturesKey)) {
+					this._isCommandExecutionSettingEnabled = this._configurationService.getValue(previewFeaturesKey);
+				}
+			}));
+		}
 	}
 
 	public equals(other: ICellModel) {
@@ -336,19 +352,21 @@ export class CellModel implements ICellModel {
 
 					// requestExecute expects a string for the code parameter
 					content = Array.isArray(content) ? content.join('') : content;
-					const future = kernel.requestExecute({
-						code: content,
-						stop_on_error: true
-					}, false);
-					this.setFuture(future as FutureInternal);
-					this.fireExecutionStateChanged();
-					// For now, await future completion. Later we should just track and handle cancellation based on model notifications
-					let result: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg><any>await future.done;
-					if (result && result.content) {
-						this.executionCount = result.content.execution_count;
-						if (result.content.status !== 'ok') {
-							// TODO track error state
-							return false;
+					if (!this.checkForAdsCommandMagic()) {
+						const future = kernel.requestExecute({
+							code: content,
+							stop_on_error: true
+						}, false);
+						this.setFuture(future as FutureInternal);
+						this.fireExecutionStateChanged();
+						// For now, await future completion. Later we should just track and handle cancellation based on model notifications
+						let result: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg><any>await future.done;
+						if (result && result.content) {
+							this.executionCount = result.content.execution_count;
+							if (result.content.status !== 'ok') {
+								// TODO track error state
+								return false;
+							}
 						}
 					}
 				}
@@ -536,7 +554,7 @@ export class CellModel implements ICellModel {
 							let host = hostAndIp.host ? hostAndIp.host : model.context.serverName;
 							let port = hostAndIp.port ? ':' + hostAndIp.port : defaultPort;
 							let html = result.data['text/html'];
-							// BDC Spark UI Link
+							// CTP 3.2 and later spark link
 							html = notebookUtils.rewriteUrlUsingRegex(/(https?:\/\/sparkhead.*\/proxy)(.*)/g, html, host, port, yarnUi);
 							// Driver link
 							html = notebookUtils.rewriteUrlUsingRegex(/(https?:\/\/storage.*\/containerlogs)(.*)/g, html, host, port, driverLog);
@@ -667,7 +685,7 @@ export class CellModel implements ICellModel {
 	}
 
 
-	private getMultilineSource(source: string | string[]): string | string[] {
+	private getMultilineSource(source: string | string[]): string[] {
 		if (source === undefined) {
 			return [];
 		}
@@ -690,6 +708,31 @@ export class CellModel implements ICellModel {
 			return sourceMultiline;
 		}
 		return source;
+	}
+
+	// Run ADS commands via a notebook. Configured by a setting (turned off by default).
+	private checkForAdsCommandMagic(): boolean {
+		if (!this._isCommandExecutionSettingEnabled) {
+			return false;
+		}
+
+		let executeCommandMagic = '%%ADS_EXECUTE_COMMAND';
+		if (this._source && this._source.length) {
+			// Magics aren't allowed to have spaces before the %%, so using startsWith() is fine
+			if (this._source[0].startsWith(executeCommandMagic)) {
+				let commandNamePlusArgs = this._source[0].replace(executeCommandMagic + ' ', '');
+				if (commandNamePlusArgs) {
+					let commandName = commandNamePlusArgs.split(' ')[0];
+					// Similar to the markdown renderer, we should not allow downloadResource here
+					if (commandName && commandName !== '_workbench.downloadResource') {
+						let args = commandNamePlusArgs.replace(commandName + ' ', '');
+						this._commandService.executeCommand(commandName, [args]);
+					}
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	// Dispose and set current future to undefined
