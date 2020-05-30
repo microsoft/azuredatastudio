@@ -212,6 +212,34 @@ describe('ProjectsController: import operations', function (): void {
 });
 
 describe('ProjectsController: round trip feature with SSDT', function (): void {
+	it('Should show warning message for SSDT project opened in Azure Data Studio', async function (): Promise<void> {
+		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
+		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
+
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+
+		await testUtils.shouldThrowSpecificError(async () => await projController.openProject(vscode.Uri.file(sqlProjPath)), constants.updateProjectForRoundTrip);
+	});
+
+	it('Should not show warning message for non-SSDT projects that have the additional information for Build', async function (): Promise<void> {
+		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline, folderPath);
+		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
+
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+
+		const project = await projController.openProject(vscode.Uri.file(sqlProjPath));	// no error thrown
+
+		should(project.importedTargets.length).equal(3); // additional target should exist by default
+	});
+
 	it('Should not update project and no backup file should be created when update to project is rejected', async function (): Promise<void> {
 		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(constants.noString));
 
