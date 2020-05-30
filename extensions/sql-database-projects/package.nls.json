@@ -21,6 +21,8 @@
 
 	"sqlDatabaseProjects.importDatabase": "Import New Database Project",
 
+	"sqlDatabaseProjects.addDatabaseReference": "Add Database Reference",
+
 	"sqlDatabaseProjects.Settings": "Database Projects",
 	"sqlDatabaseProjects.netCoreInstallLocation": "Full Path to .Net Core SDK on the machine."
 }

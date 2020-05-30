@@ -141,6 +141,39 @@ export class Project {
 		return fileEntry;
 	}
 
+	/**
+	 * Adds reference to the appropriate master dacpac to the project
+	 */
+	public async addMasterDatabaseReference(): Promise<void> {
+		let dsp: string = this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes[0].nodeValue;
+
+		// get version from dsp, which is a string like Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider
+		// remove part before the number
+		let version = dsp.substring(35);
+		// remove DatabaseSchemaProvider
+		version = version.substring(0, version.length - 22);
+		const relativeFilePath = path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', version, 'master.dacpac');
+
+		this.addDatabaseReference(relativeFilePath, 'master');
+	}
+
+	/**
+	 * Adds reference to a dacpac to the project
+	 * @param relativeFilePath Relative path to the dacpac
+	 * @param databaseName name of the database
+	 */
+	public async addDatabaseReference(relativeFilePath: string, databaseName: string): Promise<void> {
+		//Check that dacpac being referenced actually exists
+		// let exists = await utils.exists(absoluteFilePath);
+		// if (!exists) {
+		// 	throw new Error(constants.noFileExist(absoluteFilePath));
+		// }
+
+		let databaseReferenceEntry = new DatabaseReferenceProjectEntry(relativeFilePath, databaseName);
+
+		await this.addToProjFile(databaseReferenceEntry);
+	}
+
 	private createProjectEntry(relativePath: string, entryType: EntryType): ProjectEntry {
 		return new ProjectEntry(Uri.file(path.join(this.projectFolderPath, relativePath)), relativePath, entryType);
 	}
@@ -185,6 +218,24 @@ export class Project {
 		this.findOrCreateItemGroup(constants.Folder).appendChild(newFolderNode);
 	}
 
+	private addDatabaseReferenceToProjFile(path: string, databaseName: string): void {
+		const referenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
+		referenceNode.setAttribute(constants.Condition, constants.NetCoreCondition);
+		referenceNode.setAttribute(constants.Include, path);
+
+		let suppressMissingDependenciesErrorNode = this.projFileXmlDoc.createElement(constants.SuppressMissingDependenciesErrors);
+		let falseTextNode = this.projFileXmlDoc.createTextNode('False');
+		suppressMissingDependenciesErrorNode.appendChild(falseTextNode);
+		referenceNode.appendChild(suppressMissingDependenciesErrorNode);
+
+		let databaseVariableLiteralValue = this.projFileXmlDoc.createElement(constants.DatabaseVariableLiteralValue);
+		let databaseTextNode = this.projFileXmlDoc.createTextNode(databaseName);
+		databaseVariableLiteralValue.appendChild(databaseTextNode);
+		referenceNode.appendChild(databaseVariableLiteralValue);
+
+		this.findOrCreateItemGroup().appendChild(referenceNode);
+	}
+
 	private async updateImportedTargetsToProjFile(condition: string, project: string, oldImportNode?: any): Promise<any> {
 		const importNode = this.projFileXmlDoc.createElement(constants.Import);
 		importNode.setAttribute(constants.Condition, condition);
@@ -220,6 +271,8 @@ export class Project {
 				break;
 			case EntryType.Folder:
 				this.addFolderToProjFile(entry.relativePath);
+			case EntryType.DatabaseReference:
+				this.addDatabaseReferenceToProjFile(entry.relativePath, (<DatabaseReferenceProjectEntry>entry).name);
 		}
 
 		await this.serializeToProjFile(this.projFileXmlDoc);
@@ -277,7 +330,20 @@ export class ProjectEntry {
 	}
 }
 
+/**
+ * Represents a database reference entry in a project file
+ */
+class DatabaseReferenceProjectEntry extends ProjectEntry {
+	name: string;
+
+	constructor(relativePath: string, name: string) {
+		super(Uri.parse(relativePath), relativePath, EntryType.DatabaseReference);
+		this.name = name;
+	}
+}
+
 export enum EntryType {
 	File,
-	Folder
+	Folder,
+	DatabaseReference
 }

@@ -91,7 +91,10 @@ export const Condition = 'Condition';
 export const PackageReference = 'PackageReference';
 export const Version = 'Version';
 export const PrivateAssets = 'PrivateAssets';
-
+export const ArtifactReference = 'ArtifactReference';
+export const SuppressMissingDependenciesErrors = 'SuppressMissingDependenciesErrors';
+export const DatabaseVariableLiteralValue = 'DatabaseVariableLiteralValue';
+export const DSP = 'DSP';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';

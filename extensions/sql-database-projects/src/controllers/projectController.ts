@@ -292,6 +292,13 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 	}
 
+	public async addDatabaseReference(treeNode: BaseProjectTreeItem): Promise<void> {
+		const project = ProjectsController.getProjectFromContext(treeNode);
+		// await project.addDatabaseReference(path, dbName);
+
+		await project.addMasterDatabaseReference();
+	}
+
 	//#region Helper methods
 
 	public getDeployDialog(project: Project): DeployDatabaseDialog {
