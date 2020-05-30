@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { window, QuickPickItem } from 'vscode';
+import { window, QuickPickItem, env, Uri } from 'vscode';
 import * as azdata from 'azdata';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import * as nls from 'vscode-nls';
@@ -236,5 +236,24 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		if (conn) {
 			appContext.apiWrapper.executeCommand('workbench.view.connections');
 		}
+	});
+
+	appContext.apiWrapper.registerCommand('azure.resource.openInAzurePortal', async (node?: TreeNode) => {
+		if (!node) {
+			return;
+		}
+
+		const treeItem: azdata.TreeItem = await node.getTreeItem();
+		if (!treeItem.payload) {
+			return;
+		}
+		let connectionProfile = Object.assign({}, treeItem.payload, { saveProfile: true });
+
+		if (!connectionProfile.azureResourceId) {
+			return;
+		}
+
+		const urlToOpen = `${connectionProfile.azurePortalEndpoint}//${connectionProfile.azureTenantId}/#resource/${connectionProfile.azureResourceId}`;
+		env.openExternal(Uri.parse(urlToOpen));
 	});
 }
