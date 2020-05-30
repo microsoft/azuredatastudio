@@ -21,32 +21,32 @@ function createContext(): TestContext {
 		apiWrapper: TypeMoq.Mock.ofType(ApiWrapper),
 		queryProvider: {
 			providerId: '',
-			cancelQuery: () => {return Promise.reject();},
-			runQuery: () => {return Promise.reject();},
-			runQueryStatement: () => {return Promise.reject();},
-			runQueryString: () => {return Promise.reject();},
+			cancelQuery: () => { return Promise.reject(); },
+			runQuery: () => { return Promise.reject(); },
+			runQueryStatement: () => { return Promise.reject(); },
+			runQueryString: () => { return Promise.reject(); },
 			runQueryAndReturn: () => { return Promise.reject(); },
-			parseSyntax: () => {return Promise.reject();},
-			getQueryRows: () => {return Promise.reject();},
-			disposeQuery: () => {return Promise.reject();},
-			saveResults: () => {return Promise.reject();},
-			setQueryExecutionOptions: () => {return Promise.reject();},
-			registerOnQueryComplete: () => {return Promise.reject();},
-			registerOnBatchStart: () => {return Promise.reject();},
-			registerOnBatchComplete: () => {return Promise.reject();},
-			registerOnResultSetAvailable: () => {return Promise.reject();},
-			registerOnResultSetUpdated: () => {return Promise.reject();},
-			registerOnMessage: () => {return Promise.reject();},
-			commitEdit: () => {return Promise.reject();},
-			createRow: () => {return Promise.reject();},
-			deleteRow: () => {return Promise.reject();},
-			disposeEdit: () => {return Promise.reject();},
-			initializeEdit: () => {return Promise.reject();},
-			revertCell: () => {return Promise.reject();},
-			revertRow: () => {return Promise.reject();},
-			updateCell: () => {return Promise.reject();},
-			getEditRows: () => {return Promise.reject();},
-			registerOnEditSessionReady: () => {return Promise.reject();},
+			parseSyntax: () => { return Promise.reject(); },
+			getQueryRows: () => { return Promise.reject(); },
+			disposeQuery: () => { return Promise.reject(); },
+			saveResults: () => { return Promise.reject(); },
+			setQueryExecutionOptions: () => { return Promise.reject(); },
+			registerOnQueryComplete: () => { return Promise.reject(); },
+			registerOnBatchStart: () => { return Promise.reject(); },
+			registerOnBatchComplete: () => { return Promise.reject(); },
+			registerOnResultSetAvailable: () => { return Promise.reject(); },
+			registerOnResultSetUpdated: () => { return Promise.reject(); },
+			registerOnMessage: () => { return Promise.reject(); },
+			commitEdit: () => { return Promise.reject(); },
+			createRow: () => { return Promise.reject(); },
+			deleteRow: () => { return Promise.reject(); },
+			disposeEdit: () => { return Promise.reject(); },
+			initializeEdit: () => { return Promise.reject(); },
+			revertCell: () => { return Promise.reject(); },
+			revertRow: () => { return Promise.reject(); },
+			updateCell: () => { return Promise.reject(); },
+			getEditRows: () => { return Promise.reject(); },
+			registerOnEditSessionReady: () => { return Promise.reject(); },
 		}
 	};
 }
@@ -54,7 +54,7 @@ function createContext(): TestContext {
 describe('Query Runner', () => {
 	it('getPythonPackages Should return empty list if not provider found', async function (): Promise<void> {
 		let testContext = createContext();
-		let connection  = new azdata.connection.ConnectionProfile();
+		let connection = new azdata.connection.ConnectionProfile();
 		let queryRunner = new QueryRunner(testContext.apiWrapper.object);
 		let queryProvider: azdata.QueryProvider;
 		testContext.apiWrapper.setup(x => x.getProvider<azdata.QueryProvider>(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => queryProvider);
@@ -65,7 +65,7 @@ describe('Query Runner', () => {
 
 	it('getPythonPackages Should return empty list if not provider throws', async function (): Promise<void> {
 		let testContext = createContext();
-		let connection  = new azdata.connection.ConnectionProfile();
+		let connection = new azdata.connection.ConnectionProfile();
 		let queryRunner = new QueryRunner(testContext.apiWrapper.object);
 		testContext.queryProvider.runQueryAndReturn = () => { return Promise.reject(); };
 		testContext.apiWrapper.setup(x => x.getProvider<azdata.QueryProvider>(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => testContext.queryProvider);
@@ -82,12 +82,21 @@ describe('Query Runner', () => {
 				isNull: false,
 				invariantCultureDisplayValue: ''
 			}, {
+				displayValue: '0',
+				isNull: false,
+				invariantCultureDisplayValue: ''
+			},
+			{
 				displayValue: '1.1.1',
 				isNull: false,
 				invariantCultureDisplayValue: ''
 			}],
 			[{
 				displayValue: 'p2',
+				isNull: false,
+				invariantCultureDisplayValue: ''
+			}, {
+				displayValue: '1',
 				isNull: false,
 				invariantCultureDisplayValue: ''
 			}, {
@@ -99,20 +108,22 @@ describe('Query Runner', () => {
 		let expected = [
 			{
 				'name': 'p1',
+				'readonly': false,
 				'version': '1.1.1'
 			},
 			{
 				'name': 'p2',
+				'readonly': true,
 				'version': '1.1.2'
 			}
 		];
 
-		let result : azdata.SimpleExecuteResult = {
+		let result: azdata.SimpleExecuteResult = {
 			rowCount: 2,
 			columnInfo: [],
 			rows: rows,
 		};
-		let connection  = new azdata.connection.ConnectionProfile();
+		let connection = new azdata.connection.ConnectionProfile();
 		let queryRunner = new QueryRunner(testContext.apiWrapper.object);
 		testContext.queryProvider.runQueryAndReturn = () => { return Promise.resolve(result); };
 		testContext.apiWrapper.setup(x => x.getProvider<azdata.QueryProvider>(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => testContext.queryProvider);
@@ -128,12 +139,12 @@ describe('Query Runner', () => {
 		];
 		let expected: IPackageDetails[] = [];
 
-		let result : azdata.SimpleExecuteResult = {
+		let result: azdata.SimpleExecuteResult = {
 			rowCount: 2,
 			columnInfo: [],
 			rows: rows,
 		};
-		let connection  = new azdata.connection.ConnectionProfile();
+		let connection = new azdata.connection.ConnectionProfile();
 		let queryRunner = new QueryRunner(testContext.apiWrapper.object);
 		testContext.queryProvider.runQueryAndReturn = () => { return Promise.resolve(result); };
 		testContext.apiWrapper.setup(x => x.getProvider<azdata.QueryProvider>(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => testContext.queryProvider);
@@ -148,12 +159,12 @@ describe('Query Runner', () => {
 		let rows: azdata.DbCellValue[][] = [
 		];
 
-		let result : azdata.SimpleExecuteResult = {
+		let result: azdata.SimpleExecuteResult = {
 			rowCount: 2,
 			columnInfo: [],
 			rows: rows,
 		};
-		let connection  = new azdata.connection.ConnectionProfile();
+		let connection = new azdata.connection.ConnectionProfile();
 		let queryRunner = new QueryRunner(testContext.apiWrapper.object);
 		testContext.queryProvider.runQueryAndReturn = () => { return Promise.resolve(result); };
 		testContext.apiWrapper.setup(x => x.getProvider<azdata.QueryProvider>(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => testContext.queryProvider);
@@ -173,12 +184,12 @@ describe('Query Runner', () => {
 		];
 		let expected = true;
 
-		let result : azdata.SimpleExecuteResult = {
+		let result: azdata.SimpleExecuteResult = {
 			rowCount: 2,
 			columnInfo: [],
 			rows: rows,
 		};
-		let connection  = new azdata.connection.ConnectionProfile();
+		let connection = new azdata.connection.ConnectionProfile();
 		let queryRunner = new QueryRunner(testContext.apiWrapper.object);
 		testContext.queryProvider.runQueryAndReturn = () => { return Promise.resolve(result); };
 		testContext.apiWrapper.setup(x => x.getProvider<azdata.QueryProvider>(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => testContext.queryProvider);
@@ -198,12 +209,12 @@ describe('Query Runner', () => {
 		];
 		let expected = false;
 
-		let result : azdata.SimpleExecuteResult = {
+		let result: azdata.SimpleExecuteResult = {
 			rowCount: 2,
 			columnInfo: [],
 			rows: rows,
 		};
-		let connection  = new azdata.connection.ConnectionProfile();
+		let connection = new azdata.connection.ConnectionProfile();
 		let queryRunner = new QueryRunner(testContext.apiWrapper.object);
 		testContext.queryProvider.runQueryAndReturn = () => { return Promise.resolve(result); };
 		testContext.apiWrapper.setup(x => x.getProvider<azdata.QueryProvider>(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => testContext.queryProvider);
@@ -217,12 +228,12 @@ describe('Query Runner', () => {
 		let rows: azdata.DbCellValue[][] = [];
 		let expected = false;
 
-		let result : azdata.SimpleExecuteResult = {
+		let result: azdata.SimpleExecuteResult = {
 			rowCount: 2,
 			columnInfo: [],
 			rows: rows,
 		};
-		let connection  = new azdata.connection.ConnectionProfile();
+		let connection = new azdata.connection.ConnectionProfile();
 		let queryRunner = new QueryRunner(testContext.apiWrapper.object);
 		testContext.queryProvider.runQueryAndReturn = () => { return Promise.resolve(result); };
 		testContext.apiWrapper.setup(x => x.getProvider<azdata.QueryProvider>(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => testContext.queryProvider);
@@ -242,12 +253,12 @@ describe('Query Runner', () => {
 		];
 		let expected = true;
 
-		let result : azdata.SimpleExecuteResult = {
+		let result: azdata.SimpleExecuteResult = {
 			rowCount: 2,
 			columnInfo: [],
 			rows: rows,
 		};
-		let connection  = new azdata.connection.ConnectionProfile();
+		let connection = new azdata.connection.ConnectionProfile();
 		let queryRunner = new QueryRunner(testContext.apiWrapper.object);
 		testContext.queryProvider.runQueryAndReturn = () => { return Promise.resolve(result); };
 		testContext.apiWrapper.setup(x => x.getProvider<azdata.QueryProvider>(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => testContext.queryProvider);
@@ -267,12 +278,12 @@ describe('Query Runner', () => {
 		];
 		let expected = false;
 
-		let result : azdata.SimpleExecuteResult = {
+		let result: azdata.SimpleExecuteResult = {
 			rowCount: 2,
 			columnInfo: [],
 			rows: rows,
 		};
-		let connection  = new azdata.connection.ConnectionProfile();
+		let connection = new azdata.connection.ConnectionProfile();
 		let queryRunner = new QueryRunner(testContext.apiWrapper.object);
 		testContext.queryProvider.runQueryAndReturn = () => { return Promise.resolve(result); };
 		testContext.apiWrapper.setup(x => x.getProvider<azdata.QueryProvider>(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => testContext.queryProvider);
@@ -286,12 +297,12 @@ describe('Query Runner', () => {
 		let rows: azdata.DbCellValue[][] = [];
 		let expected = false;
 
-		let result : azdata.SimpleExecuteResult = {
+		let result: azdata.SimpleExecuteResult = {
 			rowCount: 2,
 			columnInfo: [],
 			rows: rows,
 		};
-		let connection  = new azdata.connection.ConnectionProfile();
+		let connection = new azdata.connection.ConnectionProfile();
 		let queryRunner = new QueryRunner(testContext.apiWrapper.object);
 		testContext.queryProvider.runQueryAndReturn = () => { return Promise.resolve(result); };
 		testContext.apiWrapper.setup(x => x.getProvider<azdata.QueryProvider>(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => testContext.queryProvider);

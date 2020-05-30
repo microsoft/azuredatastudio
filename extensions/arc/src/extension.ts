@@ -23,10 +23,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		const dbNamespace = '';
 		const dbName = '';
 
-		const controllerModel = new ControllerModel(controllerUrl, auth);
-		const databaseModel = new PostgresModel(controllerUrl, auth, dbNamespace, dbName);
-		const postgresDashboard = new PostgresDashboard(loc.postgresDashboard, controllerModel, databaseModel);
-		await postgresDashboard.showDashboard();
+		try {
+			const controllerModel = new ControllerModel(controllerUrl, auth);
+			const postgresModel = new PostgresModel(controllerUrl, auth, dbNamespace, dbName);
+			const postgresDashboard = new PostgresDashboard(loc.postgresDashboard, controllerModel, postgresModel);
+
+			await Promise.all([
+				postgresDashboard.showDashboard(),
+				controllerModel.refresh(),
+				postgresModel.refresh()
+			]);
+		} catch (error) {
+			vscode.window.showErrorMessage(loc.failedToManagePostgres(`${dbNamespace}.${dbName}`, error));
+		}
 	});
 }
 
