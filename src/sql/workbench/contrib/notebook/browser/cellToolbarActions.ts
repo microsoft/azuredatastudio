@@ -3,33 +3,103 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ElementRef } from '@angular/core';
-
 import { localize } from 'vs/nls';
-import { ActionBar, ActionsOrientation, Separator } from 'vs/base/browser/ui/actionbar/actionbar';
-import { getErrorMessage } from 'vs/base/common/errors';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
-import * as DOM from 'vs/base/browser/dom';
-
-import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { Action, IAction } from 'vs/base/common/actions';
+import { ActionBar, Separator, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { CellActionBase, CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
-import { CellTypes, CellType } from 'sql/workbench/services/notebook/common/contracts';
-import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { ToggleMoreWidgetAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
-import { Action } from 'vs/base/common/actions';
+import { CellTypes, CellType } from 'sql/workbench/services/notebook/common/contracts';
+import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { firstIndex } from 'vs/base/common/arrays';
+import { getErrorMessage } from 'vs/base/common/errors';
+import Severity from 'vs/base/common/severity';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
-export const HIDDEN_CLASS = 'actionhidden';
+
+export class EditCellAction extends ToggleableAction {
+	// Constants
+	private static readonly editLabel = localize('editLabel', "Edit");
+	private static readonly closeLabel = localize('closeLabel', "Close");
+	private static readonly baseClass = 'codicon';
+	private static readonly editCssClass = 'edit';
+	private static readonly closeCssClass = 'close';
+	private static readonly maskedIconClass = 'masked-icon';
+
+	constructor(
+		id: string, toggleTooltip: boolean, isEditMode: boolean
+	) {
+		super(id, {
+			baseClass: EditCellAction.baseClass,
+			toggleOnLabel: EditCellAction.closeLabel,
+			toggleOnClass: EditCellAction.closeCssClass,
+			toggleOffLabel: EditCellAction.editLabel,
+			toggleOffClass: EditCellAction.editCssClass,
+			maskedIconClass: EditCellAction.maskedIconClass,
+			shouldToggleTooltip: toggleTooltip,
+			isOn: isEditMode
+		});
+	}
+
+	public get editMode(): boolean {
+		return this.state.isOn;
+	}
+	public set editMode(value: boolean) {
+		this.toggle(value);
+	}
+
+	public run(context: CellContext): Promise<boolean> {
+		let self = this;
+		return new Promise<boolean>((resolve, reject) => {
+			try {
+				self.editMode = !self.editMode;
+				context.cell.isEditMode = self.editMode;
+				resolve(true);
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+}
+
+export class DeleteCellAction extends CellActionBase {
+	constructor(
+		id: string,
+		cssClass: string,
+		label: string,
+		@INotificationService notificationService: INotificationService
+	) {
+		super(id, label, undefined, notificationService);
+		this._cssClass = cssClass;
+		this._tooltip = label;
+		this._label = '';
+	}
+
+	doRun(context: CellContext): Promise<void> {
+		try {
+			context.model.deleteCell(context.cell);
+		} catch (error) {
+			let message = getErrorMessage(error);
+
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: message
+			});
+		}
+		return Promise.resolve();
+	}
+}
 
 export class CellToggleMoreActions {
 	private _actions: (Action | CellActionBase)[] = [];
 	private _moreActions: ActionBar;
 	private _moreActionsElement: HTMLElement;
 	constructor(
-		@IInstantiationService private instantiationService: IInstantiationService) {
+		@IInstantiationService private instantiationService: IInstantiationService
+	) {
 		this._actions.push(
 			instantiationService.createInstance(RunCellsAction, 'runAllBefore', localize('runAllBefore', "Run Cells Before"), false),
 			instantiationService.createInstance(RunCellsAction, 'runAllAfter', localize('runAllAfter', "Run Cells After"), true),
@@ -44,14 +114,11 @@ export class CellToggleMoreActions {
 			instantiationService.createInstance(CollapseCellAction, 'expandCell', localize('expandCell', "Expand Cell"), false),
 			new Separator(),
 			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', "Clear Result")),
-			new Separator(),
-			instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', "Delete")),
 		);
 	}
 
-	public onInit(elementRef: ElementRef, model: NotebookModel, cellModel: ICellModel) {
-		let context = new CellContext(model, cellModel);
-		this._moreActionsElement = <HTMLElement>elementRef.nativeElement;
+	public onInit(elementRef: HTMLElement, context: CellContext) {
+		this._moreActionsElement = <HTMLElement>elementRef;
 		if (this._moreActionsElement.childNodes.length > 0) {
 			this._moreActionsElement.removeChild(this._moreActionsElement.childNodes[0]);
 		}
@@ -59,18 +126,7 @@ export class CellToggleMoreActions {
 		this._moreActions.context = { target: this._moreActionsElement };
 		let validActions = this._actions.filter(a => a instanceof Separator || a instanceof CellActionBase && a.canRun(context));
 		this.removeDuplicatedAndStartingSeparators(validActions);
-		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, validActions, context), { icon: true, label: false });
-	}
-
-	public toggleVisible(visible: boolean): void {
-		if (!this._moreActionsElement) {
-			return;
-		}
-		if (visible) {
-			DOM.addClass(this._moreActionsElement, HIDDEN_CLASS);
-		} else {
-			DOM.removeClass(this._moreActionsElement, HIDDEN_CLASS);
-		}
+		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreActions, validActions, context), { icon: true, label: false });
 	}
 
 	private removeDuplicatedAndStartingSeparators(actions: (Action | CellActionBase)[]): void {
@@ -93,6 +149,7 @@ export class CellToggleMoreActions {
 	}
 }
 
+
 export class AddCellFromContextAction extends CellActionBase {
 	constructor(
 		id: string, label: string, private cellType: CellType, private isAfter: boolean,
@@ -109,28 +166,6 @@ export class AddCellFromContextAction extends CellActionBase {
 				index += 1;
 			}
 			model.addCell(this.cellType, index);
-		} catch (error) {
-			let message = getErrorMessage(error);
-
-			this.notificationService.notify({
-				severity: Severity.Error,
-				message: message
-			});
-		}
-		return Promise.resolve();
-	}
-}
-
-export class DeleteCellAction extends CellActionBase {
-	constructor(id: string, label: string,
-		@INotificationService notificationService: INotificationService
-	) {
-		super(id, label, undefined, notificationService);
-	}
-
-	doRun(context: CellContext): Promise<void> {
-		try {
-			context.model.deleteCell(context.cell);
 		} catch (error) {
 			let message = getErrorMessage(error);
 
@@ -247,5 +282,29 @@ export class CollapseCellAction extends CellActionBase {
 			});
 		}
 		return Promise.resolve();
+	}
+}
+
+export class ToggleMoreActions extends Action {
+
+	private static readonly ID = 'toggleMore';
+	private static readonly LABEL = localize('toggleMore', "Toggle More");
+	private static readonly ICON = 'masked-icon more';
+
+	constructor(
+		private readonly _actions: Array<IAction>,
+		private readonly _context: CellContext,
+		@IContextMenuService private readonly _contextMenuService: IContextMenuService
+	) {
+		super(ToggleMoreActions.ID, ToggleMoreActions.LABEL, ToggleMoreActions.ICON);
+	}
+
+	run(context: StandardKeyboardEvent): Promise<boolean> {
+		this._contextMenuService.showContextMenu({
+			getAnchor: () => context.target,
+			getActions: () => this._actions,
+			getActionsContext: () => this._context
+		});
+		return Promise.resolve(true);
 	}
 }
