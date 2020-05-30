@@ -212,8 +212,8 @@ describe('ProjectsController: import operations', function (): void {
 });
 
 describe('ProjectsController: round trip feature with SSDT', function (): void {
-	it('Should show warning message for SSDT project opened in Azure Data Studio', async function (): Promise<void> {
-		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+	it('Should not update project and no backup file should be created when update to project is rejected', async function (): Promise<void> {
+		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(constants.noString));
 
 		// setup test files
 		const folderPath = await testUtils.generateTestFolderPath();
@@ -222,43 +222,25 @@ describe('ProjectsController: round trip feature with SSDT', function (): void {
 
 		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
 
-		await testUtils.shouldThrowSpecificError(async () => await projController.openProject(vscode.Uri.file(sqlProjPath)), constants.updateProjectForRoundTrip);
-	});
-
-	it('Should not update project and no backup file should be created', async function (): Promise<void> {
-		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(constants.projectLocationRequired));
-
-		// setup test files
-		const folderPath = await testUtils.generateTestFolderPath();
-		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline, folderPath);
-		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
-console.log(sqlProjPath);
-		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
-
 		const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
-		console.log(project);
-		console.log(project.importedTargets);
 
-		should(exists(sqlProjPath+'_backup')).equal(false);	// backup file should be generated before the project is updated
+		should(await exists(sqlProjPath+'_backup')).equal(false);	// backup file should not be generated
 		should(project.importedTargets.length).equal(2); // additional target should not be added by updateProjectForRoundTrip method
 	});
 
-	it('Should load Project and associated import targets', async function (): Promise<void> {
-		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(constants.yesString));
-		console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Test start');
+	it('Should load Project and associated import targets when update to project is accepted', async function (): Promise<void> {
+		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(constants.yesString));
+
 		// setup test files
 		const folderPath = await testUtils.generateTestFolderPath();
-		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline, folderPath);
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
 		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
 
 		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
 
 		const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
 
-		console.log(project);
-		console.log(project.importedTargets);
-
-		should(exists(sqlProjPath+'_backup')).equal(false);	// backup file should be generated before the project is updated
+		should(await exists(sqlProjPath+'_backup')).equal(true);	// backup file should be generated before the project is updated
 		should(project.importedTargets.length).equal(3); // additional target added by updateProjectForRoundTrip method
 	});
 });

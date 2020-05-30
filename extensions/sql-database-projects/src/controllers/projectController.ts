@@ -299,17 +299,14 @@ export class ProjectsController {
 	}
 
 	public async updateProjectForRoundTrip(project: Project) {
-		console.log('Before warning message');
 		if (project.importedTargets.includes(constants.NetCoreTargets)) {
 			return;
 		}
-		console.log('After warning message');
-		this.apiWrapper.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString).then(async (result) => {
-			if (result === constants.yesString) {
-				console.log('Yes string');
-				await project.updateProjectForRoundTrip();
-			}
-		});
+
+		const result = await this.apiWrapper.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
+		if (result === constants.yesString) {
+			await project.updateProjectForRoundTrip();
+		}
 	}
 
 	private static getProjectFromContext(context: Project | BaseProjectTreeItem) {

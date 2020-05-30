@@ -80,10 +80,12 @@ describe('Project: round trip updates', function (): void {
 		const project: Project = new Project(projFilePath);
 		await project.readProjFile();
 
-		should(exists(projFilePath+'_backup')).equal(true);	// backup file should be generated before the project is updated
+		await project.updateProjectForRoundTrip();
+
+		should(await exists(projFilePath+'_backup')).equal(true);	// backup file should be generated before the project is updated
 		should(project.importedTargets.length).equal(3);	// additional target added by updateProjectForRoundTrip method
 
 		let projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText).equal(baselines.SSDTProjectAfterUpdateBaseline);
+		should(projFileText).equal(baselines.SSDTProjectAfterUpdateBaseline.trim());
 	});
 });

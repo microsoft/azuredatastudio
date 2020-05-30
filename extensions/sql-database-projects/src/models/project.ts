@@ -62,9 +62,7 @@ export class Project {
 	}
 
 	public async updateProjectForRoundTrip() {
-		console.log('before copy');
 		await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
-		console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>projectFilePath:', this.projectFilePath);
 		await this.updateImportToSupportRoundTrip();
 		await this.updatePackageReferenceInProjFile();
 	}
@@ -189,6 +187,7 @@ export class Project {
 		}
 		else {
 			this.projFileXmlDoc.documentElement.appendChild(importNode, oldImportNode);
+			this.importedTargets.push(project);	// Add new import target to the list
 		}
 
 		await this.serializeToProjFile(this.projFileXmlDoc);
