@@ -528,6 +528,20 @@ Includes non-masked style declarations. */
 	background-image: url("database_colored.svg");
 }
 
+.notebookExplorer {
+	background-color: rgba(255, 255, 255, 0.4);
+	-webkit-mask-image: url("book_image.svg");
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-position: 50% 50%;
+}
+
+.checked > .notebookExplorer {
+	background-color: rgb(255, 255, 255);
+	-webkit-mask-image: url("book_image.svg");
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-position: 50% 50%;
+}
+
 .small {
 	width: 16px;
 	height: 16px;

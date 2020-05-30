@@ -394,9 +394,6 @@ import 'sql/workbench/contrib/query/common/resultsGrid.contribution';
 import 'sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution';
 import 'sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contribution';
 
-// notebook explorer
-import 'sql/workbench/contrib/notebooksExplorer/browser/notebookExplorer.contribution';
-
 //editor replacement
 import 'sql/workbench/contrib/editorReplacement/common/editorReplacer.contribution';
 
