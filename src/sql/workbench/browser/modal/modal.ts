@@ -56,9 +56,11 @@ export interface IModalDialogStyles {
 	footerBorderTopColor?: Color;
 }
 
+export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
+
 export interface IModalOptions {
 	isFlyout?: boolean;
-	isWide?: boolean;
+	width?: DialogWidth;
 	isAngular?: boolean;
 	hasBackButton?: boolean;
 	hasTitleIcon?: boolean;
@@ -69,7 +71,7 @@ export interface IModalOptions {
 
 const defaultOptions: IModalOptions = {
 	isFlyout: true,
-	isWide: false,
+	width: 'narrow',
 	isAngular: false,
 	hasBackButton: false,
 	hasTitleIcon: false,
@@ -175,8 +177,8 @@ export abstract class Modal extends Disposable implements IThemable {
 			builderClass += ' flyout-dialog';
 		}
 
-		if (this._modalOptions.isWide) {
-			builderClass += ' wide';
+		if (this._modalOptions.width && typeof this._modalOptions.width === 'string') {
+			builderClass += ` ${this._modalOptions.width}-dialog `;
 		}
 
 		this._bodyContainer = DOM.$(`.${builderClass}`, { role: 'dialog', 'aria-label': this._title });
@@ -184,6 +186,10 @@ export abstract class Modal extends Disposable implements IThemable {
 		this._bodyContainer.style.top = `${top}px`;
 		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
 		this._modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
+
+		if (typeof this._modalOptions.width === 'number') {
+			this._modalDialog.style.width = `${this._modalOptions.width}px`;
+		}
 
 		if (!isUndefinedOrNull(this._title)) {
 			this._modalHeaderSection = DOM.append(this._modalContent, DOM.$('.modal-header'));

@@ -402,8 +402,14 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				createWebViewDialog(name: string) {
 					return extHostModalDialogs.createDialog(name);
 				},
-				createModelViewDialog(title: string, dialogName?: string, isWide?: boolean): azdata.window.Dialog {
-					return extHostModelViewDialog.createDialog(title, dialogName, extension, !!isWide);
+				createModelViewDialog(title: string, dialogName?: string, width?: boolean | azdata.window.DialogWidth): azdata.window.Dialog {
+					let dialogWidth: azdata.window.DialogWidth;
+					if (typeof width === 'boolean') {
+						dialogWidth = width === true ? 'wide' : 'narrow';
+					} else {
+						dialogWidth = width;
+					}
+					return extHostModelViewDialog.createDialog(title, dialogName, extension, dialogWidth);
 				},
 				createTab(title: string): azdata.window.DialogTab {
 					return extHostModelViewDialog.createTab(title, extension);
@@ -420,8 +426,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				createWizardPage(title: string): azdata.window.WizardPage {
 					return extHostModelViewDialog.createWizardPage(title, extension);
 				},
-				createWizard(title: string): azdata.window.Wizard {
-					return extHostModelViewDialog.createWizard(title);
+				createWizard(title: string, width?: azdata.window.DialogWidth): azdata.window.Wizard {
+					return extHostModelViewDialog.createWizard(title, width);
 				},
 				createModelViewDashboard(title: string, options?: azdata.ModelViewDashboardOptions): azdata.window.ModelViewDashboard {
 					return extHostModelViewDialog.createModelViewDashboard(title, options, extension);

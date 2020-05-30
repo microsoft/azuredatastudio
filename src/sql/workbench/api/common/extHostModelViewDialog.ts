@@ -13,7 +13,7 @@ import * as azdata from 'azdata';
 
 import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostModelViewShape, ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { TabOrientation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { TabOrientation, DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 const DONE_LABEL = nls.localize('dialogDoneLabel', "Done");
 const CANCEL_LABEL = nls.localize('dialogCancelLabel', "Cancel");
@@ -125,6 +125,7 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 	private _operationHandler: BackgroundOperationHandler;
 	private _dialogName: string;
 	private _isWide: boolean;
+	private _width: DialogWidth;
 
 	constructor(extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape,
@@ -137,6 +138,14 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 		this.okButton.onClick(() => {
 			this._operationHandler.createOperation();
 		});
+	}
+
+	public get width(): azdata.window.DialogWidth {
+		return this._width;
+	}
+
+	public set width(value: azdata.window.DialogWidth) {
+		this._width = value;
 	}
 
 	public registerOperation(operationInfo: azdata.BackgroundOperationInfo): void {
@@ -372,6 +381,7 @@ class WizardImpl implements azdata.window.Wizard {
 	private _message: azdata.window.DialogMessage;
 	private _displayPageTitles: boolean = true;
 	private _operationHandler: BackgroundOperationHandler;
+	private _width: DialogWidth;
 
 	constructor(public title: string, private _extHostModelViewDialog: ExtHostModelViewDialog, extHostTaskManagement: ExtHostBackgroundTaskManagementShape) {
 		this.doneButton = this._extHostModelViewDialog.createButton(DONE_LABEL);
@@ -390,6 +400,14 @@ class WizardImpl implements azdata.window.Wizard {
 
 	public registerOperation(operationInfo: azdata.BackgroundOperationInfo): void {
 		this._operationHandler.registerOperation(operationInfo);
+	}
+
+	public get width(): azdata.window.DialogWidth {
+		return this._width;
+	}
+
+	public set width(value: azdata.window.DialogWidth) {
+		this._width = value;
 	}
 
 	public get currentPage(): number {
@@ -653,9 +671,17 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		}
 		this.updateButton(dialog.okButton);
 		this.updateButton(dialog.cancelButton);
+		let dialogWidth: DialogWidth = 'narrow';
+		if (dialog.isWide !== undefined) {
+			dialogWidth = dialog.isWide ? 'wide' : 'narrow';
+		} else if (dialog.width !== undefined) {
+			dialogWidth = dialog.width;
+		} else {
+			dialogWidth = 'narrow';
+		}
 		this._proxy.$setDialogDetails(handle, {
 			title: dialog.title,
-			isWide: dialog.isWide,
+			width: dialogWidth,
 			okButton: this.getHandle(dialog.okButton),
 			cancelButton: this.getHandle(dialog.cancelButton),
 			content: dialog.content && typeof dialog.content !== 'string' ? dialog.content.map(tab => this.getHandle(tab)) : dialog.content as string,
@@ -688,13 +714,13 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._onClickCallbacks.set(handle, callback);
 	}
 
-	public createDialog(title: string, dialogName?: string, extension?: IExtensionDescription, isWide?: boolean): azdata.window.Dialog {
+	public createDialog(title: string, dialogName?: string, extension?: IExtensionDescription, width?: azdata.window.DialogWidth): azdata.window.Dialog {
 		let dialog = new DialogImpl(this, this._extHostModelView, this._extHostTaskManagement, extension);
 		if (dialogName) {
 			dialog.dialogName = dialogName;
 		}
 		dialog.title = title;
-		dialog.isWide = isWide;
+		dialog.width = width === undefined ? 'narrow' : width;
 		dialog.handle = this.getHandle(dialog);
 		return dialog;
 	}
@@ -736,8 +762,9 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return page;
 	}
 
-	public createWizard(title: string): azdata.window.Wizard {
+	public createWizard(title: string, width: azdata.window.DialogWidth = 'wide'): azdata.window.Wizard {
 		let wizard = new WizardImpl(title, this, this._extHostTaskManagement);
+		wizard.width = width;
 		this.getHandle(wizard);
 		return wizard;
 	}
@@ -769,6 +796,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		}
 		return this._proxy.$setWizardDetails(handle, {
 			title: wizard.title,
+			width: wizard.width,
 			pages: wizard.pages.map(page => this.getHandle(page)),
 			currentPage: wizard.currentPage,
 			backButton: this.getHandle(wizard.backButton),

@@ -111,7 +111,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 		};
 		dialogDetails = {
 			title: 'dialog1',
-			isWide: false,
+			width: 'narrow',
 			content: [tab1Handle, tab2Handle],
 			okButton: okButtonHandle,
 			cancelButton: cancelButtonHandle,
@@ -160,7 +160,8 @@ suite('MainThreadModelViewDialog Tests', () => {
 			customButtons: [],
 			pages: [page1Handle, page2Handle],
 			message: undefined,
-			displayPageTitles: false
+			displayPageTitles: false,
+			width: 'wide'
 		};
 
 		// Register the buttons, tabs, and dialog

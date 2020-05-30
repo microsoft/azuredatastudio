@@ -67,7 +67,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	public $openDialog(handle: number, dialogName?: string): Thenable<void> {
 		let dialog = this.getDialog(handle);
-		this._dialogService.showDialog(dialog, dialogName, { hasBackButton: false, isWide: dialog.isWide, hasErrors: true });
+		this._dialogService.showDialog(dialog, dialogName, { hasBackButton: false, width: dialog.width, hasErrors: true });
 		return Promise.resolve();
 	}
 
@@ -91,7 +91,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		}
 
 		dialog.title = details.title;
-		dialog.isWide = details.isWide;
+		dialog.width = details.width;
 		if (details.content && typeof details.content !== 'string') {
 			dialog.content = details.content.map(tabHandle => this.getTab(tabHandle));
 		} else {
@@ -163,6 +163,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		let wizard = this._wizards.get(handle);
 		if (!wizard) {
 			wizard = new Wizard(details.title);
+			wizard.width = details.width;
 			wizard.backButton = this.getButton(details.backButton);
 			wizard.cancelButton = this.getButton(details.cancelButton);
 			wizard.generateScriptButton = this.getButton(details.generateScriptButton);
@@ -213,7 +214,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	public $openWizard(handle: number): Thenable<void> {
 		let wizard = this.getWizard(handle);
-		this._dialogService.showWizard(wizard);
+		this._dialogService.showWizard(wizard, { hasBackButton: false, width: wizard.width, hasErrors: true });
 		return Promise.resolve();
 	}
 

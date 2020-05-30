@@ -9,8 +9,8 @@ import { Dialog, Wizard } from 'sql/workbench/services/dialog/common/dialogTypes
 import { IModalOptions } from 'sql/workbench/browser/modal/modal';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-const defaultOptions: IModalOptions = { hasBackButton: false, isWide: false, hasErrors: true };
-const defaultWizardOptions: IModalOptions = { hasBackButton: false, isWide: true, hasErrors: true };
+const defaultOptions: IModalOptions = { hasBackButton: false, width: 'narrow', hasErrors: true };
+const defaultWizardOptions: IModalOptions = { hasBackButton: false, width: 'wide', hasErrors: true };
 
 export class CustomDialogService {
 	private _dialogModals = new Map<Dialog, DialogModal>();
